@@ -62,6 +62,14 @@ has_field email => (
     },
 );
 
+has_field extra_bulky_text_updates => (
+    type => 'Checkbox',
+    label => 'Bulky text updates',
+    option_label => 'Do you want to receive updates by text',
+    inactive => 1,
+);
+
+
 sub default_email {
     my $self = shift;
     if (my $user = $self->non_staff_user) {
