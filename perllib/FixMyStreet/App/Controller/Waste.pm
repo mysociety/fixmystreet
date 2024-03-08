@@ -1120,6 +1120,7 @@ sub garden : Chained('garden_setup') : Args(0) {
 
     $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
     $c->stash->{per_sack_cost} = $c->cobrand->garden_waste_sacks_cost_pa;
+    $c->stash->{next_month_cost} = $c->cobrand->garden_waste_cost_pa_in_one_month($c->stash->{per_bin_cost});
 
     $c->stash->{first_page} = 'intro';
     my $service = $c->cobrand->garden_service_id;

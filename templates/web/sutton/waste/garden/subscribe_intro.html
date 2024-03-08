@@ -1,3 +1,4 @@
+[% USE date %]
 [% SET bodyclass = 'waste' %]
 
 [% INCLUDE header.html %]
@@ -15,7 +16,14 @@ You can subscribe to our garden waste collection service if you are a frequent g
 <h2>Costs</h2>
 
 <p>
-A 12 month subscription is £[% tprintf('%.2f', per_bin_cost / 100 ) %] per bin.
+It costs
+£[% tprintf('%.2f', per_bin_cost / 100 ) %]
+for a 12-month subscription.
+[% IF next_month_cost %]
+From [% date.format(next_month_cost.start_date, '%e %B') %], subscribers will pay
+£[% tprintf('%.2f', next_month_cost.cost / 100 ) %]
+for a 12-month subscription.
+[% END %]
 </p>
 
 [% IF slwp_garden_sacks %]

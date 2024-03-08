@@ -577,6 +577,39 @@ sub garden_waste_cost_pa {
     return $cost;
 }
 
+=head2 garden_waste_cost_pa_in_one_month
+
+Returns the cost of garden waste in one month, if it differs from the usual
+cost passed in. This is to show an upcoming price change on the garden
+subscription intro page.
+
+=cut
+
+sub garden_waste_cost_pa_in_one_month {
+    my ($self, $cost_pa) = @_;
+
+    my $costs = $self->feature('payment_gateway')->{ggw_cost};
+    return unless ref $costs eq 'ARRAY';
+
+    my $pattern = '%Y-%m-%d %H:%M';
+    my $date = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->add(months => 1);
+    $date = $date->strftime($pattern);
+
+    my @sorted = sort { $b->{start_date} cmp $a->{start_date} } @$costs;
+    foreach my $cost (@sorted) {
+        if ($cost->{start_date} le $date) {
+            my $parser = DateTime::Format::Strptime->new(pattern => $pattern);
+            return {
+                cost => $cost->{cost},
+                start_date => $parser->parse_datetime($cost->{start_date}),
+            } if $cost->{cost} != $cost_pa;
+            return;
+        }
+    }
+
+    die("Couldn't find a valid cost item");
+}
+
 sub garden_waste_renewal_cost_pa {
     my ($self, $end_date, $bin_count) = @_;
     return $self->garden_waste_cost_pa($bin_count);
