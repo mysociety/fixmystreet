@@ -1318,11 +1318,12 @@ sub _bulky_send_optional_text {
     my $address = $report->detail;
     $address =~ s/\s\|.*?$//; # Address may contain ref to Bartec report
     $message_data{body} =
-    sprintf("Bulky waste collection reminder\n\n
+    sprintf("%s\n\n
         Date: %s
         Items: %d
         %s
         View more details or cancel: %s",
+        $title,
         $self->bulky_nice_collection_date($report->get_extra_field_value('DATE')),
         scalar grep ({ $_->{name} =~ /^ITEM/ && $_->{value} } @{$report->get_extra_fields}),
         $address,
