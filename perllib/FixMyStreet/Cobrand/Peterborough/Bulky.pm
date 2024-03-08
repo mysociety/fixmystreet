@@ -330,6 +330,7 @@ sub waste_reconstruct_bulky_data {
     $saved_data->{email} = $p->user->email;
     $saved_data->{phone} = $p->phone_waste;
     $saved_data->{resident} = 'Yes';
+    $saved_data->{extra_bulky_text_updates} = $p->get_extra_field_value('bulky_text_updates');
 
     return $saved_data;
 }
