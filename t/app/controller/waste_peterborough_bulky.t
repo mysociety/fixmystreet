@@ -362,7 +362,15 @@ FixMyStreet::override_config {
             $mech->content_contains('Aragon Direct Services may contact you to obtain more');
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge' } });
             $mech->content_contains('Please provide an email address');
-            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+            $mech->content_contains('Do you want to receive reminders about this collection by text message?');
+            $mech->submit_form(with_fields => { name => 'Bob Marge', email => '', phone => '44 07 111 111 111' });
+            $mech->content_contains('Please provide an email address', 'Can not proceed without email if text notifications unchecked');
+            $mech->submit_form(with_fields => { name => 'Bob Marge', email => $user->email, phone => '', extra_bulky_text_updates => '1' });
+            $mech->content_contains('Please enter a mobile phone number to receive text updates', 'Can not proceed without mobile number if text notifications checked');
+            $mech->submit_form(with_fields => { name => 'Bob Marge', email => '', phone => '44 07 111 111 111', extra_bulky_text_updates => '1' });
+            $mech->content_contains('Choose date for collection', "Can proceed without email if mobile number and text notifications checked");
+            $mech->back;
+            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111', extra_bulky_text_updates => '1' }});
         };
 
         subtest 'Choose date page' => sub {
