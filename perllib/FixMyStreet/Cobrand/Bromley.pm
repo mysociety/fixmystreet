@@ -237,8 +237,13 @@ sub open311_extra_data_include {
     }
 
     # Investigation required needs a reference to the relevant event ID.
-    if ($contact->category eq 'Investigation Required') {
-        push @$open311_only, { name => 'Event_ID', value => $row->external_id };
+    if ($contact->category eq 'Investigation Required' && $self->_has_report_been_sent_to_echo($row)) {
+        # Investigation Required needs a reference to the closed event ID.
+        # We have the GUID but not the ID so we look this up.
+        my $cfg = $self->feature('echo');
+        my $echo = Integrations::Echo->new(%$cfg);
+        my $event = $echo->GetEvent($row->external_id);
+        push @$open311_only, { name => 'Event_ID', value => $event->{Id} };
     }
 
     return $open311_only;
@@ -270,7 +275,7 @@ sub open311_pre_send {
     if (my $comment_id = $row->get_extra_metadata('echo_report_reopened_with_comment')) {
         my $comment = FixMyStreet::DB->resultset('Comment')->find($comment_id);
         if ($comment && $comment->text) {
-            my $text = "Closed report reopened with comment: " . $comment->text . "\n\n" . $row->detail;
+            my $text = "Closed report has a new comment: " . $comment->text . "\n\n" . $row->detail;
             $row->detail($text);
         }
     }
@@ -404,7 +409,7 @@ sub _has_report_been_sent_to_echo {
 Do not send updates to the backend if they were made by a staff user and
 don't have any text (public or private).
 
-Also, if an update is marking a closed echo-backed report as open, skip it and instead
+Also, if an update is on a closed echo-backed report, skip it and instead
 set the report to be resent under the 'Investigation Required' category, since we
 can't update closed echo events.
 
@@ -414,7 +419,7 @@ sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $report = $update->problem;
-    if ($report->is_closed && $update->mark_open && $self->_has_report_been_sent_to_echo($report)) {
+    if ($report->is_closed && $self->_has_report_been_sent_to_echo($report)) {
         $report->set_extra_metadata('open311_category_override' => 'Investigation Required');
         $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
         $report->state('confirmed');

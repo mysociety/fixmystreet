@@ -612,21 +612,29 @@ for my $test (
     };
 }
 
-subtest "mark-open comment on a closed echo report result in a resend under 'Investigation Required'" => sub {
+subtest "comment on a closed echo report result in a resend under 'Investigation Required'" => sub {
+    my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
+    my $event_id = 123;
+
+    my $echo = Test::MockModule->new('Integrations::Echo');
+
+    $echo->mock('GetEvent', sub { {
+        Guid => $event_guid,
+        Id => $event_id,
+    } } );
+
     $mech->create_contact_ok(
         body_id => $body->id,
         category => 'Investigation Required',
         email => 'investigation_required',
     );
 
-    my $event_id = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
-
     my ($report) = $mech->create_problems_for_body(1, $body->id, 'echo report', {
             cobrand => 'bromley',
             whensent => 'now()',
             send_state => 'sent',
             send_method_used => 'Open311',
-            external_id => $event_id,
+            external_id => $event_guid,
         });
     $report->state('closed');
     my $comment = $report->add_to_comments({
@@ -663,7 +671,7 @@ subtest "mark-open comment on a closed echo report result in a resend under 'Inv
     my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
     is $c->param('attribute[Event_ID]'), $event_id, 'old event ID included in attributes';
-    like $c->param('description'), qr/Closed report reopened with comment: comment on closed event/, 'private comments included in description';
+    like $c->param('description'), qr/Closed report has a new comment: comment on closed event/, 'private comments included in description';
 };
 
 
