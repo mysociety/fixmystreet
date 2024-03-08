@@ -251,7 +251,7 @@ FixMyStreet::override_config {
             cc_url => 'http://example.com',
             ggw_cost => [
                 {
-                    start_date => '2020-01-01',
+                    start_date => '2020-01-01 00:00',
                     cost => 2000,
                 },
                 {
@@ -259,17 +259,29 @@ FixMyStreet::override_config {
                     cost => 2500,
                 }
             ],
+            ggw_cost_renewal => [
+                {
+                    start_date => '2020-01-01 00:00',
+                    cost => 2000,
+                }
+            ],
             ggw_new_bin_first_cost => 1500,
             ggw_new_bin_cost => 750,
             ggw_sacks_cost => [
                 {
-                    start_date => '2020-01-01',
+                    start_date => '2020-01-01 00:00',
                     cost => 4100,
                 },
                 {
                     start_date => '2023-01-06 00:00',
                     cost => 4300,
                 },
+            ],
+            ggw_sacks_cost_renewal => [
+                {
+                    start_date => '2020-01-01 00:00',
+                    cost => 4100,
+                }
             ],
             hmac => '1234',
             hmac_id => '1234',
@@ -1828,6 +1840,95 @@ FixMyStreet::override_config {
 
         restore_time;
     };
+};
+
+# Test renewing with different end date subscriptions
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'kingston',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        echo => { kingston => { url => 'http://example.org' } },
+        waste => { kingston => 1 },
+        payment_gateway => { kingston => {
+            ggw_cost => [ { start_date => '2020-01-01 00:00', cost => 2000 } ],
+            ggw_cost_renewal => [
+                { start_date => '2020-01-01 00:00', cost => 2000 },
+                { start_date => '2021-03-31 00:00', cost => 2600 }
+            ],
+            ggw_new_bin_first_cost => 1500,
+            ggw_new_bin_cost => 750,
+            ggw_sacks_cost => [ { start_date => '2020-01-01 00:00', cost => 4100 } ],
+            ggw_sacks_cost_renewal => [
+                { start_date => '2020-01-01 00:00', cost => 4100 },
+                { start_date => '2021-03-31 00:00', cost => 4600 }
+            ],
+        } },
+    },
+}, sub {
+    my $echo = Test::MockModule->new('Integrations::Echo');
+    $echo->mock('GetEventsForObject', sub { [] });
+    $echo->mock('GetTasks', sub { [] });
+    $echo->mock('GetPointAddress', sub {
+        return {
+            Id => '12345',
+            SharedRef => { Value => { anyType => '1000000002' } },
+            PointType => 'PointAddress',
+            PointAddressType => { Name => 'House' },
+            Coordinates => { GeoPoint => { Latitude => 51.408688, Longitude => -0.304465 } },
+            Description => '2 Example Street, Kingston, KT1 1AA',
+        };
+    });
+    mock_CancelReservedSlotsForEvent($echo);
+    set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+
+    for my $test (
+        { end_date => '2021-03-30', price => 20, sack_price => 41 },
+        { end_date => '2021-03-31', price => 26, sack_price => 46 },
+        { end_date => '2021-04-01', price => 26, sack_price => 46 },
+        ) {
+        subtest "renew bin with end date $test->{end_date}" => sub {
+            $echo->mock('GetServiceUnitsForObject', sub {
+                my $units = garden_waste_one_bin();
+                $units->[1]{ServiceTasks}{ServiceTask}{ServiceTaskSchedules}{ServiceTaskSchedule}[0]{EndDate}{DateTime} = $test->{end_date} . 'T00:00:00Z';
+                return $units;
+            });
+
+            $mech->get_ok('/waste/12345/garden_renew');
+            $mech->content_contains('<span id="cost_pa">' . $test->{price} . '.00');
+            $mech->content_contains('<span id="cost_now">' . $test->{price} . '.00');
+            $mech->submit_form_ok({ with_fields => {
+                current_bins => 1,
+                bins_wanted => 1,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net',
+            } });
+            $mech->content_contains('1 bin');
+            $mech->content_contains($test->{price} . '.00');
+        };
+        subtest "renew sack with end date $test->{end_date}" => sub {
+            $echo->mock('GetServiceUnitsForObject', sub {
+                my $units = garden_waste_with_sacks();
+                $units->[1]{ServiceTasks}{ServiceTask}{ServiceTaskSchedules}{ServiceTaskSchedule}[0]{EndDate}{DateTime} = $test->{end_date} . 'T00:00:00Z';
+                return $units;
+            });
+
+            $mech->get_ok('/waste/12345/garden_renew');
+            $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
+            $mech->content_contains('<span id="cost_pa">' . $test->{sack_price} . '.00');
+            $mech->content_contains('<span id="cost_now">' . $test->{sack_price} . '.00');
+            $mech->submit_form_ok({ with_fields => {
+                name => 'Test McTest',
+                email => 'test@example.net',
+                payment_method => 'credit_card',
+            } });
+            $mech->content_contains('Sacks');
+            $mech->content_contains($test->{sack_price} . '.00');
+        };
+    }
+
+    restore_time;
 };
 
 FixMyStreet::override_config {

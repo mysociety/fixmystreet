@@ -552,11 +552,10 @@ sub bin_services_for_address {
                     $garden_container = $containers->[0];
                     $garden_bins = $quantities->{$containers->[0]};
                     if ($garden_container == 28) {
-                        $garden_cost = $self->garden_waste_sacks_cost_pa() / 100;
+                        $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
                     } else {
-                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+                        $garden_cost = $self->garden_waste_renewal_cost_pa($schedules->{end_date}, $garden_bins) / 100;
                     }
-
                 }
 
                 if ($self->{c}->stash->{waste_features}->{garden_disabled}) {

@@ -2,6 +2,8 @@
 
 [% INCLUDE header.html %]
 
+<div class="waste__loading_wrapper">
+
   [% PROCESS 'govuk/fields.html' %]
   [% PROCESS title title=form.title %]
   [% PROCESS errors %]
@@ -70,8 +72,10 @@
       Every 2 weeks from March to November and once a month from December to February
     </p>
 
-<form method="post">
+<form method="post" action="garden">
   [% PROCESS form %]
 </form>
+
+</div>
 
 [% INCLUDE footer.html %]

@@ -2,6 +2,8 @@
 
 [% INCLUDE header.html %]
 
+<div class="waste__loading_wrapper">
+
   [% PROCESS 'govuk/fields.html' %]
   [% PROCESS title title=form.title %]
   [% PROCESS errors %]
@@ -61,8 +63,10 @@
     We take your garden waste to a composting facility where it is treated and turned into compost, and then used on farms as a soil improver.
     </p>
 
-<form method="post">
+<form method="post" action="garden">
   [% PROCESS form %]
 </form>
+
+</div>
 
 [% INCLUDE footer.html %]
