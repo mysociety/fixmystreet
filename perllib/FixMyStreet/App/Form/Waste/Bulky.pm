@@ -34,9 +34,15 @@ has_page cannot_book => (
 
 has_page about_you => (
     intro => 'bulky/about_you_preamble.html',
-    fields => ['name', 'email', 'phone', 'continue'],
+    fields => ['name', 'email', 'phone', 'extra_bulky_text_updates', 'continue'],
     title => 'About you',
     next => 'choose_date_earlier',
+    update_field_list => sub {
+        my $form = shift;
+        if ($form->c->cobrand->moniker eq 'peterborough') {
+            $form->field('extra_bulky_text_updates')->inactive(0);
+        };
+    },
 );
 
 with 'FixMyStreet::App::Form::Waste::AboutYou';
