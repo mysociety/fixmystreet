@@ -98,6 +98,17 @@ sub open311_munge_update_params {
     $params->{service_code} = $contact->email;
 }
 
+=head2 should_skip_sending_update
+
+If we fail a couple of times to send an update, stop trying.
+
+=cut
+
+sub should_skip_sending_update {
+    my ($self, $comment) = @_;
+    return 1 if $comment->send_fail_count >= 2 && $comment->send_fail_reason =~ /Username required for notification/;
+}
+
 =head2 categories_restriction
 
 Camden don't want TfL's River Piers categories on their cobrand.
