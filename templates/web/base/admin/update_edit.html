@@ -46,7 +46,7 @@
 [% END -%]
 </li>
 [% IF update.problem_state %]
-<li>[% tprintf(loc('Update changed problem state to %s'), update.problem_state) %]</li>
+<li>[% tprintf(loc('Update changed problem state to: %s'), update.problem_state) %]</li>
 [% ELSIF update.mark_fixed %]
 <li>[% loc('Update marked problem as fixed') %]</li>
 [% ELSIF update.user.id == update.problem.user.id && update.mark_open %]
@@ -55,9 +55,41 @@
 </li>
 <li>[% loc('Cobrand:') %] [% update.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% update.cobrand_data OR loc('None') %]</li>
+[% IF update.external_id~%]
+  <li>[% loc('External ID:') %] [% update.external_id %] </li>
+[%~END %]
 <li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
+<li>[% loc('Confirmed: ') ~%]
+  [%~ IF update.confirmed ~%]
+    [% PROCESS format_time time=update.confirmed %]</li>
+  [% ELSE ~%]
+    Not confirmed
+  [% END %]
 [% IF update.get_extra_metadata('external_status_code') %]
 <li>[% loc('External status code:') %] [% update.get_extra_metadata('external_status_code') | html %]</li>
+[% END %]
+<li>[% loc('Send state:') %] [% update.send_state %]</li>
+[% IF update.send_fail_count > 0 AND update.send_state != 'sent' AND update.send_state != 'skipped' %]
+<ul>
+  <li>[% loc('Send fail count:') %] [% update.send_fail_count %]</li>
+  <li>[% loc('Send fail reason:') %] [% update.send_fail_reason %]</li>
+  <li>[% loc('Last send fail:') %] [% PROCESS format_time time=update.send_fail_timestamp %]</li>
+</ul>
+  [% IF update.send_state != 'sent' %]
+    <input type="submit" class="btn" name="mark_sent" value="[% loc('Mark as sent') %]">
+  [% END %]
+  [% IF update.send_state != 'skipped' %]
+    <input type="submit" class="btn" name="mark_skip" value="[% loc('Mark as skipped') %]">
+  [% END %]
+[% ELSIF update.send_state == 'sent' OR update.send_state == 'skipped' %]
+  <li>[% loc('When sent:') %]
+    [% IF update.whensent %]
+     [% PROCESS format_time time=update.whensent %]
+    [% ELSE %]
+      Not sent
+    [% END %]
+  </li>
+  <input data-confirm="[% loc('Are you sure?') %]" class="btn" type="submit" name="resend" value="[% loc('Resend update') %]">
 [% END %]
 
 [% IF update.photo %]

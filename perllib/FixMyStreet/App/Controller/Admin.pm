@@ -270,7 +270,37 @@ sub update_edit : Path('update_edit') : Args(1) {
 
     $c->forward('check_username_for_abuse', [ $update->user ] );
 
-    if ( $c->get_param('submit') ) {
+    if ( $c->get_param('resend') ) {
+        $c->forward('/auth/check_csrf_token');
+
+        $update->send_state('unprocessed');
+        $update->update();
+        $c->forward( 'log_edit',
+            [ $update->id, 'update', 'send_state' ] );
+
+        $c->stash->{status_message} = _('Update will now be resent.');
+    }
+    elsif ( $c->get_param('mark_sent') ) {
+        $c->forward('/auth/check_csrf_token');
+
+        $update->send_state('sent');
+        $update->update();
+        $c->forward( 'log_edit',
+            [ $update->id, 'update', 'send_state' ] );
+
+        $c->stash->{status_message} = _('Update has been marked as sent.');
+    }
+    elsif ( $c->get_param('mark_skip') ) {
+        $c->forward('/auth/check_csrf_token');
+
+        $update->send_state('skipped');
+        $update->update();
+        $c->forward( 'log_edit',
+            [ $update->id, 'update', 'send_state' ] );
+
+        $c->stash->{status_message} = _('Update has been marked to be skipped from sending.');
+    }
+    elsif ( $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
 
         my $old_state = $update->state;
@@ -278,7 +308,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
         my $edited = 0;
 
-        # $update->name can be null which makes ne unhappy
+        # $update->name can be null which makes me unhappy
         my $name = $update->name || '';
 
         if ( $c->get_param('name') ne $name
@@ -329,7 +359,6 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
 
     }
-
     return 1;
 }
 
