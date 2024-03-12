@@ -490,7 +490,7 @@ sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $report = $update->problem;
-    if ($report->is_closed && $self->_has_report_been_sent_to_echo($report)) {
+    if (($report->is_closed || $report->is_fixed) && $self->_has_report_been_sent_to_echo($report)) {
         $report->set_extra_metadata('open311_category_override' => REFERRED_TO_VEOLIA);
         $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
         $report->state('confirmed');
