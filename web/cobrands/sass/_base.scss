@@ -363,6 +363,11 @@ legend,
   }
 }
 
+// For GOVUK Styling
+.govuk-radios__label {
+  margin-top: 0; // Override the label element margin-top property
+}
+
 .form-control {
   display: block;
   background-color: #fff;
@@ -2943,9 +2948,15 @@ a#geolocate_link {
   }
 }
 
+.cta-box__input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 #rss_local_alt {
   // Match .label-containing-checkbox
-  padding-#{$left}: 24px;
+  padding-#{$left}: 56px;
 
   // Close up space between this and #rss_local
   margin-top: -0.5em;
@@ -2954,6 +2965,13 @@ a#geolocate_link {
     width: 4em;
     display: inline-block;
   }
+}
+
+.alert-option-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .confirmation-header {
