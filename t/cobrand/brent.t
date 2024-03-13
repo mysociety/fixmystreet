@@ -177,6 +177,7 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
+    { code => 'referral', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Assisted collection add', email => 'assisted' },
     { code => 'Notes', description => 'Additional notes', required => 0, datatype => 'text' },
@@ -1004,6 +1005,9 @@ FixMyStreet::override_config {
             cc_url => 'http://example.com',
             ggw_cost => 6000,
         } },
+        open311_email => { brent => {
+            'Request new container' => 'referral@example.org',
+        } },
     },
 }, sub {
     my $echo = shared_echo_mocks();
@@ -1237,6 +1241,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
             $mech->content_contains('Your container request has been sent');
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->get_extra_field_value('referral'), $referral;
             FixMyStreet::Script::Reports::send();
             my @email = $mech->get_email;
             is @email, $emails;
@@ -1260,10 +1265,14 @@ FixMyStreet::override_config {
                 Value => 11,
             } } } },
         } ] } );
+        make_request("Ordered", 'new_build', 'less3', 1, 2);
+        make_request("Ordered", 'damaged', '', 1, 2);
+        make_request("Ordered", 'missing', '', 1, 2);
         make_request("Ordered", 'extra', '', 'refuse');
 
         $echo->mock('GetEventsForObject', sub { [] });
         make_request("Not ordered", 'new_build', 'less3', '', 1);
+        make_request("Not ordered", 'new_build', '3more', 1, 2);
         make_request("Not ordered", 'missing', '', '', 1);
         make_request("Not ordered", 'extra', '', '', 1);
 
@@ -1276,6 +1285,7 @@ FixMyStreet::override_config {
                 ] }
             },
         ] });
+        make_request("Contaminated", 'missing', '', 1, 2);
         make_request("Contaminated", 'extra', '', 'refuse');
     };
 
