@@ -689,6 +689,11 @@ sub open311_extra_data_exclude {
     return [];
 }
 
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+    return 'SKIP' if $row->category eq 'Request new container' && $row->get_extra_field_value('referral');
+}
+
 =head2 open311_post_send
 
 Restore the original detail field if it was changed by open311_extra_data_include
@@ -701,6 +706,17 @@ sub open311_post_send {
 
     if ($row->contact->email =~ /ATAK/ && $row->external_id) {
         $row->update({ state => 'investigating' });
+    }
+
+    if ($row->category eq 'Request new container' && $row->get_extra_field_value('referral') && !$row->get_extra_metadata('extra_email_sent')) {
+        my $emails = $self->feature('open311_email');
+        if (my $dest = $emails->{$row->category}) {
+            my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ]);
+            $sender->send($row, $h);
+            if ($sender->success) {
+                $row->update_extra_metadata(extra_email_sent => 1);
+            }
+        }
     }
 
     my $error = $sender->error;
@@ -1292,6 +1308,10 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
 
+    if (request_referral($id, $data)) {
+        $c->set_param('referral', 1);
+    }
+
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
     my $reason = $data->{request_reason} || '';
@@ -1326,14 +1346,6 @@ sub waste_munge_request_data {
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
 
     my $notes;
-    if ($data->{notes_damaged}) {
-        $notes = $c->stash->{label_for_field}->($form, 'notes_damaged', $data->{notes_damaged});
-        $data->{detail} .= " - $notes";
-    }
-    if ($data->{details_damaged}) {
-        $data->{detail} .= "\n\nDamage reported during collection: " . $data->{details_damaged};
-        $notes .= " - " . $data->{details_damaged};
-    }
     $c->set_param('Container_Request_Notes', $notes) if $notes;
 
     # XXX Share somewhere with reverse?
@@ -1346,6 +1358,14 @@ sub waste_munge_request_data {
         46 => 807,
     );
     $c->set_param('service_id', $service_id{$id});
+}
+
+sub request_referral {
+    my ($id, $data) = @_;
+
+    # return 1 if ($data->{contamination_reports} || 0) >= 3; # Will be present on missing only
+    return 1 if ($data->{how_long_lived} || '') eq '3more'; # Will be present on new build only
+    return 1 if $data->{ordered_previously};
 }
 
 sub waste_request_form_first_title { 'Which container do you need?' }
