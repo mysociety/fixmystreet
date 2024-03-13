@@ -86,7 +86,7 @@
     [% UNLESS c.user_exists AND c.user.email_verified %]
       <label for="rznvy">[% loc('Email address') %]</label>
       <div class="form-txt-submit-box">
-        <input class="form-control" type="text" id="rznvy" name="rznvy" value="[% rznvy %]">
+        <input class="form-control" type="text" id="rznvy" name="rznvy" value="[% rznvy %]" autocomplete="email">
         <input id="alert_email_button" class="btn-primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
       </div>
     [% ELSE %]
