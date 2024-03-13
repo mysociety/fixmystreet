@@ -7,7 +7,7 @@
     <p class='form-error'>[% field_errors.first_name %]</p>
 [% END %]
 <input class="js-form-name form-control" type="text"
-    name="first_name" id="form_first_name"
+    name="first_name" id="form_first_name" autocomplete="given-name"
     value="[% first_name || names.first | html %]">
 
 <label for="form_last_name">[% loc('Last Name') %]</label>
@@ -15,5 +15,5 @@
     <p class='form-error'>[% field_errors.last_name %]</p>
 [% END %]
 <input class="js-form-name form-control" type="text"
-    name="last_name" id="form_last_name"
+    name="last_name" id="form_last_name" autocomplete="family-name"
     value="[% last_name || names.last | html %]">
