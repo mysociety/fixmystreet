@@ -40,6 +40,11 @@ has_page request_refuse_call_us => (
     template => 'waste/refuse_call_us.html',
 );
 
+has_page request_extra_refusal => (
+    fields => [],
+    template => 'waste/refuse_extra_container.html',
+);
+
 has_page replacement => (
     fields => ['request_reason', 'continue'],
     title => 'Reason for request',
@@ -50,6 +55,8 @@ has_page replacement => (
 
         return 'about_you' if $choice == $CONTAINER_CLEAR_SACK;
         return 'how_long_lived' if $reason eq 'new_build';
+        return 'request_extra_refusal' if $reason eq 'extra' && $data->{ordered_previously};
+        # return 'request_extra_refusal' if $reason eq 'extra' && $data->{contamination_reports} >= 3;
         return 'about_you';
     },
 );
