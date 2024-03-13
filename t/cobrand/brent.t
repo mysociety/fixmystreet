@@ -1209,13 +1209,19 @@ FixMyStreet::override_config {
             $mech->content_contains("I am a new resident without a container", "Can request new container as new resident");
             $mech->content_contains("I would like an extra container", "Can request an extra container");
             for my $radio (
-                    {choice => 'new_build', type => 'new resident needs container'},
                     {choice => 'damaged', type => 'damaged container'},
                     {choice => 'missing', type => 'missing container'},
                     {choice => 'extra', type => 'extra container'}
             ) {
                 $mech->submit_form_ok({ with_fields => { 'request_reason' => $radio->{choice} } });
                 $mech->content_contains("About you", "No further questions for " . $radio->{type});
+                $mech->back;
+            }
+            for my $radio (
+                    {choice => 'new_build', type => 'new resident needs container'},
+            ) {
+                $mech->submit_form_ok({ with_fields => { 'request_reason' => $radio->{choice} } });
+                $mech->content_contains("How long have you", "Extra question for " . $radio->{type});
                 $mech->back;
             }
         }
