@@ -1340,7 +1340,7 @@ FixMyStreet::override_config {
         $mech->log_out_ok;
 
         $mech->get_ok('/waste/12345/garden');
-        $mech->content_contains('A 12 month subscription is £20.00 per bin');
+        $mech->content_contains("It costs\n£20.00\nfor a 12-month");
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_contains('<span class="cost-pa">£20.00 per bin per year</span>');
@@ -1348,7 +1348,7 @@ FixMyStreet::override_config {
         set_fixed_time('2023-01-06T00:00:00Z'); # New pricing should be in effect
 
         $mech->get_ok('/waste/12345/garden');
-        $mech->content_contains('A 12 month subscription is £25.00 per bin');
+        $mech->content_contains("It costs\n£25.00\nfor a 12-month");
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_contains('<span class="cost-pa">£25.00 per bin per year</span>');
