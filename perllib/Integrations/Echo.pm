@@ -368,15 +368,13 @@ sub GetServiceUnitsForObject {
 }
 
 sub GetServiceTaskInstances {
-    my ($self, @tasks) = @_;
+    my ($self, $start, $end, @tasks) = @_;
 
     my @objects;
     foreach (@tasks) {
         my $obj = _id_ref($_, 'ServiceTask');
         push @objects, { ObjectRef => $obj };
     }
-    my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
-    my $end = $start->clone->add(months => 3);
     my $query = ixhash(
         From => dt_to_hash($start),
         To => dt_to_hash($end),
@@ -417,8 +415,9 @@ sub GetEventType {
 }
 
 sub GetEventsForObject {
-    my ($self, $type, $id, $event_type) = @_;
-    my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 3);
+    my ($self, $type, $id, $event_type, $months) = @_;
+    $months ||= 3;
+    my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => $months);
     if ($self->sample_data) {
         return [ {
             # Missed collection for service 542 (food waste)

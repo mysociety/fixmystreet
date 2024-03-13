@@ -556,9 +556,12 @@ sub bin_future_collections {
         $names{$_->{service_task_id}} = $_->{service_name};
     }
 
+    my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
+    my $end = $start->clone->add(months => 3);
+
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
-    my $result = $echo->GetServiceTaskInstances(@tasks);
+    my $result = $echo->GetServiceTaskInstances($start, $end, @tasks);
 
     my $events = [];
     foreach (@$result) {
