@@ -12,6 +12,23 @@ Readonly::Scalar my $CONTAINER_FOOD_CADDY => 11;
 Readonly::Scalar my $CONTAINER_GREEN_BIN => 13;
 Readonly::Scalar my $CONTAINER_BLUE_SACK => 46;
 
+my %new_build_ordered_months = (
+    $CONTAINER_FOOD_CADDY => 2,
+    $CONTAINER_BLUE_BIN => 6,
+    $CONTAINER_BLUE_SACK => 2,
+);
+my %ordered_months = (
+    $CONTAINER_GREEN_BIN => 6,
+    $CONTAINER_FOOD_CADDY => 3,
+    $CONTAINER_BLUE_BIN => 6,
+    $CONTAINER_BLUE_SACK => 3,
+);
+my %refusal_contamination_months = (
+    $CONTAINER_FOOD_CADDY => 3,
+    $CONTAINER_BLUE_BIN => 3,
+    $CONTAINER_BLUE_SACK => 3,
+);
+
 has_page about_you => (
     fields => ['name', 'email', 'phone', 'continue'],
     title => 'About you',
@@ -46,6 +63,48 @@ has_field request_reason => (
         my $choice = $self->parent->saved_data->{'container-choice'};
         return 'Why do you need more sacks?' if $choice == $CONTAINER_CLEAR_SACK;
         return 'Why do you need a replacement container?';
+    },
+    validate_method => sub {
+        my $self = shift;
+        my $c = $self->form->c;
+        return if $self->has_errors;
+        my $value = $self->value;
+        my $saved_data = $self->form->saved_data;
+
+        my $echo = $c->cobrand->feature('echo');
+        $echo = Integrations::Echo->new(%$echo);
+
+        my $choice = $saved_data->{'container-choice'};
+        my $months = $value eq 'new_build' ?  $new_build_ordered_months{$choice} : $ordered_months{$choice};
+        my $events = $echo->GetEventsForObject(PointAddress => $c->stash->{property}{id}, 2936, $months);
+        $events = $c->cobrand->_parse_events($events, { include_closed_requests => 1 });
+        $saved_data->{ordered_previously} = $events->{request}{$choice} ? 1 : 0;
+
+        if ($value eq 'extra' || $value eq 'missing') {
+            my $services = $c->stash->{service_data};
+            my @tasks;
+            foreach (@$services) {
+                my $container = $_->{request_containers}->[0];
+                push @tasks, $_->{service_task_id} if $container == $choice;
+            }
+
+            # The below is not currently in use, FD-3672
+            # my $months = $refusal_contamination_months{$choice};
+            # my $end = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
+            # my $start = $end->clone->add(months => -$months);
+
+            # my $result = $echo->GetServiceTaskInstances($start, $end, @tasks);
+
+            # my $num = 0;
+            # foreach (@$result) {
+            #     my $task_id = $_->{ServiceTaskRef}{Value}{anyType};
+            #     my $tasks = Integrations::Echo::force_arrayref($_->{Instances}, 'ScheduledTaskInfo');
+            #     foreach (@$tasks) {
+            #         $num++ if ($_->{Resolution}||0) == 1148;
+            #     }
+            # }
+            # $saved_data->{contamination_reports} = $num;
+        }
     },
 );
 

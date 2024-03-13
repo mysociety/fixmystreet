@@ -337,8 +337,7 @@ sub _closed_event {
 }
 
 sub _parse_events {
-    my $self = shift;
-    my $events_data = shift;
+    my ($self, $events_data, $params) = @_;
     my $events = {};
     my $missed_event_types = $self->missed_event_types;
     foreach (@$events_data) {
@@ -347,7 +346,8 @@ sub _parse_events {
 
         # Only care about open requests/enquiries
         my $closed = $self->_closed_event($_);
-        next if $type ne 'missed' && $type ne 'bulky' && $closed;
+        next if $type eq 'request' && $closed && !$params->{include_closed_requests};
+        next if $type eq 'enquiry' && $closed;
         next if $type eq 'bulky' && !$closed;
 
         if ($type eq 'request') {
