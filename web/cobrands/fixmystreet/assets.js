@@ -137,8 +137,14 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
         }
     },
 
-    setAttributeFields: function(feature) {
+    setAttributeFields: function(feature, no_action) {
         if (!this.fixmystreet.attributes) {
+            return;
+        }
+        // If we have a select layer with multiple asset layers, it is possible
+        // on category change that we get called on one asset layer with a
+        // selected asset from another layer. We do not want to confuse this.
+        if (this !== feature.layer) {
             return;
         }
         // Set the extra fields to the value of the selected feature
@@ -156,6 +162,10 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
             $inspect_fields.val(value);
             $mobile_display.append(field_name + ': ' + value + '<br>');
         });
+
+        if (!no_action && this.fixmystreet.actions && this.fixmystreet.actions.attribute_set) {
+            this.fixmystreet.actions.attribute_set.call(this, feature);
+        }
     },
 
     clearAttributeFields: function() {
