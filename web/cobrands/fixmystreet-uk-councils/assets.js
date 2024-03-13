@@ -1393,6 +1393,32 @@ fixmystreet.assets.shropshire.streetlight_asset_message = function(asset) {
 
 fixmystreet.assets.tfl = {};
 
+function tfl_check_bus_layer(layer, asset) {
+    var lonlat = asset.geometry.getBounds().getCenterLonLat();
+
+    var overlap_threshold = 1;
+    var overlapping_features = layer.getFeaturesWithinDistance(
+        new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat),
+        overlap_threshold
+    );
+    if (overlapping_features.length) {
+        layer.setAttributeFields(overlapping_features[0], true);
+    }
+}
+
+fixmystreet.assets.tfl.bus_attribute_set = function(asset) {
+    var other_layer;
+    if (this.name == 'TfL Bus Stops') {
+        other_layer = fixmystreet.map.getLayersByName("TfL Bus Shelters")[0];
+    } else if (this.name == 'TfL Bus Shelters') {
+        other_layer = fixmystreet.map.getLayersByName("TfL Bus Stops")[0];
+    }
+    if (!other_layer) {
+        return;
+    }
+    tfl_check_bus_layer(other_layer, asset);
+};
+
 fixmystreet.assets.tfl.asset_found = function(asset) {
     fixmystreet.message_controller.asset_found.call(this, asset);
     fixmystreet.assets.named_select_action_found.call(this, asset);
@@ -1579,18 +1605,29 @@ fixmystreet.assets.tfl.red_routes_not_found = function(layer) {
 
 $(function(){
     var layer = fixmystreet.map.getLayersByName('Red Routes')[0];
-    if (!layer) {
-        return;
+    if (layer) {
+        layer.events.register( 'loadend', layer, function(){
+            // The roadworks layer may have finished loading before this layer, so
+            // ensure the filters to only show markers that intersect with a red route
+            // are re-applied.
+            var roadworks = fixmystreet.map.getLayersByName("Roadworks");
+            if (roadworks.length) {
+                // .redraw() reapplies filters without issuing any new requests
+                roadworks[0].redraw();
+            }
+        });
     }
-    layer.events.register( 'loadend', layer, function(){
-        // The roadworks layer may have finished loading before this layer, so
-        // ensure the filters to only show markers that intersect with a red route
-        // are re-applied.
-        var roadworks = fixmystreet.map.getLayersByName("Roadworks");
-        if (roadworks.length) {
-            // .redraw() reapplies filters without issuing any new requests
-            roadworks[0].redraw();
-        }
+    // One of the bus stop/shelter layers could have loaded before the other,
+    // and a feature auto-selected already, and we need the data from both
+    // layers, so make sure we poke it after the second layer loads
+    layers = fixmystreet.map.getLayersByName(/TfL Bus/);
+    $.each(layers, function(i, layer) {
+        layer.events.register( 'loadend', layer, function(){
+            var feature = fixmystreet.assets.selectedFeature();
+            if (feature) {
+                tfl_check_bus_layer(this, feature);
+            }
+        });
     });
 });
 
