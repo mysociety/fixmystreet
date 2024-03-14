@@ -498,6 +498,13 @@ sub bulky_reminders {
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
 
+    # If we haven't had payment, we don't want to send a reminder
+    if ($self->bulky_send_before_payment) {
+        $collections = $collections->search({
+            extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
+        });
+    }
+
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
 
     while (my $report = $collections->next) {
