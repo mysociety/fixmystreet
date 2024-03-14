@@ -21,6 +21,7 @@ use Moo;
 # checks for Confirm.
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Alloy';
+with 'FixMyStreet::Roles::CobrandNorthants';
 
 =head2 Defaults
 
@@ -51,178 +52,29 @@ sub disambiguate_location {
     };
 }
 
-sub open311_extra_data_exclude { [ 'emergency' ] }
-
 =item * Users with a westnorthants.gov.uk email can always be found in the admin.
 
 =cut
 
 sub admin_user_domain { 'westnorthants.gov.uk' }
 
-=item * Includes all Northamptonshire reports before April 2021 and ones after within the boundary.
+sub _problems_restriction_areas { [
+    '%,2392,%', # South Northamptonshire.
+    '%,2394,%', # Daventry.
+    '%,2397,%', # Northampton.
+    '%,164186,%', # West Northamptonshire.
+] }
+
+=item * Defects are coloured blue.
+
+Ideally this would be in Roles::CobrandNorthants, but that can't call $self->SUPER.
 
 =cut
-
-sub problems_restriction {
-    my ($self, $rs) = @_;
-    return $rs if FixMyStreet->staging_flag('skip_checks');
-    my $northamptonshire = FixMyStreet::Cobrand::Northamptonshire->new->body;
-    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
-    $rs = $rs->search(
-        {
-            -or => [
-                FixMyStreet::DB::ResultSet::Problem->body_query($self->body),
-                -and => [
-                    FixMyStreet::DB::ResultSet::Problem->body_query($northamptonshire),
-                    -or => [
-                        "$table.created" => { '<'  => '2021-04-01' },
-                        areas => {
-                            'like' => [
-                                '%,2392,%', # South Northamptonshire.
-                                '%,2394,%', # Daventry.
-                                '%,2397,%', # Northampton.
-                                '%,164186,%', # West Northamptonshire.
-                            ],
-                        },
-                    ],
-                ],
-            ],
-        }
-    );
-    return $rs;
-}
-
-=item * Staff users have permissions on Northamptonshire reports.
-
-=cut
-
-sub permission_body_override {
-    my ($self, $body_ids) = @_;
-    my $northamptonshire_id = FixMyStreet::Cobrand::Northamptonshire->new->body->id;
-    my @out = map { $northamptonshire_id == $_ ? $self->body->id : $_} @$body_ids;
-    return \@out;
-}
-
-=item * Uses the OSM geocoder.
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
-=item * /around map shows only open reports by default.
-
-=cut
-
-sub on_map_default_status { 'open' }
-
-=item * We send a confirmation email when report is sent.
-
-=cut
-
-sub report_sent_confirmation_email { 'id' }
-
-=item * We do not send questionnaires.
-
-=cut
-
-sub send_questionnaires { 0 }
-
-=item * We color defects blue.
-
-=cut
-
-sub is_defect {
-    my ($self, $p) = @_;
-    return $p->user_id == $self->body->comment_user_id;
-}
 
 sub pin_colour {
     my ($self, $p, $context) = @_;
     return 'blue' if $self->is_defect($p);
     return $self->SUPER::pin_colour($p, $context);
 }
-
-=item * We include external IDs in dashboard exports.
-
-=cut
-
-sub dashboard_export_problems_add_columns {
-    my ($self, $csv) = @_;
-
-    $csv->add_csv_columns(
-        external_id => 'External ID',
-    );
-
-    return if $csv->dbi;
-
-    $csv->csv_extra_data(sub {
-        my $report = shift;
-
-        return {
-            external_id => $report->external_id,
-        };
-    });
-}
-
-=item * We limit report titles to 120 characters.
-
-=cut
-
-sub report_validation {
-    my ($self, $report, $errors) = @_;
-
-    if ( length( $report->title ) > 120 ) {
-        $errors->{title} = sprintf( _('Summaries are limited to %s characters in length. Please shorten your summary'), 120 );
-    }
-}
-
-=item * We allow staff to bypass stoppers.
-
-=cut
-
-sub staff_ignore_form_disable_form {
-    my $self = shift;
-
-    my $c = $self->{c};
-
-    return $c->user_exists
-        && $c->user->belongs_to_body( $self->body->id );
-}
-
-
-=item * We always apply state changes from Open311 updates.
-
-=cut
-
-sub open311_get_update_munging {
-    my ($self, $comment) = @_;
-
-    my $state = $comment->problem_state;
-    my $p = $comment->problem;
-    if ($state && $p->state ne $state && $p->is_visible) {
-        $p->state($state);
-    }
-}
-
-=item * We don't send updates for comments made by bodies.
-
-=cut
-
-sub should_skip_sending_update {
-    my ($self, $comment) = @_;
-
-    my $p = $comment->problem;
-    my %body_users = map { $_->comment_user_id => 1 } values %{ $p->bodies };
-    if ( $body_users{ $p->user->id } ) {
-        return 1;
-    }
-    return 0;
-}
-
-=pod
-
-=back
-
-=cut
 
 1;
