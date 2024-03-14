@@ -639,6 +639,9 @@ subtest 'Dashboard CSV extra columns' => sub {
         { name => 'stop_code', value => '98756' }, { name => 'Question', value => '12345' });
     $report->update;
 
+    $contact5->update({ category => 'Trees (brown)' });
+    my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Trees test', { category => "Trees (brown)", cobrand => 'tfl' });
+
     FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
 
     $mech->get_ok('/dashboard?export=1&category=Not+present');
@@ -661,6 +664,11 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('(anonymous ' . $report->id . ')');
     $mech->content_contains($dt . ',,,confirmed,51.4021');
     $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",Yes,,98756');
+
+    $mech->get_ok('/dashboard?export=1&category=Trees+(brown)');
+    $mech->content_contains('Trees (brown)');
+    $contact5->update({ category => 'Trees' });
+    $problem->delete;
 };
 
 subtest 'Inspect form state choices' => sub {

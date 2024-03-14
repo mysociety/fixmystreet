@@ -487,7 +487,7 @@ sub filter_premade_csv {
         }
 
         my $category = $row->{Subcategory} || $row->{Category};
-        next if @{$self->category} && !grep { /$category/ } @{$self->category};
+        next if @{$self->category} && !grep { /\Q$category\E/ } @{$self->category};
 
         if ( $self->state && $fixed_states->{$self->state} ) { # Probably fixed - council
             next unless $fixed_states->{$row->{$state_column}};
