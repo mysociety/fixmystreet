@@ -4,6 +4,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
 use Digest::SHA qw(sha1_hex);
+use Encode qw(encode_utf8);
 
 sub council_area_id { return 2498; }
 sub council_area { return 'Sutton'; }
@@ -136,7 +137,7 @@ sub garden_waste_generate_sig {
     my $str = "";
     for my $param ( sort { uc($a) cmp uc($b) } keys %$params ) {
         next unless defined $params->{$param} && length $params->{$param}; # Want any 0s
-        $str .= uc($param) . "=" . $params->{$param} . $passphrase;
+        $str .= uc($param) . "=" . encode_utf8($params->{$param}) . $passphrase;
     }
 
     my $sha = sha1_hex( $str );

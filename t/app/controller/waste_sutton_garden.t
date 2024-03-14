@@ -218,6 +218,7 @@ subtest "check signature generation" => sub {
     my $params = {
         AMOUNT => 2000,
         ORDERID => 123456,
+        CN => "Matthew O’Neill",
         EMAIL => 'user@example.org',
     };
 
@@ -225,7 +226,7 @@ subtest "check signature generation" => sub {
 
     my $sha = $cobrand->garden_waste_generate_sig($params, $passphrase);
 
-    is $sha, "97AC0DA72C7EE3C7E93CD383A681266DE197FD23", "correct signature generated";
+    is $sha, "06BB8BCD34670AE7BDBC054D23B84B30DFDEBABA", "correct signature generated";
 };
 
 FixMyStreet::override_config {
