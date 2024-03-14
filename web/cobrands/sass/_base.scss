@@ -752,11 +752,12 @@ ul.error {
 }
 
 .skiplink:focus {
-  // 2px in case there are outlines
-  left: 2px;
-  top: 2px; 
-  z-index: 2;
-  border-radius: 0;
+  outline: 3px solid transparent;
+  color: $primary_text;
+  background-color: $primary;
+  text-decoration: none;
+  left: 0;
+  z-index: 999; //Higher value than the map
 }
 
 .dev-site-notice {
