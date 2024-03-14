@@ -744,18 +744,19 @@ ul.error {
 /*** LAYOUT ***/
 
 .skiplink {
+  @extend .btn;
   display: inline-block;
   padding: 1em;
   position: absolute;
   left: -9999em;
 }
+
 .skiplink:focus {
-  outline: 3px solid transparent;
-  color: $primary_text;
-  background-color: $primary;
-  text-decoration: none;
-  left: 0;
+  // 2px in case there are outlines
+  left: 2px;
+  top: 2px; 
   z-index: 2;
+  border-radius: 0;
 }
 
 .dev-site-notice {
