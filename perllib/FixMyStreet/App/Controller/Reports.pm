@@ -477,15 +477,6 @@ sub summary : Private {
 
     $c->log->info($c->user->email . ' viewed ' . $c->req->uri->path_query) if $c->user_exists;
 
-    eval {
-        my $data = path(FixMyStreet->path_to('../data/all-reports-dashboard.json'))->slurp_utf8;
-        $data = decode_json($data);
-        $c->stash(
-            top_five_bodies => $data->{top_five_bodies},
-            average => $data->{average},
-        );
-    };
-
     my $dtf = $c->model('DB')->storage->datetime_parser;
     my $period = $c->stash->{period} = $c->get_param('period') || '';
     my $start_date;
@@ -523,7 +514,6 @@ sub summary : Private {
     }
 
     $c->forward('/dashboard/generate_grouped_data');
-    $c->forward('/dashboard/generate_body_response_time');
 
     $c->stash->{template} = 'reports/summary.html';
 }

@@ -185,11 +185,6 @@ FixMyStreet::override_config {
         });
 
         $mech->get_ok('/about/council-dashboard');
-        $mech->content_contains('How responsive is Birmingham?');
-        # Average of 55 days means the older problem was included in the calculation.
-        $mech->content_lacks('<td>Birmingham</td><td>55 days</td></tr>');
-        # 10 days means the older problem was ignored.
-        $mech->content_contains('<td>Birmingham</td><td>10 days</td></tr>');
     };
 };
 

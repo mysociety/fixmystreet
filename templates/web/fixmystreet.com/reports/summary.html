@@ -140,21 +140,6 @@
 
 <div class="dashboard-row">
     <div class="dashboard-item dashboard-item--6">
-        <h2 class="dashboard-subheading">[% tprintf( loc('How responsive is %s?'), body.name ) %]</h2>
-        <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
-        <table class="dashboard-ranking-table">
-            <tbody>
-              [% FOR line IN top_five_bodies %]
-                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s day", "%s days", line.days), line.days) %]</td></tr>
-              [% END %]
-            </tbody>
-            <tfoot>
-                <tr><td>[% body.name %]</td><td>[% tprintf(nget("%s day", "%s days", body_average), body_average) %]</td></tr>
-                <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
-            </tfoot>
-        </table>
-    </div>
-    <div class="dashboard-item dashboard-item--6">
         <h2 class="dashboard-subheading">[% tprintf( loc('Most popular categories in %s'), body.name ) %]</h2>
         <p>[% loc('Number of problems reported in each category, in the last 7 days.') %]</p>
         <table class="dashboard-ranking-table">

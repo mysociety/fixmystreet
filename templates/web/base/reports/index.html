@@ -94,20 +94,7 @@
 
 <div class="dashboard-row">
     <div class="dashboard-item dashboard-item--6">
-      [% IF body %]
-        <h2 class="dashboard-subheading">[% loc('Top 5 wards') %]</h2>
-        <p>[% loc('Number of problems reported in each ward, in the last 7 days.') %]</p>
-        <table class="dashboard-ranking-table">
-            <tbody>
-              [% FOR line IN wards %]
-                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s report", "%s reports", line.reports), line.reports) %]</td></tr>
-              [% END %]
-            </tbody>
-            <tfoot>
-                <tr><td>[% loc('Other wards') %]</td><td>[% tprintf(nget("%s report", "%s reports", other_wards), other_wards) %]</td></tr>
-            </tfoot>
-        </table>
-      [% ELSE %]
+      [% IF NOT body AND c.cobrand.moniker != 'fixmystreet' %]
         <h2 class="dashboard-subheading">[% loc('Top 5 responsive councils') %]</h2>
         <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
         <table class="dashboard-ranking-table">
