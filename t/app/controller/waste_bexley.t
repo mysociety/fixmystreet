@@ -79,9 +79,12 @@ FixMyStreet::override_config {
     );
     $whitespace_mock->mock( 'GetAccountSiteID', &_account_site_id );
     $whitespace_mock->mock( 'GetCollectionByUprnAndDate',
-        &_collection_by_uprn_date );
-    $whitespace_mock->mock( 'GetCollectionByUprnAndDatePlus',
-        &_collection_by_uprn_date_plus );
+        sub {
+            my ( $self, $property_id, $from_date ) = @_;
+
+            return _collection_by_uprn_date()->{$from_date} // [];
+        }
+    );
     $whitespace_mock->mock( 'GetSiteWorksheets', &_site_worksheets );
     $whitespace_mock->mock(
         'GetWorksheetDetailServiceItems',
@@ -197,6 +200,10 @@ FixMyStreet::override_config {
         $mech->content_contains('BEGIN:VCALENDAR');
         my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
         shift @events; # Header
+
+        my $expected_num = 14;
+        is @events, $expected_num, "$expected_num events in calendar";
+
         my $i = 0;
         for (@events) {
             $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Blue Recycling Box/;
@@ -211,10 +218,15 @@ FixMyStreet::override_config {
             $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Green Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240416/ && /SUMMARY:Communal Food Bin/;
             $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Clear Sack\(s\)/;
+
+            $i++ if /DTSTART;VALUE=DATE:20240501/ && /SUMMARY:Clear Sack\(s\)/;
+
+            $i++ if /DTSTART;VALUE=DATE:20240506/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240506/ && /SUMMARY:Green Recycling Box/;
+
+            $i++ if /DTSTART;VALUE=DATE:20240515/ && /SUMMARY:Clear Sack\(s\)/;
         }
-        my $expected_num = 10;
-        is @events, $expected_num, "$expected_num events in calendar";
-        is $i, 10, 'Correct events in the calendar';
+        is $i, $expected_num, 'Correct events in the calendar';
     };
 
     subtest 'Correct PDF download link shown' => sub {
@@ -438,71 +450,105 @@ sub _site_collections {
 }
 
 sub _collection_by_uprn_date {
-    return [
-        {   Date     => '24/03/2024 00:00:00',
-            Round    => 'RND-1',
-            Schedule => 'Tue Wk 1',
-            Service  => 'Service 1 Collection',
-        },
-        # 3 working days before Sun 31st March = Wed 27th March
-        {   Date     => '27/03/2024 00:00:00',
-            Round    => 'RND-6',
-            Schedule => 'Wed Wk 2',
-            Service  => 'Service 6 Collection',
-        },
-        {   Date     => '28/03/2024 00:00:00',
-            Round    => 'RND-8-9',
-            Schedule => 'Mon',
-            Service  => 'Services 8 & 9 Collection',
-        },
-        {   Date     => '31/03/2024 00:00:00',
-            Round    => 'RND-1',
-            Schedule => 'Tue Wk 1',
-            Service  => 'Service 1 Collection',
-        },
-    ];
-}
+    return {
+        # For bin_future_collections
+        '2024-4-01T00:00:00' => [
+            {   Date     => '01/04/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Mon',
+                Service  => 'Services 8 & 9 Collection',
+            },
+            {   Date     => '02/04/2024 00:00:00',
+                Round    => 'RND-1',
+                Schedule => 'Tue Wk 1',
+                Service  => 'Service 1 Collection',
+            },
+            {   Date     => '03/04/2024 00:00:00',
+                Round    => 'RND-6',
+                Schedule => 'Wed Wk 2',
+                Service  => 'Service 6 Collection',
+            },
 
-sub _collection_by_uprn_date_plus {
-    return [
-        {   Date     => '01/04/2024 00:00:00',
-            Round    => 'RND-8-9',
-            Schedule => 'Mon',
-            Service  => 'Services 8 & 9 Collection',
-        },
-        {   Date     => '02/04/2024 00:00:00',
-            Round    => 'RND-1',
-            Schedule => 'Tue Wk 1',
-            Service  => 'Service 1 Collection',
-        },
-        {   Date     => '03/04/2024 00:00:00',
-            Round    => 'RND-6',
-            Schedule => 'Wed Wk 2',
-            Service  => 'Service 6 Collection',
-        },
+            {   Date     => '08/04/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Mon',
+                Service  => 'Services 8 & 9 Collection',
+            },
 
-        {   Date     => '08/04/2024 00:00:00',
-            Round    => 'RND-8-9',
-            Schedule => 'Mon',
-            Service  => 'Services 8 & 9 Collection',
-        },
+            {   Date     => '15/04/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Mon',
+                Service  => 'Services 8 & 9 Collection',
+            },
+            {   Date     => '16/04/2024 00:00:00',
+                Round    => 'RND-1',
+                Schedule => 'Tue Wk 1',
+                Service  => 'Service 1 Collection',
+            },
+            {   Date     => '17/04/2024 00:00:00',
+                Round    => 'RND-6',
+                Schedule => 'Wed Wk 2',
+                Service  => 'Service 6 Collection',
+            },
 
-        {   Date     => '15/04/2024 00:00:00',
-            Round    => 'RND-8-9',
-            Schedule => 'Mon',
-            Service  => 'Services 8 & 9 Collection',
-        },
-        {   Date     => '16/04/2024 00:00:00',
-            Round    => 'RND-1',
-            Schedule => 'Tue Wk 1',
-            Service  => 'Service 1 Collection',
-        },
-        {   Date     => '17/04/2024 00:00:00',
-            Round    => 'RND-6',
-            Schedule => 'Wed Wk 2',
-            Service  => 'Service 6 Collection',
-        },
-    ];
+            # Dupes of May collections below
+            {   Date     => '01/05/2024 00:00:00',
+                Round    => 'RND-6',
+                Schedule => 'Wed Wk 2',
+                Service  => 'Service 6 Collection',
+            },
+
+            {   Date     => '06/05/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Mon',
+                Service  => 'Services 8 & 9 Collection',
+            },
+        ],
+        '2024-5-01T00:00:00' => [
+            {   Date     => '01/05/2024 00:00:00',
+                Round    => 'RND-6',
+                Schedule => 'Wed Wk 2',
+                Service  => 'Service 6 Collection',
+            },
+
+            {   Date     => '06/05/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Mon',
+                Service  => 'Services 8 & 9 Collection',
+            },
+
+            {   Date     => '15/05/2024 00:00:00',
+                Round    => 'RND-6',
+                Schedule => 'Wed Wk 2',
+                Service  => 'Service 6 Collection',
+            },
+        ],
+
+        # For _recent_collections
+        '2024-03-10T00:00:00' => [
+            {   Date     => '24/03/2024 00:00:00',
+                Round    => 'RND-1',
+                Schedule => 'Tue Wk 1',
+                Service  => 'Service 1 Collection',
+            },
+            # 3 working days before Sun 31st March = Wed 27th March
+            {   Date     => '27/03/2024 00:00:00',
+                Round    => 'RND-6',
+                Schedule => 'Wed Wk 2',
+                Service  => 'Service 6 Collection',
+            },
+            {   Date     => '28/03/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Mon',
+                Service  => 'Services 8 & 9 Collection',
+            },
+            {   Date     => '31/03/2024 00:00:00',
+                Round    => 'RND-1',
+                Schedule => 'Tue Wk 1',
+                Service  => 'Service 1 Collection',
+            },
+        ],
+    };
 }
 
 sub _site_worksheets {

@@ -163,14 +163,6 @@ sub GetCollectionByUprnAndDate {
     return force_arrayref( $res->{Collections}, 'Collection' );
 }
 
-sub GetCollectionByUprnAndDatePlus {
-    my ($self, $uprn, $date_from, $date_to) = @_;
-
-    my $res = $self->call('GetCollectionByUprnAndDatePlus', getCollectionByUprnAndDatePlusInput => ixhash( Uprn => $uprn, NextCollectionFromDate => $date_from, NextCollectionToDate => $date_to ));
-
-    return force_arrayref($res->{Collections}, 'Collection');
-}
-
 sub GetInCabLogsByUsrn {
     my ($self, $usrn, $log_from_date) = @_;
 

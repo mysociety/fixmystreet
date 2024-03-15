@@ -330,24 +330,38 @@ sub bin_future_collections {
         push @{ $srv_for_round{ $_->{round_schedule} } }, $_;
     }
 
+    # TODO GetCollectionByUprnAndDatePlus would be preferable as it supports
+    # an end date, so we could just do a single search for the whole year. But
+    # Bexley's live API does not seem to support it. So we have to use
+    # several calls to GetCollectionByUprnAndDate instead, which only returns
+    # a month's worth of data.
     my $year = 1900 + (localtime)[5];
-    my $rounds =
-        $self->whitespace->GetCollectionByUprnAndDatePlus(
+    my @rounds;
+    for my $month ( 1 .. 12 ) {
+        push @rounds, @{ $self->whitespace->GetCollectionByUprnAndDate(
             $self->{c}->stash->{property}{uprn},
-            "$year-01-01T00:00:00",
-            "$year-12-31T23:59:59",
-        );
-    return [] unless $rounds;
+            "$year-$month-01T00:00:00",
+        ) };
+    }
+    return [] unless @rounds;
 
     # Dates need to be converted from 'dd/mm/yyyy hh:mm:ss' format
     my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %T' );
 
+    my %seen_rnd_schedule_date;
     my @events;
-    for my $rnd ( @$rounds ) {
-        # Concatenate Round and Schedule, try to match against services
-        my $srv = $srv_for_round{
-            $rnd->{Round} . ' ' . $rnd->{Schedule}
-        };
+    for my $rnd ( @rounds ) {
+        # There is a possibility that in our multiple calls to
+        # GetCollectionByUprnAndDate we have picked up duplicate data (e.g.
+        # the search from June 1st may have returned data from the beginning
+        # of July too). So we need to dedupe.
+        my $rnd_schedule = $rnd->{Round} . ' ' . $rnd->{Schedule};
+        my $rnd_schedule_date = $rnd_schedule . ' ' . $rnd->{Date};
+
+        next if $seen_rnd_schedule_date{$rnd_schedule_date};
+
+        # Try to match Round-Schedule against services
+        my $srv = $srv_for_round{$rnd_schedule};
         next unless $srv;
 
         my $dt = $parser->parse_datetime( $rnd->{Date} );
@@ -359,6 +373,8 @@ sub bin_future_collections {
                 summary => $_->{service_name},
             };
         }
+
+        $seen_rnd_schedule_date{$rnd_schedule_date} = 1;
     }
 
     return \@events;
