@@ -6,6 +6,8 @@ use warnings;
 use URI::Escape;
 use Integrations::SCP;
 
+sub waste_cc_has_redirect { 1 }
+
 sub waste_cc_get_redirect_url {
     my ($self, $c, $back) = @_;
 

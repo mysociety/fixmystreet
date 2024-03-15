@@ -3,6 +3,8 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
+with 'FixMyStreet::Roles::SCP';
+
 use Digest::SHA qw(sha1_hex);
 use Encode qw(encode_utf8);
 
@@ -144,8 +146,21 @@ sub garden_waste_generate_sig {
     return uc $sha;
 }
 
-sub garden_cc_check_payment_status {
-    my ($self, $c, $p) = @_;
+sub waste_cc_has_redirect {
+    my ($self, $p) = @_;
+    return 1 if $p->category eq 'Request new container';
+    return 0;
+}
+
+around garden_cc_check_payment_status => sub {
+    my ($orig, $self, $c, $p) = @_;
+
+    if ($p->category eq 'Request new container') {
+        # Call the SCP role code
+        return $self->$orig($c, $p);
+    }
+
+    # Otherwise, the EPDQ code
 
     my $passphrase;
     if ($p->category eq 'Bulky collection') {
@@ -179,7 +194,7 @@ sub garden_cc_check_payment_status {
         $c->stash->{error} = $error;
         return undef;
     }
-}
+};
 
 =head2 Bulky waste collection
 
