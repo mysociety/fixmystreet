@@ -578,7 +578,8 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
     $c->stash->{report} = $report;
     $c->stash->{property_id} = $report->get_extra_field_value('property_id');
 
-    if ( $report->get_extra_metadata('contributed_as') ne 'anonymous_user' ) {
+    my $contributed_as = $report->get_extra_metadata('contributed_as') || '';
+    if ( $contributed_as ne 'anonymous_user' ) {
         $c->stash->{sent_email} = 1;
         $c->send_email('waste/csc_payment_failed.txt', {
             to => [ [ $report->user->email, $report->name ] ],

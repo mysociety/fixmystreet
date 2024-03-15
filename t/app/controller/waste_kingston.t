@@ -1938,7 +1938,7 @@ FixMyStreet::override_config {
         echo => { kingston => { url => 'http://example.org' } },
         waste => { kingston => 1 },
         waste_features => { kingston => { garden_new_disabled => 1 } },
-        payment_gateway => { kingston => { ggw_cost => 2000 } },
+        payment_gateway => { kingston => { ggw_cost_renewal => 2000 } },
     },
 }, sub {
     my $echo = Test::MockModule->new('Integrations::Echo');
@@ -1976,7 +1976,7 @@ FixMyStreet::override_config {
             garden_renew_disabled => 1,
             garden_modify_disabled => 1,
         } },
-        payment_gateway => { kingston => { ggw_cost => 2000 } },
+        payment_gateway => { kingston => { ggw_cost_renewal => 2000 } },
     },
 }, sub {
     my $echo = Test::MockModule->new('Integrations::Echo');

@@ -58,6 +58,7 @@ FixMyStreet::override_config {
             url => 'http://example.org/',
         } },
         waste => { kingston => 1 },
+        echo => { kingston => { bulky_service_id => 413 }},
     },
     STAGING_FLAGS => {
         send_reports => 1,
