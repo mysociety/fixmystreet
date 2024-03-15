@@ -200,14 +200,15 @@ sub pay_retry : Path('pay_retry') : Args(0) {
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $back) = @_;
 
+    my $p = $c->stash->{report};
+
     # If it's using the same flow as users, but is staff, mark as CSC payment
     if ( $c->stash->{staff_payments_allowed} eq 'cnp' ) {
-        my $p = $c->stash->{report};
         $p->update_extra_field({ name => 'payment_method', value => 'csc' });
         $p->update;
     }
 
-    if ( $c->cobrand->can('waste_cc_get_redirect_url') ) {
+    if ($c->cobrand->waste_cc_has_redirect($p)) {
         my $redirect_url = $c->cobrand->waste_cc_get_redirect_url($c, $back);
 
         if ( $redirect_url ) {
