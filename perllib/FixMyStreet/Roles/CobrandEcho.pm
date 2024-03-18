@@ -795,7 +795,8 @@ sub _get_cost_from_array {
 
 sub _get_cost {
     my ($self, $cost_ref, $date) = @_;
-    my $cost = $self->feature('payment_gateway')->{$cost_ref};
+    my $payments = $self->feature('payment_gateway');
+    my $cost = $payments->{$cost_ref};
     if (ref $cost eq 'ARRAY') {
         $cost = $self->_get_cost_from_array($cost, $date);
     }

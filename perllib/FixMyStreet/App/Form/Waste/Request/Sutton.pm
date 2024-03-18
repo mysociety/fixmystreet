@@ -15,6 +15,16 @@ has_page replacement => (
     fields => ['request_reason', 'continue'],
     title => 'Reason for request',
     next => 'about_you',
+    post_process => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        my $c = $form->c;
+        if ($data) {
+            my $choice = $data->{'container-choice'};
+            my ($cost, $hint) = $c->cobrand->request_cost($choice, $c->stash->{quantities});
+            $data->{payment} = $cost if $cost;
+        }
+    },
 );
 
 has_field request_reason => (

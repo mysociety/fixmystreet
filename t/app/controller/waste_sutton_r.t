@@ -54,7 +54,13 @@ create_contact({ category => 'Request new container', email => '1635' }, 'Waste'
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Action', required => 1, automated => 'hidden_field' },
     { code => 'Reason', required => 1, automated => 'hidden_field' },
+    { code => 'LastPayMethod', required => 0, automated => 'hidden_field' },
+    { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
+    { code => 'payment_method', required => 0, automated => 'hidden_field' },
+    { code => 'payment', required => 0, automated => 'hidden_field' },
 );
+
+my $sent_params;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'sutton',
@@ -64,13 +70,19 @@ FixMyStreet::override_config {
             url => 'http://example.org/',
         } },
         waste => { sutton => 1 },
-        echo => { sutton => { bulky_service_id => 413 }}
+        echo => { sutton => { bulky_service_id => 413 }},
+        payment_gateway => { sutton => {
+            cc_url => 'http://example.com',
+            request_replace_cost => 500,
+        } },
     },
     STAGING_FLAGS => {
         send_reports => 1,
     },
 }, sub {
     my ($e) = shared_echo_mocks();
+    my ($scp) = shared_scp_mocks();
+
     subtest 'Address lookup' => sub {
         set_fixed_time('2022-09-10T12:00:00Z');
         $mech->get_ok('/waste/12345');
@@ -109,14 +121,31 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Continue to payment');
+
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        is $sent_params->{items}[0]{amount}, 500;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+
         $mech->content_contains('request has been sent');
         $mech->content_contains('Containers typically arrive within 20 working days');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Damaged";
         is $report->category, 'Request new container';
         is $report->title, 'Request new Paper and Cardboard Green Wheelie Bin (240L)';
+        is $report->get_extra_field_value('payment'), 500, 'correct payment';
+        is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $report->get_extra_field_value('Container_Type'), 19, 'correct bin type';
+        is $report->get_extra_field_value('Action'), 3, 'correct container request action';
+        is $report->state, 'unconfirmed', 'report not confirmed';
+        is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_text_body_from_email;
         like $email, qr/please allow up to 20 working days/;
@@ -288,6 +317,18 @@ FixMyStreet::override_config {
     };
 };
 
+sub get_report_from_redirect {
+    my $url = shift;
+
+    my ($report_id, $token) = ( $url =~ m#/(\d+)/([^/]+)$# );
+    my $new_report = FixMyStreet::DB->resultset('Problem')->find( {
+        id => $report_id,
+    });
+
+    return undef unless $new_report->get_extra_metadata('redirect_id') eq $token;
+    return ($token, $new_report, $report_id);
+}
+
 sub shared_echo_mocks {
     my $e = Test::MockModule->new('Integrations::Echo');
     $e->mock('GetPointAddress', sub {
@@ -308,6 +349,39 @@ sub shared_echo_mocks {
         ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
     } );
     return $e;
+}
+
+sub shared_scp_mocks {
+    my $pay = Test::MockModule->new('Integrations::SCP');
+
+    $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'IN_PROGRESS',
+            scpReference => '12345',
+            invokeResult => {
+                status => 'SUCCESS',
+                redirectUrl => 'http://example.org/faq'
+            }
+        };
+    });
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'COMPLETE',
+            paymentResult => {
+                status => 'SUCCESS',
+                paymentDetails => {
+                    paymentHeader => {
+                        uniqueTranId => 54321
+                    }
+                }
+            }
+        };
+    });
+    return $pay;
 }
 
 done_testing;

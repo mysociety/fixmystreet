@@ -679,6 +679,7 @@ containers.
 
 sub waste_munge_request_form_fields {
     my ($self, $field_list) = @_;
+    my $c = $self->{c};
 
     my @radio_options;
     my %seen;
@@ -687,10 +688,17 @@ sub waste_munge_request_form_fields {
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
         next if $self->moniker eq 'kingston' && $seen{$id};
+
+        my ($cost, $hint);
+        if ($self->moniker eq 'sutton') {
+            ($cost, $hint) = $self->request_cost($id, $c->stash->{quantities});
+        }
+
         push @radio_options, {
             value => $id,
             label => $self->{c}->stash->{containers}->{$id},
             disabled => $value->{disabled},
+            $hint ? (hint => $hint) : (),
         };
         $seen{$id} = 1;
     }
@@ -873,7 +881,7 @@ sub garden_waste_new_bin_admin_fee {
 
 =head2 waste_cc_payment_line_item_ref
 
-This is only used by Kingston (which uses the SCP role) to provide the
+This is used by the SCP role (all Kingston, Sutton requests) to provide the
 reference for the credit card payment. It differs for bulky waste.
 
 =cut
@@ -882,6 +890,8 @@ sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
     if ($p->category eq 'Bulky collection') {
         return $self->_waste_cc_line_item_ref($p, "BULKY", "");
+    } elsif ($p->category eq 'Request new container') {
+        return $self->_waste_cc_line_item_ref($p, "CCH", "");
     } else {
         return $self->_waste_cc_line_item_ref($p, "GGW", "GW Sub");
     }
