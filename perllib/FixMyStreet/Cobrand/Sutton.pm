@@ -1,6 +1,7 @@
 package FixMyStreet::Cobrand::Sutton;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
+use utf8;
 use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
 with 'FixMyStreet::Roles::SCP';
@@ -13,6 +14,11 @@ sub council_area { return 'Sutton'; }
 sub council_name { return 'Sutton Council'; }
 sub council_url { return 'sutton'; }
 sub admin_user_domain { 'sutton.gov.uk' }
+
+use constant CONTAINER_REFUSE_140 => 1;
+use constant CONTAINER_REFUSE_240 => 2;
+use constant CONTAINER_REFUSE_360 => 3;
+use constant CONTAINER_PAPER_BIN => 19;
 
 =head2 waste_on_the_day_criteria
 
@@ -195,6 +201,26 @@ around garden_cc_check_payment_status => sub {
         return undef;
     }
 };
+
+=head2 request_cost
+
+Calculate how much, if anything, a request for a container should be.
+
+=cut
+
+sub request_cost {
+    my ($self, $id, $containers) = @_;
+    if (my $cost = $self->_get_cost('request_replace_cost')) {
+        foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_REFUSE_360, CONTAINER_PAPER_BIN) {
+            if ($id == $_) {
+                my $price = sprintf("£%.2f", $cost / 100);
+                $price =~ s/\.00$//;
+                my $hint = "There is a $price administration/delivery charge to replace your container";
+                return ($cost, $hint);
+            }
+        }
+    }
+}
 
 =head2 Bulky waste collection
 
