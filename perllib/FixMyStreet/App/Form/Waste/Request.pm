@@ -24,10 +24,9 @@ has_page summary => (
     # For payments, updating the submit button
     update_field_list => sub {
         my $form = shift;
-        if ($form->can('summary_submit_button_label')) {
-            if (my $label = $form->summary_submit_button_label($form->saved_data)) {
-                return { submit => { value => $label } };
-            }
+        my $data = $form->saved_data;
+        if ($data->{payment}) {
+            return { submit => { value => 'Continue to payment' } };
         }
         return {};
     },
