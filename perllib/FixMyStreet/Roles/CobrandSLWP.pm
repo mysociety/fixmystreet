@@ -245,6 +245,9 @@ sub waste_event_state_map {
     };
 }
 
+use constant CONTAINER_REFUSE_140 => 1;
+use constant CONTAINER_REFUSE_240 => 2;
+use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
 
@@ -503,6 +506,16 @@ sub waste_service_containers {
             # The most you can request is one
             $request_max->{$container} = 1;
             $self->{c}->stash->{quantities}->{$container} = $quantity;
+
+            if ($self->moniker eq 'sutton') {
+                if ($container == CONTAINER_REFUSE_140 || $container == CONTAINER_REFUSE_360) {
+                    push @$containers, CONTAINER_REFUSE_240;
+                    $request_max->{+CONTAINER_REFUSE_240} = 1;
+                } elsif ($container == CONTAINER_REFUSE_240) {
+                    push @$containers, CONTAINER_REFUSE_140;
+                    $request_max->{+CONTAINER_REFUSE_140} = 1;
+                }
+            }
         }
     }
 
@@ -735,8 +748,9 @@ sub waste_report_form_first_next {
 =head2 waste_request_form_first_next
 
 After picking a container, we jump straight to the about you page if they've
-picked a bag, to the swap-for-a-bin page if they've picked a bin, don't already
-have a bin and are on Kingston; otherwise we move to asking for a reason.
+picked a bag or Sutton changing size, to the swap-for-a-bin page if they've
+picked a bin, don't already have a bin and are on Kingston; otherwise we move
+to asking for a reason.
 
 =cut
 
@@ -744,6 +758,7 @@ sub waste_request_form_first_title { 'Which container do you need?' }
 sub waste_request_form_first_next {
     my $self = shift;
     my $cls = ucfirst $self->council_url;
+    my $containers = $self->{c}->stash->{quantities};
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
@@ -751,6 +766,14 @@ sub waste_request_form_first_next {
         if ($cls eq 'Kingston' && $choice == CONTAINER_RECYCLING_BIN && !$self->{c}->stash->{container_recycling_bin}) {
             $data->{request_reason} = 'more';
             return 'recycling_swap';
+        }
+        if ($cls eq 'Sutton') {
+            foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240) {
+                if ($choice == $_ && !$containers->{$_}) {
+                    $data->{request_reason} = 'change_capacity';
+                    return 'about_you';
+                }
+            }
         }
         return 'replacement';
     };
@@ -794,6 +817,18 @@ sub waste_munge_request_data {
         } else {
             $action_id = 1; # Deliver
             $reason_id = 3; # Change capacity
+        }
+    } elsif ($reason eq 'change_capacity') {
+        $action_id = '2::1';
+        $reason_id = '3::3';
+        if ($id == CONTAINER_REFUSE_140) {
+            $id = CONTAINER_REFUSE_240 . '::' . CONTAINER_REFUSE_140;
+        } elsif ($id == CONTAINER_REFUSE_240) {
+            if ($c->stash->{quantities}{+CONTAINER_REFUSE_360}) {
+                $id = CONTAINER_REFUSE_360 . '::' . CONTAINER_REFUSE_240;
+            } else {
+                $id = CONTAINER_REFUSE_140 . '::' . CONTAINER_REFUSE_240;
+            }
         }
     } else {
         # No reason, must be a bag

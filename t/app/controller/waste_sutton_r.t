@@ -74,6 +74,7 @@ FixMyStreet::override_config {
         payment_gateway => { sutton => {
             cc_url => 'http://example.com',
             request_replace_cost => 500,
+            request_change_cost => 1500,
         } },
     },
     STAGING_FLAGS => {
@@ -115,7 +116,7 @@ FixMyStreet::override_config {
         $e->mock('GetTasks', sub { [] });
     };
     subtest 'Request a new bin' => sub {
-        $mech->follow_link_ok( { text => 'Request a replacement bin, box or caddy' } );
+        $mech->follow_link_ok( { text => 'Request a bin, box, caddy or bags' } );
 		# 19 (1), 24 (1), 16 (1), 1 (1)
         # missing, new_build, more
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
@@ -149,6 +150,30 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_text_body_from_email;
         like $email, qr/please allow up to 20 working days/;
+    };
+    subtest 'Request a larger bin than current' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 2 }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Continue to payment');
+
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        is $sent_params->{items}[0]{amount}, 1500;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        $mech->content_contains('request has been sent');
+        $mech->content_contains('Containers typically arrive within 20 working days');
+
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->title, 'Request new Brown Rubbish Wheelie Bin (240L)';
+        is $report->get_extra_field_value('payment'), 1500, 'correct payment';
+        is $report->get_extra_field_value('Container_Type'), '1::2', 'correct bin type';
+        is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
+        is $report->get_extra_field_value('Reason'), '3::3', 'correct container request reason';
     };
     subtest 'Report a new recycling raises a bin delivery request' => sub {
         $mech->log_in_ok($user->email);
