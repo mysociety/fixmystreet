@@ -4,6 +4,7 @@ use Test::MockModule;
 use Test::MockObject;
 use Test::MockTime 'set_fixed_time';
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -26,13 +27,47 @@ $whitespace_mock->mock('call' => sub {
 });
 
 my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {}, { cobrand => 'bexley' });
-$mech->create_contact_ok(
+my $contact = $mech->create_contact_ok(
     body => $body,
     category => 'Report missed collection',
     email => 'missed@example.org',
     extra => { type => 'waste' },
     group => ['Waste'],
 );
+$contact->set_extra_fields(
+    {
+        code => "uprn",
+        required => "false",
+        automated => "hidden_field",
+        description => "UPRN reference",
+    },
+    {
+        code => "service_item_name",
+        required => "false",
+        automated => "hidden_field",
+        description => "Service item name",
+    },
+    {
+        code => "fixmystreet_id",
+        required => "true",
+        automated => "server_set",
+        description => "external system ID",
+    },
+    {
+        code => "assisted_yn",
+        required => "false",
+        automated => "hidden_field",
+        description => "Assisted collection (Yes/No)",
+    },
+    {
+        code => "location_of_containers",
+        required => "false",
+        automated => "hidden_field",
+        description => "Location of containers",
+    }
+);
+
+$contact->update;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bexley',
@@ -105,6 +140,19 @@ FixMyStreet::override_config {
     $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
         my ( $self, $uprn ) = @_;
         return _in_cab_logs()->{$uprn};
+    });
+
+    $whitespace_mock->mock( 'GetSiteContracts', sub {
+        my ( $self, $uprn ) = @_;
+        return [
+            {   ContractID => 1,
+                ContractName => 'Contract 1',
+                ContractType => 'Type 1',
+                ContractStartDate => '2024-03-31T00:00:00',
+                ContractEndDate => '2024-03-31T00:00:00',
+                ContractStatus => 'Active',
+            },
+        ];
     });
 
     subtest 'Correct services are shown for address' => sub {
@@ -261,12 +309,35 @@ FixMyStreet::override_config {
 
         # Blue and green recycling boxes are due today
         $mech->content_contains('Being collected today');
+
+        # Put time back to previous value
+        set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
     };
 
     subtest 'Asks user for location of bins on missed collection form' => sub {
         $mech->get_ok('/waste/1/report');
         $mech->content_contains('Please supply any additional information such as the location of the bin.');
         $mech->content_contains('name="extra_detail"');
+    };
+
+    subtest 'Making a missed collection report' => sub {
+        $mech->get_ok('/waste/1/report');
+        $mech->submit_form_ok(
+            { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
+            'Selecting missed collection for clear sacks');
+        $mech->submit_form_ok(
+            { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },
+            'Submitting contact details');
+        $mech->submit_form_ok(
+            { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
+            'Submitting missed collection report');
+
+        my $report = FixMyStreet::DB->resultset("Problem")->first;
+
+        is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+        is $report->get_extra_field_value('service_item_name'), 'MDR-SACK', 'Service item name is correct';
+        is $report->get_extra_field_value('assisted_yn'), 'No', 'Assisted collection is correct';
+        is $report->get_extra_field_value('location_of_containers'), 'Front driveway', 'Location of containers is correct';
     };
 };
 
@@ -312,8 +383,8 @@ sub _site_info {
             AccountSiteUPRN => 10001,
             Site            => {
                 SiteShortAddress => ', 1, THE AVENUE, DA1 3NP',
-                SiteLatitude     => 51,
-                SiteLongitude    => -0.1,
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
             },
         },
         2 => {
@@ -321,8 +392,8 @@ sub _site_info {
             AccountSiteUPRN => 10002,
             Site            => {
                 SiteShortAddress => ', 2, THE AVENUE, DA1 3LD',
-                SiteLatitude     => 51,
-                SiteLongitude    => -0.1,
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
                 SiteParentID     => 101,
             },
         },
@@ -331,8 +402,8 @@ sub _site_info {
             AccountSiteUPRN => 10003,
             Site            => {
                 SiteShortAddress => ', 3, THE AVENUE, DA1 3LD',
-                SiteLatitude     => 51,
-                SiteLongitude    => -0.1,
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
                 SiteParentID     => 101,
             },
         },
@@ -341,8 +412,8 @@ sub _site_info {
             AccountSiteUPRN => 10004,
             Site            => {
                 SiteShortAddress => ', 4, THE AVENUE, DA1 3LD',
-                SiteLatitude     => 51,
-                SiteLongitude    => -0.1,
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
                 SiteParentID     => 101,
             },
         },

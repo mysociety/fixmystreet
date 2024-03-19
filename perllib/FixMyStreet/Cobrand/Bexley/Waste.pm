@@ -575,6 +575,12 @@ sub waste_munge_report_data {
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('service_id', $id);
+    $c->set_param('location_of_containers', $data->{extra_detail}) if $data->{extra_detail};
+    $c->set_param('service_item_name', $c->stash->{services}{$id}{service_id});
+
+    # Check if this property has assisted collections
+    my $contracts = $self->whitespace->GetSiteContracts($c->stash->{property}{uprn});
+    $c->set_param('assisted_yn', (grep { $_->{ContractID} == 7 } @$contracts) ? 'Yes' : 'No');
 }
 
 sub waste_munge_report_form_fields {
