@@ -210,9 +210,19 @@ Calculate how much, if anything, a request for a container should be.
 
 sub request_cost {
     my ($self, $id, $containers) = @_;
+    if (my $cost = $self->_get_cost('request_change_cost')) {
+        foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240) {
+            if ($id == $_ && !$containers->{$_}) {
+                my $price = sprintf("£%.2f", $cost / 100);
+                $price =~ s/\.00$//;
+                my $hint = "There is a $price administration/delivery charge to change the size of your container";
+                return ($cost, $hint);
+            }
+        }
+    }
     if (my $cost = $self->_get_cost('request_replace_cost')) {
         foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_REFUSE_360, CONTAINER_PAPER_BIN) {
-            if ($id == $_) {
+            if ($id == $_ && $containers->{$_}) {
                 my $price = sprintf("£%.2f", $cost / 100);
                 $price =~ s/\.00$//;
                 my $hint = "There is a $price administration/delivery charge to replace your container";

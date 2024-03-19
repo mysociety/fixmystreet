@@ -9,12 +9,6 @@ has_page about_you => (
     intro => 'about_you.html',
     title => 'About you',
     next => 'summary',
-);
-
-has_page replacement => (
-    fields => ['request_reason', 'continue'],
-    title => 'Reason for request',
-    next => 'about_you',
     post_process => sub {
         my $form = shift;
         my $data = $form->saved_data;
@@ -25,6 +19,12 @@ has_page replacement => (
             $data->{payment} = $cost if $cost;
         }
     },
+);
+
+has_page replacement => (
+    fields => ['request_reason', 'continue'],
+    title => 'Reason for request',
+    next => 'about_you',
 );
 
 has_field request_reason => (
