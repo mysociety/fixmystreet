@@ -250,6 +250,8 @@ use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
+use constant CONTAINER_PAPER_BIN => 19;
+use constant CONTAINER_PAPER_BIN_140 => 36;
 
 use constant GARDEN_WASTE_SERVICE_ID => 2247;
 sub garden_service_name { 'garden waste collection service' }
@@ -352,6 +354,7 @@ sub waste_containers {
             35 => 'Rubbish bin (180L)',
             16 => 'Mixed Recycling Green Box (55L)',
             19 => 'Paper and Cardboard Green Wheelie Bin (240L)',
+            36 => 'Paper and Cardboard Green Wheelie Bin (140L)',
             23 => 'Small Kitchen Food Waste Caddy (7L)',
             24 => 'Large Outdoor Food Waste Caddy (23L)',
             26 => 'Garden Waste Wheelie Bin (240L)',
@@ -514,6 +517,10 @@ sub waste_service_containers {
                 } elsif ($container == CONTAINER_REFUSE_240) {
                     push @$containers, CONTAINER_REFUSE_140;
                     $request_max->{+CONTAINER_REFUSE_140} = 1;
+                } elsif ($container == CONTAINER_PAPER_BIN_140) {
+                    $request_max->{+CONTAINER_PAPER_BIN} = 1;
+                    # Swap 140 for 240 in container list
+                    @$containers = map { $_ == CONTAINER_PAPER_BIN_140 ? CONTAINER_PAPER_BIN : $_ } @$containers;
                 }
             }
         }
@@ -768,7 +775,7 @@ sub waste_request_form_first_next {
             return 'recycling_swap';
         }
         if ($cls eq 'Sutton') {
-            foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240) {
+            foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
                 if ($choice == $_ && !$containers->{$_}) {
                     $data->{request_reason} = 'change_capacity';
                     return 'about_you';
@@ -829,6 +836,8 @@ sub waste_munge_request_data {
             } else {
                 $id = CONTAINER_REFUSE_140 . '::' . CONTAINER_REFUSE_240;
             }
+        } elsif ($id == CONTAINER_PAPER_BIN) {
+            $id = CONTAINER_PAPER_BIN_140 . '::' . CONTAINER_PAPER_BIN;
         }
     } else {
         # No reason, must be a bag
