@@ -831,7 +831,6 @@ sub _set_user_source {
 
 sub waste_request_form_first_next {
     my $self = shift;
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::Bromley';
     return sub {
         my $data = shift;
         return 'replacement' if $data->{"container-44"};
