@@ -823,11 +823,10 @@ have a bin and are on Kingston; otherwise we move to asking for a reason.
 
 =cut
 
+sub waste_request_form_first_title { 'Which container do you need?' }
 sub waste_request_form_first_next {
     my $self = shift;
     my $cls = ucfirst $self->council_url;
-    $self->{c}->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::$cls";
-    $self->{c}->stash->{form_title} = 'Which container do you need?';
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
