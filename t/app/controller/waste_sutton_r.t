@@ -64,6 +64,7 @@ FixMyStreet::override_config {
             url => 'http://example.org/',
         } },
         waste => { sutton => 1 },
+        echo => { sutton => { bulky_service_id => 413 }}
     },
     STAGING_FLAGS => {
         send_reports => 1,

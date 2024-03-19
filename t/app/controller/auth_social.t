@@ -159,6 +159,13 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
             if ($state eq 'refused') {
                 $mech->get_ok($test->{error_callback});
             } else {
+                if ($test->{oidc_fail_test} && $page eq 'my' && $state eq 'okay') {
+                    my $oidc_lite = Test::MockModule->new('OIDC::Lite::Client::WebServer::AuthCodeFlow');
+                    $oidc_lite->mock('get_access_token', sub { die  });
+                    $mech->get('/auth/OIDC?code=throw&state=login');
+                    is $mech->res->code, 500, "got 500 for page";
+                    is $mech->response->header( 'X-Custom-Error-Provided'), 'yes', 'X-Custom-Error-Provided header added';
+                }
                 $mech->get_ok($test->{success_callback});
             }
 
@@ -612,6 +619,7 @@ for my $setup (
     push @configurations,
     {
         type => 'oidc',
+        oidc_fail_test => 1,
         config => {
             ALLOWED_COBRANDS => 'tfl',
             MAPIT_URL => 'http://mapit.uk/',

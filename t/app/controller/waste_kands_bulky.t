@@ -566,11 +566,16 @@ FixMyStreet::override_config {
     };
 
     subtest 'Bulky goods email reminders' => sub {
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        my $today = $report->confirmed->strftime('%A %d %B %Y');
-        my $id = $report->id;
         set_fixed_time('2023-07-05T05:44:59Z');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         my $cobrand = $body->get_cobrand_handler;
+        # Check no payment reference, no email
+        $report->unset_extra_metadata('payment_reference');
+        $report->update;
+        $cobrand->bulky_reminders;
+        $mech->email_count_is(0);
+        $report->set_extra_metadata('payment_reference', 54321);
+        $report->update;
         $cobrand->bulky_reminders;
         my $email = $mech->get_email;
         my $reminder_email_txt = $mech->get_text_body_from_email($email);

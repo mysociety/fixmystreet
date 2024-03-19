@@ -139,6 +139,7 @@ sub page_error_400_bad_request : Private {
 
 sub page_error_500_internal_error : Private {
     my ( $self, $c, $error_msg ) = @_;
+    $c->response->header('X-Custom-Error-Provided' => 'yes');
     $c->detach('page_error', [ $error_msg, 500 ]);
 }
 
