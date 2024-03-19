@@ -806,11 +806,15 @@ sub request : Chained('property') : Args(0) {
 
     $c->stash->{first_page} = 'request';
     my $next = $c->cobrand->call_hook('waste_request_form_first_next');
+    my $title = $c->cobrand->call_hook('waste_request_form_first_title') || 'Which containers do you need?';
+
+    my $cls = ucfirst $c->cobrand->council_url;
+    $c->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::$cls";
 
     $c->stash->{page_list} = [
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
-            title => $c->stash->{form_title} || 'Which containers do you need?',
+            title => $title,
             check_unique_id => 0,
             next => $next,
         },
