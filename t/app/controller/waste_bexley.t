@@ -132,6 +132,7 @@ FixMyStreet::override_config {
                     report_allowed => 0,
                     report_open    => 1,
                     report_locked_out => 0,
+                    assisted_collection => 1, # Has taken precedence over PC-55 non-assisted collection
                     %defaults,
                 },
                 {   id             => 9,
@@ -142,6 +143,7 @@ FixMyStreet::override_config {
                     report_allowed => 0,
                     report_open    => 1,
                     report_locked_out => 0,
+                    assisted_collection => 0,
                     %defaults,
                 },
                 {   id             => 1,
@@ -152,6 +154,7 @@ FixMyStreet::override_config {
                     report_allowed => 0,
                     report_open    => 0,
                     report_locked_out => 1,
+                    assisted_collection => 0,
                     %defaults,
                 },
                 {   id             => 6,
@@ -162,6 +165,7 @@ FixMyStreet::override_config {
                     report_allowed => 1,
                     report_open    => 0,
                     report_locked_out => 0,
+                    assisted_collection => 0,
                     %defaults,
                 },
             ];
@@ -404,7 +408,17 @@ sub _site_collections {
             {   SiteServiceID          => 8,
                 ServiceItemDescription => 'Service 8',
                 ServiceItemName => 'PC-55', # Blue Recycling Box
+                ServiceName => 'Blue Recycling Box',
+                NextCollectionDate   => '2024-04-01T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
 
+                RoundSchedule => 'RND-8-9 Mon',
+            },
+            {   SiteServiceID          => 8,
+                ServiceItemDescription => 'Service 8',
+                ServiceItemName => 'PC-55', # Blue Recycling Box
+                ServiceName => 'Assisted Collection',
                 NextCollectionDate   => '2024-04-01T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '0001-01-01T00:00:00',

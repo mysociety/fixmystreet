@@ -147,6 +147,7 @@ sub bin_services_for_address {
                 ordinal => ordinal( $next_dt->day ),
                 changed => 0,
             },
+            assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
         };
 
         # Get the last collection date from recent collections
@@ -171,10 +172,34 @@ sub bin_services_for_address {
         push @site_services_filtered, $filtered_service;
     }
 
+    @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
     @site_services_filtered = $self->service_sort(@site_services_filtered);
 
     return \@site_services_filtered;
 }
+
+=head2 _remove_service_if_assisted_exists
+
+Whitespace returns a standard bin service alongside an assisted collection service where
+an assisted collection is in place.
+
+This results in a duplication of bin services on the bin page so, if there is an assisted collection
+for a service, we will use that and remove the standard service it corresponds to.
+
+In case there is no corresponding assisted collection for a service we will show the standard
+collection for that service.
+
+=cut
+
+sub _remove_service_if_assisted_exists {
+    my ($self, @services) = @_;
+
+    my %service_by_service_id = map { $_->{service_id} => $_ } grep { !$_->{assisted_collection} } @services;
+    %service_by_service_id = (%service_by_service_id, map { $_->{service_id} => $_ } grep { $_->{assisted_collection} } @services);
+
+    return values %service_by_service_id;
+}
+
 
 # Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.) that have
 # open missed collection reports against them on the given property
