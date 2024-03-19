@@ -69,6 +69,13 @@ $contact->set_extra_fields(
 
 $contact->update;
 
+my ($existing_missed_collection_report1) = $mech->create_problems_for_body(1, $body->id, 'Report missed collection', {
+    external_id => "Whitespace-4",
+});
+my ($existing_missed_collection_report2) = $mech->create_problems_for_body(1, $body->id, 'Report missed collection', {
+    external_id => "Whitespace-5",
+});
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bexley',
     MAPIT_URL => 'http://mapit.uk/',
@@ -189,6 +196,7 @@ FixMyStreet::override_config {
                     round          => 'RND-8-9',
                     report_allowed => 0,
                     report_open    => 1,
+                    report_url     => '/report/' . $existing_missed_collection_report1->id,
                     report_locked_out => 0,
                     assisted_collection => 1, # Has taken precedence over PC-55 non-assisted collection
                     %defaults,
@@ -200,6 +208,7 @@ FixMyStreet::override_config {
                     round          => 'RND-8-9',
                     report_allowed => 0,
                     report_open    => 1,
+                    report_url     => '/report/' . $existing_missed_collection_report2->id,
                     report_locked_out => 0,
                     assisted_collection => 0,
                     %defaults,
@@ -332,12 +341,18 @@ FixMyStreet::override_config {
             { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
             'Submitting missed collection report');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
 
         is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
         is $report->get_extra_field_value('service_item_name'), 'MDR-SACK', 'Service item name is correct';
         is $report->get_extra_field_value('assisted_yn'), 'No', 'Assisted collection is correct';
         is $report->get_extra_field_value('location_of_containers'), 'Front driveway', 'Location of containers is correct';
+    };
+
+    subtest 'Prevents missed collection reports if there is an open report' => sub {
+        $mech->get_ok('/waste/2');
+        $mech->content_contains('A green recycling box collection has been reported as missed');
+        $mech->content_contains('<a href="/report/' . $existing_missed_collection_report2->id . '" class="waste-service-link">check status</a>');
     };
 };
 
@@ -681,6 +696,10 @@ sub _site_worksheets {
             WorksheetStatusName => 'Open',
             WorksheetSubject    => 'Missed Collection Paper',
         },
+        {   WorksheetID         => 5,
+            WorksheetStatusName => 'Open',
+            WorksheetSubject    => 'Missed Collection Mixed Dry Recycling',
+        },
     ];
 }
 
@@ -690,6 +709,8 @@ sub _worksheet_detail_service_items {
         3 => [],
         4 => [
             { ServiceItemName => 'PC-55' },
+        ],
+        5 => [
             { ServiceItemName => 'PA-55' },
         ],
     };

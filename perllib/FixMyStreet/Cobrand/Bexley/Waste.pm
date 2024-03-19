@@ -161,6 +161,19 @@ sub bin_services_for_address {
             };
         }
 
+        my $existing_report_id = $property->{missed_collection_reports}{ $filtered_service->{service_id} };
+
+        my $report;
+        if ($existing_report_id) {
+            $filtered_service->{report_open} = 1;
+            $report = $self->problems->search({ external_id => "Whitespace-$existing_report_id" })->first;
+            if ($report) {
+                $filtered_service->{report_url} = $report->url;
+            }
+        } else {
+            $filtered_service->{report_open} = 0;
+        }
+
         $filtered_service->{report_open}
             = $property->{missed_collection_reports}{ $filtered_service->{service_id} } ? 1 : 0;
 
@@ -223,7 +236,7 @@ sub _missed_collection_reports {
             for ( @{  $self->whitespace->GetWorksheetDetailServiceItems(
                         $ws->{WorksheetID} ) } )
             {
-                $missed_collection_reports{ $_->{ServiceItemName} } = 1;
+                $missed_collection_reports{ $_->{ServiceItemName} } = $ws->{WorksheetID};
             }
         }
     }
