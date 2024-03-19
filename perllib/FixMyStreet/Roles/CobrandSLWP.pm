@@ -245,6 +245,9 @@ sub waste_event_state_map {
     };
 }
 
+use constant CONTAINER_REFUSE_140 => 1;
+use constant CONTAINER_REFUSE_240 => 2;
+use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
 
@@ -521,6 +524,16 @@ sub bin_services_for_address {
                     # The most you can request is one
                     $request_max->{$container} = 1;
                     $quantities->{$container} = $quantity;
+
+                    if ($self->moniker eq 'sutton') {
+                        if ($container == CONTAINER_REFUSE_140 || $container == CONTAINER_REFUSE_360) {
+                            push @$containers, CONTAINER_REFUSE_240;
+                            $request_max->{+CONTAINER_REFUSE_240} = 1;
+                        } elsif ($container == CONTAINER_REFUSE_240) {
+                            push @$containers, CONTAINER_REFUSE_140;
+                            $request_max->{+CONTAINER_REFUSE_140} = 1;
+                        }
+                    }
                 }
             }
 
