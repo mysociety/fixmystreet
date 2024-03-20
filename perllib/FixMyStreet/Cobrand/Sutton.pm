@@ -205,11 +205,12 @@ around garden_cc_check_payment_status => sub {
 =head2 request_cost
 
 Calculate how much, if anything, a request for a container should be.
+Quantity doesn't matter here.
 
 =cut
 
 sub request_cost {
-    my ($self, $id, $containers) = @_;
+    my ($self, $id, $quantity, $containers) = @_;
     if (my $cost = $self->_get_cost('request_change_cost')) {
         foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
             if ($id == $_ && !$containers->{$_}) {
