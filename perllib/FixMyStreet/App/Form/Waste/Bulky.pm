@@ -39,7 +39,7 @@ has_page about_you => (
     next => 'choose_date_earlier',
     update_field_list => sub {
         my $form = shift;
-        if ($form->c->cobrand->moniker eq 'peterborough') {
+        if ($form->{c}->stash->{waste_features}->{bulky_offer_text_updates}) {
             $form->field('extra_bulky_text_updates')->inactive(0);
         };
     },
