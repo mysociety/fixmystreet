@@ -585,8 +585,10 @@ sub waste_munge_report_data {
 
     my $address = $c->stash->{property}->{address};
     my $service = $c->stash->{services}{$id}{service_name};
+    my $uprn = $c->stash->{property}{parent_property} ? $c->stash->{property}{parent_property}{uprn} : $c->stash->{property}{uprn};
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
+    $c->set_param('uprn', $uprn);
     $c->set_param('service_id', $id);
     $c->set_param('location_of_containers', $data->{extra_detail}) if $data->{extra_detail};
     $c->set_param('service_item_name', $c->stash->{services}{$id}{service_id});

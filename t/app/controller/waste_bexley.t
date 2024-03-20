@@ -349,6 +349,23 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('location_of_containers'), 'Front driveway', 'Location of containers is correct';
     };
 
+    subtest 'Missed collection reports are made against the parent property' => sub {
+        $mech->get_ok('/waste/2/report');
+        $mech->submit_form_ok(
+            { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
+            'Selecting missed collection for blue recycling box');
+        $mech->submit_form_ok(
+            { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },
+            'Submitting contact details');
+        $mech->submit_form_ok(
+            { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
+            'Submitting missed collection report');
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+
+        is $report->get_extra_field_value('uprn'), '10001', 'Report is against the parent property';
+    };
+
     subtest 'Prevents missed collection reports if there is an open report' => sub {
         $mech->get_ok('/waste/2');
         $mech->content_contains('A green recycling box collection has been reported as missed');
