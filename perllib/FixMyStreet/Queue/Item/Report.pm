@@ -344,9 +344,6 @@ sub _add_confirmed_update {
 sub _send_report_sent_email {
     my $self = shift;
 
-    if ($self->report->get_extra_field_value('bulky_text_updates')) {
-        $self->cobrand_handler->call_hook('_bulky_send_optional_text' => $self->report, $self->h, { text_type => 'confirmed' });
-    };
     # Don't send 'report sent' text
     return unless $self->report->user->email_verified;
 

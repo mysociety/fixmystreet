@@ -341,6 +341,10 @@ sub open311_post_send {
         my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ] );
         $sender->send($row, $h);
     }
+
+    if ($h->{report}->get_extra_field_value('bulky_text_updates')) {
+        $self->call_hook('_bulky_send_optional_text' => $h->{report}, $h->{url}, { text_type => 'confirmed' });
+    };
 }
 
 sub suppress_report_sent_email {
@@ -1305,7 +1309,7 @@ sub bulky_refund_collection {
 }
 
 sub _bulky_send_optional_text {
-    my ($self, $report, $h, $params) = @_;
+    my ($self, $report, $url, $params) = @_;
 
     my %message_data = ();
     my $title;
@@ -1319,15 +1323,15 @@ sub _bulky_send_optional_text {
     $address =~ s/\s\|.*?$//; # Address may contain ref to Bartec report
     $message_data{body} =
     sprintf("%s\n\n
-        Date: %s
-        Items: %d
-        %s
-        View more details or cancel: %s",
-        $title,
-        $self->bulky_nice_collection_date($report->get_extra_field_value('DATE')),
-        scalar grep ({ $_->{name} =~ /^ITEM/ && $_->{value} } @{$report->get_extra_fields}),
-        $address,
-        $h->{url});
+            Date: %s
+            Items: %d
+            %s
+            View more details or cancel: %s",
+            $title,
+            $self->bulky_nice_collection_date($report->get_extra_field_value('DATE')),
+            scalar grep ({ $_->{name} =~ /^ITEM/ && $_->{value} } @{$report->get_extra_fields}),
+            $address,
+            $url);
     FixMyStreet::SMS->new(cobrand => $self, notify_choice => 'waste')->send(
         %message_data,
     );
