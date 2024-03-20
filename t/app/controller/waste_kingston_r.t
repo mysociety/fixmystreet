@@ -329,6 +329,59 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
+    subtest 'Request new containers' => sub {
+        $mech->get_ok('/waste/12345/request?new=1');
+		# 19 (1), 24 (1), 16 (1), 1 (1)
+        $mech->submit_form_ok({ with_fields => { 'container-1' => 1, 'container-19' => 1, 'container-16' => 1, 'quantity-16' => 2, 'quantity-24' => 2, 'container-24' => 1 }});
+        $mech->submit_form_ok({ with_fields => { 'how_many' => '5more' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Continue to payment');
+
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 4500;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        $mech->content_contains('request has been sent');
+
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA";
+        is $report->category, 'Request new container';
+        is $report->title, 'Request new Black rubbish bin';
+        is $report->get_extra_field_value('payment'), 4500, 'correct payment';
+        is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $report->get_extra_field_value('Container_Type'), 2, 'correct bin type';
+        is $report->get_extra_field_value('Action'), 1, 'correct container request action';
+        is $report->state, 'unconfirmed', 'report not confirmed';
+        is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        foreach (@{ $report->get_extra_metadata('grouped_ids') }) {
+            my $report = FixMyStreet::DB->resultset("Problem")->find($_);
+            is $report->get_extra_field_value('uprn'), 1000000002;
+            if ($report->title eq 'Request new Green recycling box (55L)') {
+                is $report->get_extra_field_value('Container_Type'), 16, 'correct bin type';
+            } elsif ($report->title eq 'Request new Food waste bin (outdoor)') {
+                is $report->get_extra_field_value('Container_Type'), 24, 'correct bin type';
+            } elsif ($report->title eq 'Request new Blue lid paper and cardboard bin (240L)') {
+                is $report->get_extra_field_value('Container_Type'), 19, 'correct bin type';
+            } else {
+                is $report->title, 'BAD';
+            }
+            is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA";
+            is $report->category, 'Request new container';
+            is $report->get_extra_field_value('payment'), 4500, 'correct payment';
+            is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+            is $report->get_extra_field_value('Action'), 1, 'correct container request action';
+            is $report->state, 'confirmed', 'report confirmed';
+            is $report->get_extra_metadata('scpReference'), undef, 'only original report has SCP ref';
+        }
+
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[Action]'), '1';
+        is $cgi->param('attribute[Reason]'), '3';
+    };
     subtest 'Request bins from front page' => sub {
         $mech->get_ok('/waste/12345');
         $mech->submit_form_ok({ form_number => 7 });

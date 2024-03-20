@@ -37,12 +37,27 @@ has_page about_you => (
         my $c = $form->c;
         if ($data) {
             my $choice = $data->{'container-choice'};
-            my $quantity = 1;
-            if ($choice == CONTAINER_RECYCLING_BOX) {
-                $quantity = $data->{recycling_quantity}; # Won't be set if you said more, yes to swap
+            if ($choice eq 'New') {
+                my @services = grep { /^container-\d/ && $data->{$_} } sort keys %$data;
+                my $total_paid_quantity = 0;
+                foreach (@services) {
+                    my ($id) = /container-(.*)/;
+                    my $quantity = $data->{"quantity-$id"};
+                    my $names = $c->stash->{containers};
+                    if ($names->{$id} !~ /bag|sack|food/i) {
+                        $total_paid_quantity += $quantity;
+                    }
+                }
+                my ($cost) = $c->cobrand->request_cost(1, $total_paid_quantity);
+                $data->{payment} = $cost if $cost;
+            } else {
+                my $quantity = 1;
+                if ($choice == CONTAINER_RECYCLING_BOX) {
+                    $quantity = $data->{recycling_quantity}; # Won't be set if you said more, yes to swap
+                }
+                my ($cost) = $c->cobrand->request_cost($choice, $quantity);
+                $data->{payment} = $cost if $cost;
             }
-            my ($cost) = $c->cobrand->request_cost($choice, $quantity);
-            $data->{payment} = $cost if $cost;
         }
     },
 );
@@ -50,7 +65,11 @@ has_page about_you => (
 has_page how_many => (
     fields => ['how_many', 'continue'],
     title => 'Reason for request',
-    next => 'replacement',
+    next => sub {
+        my $data = shift;
+        return 'about_you' if $data->{'container-choice'} eq 'New';
+        return 'replacement';
+    }
 );
 
 has_field how_many => (
