@@ -246,6 +246,7 @@ sub waste_event_state_map {
 }
 
 use constant CONTAINER_REFUSE_140 => 1;
+use constant CONTAINER_REFUSE_180 => 35;
 use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
@@ -357,10 +358,10 @@ sub waste_containers {
     } elsif ($self->moniker eq 'kingston') {
         return {
             %shared,
-            1 => 'Black rubbish bin (140L)',
-            2 => 'Black rubbish bin (240L)',
-            3 => 'Black rubbish bin (360L)',
-            35 => 'Black rubbish bin (180L)',
+            1 => 'Black rubbish bin', # 140L
+            2 => 'Black rubbish bin', # 240L
+            3 => 'Black rubbish bin', # 360L
+            35 => 'Black rubbish bin', # 180L
             12 => 'Green recycling bin (240L)',
             13 => 'Green recycling bin (360L)',
             16 => 'Green recycling box (55L)',

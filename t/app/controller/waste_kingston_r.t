@@ -115,14 +115,18 @@ FixMyStreet::override_config {
     foreach (
         { id => 19, name => 'Blue lid paper and cardboard bin (240L)' },
         { id => 16, name => 'Green recycling box (55L)' },
-        { id => 1, name => 'Black rubbish bin (140L)' },
+        { id => 1, name => 'Black rubbish bin', ordered => 35 },
         { id => 12, name => 'Green recycling bin (240L)' },
     ) {
         subtest "Request a new $_->{name}" => sub {
+            my $ordered = $_->{ordered} || $_->{id};
             $mech->get_ok('/waste/12345/request');
             # 19 (1), 24 (1), 16 (1), 1 (1)
             $mech->content_unlike(qr/Blue lid paper.*Blue lid paper/s);
             $mech->submit_form_ok({ with_fields => { 'container-choice' => $_->{id} }});
+            if ($_->{id} == 1) {
+                $mech->submit_form_ok({ with_fields => { 'how_many' => 'less5' }});
+            }
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
             $mech->content_contains('Continue to payment');
 
@@ -139,7 +143,7 @@ FixMyStreet::override_config {
             is $report->title, "Request $_->{name}";
             is $report->get_extra_field_value('payment'), 1800, 'correct payment';
             is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
-            is $report->get_extra_field_value('Container_Type'), $_->{id}, 'correct bin type';
+            is $report->get_extra_field_value('Container_Type'), $ordered, 'correct bin type';
             is $report->get_extra_field_value('Action'), 1, 'correct container request action';
             is $report->state, 'unconfirmed', 'report not confirmed';
             is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
@@ -147,11 +151,12 @@ FixMyStreet::override_config {
             FixMyStreet::Script::Reports::send();
             my $req = Open311->test_req_used;
             my $cgi = CGI::Simple->new($req->content);
-            is $cgi->param('attribute[Container_Type]'), $_->{id};
+            is $cgi->param('attribute[Container_Type]'), $ordered;
             is $cgi->param('attribute[Action]'), '1';
             is $cgi->param('attribute[Reason]'), '1';
         };
     }
+        #is $cgi->param('attribute[Container_Type]'), '35';
 
     subtest 'Request bins from front page' => sub {
         $mech->get_ok('/waste/12345');

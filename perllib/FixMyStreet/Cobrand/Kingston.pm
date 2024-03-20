@@ -12,6 +12,9 @@ sub council_name { return 'Kingston upon Thames Council'; }
 sub council_url { return 'kingston'; }
 sub admin_user_domain { 'kingston.gov.uk' }
 
+use constant CONTAINER_REFUSE_180 => 35;
+use constant CONTAINER_REFUSE_240 => 2;
+use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
 
@@ -114,11 +117,12 @@ After picking a container, we jump straight to the about you page
 sub waste_request_form_first_title { 'Which container do you need?' }
 sub waste_request_form_first_next {
     my $self = shift;
-    my $cls = ucfirst $self->council_url;
     my $containers = $self->{c}->stash->{quantities};
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
+        my $name = $self->{c}->stash->{containers}{$choice};
+        return 'how_many' if $name =~ /rubbish bin/;
         return 'about_you';
     };
 }
@@ -140,7 +144,16 @@ sub waste_munge_request_data {
 
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
-    $c->set_param('Container_Type', $id);
+
+    if ($data->{how_many}) { # Must have been a Kingston refuse bin
+        if ($data->{how_many} eq '5more') {
+            $c->set_param('Container_Type', CONTAINER_REFUSE_240);
+        } else {
+            $c->set_param('Container_Type', CONTAINER_REFUSE_180);
+        }
+    } else {
+        $c->set_param('Container_Type', $id);
+    }
 }
 
 =head2 request_cost
