@@ -246,6 +246,7 @@ sub waste_event_state_map {
 }
 
 use constant CONTAINER_REFUSE_140 => 1;
+use constant CONTAINER_REFUSE_180 => 35;
 use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
@@ -381,10 +382,10 @@ sub bin_services_for_address {
     } elsif ($self->moniker eq 'kingston') {
         $self->{c}->stash->{containers} = {
             %shared,
-            1 => 'Black rubbish bin (140L)',
-            2 => 'Black rubbish bin (240L)',
-            3 => 'Black rubbish bin (360L)',
-            35 => 'Black rubbish bin (180L)',
+            1 => 'Black rubbish bin', # 140L
+            2 => 'Black rubbish bin', # 240L
+            3 => 'Black rubbish bin', # 360L
+            35 => 'Black rubbish bin', # 180L
             12 => 'Green recycling bin (240L)',
             13 => 'Green recycling bin (360L)',
             16 => 'Green recycling box (55L)',
@@ -894,6 +895,10 @@ sub waste_request_form_first_next {
                 }
             }
         }
+        my $name = $self->{c}->stash->{containers}{$choice};
+        if ($cls eq 'Kingston' && $name =~ /rubbish bin/) {
+            return 'how_many';
+        }
         return 'replacement';
     };
 }
@@ -973,7 +978,16 @@ sub waste_munge_request_data {
         $data->{detail} .= " - $notes";
         $c->set_param('Notes', $notes);
     }
-    $c->set_param('Container_Type', $id);
+
+    if ($data->{how_many}) { # Must have been a Kingston refuse bin
+        if ($data->{how_many} eq '5more') {
+            $c->set_param('Container_Type', CONTAINER_REFUSE_240);
+        } else {
+            $c->set_param('Container_Type', CONTAINER_REFUSE_180);
+        }
+    } else {
+        $c->set_param('Container_Type', $id);
+    }
 }
 
 sub waste_munge_report_data {

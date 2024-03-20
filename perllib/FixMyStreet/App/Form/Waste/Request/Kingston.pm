@@ -47,6 +47,23 @@ has_page about_you => (
     },
 );
 
+has_page how_many => (
+    fields => ['how_many', 'continue'],
+    title => 'Reason for request',
+    next => 'replacement',
+);
+
+has_field how_many => (
+    required => 1,
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'How many people live in this household?',
+    options => [
+        { value => 'less5', label => '1 to 4' },
+        { value => '5more', label => '5 or more' },
+    ],
+);
+
 =head2 Reason for replacement
 
 The user is asked why they need a new container - damaged, missing, new
