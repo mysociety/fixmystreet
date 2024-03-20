@@ -67,7 +67,7 @@ $postcodeform-background: transparent;
 }
 
 @mixin kingston-form-label() {
-    color: #555;
+    color: $black;
     font-weight: 700;
 }
 

@@ -704,10 +704,7 @@ sub waste_munge_request_form_fields {
         my $id = $1;
         next if $self->moniker eq 'kingston' && $seen{$id};
 
-        my ($cost, $hint);
-        if ($self->moniker eq 'sutton') {
-            ($cost, $hint) = $self->request_cost($id, $c->stash->{quantities});
-        }
+        my ($cost, $hint) = $self->request_cost($id, 1, $c->stash->{quantities});
 
         my $data = {
             value => $id,

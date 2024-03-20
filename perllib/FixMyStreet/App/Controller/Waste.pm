@@ -822,7 +822,7 @@ sub request : Chained('property') : Args(0) {
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
             title => $title,
-            $c->cobrand->moniker eq 'sutton' ? (intro => 'request/intro.html') : (),
+            intro => 'request/intro.html',
             check_unique_id => 0,
             next => $next,
         },

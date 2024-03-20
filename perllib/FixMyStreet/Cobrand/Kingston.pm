@@ -1,6 +1,7 @@
 package FixMyStreet::Cobrand::Kingston;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
+use utf8;
 use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
 with 'FixMyStreet::Roles::SCP';
@@ -140,6 +141,28 @@ sub waste_munge_request_data {
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
     $c->set_param('Container_Type', $id);
+}
+
+=head2 request_cost
+
+Calculate how much, if anything, a request for a container should be.
+
+=cut
+
+sub request_cost {
+    my ($self, $id, $quantity, $containers) = @_;
+    $quantity ||= 1;
+    if (my $cost = $self->_get_cost('request_replace_cost')) {
+        my $cost_more = $self->_get_cost('request_replace_cost_more') || $cost/2;
+        if ($quantity > 1) {
+            $cost += $cost_more * ($quantity-1);
+        }
+        my $names = $self->{c}->stash->{containers};
+        if ($names->{$id} !~ /bag|sack|food/i) {
+            my $hint = "";
+            return ($cost, $hint);
+        }
+    }
 }
 
 =head2 Bulky waste collection

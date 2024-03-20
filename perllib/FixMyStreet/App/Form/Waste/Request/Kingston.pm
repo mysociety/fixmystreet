@@ -28,6 +28,17 @@ has_page about_you => (
     intro => 'about_you.html',
     title => 'About you',
     next => 'summary',
+    post_process => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        my $c = $form->c;
+        if ($data) {
+            my $choice = $data->{'container-choice'};
+            my $quantity = 1;
+            my ($cost) = $c->cobrand->request_cost($choice, $quantity);
+            $data->{payment} = $cost if $cost;
+        }
+    },
 );
 
 has_field submit => (
