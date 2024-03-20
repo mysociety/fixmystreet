@@ -110,7 +110,8 @@ FixMyStreet::override_config {
             bulky_amend_enabled => 'staff',
             bulky_multiple_bookings => 1,
             bulky_retry_bookings => 1,
-            bulky_tandc_link => 'peterborough-bulky-waste-tandc.com'
+            bulky_tandc_link => 'peterborough-bulky-waste-tandc.com',
+            bulky_offer_text_updates => 1,
         } },
         payment_gateway => { peterborough => {
             cc_url => 'https://example.org/scp/',
@@ -377,7 +378,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Aragon Direct Services may contact you to obtain more');
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge' } });
             $mech->content_contains('Please provide an email address');
-            $mech->content_contains('Do you want to receive updates by text');
+            $mech->content_contains('Do you want to receive reminders about this collection by text message?');
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111', extra_bulky_text_updates => '1' }});
         };
 
