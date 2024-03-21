@@ -79,16 +79,6 @@ sub call {
     return $som->result;
 }
 
-sub GetAddresses {
-    my ($self, $postcode) = @_;
-
-    my $res = $self->call('GetAddresses', getAddressInput => ixhash( Postcode => $postcode ));
-
-    my $addresses = force_arrayref($res->{Addresses}, 'Address');
-
-    return $addresses;
-}
-
 sub GetSiteCollections {
     my ($self, $uprn) = @_;
 
@@ -100,9 +90,10 @@ sub GetSiteCollections {
 }
 
 sub GetSiteInfo {
-    my ( $self, $account_site_id ) = @_;
+    my ( $self, $uprn ) = @_;
 
-    my $res = $self->call('GetSiteInfo', siteInfoInput => ixhash( AccountSiteId => $account_site_id ));
+    my $res = $self->call( 'GetSiteInfo',
+        siteInfoInput => ixhash( Uprn => $uprn ) );
 
     return $res->{Site};
 }

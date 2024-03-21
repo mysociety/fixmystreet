@@ -5,6 +5,7 @@ use Moo::Role;
 use Integrations::Whitespace;
 use DateTime;
 use DateTime::Format::W3CDTF;
+use DBI;
 use FixMyStreet;
 use FixMyStreet::Template;
 use Sort::Key::Natural qw(natkeysort_inplace);
@@ -14,50 +15,174 @@ has 'whitespace' => (
     default => sub { Integrations::Whitespace->new(%{shift->feature('whitespace')}) },
 );
 
+sub postcode_database_file {
+    FixMyStreet->path_to('../data/bexley-ww-postcodes.sqlite');
+}
+
 sub bin_addresses_for_postcode {
     my ($self, $postcode) = @_;
 
-    my $addresses = $self->whitespace->GetAddresses($postcode);
+    return [] unless -e postcode_database_file();
 
-    my $data = [ map {
-        {
-            value => $_->{AccountSiteId},
-            label => FixMyStreet::Template::title($_->{SiteShortAddress}) =~ s/^, //r,
-        }
-    } @$addresses ];
+    my $db = DBI->connect( 'dbi:SQLite:dbname=' . postcode_database_file(),
+        undef, undef )
+        or return [];
 
-    natkeysort_inplace { $_->{label} } @$data;
+    # Remove whitespaces, make sure uppercase
+    $postcode =~ s/ //g;
+    $postcode = uc $postcode;
 
-    return $data;
+    my $addresses = $db->selectall_arrayref(
+        <<SQL,
+   SELECT p.uprn uprn,
+          p.usrn usrn,
+
+          pao_start_number,
+          pao_start_suffix,
+          pao_end_number,
+          pao_end_suffix,
+          pao_text,
+
+          sao_start_number,
+          sao_start_suffix,
+          sao_end_number,
+          sao_end_suffix,
+          sao_text,
+
+          street_descriptor,
+          locality_name,
+          town_name,
+
+          parent_uprn
+     FROM postcodes p
+     JOIN street_descriptors sd
+       ON sd.usrn = p.usrn
+     LEFT OUTER JOIN child_uprns cu
+       ON cu.uprn = p.uprn
+    WHERE p.postcode = ?
+      AND p.uprn NOT IN (
+        SELECT parent_uprn FROM child_uprns
+      )
+SQL
+        { Slice => {} },
+        $postcode,
+    );
+
+    my @data =
+        map {
+            my $address_string = _build_address_string($_);
+            {
+                value => $_->{uprn},
+                label => FixMyStreet::Template::title( $address_string )
+            };
+        } sort _sort_addresses @$addresses;
+
+    return \@data;
+}
+
+sub _sort_addresses {
+    ( $a->{pao_start_number} // 0 ) <=> ( $b->{pao_start_number} // 0 )
+    or
+    ( $a->{pao_start_suffix} // '' ) cmp ( $b->{pao_start_suffix} // '' )
+    or
+    ( $a->{pao_text} // '' ) cmp ( $b->{pao_text} // '' )
+    or
+    ( $a->{sao_start_number} // 0 ) <=> ( $b->{sao_start_number} // 0 )
+    or
+    ( $a->{sao_start_suffix} // '' ) cmp ( $b->{sao_start_suffix} // '' )
+    or
+    ( $a->{sao_text} // '' ) cmp ( $b->{sao_text} // '' )
+}
+
+sub _build_address_string {
+    my $row = shift;
+
+    my $sao;
+    if ( $row->{parent_uprn} ) {
+        $sao = _join_extended(
+            ' ',
+            $row->{sao_text},
+            _join_extended(
+                '-',
+                _join_extended(
+                    '', $row->{sao_start_number},
+                    $row->{sao_start_suffix},
+                ),
+                _join_extended(
+                    '',
+                    $row->{sao_end_number},
+                    $row->{sao_end_suffix},
+                ),
+            ),
+        );
+    }
+
+    my $pao = _join_extended(
+        ' ',
+        $row->{pao_text},
+        _join_extended(
+            '-',
+            _join_extended(
+                '',
+                $row->{pao_start_number},
+                $row->{pao_start_suffix},
+            ),
+            _join_extended(
+                '',
+                $row->{pao_end_number},
+                $row->{pao_end_suffix},
+            ),
+        ),
+    );
+
+    return _join_extended(
+        ', ',
+        _join_extended( ' ', $sao, $pao, $row->{street_descriptor} ),
+        $row->{locality_name},
+        $row->{town_name},
+    );
+}
+
+# Only joins strings that are true / non-empty
+sub _join_extended {
+    my ( $sep, @strings ) = @_;
+
+    my @strings_true_only;
+    for (@strings) {
+        push @strings_true_only, $_ if $_;
+    }
+
+    return join $sep, @strings_true_only;
 }
 
 sub look_up_property {
-    my ($self, $id) = @_;
+    my ( $self, $uprn ) = @_;
 
-    my $site = $self->whitespace->GetSiteInfo($id);
+    my $site = $self->whitespace->GetSiteInfo($uprn);
 
-    # $site has a {Site}{SiteParentID} but this is NOT an AccountSiteID;
-    # we need to call GetAccountSiteID for that
+    # We need to call GetAccountSiteID to get parent UPRN
     my %parent_property;
-    if ( my $parent_id = $site->{Site}{SiteParentID} ) {
-        my $parent_data = $self->whitespace->GetAccountSiteID($parent_id);
+    if ( my $site_parent_id = $site->{Site}{SiteParentID} ) {
+        my $parent_data = $self->whitespace->GetAccountSiteID($site_parent_id);
         %parent_property = (
             parent_property => {
-                id => $parent_data->{AccountSiteID},
                 # NOTE 'AccountSiteUPRN' returned from GetSiteInfo,      but
                 #      'AccountSiteUprn' returned from GetAccountSiteID
+                id =>   $parent_data->{AccountSiteUprn},
                 uprn => $parent_data->{AccountSiteUprn},
             }
         );
     }
 
     return {
-        id => $site->{AccountSiteID},
+        # 'id' is same as 'uprn' for Bexley, but since the wider wasteworks code
+        # (e.g. FixMyStreet/App/Controller/Waste.pm) calls 'id' in some cases
+        # and 'uprn' in others, we set both here
+        id => $site->{AccountSiteUPRN},
         uprn => $site->{AccountSiteUPRN},
         address => FixMyStreet::Template::title($site->{Site}->{SiteShortAddress}),
         latitude => $site->{Site}->{SiteLatitude},
         longitude => $site->{Site}->{SiteLongitude},
-        has_children => $site->{NumChildren} ? 1 : 0,
 
         %parent_property,
     };
@@ -411,8 +536,7 @@ sub image_for_unit {
 
     my $property = $self->{c}->stash->{property};
 
-    my $is_communal
-        = $property->{has_children} || $property->{parent_property};
+    my $is_communal = $property->{parent_property};
 
     my $images = {
         'FO-140'   => 'communal-food-wheeled-bin',     # Food 140 ltr Bin
@@ -487,8 +611,7 @@ sub ordinal {
 sub _containers {
     my ( $self, $property ) = @_;
 
-    my $is_communal
-        = $property->{has_children} || $property->{parent_property};
+    my $is_communal = $property->{parent_property};
 
     return {
         'FO-140'   => 'Communal Food Bin',
