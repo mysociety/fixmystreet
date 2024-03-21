@@ -23,8 +23,9 @@ has log_ident => (
 sub receive_whitespace_event_notification : Path('/waste/whitespace') : Args(0) {
     my ($self, $c) = @_;
 
+    my %headers = $c->req->headers->flatten;
     $self->log($c->req->method);
-    $self->log($c->req->headers);
+    $self->log(\%headers);
     $self->log($c->req->parameters);
     if ($c->req->body) {
         $self->log($c->req->body);
