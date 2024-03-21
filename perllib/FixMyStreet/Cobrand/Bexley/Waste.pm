@@ -72,10 +72,16 @@ sub bin_services_for_address {
     my $site_services = $self->whitespace->GetSiteCollections($property->{uprn});
 
     # Get parent property services if no services found
-    $site_services = $self->whitespace->GetSiteCollections(
-        $property->{parent_property}{uprn} )
-        if !@{ $site_services // [] }
-        && $property->{parent_property};
+    if ( !@{ $site_services // [] }
+        && $property->{parent_property} )
+    {
+        $site_services = $self->whitespace->GetSiteCollections(
+            $property->{parent_property}{uprn} );
+
+        # A property is only communal if it has a parent property AND doesn't
+        # have its own list of services
+        $property->{is_communal} = 1;
+    }
 
     # TODO Call these in parallel
     $property->{missed_collection_reports}
@@ -426,7 +432,7 @@ sub image_for_unit {
 
     my $property = $self->{c}->stash->{property};
 
-    my $is_communal = $property->{parent_property};
+    my $is_communal = $property->{is_communal};
 
     my $images = {
         'FO-140'   => 'communal-food-wheeled-bin',     # Food 140 ltr Bin
@@ -501,7 +507,7 @@ sub ordinal {
 sub _containers {
     my ( $self, $property ) = @_;
 
-    my $is_communal = $property->{parent_property};
+    my $is_communal = $property->{is_communal};
 
     return {
         'FO-140'   => 'Communal Food Bin',
