@@ -23,6 +23,9 @@ sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
 
+use constant REFERRED_TO_BROMLEY => 'Referred to LB Bromley Streets';
+use constant REFERRED_TO_VEOLIA => 'Referred to Veolia Streets';
+
 sub report_validation {
     my ($self, $report, $errors) = @_;
 
@@ -183,7 +186,7 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     my $title = $row->title;
 
@@ -220,7 +223,7 @@ sub open311_extra_data_include {
           value => $row->user->email }
     ];
 
-    if ( $row->category eq 'Garden Subscription' ) {
+    if ( $contact->category eq 'Garden Subscription' ) {
         if ( $row->get_extra_metadata('contributed_as') && $row->get_extra_metadata('contributed_as') eq 'anonymous_user' ) {
             push @$open311_only, { name => 'contributed_as', value => 'anonymous_user' };
         }
@@ -261,6 +264,19 @@ sub open311_pre_send {
         my $text = $row->detail . "\n\nPrivate comments: $private_comments";
         $row->detail($text);
     }
+
+    if (my $handover_notes = $row->get_extra_metadata('handover_notes')) {
+        my $text = $row->detail . " | Handover notes - $handover_notes";
+        $row->detail($text);
+    }
+
+    if (my $comment_id = $row->get_extra_metadata('echo_report_reopened_with_comment')) {
+        my $comment = FixMyStreet::DB->resultset('Comment')->find($comment_id);
+        if ($comment && $comment->text) {
+            my $text = "Closed report has a new comment: " . $comment->text . "\n\n" . $row->detail;
+            $row->detail($text);
+        }
+    }
 }
 
 sub _include_user_title_in_extra {
@@ -300,6 +316,70 @@ sub open311_munge_update_params {
     $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',
     $params->{update_id_ext} = $comment->id;
     $params->{service_request_id_ext} = $comment->problem->id;
+
+    if (($comment->problem_state || '') eq REFERRED_TO_BROMLEY) {
+        $params->{status} = 'REFERRED_TO_LBB_STREETS';
+        if (my $handover_notes = $comment->problem->get_extra_metadata('handover_notes')) {
+            $params->{description} .= " | Handover notes - $handover_notes";
+        }
+    }
+}
+
+=head2 open311_get_update_munging
+
+This is used to perform Bromley's custom redirecting between Confirm and Echo
+backends. If we receive an update with a particular status/resolution, we need
+to make some changes to the update and associated report so that it is resent
+appropriately.
+
+=cut
+
+sub open311_get_update_munging {
+    my ($self, $comment, $state) = @_;
+
+    # An update from Bromley with a special referral state
+    if ($state eq 'referred to veolia streets') {
+        my $problem = $comment->problem;
+        # Do we want to store the old category somewhere for display?
+        $problem->category(REFERRED_TO_VEOLIA); # Will be an Echo Event Type ID
+        $problem->state('in progress');
+        $comment->problem_state('in progress');
+        $problem->set_extra_metadata( original_bromley_external_id => $problem->external_id );
+        $problem->update_extra_field({ name => 'Notes', value => $comment->text });
+        # Resending report, don't need comment to be public
+        $comment->state('hidden');
+        $problem->resend;
+        return;
+    }
+
+    # An update from Echo with resolution code 1252
+    my $code = $comment->get_extra_metadata('external_status_code') || '';
+    if ($code eq '1252,,') {
+        my $problem = $comment->problem;
+        $problem->category(REFERRED_TO_BROMLEY); # Will be LBB_RRE_FROM_VEOLIA_STREETS
+        $problem->state('in progress');
+        $comment->problem_state('in progress');
+
+        # Fetch outgoing notes
+        my $echo = $self->feature('echo');
+        $echo = Integrations::Echo->new(%$echo);
+        my $event = $echo->GetEvent($problem->external_id);
+        my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
+        my $notes;
+        foreach (@$data) {
+            $notes = $_->{Value} if $_->{DatatypeName} eq 'Veolia Notes';
+        }
+        $problem->set_extra_metadata(handover_notes => $notes) if $notes;
+        if (my $original_external_id = $problem->get_extra_metadata('original_bromley_external_id')) {
+            $problem->external_id($original_external_id);
+            $comment->problem_state(REFERRED_TO_BROMLEY);
+            $comment->send_state('unprocessed');
+        } else {
+            # Resending report, don't need comment to be public
+            $comment->state('hidden');
+            $problem->resend;
+        }
+    }
 }
 
 sub open311_post_send {
@@ -374,15 +454,49 @@ sub open311_contact_meta_override {
     @$meta = grep { !$ignore{$_->{code}} } @$meta;
 }
 
+=head2 _has_report_been_sent_to_echo
+
+Assumes a report has been sent to Echo if the external ID is a GUID.
+
+=cut
+
+sub _has_report_been_sent_to_echo {
+    my ($self, $report) = @_;
+    my $guid_regex = qr/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+    return $report->external_id && $report->external_id =~ /$guid_regex/;
+}
+
 =head2 should_skip_sending_update
 
 Do not send updates to the backend if they were made by a staff user and
 don't have any text (public or private).
 
+Also, if an update is on a closed echo-backed report, skip it and instead
+set the report to be resent under the referring to Veolia category, since we
+can't update closed echo events.
+
 =cut
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;
+
+    my $report = $update->problem;
+    if ($self->_has_report_been_sent_to_echo($report)) {
+        # We need to know whether to treat this as a normal update or a referral.
+        # We have the GUID but not the ID so we look this up.
+        my $cfg = $self->feature('echo');
+        my $echo = Integrations::Echo->new(%$cfg);
+        my $event = $echo->GetEvent($report->external_id);
+        if ($event->{ResolvedDate}) {
+            $report->update_extra_field({ name => 'Event_ID', value => $event->{Id} });
+            $report->set_extra_metadata('open311_category_override' => REFERRED_TO_VEOLIA);
+            $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
+            $report->state('confirmed');
+            $report->resend;
+            $report->update;
+            return 1;
+        }
+    }
 
     my $private_comments = $update->get_extra_metadata('private_comments');
     my $has_text = $update->text || $private_comments;
