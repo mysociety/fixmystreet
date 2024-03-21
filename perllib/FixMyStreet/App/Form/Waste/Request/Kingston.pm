@@ -17,7 +17,6 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
-use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
 
 =head2 About you
@@ -85,8 +84,8 @@ has_field how_many => (
 
 =head2 Reason for replacement
 
-The user is asked why they need a new container - damaged, missing, new
-resident (unless a garden bin) or they require more (if they have a green box).
+The user is asked why they need a new container - damaged, missing,
+or they require more (if they have a green box).
 
 =cut
 
@@ -115,16 +114,12 @@ sub options_request_reason {
     my $form = shift;
     my $data = $form->saved_data;
     my $choice = $data->{'container-choice'} || 0;
-    my $garden = $data->{'container-26'} || $data->{'container-27'} || $choice == 26 || $choice == 27;
     my $green_box = $data->{'container-' . CONTAINER_RECYCLING_BOX} || $choice == CONTAINER_RECYCLING_BOX;
-    my $green_bin = ($data->{'container-' . CONTAINER_RECYCLING_BIN} || $choice == CONTAINER_RECYCLING_BIN) && !$form->{c}->stash->{container_recycling_bin} && $data->{recycling_swap} ne 'No';
     my @options;
-    push @options, { value => 'new_build', label => 'I am a new resident without a container' }
-        if !$garden;
     push @options, { value => 'damaged', label => 'My container is damaged' };
     push @options, { value => 'missing', label => 'My container is missing' };
     push @options, { value => 'more', label => 'I need an additional container/bin' }
-        if $green_box || $green_bin;
+        if $green_box;
     return @options;
 }
 
@@ -138,17 +133,9 @@ for a bin, the user is asked if they'd like to swap their boxes for a bin.
 has_page recycling_swap => (
     fields => ['recycling_swap', 'continue'],
     title => 'Reason for request',
-    update_field_list => sub {
-        my $form = shift;
-        my $c = $form->{c};
-        my $data = $form->saved_data;
-        $data->{_container_recycling_bin} = $c->stash->{container_recycling_bin};
-        return {};
-    },
     next => sub {
         my $data = shift;
         return 'recycling_swap_confirm' if $data->{recycling_swap} eq 'Yes';
-        return 'replacement' if $data->{"container-choice"} == CONTAINER_RECYCLING_BIN && !$data->{_container_recycling_bin};
         return 'about_you';
     },
 );

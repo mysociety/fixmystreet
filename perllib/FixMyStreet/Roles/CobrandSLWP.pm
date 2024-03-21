@@ -528,8 +528,6 @@ sub bin_services_for_address {
                 next if $container == CONTAINER_REFUSE_RED_BAG;
                 next if $container == CONTAINER_RECYCLING_BLUE_BAG && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
                 if ($container && $quantity) {
-                    # Store this fact here for use in new request flow
-                    $self->{c}->stash->{container_recycling_bin} = 1 if $container == CONTAINER_RECYCLING_BIN;
                     push @$containers, $container;
                     next if $container == CONTAINER_GARDEN_SACK;
                     # The most you can request - ignored on replacements anyway
@@ -562,11 +560,6 @@ sub bin_services_for_address {
                 # Can always request a food caddy
                 push @$containers, CONTAINER_FOOD_INDOOR; # Food waste bin (kitchen)
                 $request_max->{+CONTAINER_FOOD_INDOOR} = 1;
-            }
-            if ($self->moniker eq 'kingston' && grep { $_ == CONTAINER_RECYCLING_BOX } @$containers) {
-                # Can request a bin if you have a box
-                push @$containers, CONTAINER_RECYCLING_BIN;
-                $request_max->{+CONTAINER_RECYCLING_BIN} = 1;
             }
 
             my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
@@ -913,10 +906,6 @@ sub waste_request_form_first_next {
             return 'about_you';
         }
         return 'about_you' if $choice == CONTAINER_RECYCLING_BLUE_BAG || $choice == CONTAINER_PAPER_SINGLE_BAG;
-        if ($cls eq 'Kingston' && $choice == CONTAINER_RECYCLING_BIN && !$self->{c}->stash->{container_recycling_bin}) {
-            $data->{request_reason} = 'more';
-            return 'recycling_swap';
-        }
         if ($cls eq 'Sutton') {
             foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
                 if ($choice == $_ && !$containers->{$_}) {
