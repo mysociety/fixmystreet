@@ -239,15 +239,6 @@ sub open311_extra_data_include {
         push @$open311_only, { name => 'fms_extra_title', value => $row->user->title };
     }
 
-    if ($contact->category eq REFERRED_TO_VEOLIA && $self->_has_report_been_sent_to_echo($row)) {
-        # This category needs a reference to the closed event ID.
-        # We have the GUID but not the ID so we look this up.
-        my $cfg = $self->feature('echo');
-        my $echo = Integrations::Echo->new(%$cfg);
-        my $event = $echo->GetEvent($row->external_id);
-        push @$open311_only, { name => 'Event_ID', value => $event->{Id} };
-    }
-
     return $open311_only;
 }
 
@@ -326,7 +317,7 @@ sub open311_munge_update_params {
     $params->{update_id_ext} = $comment->id;
     $params->{service_request_id_ext} = $comment->problem->id;
 
-    if ($comment->problem_state eq REFERRED_TO_BROMLEY) {
+    if (($comment->problem_state || '') eq REFERRED_TO_BROMLEY) {
         $params->{status} = 'REFERRED_TO_LBB_STREETS';
         if (my $handover_notes = $comment->problem->get_extra_metadata('handover_notes')) {
             $params->{description} .= " | Handover notes - $handover_notes";
@@ -490,13 +481,21 @@ sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $report = $update->problem;
-    if (($report->is_closed || $report->is_fixed) && $self->_has_report_been_sent_to_echo($report)) {
-        $report->set_extra_metadata('open311_category_override' => REFERRED_TO_VEOLIA);
-        $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
-        $report->state('confirmed');
-        $report->resend;
-        $report->update;
-        return 1;
+    if ($self->_has_report_been_sent_to_echo($report)) {
+        # We need to know whether to treat this as a normal update or a referral.
+        # We have the GUID but not the ID so we look this up.
+        my $cfg = $self->feature('echo');
+        my $echo = Integrations::Echo->new(%$cfg);
+        my $event = $echo->GetEvent($report->external_id);
+        if ($event->{ResolvedDate}) {
+            $report->update_extra_field({ name => 'Event_ID', value => $event->{Id} });
+            $report->set_extra_metadata('open311_category_override' => REFERRED_TO_VEOLIA);
+            $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
+            $report->state('confirmed');
+            $report->resend;
+            $report->update;
+            return 1;
+        }
     }
 
     my $private_comments = $update->get_extra_metadata('private_comments');
