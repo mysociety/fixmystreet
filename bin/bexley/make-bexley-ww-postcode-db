@@ -1,0 +1,253 @@
+#!/usr/bin/env perl
+
+=head1 NAME
+
+make-bexley-ww-postcode-db
+
+=head1 USAGE
+
+make-bexley-ww-postcode-db
+
+=head1 DESCRIPTION
+
+Creates a SQLite database for postcode lookups for Bexley WasteWorks, pulled
+from their LLPG data.
+See https://static.geoplace.co.uk/downloads/DTF-7.3-v3.1-Fourth-Edition-Specification-Consultation.pdf for breakdown of data types
+
+=cut
+
+use strict;
+use warnings;
+use feature 'say';
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use BexleyAddresses;
+use DBI;
+use FixMyStreet;
+use Text::CSV;
+use Cwd 'abs_path';
+
+my $csv_file = $ARGV[0] or die "Please provide a CSV file\n";
+
+# Delete any existing database file first
+my $db_file = BexleyAddresses::database_file;
+unlink $db_file or warn "Could not remove $db_file: $!" if -e $db_file;
+
+my $db = DBI->connect( 'dbi:SQLite:dbname=' . $db_file );
+
+say 'Creating postcodes tables...';
+
+$db->do(<<SQL) or die;
+CREATE VIRTUAL TABLE street_descriptors USING fts4 (
+    usrn              INTEGER NOT NULL,
+    street_descriptor TEXT,
+    locality_name     TEXT,
+    town_name         TEXT
+)
+SQL
+
+$db->do(<<SQL) or die;
+CREATE VIRTUAL TABLE child_uprns USING fts4 (
+    uprn        INTEGER NOT NULL,
+    parent_uprn INTEGER NOT NULL
+)
+SQL
+
+# PAO = 'Primary Addressable Object'
+# SAO = 'Secondary Addressable Object' - used for child addresses
+$db->do(<<SQL) or die;
+CREATE VIRTUAL TABLE postcodes USING fts4 (
+    postcode          TEXT    NOT NULL,
+    uprn              INTEGER NOT NULL,
+    usrn              INTEGER NOT NULL,
+
+    pao_start_number TEXT,
+    pao_start_suffix TEXT,
+    pao_end_number   TEXT,
+    pao_end_suffix   TEXT,
+    pao_text         TEXT,
+
+    sao_start_number TEXT,
+    sao_start_suffix TEXT,
+    sao_end_number   TEXT,
+    sao_end_suffix   TEXT,
+    sao_text         TEXT
+)
+SQL
+
+say 'Tables created in '
+    . abs_path(BexleyAddresses::database_file);
+
+my $query_sd = $db->prepare(
+<<SQL
+    INSERT OR IGNORE INTO street_descriptors (
+        usrn,
+        street_descriptor,
+        locality_name,
+        town_name
+    )
+    VALUES (?,?,?,?)
+SQL
+);
+
+my $query_cu = $db->prepare(
+<<SQL
+    INSERT OR IGNORE INTO child_uprns (
+        uprn,
+        parent_uprn
+    )
+    VALUES (?,?)
+SQL
+);
+
+my $query_postcodes = $db->prepare(
+<<SQL
+    INSERT OR IGNORE INTO postcodes (
+        postcode,
+        uprn,
+        usrn,
+
+        pao_start_number,
+        pao_start_suffix,
+        pao_end_number,
+        pao_end_suffix,
+        pao_text,
+
+        sao_start_number,
+        sao_start_suffix,
+        sao_end_number,
+        sao_end_suffix,
+        sao_text
+    )
+    VALUES (?,?,?,
+            ?,?,?,?,?,
+            ?,?,?,?,?)
+SQL
+);
+
+my $csv = Text::CSV->new( { binary => 1, auto_diag => 1 } );
+open my $fh, '<:encoding(utf8)', $csv_file;
+
+my $id_street_descriptor = 15;
+my @columns_street_descriptor = (
+    qw/
+        RECORD_IDENTIFIER
+        CHANGE_TYPE
+        PRO_ORDER
+        USRN
+        STREET_DESCRIPTOR
+        LOCALITY_NAME
+        TOWN_NAME
+        ADMINSTRATIVE_AREA
+        LANGUAGE
+    /
+);
+
+# 'Basic Land and Property Unit', needed to determine parent-child relationships
+my $id_blpu = 21;
+my @columns_blpu = (
+    qw/
+        RECORD_IDENTIFIER
+        CHANGE_TYPE
+        PRO_ORDER
+        UPRN
+        LOGICAL_STATUS
+        BLPU_STATE
+        BLPU_STATE_DATE
+        BLPU_CLASS
+        PARENT_UPRN
+        X_COORDINATE
+        Y_COORDINATE
+        RPC
+        LOCAL_CUSTODIAN_CODE
+        START_DATE
+        END_DATE
+        LAST_UPDATE_DATE
+        ENTRY_DATE
+        ORGANISATION
+        WARD_CODE
+        PARISH_CODE
+        CUSTODIAN_ONE
+        CUSTODIAN_TWO
+        CAN_KEY
+    /
+);
+
+# 'Land and Property Identifier'
+my $id_lpi = 24;
+my @columns_lpi = (
+    qw/
+        RECORD_IDENTIFIER    CHANGE_TYPE      PRO_ORDER         UPRN
+        LPI_KEY              LANGUAGE         LOGICAL_STATUS    START_DATE
+        END_DATE             ENTRY_DATE       LAST_UPDATE_DATE  SAO_START_NUMBER
+        SAO_START_SUFFIX     SAO_END_NUMBER   SAO_END_SUFFIX    SAO_TEXT
+        PAO_START_NUMBER     PAO_START_SUFFIX PAO_END_NUMBER    PAO_END_SUFFIX
+        PAO_TEXT             USRN             LEVEL             POSTAL_ADDRESS
+        POSTCODE             POST_TOWN        OFFICIAL_FLAG
+    /
+);
+
+say 'Populating tables...';
+
+# Cannot set column names / headers in usual way as CSV contains multiple
+# record types
+while( my $row = $csv->getline($fh) ) {
+    # First column is always record identifier
+    my $record_id = $row->[0];
+
+    my %row_h;
+    if ( $record_id == $id_street_descriptor ) {
+        @row_h{@columns_street_descriptor} = @$row;
+
+        $query_sd->execute(
+            $row_h{USRN},
+            $row_h{STREET_DESCRIPTOR},
+            $row_h{LOCALITY_NAME},
+            $row_h{TOWN_NAME},
+        );
+    } elsif ( $record_id == $id_blpu ) {
+        @row_h{@columns_blpu} = @$row;
+
+        next if ( $row_h{LOGICAL_STATUS} || 0 ) != 1;
+        next unless $row_h{PARENT_UPRN};
+
+        $query_cu->execute(
+            $row_h{UPRN},
+            $row_h{PARENT_UPRN},
+        );
+    } elsif ( $record_id == $id_lpi ) {
+        @row_h{@columns_lpi} = @$row;
+
+        next if ( $row_h{LOGICAL_STATUS} || 0 ) != 1;
+        next unless $row_h{POSTCODE};
+
+        # Remove whitespace from postcode
+        my $postcode = $row_h{POSTCODE} =~ s/ //gr;
+
+        $query_postcodes->execute(
+            $postcode,
+            $row_h{UPRN},
+            $row_h{USRN},
+
+            $row_h{PAO_START_NUMBER},
+            $row_h{PAO_START_SUFFIX},
+            $row_h{PAO_END_NUMBER},
+            $row_h{PAO_END_SUFFIX},
+            $row_h{PAO_TEXT},
+
+            $row_h{SAO_START_NUMBER},
+            $row_h{SAO_START_SUFFIX},
+            $row_h{SAO_END_NUMBER},
+            $row_h{SAO_END_SUFFIX},
+            $row_h{SAO_TEXT},
+        );
+    }
+}
+
+say 'Tables populated';

@@ -2,6 +2,7 @@ package FixMyStreet::Cobrand::Bexley::Waste;
 
 use Moo::Role;
 
+use BexleyAddresses;
 use Integrations::Whitespace;
 use DateTime;
 use DateTime::Format::W3CDTF;
@@ -17,47 +18,48 @@ has 'whitespace' => (
 sub bin_addresses_for_postcode {
     my ($self, $postcode) = @_;
 
-    my $addresses = $self->whitespace->GetAddresses($postcode);
+    my $addresses = BexleyAddresses::addresses_for_postcode($postcode);
 
-    my $data = [ map {
-        {
-            value => $_->{AccountSiteId},
-            label => FixMyStreet::Template::title($_->{SiteShortAddress}) =~ s/^, //r,
-        }
-    } @$addresses ];
+    my @data =
+        map {
+            my $address_string = BexleyAddresses::build_address_string($_);
+            {
+                value => $_->{uprn},
+                label => FixMyStreet::Template::title( $address_string )
+            };
+        } @$addresses;
 
-    natkeysort_inplace { $_->{label} } @$data;
-
-    return $data;
+    return \@data;
 }
 
 sub look_up_property {
-    my ($self, $id) = @_;
+    my ( $self, $uprn ) = @_;
 
-    my $site = $self->whitespace->GetSiteInfo($id);
+    my $site = $self->whitespace->GetSiteInfo($uprn);
 
-    # $site has a {Site}{SiteParentID} but this is NOT an AccountSiteID;
-    # we need to call GetAccountSiteID for that
+    # We need to call GetAccountSiteID to get parent UPRN
     my %parent_property;
-    if ( my $parent_id = $site->{Site}{SiteParentID} ) {
-        my $parent_data = $self->whitespace->GetAccountSiteID($parent_id);
+    if ( my $site_parent_id = $site->{Site}{SiteParentID} ) {
+        my $parent_data = $self->whitespace->GetAccountSiteID($site_parent_id);
         %parent_property = (
             parent_property => {
-                id => $parent_data->{AccountSiteID},
                 # NOTE 'AccountSiteUPRN' returned from GetSiteInfo,      but
                 #      'AccountSiteUprn' returned from GetAccountSiteID
+                id =>   $parent_data->{AccountSiteUprn},
                 uprn => $parent_data->{AccountSiteUprn},
             }
         );
     }
 
     return {
-        id => $site->{AccountSiteID},
+        # 'id' is same as 'uprn' for Bexley, but since the wider wasteworks code
+        # (e.g. FixMyStreet/App/Controller/Waste.pm) calls 'id' in some cases
+        # and 'uprn' in others, we set both here
+        id => $site->{AccountSiteUPRN},
         uprn => $site->{AccountSiteUPRN},
         address => FixMyStreet::Template::title($site->{Site}->{SiteShortAddress}),
         latitude => $site->{Site}->{SiteLatitude},
         longitude => $site->{Site}->{SiteLongitude},
-        has_children => $site->{NumChildren} ? 1 : 0,
 
         %parent_property,
     };
@@ -424,8 +426,7 @@ sub image_for_unit {
 
     my $property = $self->{c}->stash->{property};
 
-    my $is_communal
-        = $property->{has_children} || $property->{parent_property};
+    my $is_communal = $property->{parent_property};
 
     my $images = {
         'FO-140'   => 'communal-food-wheeled-bin',     # Food 140 ltr Bin
@@ -500,8 +501,7 @@ sub ordinal {
 sub _containers {
     my ( $self, $property ) = @_;
 
-    my $is_communal
-        = $property->{has_children} || $property->{parent_property};
+    my $is_communal = $property->{parent_property};
 
     return {
         'FO-140'   => 'Communal Food Bin',

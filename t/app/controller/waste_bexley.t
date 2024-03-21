@@ -16,14 +16,73 @@ my $mech = FixMyStreet::TestMech->new;
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Bexley');
 $mock->mock('_fetch_features', sub { [] });
 
-my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
-$whitespace_mock->mock('call' => sub {
-  my ($whitespace, $method, @args) = @_;
+my $mock_waste = Test::MockModule->new('BexleyAddresses');
+# We don't actually read from the file, so just put anything that is a valid path
+$mock_waste->mock( 'database_file', '/' );
 
-  if ($method eq 'GetAddresses') {
-    my %args = @args;
-    &_addresses_for_postcode($args{getAddressInput});
-  }
+my $dbi_mock = Test::MockModule->new('DBI');
+$dbi_mock->mock( 'connect', sub {
+    my $dbh = Test::MockObject->new;
+    $dbh->mock( 'selectall_arrayref', sub {
+        my ( undef, undef, undef, $postcode ) = @_;
+
+        if ( $postcode eq 'DA13LD' ) {
+            return [
+                {   uprn              => 10001,
+                    pao_start_number  => 1,
+                    street_descriptor => 'THE AVENUE',
+                },
+                {   uprn              => 10002,
+                    pao_start_number  => 2,
+                    street_descriptor => 'THE AVENUE',
+                },
+            ];
+        } elsif ( $postcode eq 'DA13NP' ) {
+            return [
+                {   uprn              => 10001,
+                    pao_start_number  => 1,
+                    street_descriptor => 'THE AVENUE',
+                },
+            ];
+        }
+    } );
+    return $dbh;
+} );
+
+my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
+$whitespace_mock->mock(
+    'GetSiteInfo',
+    sub {
+        my ( $self, $uprn ) = @_;
+        return _site_info()->{$uprn};
+    }
+);
+$whitespace_mock->mock(
+    'GetSiteCollections',
+    sub {
+        my ( $self, $uprn ) = @_;
+        return _site_collections()->{$uprn};
+    }
+);
+$whitespace_mock->mock( 'GetAccountSiteID', &_account_site_id );
+$whitespace_mock->mock( 'GetCollectionByUprnAndDate',
+    sub {
+        my ( $self, $property_id, $from_date ) = @_;
+
+        return _collection_by_uprn_date()->{$from_date} // [];
+    }
+);
+$whitespace_mock->mock( 'GetSiteWorksheets', &_site_worksheets );
+$whitespace_mock->mock(
+    'GetWorksheetDetailServiceItems',
+    sub {
+        my ( $self, $worksheet_id ) = @_;
+        return _worksheet_detail_service_items()->{$worksheet_id};
+    }
+);
+$whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
+    my ( $self, $uprn ) = @_;
+    return _in_cab_logs()->{$uprn};
 });
 
 my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {}, { cobrand => 'bexley' });
@@ -96,58 +155,23 @@ FixMyStreet::override_config {
     };
 
     subtest 'False postcode shows error' => sub {
-      $mech->submit_form_ok({ with_fields => {postcode => 'PC1 1PC'} });
-      $mech->content_contains('Sorry, we did not recognise that postcode');
+        $mech->submit_form_ok( { with_fields => { postcode => 'PC1 1PC' } } );
+        $mech->content_contains('Sorry, we did not recognise that postcode');
     };
 
     subtest 'Postcode with multiple addresses progresses to selecting an address' => sub {
-      $mech->submit_form_ok({ with_fields => {postcode => 'DA1 3LD'} });
-      $mech->content_contains('Select an address');
-      $mech->content_contains('<option value="1">1, The Avenue, DA1 3LD</option>');
-      $mech->content_contains('<option value="2">2, The Avenue, DA1 3LD</option>');
-  };
+        $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
+        $mech->content_contains('Select an address');
+        $mech->content_contains('<option value="10001">1 The Avenue</option>');
+        $mech->content_contains('<option value="10002">2 The Avenue</option>');
+    };
 
-  subtest 'Postcode with one address progresses to selecting an address' => sub {
-      $mech->get_ok('/waste');
-      $mech->submit_form_ok({ with_fields => {postcode => 'DA1 3NP'} });
-      $mech->content_contains('Select an address');
-      $mech->content_contains('<option value="1">1, The Avenue, DA1 3NP</option>');
-  };
-
-    $whitespace_mock->mock(
-        'GetSiteInfo',
-        sub {
-            my ( $self, $account_site_id ) = @_;
-            return _site_info()->{$account_site_id};
-        }
-    );
-    $whitespace_mock->mock(
-        'GetSiteCollections',
-        sub {
-            my ( $self, $uprn ) = @_;
-            return _site_collections()->{$uprn};
-        }
-    );
-    $whitespace_mock->mock( 'GetAccountSiteID', &_account_site_id );
-    $whitespace_mock->mock( 'GetCollectionByUprnAndDate',
-        sub {
-            my ( $self, $property_id, $from_date ) = @_;
-
-            return _collection_by_uprn_date()->{$from_date} // [];
-        }
-    );
-    $whitespace_mock->mock( 'GetSiteWorksheets', &_site_worksheets );
-    $whitespace_mock->mock(
-        'GetWorksheetDetailServiceItems',
-        sub {
-            my ( $self, $worksheet_id ) = @_;
-            return _worksheet_detail_service_items()->{$worksheet_id};
-        }
-    );
-    $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
-        my ( $self, $uprn ) = @_;
-        return _in_cab_logs()->{$uprn};
-    });
+    subtest 'Postcode with one address progresses to selecting an address' => sub {
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3NP' } } );
+        $mech->content_contains('Select an address');
+        $mech->content_contains('<option value="10001">1 The Avenue</option>');
+    };
 
     $whitespace_mock->mock( 'GetSiteContracts', sub {
         my ( $self, $uprn ) = @_;
@@ -163,7 +187,7 @@ FixMyStreet::override_config {
     });
 
     subtest 'Correct services are shown for address' => sub {
-        $mech->submit_form_ok( { with_fields => { address => 1 } } );
+        $mech->submit_form_ok( { with_fields => { address => 10001 } } );
 
         test_services($mech);
 
@@ -242,7 +266,7 @@ FixMyStreet::override_config {
     subtest 'Parent services shown for child' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
-        $mech->submit_form_ok( { with_fields => { address => 2 } } );
+        $mech->submit_form_ok( { with_fields => { address => 10002 } } );
 
         test_services($mech);
     };
@@ -301,7 +325,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Correct PDF download link shown' => sub {
-        for my $test ({ address => 3, link => 1 }, { address => 4, link => 2 }) {
+        for my $test ({ address => 10003, link => 1 }, { address => 10004, link => 2 }) {
             $mech->get_ok('/waste');
             $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
             $mech->submit_form_ok( { with_fields => { address => $test->{address} } } );
@@ -314,7 +338,7 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste');
         $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
-        $mech->submit_form_ok( { with_fields => { address => 1 } } );
+        $mech->submit_form_ok( { with_fields => { address => 10001 } } );
 
         # Blue and green recycling boxes are due today
         $mech->content_contains('Being collected today');
@@ -324,13 +348,13 @@ FixMyStreet::override_config {
     };
 
     subtest 'Asks user for location of bins on missed collection form' => sub {
-        $mech->get_ok('/waste/1/report');
+        $mech->get_ok('/waste/10001/report');
         $mech->content_contains('Please supply any additional information such as the location of the bin.');
         $mech->content_contains('name="extra_detail"');
     };
 
     subtest 'Making a missed collection report' => sub {
-        $mech->get_ok('/waste/1/report');
+        $mech->get_ok('/waste/10001/report');
         $mech->submit_form_ok(
             { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
             'Selecting missed collection for clear sacks');
@@ -350,7 +374,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Missed collection reports are made against the parent property' => sub {
-        $mech->get_ok('/waste/2/report');
+        $mech->get_ok('/waste/10002/report');
         $mech->submit_form_ok(
             { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
             'Selecting missed collection for blue recycling box');
@@ -367,7 +391,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Prevents missed collection reports if there is an open report' => sub {
-        $mech->get_ok('/waste/2');
+        $mech->get_ok('/waste/10002');
         $mech->content_contains('A green recycling box collection has been reported as missed');
         $mech->content_contains('<a href="/report/' . $existing_missed_collection_report2->id . '" class="waste-service-link">check status</a>');
     };
@@ -375,42 +399,9 @@ FixMyStreet::override_config {
 
 done_testing;
 
-sub _addresses_for_postcode {
-
-  my $data = shift;
-
-  if ($data->{Postcode} eq 'DA1 3LD') {
-    return
-    { Addresses =>
-      { Address =>
-        [
-          {
-            'SiteShortAddress' => ', 1, THE AVENUE, DA1 3LD',
-            'AccountSiteId' => '1',
-          },
-          {
-            'SiteShortAddress' => ', 2, THE AVENUE, DA1 3LD',
-            'AccountSiteId' => '2',
-          },
-        ]
-      }
-    }
-  } elsif ($data->{Postcode} eq 'DA1 3NP') {
-    return
-    { Addresses => {
-        Address =>
-          {
-            'SiteShortAddress' => ', 1, THE AVENUE, DA1 3NP',
-            'AccountSiteId' => '1',
-          }
-      }
-    }
-  }
-}
-
 sub _site_info {
     return {
-        1 => {
+        10001 => {
             AccountSiteID   => 1,
             AccountSiteUPRN => 10001,
             Site            => {
@@ -419,7 +410,7 @@ sub _site_info {
                 SiteLongitude    => 0.181108,
             },
         },
-        2 => {
+        10002 => {
             AccountSiteID   => 2,
             AccountSiteUPRN => 10002,
             Site            => {
@@ -429,7 +420,7 @@ sub _site_info {
                 SiteParentID     => 101,
             },
         },
-        3 => {
+        10003 => {
             AccountSiteID   => 3,
             AccountSiteUPRN => 10003,
             Site            => {
@@ -439,7 +430,7 @@ sub _site_info {
                 SiteParentID     => 101,
             },
         },
-        4 => {
+        10004 => {
             AccountSiteID   => 4,
             AccountSiteUPRN => 10004,
             Site            => {
@@ -449,13 +440,11 @@ sub _site_info {
                 SiteParentID     => 101,
             },
         },
-
     };
 }
 
 sub _account_site_id {
     return {
-        AccountSiteID   => 1,
         AccountSiteUprn => 10001,
     };
 }
