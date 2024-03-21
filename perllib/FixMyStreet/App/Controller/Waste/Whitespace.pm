@@ -24,12 +24,10 @@ sub receive_whitespace_event_notification : Path('/waste/whitespace') : Args(0) 
     my ($self, $c) = @_;
 
     if ($c->req->body) {
-        my $soap = join('', $c->req->body->getlines);
-        $self->log($soap);
+        $self->log($c->req->body);
     } else {
         $self->log('No body');
     }
-
 
     $c->response->status(200);
     $c->response->body('OK');
