@@ -800,6 +800,7 @@ subtest "comment on a closed echo report result in a resend under 'Referred to V
 
     $echo->mock('GetEvent', sub { {
         Guid => $event_guid,
+        ResolvedDate => { DateTime => '2024-03-21T12:00:00Z' },
         Id => $event_id,
     } } );
 
