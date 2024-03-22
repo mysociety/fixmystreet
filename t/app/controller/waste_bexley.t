@@ -354,7 +354,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Making a missed collection report' => sub {
-        $mech->get_ok('/waste/1/report');
+        $mech->get_ok('/waste/10001/report');
         $mech->submit_form_ok(
             { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
             'Selecting missed collection for clear sacks');
@@ -374,7 +374,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Missed collection reports are made against the parent property' => sub {
-        $mech->get_ok('/waste/2/report');
+        $mech->get_ok('/waste/10002/report');
         $mech->submit_form_ok(
             { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
             'Selecting missed collection for blue recycling box');
@@ -391,7 +391,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Prevents missed collection reports if there is an open report' => sub {
-        $mech->get_ok('/waste/2');
+        $mech->get_ok('/waste/10002');
         $mech->content_contains('A green recycling box collection has been reported as missed');
         $mech->content_contains('<a href="/report/' . $existing_missed_collection_report2->id . '" class="waste-service-link">check status</a>');
     };
