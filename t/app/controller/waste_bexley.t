@@ -16,9 +16,9 @@ my $mech = FixMyStreet::TestMech->new;
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Bexley');
 $mock->mock('_fetch_features', sub { [] });
 
-my $mock_waste = Test::MockModule->new('FixMyStreet::Cobrand::Bexley::Waste');
+my $mock_waste = Test::MockModule->new('BexleyAddresses');
 # We don't actually read from the file, so just put anything that is a valid path
-$mock_waste->mock( 'postcode_database_file', '/' );
+$mock_waste->mock( 'database_file', '/' );
 
 my $dbi_mock = Test::MockModule->new('DBI');
 $dbi_mock->mock( 'connect', sub {
