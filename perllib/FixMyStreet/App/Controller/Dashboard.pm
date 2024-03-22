@@ -136,24 +136,54 @@ sub index : Path : Args(0) {
         }
 
         my %group_names = map { $_->{name} => $_->{categories} } @{$c->stash->{category_groups}};
-        # See if we've had anything from the body dropdowns
-        $c->stash->{category} = [ $c->get_param_list('category') ];
-        my @remove_from_display;
 
-        foreach (@{$c->stash->{category}}) {
-            next unless /^group-(.*)/;
-            for my $contact (@{$group_names{$1}}) {
-                push @{ $c->stash->{category} }, $contact->category;
-                push @remove_from_display, $contact->category;
+        # Categories being received are expected to carry group information
+        # from the interface. A category can be:
+        # 'group-Roads' -> A master category 'Roads' which will contain subcategories
+        # 'Potholes-group-Roads' -> A 'Potholes' category under roads
+        # 'Potholes-group-' -> A 'Potholes' category not under another category
+        # We need to reformat any categories that may be manually put into the url
+        # which may be bookmarks from before grouping was added
+
+        my %display_categories;
+        foreach my $display ($c->get_param_list('category')) {
+            if ($display !~ /group-/) {
+                $display = $display . '-group-';
             }
+            $display_categories{$display} = 1;
         }
 
-        my %display_categories = map { $_ => 1 } @{$c->stash->{category}};
-        delete $display_categories{$_} for (@remove_from_display);
+        my (@categories, @groups_selected_from);
+        for my $param (keys %display_categories) {
+            if ($param =~ /\-group\-/) {
+                my ($category, $group) = split(/\-group\-/, $param);
+                push @categories, $category;
+                push @groups_selected_from, $group if $group;
+                $display_categories{$param} = $category;
+            } elsif ($param =~ /^group-(.*)/) {
+                push @groups_selected_from, $1;
+                $display_categories{$param} = 'group-' . $1;
+                for my $contact (@{$group_names{$1}}) {
+                    push @categories, $contact->category;
+                }
+            }
+        };
+
+        # Have to convert ampersand to web style here, but only
+        # should be done for group members as group names have
+        # this is done in the template
+        my %convert;
+        while (my ($key, $value) = each %display_categories) {
+            if ($key =~ /-group-/) {
+                $key =~ s/ & / &amp; /g;
+            };
+            $convert{$key} = $value;
+        };
+        %display_categories = %convert;
+
+        $c->stash->{category} = \@categories;
+        $c->stash->{groups_selected_from} = \@groups_selected_from;
         $c->stash->{display_categories} = \%display_categories;
-
-        @{$c->stash->{category}} = grep { $_ !~ /^group-/} @{$c->stash->{category}};
-
         $c->stash->{ward} = [ $c->get_param_list('ward') ];
 
         if ($c->user_exists) {
@@ -256,18 +286,27 @@ sub generate_grouped_data : Private {
         %grouped = map { $_->category => {} } @{$c->stash->{contacts}};
     }
     my $problems = $c->stash->{objects_rs}->search(undef, {
-        group_by => [ map { ref $_ ? $_->{-as} : $_ } @groups ],
-        select   => [ @groups, { count => 'me.id' } ],
-        as       => [ @groups == 2 ? qw/key1 key2 count/ : qw/key1 count/ ],
+        group_by => [ map { ref($_) eq 'HASH'  ? $_->{-as} : $_ } (@groups,  \"me.extra->>'group'") ],
+        select   => [ @groups, { count => 'me.id' }, \"me.extra->>'group'" ],
+        as       => [ @groups == 2 ? qw/key1 key2 count extra/ : qw/key1 count extra/ ],
     } );
     $c->stash->{group_by} = $group_by;
 
     my %columns;
     while (my $p = $problems->next) {
         my %cols = $p->get_columns;
-        my ($col1, $col2) = ($cols{key1}, $cols{key2});
+        my ($col1, $col2, $col3) = ($cols{key1}, $cols{key2}, $cols{extra});
         if ($group_by eq 'category+state') {
             $col2 = $state_map->{$cols{key2}};
+        }
+        if ($group_by eq 'category+state' || $group_by eq 'category') {
+            if ($col3) {
+                if (!@{$c->stash->{groups_selected_from}} || grep { /$col3/ } @{$c->stash->{groups_selected_from}} ) {
+                    $col1 = $col3 . "::" . $col1;
+                } else {
+                    next;
+                }
+            }
         } elsif ($group_by eq 'month') {
             $col1 = Time::Piece->strptime("2017-$cols{key1}-01", '%Y-%m-%d')->fullmonth;
         }
@@ -295,6 +334,7 @@ sub generate_grouped_data : Private {
             $am <=> $bm;
         } @rows;
     } elsif ($group_by eq 'category+state' || $group_by eq 'category') {
+        my @subcategory_specific = grep { $_ =~ /::/ } @rows;
         @rows = ();
         my @sorting_categories;
         my %category_to_group;
@@ -302,16 +342,30 @@ sub generate_grouped_data : Private {
             for my $category (@{$group->{categories}}) {
                 push @sorting_categories, $category->category;
                 if (!$category_to_group{$category->category}) {
-                    $category_to_group{$category->category} = $group->{name};
+                    $category_to_group{$category->category}{group} = $group->{name} || '';
+                    $category_to_group{$category->category}{display_name} = $category->category;
                 } else {
-                    $category_to_group{$category->category} = 'Multiple';
+                    $category_to_group{$category->category}{group} = 'Multiple';
+                    $category_to_group{$category->category}{display_name} = $category->category;
                 }
             }
         };
-        my ($single_group, $multiple_groups) = part { $category_to_group{$_} eq 'Multiple'} @sorting_categories;
-        my @multiple = sort (uniq(@$multiple_groups));
-
-        push @rows, @$single_group if $single_group;
+        for (@subcategory_specific) {
+            my ($group, $display_name) = split(/::/, $_);
+            push @sorting_categories, $_;
+            $category_to_group{$_}{group} = $group;
+            $category_to_group{$_}{display_name} = $display_name;
+        }
+        my ($single_group, $multiple_groups) = part { $category_to_group{$_}{group} eq 'Multiple'} @sorting_categories;
+        my @single_group = sort {
+            $category_to_group{$a}{group} cmp $category_to_group{$b}{group}
+            || $category_to_group{$a}{display_name} cmp $category_to_group{$b}{display_name}
+            } (@$single_group);
+        my @multiple = sort {
+            $category_to_group{$a}{group} cmp $category_to_group{$b}{group}
+            || $category_to_group{$a}{display_name} cmp $category_to_group{$b}{display_name}
+            } (uniq(@$multiple_groups));
+        push @rows, @single_group if scalar @single_group;
         push @rows, @multiple if scalar @multiple;
         $c->stash->{category_to_group} = \%category_to_group;
     } else {

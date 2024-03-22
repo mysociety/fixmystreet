@@ -95,7 +95,7 @@ has filename => ( is => 'rw', isa => Str, lazy => 1, default => sub {
         start_date => $self->start_date,
         end_date => $self->end_date,
     );
-    $where{category} = @{$self->category} < 3 ? join(',', @{$self->category}) : 'multiple-categories';
+    $where{category} = @{$self->category} < 3 ? join(',', sort @{$self->category}) : 'multiple-categories';
     $where{body} = $self->body->id if $self->body;
     $where{role} = $self->role_id if $self->role_id;
     my $host = URI->new($self->cobrand->base_url)->host;
