@@ -139,6 +139,12 @@ sub open311_update_missing_data {
                 $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
             }
         }
+    } elsif ($contact->email =~ /^Whitespace/) {
+        if (!$row->get_extra_field_value('uprn')) {
+            if (my $ref = $feature->{properties}{UPRN}) {
+                $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
+            }
+        }
     } else { # Symology
         # Reports made via the app probably won't have a NSGRef because we don't
         # display the road layer. Instead we'll look up the closest asset from the

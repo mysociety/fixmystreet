@@ -1577,7 +1577,7 @@ sub add_report : Private {
     $c->set_param('category', $data->{category});
     $c->set_param('title', $data->{title});
     $c->set_param('detail', $data->{detail});
-    $c->set_param('uprn', $c->stash->{property}{uprn});
+    $c->set_param('uprn', $c->stash->{property}{uprn}) unless $c->get_param('uprn');
     $c->set_param('property_id', $c->stash->{property}{id});
 
     # Data may contain duplicate photo data under different keys e.g.

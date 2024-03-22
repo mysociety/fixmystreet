@@ -286,6 +286,19 @@ sub bin_services_for_address {
             };
         }
 
+        my $existing_report_id = $property->{missed_collection_reports}{ $filtered_service->{service_id} };
+
+        my $report;
+        if ($existing_report_id) {
+            $filtered_service->{report_open} = 1;
+            $report = $self->problems->search({ external_id => "Whitespace-$existing_report_id" })->first;
+            if ($report) {
+                $filtered_service->{report_url} = $report->url;
+            }
+        } else {
+            $filtered_service->{report_open} = 0;
+        }
+
         $filtered_service->{report_open}
             = $property->{missed_collection_reports}{ $filtered_service->{service_id} } ? 1 : 0;
 
@@ -348,7 +361,7 @@ sub _missed_collection_reports {
             for ( @{  $self->whitespace->GetWorksheetDetailServiceItems(
                         $ws->{WorksheetID} ) } )
             {
-                $missed_collection_reports{ $_->{ServiceItemName} } = 1;
+                $missed_collection_reports{ $_->{ServiceItemName} } = $ws->{WorksheetID};
             }
         }
     }
@@ -695,9 +708,17 @@ sub waste_munge_report_data {
 
     my $address = $c->stash->{property}->{address};
     my $service = $c->stash->{services}{$id}{service_name};
+    my $uprn = $c->stash->{property}{parent_property} ? $c->stash->{property}{parent_property}{uprn} : $c->stash->{property}{uprn};
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
+    $c->set_param('uprn', $uprn);
     $c->set_param('service_id', $id);
+    $c->set_param('location_of_containers', $data->{extra_detail}) if $data->{extra_detail};
+    $c->set_param('service_item_name', $c->stash->{services}{$id}{service_id});
+
+    # Check if this property has assisted collections
+    my $contracts = $self->whitespace->GetSiteContracts($c->stash->{property}{uprn});
+    $c->set_param('assisted_yn', (grep { $_->{ContractID} == 7 } @$contracts) ? 'Yes' : 'No');
 }
 
 sub waste_munge_report_form_fields {
