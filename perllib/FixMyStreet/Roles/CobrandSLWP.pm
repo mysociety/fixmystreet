@@ -914,7 +914,7 @@ sub waste_munge_request_data {
     my $c = $self->{c};
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
-    my $quantity = $data->{recycling_quantity} || 1;
+    my $quantity = 1;
     my $reason = $data->{request_reason} || '';
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 

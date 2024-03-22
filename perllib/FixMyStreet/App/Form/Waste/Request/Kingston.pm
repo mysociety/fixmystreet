@@ -48,7 +48,6 @@ has_page replacement => (
         my $choice = $data->{"container-choice"};
         my $reason = $data->{request_reason};
         return 'recycling_swap' if $choice == CONTAINER_RECYCLING_BOX && $reason eq 'more';
-        return 'recycling_number' if $choice == CONTAINER_RECYCLING_BOX;
         return 'notes_missing' if $reason eq 'missing';
         return 'notes_damaged' if $reason eq 'damaged';
         return 'about_you';
@@ -100,7 +99,7 @@ has_page recycling_swap => (
         my $data = shift;
         return 'recycling_swap_confirm' if $data->{recycling_swap} eq 'Yes';
         return 'replacement' if $data->{"container-choice"} == CONTAINER_RECYCLING_BIN && !$data->{_container_recycling_bin};
-        return 'recycling_number';
+        return 'about_you';
     },
 );
 
@@ -137,44 +136,6 @@ has_field recycling_swap_confirm => (
     label => 'Confirmation',
     option_label => 'I confirm that I have 3 or more recycling box containers',
 );
-
-=head2 Quantity required
-
-If they've asked for replacement boxes, ask how many they need.
-
-=cut
-
-has_page recycling_number => (
-    fields => ['recycling_quantity', 'continue'],
-    title => 'Quantity',
-    next => sub {
-        my $data = shift;
-        my $reason = $data->{request_reason};
-        return 'notes_missing' if $reason eq 'missing';
-        return 'notes_damaged' if $reason eq 'damaged';
-        return 'about_you';
-    },
-);
-
-has_field recycling_quantity => (
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    build_label_method => sub {
-        my $self = shift;
-        my $reason = $self->parent->saved_data->{request_reason};
-        return 'How many recycling boxes would you like?' if $reason eq 'new_build';
-        return 'How many containers are missing?' if $reason eq 'missing';
-        return 'How many containers are damaged?' if $reason eq 'damaged';
-        return 'How many recycling boxes would you like?' if $reason eq 'more';
-    },
-);
-
-sub options_recycling_quantity {
-    my $form = shift;
-    my @options = map { { value => $_, label => $_ } } (1..5);
-    return @options;
-}
 
 =head2 Missing notes
 
