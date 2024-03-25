@@ -1,0 +1,6 @@
+[% IF bodyclass.match('waste') OR (problem AND problem.cobrand_data == 'waste') %]
+    <a href="/waste" id="site-logo">[% site_name %]</a>
+[% ELSE %]
+    <a href="/" id="site-logo">[% site_name %]</a>
+    <a href="/" id="report-cta" title="[%- loc('Report a problem') -%]">[%- loc('Report') -%]</a>
+[% END %]
