@@ -228,7 +228,7 @@ FixMyStreet::override_config {
                 {   id             => 8,
                     service_id     => 'PC-55',
                     service_name   => 'Blue Recycling Box',
-                    round_schedule => 'RND-8-9 Mon',
+                    round_schedule => 'RND-8-9 Mon, RND-8-9 Wed',
                     round          => 'RND-8-9',
                     report_allowed => 0,
                     report_open    => 1,
@@ -240,7 +240,7 @@ FixMyStreet::override_config {
                 {   id             => 9,
                     service_id     => 'PA-55',
                     service_name   => 'Green Recycling Box',
-                    round_schedule => 'RND-8-9 Mon',
+                    round_schedule => 'RND-8-9 Mon, RND-8-9 Wed',
                     round          => 'RND-8-9',
                     report_allowed => 0,
                     report_open    => 1,
@@ -272,6 +272,16 @@ FixMyStreet::override_config {
                     %defaults,
                 },
             ];
+
+            my %expected_last_dates = (
+                8 => '2024-03-28T00:00:00',
+                9 => '2024-03-28T00:00:00',
+                1 => '2024-03-24T00:00:00',
+                6 => '2024-03-27T00:00:00',
+            );
+            for (@sorted) {
+                is $_->{last}{date}, $expected_last_dates{ $_->{id} };
+            }
         };
     };
 
@@ -308,7 +318,7 @@ FixMyStreet::override_config {
         my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
         shift @events; # Header
 
-        my $expected_num = 14;
+        my $expected_num = 20;
         is @events, $expected_num, "$expected_num events in calendar";
 
         my $i = 0;
@@ -317,14 +327,20 @@ FixMyStreet::override_config {
             $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Green Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240402/ && /SUMMARY:Communal Food Bin/;
             $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Clear Sack\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Green Recycling Box/;
 
             $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Green Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240410/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240410/ && /SUMMARY:Green Recycling Box/;
 
             $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Green Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240416/ && /SUMMARY:Communal Food Bin/;
             $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Clear Sack\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Green Recycling Box/;
 
             $i++ if /DTSTART;VALUE=DATE:20240501/ && /SUMMARY:Clear Sack\(s\)/;
 
@@ -544,7 +560,7 @@ sub _site_collections {
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '0001-01-01T00:00:00',
 
-                RoundSchedule => 'RND-8-9 Mon',
+                RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
             },
             {   SiteServiceID          => 8,
                 ServiceItemDescription => 'Service 8',
@@ -554,7 +570,7 @@ sub _site_collections {
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '0001-01-01T00:00:00',
 
-                RoundSchedule => 'RND-8-9 Mon',
+                RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
             },
             {   SiteServiceID          => 9,
                 ServiceItemDescription => 'Another service (9)',
@@ -564,7 +580,7 @@ sub _site_collections {
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '0001-01-01T00:00:00',
 
-                RoundSchedule => 'RND-8-9 Mon',
+                RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
             },
         ],
         10003 => [
@@ -609,6 +625,11 @@ sub _collection_by_uprn_date {
                 Service  => 'Service 1 Collection',
             },
             {   Date     => '03/04/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Wed',
+                Service  => 'Services 8 & 9 Collection',
+            },
+            {   Date     => '03/04/2024 00:00:00',
                 Round    => 'RND-6',
                 Schedule => 'Wed Wk 2',
                 Service  => 'Service 6 Collection',
@@ -617,6 +638,11 @@ sub _collection_by_uprn_date {
             {   Date     => '08/04/2024 00:00:00',
                 Round    => 'RND-8-9',
                 Schedule => 'Mon',
+                Service  => 'Services 8 & 9 Collection',
+            },
+            {   Date     => '10/04/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Wed',
                 Service  => 'Services 8 & 9 Collection',
             },
 
@@ -629,6 +655,11 @@ sub _collection_by_uprn_date {
                 Round    => 'RND-1',
                 Schedule => 'Tue Wk 1',
                 Service  => 'Service 1 Collection',
+            },
+            {   Date     => '17/04/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Wed',
+                Service  => 'Services 8 & 9 Collection',
             },
             {   Date     => '17/04/2024 00:00:00',
                 Round    => 'RND-6',
@@ -681,6 +712,11 @@ sub _collection_by_uprn_date {
                 Round    => 'RND-6',
                 Schedule => 'Wed Wk 2',
                 Service  => 'Service 6 Collection',
+            },
+            {   Date     => '27/03/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Wed',
+                Service  => 'Services 8 & 9 Collection',
             },
             {   Date     => '28/03/2024 00:00:00',
                 Round    => 'RND-8-9',
