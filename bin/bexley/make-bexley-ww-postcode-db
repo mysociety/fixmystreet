@@ -27,25 +27,21 @@ BEGIN {
     require "$d/../../setenv.pl";
 }
 
+use BexleyAddresses;
 use DBI;
 use FixMyStreet;
-use FixMyStreet::Cobrand::Bexley::Waste;
 use Text::CSV;
 use Cwd 'abs_path';
 
-my $csv_file = FixMyStreet->path_to('../fixmystreet.com/data/bexley-llpg.csv');
-my $db = DBI->connect( 'dbi:SQLite:dbname='
-        . FixMyStreet::Cobrand::Bexley::Waste::postcode_database_file );
+my $csv_file = $ARGV[0] or die "Please provide a CSV file\n";
 
-# Delete databases if they were previously created (on the assumption that the
-# population phase failed or had errors)
-$db->do('DROP TABLE street_descriptors');
-$db->do('DROP TABLE child_uprns');
-$db->do('DROP TABLE postcodes');
+# Delete any existing database file first
+my $db_file = BexleyAddresses::database_file;
+unlink $db_file or warn "Could not remove $db_file: $!" if -e $db_file;
 
-say 'Creating postcodes databases...';
+my $db = DBI->connect( 'dbi:SQLite:dbname=' . $db_file );
 
-# TODO tokenize=porter ... ?
+say 'Creating postcodes tables...';
 
 $db->do(<<SQL) or die;
 CREATE VIRTUAL TABLE street_descriptors USING fts4 (
@@ -85,8 +81,8 @@ CREATE VIRTUAL TABLE postcodes USING fts4 (
 )
 SQL
 
-say 'Databases created: '
-    . abs_path(FixMyStreet::Cobrand::Bexley::Waste::postcode_database_file);
+say 'Tables created in '
+    . abs_path(BexleyAddresses::database_file);
 
 my $query_sd = $db->prepare(
 <<SQL
@@ -197,6 +193,8 @@ my @columns_lpi = (
     /
 );
 
+say 'Populating tables...';
+
 # Cannot set column names / headers in usual way as CSV contains multiple
 # record types
 while( my $row = $csv->getline($fh) ) {
@@ -252,4 +250,4 @@ while( my $row = $csv->getline($fh) ) {
     }
 }
 
-say 'Databases populated';
+say 'Tables populated';

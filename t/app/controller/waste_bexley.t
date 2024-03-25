@@ -16,9 +16,9 @@ my $mech = FixMyStreet::TestMech->new;
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Bexley');
 $mock->mock('_fetch_features', sub { [] });
 
-my $mock_waste = Test::MockModule->new('FixMyStreet::Cobrand::Bexley::Waste');
+my $mock_waste = Test::MockModule->new('BexleyAddresses');
 # We don't actually read from the file, so just put anything that is a valid path
-$mock_waste->mock( 'postcode_database_file', '/' );
+$mock_waste->mock( 'database_file', '/' );
 
 my $dbi_mock = Test::MockModule->new('DBI');
 $dbi_mock->mock( 'connect', sub {
@@ -354,7 +354,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Making a missed collection report' => sub {
-        $mech->get_ok('/waste/1/report');
+        $mech->get_ok('/waste/10001/report');
         $mech->submit_form_ok(
             { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
             'Selecting missed collection for clear sacks');
@@ -374,7 +374,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Missed collection reports are made against the parent property' => sub {
-        $mech->get_ok('/waste/2/report');
+        $mech->get_ok('/waste/10002/report');
         $mech->submit_form_ok(
             { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
             'Selecting missed collection for blue recycling box');
@@ -391,7 +391,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Prevents missed collection reports if there is an open report' => sub {
-        $mech->get_ok('/waste/2');
+        $mech->get_ok('/waste/10002');
         $mech->content_contains('A green recycling box collection has been reported as missed');
         $mech->content_contains('<a href="/report/' . $existing_missed_collection_report2->id . '" class="waste-service-link">check status</a>');
     };
