@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Moo;
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
+with 'FixMyStreet::Cobrand::Merton::Waste';
 
 sub council_area_id { 2500 }
 sub council_area { 'Merton' }
