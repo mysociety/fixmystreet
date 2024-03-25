@@ -179,7 +179,7 @@ sub bin_services_for_address {
             }
         }
 
-        my $request_allowed = ($request_allowed{$service_id} || $self->moniker eq 'kingston' || $self->moniker eq 'sutton') && $request_max && $schedules->{next};
+        my $request_allowed = ($request_allowed{$service_id} || !%service_to_containers) && $request_max && $schedules->{next};
         my $row = {
             id => $_->{Id},
             service_id => $service_id,
@@ -510,6 +510,27 @@ sub waste_task_resolutions {
             $row->{report_allowed} = 0;
             $row->{report_locked_out} = 1;
         }
+    }
+}
+
+=head2 waste_on_the_day_criteria
+
+Treat an Outstanding/Allocated task as if it's the next collection and in
+progress, and do not allow missed collection reporting if the task is not
+completed.
+
+=cut
+
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    if ($state eq 'Outstanding' || $state eq 'Allocated') {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    if (!$completed) {
+        $row->{report_allowed} = 0;
     }
 }
 
