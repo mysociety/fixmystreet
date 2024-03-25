@@ -160,8 +160,26 @@ sub bin_services_for_address {
             assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
         };
 
-        # Get the last collection date from recent collections
-        my $last_dt = $property->{recent_collections}{ $service->{RoundSchedule} };
+        # Get the last collection date from recent collections.
+        #
+        # Some services may have two collections a week; these are concatenated
+        # together in $service->{RoundSchedule}. We need to split them so we
+        # can look them up individually in $property->{recent_collections}.
+        my @round_schedules = split /, /, $service->{RoundSchedule};
+
+        my $last_dt;
+        for (@round_schedules) {
+            my $dt_to_check = $property->{recent_collections}{$_};
+
+            if (
+                $dt_to_check
+                && (  !$last_dt
+                    || $dt_to_check > $last_dt )
+                )
+            {
+                $last_dt = $dt_to_check;
+            }
+        }
 
         if ($last_dt) {
             $filtered_service->{last} = {
@@ -372,10 +390,15 @@ sub bin_future_collections {
     my $services = $self->{c}->stash->{service_data};
     return [] unless $services;
 
-    # There may be more than one service associated with a round
+    # There may be more than one service associated with a round.
+    # Additionally, more than one round-schedule may be associated with a
+    # service, e.g. 'RES-NOR Fri, RES-NOR Tue', so we need to split these out.
     my %srv_for_round;
-    for (@$services) {
-        push @{ $srv_for_round{ $_->{round_schedule} } }, $_;
+    for my $srv (@$services) {
+        my @round_schedules = split /, /, $srv->{round_schedule};
+        for (@round_schedules) {
+            push @{ $srv_for_round{$_} }, $srv;
+        }
     }
 
     # TODO GetCollectionByUprnAndDatePlus would be preferable as it supports
