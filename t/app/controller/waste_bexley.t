@@ -46,6 +46,13 @@ $dbi_mock->mock( 'connect', sub {
             ];
         }
     } );
+    $dbh->mock( 'selectrow_hashref', sub {
+        return {
+            postcode => 'DA13NP',
+            pao_start_number  => 1,
+            street_descriptor => 'THE AVENUE',
+        };
+    } );
     return $dbh;
 } );
 
@@ -190,6 +197,11 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { address => 10001 } } );
 
         test_services($mech);
+
+        $mech->content_contains(
+            '<dd class="waste__address__property">1 The Avenue, DA1 3NP</dd>',
+            'Correct address string displayed',
+        );
 
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;

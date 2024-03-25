@@ -57,7 +57,8 @@ sub look_up_property {
         # and 'uprn' in others, we set both here
         id => $site->{AccountSiteUPRN},
         uprn => $site->{AccountSiteUPRN},
-        address => FixMyStreet::Template::title($site->{Site}->{SiteShortAddress}),
+        address => FixMyStreet::Template::title(
+            BexleyAddresses::address_for_uprn($uprn) ),
         latitude => $site->{Site}->{SiteLatitude},
         longitude => $site->{Site}->{SiteLongitude},
 

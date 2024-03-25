@@ -5,46 +5,35 @@ use warnings;
 
 use DBI;
 use FixMyStreet;
+use mySociety::PostcodeUtil;
 
 sub database_file {
     FixMyStreet->path_to('../data/bexley-ww-postcodes.sqlite');
 }
 
+sub connect_db {
+    die $! unless -e database_file();
+
+    return DBI->connect( 'dbi:SQLite:dbname=' . database_file(),
+        undef, undef );
+}
+
 sub addresses_for_postcode {
     my $postcode = shift;
 
-    die $! unless -e database_file();
-
-    my $db = DBI->connect( 'dbi:SQLite:dbname=' . database_file(),
-        undef, undef )
-        or return [];
+    my $db = connect_db() or return [];
 
     # Remove whitespaces, make sure uppercase
     $postcode =~ s/ //g;
     $postcode = uc $postcode;
 
+    my $address_fields = _address_fields();
+
     my $addresses = $db->selectall_arrayref(
-        <<SQL,
+        <<"SQL",
    SELECT p.uprn uprn,
           p.usrn usrn,
-
-          pao_start_number,
-          pao_start_suffix,
-          pao_end_number,
-          pao_end_suffix,
-          pao_text,
-
-          sao_start_number,
-          sao_start_suffix,
-          sao_end_number,
-          sao_end_suffix,
-          sao_text,
-
-          street_descriptor,
-          locality_name,
-          town_name,
-
-          parent_uprn
+          $address_fields
      FROM postcodes p
      JOIN street_descriptors sd
        ON sd.usrn = p.usrn
@@ -60,6 +49,33 @@ SQL
     );
 
     return [ sort _sort_addresses @$addresses ];
+}
+
+sub address_for_uprn {
+    my $uprn = shift;
+
+    die $! unless -e database_file();
+
+    my $db = connect_db() or return '';
+
+    my $address_fields = _address_fields();
+
+    my $row = $db->selectrow_hashref(
+        <<"SQL",
+   SELECT postcode,
+          $address_fields
+     FROM postcodes p
+     JOIN street_descriptors sd
+       ON sd.usrn = p.usrn
+     LEFT OUTER JOIN child_uprns cu
+       ON cu.uprn = p.uprn
+    WHERE p.uprn = ?
+SQL
+        undef,
+        $uprn,
+    );
+
+    return $row ? build_address_string($row) : '';
 }
 
 sub build_address_string {
@@ -108,6 +124,7 @@ sub build_address_string {
         _join_extended( ' ', $sao, $pao, $row->{street_descriptor} ),
         $row->{locality_name},
         $row->{town_name},
+        mySociety::PostcodeUtil::canonicalise_postcode( $row->{postcode} ),
     );
 }
 
@@ -135,6 +152,29 @@ sub _sort_addresses {
     ( $a->{sao_start_suffix} // '' ) cmp ( $b->{sao_start_suffix} // '' )
     or
     ( $a->{sao_text} // '' ) cmp ( $b->{sao_text} // '' )
+}
+
+# Fields needed to build an address string
+sub _address_fields {
+    return <<SQL;
+        pao_start_number,
+        pao_start_suffix,
+        pao_end_number,
+        pao_end_suffix,
+        pao_text,
+
+        sao_start_number,
+        sao_start_suffix,
+        sao_end_number,
+        sao_end_suffix,
+        sao_text,
+
+        street_descriptor,
+        locality_name,
+        town_name,
+
+        parent_uprn
+SQL
 }
 
 1;
