@@ -3,8 +3,8 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use utf8;
 use Moo;
-with 'FixMyStreet::Roles::CobrandSLWP';
-with 'FixMyStreet::Roles::SCP';
+with 'FixMyStreet::Roles::Cobrand::KingstonSutton';
+with 'FixMyStreet::Roles::Cobrand::SCP';
 
 use Digest::SHA qw(sha1_hex);
 use Encode qw(encode_utf8);

@@ -14,7 +14,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use Moo;
 
 # We use the functionality of bulky waste, though it's called small items
-with 'FixMyStreet::Roles::CobrandBulkyWaste';
+with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
 use strict;
 use warnings;
@@ -43,8 +43,8 @@ use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
-with 'FixMyStreet::Roles::CobrandEcho';
-with 'FixMyStreet::Roles::SCP';
+with 'FixMyStreet::Roles::Cobrand::Echo';
+with 'FixMyStreet::Roles::Cobrand::SCP';
 use Integrations::Paye;
 
 # Brent covers some of the areas around it so that it can handle near-boundary reports

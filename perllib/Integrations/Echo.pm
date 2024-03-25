@@ -3,8 +3,8 @@ package Integrations::Echo;
 use Moo;
 use strict;
 use warnings;
-with 'FixMyStreet::Roles::SOAPIntegration';
-with 'FixMyStreet::Roles::ParallelAPI';
+with 'Integrations::Roles::SOAP';
+with 'Integrations::Roles::ParallelAPI';
 with 'FixMyStreet::Roles::Syslog';
 
 use DateTime;

@@ -30,7 +30,7 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Multi';
-with 'FixMyStreet::Roles::SCP';
+with 'FixMyStreet::Roles::Cobrand::SCP';
 with 'FixMyStreet::Cobrand::Peterborough::Bulky';
 
 =head2 Defaults

@@ -3,8 +3,8 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use utf8;
 use Moo;
-with 'FixMyStreet::Roles::CobrandSLWP';
-with 'FixMyStreet::Roles::SCP';
+with 'FixMyStreet::Roles::Cobrand::KingstonSutton';
+with 'FixMyStreet::Roles::Cobrand::SCP';
 
 use Lingua::EN::Inflect qw( NUMWORDS );
 
@@ -20,27 +20,6 @@ use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
 use constant CONTAINER_FOOD_OUTDOOR => 24;
-
-=head2 waste_on_the_day_criteria
-
-Treat an Outstanding/Allocated task as if it's the next collection and in
-progress, and do not allow missed collection reporting if the task is not
-completed.
-
-=cut
-
-sub waste_on_the_day_criteria {
-    my ($self, $completed, $state, $now, $row) = @_;
-
-    if ($state eq 'Outstanding' || $state eq 'Allocated') {
-        $row->{next} = $row->{last};
-        $row->{next}{state} = 'In progress';
-        delete $row->{last};
-    }
-    if (!$completed) {
-        $row->{report_allowed} = 0;
-    }
-}
 
 sub waste_check_staff_payment_permissions {
     my $self = shift;

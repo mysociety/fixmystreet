@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::Moderation;
+package FixMyStreet::Roles::DB::Moderation;
 use Moo::Role;
 
 =head2 latest_moderation_log_entry

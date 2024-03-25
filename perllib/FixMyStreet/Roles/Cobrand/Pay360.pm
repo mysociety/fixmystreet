@@ -1,11 +1,11 @@
-package FixMyStreet::Roles::CobrandPay360;
+package FixMyStreet::Roles::Cobrand::Pay360;
 
 use Moo::Role;
 use strict;
 use warnings;
 use Integrations::Echo;
 use Integrations::Pay360;
-with 'FixMyStreet::Roles::DDProcessor';
+with 'FixMyStreet::Roles::Cobrand::DDProcessor';
 
 has paymentDateField => (
     is => 'ro',

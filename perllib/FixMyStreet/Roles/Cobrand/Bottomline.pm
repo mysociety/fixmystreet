@@ -1,10 +1,8 @@
-package FixMyStreet::Roles::Bottomline;
+package FixMyStreet::Roles::Cobrand::Bottomline;
 
 use Moo::Role;
-use strict;
-use warnings;
 use Integrations::Bottomline;
-with 'FixMyStreet::Roles::DDProcessor';
+with 'FixMyStreet::Roles::Cobrand::DDProcessor';
 
 has paymentDateField => (
     is => 'ro',

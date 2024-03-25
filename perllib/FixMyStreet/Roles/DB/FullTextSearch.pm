@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::FullTextSearch;
+package FixMyStreet::Roles::DB::FullTextSearch;
 
 use Moo::Role;
 use FixMyStreet;

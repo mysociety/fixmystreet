@@ -294,7 +294,7 @@ sub confirm_subscription : Private {
 
     if ($c->cobrand->suppress_report_sent_email($p)) {
         # Send bulky confirmation email after report confirmation (see
-        # the suppress_report_sent_email in CobrandSLWP.pm)
+        # the suppress_report_sent_email for SLWP)
         $p->send_logged_email({ %{$c->stash} }, 0, $c->cobrand);
     }
 

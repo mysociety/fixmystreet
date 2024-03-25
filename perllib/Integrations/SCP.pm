@@ -1,7 +1,7 @@
 package Integrations::SCP;
 
 use Moo;
-with 'FixMyStreet::Roles::SOAPIntegration';
+with 'Integrations::Roles::SOAP';
 with 'FixMyStreet::Roles::Syslog';
 
 use DateTime;

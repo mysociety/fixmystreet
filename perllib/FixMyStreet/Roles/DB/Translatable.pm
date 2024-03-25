@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::Translatable;
+package FixMyStreet::Roles::DB::Translatable;
 
 use Moo::Role;
 use FixMyStreet;

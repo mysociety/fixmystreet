@@ -14,12 +14,8 @@ use strict;
 use warnings;
 use Moo;
 
-use FixMyStreet;
-
-use SOAP::Lite; # +trace => [qw(debug)];
-
-with 'FixMyStreet::Roles::SOAPIntegration';
-with 'FixMyStreet::Roles::ParallelAPI';
+with 'Integrations::Roles::SOAP';
+with 'Integrations::Roles::ParallelAPI';
 
 has attr => ( is => 'ro', default => 'http://webservices.whitespacews.com/' );
 has username => ( is => 'ro' );

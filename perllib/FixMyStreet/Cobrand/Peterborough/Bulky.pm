@@ -12,7 +12,7 @@ Functions specific to Peterborough bulky waste collections.
 
 package FixMyStreet::Cobrand::Peterborough::Bulky;
 use Moo::Role;
-with 'FixMyStreet::Roles::CobrandBulkyWaste';
+with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
 use utf8;
 use DateTime;

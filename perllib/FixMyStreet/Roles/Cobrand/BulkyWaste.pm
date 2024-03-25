@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::CobrandBulkyWaste;
+package FixMyStreet::Roles::Cobrand::BulkyWaste;
 
 use Moo::Role;
 use JSON::MaybeXS;
@@ -6,7 +6,7 @@ use FixMyStreet::Map;
 
 =head1 NAME
 
-FixMyStreet::Roles::CobrandBulkyWaste - shared code between cobrands that use WasteWorks Bulky waste feature
+FixMyStreet::Roles::Cobrand::BulkyWaste - shared code between cobrands that use WasteWorks Bulky waste feature
 
 =head2 bulky_enabled
 

@@ -84,8 +84,8 @@ __PACKAGE__->has_many(
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 
-with 'FixMyStreet::Roles::Extra',
-    'FixMyStreet::Roles::Translatable';
+with 'FixMyStreet::Roles::DB::Extra',
+    'FixMyStreet::Roles::DB::Translatable';
 
 __PACKAGE__->many_to_many( response_templates => 'contact_response_templates', 'response_template' );
 __PACKAGE__->many_to_many( response_priorities => 'contact_response_priorities', 'response_priority' );

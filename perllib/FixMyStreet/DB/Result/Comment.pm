@@ -106,10 +106,10 @@ use FixMyStreet::Template::SafeString;
 use namespace::clean -except => [ 'meta' ];
 use FixMyStreet::Template;
 
-with 'FixMyStreet::Roles::Abuser',
-     'FixMyStreet::Roles::Extra',
-     'FixMyStreet::Roles::Moderation',
-     'FixMyStreet::Roles::PhotoSet';
+with 'FixMyStreet::Roles::DB::Abuser',
+     'FixMyStreet::Roles::DB::Extra',
+     'FixMyStreet::Roles::DB::Moderation',
+     'FixMyStreet::Roles::DB::PhotoSet';
 
 =head2 FOREIGNBUILDARGS
 
