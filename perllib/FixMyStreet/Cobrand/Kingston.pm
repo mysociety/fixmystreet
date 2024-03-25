@@ -2,7 +2,7 @@ package FixMyStreet::Cobrand::Kingston;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use Moo;
-with 'FixMyStreet::Roles::CobrandSLWP';
+with 'FixMyStreet::Roles::Cobrand::KingstonSutton';
 with 'FixMyStreet::Roles::SCP';
 
 sub council_area_id { return 2480; }

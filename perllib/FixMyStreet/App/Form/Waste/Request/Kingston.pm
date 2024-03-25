@@ -5,7 +5,7 @@ FixMyStreet::App::Form::Waste::Request::Kingston - Kingston-specific request new
 =head1 SYNOPSIS
 
 The Kingston container request form lets you request one container at a time
-(code for that in L<FixMyStreet::Roles::CobrandSLWP>).
+(code for that in L<FixMyStreet::Roles::Cobrand::KingstonSutton>).
 
 =head1 PAGES
 
