@@ -300,6 +300,45 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
+    subtest 'No requesting if open request of different size' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_unlike(qr/name="container-choice" value="1"[^>]+disabled/s);
+
+        $e->mock('GetEventsForObject', sub { [ {
+            # Request
+            EventTypeId => 1635,
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 1, DatatypeName => 'Container Type' },
+                    ] },
+                },
+            ] },
+        } ] });
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_like(qr/name="container-choice" value="1"[^>]+disabled/s);
+
+        $e->mock('GetEventsForObject', sub { [ {
+            # Request
+            EventTypeId => 1635,
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 2, DatatypeName => 'Container Type' },
+                    ] },
+                },
+            ] },
+        } ] });
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_like(qr/name="container-choice" value="1"[^>]+disabled/s); # still disabled
+
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
 
     $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });
     subtest 'No requesting a red stripe bag' => sub {

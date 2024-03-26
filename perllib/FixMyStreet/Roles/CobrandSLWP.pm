@@ -540,6 +540,21 @@ sub waste_service_containers {
     return ($containers, $request_max);
 }
 
+sub waste_munge_bin_services_open_requests {
+    my ($self, $open_requests) = @_;
+    if ($self->moniker eq 'sutton') {
+        if ($open_requests->{+CONTAINER_REFUSE_140}) {
+            $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_140};
+        } elsif ($open_requests->{+CONTAINER_REFUSE_240}) {
+            $open_requests->{+CONTAINER_REFUSE_140} = $open_requests->{+CONTAINER_REFUSE_240};
+            $open_requests->{+CONTAINER_REFUSE_360} = $open_requests->{+CONTAINER_REFUSE_240};
+        }
+        if ($open_requests->{+CONTAINER_PAPER_BIN_140}) {
+            $open_requests->{+CONTAINER_PAPER_BIN} = $open_requests->{+CONTAINER_PAPER_BIN_140};
+        }
+    }
+}
+
 sub garden_container_data_extract {
     my ($self, $data, $containers, $quantities, $schedules) = @_;
     # Assume garden will only have one container data

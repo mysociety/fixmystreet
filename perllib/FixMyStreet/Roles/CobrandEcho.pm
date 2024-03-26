@@ -154,6 +154,7 @@ sub bin_services_for_address {
         $request_max ||= $quantity_max{$service_id};
 
         my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
+        $self->call_hook(waste_munge_bin_services_open_requests => $open_requests);
 
         my $garden = 0;
         my $garden_bins;
