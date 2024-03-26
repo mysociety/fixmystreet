@@ -92,6 +92,9 @@ subtest 'check footer is powered by SocietyWorks' => sub {
 };
 
 subtest 'test waste duplicate' => sub {
+    my $echo = Test::MockModule->new('Integrations::Echo');
+    $echo->mock(GetEvent => sub { {} });
+
     my $sender = FixMyStreet::SendReport::Open311->new(
         bodies => [ $body ], body_config => { $body->id => $body },
     );
@@ -109,6 +112,9 @@ subtest 'test waste duplicate' => sub {
 };
 
 subtest 'test DD taking so long it expires' => sub {
+    my $echo = Test::MockModule->new('Integrations::Echo');
+    $echo->mock(GetEvent => sub { {} });
+
     my $title = $report->title;
     $report->update({ title => "Garden Subscription - Renew" });
     my $sender = FixMyStreet::SendReport::Open311->new(

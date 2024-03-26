@@ -160,6 +160,9 @@ subtest 'Updates from staff with no text but with private comments are sent' => 
     };
 };
 
+my $echo = Test::MockModule->new('Integrations::Echo');
+$echo->mock(GetEvent => sub { {} });
+
 for my $test (
     {
         desc => 'testing special Open311 behaviour',
