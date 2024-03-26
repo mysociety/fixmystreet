@@ -678,6 +678,17 @@ sub open311_extra_data_exclude {
     return [];
 }
 
+=head2 open311_pre_send
+
+We check in Echo to see if something has already been sent there first.
+
+=cut
+
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+    return 'SENT' if $self->open311_pre_send_check($row, 'FMS');
+}
+
 =head2 open311_post_send
 
 Restore the original detail field if it was changed by open311_extra_data_include
@@ -699,6 +710,8 @@ sub open311_post_send {
         if ($error =~ /Selected reservations expired|Invalid reservation reference/) {
             $self->bulky_refetch_slots($row2);
             $row->discard_changes;
+        } elsif ($error =~ /Internal error/) {
+            $self->open311_post_send_error_check("FMS", $row, $row2, $sender);
         }
     });
 }
