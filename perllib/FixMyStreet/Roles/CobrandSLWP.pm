@@ -556,6 +556,17 @@ sub bin_services_for_address {
             }
 
             my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
+            if ($self->moniker eq 'sutton') {
+                if ($open_requests->{+CONTAINER_REFUSE_140}) {
+                    $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_140};
+                } elsif ($open_requests->{+CONTAINER_REFUSE_240}) {
+                    $open_requests->{+CONTAINER_REFUSE_140} = $open_requests->{+CONTAINER_REFUSE_240};
+                    $open_requests->{+CONTAINER_REFUSE_360} = $open_requests->{+CONTAINER_REFUSE_240};
+                }
+                if ($open_requests->{+CONTAINER_PAPER_BIN_140}) {
+                    $open_requests->{+CONTAINER_PAPER_BIN} = $open_requests->{+CONTAINER_PAPER_BIN_140};
+                }
+            }
 
             my $garden = 0;
             my $garden_bins;
