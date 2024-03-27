@@ -95,6 +95,17 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+=item * We check in Echo to see if something has already been sent there first
+
+=cut
+
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    my $prefix = $self->moniker eq 'sutton' ? 'LBS' : 'RBK';
+    return 'SENT' if $self->open311_pre_send_check($row, $prefix);
+}
+
 =item * If Echo errors, we try and deal with standard issues - a renewal on an expired subscription, or a duplicate event
 
 =cut
@@ -120,13 +131,10 @@ sub open311_post_send {
             $row->discard_changes;
         } elsif ($error =~ /Duplicate Event! Original eventID: (\d+)/) {
             my $id = $1;
-            my $cfg = $self->feature('echo');
-            my $echo = Integrations::Echo->new(%$cfg);
-            my $event = $echo->GetEvent($id, 'Id');
-            $row2->external_id($event->{Guid});
-            $sender->success(1);
-            $row2->update;
-            $row->discard_changes;
+            $self->open311_post_send_check($id, "Id", $row, $row2, $sender);
+        } elsif ($error =~ /Internal error/) {
+            my $prefix = $self->moniker eq 'sutton' ? 'LBS' : 'RBK';
+            $self->open311_post_send_error_check($prefix, $row, $row2, $sender);
         }
     });
 }
