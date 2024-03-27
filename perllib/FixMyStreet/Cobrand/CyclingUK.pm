@@ -53,6 +53,12 @@ sub problems_restriction {
     });
 }
 
+sub problems_sql_restriction {
+    my ($self, $item_table) = @_;
+
+    return "AND cobrand = 'cyclinguk'";
+}
+
 =item problems_on_map_restriction
 
 Same restriction on map as problems_restriction above.
