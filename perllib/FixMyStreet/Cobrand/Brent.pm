@@ -1059,14 +1059,10 @@ sub waste_on_the_day_criteria {
     }
 }
 
-sub bin_services_for_address {
-    my $self = shift;
-    my $property = shift;
+sub waste_containers { $BRENT_CONTAINERS }
 
-    $self->{c}->stash->{containers} = $BRENT_CONTAINERS;
-    $self->{c}->stash->{container_actions} = $self->waste_container_actions;
-
-    my %service_to_containers = (
+sub waste_service_to_containers {
+    return (
         262 => [ 16 ],
         265 => [ 6 ],
         269 => [ 8 ],
@@ -1074,8 +1070,10 @@ sub bin_services_for_address {
         317 => [ 13 ],
         807 => [ 46 ],
     );
-    my %request_allowed = map { $_ => 1 } keys %service_to_containers;
-    my %quantity_max = (
+}
+
+sub waste_quantity_max {
+    return (
         262 => 1,
         265 => 1,
         269 => 1,
@@ -1083,50 +1081,45 @@ sub bin_services_for_address {
         317 => 5,
         807 => 1,
     );
+}
 
-    $self->{c}->stash->{quantity_max} = \%quantity_max;
+sub waste_bulky_missed_blocked_codes {
+    return {
+        # Not Completed
+        18491 => {
+            all => 'the collection could not be completed',
+        },
+    };
+}
 
-    $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
+sub garden_echo_container_name { 'BRT - Paid Collection Container Quantity' }
 
-    my $result = $self->{api_serviceunits};
-    return [] unless @$result;
-
-    my $events = $self->_parse_events($self->{api_events});
-    $self->{c}->stash->{open_service_requests} = $events->{enquiry};
-
-    # If there is an open Garden subscription (1159) event, assume
-    # that means a bin is being delivered and so a pending subscription
-    if ($events->{enquiry}{1159}) {
-        $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
-        $self->{c}->stash->{open_garden_event} = 1;
+sub garden_container_data_extract {
+    my ($self, $data) = @_;
+    my $garden_bins = $data->{Value};
+    # $data->{Value} is a code for the number of bins and corresponds 1:1 (bin), 2:2 (bins) etc,
+    # until it gets to 9 when it corresponds to sacks
+    if ($garden_bins == '9') {
+        my $garden_cost = $self->garden_waste_sacks_cost_pa($garden_bins) / 100;
+        return ($garden_bins, 1, $garden_cost);
+    } else {
+        my $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+        return ($garden_bins, 0, $garden_cost);
     }
+}
 
-    # Small items collection event
-    if ($self->{c}->stash->{waste_features}->{bulky_missed}) {
-        $self->bulky_check_missed_collection($events, {
-            # Not Completed
-            18491 => {
-                all => 'the collection could not be completed',
-            },
-        });
-    }
+sub waste_extra_service_info {
+    my ($self, $property, @rows) = @_;
 
-    my @to_fetch;
-    my %schedules;
-    my @task_refs;
-    my %expired;
     my $calendar_save = {};
-    foreach (@$result) {
-        my $servicetask = $self->_get_current_service_task($_) or next;
-        my $schedules = _parse_schedules($servicetask);
+    foreach (@rows) {
+        next unless $_->{active};
+        my $schedules = $_->{Schedules};
+
+        $_->{timeband} = _timeband_for_schedule($schedules->{next});
+
         # Brent has two overlapping schedules for food
         $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == 316 || $_->{ServiceId} == 263;
-        $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
-
-        next unless $schedules->{next} or $schedules->{last};
-        $schedules{$_->{Id}} = $schedules;
-        push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
-        push @task_refs, $schedules->{last}{ref} if $schedules->{last};
 
         # Check calendar allocation
         if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317 || $_->{ServiceId} == 807) && ($schedules->{description} =~ /every other/ || $schedules->{description} =~ /every \d+(th|st|nd|rd) week/) && $schedules->{next}{schedule}) {
@@ -1152,107 +1145,7 @@ sub bin_services_for_address {
                 $self->{c}->stash->{ggw_calendar_link} = $links->{$id};
             }
         }
-
     }
-    push @to_fetch, GetTasks => \@task_refs if @task_refs;
-
-    my $cfg = $self->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, 'brent', 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
-
-    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
-
-    my @out;
-    my %task_ref_to_row;
-    foreach (@$result) {
-        my $service_id = $_->{ServiceId};
-        my $service_name = $self->service_name_override($_);
-        next unless $schedules{$_->{Id}} || ( $service_name eq 'Garden waste' && $expired{$_->{Id}} );
-
-        my $schedules = $schedules{$_->{Id}} || $expired{$_->{Id}};
-        my $servicetask = $self->_get_current_service_task($_);
-
-        my $containers = $service_to_containers{$service_id};
-        my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
-
-        my $request_max = $quantity_max{$service_id};
-
-        my $timeband = _timeband_for_schedule($schedules->{next});
-
-        my $garden = 0;
-        my $garden_bins;
-        my $garden_sacks;
-        my $garden_cost = 0;
-        my $garden_due;
-        my $garden_overdue;
-        if ($service_name eq 'Garden waste') {
-            $garden = 1;
-            $garden_due = $self->waste_sub_due($schedules->{end_date});
-            $garden_overdue = $expired{$_->{Id}};
-            my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
-            foreach (@$data) {
-                if ( $_->{DatatypeName} eq 'BRT - Paid Collection Container Quantity' ) {
-                    $garden_bins = $_->{Value};
-                    # $_->{Value} is a code for the number of bins and corresponds 1:1 (bin), 2:2 (bins) etc,
-                    # until it gets to 9 when it corresponds to sacks
-                    if ($garden_bins == '9') {
-                        $garden_sacks = 1;
-                        $garden_cost = $self->garden_waste_sacks_cost_pa($garden_bins) / 100;
-                    } else {
-                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
-                    }
-                }
-            }
-            $request_max = $garden_bins;
-
-            if ($self->{c}->stash->{waste_features}->{garden_disabled}) {
-                $garden = 0;
-            }
-        }
-
-        my $row = {
-            id => $_->{Id},
-            service_id => $service_id,
-            service_name => $service_name,
-            garden_waste => $garden,
-            garden_bins => $garden_bins,
-            garden_sacks => $garden_sacks,
-            garden_cost => $garden_cost,
-            garden_due => $garden_due,
-            garden_overdue => $garden_overdue,
-            request_allowed => $request_allowed{$service_id} && $request_max && $schedules->{next},
-            requests_open => $open_requests,
-            request_containers => $containers,
-            request_max => $request_max,
-            service_task_id => $servicetask->{Id},
-            service_task_name => $servicetask->{TaskTypeName},
-            service_task_type_id => $servicetask->{TaskTypeId},
-            schedule => $schedules->{description},
-            last => $schedules->{last},
-            next => $schedules->{next},
-            end_date => $schedules->{end_date},
-            timeband => $timeband,
-        };
-        if ($row->{last}) {
-            my $ref = join(',', @{$row->{last}{ref}});
-            $task_ref_to_row{$ref} = $row;
-
-            $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
-
-            my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
-            my $missed_events = [
-                @{$events->{missed}->{$service_id} || []},
-                @{$events_unit->{missed}->{$service_id} || []},
-            ];
-            my $recent_events = $self->_events_since_date($row->{last}{date}, $missed_events);
-            $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
-        }
-        push @out, $row;
-    }
-
-    $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
-
-    return \@out;
 }
 
 sub _timeband_for_schedule {
@@ -1522,6 +1415,7 @@ use constant GARDEN_WASTE_PAID_COLLECTION_BIN => 1;
 use constant GARDEN_WASTE_PAID_COLLECTION_SACK => 2;
 sub garden_service_name { 'Garden waste collection service' }
 sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
+sub garden_subscription_event_id { 1159 }
 sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
 sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 sub garden_due_days { 90 }

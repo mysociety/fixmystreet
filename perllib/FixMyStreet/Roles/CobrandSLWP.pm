@@ -297,7 +297,7 @@ sub service_name_override {
         2257 => '', # Deliver recycling bags
     );
 
-    return $service_name_override{$service} // '';
+    return $service_name_override{$service->{ServiceId}} // '';
 }
 
 sub bin_payment_types {
@@ -329,10 +329,8 @@ sub waste_container_actions {
 # For renewal/modify
 sub waste_allow_current_bins_edit { 1 }
 
-sub bin_services_for_address {
+sub waste_containers {
     my $self = shift;
-    my $property = shift;
-
     my %shared = (
             4 => 'Refuse Blue Sack',
             5 => 'Refuse Black Sack',
@@ -358,7 +356,7 @@ sub bin_services_for_address {
             31 => 'Paper 55L Box',
     );
     if ($self->moniker eq 'sutton') {
-        $self->{c}->stash->{containers} = {
+        return {
             %shared,
             1 => 'Brown Rubbish Wheelie Bin (140L)',
             2 => 'Brown Rubbish Wheelie Bin (240L)',
@@ -373,7 +371,7 @@ sub bin_services_for_address {
             28 => 'Garden waste sacks',
         };
     } elsif ($self->moniker eq 'kingston') {
-        $self->{c}->stash->{containers} = {
+        return {
             %shared,
             1 => 'Black rubbish bin (140L)',
             2 => 'Black rubbish bin (240L)',
@@ -392,218 +390,156 @@ sub bin_services_for_address {
             28 => 'Garden waste sacks',
         };
     }
+}
 
-    $self->{c}->stash->{container_actions} = $self->waste_container_actions;
+sub waste_service_to_containers { () }
 
-    my %quantity_max = (
+sub waste_quantity_max {
+    return (
         2247 => 5, # Garden waste maximum
     );
-    $self->{c}->stash->{quantity_max} = \%quantity_max;
-    my $quantities = $self->{c}->stash->{quantities} = {};
+}
 
-    $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
+sub garden_subscription_event_id { 1638 }
 
-    my $result = $self->{api_serviceunits};
-    unless (@$result && grep { $_->{ServiceId} == 409 } @$result) {
-        # No garden collection possible
-        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
-    }
+sub waste_bulky_missed_blocked_codes {
+    return {
+        # Partially completed
+        12399 => {
+            507 => 'Not all items presented',
+            380 => 'Some items too heavy',
+        },
+        # Completed
+        12400 => {
+            606 => 'More items presented than booked',
+        },
+        # Not Completed
+        12401 => {
+            460 => 'Nothing out',
+            379 => 'Item not as described',
+            100 => 'No access',
+            212 => 'Too heavy',
+            473 => 'Damage on site',
+            234 => 'Hazardous waste',
+        },
+    };
+}
 
-    my $events = $self->_parse_events($self->{api_events});
-    $self->{c}->stash->{open_service_requests} = $events->{enquiry};
-
-    # If there is an open Garden subscription (1638) event, assume
-    # that means a bin is being delivered and so a pending subscription
-    if ($events->{enquiry}{1638}) {
-        $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
-        $self->{c}->stash->{open_garden_event} = 1;
-    }
-
-    # Bulky collection event
-    if ($self->{c}->stash->{waste_features}->{bulky_missed}) {
-        $self->bulky_check_missed_collection($events, {
-            # Partially completed
-            12399 => {
-                507 => 'Not all items presented',
-                380 => 'Some items too heavy',
-            },
-            # Completed
-            12400 => {
-                606 => 'More items presented than booked',
-            },
-            # Not Completed
-            12401 => {
-                460 => 'Nothing out',
-                379 => 'Item not as described',
-                100 => 'No access',
-                212 => 'Too heavy',
-                473 => 'Damage on site',
-                234 => 'Hazardous waste',
-            },
-        });
-    }
-
-    my @to_fetch;
-    my %schedules;
-    my @task_refs;
-    $property->{has_no_services} = scalar @$result == 0;
+sub waste_relevant_serviceunits {
+    my ($self, $result) = @_;
+    my @rows;
     foreach (@$result) {
         my $servicetasks = $self->_get_service_tasks($_);
         foreach my $task (@$servicetasks) {
-            my $task_id = $task->{Id};
             my $service_id = $task->{TaskTypeId};
-            my $service_name = $self->service_name_override($service_id);
+            my $service_name = $self->service_name_override({ ServiceId => $service_id });
             next unless $service_name;
 
-            if ($service_id == 2242) { # Collect Domestic Refuse Bag
-                $self->{c}->stash->{slwp_garden_sacks} = 1;
-            } elsif ($service_id == 2238) { # Collect Domestic Refuse Bin
-                $property->{domestic_refuse_bin} = 1;
-            }
-
             my $schedules = _parse_schedules($task, 'task');
-
-            next unless $schedules->{next} or $schedules->{last};
 
             # Ignore retired diesel rounds
             next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != GARDEN_WASTE_SERVICE_ID;
 
-            $schedules{$task_id} = $schedules;
-            push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
-            push @task_refs, $schedules->{last}{ref} if $schedules->{last};
+            push @rows, {
+                Id => $task->{Id},
+                ServiceId => $task->{TaskTypeId},
+                ServiceTask => $task,
+                Schedules => $schedules,
+            };
         }
     }
-    push @to_fetch, GetTasks => \@task_refs if @task_refs;
+    return @rows;
+}
 
-    my $cfg = $self->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, $self->council_url, 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
+sub waste_extra_service_info_all_results {
+    my ($self, $property, $result) = @_;
 
-    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
+    if (!(@$result && grep { $_->{ServiceId} == 409 } @$result)) {
+        # No garden collection possible
+        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
+    }
 
-    my @out;
-    my %task_ref_to_row;
+    $property->{has_no_services} = scalar @$result == 0;
+
     foreach (@$result) {
         my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
         foreach (@$data) {
             $self->{c}->stash->{assisted_collection} = 1 if $_->{DatatypeName} eq "Assisted Collection" && $_->{Value};
         }
+    }
+}
 
-        my $servicetasks = $self->_get_service_tasks($_);
-        foreach my $task (@$servicetasks) {
-            my $task_id = $task->{Id};
-            my $service_id = $task->{TaskTypeId};
-            my $service_name = $self->service_name_override($service_id);
-            next unless $service_name;
-            next unless $schedules{$task_id};
+sub waste_extra_service_info {
+    my ($self, $property, @rows) = @_;
 
-            my $schedules = $schedules{$task_id};
+    foreach (@rows) {
+        my $service_id = $_->{ServiceId};
+        if ($service_id == 2242) { # Collect Domestic Refuse Bag
+            $self->{c}->stash->{slwp_garden_sacks} = 1;
+        } elsif ($service_id == 2238) { # Collect Domestic Refuse Bin
+            $property->{domestic_refuse_bin} = 1;
+        }
+        $self->{c}->stash->{communal_property} = 1 if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
+    }
+}
 
-            $self->{c}->stash->{communal_property} = 1 if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
+sub waste_service_containers {
+    my ($self, $service) = @_;
 
-            my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
-            my ($containers, $request_max);
-            foreach (@$data) {
-                next if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                my ($container, $quantity) = (0, 0);
-                foreach (@$moredata) {
-                    $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
-                    $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
-                }
-                next if $container == 6; # Red stripe bag
-                next if $container == 18 && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
-                if ($container && $quantity) {
-                    # Store this fact here for use in new request flow
-                    $self->{c}->stash->{container_recycling_bin} = 1 if $container == CONTAINER_RECYCLING_BIN;
-                    push @$containers, $container;
-                    next if $container == 28; # Garden waste bag
-                    # The most you can request is one
-                    $request_max->{$container} = 1;
-                    $quantities->{$container} = $quantity;
-                }
-            }
+    my $task = $service->{ServiceTask};
+    my $service_id = $service->{ServiceId};
+    my $service_name = $self->service_name_override($service);
+    my $schedules = $service->{Schedules};
 
-            if ($service_name =~ /Food/) {
-                # Can always request a food caddy
-                push @$containers, 23; # Food waste bin (kitchen)
-                $request_max->{23} = 1;
-            }
-            if ($self->moniker eq 'kingston' && grep { $_ == CONTAINER_RECYCLING_BOX } @$containers) {
-                # Can request a bin if you have a box
-                push @$containers, CONTAINER_RECYCLING_BIN;
-                $request_max->{+CONTAINER_RECYCLING_BIN} = 1;
-            }
-
-            my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
-
-            my $garden = 0;
-            my $garden_bins;
-            my $garden_container;
-            my $garden_cost = 0;
-            my $garden_due;
-            my $garden_overdue = 0; # No 'overdue' notice
-            if ($service_name eq 'Garden Waste') {
-                $garden = 1;
-                $garden_due = $self->waste_sub_due($schedules->{end_date});
-                foreach (@$data) {
-                    next unless $_->{DatatypeName} eq $self->garden_echo_container_name; # DatatypeId 3346
-                    # Assume garden will only have one container data
-                    $garden_container = $containers->[0];
-                    $garden_bins = $quantities->{$containers->[0]};
-                    if ($garden_container == 28) {
-                        $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
-                    } else {
-                        $garden_cost = $self->garden_waste_renewal_cost_pa($schedules->{end_date}, $garden_bins) / 100;
-                    }
-                }
-
-                if ($self->{c}->stash->{waste_features}->{garden_disabled}) {
-                    $garden = 0;
-                }
-            }
-
-            my $row = {
-                id => $_->{Id},
-                service_id => $service_id,
-                service_name => $service_name,
-                garden_waste => $garden,
-                garden_container => $garden_container,
-                garden_bins => $garden_bins,
-                garden_cost => $garden_cost,
-                garden_due => $garden_due,
-                garden_overdue => $garden_overdue,
-                request_allowed => $request_max && $schedules->{next},
-                requests_open => $open_requests,
-                request_containers => $containers,
-                request_max => $request_max,
-                service_task_id => $task->{Id},
-                schedule => $schedules->{description},
-                last => $schedules->{last},
-                next => $schedules->{next},
-                end_date => $schedules->{end_date},
-            };
-            if ($row->{last}) {
-                my $ref = join(',', @{$row->{last}{ref}});
-                $task_ref_to_row{$ref} = $row;
-
-                $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
-
-                my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
-                my $missed_events = [
-                    @{$events->{missed}->{$service_id} || []},
-                    @{$events_unit->{missed}->{$service_id} || []},
-                ];
-                my $recent_events = $self->_events_since_date($row->{last}{date}, $missed_events);
-                $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
-            }
-            push @out, $row;
+    my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
+    my ($containers, $request_max);
+    foreach (@$data) {
+        next if $service_id == 2243 || $service_id == 2248 || $service_id == 2249 || $service_id == 2250; # Communal
+        my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+        my ($container, $quantity) = (0, 0);
+        foreach (@$moredata) {
+            $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
+            $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
+        }
+        next if $container == 6; # Red stripe bag
+        next if $container == 18 && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
+        if ($container && $quantity) {
+            # Store this fact here for use in new request flow
+            $self->{c}->stash->{container_recycling_bin} = 1 if $container == CONTAINER_RECYCLING_BIN;
+            push @$containers, $container;
+            next if $container == 28; # Garden waste bag
+            # The most you can request is one
+            $request_max->{$container} = 1;
+            $self->{c}->stash->{quantities}->{$container} = $quantity;
         }
     }
 
-    $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
+    if ($service_name =~ /Food/) {
+        # Can always request a food caddy
+        push @$containers, 23; # Food waste bin (kitchen)
+        $request_max->{23} = 1;
+    }
+    if ($self->moniker eq 'kingston' && grep { $_ == CONTAINER_RECYCLING_BOX } @$containers) {
+        # Can request a bin if you have a box
+        push @$containers, CONTAINER_RECYCLING_BIN;
+        $request_max->{+CONTAINER_RECYCLING_BIN} = 1;
+    }
 
-    return \@out;
+    return ($containers, $request_max);
+}
+
+sub garden_container_data_extract {
+    my ($self, $data, $containers, $quantities, $schedules) = @_;
+    # Assume garden will only have one container data
+    my $garden_container = $containers->[0];
+    my $garden_bins = $quantities->{$containers->[0]};
+    if ($garden_container == 28) {
+        my $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
+        return ($garden_bins, 1, $garden_cost, $garden_container);
+    } else {
+        my $garden_cost = $self->garden_waste_renewal_cost_pa($schedules->{end_date}, $garden_bins) / 100;
+        return ($garden_bins, 0, $garden_cost, $garden_container);
+    }
 }
 
 sub missed_event_types { {

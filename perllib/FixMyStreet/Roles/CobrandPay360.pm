@@ -80,24 +80,6 @@ sub waste_payment_type {
     return ($category, $sub_type);
 }
 
-sub waste_get_sub_quantity {
-    my ($self, $service) = @_;
-
-    my $quantity = 0;
-    my $tasks = Integrations::Echo::force_arrayref($service->{Data}, 'ExtensibleDatum');
-    return 0 unless scalar @$tasks;
-    for my $data ( @$tasks ) {
-        next unless $data->{DatatypeName} eq 'LBB - GW Container';
-        my $kids = Integrations::Echo::force_arrayref($data->{ChildData}, 'ExtensibleDatum');
-        for my $child ( @$kids ) {
-            next unless $child->{DatatypeName} eq 'Quantity';
-            $quantity = $child->{Value}
-        }
-    }
-
-    return $quantity;
-}
-
 sub waste_check_existing_dd {
     my ($self, $p) = @_;
     my $c = $self->{c};
