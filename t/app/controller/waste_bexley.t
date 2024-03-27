@@ -202,6 +202,10 @@ FixMyStreet::override_config {
             '<dd class="waste__address__property">1 The Avenue, DA1 3NP</dd>',
             'Correct address string displayed',
         );
+        $mech->content_contains(
+            'Your rotation schedule is Week 1',
+            'Correct rotation schedule displayed',
+        );
 
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
@@ -361,6 +365,10 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste');
             $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
             $mech->submit_form_ok( { with_fields => { address => $test->{address} } } );
+            $mech->content_contains(
+                "Your rotation schedule is Week $test->{link}",
+                'Correct rotation schedule displayed',
+            );
             $mech->content_contains('<li><a href="PDF '. $test->{link} . '">Download PDF waste calendar', 'PDF link ' . $test->{link} . ' shown');
         }
     };
