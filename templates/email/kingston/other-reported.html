@@ -23,6 +23,14 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">We will arrange another collection as soon as possible
   in the next 2 working days (not including Saturday and Sunday).</p>
 [% ELSIF report.category == 'Request new container' %]
+  <p style="[% p_style %]">
+    On delivery day - You do not need to be home for our crew to deliver the bin.
+  </p>
+  <p style="[% p_style %]">
+    Collecting your old bin - If you&apos;ve requested a collection of your old bin,
+    we&apos;ll schedule a specific date for our crew to remove it. We aim for this
+    to be the same day as we deliver your new bin, but it could be a different day.
+  </p>
   <p style="[% p_style %]">We aim to deliver this container to you within [% cobrand.wasteworks_config.request_timeframe %].
   If you have requested a replacement bin please leave your
   broken one available for collection at the front of your property.</p>
@@ -33,6 +41,10 @@ INCLUDE '_email_top.html';
 [% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     [% report.detail | html_para_email(secondary_p_style) %]
+
+    [% IF report.category == 'Request new container' %]
+      <a style="[% button_style %]" href="https://kingston-self.test.achieveservice.com/service/Status_update_for_waste_container_request?client_ref=RBK-[% report.id %]">Track your request</a>
+    [% END %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
