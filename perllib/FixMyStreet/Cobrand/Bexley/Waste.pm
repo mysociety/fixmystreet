@@ -595,7 +595,7 @@ sub _containers {
         'RES-940'  => 'Communal Refuse Bin(s)',
         'RES-CHAM' => 'Communal Refuse Bin(s)',
         'RES-DBIN' => 'Communal Refuse Bin(s)',
-        'RES-SACK' => 'Green Wheelie Bin',
+        'RES-SACK' => 'Rubbish collection',
     };
 }
 
