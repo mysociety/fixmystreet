@@ -73,6 +73,23 @@ sub domestic_waste_service_units {
     return [ {
         Id => 1,
         ServiceId => 531,
+        ServiceTasks => { ServiceTask => {
+            Id => '401',
+            ServiceTaskSchedules => { ServiceTaskSchedule => {
+                ScheduleDescription => 'every Wednesday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                NextInstance => {
+                    CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                    OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    Ref => { Value => { anyType => [ '123', '456' ] } },
+                },
+            } },
+        } },
     } ]
 }
 
@@ -81,6 +98,23 @@ sub trade_waste_service_units {
     return [ {
         Id => 1,
         ServiceId => 532,
+        ServiceTasks => { ServiceTask => {
+            Id => '401',
+            ServiceTaskSchedules => { ServiceTaskSchedule => {
+                ScheduleDescription => 'every Wednesday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                NextInstance => {
+                    CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                    OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    Ref => { Value => { anyType => [ '123', '456' ] } },
+                },
+            } },
+        } },
     } ]
 }
 
@@ -221,7 +255,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { address => '12345' } } );
 
         $mech->content_contains('Bulky Waste');
-        $mech->submit_form_ok; # 'Book Collection'
+        $mech->submit_form_ok({ form_number => 2 }); # 'Book Collection'
         $mech->content_contains( 'Before you start your booking',
             'Should be able to access the booking form' );
     };
