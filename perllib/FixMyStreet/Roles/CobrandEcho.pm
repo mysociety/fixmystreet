@@ -71,11 +71,18 @@ sub look_up_property {
     };
 }
 
+sub waste_subscription_types {
+    return {
+        New => 1,
+        Renew => 2,
+        Amend => 3,
+    };
+}
+
 sub bin_services_for_address {
     my ($self, $property) = @_;
 
     $self->{c}->stash->{containers} = $self->waste_containers;
-    $self->{c}->stash->{container_actions} = $self->waste_container_actions;
 
     my %service_to_containers = $self->waste_service_to_containers;
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
@@ -235,6 +242,31 @@ sub waste_relevant_serviceunits {
         };
     }
     return @rows;
+}
+
+=over
+
+=item within_working_days
+
+Given a DateTime object and a number, return true if today is less than or
+equal to that number of working days (excluding weekends and bank holidays)
+after the date. Sutton includes Saturdays as working days.
+
+=cut
+
+sub within_working_days {
+    my ($self, $dt, $days, $future) = @_;
+    my $wd = FixMyStreet::WorkingDays->new(
+        public_holidays => FixMyStreet::Cobrand::UK::public_holidays(),
+        $self->council_url eq 'sutton' ? (saturdays => 1) : (),
+    );
+    $dt = $wd->add_days($dt, $days)->ymd;
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
+    if ( $future ) {
+        return $today ge $dt;
+    } else {
+        return $today le $dt;
+    }
 }
 
 my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');
@@ -507,6 +539,35 @@ sub bin_future_collections {
         }
     }
     return $events;
+}
+
+sub split_echo_external_status_code { 1 }
+
+=head2 admin_templates_external_status_code_hook
+
+In order to provide more nuanced messaging on the bin day
+page with regards to not complete collections, the external
+status code admin is split into three fields, which are then
+combined here for storage.
+
+Brent removes the commas so that eg non-Echo status codes
+will trigger auto-templates.
+
+=cut
+
+sub admin_templates_external_status_code_hook {
+    my ($self) = @_;
+    my $c = $self->{c};
+
+    my $res_code = $c->get_param('resolution_code') || '';
+    my $task_type = $c->get_param('task_type') || '';
+    my $task_state = $c->get_param('task_state') || '';
+
+    my $code = "$res_code,$task_type,$task_state";
+    $code = '' if $code eq ',,';
+    $code =~ s/,,$// if $code && $self->moniker eq 'brent';
+
+    return $code;
 }
 
 =item waste_fetch_events

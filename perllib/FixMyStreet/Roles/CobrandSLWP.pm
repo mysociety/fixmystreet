@@ -311,21 +311,6 @@ sub bin_payment_types {
 
 sub waste_password_hidden { 1 }
 
-sub waste_subscription_types {
-    return {
-        New => 1,
-        Renew => 2,
-        Amend => 3,
-    };
-}
-
-sub waste_container_actions {
-    return {
-        deliver => 1,
-        remove => 2
-    };
-}
-
 # For renewal/modify
 sub waste_allow_current_bins_edit { 1 }
 
@@ -595,29 +580,6 @@ sub parse_event_missed {
     }
 }
 
-=head2 within_working_days
-
-Given a DateTime object and a number, return true if today is less than or
-equal to that number of working days (excluding Sundays and bank holidays)
-after the date.
-
-=cut
-
-sub within_working_days {
-    my ($self, $dt, $days, $future) = @_;
-    my $wd = FixMyStreet::WorkingDays->new(
-        public_holidays => FixMyStreet::Cobrand::UK::public_holidays(),
-        $self->council_url eq 'sutton' ? (saturdays => 1) : (),
-    );
-    $dt = $wd->add_days($dt, $days)->ymd;
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-    if ( $future ) {
-        return $today ge $dt;
-    } else {
-        return $today le $dt;
-    }
-}
-
 # Not in the function below because it needs to set things needed before then
 # (perhaps could be refactored better at some point). Used for new/renew
 sub waste_garden_sub_payment_params {
@@ -643,13 +605,17 @@ sub waste_garden_sub_params {
     my $service = $self->garden_current_subscription;
     my $existing = $service ? $service->{garden_container} : undef;
     my $container = $data->{slwp_garden_sacks} ? 28 : $existing || 26;
+    my $container_actions = {
+        deliver => 1,
+        remove => 2
+    };
 
     $c->set_param('Request_Type', $type);
     $c->set_param('Subscription_Details_Containers', $container);
     $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
     if ( $data->{new_bins} ) {
         my $action = ($data->{new_bins} > 0) ? 'deliver' : 'remove';
-        $c->set_param('Bin_Delivery_Detail_Containers', $c->stash->{container_actions}->{$action});
+        $c->set_param('Bin_Delivery_Detail_Containers', $container_actions->{$action});
         $c->set_param('Bin_Delivery_Detail_Container', $container);
         $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
     }
@@ -1038,27 +1004,6 @@ sub _get_addressable_object {
     $ao .= '-' if $property->{$type . '_END_NUMBER'};
     $ao .= ($property->{$type . '_END_NUMBER'} || '') . ($property->{$type . '_END_SUFFIX'} || '');
     return $ao;
-}
-
-=head2 admin_templates_external_status_code_hook
-
-In order to provide more nuanced messaging on the bin day page with regards to
-not complete collections, the external status code admin is split into three
-fields, which are then combined here for storage.
-
-=cut
-
-sub admin_templates_external_status_code_hook {
-    my ($self) = @_;
-    my $c = $self->{c};
-
-    my $res_code = $c->get_param('resolution_code') || '';
-    my $task_type = $c->get_param('task_type') || '';
-    my $task_state = $c->get_param('task_state') || '';
-
-    my $code = "$res_code,$task_type,$task_state";
-    $code = '' if $code eq ',,';
-    return $code;
 }
 
 =head2 Dashboard export

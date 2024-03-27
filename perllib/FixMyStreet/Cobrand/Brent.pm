@@ -835,29 +835,6 @@ status of reports
 
 sub prevent_questionnaire_updating_status { 1 };
 
-=head2 admin_templates_external_status_code_hook
-
-Munges empty fields out of external status code used
-for triggering template responses so non-waste
-Echo status codes will trigger auto-templates
-
-=cut
-
-sub admin_templates_external_status_code_hook {
-    my ($self) = @_;
-    my $c = $self->{c};
-
-    my $res_code = $c->get_param('resolution_code') || '';
-    my $task_type = $c->get_param('task_type') || '';
-    my $task_state = $c->get_param('task_state') || '';
-
-    my $code = "$res_code,$task_type,$task_state";
-    $code = '' if $code eq ',,';
-    $code =~ s/,,$// if $code;
-
-    return $code;
-}
-
 =head2 Staff payments
 
 If a staff member is making a payment, then instead of using SCP, we redirect
@@ -1162,21 +1139,6 @@ sub _timeband_for_schedule {
     }
 }
 
-sub waste_container_actions {
-    return {
-        deliver => 1,
-        remove => 2
-    };
-}
-
-sub waste_subscription_types {
-    return {
-        New => 1,
-        Renew => 2,
-        Amend => 3,
-    };
-}
-
 sub missed_event_types { {
     2936 => 'request',
     2891 => 'missed',
@@ -1231,18 +1193,6 @@ sub service_name_override {
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
-}
-
-sub within_working_days {
-    my ($self, $dt, $days, $future) = @_;
-    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
-    $dt = $wd->add_days($dt, $days)->ymd;
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-    if ( $future ) {
-        return $today ge $dt;
-    } else {
-        return $today le $dt;
-    }
 }
 
 sub waste_munge_report_data {

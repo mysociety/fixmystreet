@@ -527,21 +527,6 @@ sub bin_payment_types {
     };
 }
 
-sub waste_subscription_types {
-    return {
-        New => 1,
-        Renew => 2,
-        Amend => 3,
-    };
-}
-
-sub waste_container_actions {
-    return {
-        deliver => 1,
-        remove => 2
-    };
-}
-
 sub waste_containers {
     return {
         1 => 'Green Box (Plastic)',
@@ -655,42 +640,24 @@ sub missed_event_types { {
     2175 => 'bulky',
 } }
 
-=over
-
-=item within_working_days
-
-Given a DateTime object and a number, return true if today is less than or
-equal to that number of working days (excluding weekends and bank holidays)
-after the date.
-
-=cut
-
-sub within_working_days {
-    my ($self, $dt, $days, $future) = @_;
-    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
-    $dt = $wd->add_days($dt, $days)->ymd;
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-    if ( $future ) {
-        return $today ge $dt;
-    } else {
-        return $today le $dt;
-    }
-}
-
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};
 
     my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
+    my $container_actions = {
+        deliver => 1,
+        remove => 2,
+    };
 
     $c->set_param('Subscription_Type', $type);
     $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste Container'});
     $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
     if ( $data->{new_bins} ) {
         if ( $data->{new_bins} > 0 ) {
-            $c->set_param('Container_Instruction_Action', $c->stash->{container_actions}->{deliver} );
+            $c->set_param('Container_Instruction_Action', $container_actions->{deliver} );
         } elsif ( $data->{new_bins} < 0 ) {
-            $c->set_param('Container_Instruction_Action',  $c->stash->{container_actions}->{remove} );
+            $c->set_param('Container_Instruction_Action',  $container_actions->{remove} );
         }
         $c->set_param('Container_Instruction_Container_Type', $container_types{'Garden Waste Container'});
         $c->set_param('Container_Instruction_Quantity', abs($data->{new_bins}));
@@ -857,19 +824,6 @@ sub waste_cc_payment_admin_fee_line_item_ref {
 sub waste_cc_payment_sale_ref {
     my ($self, $p) = @_;
     return "GGW" . $p->get_extra_field_value('uprn');
-}
-
-sub admin_templates_external_status_code_hook {
-    my ($self) = @_;
-    my $c = $self->{c};
-
-    my $res_code = $c->get_param('resolution_code') || '';
-    my $task_type = $c->get_param('task_type') || '';
-    my $task_state = $c->get_param('task_state') || '';
-
-    my $code = "$res_code,$task_type,$task_state";
-    $code = '' if $code eq ',,';
-    return $code;
 }
 
 sub dashboard_export_problems_add_columns {
