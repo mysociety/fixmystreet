@@ -99,6 +99,8 @@ sub bin_services_for_address {
     my $containers = $self->_containers($property);
     my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
 
+    my %frequency_types;
+
     my @site_services_filtered;
 
     for my $service (@$site_services) {
@@ -137,12 +139,7 @@ sub bin_services_for_address {
         }
 
         my $containers = $self->_containers($property);
-        if (!$self->{c}->stash->{calendar_link} && $service->{RoundSchedule} =~ /(Wk \d+)/) {
-            my ($id) = $service->{RoundSchedule} =~ /(Wk \d+)/;
-            $id =~ s/\s+/-/;
-            my $links = $self->{c}->cobrand->feature('waste_calendar_links');
-            $self->{c}->stash->{calendar_link} = $links->{$id};
-        }
+
         my ($round) = split / /, $service->{RoundSchedule};
 
         my $filtered_service = {
@@ -191,9 +188,11 @@ sub bin_services_for_address {
         # Frequency of collection
         if ( @round_schedules > 1 ) {
             $filtered_service->{schedule} = 'Twice Weekly';
-        } elsif ( $round_schedules[0] =~ /Wk \d+$/ ) {
+        } elsif ( $round_schedules[0] =~ /Wk (\d+)$/ ) {
+            $frequency_types{fortnightly} //= $1;
             $filtered_service->{schedule} = 'Fortnightly';
         } else {
+            $frequency_types{weekly} //= 1;
             $filtered_service->{schedule} = 'Weekly';
         }
 
@@ -220,6 +219,15 @@ sub bin_services_for_address {
             = $property->{round_exceptions}{ $filtered_service->{round} } ? 1 : 0;
 
         push @site_services_filtered, $filtered_service;
+    }
+
+    $property->{frequency_types} = \%frequency_types;
+
+    # Provide calendar link if fortnightly collections
+    if ( my $id = $frequency_types{fortnightly} ) {
+        $id = 'Wk-' . $id;
+        my $links = $self->{c}->cobrand->feature('waste_calendar_links');
+        $self->{c}->stash->{calendar_link} = $links->{$id};
     }
 
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
