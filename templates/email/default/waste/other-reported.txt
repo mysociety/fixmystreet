@@ -1,7 +1,12 @@
-[% IF cobrand.moniker == 'kingston' %][% SET prefix = 'RBK-' ~%]
+[% SET subject_text = 'Your report has been logged' ~%]
+[% IF cobrand.moniker == 'kingston' ~%]
+    [% SET prefix = 'RBK-' ~%]
+    [% IF report.category == 'Request new container' ~%]
+        [% subject_text = 'Your bin request has been logged' ~%]
+    [% END ~%]
 [% ELSIF cobrand.moniker == 'sutton' %][% SET prefix = 'LBS-' ~%]
 [% ELSE %][% SET prefix = '' %][% END ~%]
-Subject: Your report has been logged, reference [% prefix %][% report.id %]
+Subject: [% subject_text ~%], reference [% prefix %][% report.id %]
 
 Dear [% report.name %],
 
@@ -30,6 +35,17 @@ If you have requested a bin, box or caddy to be collected as part of the request
 * We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.
 [% END %]
 
+[% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
+
+On delivery day - You do not need to be home for our crew to deliver the bin.
+
+Collecting your old bin - If you've requested a collection of your old bin, we'll schedule a specific date for our
+crew to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
+
+We aim to deliver this container to you within [% cobrand.wasteworks_config.request_timeframe %]. If
+you have requested a replacement bin please leave your broken one
+available for collection at the front of your property.
+
 [% ELSE %]
 
 [% IF report.category == 'Report missed collection' %]
@@ -51,6 +67,10 @@ Your report has the title:
 And details:
 
 [% report.detail %]
+
+[% IF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
+Track your request: [% cobrand.feature('waste_features').track_request_url %]?client_ref=RBK-[% report.id %]
+[% END %]
 
 [% signature %]
 

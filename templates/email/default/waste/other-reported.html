@@ -10,15 +10,20 @@ INCLUDE '_email_top.html';
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
- [% IF report.category == 'Request new container' %]
-  <h1 style="[% h1_style %]">Your request has been&nbsp;logged</h1>
- [% ELSE %]
-  <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
- [% END %]
 
-[% IF cobrand.moniker == 'sutton' %]
-<p style="[% p_style %]">Thank you for contacting the London Borough of Sutton.</p>
-[% END %]
+  [% IF report.category == 'Request new container' %]
+    [% IF cobrand.moniker == 'kingston' %]
+      <h1 style="[% h1_style %]">Your bin request has been&nbsp;logged</h1>
+    [% ELSE %]
+      <h1 style="[% h1_style %]">Your request has been&nbsp;logged</h1>
+    [% END %]
+  [% ELSE %]
+    <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
+  [% END %]
+
+  [% IF cobrand.moniker == 'sutton' %]
+  <p style="[% p_style %]">Thank you for contacting the London Borough of Sutton.</p>
+  [% END %]
 
 [% INCLUDE '_council_reference.html' problem=report %]
 
@@ -39,6 +44,22 @@ INCLUDE '_email_top.html';
             <li>We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.</li>
         </ul>
     [% END %]
+
+[% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
+  <p style="[% p_style %]">We aim to deliver your bin in [% cobrand.wasteworks_config.request_timeframe %].</p>
+  <p style="[% p_style %]">
+    <b>On delivery day</b><br>
+    You do not need to be home for our crew to deliver the bin.
+  </p>
+  <p style="[% p_style %]">
+    <b>Collecting your old bin</b>
+    If you&apos;ve requested a collection of your old bin, we'll schedule a specific date for our crew
+    to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
+  </p>
+  <p style="[% p_style %]">
+    <strong>Use track your request link to check for your scheduled delivery date.</strong>
+  </p>
+
 [% ELSE %]
 
     [% IF report.category == 'Report missed collection' %]
@@ -58,6 +79,10 @@ INCLUDE '_email_top.html';
 [% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     [% report.detail | html_para_email(secondary_p_style) %]
+
+    [% IF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
+      <a style="[% button_style %]" href="[% cobrand.feature('waste_features').track_request_url %]?client_ref=RBK-[% report.id %]">Track your request</a>
+    [% END %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
