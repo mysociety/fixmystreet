@@ -164,6 +164,27 @@ sub should_skip_sending_update {
     return 0;
 }
 
+sub path_to_web_templates {
+    my $self = shift;
+    return [
+        FixMyStreet->path_to( 'templates/web', $self->moniker ),
+        FixMyStreet->path_to( 'templates/web/northants' ),
+        FixMyStreet->path_to( 'templates/web/fixmystreet-uk-councils' ),
+    ];
+}
+
+sub path_to_email_templates {
+    my ( $self, $lang_code ) = @_;
+    my $paths = [
+        FixMyStreet->path_to( 'templates', 'email', $self->moniker ),
+        FixMyStreet->path_to( 'templates', 'email', 'northants' ),
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet-uk-councils' ),
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com'),
+    ];
+    return $paths;
+}
+
+
 =pod
 
 =back
