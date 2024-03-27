@@ -141,17 +141,17 @@ sub _join_extended {
 }
 
 sub _sort_addresses {
-    ( $a->{pao_start_number} // 0 ) <=> ( $b->{pao_start_number} // 0 )
+    ( $a->{pao_start_number} || 0 ) <=> ( $b->{pao_start_number} || 0 )
     or
-    ( $a->{pao_start_suffix} // '' ) cmp ( $b->{pao_start_suffix} // '' )
+    ( $a->{pao_start_suffix} || '' ) cmp ( $b->{pao_start_suffix} || '' )
     or
-    ( $a->{pao_text} // '' ) cmp ( $b->{pao_text} // '' )
+    ( $a->{pao_text} || '' ) cmp ( $b->{pao_text} || '' )
     or
-    ( $a->{sao_start_number} // 0 ) <=> ( $b->{sao_start_number} // 0 )
+    ( $a->{sao_start_number} || 0 ) <=> ( $b->{sao_start_number} || 0 )
     or
-    ( $a->{sao_start_suffix} // '' ) cmp ( $b->{sao_start_suffix} // '' )
+    ( $a->{sao_start_suffix} || '' ) cmp ( $b->{sao_start_suffix} || '' )
     or
-    ( $a->{sao_text} // '' ) cmp ( $b->{sao_text} // '' )
+    ( $a->{sao_text} || '' ) cmp ( $b->{sao_text} || '' )
 }
 
 # Fields needed to build an address string
