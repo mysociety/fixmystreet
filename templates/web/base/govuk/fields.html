@@ -193,6 +193,9 @@
       [% IF loop.last AND field.get_tag('last_differs') %]
         <div class="govuk-radios__divider">or</div>
       [% END %]
+      [% IF item.tags.divider_template %]
+        [% PROCESS "${item.tags.divider_template}.html" %]
+      [% END %]
 	  [% hint = item.hint OR item.get_tag('hint') ~%]
       <div class="govuk-radios__item">
         <input type="radio" class="govuk-radios__input" id="[% field.id %]-[% loop.index %]"

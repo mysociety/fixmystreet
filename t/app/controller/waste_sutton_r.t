@@ -120,6 +120,8 @@ FixMyStreet::override_config {
         $mech->follow_link_ok( { text => 'Request a bin, box, caddy or bags' } );
 		# 19 (1), 24 (1), 16 (1), 1 (1)
         # missing, new_build, more
+        $mech->content_contains('The Council has continued to provide waste and recycling containers free for as long as possible', 'Intro text included');
+        $mech->content_contains('You can request a larger container if you meet the following criteria', 'Divider intro text included for container sizes');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
