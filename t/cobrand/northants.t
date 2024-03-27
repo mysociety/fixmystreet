@@ -5,23 +5,50 @@ use Catalyst::Test 'FixMyStreet::App';
 use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
 
+use_ok 'FixMyStreet::Cobrand::WestNorthants';
 use_ok 'FixMyStreet::Cobrand::NorthNorthants';
 
 my $mech = FixMyStreet::TestMech->new;
 
 use open ':std', ':encoding(UTF-8)';
 
-my $nh = $mech->create_body_ok(164185, 'Northamptonshire Highways', {}, { cobrand => 'northamptonshire' });
-my $nnc = $mech->create_body_ok(164185, 'North Northamptonshire Council', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1 }, { cobrand => 'northnorthants' });
+for my $test ( {
+    northants_area_id => 164185,
+    opposite => 164186,
+    northants_name => 'North Northamptonshire',
+    moniker => 'northnorthants',
+    areas_to_include => {
+        'corby' => '2398',
+        'kettering' => '2396',
+        'wellingborough' => '2395',
+        'north northamptonshire' => '164185',
+    },
+    cobrand_pkg => 'FixMyStreet::Cobrand::NorthNorthants',
+}, {
+    northants_area_id => 164186,
+    opposite => 164185,
+    northants_name => 'West Northamptonshire',
+    moniker => 'westnorthants',
+    areas_to_include => {
+        'south northants' => '2392',
+        'daventry' => '2394',
+        'northampton' => '2397',
+        'west northamptonshire' => '164186',
+    },
+    cobrand_pkg => 'FixMyStreet::Cobrand::WestNorthants',
+} ) {
 
-my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $nnc);
-my $user = $mech->create_user_ok('user@example.com', name => 'User');
+my $nh = $mech->create_body_ok($test->{northants_area_id}, 'Northamptonshire Highways', {}, { cobrand => 'northamptonshire' });
+my $northants = $mech->create_body_ok($test->{northants_area_id}, $test->{northants_name},{
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1 }, { cobrand => $test->{moniker} });
 
-my $nnc_contact = $mech->create_contact_ok(
-    body_id => $nnc->id,
+my $counciluser = $mech->create_user_ok($test->{moniker} . 'counciluser@example.com', name => 'Council User', from_body => $northants);
+my $user = $mech->create_user_ok($test->{moniker} . 'user@example.com', name => 'User');
+
+my $northants_contact = $mech->create_contact_ok(
+    body_id => $northants->id,
     category => 'Trees',
-    email => 'trees-nnc@example.com',
+    email => 'trees@example.com',
 );
 
 my $nh_contact = $mech->create_contact_ok(
@@ -31,15 +58,15 @@ my $nh_contact = $mech->create_contact_ok(
 );
 
 $mech->create_contact_ok(
-    body_id => $nnc->id,
+    body_id => $northants->id,
     category => 'Hedges',
-    email => 'hedges-nnc@example.com',
+    email => 'hedges@example.com',
     send_method => 'Email',
 );
 
-my ($report) = $mech->create_problems_for_body(1, $nnc->id, 'Defect Problem', {
+my ($report) = $mech->create_problems_for_body(1, $northants->id, 'Defect Problem', {
     whensent => DateTime->now()->subtract( minutes => 5 ),
-    cobrand => 'northnorthants',
+    cobrand => $test->{moniker},
     external_id => 'CRM123',
     send_method_used => 'Open311',
     user => $counciluser
@@ -57,11 +84,11 @@ my $comment = FixMyStreet::DB->resultset('Comment')->create( {
     cobrand => 'default',
 } );
 
-$nnc->update( { comment_user_id => $counciluser->id } );
+$northants->update( { comment_user_id => $counciluser->id } );
 
 subtest 'Check updates not sent for defects' => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS=> 'northnorthants',
+        ALLOWED_COBRANDS=> $test->{moniker},
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         my $updates = Open311::PostServiceRequestUpdates->new();
@@ -77,7 +104,7 @@ $report->update({ user => $user });
 $comment->update({ send_state => 'unprocessed' });
 subtest 'check updates sent for non defects' => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS=> 'northnorthants',
+        ALLOWED_COBRANDS=> $test->{moniker},
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         my $updates = Open311::PostServiceRequestUpdates->new();
@@ -89,15 +116,15 @@ subtest 'check updates sent for non defects' => sub {
 };
 
 my ($res, $c) = ctx_request('/');
-my $cobrand = FixMyStreet::Cobrand::NorthNorthants->new({ c => $c });
+my $cobrand = $test->{cobrand_pkg}->new({ c => $c });
 
 subtest 'check updates disallowed correctly' => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS=> 'northnorthants',
+        ALLOWED_COBRANDS=> $test->{moniker},
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             updates_allowed => {
-                northnorthants => 'notopen311-open',
+                $test->{moniker} => 'notopen311-open',
             }
         }
     }, sub {
@@ -114,11 +141,11 @@ subtest 'check further investigation state' => sub {
     $comment->update();
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS=> 'northnorthants',
+        ALLOWED_COBRANDS=> $test->{moniker},
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
-                northnorthants => {
+                $test->{moniker} => {
                     investigating => {
                         further => 'Under further investigation'
                     }
@@ -135,11 +162,11 @@ subtest 'check further investigation state' => sub {
     $comment->update;
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS=> 'northnorthants',
+        ALLOWED_COBRANDS=> $test->{moniker},
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
-                northnorthants => {
+                $test->{moniker} => {
                     investigating => {
                         further => 'Under further investigation'
                     }
@@ -153,17 +180,17 @@ subtest 'check further investigation state' => sub {
     $mech->content_contains('Under further investigation');
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS=> 'northnorthants',
+        ALLOWED_COBRANDS=> $test->{moniker},
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
-                northnorthants => {
+                $test->{moniker} => {
                     fixed => {
                         further => 'Under further investigation'
                     }
                 },
                 fixmystreet => {
-                    'North Northamptonshire Council' => {
+                    $test->{northants_name} => {
                         fixed => {
                             further => 'Under further investigation'
                         }
@@ -179,7 +206,7 @@ subtest 'check further investigation state' => sub {
     $mech->content_lacks('Under further investigation');
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS=> 'northnorthants',
+        ALLOWED_COBRANDS=> $test->{moniker},
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok('/report/' . $comment->problem_id);
@@ -193,13 +220,13 @@ subtest 'check further investigation state' => sub {
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
-                northnorthants => {
+                $test->{moniker} => {
                     investigating => {
                         further => 'Under further investigation'
                     }
                 },
                 fixmystreet => {
-                    'North Northamptonshire Council' => {
+                    $test->{northants_name} => {
                         investigating => {
                             further => 'Under further investigation'
                         }
@@ -218,13 +245,13 @@ subtest 'check further investigation state' => sub {
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
-                northnorthants => {
+                $test->{moniker} => {
                     fixed => {
                         further => 'Under further investigation'
                     }
                 },
                 fixmystreet => {
-                    'North Northamptonshire Council' => {
+                    $test->{northants_name} => {
                         fixed => {
                             further => 'Under further investigation'
                         }
@@ -266,11 +293,11 @@ subtest 'check further investigation state' => sub {
     $comment2->update;
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS=> 'northnorthants',
+        ALLOWED_COBRANDS=> $test->{moniker},
         MAPIT_URL => 'http://mapit.uk/',
         COBRAND_FEATURES => {
             extra_state_mapping => {
-                northnorthants => {
+                $test->{moniker} => {
                     investigating => {
                         further => 'Under further investigation'
                     }
@@ -287,7 +314,7 @@ subtest 'check further investigation state' => sub {
 
 subtest 'check pin colour / reference shown' => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'northnorthants',
+        ALLOWED_COBRANDS => $test->{moniker},
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         is $cobrand->pin_colour($report, 'around'), 'blue';
@@ -301,19 +328,19 @@ subtest 'check pin colour / reference shown' => sub {
     };
 };
 
-my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
-    from_body => $nnc, password => 'password');
+my $staffuser = $mech->create_user_ok($test->{moniker} . 'counciluser@example.com', name => 'Council User',
+    from_body => $northants, password => 'password');
 $mech->log_in_ok( $staffuser->email );
 
 subtest 'Dashboard CSV extra columns' => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => 'northnorthants',
+        ALLOWED_COBRANDS => $test->{moniker},
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };
     $mech->content_contains('"Site Used","Reported As","External ID"');
-    $mech->content_contains('northnorthants,,' . $report->external_id);
+    $mech->content_contains($test->{moniker} . ",," . $report->external_id);
 };
 
 subtest 'Includes old Northamptonshire reports' => sub {
@@ -322,13 +349,13 @@ subtest 'Includes old Northamptonshire reports' => sub {
         my ($old_enough) = $mech->create_problems_for_body(1, $nh->id, 'nh problem', {
             cobrand => 'northamptonshire',
             user => $user,
-            areas => ',164186,', # In North Northamptonshire.
+            areas => "," . $test->{opposite} . ",",
             created => '2021-03-31',
         });
         my ($too_recent) = $mech->create_problems_for_body(1, $nh->id, 'nh problem', {
             cobrand => 'northamptonshire',
             user => $user,
-            areas => ',164186,', # In North Northamptonshire.
+            areas => "," . $test->{opposite} . ",",
             created => '2021-04-01',
         });
         my $rs = $cobrand->problems;
@@ -337,12 +364,7 @@ subtest 'Includes old Northamptonshire reports' => sub {
     };
 
     subtest 'Includes reports within boundary after April 2021' => sub {
-        my %areas_to_include = (
-            'corby' => '2398',
-            'kettering' => '2396',
-            'wellingborough' => '2395',
-            'north northamptonshire' => '164185',
-        );
+        my %areas_to_include = %{ $test->{areas_to_include} };
         while (my ($area_name, $area_id) = each %areas_to_include) {
             my ($r) = $mech->create_problems_for_body(1, $nh->id, 'nh problem', {
                 cobrand => 'northamptonshire',
@@ -356,7 +378,7 @@ subtest 'Includes old Northamptonshire reports' => sub {
 };
 
 subtest 'Staff have perms for northamptonshire highways reports' => sub {
-    $staffuser->user_body_permissions->create({ body => $nnc, permission_type => 'report_edit' });
+    $staffuser->user_body_permissions->create({ body => $northants, permission_type => 'report_edit' });
     my ($p) = $mech->create_problems_for_body(1, $nh->id, 'Northamptonshire Highways Problem', {
         cobrand => 'northamptonshire',
         user => $user,
@@ -364,12 +386,14 @@ subtest 'Staff have perms for northamptonshire highways reports' => sub {
     });
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => ['northnorthants', 'northamptonshire'],
+        ALLOWED_COBRANDS => [$test->{moniker}, 'northamptonshire'],
     }, sub {
-        $mech->host('northnorthants.fixmystreet.com');
+        $mech->host($test->{moniker} . ".fixmystreet.com");
         $mech->log_in_ok( $staffuser->email );
         $mech->get_ok('/admin/report_edit/' . $p->id);
     };
 };
+
+}
 
 done_testing();
