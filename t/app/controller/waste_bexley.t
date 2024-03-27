@@ -235,6 +235,7 @@ FixMyStreet::override_config {
                     report_url     => '/report/' . $existing_missed_collection_report1->id,
                     report_locked_out => 0,
                     assisted_collection => 1, # Has taken precedence over PC-55 non-assisted collection
+                    schedule => 'Twice Weekly',
                     %defaults,
                 },
                 {   id             => 9,
@@ -247,6 +248,7 @@ FixMyStreet::override_config {
                     report_url     => '/report/' . $existing_missed_collection_report2->id,
                     report_locked_out => 0,
                     assisted_collection => 0,
+                    schedule => 'Twice Weekly',
                     %defaults,
                 },
                 {   id             => 1,
@@ -258,6 +260,7 @@ FixMyStreet::override_config {
                     report_open    => 0,
                     report_locked_out => 1,
                     assisted_collection => 0,
+                    schedule => 'Fortnightly',
                     %defaults,
                 },
                 {   id             => 6,
@@ -269,6 +272,7 @@ FixMyStreet::override_config {
                     report_open    => 0,
                     report_locked_out => 0,
                     assisted_collection => 0,
+                    schedule => 'Fortnightly',
                     %defaults,
                 },
             ];
