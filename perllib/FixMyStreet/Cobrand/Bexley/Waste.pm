@@ -188,6 +188,15 @@ sub bin_services_for_address {
             };
         }
 
+        # Frequency of collection
+        if ( @round_schedules > 1 ) {
+            $filtered_service->{schedule} = 'Twice Weekly';
+        } elsif ( $round_schedules[0] =~ /Wk \d+$/ ) {
+            $filtered_service->{schedule} = 'Fortnightly';
+        } else {
+            $filtered_service->{schedule} = 'Weekly';
+        }
+
         my $existing_report_id = $property->{missed_collection_reports}{ $filtered_service->{service_id} };
 
         my $report;
