@@ -66,7 +66,7 @@
     [% IF field_errors.name %]
         <div class="form-error">[% field_errors.name %]</div>
     [% END %]
-    <input type="text" class="govuk-input required" name="name" id="form_name" value="[% form_name | html %]" size="30">
+    <input type="text" class="govuk-input required" name="name"  autocomplete="name" id="form_name" value="[% form_name | html %]" size="30">
   </div>
 
   <div class="govuk-form-group">

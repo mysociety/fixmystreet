@@ -34,7 +34,7 @@
                 [% IF field_errors.name %]
                     <p class='form-error'>[% field_errors.name %]</p>
                 [% END %]
-                <input class="form-control js-form-name" type="text" value="[% report.name | html %]" name="name" id="form_name">
+                <input class="form-control js-form-name" type="text" value="[% report.name | html %]" name="name" id="form_name" autocomplete="name">
 
                 <label for="form_phone">[% loc('Phone number') %]</label>
                 [% IF field_errors.phone %]

@@ -49,7 +49,7 @@
     [% IF field_errors.email %]
         <p class='form-error'>[% field_errors.email %]</p>
     [% END %]
-    <input type="email" name="email" id="form_email" value="[% email %]" class="form-control">
+    <input type="email" name="email" id="form_email" value="[% email %]" class="form-control" autocomplete="email">
 
     <label for="form_phone">[% loc('Phone number') %]<span class="hidden-js" id="js-optional-phone-update-method-triggered"> [% loc('(optional)') %]</span></label>
     [% IF field_errors.phone %]

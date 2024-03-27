@@ -38,7 +38,7 @@ END
             [% loc('New email address:') %]
           [% END %]
         </label>
-        <input class="form-control" type="email" name="email" id="email" value="[% username | html %]">
+        <input class="form-control" type="email" name="email" id="email" value="[% username | html %]" autocomplete="email">
     </div>
     <div class="final-submit">
         <input type="submit" class="btn" value="[% title %]">
