@@ -1,6 +1,7 @@
 package FixMyStreet::Cobrand::Kingston;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
+use utf8;
 use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
 with 'FixMyStreet::Roles::Bottomline';
@@ -11,6 +12,9 @@ sub council_area { return 'Kingston'; }
 sub council_name { return 'Kingston upon Thames Council'; }
 sub council_url { return 'kingston'; }
 sub admin_user_domain { 'kingston.gov.uk' }
+
+use constant CONTAINER_RECYCLING_BIN => 12;
+use constant CONTAINER_RECYCLING_BOX => 16;
 
 =head2 waste_on_the_day_criteria
 
@@ -60,8 +64,8 @@ sub image_for_unit {
 
     # Base mixed recycling (2241) on the container itself
     my %containers = map { $_ => 1 } @{$unit->{request_containers}};
-    return "$base/bin-green" if $containers{12} && $self->{c}->stash->{container_recycling_bin};
-    return "$base/box-green-mix" if $containers{16};
+    return "$base/bin-green" if $containers{+CONTAINER_RECYCLING_BIN};
+    return "$base/box-green-mix" if $containers{+CONTAINER_RECYCLING_BOX};
 
     my $service_id = $unit->{service_id};
     my $images = {
@@ -99,6 +103,29 @@ sub garden_waste_renewal_sacks_cost_pa {
      my ($self, $end_date) = @_;
      return $self->_get_cost('ggw_sacks_cost_renewal', $end_date);
 }
+
+=head2 request_cost
+
+Calculate how much, if anything, a request for a container should be.
+
+=cut
+
+sub request_cost {
+    my ($self, $id, $quantity, $containers) = @_;
+    $quantity ||= 1;
+    if (my $cost = $self->_get_cost('request_replace_cost')) {
+        my $cost_more = $self->_get_cost('request_replace_cost_more') || $cost/2;
+        if ($quantity > 1) {
+            $cost += $cost_more * ($quantity-1);
+        }
+        my $names = $self->{c}->stash->{containers};
+        if ($names->{$id} !~ /bag|sack|food/i) {
+            my $hint = "";
+            return ($cost, $hint);
+        }
+    }
+}
+
 
 =head2 Bulky waste collection
 

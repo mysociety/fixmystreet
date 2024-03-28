@@ -246,12 +246,20 @@ sub waste_event_state_map {
 }
 
 use constant CONTAINER_REFUSE_140 => 1;
+use constant CONTAINER_REFUSE_180 => 35;
 use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
+use constant CONTAINER_REFUSE_RED_BAG => 6;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
+use constant CONTAINER_RECYCLING_BLUE_BAG => 18;
 use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_PAPER_BIN_140 => 36;
+use constant CONTAINER_FOOD_INDOOR => 23;
+use constant CONTAINER_FOOD_OUTDOOR => 24;
+use constant CONTAINER_GARDEN_BIN => 26;
+use constant CONTAINER_GARDEN_SACK => 28;
+use constant CONTAINER_PAPER_SINGLE_BAG => 30;
 
 use constant GARDEN_WASTE_SERVICE_ID => 2247;
 sub garden_service_name { 'garden waste collection service' }
@@ -381,10 +389,10 @@ sub bin_services_for_address {
     } elsif ($self->moniker eq 'kingston') {
         $self->{c}->stash->{containers} = {
             %shared,
-            1 => 'Black rubbish bin (140L)',
-            2 => 'Black rubbish bin (240L)',
-            3 => 'Black rubbish bin (360L)',
-            35 => 'Black rubbish bin (180L)',
+            1 => 'Black rubbish bin', # 140L
+            2 => 'Black rubbish bin', # 240L
+            3 => 'Black rubbish bin', # 360L
+            35 => 'Black rubbish bin', # 180L
             12 => 'Green recycling bin (240L)',
             13 => 'Green recycling bin (360L)',
             16 => 'Green recycling box (55L)',
@@ -517,15 +525,19 @@ sub bin_services_for_address {
                     $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
                     $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
                 }
-                next if $container == 6; # Red stripe bag
-                next if $container == 18 && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
+                next if $container == CONTAINER_REFUSE_RED_BAG;
+                next if $container == CONTAINER_RECYCLING_BLUE_BAG && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
                 if ($container && $quantity) {
-                    # Store this fact here for use in new request flow
-                    $self->{c}->stash->{container_recycling_bin} = 1 if $container == CONTAINER_RECYCLING_BIN;
                     push @$containers, $container;
-                    next if $container == 28; # Garden waste bag
-                    # The most you can request is one
-                    $request_max->{$container} = 1;
+                    next if $container == CONTAINER_GARDEN_SACK;
+                    # The most you can request - ignored on replacements anyway
+                    if ($container == CONTAINER_FOOD_OUTDOOR) {
+                        $request_max->{$container} = 3;
+                    } elsif ($container == CONTAINER_RECYCLING_BOX) {
+                        $request_max->{$container} = 5;
+                    } else {
+                        $request_max->{$container} = 1;
+                    }
                     $quantities->{$container} = $quantity;
 
                     if ($self->moniker eq 'sutton') {
@@ -544,15 +556,10 @@ sub bin_services_for_address {
                 }
             }
 
-            if ($service_name =~ /Food/) {
+            if ($service_name =~ /Food/ && !$quantities->{+CONTAINER_FOOD_INDOOR}) {
                 # Can always request a food caddy
-                push @$containers, 23; # Food waste bin (kitchen)
-                $request_max->{23} = 1;
-            }
-            if ($self->moniker eq 'kingston' && grep { $_ == CONTAINER_RECYCLING_BOX } @$containers) {
-                # Can request a bin if you have a box
-                push @$containers, CONTAINER_RECYCLING_BIN;
-                $request_max->{+CONTAINER_RECYCLING_BIN} = 1;
+                push @$containers, CONTAINER_FOOD_INDOOR; # Food waste bin (kitchen)
+                $request_max->{+CONTAINER_FOOD_INDOOR} = 1;
             }
 
             my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
@@ -582,7 +589,7 @@ sub bin_services_for_address {
                     # Assume garden will only have one container data
                     $garden_container = $containers->[0];
                     $garden_bins = $quantities->{$containers->[0]};
-                    if ($garden_container == 28) {
+                    if ($garden_container == CONTAINER_GARDEN_SACK) {
                         $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
                     } else {
                         $garden_cost = $self->garden_waste_renewal_cost_pa($schedules->{end_date}, $garden_bins) / 100;
@@ -737,7 +744,7 @@ sub waste_garden_sub_params {
 
     my $service = $self->garden_current_subscription;
     my $existing = $service ? $service->{garden_container} : undef;
-    my $container = $data->{slwp_garden_sacks} ? 28 : $existing || 26;
+    my $container = $data->{slwp_garden_sacks} ? CONTAINER_GARDEN_SACK : $existing || CONTAINER_GARDEN_BIN;
 
     $c->set_param('Request_Type', $type);
     $c->set_param('Subscription_Details_Containers', $container);
@@ -795,13 +802,21 @@ sub waste_munge_report_form_fields {
 =head2 waste_munge_request_form_fields
 
 Replace the usual checkboxes grouped by service with one radio list of
-containers.
+containers (unless the 'new' parameter is supplied for Kingston).
 
 =cut
 
 sub waste_munge_request_form_fields {
     my ($self, $field_list) = @_;
     my $c = $self->{c};
+
+    if ($self->moniker eq 'kingston' && $c->get_param('new')) {
+        push @$field_list, "container-choice" => {
+            type => 'Hidden',
+            default => 'New',
+        };
+        return;
+    }
 
     my @radio_options;
     my @replace_options;
@@ -812,10 +827,7 @@ sub waste_munge_request_form_fields {
         my $id = $1;
         next if $self->moniker eq 'kingston' && $seen{$id};
 
-        my ($cost, $hint);
-        if ($self->moniker eq 'sutton') {
-            ($cost, $hint) = $self->request_cost($id, $c->stash->{quantities});
-        }
+        my ($cost, $hint) = $self->request_cost($id, 1, $c->stash->{quantities});
 
         my $data = {
             value => $id,
@@ -884,11 +896,16 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'about_you' if $choice == 18 || $choice == 30;
-        if ($cls eq 'Kingston' && $choice == CONTAINER_RECYCLING_BIN && !$self->{c}->stash->{container_recycling_bin}) {
-            $data->{request_reason} = 'more';
-            return 'recycling_swap';
+        if ($choice eq 'New') {
+            if ($data->{'container-' . CONTAINER_REFUSE_140}
+                || $data->{'container-' . CONTAINER_REFUSE_180}
+                || $data->{'container-' . CONTAINER_REFUSE_240}
+                || $data->{'container-' . CONTAINER_REFUSE_360}) {
+                return 'how_many';
+            }
+            return 'about_you';
         }
+        return 'about_you' if $choice == CONTAINER_RECYCLING_BLUE_BAG || $choice == CONTAINER_PAPER_SINGLE_BAG;
         if ($cls eq 'Sutton') {
             foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
                 if ($choice == $_ && !$containers->{$_}) {
@@ -896,6 +913,10 @@ sub waste_request_form_first_next {
                     return 'about_you';
                 }
             }
+        }
+        my $name = $self->{c}->stash->{containers}{$choice};
+        if ($cls eq 'Kingston' && $name =~ /rubbish bin/) {
+            return 'how_many';
         }
         return 'replacement';
     };
@@ -905,6 +926,7 @@ sub waste_request_form_first_next {
 sub waste_munge_request_form_data {
     my ($self, $data) = @_;
     my $container_id = delete $data->{'container-choice'};
+    return if $container_id eq 'New';
     $data->{"container-$container_id"} = 1;
 }
 
@@ -914,7 +936,7 @@ sub waste_munge_request_data {
     my $c = $self->{c};
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
-    my $quantity = $data->{recycling_quantity} || 1;
+    my $quantity = 1;
     my $reason = $data->{request_reason} || '';
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 
@@ -955,10 +977,11 @@ sub waste_munge_request_data {
             $id = CONTAINER_PAPER_BIN_140 . '::' . CONTAINER_PAPER_BIN;
         }
     } else {
-        # No reason, must be a bag
         $action_id = 1; # Deliver
         $reason_id = 3; # Change capacity
-        $nice_reason = "Additional bag required";
+        if ($id == CONTAINER_RECYCLING_BLUE_BAG || $id == CONTAINER_PAPER_SINGLE_BAG) { # A bag
+            $nice_reason = "Additional bag required";
+        }
     }
 
     $data->{title} = "Request new $container";
@@ -976,7 +999,16 @@ sub waste_munge_request_data {
         $data->{detail} .= " - $notes";
         $c->set_param('Notes', $notes);
     }
-    $c->set_param('Container_Type', $id);
+
+    if ($data->{how_many} && $container =~ /rubbish bin/) { # Must have been a Kingston refuse bin
+        if ($data->{how_many} eq '5more') {
+            $c->set_param('Container_Type', CONTAINER_REFUSE_240);
+        } else {
+            $c->set_param('Container_Type', CONTAINER_REFUSE_180);
+        }
+    } else {
+        $c->set_param('Container_Type', $id);
+    }
 }
 
 sub waste_munge_report_data {
