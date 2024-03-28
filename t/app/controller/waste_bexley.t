@@ -190,6 +190,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { address => 10001 } } );
 
         test_services($mech);
+        $mech->content_contains("You do not have a Garden waste collection");
 
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
@@ -269,6 +270,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { address => 10002 } } );
 
         test_services($mech);
+        $mech->content_lacks("You do not have a Garden waste collection"); # not allowed GGW if communal property
     };
 
     sub test_services {
@@ -277,7 +279,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Communal Food Bin');
         $mech->content_contains('Tuesday, 30th April 2024');
         $mech->content_lacks('Brown Caddy');
-        $mech->content_lacks('Brown Wheelie Bin');
         $mech->content_lacks('Green Recycling Bin');
         $mech->content_lacks('Black Recycling Box');
         $mech->content_contains('Clear Sack(s)');
@@ -395,6 +396,13 @@ FixMyStreet::override_config {
         $mech->content_contains('A green recycling box collection has been reported as missed');
         $mech->content_contains('<a href="/report/' . $existing_missed_collection_report2->id . '" class="waste-service-link">check status</a>');
     };
+
+    subtest 'GGW promo not shown if already subscribed' => sub {
+        $mech->get_ok('/waste/10005');
+
+        $mech->content_lacks("You do not have a Garden waste collection");
+    };
+
 };
 
 done_testing;
@@ -438,6 +446,15 @@ sub _site_info {
                 SiteLatitude     => 51.466707,
                 SiteLongitude    => 0.181108,
                 SiteParentID     => 101,
+            },
+        },
+        10005 => {
+            AccountSiteID   => 5,
+            AccountSiteUPRN => 10005,
+            Site            => {
+                SiteShortAddress => ', 5, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
             },
         },
     };
@@ -577,6 +594,18 @@ sub _site_collections {
                 SiteServiceValidTo   => '2024-03-31T03:00:00',
 
                 RoundSchedule => 'RND-1 Tue Wk 2',
+            },
+        ],
+        10005 => [
+            {   SiteServiceID          => 2,
+                ServiceItemDescription => 'Service 3',
+                ServiceItemName => 'GA-140', # Brown Wheelie Bin
+
+                NextCollectionDate   => '2024-04-30T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '2024-03-31T03:00:00',
+
+                RoundSchedule => 'N/A',
             },
         ],
     };
