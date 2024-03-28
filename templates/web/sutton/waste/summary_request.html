@@ -11,6 +11,14 @@ step1 = 'request';
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
         <dd class="govuk-summary-list__value">[% data.request_reason.ucfirst %]</dd>
     </div>
+
+  [% IF data.payment %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Administration/delivery charge</dt>
+        <dd class="govuk-summary-list__value">£[% tprintf( '%.2f', data.payment / 100 ) %]</dd>
+    </div>
+  [% END %]
+
 [% END %]
 
 [% PROCESS waste/summary.html %]

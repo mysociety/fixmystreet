@@ -1,0 +1,172 @@
+[
+    {
+      "ServiceTasks": {
+        "ServiceTask": [
+          {
+            "TaskTypeId": "2240",
+            "Data": {
+              "ExtensibleDatum": {
+                "Value": "Paper Recycling 240L ",
+                "DatatypeName": "Recycling Containers",
+                "ChildData": {
+                  "ExtensibleDatum": [
+                    { "DatatypeName": "Container Type", "Value": "36" },
+                    { "DatatypeName": "Quantity", "Value": "1" }
+                  ]
+                }
+              }
+            },
+            "ServiceTaskSchedules": {
+              "ServiceTaskSchedule": {
+                "ScheduleDescription": "Friday every other week",
+                "NextInstance": {
+                  "CurrentScheduledDate": { "DateTime": "2022-09-15T23:00:00Z" },
+                  "OriginalScheduledDate": { "DateTime": "2022-09-15T23:00:00Z" }
+                },
+                "LastInstance": {
+                  "CurrentScheduledDate": { "DateTime": "2022-09-02T05:00:00Z" },
+                  "OriginalScheduledDate": { "DateTime": "2022-09-01T23:00:00Z" },
+                  "Ref": { "Value": { "anyType": [ "22239416", "8280" ] } },
+                  "CompletedDate": { "DateTime": "2022-09-02T06:17:01Z" }
+                },
+                "StartDate": { "DateTime": "2018-09-02T23:00:00Z" },
+                "EndDate": { "DateTime": "2050-01-01T00:00:00Z" }
+              }
+            },
+            "TaskIndicatorId": "33",
+            "Id": "2001",
+            "TaskTypeName": "Collect Domestic Paper",
+            "ScheduleDescription": "Every Friday fortnightly"
+          },
+          {
+            "Data": {
+              "ExtensibleDatum": [ {
+                "ChildData": {
+                  "ExtensibleDatum": [
+                    { "Value": "24", "DatatypeName": "Container Type" },
+                    { "Value": "1", "DatatypeName": "Quantity" }
+                  ]
+                },
+                "DatatypeName": "Food Containers",
+                "DatatypeId": "3955",
+                "Value": "Food Caddy 23L"
+              } ]
+            },
+            "TaskTypeId": "2239",
+            "ServiceTaskSchedules": {
+              "ServiceTaskSchedule": [
+                {
+                  "LastInstance": {
+                    "Ref": { "Value": { "anyType": [ "22244305", "8287" ] } },
+                    "OriginalScheduledDate": { "DateTime": "2022-09-08T23:00:00Z" },
+                    "CurrentScheduledDate": { "DateTime": "2022-09-09T05:00:00Z" },
+                    "CompletedDate": { "DateTime": "2022-09-09T05:42:38.93Z" }
+                  },
+                  "StartDate": { "DateTime": "2018-09-02T23:00:00Z" },
+                  "NextInstance": null,
+                  "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+                  "ScheduleDescription": null
+                },
+                {
+                  "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+                  "StartDate": { "DateTime": "2018-09-02T23:00:00Z" },
+                  "LastInstance": null,
+                  "NextInstance": {
+                    "CurrentScheduledDate": { "DateTime": "2022-09-15T23:00:00Z" },
+                    "OriginalScheduledDate": { "DateTime": "2022-09-15T23:00:00Z" }
+                  },
+                  "ScheduleDescription": "Friday every other week"
+                }
+              ]
+            },
+            "TaskIndicatorId": "33",
+            "TaskTypeName": "Collect Domestic Food",
+            "Id": "2002",
+            "ScheduleDescription": "Every Friday"
+          },
+          {
+            "TaskIndicatorId": "33",
+            "ServiceTaskSchedules": {
+              "ServiceTaskSchedule": {
+                "ScheduleDescription": "Friday every other week",
+                "NextInstance": {
+                  "CurrentScheduledDate": { "DateTime": "2022-09-22T23:00:00Z" },
+                  "OriginalScheduledDate": { "DateTime": "2022-09-22T23:00:00Z" }
+                },
+                "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+                "LastInstance": {
+                  "CompletedDate": { "DateTime": "2022-09-09T05:52:03.367Z" },
+                  "Ref": { "Value": { "anyType": [ "17510905", "8287" ] } },
+                  "CurrentScheduledDate": { "DateTime": "2022-09-09T05:00:00Z" },
+                  "OriginalScheduledDate": { "DateTime": "2022-09-08T23:00:00Z" }
+                },
+                "EndDate": { "DateTime": "2050-01-01T00:00:00Z" }
+              }
+            },
+            "TaskTypeId": "2241",
+            "Data": {
+              "ExtensibleDatum": {
+                "DatatypeName": "Recycling Containers",
+                "DatatypeId": "3964",
+                "Value": "Recycling 55L Box",
+                "ChildData": {
+                  "ExtensibleDatum": [
+                    { "Value": "16", "DatatypeName": "Container Type" },
+                    { "Value": "3", "DatatypeName": "Quantity" }
+                  ]
+                }
+              }
+            },
+            "ScheduleDescription": "Every Friday fortnightly",
+            "TaskTypeName": "Collect Domestic Recycling",
+            "Id": "2003"
+          }
+        ]
+      },
+      "ServiceName": "Domestic Recycling Collection",
+      "ServiceId": "408",
+      "Id": "1001"
+    },
+    {
+      "ServiceId": "405",
+      "ServiceName": "Domestic Refuse Collection",
+      "Id": "1002",
+      "ServiceTasks": {
+        "ServiceTask": {
+          "ScheduleDescription": "Every Friday fortnightly",
+          "Id": "2004",
+          "TaskTypeName": "Collect Domestic Refuse Bin",
+          "TaskIndicatorId": "33",
+          "ServiceTaskSchedules": {
+            "ServiceTaskSchedule": {
+              "ScheduleDescription": "Friday every other week",
+              "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+              "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+              "LastInstance": {
+                "Ref": { "Value": { "anyType": [ "17430692", "8287" ] } },
+                "CurrentScheduledDate": { "DateTime": "2022-09-09T05:00:00Z" },
+                "OriginalScheduledDate": { "DateTime": "2022-09-08T23:00:00Z" },
+                "CompletedDate": { "DateTime": "2022-09-09T08:19:22.76Z" }
+              },
+              "NextInstance": {
+                "OriginalScheduledDate": { "DateTime": "2022-09-22T23:00:00Z" },
+                "CurrentScheduledDate": { "DateTime": "2022-09-22T23:00:00Z" }
+              }
+            }
+          },
+          "TaskTypeId": "2238",
+          "Data": {
+            "ExtensibleDatum": {
+              "ChildData": {
+                "ExtensibleDatum": [
+                  { "Value": "1", "DatatypeName": "Container Type" },
+                  { "Value": "1", "DatatypeName": "Quantity" }
+                ]
+              },
+              "DatatypeName": "Refuse Containers"
+            }
+          }
+        }
+      }
+    }
+]

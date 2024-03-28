@@ -17,7 +17,6 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
-use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
 
 =head2 About you
@@ -31,12 +30,62 @@ has_page about_you => (
     intro => 'about_you.html',
     title => 'About you',
     next => 'summary',
+    post_process => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        my $c = $form->c;
+        if ($data) {
+            my $choice = $data->{'container-choice'};
+            if ($choice eq 'New') {
+                my @services = grep { /^container-\d/ && $data->{$_} } sort keys %$data;
+                my $total_paid_quantity = 0;
+                foreach (@services) {
+                    my ($id) = /container-(.*)/;
+                    my $quantity = $data->{"quantity-$id"};
+                    my $names = $c->stash->{containers};
+                    if ($names->{$id} !~ /bag|sack|food/i) {
+                        $total_paid_quantity += $quantity;
+                    }
+                }
+                my ($cost) = $c->cobrand->request_cost(1, $total_paid_quantity);
+                $data->{payment} = $cost if $cost;
+            } else {
+                my $quantity = 1;
+                if ($choice == CONTAINER_RECYCLING_BOX) {
+                    $quantity = $data->{recycling_quantity}; # Won't be set if you said more, yes to swap
+                }
+                my ($cost) = $c->cobrand->request_cost($choice, $quantity);
+                $data->{payment} = $cost if $cost;
+            }
+        }
+    },
+);
+
+has_page how_many => (
+    fields => ['how_many', 'continue'],
+    title => 'Reason for request',
+    next => sub {
+        my $data = shift;
+        return 'about_you' if $data->{'container-choice'} eq 'New';
+        return 'replacement';
+    }
+);
+
+has_field how_many => (
+    required => 1,
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'How many people live in this household?',
+    options => [
+        { value => 'less5', label => '1 to 4' },
+        { value => '5more', label => '5 or more' },
+    ],
 );
 
 =head2 Reason for replacement
 
-The user is asked why they need a new container - damaged, missing, new
-resident (unless a garden bin) or they require more (if they have a green box).
+The user is asked why they need a new container - damaged, missing,
+or they require more (if they have a green box).
 
 =cut
 
@@ -48,7 +97,6 @@ has_page replacement => (
         my $choice = $data->{"container-choice"};
         my $reason = $data->{request_reason};
         return 'recycling_swap' if $choice == CONTAINER_RECYCLING_BOX && $reason eq 'more';
-        return 'recycling_number' if $choice == CONTAINER_RECYCLING_BOX;
         return 'notes_missing' if $reason eq 'missing';
         return 'notes_damaged' if $reason eq 'damaged';
         return 'about_you';
@@ -66,16 +114,12 @@ sub options_request_reason {
     my $form = shift;
     my $data = $form->saved_data;
     my $choice = $data->{'container-choice'} || 0;
-    my $garden = $data->{'container-26'} || $data->{'container-27'} || $choice == 26 || $choice == 27;
     my $green_box = $data->{'container-' . CONTAINER_RECYCLING_BOX} || $choice == CONTAINER_RECYCLING_BOX;
-    my $green_bin = ($data->{'container-' . CONTAINER_RECYCLING_BIN} || $choice == CONTAINER_RECYCLING_BIN) && !$form->{c}->stash->{container_recycling_bin} && $data->{recycling_swap} ne 'No';
     my @options;
-    push @options, { value => 'new_build', label => 'I am a new resident without a container' }
-        if !$garden;
     push @options, { value => 'damaged', label => 'My container is damaged' };
     push @options, { value => 'missing', label => 'My container is missing' };
     push @options, { value => 'more', label => 'I need an additional container/bin' }
-        if $green_box || $green_bin;
+        if $green_box;
     return @options;
 }
 
@@ -89,18 +133,10 @@ for a bin, the user is asked if they'd like to swap their boxes for a bin.
 has_page recycling_swap => (
     fields => ['recycling_swap', 'continue'],
     title => 'Reason for request',
-    update_field_list => sub {
-        my $form = shift;
-        my $c = $form->{c};
-        my $data = $form->saved_data;
-        $data->{_container_recycling_bin} = $c->stash->{container_recycling_bin};
-        return {};
-    },
     next => sub {
         my $data = shift;
         return 'recycling_swap_confirm' if $data->{recycling_swap} eq 'Yes';
-        return 'replacement' if $data->{"container-choice"} == CONTAINER_RECYCLING_BIN && !$data->{_container_recycling_bin};
-        return 'recycling_number';
+        return 'about_you';
     },
 );
 
@@ -137,44 +173,6 @@ has_field recycling_swap_confirm => (
     label => 'Confirmation',
     option_label => 'I confirm that I have 3 or more recycling box containers',
 );
-
-=head2 Quantity required
-
-If they've asked for replacement boxes, ask how many they need.
-
-=cut
-
-has_page recycling_number => (
-    fields => ['recycling_quantity', 'continue'],
-    title => 'Quantity',
-    next => sub {
-        my $data = shift;
-        my $reason = $data->{request_reason};
-        return 'notes_missing' if $reason eq 'missing';
-        return 'notes_damaged' if $reason eq 'damaged';
-        return 'about_you';
-    },
-);
-
-has_field recycling_quantity => (
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    build_label_method => sub {
-        my $self = shift;
-        my $reason = $self->parent->saved_data->{request_reason};
-        return 'How many recycling boxes would you like?' if $reason eq 'new_build';
-        return 'How many containers are missing?' if $reason eq 'missing';
-        return 'How many containers are damaged?' if $reason eq 'damaged';
-        return 'How many recycling boxes would you like?' if $reason eq 'more';
-    },
-);
-
-sub options_recycling_quantity {
-    my $form = shift;
-    my @options = map { { value => $_, label => $_ } } (1..5);
-    return @options;
-}
 
 =head2 Missing notes
 

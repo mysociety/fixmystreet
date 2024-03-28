@@ -48,7 +48,13 @@ create_contact({ category => 'Request new container', email => '1635' }, 'Waste'
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Action', required => 1, automated => 'hidden_field' },
     { code => 'Reason', required => 1, automated => 'hidden_field' },
+    { code => 'LastPayMethod', required => 0, automated => 'hidden_field' },
+    { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
+    { code => 'payment_method', required => 0, automated => 'hidden_field' },
+    { code => 'payment', required => 0, automated => 'hidden_field' },
 );
+
+my $sent_params;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'kingston',
@@ -59,12 +65,19 @@ FixMyStreet::override_config {
         } },
         waste => { kingston => 1 },
         echo => { kingston => { bulky_service_id => 413 }},
+        payment_gateway => { kingston => {
+            cc_url => 'http://example.com',
+            request_replace_cost => 1800,
+            request_replace_cost_more => 900,
+        } },
     },
     STAGING_FLAGS => {
         send_reports => 1,
     },
 }, sub {
     my ($e) = shared_echo_mocks();
+    my ($scp) = shared_scp_mocks();
+
     subtest 'Address lookup' => sub {
         set_fixed_time('2022-09-10T12:00:00Z');
         $mech->get_ok('/waste/12345');
@@ -107,13 +120,25 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'collection' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Continue to payment');
+
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 1800;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Damaged during collection";
         is $report->category, 'Request new container';
         is $report->title, 'Request new Blue lid paper and cardboard bin (240L)';
+        is $report->get_extra_field_value('payment'), 1800, 'correct payment';
+        is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $report->get_extra_field_value('Container_Type'), 19, 'correct bin type';
+        is $report->get_extra_field_value('Action'), 3, 'correct container request action';
+        is $report->state, 'unconfirmed', 'report not confirmed';
+        is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -125,76 +150,65 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
-        $mech->submit_form_ok({ with_fields => { 'recycling_quantity' => 2 }});
         $mech->submit_form_ok({ with_fields => { 'notes_missing' => 'Were there, now not' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 1800;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
         $mech->content_contains('>Return to property details<', "Button text changed for Kingston");
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 2\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing - Were there, now not";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing - Were there, now not";
         is $report->title, 'Request new Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[Action]'), '1::1';
-        is $cgi->param('attribute[Reason]'), '1::1';
-    };
-    subtest 'Request new build container' => sub {
-        $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 1 } });
-        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I am a new resident without a container";
-        is $report->title, 'Request new Black rubbish bin (140L)';
-        FixMyStreet::Script::Reports::send();
-        my $req = Open311->test_req_used;
-        my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '1';
-        is $cgi->param('attribute[Reason]'), '4';
+        is $cgi->param('attribute[Reason]'), '1';
     };
     subtest 'Request a new damaged recycling box' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
-        $mech->submit_form_ok({ with_fields => { 'recycling_quantity' => 2 }});
         $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'wear' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 1800;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 2\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Wear and tear";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Wear and tear";
         is $report->title, 'Request new Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[Action]'), '3::3';
-        is $cgi->param('attribute[Reason]'), '2::2';
+        is $cgi->param('attribute[Action]'), '3';
+        is $cgi->param('attribute[Reason]'), '2';
     };
     subtest 'Request more recycling boxes' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'more' }});
         $mech->submit_form_ok({ with_fields => { 'recycling_swap' => 'No' }});
-        $mech->submit_form_ok({ with_fields => { 'recycling_quantity' => 3 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 1800;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 3\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I need an additional container/bin";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I need an additional container/bin";
         is $report->title, 'Request new Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[Action]'), '1::1::1';
-        is $cgi->param('attribute[Reason]'), '3::3::3';
+        is $cgi->param('attribute[Action]'), '1';
+        is $cgi->param('attribute[Reason]'), '3';
     };
     subtest 'Request recycling boxes bin swap' => sub {
         $mech->get_ok('/waste/12345/request');
@@ -203,9 +217,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'recycling_swap' => 'Yes' }});
         $mech->submit_form_ok({ with_fields => { 'recycling_swap_confirm' => 1 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 1800;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I need an additional container/bin";
         is $report->title, 'Request new Green recycling bin (240L)';
@@ -215,44 +232,6 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Container_Type]'), '16::16::16::12';
         is $cgi->param('attribute[Action]'), '2::2::2::1';
         is $cgi->param('attribute[Reason]'), '3::3::3::3';
-    };
-    subtest 'Request recycling boxes bin swap, second way' => sub {
-        $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 12 } });
-        $mech->submit_form_ok({ with_fields => { 'recycling_swap' => 'Yes' }});
-        $mech->submit_form_ok({ with_fields => { 'recycling_swap_confirm' => 1 }});
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I need an additional container/bin";
-        is $report->title, 'Request new Green recycling bin (240L)';
-        FixMyStreet::Script::Reports::send();
-        my $req = Open311->test_req_used;
-        my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[Container_Type]'), '16::16::16::12';
-        is $cgi->param('attribute[Action]'), '2::2::2::1';
-        is $cgi->param('attribute[Reason]'), '3::3::3::3';
-    };
-    subtest 'Request recycling boxes bin swap, change mind' => sub {
-        $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 12 } });
-        $mech->submit_form_ok({ with_fields => { 'recycling_swap' => 'No' }});
-        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: I am a new resident without a container";
-        is $report->title, 'Request new Green recycling bin (240L)';
-        FixMyStreet::Script::Reports::send();
-        my $req = Open311->test_req_used;
-        my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[Container_Type]'), '12';
-        is $cgi->param('attribute[Action]'), '1';
-        is $cgi->param('attribute[Reason]'), '4';
     };
     subtest 'Request recycling bin replacement, no additional' => sub {
         my $clone = dclone($bin_data);
@@ -266,9 +245,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { 'notes_damaged' => 'other' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 1800;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Other damage";
         is $report->title, 'Request new Green recycling bin (240L)';
@@ -281,6 +263,59 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
+    subtest 'Request new containers' => sub {
+        $mech->get_ok('/waste/12345/request?new=1');
+		# 19 (1), 24 (1), 16 (1), 1 (1)
+        $mech->submit_form_ok({ with_fields => { 'container-1' => 1, 'container-19' => 1, 'container-16' => 1, 'quantity-16' => 2, 'quantity-24' => 2, 'container-24' => 1 }});
+        $mech->submit_form_ok({ with_fields => { 'how_many' => '5more' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Continue to payment');
+
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+        is $sent_params->{items}[0]{amount}, 4500;
+
+        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        $mech->content_contains('request has been sent');
+
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA";
+        is $report->category, 'Request new container';
+        is $report->title, 'Request new Black rubbish bin';
+        is $report->get_extra_field_value('payment'), 4500, 'correct payment';
+        is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+        is $report->get_extra_field_value('Container_Type'), 2, 'correct bin type';
+        is $report->get_extra_field_value('Action'), 1, 'correct container request action';
+        is $report->state, 'unconfirmed', 'report not confirmed';
+        is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        foreach (@{ $report->get_extra_metadata('grouped_ids') }) {
+            my $report = FixMyStreet::DB->resultset("Problem")->find($_);
+            is $report->get_extra_field_value('uprn'), 1000000002;
+            if ($report->title eq 'Request new Green recycling box (55L)') {
+                is $report->get_extra_field_value('Container_Type'), 16, 'correct bin type';
+            } elsif ($report->title eq 'Request new Food waste bin (outdoor)') {
+                is $report->get_extra_field_value('Container_Type'), 24, 'correct bin type';
+            } elsif ($report->title eq 'Request new Blue lid paper and cardboard bin (240L)') {
+                is $report->get_extra_field_value('Container_Type'), 19, 'correct bin type';
+            } else {
+                is $report->title, 'BAD';
+            }
+            is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA";
+            is $report->category, 'Request new container';
+            is $report->get_extra_field_value('payment'), 4500, 'correct payment';
+            is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+            is $report->get_extra_field_value('Action'), 1, 'correct container request action';
+            is $report->state, 'confirmed', 'report confirmed';
+            is $report->get_extra_metadata('scpReference'), undef, 'only original report has SCP ref';
+        }
+
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[Action]'), '1';
+        is $cgi->param('attribute[Reason]'), '3';
+    };
     subtest 'Request bins from front page' => sub {
         $mech->get_ok('/waste/12345');
         $mech->submit_form_ok({ form_number => 7 });
@@ -334,8 +369,7 @@ FixMyStreet::override_config {
         $mech->content_contains('A mixed recycling container request has been made');
         $mech->content_contains('Report a mixed recycling collection as missed');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-choice" value="16"\s+disabled/s); # green
-        $mech->content_like(qr/name="container-choice" value="12"\s+disabled/s); # green
+        $mech->content_like(qr/name="container-choice" value="16"[^>]+disabled/s); # green
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
@@ -429,6 +463,18 @@ FixMyStreet::override_config {
     };
 };
 
+sub get_report_from_redirect {
+    my $url = shift;
+
+    my ($report_id, $token) = ( $url =~ m#/(\d+)/([^/]+)$# );
+    my $new_report = FixMyStreet::DB->resultset('Problem')->find( {
+        id => $report_id,
+    });
+
+    return undef unless $new_report->get_extra_metadata('redirect_id') eq $token;
+    return ($token, $new_report, $report_id);
+}
+
 sub shared_echo_mocks {
     my $e = Test::MockModule->new('Integrations::Echo');
     $e->mock('GetPointAddress', sub {
@@ -450,6 +496,39 @@ sub shared_echo_mocks {
     } );
 
     return $e;
+}
+
+sub shared_scp_mocks {
+    my $pay = Test::MockModule->new('Integrations::SCP');
+
+    $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'IN_PROGRESS',
+            scpReference => '12345',
+            invokeResult => {
+                status => 'SUCCESS',
+                redirectUrl => 'http://example.org/faq'
+            }
+        };
+    });
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'COMPLETE',
+            paymentResult => {
+                status => 'SUCCESS',
+                paymentDetails => {
+                    paymentHeader => {
+                        uniqueTranId => 54321
+                    }
+                }
+            }
+        };
+    });
+    return $pay;
 }
 
 done_testing;

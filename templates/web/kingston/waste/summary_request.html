@@ -7,12 +7,30 @@ step1 = 'request';
 
 [% BLOCK answers %]
     [% SET container_id = data.item('container-choice') %]
+    [% IF container_id != 'New' %]
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
+            <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_reason', data.request_reason) %]</dd>
+        </div>
+    [% ELSE %]
+        [% FOR container IN data.keys.grep('^container-') %]
+            [% NEXT UNLESS data.$container %]
+            [% SET container_id = container.replace('container-', '') %]
+            [% SET quantity_key = container.replace('container-', 'quantity-') %]
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
+                <dd class="govuk-summary-list__value">[% data.$quantity_key %]</dd>
+            </div>
+        [% END %]
+  [% END %]
+
+  [% IF data.payment %]
     <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
-        <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_reason', data.request_reason) %]
-            [% IF data.recycling_quantity %] ([% data.recycling_quantity %])[% END %]
-        </dd>
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Administration/delivery charge</dt>
+        <dd class="govuk-summary-list__value">£[% tprintf( '%.2f', data.payment / 100 ) %]</dd>
     </div>
+  [% END %]
+
 [% END %]
 
 [% PROCESS waste/summary.html %]

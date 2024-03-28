@@ -6,6 +6,8 @@ use warnings;
 use URI::Escape;
 use Integrations::SCP;
 
+sub waste_cc_has_redirect { 1 }
+
 sub waste_cc_get_redirect_url {
     my ($self, $c, $back) = @_;
 
@@ -39,9 +41,13 @@ sub waste_cc_get_redirect_url {
         if (my $bulky_customer_ref = $payment->config->{bulky_customer_ref}) {
             $customer_ref = $bulky_customer_ref;
         }
-    } else {
-        $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
+    } elsif ($back eq 'request') {
+        if (my $request_customer_ref = $payment->config->{request_customer_ref}) {
+            $customer_ref = $request_customer_ref;
+        }
     }
+    $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . ''
+        unless $backUrl;
 
     my $address = $c->stash->{property}{address};
     my @parts = split ',', $address;
