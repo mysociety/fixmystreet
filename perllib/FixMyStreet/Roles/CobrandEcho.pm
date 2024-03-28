@@ -178,7 +178,7 @@ sub bin_services_for_address {
             }
         }
 
-        my $request_allowed = ($request_allowed{$service_id} || $self->moniker eq 'kingston' || $self->moniker eq 'sutton') && $request_max && $schedules->{next};
+        my $request_allowed = ($request_allowed{$service_id} || !%service_to_containers) && $request_max && $schedules->{next};
         my $row = {
             id => $_->{Id},
             service_id => $service_id,
@@ -512,6 +512,27 @@ sub waste_task_resolutions {
     }
 }
 
+=head2 waste_on_the_day_criteria
+
+Treat an Outstanding/Allocated task as if it's the next collection and in
+progress, and do not allow missed collection reporting if the task is not
+completed.
+
+=cut
+
+sub waste_on_the_day_criteria {
+    my ($self, $completed, $state, $now, $row) = @_;
+
+    if ($state eq 'Outstanding' || $state eq 'Allocated') {
+        $row->{next} = $row->{last};
+        $row->{next}{state} = 'In progress';
+        delete $row->{last};
+    }
+    if (!$completed) {
+        $row->{report_allowed} = 0;
+    }
+}
+
 sub bin_future_collections {
     my $self = shift;
 
@@ -565,7 +586,7 @@ sub admin_templates_external_status_code_hook {
 
     my $code = "$res_code,$task_type,$task_state";
     $code = '' if $code eq ',,';
-    $code =~ s/,,$// if $code && $self->moniker eq 'brent';
+    $code =~ s/,,$// if $code && ($self->moniker eq 'brent' || $self->moniker eq 'merton');
 
     return $code;
 }
@@ -667,7 +688,7 @@ sub construct_waste_open311_update {
     my $status = $event_type->{states}{$state_id}{state};
     my $description = $event_type->{resolution}{$resolution_id} || $event_type->{states}{$state_id}{name};
     my $external_status_code;
-    if ($self->moniker eq "brent") {
+    if ($self->moniker eq "brent" || $self->moniker eq 'merton') {
         $external_status_code = $resolution_id ? "$resolution_id" : "",
     } else {
         $external_status_code = $resolution_id ? "$resolution_id,," : "",
