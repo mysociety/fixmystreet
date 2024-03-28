@@ -40,17 +40,43 @@ $dbi_mock->mock( 'connect', sub {
         } elsif ( $postcode eq 'DA13NP' ) {
             return [
                 {   uprn              => 10001,
+                    sao_start_number  => 98,
+                    sao_start_suffix  => 'A',
+                    sao_end_number    => 99,
+                    sao_end_suffix    => 'B',
+                    sao_text          => 'Flat',
                     pao_start_number  => 1,
+                    pao_start_suffix  => 'a',
+                    pao_end_number    => 2,
+                    pao_end_suffix    => 'b',
+                    pao_text          => 'The Court',
                     street_descriptor => 'THE AVENUE',
+                    locality_name     => 'Little Bexlington',
+                    town_name         => 'Bexley',
+
+                    parent_uprn => 999999,
                 },
             ];
         }
     } );
     $dbh->mock( 'selectrow_hashref', sub {
         return {
-            postcode => 'DA13NP',
+            postcode          => 'DA13NP',
+            sao_start_number  => 98,
+            sao_start_suffix  => 'A',
+            sao_end_number    => 99,
+            sao_end_suffix    => 'B',
+            sao_text          => 'Flat',
             pao_start_number  => 1,
+            pao_start_suffix  => 'a',
+            pao_end_number    => 2,
+            pao_end_suffix    => 'b',
+            pao_text          => 'The Court',
             street_descriptor => 'THE AVENUE',
+            locality_name     => 'Little Bexlington',
+            town_name         => 'Bexley',
+
+            parent_uprn => 999999,
         };
     } );
     return $dbh;
@@ -177,7 +203,9 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste');
         $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3NP' } } );
         $mech->content_contains('Select an address');
-        $mech->content_contains('<option value="10001">1 The Avenue</option>');
+        $mech->content_contains(
+            '<option value="10001">Flat, 98a-99b, The Court, 1a-2b The Avenue, Little Bexlington, Bexley</option>'
+        );
     };
 
     $whitespace_mock->mock( 'GetSiteContracts', sub {
@@ -199,7 +227,7 @@ FixMyStreet::override_config {
         test_services($mech);
 
         $mech->content_contains(
-            '<dd class="waste__address__property">1 The Avenue, DA1 3NP</dd>',
+            '<dd class="waste__address__property">Flat, 98a-99b, The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP</dd>',
             'Correct address string displayed',
         );
         $mech->content_contains(
