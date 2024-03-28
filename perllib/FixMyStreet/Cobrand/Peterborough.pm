@@ -1261,10 +1261,9 @@ sub waste_munge_problem_form_fields {
 
 }
 
+sub waste_request_form_first_title { 'Which bins do you need?' }
 sub waste_request_form_first_next {
     my $self = shift;
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::Peterborough';
-    $self->{c}->stash->{form_title} = 'Which bins do you need?';
     return 'replacement' unless $self->{c}->get_param('bags_only');
     return 'about_you';
 }

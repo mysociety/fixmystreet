@@ -286,7 +286,6 @@ FixMyStreet::override_config {
         echo => { sutton => { url => 'http://example.org' } },
         waste => { sutton => 1 },
         payment_gateway => { sutton => {
-            cc_url => 'http://example.com',
             ggw_cost => [
                 {
                     start_date => '2020-01-01',
@@ -314,7 +313,7 @@ FixMyStreet::override_config {
             scpID => '1234',
             company_name => 'rbk',
             form_name => 'rbk_user_form',
-            cc_url => 'http://example.org/cc_submit',
+            epdq_url => 'http://example.org/cc_submit',
             sha_passphrase => 'XYZ123',
         } },
     },

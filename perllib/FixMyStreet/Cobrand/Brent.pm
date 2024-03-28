@@ -1480,11 +1480,9 @@ sub waste_munge_request_data {
     $c->set_param('service_id', $service_id{$id});
 }
 
+sub waste_request_form_first_title { 'Which container do you need?' }
 sub waste_request_form_first_next {
     my $self = shift;
-
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::Brent';
-    $self->{c}->stash->{form_title} = 'Which container do you need?';
 
     return sub {
         my $data = shift;

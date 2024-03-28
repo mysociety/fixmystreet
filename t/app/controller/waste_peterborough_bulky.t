@@ -1332,7 +1332,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->content_contains("Confirm Booking");
-        $mech->content_lacks("Confirm Subscription");
+        $mech->content_lacks("Confirm Payment");
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
 
