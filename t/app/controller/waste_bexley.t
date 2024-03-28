@@ -203,6 +203,10 @@ FixMyStreet::override_config {
             '<dd class="waste__address__property">1 The Avenue, DA1 3NP</dd>',
             'Correct address string displayed',
         );
+        $mech->content_contains(
+            'Your rotation schedule is Week 1',
+            'Correct rotation schedule displayed',
+        );
 
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
@@ -236,6 +240,7 @@ FixMyStreet::override_config {
                     report_url     => '/report/' . $existing_missed_collection_report1->id,
                     report_locked_out => 0,
                     assisted_collection => 1, # Has taken precedence over PC-55 non-assisted collection
+                    schedule => 'Twice Weekly',
                     %defaults,
                 },
                 {   id             => 9,
@@ -248,6 +253,7 @@ FixMyStreet::override_config {
                     report_url     => '/report/' . $existing_missed_collection_report2->id,
                     report_locked_out => 0,
                     assisted_collection => 0,
+                    schedule => 'Twice Weekly',
                     %defaults,
                 },
                 {   id             => 1,
@@ -259,6 +265,7 @@ FixMyStreet::override_config {
                     report_open    => 0,
                     report_locked_out => 1,
                     assisted_collection => 0,
+                    schedule => 'Fortnightly',
                     %defaults,
                 },
                 {   id             => 6,
@@ -270,6 +277,7 @@ FixMyStreet::override_config {
                     report_open    => 0,
                     report_locked_out => 0,
                     assisted_collection => 0,
+                    schedule => 'Fortnightly',
                     %defaults,
                 },
             ];
@@ -358,6 +366,10 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste');
             $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
             $mech->submit_form_ok( { with_fields => { address => $test->{address} } } );
+            $mech->content_contains(
+                "Your rotation schedule is Week $test->{link}",
+                'Correct rotation schedule displayed',
+            );
             $mech->content_contains('<li><a href="PDF '. $test->{link} . '">Download PDF waste calendar', 'PDF link ' . $test->{link} . ' shown');
         }
     };
