@@ -1,2 +1,94 @@
 @import "_variables";
 @import "../sass/layout";
+
+/* GENERAL COMPONENTS */
+html {
+  font-size: 16px;
+}
+
+/* HEADER */
+.nav-menu--main {
+  span {
+    color: $primary_text;
+    text-decoration: underline;
+  }
+
+  a, span {
+    font-size: 1rem;
+  }
+
+  a {
+    &:hover {
+      text-decoration: underline;
+    }
+  
+    &:focus {
+      color: $primary_b;
+      background-color: $surrey_orange_light;
+    }
+  }
+
+  span.report-a-problem-btn {
+    &:hover {
+      color: $primary_text;
+      text-decoration: underline;
+    }
+  }
+
+  a.report-a-problem-btn {
+    @include navbar-btn;
+    @include surrey-focus;
+    &:focus {
+      background-color: $surrey_orange;
+      color: $primary_b;
+    }
+  }
+}
+
+/* HOMEPAGE */
+#front-main {
+  border-top: 0.1rem solid $base_bg;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.site-message {
+  border-width: 0.3125rem;
+  padding: 2rem;
+  font-size: 1rem;
+}
+
+/* MAPPAGE */
+.big-green-banner {
+  border-top: 0.1rem solid $base_bg;
+}
+
+/* FOOTER */
+.scc-footer {
+  .footer-upper-section {
+      display: flex;
+      flex-direction:row;
+  }
+
+  .scc-footer__list--contact-channels {
+    width: 30%;
+  }
+
+  .scc-footer__list--pages {
+    text-align: right;
+    width: 100%;
+    ul {
+      margin: 0;
+    }
+  }
+
+  .scc-footer__item {
+    display: inline-block;
+  }
+
+  .scc-footer__list {
+    ul {
+      margin: 0;
+    }
+  }
+}
