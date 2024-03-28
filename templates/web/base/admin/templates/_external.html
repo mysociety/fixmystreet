@@ -1,12 +1,41 @@
 [% IF errors.external_status_code %]
     <div class="form-error">[% errors.external_status_code %]</div>
 [% END %]
-<div class="admin-hint">
-  <p>
-    [% loc('If you want to use this template to prefill the update field when a report&rsquo;s <strong>external</strong> (e.g. Confirm) status code changes, enter the status code here.') %]
-  </p>
-</div>
-<p>
-  <label for="external_status_code">[% loc('External status code') %]</label>
-  <input type="text" id="external_status_code" name="external_status_code" class="form-control" size="30" value="[% rt.external_status_code | html %]">
-</p>
+
+[% IF c.cobrand.split_echo_external_status_code %]
+
+    [% parts = rt.external_status_code.split(',') ~%]
+
+    <p>
+      <label for="resolution_code">External status code / Resolution Code ID</label>
+      <input type="text" id="resolution_code" name="resolution_code" class="form-control" size="30" value="[% parts.0 %]">
+    </p>
+
+    <p>
+      <label for="task_type">Task type ID</label>
+      <input type="text" id="task_type" name="task_type" class="form-control" size="30" value="[% parts.1 %]">
+    </p>
+
+    <p>
+      <label for="task_state">Task state</label>
+      <select class="form-control" name="task_state" id="task_state">
+          <option value="">---</option>
+        [% FOR opt IN ['Completed', 'Not Completed'] %]
+          <option value="[% opt %]"[% ' selected' IF parts.2 == opt %]>[% opt %]</option>
+        [% END %]
+      </select>
+    </p>
+
+[% ELSE %]
+
+    <div class="admin-hint">
+      <p>
+        [% loc('If you want to use this template to prefill the update field when a report&rsquo;s <strong>external</strong> (e.g. Confirm) status code changes, enter the status code here.') %]
+      </p>
+    </div>
+    <p>
+      <label for="external_status_code">[% loc('External status code') %]</label>
+      <input type="text" id="external_status_code" name="external_status_code" class="form-control" size="30" value="[% rt.external_status_code | html %]">
+    </p>
+
+[% END %]

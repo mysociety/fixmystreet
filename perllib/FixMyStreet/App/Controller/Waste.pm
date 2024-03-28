@@ -629,6 +629,7 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my $loading = ($c->req->{headers}->{'hx-request'} || "") eq "true";
     # non-JS page loads include a page_loading=1 request param
     $loading ||= $c->get_param('page_loading');
+    $c->stash->{partial_loading} = $loading;
 
     if ( $c->req->path =~ m#^waste/[:\w %]+$#i && !$loading) {
         $c->cobrand->call_hook( clear_cached_lookups_property => $id );
@@ -806,11 +807,15 @@ sub request : Chained('property') : Args(0) {
 
     $c->stash->{first_page} = 'request';
     my $next = $c->cobrand->call_hook('waste_request_form_first_next');
+    my $title = $c->cobrand->call_hook('waste_request_form_first_title') || 'Which containers do you need?';
+
+    my $cls = ucfirst $c->cobrand->council_url;
+    $c->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::$cls";
 
     $c->stash->{page_list} = [
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
-            title => $c->stash->{form_title} || 'Which containers do you need?',
+            title => $title,
             check_unique_id => 0,
             next => $next,
         },
