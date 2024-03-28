@@ -177,6 +177,7 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
+    { code => 'referral', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Assisted collection add', email => 'assisted' },
     { code => 'Notes', description => 'Additional notes', required => 0, datatype => 'text' },
@@ -633,6 +634,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Sweeping'); # TfL
         $mech->content_lacks('Leaf clearance'); # Brent
         $mech->content_lacks('Potholes'); # Brent
+        $problem->delete;
     };
 
     subtest "All reports page for Brent works appropriately" => sub {
@@ -985,6 +987,7 @@ FixMyStreet::override_config {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'brent',
     MAPIT_URL => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1 },
     COBRAND_FEATURES => {
         echo => { brent => { sample_data => 1 } },
         waste => { brent => 1 },
@@ -1001,6 +1004,9 @@ FixMyStreet::override_config {
         payment_gateway => { brent => {
             cc_url => 'http://example.com',
             ggw_cost => 6000,
+        } },
+        open311_email => { brent => {
+            'Request new container' => 'referral@example.org',
         } },
     },
 }, sub {
@@ -1183,13 +1189,19 @@ FixMyStreet::override_config {
             $mech->content_contains("I am a new resident without a container", "Can request new container as new resident");
             $mech->content_contains("I would like an extra container", "Can request an extra container");
             for my $radio (
-                    {choice => 'new_build', type => 'new resident needs container'},
                     {choice => 'damaged', type => 'damaged container'},
                     {choice => 'missing', type => 'missing container'},
                     {choice => 'extra', type => 'extra container'}
             ) {
                 $mech->submit_form_ok({ with_fields => { 'request_reason' => $radio->{choice} } });
                 $mech->content_contains("About you", "No further questions for " . $radio->{type});
+                $mech->back;
+            }
+            for my $radio (
+                    {choice => 'new_build', type => 'new resident needs container'},
+            ) {
+                $mech->submit_form_ok({ with_fields => { 'request_reason' => $radio->{choice} } });
+                $mech->content_contains("How long have you", "Extra question for " . $radio->{type});
                 $mech->back;
             }
         }
@@ -1206,6 +1218,75 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Request_Notes'), '';
         is $report->get_extra_field_value('Container_Request_Quantity'), '1::1';
         is $report->get_extra_field_value('service_id'), '265';
+
+        FixMyStreet::Script::Reports::send();
+        # No sent email, only logged email
+        my $body = $mech->get_text_body_from_email;
+        like $body, qr/We aim to deliver this container/;
+    };
+
+    sub make_request {
+        my ($test_name, $reason, $duration, $referral, $emails) = @_;
+        $test_name = "Making a request, $test_name, $reason" . ($duration ? ", $duration" : "");
+        subtest $test_name => sub {
+            $mech->get_ok('/waste/12345/request');
+            $mech->submit_form_ok({ with_fields => { 'container-choice' => 11 } }, "Choose food caddy");
+            $mech->submit_form_ok({ with_fields => { 'request_reason' => $reason } });
+            $mech->submit_form_ok({ with_fields => { how_long_lived => $duration } }) if $duration;
+            if ($referral eq 'refuse') {
+                $mech->content_contains('unable to request');
+                return;
+            }
+            $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+            $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
+            $mech->content_contains('Your container request has been sent');
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->get_extra_field_value('referral'), $referral;
+            FixMyStreet::Script::Reports::send();
+            my @email = $mech->get_email;
+            is @email, $emails;
+            if ($emails == 2) {
+                like $mech->get_text_body_from_email($email[0]), qr/submitted the following report/;
+                like $mech->get_text_body_from_email($email[1]), qr/We aim to deliver this container/;
+            } else {
+                like $mech->get_text_body_from_email($email[0]), qr/We aim to deliver this container/;
+            }
+            $mech->clear_emails_ok;
+            $report->delete;
+        };
+    }
+
+    subtest 'check request referral/refusal' => sub {
+        $echo->mock('GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 2936,
+            Data => { ExtensibleDatum => { ChildData => { ExtensibleDatum => {
+                DatatypeName => 'Container Type',
+                Value => 11,
+            } } } },
+        } ] } );
+        make_request("Ordered", 'new_build', 'less3', 1, 2);
+        make_request("Ordered", 'damaged', '', 1, 2);
+        make_request("Ordered", 'missing', '', 1, 2);
+        make_request("Ordered", 'extra', '', 'refuse');
+
+        $echo->mock('GetEventsForObject', sub { [] });
+        make_request("Not ordered", 'new_build', 'less3', '', 1);
+        make_request("Not ordered", 'new_build', '3more', 1, 2);
+        make_request("Not ordered", 'missing', '', '', 1);
+        make_request("Not ordered", 'extra', '', '', 1);
+
+        $echo->mock('GetServiceTaskInstances', sub { [
+            { ServiceTaskRef => { Value => { anyType => '401' } },
+                Instances => { ScheduledTaskInfo => [
+                    { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
+                    { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
+                    { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
+                ] }
+            },
+        ] });
+        make_request("Contaminated", 'missing', '', 1, 2);
+        make_request("Contaminated", 'extra', '', 'refuse');
     };
 
     subtest 'test staff-only assisted collection form' => sub {
