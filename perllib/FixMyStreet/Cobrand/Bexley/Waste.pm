@@ -57,7 +57,8 @@ sub look_up_property {
         # and 'uprn' in others, we set both here
         id => $site->{AccountSiteUPRN},
         uprn => $site->{AccountSiteUPRN},
-        address => FixMyStreet::Template::title($site->{Site}->{SiteShortAddress}),
+        address => FixMyStreet::Template::title(
+            BexleyAddresses::address_for_uprn($uprn) ),
         latitude => $site->{Site}->{SiteLatitude},
         longitude => $site->{Site}->{SiteLongitude},
 
@@ -72,10 +73,16 @@ sub bin_services_for_address {
     my $site_services = $self->whitespace->GetSiteCollections($property->{uprn});
 
     # Get parent property services if no services found
-    $site_services = $self->whitespace->GetSiteCollections(
-        $property->{parent_property}{uprn} )
-        if !@{ $site_services // [] }
-        && $property->{parent_property};
+    if ( !@{ $site_services // [] }
+        && $property->{parent_property} )
+    {
+        $site_services = $self->whitespace->GetSiteCollections(
+            $property->{parent_property}{uprn} );
+
+        # A property is only communal if it has a parent property AND doesn't
+        # have its own list of services
+        $property->{is_communal} = 1;
+    }
 
     # TODO Call these in parallel
     $property->{missed_collection_reports}
@@ -91,6 +98,8 @@ sub bin_services_for_address {
     # Set certain things outside of services loop
     my $containers = $self->_containers($property);
     my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
+
+    my %frequency_types;
 
     my @site_services_filtered;
 
@@ -130,12 +139,7 @@ sub bin_services_for_address {
         }
 
         my $containers = $self->_containers($property);
-        if (!$self->{c}->stash->{calendar_link} && $service->{RoundSchedule} =~ /(Wk \d+)/) {
-            my ($id) = $service->{RoundSchedule} =~ /(Wk \d+)/;
-            $id =~ s/\s+/-/;
-            my $links = $self->{c}->cobrand->feature('waste_calendar_links');
-            $self->{c}->stash->{calendar_link} = $links->{$id};
-        }
+
         my ($round) = split / /, $service->{RoundSchedule};
 
         my $filtered_service = {
@@ -153,14 +157,43 @@ sub bin_services_for_address {
             assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
         };
 
-        # Get the last collection date from recent collections
-        my $last_dt = $property->{recent_collections}{ $service->{RoundSchedule} };
+        # Get the last collection date from recent collections.
+        #
+        # Some services may have two collections a week; these are concatenated
+        # together in $service->{RoundSchedule}. We need to split them so we
+        # can look them up individually in $property->{recent_collections}.
+        my @round_schedules = split /, /, $service->{RoundSchedule};
+
+        my $last_dt;
+        for (@round_schedules) {
+            my $dt_to_check = $property->{recent_collections}{$_};
+
+            if (
+                $dt_to_check
+                && (  !$last_dt
+                    || $dt_to_check > $last_dt )
+                )
+            {
+                $last_dt = $dt_to_check;
+            }
+        }
 
         if ($last_dt) {
             $filtered_service->{last} = {
                 date    => $last_dt,
                 ordinal => ordinal( $last_dt->day ),
             };
+        }
+
+        # Frequency of collection
+        if ( @round_schedules > 1 ) {
+            $filtered_service->{schedule} = 'Twice Weekly';
+        } elsif ( $round_schedules[0] =~ /Wk (\d+)$/ ) {
+            $frequency_types{fortnightly} //= $1;
+            $filtered_service->{schedule} = 'Fortnightly';
+        } else {
+            $frequency_types{weekly} //= 1;
+            $filtered_service->{schedule} = 'Weekly';
         }
 
         my $existing_report_id = $property->{missed_collection_reports}{ $filtered_service->{service_id} };
@@ -186,6 +219,15 @@ sub bin_services_for_address {
             = $property->{round_exceptions}{ $filtered_service->{round} } ? 1 : 0;
 
         push @site_services_filtered, $filtered_service;
+    }
+
+    $property->{frequency_types} = \%frequency_types;
+
+    # Provide calendar link if fortnightly collections
+    if ( my $id = $frequency_types{fortnightly} ) {
+        $id = 'Wk-' . $id;
+        my $links = $self->{c}->cobrand->feature('waste_calendar_links');
+        $self->{c}->stash->{calendar_link} = $links->{$id};
     }
 
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
@@ -365,10 +407,15 @@ sub bin_future_collections {
     my $services = $self->{c}->stash->{service_data};
     return [] unless $services;
 
-    # There may be more than one service associated with a round
+    # There may be more than one service associated with a round.
+    # Additionally, more than one round-schedule may be associated with a
+    # service, e.g. 'RES-NOR Fri, RES-NOR Tue', so we need to split these out.
     my %srv_for_round;
-    for (@$services) {
-        push @{ $srv_for_round{ $_->{round_schedule} } }, $_;
+    for my $srv (@$services) {
+        my @round_schedules = split /, /, $srv->{round_schedule};
+        for (@round_schedules) {
+            push @{ $srv_for_round{$_} }, $srv;
+        }
     }
 
     # TODO GetCollectionByUprnAndDatePlus would be preferable as it supports
@@ -426,7 +473,7 @@ sub image_for_unit {
 
     my $property = $self->{c}->stash->{property};
 
-    my $is_communal = $property->{parent_property};
+    my $is_communal = $property->{is_communal};
 
     my $images = {
         'FO-140'   => 'communal-food-wheeled-bin',     # Food 140 ltr Bin
@@ -501,7 +548,7 @@ sub ordinal {
 sub _containers {
     my ( $self, $property ) = @_;
 
-    my $is_communal = $property->{parent_property};
+    my $is_communal = $property->{is_communal};
 
     return {
         'FO-140'   => 'Communal Food Bin',

@@ -10,6 +10,7 @@
 
 [% TRY %][% PROCESS waste/_service_navigation_bar.html %][% CATCH file %][% END %]
 [% INCLUDE 'waste/_address_display.html' %]
+[% TRY %][% PROCESS waste/_rotation_schedule.html %][% CATCH file %][% END %]
 [% TRY %][% PROCESS waste/_announcement.html %][% CATCH file %][% END %]
 <div class="waste__collections">
  [% IF c.cobrand.moniker != 'peterborough' %]

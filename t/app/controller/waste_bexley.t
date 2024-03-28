@@ -40,11 +40,44 @@ $dbi_mock->mock( 'connect', sub {
         } elsif ( $postcode eq 'DA13NP' ) {
             return [
                 {   uprn              => 10001,
+                    sao_start_number  => 98,
+                    sao_start_suffix  => 'A',
+                    sao_end_number    => 99,
+                    sao_end_suffix    => 'B',
+                    sao_text          => 'Flat',
                     pao_start_number  => 1,
+                    pao_start_suffix  => 'a',
+                    pao_end_number    => 2,
+                    pao_end_suffix    => 'b',
+                    pao_text          => 'The Court',
                     street_descriptor => 'THE AVENUE',
+                    locality_name     => 'Little Bexlington',
+                    town_name         => 'Bexley',
+
+                    parent_uprn => 999999,
                 },
             ];
         }
+    } );
+    $dbh->mock( 'selectrow_hashref', sub {
+        return {
+            postcode          => 'DA13NP',
+            sao_start_number  => 98,
+            sao_start_suffix  => 'A',
+            sao_end_number    => 99,
+            sao_end_suffix    => 'B',
+            sao_text          => 'Flat',
+            pao_start_number  => 1,
+            pao_start_suffix  => 'a',
+            pao_end_number    => 2,
+            pao_end_suffix    => 'b',
+            pao_text          => 'The Court',
+            street_descriptor => 'THE AVENUE',
+            locality_name     => 'Little Bexlington',
+            town_name         => 'Bexley',
+
+            parent_uprn => 999999,
+        };
     } );
     return $dbh;
 } );
@@ -170,7 +203,9 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste');
         $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3NP' } } );
         $mech->content_contains('Select an address');
-        $mech->content_contains('<option value="10001">1 The Avenue</option>');
+        $mech->content_contains(
+            '<option value="10001">Flat, 98a-99b, The Court, 1a-2b The Avenue, Little Bexlington, Bexley</option>'
+        );
     };
 
     $whitespace_mock->mock( 'GetSiteContracts', sub {
@@ -190,6 +225,15 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { address => 10001 } } );
 
         test_services($mech);
+
+        $mech->content_contains(
+            '<dd class="waste__address__property">Flat, 98a-99b, The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP</dd>',
+            'Correct address string displayed',
+        );
+        $mech->content_contains(
+            'Your rotation schedule is Week 1',
+            'Correct rotation schedule displayed',
+        );
 
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
@@ -216,25 +260,27 @@ FixMyStreet::override_config {
                 {   id             => 8,
                     service_id     => 'PC-55',
                     service_name   => 'Blue Recycling Box',
-                    round_schedule => 'RND-8-9 Mon',
+                    round_schedule => 'RND-8-9 Mon, RND-8-9 Wed',
                     round          => 'RND-8-9',
                     report_allowed => 0,
                     report_open    => 1,
                     report_url     => '/report/' . $existing_missed_collection_report1->id,
                     report_locked_out => 0,
                     assisted_collection => 1, # Has taken precedence over PC-55 non-assisted collection
+                    schedule => 'Twice Weekly',
                     %defaults,
                 },
                 {   id             => 9,
                     service_id     => 'PA-55',
                     service_name   => 'Green Recycling Box',
-                    round_schedule => 'RND-8-9 Mon',
+                    round_schedule => 'RND-8-9 Mon, RND-8-9 Wed',
                     round          => 'RND-8-9',
                     report_allowed => 0,
                     report_open    => 1,
                     report_url     => '/report/' . $existing_missed_collection_report2->id,
                     report_locked_out => 0,
                     assisted_collection => 0,
+                    schedule => 'Twice Weekly',
                     %defaults,
                 },
                 {   id             => 1,
@@ -246,6 +292,7 @@ FixMyStreet::override_config {
                     report_open    => 0,
                     report_locked_out => 1,
                     assisted_collection => 0,
+                    schedule => 'Fortnightly',
                     %defaults,
                 },
                 {   id             => 6,
@@ -257,9 +304,20 @@ FixMyStreet::override_config {
                     report_open    => 0,
                     report_locked_out => 0,
                     assisted_collection => 0,
+                    schedule => 'Fortnightly',
                     %defaults,
                 },
             ];
+
+            my %expected_last_dates = (
+                8 => '2024-03-28T00:00:00',
+                9 => '2024-03-28T00:00:00',
+                1 => '2024-03-24T00:00:00',
+                6 => '2024-03-27T00:00:00',
+            );
+            for (@sorted) {
+                is $_->{last}{date}, $expected_last_dates{ $_->{id} };
+            }
         };
     };
 
@@ -296,7 +354,7 @@ FixMyStreet::override_config {
         my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
         shift @events; # Header
 
-        my $expected_num = 14;
+        my $expected_num = 20;
         is @events, $expected_num, "$expected_num events in calendar";
 
         my $i = 0;
@@ -305,14 +363,20 @@ FixMyStreet::override_config {
             $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Green Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240402/ && /SUMMARY:Communal Food Bin/;
             $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Clear Sack\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Green Recycling Box/;
 
             $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240408/ && /SUMMARY:Green Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240410/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240410/ && /SUMMARY:Green Recycling Box/;
 
             $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Green Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240416/ && /SUMMARY:Communal Food Bin/;
             $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Clear Sack\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Blue Recycling Box/;
+            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Green Recycling Box/;
 
             $i++ if /DTSTART;VALUE=DATE:20240501/ && /SUMMARY:Clear Sack\(s\)/;
 
@@ -329,6 +393,10 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste');
             $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
             $mech->submit_form_ok( { with_fields => { address => $test->{address} } } );
+            $mech->content_contains(
+                "Your rotation schedule is Week $test->{link}",
+                'Correct rotation schedule displayed',
+            );
             $mech->content_contains('<li><a href="PDF '. $test->{link} . '">Download PDF waste calendar', 'PDF link ' . $test->{link} . ' shown');
         }
     };
@@ -532,7 +600,7 @@ sub _site_collections {
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '0001-01-01T00:00:00',
 
-                RoundSchedule => 'RND-8-9 Mon',
+                RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
             },
             {   SiteServiceID          => 8,
                 ServiceItemDescription => 'Service 8',
@@ -542,7 +610,7 @@ sub _site_collections {
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '0001-01-01T00:00:00',
 
-                RoundSchedule => 'RND-8-9 Mon',
+                RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
             },
             {   SiteServiceID          => 9,
                 ServiceItemDescription => 'Another service (9)',
@@ -552,7 +620,7 @@ sub _site_collections {
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '0001-01-01T00:00:00',
 
-                RoundSchedule => 'RND-8-9 Mon',
+                RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
             },
         ],
         10003 => [
@@ -597,6 +665,11 @@ sub _collection_by_uprn_date {
                 Service  => 'Service 1 Collection',
             },
             {   Date     => '03/04/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Wed',
+                Service  => 'Services 8 & 9 Collection',
+            },
+            {   Date     => '03/04/2024 00:00:00',
                 Round    => 'RND-6',
                 Schedule => 'Wed Wk 2',
                 Service  => 'Service 6 Collection',
@@ -605,6 +678,11 @@ sub _collection_by_uprn_date {
             {   Date     => '08/04/2024 00:00:00',
                 Round    => 'RND-8-9',
                 Schedule => 'Mon',
+                Service  => 'Services 8 & 9 Collection',
+            },
+            {   Date     => '10/04/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Wed',
                 Service  => 'Services 8 & 9 Collection',
             },
 
@@ -617,6 +695,11 @@ sub _collection_by_uprn_date {
                 Round    => 'RND-1',
                 Schedule => 'Tue Wk 1',
                 Service  => 'Service 1 Collection',
+            },
+            {   Date     => '17/04/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Wed',
+                Service  => 'Services 8 & 9 Collection',
             },
             {   Date     => '17/04/2024 00:00:00',
                 Round    => 'RND-6',
@@ -669,6 +752,11 @@ sub _collection_by_uprn_date {
                 Round    => 'RND-6',
                 Schedule => 'Wed Wk 2',
                 Service  => 'Service 6 Collection',
+            },
+            {   Date     => '27/03/2024 00:00:00',
+                Round    => 'RND-8-9',
+                Schedule => 'Wed',
+                Service  => 'Services 8 & 9 Collection',
             },
             {   Date     => '28/03/2024 00:00:00',
                 Round    => 'RND-8-9',
