@@ -4,6 +4,195 @@
 @import "../sass/base";
 @import "../fixmystreet-uk-councils/societyworks-footer";
 
-.postcode-form-box {
-    color: #fff;
+/* GENERAL COMPONENTS */
+html {
+  font-size: 14px;
+}
+
+a {
+  font-weight: 600;
+  &:focus {
+      background-color: $surrey_orange_light;
+  }
+}
+
+input {
+  @include surrey-focus;
+}
+
+
+.item-list__item {
+  a {
+    h3 {
+      font-weight: inherit;
+      color: $link-color;
+    }
+
+    &:focus {
+      background-color: $surrey_orange;
+      h3, small {
+          color: $primary_b;
+      }
+    }
+    @include surrey-focus;
+  }
+}
+
+/* HEADER */
+#site-logo {
+  $logo-width:55px;
+  $logo-height: 50px;
+  width:  $logo-width;
+  height: 70px; // Same as Surrey website.
+  background-size:  $logo-width  $logo-height;
+  background-image: url("/cobrands/surrey/images/surrey_county_council_white.png");
+  @include surrey-button-focus;
+}
+
+#report-cta {
+  @include navbar-btn;
+}
+
+/* BUTTONS */
+.btn-primary, 
+.btn--primary, 
+.postcode-form-box div input#sub {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+  border-radius: $button-border-radius;
+  text-decoration: none; // For #report-cta
+  @include surrey-focus;
+}
+
+.btn--secondary, 
+.btn-secondary, 
+.nav-menu a.btn-secondary,
+a#geolocate_link,
+.my-account-buttons a{
+  @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+  border-width: 0.1rem;
+  border-radius: $button-border-radius;
+  text-decoration: none; // For .my-account-buttons
+  @include surrey-focus;
+}
+
+/* HOMEPAGE */
+#postcodeForm {
+  overflow: visible; // So outlines don't look cropped
+}
+
+.site-message {
+  border: 0.3571428571rem solid $primary;
+  padding: 2rem;
+  font-size: 1rem;
+}
+
+/* FOOTER */
+.scc-footer {
+  background-color: #333;
+  color: #fff;
+  padding: 1.25rem 0;
+
+  a {
+    &:focus {
+      color: $primary_b;
+    }
+  }
+
+  .footer-upper-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scc-footer__list--contact-channels {
+    width: 30%;
+  }
+
+  .scc-footer__list {
+    margin: 0 0 1.25rem;
+
+    &.m-0 {
+        margin: 0;
+    }
+  }
+
+  li {
+    margin-top: 0.625rem;
+  }
+
+  .scc-footer__item {
+    display: block;
+    padding-right: 1.5625rem;
+
+    &:last-child {
+        padding-right: 0;
+    }
+  }
+
+  .scc-footer__link {
+    color: $primary_text;
+    font-weight: 400;
+  }
+
+  .scc-social-icons {
+    margin-top: 1rem;
+  }
+
+  .scc-social-icons__list {
+    list-style: none;
+    margin: 0 0 0.625rem;
+  }
+
+  .scc-social-icons__item {
+    display: inline-block;
+    margin: 0 0 0 0.9375rem;
+
+    &:first-child {
+        margin-left: 0;
+    }
+  }
+
+  .scc-footer__list--pages {
+    &:first-child {
+        margin-bottom: 0;
+    }
+  }
+
+  .fa-brands {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: var(--fa-display, inline-block);
+    font-style: normal;
+    font-variant: normal;
+    line-height: 1;
+    text-rendering: auto;
+  }
+
+  .scc-social-icons__link {
+    font-size: 1.875rem;
+    &:hover {
+      color: $surrey_orange_light;
+      text-decoration: none;
+    }
+    &:focus {
+      margin: -0.5rem;
+      outline: none;
+      padding: 0.5rem;
+    }
+  }
+
+  .scc-footer__item {
+    &--contact {
+      background: url('/cobrands/surrey/images/Call-Icon-white-19x30.png');
+      background-repeat: no-repeat;
+      padding: 0 0 0.9375rem 1.56rem;
+      margin-right: 1.25rem;
+    }
+
+    &--find {
+      background-image: url('/cobrands/surrey/images/Map-Icon-white-24x30.png');
+      background-repeat: no-repeat;
+      padding: 0 0 0.9375rem 1.875rem;
+      border: 0;
+    }
+  }
 }
