@@ -13,6 +13,12 @@ Dear [% report.name %],
 We will arrange another collection as soon as possible in the next 2
 working days (not including Saturday and Sunday).
 [% ELSIF report.category == 'Request new container' %]
+On delivery day - You do not need to be home for our crew to deliver the bin.
+
+Collecting your old bin - If you've requested a collection of your old bin,
+we'll schedule a specific date for our crew to remove it. We aim for this
+to be the same day as we deliver your new bin, but it could be a different day.
+
 We aim to deliver this container to you within [% cobrand.wasteworks_config.request_timeframe %]. If
 you have requested a replacement bin please leave your broken one
 available for collection at the front of your property.
@@ -25,6 +31,10 @@ Your report has the title:
 And details:
 
 [% report.detail %]
+
+[% IF report.category == 'Request new container' %]
+Track your request: https://kingston-self.test.achieveservice.com/service/Status_update_for_waste_container_request?client_ref=RBK-[% report.id %]
+[% END %]
 
 [% signature %]
 
