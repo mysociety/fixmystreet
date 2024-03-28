@@ -84,7 +84,7 @@ sub build_address_string {
     my $sao;
     if ( $row->{parent_uprn} ) {
         $sao = _join_extended(
-            ' ',
+            ', ',
             $row->{sao_text},
             _join_extended(
                 '-',
@@ -102,7 +102,7 @@ sub build_address_string {
     }
 
     my $pao = _join_extended(
-        ' ',
+        ', ',
         $row->{pao_text},
         _join_extended(
             '-',
@@ -121,7 +121,8 @@ sub build_address_string {
 
     return _join_extended(
         ', ',
-        _join_extended( ' ', $sao, $pao, $row->{street_descriptor} ),
+        $sao,
+        _join_extended( ' ', $pao, $row->{street_descriptor} ),
         $row->{locality_name},
         $row->{town_name},
         mySociety::PostcodeUtil::canonicalise_postcode( $row->{postcode} ),
