@@ -64,6 +64,8 @@ subtest '.com and council cobrand reports do not appear on site' => sub {
     is $mech->res->code, 404;
     $mech->get_ok('/reports/Bath+and+North+East+Somerset');
     $mech->content_lacks($problem->title);
+    $mech->get_ok('/rss/problems');
+    $mech->content_lacks($problem->title);
     $mech->log_in_ok($super->email);
     $mech->get('/admin/report_edit/' . $problem->id);
     is $mech->res->code, 404;
@@ -73,6 +75,8 @@ subtest '.com and council cobrand reports do not appear on site' => sub {
     $mech->get('/report/' . $problem->id);
     is $mech->res->code, 404;
     $mech->get_ok('/reports/Bath+and+North+East+Somerset');
+    $mech->content_lacks($problem->title);
+    $mech->get_ok('/rss/problems');
     $mech->content_lacks($problem->title);
     $mech->log_in_ok($super->email);
     $mech->get('/admin/report_edit/' . $problem->id);

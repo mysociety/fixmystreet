@@ -1094,8 +1094,8 @@ sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
 
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_disabled};
 
-    $c->stash->{per_new_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_cost};
-    $c->stash->{per_new_bin_first_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_first_cost} || $c->stash->{per_new_bin_cost};
+    $c->stash->{per_new_bin_cost} = $c->cobrand->_get_cost('ggw_new_bin_cost');
+    $c->stash->{per_new_bin_first_cost} = $c->cobrand->_get_cost('ggw_new_bin_first_cost') || $c->stash->{per_new_bin_cost};
 }
 
 sub garden_check : Chained('garden_setup') : Args(0) {

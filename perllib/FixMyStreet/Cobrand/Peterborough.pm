@@ -115,7 +115,9 @@ sub geocoder_munge_results {
     my ($self, $result) = @_;
     $result->{display_name} = '' unless $result->{display_name} =~ /City of Peterborough/;
     $result->{display_name} =~ s/, UK$//;
+    $result->{display_name} =~ s/, United Kingdom$//;
     $result->{display_name} =~ s/, City of Peterborough, East of England, England//;
+    $result->{display_name} =~ s/, City of Peterborough, Cambridgeshire and Peterborough, England//;
 }
 
 =head2 (around) open311_update_missing_data

@@ -950,8 +950,8 @@ sub garden_waste_new_bin_admin_fee {
     my ($self, $new_bins) = @_;
     $new_bins ||= 0;
 
-    my $per_new_bin_first_cost = $self->feature('payment_gateway')->{ggw_new_bin_first_cost};
-    my $per_new_bin_cost = $self->feature('payment_gateway')->{ggw_new_bin_cost};
+    my $per_new_bin_first_cost = $self->_get_cost('ggw_new_bin_first_cost');
+    my $per_new_bin_cost = $self->_get_cost('ggw_new_bin_cost');
 
     my $cost = 0;
     if ($new_bins > 0) {
