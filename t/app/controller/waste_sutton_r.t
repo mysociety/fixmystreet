@@ -172,7 +172,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Containers typically arrive within 20 working days');
 
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->title, 'Request new Brown Rubbish Wheelie Bin (240L)';
+        is $report->title, 'Request new Larger Brown General Waste Wheelie Bin (240L)';
         is $report->get_extra_field_value('payment'), 1500, 'correct payment';
         is $report->get_extra_field_value('Container_Type'), '1::2', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';

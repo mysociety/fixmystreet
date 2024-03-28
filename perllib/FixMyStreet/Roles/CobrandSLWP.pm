@@ -348,9 +348,9 @@ sub waste_containers {
     if ($self->moniker eq 'sutton') {
         return {
             %shared,
-            1 => 'Brown Rubbish Wheelie Bin (140L)',
-            2 => 'Brown Rubbish Wheelie Bin (240L)',
-            3 => 'Brown Rubbish Wheelie Bin (360L)',
+            1 => 'Standard Brown General Waste Wheelie Bin (140L)',
+            2 => 'Larger Brown General Waste Wheelie Bin (240L)',
+            3 => 'Extra Large Brown General Waste Wheelie Bin (360L)',
             35 => 'Rubbish bin (180L)',
             16 => 'Mixed Recycling Green Box (55L)',
             19 => 'Paper and Cardboard Green Wheelie Bin (240L)',
