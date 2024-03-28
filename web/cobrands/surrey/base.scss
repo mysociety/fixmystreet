@@ -4,6 +4,134 @@
 @import "../sass/base";
 @import "../fixmystreet-uk-councils/societyworks-footer";
 
-.postcode-form-box {
+/* GENERAL COMPONENTS */
+a {
+    font-weight: 600;
+    &:focus {
+        background-color: $surrey_orange_light;
+    }
+}
+
+input {
+    &:focus {
+        outline: 0.3rem solid $surrey_orange_light;
+    }
+}
+
+
+.item-list__item {
+    a {
+        h3 {
+            font-weight: inherit;
+            color: $link-color;
+        }
+    }
+}
+
+/* HEADER */
+#site-logo {
+    $logo-width:55px;
+    $logo-height: 50px;
+    width:  $logo-width;
+    height: 70px; // Same as Surrey website.
+    background-size:  $logo-width  $logo-height;
+    background-image: url("/cobrands/surrey/images/surrey_county_council_white.png");
+
+    &:focus {
+        background-color: $surrey_orange;
+        outline: 0.3rem $surrey_orange_light solid;
+        outline-offset: -0.1rem;
+    }
+}
+
+/* BUTTONS */
+.btn, 
+.btn-primary, 
+.btn--primary, 
+.postcode-form-box div input#sub,
+#report-cta,
+.nav-menu--main a.report-a-problem-btn  {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+    border-radius: $button-border-radius;
+    text-decoration: none; // For #report-cta
+
+    &:focus {
+        outline: 0.3rem $surrey_orange_light solid;
+        outline-offset: -0.1rem;
+    }
+}
+
+.btn--secondary, 
+.btn-secondary, 
+.nav-menu a.btn-secondary,
+a#geolocate_link,
+.my-account-buttons a{
+    @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+    border-width: 0.1rem;
+    border-radius: $button-border-radius;
+    text-decoration: none; // For .my-account-buttons
+
+    &:focus {
+      outline: 0.3rem $surrey_orange_light solid;
+      outline-offset: -0.1rem;
+    }
+}
+
+/* HOME */
+#postcodeForm {
+    overflow: visible; // So outlines don't look cropped
+}
+
+/* FOOTER */
+.scc-footer {
+    background-color: #333;
     color: #fff;
+    padding: 2rem 0;
+
+    .scc-footer__link {
+        color: $primary_text;
+        font-weight: 400;
+    }
+
+    .scc-social-icons__list {
+        list-style: none;
+        margin: 0;
+    }
+
+    .scc-social-icons__item {
+        display: inline-block;
+        margin: 0 0 0 1.5rem;
+    }
+
+    .fa-brands {
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        display: var(--fa-display, inline-block);
+        font-style: normal;
+        font-variant: normal;
+        line-height: 1;
+        text-rendering: auto;
+    }
+
+    .scc-social-icons__link {
+        font-size: 30px;
+    }
+
+    .scc-footer__item {
+        display: inline-block;
+        &--contact {
+            background: url('/cobrands/surrey/images/Call-Icon-white-19x30.png');
+            background-repeat: no-repeat;
+            padding: 0 0 1.5rem 2.5rem;
+            margin-right: 2rem;
+        }
+
+        &--find {
+            background-image: url('/cobrands/surrey/images/Map-Icon-white-24x30.png');
+            background-repeat: no-repeat;
+            padding: 0 0 1.5rem 3rem;
+            border: 0;
+        }
+    }
+
 }

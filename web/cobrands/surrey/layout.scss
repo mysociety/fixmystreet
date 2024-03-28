@@ -1,2 +1,23 @@
 @import "_variables";
 @import "../sass/layout";
+
+.nav-menu--main a, .nav-menu--main span {
+  font-size: 1rem;
+}
+
+.nav-menu--main a {
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus {
+    color: $primary_b;
+    background-color: $surrey_orange_light;
+  }
+}
+
+#front-main {
+  border-top: 0.1rem solid $base_bg;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
