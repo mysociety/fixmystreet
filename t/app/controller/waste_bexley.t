@@ -398,7 +398,7 @@ FixMyStreet::override_config {
                 "Your rotation schedule is Week $test->{link}",
                 'Correct rotation schedule displayed',
             );
-            $mech->content_contains('<li><a href="PDF '. $test->{link} . '">Download PDF waste calendar', 'PDF link ' . $test->{link} . ' shown');
+            $mech->content_contains('<li><a target="_blank" href="PDF '. $test->{link} . '">Download PDF waste calendar', 'PDF link ' . $test->{link} . ' shown');
         }
     };
 
