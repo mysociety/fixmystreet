@@ -10,5 +10,5 @@
   [% IF show_garden_subscribe %]
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
   [% END %]
-  <li><a href="https://mybexley.bexley.gov.uk/service/rubbish_and_recycling_enquiries">Report an issue with your collection service</a></li>
+  <li><a [% external_new_tab | safe %] href="https://mybexley.bexley.gov.uk/service/rubbish_and_recycling_enquiries">Report an issue with your collection service</a></li>
 </ul>
