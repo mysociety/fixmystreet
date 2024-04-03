@@ -434,8 +434,12 @@ FixMyStreet::override_config {
             { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
             'Submitting missed collection report');
 
+        $mech->content_contains('Missed collection has been reported');
+
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
 
+        ok $report->confirmed;
+        is $report->state, 'confirmed';
         is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
         is $report->get_extra_field_value('service_item_name'), 'MDR-SACK', 'Service item name is correct';
         is $report->get_extra_field_value('assisted_yn'), 'No', 'Assisted collection is correct';
