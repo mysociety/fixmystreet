@@ -371,4 +371,15 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=head2 waste_auto_confirm_report
+
+Missed collection reports are automatically confirmed.
+
+=cut
+
+sub waste_auto_confirm_report {
+    my ($self, $report) = @_;
+    return $report->category eq 'Report missed collection';
+}
+
 1;
