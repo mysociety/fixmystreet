@@ -43,6 +43,13 @@ sub problems_restriction {
     return $rs;
 }
 
+sub updates_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+    my $northamptonshire = FixMyStreet::Cobrand::Northamptonshire->new->body;
+    return $rs->to_body([ $northamptonshire->id, $self->body->id ]);
+}
+
 =item * Staff users have permissions on Northamptonshire reports.
 
 =cut
