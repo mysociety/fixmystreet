@@ -833,8 +833,8 @@ sub waste_munge_request_form_fields {
     }
 
     if (@replace_options) {
-        $radio_options[0]{tags}{divider} = "Request a replacement to an existing container:";
-        $replace_options[0]{tags}{divider} = "Request a change of size to a container:";
+        $radio_options[0]{tags}{divider_template} = "waste/request/intro_replace";
+        $replace_options[0]{tags}{divider_template} = "waste/request/intro_change";
         push @radio_options, @replace_options;
     }
 
