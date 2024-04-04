@@ -261,6 +261,7 @@ FixMyStreet::override_config {
                 {   id             => 8,
                     service_id     => 'PC-55',
                     service_name   => 'Blue Recycling Box',
+                    service_description => 'Paper and card',
                     round_schedule => 'RND-8-9 Mon, RND-8-9 Wed',
                     round          => 'RND-8-9',
                     report_allowed => 0,
@@ -274,6 +275,7 @@ FixMyStreet::override_config {
                 {   id             => 9,
                     service_id     => 'PA-55',
                     service_name   => 'Green Recycling Box',
+                    service_description => 'Paper and card',
                     round_schedule => 'RND-8-9 Mon, RND-8-9 Wed',
                     round          => 'RND-8-9',
                     report_allowed => 0,
@@ -287,6 +289,7 @@ FixMyStreet::override_config {
                 {   id             => 1,
                     service_id     => 'FO-140',
                     service_name   => 'Communal Food Bin',
+                    service_description => 'Food waste',
                     round_schedule => 'RND-1 Tue Wk 1',
                     round          => 'RND-1',
                     report_allowed => 0,
@@ -299,6 +302,14 @@ FixMyStreet::override_config {
                 {   id             => 6,
                     service_id     => 'MDR-SACK',
                     service_name   => 'Clear Sack(s)',
+                    service_description => 'For:
+<ul>
+<li>paper and cardboard</li>
+<li>plastic bottles</li>
+<li>glass bottles and jars</li>
+<li>food and drinks cans</li>
+</ul>
+',
                     round_schedule => 'RND-6 Wed Wk 2',
                     round          => 'RND-6',
                     report_allowed => 1,

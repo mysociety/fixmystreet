@@ -47,6 +47,11 @@
       <h3 class="govuk-heading-m waste-service-name">
           [% unit.service_name %]
           [% IF c.cobrand.moniker == 'brent' %]collection[% END %]
+          [% IF unit.service_description %]
+            <div class="waste-service-subtitle">
+              [% unit.service_description | safe %]
+            </div>
+          [% END %]
       </h3>
       <div class="govuk-grid-row">
      [% ELSE %]
