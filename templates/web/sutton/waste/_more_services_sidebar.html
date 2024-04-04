@@ -10,7 +10,7 @@
        <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
     [% END %]
     [% IF any_request_allowed %]
-      <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a bin, box or caddy</a></li>
+      <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a bin, box, caddy or bags</a></li>
     [% END %]
     [% IF show_garden_subscribe %]
       <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>

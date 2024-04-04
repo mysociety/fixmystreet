@@ -117,7 +117,7 @@ FixMyStreet::override_config {
         $e->mock('GetTasks', sub { [] });
     };
     subtest 'Request a new bin' => sub {
-        $mech->follow_link_ok( { text => 'Request a bin, box or caddy' } );
+        $mech->follow_link_ok( { text => 'Request a bin, box, caddy or bags' } );
 		# 19 (1), 24 (1), 16 (1), 1 (1)
         # missing, new_build, more
         $mech->content_contains('The Council has continued to provide waste and recycling containers free for as long as possible', 'Intro text included');
