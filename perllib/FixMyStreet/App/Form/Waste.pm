@@ -65,7 +65,7 @@ sub validate {
 
     $email->add_error('Please provide an email address')
         unless $email->is_inactive || $email->value || ($is_staff_user && !$staff_provide_email)
-        || (FixMyStreet::SMS->parse_username($phone->value)->{may_be_mobile} && $cobrand eq 'peterborough');
+        || $c->cobrand->call_hook('report_can_have_text_only_notifcations' => $phone, $text_updates);
     $email->add_error('Please provide email and/or phone')
         unless $phone->is_inactive || $phone->value || $email->value || !($is_staff_user && !$staff_provide_email) || $cobrand eq 'bromley';
 
