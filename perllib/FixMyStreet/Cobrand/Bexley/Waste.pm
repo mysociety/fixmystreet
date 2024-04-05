@@ -159,6 +159,14 @@ sub bin_services_for_address {
             assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
         };
 
+        # Set some flags on property as well; these are used for missed
+        # collection location options
+        $property->{has_assisted} = 1
+            if !$property->{has_assisted}
+            && $filtered_service->{assisted_collection};
+        $property->{above_shop} = 1
+            if $filtered_service->{service_id} eq 'MDR-SACK';
+
         # Get the last collection date from recent collections.
         #
         # Some services may have two collections a week; these are concatenated
@@ -797,14 +805,68 @@ sub waste_munge_report_data {
 sub waste_munge_report_form_fields {
     my ($self, $field_list) = @_;
 
-    push @$field_list, "extra_detail" => {
-        type => 'Text',
-        widget => 'Textarea',
-        label => 'Please supply any additional information such as the location of the bin.',
-        maxlength => 1_000,
-        messages => {
-            text_maxlength => 'Please use 1000 characters or less for additional information.',
-        },
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+
+    my $type
+        = $c->stash->{is_staff}
+        || $property->{has_assisted} ? 'staff_or_assisted'
+        : $property->{is_communal}   ? 'communal'
+        : $property->{above_shop}    ? 'above_shop'
+        :                              '';
+
+    my $options = _bin_location_options()->{$type};
+
+    if ($options) {
+        # Double up options for label-value pairing
+        $options = [
+            map { $_, $_ } @$options
+        ];
+
+        push @$field_list, extra_detail => {
+            type => 'Select',
+            label => 'Please select bin location',
+            options => $options,
+        };
+    } else {
+        push @$field_list, extra_detail => {
+            type => 'Hidden',
+            value => 'Front of property',
+        };
+    }
+}
+
+sub _bin_location_options {
+    return {
+        staff_or_assisted => [
+            'Front boundary of property',
+            'Rear of property',
+            'Side of property',
+            'By the door',
+            'Top of the driveway',
+        ],
+        communal => [
+            'Front of property',
+            'Inside the bin-store',
+            'Inside the chute room',
+            'In the car park',
+            'In front of the block',
+            'At the rear of the block',
+            'To the side of the block',
+            'In the under croft',
+            'In the drying area',
+            'Rear of property',
+        ],
+        above_shop => [
+            'Front of property',
+            'Next to front entrance',
+            'Next to rear entrance',
+            'Inside the bin-store',
+            'Inside dustbin',
+            'On first-floor balcony',
+            'At the bottom of the steps',
+            'Next to refuse bins',
+        ],
     };
 }
 
