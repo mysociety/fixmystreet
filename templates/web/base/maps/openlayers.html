@@ -42,7 +42,7 @@
 <div id="map_box">
     [% pre_map %]
     <div id="map">
-      <a href="#map_sidebar" class="skiplink">Skip map</a>
+      <a href="#map_sidebar" class="skiplink">[% loc('Skip map') %]</a>
       [% IF noscript_map_template == 'maps/noscript_map_base_wmx.html' %]
           [% INCLUDE 'maps/noscript_map_base_wmx.html' js = 1 %]
       [% ELSE %]
