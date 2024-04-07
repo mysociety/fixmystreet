@@ -113,7 +113,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Damaged during collection";
         is $report->category, 'Request new container';
-        is $report->title, 'Request new Blue lid paper and cardboard bin (240L)';
+        is $report->title, 'Request replacement Blue lid paper and cardboard bin (240L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -134,7 +134,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is missing - Were there, now not";
-        is $report->title, 'Request new Green recycling box (55L)';
+        is $report->title, 'Request replacement Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -170,7 +170,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Wear and tear";
-        is $report->title, 'Request new Green recycling box (55L)';
+        is $report->title, 'Request replacement Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
@@ -271,7 +271,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: My container is damaged - Other damage";
-        is $report->title, 'Request new Green recycling bin (240L)';
+        is $report->title, 'Request replacement Green recycling bin (240L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);

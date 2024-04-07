@@ -874,7 +874,13 @@ sub waste_munge_request_data {
         $nice_reason = "Additional bag required";
     }
 
-    $data->{title} = "Request new $container";
+    if ($reason eq 'damaged' || $reason eq 'missing') {
+        $data->{title} = "Request replacement $container";
+    } elsif ($reason eq 'change_capacity') {
+        $data->{title} = "Request exchange for $container";
+    } else {
+        $data->{title} = "Request new $container";
+    }
     $data->{detail} = "Quantity: $quantity\n\n$address";
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
 

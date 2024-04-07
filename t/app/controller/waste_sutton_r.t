@@ -142,7 +142,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Damaged";
         is $report->category, 'Request new container';
-        is $report->title, 'Request new Paper and Cardboard Green Wheelie Bin (240L)';
+        is $report->title, 'Request replacement Paper and Cardboard Green Wheelie Bin (240L)';
         is $report->get_extra_field_value('payment'), 500, 'correct payment';
         is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $report->get_extra_field_value('Container_Type'), 19, 'correct bin type';
@@ -172,7 +172,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Containers typically arrive within 20 working days');
 
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->title, 'Request new Larger Brown General Waste Wheelie Bin (240L)';
+        is $report->title, 'Request exchange for Larger Brown General Waste Wheelie Bin (240L)';
         is $report->get_extra_field_value('payment'), 1500, 'correct payment';
         is $report->get_extra_field_value('Container_Type'), '1::2', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
@@ -197,7 +197,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Containers typically arrive within 20 working days');
 
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->title, 'Request new Paper and Cardboard Green Wheelie Bin (240L)';
+        is $report->title, 'Request exchange for Paper and Cardboard Green Wheelie Bin (240L)';
         is $report->get_extra_field_value('payment'), 1500, 'correct payment';
         is $report->get_extra_field_value('Container_Type'), '36::19', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
@@ -215,7 +215,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Missing";
-        is $report->title, 'Request new Mixed Recycling Green Box (55L)';
+        is $report->title, 'Request replacement Mixed Recycling Green Box (55L)';
     };
 
     subtest 'Report missed collection' => sub {
