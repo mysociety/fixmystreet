@@ -744,18 +744,20 @@ ul.error {
 /*** LAYOUT ***/
 
 .skiplink {
+  @extend .btn;
   display: inline-block;
   padding: 1em;
   position: absolute;
   left: -9999em;
 }
+
 .skiplink:focus {
   outline: 3px solid transparent;
   color: $primary_text;
   background-color: $primary;
   text-decoration: none;
   left: 0;
-  z-index: 2;
+  z-index: 999; //Higher value than the map
 }
 
 .dev-site-notice {

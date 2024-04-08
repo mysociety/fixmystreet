@@ -43,6 +43,13 @@ sub problems_restriction {
     return $rs;
 }
 
+sub updates_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+    my $northamptonshire = FixMyStreet::Cobrand::Northamptonshire->new->body;
+    return $rs->to_body([ $northamptonshire->id, $self->body->id ]);
+}
+
 =item * Staff users have permissions on Northamptonshire reports.
 
 =cut
@@ -163,6 +170,27 @@ sub should_skip_sending_update {
     }
     return 0;
 }
+
+sub path_to_web_templates {
+    my $self = shift;
+    return [
+        FixMyStreet->path_to( 'templates/web', $self->moniker ),
+        FixMyStreet->path_to( 'templates/web/northants' ),
+        FixMyStreet->path_to( 'templates/web/fixmystreet-uk-councils' ),
+    ];
+}
+
+sub path_to_email_templates {
+    my ( $self, $lang_code ) = @_;
+    my $paths = [
+        FixMyStreet->path_to( 'templates', 'email', $self->moniker ),
+        FixMyStreet->path_to( 'templates', 'email', 'northants' ),
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet-uk-councils' ),
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com'),
+    ];
+    return $paths;
+}
+
 
 =pod
 

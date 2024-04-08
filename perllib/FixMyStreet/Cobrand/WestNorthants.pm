@@ -22,6 +22,7 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Alloy';
 with 'FixMyStreet::Roles::CobrandNorthants';
+with 'FixMyStreet::Roles::BoroughEmails';
 
 =head2 Defaults
 
@@ -76,5 +77,24 @@ sub pin_colour {
     return 'blue' if $self->is_defect($p);
     return $self->SUPER::pin_colour($p, $context);
 }
+
+around 'munge_sendreport_params' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
+
+    # The district areas don't exist in MapIt past generation 41, so look up
+    # what district this report would have been in and temporarily override
+    # the areas column so BoroughEmails::munge_sendreport_params can do its
+    # thing.
+    my ($lat, $lon) = ($row->latitude, $row->longitude);
+    my $district = FixMyStreet::MapIt::call( 'point', "4326/$lon,$lat", type => 'DIS', generation => 41 );
+    ($district) = keys %$district;
+
+    my $original_areas = $row->areas;
+    $row->areas(",$district,");
+
+    $self->$orig($row, $h, $params);
+
+    $row->areas($original_areas);
+};
 
 1;

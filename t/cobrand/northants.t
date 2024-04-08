@@ -375,6 +375,37 @@ subtest 'Includes old Northamptonshire reports' => sub {
             ok $cobrand->problems->find($r->id), "includes $area_name report after April 2021";
         }
     };
+
+    subtest 'Comments left on Northamptonshire reports are visible' => sub {
+            FixMyStreet::override_config {
+                MAPIT_URL => 'http://mapit.uk/',
+                ALLOWED_COBRANDS => $test->{moniker},
+            }, sub {
+
+                my ($nhreport) = $mech->create_problems_for_body(1, $nh->id, 'Defect Problem', {
+                    created => '2021-03-24',
+                    confirmed => '2021-03-24',
+                    cobrand => 'northamptonshire',
+                    send_method_used => 'Open311',
+                    user => $counciluser
+                });
+
+                my $nhcomment = FixMyStreet::DB->resultset('Comment')->create( {
+                    mark_fixed => 0,
+                    user => $user,
+                    problem => $nhreport,
+                    anonymous => 0,
+                    text => 'this is a comment left on a Northamptonshire Highways report',
+                    confirmed => DateTime->now,
+                    state => 'confirmed',
+                    problem_state => 'confirmed',
+                    cobrand => 'default',
+                } );
+
+                $mech->get_ok('/report/' . $nhreport->id);
+                $mech->content_contains('this is a comment left on a Northamptonshire Highways report');
+            };
+    };
 };
 
 subtest 'Staff have perms for northamptonshire highways reports' => sub {
