@@ -34,7 +34,7 @@ has_page cannot_book => (
 
 has_page about_you => (
     intro => 'bulky/about_you_preamble.html',
-    fields => ['name', 'email', 'phone', 'extra_bulky_text_updates', 'continue'],
+    fields => ['name', 'email', 'phone', 'extra_bulky_text_reminders', 'continue'],
     title => 'About you',
     next => 'choose_date_earlier',
     update_field_list => sub {
@@ -43,6 +43,7 @@ has_page about_you => (
             my $fields = {};
             $fields->{phone}{tags}{hint} = 'Providing a phone number will allow Aragon Direct Services (who provide the service on behalf of the council) to contact you if there are any issues with the service.';
             $form->field('extra_bulky_text_updates')->inactive(0);
+            $form->field('extra_bulky_text_reminders')->inactive(0);
             return $fields;
         };
     },

@@ -59,7 +59,7 @@ sub validate {
     my $email = $self->field('email');
     my $phone = $self->field('phone');
     return 1 unless $email && $phone;
-    my $text_updates = $self->field('extra_bulky_text_updates');
+    my $text_updates = $self->field('extra_bulky_text_reminders');
 
     my $c = $self->c;
     my $cobrand = $c->cobrand->moniker;

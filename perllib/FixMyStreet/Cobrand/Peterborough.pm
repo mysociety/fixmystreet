@@ -304,7 +304,7 @@ sub open311_post_send {
         $sender->send($row, $h);
     }
 
-    if ($h->{report}->get_extra_field_value('bulky_text_updates')) {
+    if ($h->{report}->get_extra_field_value('bulky_text_reminders')) {
         $self->call_hook('_bulky_send_optional_text' => $h->{report}, $h->{url}, { text_type => 'confirmed' });
     };
 }
