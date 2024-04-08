@@ -15,7 +15,7 @@
   [% IF property.red_tags && property.red_tags.size %]
   <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
     <h2 class="govuk-error-summary__title" id="error-summary-title">
-      Our collections teams have put a 'red-tag' on the following bins:
+      Our collection teams have reported the following problems with your bins:
     </h2>
     <div class="govuk-error-summary__body">
       <dl class="govuk-summary-list">
@@ -26,14 +26,6 @@
           </div>
         [% END %]
       </dl>
-      <p class="govuk-body">Our collection teams will put a red tag on your bin if:</p>
-      <ul class="govuk-list">
-        <li>Bins are not out when the collection team arrives</li>
-        <li>You put the wrong kind of waste in it</li>
-        <li>It was overflowing and the lid wasn’t properly shut</li>
-        <li>It was too heavy for anyone to lift safely</li>
-        <li>It’s a charged service (like garden waste) and you haven’t paid yet</li>
-      </ul>
       <p class="govuk-body">We are unable to accept missed bin reports for bins that have been red-tagged.</p>
       <p class="govuk-body">
         <a [% external_new_tab %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/find-your-collection-day-and-report-missed-bin/why-your-rubbish-wasnt-collected">Find out about red-tags and what to do with rubbish that wasn’t collected.</a>
