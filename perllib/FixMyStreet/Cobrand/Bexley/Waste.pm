@@ -146,11 +146,13 @@ sub bin_services_for_address {
         my $containers = $self->_containers($property);
 
         my ($round) = split / /, $service->{RoundSchedule};
-
         my $filtered_service = {
             id             => $service->{SiteServiceID},
             service_id     => $service->{ServiceItemName},
-            service_name   => $containers->{ $service->{ServiceItemName} },
+            service_name =>
+                $containers->{ $service->{ServiceItemName} }{name},
+            service_description =>
+                $containers->{ $service->{ServiceItemName} }{description},
             round_schedule => $service->{RoundSchedule},
             round          => $round,
             next           => {
@@ -161,6 +163,14 @@ sub bin_services_for_address {
             },
             assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
         };
+
+        # Set some flags on property as well; these are used for missed
+        # collection location options
+        $property->{has_assisted} = 1
+            if !$property->{has_assisted}
+            && $filtered_service->{assisted_collection};
+        $property->{above_shop} = 1
+            if $filtered_service->{service_id} eq 'MDR-SACK';
 
         # Get the last collection date from recent collections.
         #
@@ -555,52 +565,199 @@ sub _containers {
 
     my $is_communal = $property->{is_communal};
 
+    my $clear_sack_desc = <<HTML;
+For:
+<ul>
+<li>paper and cardboard</li>
+<li>plastic bottles</li>
+<li>glass bottles and jars</li>
+<li>food and drinks cans</li>
+</ul>
+HTML
+
     return {
-        'FO-140'   => 'Communal Food Bin',
-        'FO-23'    => 'Brown Caddy',
-        'GA-140'   => 'Brown Wheelie Bin',
-        'GA-240'   => 'Brown Wheelie Bin',
-        'GL-1100'  => 'Green Recycling Bin',
-        'GL-1280'  => 'Green Recycling Bin',
-        'GL-55'    => 'Black Recycling Box',
-        'MDR-SACK' => 'Clear Sack(s)',
-        'PC-180'   => 'Blue Lidded Wheelie Bin',
-        'PC-55'    => 'Blue Recycling Box',
-        'PA-1100'  => 'Blue Recycling Bin',
-        'PA-1280'  => 'Blue Recycling Bin',
-        'PA-140'   => 'Blue Recycling Bin',
-        'PA-240'   => 'Blue Recycling Bin',
-        'PA-55'    => 'Green Recycling Box',
-        'PA-660'   => 'Blue Recycling Bin',
-        'PA-940'   => 'Blue Recycling Bin',
-        'PL-1100'  => 'White / Silver Recycling Bin',
-        'PL-1280'  => 'White / Silver Recycling Bin',
-        'PL-140'   => 'White / Silver Recycling Bin',
-        'PL-55'    => 'Maroon Recycling Box',
-        'PL-660'   => 'White / Silver Recycling Bin',
-        'PL-940'   => 'White / Silver Recycling Bin',
-        'PG-1100'  => 'White / Silver Recycling Bin',
-        'PG-1280'  => 'White / Silver Recycling Bin',
-        'PG-240' => ( $is_communal
-            ? 'White / Silver Recycling Bin'
-            : 'White Lidded Wheelie Bin' ),
-        'PG-360'   => 'White / Silver Recycling Bin',
-        'PG-55'    => 'White Recycling Box',
-        'PG-660'   => 'White / Silver Recycling Bin',
-        'PG-940'   => 'White / Silver Recycling Bin',
-        'RES-1100' => 'Communal Refuse Bin(s)',
-        'RES-1280' => 'Communal Refuse Bin(s)',
-        'RES-140'  => 'Communal Refuse Bin(s)',
-        'RES-180'  => 'Green Wheelie Bin',
-        'RES-240' => ( $is_communal
-            ? 'Communal Refuse Bin(s)'
-            : 'Green Wheelie bin' ),
-        'RES-660'  => 'Communal Refuse Bin(s)',
-        'RES-720'  => 'Communal Refuse Bin(s)',
-        'RES-940'  => 'Communal Refuse Bin(s)',
-        'RES-CHAM' => 'Communal Refuse Bin(s)',
-        'RES-DBIN' => 'Communal Refuse Bin(s)',
-        'RES-SACK' => 'Rubbish collection',
+        'FO-140' => {
+            name => 'Communal Food Bin',
+            description => 'Food waste',
+        },
+        'FO-23' => {
+            name => 'Brown Caddy',
+            description => 'Food waste',
+        },
+        'GA-140' => {
+            name => 'Brown Wheelie Bin',
+            description => 'Garden waste',
+        },
+        'GA-240' => {
+            name => 'Brown Wheelie Bin',
+            description => 'Garden waste',
+        },
+        'GL-1100' => {
+            name        => 'Green Recycling Bin',
+            description => 'Glass bottles and jars',
+        },
+        'GL-1280' => {
+            name        => 'Green Recycling Bin',
+            description => 'Glass bottles and jars',
+        },
+        'GL-55' => {
+            name        => 'Black Recycling Box',
+            description => 'Glass bottles and jars',
+        },
+        'GL-660' => {
+            name        => 'Green Recycling Bin',
+            description => 'Glass bottles and jars',
+        },
+        'MDR-SACK' => {
+            name => 'Clear Sack(s)',
+            description => $clear_sack_desc,
+        },
+        'PA-1100' => {
+            name        => 'Blue Recycling Bin',
+            description => 'Paper and card',
+        },
+        'PA-1280' => {
+            name        => 'Blue Recycling Bin',
+            description => 'Paper and card',
+        },
+        'PA-140' => {
+            name        => 'Blue Recycling Bin',
+            description => 'Paper and card',
+        },
+        'PA-240' => {
+            name        => 'Blue Recycling Bin',
+            description => 'Paper and card',
+        },
+        'PA-55' => {
+            name        => 'Green Recycling Box',
+            description => 'Paper and card',
+        },
+        'PA-660' => {
+            name        => 'Blue Recycling Bin',
+            description => 'Paper and card',
+        },
+        'PA-940' => {
+            name        => 'Blue Recycling Bin',
+            description => 'Paper and card',
+        },
+        'PC-180' => {
+            name        => 'Blue Lidded Wheelie Bin',
+            description => 'Paper and card',
+        },
+        'PC-55' => {
+            name        => 'Blue Recycling Box',
+            description => 'Paper and card',
+        },
+        'PG-1100' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics, cans and glass',
+        },
+        'PG-1280' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics, cans and glass',
+        },
+        'PG-240' => (
+            $is_communal
+            ? {
+                name        => 'White / Silver Recycling Bin',
+                description => 'Plastics, cans and glass',
+            }
+            : {
+                name        => 'White Lidded Wheelie Bin',
+                description => 'Plastics, cans and glass',
+            }
+        ),
+        'PG-360' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics, cans and glass',
+        },
+        'PG-55' => {
+            name        => 'White Recycling Box',
+            description => 'Plastics, cans and glass',
+        },
+        'PG-660' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics, cans and glass',
+        },
+        'PG-940' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics, cans and glass',
+        },
+        'PL-1100' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics and cans',
+        },
+        'PL-1280' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics and cans',
+        },
+        'PL-140' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics and cans',
+        },
+        'PL-55' => {
+            name        => 'Maroon Recycling Box',
+            description => 'Plastics and cans',
+        },
+        'PL-660' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics and cans',
+        },
+        'PL-940' => {
+            name        => 'White / Silver Recycling Bin',
+            description => 'Plastics and cans',
+        },
+        'RES-1100' => {
+            name        => 'Communal Refuse Bin(s)',
+            description => 'Non-recyclable waste',
+        },
+        'RES-1280' => {
+            name        => 'Communal Refuse Bin(s)',
+            description => 'Non-recyclable waste',
+        },
+        'RES-140' => {
+            name        => 'Communal Refuse Bin(s)',
+            description => 'Non-recyclable waste',
+        },
+        'RES-180' => {
+            name        => 'Green Wheelie Bin',
+            description => 'Non-recyclable waste',
+        },
+        'RES-240' => (
+            $is_communal
+            ? {
+                name        => 'Communal Refuse Bin(s)',
+                description => 'Non-recyclable waste',
+            }
+            : {
+                name        => 'Green Wheelie bin',
+                description => 'Non-recyclable waste',
+            }
+        ),
+        'RES-660' => {
+            name        => 'Communal Refuse Bin(s)',
+            description => 'Non-recyclable waste',
+        },
+        'RES-720' => {
+            name        => 'Communal Refuse Bin(s)',
+            description => 'Non-recyclable waste',
+        },
+        'RES-940' => {
+            name        => 'Communal Refuse Bin(s)',
+            description => 'Non-recyclable waste',
+        },
+        'RES-CHAM' => {
+            name        => 'Communal Refuse Bin(s)',
+            description => 'Non-recyclable waste',
+        },
+        'RES-DBIN' => {
+            name        => 'Communal Refuse Bin(s)',
+            description => 'Non-recyclable waste',
+        },
+        'RES-SACK' => {
+            name        => 'Rubbish collection',
+            description => 'Non-recyclable waste',
+        },
     };
 }
 
@@ -653,14 +810,68 @@ sub waste_munge_report_data {
 sub waste_munge_report_form_fields {
     my ($self, $field_list) = @_;
 
-    push @$field_list, "extra_detail" => {
-        type => 'Text',
-        widget => 'Textarea',
-        label => 'Please supply any additional information such as the location of the bin.',
-        maxlength => 1_000,
-        messages => {
-            text_maxlength => 'Please use 1000 characters or less for additional information.',
-        },
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+
+    my $type
+        = $c->stash->{is_staff}
+        || $property->{has_assisted} ? 'staff_or_assisted'
+        : $property->{is_communal}   ? 'communal'
+        : $property->{above_shop}    ? 'above_shop'
+        :                              '';
+
+    my $options = _bin_location_options()->{$type};
+
+    if ($options) {
+        # Double up options for label-value pairing
+        $options = [
+            map { $_, $_ } @$options
+        ];
+
+        push @$field_list, extra_detail => {
+            type => 'Select',
+            label => 'Please select bin location',
+            options => $options,
+        };
+    } else {
+        push @$field_list, extra_detail => {
+            type => 'Hidden',
+            value => 'Front of property',
+        };
+    }
+}
+
+sub _bin_location_options {
+    return {
+        staff_or_assisted => [
+            'Front boundary of property',
+            'Rear of property',
+            'Side of property',
+            'By the door',
+            'Top of the driveway',
+        ],
+        communal => [
+            'Front of property',
+            'Inside the bin-store',
+            'Inside the chute room',
+            'In the car park',
+            'In front of the block',
+            'At the rear of the block',
+            'To the side of the block',
+            'In the under croft',
+            'In the drying area',
+            'Rear of property',
+        ],
+        above_shop => [
+            'Front of property',
+            'Next to front entrance',
+            'Next to rear entrance',
+            'Inside the bin-store',
+            'Inside dustbin',
+            'On first-floor balcony',
+            'At the bottom of the steps',
+            'Next to refuse bins',
+        ],
     };
 }
 

@@ -261,6 +261,7 @@ FixMyStreet::override_config {
                 {   id             => 8,
                     service_id     => 'PC-55',
                     service_name   => 'Blue Recycling Box',
+                    service_description => 'Paper and card',
                     round_schedule => 'RND-8-9 Mon, RND-8-9 Wed',
                     round          => 'RND-8-9',
                     report_allowed => 0,
@@ -274,6 +275,7 @@ FixMyStreet::override_config {
                 {   id             => 9,
                     service_id     => 'PA-55',
                     service_name   => 'Green Recycling Box',
+                    service_description => 'Paper and card',
                     round_schedule => 'RND-8-9 Mon, RND-8-9 Wed',
                     round          => 'RND-8-9',
                     report_allowed => 0,
@@ -287,6 +289,7 @@ FixMyStreet::override_config {
                 {   id             => 1,
                     service_id     => 'FO-140',
                     service_name   => 'Communal Food Bin',
+                    service_description => 'Food waste',
                     round_schedule => 'RND-1 Tue Wk 1',
                     round          => 'RND-1',
                     report_allowed => 0,
@@ -299,6 +302,14 @@ FixMyStreet::override_config {
                 {   id             => 6,
                     service_id     => 'MDR-SACK',
                     service_name   => 'Clear Sack(s)',
+                    service_description => 'For:
+<ul>
+<li>paper and cardboard</li>
+<li>plastic bottles</li>
+<li>glass bottles and jars</li>
+<li>food and drinks cans</li>
+</ul>
+',
                     round_schedule => 'RND-6 Wed Wk 2',
                     round          => 'RND-6',
                     report_allowed => 1,
@@ -398,7 +409,7 @@ FixMyStreet::override_config {
                 "Your rotation schedule is Week $test->{link}",
                 'Correct rotation schedule displayed',
             );
-            $mech->content_contains('<li><a href="PDF '. $test->{link} . '">Download PDF waste calendar', 'PDF link ' . $test->{link} . ' shown');
+            $mech->content_contains('<li><a target="_blank" href="PDF '. $test->{link} . '">Download PDF waste calendar', 'PDF link ' . $test->{link} . ' shown');
         }
     };
 
@@ -418,14 +429,18 @@ FixMyStreet::override_config {
 
     subtest 'Asks user for location of bins on missed collection form' => sub {
         $mech->get_ok('/waste/10001/report');
-        $mech->content_contains('Please supply any additional information such as the location of the bin.');
+        $mech->content_contains('Please select bin location');
         $mech->content_contains('name="extra_detail"');
+        $mech->content_contains($_)
+            for
+            @{ FixMyStreet::Cobrand::Bexley::Waste::_bin_location_options()
+                ->{staff_or_assisted} };
     };
 
     subtest 'Making a missed collection report' => sub {
         $mech->get_ok('/waste/10001/report');
         $mech->submit_form_ok(
-            { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
+            { with_fields => { extra_detail => 'Front boundary of property', 'service-MDR-SACK' => 1 } },
             'Selecting missed collection for clear sacks');
         $mech->submit_form_ok(
             { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },
@@ -443,13 +458,13 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
         is $report->get_extra_field_value('service_item_name'), 'MDR-SACK', 'Service item name is correct';
         is $report->get_extra_field_value('assisted_yn'), 'No', 'Assisted collection is correct';
-        is $report->get_extra_field_value('location_of_containers'), 'Front driveway', 'Location of containers is correct';
+        is $report->get_extra_field_value('location_of_containers'), 'Front boundary of property', 'Location of containers is correct';
     };
 
     subtest 'Missed collection reports are made against the parent property' => sub {
         $mech->get_ok('/waste/10002/report');
         $mech->submit_form_ok(
-            { with_fields => { extra_detail => 'Front driveway', 'service-MDR-SACK' => 1 } },
+            { with_fields => { extra_detail => 'Rear of property', 'service-MDR-SACK' => 1 } },
             'Selecting missed collection for blue recycling box');
         $mech->submit_form_ok(
             { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },
