@@ -320,11 +320,11 @@ sub waste_containers {
             4 => 'Refuse Blue Sack',
             5 => 'Refuse Black Sack',
             6 => 'Refuse Red Stripe Bag',
-            18 => 'Recycling Blue Stripe Bag',
+            18 => 'Mixed Recycling Blue Striped Bag',
             29 => 'Recycling Single Use Bag',
             21 => 'Paper & Card Reusable Bag',
             22 => 'Paper Sacks',
-            30 => 'Paper Single Use Bag',
+            30 => 'Paper & Card Recycling Clear Bag',
             7 => 'Communal Refuse bin (240L)',
             8 => 'Communal Refuse bin (360L)',
             9 => 'Communal Refuse bin (660L)',
@@ -468,6 +468,13 @@ sub waste_extra_service_info {
     }
 }
 
+my %waste_containers_no_request = (
+    6 => 1, # Red stripe bag
+    17 => 1, # Recycling purple sack
+    29 => 1, # Recycling Single Use Bag
+    21 => 1, # Paper & Card Reusable bag
+);
+
 sub waste_service_containers {
     my ($self, $service) = @_;
 
@@ -486,7 +493,7 @@ sub waste_service_containers {
             $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
             $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
         }
-        next if $container == 6; # Red stripe bag
+        next if $waste_containers_no_request{$container};
         next if $container == 18 && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
         if ($container && $quantity) {
             # Store this fact here for use in new request flow

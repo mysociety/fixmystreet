@@ -397,7 +397,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Kingston, KT1 1AA\n\nReason: Additional bag required";
         is $report->category, 'Request new container';
-        is $report->title, 'Request new Recycling Blue Stripe Bag';
+        is $report->title, 'Request new Mixed Recycling Blue Striped Bag';
     };
     subtest 'Weekly collection cannot request a blue stripe bag' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
