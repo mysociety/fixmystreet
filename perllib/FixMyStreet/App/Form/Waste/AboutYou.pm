@@ -64,7 +64,7 @@ has_field email => (
 
 has_field extra_bulky_text_reminders => (
     type => 'Checkbox',
-    label => 'Bulky text updates',
+    label => 'Bulky text reminders',
     option_label => 'Do you want to receive reminders about this collection by text message?',
     inactive => 1,
 );
