@@ -476,29 +476,12 @@ sub waste_event_state_map {
     };
 }
 
-use constant GARDEN_WASTE_SERVICE_ID => 545;
+sub garden_service_id { 545 }
 sub garden_service_name { 'Green Garden Waste collection service' }
-sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
-sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
-sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
 sub garden_echo_container_name { 'LBB - GW Container' }
 sub garden_due_days { 48 }
-
-sub garden_current_service_from_service_units {
-    my ($self, $services) = @_;
-
-    my $garden;
-    for my $service ( @$services ) {
-        if ( $service->{ServiceId} == GARDEN_WASTE_SERVICE_ID ) {
-            $garden = $self->_get_current_service_task($service);
-            last;
-        }
-    }
-
-    return $garden;
-}
 
 sub service_name_override {
     my ($self, $service) = @_;
@@ -517,14 +500,6 @@ sub service_name_override {
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
-}
-
-sub bin_payment_types {
-    return {
-        'csc' => 1,
-        'credit_card' => 2,
-        'direct_debit' => 3,
-    };
 }
 
 sub waste_containers {
@@ -778,17 +753,6 @@ sub waste_get_pro_rata_bin_cost {
     my $cost = sprintf "%.0f", ($base + ( $weeks * $weekly_cost ));
 
     return $cost;
-}
-
-sub waste_display_payment_method {
-    my ($self, $method) = @_;
-
-    my $display = {
-        direct_debit => _('Direct Debit'),
-        credit_card => _('Credit Card'),
-    };
-
-    return $display->{$method};
 }
 
 =head2 garden_waste_renewal_cost_pa

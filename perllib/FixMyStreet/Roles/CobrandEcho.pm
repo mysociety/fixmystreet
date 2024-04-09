@@ -19,6 +19,8 @@ requires 'waste_extra_service_info';
 requires 'garden_subscription_event_id';
 requires 'garden_echo_container_name';
 requires 'garden_container_data_extract';
+requires 'garden_due_days';
+requires 'garden_service_id';
 
 requires 'waste_bulky_missed_blocked_codes';
 
@@ -793,6 +795,45 @@ sub _get_cost {
         $cost = $self->_get_cost_from_array($cost, $date);
     }
     return $cost;
+}
+
+# Garden waste
+
+sub bin_payment_types {
+    return {
+        'csc' => 1,
+        'credit_card' => 2,
+        'direct_debit' => 3,
+        'cheque' => 4,
+    };
+}
+
+sub waste_display_payment_method {
+    my ($self, $method) = @_;
+
+    my $display = {
+        direct_debit => _('Direct Debit'),
+        credit_card => _('Credit Card'),
+    };
+
+    return $display->{$method};
+}
+
+sub garden_current_subscription { $_[0]->{c}->stash->{services}{$_[0]->garden_service_id} }
+sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
+
+sub garden_current_service_from_service_units {
+    my ($self, $services) = @_;
+
+    my $garden;
+    for my $service ( @$services ) {
+        if ( $service->{ServiceId} == $self->garden_service_id ) {
+            $garden = $self->_get_current_service_task($service);
+            last;
+        }
+    }
+
+    return $garden;
 }
 
 sub garden_waste_sacks_cost_pa {
