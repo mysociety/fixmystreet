@@ -1365,38 +1365,12 @@ sub waste_auto_confirm_report { 1 }
 sub waste_staff_choose_payment_method { 0 }
 sub waste_cheque_payments { 0 }
 
-use constant GARDEN_WASTE_SERVICE_ID => 317;
+sub garden_service_id { 317 }
 use constant GARDEN_WASTE_PAID_COLLECTION_BIN => 1;
 use constant GARDEN_WASTE_PAID_COLLECTION_SACK => 2;
 sub garden_service_name { 'Garden waste collection service' }
-sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
 sub garden_subscription_event_id { 1159 }
-sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
-sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 sub garden_due_days { 90 }
-
-sub garden_current_service_from_service_units {
-    my ($self, $services) = @_;
-
-    my $garden;
-    for my $service ( @$services ) {
-        if ( $service->{ServiceId} == GARDEN_WASTE_SERVICE_ID ) {
-            $garden = $self->_get_current_service_task($service);
-            last;
-        }
-    }
-
-    return $garden;
-}
-
-sub bin_payment_types {
-    return {
-        'csc' => 1,
-        'credit_card' => 2,
-        'direct_debit' => 3,
-        'cheque' => 4,
-    };
-}
 
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;

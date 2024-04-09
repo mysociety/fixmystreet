@@ -253,11 +253,8 @@ use constant CONTAINER_RECYCLING_BOX => 16;
 use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_PAPER_BIN_140 => 36;
 
-use constant GARDEN_WASTE_SERVICE_ID => 2247;
 sub garden_service_name { 'garden waste collection service' }
-sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
-sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
-sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
+sub garden_service_id { 2247 }
 
 sub garden_echo_container_name { 'SLWP - Containers' }
 sub garden_due_days { 30 }
@@ -301,15 +298,6 @@ sub service_name_override {
     );
 
     return $service_name_override{$service->{ServiceId}} // '';
-}
-
-sub bin_payment_types {
-    return {
-        'csc' => 1,
-        'credit_card' => 2,
-        'direct_debit' => 3,
-        'cheque' => 4,
-    };
 }
 
 sub waste_password_hidden { 1 }
@@ -427,7 +415,7 @@ sub waste_relevant_serviceunits {
             my $schedules = _parse_schedules($task, 'task');
 
             # Ignore retired diesel rounds
-            next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != GARDEN_WASTE_SERVICE_ID;
+            next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != $self->garden_service_id;
 
             push @rows, {
                 Id => $task->{Id},
@@ -913,17 +901,6 @@ sub waste_munge_report_data {
 sub waste_get_pro_rata_cost {
     my ($self, $bins, $end) = @_;
     return $self->garden_waste_cost_pa($bins);
-}
-
-sub waste_display_payment_method {
-    my ($self, $method) = @_;
-
-    my $display = {
-        direct_debit => _('Direct Debit'),
-        credit_card => _('Credit Card'),
-    };
-
-    return $display->{$method};
 }
 
 sub garden_waste_new_bin_admin_fee {
