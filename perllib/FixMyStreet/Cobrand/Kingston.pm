@@ -3,7 +3,6 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
-with 'FixMyStreet::Roles::Bottomline';
 with 'FixMyStreet::Roles::SCP';
 
 sub council_area_id { return 2480; }

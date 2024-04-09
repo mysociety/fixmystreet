@@ -259,8 +259,6 @@ sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
 sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
 sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 
-sub garden_subscription_type_field { 'Request_Type' }
-sub garden_subscription_container_field { 'Subscription_Details_Containers' }
 sub garden_echo_container_name { 'SLWP - Containers' }
 sub garden_due_days { 30 }
 
@@ -680,20 +678,6 @@ sub waste_garden_renew_form_setup {
     }
 }
 
-sub waste_report_extra_dd_data {
-    my ($self) = @_;
-    my $c = $self->{c};
-
-    if (my $orig = $c->stash->{orig_sub}) {
-        my $p = $c->stash->{report};
-        $p->set_extra_metadata(dd_contact_id => $orig->get_extra_metadata('dd_contact_id'))
-            if $orig->get_extra_metadata('dd_contact_id');
-        $p->set_extra_metadata(dd_mandate_id => $orig->get_extra_metadata('dd_mandate_id'))
-            if $orig->get_extra_metadata('dd_mandate_id');
-        $p->update;
-    }
-}
-
 =head2 waste_munge_report_form_fields
 
 We use a custom report form to add some text to the "About you" page.
@@ -995,110 +979,6 @@ sub _waste_cc_line_item_ref {
 sub waste_cc_payment_sale_ref {
     my ($self, $p) = @_;
     return "GGW" . $p->get_extra_field_value('uprn');
-}
-
-sub garden_waste_dd_munge_form_details {
-    my ($self, $c) = @_;
-
-    $c->stash->{form_name} = $c->stash->{payment_details}->{form_name};
-    if ( $c->stash->{staff_payments_allowed} ) {
-        $c->stash->{form_name} = $c->stash->{payment_details}->{staff_form_name};
-    }
-
-    my $cfg = $self->feature('echo');
-    if ($cfg->{nlpg} && $c->stash->{property}{uprn}) {
-        my $uprn_data = get(sprintf($cfg->{nlpg}, $c->stash->{property}{uprn}));
-        $uprn_data = JSON::MaybeXS->new->decode($uprn_data);
-        my $address = $self->get_address_details_from_nlpg($uprn_data);
-        if ( $address ) {
-            $c->stash->{address1} = $address->{address1};
-            $c->stash->{address2} = $address->{address2};
-            $c->stash->{town} = $address->{town};
-            $c->stash->{postcode} = $address->{postcode};
-        }
-    }
-}
-
-sub garden_waste_dd_redirect_url {
-    my ($self, $p) = @_;
-
-    my $c = $self->{c};
-
-    return $c->cobrand->base_url_with_lang . "/waste/dd_complete";
-}
-
-sub garden_waste_dd_check_success {
-    my ($self, $c) = @_;
-
-    if ( defined( $c->get_param('stage') ) && $c->get_param('stage') == 0 ) {
-        # something has gone wrong and the form has not recorded correctly
-        $c->forward('direct_debit_error');
-        $c->detach();
-    # check if the bank details have been verified
-    } elsif ( $c->get_param('verificationapplied') && lc($c->get_param('verificationapplied')) eq 'true' ) {
-        # and if they have and verification has failed then redirect
-        # to the cancelled page
-        if ( lc $c->get_param('status') eq 'false') {
-            $c->forward('direct_debit_error');
-            $c->detach();
-        }
-    }
-}
-
-sub garden_waste_dd_get_redirect_params {
-    my ($self, $c) = @_;
-
-    my $data = $c->get_param('customData');
-
-    my %params = map {
-        my ($key, $value) = split ':';
-        $key => $value;
-    } split '\^', $data;
-
-    return ($params{reference}, $params{report_id});
-}
-
-sub garden_waste_check_pending {
-    my ($self, $report) = @_;
-
-
-    if ( $report && ($report->get_extra_metadata('ddsubmitted') || 0) == 1 ) {
-        return $report;
-    }
-
-    return undef;
-}
-
-sub garden_waste_dd_complete {
-    my ($self, $report) = @_;
-    $report->set_extra_metadata('ddsubmitted', 1);
-    $report->update();
-}
-
-sub get_address_details_from_nlpg {
-    my ( $self, $uprn_data) = @_;
-
-    my $address;
-    my $property = $uprn_data->{results}->[0]->{LPI};
-    if ( $property ) {
-        $address = {};
-        my @namenumber = (_get_addressable_object($property, 'SAO'), _get_addressable_object($property, 'PAO'));
-        $address->{address1} = join(", ", grep { /./ } map { FixMyStreet::Template::title($_) } @namenumber);
-        $address->{address2} = FixMyStreet::Template::title($property->{STREET_DESCRIPTION});
-        $address->{town} = FixMyStreet::Template::title($property->{TOWN_NAME});
-        $address->{postcode} = $property->{POSTCODE_LOCATOR};
-    }
-    return $address;
-}
-
-sub _get_addressable_object {
-    my ($property, $type) = @_;
-    my $ao = $property->{$type . '_TEXT'} || '';
-    $ao .= ' ' if $ao && $property->{$type . '_START_NUMBER'};
-    $ao .= ($property->{$type . '_START_NUMBER'} || '') . ($property->{$type . '_START_SUFFIX'} || '');
-    $ao .= '-' if $property->{$type . '_END_NUMBER'};
-    $ao .= ($property->{$type . '_END_NUMBER'} || '') . ($property->{$type . '_END_SUFFIX'} || '');
-    return $ao;
 }
 
 =head2 Dashboard export
