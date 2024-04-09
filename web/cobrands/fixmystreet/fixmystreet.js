@@ -957,7 +957,7 @@ $.extend(fixmystreet.set_up, {
       var $originalInputs = $('#form_photos, .js-photo-fields', $context);
       $originalInputs.each(function() {
         var $originalInput = $(this);
-        var $dropzone = $('<div tabindex=0>').addClass('dropzone');
+        var $dropzone = $('<div tabindex=0 role="button">').addClass('dropzone');
         var $fileid_input = $originalInput.data('upload-field') || 'upload_fileid';
         var max_photos = !isNaN($originalInput.data('max-photos')) ? $originalInput.data('max-photos') : 3;
 
