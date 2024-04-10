@@ -300,7 +300,7 @@ sub open311_pre_send {
     if (my $comment_id = $row->get_extra_metadata('echo_report_reopened_with_comment')) {
         my $comment = FixMyStreet::DB->resultset('Comment')->find($comment_id);
         if ($comment && $comment->text) {
-            my $text = "Closed report has a new comment: " . $comment->text . "\n\n" . $row->detail;
+            my $text = 'Closed report has a new comment: ' . $comment->text . "\r\n" . $comment->user->name . ' ' . $comment->user->email . "\r\n" . $row->detail;
             $row->detail($text);
         }
     }

@@ -903,8 +903,9 @@ subtest "comment on a closed echo report result in a resend under 'Referred to V
 
     my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
+    my $detail = $report->detail;
     is $c->param('attribute[Event_ID]'), $event_id, 'old event ID included in attributes';
-    like $c->param('description'), qr/Closed report has a new comment: comment on closed event/, 'private comments included in description';
+    like $c->param('description'), qr/Closed report has a new comment: comment on closed event\r\nBromley pkg-tcobrandbromleyt-bromley\@example.com\r\n$detail/, 'Comment on closed report included in new report description';
 };
 
 done_testing();
