@@ -50,7 +50,7 @@ describe('Regression tests', function() {
         cy.wait('@show-report');
         // TODO as report-a-problem-btn not printed on around at the mo
         cy.get('.big-green-banner').click({ force: true });
-        //cy.get('.report-a-problem-btn').eq(0).should('contain', 'Report another problem here').click();
+        //cy.get('.report-a-problem-btn').eq(0).should('contain', 'Report a problem').click();
         cy.get('.content').should('not.contain', 'toddler');
     });
 

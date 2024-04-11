@@ -5,7 +5,7 @@ describe('Duplicate tests', function() {
       cy.route('/around/nearby*').as('nearby-ajax');
       cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-hide'); // Server-side setup
       cy.visit('http://borsetshire.localhost:3001/report/1');
-      cy.contains('Report another problem here').click();
+      cy.contains('Report a problem').click();
       cy.wait('@report-ajax');
       cy.pickCategory('Licensing');
       cy.nextPageReporting();
@@ -23,7 +23,7 @@ describe('Duplicate tests', function() {
       cy.route('/around/nearby*').as('nearby-ajax');
       cy.visit('http://fixmystreet.localhost:3001/_test/setup/regression-duplicate-hide'); // Server-side setup
       cy.visit('http://fixmystreet.localhost:3001/report/1');
-      cy.contains('Report another problem here').click();
+      cy.contains('Report a problem').click();
       cy.wait('@report-ajax');
       cy.pickCategory('Licensing');
       cy.nextPageReporting();
@@ -40,7 +40,7 @@ describe('Duplicate tests', function() {
       cy.route('/report/new/ajax*').as('report-ajax');
       cy.route('/around/nearby*').as('nearby-ajax');
       cy.visit('http://borsetshire.localhost:3001/report/1');
-      cy.contains('Report another problem here').click();
+      cy.contains('Report a problem').click();
       cy.wait('@report-ajax');
       cy.pickCategory('Potholes');
       cy.wait('@nearby-ajax');
@@ -92,7 +92,7 @@ describe('Duplicate tests', function() {
       cy.route('/around/nearby*').as('nearby-ajax');
       cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-stopper'); // Server-side setup
       cy.visit('http://borsetshire.localhost:3001/report/1');
-      cy.contains('Report another problem here').click();
+      cy.contains('Report a problem').click();
       cy.wait('@report-ajax');
       cy.pickCategory('Flytipping');
       cy.wait('@nearby-ajax');

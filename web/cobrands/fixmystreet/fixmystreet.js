@@ -1649,16 +1649,7 @@ fixmystreet.update_report_a_problem_btn = function() {
     var href = '/';
     var text = translation_strings.report_a_problem_btn.default;
 
-    if (fixmystreet.page === 'report') {
-        text = translation_strings.report_a_problem_btn.another;
-        href = new_report_url;
-
-    } else if (fixmystreet.page === 'around' && zoom > 1) {
-        text = translation_strings.report_a_problem_btn.here;
-        href = new_report_url;
-
-    } else if (fixmystreet.page === 'reports' && zoom > 12) {
-        text = translation_strings.report_a_problem_btn.here;
+    if ((fixmystreet.page === 'report') || (fixmystreet.page === 'around' && zoom > 1) || (fixmystreet.page === 'reports' && zoom > 12)) {
         href = new_report_url;
     }
 
