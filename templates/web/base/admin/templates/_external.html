@@ -6,6 +6,12 @@
 
     [% parts = rt.external_status_code.split(',') ~%]
 
+    <div class="fms-admin-info">
+        <p>Response templates are used (as long as the Auto-response checkbox is ticked) when updates are received from backend systems such as Echo; additionally, on WasteWorks they are also used to display task completion status on the property’s bin day page.</p>
+        <p>To use a response template for an update on an event from Echo, you should only use some or all of the category, state, and Resolution Code ID fields. When an update is received on an event, the system will try and find a matching template based upon the report category, the new state, and if present any resolution code. For example, a template with a category of “Request new container” and a Resolution Code ID of 412 will be used when an update from Echo is received that completes a request event with the resolution “Container/s already on Site” (412); a template with a category of “Garden Subscription” and a state of “Fixed” will be used when any garden subscription event is Completed by Echo.</p>
+        <p>When displaying task completion status on a bin day page, to override the default resolution text from Echo, you should use the Resolution Code ID, optionally with the Task type ID or Task state. For example, a template with no category, a Resolution Code ID of 524 and a Task type ID of 3226 will be used on a bin day page when a Bromley Garden Waste (3226) collection was not completed due to textile contamination (524), instead of the default “Con - Textiles” text.</p>
+    </div>
+
     <p>
       <label for="resolution_code">External status code / Resolution Code ID</label>
       <input type="text" id="resolution_code" name="resolution_code" class="form-control" size="30" value="[% parts.0 %]">
