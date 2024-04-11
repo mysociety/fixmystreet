@@ -1158,11 +1158,6 @@ $.extend(fixmystreet.set_up, {
   report_a_problem_btn: function() {
     $(fixmystreet).on('maps:update_view', fixmystreet.update_report_a_problem_btn);
 
-    // Hide button on new report page.
-    if ( fixmystreet.page === 'new' ) {
-      $('.report-a-problem-btn').hide();
-    }
-
     $('.report-a-problem-btn').on('click', function(e){
       if (e.metaKey || e.ctrlKey) {
           return;
@@ -1652,13 +1647,9 @@ fixmystreet.update_report_a_problem_btn = function() {
     var new_report_url = '/report/new?longitude=' + center.lon.toFixed(6) + '&latitude=' + center.lat.toFixed(6);
 
     var href = '/';
-    var visible = true;
     var text = translation_strings.report_a_problem_btn.default;
 
-    if (fixmystreet.page === 'new') {
-        visible = false;
-
-    } else if (fixmystreet.page === 'report') {
+    if (fixmystreet.page === 'report') {
         text = translation_strings.report_a_problem_btn.another;
         href = new_report_url;
 
@@ -1671,7 +1662,7 @@ fixmystreet.update_report_a_problem_btn = function() {
         href = new_report_url;
     }
 
-    $('.report-a-problem-btn').attr('href', href).text(text).toggle(visible);
+    $('.report-a-problem-btn').attr('href', href).text(text);
 };
 
 fixmystreet.update_public_councils_text = function(text, bodies) {
