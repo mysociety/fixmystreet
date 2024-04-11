@@ -1,9 +1,12 @@
-Subject: Garden waste collection service - reference [% report.id %]
+[% IF cobrand.moniker == 'kingston' %][% SET prefix = 'RBK-' ~%]
+[% ELSIF cobrand.moniker == 'sutton' %][% SET prefix = 'LBS-' ~%]
+[% ELSE %][% SET prefix = '' %][% END ~%]
+Subject: Garden waste collection service - reference [% prefix %][% report.id %]
 
 [%
 
 USE pounds = format('%.2f');
-PROCESS '_garden_data.html';
+PROCESS 'waste/_garden_data.html';
 
 BLOCK show_fields;
     FOR field IN fields;
@@ -39,7 +42,7 @@ Number of bin subscriptions: [% quantity %]
 
 [% IF new_bins > 0 ~%]
 [% IF sacks ~%]
-Garden waste sack collection: [% new_bins %]
+Garden waste sack collection: 1 roll
 [% ELSE ~%]
 Bins to be delivered: [% new_bins %]
 [% END ~%]
@@ -57,21 +60,35 @@ Bins to be removed: [% 0 - new_bins %]
 Total: £[% pounds(total / 100) %]
 [% END %]
 
+[% IF cobrand.moniker == 'brent' %]
+
 [% IF type == 'new' OR type == 'renew' ~%]
 Your subscription will last until the end of March [% renew_year_end %] and starts after your first collection date.
 [% END %]
 
+[% ELSE %]
+
+[% IF type == 'new' ~%]
+Your subscription will last for 12 months and starts after your first collection date.
+[% END %]
+
+[% END %]
+
 You can check your collection day online:
-https://www.brent.gov.uk/bins-rubbish-and-recycling/how-collections-work
+[% cobrand.feature('waste_features').garden_check_bin_day_link %]
 
 [% IF new_bins > 0 ~%]
+[% IF cobrand.moniker == 'brent' %]
 We will aim to deliver your [% IF sacks %]sacks[% ELSE %]new bin(s)[% END %] within 10 working days.
+[% ELSE %]
+We will aim to deliver your [% IF sacks %]roll of sacks[% ELSE %]new bin(s)[% END %] within 20 working days.
+[% END %]
 You don't need to be at home for the delivery - we'll leave them outside your address.
 [% END %]
 
-Your garden waste needs to be at the boundary of your property by 6.30am on the
+Your garden waste needs to be at the boundary of your property by [% cobrand.garden_collection_time %] on the
 day of collection. Find out what you can put in your garden waste:
-https://www.brent.gov.uk/bins-rubbish-and-recycling/how-collections-work
+[% cobrand.feature('waste_features').garden_what_can_be_collected_link %]
 
 [% signature %]
 

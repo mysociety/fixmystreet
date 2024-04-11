@@ -1069,6 +1069,8 @@ sub waste_bulky_missed_blocked_codes {
     };
 }
 
+sub garden_collection_time { '6:30am' }
+
 sub garden_echo_container_name { 'BRT - Paid Collection Container Quantity' }
 
 sub garden_container_data_extract {
