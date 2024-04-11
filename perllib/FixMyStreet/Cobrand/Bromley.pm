@@ -169,11 +169,24 @@ sub available_permissions {
     return $perms;
 }
 
+=item * open311_config
+
+Sets options for what data will be sent to the open311 integrations.
+
+Bromley require all images to be sent for reports - in Echo, these
+will be sent as binaries for upload, in open311 they will be sent as urls.
+
+We do not 'always_send_latlong' or 'extended_description'
+
+We do 'send_notpinpointed'
+
+=cut
+
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
-    if ($contact->category eq 'Bulky collection') {
-        $params->{multi_photos} = 1;
+    $params->{multi_photos} = 1;
+    if ($contact->get_extra_metadata('group') eq 'Waste') {
         $params->{upload_files} = 1;
     }
 
