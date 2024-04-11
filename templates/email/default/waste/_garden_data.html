@@ -1,8 +1,14 @@
 [%
 
-SET container = report.get_extra_field_value('Subscription_Details_Containers');
-SET sacks = (container == 28);
-SET quantity = report.get_extra_field_value('Subscription_Details_Quantity');
+IF cobrand.moniker == 'brent';
+    SET container = report.get_extra_field_value('Paid_Collection_Container_Type');
+    SET sacks = (container == 2);
+    SET quantity = report.get_extra_field_value('Paid_Collection_Container_Quantity');
+ELSIF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton';
+    SET container = report.get_extra_field_value('Subscription_Details_Containers');
+    SET sacks = (container == 28);
+    SET quantity = report.get_extra_field_value('Subscription_Details_Quantity');
+END;
 SET new_bins = report.get_extra_field_value('new_containers') || 0;
 
 SET pro_rata = report.get_extra_field_value('pro_rata');
@@ -22,13 +28,14 @@ ELSIF report.title == 'Garden Subscription - Cancel'; SET type = 'cancel';
 END;
 
 IF type == 'renew';
-    SET email_summary = "Thank you for renewing your subscription to Kingston’s garden waste collection service.";
+    SET email_summary = "Thank you for renewing your subscription to " _ cobrand.council_area _ "’s garden waste collection service.";
+    SET renew_year_end = report.created.year + 1;
 ELSIF type == 'cancel';
     SET email_summary = "You have cancelled your garden waste collection service.";
 ELSIF type == 'amend';
     SET email_summary = "You have amended your garden waste collection service.";
 ELSE;
-    SET email_summary = "Welcome to Kingston's garden waste collection service.";
+    SET email_summary = "Welcome to " _ cobrand.council_area _ "’s garden waste collection service.";
 END;
 
 ~%]

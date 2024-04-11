@@ -45,6 +45,8 @@ has lpi_value => ( is => 'ro', default => 'KINGSTON UPON THAMES' );
 
 sub waste_payment_ref_council_code { "RBK" }
 
+sub garden_collection_time { '6:30am' }
+
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
