@@ -43,7 +43,7 @@
     span {
         color: $nav_header_colour;
     }
-    span.report-a-problem-btn {
+    a.report-a-problem-btn[aria-current="page"] {
         &:hover {
             color: $nav_header_colour;
         }

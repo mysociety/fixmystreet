@@ -11,7 +11,7 @@
     a,
     span,
     a.report-a-problem-btn,
-    span.report-a-problem-btn {
+    a.report-a-problem-btn[aria-current="page"] {
         line-height: 1em;
         font-size: 18px;
         cursor: pointer;
@@ -20,7 +20,7 @@
         margin-left: 0.5em;
     }
 
-    span.report-a-problem-btn, span {
+    a.report-a-problem-btn[aria-current="page"], span {
         background-color: $primary_b;
         color: $nav_colour;
 
@@ -34,7 +34,7 @@
     :first-child {
         a,
         span,
-        span.report-a-problem-btn {
+        a.report-a-problem-btn[aria-current="page"] {
             margin-top: 1em;
         }
     }

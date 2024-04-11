@@ -72,7 +72,7 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
     }
   }
 
-  span.report-a-problem-btn {
+  a.report-a-problem-btn[aria-current="page"] {
     cursor:auto;
     border-radius: 0.25em;
     &:hover, &:focus {

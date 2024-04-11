@@ -40,8 +40,8 @@
         }
     }
 
-    span.report-a-problem-btn,
-    span.report-a-problem-btn:hover {
+    a.report-a-problem-btn[aria-current="page"],
+    a.report-a-problem-btn[aria-current="page"]:hover {
         color: $nav_colour;
     }
 }

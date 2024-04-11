@@ -31,7 +31,7 @@
   }
 
   span,
-  span.report-a-problem-btn {
+  a.report-a-problem-btn[aria-current="page"] {
     text-decoration: underline;
     &:hover {
       color: $nav_colour;

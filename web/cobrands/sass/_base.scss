@@ -911,10 +911,10 @@ html.mobile.js-nav-open #js-menu-open-modal {
   span {
     background-color: mix(#fff, $primary, 70%);
   }
-  span.report-a-problem-btn {
+  a.report-a-problem-btn[aria-current="page"] {
     cursor: pointer;
   }
-  span.report-a-problem-btn:hover {
+  a.report-a-problem-btn[aria-current="page"]:hover {
     background-color: #333;
     color: #fff;
     text-decoration: none;

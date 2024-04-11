@@ -44,7 +44,7 @@ body.mappage #site-header {
     a:hover {
       color: $primary_text;
     }
-    span {
+    span, a.report-a-problem-btn[aria-current="page"] {
         color: $primary_b;
     }
     a.report-a-problem-btn {
@@ -60,7 +60,7 @@ body.mappage #site-header {
             color: #fff;
         }
     }
-    span.report-a-problem-btn {
+    a.report-a-problem-btn[aria-current="page"] {
         &:hover,
         &:active,
         &:focus {

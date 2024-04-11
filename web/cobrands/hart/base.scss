@@ -70,7 +70,7 @@
 
     a,
     span,
-    span.report-a-problem-btn {
+    a.report-a-problem-btn[aria-current="page"] {
 
         font-size: 18px;
         text-decoration: none;
@@ -94,7 +94,7 @@
     :first-child {
         a,
         span,
-        span.report-a-problem-btn {
+        a.report-a-problem-btn[aria-current="page"] {
             margin-top: 0;
         }
     }
@@ -105,7 +105,7 @@
         }
     }
 
-    span.report-a-problem-btn {
+    a.report-a-problem-btn[aria-current="page"] {
         cursor: pointer;
     }
 }

@@ -27,7 +27,7 @@
         color: $nav_colour;
     }
 
-    span, span:hover, span.report-a-problem-btn:hover {
+    span, span:hover, a.report-a-problem-btn[aria-current="page"] {
         color: $color-societyworks-pink;
     }
 

@@ -98,10 +98,8 @@ body.mappage {
         }
     }
 
-    // Make it look unclickable (because it is).
-    span.report-a-problem-btn:hover {
+    a.report-a-problem-btn[aria-current="page"] {
         color: inherit;
-        cursor: default;
     }
 
     // Make it not look like a button any more.

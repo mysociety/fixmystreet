@@ -164,11 +164,7 @@ h1 {
   span {
     color:$primary;
   }
-  /* Stop mobile-only things */
-  span.report-a-problem-btn {
-    cursor: auto;
-  }
-  span.report-a-problem-btn:hover {
+  a.report-a-problem-btn[aria-current="page"]:hover {
     background-color: transparent;
     color: $primary;
   }

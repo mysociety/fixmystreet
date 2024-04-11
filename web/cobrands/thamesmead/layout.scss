@@ -66,7 +66,7 @@ $mappage-navbar-height: 64px;
     }
 
     // Active state
-    span, span.report-a-problem-btn {
+    span, a.report-a-problem-btn[aria-current="page"] {
         color: $peabody-brick-d1;
         background-color: $peabody-white;
         border-bottom: 1.5px solid $peabody-orange;
@@ -101,7 +101,7 @@ $mappage-navbar-height: 64px;
 
     // darken background for selected nav item
     // span,
-    // span.report-a-problem-btn {
+    // a.report-a-problem-btn[aria-current="page"] {
     //     &, &:hover {
     //         background-color: $nav_hover_background_colour;
     //     }
