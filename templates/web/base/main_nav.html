@@ -6,7 +6,7 @@
 [% BLOCK navitem ~%]
     <li [% liattrs | safe %]>
       [%~ IF c.req.uri.path == uri AND NOT always_url ~%]
-          <span [% attrs | safe %]>[% label %]</span>
+          <a [% attrs | safe %] href="[% uri %][% suffix IF suffix %]" aria-current="page">[% label %]</a>
       [%~ ELSE ~%]
           <a href="[% uri %][% suffix IF suffix %]" [% attrs | safe %]>[% label %]</a>
       [%~ END ~%]
