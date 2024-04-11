@@ -903,7 +903,10 @@ sub response_template_for {
             push @$state_params, { 'me.state' => $state, 'me.external_status_code' => ["", undef] };
         }
         if ($ext_code_changed) {
-            push @$state_params, { 'me.state' => '', 'me.external_status_code' => $ext_code };
+            # The double comma option here dates from Echo updates with only a
+            # resolution code ID being stored in the database as "CODE,,". Once
+            # they're all updated to only be CODE, this can be removed.
+            push @$state_params, { 'me.state' => '', 'me.external_status_code' => [$ext_code, "$ext_code,,"] };
         };
 
         $template = $self->response_templates->search({
