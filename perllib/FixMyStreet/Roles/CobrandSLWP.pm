@@ -696,6 +696,8 @@ containers.
 
 =cut
 
+sub waste_request_single_radio_list { 1 }
+
 sub waste_munge_request_form_fields {
     my ($self, $field_list) = @_;
     my $c = $self->{c};
