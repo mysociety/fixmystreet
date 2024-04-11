@@ -1215,6 +1215,9 @@ sub waste_munge_report_data {
 }
 
 # Replace the usual checkboxes grouped by service with one radio list
+
+sub waste_request_single_radio_list { 1 }
+
 sub waste_munge_request_form_fields {
     my ($self, $field_list) = @_;
 
