@@ -200,14 +200,15 @@ sub pay_retry : Path('pay_retry') : Args(0) {
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $back) = @_;
 
+    my $p = $c->stash->{report};
+
     # If it's using the same flow as users, but is staff, mark as CSC payment
     if ( $c->stash->{staff_payments_allowed} eq 'cnp' ) {
-        my $p = $c->stash->{report};
         $p->update_extra_field({ name => 'payment_method', value => 'csc' });
         $p->update;
     }
 
-    if ( $c->cobrand->can('waste_cc_get_redirect_url') ) {
+    if ($c->cobrand->waste_cc_has_redirect($p)) {
         my $redirect_url = $c->cobrand->waste_cc_get_redirect_url($c, $back);
 
         if ( $redirect_url ) {
@@ -278,6 +279,8 @@ sub confirm_subscription : Private {
     if ($p->category eq 'Bulky collection' || $p->category eq 'Small items collection') {
         $c->stash->{template} = 'waste/bulky/confirmation.html';
         $already_confirmed = $c->cobrand->bulky_send_before_payment;
+    } elsif ($p->category eq 'Request new container') {
+        $c->stash->{template} = 'waste/request_confirm.html';
     } else {
         $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
     }
@@ -300,23 +303,33 @@ sub confirm_subscription : Private {
         $p->get_extra_metadata('contributed_as') eq 'anonymous_user';
 
     my $db = FixMyStreet::DB->schema->storage;
-    $db->txn_do(sub {
-        $p = FixMyStreet::DB->resultset('Problem')->search({ id => $p->id }, { for => \'UPDATE' })->single;
-        $p->update_extra_field( {
-            name => 'LastPayMethod',
-            description => 'LastPayMethod',
-            value => $c->cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
+
+    my @problems = ($p);
+    if (my $grouped_ids = $p->get_extra_metadata('grouped_ids')) {
+        foreach my $id (@$grouped_ids) {
+            my $problem = $c->model('DB::Problem')->find({ id => $id }) or next;
+            push @problems, $problem;
+        }
+    }
+    foreach my $p (@problems) {
+        $db->txn_do(sub {
+            $p = FixMyStreet::DB->resultset('Problem')->search({ id => $p->id }, { for => \'UPDATE' })->single;
+            $p->update_extra_field( {
+                name => 'LastPayMethod',
+                description => 'LastPayMethod',
+                value => $c->cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
+            });
+            $p->update_extra_field( {
+                name => 'PaymentCode',
+                description => 'PaymentCode',
+                value => $reference
+            });
+            $p->set_extra_metadata('payment_reference', $reference) if $reference;
+            $p->confirm;
+            $c->forward( '/report/new/create_related_things', [ $p ] );
+            $p->update;
         });
-        $p->update_extra_field( {
-            name => 'PaymentCode',
-            description => 'PaymentCode',
-            value => $reference
-        });
-        $p->set_extra_metadata('payment_reference', $reference) if $reference;
-        $p->confirm;
-        $c->forward( '/report/new/create_related_things', [ $p ] );
-        $p->update;
-    });
+    }
 
     if ($already_confirmed) {
         my $payment = $p->get_extra_field_value('payment');
@@ -629,6 +642,7 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my $loading = ($c->req->{headers}->{'hx-request'} || "") eq "true";
     # non-JS page loads include a page_loading=1 request param
     $loading ||= $c->get_param('page_loading');
+    $c->stash->{partial_loading} = $loading;
 
     if ( $c->req->path =~ m#^waste/[:\w %]+$#i && !$loading) {
         $c->cobrand->call_hook( clear_cached_lookups_property => $id );
@@ -806,11 +820,16 @@ sub request : Chained('property') : Args(0) {
 
     $c->stash->{first_page} = 'request';
     my $next = $c->cobrand->call_hook('waste_request_form_first_next');
+    my $title = $c->cobrand->call_hook('waste_request_form_first_title') || 'Which containers do you need?';
+
+    my $cls = ucfirst $c->cobrand->council_url;
+    $c->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::$cls";
 
     $c->stash->{page_list} = [
         request => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
-            title => $c->stash->{form_title} || 'Which containers do you need?',
+            title => $title,
+            $c->cobrand->moniker eq 'sutton' ? (intro => 'request/intro.html') : (),
             check_unique_id => 0,
             next => $next,
         },
@@ -826,14 +845,20 @@ sub process_request_data : Private {
     my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
     my @reports;
 
-    if (my $payment = $data->{payment}) {
-        # Will only be the one container
-        my $container = shift @services;
-        my ($id) = $container =~ /container-(.*)/;
+    my $payment = $data->{payment};
+    foreach (@services) {
+        my ($id) = /container-(.*)/;
         $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
-        $c->set_param('payment', $data->{payment});
-        $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
-        $c->forward('add_report', [ $data, 1 ]) or return;
+        if ($payment) {
+            $c->set_param('payment', $payment);
+            $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
+        }
+        $c->forward('add_report', [ $data, $payment ? 1 : 0 ]) or return;
+        push @reports, $c->stash->{report};
+    }
+    group_reports($c, @reports);
+
+    if ($payment) {
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
             $c->stash->{message} = 'Payment skipped on staging';
             $c->stash->{reference} = $c->stash->{report}->id;
@@ -845,16 +870,8 @@ sub process_request_data : Private {
                 $c->forward('pay', [ 'request' ]);
             }
         }
-        return 1;
     }
 
-    foreach (@services) {
-        my ($id) = /container-(.*)/;
-        $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
-        $c->forward('add_report', [ $data ]) or return;
-        push @reports, $c->stash->{report};
-    }
-    group_reports($c, @reports);
     return 1;
 }
 

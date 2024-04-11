@@ -1,0 +1,4 @@
+<form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="submit" value="Change the number of [% unit.service_name FILTER lower %] containers" class="waste-service-descriptor waste-service-link">
+</form>

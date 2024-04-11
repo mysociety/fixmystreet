@@ -1,8 +1,11 @@
 package FixMyStreet::Cobrand::Sutton;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
+use utf8;
 use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
+with 'FixMyStreet::Roles::SCP';
+
 use Digest::SHA qw(sha1_hex);
 use Encode qw(encode_utf8);
 
@@ -11,6 +14,11 @@ sub council_area { return 'Sutton'; }
 sub council_name { return 'Sutton Council'; }
 sub council_url { return 'sutton'; }
 sub admin_user_domain { 'sutton.gov.uk' }
+
+use constant CONTAINER_REFUSE_140 => 1;
+use constant CONTAINER_REFUSE_240 => 2;
+use constant CONTAINER_REFUSE_360 => 3;
+use constant CONTAINER_PAPER_BIN => 19;
 
 =head2 waste_on_the_day_criteria
 
@@ -144,8 +152,21 @@ sub garden_waste_generate_sig {
     return uc $sha;
 }
 
-sub garden_cc_check_payment_status {
-    my ($self, $c, $p) = @_;
+sub waste_cc_has_redirect {
+    my ($self, $p) = @_;
+    return 1 if $p->category eq 'Request new container';
+    return 0;
+}
+
+around garden_cc_check_payment_status => sub {
+    my ($orig, $self, $c, $p) = @_;
+
+    if ($p->category eq 'Request new container') {
+        # Call the SCP role code
+        return $self->$orig($c, $p);
+    }
+
+    # Otherwise, the EPDQ code
 
     my $passphrase;
     if ($p->category eq 'Bulky collection') {
@@ -178,6 +199,36 @@ sub garden_cc_check_payment_status {
         }
         $c->stash->{error} = $error;
         return undef;
+    }
+};
+
+=head2 request_cost
+
+Calculate how much, if anything, a request for a container should be.
+
+=cut
+
+sub request_cost {
+    my ($self, $id, $containers) = @_;
+    if (my $cost = $self->_get_cost('request_change_cost')) {
+        foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
+            if ($id == $_ && !$containers->{$_}) {
+                my $price = sprintf("£%.2f", $cost / 100);
+                $price =~ s/\.00$//;
+                my $hint = "There is a $price administration/delivery charge to change the size of your container";
+                return ($cost, $hint);
+            }
+        }
+    }
+    if (my $cost = $self->_get_cost('request_replace_cost')) {
+        foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_REFUSE_360, CONTAINER_PAPER_BIN) {
+            if ($id == $_ && $containers->{$_}) {
+                my $price = sprintf("£%.2f", $cost / 100);
+                $price =~ s/\.00$//;
+                my $hint = "There is a $price administration/delivery charge to replace your container";
+                return ($cost, $hint);
+            }
+        }
     }
 }
 

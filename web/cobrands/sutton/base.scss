@@ -405,7 +405,7 @@ p.form-error {
     .content[role="main"] {
         background-color: $white;
 
-        label {
+        label:last-child {
             margin-bottom: 0.5em;
         }
     }
