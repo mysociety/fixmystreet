@@ -551,9 +551,6 @@ page with regards to not complete collections, the external
 status code admin is split into three fields, which are then
 combined here for storage.
 
-Brent removes the commas so that eg non-Echo status codes
-will trigger auto-templates.
-
 =cut
 
 sub admin_templates_external_status_code_hook {
@@ -565,8 +562,7 @@ sub admin_templates_external_status_code_hook {
     my $task_state = $c->get_param('task_state') || '';
 
     my $code = "$res_code,$task_type,$task_state";
-    $code = '' if $code eq ',,';
-    $code =~ s/,,$// if $code && $self->moniker eq 'brent';
+    $code =~ s/,,$//;
 
     return $code;
 }
@@ -667,12 +663,7 @@ sub construct_waste_open311_update {
     my $resolution_id = $event->{ResolutionCodeId} || '';
     my $status = $event_type->{states}{$state_id}{state};
     my $description = $event_type->{resolution}{$resolution_id} || $event_type->{states}{$state_id}{name};
-    my $external_status_code;
-    if ($self->moniker eq "brent") {
-        $external_status_code = $resolution_id ? "$resolution_id" : "",
-    } else {
-        $external_status_code = $resolution_id ? "$resolution_id,," : "",
-    }
+    my $external_status_code = $resolution_id ? "$resolution_id" : "";
     my %extra = $self->call_hook(open311_waste_update_extra => $cfg, $event);
     return {
         description => $description,
