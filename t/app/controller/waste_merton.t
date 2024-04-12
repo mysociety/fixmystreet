@@ -57,6 +57,8 @@ FixMyStreet::override_config {
         echo => { merton => {
             url => 'http://example.org/',
             bulky_service_id => 413,
+            open311_endpoint => 'http://example.net/api/',
+            open311_api_key => 'api_key',
         } },
         waste => { merton => 1 },
     },
@@ -115,6 +117,17 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('api_key'), 'KEY';
+        is $cgi->param('attribute[Action]'), '3';
+        is $cgi->param('attribute[Reason]'), '2';
+    };
+    subtest 'Test sending of reports to other endpoint' => sub {
+        use_ok 'FixMyStreet::Script::Merton::SendWaste';
+        my $send = FixMyStreet::Script::Merton::SendWaste->new;
+        $send->send_reports;
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('api_key'), 'api_key';
         is $cgi->param('attribute[Action]'), '3';
         is $cgi->param('attribute[Reason]'), '2';
     };
