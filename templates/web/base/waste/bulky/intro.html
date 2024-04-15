@@ -12,10 +12,12 @@
   [% IF c.cobrand.moniker != 'brent' AND c.cobrand.moniker != 'bromley' %]
     <li>You can request up to <strong>[% c.cobrand.bulky_items_maximum | numwords %] items per collection</strong></li>
   [% END %]
-  [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' %]
-    [%
+    [%~
         USE pounds = format('%.2f');
         SET cfg = c.cobrand.wasteworks_config;
+    ~%]
+  [% IF cfg.band1_price %]
+    [%
         SET band1_items = cfg.band1_max;
         SET max_items = cfg.items_per_collection_max;
         SET base_price = cfg.base_price / 100;
@@ -38,10 +40,8 @@
     <li>Householders will be able to book up to <strong>three</strong> categories per collection. For example, a collection could include 10 AA batteries, two x 5 litre paint tins, one black sack of textiles.
     <li>To see your options for coffee pod recycling please visit
         <a href="https://www.podback.org/recycle-checker" target="_blank">https://www.podback.org/recycle-checker</a>
-  [% ELSIF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' %]
-    <li>In order to help us with your collection, you may wish to add pictures of the items to be collected and the location</li>
   [% ELSE %]
-    <li>In order to help us with your collection, we will ask you to optionally add pictures of the items to be collected and the location</li>
+    <li>In order to help us with your collection, you may wish to add pictures of the items to be collected and the location</li>
   [% END %]
     <li>Before confirming your booking, you need to check all the information provided is correct</li>
     [% IF cobrand.moniker == 'peterborough' -%]

@@ -1599,14 +1599,6 @@ sub collection_date {
 
 sub _bulky_refund_cutoff_date { }
 
-sub _bulky_date_to_dt {
-    my ($self, $date) = @_;
-    $date = (split(";", $date))[0];
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
-    my $dt = $parser->parse_datetime($date);
-    return $dt ? $dt->truncate( to => 'day' ) : undef;
-}
-
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
