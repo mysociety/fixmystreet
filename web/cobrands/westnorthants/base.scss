@@ -81,17 +81,6 @@ a,
   background: $primary_b;
 }
 
-// form errors
-div.form-error,
-p.form-error {
-  background: $red;
-}
-
-input.form-error, 
-textarea.form-error {
-  border-color: $red;
-}
-
 // FOOTER
 .westnorthants-footer {
   background: $black;

@@ -168,15 +168,6 @@ input {
   background: $primary_b;
 }
 
-// form errors
-div.form-error, 
-p.form-error, 
-input.form-error, 
-textarea.form-error {
-  background: $red;
-  border-color: $red;
-}
-
 // FOOTER
 .northnorthants-footer {
   background: $black;

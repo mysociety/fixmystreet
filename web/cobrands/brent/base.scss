@@ -109,14 +109,6 @@ a {
   box-shadow: 0 0 0 4px $link-focus-color;
 }
 
-input.form-error, textarea.form-error {
-  border-color: $red;
-}
-
-div.form-error, p.form-error {
-  background: $red;
-}
-
 .form-section-description, .change_location {
   color: $primary_b;
 }
