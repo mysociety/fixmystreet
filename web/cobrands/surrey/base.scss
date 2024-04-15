@@ -38,6 +38,14 @@ input {
   }
 }
 
+div.form-error, p.form-error {
+  background: $surrey_red;
+}
+
+input.form-error, textarea.form-error {
+  border-color: $surrey_red;
+}
+
 /* HEADER */
 #site-logo {
   $logo-width:55px;
