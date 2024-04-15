@@ -100,7 +100,7 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $time_banded = $self->{c}->stash->{property_time_banded};
 
-    return "$base/sack-black" if $service_id == 2242 && $time_banded;
+    return "$base/sack-black" if $service_id eq 2242 && $time_banded;
     if (my $container = $unit->{request_containers}[0]) {
         return "$base/sack-purple" if $container == 17;
     }
@@ -128,9 +128,6 @@ sub _closed_event {
     return 1 if $event->{ResolutionCodeId} && $event->{ResolutionCodeId} != 584; # Out of Stock
     return 0;
 }
-
-# TODO
-sub waste_bulky_missed_blocked_codes {}
 
 sub garden_collection_time { '6:30am' }
 sub garden_waste_new_bin_admin_fee { 0 }
@@ -270,5 +267,20 @@ sub waste_post_report_creation {
         $report->update({ external_id => 'no_echo' });
     }
 }
+
+=head2 Bulky waste collection
+
+Merton has a 6am collection and cut-off for cancellation time.
+Everything else is configured in SLWPEcho.pm
+
+=cut
+
+sub bulky_collection_time { { hours => 6, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0 } }
+sub bulky_allowed_property {
+    my ( $self, $property ) = @_;
+    return 1 if $self->bulky_enabled && $property->{has_bulky_service};
+}
+sub bulky_collection_window_days { 28 }
 
 1;
