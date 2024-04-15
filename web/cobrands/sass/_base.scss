@@ -12,6 +12,8 @@ $link-visited-color: $link-color !default;
 $link-text-decoration: none !default;
 $link-hover-text-decoration: underline !default;
 
+$error_color: #D50404 !default;
+
 $primary_link_decoration: underline !default;
 $primary_link_hover_decoration: $primary_link_decoration !default;
 
@@ -639,7 +641,7 @@ small.or:after {
 div.form-error,
 p.form-error {
   @include inline-block;
-  background: #ff0000;
+  background: $error_color;
   color: #fff;
   padding: 0 0.5em;
   @include border-radius(0.25em 0.25em 0 0);
@@ -654,18 +656,18 @@ p.form-error {
 
 input.form-error,
 textarea.form-error {
-  border-color: #ff0000;
+  border-color: $error_color;
   @include border-radius(0 0.25em 0.25em 0.25em);
 }
 
 .form-error__box {
-  border: solid 2px #ff0000;
+  border: solid 2px $error_color;
   padding: 0.5em;
   margin-bottom: 0.5em;
 }
 
 ul.error {
-  background: #ff0000;
+  background: $error_color;
   color: #fff;
   padding: 0 0.5em;
   @include border-radius(0.25em);
@@ -2644,7 +2646,7 @@ label .muted {
 
 .alert {
   margin: 0 -1em 1em;
-  background: #ff0000;
+  background: $error_color;
   padding: 1em;
   color: #fff;
   a,
