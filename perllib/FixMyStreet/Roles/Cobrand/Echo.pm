@@ -1293,4 +1293,12 @@ sub per_photo_size_limit_for_report_in_bytes {
     return min($max_size_per_image, $max_size_per_image_from_total);
 };
 
+sub _bulky_date_to_dt {
+    my ($self, $date) = @_;
+    $date = (split(";", $date))[0];
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
+    my $dt = $parser->parse_datetime($date);
+    return $dt ? $dt->truncate( to => 'day' ) : undef;
+}
+
 1;
