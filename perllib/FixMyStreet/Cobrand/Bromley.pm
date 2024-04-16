@@ -354,7 +354,7 @@ sub open311_get_update_munging {
 
     # An update from Echo with resolution code 1252
     my $code = $comment->get_extra_metadata('external_status_code') || '';
-    if ($code eq '1252,,') {
+    if ($code eq '1252') {
         my $problem = $comment->problem;
         $problem->category(REFERRED_TO_BROMLEY); # Will be LBB_RRE_FROM_VEOLIA_STREETS
         $problem->state('in progress');
