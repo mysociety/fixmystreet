@@ -3,6 +3,7 @@ use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use List::MoreUtils qw(firstidx);
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -44,6 +45,7 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'new_containers', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
+    { code => 'email_renewal_reminders_opt_in', required => 0, automated => 'hidden_field' },
 );
 
 create_contact({ category => 'Amend Garden Subscription', email => 'garden@example.com'},
@@ -56,6 +58,7 @@ create_contact({ category => 'Amend Garden Subscription', email => 'garden@examp
     { code => 'Payment_Value', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
+    { code => 'email_renewal_reminders_opt_in', required => 0, automated => 'hidden_field' },
 );
 
 create_contact({ category => 'Cancel Garden Subscription', email => 'garden@example.com'},
@@ -476,6 +479,68 @@ FixMyStreet::override_config {
         like $body, qr/Bins to be removed: 1/;
         like $body, qr/Total:.*?50.00/;
     };
+
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+
+    subtest 'check new sub and resub email reminder opt-in' => sub {
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 2,
+                bins_wanted => 1,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net',
+                email_renewal_reminders => 'Yes'
+        } });
+        $mech->content_contains('Email notifications');
+        $mech->content_contains('Upcoming renewal reminders');
+        $mech->content_contains('Yes');
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
+
+        my ( $sub_token, $sub_report, $sub_report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$sub_report_id/$sub_token?STATUS=9&PAYID=54321");
+        is $sub_report->get_extra_field_value('email_renewal_reminders_opt_in'), "Y", "opt-in flag set on sub report";
+
+        set_fixed_time('2021-03-09T17:00:00Z');
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => {
+                current_bins => 2,
+                bins_wanted => 1,
+                payment_method => 'credit_card',
+                name => 'Test McTest',
+                email => 'test@example.net',
+                email_renewal_reminders => 'No'
+        } });
+        $mech->content_contains('Email notifications');
+        $mech->content_contains('Upcoming renewal reminders');
+        $mech->content_contains('No');
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
+
+        my ( $renew_token, $renew_report, $renew_report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        $mech->get_ok("/waste/pay_complete/$renew_report_id/$renew_token");
+        is $renew_report->get_extra_field_value('email_renewal_reminders_opt_in'), "N", "opt-in flag set on renew report";
+
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/dashboard?export=1');
+        my @rows = $mech->content_as_csv;
+        my $idx = firstidx { $_ eq 'Email Renewal Reminders Opt-In' } @{$rows[0]};
+        isnt $idx, -1, "CSV export contains column for opt-in";
+
+        my $sub_opt_in = @{$rows[-2]}[$idx];
+        is $sub_opt_in, "Y", "opt-in is true on sub in CSV export";
+
+        my $renew_opt_in = @{$rows[-1]}[$idx];
+        is $renew_opt_in, "N", "opt-in is false on renew in CSV export";
+    };
+
+    # Flush emails.
+    FixMyStreet::Script::Reports::send();
+    $mech->clear_emails_ok;
+
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
 
     subtest 'check new staff subscription of sacks' => sub {
         $mech->log_in_ok($staff_user->email);

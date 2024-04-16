@@ -426,6 +426,8 @@ sub dashboard_export_problems_add_columns {
             container_req_type => 'Container Request Container Type',
             container_req_reason => 'Container Request Reason',
 
+            email_renewal_reminders_opt_in => 'Email Renewal Reminders Opt-In',
+
             missed_collection_id => 'Service ID',
             map { "item_" . $_ => "Small Item $_" } (1..11)
         )
@@ -495,6 +497,7 @@ sub dashboard_export_problems_add_columns {
             container_req_action => $container_req_action,
             container_req_type => $container_req_type,
             container_req_reason => $container_req_reason,
+            email_renewal_reminders_opt_in => $csv->_extra_field($report, 'email_renewal_reminders_opt_in'),
             missed_collection_id => $csv->_extra_field($report, 'service_id'),
         };
 
@@ -1068,6 +1071,15 @@ sub waste_bulky_missed_blocked_codes {
         },
     };
 }
+
+=head2 garden_subscription_email_renew_reminder_opt_in
+
+Gives users the option to opt-in or out of a reminder email for renewal
+when they first subscribe or renew.
+
+=cut
+
+sub garden_subscription_email_renew_reminder_opt_in { 1 }
 
 sub garden_collection_time { '6:30am' }
 

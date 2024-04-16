@@ -1363,6 +1363,7 @@ sub setup_garden_sub_params : Private {
     } else {
         $service_id = $c->cobrand->garden_service_id;
     }
+    $c->set_param('email_renewal_reminders_opt_in', $data->{email_renewal_reminders} eq 'Yes' ? 'Y' : 'N') if $data->{email_renewal_reminders};
     $c->set_param('service_id', $service_id);
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});

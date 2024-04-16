@@ -84,13 +84,15 @@ has_page existing => (
 has_page details => (
     title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_details.html',
-    fields => ['current_bins', 'bins_wanted', 'payment_method', 'cheque_reference', 'name', 'email', 'phone', 'password', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'payment_method', 'cheque_reference', 'name', 'email', 'phone', 'password', 'email_renewal_reminders', 'continue_review'],
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
-        return ['payment_method', 'cheque_reference', 'password'] if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
-        return ['password'] if $c->stash->{staff_payments_allowed};
-        return ['password'] if $c->cobrand->call_hook('waste_password_hidden');
+        my @fields;
+        push @fields, 'email_renewal_reminders' if !$c->cobrand->garden_subscription_email_renew_reminder_opt_in;
+        push @fields, 'password' if $c->stash->{staff_payments_allowed} or $c->cobrand->call_hook('waste_password_hidden');
+        push @fields, ('payment_method', 'cheque_reference') if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
+        return \@fields;
     },
     update_field_list => \&details_update_fields,
     next => 'summary',
@@ -227,6 +229,8 @@ has_field password => (
         hint => 'Choose a password to sign in and manage your account in the future. If you don’t pick a password, you will still be able to sign in by clicking a link in an email we send to you.',
     },
 );
+
+with 'FixMyStreet::App::Form::Waste::Garden::EmailRenewalReminders';
 
 with 'FixMyStreet::App::Form::Waste::GardenTandC';
 

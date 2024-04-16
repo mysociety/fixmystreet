@@ -42,13 +42,18 @@
   </dl>
   [% END %]
 
-  [% IF staff_payments_allowed OR c.cobrand.waste_password_hidden %]
-  [% PROCESS form override_fields=['name', 'email', 'phone', 'continue_review' ] %]
-  [% ELSE %]
-  [% PROCESS form override_fields=['name', 'email', 'phone', 'password', 'continue_review' ] %]
+  [% PROCESS form override_fields=['name', 'email', 'phone'] %]
+
+  [% IF !(staff_payments_allowed OR c.cobrand.waste_password_hidden) %]
+  [% PROCESS form override_fields=['password'] %]
   [% END %]
 
-  [% PROCESS form override_fields=['saved_data', 'token', 'process', 'service_id', 'unique_id'] %]
+  [% IF c.cobrand.garden_subscription_email_renew_reminder_opt_in %]
+  [% PROCESS form override_fields=['email_renewal_reminders'] %]
+  [% END %]
+
+
+  [% PROCESS form override_fields=['continue_review', 'saved_data', 'token', 'process', 'service_id', 'unique_id'] %]
 
 </form>
 
