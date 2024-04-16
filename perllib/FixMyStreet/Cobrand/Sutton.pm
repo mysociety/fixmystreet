@@ -57,6 +57,8 @@ has lpi_value => ( is => 'ro', default => 'SUTTON' );
 
 sub waste_payment_ref_council_code { "LBS" }
 
+sub garden_collection_time { '6am' }
+
 sub waste_garden_allow_cancellation { 'staff' }
 
 sub image_for_unit {

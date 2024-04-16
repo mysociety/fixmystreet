@@ -112,7 +112,6 @@ sub _closed_event {
 }
 
 # TODO
-sub garden_echo_container_name { }
 sub garden_container_data_extract { }
 sub waste_bulky_missed_blocked_codes {}
 
@@ -130,5 +129,7 @@ sub waste_request_form_first_next {
         return 'replacement';
     };
 }
+
+sub garden_due_days { 30 }
 
 1;

@@ -14,6 +14,7 @@ with 'FixMyStreet::Roles::CobrandEcho';
 use Integrations::Echo;
 use JSON::MaybeXS;
 use LWP::Simple;
+use MIME::Base64;
 
 around look_up_property => sub {
     my ($orig, $self, $id) = @_;
@@ -60,7 +61,7 @@ use constant CONTAINER_RECYCLING_BOX => 16;
 use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_PAPER_BIN_140 => 36;
 
-use constant GARDEN_WASTE_SERVICE_ID => 2247;
+sub garden_service_id { 2247 }
 
 sub waste_service_to_containers { () }
 
@@ -79,7 +80,7 @@ sub waste_relevant_serviceunits {
             my $schedules = _parse_schedules($task, 'task');
 
             # Ignore retired diesel rounds
-            next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != GARDEN_WASTE_SERVICE_ID;
+            next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != $self->garden_service_id;
 
             push @rows, {
                 Id => $task->{Id},
@@ -344,5 +345,129 @@ sub waste_munge_report_data {
     $c->set_param('Notes', $data->{extra_detail}) if $data->{extra_detail};
     $c->set_param('service_id', $id);
 }
+
+# Garden waste
+
+sub garden_service_name { 'garden waste collection service' }
+sub garden_echo_container_name { 'SLWP - Containers' }
+
+sub garden_current_service_from_service_units {
+    my ($self, $services) = @_;
+
+    my $garden;
+    for my $service ( @$services ) {
+        my $servicetasks = $self->_get_service_tasks($service);
+        foreach my $task (@$servicetasks) {
+            if ( $task->{TaskTypeId} == $self->garden_service_id ) {
+                $garden = $self->_get_current_service_task($service);
+                last;
+            }
+        }
+    }
+    return $garden;
+}
+
+=item * When a garden subscription is sent to Echo, we include payment details
+
+=cut
+
+sub open311_extra_data_include {
+    my ($self, $row, $h) = @_;
+
+    my $open311_only = [
+        #{ name => 'email', value => $row->user->email }
+    ];
+
+    if ( $row->category eq 'Garden Subscription' ) {
+        if ( $row->get_extra_metadata('contributed_as') && $row->get_extra_metadata('contributed_as') eq 'anonymous_user' ) {
+            push @$open311_only, { name => 'contributed_as', value => 'anonymous_user' };
+        }
+
+        my $ref = $row->get_extra_field_value('PaymentCode') || $row->get_extra_metadata('chequeReference');
+        push @$open311_only, { name => 'Transaction_Number', value => $ref } if $ref;
+
+        my $payment = $row->get_extra_field_value('pro_rata') || $row->get_extra_field_value('payment');
+        my $admin_fee = $row->get_extra_field_value('admin_fee');
+        $payment += $admin_fee if $admin_fee;
+        if ($payment) {
+            my $amount = sprintf( '%.2f', $payment / 100 );
+            push @$open311_only, { name => 'Payment_Amount', value => $amount };
+        }
+    }
+
+    return $open311_only;
+}
+
+=item * If Echo errors, we try and deal with standard issues - a renewal on an expired subscription, or a duplicate event
+
+=cut
+
+sub open311_post_send {
+    my ($self, $row, $h, $sender) = @_;
+    my $error = $sender->error;
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE' })->single;
+        if ($error =~ /Cannot renew this property, a new request is required/ && $row2->title eq "Garden Subscription - Renew") {
+            # Was created as a renewal, but due to DD delay has now expired. Switch to new subscription
+            $row2->title("Garden Subscription - New");
+            $row2->update_extra_field({ name => "Request_Type", value => $self->waste_subscription_types->{New} });
+            $row2->update;
+            $row->discard_changes;
+        } elsif ($error =~ /Missed Collection event already open for the property/) {
+            $row2->state('duplicate');
+            $row2->update;
+            $row->discard_changes;
+        } elsif ($error =~ /Selected reservations expired|Invalid reservation reference/) {
+            $self->bulky_refetch_slots($row2);
+            $row->discard_changes;
+        } elsif ($error =~ /Duplicate Event! Original eventID: (\d+)/) {
+            my $id = $1;
+            my $cfg = $self->feature('echo');
+            my $echo = Integrations::Echo->new(%$cfg);
+            my $event = $echo->GetEvent($id, 'Id');
+            $row2->external_id($event->{Guid});
+            $sender->success(1);
+            $row2->update;
+            $row->discard_changes;
+        }
+    });
+}
+
+=item * Look for completion photos on updates
+
+=cut
+
+sub open311_waste_update_extra {
+    my ($self, $cfg, $event) = @_;
+
+    # Could have got here with a full event (pull) or subset (push)
+    if (!$event->{Data}) {
+        $event = $cfg->{echo}->GetEvent($event->{Guid});
+    }
+    my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
+    my @media;
+    foreach (@$data) {
+        if ($_->{DatatypeName} eq 'Post Collection Photo' || $_->{DatatypeName} eq 'Pre Collection Photo') {
+            my $value = decode_base64($_->{Value});
+            my $type = FixMyStreet::PhotoStorage->detect_type($value);
+            push @media, "data:image/$type,$value";
+        }
+    }
+    return @media ? ( media_url => \@media ) : ();
+}
+
+=item * No updates on waste reports
+
+=cut
+
+around updates_disallowed => sub {
+    my ($orig, $self, $problem) = @_;
+
+    # No updates on waste reports
+    return 'waste' if $problem->cobrand_data eq 'waste';
+
+    return $orig->($self, $problem);
+};
 
 1;

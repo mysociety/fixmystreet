@@ -1,7 +1,7 @@
 [%
 
 USE pounds = format('%.2f');
-PROCESS '_garden_data.html';
+PROCESS 'waste/_garden_data.html';
 
 BLOCK show_fields;
     FOR field IN fields;
@@ -53,7 +53,7 @@ INCLUDE '_email_top.html';
 [% IF new_bins > 0 ~%]
   <p style="[% p_style %]">
     [% IF sacks ~%]
-    Garden waste sack collection: [% new_bins %]
+    Garden waste sack collection: 1 roll
     [% ELSE ~%]
     Bins to be delivered: [% new_bins %]
     [% END ~%]
@@ -76,26 +76,39 @@ INCLUDE '_email_top.html';
   </p>
 [% END %]
 
-[% IF type == 'new' OR type == 'renew' ~%]
-  <p style="[% p_style %]">
-    Your subscription will last until the end of March [% renew_year_end %] and starts after your first collection date.
-  </p>
+[% IF cobrand.moniker == 'brent' %]
+    [% IF type == 'new' OR type == 'renew' ~%]
+      <p style="[% p_style %]">
+        Your subscription will last until the end of March [% renew_year_end %] and starts after your first collection date.
+      </p>
+    [% END %]
+[% ELSE %]
+    [% IF type == 'new' ~%]
+      <p style="[% p_style %]">
+        Your subscription will last for 12 months and starts after your first collection date.
+      </p>
+    [% END %]
 [% END %]
 
   <p style="[% p_style %]">
-    You can <a href="https://www.brent.gov.uk/bins-rubbish-and-recycling/how-collections-work">check your collection day online</a>.
+    You can <a href="[% cobrand.feature('waste_features').garden_check_bin_day_link %]">check your collection day online</a>.
   </p>
 
 [% IF new_bins > 0 ~%]
   <p style="[% p_style %]">
-  We will aim to deliver your [% IF sacks %]sacks[% ELSE %]new bin(s)[% END %] within 10 working days.
+    [% IF cobrand.moniker == 'brent' %]
+      We will aim to deliver your [% IF sacks %]sacks[% ELSE %]new bin(s)[% END %] within 10 working days.
+    [% ELSE %]
+      We will aim to deliver your [% IF sacks %]roll of sacks[% ELSE %]new bin(s)[% END %] within 20 working days.
+    [% END %]
     You don’t need to be at home for the delivery - we’ll leave them outside your address.
   </p>
 [% END %]
 
   <p style="[% p_style %]">
-    Your garden waste needs to be at the boundary of your property by 6.30am on the day of collection.
-    <a href="https://www.brent.gov.uk/bins-rubbish-and-recycling/how-collections-work">Find out what you can put in your garden waste</a>.
+    Your garden waste needs to be at the boundary of your property by
+    [% cobrand.garden_collection_time %] on the day of collection.
+    <a href="[% cobrand.feature('waste_features').garden_what_can_be_collected_link %]">Find out what you can put in your garden waste</a>.
   </p>
 
   <p style="[% p_style %]">
