@@ -126,14 +126,4 @@ describe('Grass cutting layer', function(){
         cy.get('.js-reporting-page--next:visible').should('be.disabled');
     });
 
-    it('presents a CP Media Sponsorship message if CP responsibility and stops', function(){
-        cy.route('POST', '**/mapserver/lincs', 'fixture:lincs_grass_contact_cp.xml').as('grass');
-        cy.visit('http://lincolnshire.localhost:3001/report/new?longitude=-0.510956&latitude=52.655591');
-        cy.wait('@report-ajax');
-        cy.pickCategory('Grass cutting');
-        cy.wait('@grass');
-        cy.contains('responsibility of CP Media').should('be.visible');
-        cy.get('.js-reporting-page--next:visible').should('be.disabled');
-    });
-
 });

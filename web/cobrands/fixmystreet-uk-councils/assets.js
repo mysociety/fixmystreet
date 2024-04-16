@@ -923,11 +923,6 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
         new_text = text.replace('{{PARISH_COUNCIL}}', data.Authority);
         $('#js-lincs-parish-grass').html(new_text);
     }
-    /* If handled by “CP Media Sponsorship”, display a message informing the user how to contact them? */
-    else if (data.Cut_By === 'CPM') {
-        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-media-grass');
-        layer.fixmystreet.no_asset_msg_id = '#js-lincs-media-grass';
-    }
 
     function lincs_has_dates(cut_info) {
         if (cut_info[0].match(/Contact /) && cut_info[0] === cut_info[1] && cut_info[1] === cut_info[2]) {
