@@ -259,6 +259,8 @@ sub garden_service_id { 2247 }
 sub garden_echo_container_name { 'SLWP - Containers' }
 sub garden_due_days { 30 }
 
+sub garden_subscription_email_renew_reminder_opt_in { 0 }
+
 sub garden_current_service_from_service_units {
     my ($self, $services) = @_;
 

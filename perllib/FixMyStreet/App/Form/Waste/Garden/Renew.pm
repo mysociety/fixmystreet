@@ -14,11 +14,12 @@ has_page discount => (
 has_page intro => (
     title => 'Renew your green garden waste subscription',
     template => 'waste/garden/renew.html',
-    fields => ['current_bins', 'bins_wanted', 'payment_method', 'cheque_reference', 'name', 'phone', 'email', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'payment_method', 'cheque_reference', 'name', 'phone', 'email', 'email_renewal_reminders', 'continue_review'],
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
         my @exclude;
+        push @exclude, 'email_renewal_reminders' if !$c->cobrand->garden_subscription_email_renew_reminder_opt_in;
         push @exclude, ('payment_method', 'cheque_reference') if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
         return \@exclude;
     },
@@ -51,6 +52,8 @@ has_page intro => (
     },
     next => 'summary',
 );
+
+with 'FixMyStreet::App::Form::Waste::Garden::EmailRenewalReminders';
 
 has_page summary => (
     fields => ['tandc', 'submit'],

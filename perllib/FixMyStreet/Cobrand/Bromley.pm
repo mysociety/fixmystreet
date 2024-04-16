@@ -480,6 +480,7 @@ sub garden_service_id { 545 }
 sub garden_service_name { 'Green Garden Waste collection service' }
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
+sub garden_subscription_email_renew_reminder_opt_in { 0 }
 sub garden_echo_container_name { 'LBB - GW Container' }
 sub garden_due_days { 48 }
 
