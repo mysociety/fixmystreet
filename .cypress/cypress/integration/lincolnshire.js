@@ -77,7 +77,9 @@ describe('Grass cutting layer', function(){
         cy.nextPageReporting();
         cy.contains('12 June - 16 July').should('be.visible');
         cy.nextPageReporting();
+        cy.get('.js-reporting-page--next:visible').contains('No').click();
         cy.contains('Drag photos here').should('be.visible');
+        cy.get('.js-reporting-page--next:visible').contains('Continue');
         cy.nextPageReporting();
         cy.contains('These will be sent to Lincolnshire County Council').should('be.visible');
     });

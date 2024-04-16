@@ -860,6 +860,7 @@ fixmystreet.assets.lincolnshire.llpg_stylemap = new OpenLayers.StyleMap({
 fixmystreet.assets.lincolnshire.grass_found = function(layer) {
     var data = layer.selected_feature.attributes;
     var parish_regex = new RegExp(/Contact Parish/);
+
     /* If it is handled by LCC and has cut dates provided,
     add an extra notice to the reporting form showing the cut dates */
     if (data.Cut_By === 'LCC' && lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3]).length) {
@@ -871,10 +872,28 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
                         "<h1>Grass cutting schedule</h1>" +
                         "<p>The grass in this area is scheduled to be cut between <strong>" +
                         lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] +
-                        "</strong>. If that answers your query, there is no need to finish the report. " +
-                        "Otherwise, please continue.</p>" +
-                        "</div>";
+                        "</strong>. <p>Does this answer your question about grass cutting?</p>"
             $div = $(msg);
+
+            var $button = $("<div><button class='btn btn--block'>Yes</button></div>");
+            $button.on( "click", function(e) {
+                e.preventDefault();
+                $('.js-reporting-page--next').prop('disabled', true);
+                if (!$('#lincs-thank-you').length) {
+                    $div.append('<p id="lincs-thank-you">Thank you for making an enquiry. If you have any other highways faults to report please <a href="/">make another report</a>.</p>');
+                }
+            });
+            $div.append($button);
+            // We'll call the 'Continue' button 'No' for this page
+            // as clicking 'No' should continue report
+            $(fixmystreet).on("report_new:page_change", function(e, $curr, $page) {
+                if ($page.hasClass('js-lincs-grass-notice')) {
+                    $('.js-reporting-page--next').text('No');
+                } else {
+                    $('.js-reporting-page--next').prop('disabled', false);
+                    $('.js-reporting-page--next').text('Continue');
+                }
+            });
             fixmystreet.pageController.addNextPage('lincs_grass', $div);
         }
         fixmystreet.body_overrides.only_send('Lincolnshire County Council');
