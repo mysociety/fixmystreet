@@ -200,4 +200,13 @@ sub GetSiteContracts {
     return $res->{SiteContracts}->{SiteContract};
 }
 
+sub GetFullWorksheetDetails {
+    my ( $self, $ws_id ) = @_;
+
+    my $res = $self->call( 'GetFullWorksheetDetails',
+        fullworksheetDetailsInput => ixhash( WorksheetId => $ws_id ) );
+
+    return $res->{FullWSDetails};
+}
+
 1;
