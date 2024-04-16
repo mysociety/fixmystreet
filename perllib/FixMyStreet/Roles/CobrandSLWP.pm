@@ -108,7 +108,6 @@ use constant CONTAINER_RECYCLING_BOX => 16;
 use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_PAPER_BIN_140 => 36;
 
-sub garden_subscription_container_field { 'Subscription_Details_Containers' }
 sub garden_due_days { 30 }
 
 sub service_name_override {
