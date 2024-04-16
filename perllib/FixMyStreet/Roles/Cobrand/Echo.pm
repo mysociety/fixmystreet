@@ -637,6 +637,11 @@ sub waste_fetch_events {
         $report_params = { external_id => { like => 'Echo%' } };
     } else {
         $conf = $body;
+        my @contacts = $body->contacts->search({
+            extra => { '@>' => '{"type":"waste"}' }
+        })->all;
+        die "Could not find any waste contacts\n" unless @contacts;
+        $report_params = { category => [ map { $_->category } @contacts ] };
     }
 
     my %open311_conf = (
@@ -670,7 +675,6 @@ sub waste_fetch_events {
     my $reports = $self->problems->search({
         external_id => { '!=', '' },
         state => [ FixMyStreet::DB::Result::Problem->open_states() ],
-        # TODO Should know which categories to use somehow, even in non-devolved case
         %$report_params,
     });
 
