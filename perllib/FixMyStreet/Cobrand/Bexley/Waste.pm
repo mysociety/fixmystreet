@@ -15,6 +15,101 @@ has 'whitespace' => (
     default => sub { Integrations::Whitespace->new(%{shift->feature('whitespace')}) },
 );
 
+sub waste_fetch_events {
+    my ( $self, $params ) = @_;
+
+    my $gsr_updates = Open311::GetServiceRequestUpdates->new(
+        current_body => $self->body,
+        system_user => $self->body->comment_user,
+    );
+
+    my $missed_collection_reports = $self->problems->search(
+        {   external_id => { like => 'Whitespace%' },
+            state => [ FixMyStreet::DB::Result::Problem->open_states() ],
+        },
+        { order_by => 'id' },
+    );
+
+    my $missed_collection_service_property_id = 68;
+    my $db = FixMyStreet::DB->schema->storage;
+
+    while ( my $report = $missed_collection_reports->next ) {
+        print 'Fetching data for report ' . $report->id . "\n" if $params->{verbose};
+
+        my $worksheet_id = $report->external_id =~ s/Whitespace-//r;
+        my $worksheet
+            = $self->whitespace->GetFullWorksheetDetails($worksheet_id);
+
+        # Get info for missed collection
+        my $missed_collection_properties;
+        for my $service_properties (
+            @{  $worksheet->{WSServiceProperties}{WorksheetServiceProperty}
+                    // []
+            }
+        ) {
+            next
+                unless $service_properties->{ServicePropertyID}
+                == $missed_collection_service_property_id;
+
+            $missed_collection_properties = $service_properties;
+        }
+
+        my $whitespace_state_string
+            = $missed_collection_properties
+            ? $missed_collection_properties->{ServicePropertyValue}
+            : '';
+
+        # TODO To open311-adapter or some kind of config
+        my $new_state
+            = missed_collection_state_mapping()->{$whitespace_state_string};
+        unless ($new_state) {
+            print "  No new state, skipping\n" if $params->{verbose};
+            next;
+        }
+
+        next
+            unless $self->waste_check_last_update( $params, $report,
+            $new_state );
+
+        my $request = {
+            description => $new_state->{text},
+            # No data from Whitespace for this, so make it now
+            comment_time =>
+                DateTime->now->set_time_zone( FixMyStreet->local_time_zone ),
+            external_status_code => $whitespace_state_string,
+            prefer_template      => 1,
+            status               => $new_state->{fms_state},
+            # TODO Is there an ID for specific worksheet update?
+            update_id => $report->external_id,
+        };
+
+        print
+            "  Updating report to state '$request->{status}' - '$request->{description}' ($request->{external_status_code})\n"
+            if $params->{verbose};
+
+        $gsr_updates->process_update(
+            $request,
+            $report,
+        );
+    }
+}
+
+sub waste_check_last_update {
+    my ( $self, $params, $report, $new_state ) = @_;
+
+    my $last_update = $report->comments->search(
+        { external_id => { like => 'Whitespace%' } },
+        { order_by => { -desc => 'id' } }
+    )->first;
+
+    if ( $last_update && $new_state->{fms_state} eq $last_update->problem_state ) {
+        print "  Latest update matches fetched state, skipping\n" if $params->{verbose};
+        return;
+    }
+
+    return 1;
+}
+
 sub bin_addresses_for_postcode {
     my ($self, $postcode) = @_;
 
@@ -872,6 +967,107 @@ sub _bin_location_options {
             'At the bottom of the steps',
             'Next to refuse bins',
         ],
+    };
+}
+
+# TODO Move this to open311-adapter?
+sub missed_collection_state_mapping {
+    return {
+        'Collected' => {
+            fms_state => 'fixed - council',
+            text       => 'Collection completed.',
+        },
+        'Cancelled' => {
+            fms_state => 'closed',
+            text       => 'Collection cancelled.',
+        },
+        'Complete' => {
+            fms_state => 'fixed - council',
+            text       => 'Collection completed.',
+        },
+        'Overdue' => {
+            fms_state => 'action scheduled',
+            text       => 'Collection overdue.',
+        },
+        'Duplicate worksheet' => {
+            fms_state => 'duplicate',
+            text => 'This report has been closed because it was a duplicate.',
+        },
+        'Excess Waste Left' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this collection could not be completed because excess waste was left.',
+        },
+        'Overfull' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this collection could not be completed because excess waste was left.',
+        },
+        'Overweight' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this bin collection could not be completed because your bin is too heavy to empty safely.',
+        },
+        'Re-filled after collection' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this bin collection could not be completed because your bin is too heavy to empty safely.',
+        },
+        'Unsafe situation' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this collection could not be completed because it was not safe for to collect your waste.',
+        },
+        'Waste compacted or stuck in bin' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this collection could not be completed because the waste was compacted or stuck in your bin.',
+        },
+        'Waste Frozen in Bin' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this collection could not be completed because the waste was frozen in your bin.',
+        },
+        'Contains Hazardous Waste' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this bin contains hazardous materials that are not suitable for collection.',
+        },
+        'Contaminated' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this bin collection could not be completed because it contains items that cannot be recycled.',
+        },
+        'Damaged Container' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this bin collection could not be completed because your container is damaged.',
+        },
+        'Wrong container used' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this collection could not be completed because the wrong container has been used.',
+        },
+        'No access' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this bin collection could not be completed because they were unable to access your container.',
+        },
+        'Not Out' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this bin collection could not be completed because your bin, box or sack was not out for collection.',
+        },
+        'Whole road not collected' => {
+            fms_state => 'action scheduled',
+            text       =>
+                'Our waste collection contractor have confirmed that the collections have yet to be made on your road and these will be carried out in due course.',
+        },
+        'Wrong container reported as missed' => {
+            fms_state => 'unable to fix',
+            text       =>
+                'Our waste collection contractor has advised that this bin collection could not be completed because you have used the wrong container.',
+        },
     };
 }
 
