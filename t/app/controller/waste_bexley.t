@@ -493,6 +493,52 @@ FixMyStreet::override_config {
         $mech->content_lacks("You do not have a Garden waste collection");
     };
 
+    my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+    $ukc->mock('_get_bank_holiday_json', sub {
+        {
+            "england-and-wales" => {
+                "events" => [
+                    { "date" => "2024-04-01", "title" => 'Easter Monday' }
+                ]
+            }
+        }
+    });
+
+    subtest 'bank holiday message' => sub {
+        # 15 days before the bank holiday
+        set_fixed_time('2024-03-17T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_lacks('Collections will be a day later than usual in the week following the bank holiday.', 'Bank holiday message not shown more than a week before');
+
+        # 14 days before the bank holiday
+        set_fixed_time('2024-03-18T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains('Collections will be a day later than usual in the week following the bank holiday.', 'Bank holiday message shown a week before');
+
+        # Should still show the message on the day of the bank holiday
+        set_fixed_time('2024-04-01T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains('Collections will be a day later than usual in the week following the bank holiday.', 'Bank holiday message shown on the day');
+
+        # Should show the message for 1 week after the bank holiday
+        set_fixed_time('2024-04-08T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains('Collections will be a day later than usual in the week following the bank holiday.', 'Bank holiday message shown one week after bank holiday');
+
+        # Shouldn't show the message after 1 week
+        set_fixed_time('2024-04-09T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_lacks('Collections will be a day later than usual in the week following the bank holiday.', 'Bank holiday message not shown more than one week after');
+
+        # Should show the message if custom query parameter provided, even if more than a week before
+        set_fixed_time('2024-03-01T02:00:00');
+        $mech->get_ok('/waste/10001?show_bank_holiday_message=1');
+        $mech->content_contains('Collections will be a day later than usual in the week following the bank holiday.', 'Bank holiday message shown with custom query parameter');
+
+        # Put time back to previous value
+        set_fixed_time('2024-03-31T02:00:00'); # March 31st, 02:00 BST
+    };
+
 };
 
 FixMyStreet::override_config {

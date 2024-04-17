@@ -147,6 +147,22 @@ sub look_up_property {
         );
     }
 
+    # Check if today or any of the next 7 days are bank holidays
+    my $upcoming_bank_holiday = 0;
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+    for (-7..14) {
+        my $dt = DateTime->now->add(days => $_);
+        if ($wd->is_public_holiday($dt)) {
+            $upcoming_bank_holiday = 1;
+            last;
+        }
+    }
+
+    # Add query string parameter for showing bank holiday message
+    if ($self->{c}->get_param('show_bank_holiday_message')) {
+        $upcoming_bank_holiday = 1;
+    }
+
     return {
         # 'id' is same as 'uprn' for Bexley, but since the wider wasteworks code
         # (e.g. FixMyStreet/App/Controller/Waste.pm) calls 'id' in some cases
@@ -157,6 +173,7 @@ sub look_up_property {
             BexleyAddresses::address_for_uprn($uprn) ),
         latitude => $site->{Site}->{SiteLatitude},
         longitude => $site->{Site}->{SiteLongitude},
+        upcoming_bank_holiday => $upcoming_bank_holiday,
 
         %parent_property,
     };
