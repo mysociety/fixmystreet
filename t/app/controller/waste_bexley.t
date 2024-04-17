@@ -483,6 +483,47 @@ FixMyStreet::override_config {
         $mech->content_lacks("You do not have a Garden waste collection");
     };
 
+    my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+    $ukc->mock('_get_bank_holiday_json', sub {
+        {
+            "england-and-wales" => {
+                "events" => [
+                    { "date" => "2024-04-01", "title" => 'Easter Monday' }
+                ]
+            }
+        }
+    });
+
+    subtest 'bank holiday message' => sub {
+        # 8 days before the bank holiday
+        set_fixed_time('2024-03-24T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_lacks('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message not shown more than a week before');
+
+        # 7 days before the bank holiday
+        set_fixed_time('2024-03-25T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message shown a week before');
+
+        # Should still show the message on the day of the bank holiday
+        set_fixed_time('2024-04-01T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message shown on the day');
+
+        # Should not show the message after the bank holiday
+        set_fixed_time('2024-04-02T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_lacks('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message not shown after the day');
+
+        # Should show the message if custom query parameter provided, even if more than a week before
+        set_fixed_time('2024-03-24T02:00:00');
+        $mech->get_ok('/waste/10001?show_bank_holiday_message=1');
+        $mech->content_contains('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message shown with custom query parameter');
+
+        # Put time back to previous value
+        set_fixed_time('2024-03-31T02:00:00'); # March 31st, 02:00 BST
+    };
+
 };
 
 done_testing;
