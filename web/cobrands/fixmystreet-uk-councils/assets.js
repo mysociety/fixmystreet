@@ -860,10 +860,9 @@ fixmystreet.assets.lincolnshire.llpg_stylemap = new OpenLayers.StyleMap({
 fixmystreet.assets.lincolnshire.grass_found = function(layer) {
     var data = layer.selected_feature.attributes;
     var parish_regex = new RegExp(/Contact Parish/);
-
     /* If it is handled by LCC and has cut dates provided,
     add an extra notice to the reporting form showing the cut dates */
-    if (data.Cut_By === 'LCC' && lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3]).length) {
+    if (data.Cut_By.match(/LCC|F0|F1|Flail|STR/) && lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3]).length) {
         var $div = $(".js-reporting-page.js-lincs-grass-notice");
         if ($div.length) {
             $div.removeClass('js-reporting-page--skip');
@@ -871,8 +870,11 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
             var msg = "<div class='box-warning js-lincs-grass-notice'>" +
                         "<h1>Grass cutting schedule</h1>" +
                         "<p>The grass in this area is scheduled to be cut between <strong>" +
-                        lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] +
-                        "</strong>. <p>Does this answer your question about grass cutting?</p>"
+                        lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+            if (data.Cut_By != 'LCC') {
+                msg += '<p>In rural areas we cut roads to the first 1.1m width from the edge of the road and leave the rest for wildlife except for areas providing visibility at junctions and bends where a greater width is cut. We also cut a strip either side of footways where possible.</p>';
+            }
+            msg += "<p>Does this answer your question about grass cutting?</p>";
             $div = $(msg);
 
             var $button = $("<div><button id='lincs-yes-verge-query' class='btn btn--block'>Yes</button></div>");
