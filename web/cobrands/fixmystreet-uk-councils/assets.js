@@ -875,7 +875,7 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
                         "</strong>. <p>Does this answer your question about grass cutting?</p>"
             $div = $(msg);
 
-            var $button = $("<div><button class='btn btn--block'>Yes</button></div>");
+            var $button = $("<div><button id='lincs-yes-verge-query' class='btn btn--block'>Yes</button></div>");
             $button.on( "click", function(e) {
                 e.preventDefault();
                 $('.js-reporting-page--next').prop('disabled', true);
