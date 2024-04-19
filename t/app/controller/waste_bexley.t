@@ -3,6 +3,7 @@ use Test::Deep;
 use Test::MockModule;
 use Test::MockObject;
 use Test::MockTime 'set_fixed_time';
+use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 
@@ -118,7 +119,13 @@ $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
     return _in_cab_logs()->{$uprn};
 });
 
-my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {}, { cobrand => 'bexley' });
+my $comment_user = $mech->create_user_ok('comment');
+my $body = $mech->create_body_ok(
+    2494,
+    'London Borough of Bexley',
+    { comment_user => $comment_user },
+    { cobrand      => 'bexley' },
+);
 my $contact = $mech->create_contact_ok(
     body => $body,
     category => 'Report missed collection',
@@ -490,6 +497,195 @@ FixMyStreet::override_config {
         $mech->content_lacks("You do not have a Garden waste collection");
     };
 
+};
+
+FixMyStreet::override_config {
+    COBRAND_FEATURES => {
+        whitespace => {
+            bexley => { url => 'http://example.org/' },
+        },
+    },
+}, sub {
+    subtest 'Updates for missed collection reports' => sub {
+        $whitespace_mock->mock( 'GetFullWorksheetDetails', sub {
+            my ( $self, $ws_id ) = @_;
+            return {
+                2002 => {
+                    WSServiceProperties => {
+                        WorksheetServiceProperty => [
+                            {
+                                ServicePropertyID => 1,
+                            },
+                        ],
+                    },
+                },
+                2003 => {
+                    WSServiceProperties => {
+                        WorksheetServiceProperty => [
+                            {
+                                ServicePropertyID => 1,
+                            },
+                            {
+                                ServicePropertyID => 68,
+                                ServicePropertyValue => 'Overdue', # 'action scheduled'
+                            },
+                        ],
+                    },
+                },
+                2004 => {
+                    WSServiceProperties => {
+                        WorksheetServiceProperty => [
+                            {
+                                ServicePropertyID => 1,
+                            },
+                            {
+                                ServicePropertyID => 68,
+                                ServicePropertyValue => 'Duplicate worksheet', # 'duplicate'
+                            },
+                        ],
+                    },
+                },
+                2005 => {
+                    WSServiceProperties => {
+                        WorksheetServiceProperty => [
+                            {
+                                ServicePropertyID => 1,
+                            },
+                            {
+                                ServicePropertyID => 68,
+                                ServicePropertyValue => 'Not Out', # 'unable to fix'
+                            },
+                        ],
+                    },
+                },
+            }->{$ws_id};
+        });
+
+        my $cobrand = FixMyStreet::Cobrand::Bexley->new;
+
+        $mech->delete_problems_for_body( $body->id );
+
+        my @reports;
+        for my $id ( 2001..2005 ) {
+            my ($r) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Missed collection',
+                {
+                    external_id => "Whitespace-$id",
+                },
+            );
+
+            if ( $id == 2003 || $id == 2005 ) {
+                $r->state('action scheduled');
+                $r->add_to_comments(
+                    {
+                        external_id   => $r->external_id,
+                        problem_state => $r->state,
+                        text          => 'Preexisting comment',
+                        user          => $comment_user,
+                    }
+                );
+            } else {
+                $r->state('confirmed');
+            }
+            $r->update;
+
+            push @reports, $r;
+        }
+
+        my $lines = join '\n', (
+            'Fetching data for report \d+',
+            '  No new state, skipping',
+            'Fetching data for report \d+',
+            '  No new state, skipping',
+            'Fetching data for report \d+',
+            '  Latest update matches fetched state, skipping',
+            'Fetching data for report \d+',
+            '  Updating report to state \'duplicate\'.*',
+            'Fetching data for report \d+',
+            '  Updating report to state \'unable to fix\'.*',
+        );
+        stdout_like {
+            $cobrand->waste_fetch_events( { verbose => 1 } )
+        } qr/$lines/;
+
+        my @got;
+        for my $r (@reports) {
+            $r->discard_changes;
+
+            my @comments;
+            for my $c ( $r->comments->all ) {
+                push @comments, {
+                    problem_state => $c->problem_state,
+                    user_id       => $c->user_id,
+                    external_id   => $c->external_id,
+                    text          => $c->text,
+                };
+            }
+
+            push @got, {
+                external_id => $r->external_id,
+                state       => $r->state,
+                comments    => \@comments,
+            };
+        }
+
+        cmp_deeply \@got, [
+            # No worksheet so no update
+            {   external_id => 'Whitespace-2001',
+                state       => 'confirmed',
+                comments    => [],
+            },
+            # No missed collection data for worksheet, so no update
+            {   external_id => 'Whitespace-2002',
+                state       => 'confirmed',
+                comments    => [],
+            },
+            # No state change, so no update
+            {   external_id => 'Whitespace-2003',
+                state       => 'action scheduled',
+                comments    => [
+                    {
+                        external_id   => 'Whitespace-2003',
+                        problem_state => 'action scheduled',
+                        text          => 'Preexisting comment',
+                        user_id       => $comment_user->id,
+                    },
+                ],
+            },
+            # Update (no preexisting comment)
+            {   external_id => 'Whitespace-2004',
+                state       => 'duplicate',
+                comments    => [
+                    {
+                        external_id   => 'Whitespace-2004',
+                        problem_state => 'duplicate',
+                        text          => 'This report has been closed because it was a duplicate.',
+                        user_id       => $comment_user->id,
+                    },
+                ],
+            },
+            # Update (with preexisting comment)
+            {   external_id => 'Whitespace-2005',
+                state       => 'unable to fix',
+                comments    => [
+                    {
+                        external_id   => 'Whitespace-2005',
+                        problem_state => 'action scheduled',
+                        text          => 'Preexisting comment',
+                        user_id       => $comment_user->id,
+                    },
+                    {
+                        external_id   => 'Whitespace-2005',
+                        problem_state => 'unable to fix',
+                        text          => 'Our waste collection contractor has advised that this bin collection could not be completed because your bin, box or sack was not out for collection.',
+                        user_id       => $comment_user->id,
+                    },
+                ],
+            },
+        ], 'correct reports updated with comments added';
+    };
 };
 
 done_testing;

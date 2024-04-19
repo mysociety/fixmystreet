@@ -25,6 +25,7 @@ sub waste_fetch_events {
         {   external_id => { like => 'Whitespace%' },
             state => [ FixMyStreet::DB::Result::Problem->open_states() ],
         },
+        { order_by => 'id' },
     );
 
     while ( my $report = $missed_collection_reports->next ) {
@@ -74,14 +75,15 @@ sub waste_fetch_events {
 
             $db->txn_do( sub {
                 my $comment = $report->comments->new(
-                    {   created       => \'NOW()',
-                        problem       => $report,
-                        problem_state => $new_state->{fms_state},
-                        user          => $self->body->comment_user,
+                    {
+                        created       => \'NOW()',
                         # TODO Any IDs for worksheet updates?
                         external_id => $report->external_id,
+                        problem       => $report,
+                        problem_state => $new_state->{fms_state},
                         send_state  => 'processed',
                         text        => $new_state->{text},
+                        user          => $self->body->comment_user,
                     },
                 );
                 $comment->insert;
@@ -101,7 +103,7 @@ sub waste_check_last_update {
         { order_by => { -desc => 'id' } }
     )->first;
 
-    if ( $last_update && $new_state eq $last_update->problem_state ) {
+    if ( $last_update && $new_state->{fms_state} eq $last_update->problem_state ) {
         print "  Latest update matches fetched state, skipping\n" if $params->{verbose};
         return;
     }
