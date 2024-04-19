@@ -1,4 +1,4 @@
-Subject: New [% site_name %] updates on report, reference LBS-[% report.id %]
+Subject: Update on report, reference LBS-[% report.id %]
 
 The following updates have been left on this report:
 
