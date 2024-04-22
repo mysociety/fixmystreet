@@ -371,7 +371,7 @@ sub open311_post_send {
     });
 }
 
-=item * Look for completion photos on updates
+=item * Look for completion photos on updates, and ignore "Not Completed" without a resolution code
 
 =cut
 
@@ -391,7 +391,20 @@ sub open311_waste_update_extra {
             push @media, "data:image/$type,$value";
         }
     }
-    return @media ? ( media_url => \@media ) : ();
+
+    my $override_status;
+    my $event_type = $cfg->{event_types}{$event->{EventTypeId}};
+    my $state_id = $event->{EventStateId};
+    my $resolution_id = $event->{ResolutionCodeId} || '';
+    my $description = $event_type->{states}{$state_id}{name} || '';
+    if ($description eq 'Not Completed' && !$resolution_id) {
+        $override_status = "";
+    }
+
+    return (
+        @media ? ( media_url => \@media ) : (),
+        defined $override_status ? (status => $override_status ) : (),
+    );
 }
 
 =item * No updates on waste reports
