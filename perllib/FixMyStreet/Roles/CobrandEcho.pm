@@ -4,12 +4,16 @@ use v5.14;
 use warnings;
 use DateTime;
 use DateTime::Format::Strptime;
+use List::Util qw(min);
 use Moo::Role;
+use POSIX qw(floor);
 use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::DateRange;
 use FixMyStreet::DB;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
+
+with 'FixMyStreet::Roles::EnforcePhotoSizeOpen311PreSend';
 
 requires 'waste_containers';
 requires 'waste_service_to_containers';
@@ -1216,5 +1220,29 @@ sub send_bulky_payment_echo_update_failed {
         }
     }
 }
+
+sub per_photo_size_limit_for_report_in_bytes {
+    my ($self, $report, $image_count) = @_;
+
+    # We only need to check bulky collections at present.
+    return 0 unless $report->cobrand_data eq 'waste' && $report->contact->category eq 'Bulky collection';
+
+    my $cfg = FixMyStreet->config('COBRAND_FEATURES');
+    return 0 unless $cfg;
+
+    my $echo_cfg = $cfg->{'echo'};
+    return 0 unless $echo_cfg;
+
+    my $max_size_per_image = $echo_cfg->{'max_size_per_image_bytes'};
+    my $max_size_images_total = $echo_cfg->{'max_size_image_total_bytes'};
+
+    return 0 unless $max_size_per_image || $max_size_images_total;
+    return $max_size_per_image if !$max_size_images_total;
+
+    my $max_size_per_image_from_total = floor($max_size_images_total / $image_count);
+    return $max_size_per_image_from_total if !$max_size_per_image;
+
+    return min($max_size_per_image, $max_size_per_image_from_total);
+};
 
 1;
