@@ -564,6 +564,7 @@ subtest 'updating of waste reports' => sub {
         }
     });
 
+    my $comment_count = 0;
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
         COBRAND_FEATURES => {
@@ -589,33 +590,49 @@ subtest 'updating of waste reports' => sub {
             $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Fetching data for report/;
         $report->discard_changes;
-        is $report->comments->count, 0, 'No new update';
+        is $report->comments->count, $comment_count, 'No new update';
         is $report->state, 'confirmed', 'No state change';
 
         $report->update({ external_id => 'waste-15003-' });
         stdout_like {
             $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Fetching data for report/;
+        $report->discard_changes;
+        is $report->comments->count, $comment_count, 'No new update';
+        is $report->state, 'confirmed', 'No state change';
+
+        $report->update({ external_id => 'waste-15003-123' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state action scheduled, Allocated to Crew/;
         $report->discard_changes;
-        is $report->comments->count, 1, 'A new update';
+        is $report->comments->count, ++$comment_count, 'A new update';
         my $update = $report->comments->first;
         is $update->text, 'This has been allocated';
         is $report->state, 'action scheduled', 'A state change';
 
-        $report->update({ external_id => 'waste-15003-' });
+        $report->update({ external_id => 'waste-15003-123' });
         stdout_like {
             $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Latest update matches fetched state/;
         $report->discard_changes;
-        is $report->comments->count, 1, 'No new update';
+        is $report->comments->count, $comment_count, 'No new update';
         is $report->state, 'action scheduled', 'State unchanged';
 
-        $report->update({ external_id => 'waste-15004-201' });
+        $report->update({ external_id => 'waste-15004-' });
         stdout_like {
             $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state fixed - council, Completed/;
         $report->discard_changes;
-        is $report->comments->count, 2, 'A new update';
+        is $report->comments->count, ++$comment_count, 'A new update';
+        is $report->state, 'fixed - council', 'Changed to fixed';
+
+        $report->update({ state => 'action scheduled', external_id => 'waste-15004-201' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Updating report to state fixed - council, Completed/;
+        $report->discard_changes;
+        is $report->comments->count, ++$comment_count, 'A new update';
         is $report->state, 'fixed - council', 'Changed to fixed';
 
         $reports[1]->update({ state => 'fixed - council' });
@@ -628,7 +645,7 @@ subtest 'updating of waste reports' => sub {
             $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state unable to fix, Inclement Weather/;
         $report->discard_changes;
-        is $report->comments->count, 3, 'A new update';
+        is $report->comments->count, ++$comment_count, 'A new update';
         is $report->state, 'unable to fix', 'A state change';
     };
 
@@ -682,7 +699,7 @@ EOF
 
         $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $mech->res->code, 200, 'OK response, even though event does not exist';
-        is $report->comments->count, 3, 'No new update';
+        is $report->comments->count, $comment_count, 'No new update';
 
         $in = <<EOF;
 <?xml version="1.0" encoding="UTF-8"?>
@@ -709,7 +726,7 @@ EOF
 
         $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         #$report->update({ external_id => 'waste-15005-205', state => 'confirmed' });
-        is $report->comments->count, 4, 'A new update';
+        is $report->comments->count, ++$comment_count, 'A new update';
         $report->discard_changes;
         is $report->state, 'closed', 'A state change';
 
