@@ -242,7 +242,11 @@ sub bin_services_for_address {
     if ( my $id = $frequency_types{fortnightly} ) {
         $id = 'Wk-' . $id;
         my $links = $self->{c}->cobrand->feature('waste_calendar_links');
-        $self->{c}->stash->{calendar_link} = $links->{$id};
+        $self->{c}->stash->{calendar_link} = [
+            {   href => $links->{$id},
+                text => 'View and download collection calendar',
+            }
+        ];
     }
 
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
@@ -551,7 +555,7 @@ sub image_for_unit {
     return '/i/waste-containers/bexley/' . $images->{$service_id};
 }
 
-sub bin_day_format { '%A, %-d~~~ %B %Y' }
+sub bin_day_format { '%A %-d %B %Y' }
 
 sub waste_images_2x_unavailable { 1 }
 
@@ -578,6 +582,10 @@ For:
 HTML
 
     return {
+        'CW-SACK' => {
+            name        => 'Clinical Waste Sack(s)',
+            description => 'Clinical waste',
+        },
         'FO-140' => {
             name => 'Communal Food Bin',
             description => 'Food waste',
@@ -757,7 +765,7 @@ HTML
             description => 'Non-recyclable waste',
         },
         'RES-SACK' => {
-            name        => 'Rubbish collection',
+            name        => 'Black Sack(s)',
             description => 'Non-recyclable waste',
         },
     };

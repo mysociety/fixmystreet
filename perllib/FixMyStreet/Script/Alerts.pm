@@ -399,7 +399,7 @@ sub _send_aggregated_alert(%) {
     if (@template_data) {
         my %template_data = %data;
         $template_data{data} = [@template_data];
-        $template_data{template} = 'templated_email_alert-update';
+        $template_data{private_email} = 1;
         trigger_alert_sending($alert_by, $token, %template_data);
     };
 

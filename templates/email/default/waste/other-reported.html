@@ -10,7 +10,15 @@ INCLUDE '_email_top.html';
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
+ [% IF report.category == 'Request new container' %]
+  <h1 style="[% h1_style %]">Your request has been&nbsp;logged</h1>
+ [% ELSE %]
   <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
+ [% END %]
+
+[% IF cobrand.moniker == 'sutton' %]
+<p style="[% p_style %]">Thank you for contacting the London Borough of Sutton.</p>
+[% END %]
 
 [% INCLUDE '_council_reference.html' problem=report %]
 
@@ -24,6 +32,12 @@ INCLUDE '_email_top.html';
         [% cobrand.wasteworks_config.request_timeframe %]
         for this order to be processed. We thank you for your patience and
         understanding in advance.</p>
+        <p style="[% p_style %]">If you have requested a bin, box or caddy to be collected as part of the request:</p>
+        <ul>
+            <li>Please keep any bin, box or caddy accessible in your front garden or driveway, ready to be exchanged.</li>
+            <li>It must be visible from the public highway, so delivery drivers can see it.</li>
+            <li>We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.</li>
+        </ul>
     [% END %]
 [% ELSE %]
 
