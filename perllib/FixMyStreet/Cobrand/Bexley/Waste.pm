@@ -754,7 +754,7 @@ HTML
             description => 'Non-recyclable waste',
         },
         'RES-SACK' => {
-            name        => 'Rubbish collection',
+            name        => 'Black Sack(s)',
             description => 'Non-recyclable waste',
         },
     };
