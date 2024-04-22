@@ -575,6 +575,10 @@ For:
 HTML
 
     return {
+        'CW-SACK' => {
+            name        => 'Clinical Waste Sack(s)',
+            description => 'Clinical waste',
+        },
         'FO-140' => {
             name => 'Communal Food Bin',
             description => 'Food waste',
