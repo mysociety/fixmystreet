@@ -550,7 +550,7 @@ sub image_for_unit {
     return '/i/waste-containers/bexley/' . $images->{$service_id};
 }
 
-sub bin_day_format { '%A, %-d~~~ %B %Y' }
+sub bin_day_format { '%A %-d %B %Y' }
 
 # TODO This logic is copypasted across multiple files; get it into one place
 my %irregulars = ( 1 => 'st', 2 => 'nd', 3 => 'rd', 11 => 'th', 12 => 'th', 13 => 'th');

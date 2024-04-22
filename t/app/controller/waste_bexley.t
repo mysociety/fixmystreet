@@ -346,17 +346,17 @@ FixMyStreet::override_config {
         my $mech = shift;
 
         $mech->content_contains('Communal Food Bin');
-        $mech->content_contains('Tuesday, 30th April 2024');
+        $mech->content_contains('Tuesday 30 April 2024');
         $mech->content_lacks('Brown Caddy');
         $mech->content_lacks('Green Recycling Bin');
         $mech->content_lacks('Black Recycling Box');
         $mech->content_contains('Clear Sack(s)');
-        $mech->content_contains('Wednesday, 1st May 2024');
+        $mech->content_contains('Wednesday 1 May 2024');
         $mech->content_lacks('Blue Lidded Wheelie Bin');
         $mech->content_contains('Blue Recycling Box');
-        $mech->content_contains('Monday, 1st April 2024');
+        $mech->content_contains('Monday 1 April 2024');
         $mech->content_contains('Green Recycling Box');
-        $mech->content_contains('Monday, 1st April 2024');
+        $mech->content_contains('Monday 1 April 2024');
     }
 
     subtest 'Checking calendar' => sub {
