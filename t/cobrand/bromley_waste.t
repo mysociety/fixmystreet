@@ -587,6 +587,14 @@ subtest 'updating of waste reports' => sub {
         $report->update({ external_id => 'waste-15003-' });
         stdout_like {
             $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Fetching data for report/;
+        $report->discard_changes;
+        is $report->comments->count, 0, 'No new update';
+        is $report->state, 'confirmed', 'No state change';
+
+        $report->update({ external_id => 'waste-15003-123' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Updating report to state action scheduled, Allocated to Crew/;
         $report->discard_changes;
         is $report->comments->count, 1, 'A new update';
@@ -594,7 +602,7 @@ subtest 'updating of waste reports' => sub {
         is $update->text, 'This has been allocated';
         is $report->state, 'action scheduled', 'A state change';
 
-        $report->update({ external_id => 'waste-15003-' });
+        $report->update({ external_id => 'waste-15003-123' });
         stdout_like {
             $cobrand->waste_fetch_events({ verbose => 1 });
         } qr/Latest update matches fetched state/;

@@ -339,6 +339,25 @@ sub open311_munge_update_params {
     }
 }
 
+=head2 open311_waste_update_extra
+
+Ingore any updates from Echo that don't have a resolution code
+
+=cut
+
+sub open311_waste_update_extra {
+    my ($self, $cfg, $event) = @_;
+
+    my $override_status;
+    if (!$event->{ResolutionCodeId}) {
+        $override_status = "";
+    }
+
+    return (
+        defined $override_status ? (status => $override_status ) : (),
+    );
+}
+
 =head2 open311_get_update_munging
 
 This is used to perform Bromley's custom redirecting between Confirm and Echo
