@@ -63,6 +63,19 @@ sub shrink {
     return $self->strip;
 }
 
+# Shrinks a picture to the specified percentage of the original, but keeping in proportion.
+sub shrink_to_percentage {
+    my ($self, $percentage) = @_;
+    return $self unless $self->image;
+
+    my ($width, $height) = $self->image->Get('width', 'height');
+    my $new_width  = int($width * $percentage / 100);
+    my $new_height = int($height * $percentage / 100);
+
+    my $err = $self->image->Scale(width => $new_width, height => $new_height);
+    return $self->strip;
+}
+
 # Shrinks a picture to a given dimension (defaults to 90x60(, cropping so that
 # it is exactly that.
 sub crop {
