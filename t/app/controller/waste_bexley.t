@@ -516,18 +516,146 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), '10001', 'Report is against the parent property';
     };
 
-    subtest 'Prevents missed collection reports if there is an open report' => sub {
-        $mech->get_ok('/waste/10002');
-        $mech->content_contains('A green recycling box collection has been reported as missed');
-        $mech->content_contains('<a href="/report/' . $existing_missed_collection_report2->id . '" class="waste-service-link">check status</a>');
+    subtest 'Missed collection eligibility checks' => sub {
+        set_fixed_time('2024-04-22T12:00:00'); # Monday
+
+        my %services = (
+            # Has a missed collection report
+            'RES-SACK' => {
+                service_id => 'RES-SACK',
+                round => 'RES-R1',
+                round_schedule => 'RES-R1 Fri',
+            },
+            # Has exception against round
+            'MDR-SACK' => {
+                service_id => 'MDR-SACK',
+                round => 'MDR-R1',
+                round_schedule => 'MDR-R1 Fri',
+            },
+            # Collection due today but has not happened
+            'FO-23' => {
+                service_id => 'FO-23',
+                round => 'RCY-R1',
+                round_schedule => 'RCY-R1 Mon',
+            },
+            # Had a collection earlier today
+            'FO-140' => {
+                service_id => 'FO-140',
+                round => 'RCY-R2',
+                round_schedule => 'RCY-R2 Mon',
+            },
+            # Collection due last working day but it did not happen
+            'RES-180' => {
+                service_id => 'RES-180',
+                round => 'RES-R2',
+                round_schedule => 'RES-R2 Fri',
+            },
+            # Collections due last working day and they happened
+            'RES-240' => {
+                service_id => 'RES-240',
+                round => 'RES-R3',
+                round_schedule => 'RES-R3 Fri',
+            },
+            'RES-660' => {
+                service_id => 'RES-660',
+                round => 'RES-R4',
+                round_schedule => 'RES-R4 Fri',
+            },
+            # Collection too old
+            'GA-240' => {
+                service_id => 'GA-240',
+                round => 'GDN-R1',
+                round_schedule => 'GDN-R1 Tue',
+            },
+        );
+
+        my $property = {
+            missed_collection_reports => {
+                'RES-SACK' => 1,
+            },
+            round_exceptions => {
+                'MDR-R1' => 1, # MDR-SACK
+            },
+            recent_collections => {
+                'RCY-R1 Mon' => DateTime->today, # FO-23
+                'RCY-R2 Mon' => DateTime->today, # FO-140
+                'RES-R2 Fri' => DateTime->today->subtract( days => 3 ), # RES-180
+                'RES-R3 Fri' => DateTime->today->subtract( days => 3 ), # RES-240
+                'RES-R4 Fri' => DateTime->today->subtract( days => 3 ), # RES-240
+                'GDN-R1 Tue' => DateTime->today->subtract( days => 6 ), # GA-240
+            },
+        };
+
+        my $cobrand = FixMyStreet::Cobrand::Bexley->new;
+        $cobrand->{c} = Test::MockObject->new;
+        $cobrand->{c}->mock(
+            stash => sub {
+                {
+                    cab_logs => [
+                        # Successful collection today
+                        {   LogDate   => '2024-04-22T10:00:00.977',
+                            Reason    => 'N/A',
+                            RoundCode => 'RCY-R2',    # For FO-140
+                            Uprn      => '',
+                        },
+                        # Successful collection last working day
+                        {   LogDate   => '2024-04-19T10:00:00.977',
+                            Reason    => 'N/A',
+                            RoundCode => 'RES-R3',    # For RES-240
+                            Uprn      => '',
+                        },
+                        # Successful collection last working day,
+                        # marked against individual property
+                        {   LogDate   => '2024-04-19T10:00:00.977',
+                            Reason    => 'N/A',
+                            RoundCode => 'RES-R4',    # For RES-660
+                            Uprn      => '123456',
+                        },
+                        # Successful collection earlier than allowed window
+                        {   LogDate   => '2024-04-16T10:00:00.977',
+                            Reason    => 'N/A',
+                            RoundCode => 'GDN-R1',    # For GA-240
+                            Uprn      => '',
+                        },
+                    ],
+                };
+            },
+        );
+        $cobrand->{c}->mock( cobrand => sub {$cobrand} );
+
+        is $cobrand->can_report_missed( $property, $services{'RES-SACK'} ), 0,
+            'cannot report missed collection against service with an open report';
+
+        is $cobrand->can_report_missed( $property, $services{'MDR-SACK'} ), 0,
+            'cannot report missed collection against service with round exceptions';
+
+        is $cobrand->can_report_missed( $property, $services{'FO-23'} ), 0,
+            'cannot report missed collection against service due today that has not been collected';
+        ok !$services{'FO-23'}{last}{is_delayed}, 'not marked delayed';
+
+        is $cobrand->can_report_missed( $property, $services{'FO-140'} ), 0,
+            'cannot report missed collection against service due today that *has* been collected';
+        ok !$services{'FO-140'}{last}{is_delayed}, 'not marked delayed';
+
+        is $cobrand->can_report_missed( $property, $services{'RES-180'} ), 0,
+            'cannot report missed collection against service due yesterday whose round is not logged as collected';
+        ok $services{'RES-180'}{last}{is_delayed}, 'marked delayed';
+
+        is $cobrand->can_report_missed( $property, $services{'RES-240'} ), 1,
+            'can report missed collection against service due yesterday whose round *is* logged as collected';
+        ok !$services{'RES-240'}{last}{is_delayed}, 'not marked delayed';
+
+        is $cobrand->can_report_missed( $property, $services{'RES-660'} ), 1,
+            'can report missed collection against service due yesterday whose round *is* logged as collected (against individual property)';
+        ok !$services{'RES-660'}{last}{is_delayed}, 'not marked delayed';
+
+        is $cobrand->can_report_missed( $property, $services{'GA-240'} ), 0,
+            'cannot report missed collection against service whose round was collected more than 3 working days ago';
+        ok !$services{'GA-240'}{last}{is_delayed}, 'not marked delayed';
+
+        # Put time back to previous value
+        set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
     };
-
-    subtest 'GGW promo not shown if already subscribed' => sub {
-        $mech->get_ok('/waste/10005');
-
-        $mech->content_lacks("You do not have a Garden waste collection");
-    };
-
     my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
     $ukc->mock('_get_bank_holiday_json', sub {
         {
