@@ -300,16 +300,9 @@ FixMyStreet::override_config {
                     %defaults,
                 },
                 {   id             => 6,
-                    service_id     => 'MDR-SACK',
-                    service_name   => 'Clear Sack(s)',
-                    service_description => 'For:
-<ul>
-<li>paper and cardboard</li>
-<li>plastic bottles</li>
-<li>glass bottles and jars</li>
-<li>food and drinks cans</li>
-</ul>
-',
+                    service_id     => 'RES-CHAM',
+                    service_name   => 'Communal Refuse Bin(s)',
+                    service_description => 'Non-recyclable waste',
                     round_schedule => 'RND-6 Wed Wk 2',
                     round          => 'RND-6',
                     report_allowed => 1,
@@ -350,7 +343,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Brown Caddy');
         $mech->content_lacks('Green Recycling Bin');
         $mech->content_lacks('Black Recycling Box');
-        $mech->content_contains('Clear Sack(s)');
+        $mech->content_contains('Communal Refuse Bin(s)');
         $mech->content_contains('Wednesday 1 May 2024');
         $mech->content_lacks('Blue Lidded Wheelie Bin');
         $mech->content_contains('Blue Recycling Box');
@@ -374,7 +367,7 @@ FixMyStreet::override_config {
             $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Green Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240402/ && /SUMMARY:Communal Food Bin/;
-            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Clear Sack\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Communal Refuse Bin\(s\)/;
             $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Green Recycling Box/;
 
@@ -386,16 +379,16 @@ FixMyStreet::override_config {
             $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Green Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240416/ && /SUMMARY:Communal Food Bin/;
-            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Clear Sack\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Communal Refuse Bin\(s\)/;
             $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Green Recycling Box/;
 
-            $i++ if /DTSTART;VALUE=DATE:20240501/ && /SUMMARY:Clear Sack\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240501/ && /SUMMARY:Communal Refuse Bin\(s\)/;
 
             $i++ if /DTSTART;VALUE=DATE:20240506/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240506/ && /SUMMARY:Green Recycling Box/;
 
-            $i++ if /DTSTART;VALUE=DATE:20240515/ && /SUMMARY:Clear Sack\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240515/ && /SUMMARY:Communal Refuse Bin\(s\)/;
         }
         is $i, $expected_num, 'Correct events in the calendar';
     };
@@ -440,7 +433,7 @@ FixMyStreet::override_config {
     subtest 'Making a missed collection report' => sub {
         $mech->get_ok('/waste/10001/report');
         $mech->submit_form_ok(
-            { with_fields => { extra_detail => 'Front boundary of property', 'service-MDR-SACK' => 1 } },
+            { with_fields => { extra_detail => 'Front boundary of property', 'service-RES-CHAM' => 1 } },
             'Selecting missed collection for clear sacks');
         $mech->submit_form_ok(
             { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },
@@ -456,7 +449,7 @@ FixMyStreet::override_config {
         ok $report->confirmed;
         is $report->state, 'confirmed';
         is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
-        is $report->get_extra_field_value('service_item_name'), 'MDR-SACK', 'Service item name is correct';
+        is $report->get_extra_field_value('service_item_name'), 'RES-CHAM', 'Service item name is correct';
         is $report->get_extra_field_value('assisted_yn'), 'No', 'Assisted collection is correct';
         is $report->get_extra_field_value('location_of_containers'), 'Front boundary of property', 'Location of containers is correct';
     };
@@ -464,8 +457,8 @@ FixMyStreet::override_config {
     subtest 'Missed collection reports are made against the parent property' => sub {
         $mech->get_ok('/waste/10002/report');
         $mech->submit_form_ok(
-            { with_fields => { extra_detail => 'Rear of property', 'service-MDR-SACK' => 1 } },
-            'Selecting missed collection for blue recycling box');
+            { with_fields => { extra_detail => 'Rear of property', 'service-RES-CHAM' => 1 } },
+            'Selecting missed collection for communal refuse bin');
         $mech->submit_form_ok(
             { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },
             'Submitting contact details');
@@ -610,7 +603,7 @@ sub _site_collections {
             },
             {   SiteServiceID          => 6,
                 ServiceItemDescription => 'Service 6',
-                ServiceItemName => 'MDR-SACK', # Clear Sack(s)
+                ServiceItemName => 'RES-CHAM', # Residual Chamberlain
 
                 NextCollectionDate   => '2024-05-01T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
