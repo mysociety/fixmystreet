@@ -477,6 +477,32 @@ FixMyStreet::override_config {
         $mech->content_contains('<a href="/report/' . $existing_missed_collection_report2->id . '" class="waste-service-link">check status</a>');
     };
 
+    subtest 'Allows missed collection reports if within 3 days of round completion' => sub {
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains('Report a clear sack(s) collection as missed');
+    };
+
+    subtest 'Prevents missed collection reports if there is no round logs and 4 days or more after collection date' => sub {
+        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
+            my ( $self, $uprn ) = @_;
+            return _empty_cab_logs()->{$uprn};
+            });
+        $mech->get_ok('/waste/10001');
+        $mech->content_lacks('Report a clear sack(s) collection as missed');
+        $mech->content_contains('Please note that missed collections can only be reported within 3 working days of your scheduled collection day.');
+    };
+
+    subtest 'Warns service delayed if no round logs and within 3 days of expected date' => sub {
+        set_fixed_time('2024-04-02T07:00:00'); # April 1st, 08:00 BST
+        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
+            my ( $self, $uprn ) = @_;
+            return _empty_cab_logs()->{$uprn};
+            });
+        $mech->get_ok('/waste/10001');
+        warn $mech->content;
+        $mech->content_lacks('Report a clear sack(s) collection as missed');
+    };
+
     subtest 'GGW promo not shown if already subscribed' => sub {
         $mech->get_ok('/waste/10005');
 
@@ -694,6 +720,13 @@ sub _site_collections {
 sub _collection_by_uprn_date {
     return {
         # For bin_future_collections
+        '2024-4-02T00:00:00' => [
+            {   Date     => '03/04/2024 00:00:00',
+                Round    => 'RND-6',
+                Schedule => 'Wed Wk 2',
+                Service  => 'Service 6 Collection',
+            },
+        ],
         '2024-4-01T00:00:00' => [
             {   Date     => '01/04/2024 00:00:00',
                 Round    => 'RND-8-9',
@@ -867,5 +900,11 @@ sub _in_cab_logs {
                 Uprn => '',
             },
         ],
+    }
+}
+
+sub _empty_cab_logs {
+    {
+        10001 => [],
     }
 }

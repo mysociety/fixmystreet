@@ -122,6 +122,8 @@
             [% IF unit.next %]
               [% IF unit.next.is_today %]
                 <strong>Being collected today</strong>
+              [% ELSIF unit.last.is_delayed %]
+                <strong>We are currently behind on collecting this. We will be there shortly.</strong>
               [% ELSE %]
                 [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
               [% END %]
