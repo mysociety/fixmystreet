@@ -303,14 +303,6 @@ body:not(.admin, .mappage.with-actions) {
   max-width: 8em;
 }
 
-input.form-error, textarea.form-error {
-  border-color: $error-color;
-}
-
-div.form-error, p.form-error {
-  background: $error-color;
-}
-
 .form-section-description, .change_location {
   color: $gray-2;
 }

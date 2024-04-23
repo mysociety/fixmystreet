@@ -150,11 +150,6 @@ html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.s
     &:focus {}
 }
 
-p.form-error, div.form-error, input.form-error {
-    background-color: #e00;
-    border-color: #e00;
-}
-
 #report-cta {
     padding: 0.4em 0.6em;
 }
