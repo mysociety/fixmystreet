@@ -680,7 +680,7 @@ sub open311_extra_data_exclude {
 
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
-    return 'SKIP' if $row->category eq 'Request new container' && $row->get_extra_field_value('referral');
+    return 'SKIP' if $row->category eq 'Request new container' && $row->get_extra_field_value('request_referral');
 }
 
 =head2 open311_post_send
@@ -697,7 +697,7 @@ sub open311_post_send {
         $row->update({ state => 'investigating' });
     }
 
-    if ($row->category eq 'Request new container' && $row->get_extra_field_value('referral') && !$row->get_extra_metadata('extra_email_sent')) {
+    if ($row->category eq 'Request new container' && $row->get_extra_field_value('request_referral') && !$row->get_extra_metadata('extra_email_sent')) {
         my $emails = $self->feature('open311_email');
         if (my $dest = $emails->{$row->category}) {
             my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ]);
@@ -1440,8 +1440,11 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
 
+    for (qw(how_long_lived contamination_reports ordered_previously)) {
+        $c->set_param("request_$_", $data->{$_} || '');
+    }
     if (request_referral($id, $data)) {
-        $c->set_param('referral', 1);
+        $c->set_param('request_referral', 1);
     }
 
     my $address = $c->stash->{property}->{address};
