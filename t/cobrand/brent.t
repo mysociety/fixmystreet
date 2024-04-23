@@ -199,7 +199,10 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
-    { code => 'referral', required => 0, automated => 'hidden_field' },
+    { code => 'request_referral', required => 0, automated => 'hidden_field' },
+    { code => 'request_how_long_lived', required => 0, automated => 'hidden_field' },
+    { code => 'request_ordered_previously', required => 0, automated => 'hidden_field' },
+    { code => 'request_contamination_reports', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Assisted collection add', email => 'assisted' },
     { code => 'Notes', description => 'Additional notes', required => 0, datatype => 'text' },
@@ -1253,8 +1256,8 @@ FixMyStreet::override_config {
 
     sub make_request {
         my ($test_name, $reason, $duration, $referral, $emails) = @_;
-        $test_name = "Making a request, $test_name, $reason" . ($duration ? ", $duration" : "");
-        subtest $test_name => sub {
+        my $full_test_name = "Making a request, $test_name, $reason" . ($duration ? ", $duration" : "");
+        subtest $full_test_name => sub {
             $mech->get_ok('/waste/12345/request');
             $mech->submit_form_ok({ with_fields => { 'container-choice' => 11 } }, "Choose food caddy");
             $mech->submit_form_ok({ with_fields => { 'request_reason' => $reason } });
@@ -1267,7 +1270,10 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
             $mech->content_contains('Your container request has been sent');
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-            is $report->get_extra_field_value('referral'), $referral;
+            is $report->get_extra_field_value('request_referral'), $referral;
+            is $report->get_extra_field_value('request_how_long_lived'), $duration;
+            is $report->get_extra_field_value('request_ordered_previously'), $test_name eq 'Ordered' ? 1 : '';
+            is $report->get_extra_field_value('request_contamination_reports'), $test_name eq 'Contaminated' ? 3 : '';
             FixMyStreet::Script::Reports::send();
             my @email = $mech->get_email;
             is @email, $emails;
