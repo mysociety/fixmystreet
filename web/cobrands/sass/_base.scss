@@ -765,7 +765,7 @@ ul.error {
 .dev-site-notice {
   font-size: 1.5em;
   color: #fff;
-  background-color: #f00;
+  background-color: $error_color;
   position: absolute;
   padding: 1em 5em;
   top: 1em;
