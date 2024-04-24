@@ -15,6 +15,8 @@ has 'whitespace' => (
     default => sub { Integrations::Whitespace->new(%{shift->feature('whitespace')}) },
 );
 
+use constant WORKING_DAYS_WINDOW => 3;
+
 sub bin_addresses_for_postcode {
     my ($self, $postcode) = @_;
 
@@ -351,13 +353,13 @@ sub _in_cab_logs {
     # Logs are recorded against parent properties, not children
     $property = $property->{parent_property} if $property->{parent_property};
 
-    my $dt_from = $self->_subtract_working_days(3);
+    my $dt_from = $self->_subtract_working_days(WORKING_DAYS_WINDOW);
     my $cab_logs;
-    if (!$self->{c}->stash->{cab_logs}) {
+    if ( !$self->{c}->stash->{cab_logs} ) {
         $cab_logs = $self->whitespace->GetInCabLogsByUprn(
-                $property->{uprn},
-                $dt_from->stringify,
-            );
+            $property->{uprn},
+            $dt_from->stringify,
+        );
         $self->{c}->stash->{cab_logs} = $cab_logs;
     } else {
         $cab_logs = $self->{c}->stash->{cab_logs};
@@ -367,8 +369,11 @@ sub _in_cab_logs {
     my @street_logs;
 
     return ( \@property_logs, \@street_logs ) unless $cab_logs;
+
     for (@$cab_logs) {
-        next if (!$_->{Reason} || $_->{Reason} eq 'N/A') && !$all_logs; # Skip non-exceptional logs
+        # Skip non-exceptional logs
+        next if (!$_->{Reason} || $_->{Reason} eq 'N/A') && !$all_logs;
+
         my $logdate = DateTime::Format::Strptime->new( pattern => '%Y-%m-%dT%H:%M:%S' )->parse_datetime( $_->{LogDate} );
 
         if ( $_->{Uprn} ) {
@@ -387,7 +392,7 @@ sub _in_cab_logs {
                 ordinal => ordinal( $logdate->day ),
             };
         }
-    };
+    }
 
     return ( \@property_logs, \@street_logs );
 }
@@ -401,36 +406,51 @@ sub can_report_missed {
     # Can't make a report if an exception has been logged for the service's round
     return 0 if $property->{round_exceptions}{ $service->{round} };
 
-    my $last_dt = $property->{recent_collections}{ $service->{round_schedule} };
-    # Needs to be within 3 working days of the last completed round
-    if ($last_dt) {
-        my @log;
-        my ($cab_logs, $street_logs) = $self->_in_cab_logs($property, 1);
-        @log = grep { $_->{round} eq $service->{round} } @$street_logs if $street_logs;
-        my $days_past = $last_dt->delta_days(DateTime->now)->delta_days();
-        if (@log) {
-            # If there is a log for this collection, that is when
-            # the round was completed so we can make a report if
-            # we're within that time
-            return $self->within_working_days($log[0]->{date}, 3) || 0;
-        }
-        # We have 3 days of logs - if there isn't a log for this service
-        # and we are within 3 days of the collection being due,
-        # then the collection is delayed so we will add a message
-        # but not allow reporting a missed collection
-        elsif (!@log && $days_past > 0 && $days_past < 4) {
-            $service->{last}->{is_delayed} = 1;
-            return 0;
-        # Assume the collection has been made before current logs
-        # or is today
-        } else {
-            return 0;
-        }
-    } else {
-        # If there's no last collection expected we can't make a report
-        # as it's a new service
-        return 0;
+    # Needs to be within 3 working days of the last completed round, today
+    # not included.
+    # NOTE recent_collections shows the 'ideal'/expected collection date,
+    # not actual. So we need to check cab logs for actual collection date.
+    my $last_expected_collection_dt
+        = $property->{recent_collections}{ $service->{round_schedule} };
+
+    if ($last_expected_collection_dt) {
+        # We need to consider both property and street logs here,
+        # as either type may log a successful collection
+        # (i.e. 'Reason' = 'N/A' for given round)
+        my ( $property_logs, $street_logs )
+            = $self->_in_cab_logs( $property, 1 );
+
+        # If there is a log for this collection, that is when
+        # the round was completed so we can make a report if
+        # we're within that time
+        my ($log_for_round)
+            = grep { $_->{round} eq $service->{round} }
+            ( @$property_logs, @$street_logs );
+
+        # log time needs to be greater than or equal to 3 working days ago,
+        # less than today
+        my $min_dt = $self->_subtract_working_days(WORKING_DAYS_WINDOW);
+        my $today_dt
+            = DateTime->today( time_zone => FixMyStreet->local_time_zone );
+
+        return (   $log_for_round->{date} < $today_dt
+                && $log_for_round->{date} >= $min_dt ) ? 1 : 0
+            if $log_for_round;
+
+        $service->{last}{is_delayed} = 1
+            if $last_expected_collection_dt < $today_dt
+            && $last_expected_collection_dt >= $min_dt;
     }
+
+    # At this point, missed report is not allowed because
+    # a) collection is marked as delayed
+    # OR
+    # b) collection was been made over WORKING_DAYS_WINDOW ago
+    # OR
+    # c) collection is today
+    # OR
+    # c) new service, so no last collection expected
+    return 0;
 }
 
 # Bexley want services to be ordered by next collection date.
@@ -807,18 +827,6 @@ sub _subtract_working_days {
     return $wd->sub_days( $dt, $day_count );
 }
 
-sub within_working_days {
-    my ($self, $dt, $days, $future) = @_;
-    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
-    $dt = $wd->add_days($dt, $days)->ymd;
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-    if ( $future ) {
-        return $today ge $dt;
-    } else {
-        return $today le $dt;
-    }
-}
-
 sub waste_munge_report_data {
     my ($self, $id, $data) = @_;
 
@@ -907,80 +915,4 @@ sub _bin_location_options {
     };
 }
 
-sub temp {
-    return [
-          {
-            'StreetID' => '1183',
-            'WorksheetID' => '0',
-            'ServiceItemName' => '',
-            'AssetTypeID' => '0',
-            'Uprn' => '100020221307',
-            'LogDate' => '2024-04-18T11:03:19.697',
-            'ContractID' => '(Thu) GDN-R1',
-            'StreetName' => 'LEA VALE - CRAYFORD',
-            'LogTypeName' => 'ROUND',
-            'LogTypeID' => '0',
-            'Reason' => 'Garden - Not Out',
-            'SiteID' => '1745',
-            'OrderID' => '234348',
-            'DriverID' => '',
-            'AccountSiteID' => '23372',
-            'VehicleID' => 'gdn-r1@cbex.com',
-            'ClientID' => '20',
-            'LogID' => '1123649',
-            'RoundCode' => 'GDN-R1',
-            'Usrn' => '20100831          ',
-            'SiteAddress' => '1, LEA VALE, CRAYFORD, DARTFORD, BEXLEY, DA1 4DL',
-            'WorksheetType' => ''
-          },
-          {
-            'WorksheetType' => '',
-            'LogID' => '1123584',
-            'RoundCode' => 'GP-BOX',
-            'SiteAddress' => '',
-            'Usrn' => '20100831',
-            'AccountSiteID' => '0',
-            'ClientID' => '11',
-            'VehicleID' => 'gp-box@cbex.com',
-            'OrderID' => '234352',
-            'DriverID' => '',
-            'SiteID' => '0',
-            'Reason' => 'N/A',
-            'LogTypeName' => 'ROUND',
-            'StreetName' => 'LEA VALE - CRAYFORD',
-            'LogTypeID' => '0',
-            'ContractID' => '(Thu) GP-BOX',
-            'Uprn' => '',
-            'LogDate' => '2024-04-18T10:51:41.987',
-            'ServiceItemName' => '',
-            'AssetTypeID' => '0',
-            'WorksheetID' => '0',
-            'StreetID' => '1183'
-          },
-          {
-            'WorksheetID' => '0',
-            'StreetID' => '1183',
-            'StreetName' => 'LEA VALE - CRAYFORD',
-            'LogTypeName' => 'ROUND',
-            'LogTypeID' => '0',
-            'ContractID' => '(Thu) PFR-BOX',
-            'Uprn' => '',
-            'LogDate' => '2024-04-18T06:38:46.703',
-            'AssetTypeID' => '0',
-            'ServiceItemName' => '',
-            'DriverID' => '',
-            'OrderID' => '234357',
-            'SiteID' => '0',
-            'Reason' => 'N/A',
-            'WorksheetType' => '',
-            'Usrn' => '20100831          ',
-            'SiteAddress' => '',
-            'LogID' => '1122519',
-            'RoundCode' => 'PFR-BOX',
-            'VehicleID' => 'pfr-box@cbex.com',
-            'ClientID' => '11',
-            'AccountSiteID' => '0'
-          }
-       ];
-}
 1;
