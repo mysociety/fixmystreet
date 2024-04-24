@@ -869,8 +869,13 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
         } else {
             var msg = "<div class='box-warning js-lincs-grass-notice'>" +
                         "<h1>Grass cutting schedule</h1>" +
-                        "<p>The grass in this area is scheduled to be cut between <strong>" +
-                        lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+                        "<p>The grass in this area is scheduled to be cut ";
+                        if (data.Cut_3 === 'N/A') {
+                            msg = msg + "on <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+                        } else {
+                            msg = msg + "between <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+                        }
+
             if (data.Cut_By != 'LCC') {
                 msg += '<p>In rural areas we cut roads to the first 1.1m width from the edge of the road and leave the rest for wildlife except for areas providing visibility at junctions and bends where a greater width is cut. We also cut a strip either side of footways where possible.</p>';
             }
@@ -927,12 +932,23 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
     }
 
     function lincs_has_dates(cut_info) {
+        var dates = [];
         if (cut_info[0].match(/Contact /) && cut_info[0] === cut_info[1] && cut_info[1] === cut_info[2]) {
-            return [];
-        } else {
-            var dates = [];
+            return dates;
+        } else if (cut_info[0] && cut_info[1] && cut_info[2] === 'N/A') {
+            var now = new Date();
             for (var i=0; i < cut_info.length; i++) {
-                var date_returned = check_date(cut_info[i]);
+                var date_components = cut_info[i].split(' ');
+                var date = new Date(now.getFullYear(), months(date_components[1]), date_components[0], '23', '59', '59');
+                if (date >= now) {
+                    dates.push(cut_info[i]);
+                    return dates;
+                }
+            }
+            return dates;
+        } else {
+            for (var j=0; j < cut_info.length; j++) {
+                var date_returned = check_date(cut_info[j]);
                 if (date_returned) {
                     dates.push(date_returned);
                 }
@@ -941,6 +957,21 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
         }
 
         function check_date(date) {
+            var dates = date.split(" - ");
+            if (dates.length === 2) {
+                var now = new Date();
+                var end_date_components = dates[1].split(' ');
+                var end_date = new Date(now.getFullYear(), months(end_date_components[1]), end_date_components[0], '23', '59', '59');
+                if (end_date < now) {
+                    return 0;
+                } else {
+                    return date;
+                }
+            } else {
+                return 0;
+            }
+        }
+        function months($day) {
             var months = {
                 January: '0',
                 February: '1',
@@ -955,20 +986,7 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
                 November: '10',
                 December: '11',
             };
-
-            var dates = date.split(" - ");
-            if (dates.length === 2) {
-                var now = new Date();
-                var end_date_components = dates[1].split(' ');
-                var end_date = new Date(now.getFullYear(), months[end_date_components[1]], end_date_components[0], '23', '59', '59');
-                if (end_date < now) {
-                    return 0;
-                } else {
-                    return date;
-                }
-            } else {
-                return 0;
-            }
+            return months[$day];
         }
     }
 };
