@@ -64,7 +64,7 @@ sub image_for_unit {
 
     # Base mixed recycling (2241) on the container itself
     my %containers = map { $_ => 1 } @{$unit->{request_containers}};
-    return "$base/bin-green" if $containers{+CONTAINER_RECYCLING_BIN} && $self->{c}->stash->{container_recycling_bin};
+    return "$base/bin-green" if $containers{+CONTAINER_RECYCLING_BIN};
     return "$base/box-green-mix" if $containers{+CONTAINER_RECYCLING_BOX};
 
     my $service_id = $unit->{service_id};
@@ -102,6 +102,44 @@ sub garden_waste_renewal_cost_pa {
 sub garden_waste_renewal_sacks_cost_pa {
      my ($self, $end_date) = @_;
      return $self->_get_cost('ggw_sacks_cost_renewal', $end_date);
+}
+
+=head2 waste_request_form_first_next
+
+After picking a container, we jump straight to the about you page
+
+=cut
+
+sub waste_request_form_first_title { 'Which container do you need?' }
+sub waste_request_form_first_next {
+    my $self = shift;
+    my $cls = ucfirst $self->council_url;
+    my $containers = $self->{c}->stash->{quantities};
+    return sub {
+        my $data = shift;
+        my $choice = $data->{"container-choice"};
+        return 'about_you';
+    };
+}
+
+sub waste_munge_request_data {
+    my ($self, $id, $data, $form) = @_;
+
+    my $c = $self->{c};
+    my $address = $c->stash->{property}->{address};
+    my $container = $c->stash->{containers}{$id};
+    my $quantity = 1;
+
+    my ($action_id, $reason_id);
+    $action_id = 1; # Deliver
+    $reason_id = 1; # Missing
+
+    $data->{title} = "Request $container";
+    $data->{detail} = "Quantity: $quantity\n\n$address";
+
+    $c->set_param('Action', join('::', ($action_id) x $quantity));
+    $c->set_param('Reason', join('::', ($reason_id) x $quantity));
+    $c->set_param('Container_Type', $id);
 }
 
 =head2 Bulky waste collection

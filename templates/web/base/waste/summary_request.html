@@ -18,10 +18,6 @@ step1 = 'request';
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
       [% IF c.cobrand.moniker == 'brent' %]
         <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_reason', data.request_reason) %]</dd>
-      [% ELSIF c.cobrand.moniker == 'kingston' %]
-        <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_reason', data.request_reason) %]
-            [% IF data.recycling_quantity %] ([% data.recycling_quantity %])[% END %]
-        </dd>
       [% ELSIF c.cobrand.moniker == 'sutton' %]
         <dd class="govuk-summary-list__value">[% data.request_reason.ucfirst %]</dd>
       [% ELSE %]

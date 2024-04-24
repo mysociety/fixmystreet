@@ -19,6 +19,9 @@ use constant CONTAINER_REFUSE_140 => 1;
 use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_PAPER_BIN => 19;
+use constant CONTAINER_PAPER_BIN_140 => 36;
+use constant CONTAINER_RECYCLING_BLUE_BAG => 18;
+use constant CONTAINER_PAPER_SINGLE_BAG => 30;
 
 =head2 waste_on_the_day_criteria
 
@@ -203,6 +206,90 @@ around garden_cc_check_payment_status => sub {
         return undef;
     }
 };
+
+=head2 waste_request_form_first_next
+
+After picking a container, we jump straight to the about you page if they've
+picked a bag or changing size; otherwise we move to asking for a reason.
+
+=cut
+
+sub waste_request_form_first_title { 'Which container do you need?' }
+sub waste_request_form_first_next {
+    my $self = shift;
+    my $containers = $self->{c}->stash->{quantities};
+    return sub {
+        my $data = shift;
+        my $choice = $data->{"container-choice"};
+        return 'about_you' if $choice == CONTAINER_RECYCLING_BLUE_BAG || $choice == CONTAINER_PAPER_SINGLE_BAG;
+        foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
+            if ($choice == $_ && !$containers->{$_}) {
+                $data->{request_reason} = 'change_capacity';
+                return 'about_you';
+            }
+        }
+        return 'replacement';
+    };
+}
+
+sub waste_munge_request_data {
+    my ($self, $id, $data, $form) = @_;
+
+    my $c = $self->{c};
+    my $address = $c->stash->{property}->{address};
+    my $container = $c->stash->{containers}{$id};
+    my $quantity = 1;
+    my $reason = $data->{request_reason} || '';
+    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
+
+    my ($action_id, $reason_id);
+    if ($reason eq 'damaged') {
+        $action_id = 3; # Replace
+        $reason_id = 2; # Damaged
+    } elsif ($reason eq 'missing') {
+        $action_id = 1; # Deliver
+        $reason_id = 1; # Missing
+    } elsif ($reason eq 'new_build') {
+        $action_id = 1; # Deliver
+        $reason_id = 4; # New
+    } elsif ($reason eq 'more') {
+        $action_id = 1; # Deliver
+        $reason_id = 3; # Change capacity
+    } elsif ($reason eq 'change_capacity') {
+        $action_id = '2::1';
+        $reason_id = '3::3';
+        if ($id == CONTAINER_REFUSE_140) {
+            $id = CONTAINER_REFUSE_240 . '::' . CONTAINER_REFUSE_140;
+        } elsif ($id == CONTAINER_REFUSE_240) {
+            if ($c->stash->{quantities}{+CONTAINER_REFUSE_360}) {
+                $id = CONTAINER_REFUSE_360 . '::' . CONTAINER_REFUSE_240;
+            } else {
+                $id = CONTAINER_REFUSE_140 . '::' . CONTAINER_REFUSE_240;
+            }
+        } elsif ($id == CONTAINER_PAPER_BIN) {
+            $id = CONTAINER_PAPER_BIN_140 . '::' . CONTAINER_PAPER_BIN;
+        }
+    } else {
+        # No reason, must be a bag
+        $action_id = 1; # Deliver
+        $reason_id = 3; # Change capacity
+        $nice_reason = "Additional bag required";
+    }
+
+    if ($reason eq 'damaged' || $reason eq 'missing') {
+        $data->{title} = "Request replacement $container";
+    } elsif ($reason eq 'change_capacity') {
+        $data->{title} = "Request exchange for $container";
+    } else {
+        $data->{title} = "Request new $container";
+    }
+    $data->{detail} = "Quantity: $quantity\n\n$address";
+    $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
+
+    $c->set_param('Action', join('::', ($action_id) x $quantity));
+    $c->set_param('Reason', join('::', ($reason_id) x $quantity));
+    $c->set_param('Container_Type', $id);
+}
 
 =head2 request_cost
 

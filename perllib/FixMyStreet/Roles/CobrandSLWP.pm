@@ -257,7 +257,6 @@ use constant CONTAINER_FOOD_INDOOR => 23;
 use constant CONTAINER_FOOD_OUTDOOR => 24;
 use constant CONTAINER_GARDEN_BIN => 26;
 use constant CONTAINER_GARDEN_SACK => 28;
-use constant CONTAINER_PAPER_SINGLE_BAG => 30;
 
 sub garden_service_name { 'garden waste collection service' }
 sub garden_service_id { 2247 }
@@ -496,8 +495,6 @@ sub waste_service_containers {
         next if $waste_containers_no_request{$container};
         next if $container == CONTAINER_RECYCLING_BLUE_BAG && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
         if ($container && $quantity) {
-            # Store this fact here for use in new request flow
-            $self->{c}->stash->{container_recycling_bin} = 1 if $container == CONTAINER_RECYCLING_BIN;
             push @$containers, $container;
             next if $container == CONTAINER_GARDEN_SACK; # Garden waste bag
             # The most you can request is one
@@ -762,122 +759,11 @@ sub waste_report_form_first_next {
     };
 }
 
-=head2 waste_request_form_first_next
-
-After picking a container, we jump straight to the about you page if they've
-picked a bag or Sutton changing size, to the swap-for-a-bin page if they've
-picked a bin, don't already have a bin and are on Kingston; otherwise we move
-to asking for a reason.
-
-=cut
-
-sub waste_request_form_first_title { 'Which container do you need?' }
-sub waste_request_form_first_next {
-    my $self = shift;
-    my $cls = ucfirst $self->council_url;
-    my $containers = $self->{c}->stash->{quantities};
-    return sub {
-        my $data = shift;
-        my $choice = $data->{"container-choice"};
-        return 'about_you' if $choice == CONTAINER_RECYCLING_BLUE_BAG || $choice == CONTAINER_PAPER_SINGLE_BAG;
-        if ($cls eq 'Kingston' && $choice == CONTAINER_RECYCLING_BIN && !$self->{c}->stash->{container_recycling_bin}) {
-            $data->{request_reason} = 'more';
-            return 'recycling_swap';
-        }
-        if ($cls eq 'Sutton') {
-            foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
-                if ($choice == $_ && !$containers->{$_}) {
-                    $data->{request_reason} = 'change_capacity';
-                    return 'about_you';
-                }
-            }
-        }
-        return 'replacement';
-    };
-}
-
 # Take the chosen container and munge it into the normal data format
 sub waste_munge_request_form_data {
     my ($self, $data) = @_;
     my $container_id = delete $data->{'container-choice'};
     $data->{"container-$container_id"} = 1;
-}
-
-sub waste_munge_request_data {
-    my ($self, $id, $data, $form) = @_;
-
-    my $c = $self->{c};
-    my $address = $c->stash->{property}->{address};
-    my $container = $c->stash->{containers}{$id};
-    my $quantity = $data->{recycling_quantity} || 1;
-    my $reason = $data->{request_reason} || '';
-    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
-
-    my ($action_id, $reason_id);
-    if ($reason eq 'damaged') {
-        $action_id = 3; # Replace
-        $reason_id = 2; # Damaged
-    } elsif ($reason eq 'missing') {
-        $action_id = 1; # Deliver
-        $reason_id = 1; # Missing
-    } elsif ($reason eq 'new_build') {
-        $action_id = 1; # Deliver
-        $reason_id = 4; # New
-    } elsif ($reason eq 'more') {
-        if ($data->{recycling_swap} eq 'Yes') {
-            # $id has to be 16 here but we want to swap it for a 12
-            my $q = $c->stash->{quantities}{+CONTAINER_RECYCLING_BOX} || 1;
-            $action_id = ('2::' x $q) . '1'; # Collect and Deliver
-            $reason_id = ('3::' x $q) . '3'; # Change capacity
-            $id = ((CONTAINER_RECYCLING_BOX . '::') x $q) . CONTAINER_RECYCLING_BIN;
-            $container = $c->stash->{containers}{+CONTAINER_RECYCLING_BIN};
-        } else {
-            $action_id = 1; # Deliver
-            $reason_id = 3; # Change capacity
-        }
-    } elsif ($reason eq 'change_capacity') {
-        $action_id = '2::1';
-        $reason_id = '3::3';
-        if ($id == CONTAINER_REFUSE_140) {
-            $id = CONTAINER_REFUSE_240 . '::' . CONTAINER_REFUSE_140;
-        } elsif ($id == CONTAINER_REFUSE_240) {
-            if ($c->stash->{quantities}{+CONTAINER_REFUSE_360}) {
-                $id = CONTAINER_REFUSE_360 . '::' . CONTAINER_REFUSE_240;
-            } else {
-                $id = CONTAINER_REFUSE_140 . '::' . CONTAINER_REFUSE_240;
-            }
-        } elsif ($id == CONTAINER_PAPER_BIN) {
-            $id = CONTAINER_PAPER_BIN_140 . '::' . CONTAINER_PAPER_BIN;
-        }
-    } else {
-        # No reason, must be a bag
-        $action_id = 1; # Deliver
-        $reason_id = 3; # Change capacity
-        $nice_reason = "Additional bag required";
-    }
-
-    if ($reason eq 'damaged' || $reason eq 'missing') {
-        $data->{title} = "Request replacement $container";
-    } elsif ($reason eq 'change_capacity') {
-        $data->{title} = "Request exchange for $container";
-    } else {
-        $data->{title} = "Request new $container";
-    }
-    $data->{detail} = "Quantity: $quantity\n\n$address";
-    $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
-
-    $c->set_param('Action', join('::', ($action_id) x $quantity));
-    $c->set_param('Reason', join('::', ($reason_id) x $quantity));
-    if ($data->{notes_missing}) {
-        $data->{detail} .= " - $data->{notes_missing}";
-        $c->set_param('Notes', $data->{notes_missing});
-    }
-    if ($data->{notes_damaged}) {
-        my $notes = $c->stash->{label_for_field}->($form, 'notes_damaged', $data->{notes_damaged});
-        $data->{detail} .= " - $notes";
-        $c->set_param('Notes', $notes);
-    }
-    $c->set_param('Container_Type', $id);
 }
 
 sub waste_munge_report_data {
