@@ -11,6 +11,9 @@ sub council_name { return 'Kingston upon Thames Council'; }
 sub council_url { return 'kingston'; }
 sub admin_user_domain { 'kingston.gov.uk' }
 
+use constant CONTAINER_RECYCLING_BIN => 12;
+use constant CONTAINER_RECYCLING_BOX => 16;
+
 =head2 waste_on_the_day_criteria
 
 Treat an Outstanding/Allocated task as if it's the next collection and in
@@ -61,8 +64,8 @@ sub image_for_unit {
 
     # Base mixed recycling (2241) on the container itself
     my %containers = map { $_ => 1 } @{$unit->{request_containers}};
-    return "$base/bin-green" if $containers{12} && $self->{c}->stash->{container_recycling_bin};
-    return "$base/box-green-mix" if $containers{16};
+    return "$base/bin-green" if $containers{+CONTAINER_RECYCLING_BIN} && $self->{c}->stash->{container_recycling_bin};
+    return "$base/box-green-mix" if $containers{+CONTAINER_RECYCLING_BOX};
 
     my $service_id = $unit->{service_id};
     my $images = {

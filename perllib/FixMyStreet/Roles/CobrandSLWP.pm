@@ -250,8 +250,14 @@ use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
+use constant CONTAINER_RECYCLING_BLUE_BAG => 18;
 use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_PAPER_BIN_140 => 36;
+use constant CONTAINER_FOOD_INDOOR => 23;
+use constant CONTAINER_FOOD_OUTDOOR => 24;
+use constant CONTAINER_GARDEN_BIN => 26;
+use constant CONTAINER_GARDEN_SACK => 28;
+use constant CONTAINER_PAPER_SINGLE_BAG => 30;
 
 sub garden_service_name { 'garden waste collection service' }
 sub garden_service_id { 2247 }
@@ -488,12 +494,12 @@ sub waste_service_containers {
             $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
         }
         next if $waste_containers_no_request{$container};
-        next if $container == 18 && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
+        next if $container == CONTAINER_RECYCLING_BLUE_BAG && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
         if ($container && $quantity) {
             # Store this fact here for use in new request flow
             $self->{c}->stash->{container_recycling_bin} = 1 if $container == CONTAINER_RECYCLING_BIN;
             push @$containers, $container;
-            next if $container == 28; # Garden waste bag
+            next if $container == CONTAINER_GARDEN_SACK; # Garden waste bag
             # The most you can request is one
             $request_max->{$container} = 1;
             $self->{c}->stash->{quantities}->{$container} = $quantity;
@@ -516,8 +522,8 @@ sub waste_service_containers {
 
     if ($service_name =~ /Food/) {
         # Can always request a food caddy
-        push @$containers, 23; # Food waste bin (kitchen)
-        $request_max->{23} = 1;
+        push @$containers, CONTAINER_FOOD_INDOOR;
+        $request_max->{+CONTAINER_FOOD_INDOOR} = 1;
     }
     if ($self->moniker eq 'kingston' && grep { $_ == CONTAINER_RECYCLING_BOX } @$containers) {
         # Can request a bin if you have a box
@@ -548,7 +554,7 @@ sub garden_container_data_extract {
     # Assume garden will only have one container data
     my $garden_container = $containers->[0];
     my $garden_bins = $quantities->{$containers->[0]};
-    if ($garden_container == 28) {
+    if ($garden_container == CONTAINER_GARDEN_SACK) {
         my $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
         return ($garden_bins, 1, $garden_cost, $garden_container);
     } else {
@@ -634,7 +640,7 @@ sub waste_garden_sub_params {
 
     my $service = $self->garden_current_subscription;
     my $existing = $service ? $service->{garden_container} : undef;
-    my $container = $data->{slwp_garden_sacks} ? 28 : $existing || 26;
+    my $container = $data->{slwp_garden_sacks} ? CONTAINER_GARDEN_SACK : $existing || CONTAINER_GARDEN_BIN;
     my $container_actions = {
         deliver => 1,
         remove => 2
@@ -773,7 +779,7 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'about_you' if $choice == 18 || $choice == 30;
+        return 'about_you' if $choice == CONTAINER_RECYCLING_BLUE_BAG || $choice == CONTAINER_PAPER_SINGLE_BAG;
         if ($cls eq 'Kingston' && $choice == CONTAINER_RECYCLING_BIN && !$self->{c}->stash->{container_recycling_bin}) {
             $data->{request_reason} = 'more';
             return 'recycling_swap';

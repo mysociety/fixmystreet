@@ -19,6 +19,8 @@ extends 'FixMyStreet::App::Form::Waste::Request';
 
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
+use constant CONTAINER_GARDEN_BIN_240 => 26;
+use constant CONTAINER_GARDEN_BIN_140 => 27;
 
 =head2 About you
 
@@ -66,7 +68,7 @@ sub options_request_reason {
     my $form = shift;
     my $data = $form->saved_data;
     my $choice = $data->{'container-choice'} || 0;
-    my $garden = $data->{'container-26'} || $data->{'container-27'} || $choice == 26 || $choice == 27;
+    my $garden = $data->{'container-' . CONTAINER_GARDEN_BIN_240} || $data->{'container-' . CONTAINER_GARDEN_BIN_140} || $choice == CONTAINER_GARDEN_BIN_240 || $choice == CONTAINER_GARDEN_BIN_140;
     my $green_box = $data->{'container-' . CONTAINER_RECYCLING_BOX} || $choice == CONTAINER_RECYCLING_BOX;
     my $green_bin = ($data->{'container-' . CONTAINER_RECYCLING_BIN} || $choice == CONTAINER_RECYCLING_BIN) && !$form->{c}->stash->{container_recycling_bin} && $data->{recycling_swap} ne 'No';
     my @options;
