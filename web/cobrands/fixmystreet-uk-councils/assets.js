@@ -863,19 +863,45 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
     var parish_regex = new RegExp(/Contact Parish/);
     /* If it is handled by LCC and has cut dates provided,
     add an extra notice to the reporting form showing the cut dates */
-    if (data.Cut_By === 'LCC' && lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3]).length) {
+    if (data.Cut_By.match(/LCC|F0|F1|Flail|STR/) && lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3]).length) {
         var $div = $(".js-reporting-page.js-lincs-grass-notice");
         if ($div.length) {
             $div.removeClass('js-reporting-page--skip');
         } else {
             var msg = "<div class='box-warning js-lincs-grass-notice'>" +
                         "<h1>Grass cutting schedule</h1>" +
-                        "<p>The grass in this area is scheduled to be cut between <strong>" +
-                        lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] +
-                        "</strong>. If that answers your query, there is no need to finish the report. " +
-                        "Otherwise, please continue.</p>" +
-                        "</div>";
+                        "<p>The grass in this area is scheduled to be cut ";
+                        if (data.Cut_3 === 'N/A') {
+                            msg = msg + "on <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+                        } else {
+                            msg = msg + "between <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+                        }
+
+            if (data.Cut_By != 'LCC') {
+                msg += '<p>In rural areas we cut roads to the first 1.1m width from the edge of the road and leave the rest for wildlife except for areas providing visibility at junctions and bends where a greater width is cut. We also cut a strip either side of footways where possible.</p>';
+            }
+            msg += "<p>Does this answer your question about grass cutting?</p>";
             $div = $(msg);
+
+            var $button = $("<div><button id='lincs-yes-verge-query' class='btn btn--block'>Yes</button></div>");
+            $button.on( "click", function(e) {
+                e.preventDefault();
+                $('.js-reporting-page--next').prop('disabled', true);
+                if (!$('#lincs-thank-you').length) {
+                    $div.append('<p id="lincs-thank-you">Thank you for making an enquiry. If you have any other highways faults to report please <a href="/">make another report</a>.</p>');
+                }
+            });
+            $div.append($button);
+            // We'll call the 'Continue' button 'No' for this page
+            // as clicking 'No' should continue report
+            $(fixmystreet).on("report_new:page_change", function(e, $curr, $page) {
+                if ($page.hasClass('js-lincs-grass-notice')) {
+                    $('.js-reporting-page--next').text('No');
+                } else {
+                    $('.js-reporting-page--next').prop('disabled', false);
+                    $('.js-reporting-page--next').text('Continue');
+                }
+            });
             fixmystreet.pageController.addNextPage('lincs_grass', $div);
         }
         fixmystreet.body_overrides.only_send('Lincolnshire County Council');
@@ -905,19 +931,25 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
         new_text = text.replace('{{PARISH_COUNCIL}}', data.Authority);
         $('#js-lincs-parish-grass').html(new_text);
     }
-    /* If handled by “CP Media Sponsorship”, display a message informing the user how to contact them? */
-    else if (data.Cut_By === 'CPM') {
-        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-media-grass');
-        layer.fixmystreet.no_asset_msg_id = '#js-lincs-media-grass';
-    }
 
     function lincs_has_dates(cut_info) {
+        var dates = [];
         if (cut_info[0].match(/Contact /) && cut_info[0] === cut_info[1] && cut_info[1] === cut_info[2]) {
-            return [];
-        } else {
-            var dates = [];
+            return dates;
+        } else if (cut_info[0] && cut_info[1] && cut_info[2] === 'N/A') {
+            var now = new Date();
             for (var i=0; i < cut_info.length; i++) {
-                var date_returned = check_date(cut_info[i]);
+                var date_components = cut_info[i].split(' ');
+                var date = new Date(now.getFullYear(), months(date_components[1]), date_components[0], '23', '59', '59');
+                if (date >= now) {
+                    dates.push(cut_info[i]);
+                    return dates;
+                }
+            }
+            return dates;
+        } else {
+            for (var j=0; j < cut_info.length; j++) {
+                var date_returned = check_date(cut_info[j]);
                 if (date_returned) {
                     dates.push(date_returned);
                 }
@@ -926,6 +958,21 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
         }
 
         function check_date(date) {
+            var dates = date.split(" - ");
+            if (dates.length === 2) {
+                var now = new Date();
+                var end_date_components = dates[1].split(' ');
+                var end_date = new Date(now.getFullYear(), months(end_date_components[1]), end_date_components[0], '23', '59', '59');
+                if (end_date < now) {
+                    return 0;
+                } else {
+                    return date;
+                }
+            } else {
+                return 0;
+            }
+        }
+        function months($day) {
             var months = {
                 January: '0',
                 February: '1',
@@ -940,20 +987,7 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
                 November: '10',
                 December: '11',
             };
-
-            var dates = date.split(" - ");
-            if (dates.length === 2) {
-                var now = new Date();
-                var end_date_components = dates[1].split(' ');
-                var end_date = new Date(now.getFullYear(), months[end_date_components[1]], end_date_components[0], '23', '59', '59');
-                if (end_date < now) {
-                    return 0;
-                } else {
-                    return date;
-                }
-            } else {
-                return 0;
-            }
+            return months[$day];
         }
     }
 };

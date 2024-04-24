@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.staging.mysociety.org:80/mapserver/lincs?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=feature:LCC_Verges&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <gml:boundedBy>
+      	<gml:Envelope srsName="EPSG:3857">
+      		<gml:lowerCorner>-57390.375388 6918829.024662</gml:lowerCorner>
+      		<gml:upperCorner>-54164.074490 6920304.282900</gml:upperCorner>
+      	</gml:Envelope>
+      </gml:boundedBy>
+    <gml:featureMember>
+      <ms:LCC_Verges gml:id="LCC_Verges.">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:3857">
+        		<gml:lowerCorner>-56899.959868 6919536.186899</gml:lowerCorner>
+        		<gml:upperCorner>-56862.445020 6919558.224214</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:3857">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">-56899.874561 6919554.442915 -56895.600401 6919554.205905 -56890.465020 6919558.224214 -56862.826303 6919556.117338 -56862.445020 6919553.057184 -56862.505189 6919550.138165 -56863.630450 6919546.647258 -56865.992920 6919543.016995 -56868.668768 6919540.152163 -56870.993163 6919538.368961 -56873.620944 6919537.037507 -56877.160452 6919536.186899 -56884.036889 6919536.329332 -56889.834508 6919536.911376 -56894.241559 6919538.685515 -56896.944662 6919540.886324 -56898.568946 6919543.526752 -56899.720033 6919546.767831 -56899.959868 6919550.303514 -56899.874561 6919554.442915 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+        <ms:Cut_By>F1</ms:Cut_By>
+        <ms:Authority>LCC</ms:Authority>
+        <ms:Asset_Id></ms:Asset_Id>
+        <ms:Cut_1>24 April - 28 May</ms:Cut_1>
+        <ms:Cut_2>12 June - 16 July</ms:Cut_2>
+        <ms:Cut_3>4 September - 8 October</ms:Cut_3>
+        <ms:CutType>CountyUrban</ms:CutType>
+      </ms:LCC_Verges>
+    </gml:featureMember>
+</wfs:FeatureCollection>

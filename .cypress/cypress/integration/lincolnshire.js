@@ -76,10 +76,50 @@ describe('Grass cutting layer', function(){
         cy.wait('@grass');
         cy.nextPageReporting();
         cy.contains('12 June - 16 July').should('be.visible');
+        cy.contains('Thank you for making an enquiry').should('not.be.visible');
+        cy.get('.js-reporting-page--next').contains('No');
+        cy.get('#lincs-yes-verge-query').contains('Yes').click();
+        cy.get('.js-reporting-page--next').should('be.disabled');
+        cy.contains('In rural areas we cut roads to the first').should('not.be.visible');
+        cy.contains('Thank you for making an enquiry').should('be.visible');
+        cy.go('back');
+        cy.get('.js-reporting-page--next').contains('Continue');
+        cy.nextPageReporting();
         cy.nextPageReporting();
         cy.contains('Drag photos here').should('be.visible');
+        cy.get('.js-reporting-page--next').contains('Continue');
         cy.nextPageReporting();
         cy.contains('These will be sent to Lincolnshire County Council').should('be.visible');
+    });
+
+    it('presents a message with grass cutting date if F1 responsibility and cut date given with extra message', function(){
+        cy.route('POST', '**/mapserver/lincs', 'fixture:lincs_grass_f1_withDates.xml').as('grass');
+        cy.clock(Date.UTC(2020, 6, 10), ['Date']);
+        cy.visit('http://lincolnshire.localhost:3001/report/new?longitude=-0.510956&latitude=52.655591');
+        cy.wait('@report-ajax');
+        cy.pickCategory('Grass cutting');
+        cy.wait('@grass');
+        cy.nextPageReporting();
+        cy.contains('12 June - 16 July').should('be.visible');
+        cy.contains('In rural areas we cut roads to the first').should('be.visible');
+        cy.contains('Thank you for making an enquiry').should('not.be.visible');
+        cy.get('#lincs-yes-verge-query').contains('Yes').click();
+        cy.contains('Thank you for making an enquiry').should('be.visible');
+    });
+
+    it('presents a message with grass cutting date if F0 responsibility and cut date given with extra message', function(){
+        cy.route('POST', '**/mapserver/lincs', 'fixture:lincs_grass_f0_withDates.xml').as('grass');
+        cy.clock(Date.UTC(2020, 6, 10), ['Date']);
+        cy.visit('http://lincolnshire.localhost:3001/report/new?longitude=-0.510956&latitude=52.655591');
+        cy.wait('@report-ajax');
+        cy.pickCategory('Grass cutting');
+        cy.wait('@grass');
+        cy.nextPageReporting();
+        cy.contains('on 6 September').should('be.visible');
+        cy.contains('In rural areas we cut roads to the first').should('be.visible');
+        cy.contains('Thank you for making an enquiry').should('not.be.visible');
+        cy.get('#lincs-yes-verge-query').contains('Yes').click();
+        cy.contains('Thank you for making an enquiry').should('be.visible');
     });
 
     it('reports to LCC if LCDC responsibility and data says contact LCC', function(){
@@ -112,17 +152,8 @@ describe('Grass cutting layer', function(){
         cy.wait('@report-ajax');
         cy.pickCategory('Grass cutting');
         cy.wait('@grass');
+        cy.get('#map_sidebar').scrollTo('bottom');
         cy.contains('responsibility of North Somercotes Parish Council').should('be.visible');
-        cy.get('.js-reporting-page--next:visible').should('be.disabled');
-    });
-
-    it('presents a CP Media Sponsorship message if CP responsibility and stops', function(){
-        cy.route('POST', '**/mapserver/lincs', 'fixture:lincs_grass_contact_cp.xml').as('grass');
-        cy.visit('http://lincolnshire.localhost:3001/report/new?longitude=-0.510956&latitude=52.655591');
-        cy.wait('@report-ajax');
-        cy.pickCategory('Grass cutting');
-        cy.wait('@grass');
-        cy.contains('responsibility of CP Media').should('be.visible');
         cy.get('.js-reporting-page--next:visible').should('be.disabled');
     });
 
