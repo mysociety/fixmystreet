@@ -62,6 +62,20 @@
         <dd class="govuk-summary-list__value">[% data.email %]</dd>
     </div>
 
+  [% IF data.email_renewal_reminders %]
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Email notifications
+    </dt>
+    <dd class="govuk-summary-list__value">
+    </dd>
+  </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Upcoming renewal reminders</dt>
+        <dd class="govuk-summary-list__value">[% data.email_renewal_reminders %]</dd>
+    </div>
+   [% END %]
+
 </dl>
 
 <form class="waste" method="post">

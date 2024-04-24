@@ -110,6 +110,8 @@ use constant CONTAINER_PAPER_BIN_140 => 36;
 
 sub garden_due_days { 30 }
 
+sub garden_subscription_email_renew_reminder_opt_in { 0 }
+
 sub service_name_override {
     my ($self, $service) = @_;
 

@@ -47,6 +47,11 @@
   [% END %]
 
   [% PROCESS form override_fields=['name', 'email', 'phone'] %]
+
+  [% IF c.cobrand.garden_subscription_email_renew_reminder_opt_in %]
+  [% PROCESS form override_fields=['email_renewal_reminders'] %]
+  [% END %]
+
   [% PROCESS form override_fields=['continue_review'] %]
   [% PROCESS form override_fields=['saved_data', 'token', 'process', 'unique_id'] %]
 
