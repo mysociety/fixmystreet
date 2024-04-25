@@ -827,6 +827,8 @@ sub request : Chained('property') : Args(0) {
             next => $next,
         },
     ];
+
+    $c->cobrand->call_hook("waste_munge_request_form_pages", $c->stash->{page_list}, $field_list);
     $c->stash->{field_list} = $field_list;
     $c->forward('form');
 }

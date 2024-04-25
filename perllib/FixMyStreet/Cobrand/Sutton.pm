@@ -207,6 +207,59 @@ around garden_cc_check_payment_status => sub {
     }
 };
 
+sub waste_request_single_radio_list { 1 }
+
+=head2 waste_munge_request_form_fields
+
+Replace the usual checkboxes grouped by service with one radio list of
+containers.
+
+=cut
+
+sub waste_munge_request_form_fields {
+    my ($self, $field_list) = @_;
+    my $c = $self->{c};
+
+    my @radio_options;
+    my @replace_options;
+    for (my $i=0; $i<@$field_list; $i+=2) {
+        my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
+        next unless $key =~ /^container-(\d+)/;
+        my $id = $1;
+
+        my ($cost, $hint) = $self->request_cost($id, 1, $c->stash->{quantities});
+
+        my $data = {
+            value => $id,
+            label => $self->{c}->stash->{containers}->{$id},
+            disabled => $value->{disabled},
+            $hint ? (hint => $hint) : (),
+        };
+        my $change_cost = $self->_get_cost('request_change_cost');
+        if ($cost && $change_cost && $cost == $change_cost) {
+            push @replace_options, $data;
+        } else {
+            push @radio_options, $data;
+        }
+    }
+
+    if (@replace_options) {
+        $radio_options[0]{tags}{divider_template} = "waste/request/intro_replace";
+        $replace_options[0]{tags}{divider_template} = "waste/request/intro_change";
+        push @radio_options, @replace_options;
+    }
+
+    @$field_list = (
+        "container-choice" => {
+            type => 'Select',
+            widget => 'RadioGroup',
+            label => 'Which container do you need?',
+            options => \@radio_options,
+            required => 1,
+        }
+    );
+}
+
 =head2 waste_request_form_first_next
 
 After picking a container, we jump straight to the about you page if they've
@@ -230,6 +283,13 @@ sub waste_request_form_first_next {
         }
         return 'replacement';
     };
+}
+
+# Take the chosen container and munge it into the normal data format
+sub waste_munge_request_form_data {
+    my ($self, $data) = @_;
+    my $container_id = delete $data->{'container-choice'};
+    $data->{"container-$container_id"} = 1;
 }
 
 sub waste_munge_request_data {

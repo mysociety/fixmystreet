@@ -26,7 +26,7 @@
     [% ELSIF field.widget == 'CheckboxGroup' %]
         [% PROCESS checkboxes options=field.options %]
     [% ELSIF field.widget == 'Checkbox' %]
-        [% PROCESS checkboxes options=[{ value = 1, label = field.option_label, disabled = field.disabled }] %]
+        [% PROCESS checkboxes options=[{ value = 1, label = field.option_label, hint = field.option_hint, disabled = field.disabled }] %]
     [% ELSIF field.type == 'DateTime' %]
         [% PROCESS date %]
     [% ELSIF field.type == 'Photo' %]

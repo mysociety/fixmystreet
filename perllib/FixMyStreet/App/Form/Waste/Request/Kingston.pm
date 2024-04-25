@@ -33,9 +33,18 @@ has_page about_you => (
         my $data = $form->saved_data;
         my $c = $form->c;
         if ($data) {
-            my $choice = $data->{'container-choice'};
-            my $quantity = 1;
-            my ($cost) = $c->cobrand->request_cost($choice, $quantity);
+            my @services = grep { /^container-\d/ && $data->{$_} } sort keys %$data;
+            my $total_paid_quantity = 0;
+            foreach (@services) {
+                my ($id) = /container-(.*)/;
+                my $quantity = $data->{"quantity-$id"};
+                my $names = $c->stash->{containers};
+                if ($names->{$id} !~ /bag|sack|food/i) {
+                    $total_paid_quantity += $quantity;
+                }
+            }
+            return unless $total_paid_quantity;
+            my ($cost) = $c->cobrand->request_cost(1, $total_paid_quantity);
             $data->{payment} = $cost if $cost;
         }
     },
@@ -60,7 +69,7 @@ has_field how_many => (
 
 has_field submit => (
     type => 'Submit',
-    value => 'Request container',
+    value => 'Request containers',
     element_attr => { class => 'govuk-button' },
     order => 999,
 );

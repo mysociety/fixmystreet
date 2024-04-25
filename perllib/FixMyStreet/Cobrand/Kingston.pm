@@ -6,6 +6,8 @@ use Moo;
 with 'FixMyStreet::Roles::CobrandSLWP';
 with 'FixMyStreet::Roles::SCP';
 
+use Lingua::EN::Inflect qw( NUMWORDS );
+
 sub council_area_id { return 2480; }
 sub council_area { return 'Kingston'; }
 sub council_name { return 'Kingston upon Thames Council'; }
@@ -17,6 +19,7 @@ use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
+use constant CONTAINER_FOOD_OUTDOOR => 24;
 
 =head2 waste_on_the_day_criteria
 
@@ -108,23 +111,142 @@ sub garden_waste_renewal_sacks_cost_pa {
      return $self->_get_cost('ggw_sacks_cost_renewal', $end_date);
 }
 
-=head2 waste_request_form_first_next
+sub waste_request_single_radio_list { 0 }
 
-After picking a container, we jump straight to the about you page
+=head2 bin_request_form_extra_fields
+
+We want an extra message on the outdoor food container option.
 
 =cut
 
-sub waste_request_form_first_title { 'Which container do you need?' }
-sub waste_request_form_first_next {
-    my $self = shift;
-    my $containers = $self->{c}->stash->{quantities};
-    return sub {
-        my $data = shift;
-        my $choice = $data->{"container-choice"};
-        my $name = $self->{c}->stash->{containers}{$choice};
-        return 'how_many' if $name =~ /rubbish bin/;
-        return 'about_you';
+sub bin_request_form_extra_fields {
+    my ($self, $service, $id, $field_list) = @_;
+
+    return unless $id == CONTAINER_FOOD_OUTDOOR;
+    my %fields = @$field_list;
+    $fields{"container-$id"}{option_hint} = 'Only three are allowed per property. Any more than this will not be collected.';
+}
+
+=head2 waste_request_form_first_next
+
+After picking a container, we ask what bins needs removing.
+
+=cut
+
+sub waste_request_form_first_next { 'removals' }
+
+=head2 waste_munge_request_form_pages
+
+We have a separate removal page, asking which bins need to be removed.
+
+=cut
+
+sub waste_munge_request_form_pages {
+    my ($self, $page_list, $field_list) = @_;
+    my $c = $self->{c};
+
+    my %maxes;
+    foreach (@{$c->stash->{service_data}}) {
+        next unless $_->{next} || $_->{request_only};
+        my $containers = $_->{request_containers};
+        my $maximum = $_->{request_max};
+        foreach my $id (@$containers) {
+            $maxes{$id} = ref $maximum ? $maximum->{$id} : $maximum;
+        }
+    }
+
+    sub n { my $n = shift; my $w = ucfirst NUMWORDS($n); $w =~ s/Zero/None/; "$w ($n)"; }
+
+    my @removal_options;
+    for (my $i=0; $i<@$field_list; $i+=2) {
+        my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
+        next unless $key =~ /^container-(\d+)/;
+        my $id = $1;
+        my $name = $c->stash->{containers}{$id};
+        push @$field_list, "removal-$id" => {
+            required => 1,
+            type => 'Select',
+            widget => 'RadioGroup',
+            label => "$name: How many do you wish removing from your property?",
+            tags => { small => 1 },
+            options => [
+                map { { value => $_, label => n($_) } } (0..$maxes{$id})
+            ],
+        };
+        push @removal_options, "removal-$id";
+    }
+
+    push @$page_list, removals => {
+        fields => [ @removal_options, 'submit' ],
+        update_field_list => sub {
+            my $form = shift;
+            my $data = $form->saved_data;
+            my $fields = {};
+            foreach (@removal_options) {
+                my ($id) = /removal-(.*)/;
+                if ($data->{"container-$id"}) {
+                    my $quantity = $data->{"quantity-$id"};
+                    my $max = $quantity || $maxes{$id};
+                    $fields->{$_}{options} = [
+                        map { { value => $_, label => n($_) } } (0..$max)
+                    ];
+                } else {
+                    $fields->{$_}{widget} = 'Hidden';
+                    $fields->{$_}{required} = 0;
+                }
+            }
+            # Both types of recycling container always
+            if ($data->{'container-' . CONTAINER_RECYCLING_BIN}) {
+                delete $fields->{"removal-" . CONTAINER_RECYCLING_BOX}{widget};
+                delete $fields->{"removal-" . CONTAINER_RECYCLING_BOX}{required};
+            }
+            if ($data->{'container-' . CONTAINER_RECYCLING_BOX}) {
+                delete $fields->{"removal-" . CONTAINER_RECYCLING_BIN}{widget};
+                delete $fields->{"removal-" . CONTAINER_RECYCLING_BIN}{required};
+            }
+            return $fields;
+        },
+        title => 'How many containers need removing?',
+        next => sub {
+            # If it is a refuse bin, and they haven't asked for one to be
+            # removed, we need to ask how many people live at the property
+            for (CONTAINER_REFUSE_180, CONTAINER_REFUSE_240, CONTAINER_REFUSE_360) {
+                return 'how_many' if $_[0]->{"container-$_"} && !$_[0]->{"removal-$_"};
+            }
+            return 'about_you';
+        },
     };
+}
+
+# Expand out everything to one entry per container
+sub waste_munge_request_form_data {
+    my ($self, $data) = @_;
+
+    my $new_data;
+    my @services = grep { /^container-/ } sort keys %$data;
+    foreach (@services) {
+        my ($id) = /container-(.*)/;
+        my $quantity = $data->{"quantity-$id"} || 0;
+        my $to_remove = $data->{"removal-$id"} || 0;
+        next unless $data->{$_} || ($id == CONTAINER_RECYCLING_BIN || $id == CONTAINER_RECYCLING_BOX);
+
+        if ($quantity - $to_remove > 0) {
+            $new_data->{"container-$id-deliver-$_"} = 1
+                for 1..($quantity-$to_remove);
+            $new_data->{"container-$id-replace-$_"} = 1
+                for 1..$to_remove;
+        } elsif ($to_remove - $quantity > 0) {
+            $new_data->{"container-$id-collect-$_"} = 1
+                for 1..($to_remove-$quantity);
+            $new_data->{"container-$id-replace-$_"} = 1
+                for 1..$quantity;
+        } else { # Equal
+            $new_data->{"container-$id-replace-$_"} = 1
+                for 1..$quantity;
+        }
+    }
+    %$data = map { $_ => $data->{$_} } grep { !/^(container|quantity|removal)-/ } keys %$data;
+    %$data = (%$data, %$new_data);
 }
 
 sub waste_munge_request_data {
@@ -132,27 +254,42 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
     my $address = $c->stash->{property}->{address};
-    my $container = $c->stash->{containers}{$id};
-    my $quantity = 1;
+
+    my ($container_id, $action, $n) = split /-/, $id;
+    my $container = $c->stash->{containers}{$container_id};
 
     my ($action_id, $reason_id);
-    $action_id = 1; # Deliver
-    $reason_id = 1; # Missing
+    if ($action eq 'deliver') {
+        $action_id = 1; # Deliver
+        $reason_id = 1; # Missing (or 4 New)
+    } elsif ($action eq 'collect') {
+        $action_id = 2; # Collect
+        $reason_id = 3; # Change capacity
+    } elsif ($action eq 'replace') {
+        $action_id = 3; # Replace
+        $reason_id = 2; # Damaged
+    }
 
-    $data->{title} = "Request $container";
-    $data->{detail} = "Quantity: $quantity\n\n$address";
+    if ($action eq 'deliver') {
+        $data->{title} = "Request $container delivery";
+    } elsif ($action eq 'replace') {
+        $data->{title} = "Request $container replacement";
+    } else {
+        $data->{title} = "Request $container collection";
+    }
+    $data->{detail} = $address;
 
-    $c->set_param('Action', join('::', ($action_id) x $quantity));
-    $c->set_param('Reason', join('::', ($reason_id) x $quantity));
+    $c->set_param('Action', $action_id);
+    $c->set_param('Reason', $reason_id);
 
-    if ($data->{how_many}) { # Must have been a Kingston refuse bin
+    if ($data->{how_many} && $container =~ /rubbish bin/) { # Must be a refuse bin
         if ($data->{how_many} eq '5more') {
             $c->set_param('Container_Type', CONTAINER_REFUSE_240);
         } else {
             $c->set_param('Container_Type', CONTAINER_REFUSE_180);
         }
     } else {
-        $c->set_param('Container_Type', $id);
+        $c->set_param('Container_Type', $container_id);
     }
 }
 
@@ -164,7 +301,7 @@ Calculate how much, if anything, a request for a container should be.
 
 sub request_cost {
     my ($self, $id, $quantity, $containers) = @_;
-    $quantity ||= 1;
+    $quantity //= 1;
     if (my $cost = $self->_get_cost('request_replace_cost')) {
         my $cost_more = $self->_get_cost('request_replace_cost_more') || $cost/2;
         if ($quantity > 1) {

@@ -52,10 +52,13 @@ sub waste_cc_get_redirect_url {
     my $address = $c->stash->{property}{address};
     my @parts = split ',', $address;
 
+    my $title = $p->title;
+    $title = 'Request containers' if $p->get_extra_metadata('grouped_ids');
+
     my @items = ({
         amount => $amount,
         reference => $customer_ref,
-        description => $p->title,
+        description => $title,
         lineId => $self->waste_cc_payment_line_item_ref($p),
     });
     if ($admin_fee) {
@@ -71,7 +74,7 @@ sub waste_cc_get_redirect_url {
         backUrl => $backUrl,
         ref => $self->waste_cc_payment_sale_ref($p),
         request_id => $p->id,
-        description => $p->title,
+        description => $title,
         name => $p->name,
         email => $p->user->email,
         uprn => $uprn,

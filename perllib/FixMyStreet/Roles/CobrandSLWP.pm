@@ -498,8 +498,14 @@ sub waste_service_containers {
         if ($container && $quantity) {
             push @$containers, $container;
             next if $container == CONTAINER_GARDEN_SACK; # Garden waste bag
-            # The most you can request is one
-            $request_max->{$container} = 1;
+            # The most you can request - ignored on replacements anyway
+            if ($container == CONTAINER_FOOD_OUTDOOR || $container == CONTAINER_PAPER_BIN || $container == CONTAINER_RECYCLING_BIN) {
+                $request_max->{$container} = 3;
+            } elsif ($container == CONTAINER_RECYCLING_BOX) {
+                $request_max->{$container} = 5;
+            } else {
+                $request_max->{$container} = 1;
+            }
             $self->{c}->stash->{quantities}->{$container} = $quantity;
 
             if ($self->moniker eq 'sutton') {
@@ -518,7 +524,7 @@ sub waste_service_containers {
         }
     }
 
-    if ($service_name =~ /Food/) {
+    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{+CONTAINER_FOOD_INDOOR}) {
         # Can always request a food caddy
         push @$containers, CONTAINER_FOOD_INDOOR;
         $request_max->{+CONTAINER_FOOD_INDOOR} = 1;
@@ -526,7 +532,7 @@ sub waste_service_containers {
     if ($self->moniker eq 'kingston' && grep { $_ == CONTAINER_RECYCLING_BOX } @$containers) {
         # Can request a bin if you have a box
         push @$containers, CONTAINER_RECYCLING_BIN;
-        $request_max->{+CONTAINER_RECYCLING_BIN} = 1;
+        $request_max->{+CONTAINER_RECYCLING_BIN} = 3;
     }
 
     return ($containers, $request_max);
@@ -683,62 +689,6 @@ sub waste_munge_report_form_fields {
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
-=head2 waste_munge_request_form_fields
-
-Replace the usual checkboxes grouped by service with one radio list of
-containers.
-
-=cut
-
-sub waste_request_single_radio_list { 1 }
-
-sub waste_munge_request_form_fields {
-    my ($self, $field_list) = @_;
-    my $c = $self->{c};
-
-    my @radio_options;
-    my @replace_options;
-    my %seen;
-    for (my $i=0; $i<@$field_list; $i+=2) {
-        my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
-        next unless $key =~ /^container-(\d+)/;
-        my $id = $1;
-        next if $self->moniker eq 'kingston' && $seen{$id};
-
-        my ($cost, $hint) = $self->request_cost($id, 1, $c->stash->{quantities});
-
-        my $data = {
-            value => $id,
-            label => $self->{c}->stash->{containers}->{$id},
-            disabled => $value->{disabled},
-            $hint ? (hint => $hint) : (),
-        };
-        my $change_cost = $self->_get_cost('request_change_cost');
-        if ($cost && $change_cost && $cost == $change_cost) {
-            push @replace_options, $data;
-        } else {
-            push @radio_options, $data;
-        }
-        $seen{$id} = 1;
-    }
-
-    if (@replace_options) {
-        $radio_options[0]{tags}{divider_template} = "waste/request/intro_replace";
-        $replace_options[0]{tags}{divider_template} = "waste/request/intro_change";
-        push @radio_options, @replace_options;
-    }
-
-    @$field_list = (
-        "container-choice" => {
-            type => 'Select',
-            widget => 'RadioGroup',
-            label => 'Which container do you need?',
-            options => \@radio_options,
-            required => 1,
-        }
-    );
-}
-
 =head2 waste_report_form_first_next
 
 After picking a service, we jump straight to the about you page unless it's
@@ -755,13 +705,6 @@ sub waste_report_form_first_next {
         return 'notes' if $data->{"service-$bulky_service_id"};
         return 'about_you';
     };
-}
-
-# Take the chosen container and munge it into the normal data format
-sub waste_munge_request_form_data {
-    my ($self, $data) = @_;
-    my $container_id = delete $data->{'container-choice'};
-    $data->{"container-$container_id"} = 1;
 }
 
 sub waste_munge_report_data {
