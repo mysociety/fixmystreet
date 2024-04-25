@@ -333,9 +333,6 @@ sub bin_services_for_address {
             $filtered_service->{report_open} = 0;
         }
 
-        $filtered_service->{report_open}
-            = $property->{missed_collection_reports}{ $filtered_service->{service_id} } ? 1 : 0;
-
         $filtered_service->{report_allowed}
             = $self->can_report_missed( $property, $filtered_service );
 
