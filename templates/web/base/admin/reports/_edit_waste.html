@@ -45,12 +45,15 @@
 
 <li><label class="inline-text" for="external_id">[% loc('External ID') %]:</label>
     <input type="text" class="form-control" name="external_id" id="external_id" value="[% problem.external_id | html %]">
-
+[% SET readonly = 'readonly' %]
+[% IF c.cobrand.moniker == 'peterborough' %]
+    [% SET readonly = '' %]
+[% END %]
 <li><label class="inline-text" for="name">[% loc('Name:') %]</label>
-    <input type='text' readonly class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
+    <input type='text' [% readonly %] class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
 
 <li><label class="inline-text" for="username">[% loc('User:') %]</label>
-    <input type='text' readonly class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
+    <input type='text' [% readonly %] class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
 </li>
 
 [% IF problem.phone_waste != problem.user.username %]

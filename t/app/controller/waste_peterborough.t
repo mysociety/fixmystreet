@@ -27,6 +27,7 @@ my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', fro
 $staff->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_another_user' });
 $staff->user_body_permissions->create({ body => $body, permission_type => 'report_mark_private' });
 $staff->user_body_permissions->create({ body => $body, permission_type => 'planned_reports' });
+$staff->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 my $super = $mech->create_user_ok('super@example.net', name => 'Super User', is_superuser => 1);
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
@@ -324,7 +325,19 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin";
         is $report->title, 'Request new Both food bins';
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/admin/report_edit/' . $report->id);
     };
+
+    subtest 'Staff can edit name and email on waste report' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/admin/report_edit/' . $report->id);
+        $mech->content_like(qr/input type='text'  class="form-control" id='username' name='username' value='email\@example.org'/, "Username field not readonly");
+        $mech->content_like(qr/input type='text'  class="form-control" name='name' id='name' value='Bob Marge'/, "Name field not readonly");
+        $mech->log_out_ok;
+    };
+
     subtest 'Food bags link appears on front page when logged out' => sub {
         $mech->log_out_ok;
         $mech->get_ok('/waste/PE1 3NA:100090215480');
