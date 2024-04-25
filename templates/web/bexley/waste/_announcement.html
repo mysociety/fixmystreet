@@ -1,3 +1,12 @@
+[% IF property.upcoming_bank_holiday %]
+<div class="bank-holiday-notice site-message">
+  <p>
+    Due to an upcoming Bank Holiday, some of your bins that are scheduled to be
+    collected next may be collected on a different date than usual.
+  </p>
+</div>
+[% END %]
+
 [% USE date(format = c.cobrand.bin_day_format) %]
 [% IF (property.red_tags && property.red_tags.size) || (property.service_updates && property.service_updates.size) %]
   <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Service status</h2>
