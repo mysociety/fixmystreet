@@ -136,11 +136,15 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Last collection</dt>
           <dd class="govuk-summary-list__value">
-              [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
-              [%~ IF unit.last.completed %], at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%][% END %]
-              [% IF unit.last.changed %](this collection was adjusted from its usual time)[% END %]
-              [% IF unit.last.state %]([% unit.last.state %])[% END %]
-              [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
+              [% IF unit.last.is_delayed %]
+                <strong>We are currently behind on collecting this. We will be there shortly.</strong>
+              [% ELSE %]
+                [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
+                [%~ IF unit.last.completed %], at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%][% END %]
+                [% IF unit.last.changed %](this collection was adjusted from its usual time)[% END %]
+                [% IF unit.last.state %]([% unit.last.state %])[% END %]
+                [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
+              [% END %]
           </dd>
         </div>
       [% END %]
