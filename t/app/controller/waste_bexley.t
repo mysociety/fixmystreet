@@ -630,13 +630,13 @@ FixMyStreet::override_config {
     });
 
     subtest 'bank holiday message' => sub {
-        # 8 days before the bank holiday
-        set_fixed_time('2024-03-24T02:00:00');
+        # 15 days before the bank holiday
+        set_fixed_time('2024-03-17T02:00:00');
         $mech->get_ok('/waste/10001');
         $mech->content_lacks('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message not shown more than a week before');
 
-        # 7 days before the bank holiday
-        set_fixed_time('2024-03-25T02:00:00');
+        # 14 days before the bank holiday
+        set_fixed_time('2024-03-18T02:00:00');
         $mech->get_ok('/waste/10001');
         $mech->content_contains('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message shown a week before');
 
@@ -645,13 +645,18 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/10001');
         $mech->content_contains('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message shown on the day');
 
-        # Should not show the message after the bank holiday
-        set_fixed_time('2024-04-02T02:00:00');
+        # Should show the message for 1 week after the bank holiday
+        set_fixed_time('2024-04-08T02:00:00');
         $mech->get_ok('/waste/10001');
-        $mech->content_lacks('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message not shown after the day');
+        $mech->content_contains('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message shown one week after bank holiday');
+
+        # Shouldn't show the message after 1 week
+        set_fixed_time('2024-04-09T02:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_lacks('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message not shown more than one week after');
 
         # Should show the message if custom query parameter provided, even if more than a week before
-        set_fixed_time('2024-03-24T02:00:00');
+        set_fixed_time('2024-03-01T02:00:00');
         $mech->get_ok('/waste/10001?show_bank_holiday_message=1');
         $mech->content_contains('Due to an upcoming Bank Holiday, some of your bins that are scheduled to be', 'Bank holiday message shown with custom query parameter');
 

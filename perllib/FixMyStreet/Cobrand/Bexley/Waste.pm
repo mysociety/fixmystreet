@@ -57,7 +57,7 @@ sub look_up_property {
     # Check if today or any of the next 7 days are bank holidays
     my $upcoming_bank_holiday = 0;
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
-    for (0..7) {
+    for (-7..14) {
         my $dt = DateTime->now->add(days => $_);
         if ($wd->is_public_holiday($dt)) {
             $upcoming_bank_holiday = 1;
