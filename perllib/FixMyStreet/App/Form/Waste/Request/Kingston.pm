@@ -17,6 +17,8 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
+use constant CONTAINER_REFUSE_240 => 2;
+
 =head2 About you
 
 At the last step of the form, the user is asked for their personal details.
@@ -65,6 +67,40 @@ has_field how_many => (
         { value => 'less5', label => '1 to 4' },
         { value => '5more', label => '5 or more' },
     ],
+);
+
+has_page how_many_exchange => (
+    fields => ['how_many_exchange', 'continue'],
+    title => 'Black bin size change request',
+    intro => 'request/intro.html',
+    next => sub {
+        my $data = shift;
+        my $how_many = $data->{"how_many_exchange"};
+        if ($how_many eq 'less5' || $how_many eq '7more') {
+            return 'biggest_bin_allowed';
+        }
+        $data->{'container-' . CONTAINER_REFUSE_240} = 1;
+        $data->{'quantity-' . CONTAINER_REFUSE_240} = 1;
+        $data->{'removal-' . CONTAINER_REFUSE_240} = 1;
+        return 'about_you';
+    },
+);
+
+has_field how_many_exchange => (
+    required => 1,
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'How many people live in this household?',
+    options => [
+        { value => 'less5', label => '1 to 4' },
+        { value => '5or6', label => '5 or 6' },
+        { value => '7more', label => '7 or more' },
+    ],
+);
+
+has_page biggest_bin_allowed => (
+    fields => [],
+    template => 'waste/biggest_bin_allowed.html',
 );
 
 has_field submit => (

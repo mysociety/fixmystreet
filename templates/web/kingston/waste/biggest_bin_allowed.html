@@ -1,0 +1,19 @@
+[% USE date(format='%Y%m%d') ~%]
+[% PROCESS 'waste/header.html' %]
+[% IF property %]
+    [% INCLUDE 'waste/_address_display.html' %]
+[% END %]
+
+<h1 class="govuk-heading-xl">Black bin size change request</h1>
+
+[% IF form.saved_data.how_many_exchange == '7more' %]
+<p class="govuk-body">
+If you have an exceptionally large household or your household has medical needs that create more waste than normal, you can apply for more capacity, but this will be assessed by our officers.</p>
+<p class="govuk-body"><a href="[% waste_features.large_refuse_application_form %]?uprn=[% property.uprn %]">Large refuse bin application form</a></p>
+[% ELSE %]
+<p class="govuk-body">
+You already have the biggest sized bin allowed.
+</p>
+[% END %]
+
+[% INCLUDE footer.html %]

@@ -73,6 +73,9 @@ FixMyStreet::override_config {
             request_replace_cost => 1800,
             request_replace_cost_more => 900,
         } },
+        waste_features => { kingston => {
+            large_refuse_application_form => '/faq?refuse-application',
+        } },
     },
     STAGING_FLAGS => {
         send_reports => 1,
@@ -226,6 +229,77 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Action]'), '1';
         is $cgi->param('attribute[Reason]'), '1';
     };
+
+    subtest 'Request refuse exchange' => sub {
+        subtest "240L, ordering a larger" => sub {
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'Request a larger/smaller refuse container' });
+            $mech->content_contains('Smaller black rubbish bin');
+            $mech->content_contains('Larger black rubbish bin');
+            $mech->submit_form_ok({ with_fields => { 'container-capacity-change' => 3 } });
+            is $mech->uri->path_query, '/faq?refuse-application?uprn=1000000002';
+        };
+        subtest '180L, small household' => sub {
+            $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '35';
+            $mech->get_ok('/waste/12345/request?exchange=1');
+            $mech->submit_form_ok({ with_fields => { 'how_many_exchange' => 'less5' }});
+            $mech->content_contains('You already have the biggest sized bin allowed.');
+        };
+        subtest '180L, very large household' => sub {
+            $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '35';
+            $mech->get_ok('/waste/12345/request?exchange=1');
+            $mech->submit_form_ok({ with_fields => { 'how_many_exchange' => '7more' }});
+            $mech->content_contains('you can apply for more capacity');
+        };
+        foreach (
+            { has => 2, id => 35, name => "Black rubbish bin (180L)" }, # 240L going smaller
+            { has => 35, id => 2, name => "Black rubbish bin (240L)" }, # 180L, 5 or 6 people
+            { has => 3, id => 35, name => "Black rubbish bin (180L)" }, # 360L going smaller
+            { has => 3, id => 2, name => "Black rubbish bin (240L)" }, # 360L going smaller
+        ) {
+            subtest "Has a $_->{has}, ordering a $_->{name}" => sub {
+                $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = $_->{has};
+                $mech->get_ok('/waste/12345/request?exchange=1');
+                if ($_->{has} == 2) {
+                    $mech->content_contains('Smaller black rubbish bin');
+                    $mech->content_contains('Larger black rubbish bin');
+                }
+                if ($_->{has} == 35) {
+                    $mech->submit_form_ok({ with_fields => { 'how_many_exchange' => '5or6' }});
+                } else {
+                    $mech->submit_form_ok({ with_fields => { 'container-capacity-change' => $_->{id} } });
+                }
+                $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+                $mech->content_contains('Continue to payment');
+
+                $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+                is $sent_params->{items}[0]{amount}, 1800;
+
+                my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+                $mech->get_ok("/waste/pay_complete/$report_id/$token");
+                $mech->content_contains('request has been sent');
+                is $report->get_extra_field_value('uprn'), 1000000002;
+                is $report->detail, "2 Example Street, Kingston, KT1 1AA";
+                is $report->category, 'Request new container';
+                is $report->title, "Request $_->{name} replacement";
+                is $report->get_extra_field_value('payment'), 1800, 'correct payment';
+                is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+                is $report->get_extra_field_value('Container_Type'), $_->{id}, 'correct bin type';
+                is $report->get_extra_field_value('Action'), 3, 'correct container request action';
+                is $report->state, 'unconfirmed', 'report not confirmed';
+                is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+                FixMyStreet::Script::Reports::send();
+                my $req = Open311->test_req_used;
+                my $cgi = CGI::Simple->new($req->content);
+                is $cgi->param('attribute[Action]'), '3';
+                is $cgi->param('attribute[Reason]'), '3';
+            };
+        }
+    };
+    # Reset back to 240L
+    $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '2';
+
     subtest 'Request bins from front page' => sub {
         $mech->get_ok('/waste/12345');
         $mech->submit_form_ok({ form_number => 7 });

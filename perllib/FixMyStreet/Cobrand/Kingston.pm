@@ -127,13 +127,105 @@ sub bin_request_form_extra_fields {
     $fields{"container-$id"}{option_hint} = 'Only three are allowed per property. Any more than this will not be collected.';
 }
 
+=head2 waste_munge_request_form_fields
+
+If we're looking to change capacity, list the possibilities here.
+
+=cut
+
+sub waste_munge_request_form_fields {
+    my ($self, $field_list) = @_;
+    my $c = $self->{c};
+
+    return unless $c->get_param('exchange');
+
+    my @radio_options;
+    for (my $i=0; $i<@$field_list; $i+=2) {
+        my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
+        next unless $key =~ /^container-(\d+)/;
+        my $id = $1;
+
+        if (my $os = $c->get_param('override_size')) {
+            $id = 35 if $os == '180';
+            $id = 2 if $os == '240';
+            $id = 3 if $os == '360';
+        }
+
+        if ($id == CONTAINER_REFUSE_180) {
+            $c->stash->{current_refuse_bin} = 180;
+        } elsif ($id == CONTAINER_REFUSE_240) {
+            $c->stash->{current_refuse_bin} = 240;
+            @radio_options = ( {
+                value => CONTAINER_REFUSE_180,
+                label => 'Smaller black rubbish bin',
+                disabled => $value->{disabled},
+                hint => 'You can decrease the size of your bin to 180L.',
+            }, {
+                value => CONTAINER_REFUSE_360,
+                label => 'Larger black rubbish bin',
+                disabled => $value->{disabled},
+                hint => 'You already have the biggest sized bin allowed. If you have an exceptionally large household or your household has medical needs that create more waste than normal, you can apply for more capacity, but this will be assessed by our officers.',
+            },
+            );
+        } elsif ($id == CONTAINER_REFUSE_360) {
+            $c->stash->{current_refuse_bin} = 360;
+            @radio_options = ( {
+                value => CONTAINER_REFUSE_180,
+                label => '180L black rubbish bin ‘standard’',
+                disabled => $value->{disabled},
+            }, {
+                value => CONTAINER_REFUSE_240,
+                label => '240L black rubbish bin ‘larger’',
+                disabled => $value->{disabled},
+            },
+            );
+        }
+    }
+
+    @$field_list = (
+        "container-capacity-change" => {
+            type => 'Select',
+            widget => 'RadioGroup',
+            label => 'Which container do you need?',
+            options => \@radio_options,
+            required => 1,
+        }
+    );
+}
+
 =head2 waste_request_form_first_next
 
 After picking a container, we ask what bins needs removing.
 
 =cut
 
-sub waste_request_form_first_next { 'removals' }
+sub waste_request_form_first_title {
+    my $self = shift;
+    my $c = $self->{c};
+    return 'Black bin size change request' if $c->get_param('exchange');
+}
+
+sub waste_request_form_first_next {
+    my $self = shift;
+    my $c = $self->{c};
+    if ($c->get_param('exchange')) {
+        my $uprn = $c->stash->{property}{uprn};
+        return sub {
+            my $data = shift;
+            my $choice = $data->{"container-capacity-change"};
+            if ($choice == CONTAINER_REFUSE_360) {
+                $c->res->redirect($c->stash->{waste_features}{large_refuse_application_form} . '?uprn=' . $uprn);
+                $c->detach;
+            } else {
+                $data->{"container-$choice"} = 1;
+                $data->{"quantity-$choice"} = 1;
+                $data->{"removal-$choice"} = 1;
+            }
+            return 'about_you';
+        };
+    }
+    return 'removals';
+}
 
 =head2 waste_munge_request_form_pages
 
@@ -144,6 +236,10 @@ We have a separate removal page, asking which bins need to be removed.
 sub waste_munge_request_form_pages {
     my ($self, $page_list, $field_list) = @_;
     my $c = $self->{c};
+
+    if (($c->stash->{current_refuse_bin} || 0) == 180) {
+        $c->stash->{first_page} = 'how_many_exchange';
+    }
 
     my %maxes;
     foreach (@{$c->stash->{service_data}}) {
@@ -267,7 +363,7 @@ sub waste_munge_request_data {
         $reason_id = 3; # Change capacity
     } elsif ($action eq 'replace') {
         $action_id = 3; # Replace
-        $reason_id = 2; # Damaged
+        $reason_id = $c->get_param('exchange') ? 3 : 2; # Change capacity : Damaged
     }
 
     if ($action eq 'deliver') {

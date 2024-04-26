@@ -356,12 +356,20 @@ sub waste_containers {
             28 => 'Garden waste sacks',
         };
     } elsif ($self->moniker eq 'kingston') {
+        my $black_bins = $self->{c}->get_param('exchange') ? {
+            1 => 'Black rubbish bin (140L)',
+            2 => 'Black rubbish bin (240L)',
+            3 => 'Black rubbish bin (360L)',
+            35 => 'Black rubbish bin (180L)',
+        } : {
+            1 => 'Black rubbish bin',
+            2 => 'Black rubbish bin',
+            3 => 'Black rubbish bin',
+            35 => 'Black rubbish bin',
+        };
         return {
             %shared,
-            1 => 'Black rubbish bin', # 140L
-            2 => 'Black rubbish bin', # 240L
-            3 => 'Black rubbish bin', # 360L
-            35 => 'Black rubbish bin', # 180L
+            %$black_bins,
             12 => 'Green recycling bin (240L)',
             13 => 'Green recycling bin (360L)',
             16 => 'Green recycling box (55L)',
@@ -540,16 +548,20 @@ sub waste_service_containers {
 
 sub waste_munge_bin_services_open_requests {
     my ($self, $open_requests) = @_;
-    if ($self->moniker eq 'sutton') {
-        if ($open_requests->{+CONTAINER_REFUSE_140}) {
-            $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_140};
-        } elsif ($open_requests->{+CONTAINER_REFUSE_240}) {
-            $open_requests->{+CONTAINER_REFUSE_140} = $open_requests->{+CONTAINER_REFUSE_240};
-            $open_requests->{+CONTAINER_REFUSE_360} = $open_requests->{+CONTAINER_REFUSE_240};
-        }
-        if ($open_requests->{+CONTAINER_PAPER_BIN_140}) {
-            $open_requests->{+CONTAINER_PAPER_BIN} = $open_requests->{+CONTAINER_PAPER_BIN_140};
-        }
+    if ($open_requests->{+CONTAINER_REFUSE_140}) { # Sutton
+        $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_140};
+    } elsif ($open_requests->{+CONTAINER_REFUSE_180}) { # Kingston
+        $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_180};
+    } elsif ($open_requests->{+CONTAINER_REFUSE_240}) { # Both
+        $open_requests->{+CONTAINER_REFUSE_140} = $open_requests->{+CONTAINER_REFUSE_240};
+        $open_requests->{+CONTAINER_REFUSE_180} = $open_requests->{+CONTAINER_REFUSE_240};
+        $open_requests->{+CONTAINER_REFUSE_360} = $open_requests->{+CONTAINER_REFUSE_240};
+    } elsif ($open_requests->{+CONTAINER_REFUSE_360}) { # Kingston
+        $open_requests->{+CONTAINER_REFUSE_180} = $open_requests->{+CONTAINER_REFUSE_360};
+        $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_360};
+    }
+    if ($open_requests->{+CONTAINER_PAPER_BIN_140}) {
+        $open_requests->{+CONTAINER_PAPER_BIN} = $open_requests->{+CONTAINER_PAPER_BIN_140};
     }
 }
 
