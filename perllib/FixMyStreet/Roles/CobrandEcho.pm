@@ -118,6 +118,10 @@ sub bin_services_for_address {
     my @to_fetch;
     my @task_refs;
     my @rows = $self->waste_relevant_serviceunits($result);
+    # Each row is normally a service unit but e.g. SLWP has multiple rows per
+    # service unit and we only want to call GetEventsForObject once with each
+    # service unit
+    my %seen_service_units;
     foreach (@rows) {
         my $schedules = $_->{Schedules};
         if ($self->moniker ne 'sutton' && $self->moniker ne 'kingston') { # K&S don't use overdue
@@ -126,7 +130,8 @@ sub bin_services_for_address {
 
         next unless $schedules->{next} or $schedules->{last};
         $_->{active} = 1;
-        push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
+        push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ]
+            unless $seen_service_units{$_->{Id}}++;
         push @task_refs, $schedules->{last}{ref} if $schedules->{last};
     }
     push @to_fetch, GetTasks => \@task_refs if @task_refs;

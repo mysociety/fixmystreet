@@ -420,7 +420,7 @@ sub waste_relevant_serviceunits {
             next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != $self->garden_service_id;
 
             push @rows, {
-                Id => $task->{Id},
+                Id => $_->{Id},
                 ServiceId => $task->{TaskTypeId},
                 ServiceTask => $task,
                 Schedules => $schedules,

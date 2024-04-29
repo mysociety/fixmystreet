@@ -302,6 +302,24 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
+    subtest 'No reporting if open request on service unit' => sub {
+        $e->mock('GetEventsForObject', sub {
+            my ($self, $type, $id) = @_;
+            return [] if $type eq 'PointAddress' || $id == 1002;
+            is $id, 1001; # recycling service unit
+            return [ {
+                EventTypeId => 1566,
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                ServiceId => 408,
+                Data => { ExtensibleDatum => [
+                    { Value => 1, DatatypeName => 'Container Mix' },
+                ] },
+            } ]
+        });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A mixed recycling collection has been reported as missed');
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
     subtest 'No requesting if open request of different size' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->content_unlike(qr/name="container-choice" value="1"[^>]+disabled/s);
