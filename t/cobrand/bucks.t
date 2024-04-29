@@ -115,6 +115,11 @@ subtest 'cobrand displays correct categories' => sub {
     is @{$json->{bodies}}, 2, 'Still Bucks and parish returned';
 };
 
+subtest 'privacy page contains link to Bucks privacy policy' => sub {
+    $mech->get_ok('/about/privacy');
+    $mech->content_contains('privacy-and-buckinghamshire-highways');
+};
+
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
     category => 'Flytipping', cobrand => 'fixmystreet',
     latitude => 51.812244, longitude => -0.827363,

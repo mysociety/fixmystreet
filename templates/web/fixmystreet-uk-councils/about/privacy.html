@@ -158,6 +158,9 @@ When you make a report
     [% END %]
     who adhere to strict data-handling policies, and to [% c.cobrand.council_name %] staff,
     who abide by their own data-handling and security policies.
+    [% IF c.cobrand.moniker == 'buckinghamshire' %]
+        <a href='https://www.buckinghamshire.gov.uk/your-council/privacy/privacy-information-for-specific-services/privacy-and-buckinghamshire-highways/'>Privacy and Buckinghamshire Highways</a>
+    [% END %]
 </p>
 
 [% IF c.cobrand.feature('updates_allowed') != 'staff' AND c.cobrand.send_questionnaires %]
