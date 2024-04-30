@@ -3,7 +3,7 @@
 [% PROCESS 'waste/header.html' %]
 
 <div class="waste__loading_wrapper"
-  hx-get="[% c.req.uri.path %]"
+  hx-get="[% c.req.uri.path_query %]"
   hx-swap="outerHTML"
   hx-select=".waste__loading_wrapper"
   hx-trigger="every [% page_refresh %]s">
