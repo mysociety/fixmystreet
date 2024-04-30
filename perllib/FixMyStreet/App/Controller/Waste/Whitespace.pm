@@ -28,7 +28,8 @@ sub receive_whitespace_event_notification : Path('/waste/whitespace') : Args(0) 
     $self->log(\%headers);
     $self->log($c->req->parameters);
     if ($c->req->body) {
-        $self->log($c->req->body);
+        my $soap = join('', $c->req->body->getlines);
+        $self->log($soap);
     } else {
         $self->log('No body');
     }
