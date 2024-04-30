@@ -337,7 +337,7 @@ sub process_login : Private {
         %{ $user->get_extra() },
         %{ $data->{extra} }
     }) if $data->{extra};
-    $c->cobrand->call_hook(roles_from_oidc => $user, $c->session->{oauth}{roles}) if $c->session->{oauth}{roles};
+    $c->cobrand->call_hook(roles_from_oidc => $user, $c->session->{oauth}{roles});
     $user->update_or_insert;
     $c->authenticate( { $type => $data->{$type}, $ver => 1 }, 'no_password' );
 

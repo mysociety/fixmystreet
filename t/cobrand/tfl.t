@@ -513,6 +513,7 @@ subtest "test bus report creation outside London, .com" => sub {
     $mech->get_ok('/report/new?latitude=51.345714&longitude=-0.227959');
     $mech->content_lacks('Bus things');
     $mech->host('tfl.fixmystreet.com');
+    $mech->log_out_ok;
 };
 
 subtest "test bus report creation outside London" => sub {
@@ -528,12 +529,15 @@ subtest "test bus report creation outside London" => sub {
                 title => 'Test outwith London',
                 detail => 'Test report details.',
                 name => 'Joe Bloggs',
+                username_register => 'test@example.org',
                 may_show_name => '1',
                 category => 'Bus stops',
             }
         },
         "submit good details"
     );
+    my $link = $mech->get_link_from_email;
+    $mech->get_ok($link);
     $mech->content_contains('Your issue is on its way to Transport for London');
     is_deeply $mech->page_errors, [], "check there were no errors";
 
@@ -541,6 +545,7 @@ subtest "test bus report creation outside London" => sub {
     ok $report, "Found the report";
     is $report->state, 'confirmed', "report confirmed";
     is $report->bodies_str, $body->id;
+    is $report->user->from_body, undef;
     $report->delete;
 
     $mech->log_out_ok;
