@@ -135,6 +135,7 @@ FixMyStreet::override_config {
     };
     subtest 'Test sending of reports to other endpoint' => sub {
         use_ok 'FixMyStreet::Script::Merton::SendWaste';
+        Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
         my $send = FixMyStreet::Script::Merton::SendWaste->new;
         $send->send_reports;
         my $req = Open311->test_req_used;
@@ -142,6 +143,10 @@ FixMyStreet::override_config {
         is $cgi->param('api_key'), 'api_key';
         is $cgi->param('attribute[Action]'), '3';
         is $cgi->param('attribute[Reason]'), '2';
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_metadata('sent_to_crimson'), 1;
+        is $report->get_extra_metadata('crimson_external_id'), "359";
+        is $report->external_id, "248";
     };
     subtest 'Report a new recycling raises a bin delivery request' => sub {
         $mech->log_in_ok($user->email);
