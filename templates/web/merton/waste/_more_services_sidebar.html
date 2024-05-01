@@ -1,0 +1,38 @@
+[% IF communal_property %]
+    <h3>Damaged or missing</h3>
+    <p>Please contact your managing agent if you have damaged or missing containers.</p>
+[% END %]
+
+[% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe %]
+  <h3>More services</h3>
+   <ul>
+     [% IF any_report_allowed %]
+       <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
+    [% END %]
+    [% IF any_request_allowed %]
+      <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a replacement container</a></li>
+    [% END %]
+    [% IF show_garden_subscribe %]
+      <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
+    [% END %]
+    [% IF property.show_bulky_waste %]
+      <li>
+          <a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Book bulky goods collection</a>
+      </li>
+    [% END %]
+  </ul>
+[% END %]
+
+[% IF c.user.from_body OR c.user.is_superuser %]
+    <h3>Assisted collection</h3>
+    <ul>
+    [% IF assisted_collection %]
+        <li>This property is set up for assisted collections.</li>
+        <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+remove&amp;service_id=2238">Remove assisted collection</a></li>
+        <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+add&amp;service_id=2238">Update assisted collection</a></li>
+    [% ELSE %]
+        <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+add&amp;service_id=2238">Set up for assisted collection</a></li>
+    [% END %]
+    </ul>
+[% END %]
+

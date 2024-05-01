@@ -1,15 +1,15 @@
 =head1 NAME
 
-FixMyStreet::Roles::CobrandSLWP - shared code for Kingston and Sutton WasteWorks
+FixMyStreet::Roles::Cobrand::KingstonSutton - shared code for Kingston and Sutton WasteWorks
 
 =head1 DESCRIPTION
 
 =cut
 
-package FixMyStreet::Roles::CobrandSLWP;
+package FixMyStreet::Roles::Cobrand::KingstonSutton;
 
 use Moo::Role;
-with 'FixMyStreet::Roles::CobrandSLWPEcho';
+with 'FixMyStreet::Roles::Cobrand::SLWP';
 with 'FixMyStreet::Roles::CobrandBulkyWaste';
 
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
@@ -109,8 +109,6 @@ use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_PAPER_BIN_140 => 36;
 
 sub garden_due_days { 30 }
-
-sub garden_subscription_email_renew_reminder_opt_in { 0 }
 
 sub service_name_override {
     my ($self, $service) = @_;
