@@ -9,11 +9,19 @@ html {
   font-size: 14px;
 }
 
+h1, h2 {
+  font-weight: bold;
+}
+
 a {
   font-weight: 600;
   &:focus {
       background-color: $surrey_orange_light;
   }
+}
+
+.box-warning {
+  background-color: $surrey_grey;
 }
 
 input {
@@ -28,14 +36,43 @@ input {
       color: $link-color;
     }
 
+    small {
+      font-style: normal;
+    }
+
     &:focus {
-      background-color: $surrey_orange;
+      background-color: $surrey_orange_light;
+      border-color: $surrey_orange_light;
+      outline: 3px solid $primary_b;
+      outline-offset: 0;
       h3, small {
           color: $primary_b;
       }
     }
-    @include surrey-focus;
   }
+}
+
+.item-list--front-page .item-list__item {
+  a {
+    padding: 0.5rem;
+    border-left: 3px solid #0D76A6;
+    background-color: $surrey_grey;
+
+    &:hover {
+      h3 {
+        text-decoration: underline;
+      }
+    }
+
+    &:focus {
+      background-color: $surrey_orange_light;
+      border-color: $surrey_orange_light;
+      outline: 3px solid $primary_b;
+      outline-offset: 0;
+    }
+  }
+
+  margin-bottom: 0.5rem;
 }
 
 div.form-error, p.form-error {
@@ -88,6 +125,17 @@ a#geolocate_link,
   overflow: visible; // So outlines don't look cropped
 }
 
+.postcode-form-box div {
+  border-width: 0;
+  input#sub  {
+    border-color: $primary_text;
+  }
+}
+
+#front-main {
+  border-top: 0.1rem solid $base_bg;
+}
+
 .site-message {
   border: 0.3571428571rem solid $primary;
   padding: 2rem;
@@ -95,10 +143,32 @@ a#geolocate_link,
 }
 
 /* FOOTER */
+.scc-subscribe {
+  background-color: #e0e7cf;
+  border-top: .1rem solid #fff;
+  padding: 0.9375rem 0;
+  margin: 1rem auto 0 auto;
+
+  p {
+    margin-bottom: 0;
+  }
+
+  .scc-subscribe__icon:before {
+    color: $primary;
+    display: inline-block;
+    font-size: 2.5rem;
+    font-family: 'Font Awesome 6 Free';
+    margin-right: 0.625rem;
+    padding-bottom: 0.1875rem;
+    vertical-align: middle;
+  }
+}
+
 .scc-footer {
   background-color: #333;
   color: #fff;
   padding: 1.25rem 0;
+  margin-top: 0;
 
   a {
     &:focus {
