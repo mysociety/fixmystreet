@@ -1093,7 +1093,7 @@ $.extend(fixmystreet.set_up, {
     $('.js-multiple').make_multi();
 
     function update_label(id, str) {
-        $(id).prev('label').addClass('hidden-js').after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
+        $(id).prev('label').addClass('hidden-js').attr('for', id.slice(1)).after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
         $(id).next('.multi-select-container').children('.multi-select-button').attr('aria-label', str);
     }
     update_label('#statuses', translation_strings.select_status_aria_label);
