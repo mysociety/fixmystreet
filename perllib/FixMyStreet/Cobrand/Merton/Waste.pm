@@ -176,4 +176,18 @@ sub waste_munge_request_data {
 
 sub garden_due_days { 30 }
 
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+
+    my $address = $self->{c}->stash->{property}->{address};
+    $data->{title} = $data->{category};
+
+    my $detail;
+    foreach (sort grep { /^extra_/ } keys %$data) {
+        $detail .= "$data->{$_}\n\n";
+    }
+    $detail .= $address;
+    $data->{detail} = $detail;
+}
+
 1;
