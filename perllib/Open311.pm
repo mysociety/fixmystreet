@@ -117,9 +117,9 @@ sub send_service_request {
                     return $service_request_id;
                 } else {
                     my $timeout_warning = "Timed out while trying to fetch service_request_id for token $token"
-                        . " and create remote case for FMS problem ID $problem->id.";
+                        . " and create remote case for FMS problem ID " . $problem->id;
                     $self->error($self->error . $timeout_warning);
-                    warn $timeout_warning unless FixMyStreet->test_mode;
+                    warn "$timeout_warning\n" unless FixMyStreet->test_mode;
                     return 0;
                 }
             }
