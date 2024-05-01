@@ -13,6 +13,10 @@
   [% PROCESS 'waste/_services_garden_modify.html' %]
 [% END %]
 
+[% IF c.cobrand.moniker == 'merton' %]
+  <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Failure+to+deliver&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
+[% END %]
+
 [% IF unit.garden_waste %]
 
     <dl class="govuk-summary-list">
