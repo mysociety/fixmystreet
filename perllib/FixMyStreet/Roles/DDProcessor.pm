@@ -8,6 +8,7 @@ has date => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->payme
 has status => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->statusField} } );
 has type => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->paymentTypeField} } );
 has oneOffRef => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->oneOffReferenceField} } );
+has amount => ( is => 'lazy', default => sub { $_[0]->data->{Amount} } );
 
 package DDCancelPayment;
 use Moo;
@@ -19,6 +20,7 @@ has date => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->cance
 
 package FixMyStreet::Roles::DDProcessor;
 
+use utf8;
 use Moo::Role;
 use Utils;
 use JSON::MaybeXS;
@@ -86,8 +88,7 @@ sub waste_reconcile_direct_debits {
         # payments that match that reference.
         next if $params->{reference} && $payment->payer ne $params->{reference};
 
-        $self->log( "looking at payment " . $payment->payer );
-        $self->log( "payment date: " . $payment->date );
+        $self->log( "looking at payment " . $payment->payer . " for £" . $payment->amount . " on " . $payment->date );
 
         next unless $self->waste_dd_paid($payment->date);
         next unless $payment->status eq $self->paymentTakenCode;
@@ -147,12 +148,17 @@ sub waste_reconcile_direct_debits {
             }
             if ( $p ) {
                 my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
-                unless ($service) {
+                my $quantity;
+                if ($service) {
+                    $quantity = $self->waste_get_sub_quantity($service);
+                } elsif ($params->{reference} && $params->{force_when_missing}) {
+                    $quantity = $params->{force_when_missing};
+                } else {
                     $self->log("no matching service to renew for " . $payment->payer);
                     $self->output_log(1);
                     next;
                 }
-                my $renew = $self->_duplicate_waste_report($p, $uprn, $service, $payment, $dry_run);
+                my $renew = $self->_duplicate_waste_report($p, $uprn, $quantity, $payment, $dry_run);
                 $handled = $dry_run ? 1 : $renew->id;
             }
         # this covers new subscriptions and ad-hoc payments, both of which already have
@@ -284,12 +290,12 @@ sub _report_matches_payment {
 }
 
 sub _duplicate_waste_report {
-    my ($self, $report, $uprn, $service, $payment, $dry_run) = @_;
+    my ($self, $report, $uprn, $quantity, $payment, $dry_run) = @_;
 
     my $extra = {
         $self->garden_subscription_type_field => $self->waste_subscription_types->{Renew},
         uprn => $uprn,
-        Subscription_Details_Quantity => $self->waste_get_sub_quantity($service),
+        Subscription_Details_Quantity => $quantity,
         LastPayMethod => $self->bin_payment_types->{direct_debit},
         PaymentCode => $payment->payer,
         payment_method => 'direct_debit',

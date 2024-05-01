@@ -1,3 +1,4 @@
+use utf8;
 use CGI::Simple;
 use JSON::MaybeXS;
 use Test::MockModule;
@@ -1421,15 +1422,13 @@ subtest 'check direct debit reconcilliation' => sub {
 
     my $warnings = [
         "\n",
-        "looking at payment GGW554321\n",
-        "payment date: 16/03/2021\n",
+        "looking at payment GGW554321 for £10 on 16/03/2021\n",
         "category: Garden Subscription (1)\n",
         "is a new/ad hoc\n",
         "no matching record found for Garden Subscription payment with id GGW554321\n",
         "done looking at payment GGW554321\n",
         "\n",
-        "looking at payment $hidden_ref\n",
-        "payment date: 16/03/2021\n",
+        "looking at payment $hidden_ref for £10 on 16/03/2021\n",
         "category: Garden Subscription (1)\n",
         "extra query is {payerReference: $hidden_ref\n",
         "is a new/ad hoc\n",
@@ -1440,8 +1439,7 @@ subtest 'check direct debit reconcilliation' => sub {
         "no matching record found for Garden Subscription payment with id $hidden_ref\n",
         "done looking at payment $hidden_ref\n",
         "\n",
-        "looking at payment $renewal_nothing_in_echo_ref\n",
-        "payment date: 16/03/2021\n",
+        "looking at payment $renewal_nothing_in_echo_ref for £10 on 16/03/2021\n",
         "category: Garden Subscription (2)\n",
         "extra query is {payerReference: $renewal_nothing_in_echo_ref\n",
         "is a renewal\n",
@@ -1449,15 +1447,13 @@ subtest 'check direct debit reconcilliation' => sub {
         "is a matching new report\n",
         "no matching service to renew for $renewal_nothing_in_echo_ref\n",
         "\n",
-        "looking at payment GGW854324\n",
-        "payment date: 16/03/2021\n",
+        "looking at payment GGW854324 for £10 on 16/03/2021\n",
         "category: Garden Subscription (2)\n",
         "is a renewal\n",
         "no matching record found for Garden Subscription payment with id GGW854324\n",
         "done looking at payment GGW854324\n",
         "\n",
-        "looking at payment $ad_hoc_skipped_ref\n",
-        "payment date: 16/03/2021\n",
+        "looking at payment $ad_hoc_skipped_ref for £10 on 16/03/2021\n",
         "category: Garden Subscription (1)\n",
         "extra query is {payerReference: $ad_hoc_skipped_ref\n",
         "is a new/ad hoc\n",
@@ -1628,8 +1624,7 @@ subtest 'check direct debit reconcilliation' => sub {
         $c->waste_reconcile_direct_debits({ reference => $hidden_ref });
     } [
         "\n",
-        "looking at payment $hidden_ref\n",
-        "payment date: 16/03/2021\n",
+        "looking at payment $hidden_ref for £10 on 16/03/2021\n",
         "category: Garden Subscription (1)\n",
         "extra query is {payerReference: $hidden_ref\n",
         "is a new/ad hoc\n",
@@ -1646,8 +1641,7 @@ subtest 'check direct debit reconcilliation' => sub {
         $c->waste_reconcile_direct_debits({ reference => $hidden_ref, force_renewal => 1 });
     } [
         "\n",
-        "looking at payment $hidden_ref\n",
-        "payment date: 16/03/2021\n",
+        "looking at payment $hidden_ref for £10 on 16/03/2021\n",
         "category: Garden Subscription (1)\n",
         "Overriding type 1 to renew\n",
         "extra query is {payerReference: $hidden_ref\n",
@@ -1656,6 +1650,10 @@ subtest 'check direct debit reconcilliation' => sub {
         "is a matching new report\n",
         "no matching service to renew for $hidden_ref\n",
     ], "gets past the first stage if forced renewal";
+
+    stdout_like {
+        $c->waste_reconcile_direct_debits({ reference => $renewal_nothing_in_echo_ref, force_when_missing => 1, verbose => 1 });
+    } qr/looking at payment $renewal_nothing_in_echo_ref for £10 on 16\/03\/2021.*?category: Garden Subscription \(2\).*?is a renewal.*?looking at potential match @{[$renewal_nothing_in_echo->id]}.*?is a matching new report.*?created new confirmed report.*?done looking at payment/s, "creates a renewal if forced to";
 };
 
 };
