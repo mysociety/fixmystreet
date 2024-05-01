@@ -20,7 +20,7 @@
     [% PROCESS "report/new/category_wrapper.html" %]
     [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
-    <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next"
+    <button class="btn btn--primary btn--block btn--final hidden-nojs js-reporting-page--next"
         [% ' disabled' IF disable_form_message %]>[% loc('Continue') %]</button>
 </div>
 

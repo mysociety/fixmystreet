@@ -89,10 +89,10 @@ $button-margin-left: 0 !default;
   }
 
     &:disabled {
-        color: desaturate(darken($bg-bottom, 50%), 50%) !important;
-        background: $bg-bottom;
+        color: transparentize(#000, 0.4) !important;
+        background: #eee;
         @if $border {
-            border-color: $border;
+            border-color: #eee;
         } @else {
             border: none;
         }
