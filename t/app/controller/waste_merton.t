@@ -58,6 +58,9 @@ create_contact({ category => 'Assisted collection remove', email => 'assisted' }
     { code => 'Crew_Notes', description => 'Notes', required => 1, datatype => 'text' },
     { code => 'staff_form', automated => 'hidden_field' },
 );
+create_contact({ category => 'Failure to deliver', email => 'failure' }, 'Waste',
+    { code => 'Notes', description => 'Details', required => 1, datatype => 'text' },
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'merton',
@@ -283,6 +286,37 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('"container-18" value="1"');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
+    subtest 'test failure to deliver' => sub {
+        $e->mock('GetEventsForObject', sub { [ {
+            # Request
+            EventTypeId => 1635,
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 16, DatatypeName => 'Container Type' },
+                    ] },
+                },
+            ] },
+        } ] });
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a failure to deliver a food waste container');
+        $mech->follow_link_ok({ text => 'Report a failure to deliver a mixed recycling container' });
+        $mech->submit_form_ok({ with_fields => { extra_Notes => 'It never turned up' } });
+        $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Notes'), 'It never turned up';
+        is $report->detail, "It never turned up\n\n2 Example Street, Merton, KT1 1AA";
+        is $report->user->email, 'anne@example.org';
+        is $report->name, 'Anne Assist';
+        $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
     subtest 'test staff-only assisted collection form' => sub {
