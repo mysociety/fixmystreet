@@ -26,6 +26,7 @@ my $params = {
 };
 my $merton = $mech->create_body_ok(2500, 'Merton Council', $params, { cobrand => 'merton' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $merton, name => 'Staff User');
 
 sub create_contact {
     my ($params, $group, @extra) = @_;
@@ -48,6 +49,14 @@ create_contact({ category => 'Request new container', email => '1635' }, 'Waste'
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Action', required => 1, automated => 'hidden_field' },
     { code => 'Reason', required => 1, automated => 'hidden_field' },
+);
+create_contact({ category => 'Assisted collection add', email => 'assisted' }, 'Waste',
+    { code => 'Crew_Notes', description => 'Notes', required => 1, datatype => 'text' },
+    { code => 'staff_form', automated => 'hidden_field' },
+);
+create_contact({ category => 'Assisted collection remove', email => 'assisted' }, 'Waste',
+    { code => 'Crew_Notes', description => 'Notes', required => 1, datatype => 'text' },
+    { code => 'staff_form', automated => 'hidden_field' },
 );
 
 FixMyStreet::override_config {
@@ -273,6 +282,40 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('"container-18" value="1"');
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
+    subtest 'test staff-only assisted collection form' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=2238');
+        $mech->submit_form_ok({ with_fields => { extra_Crew_Notes => 'Behind the garden gate' } });
+        $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Crew_Notes'), 'Behind the garden gate';
+        is $report->detail, "Behind the garden gate\n\n2 Example Street, Merton, KT1 1AA";
+        is $report->user->email, 'anne@example.org';
+        is $report->name, 'Anne Assist';
+    };
+    subtest 'test staff-only form when logged out' => sub {
+        $mech->log_out_ok;
+        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=2238');
+        is $mech->res->previous->code, 302;
+    };
+    subtest 'test assisted collection display' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Set up for assisted collection');
+        my $dupe = dclone($bin_data);
+        # Give the entry an assisted collection
+        $dupe->[0]{Data}{ExtensibleDatum}{DatatypeName} = 'Assisted Collection';
+        $dupe->[0]{Data}{ExtensibleDatum}{Value} = 1;
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('is set up for assisted collection');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 };
