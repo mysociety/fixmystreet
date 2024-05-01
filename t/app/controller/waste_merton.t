@@ -54,7 +54,7 @@ create_contact({ category => 'Assisted collection add', email => 'assisted' }, '
     { code => 'Crew_Notes', description => 'Notes', required => 1, datatype => 'text' },
     { code => 'staff_form', automated => 'hidden_field' },
 );
-create_contact({ category => 'Assisted collection remove', email => 'assisted' },
+create_contact({ category => 'Assisted collection remove', email => 'assisted' }, 'Waste',
     { code => 'Crew_Notes', description => 'Notes', required => 1, datatype => 'text' },
     { code => 'staff_form', automated => 'hidden_field' },
 );
