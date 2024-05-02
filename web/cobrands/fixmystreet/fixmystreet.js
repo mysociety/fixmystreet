@@ -1776,6 +1776,10 @@ fixmystreet.fetch_reporting_data = function() {
             fixmystreet.body_overrides.clear();
         }
 
+        if (data.bodies && data.bodies.indexOf('Bristol City Council') > -1) {
+            $('#category-filter-div').hide();
+        }
+
         fixmystreet.update_councils_text(data);
         $('#js-top-message').html(data.top_message || '');
 
