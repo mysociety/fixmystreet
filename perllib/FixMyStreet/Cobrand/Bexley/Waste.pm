@@ -552,8 +552,10 @@ sub can_report_missed {
         my $min_dt = $self->_subtract_working_days(WORKING_DAYS_WINDOW);
         my $today_dt
             = DateTime->today( time_zone => FixMyStreet->local_time_zone );
+        my $now_dt
+            = DateTime->now( time_zone => FixMyStreet->local_time_zone );
 
-        return (   $log_for_round->{date} < $today_dt
+        return (   $log_for_round->{date} < $now_dt
                 && $log_for_round->{date} >= $min_dt ) ? 1 : 0
             if $log_for_round;
 
@@ -566,8 +568,6 @@ sub can_report_missed {
     # a) collection is marked as delayed
     # OR
     # b) collection was been made over WORKING_DAYS_WINDOW ago
-    # OR
-    # c) collection is today
     # OR
     # c) new service, so no last collection expected
     return 0;
