@@ -117,7 +117,7 @@ sub contact_extra_fields { [ 'display_name' ] }
 =cut
 
 sub new_report_detail_field_label {
-    'Where is the location of the problem? Please be specific and identify the nearest property address or landmark to the problem.'
+    'Where is the location of the problem? Please be specific and identify the nearest property address or landmark to the problem. Or use what3words.'
 }
 
 sub new_report_detail_field_hint {
