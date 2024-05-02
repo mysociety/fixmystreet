@@ -128,4 +128,23 @@ sub categories_restriction {
     return $rs->search( { 'me.category' => { -not_like => 'River Piers%' } } );
 }
 
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    # if this report has already been sent to Echo and we're re-sending to Dynamics,
+    # need to keep the original external_id so we can restore it afterwards.
+    $self->{original_external_id} = $row->external_id;
+}
+
+sub open311_post_send {
+    my ($self, $row, $h, $sender) = @_;
+
+    # restore original external_id for this report, and store new Dynamics ID
+    if ( $self->{original_external_id} ) {
+        $row->set_extra_metadata( crimson_external_id => $row->external_id );
+        $row->external_id($self->{original_external_id});
+        $row->update;
+        delete $self->{original_external_id};
+    }
+}
 1;
