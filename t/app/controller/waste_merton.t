@@ -148,6 +148,57 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('crimson_external_id'), "359";
         is $report->external_id, "248";
     };
+    subtest 'Test sending of updates to other endpoint' => sub {
+        use_ok 'FixMyStreet::Script::Merton::SendWaste';
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $comment = $report->add_to_comments({
+            text => "Let's imagine this update is from Echo",
+            user => $report->user,
+            external_id => "248_1",
+        });
+
+        subtest 'Update in Echo sent to Crimson'=> sub {
+            Open311->_inject_response('/api/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>359_1</update_id></request_update></service_request_updates>');
+            my $send = FixMyStreet::Script::Merton::SendWaste->new;
+            $send->send_comments;
+            my $req = Open311->test_req_used;
+            my $cgi = CGI::Simple->new($req->content);
+            is $cgi->param('api_key'), 'api_key';
+            is $cgi->param('service_request_id'), '359';
+            is $cgi->param('update_id'), $comment->id;
+
+            $comment->discard_changes;
+            is $comment->get_extra_metadata('sent_to_crimson'), 1;
+            is $comment->get_extra_metadata('crimson_external_id'), "359_1";
+            is $comment->external_id, "248_1";
+        };
+
+        Open311->_inject_response('/api/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>359_2</update_id></request_update></service_request_updates>');
+
+        subtest 'Update already in Crimson not sent again' => sub {
+            my $send = FixMyStreet::Script::Merton::SendWaste->new;
+            $send->send_comments;
+            my $req = Open311->test_req_used;
+            is $req, undef, 'no request made';
+            $comment->discard_changes;
+            is $comment->get_extra_metadata('crimson_external_id'), "359_1", 'crimson_external_id unchanged';
+        };
+
+        subtest 'Update not yet in Echo is not sent to Crimson' => sub {
+            $comment = $report->add_to_comments({
+                text => "Let's imagine this hasn't yet gone to Echo",
+                user => $report->user,
+            });
+
+            my $send = FixMyStreet::Script::Merton::SendWaste->new;
+            $send->send_comments;
+            my $req = Open311->test_req_used;
+            is $req, undef, 'no request made';
+            $comment->discard_changes;
+            is $comment->get_extra_metadata('crimson_external_id'), undef, 'crimson_external_id not set';
+        };
+    };
     subtest 'Report a new recycling raises a bin delivery request' => sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/request');

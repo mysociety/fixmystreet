@@ -17,3 +17,4 @@ use FixMyStreet::Script::Merton::SendWaste;
 
 my $send = FixMyStreet::Script::Merton::SendWaste->new;
 $send->send_reports;
+$send->send_comments;
