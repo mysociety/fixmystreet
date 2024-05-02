@@ -200,4 +200,12 @@ sub GetSiteContracts {
     return $res->{SiteContracts}->{SiteContract};
 }
 
+sub GetServiceItems {
+    my ($self, $site_service_id) = @_;
+
+    my $res = $self->call('GetServiceItems', serviceItemInput => ixhash( ServiceId => $site_service_id, ServiceItemId => '' ));
+
+    return $res->{ServiceItems}->{ServiceItem};
+}
+
 1;
