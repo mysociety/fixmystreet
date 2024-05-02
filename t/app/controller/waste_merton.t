@@ -61,6 +61,10 @@ create_contact({ category => 'Assisted collection remove', email => 'assisted' }
 create_contact({ category => 'Failure to deliver', email => 'failure' }, 'Waste',
     { code => 'Notes', description => 'Details', required => 1, datatype => 'text' },
 );
+create_contact({ category => 'Request additional collection', email => 'additional' }, 'Waste',
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'merton',
@@ -373,6 +377,21 @@ FixMyStreet::override_config {
         is $report->user->email, 'anne@example.org';
         is $report->name, 'Anne Assist';
         $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
+    subtest 'test staff-only additional collection' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({ text => 'Request an additional food waste collection' });
+        $mech->content_contains('Paper and card'); # Normally not there, see missed test above
+        $mech->submit_form_ok({ with_fields => { 'service-2239' => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('additional collection has been requested');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Request additional Food waste collection\n\n2 Example Street, Merton, KT1 1AA";
+        is $report->title, 'Request additional Food waste collection';
     };
 
     subtest 'test staff-only assisted collection form' => sub {

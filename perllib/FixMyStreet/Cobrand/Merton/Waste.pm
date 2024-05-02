@@ -4,6 +4,7 @@ use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Roles::Cobrand::SLWP';
 
+use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
 
 has lpi_value => ( is => 'ro', default => 'MERTON' );
@@ -175,6 +176,27 @@ sub waste_munge_request_data {
 }
 
 sub garden_due_days { 30 }
+
+=head2 waste_munge_report_form_pages
+
+Rename the button on the first report page if we're doing an additional collection
+
+=cut
+
+sub waste_munge_report_form_pages {
+    my ($self, $page_list, $field_list) = @_;
+    if ($self->{c}->get_param('additional')) {
+        $page_list->[1]->{title} = 'Select additional collection';
+        $page_list->[1]->{update_field_list} = sub {
+            return { submit => { value => 'Request additional collection' } };
+        };
+    }
+}
+
+sub waste_munge_report_form_fields {
+    my ($self, $field_list) = @_;
+    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
+}
 
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;

@@ -942,6 +942,7 @@ sub construct_bin_report_form {
 
     my $field_list = [];
 
+    my $show_all_services = $c->stash->{is_staff} && $c->get_param('additional');
     foreach (@{$c->stash->{service_data}}) {
         my $id = $_->{service_id};
 
@@ -949,7 +950,8 @@ sub construct_bin_report_form {
             ( $_->{last}
             && $_->{report_allowed}
             && !$_->{report_open} )
-            || $_->{report_only} )
+            || $_->{report_only}
+            || $show_all_services )
         {
             # Missed collection link may have passed in a hidden param for
             # a service that is no longer eligible for collection (e.g. if
@@ -1005,6 +1007,7 @@ sub report : Chained('property') : Args(0) {
             next => $next,
         },
     ];
+    $c->cobrand->call_hook("waste_munge_report_form_pages", $c->stash->{page_list}, $field_list);
     $c->stash->{field_list} = $field_list;
     $c->forward('form');
 }
