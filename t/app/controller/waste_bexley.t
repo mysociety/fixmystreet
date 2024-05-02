@@ -637,8 +637,8 @@ FixMyStreet::override_config {
             'cannot report missed collection against service due today that has not been collected';
         ok !$services{'FO-23'}{last}{is_delayed}, 'not marked delayed';
 
-        is $cobrand->can_report_missed( $property, $services{'FO-140'} ), 0,
-            'cannot report missed collection against service due today that *has* been collected';
+        is $cobrand->can_report_missed( $property, $services{'FO-140'} ), 1,
+            'can report missed collection against service due today that *has* been collected';
         ok !$services{'FO-140'}{last}{is_delayed}, 'not marked delayed';
 
         is $cobrand->can_report_missed( $property, $services{'RES-180'} ), 0,
