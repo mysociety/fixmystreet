@@ -111,7 +111,7 @@ sub bin_services_for_address {
     my ($property_logs, $street_logs) = $self->_in_cab_logs($property);
 
     $property->{red_tags} = $property_logs;
-    $property->{service_updates} = $street_logs;
+    $property->{service_updates} = grep { $_->{service_update} } @$street_logs;
     my %round_exceptions = map { $_->{round} => 1 } @$property_logs;
     $property->{round_exceptions} = \%round_exceptions;
 
@@ -371,10 +371,20 @@ sub _in_cab_logs {
     my $dt_from = $self->_subtract_working_days(WORKING_DAYS_WINDOW);
     my $cab_logs;
     if ( !$self->{c}->stash->{cab_logs} ) {
-        $cab_logs = $self->whitespace->GetInCabLogsByUprn(
+        my $cab_logs_uprn = $self->whitespace->GetInCabLogsByUprn(
             $property->{uprn},
             $dt_from->stringify,
         );
+        my $cab_logs_usrn = $self->whitespace->GetInCabLogsByUsrn(
+            $cab_logs_uprn->[0]{Usrn},
+            $dt_from->stringify,
+        );
+        $cab_logs = [ @$cab_logs_uprn, @$cab_logs_usrn ];
+
+        # Make cab logs unique by LogID
+        my %seen;
+        @$cab_logs = grep { !$seen{ $_->{LogID} }++ } @$cab_logs;
+
         $self->{c}->stash->{cab_logs} = $cab_logs;
     } else {
         $cab_logs = $self->{c}->stash->{cab_logs};
@@ -391,7 +401,7 @@ sub _in_cab_logs {
 
         my $logdate = DateTime::Format::Strptime->new( pattern => '%Y-%m-%dT%H:%M:%S' )->parse_datetime( $_->{LogDate} );
 
-        if ( $_->{Uprn} ) {
+        if ( $_->{Uprn} && $_->{Uprn} eq $property->{uprn} ) {
             push @property_logs, {
                 uprn   => $_->{Uprn},
                 round  => $_->{RoundCode},
@@ -401,6 +411,7 @@ sub _in_cab_logs {
             };
         } else {
             push @street_logs, {
+                service_update => $_->{Uprn} ? 0 : 1,
                 round  => $_->{RoundCode},
                 reason => $_->{Reason},
                 date   => $logdate,
@@ -447,8 +458,10 @@ sub can_report_missed {
         my $min_dt = $self->_subtract_working_days(WORKING_DAYS_WINDOW);
         my $today_dt
             = DateTime->today( time_zone => FixMyStreet->local_time_zone );
+        my $now_dt
+            = DateTime->now( time_zone => FixMyStreet->local_time_zone );
 
-        return (   $log_for_round->{date} < $today_dt
+        return (   $log_for_round->{date} < $now_dt
                 && $log_for_round->{date} >= $min_dt ) ? 1 : 0
             if $log_for_round;
 
@@ -461,8 +474,6 @@ sub can_report_missed {
     # a) collection is marked as delayed
     # OR
     # b) collection was been made over WORKING_DAYS_WINDOW ago
-    # OR
-    # c) collection is today
     # OR
     # c) new service, so no last collection expected
     return 0;
