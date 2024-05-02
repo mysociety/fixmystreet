@@ -115,9 +115,12 @@ $whitespace_mock->mock(
 );
 $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
     my ( $self, $uprn ) = @_;
-    return _in_cab_logs()->{$uprn};
+    return [ grep { $_->{Uprn} eq $uprn } @{ _in_cab_logs() } ];
 });
-
+$whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
+    my ( $self, $usrn ) = @_;
+    return _in_cab_logs();
+});
 my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {}, { cobrand => 'bexley' });
 my $contact = $mech->create_contact_ok(
     body => $body,
@@ -525,6 +528,7 @@ FixMyStreet::override_config {
         );
 
         my $property = {
+            uprn => 10001,
             missed_collection_reports => {
                 'RES-SACK' => 1,
             },
@@ -980,20 +984,22 @@ sub _worksheet_detail_service_items {
 }
 
 sub _in_cab_logs {
-    {
-        10001 => [
-            {
-                Reason => 'Food - Not Out',
-                RoundCode => 'RND-1',
-                LogDate => '2024-03-28T06:10:09.417',
-                Uprn => '10001',
-            },
-            {
-                Reason => 'N/A',
-                RoundCode => 'RND-6',
-                LogDate => '2024-03-28T06:10:09.417',
-                Uprn => '',
-            },
-        ],
-    }
+    [
+        {
+            LogID => 1,
+            Reason => 'Food - Not Out',
+            RoundCode => 'RND-1',
+            LogDate => '2024-03-28T06:10:09.417',
+            Uprn => '10001',
+            Usrn => '321',
+        },
+        {
+            LogID => 2,
+            Reason => 'N/A',
+            RoundCode => 'RND-6',
+            LogDate => '2024-03-28T06:10:09.417',
+            Uprn => '',
+            Usrn => '321',
+        },
+    ]
 }
