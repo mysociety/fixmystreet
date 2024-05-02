@@ -271,7 +271,12 @@ sub waste_munge_report_data {
     if ($id == $cfg->{bulky_service_id}) {
         $service = 'bulky collection';
     }
-    $data->{title} = "Report missed $service";
+    if ($c->get_param('additional') && $c->stash->{is_staff}) {
+        $data->{category} = 'Request additional collection';
+        $data->{title} = "Request additional $service collection";
+    } else {
+        $data->{title} = "Report missed $service";
+    }
     $data->{detail} = "$data->{title}\n\n$address";
     if ($booking_report) {
         $c->set_param('Exact_Location', $booking_report->get_extra_field_value('Exact_Location'));

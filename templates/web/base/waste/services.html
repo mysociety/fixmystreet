@@ -15,6 +15,9 @@
 
 [% IF c.cobrand.moniker == 'merton' %]
   <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Failure+to+deliver&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
+    [% IF is_staff %]
+        <a href="[% c.uri_for_action('waste/report', [ property.id ]) %]?additional=1&amp;service-[% unit.service_id %]=1" class="waste-service-link waste-service-descriptor">Request an additional [% unit.service_name FILTER lower %] collection</a>
+    [% END %]
 [% END %]
 
 [% IF unit.garden_waste %]
