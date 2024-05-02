@@ -123,7 +123,10 @@ my $comment_user = $mech->create_user_ok('comment');
 my $body = $mech->create_body_ok(
     2494,
     'London Borough of Bexley',
-    { comment_user => $comment_user },
+    {
+        comment_user           => $comment_user,
+        send_extended_statuses => 1,
+    },
     { cobrand      => 'bexley' },
 );
 my $contact = $mech->create_contact_ok(
@@ -536,9 +539,6 @@ FixMyStreet::override_config {
                     WSServiceProperties => {
                         WorksheetServiceProperty => [
                             {
-                                ServicePropertyID => 1,
-                            },
-                            {
                                 ServicePropertyID => 68,
                                 ServicePropertyValue => 'Duplicate worksheet', # 'duplicate'
                             },
@@ -549,11 +549,18 @@ FixMyStreet::override_config {
                     WSServiceProperties => {
                         WorksheetServiceProperty => [
                             {
-                                ServicePropertyID => 1,
-                            },
-                            {
                                 ServicePropertyID => 68,
                                 ServicePropertyValue => 'Not Out', # 'unable to fix'
+                            },
+                        ],
+                    },
+                },
+                2006 => {
+                    WSServiceProperties => {
+                        WorksheetServiceProperty => [
+                            {
+                                ServicePropertyID => 68,
+                                ServicePropertyValue => 'Cancelled', # 'closed'
                             },
                         ],
                     },
@@ -565,13 +572,27 @@ FixMyStreet::override_config {
 
         $mech->delete_problems_for_body( $body->id );
 
+        # Create a response template for missed collection contact
+        my $cancelled_template = $body->response_templates->create(
+            {   auto_response        => 1,
+                external_status_code => 'Cancelled',
+                state                => '',
+                text                 => 'This collection has been cancelled.',
+                title                => 'Cancelled template',
+            },
+        );
+        $cancelled_template->contact_response_templates->find_or_create(
+            { contact_id => $contact->id },
+        );
+
         my @reports;
-        for my $id ( 2001..2005 ) {
+        for my $id ( 2001..2006 ) {
             my ($r) = $mech->create_problems_for_body(
                 1,
                 $body->id,
                 'Missed collection',
                 {
+                    category    => 'Report missed collection',
                     external_id => "Whitespace-$id",
                 },
             );
@@ -582,13 +603,17 @@ FixMyStreet::override_config {
                     {
                         external_id   => $r->external_id,
                         problem_state => $r->state,
-                        text          => 'Preexisting comment',
+                        text => "Preexisting comment for worksheet $id",
                         user          => $comment_user,
                     }
                 );
             } else {
                 $r->state('confirmed');
             }
+
+            # Force explicit lastupdate, otherwise it will use real
+            # time and not set_fixed_time
+            $r->lastupdate( DateTime->now );
             $r->update;
 
             push @reports, $r;
@@ -615,7 +640,10 @@ FixMyStreet::override_config {
             $r->discard_changes;
 
             my @comments;
-            for my $c ( $r->comments->all ) {
+            for my $c (
+                sort { $a->problem_state cmp $b->problem_state }
+                $r->comments->all
+            ) {
                 push @comments, {
                     problem_state => $c->problem_state,
                     user_id       => $c->user_id,
@@ -649,7 +677,7 @@ FixMyStreet::override_config {
                     {
                         external_id   => 'Whitespace-2003',
                         problem_state => 'action scheduled',
-                        text          => 'Preexisting comment',
+                        text => 'Preexisting comment for worksheet 2003',
                         user_id       => $comment_user->id,
                     },
                 ],
@@ -673,13 +701,25 @@ FixMyStreet::override_config {
                     {
                         external_id   => 'Whitespace-2005',
                         problem_state => 'action scheduled',
-                        text          => 'Preexisting comment',
+                        text => 'Preexisting comment for worksheet 2005',
                         user_id       => $comment_user->id,
                     },
                     {
                         external_id   => 'Whitespace-2005',
                         problem_state => 'unable to fix',
                         text          => 'Our waste collection contractor has advised that this bin collection could not be completed because your bin, box or sack was not out for collection.',
+                        user_id       => $comment_user->id,
+                    },
+                ],
+            },
+            # Update (with template text)
+            {   external_id => 'Whitespace-2006',
+                state       => 'closed',
+                comments    => [
+                    {
+                        external_id   => 'Whitespace-2006',
+                        problem_state => 'closed',
+                        text          => $cancelled_template->text,
                         user_id       => $comment_user->id,
                     },
                 ],

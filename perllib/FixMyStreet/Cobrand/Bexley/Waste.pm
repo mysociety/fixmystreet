@@ -18,8 +18,10 @@ has 'whitespace' => (
 sub waste_fetch_events {
     my ( $self, $params ) = @_;
 
-    my $missed_collection_service_property_id = 68;
-    my $db = FixMyStreet::DB->schema->storage;
+    my $gsr_updates = Open311::GetServiceRequestUpdates->new(
+        current_body => $self->body,
+        system_user => $self->body->comment_user,
+    );
 
     my $missed_collection_reports = $self->problems->search(
         {   external_id => { like => 'Whitespace%' },
@@ -27,6 +29,9 @@ sub waste_fetch_events {
         },
         { order_by => 'id' },
     );
+
+    my $missed_collection_service_property_id = 68;
+    my $db = FixMyStreet::DB->schema->storage;
 
     while ( my $report = $missed_collection_reports->next ) {
         print 'Fetching data for report ' . $report->id . "\n" if $params->{verbose};
@@ -54,6 +59,7 @@ sub waste_fetch_events {
             ? $missed_collection_properties->{ServicePropertyValue}
             : '';
 
+        # TODO To open311-adapter or some kind of config
         my $new_state
             = missed_collection_state_mapping()->{$whitespace_state_string};
         unless ($new_state) {
@@ -65,33 +71,26 @@ sub waste_fetch_events {
             unless $self->waste_check_last_update( $params, $report,
             $new_state );
 
-        # Don't update state unless it's an allowed state
-        if ( FixMyStreet::DB::Result::Problem->visible_states()
-            ->{ $new_state->{fms_state} } )
-        {
-            print
-                "  Updating report to state '$new_state->{fms_state}' ('$new_state->{text}')\n"
-                if $params->{verbose};
+        my $request = {
+            description => $new_state->{text},
+            # No data from Whitespace for this, so make it now
+            comment_time =>
+                DateTime->now->set_time_zone( FixMyStreet->local_time_zone ),
+            external_status_code => $whitespace_state_string,
+            prefer_template      => 1,
+            status               => $new_state->{fms_state},
+            # TODO Is there an ID for specific worksheet update?
+            update_id => $report->external_id,
+        };
 
-            $db->txn_do( sub {
-                my $comment = $report->comments->new(
-                    {
-                        created       => \'NOW()',
-                        # TODO Any IDs for worksheet updates?
-                        external_id => $report->external_id,
-                        problem       => $report,
-                        problem_state => $new_state->{fms_state},
-                        send_state  => 'processed',
-                        text        => $new_state->{text},
-                        user          => $self->body->comment_user,
-                    },
-                );
-                $comment->insert;
-                $report->state( $new_state->{fms_state} );
-                $report->lastupdate( $comment->created );
-                $report->update;
-            } );
-        }
+        print
+            "  Updating report to state '$request->{status}' - '$request->{description}' ($request->{external_status_code})\n"
+            if $params->{verbose};
+
+        $gsr_updates->process_update(
+            $request,
+            $report,
+        );
     }
 }
 
