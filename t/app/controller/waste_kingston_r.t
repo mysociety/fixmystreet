@@ -179,7 +179,8 @@ FixMyStreet::override_config {
         $mech->content_contains('Continue to payment');
 
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
-        is $sent_params->{items}[0]{amount}, 4500;
+        my $pay_params = $sent_params;
+        is scalar @{$pay_params->{items}}, 5, 'right number of line items';
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
@@ -189,12 +190,17 @@ FixMyStreet::override_config {
         is $report->detail, "2 Example Street, Kingston, KT1 1AA";
         is $report->category, 'Request new container';
         is $report->title, 'Request Green recycling bin (240L) collection';
-        is $report->get_extra_field_value('payment'), 4500, 'correct payment';
+        is $report->get_extra_field_value('payment'), 1800, 'correct payment';
         is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $report->get_extra_field_value('Container_Type'), 12, 'correct bin type';
         is $report->get_extra_field_value('Action'), 2, 'correct container request action';
         is $report->state, 'unconfirmed', 'report not confirmed';
         is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+        my $sent_count = 0;
+        is $pay_params->{items}[$sent_count]{amount}, 1800;
+        is $pay_params->{items}[$sent_count]{lineId}, 'RBK-CCH-' . $report->id . '-Bob Marge';
+        $sent_count++;
 
         foreach (@{ $report->get_extra_metadata('grouped_ids') }) {
             my $report = FixMyStreet::DB->resultset("Problem")->find($_);
@@ -212,7 +218,7 @@ FixMyStreet::override_config {
             }
             is $report->detail, "2 Example Street, Kingston, KT1 1AA";
             is $report->category, 'Request new container';
-            is $report->get_extra_field_value('payment'), 4500, 'correct payment';
+            is $report->get_extra_field_value('payment'), $report->title =~ /Food/ ? "" : 900, 'correct payment';
             is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             if ($report->title =~ /replacement$/) {
                 is $report->get_extra_field_value('Action'), 3, 'correct container request action';
@@ -221,6 +227,11 @@ FixMyStreet::override_config {
             }
             is $report->state, 'confirmed', 'report confirmed';
             is $report->get_extra_metadata('scpReference'), undef, 'only original report has SCP ref';
+            next if $report->title =~ /Food/;
+            is $pay_params->{items}[$sent_count]{description}, $report->title;
+            is $pay_params->{items}[$sent_count]{lineId}, 'RBK-CCH-' . $report->id . '-Bob Marge';
+            is $pay_params->{items}[$sent_count]{amount}, 900;
+            $sent_count++;
         }
 
         FixMyStreet::Script::Reports::send();

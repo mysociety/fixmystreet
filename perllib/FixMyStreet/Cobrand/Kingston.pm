@@ -387,6 +387,18 @@ sub waste_munge_request_data {
     } else {
         $c->set_param('Container_Type', $container_id);
     }
+
+    if ($data->{payment}) {
+        my ($cost) = $self->request_cost($container_id); # Will be full price, or nothing if free
+        if ($cost) {
+            if ($data->{first_bin_done}) {
+                $cost = $self->_get_cost('request_replace_cost_more') || $cost/2;
+            } else {
+                $data->{first_bin_done} = 1;
+            }
+        }
+        $c->set_param('payment', $cost);
+    }
 }
 
 =head2 request_cost
