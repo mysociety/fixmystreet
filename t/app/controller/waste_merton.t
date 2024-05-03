@@ -61,6 +61,10 @@ create_contact({ category => 'Assisted collection remove', email => 'assisted' }
 create_contact({ category => 'Failure to deliver', email => 'failure' }, 'Waste',
     { code => 'Notes', description => 'Details', required => 1, datatype => 'text' },
 );
+create_contact({ category => 'Request additional collection', email => 'additional' }, 'Waste',
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'merton',
@@ -135,6 +139,7 @@ FixMyStreet::override_config {
     };
     subtest 'Test sending of reports to other endpoint' => sub {
         use_ok 'FixMyStreet::Script::Merton::SendWaste';
+        $e->mock('GetEvent', sub { { Id => 1928374 } });
         Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
         my $send = FixMyStreet::Script::Merton::SendWaste->new;
         $send->send_reports;
@@ -143,10 +148,63 @@ FixMyStreet::override_config {
         is $cgi->param('api_key'), 'api_key';
         is $cgi->param('attribute[Action]'), '3';
         is $cgi->param('attribute[Reason]'), '2';
+        is $cgi->param('attribute[echo_id]'), '1928374';
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_metadata('sent_to_crimson'), 1;
         is $report->get_extra_metadata('crimson_external_id'), "359";
+        is $report->get_extra_field_value('echo_id'), "1928374";
         is $report->external_id, "248";
+    };
+    subtest 'Test sending of updates to other endpoint' => sub {
+        use_ok 'FixMyStreet::Script::Merton::SendWaste';
+
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $comment = $report->add_to_comments({
+            text => "Let's imagine this update is from Echo",
+            user => $report->user,
+            external_id => "248_1",
+        });
+
+        subtest 'Update in Echo sent to Crimson'=> sub {
+            Open311->_inject_response('/api/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>359_1</update_id></request_update></service_request_updates>');
+            my $send = FixMyStreet::Script::Merton::SendWaste->new;
+            $send->send_comments;
+            my $req = Open311->test_req_used;
+            my $cgi = CGI::Simple->new($req->content);
+            is $cgi->param('api_key'), 'api_key';
+            is $cgi->param('service_request_id'), '359';
+            is $cgi->param('update_id'), $comment->id;
+
+            $comment->discard_changes;
+            is $comment->get_extra_metadata('sent_to_crimson'), 1;
+            is $comment->get_extra_metadata('crimson_external_id'), "359_1";
+            is $comment->external_id, "248_1";
+        };
+
+        Open311->_inject_response('/api/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>359_2</update_id></request_update></service_request_updates>');
+
+        subtest 'Update already in Crimson not sent again' => sub {
+            my $send = FixMyStreet::Script::Merton::SendWaste->new;
+            $send->send_comments;
+            my $req = Open311->test_req_used;
+            is $req, undef, 'no request made';
+            $comment->discard_changes;
+            is $comment->get_extra_metadata('crimson_external_id'), "359_1", 'crimson_external_id unchanged';
+        };
+
+        subtest 'Update not yet in Echo is not sent to Crimson' => sub {
+            $comment = $report->add_to_comments({
+                text => "Let's imagine this hasn't yet gone to Echo",
+                user => $report->user,
+            });
+
+            my $send = FixMyStreet::Script::Merton::SendWaste->new;
+            $send->send_comments;
+            my $req = Open311->test_req_used;
+            is $req, undef, 'no request made';
+            $comment->discard_changes;
+            is $comment->get_extra_metadata('crimson_external_id'), undef, 'crimson_external_id not set';
+        };
     };
     subtest 'Report a new recycling raises a bin delivery request' => sub {
         $mech->log_in_ok($user->email);
@@ -307,6 +365,21 @@ FixMyStreet::override_config {
         is $report->detail, "It never turned up\n\n2 Example Street, Merton, KT1 1AA";
         is $report->user->email, 'anne@example.org';
         is $report->name, 'Anne Assist';
+    };
+
+    subtest 'test staff-only additional collection' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({ text => 'Request an additional food waste collection' });
+        $mech->content_contains('Paper and card'); # Normally not there, see missed test above
+        $mech->submit_form_ok({ with_fields => { 'service-2239' => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('additional collection has been requested');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Request additional Food waste collection\n\n2 Example Street, Merton, KT1 1AA";
+        is $report->title, 'Request additional Food waste collection';
     };
 
     subtest 'test staff-only assisted collection form' => sub {
