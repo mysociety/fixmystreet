@@ -771,13 +771,6 @@ sub construct_bin_request_form {
             my $max = ref $maximum ? $maximum->{$id} : $maximum;
             push @$field_list, "container-$id" => {
                 type => 'Checkbox',
-                apply => [
-                    {
-                        when => { "quantity-$id" => sub { $max > 1 && $_[0] > 0 } },
-                        check => qr/^1$/,
-                        message => 'Please tick the box',
-                    },
-                ],
                 label => $name,
                 option_label => $c->stash->{containers}->{$id},
                 tags => { toggle => "form-quantity-$id-row" },
