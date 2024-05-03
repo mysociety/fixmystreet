@@ -5,6 +5,7 @@ use FixMyStreet::DB;
 use FixMyStreet::Queue::Item::Report;
 use FixMyStreet::SendReport::Open311;
 use Open311;
+use Integrations::Echo;
 
 has body => (
     is => 'ro',
@@ -17,6 +18,7 @@ sub send_reports {
     my $problems = $self->_problems;
 
     while (my $row = $problems->next) {
+        $self->set_echo_id($row) or next; # skip if no echo_id
         my $item = FixMyStreet::Queue::Item::Report->new( report => $row );
         FixMyStreet::DB->schema->cobrand($item->cobrand);
         $item->cobrand->set_lang_and_domain($row->lang, 1);
@@ -53,6 +55,27 @@ sub _problems {
         cobrand => 'merton',
         -not => { extra => { '\?' => 'sent_to_crimson' } },
     });
+}
+
+sub set_echo_id {
+    my ($self, $problem) = @_;
+
+    unless ($problem->get_extra_field_value('echo_id')) {
+        my $cobrand = $problem->get_cobrand_logged;
+        my $cfg = $cobrand->feature('echo');
+        my $echo = Integrations::Echo->new(%$cfg);
+        my $event = $echo->GetEvent($problem->external_id);
+        return unless $event && $event->{Id};
+
+        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $problem->id }, { for => \'UPDATE' })->single;
+        $row2->update_extra_field({
+            name => 'echo_id',
+            value => $event->{Id},
+        });
+        $row2->update;
+    }
+
+    return 1;
 }
 
 sub send_comments {
