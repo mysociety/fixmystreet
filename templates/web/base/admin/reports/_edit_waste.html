@@ -95,6 +95,7 @@
     <li>Source: [% problem.get_extra_field_value('Source') %]
   [% END %]
   [% IF c.cobrand.moniker == 'merton' %]
+    <li>Echo ID: [% problem.get_extra_field_value('echo_id') OR 'None' %]
     <li>Dynamics ID: [% problem.get_extra_metadata('crimson_external_id') OR 'None' %]
   [% END %]
 
