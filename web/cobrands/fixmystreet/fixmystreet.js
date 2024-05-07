@@ -1352,7 +1352,7 @@ $.extend(fixmystreet.set_up, {
         $('.js-new-report-user-hidden')[0].scrollIntoView({behavior: "smooth"});
         hide('.js-new-report-user-hidden');
         show('.js-new-report-user-shown').then(function(){
-            focusFirstVisibleInput();
+            $(this).find('.form-section-preview h2').trigger('focus');
         });
     });
 
