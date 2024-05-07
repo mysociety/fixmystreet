@@ -67,19 +67,32 @@ $front-main-color-desktop: $primary_b;
 $postcodeform-color: $primary_b;
 $postcodeform-color-desktop: $primary_b;
 
+// BUTTONS
+
+$button-primary-bg-top: $col_button;
+$button-primary-bg-bottom: $col_button;
+$button-primary-border: false;
+$button-primary-text: $bucks_charcoal;
+
+$button-primary-hover-bg-top: $bucks_button_bg_hover;
+$button-primary-hover-bg-bottom:$bucks_button_bg_hover;
+$button-primary-hover-border: false;
+$button-primary-hover-text: $bucks_charcoal;
+
+$button-primary-focus-bg-top: $bucks_button_bg_hover;
+$button-primary-focus-bg-bottom: $bucks_button_bg_hover;
+$button-primary-focus-border: false;
+$button-primary-focus-text: $bucks_charcoal;
+
+$button-border-radius: 0;
 
 @mixin bucks-button {
-  background-color: $bucks_button_bg;
-  border: 0;
-  border-radius: 0;
-  box-shadow: 0 2px 0 darken($bucks_button_bg, 10%);
-  color: $bucks_charcoal;
+  @include button-variant();
   @extend %bold-font;
+  box-shadow: 0 2px 0 darken($bucks_button_bg, 10%);
   padding: 0.75em 1em;
   font-size: 1em;
-  &:hover,
-  &:active,
-  &:focus {
+  &:active {
     color: $bucks_charcoal;
     background-color: $bucks_button_bg_hover;
   }

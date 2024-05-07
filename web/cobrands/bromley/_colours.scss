@@ -60,3 +60,13 @@ $content-background-desktop: $bromley_green_l2;
 $geolocation-link: $primary;
 
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$button-primary-bg-top: $bromley_blue;
+$button-primary-bg-bottom: $bromley_blue;
+$button-primary-border: $bromley_blue;
+$button-primary-text: $white;
+
+$button-primary-hover-bg-top: darken($bromley_blue, 10%);
+$button-primary-hover-bg-bottom:darken($bromley_blue, 10%);
+$button-primary-hover-border: darken($bromley_blue, 10%);
+$button-primary-hover-text: $white;
