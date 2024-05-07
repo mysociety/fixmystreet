@@ -59,9 +59,10 @@ sub waste_fetch_events {
             ? $missed_collection_properties->{ServicePropertyValue}
             : '';
 
-        # TODO To open311-adapter or some kind of config
+        my $config = $self->feature('whitespace');
         my $new_state
-            = missed_collection_state_mapping()->{$whitespace_state_string};
+            = $config->{missed_collection_state_mapping}
+                {$whitespace_state_string};
         unless ($new_state) {
             print "  No new state, skipping\n" if $params->{verbose};
             next;
@@ -967,107 +968,6 @@ sub _bin_location_options {
             'At the bottom of the steps',
             'Next to refuse bins',
         ],
-    };
-}
-
-# TODO Move this to open311-adapter?
-sub missed_collection_state_mapping {
-    return {
-        'Collected' => {
-            fms_state => 'fixed - council',
-            text       => 'Collection completed.',
-        },
-        'Cancelled' => {
-            fms_state => 'closed',
-            text       => 'Collection cancelled.',
-        },
-        'Complete' => {
-            fms_state => 'fixed - council',
-            text       => 'Collection completed.',
-        },
-        'Overdue' => {
-            fms_state => 'action scheduled',
-            text       => 'Collection overdue.',
-        },
-        'Duplicate worksheet' => {
-            fms_state => 'duplicate',
-            text => 'This report has been closed because it was a duplicate.',
-        },
-        'Excess Waste Left' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this collection could not be completed because excess waste was left.',
-        },
-        'Overfull' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this collection could not be completed because excess waste was left.',
-        },
-        'Overweight' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this bin collection could not be completed because your bin is too heavy to empty safely.',
-        },
-        'Re-filled after collection' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this bin collection could not be completed because your bin is too heavy to empty safely.',
-        },
-        'Unsafe situation' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this collection could not be completed because it was not safe for to collect your waste.',
-        },
-        'Waste compacted or stuck in bin' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this collection could not be completed because the waste was compacted or stuck in your bin.',
-        },
-        'Waste Frozen in Bin' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this collection could not be completed because the waste was frozen in your bin.',
-        },
-        'Contains Hazardous Waste' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this bin contains hazardous materials that are not suitable for collection.',
-        },
-        'Contaminated' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this bin collection could not be completed because it contains items that cannot be recycled.',
-        },
-        'Damaged Container' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this bin collection could not be completed because your container is damaged.',
-        },
-        'Wrong container used' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this collection could not be completed because the wrong container has been used.',
-        },
-        'No access' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this bin collection could not be completed because they were unable to access your container.',
-        },
-        'Not Out' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this bin collection could not be completed because your bin, box or sack was not out for collection.',
-        },
-        'Whole road not collected' => {
-            fms_state => 'action scheduled',
-            text       =>
-                'Our waste collection contractor have confirmed that the collections have yet to be made on your road and these will be carried out in due course.',
-        },
-        'Wrong container reported as missed' => {
-            fms_state => 'unable to fix',
-            text       =>
-                'Our waste collection contractor has advised that this bin collection could not be completed because you have used the wrong container.',
-        },
     };
 }
 

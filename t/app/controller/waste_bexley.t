@@ -498,7 +498,28 @@ FixMyStreet::override_config {
 FixMyStreet::override_config {
     COBRAND_FEATURES => {
         whitespace => {
-            bexley => { url => 'http://example.org/' },
+            bexley => {
+                url => 'http://example.org/',
+                missed_collection_state_mapping => {
+                    'Overdue' => {
+                        fms_state => 'action scheduled',
+                        text       => 'Collection overdue.',
+                    },
+                    'Duplicate worksheet' => {
+                        fms_state => 'duplicate',
+                        text => 'This report has been closed because it was a duplicate.',
+                    },
+                    'Not Out' => {
+                        fms_state => 'unable to fix',
+                        text       =>
+                            'Our waste collection contractor has advised that this bin collection could not be completed because your bin, box or sack was not out for collection.',
+                    },
+                    'Cancelled' => {
+                        fms_state => 'closed',
+                        text       => 'Collection cancelled.',
+                    },
+                },
+            },
         },
     },
 }, sub {
