@@ -11,10 +11,11 @@ $bromley_ligh_grey: #eeece8;
 $bromley_black: #171717;
 $bromley_yellow: #fdcb4c;
 $bromley_red_l1: #e8bac4;
+$white: #fff;
 
 $primary: $bromley_blue;
 $primary_b: $bromley_black;
-$primary_text: #ffffff;
+$primary_text: $white;
 $primary_link_color: $primary_text;
 $primary_link_hover_color: rgba($primary_text, 0.8);
 
@@ -60,3 +61,13 @@ $content-background-desktop: $bromley_green_l2;
 $geolocation-link: $primary;
 
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$button-primary-bg-top: $bromley_blue;
+$button-primary-bg-bottom: $bromley_blue;
+$button-primary-border: $bromley_blue;
+$button-primary-text: $white;
+
+$button-primary-hover-bg-top: darken($bromley_blue, 10%);
+$button-primary-hover-bg-bottom:darken($bromley_blue, 10%);
+$button-primary-hover-border: darken($bromley_blue, 10%);
+$button-primary-hover-text: $white;

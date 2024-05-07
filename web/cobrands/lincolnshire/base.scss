@@ -71,20 +71,7 @@ h1, h2, h3 {
   }
 }
 
-.btn--primary {
-  background: none; // remove gradient bg
-  background-color: $primary;
-  border-color: $primary;
-  &:hover,
-  &:active,
-  &:focus {
-    background: none; // remove gradient bg
-    border-color: darken($primary, 10%);
-    background-color: darken($primary, 10%);
-  }
-}
-
-.form-box,
+.form-box, 
 .alerts__cta-box {
   background-color: $lincs-panel;
 }
