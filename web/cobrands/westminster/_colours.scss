@@ -64,3 +64,25 @@ $postcodeform-background-desktop: transparent;
 
 $mobile-sticky-sidebar-button-bg: $westminster_blue_btns;
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$button-padding-top: .9em;
+$button-padding-bottom: .9em;
+$button-padding-left: 1em;
+$button-padding-right: 1em;
+
+$button-border-radius: 4.5px;
+
+$button-primary-bg-top: $westminster_blue_btns;
+$button-primary-bg-bottom: $westminster_blue_btns;
+$button-primary-border: false;
+$button-primary-text:#fff;
+
+$button-primary-hover-bg-top: $westminster_blue_btns_hover;
+$button-primary-hover-bg-bottom:$westminster_blue_btns_hover;
+$button-primary-hover-border: false;
+$button-primary-hover-text:#fff;
+
+$button-primary-focus-bg-top: #ffd420;
+$button-primary-focus-bg-bottom: #ffd420;
+$button-primary-focus-border: false;
+$button-primary-focus-text: #222;

@@ -75,17 +75,6 @@ a,
     }
 }
 
-.btn--primary {
-    border: none;
-    background: $col_button;
-
-    &:focus,
-    &:hover,
-    &:active {
-        background: $col_button_hover;
-    }
-}
-
 .box-warning {
     background-color: #ecf3ec;
 }

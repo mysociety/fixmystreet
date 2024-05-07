@@ -77,17 +77,6 @@ a,
   }
 }
 
-.btn--primary {
-    border: none;
-    background: $col_button;
-
-    &:focus,
-    &:hover,
-    &:active {
-        background: $col_button_hover;
-    }
-}
-
 ol.big-numbers > li:before {
     color: $fuchsia_lt;
 }

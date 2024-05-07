@@ -181,14 +181,8 @@
 }
 
 @mixin cobrand-btn-primary {
-    // All the !important declarations are to override the default behaviour of button-variant.
-    @include button-variant($bg-top: $primary_button_background_color, $bg-bottom: $primary_button_background_color, $border: $primary_button_border_color, $text: $primary_button_color, $hover-bg-bottom: $primary_button_background_color_hover, $hover-bg-top: $primary_button_background_color_hover, $hover-border: $primary_button_border_color_hover, $hover-text: $primary_button_color_hover);
+    @include button-variant($bg-top: $primary_button_background_color, $bg-bottom: $primary_button_background_color, $border: $primary_button_border_color, $text: $primary_button_color, $hover-bg-bottom: $primary_button_background_color_hover, $hover-bg-top: $primary_button_background_color_hover, $hover-border: $primary_button_border_color_hover, $hover-text: $primary_button_color_hover,$focus-bg-bottom: $primary_button_background_color_focus, $focus-bg-top: $primary_button_background_color_focus, $focus-border: $primary_button_border_color_focus, $focus-text: $primary_button_color_focus);
     @include cobrand-btn;
-    &:focus {
-        background: $primary_button_background_color_focus !important;
-        color: $primary_button_color_focus !important;
-        border-color: $primary_button_border_color_focus !important;
-    }
 }
 
 @mixin cobrand-btn-secondary {

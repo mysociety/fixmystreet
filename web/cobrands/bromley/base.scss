@@ -178,13 +178,6 @@ input.field, input.text,
   font-family: $body-font;
 }
 
-.btn--primary {
-  $bg: $bromley_blue;
-  $hover-bg: darken($bromley_blue, 10%);
-  @include button-variant($bg, $bg, false, #fff, $hover-bg, $hover-bg, false, #fff);
-  border-color: $bromley_blue !important;
-}
-
 .container .content {
   .frontpage & {
     &:first-child p {

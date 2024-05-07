@@ -48,6 +48,21 @@ $dropzone-button-text: $shropshire-white;
 $front-main-container-background-desktop: $shropshire-white;
 $postcodeform-background: transparent;
 
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $shropshire-white;
+
+$button-primary-hover-bg-top:$shropshire-dark-blue;
+$button-primary-hover-bg-bottom:$shropshire-dark-blue;
+$button-primary-hover-border:$shropshire-dark-blue;
+$button-primary-hover-text: $shropshire-white;
+
+$button-primary-focus-bg-top: #ffe100;
+$button-primary-focus-bg-bottom: #ffe100;
+$button-primary-focus-border: $button-primary-border;
+$button-primary-focus-text: #222;
+
 @mixin shropshire-form-input($margin: 0.5em 0, $padding: 5px) {
     margin: $margin;
     padding: $padding;
@@ -68,29 +83,16 @@ $postcodeform-background: transparent;
 }
 
 @mixin shropshire-button-primary($padding: 0.33em 1em, $font-size: 1em, $line-height: 1.5em) {
-    border: none;
+    @include button-variant();
     font-weight: normal;
-
     text-align: center;
     font-size: $font-size;
     line-height: $line-height;
     padding: $padding;
-    border-radius: 4px;
-    border: 2px solid $shropshire-blue;
-    background: $shropshire-blue;
-    color: #fff !important;
+    border-width: 2px;
 
     &:focus {
-        border: 2px solid $shropshire-dark-blue;
-        background: $shropshire-dark-blue;
-        color: #fff !important;
         outline: solid 3px $shropshire-yellow;
-    }
-
-    &:hover {
-        border: 2px solid $shropshire-dark-blue;
-        background: $shropshire-dark-blue;
-        color: #fff !important;
     }
 }
 
