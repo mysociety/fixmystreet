@@ -341,7 +341,7 @@ sub open311_munge_update_params {
 
 =head2 open311_waste_update_extra
 
-Ingore any updates from Echo that don't have a resolution code
+Ingore any updates from Echo that aren't New/Completed and don't have a resolution code
 
 =cut
 
@@ -349,7 +349,11 @@ sub open311_waste_update_extra {
     my ($self, $cfg, $event) = @_;
 
     my $override_status;
-    if (!$event->{ResolutionCodeId}) {
+    my $event_type = $cfg->{event_types}{$event->{EventTypeId}};
+    my $state_id = $event->{EventStateId};
+    my $resolution_id = $event->{ResolutionCodeId} || '';
+    my $description = $event_type->{states}{$state_id}{name} || '';
+    if ($description ne 'New' && $description ne 'Completed' && !$resolution_id) {
         $override_status = "";
     }
 
