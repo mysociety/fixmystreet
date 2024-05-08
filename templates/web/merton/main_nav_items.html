@@ -5,6 +5,9 @@
     [%~ ELSE ~%]
         [%~ INCLUDE navitem uri='/auth' label=loc('Sign in') ~%]
     [%~ END ~%]
+    [%~ IF c.user_exists AND c.cobrand.admin_allow_user(c.user) ~%]
+      [%~ INCLUDE navitem uri='/admin' label=loc('Admin') ~%]
+    [%~ END ~%]
     [% RETURN %]
 [% END %]
 
