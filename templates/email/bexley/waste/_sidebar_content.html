@@ -1,0 +1,11 @@
+[% # Hacky string munging :-( %]
+[%
+  title = report.title;
+  address = report.detail.remove(".+\n\n");
+  title = title.remove('Report missed ');
+%]
+<h2 style="[% h2_style %]">Bins reported as missed:</h2>
+[% title | html_para_email(secondary_p_style) %]
+<br>
+<h2 style="[% h2_style %]">Address:</h2>
+[% address | html_para_email(secondary_p_style) %]
