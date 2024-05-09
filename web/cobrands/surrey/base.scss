@@ -174,7 +174,7 @@ a#geolocate_link,
 .scc-footer {
   background-color: #333;
   color: #fff;
-  padding: 1.25rem 0;
+  padding: 2.375rem 0;
   margin-top: 0;
 
   a {
@@ -183,101 +183,23 @@ a#geolocate_link,
     }
   }
 
-  .footer-upper-section {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .scc-footer__list--contact-channels {
-    width: 30%;
-  }
-
   .scc-footer__list {
-    margin: 0 0 1.25rem;
+    margin: 0;
+    text-align: center;
 
-    &.m-0 {
-        margin: 0;
-    }
-  }
-
-  li {
-    margin-top: 0.625rem;
-  }
-
-  .scc-footer__item {
-    display: block;
-    padding-right: 1.5625rem;
-
-    &:last-child {
-        padding-right: 0;
-    }
-  }
-
-  .scc-footer__link {
-    color: $primary_text;
-    font-weight: 400;
-  }
-
-  .scc-social-icons {
-    margin-top: 1rem;
-  }
-
-  .scc-social-icons__list {
-    list-style: none;
-    margin: 0 0 0.625rem;
-  }
-
-  .scc-social-icons__item {
-    display: inline-block;
-    margin: 0 0 0 0.9375rem;
-
-    &:first-child {
-        margin-left: 0;
-    }
-  }
-
-  .scc-footer__list--pages {
-    &:first-child {
-        margin-bottom: 0;
-    }
-  }
-
-  .fa-brands {
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    display: var(--fa-display, inline-block);
-    font-style: normal;
-    font-variant: normal;
-    line-height: 1;
-    text-rendering: auto;
-  }
-
-  .scc-social-icons__link {
-    font-size: 1.875rem;
-    &:hover {
-      color: $surrey_orange_light;
-      text-decoration: none;
-    }
-    &:focus {
-      margin: -0.5rem;
-      outline: none;
-      padding: 0.5rem;
-    }
-  }
-
-  .scc-footer__item {
-    &--contact {
-      background: url('/cobrands/surrey/images/Call-Icon-white-19x30.png');
-      background-repeat: no-repeat;
-      padding: 0 0 0.9375rem 1.56rem;
-      margin-right: 1.25rem;
+    .scc-footer__item {
+      margin-bottom: 0;
+      padding: 10px;
+      list-style: none;
     }
 
-    &--find {
-      background-image: url('/cobrands/surrey/images/Map-Icon-white-24x30.png');
-      background-repeat: no-repeat;
-      padding: 0 0 0.9375rem 1.875rem;
-      border: 0;
+    .scc-footer__link {
+      color: $primary_text;
+      font-weight: 400;
     }
   }
+}
+
+.societyworks-footer p {
+  text-align: center;
 }
