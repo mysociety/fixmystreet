@@ -28,6 +28,11 @@ input {
   @include surrey-focus;
 }
 
+input[type="text"],
+textarea {
+  color: #222; // requested by Surrey
+}
+
 
 .item-list__item {
   a {
