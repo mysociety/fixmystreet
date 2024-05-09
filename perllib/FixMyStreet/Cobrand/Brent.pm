@@ -534,7 +534,7 @@ sub open311_munge_update_params {
 
 =head2 should_skip_sending_update
 
-Do not try and send updates to the ATAK backend.
+Do not try and send updates to the ATAK or Symology backends.
 
 =cut
 
@@ -542,7 +542,7 @@ sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $code = $update->problem->contact->email;
-    return 1 if $code =~ /^ATAK/;
+    return 1 if $code =~ /^(ATAK|Symology)/;
     return 0;
 }
 
