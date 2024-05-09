@@ -145,8 +145,15 @@ a#geolocate_link,
 
 .site-message {
   border: 0.3571428571rem solid $primary;
-  padding: 2rem;
+  padding: 20px;
+  padding-top: 24px;
+  padding-left: 75px;
   font-size: 1rem;
+
+  @include svg-background-image('/cobrands/surrey/images/info-circle');
+  background-repeat: no-repeat;
+  background-size: 35px;
+  background-position: left 25px top 20px;
 }
 
 /* FOOTER */
