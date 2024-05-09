@@ -219,6 +219,7 @@ sub roles_from_oidc {
         AgentInspector => 'Streetcare - Agent Inspector',
         Admin => 'Streetcare - Admin',
         CustomerServices => 'Streetcare - Customer Services',
+        CPOS => 'Streetcare - CPOS',
     );
 
     my @body_roles;
