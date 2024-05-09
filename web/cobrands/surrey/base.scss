@@ -28,6 +28,11 @@ input {
   @include surrey-focus;
 }
 
+input[type="text"],
+textarea {
+  color: #222; // requested by Surrey
+}
+
 
 .item-list__item {
   a {
@@ -77,6 +82,8 @@ input {
 
 div.form-error, p.form-error {
   background: $surrey_red;
+  border-radius: 0;
+  padding: 5px 7px;
 }
 
 input.form-error, textarea.form-error {
