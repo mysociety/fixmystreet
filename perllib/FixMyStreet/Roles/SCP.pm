@@ -57,7 +57,20 @@ sub waste_cc_get_redirect_url {
         reference => $customer_ref,
         description => $p->title,
         lineId => $self->waste_cc_payment_line_item_ref($p),
-    });
+    }) if $amount;
+    if (my $grouped_ids = $p->get_extra_metadata('grouped_ids')) {
+        foreach my $id (@$grouped_ids) {
+            my $problem = $c->model('DB::Problem')->find({ id => $id });
+            my $amount = $problem->get_extra_field_value('payment');
+            push @items, {
+                amount => $amount,
+                reference => $customer_ref,
+                description => $problem->title,
+                lineId => $self->waste_cc_payment_line_item_ref($problem),
+            } if $amount;
+        }
+    }
+
     if ($admin_fee) {
         push @items, {
             amount => $admin_fee,

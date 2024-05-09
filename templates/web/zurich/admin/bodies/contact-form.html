@@ -21,7 +21,7 @@
     </p>
 
     <p><strong>[% loc('Email:') %] </strong>
-    <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
+    <input type="email" class="form-control" name="email" value="[% contact.email | html %]" size="30" autocomplete="email">
 
     <p>
       <strong>[% loc('Extra fields:') %]</strong>

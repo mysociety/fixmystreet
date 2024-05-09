@@ -208,10 +208,10 @@ sub user_from_oidc {
 sub roles_from_oidc {
     my ($self, $user, $roles) = @_;
 
+    return unless $roles && @$roles;
+
     $user->user_roles->delete;
     $user->from_body($self->body->id);
-
-    return unless $roles && @$roles;
 
     my %role_map = (
         BasicEditorViewers => 'Streetcare - Basic Editor Viewers',

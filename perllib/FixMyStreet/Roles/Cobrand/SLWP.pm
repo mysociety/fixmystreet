@@ -58,7 +58,11 @@ use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
+use constant CONTAINER_RECYCLING_BLUE_BAG => 18;
 use constant CONTAINER_PAPER_BIN => 19;
+use constant CONTAINER_FOOD_INDOOR => 23;
+use constant CONTAINER_FOOD_OUTDOOR => 24;
+use constant CONTAINER_GARDEN_SACK => 28;
 use constant CONTAINER_PAPER_BIN_140 => 36;
 
 sub garden_service_id { 2247 }
@@ -83,7 +87,7 @@ sub waste_relevant_serviceunits {
             next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != $self->garden_service_id;
 
             push @rows, {
-                Id => $task->{Id},
+                Id => $_->{Id},
                 ServiceId => $task->{TaskTypeId},
                 ServiceTask => $task,
                 Schedules => $schedules,
@@ -151,14 +155,22 @@ sub waste_service_containers {
             $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
         }
         next if $waste_containers_no_request{$container};
-        next if $container == 18 && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
+        next if $container == CONTAINER_RECYCLING_BLUE_BAG && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
         if ($container && $quantity) {
-            # Store this fact here for use in new request flow
-            $self->{c}->stash->{container_recycling_bin} = 1 if $container == CONTAINER_RECYCLING_BIN;
             push @$containers, $container;
-            next if $container == 28; # Garden waste bag
-            # The most you can request is one
-            $request_max->{$container} = 1;
+            next if $container == CONTAINER_GARDEN_SACK; # Garden waste bag
+            # The most you can request - ignored on replacements anyway
+            if ($self->moniker ne 'kingston') {
+                $request_max->{$container} = 1;
+            } elsif ($self->moniker eq 'kingston') {
+                if ($container == CONTAINER_FOOD_OUTDOOR || $container == CONTAINER_PAPER_BIN || $container == CONTAINER_RECYCLING_BIN) {
+                    $request_max->{$container} = 3;
+                } elsif ($container == CONTAINER_RECYCLING_BOX) {
+                    $request_max->{$container} = 5;
+                } else {
+                    $request_max->{$container} = 1;
+                }
+            }
             $self->{c}->stash->{quantities}->{$container} = $quantity;
 
             if ($self->moniker eq 'sutton') {
@@ -177,15 +189,15 @@ sub waste_service_containers {
         }
     }
 
-    if ($service_name =~ /Food/) {
+    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{+CONTAINER_FOOD_INDOOR}) {
         # Can always request a food caddy
-        push @$containers, 23; # Food waste bin (kitchen)
-        $request_max->{23} = 1;
+        push @$containers, CONTAINER_FOOD_INDOOR;
+        $request_max->{+CONTAINER_FOOD_INDOOR} = 1;
     }
     if ($self->moniker eq 'kingston' && grep { $_ == CONTAINER_RECYCLING_BOX } @$containers) {
         # Can request a bin if you have a box
         push @$containers, CONTAINER_RECYCLING_BIN;
-        $request_max->{+CONTAINER_RECYCLING_BIN} = 1;
+        $request_max->{+CONTAINER_RECYCLING_BIN} = 3;
     }
 
     return ($containers, $request_max);

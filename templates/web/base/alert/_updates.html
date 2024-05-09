@@ -17,7 +17,7 @@
     [% IF permissions.contribute_as_another_user %]
       <label for="alert_rznvy">[% loc('Email') %]</label>
       <div class="form-txt-submit-box">
-          <input type="email" class="form-control" name="rznvy" id="alert_rznvy" value="[% email %]" size="30">
+          <input type="email" class="form-control" name="rznvy" id="alert_rznvy" value="[% email %]" size="30" autocomplete="email">
           <input class="green-btn" type="submit" name="alert" value="[% loc('Subscribe') %]">
       </div>
     [% ELSE %]

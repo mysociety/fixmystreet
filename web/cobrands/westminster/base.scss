@@ -272,3 +272,126 @@ body.alertpage, body.authpage, body.twothirdswidthpage {
         @include btn-medium-primary
     }
 }
+
+.westminster-cookie-banner {
+    *, ::before, ::after {
+        box-sizing: border-box;
+        border-width: 0;
+        border-style: solid;
+        border-color: #e5e7eb;
+    }
+
+    .cookiealert.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0%);
+        transition: all 200ms;
+    }
+
+    .cookiealert {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        margin: 0 !important;
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        border-radius: 0;
+        transform: translateY(100%);
+        transition: all 200ms ease-out;
+        color: #fff;
+        background: #0B2265;
+        border-top: 0.4rem solid #ffd420;
+        font-family: "Source Sans Pro" !important;
+        font-size: 19px;
+        line-height: 1.78125rem;
+    }
+
+
+    .row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        flex-flow: row wrap;
+        position: relative;
+    }
+
+    .p-6 {
+        padding: 1.5rem;
+    }
+
+    .text-left {
+        text-align: left;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .ml-auto {
+        margin-left: auto;
+    }
+
+
+    .header-4 {
+        font-size: 1.5rem;
+        font-family: "Source Sans Pro";
+        letter-spacing: 0;
+        color: #0B2265;
+        line-height: 1.9375rem;
+    }
+
+    .cookiealert p {
+        font-size: 1.0625rem;
+        line-height: 1.59375rem;
+        margin-top: 0;
+        margin-bottom: 0.625rem;
+    }
+
+    .cookiealert a {
+        color: #ffffff;
+        text-decoration: underline;
+    }
+
+    .text-link-colour {
+        color: rgb(0, 89, 175);
+    }
+
+    .text-white {
+        color: rgb(255, 255, 255);
+    }
+
+    button, [type='button'] {
+        background-color: transparent;
+        background-image: none;
+        cursor: pointer;
+        text-transform: none;
+    }
+
+    .primary-button {
+        font-size: 1.1475rem;
+        line-height: 1.336rem;
+        background-color: #0335ff;
+        color: #ffffff;
+        padding: 0.5em;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 0 0.125rem 0.735rem 0 rgba(0, 0, 0, 0.3);
+        outline: none;
+        border-radius: 0.4rem;
+    }
+
+    .bg-button-default {
+        background-color: rgb(3, 53, 255);
+    }
+
+    .mt-3 {
+        margin-top: 0.75rem;
+    }
+}

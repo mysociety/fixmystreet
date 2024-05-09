@@ -416,8 +416,11 @@ sub redact_image {
     return $new_set;
 }
 
-# Repeatedly shrink any images over the given size to the given percentage
-# of their original size until they are small enough.
+# Shrinks any images over the given size until they are small enough.
+# First tries shrinking to the given percentage of the original size.
+# If this isn't small enough, next tries shrinking the original to the given percentage squared,
+# and so on.
+# E.g. for 90% it would next try 81%, then 72% etc.
 # Returns the new photoset and a bool indicating if any images were shrunk.
 sub shrink_all_to_size {
     my ($self, $size_bytes, $resize_percent) = @_;
@@ -425,14 +428,24 @@ sub shrink_all_to_size {
     my $shrunk = 0;
     my @images = $self->all_ids;
     foreach my $i (0.. $#images) {
-        my $blob = $self->get_raw_image($i)->{data};
-        while (length $blob > $size_bytes) {
-            $blob = FixMyStreet::ImageMagick->new(blob => $blob)
-                        ->shrink_to_percentage($resize_percent)
-                        ->as_blob;
-            $images[$i] = $blob;
-            $shrunk = 1;
+        my $original_blob = $self->get_raw_image($i)->{data};
+
+        if (length $original_blob <= $size_bytes) {
+            next;
         }
+
+        $shrunk = 1;
+
+        my $percent = $resize_percent;
+        my $shrunk_blob;
+        do {
+            $shrunk_blob = FixMyStreet::ImageMagick->new(blob => $original_blob)
+                            ->shrink_to_percentage($percent)
+                            ->as_blob;
+            $percent = $percent * $resize_percent;
+        } while (length $shrunk_blob > $size_bytes);
+
+        $images[$i] = $shrunk_blob;
     }
 
     my $new_set = (ref $self)->new({

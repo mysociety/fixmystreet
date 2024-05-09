@@ -101,12 +101,16 @@ sub waste_staff_choose_payment_method { 1 }
 sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
 
 use constant CONTAINER_REFUSE_140 => 1;
+use constant CONTAINER_REFUSE_180 => 35;
 use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
+use constant CONTAINER_RECYCLING_BLUE_BAG => 18;
 use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_PAPER_BIN_140 => 36;
+use constant CONTAINER_GARDEN_BIN => 26;
+use constant CONTAINER_GARDEN_SACK => 28;
 
 sub garden_due_days { 30 }
 
@@ -183,12 +187,20 @@ sub waste_containers {
             28 => 'Garden waste sacks',
         };
     } elsif ($self->moniker eq 'kingston') {
-        return {
-            %shared,
+        my $black_bins = $self->{c}->get_param('exchange') ? {
             1 => 'Black rubbish bin (140L)',
             2 => 'Black rubbish bin (240L)',
             3 => 'Black rubbish bin (360L)',
             35 => 'Black rubbish bin (180L)',
+        } : {
+            1 => 'Black rubbish bin',
+            2 => 'Black rubbish bin',
+            3 => 'Black rubbish bin',
+            35 => 'Black rubbish bin',
+        };
+        return {
+            %shared,
+            %$black_bins,
             12 => 'Green recycling bin (240L)',
             13 => 'Green recycling bin (360L)',
             16 => 'Green recycling box (55L)',
@@ -235,16 +247,20 @@ sub waste_bulky_missed_blocked_codes {
 
 sub waste_munge_bin_services_open_requests {
     my ($self, $open_requests) = @_;
-    if ($self->moniker eq 'sutton') {
-        if ($open_requests->{+CONTAINER_REFUSE_140}) {
-            $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_140};
-        } elsif ($open_requests->{+CONTAINER_REFUSE_240}) {
-            $open_requests->{+CONTAINER_REFUSE_140} = $open_requests->{+CONTAINER_REFUSE_240};
-            $open_requests->{+CONTAINER_REFUSE_360} = $open_requests->{+CONTAINER_REFUSE_240};
-        }
-        if ($open_requests->{+CONTAINER_PAPER_BIN_140}) {
-            $open_requests->{+CONTAINER_PAPER_BIN} = $open_requests->{+CONTAINER_PAPER_BIN_140};
-        }
+    if ($open_requests->{+CONTAINER_REFUSE_140}) { # Sutton
+        $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_140};
+    } elsif ($open_requests->{+CONTAINER_REFUSE_180}) { # Kingston
+        $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_180};
+    } elsif ($open_requests->{+CONTAINER_REFUSE_240}) { # Both
+        $open_requests->{+CONTAINER_REFUSE_140} = $open_requests->{+CONTAINER_REFUSE_240};
+        $open_requests->{+CONTAINER_REFUSE_180} = $open_requests->{+CONTAINER_REFUSE_240};
+        $open_requests->{+CONTAINER_REFUSE_360} = $open_requests->{+CONTAINER_REFUSE_240};
+    } elsif ($open_requests->{+CONTAINER_REFUSE_360}) { # Kingston
+        $open_requests->{+CONTAINER_REFUSE_180} = $open_requests->{+CONTAINER_REFUSE_360};
+        $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_360};
+    }
+    if ($open_requests->{+CONTAINER_PAPER_BIN_140}) {
+        $open_requests->{+CONTAINER_PAPER_BIN} = $open_requests->{+CONTAINER_PAPER_BIN_140};
     }
 }
 
@@ -253,7 +269,7 @@ sub garden_container_data_extract {
     # Assume garden will only have one container data
     my $garden_container = $containers->[0];
     my $garden_bins = $quantities->{$containers->[0]};
-    if ($garden_container == 28) {
+    if ($garden_container == CONTAINER_GARDEN_SACK) {
         my $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
         return ($garden_bins, 1, $garden_cost, $garden_container);
     } else {
@@ -286,7 +302,7 @@ sub waste_garden_sub_params {
 
     my $service = $self->garden_current_subscription;
     my $existing = $service ? $service->{garden_container} : undef;
-    my $container = $data->{slwp_garden_sacks} ? 28 : $existing || 26;
+    my $container = $data->{slwp_garden_sacks} ? CONTAINER_GARDEN_SACK : $existing || CONTAINER_GARDEN_BIN;
     my $container_actions = {
         deliver => 1,
         remove => 2
@@ -331,65 +347,6 @@ sub waste_munge_report_form_fields {
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
-=head2 waste_munge_request_form_fields
-
-Replace the usual checkboxes grouped by service with one radio list of
-containers.
-
-=cut
-
-sub waste_request_single_radio_list { 1 }
-
-sub waste_munge_request_form_fields {
-    my ($self, $field_list) = @_;
-    my $c = $self->{c};
-
-    my @radio_options;
-    my @replace_options;
-    my %seen;
-    for (my $i=0; $i<@$field_list; $i+=2) {
-        my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
-        next unless $key =~ /^container-(\d+)/;
-        my $id = $1;
-        next if $self->moniker eq 'kingston' && $seen{$id};
-
-        my ($cost, $hint);
-        if ($self->moniker eq 'sutton') {
-            ($cost, $hint) = $self->request_cost($id, $c->stash->{quantities});
-        }
-
-        my $data = {
-            value => $id,
-            label => $self->{c}->stash->{containers}->{$id},
-            disabled => $value->{disabled},
-            $hint ? (hint => $hint) : (),
-        };
-        my $change_cost = $self->_get_cost('request_change_cost');
-        if ($cost && $change_cost && $cost == $change_cost) {
-            push @replace_options, $data;
-        } else {
-            push @radio_options, $data;
-        }
-        $seen{$id} = 1;
-    }
-
-    if (@replace_options) {
-        $radio_options[0]{tags}{divider_template} = "waste/request/intro_replace";
-        $replace_options[0]{tags}{divider_template} = "waste/request/intro_change";
-        push @radio_options, @replace_options;
-    }
-
-    @$field_list = (
-        "container-choice" => {
-            type => 'Select',
-            widget => 'RadioGroup',
-            label => 'Which container do you need?',
-            options => \@radio_options,
-            required => 1,
-        }
-    );
-}
-
 =head2 waste_report_form_first_next
 
 After picking a service, we jump straight to the about you page unless it's
@@ -406,47 +363,6 @@ sub waste_report_form_first_next {
         return 'notes' if $data->{"service-$bulky_service_id"};
         return 'about_you';
     };
-}
-
-=head2 waste_request_form_first_next
-
-After picking a container, we jump straight to the about you page if they've
-picked a bag or Sutton changing size, to the swap-for-a-bin page if they've
-picked a bin, don't already have a bin and are on Kingston; otherwise we move
-to asking for a reason.
-
-=cut
-
-sub waste_request_form_first_title { 'Which container do you need?' }
-sub waste_request_form_first_next {
-    my $self = shift;
-    my $cls = ucfirst $self->council_url;
-    my $containers = $self->{c}->stash->{quantities};
-    return sub {
-        my $data = shift;
-        my $choice = $data->{"container-choice"};
-        return 'about_you' if $choice == 18 || $choice == 30;
-        if ($cls eq 'Kingston' && $choice == CONTAINER_RECYCLING_BIN && !$self->{c}->stash->{container_recycling_bin}) {
-            $data->{request_reason} = 'more';
-            return 'recycling_swap';
-        }
-        if ($cls eq 'Sutton') {
-            foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
-                if ($choice == $_ && !$containers->{$_}) {
-                    $data->{request_reason} = 'change_capacity';
-                    return 'about_you';
-                }
-            }
-        }
-        return 'replacement';
-    };
-}
-
-# Take the chosen container and munge it into the normal data format
-sub waste_munge_request_form_data {
-    my ($self, $data) = @_;
-    my $container_id = delete $data->{'container-choice'};
-    $data->{"container-$container_id"} = 1;
 }
 
 # Same as full cost

@@ -79,6 +79,8 @@ document.getElementById('pc').focus();
 
     var lk = document.querySelector('span.report-a-problem-btn');
     if (lk && lk.addEventListener) {
+        lk.setAttribute('role', 'button');
+        lk.setAttribute('tabindex', '0');
         lk.addEventListener('click', function(e){
             e.preventDefault();
             scrollTo(0,0);

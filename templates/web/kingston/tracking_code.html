@@ -1,41 +1,9 @@
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
-<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.x.min.js" type="text/javascript"></script>
 <script>
-    var config = {
-        apiKey: '67e66ced473704b266e9c82015018ff0030f92ca',
-        product: 'PRO',
-        optionalCookies: [
-            {
-                    name: 'analytics',
-                    label: 'Analytics',
-                    description: 'Analytical cookies help us to improve our website by collecting and reporting information on its usage.',
-                    cookies: ['_ga', '_gid', '_gat', '_gat_UA-*', '_ga_*', '_hjid', '__hjTLDTest', 'mc', 'd'],
-                    onAccept : function(){
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-57VJDBT');},
-                    onRevoke: function(){}
-                },{
-                    name: 'marketing',
-                    label: 'Marketing',
-                    description: 'We use marketing cookies to help us improve the relevancy of advertising campaigns you receive.',
-                    cookies: [],
-                    onAccept : function(){},
-                    onRevoke: function(){}
-                },{
-                    name: 'preferences',
-                    label: 'Preferences',
-                    description: 'Your preferences will apply to this website only. Please note that some processing of your personal data may not require your consent, but you have a right to object to such processing. You can change your preferences at any time by returning to this site or visit our privacy policy.',
-                    cookies: [],
-                    onAccept : function(){},
-                    onRevoke: function(){}
-                }
-        ],
-        position: 'LEFT',
-        theme: 'LIGHT'
-    };
-    CookieControl.load( config );
+})(window,document,'script','dataLayer','GTM-57VJDBT');
 </script>
 [% END %]

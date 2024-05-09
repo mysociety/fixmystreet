@@ -14,5 +14,10 @@
 [% END %]
 <input type="[% username_type %]" name="[% username_field %]" id="form_[% name %]"
        value="[% c.get_param(username_field) %]"
-    class="form-control required">
+    class="form-control required"
+    [% IF NOT c.cobrand.sms_authentication %]
+        autocomplete="[% username_type %]"
+    [% END %]
+>
+
 <!-- /user_loggedout_email.html -->

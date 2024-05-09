@@ -957,7 +957,7 @@ $.extend(fixmystreet.set_up, {
       var $originalInputs = $('#form_photos, .js-photo-fields', $context);
       $originalInputs.each(function() {
         var $originalInput = $(this);
-        var $dropzone = $('<div tabindex=0>').addClass('dropzone');
+        var $dropzone = $('<div tabindex=0 role="button">').addClass('dropzone');
         var $fileid_input = $originalInput.data('upload-field') || 'upload_fileid';
         var max_photos = !isNaN($originalInput.data('max-photos')) ? $originalInput.data('max-photos') : 3;
 
@@ -1774,6 +1774,10 @@ fixmystreet.fetch_reporting_data = function() {
         fixmystreet.bodies = data.bodies || [];
         if (fixmystreet.body_overrides) {
             fixmystreet.body_overrides.clear();
+        }
+
+        if (data.bodies && data.bodies.indexOf('Bristol City Council') > -1) {
+            $('#category-filter-div').hide();
         }
 
         fixmystreet.update_councils_text(data);
