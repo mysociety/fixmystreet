@@ -1416,6 +1416,11 @@ sub garden_service_name { 'Garden waste collection service' }
 sub garden_subscription_event_id { 1159 }
 sub garden_due_days { 90 }
 
+sub waste_show_garden_modify {
+    my ($self, $unit) = @_;
+    return $self->{c}->stash->{is_staff};
+}
+
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
     return "Brent-" . $p->id;

@@ -1,3 +1,11 @@
+=head1 NAME
+
+FixMyStreet::App::Form::Waste::Billing - billing information for garden subs and renewals
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::App::Form::Waste::Billing;
 
 use utf8;
