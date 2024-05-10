@@ -328,10 +328,6 @@ FixMyStreet::override_config {
     };
 
     $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });
-    subtest 'No requesting a red stripe bag' => sub {
-        $mech->get_ok('/waste/12345/request');
-        $mech->content_lacks('"container-6" value="1"');
-    };
     subtest 'Fortnightly collection can request a blue stripe bag' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-18' => 1 }});
@@ -344,10 +340,21 @@ FixMyStreet::override_config {
         is $report->category, 'Request new container';
         is $report->title, 'Request new Recycling Blue Stripe Bag';
     };
-    subtest 'Weekly collection cannot request a blue stripe bag' => sub {
+    subtest 'Above-shop address' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345/request');
-        $mech->content_lacks('"container-18" value="1"');
+        $mech->content_lacks( '"container-18" value="1"',
+            'Weekly collection cannot request a blue stripe bag' );
+
+        $mech->get_ok('/waste/12345');
+
+        $mech->content_contains( 'Put your bags out between 6pm and 8pm',
+            'Property has time-banded message' );
+        $mech->content_contains( 'color: #BD63D1', 'Property has purple sack' );
+        $mech->content_contains( 'color: #3B3B3A', 'Property has black sack' );
+        $mech->content_contains( 'You need to buy your own black sacks',
+            'Property has black sack message' );
+
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
