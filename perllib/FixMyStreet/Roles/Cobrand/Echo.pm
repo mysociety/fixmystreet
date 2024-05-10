@@ -357,7 +357,6 @@ sub _parse_events {
         my $closed = $self->_closed_event($_);
         next if $type eq 'request' && $closed && !$params->{include_closed_requests};
         next if $type eq 'enquiry' && $closed;
-        next if $type eq 'bulky' && !$closed;
 
         if ($type eq 'request') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
@@ -375,13 +374,20 @@ sub _parse_events {
             $self->parse_event_missed($_, $closed, $events);
         } elsif ($type eq 'bulky') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $resolved_date = construct_bin_date($_->{ResolvedDate});
-            $events->{enquiry}{$event_type}{$_->{Guid}} = {
-                date => $resolved_date,
-                report => $report,
-                resolution => $_->{ResolutionCodeId},
-                state => $_->{EventStateId},
-            };
+            if ($report) {
+                my $row = {
+                    report => $report,
+                    resolution => $_->{ResolutionCodeId},
+                };
+                if ($closed) {
+                    $row->{date} = construct_bin_date($_->{ResolvedDate});
+                    $row->{state} = $_->{EventStateId};
+                } else {
+                    $row->{date} = $self->collection_date($report);
+                    $row->{state} = 'open';
+                }
+                $events->{enquiry}{$event_type}{$_->{Guid}} = $row;
+            }
         } else { # General enquiry of some sort
             $events->{enquiry}->{$event_type} = 1;
         }
@@ -1064,10 +1070,15 @@ sub bulky_check_missed_collection {
                 }
             }
         }
+
+        # Open events are coming through and we only want to continue under specific circumstances with an open event
+        next unless (!$event->{state} || $event->{state} ne 'open') || $self->{c}->cobrand->call_hook('bulky_open_overdue', $event);
+
         $row->{report_allowed} = $in_time && !$row->{report_locked_out};
 
         my $recent_events = $self->_events_since_date($event->{date}, $missed_events);
         $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
+
         $self->{c}->stash->{bulky_missed}{$guid} = $row;
     }
 }
