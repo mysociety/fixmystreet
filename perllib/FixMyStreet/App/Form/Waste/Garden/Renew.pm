@@ -58,7 +58,7 @@ with 'FixMyStreet::App::Form::Waste::Garden::EmailRenewalReminders';
 has_page summary => (
     fields => ['tandc', 'submit'],
     title => 'Renew your green garden waste subscription',
-    template => 'waste/garden/renew_summary.html',
+    template => 'waste/garden/subscribe_summary.html',
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
