@@ -570,6 +570,11 @@ FixMyStreet::override_config {
                 round => 'GDN-R1',
                 round_schedule => 'GDN-R1 Tue',
             },
+            'PG-240' => {
+                service_id => 'PG-240',
+                round => 'RCY-R2',
+                round_schedule => 'RCY-R2 Mon PG Wk 2',
+            },
         );
 
         my $property = {
@@ -587,6 +592,7 @@ FixMyStreet::override_config {
                 'RES-R3 Fri' => DateTime->today->subtract( days => 3 ), # RES-240
                 'RES-R4 Fri' => DateTime->today->subtract( days => 3 ), # RES-240
                 'GDN-R1 Tue' => DateTime->today->subtract( days => 6 ), # GA-240
+                'RCY-R2 Mon PG Wk 2' => DateTime->today->subtract( days => 7 ), # PG-240
             },
         };
 
@@ -599,7 +605,7 @@ FixMyStreet::override_config {
                         # Successful collection today
                         {   LogDate   => '2024-04-22T10:00:00.977',
                             Reason    => 'N/A',
-                            RoundCode => 'RCY-R2',    # For FO-140
+                            RoundCode => 'RCY-R2',    # For FO-140 and PG-240
                             Uprn      => '',
                         },
                         # Successful collection last working day
@@ -656,6 +662,9 @@ FixMyStreet::override_config {
         is $cobrand->can_report_missed( $property, $services{'GA-240'} ), 0,
             'cannot report missed collection against service whose round was collected more than 3 working days ago';
         ok !$services{'GA-240'}{last}{is_delayed}, 'not marked delayed';
+
+        is $cobrand->can_report_missed( $property, $services{'PG-240'} ), 0,
+            'cannot report missed collection against service whose round was collected more than 3 working days ago';
 
         # Put time back to previous value
         set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
