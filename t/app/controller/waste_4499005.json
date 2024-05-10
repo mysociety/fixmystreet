@@ -93,5 +93,53 @@
       "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
       "ServiceId": "408",
       "ServiceName": "Domestic Recycling Collection"
+    },
+    {
+      "Id": "1003",
+      "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+      "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+      "ServiceId": "408",
+      "ServiceName": "Domestic Recycling Collection",
+      "ServiceUnitTypeId": "65",
+      "ServiceTasks": {
+        "ServiceTask": {
+          "Data": {
+            "ExtensibleDatum": [
+              {
+                "ChildData": {
+                  "ExtensibleDatum": [
+                    { "DatatypeName": "Container Type", "Value": "17" },
+                    { "Value": "1", "DatatypeName": "Quantity" }
+                  ]
+                },
+                "DatatypeName": "Recycling Containers"
+              }
+            ]
+          },
+          "ServiceTaskSchedules": {
+            "ServiceTaskSchedule": {
+              "ScheduleDescription": "Wednesday, Saturday every week",
+              "LastInstance": {
+                "Ref": { "Value": { "anyType": [ "23293043", "8318" ] } },
+                "OriginalScheduledDate": { "DateTime": "2022-10-09T23:00:00Z" },
+                "CurrentScheduledDate": { "DateTime": "2022-10-10T05:00:00Z" }
+              },
+              "NextInstance": {
+                "Ref": { "Value": { "anyType": [ "23293043", "8325" ] } },
+                "OriginalScheduledDate": { "DateTime": "2022-10-16T23:00:00Z" },
+                "CurrentScheduledDate": { "DateTime": "2022-10-16T23:00:00Z" }
+              },
+              "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+              "StartDate": { "DateTime": "2018-09-02T23:00:00Z" }
+            }
+          },
+          "ScheduleDescription": "Every Wednesday and Saturday",
+          "TaskTypeId": "2246",
+          "Id": "2001",
+          "TaskTypeName": "Collect Domestic Refuse Bag",
+          "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+          "EndDate": { "DateTime": "2050-01-01T00:00:00Z" }
+        }
+      }
     }
 ]

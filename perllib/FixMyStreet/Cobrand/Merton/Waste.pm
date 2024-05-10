@@ -88,6 +88,13 @@ sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
     my $service_id = $unit->{service_id};
+    my $time_banded = $self->{c}->stash->{property_time_banded};
+
+    return "$base/sack-black" if $service_id == 2242 && $time_banded;
+    if (my $container = $unit->{request_containers}[0]) {
+        return "$base/sack-purple" if $container == 17;
+    }
+
     my $images = {
         2238 => "$base/bin-black", # refuse
         2239 => "$base/caddy-brown-large", # food
