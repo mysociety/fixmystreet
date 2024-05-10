@@ -136,9 +136,7 @@ sub bin_services_for_address {
     my %seen_service_units;
     foreach (@rows) {
         my $schedules = $_->{Schedules};
-        if ($self->moniker ne 'sutton' && $self->moniker ne 'kingston') { # K&S don't use overdue
-            $_->{expired} = 1 if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
-        }
+        $_->{expired} = 1 if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
         next unless $schedules->{next} or $schedules->{last};
         $_->{active} = 1;
@@ -787,6 +785,12 @@ sub waste_get_next_dd_day {
     return $next_day;
 }
 
+=head2 waste_sub_due
+
+Returns true/false if now is less than garden_due_days before DATE.
+
+=cut
+
 sub waste_sub_due {
     my ($self, $date) = @_;
 
@@ -796,6 +800,13 @@ sub waste_sub_due {
     my $diff = $now->delta_days($sub_end)->in_units('days');
     return $diff <= $self->garden_due_days;
 }
+
+=head2 waste_sub_overdue
+
+Returns true/false if now is past DATE and (if provided)
+less than COUNT INTERVAL after.
+
+=cut
 
 sub waste_sub_overdue {
     my ($self, $date, $interval, $count) = @_;

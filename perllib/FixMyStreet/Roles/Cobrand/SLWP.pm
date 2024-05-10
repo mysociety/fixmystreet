@@ -73,6 +73,12 @@ sub waste_service_to_containers { () }
 
 sub garden_subscription_event_id { 1638 }
 
+sub waste_show_garden_modify {
+    my ($self, $unit) = @_;
+    return 1 if $self->moniker eq 'kingston';
+    return $unit->{garden_sacks} ? 0 : 1;
+}
+
 sub waste_relevant_serviceunits {
     my ($self, $result) = @_;
     my @rows;
@@ -294,6 +300,7 @@ sub waste_munge_report_data {
 
 sub garden_service_name { 'garden waste collection service' }
 sub garden_echo_container_name { 'SLWP - Containers' }
+sub garden_staff_provide_email { 1 }
 
 sub garden_subscription_email_renew_reminder_opt_in { 0 }
 
@@ -312,6 +319,9 @@ sub garden_current_service_from_service_units {
     }
     return $garden;
 }
+
+# We don't have overdue renewals here
+sub waste_sub_overdue { 0 }
 
 =item * When a garden subscription is sent to Echo, we include payment details
 

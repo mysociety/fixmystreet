@@ -1,6 +1,5 @@
 [% PROCESS 'waste/_services_header.html' %]
 [% PROCESS 'waste/_service_missed.html' %]
-[% SET show_garden_modify = c.cobrand.moniker == 'kingston' OR (c.cobrand.moniker == 'sutton' AND NOT unit.garden_sacks) OR (c.cobrand.moniker == 'brent' AND is_staff) %]
 
 [% IF unit.requests_open.size %]
   <span class="waste-service-descriptor">
@@ -16,7 +15,7 @@
 [% ELSIF unit.request_allowed %]
   [% any_request_allowed = 1 %]
   [% PROCESS 'waste/_services_request.html' %]
-[% ELSIF unit.garden_waste AND NOT waste_features.garden_modify_disabled AND NOT unit.garden_due AND show_garden_modify %]
+[% ELSIF unit.garden_waste AND NOT waste_features.garden_modify_disabled AND NOT unit.garden_due AND c.cobrand.waste_show_garden_modify(unit) %]
   [% PROCESS 'waste/_services_garden_modify.html' %]
 [% END %]
 
@@ -59,7 +58,7 @@
   [% END %]
 
   [% IF NOT pending_cancellation %]
-      [% IF NOT unit.garden_due AND NOT waste_features.garden_modify_disabled AND show_garden_modify %]
+      [% IF NOT unit.garden_due AND NOT waste_features.garden_modify_disabled AND c.cobrand.waste_show_garden_modify(unit) %]
           <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
             <input type="hidden" name="token" value="[% csrf_token %]">
          [% IF c.cobrand.moniker == 'kingston' AND (slwp_garden_sacks AND unit.garden_sacks) %]
