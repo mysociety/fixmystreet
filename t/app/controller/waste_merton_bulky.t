@@ -591,10 +591,19 @@ FixMyStreet::override_config {
     };
 
     subtest 'Missed collections' => sub {
-        set_fixed_time('2023-07-05T05:44:59Z');
-        $report->update({ state => 'fixed - council', external_id => 'a-guid' });
-
-        # Fixed date still set to 5th July
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 1636,
+        } ] } );
+        ok set_fixed_time('2023-07-08T13:44:59Z'), "Set current date to collection date before 6pm";
+        ok $report->update({ state => 'confirmed', external_id => 'a-guid'}), 'Reopen the report from previous test which cancelled it';
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a bulky waste collection as missed', "Not able to report a missed collection on day of collection before 6pm");
+        ok set_fixed_time('2023-07-08T18:00:59Z'), "Set current date to collection date after 6pm";
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a bulky waste collection as missed', "Can report missed collection on day of collection after 6pm");
+        ok $report->update({ state => 'fixed - council', external_id => 'a-guid' }), 'Set report to fixed for next tests';
+        ok set_fixed_time('2023-07-05T05:44:59Z'), 'Set current date to 5th July';
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a bulky waste collection as missed');
         $mech->get_ok('/waste/12345/report');
