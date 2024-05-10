@@ -106,6 +106,9 @@ sub bin_services_for_address {
     for my $service (@$site_services) {
         next if !$service->{NextCollectionDate};
 
+        my $container = $containers->{ $service->{ServiceItemName} };
+        next unless $container;
+
         my $next_dt = eval {
             DateTime::Format::W3CDTF->parse_datetime(
                 $service->{NextCollectionDate} );
@@ -138,16 +141,12 @@ sub bin_services_for_address {
             next if $now_dt > $to_dt;
         }
 
-        my $containers = $self->_containers($property);
-
         my ($round) = split / /, $service->{RoundSchedule};
         my $filtered_service = {
             id             => $service->{SiteServiceID},
             service_id     => $service->{ServiceItemName},
-            service_name =>
-                $containers->{ $service->{ServiceItemName} }{name},
-            service_description =>
-                $containers->{ $service->{ServiceItemName} }{description},
+            service_name        => $container->{name},
+            service_description => $container->{description},
             round_schedule => $service->{RoundSchedule},
             round          => $round,
             next           => {
@@ -577,10 +576,6 @@ For:
 HTML
 
     return {
-        'CW-SACK' => {
-            name        => 'Clinical Waste Sack(s)',
-            description => 'Clinical waste',
-        },
         'FO-140' => {
             name => 'Communal Food Bin',
             description => 'Food waste',

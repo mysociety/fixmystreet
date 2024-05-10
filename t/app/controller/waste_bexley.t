@@ -651,6 +651,14 @@ sub _site_collections {
 
                 RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
             },
+            # CW-SACK (Clinical waste) is not in container list so won't be shown
+            {
+                SiteServiceID          => 99,
+                ServiceItemDescription => 'Clinical Waste Sack',
+                ServiceItemName        => 'CW-SACK',
+
+                NextCollectionDate   => '2024-04-01T00:00:00',
+            },
         ],
         10003 => [
             {   SiteServiceID          => 1000,
