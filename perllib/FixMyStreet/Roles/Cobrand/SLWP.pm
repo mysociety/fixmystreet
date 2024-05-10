@@ -56,8 +56,10 @@ sub waste_event_state_map {
 use constant CONTAINER_REFUSE_140 => 1;
 use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
+use constant CONTAINER_REFUSE_BLUE_BAG => 4;
 use constant CONTAINER_RECYCLING_BIN => 12;
 use constant CONTAINER_RECYCLING_BOX => 16;
+use constant CONTAINER_RECYCLING_PURPLE_BAG => 17;
 use constant CONTAINER_RECYCLING_BLUE_BAG => 18;
 use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_FOOD_INDOOR => 23;
@@ -129,15 +131,10 @@ sub waste_extra_service_info {
     }
 }
 
-my %waste_containers_no_request = (
-    6 => 1, # Red stripe bag
-    17 => 1, # Recycling purple sack
-    29 => 1, # Recycling Single Use Bag
-    21 => 1, # Paper & Card Reusable bag
-);
-
 sub waste_service_containers {
     my ($self, $service) = @_;
+
+    my $waste_containers_no_request = $self->_waste_containers_no_request;
 
     my $task = $service->{ServiceTask};
     my $service_id = $service->{ServiceId};
@@ -154,12 +151,19 @@ sub waste_service_containers {
             $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
             $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
         }
-        next if $waste_containers_no_request{$container};
+
+        next if $waste_containers_no_request->{$container};
+
         next if $container == CONTAINER_RECYCLING_BLUE_BAG && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
+
         if ($container && $quantity) {
+            $self->{c}->stash->{property_time_banded} = 1 if $container == CONTAINER_RECYCLING_PURPLE_BAG;
+
             push @$containers, $container;
             next if $container == CONTAINER_GARDEN_SACK; # Garden waste bag
-            # The most you can request is one
+
+            $self->{c}->stash->{quantities}->{$container} = $quantity;
+
             if ($self->moniker eq 'kingston') {
                 if ($container == CONTAINER_FOOD_OUTDOOR || $container == CONTAINER_PAPER_BIN || $container == CONTAINER_RECYCLING_BIN) {
                     $request_max->{$container} = 3;
@@ -169,9 +173,9 @@ sub waste_service_containers {
                     $request_max->{$container} = 1;
                 }
             } else {
+                # The most you can request is one
                 $request_max->{$container} = 1;
             }
-            $self->{c}->stash->{quantities}->{$container} = $quantity;
 
             if ($self->moniker eq 'sutton') {
                 if ($container == CONTAINER_REFUSE_140 || $container == CONTAINER_REFUSE_360) {

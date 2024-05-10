@@ -51,6 +51,7 @@ sub waste_containers {
         13 => 'Green recycling bin (360L)',
         16 => 'Green recycling box (55L)',
 
+        17 => 'Recycling Purple Bag',
         18 => 'Recycling Blue Stripe Bag',
         29 => 'Recycling Single Use Bag',
 
@@ -83,10 +84,23 @@ sub waste_containers {
     };
 }
 
+sub _waste_containers_no_request { {
+    4 => 1, # Refuse blue bag
+    29 => 1, # Recycling Single Use Bag
+    21 => 1, # Paper & Card Reusable bag
+} }
+
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
     my $service_id = $unit->{service_id};
+    my $time_banded = $self->{c}->stash->{property_time_banded};
+
+    return svg_container_sack('normal', '#3B3B3A') if $service_id eq 2242 && $time_banded;
+    if (my $container = $unit->{request_containers}[0]) {
+        return svg_container_sack('normal', '#BD63D1') if $container == 17;
+    }
+
     my $images = {
         2238 => svg_container_bin('wheelie', '#333333'), # refuse
         2239 => "$base/caddy-brown-large", # food

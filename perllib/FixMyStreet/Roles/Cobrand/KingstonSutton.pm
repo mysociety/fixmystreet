@@ -213,6 +213,13 @@ sub waste_containers {
     }
 }
 
+sub _waste_containers_no_request { {
+    6 => 1, # Red stripe bag
+    17 => 1, # Recycling purple sack
+    29 => 1, # Recycling Single Use Bag
+    21 => 1, # Paper & Card Reusable bag
+} }
+
 sub waste_quantity_max {
     return (
         2247 => 5, # Garden waste maximum
