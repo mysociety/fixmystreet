@@ -14,7 +14,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use Moo;
 
 # We use the functionality of bulky waste, though it's called small items
-with 'FixMyStreet::Roles::CobrandBulkyWaste';
+with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
 use strict;
 use warnings;
@@ -43,8 +43,8 @@ use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
-with 'FixMyStreet::Roles::CobrandEcho';
-with 'FixMyStreet::Roles::SCP';
+with 'FixMyStreet::Roles::Cobrand::Echo';
+with 'FixMyStreet::Roles::Cobrand::SCP';
 use Integrations::Paye;
 
 # Brent covers some of the areas around it so that it can handle near-boundary reports
@@ -534,7 +534,7 @@ sub open311_munge_update_params {
 
 =head2 should_skip_sending_update
 
-Do not try and send updates to the ATAK backend.
+Do not try and send updates to the ATAK or Symology backends.
 
 =cut
 
@@ -542,7 +542,7 @@ sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $code = $update->problem->contact->email;
-    return 1 if $code =~ /^ATAK/;
+    return 1 if $code =~ /^(ATAK|Symology)/;
     return 0;
 }
 

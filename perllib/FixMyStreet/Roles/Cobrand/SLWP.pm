@@ -9,7 +9,7 @@ FixMyStreet::Roles::Cobrand::SLWP - shared code for anything with the SLWP Echo
 package FixMyStreet::Roles::Cobrand::SLWP;
 
 use Moo::Role;
-with 'FixMyStreet::Roles::CobrandEcho';
+with 'FixMyStreet::Roles::Cobrand::Echo';
 
 use Integrations::Echo;
 use JSON::MaybeXS;
@@ -62,8 +62,8 @@ use constant CONTAINER_RECYCLING_BLUE_BAG => 18;
 use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_FOOD_INDOOR => 23;
 use constant CONTAINER_FOOD_OUTDOOR => 24;
-use constant CONTAINER_GARDEN_SACK => 28;
 use constant CONTAINER_PAPER_BIN_140 => 36;
+use constant CONTAINER_GARDEN_SACK => 28;
 
 sub garden_service_id { 2247 }
 
@@ -159,10 +159,8 @@ sub waste_service_containers {
         if ($container && $quantity) {
             push @$containers, $container;
             next if $container == CONTAINER_GARDEN_SACK; # Garden waste bag
-            # The most you can request - ignored on replacements anyway
-            if ($self->moniker ne 'kingston') {
-                $request_max->{$container} = 1;
-            } elsif ($self->moniker eq 'kingston') {
+            # The most you can request is one
+            if ($self->moniker eq 'kingston') {
                 if ($container == CONTAINER_FOOD_OUTDOOR || $container == CONTAINER_PAPER_BIN || $container == CONTAINER_RECYCLING_BIN) {
                     $request_max->{$container} = 3;
                 } elsif ($container == CONTAINER_RECYCLING_BOX) {
@@ -170,6 +168,8 @@ sub waste_service_containers {
                 } else {
                     $request_max->{$container} = 1;
                 }
+            } else {
+                $request_max->{$container} = 1;
             }
             $self->{c}->stash->{quantities}->{$container} = $quantity;
 
@@ -191,7 +191,7 @@ sub waste_service_containers {
 
     if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{+CONTAINER_FOOD_INDOOR}) {
         # Can always request a food caddy
-        push @$containers, CONTAINER_FOOD_INDOOR;
+        push @$containers, CONTAINER_FOOD_INDOOR; # Food waste bin (kitchen)
         $request_max->{+CONTAINER_FOOD_INDOOR} = 1;
     }
     if ($self->moniker eq 'kingston' && grep { $_ == CONTAINER_RECYCLING_BOX } @$containers) {
@@ -256,83 +256,6 @@ sub parse_event_missed {
     }
 }
 
-sub waste_munge_request_data {
-    my ($self, $id, $data, $form) = @_;
-
-    my $c = $self->{c};
-    my $address = $c->stash->{property}->{address};
-    my $container = $c->stash->{containers}{$id};
-    my $quantity = $data->{recycling_quantity} || 1;
-    my $reason = $data->{request_reason} || '';
-    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
-
-    my ($action_id, $reason_id);
-    if ($reason eq 'damaged') {
-        $action_id = 3; # Replace
-        $reason_id = 2; # Damaged
-    } elsif ($reason eq 'missing') {
-        $action_id = 1; # Deliver
-        $reason_id = 1; # Missing
-    } elsif ($reason eq 'new_build') {
-        $action_id = 1; # Deliver
-        $reason_id = 4; # New
-    } elsif ($reason eq 'more') {
-        if ($data->{recycling_swap} eq 'Yes') {
-            # $id has to be 16 here but we want to swap it for a 12
-            my $q = $c->stash->{quantities}{+CONTAINER_RECYCLING_BOX} || 1;
-            $action_id = ('2::' x $q) . '1'; # Collect and Deliver
-            $reason_id = ('3::' x $q) . '3'; # Change capacity
-            $id = ((CONTAINER_RECYCLING_BOX . '::') x $q) . CONTAINER_RECYCLING_BIN;
-            $container = $c->stash->{containers}{+CONTAINER_RECYCLING_BIN};
-        } else {
-            $action_id = 1; # Deliver
-            $reason_id = 3; # Change capacity
-        }
-    } elsif ($reason eq 'change_capacity') {
-        $action_id = '2::1';
-        $reason_id = '3::3';
-        if ($id == CONTAINER_REFUSE_140) {
-            $id = CONTAINER_REFUSE_240 . '::' . CONTAINER_REFUSE_140;
-        } elsif ($id == CONTAINER_REFUSE_240) {
-            if ($c->stash->{quantities}{+CONTAINER_REFUSE_360}) {
-                $id = CONTAINER_REFUSE_360 . '::' . CONTAINER_REFUSE_240;
-            } else {
-                $id = CONTAINER_REFUSE_140 . '::' . CONTAINER_REFUSE_240;
-            }
-        } elsif ($id == CONTAINER_PAPER_BIN) {
-            $id = CONTAINER_PAPER_BIN_140 . '::' . CONTAINER_PAPER_BIN;
-        }
-    } else {
-        # No reason, must be a bag
-        $action_id = 1; # Deliver
-        $reason_id = 3; # Change capacity
-        $nice_reason = "Additional bag required";
-    }
-
-    if ($reason eq 'damaged' || $reason eq 'missing') {
-        $data->{title} = "Request replacement $container";
-    } elsif ($reason eq 'change_capacity') {
-        $data->{title} = "Request exchange for $container";
-    } else {
-        $data->{title} = "Request new $container";
-    }
-    $data->{detail} = "Quantity: $quantity\n\n$address";
-    $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
-
-    $c->set_param('Action', join('::', ($action_id) x $quantity));
-    $c->set_param('Reason', join('::', ($reason_id) x $quantity));
-    if ($data->{notes_missing}) {
-        $data->{detail} .= " - $data->{notes_missing}";
-        $c->set_param('Notes', $data->{notes_missing});
-    }
-    if ($data->{notes_damaged}) {
-        my $notes = $c->stash->{label_for_field}->($form, 'notes_damaged', $data->{notes_damaged});
-        $data->{detail} .= " - $notes";
-        $c->set_param('Notes', $notes);
-    }
-    $c->set_param('Container_Type', $id);
-}
-
 sub waste_munge_report_data {
     my ($self, $id, $data) = @_;
 
@@ -365,10 +288,10 @@ sub waste_munge_report_data {
 
 # Garden waste
 
-sub garden_subscription_email_renew_reminder_opt_in { 0 }
-
 sub garden_service_name { 'garden waste collection service' }
 sub garden_echo_container_name { 'SLWP - Containers' }
+
+sub garden_subscription_email_renew_reminder_opt_in { 0 }
 
 sub garden_current_service_from_service_units {
     my ($self, $services) = @_;

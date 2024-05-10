@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 use Moo;
-with 'FixMyStreet::Roles::FullTextSearch';
+with 'FixMyStreet::Roles::DB::FullTextSearch';
 __PACKAGE__->load_components('Helper::ResultSet::Me');
 sub text_search_columns { qw(id name email phone) }
 sub text_search_nulls { qw(name email phone) }

@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::Abuser;
+package FixMyStreet::Roles::DB::Abuser;
 
 use Moo::Role;
 

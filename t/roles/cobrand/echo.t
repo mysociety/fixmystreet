@@ -8,7 +8,7 @@ package FixMyStreet::Cobrand::CobrandEchoTest;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use Moo;
-with 'FixMyStreet::Roles::CobrandEcho';
+with 'FixMyStreet::Roles::Cobrand::Echo';
 
 sub waste_bulky_missed_blocked_codes {}
 sub waste_containers {}

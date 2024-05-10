@@ -144,8 +144,8 @@ use Moo;
 use namespace::clean;
 use FixMyStreet::MapIt;
 
-with 'FixMyStreet::Roles::Translatable',
-     'FixMyStreet::Roles::Extra';
+with 'FixMyStreet::Roles::DB::Translatable',
+     'FixMyStreet::Roles::DB::Extra';
 
 sub _url {
     my ( $obj, $cobrand, $args ) = @_;

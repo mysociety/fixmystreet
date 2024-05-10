@@ -1,6 +1,6 @@
 =head1 NAME
 
-FixMyStreet::Roles::ParallelAPI - code for calling external APIs in parallel
+Integrations::Roles::ParallelAPI - code for calling external APIs in parallel
 
 =head1 SYNOPSIS
 
@@ -13,7 +13,7 @@ background (relying on the parent to deal with 'please wait' pages).
 
 =cut
 
-package FixMyStreet::Roles::ParallelAPI;
+package Integrations::Roles::ParallelAPI;
 use Moo::Role;
 use JSON::MaybeXS;
 use Parallel::ForkManager;

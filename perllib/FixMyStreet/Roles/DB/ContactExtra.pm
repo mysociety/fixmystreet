@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::ContactExtra;
+package FixMyStreet::Roles::DB::ContactExtra;
 
 use Moo::Role;
 use JSON::MaybeXS;

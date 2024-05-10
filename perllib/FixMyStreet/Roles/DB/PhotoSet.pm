@@ -1,9 +1,9 @@
-package FixMyStreet::Roles::PhotoSet;
+package FixMyStreet::Roles::DB::PhotoSet;
 use Moo::Role;
 
 =head1 NAME
 
-FixMyStreet::Roles::Photoset - role for accessing photosets
+FixMyStreet::Roles::DB::Photoset - role for accessing photosets
 
 =cut
 

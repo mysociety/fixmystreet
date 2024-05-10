@@ -10,7 +10,7 @@ package FixMyStreet::Roles::Cobrand::KingstonSutton;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SLWP';
-with 'FixMyStreet::Roles::CobrandBulkyWaste';
+with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
@@ -104,9 +104,6 @@ use constant CONTAINER_REFUSE_140 => 1;
 use constant CONTAINER_REFUSE_180 => 35;
 use constant CONTAINER_REFUSE_240 => 2;
 use constant CONTAINER_REFUSE_360 => 3;
-use constant CONTAINER_RECYCLING_BIN => 12;
-use constant CONTAINER_RECYCLING_BOX => 16;
-use constant CONTAINER_RECYCLING_BLUE_BAG => 18;
 use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_PAPER_BIN_140 => 36;
 use constant CONTAINER_GARDEN_BIN => 26;

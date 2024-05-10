@@ -12,11 +12,11 @@ use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
 use FixMyStreet::DB;
 use Moo;
-with 'FixMyStreet::Roles::CobrandEcho';
-with 'FixMyStreet::Roles::CobrandPay360';
+with 'FixMyStreet::Roles::Cobrand::Echo';
+with 'FixMyStreet::Roles::Cobrand::Pay360';
 with 'FixMyStreet::Roles::Open311Multi';
-with 'FixMyStreet::Roles::SCP';
-with 'FixMyStreet::Roles::CobrandBulkyWaste';
+with 'FixMyStreet::Roles::Cobrand::SCP';
+with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
 sub council_area_id { return 2482; }
 sub council_area { return 'Bromley'; }

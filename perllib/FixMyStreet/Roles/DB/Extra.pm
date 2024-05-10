@@ -1,17 +1,17 @@
-package FixMyStreet::Roles::Extra;
+package FixMyStreet::Roles::DB::Extra;
 use Moo::Role;
 use JSON::MaybeXS;
 
 =head1 NAME
 
-FixMyStreet::Roles::Extra - role for accessing {extra} field
+FixMyStreet::Roles::DB::Extra - role for accessing {extra} field
 
 =head1 SYNOPSIS
 
 This is to applied to a DB class like Problem or Contacts that has a rich {extra} field:
 
     use Moo;
-    with 'FixMyStreet::Roles::Extra';
+    with 'FixMyStreet::Roles::DB::Extra';
 
 Then:
 

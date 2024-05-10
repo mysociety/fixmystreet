@@ -9,7 +9,7 @@ use mySociety::Locale;
 use FixMyStreet::DB;
 
 use Moo;
-with 'FixMyStreet::Roles::FullTextSearch';
+with 'FixMyStreet::Roles::DB::FullTextSearch';
 __PACKAGE__->load_components('Helper::ResultSet::Me');
 sub text_search_columns { qw(id external_id bodies_str name title detail) }
 sub text_search_nulls { qw(external_id bodies_str) }

@@ -9,7 +9,7 @@ Integrations::Paye - integration with the Capita paye.net interface
 package Integrations::Paye;
 
 use Moo;
-with 'FixMyStreet::Roles::SOAPIntegration';
+with 'Integrations::Roles::SOAP';
 
 use Data::Dumper;
 use Sys::Syslog;

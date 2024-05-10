@@ -277,11 +277,11 @@ my $IM = eval {
 
 use constant SENDER_REGEX => qr/^.*::/;
 
-with 'FixMyStreet::Roles::Abuser',
-     'FixMyStreet::Roles::Extra',
-     'FixMyStreet::Roles::Moderation',
-     'FixMyStreet::Roles::Translatable',
-     'FixMyStreet::Roles::PhotoSet';
+with 'FixMyStreet::Roles::DB::Abuser',
+     'FixMyStreet::Roles::DB::Extra',
+     'FixMyStreet::Roles::DB::Moderation',
+     'FixMyStreet::Roles::DB::Translatable',
+     'FixMyStreet::Roles::DB::PhotoSet';
 
 =head2
 

@@ -154,6 +154,51 @@ sub waste_munge_report_form_fields {
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
+sub waste_munge_request_data {
+    my ($self, $id, $data, $form) = @_;
+
+    my $c = $self->{c};
+    my $address = $c->stash->{property}->{address};
+    my $container = $c->stash->{containers}{$id};
+    my $quantity = 1;
+    my $reason = $data->{request_reason} || '';
+    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
+
+    my ($action_id, $reason_id);
+    if ($reason eq 'damaged') {
+        $action_id = 3; # Replace
+        $reason_id = 2; # Damaged
+    } elsif ($reason eq 'missing') {
+        $action_id = 1; # Deliver
+        $reason_id = 1; # Missing
+    } elsif ($reason eq 'new_build') {
+        $action_id = 1; # Deliver
+        $reason_id = 4; # New
+    } elsif ($reason eq 'more') {
+        $action_id = 1; # Deliver
+        $reason_id = 3; # Change capacity
+    } else {
+        # No reason, must be a bag
+        $action_id = 1; # Deliver
+        $reason_id = 3; # Change capacity
+        $nice_reason = "Additional bag required";
+    }
+
+    if ($reason eq 'damaged' || $reason eq 'missing') {
+        $data->{title} = "Request replacement $container";
+    } elsif ($reason eq 'change_capacity') {
+        $data->{title} = "Request exchange for $container";
+    } else {
+        $data->{title} = "Request new $container";
+    }
+    $data->{detail} = "Quantity: $quantity\n\n$address";
+    $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
+
+    $c->set_param('Action', join('::', ($action_id) x $quantity));
+    $c->set_param('Reason', join('::', ($reason_id) x $quantity));
+    $c->set_param('Container_Type', $id);
+}
+
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
 

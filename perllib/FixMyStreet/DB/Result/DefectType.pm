@@ -62,7 +62,7 @@ __PACKAGE__->many_to_many( contacts => 'contact_defect_types', 'contact' );
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 
-with 'FixMyStreet::Roles::Extra';
+with 'FixMyStreet::Roles::DB::Extra';
 
 
 1;

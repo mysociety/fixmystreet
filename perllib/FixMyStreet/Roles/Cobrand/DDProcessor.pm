@@ -18,7 +18,7 @@ has cobrand => ( is => 'ro' );
 has payer => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->cancelReferenceField} } );
 has date => ( is => 'lazy', default => sub { $_[0]->data->{$_[0]->cobrand->cancelledDateField} } );
 
-package FixMyStreet::Roles::DDProcessor;
+package FixMyStreet::Roles::Cobrand::DDProcessor;
 
 use utf8;
 use Moo::Role;

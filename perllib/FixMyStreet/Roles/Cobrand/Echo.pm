@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::CobrandEcho;
+package FixMyStreet::Roles::Cobrand::Echo;
 
 use v5.14;
 use warnings;
@@ -30,7 +30,7 @@ requires 'waste_bulky_missed_blocked_codes';
 
 =head1 NAME
 
-FixMyStreet::Roles::CobrandEcho - shared code between cobrands using an Echo backend
+FixMyStreet::Roles::Cobrand::Echo - shared code between cobrands using an Echo backend
 
 =cut
 

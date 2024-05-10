@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::SOAPIntegration;
+package Integrations::Roles::SOAP;
 use Moo::Role;
 use Tie::IxHash;
 

@@ -1,10 +1,12 @@
-package FixMyStreet::Roles::SCP;
+package FixMyStreet::Roles::Cobrand::SCP;
 
 use Moo::Role;
-use strict;
-use warnings;
 use URI::Escape;
 use Integrations::SCP;
+
+requires 'waste_cc_payment_sale_ref';
+requires 'waste_cc_payment_line_item_ref';
+# requires 'waste_cc_payment_admin_fee_line_item_ref'; Only if admin fee used
 
 sub waste_cc_has_redirect { 1 }
 
