@@ -2,16 +2,24 @@
 title = 'Subscribe to green garden waste collections';
 thing = 'garden subscription';
 summary_title = 'Subscription';
-IF form.saved_data.container_choice == 'sack';
-    step1 = 'sacks_details';
+IF form_class.match('Renew');
+    IF form.saved_data.container_choice == 'sack';
+        step1 = 'sacks_choice';
+    ELSE;
+        step1 = 'intro';
+    END;
 ELSE;
-    step1 = 'details';
+    IF form.saved_data.container_choice == 'sack';
+        step1 = 'sacks_details';
+    ELSE;
+        step1 = 'details';
+    END;
 END;
 %]
 
 [% BLOCK answers %]
     <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Green garden waste subscription</dt>
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Green garden waste collection</dt>
         <dd class="govuk-summary-list__value">
           [% IF data.bins_wanted %]
             [% data.bins_wanted %] [% IF data.container_choice == 'sack' ~%]
