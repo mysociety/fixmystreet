@@ -46,7 +46,6 @@ INCLUDE '_email_top.html';
     [% END %]
 
 [% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
-  <p style="[% p_style %]">We aim to deliver your bin in [% cobrand.wasteworks_config.request_timeframe %].</p>
   <p style="[% p_style %]">
     <b>On delivery day</b><br>
     You do not need to be home for our crew to deliver the bin.
@@ -63,8 +62,7 @@ INCLUDE '_email_top.html';
 [% ELSE %]
 
     [% IF report.category == 'Report missed collection' %]
-      <p style="[% p_style %]">We will arrange another collection as soon as possible
-      in the next 2 working days (not including Saturday and Sunday).</p>
+      <p style="[% p_style %]">We will arrange another collection as soon as possible in the next 2 working days.</p>
     [% ELSIF report.category == 'Request new container' %]
       <p style="[% p_style %]">We aim to deliver this container to you within
       [% cobrand.wasteworks_config.request_timeframe || '20 working days' %].

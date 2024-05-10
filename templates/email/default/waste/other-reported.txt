@@ -42,15 +42,10 @@ On delivery day - You do not need to be home for our crew to deliver the bin.
 Collecting your old bin - If you've requested a collection of your old bin, we'll schedule a specific date for our
 crew to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
 
-We aim to deliver this container to you within [% cobrand.wasteworks_config.request_timeframe %]. If
-you have requested a replacement bin please leave your broken one
-available for collection at the front of your property.
-
 [% ELSE %]
 
 [% IF report.category == 'Report missed collection' %]
-We will arrange another collection as soon as possible in the next 2
-working days (not including Saturday and Sunday).
+We will arrange another collection as soon as possible in the next 2 working days.
 [% ELSIF report.category == 'Request new container' %]
 We aim to deliver this container to you within
 [% cobrand.wasteworks_config.request_timeframe || '20 working days' %]. If
