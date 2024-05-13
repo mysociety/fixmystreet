@@ -635,7 +635,11 @@ for my $setup (
                         token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
                         logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
                         password_change_uri => 'http://oidc.example.org/oauth2/v2.0/password_change',
-                        display_name => 'MyAccount'
+                        display_name => 'MyAccount',
+                        role_map => {
+                            BasicEditorViewers => 'Streetcare - Basic Editor Viewers',
+                            Admin => 'Streetcare - Admin',
+                        },
                     }
                 }
             }
