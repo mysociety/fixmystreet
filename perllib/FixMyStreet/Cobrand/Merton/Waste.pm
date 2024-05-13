@@ -131,29 +131,6 @@ sub waste_request_form_first_next {
     };
 }
 
-sub garden_due_days { 30 }
-
-=head2 waste_munge_report_form_pages
-
-Rename the button on the first report page if we're doing an additional collection
-
-=cut
-
-sub waste_munge_report_form_pages {
-    my ($self, $page_list, $field_list) = @_;
-    if ($self->{c}->get_param('additional')) {
-        $page_list->[1]->{title} = 'Select additional collection';
-        $page_list->[1]->{update_field_list} = sub {
-            return { submit => { value => 'Request additional collection' } };
-        };
-    }
-}
-
-sub waste_munge_report_form_fields {
-    my ($self, $field_list) = @_;
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
-}
-
 sub waste_munge_request_data {
     my ($self, $id, $data, $form) = @_;
 
@@ -197,6 +174,29 @@ sub waste_munge_request_data {
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
     $c->set_param('Container_Type', $id);
+}
+
+sub garden_due_days { 30 }
+
+=head2 waste_munge_report_form_pages
+
+Rename the button on the first report page if we're doing an additional collection
+
+=cut
+
+sub waste_munge_report_form_pages {
+    my ($self, $page_list, $field_list) = @_;
+    if ($self->{c}->get_param('additional')) {
+        $page_list->[1]->{title} = 'Select additional collection';
+        $page_list->[1]->{update_field_list} = sub {
+            return { submit => { value => 'Request additional collection' } };
+        };
+    }
+}
+
+sub waste_munge_report_form_fields {
+    my ($self, $field_list) = @_;
+    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
 sub waste_munge_enquiry_data {
