@@ -346,7 +346,6 @@ FixMyStreet::override_config {
     };
     subtest 'Request food bags link can be disabled via config' => sub {
         $mech->log_in_ok($user->email);
-        set_fixed_time('2024-04-01T10:00:00Z');
 
         $body->set_extra_metadata( wasteworks_config => {} );
         $body->update;
@@ -355,7 +354,7 @@ FixMyStreet::override_config {
         $mech->content_contains("Request more food bags");
         $mech->content_lacks("Food bags currently out of stock");
 
-        $body->set_extra_metadata( wasteworks_config => { food_bags_disabled => 1 } );
+        $body->set_extra_metadata( wasteworks_config => { food_bags_disabled => 'stock' } );
         $body->update;
 
         $mech->get_ok('/waste/PE1 3NA:100090215480');
@@ -364,7 +363,6 @@ FixMyStreet::override_config {
 
         $body->set_extra_metadata( wasteworks_config => {} );
         $body->update;
-        set_fixed_time('2021-08-06T10:00:00Z'); # To what it was before this subtest
     };
     subtest 'Request food bags from front page as non-staff' => sub {
         $mech->log_in_ok($user->email);
@@ -813,7 +811,7 @@ FixMyStreet::override_config {
                 band1_price => '',
                 daily_slots => 50,
                 free_mode => 0, # not checked
-                food_bags_disabled => 0, # not checked
+                food_bags_disabled => '', # not checked
                 base_price => 1234, per_item_costs => 1, per_item_min_collection_price => '', items_per_collection_max => 7 };
         };
     };

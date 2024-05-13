@@ -83,7 +83,7 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                 band1_price => 'int',
                 band1_max => 'int',
                 free_mode => 'bool',
-                food_bags_disabled => 'bool',
+                food_bags_disabled => 'sel',
                 show_location_page => 'sel',
                 show_individual_notes => 'bool',
             );
