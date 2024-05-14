@@ -631,7 +631,7 @@ FixMyStreet::override_config {
         ok !$services{'PG-240'}{last}{is_delayed}, 'not marked delayed';
 
         # After 5pm, so FO-23 is now considered delayed
-        set_fixed_time('2024-04-22T16:00:00'); # Monday, 17:00 BST
+        set_fixed_time('2024-04-22T17:00:00');
         is $cobrand->can_report_missed( $property, $services{'FO-23'} ), 0,
             'cannot report missed collection after 5pm against service due today that has not been collected';
         ok $services{'FO-23'}{last}{is_delayed}, 'marked delayed';
