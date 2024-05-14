@@ -13,11 +13,9 @@ package Integrations::Whitespace;
 use strict;
 use warnings;
 use Moo;
-use JSON::MaybeXS qw(encode_json);
 
 with 'Integrations::Roles::SOAP';
 with 'Integrations::Roles::ParallelAPI';
-with 'FixMyStreet::Roles::Syslog';
 
 has attr => ( is => 'ro', default => 'http://webservices.whitespacews.com/' );
 has username => ( is => 'ro' );
@@ -35,12 +33,7 @@ has endpoint => (
             soapversion => 1.1,
             proxy => $self->url,
             default_ns => $self->attr,
-            on_action => sub { $self->attr . $_[1] },
-            on_fault => sub {
-                my ($soap, $res) = @_;
-                $self->log("[Whitespace] SOAP Fault: " . $res->method . ": " . $res->faultcode . " - " . $res->faultstring);
-                die $res->faultstring;
-            },
+            on_action => sub { $self->attr . $_[1] }
         );
     },
 );
@@ -65,22 +58,8 @@ has security => (
 
 has backend_type => ( is => 'ro', default => 'whitespace' );
 
-has log_ident => (
-    is => 'ro',
-    default => sub {
-        my $feature = 'whitespace';
-        my $features = FixMyStreet->config('COBRAND_FEATURES');
-        return unless $features && ref $features eq 'HASH';
-        return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
-        my $f = $features->{$feature}->{_fallback};
-        return $f->{log_ident};
-    }
-);
-
 sub call {
     my ($self, $method, @params) = @_;
-
-    $self->log("[Whitespace] $method : " . encode_json(\@params));
 
     require SOAP::Lite;
     @params = make_soap_structure(@params);
