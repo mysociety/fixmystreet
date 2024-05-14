@@ -23,10 +23,14 @@ END;
         <dd class="govuk-summary-list__value">
           [% IF data.bins_wanted %]
             [% data.bins_wanted %] [% IF data.container_choice == 'sack' ~%]
-                [% nget('sack subscription', 'sack subscriptions', data.bins_wanted) %]
-              [% ELSE ~%]
-                [% nget('bin', 'bins', data.bins_wanted) %]
-              [% END %]
+              [% nget('sack subscription', 'sack subscriptions', data.bins_wanted) %]
+            [% ELSIF data.container_choice == 'bin140' ~%]
+              [% nget('140L bin', '140L bins', data.bins_wanted) %]
+            [% ELSIF data.container_choice == 'bin240' ~%]
+              [% nget('240L bin', '240L bins', data.bins_wanted) %]
+            [% ELSE ~%]
+              [% nget('bin', 'bins', data.bins_wanted) %]
+            [% END %]
           [% ELSE %]
             Sacks
           [% END %]

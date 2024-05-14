@@ -32,6 +32,9 @@ around look_up_property => sub {
     return $data;
 };
 
+sub waste_staff_choose_payment_method { 1 }
+sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
+
 sub waste_event_state_map {
     return {
         New => { New => 'confirmed' },
@@ -65,6 +68,8 @@ use constant CONTAINER_PAPER_BIN => 19;
 use constant CONTAINER_FOOD_INDOOR => 23;
 use constant CONTAINER_FOOD_OUTDOOR => 24;
 use constant CONTAINER_PAPER_BIN_140 => 36;
+use constant CONTAINER_GARDEN_BIN => 26;
+use constant CONTAINER_GARDEN_BIN_140 => 27;
 use constant CONTAINER_GARDEN_SACK => 28;
 
 sub garden_service_id { 2247 }
@@ -125,6 +130,11 @@ sub waste_extra_service_info_all_results {
 
 sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
+
+    if ($self->moniker eq 'merton') {
+        # Merton lets everyone pick between bins and sacks
+        $self->{c}->stash->{slwp_garden_sacks} = 1;
+    }
 
     foreach (@rows) {
         my $service_id = $_->{ServiceId};
@@ -320,8 +330,83 @@ sub garden_current_service_from_service_units {
     return $garden;
 }
 
+sub garden_container_data_extract {
+    my ($self, $data, $containers, $quantities, $schedules) = @_;
+    # Assume garden will only have one container data
+    my $garden_container = $containers->[0];
+    my $garden_bins = $quantities->{$containers->[0]};
+    if ($garden_container == CONTAINER_GARDEN_SACK) {
+        my $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
+        return ($garden_bins, 1, $garden_cost, $garden_container);
+    } else {
+        my $garden_cost = $self->garden_waste_renewal_cost_pa($schedules->{end_date}, $garden_bins) / 100;
+        return ($garden_bins, 0, $garden_cost, $garden_container);
+    }
+}
+
 # We don't have overdue renewals here
 sub waste_sub_overdue { 0 }
+
+# Same as full cost
+sub waste_get_pro_rata_cost {
+    my ($self, $bins, $end) = @_;
+    return $self->garden_waste_cost_pa($bins);
+}
+
+sub waste_garden_sub_params {
+    my ($self, $data, $type) = @_;
+    my $c = $self->{c};
+
+    my $service = $self->garden_current_subscription;
+    my $choice = $data->{container_choice} || '';
+    my $existing = $service ? $service->{garden_container} : undef;
+    my $container;
+    if ($choice eq 'sack') {
+        $container = CONTAINER_GARDEN_SACK;
+    } elsif ($choice eq 'bin140') {
+        $container = CONTAINER_GARDEN_BIN_140;
+    } elsif ($choice eq 'bin240') {
+        $container = CONTAINER_GARDEN_BIN;
+    } elsif ($choice) {
+        $container = CONTAINER_GARDEN_BIN;
+    } elsif ($existing) {
+        $container = $existing;
+    } else {
+        $container = CONTAINER_GARDEN_BIN;
+    }
+
+    my $container_actions = {
+        deliver => 1,
+        remove => 2
+    };
+
+    $c->set_param('Request_Type', $type);
+    $c->set_param('Subscription_Details_Containers', $container);
+    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
+    if ( $data->{new_bins} ) {
+        my $action = ($data->{new_bins} > 0) ? 'deliver' : 'remove';
+        $c->set_param('Bin_Delivery_Detail_Containers', $container_actions->{$action});
+        $c->set_param('Bin_Delivery_Detail_Container', $container);
+        $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
+    }
+}
+
+sub waste_garden_subscribe_form_setup {
+    my ($self) = @_;
+    my $c = $self->{c};
+    if ($c->stash->{slwp_garden_sacks}) {
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks';
+    }
+}
+
+sub waste_garden_renew_form_setup {
+    my ($self) = @_;
+    my $c = $self->{c};
+    if ($c->stash->{slwp_garden_sacks}) {
+        $c->stash->{first_page} = 'sacks_choice';
+        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
+    }
+}
 
 =item * When a garden subscription is sent to Echo, we include payment details
 
