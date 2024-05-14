@@ -564,9 +564,9 @@ sub can_report_missed {
                 && $log_for_round->{date} >= $min_dt ) ? 1 : 0
             if $log_for_round;
 
-        $service->{last}{is_delayed} = 1
-            if $last_expected_collection_dt < $today_dt
-            && $last_expected_collection_dt >= $min_dt;
+        $service->{last}{is_delayed} =
+            ($last_expected_collection_dt < $today_dt && $last_expected_collection_dt >= $min_dt)
+            || ($service->{next}{is_today} && $now_dt->hour >= 17) ? 1 : 0;
     }
 
     # At this point, missed report is not allowed because

@@ -540,6 +540,9 @@ FixMyStreet::override_config {
                 service_id => 'FO-23',
                 round => 'RCY-R1',
                 round_schedule => 'RCY-R1 Mon',
+                next => {
+                    is_today => 1,
+                },
             },
             # Had a collection earlier today
             'FO-140' => {
@@ -671,6 +674,12 @@ FixMyStreet::override_config {
         is $cobrand->can_report_missed( $property, $services{'PG-240'} ), 0,
             'cannot report missed collection against service whose round was collected more than 3 working days ago';
         ok !$services{'PG-240'}{last}{is_delayed}, 'not marked delayed';
+
+        # After 5pm, so FO-23 is now considered delayed
+        set_fixed_time('2024-04-22T17:00:00');
+        is $cobrand->can_report_missed( $property, $services{'FO-23'} ), 0,
+            'cannot report missed collection after 5pm against service due today that has not been collected';
+        ok $services{'FO-23'}{last}{is_delayed}, 'marked delayed';
 
         # Put time back to previous value
         set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
