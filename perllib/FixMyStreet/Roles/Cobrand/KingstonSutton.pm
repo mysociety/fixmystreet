@@ -97,9 +97,6 @@ sub available_permissions {
 
 sub waste_auto_confirm_report { 1 }
 
-sub waste_staff_choose_payment_method { 1 }
-sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
-
 use constant CONTAINER_REFUSE_140 => 1;
 use constant CONTAINER_REFUSE_180 => 35;
 use constant CONTAINER_REFUSE_240 => 2;
@@ -268,20 +265,6 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
-sub garden_container_data_extract {
-    my ($self, $data, $containers, $quantities, $schedules) = @_;
-    # Assume garden will only have one container data
-    my $garden_container = $containers->[0];
-    my $garden_bins = $quantities->{$containers->[0]};
-    if ($garden_container == CONTAINER_GARDEN_SACK) {
-        my $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
-        return ($garden_bins, 1, $garden_cost, $garden_container);
-    } else {
-        my $garden_cost = $self->garden_waste_renewal_cost_pa($schedules->{end_date}, $garden_bins) / 100;
-        return ($garden_bins, 0, $garden_cost, $garden_container);
-    }
-}
-
 # Not in the function below because it needs to set things needed before then
 # (perhaps could be refactored better at some point). Used for new/renew
 sub waste_garden_sub_payment_params {
@@ -291,52 +274,11 @@ sub waste_garden_sub_payment_params {
     # Special sack form handling
     my $container = $data->{container_choice} || '';
     if ($container eq 'sack') {
-        $data->{slwp_garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
         ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
         $c->set_param('payment', $cost_pa);
-    }
-}
-
-sub waste_garden_sub_params {
-    my ($self, $data, $type) = @_;
-    my $c = $self->{c};
-
-    my $service = $self->garden_current_subscription;
-    my $existing = $service ? $service->{garden_container} : undef;
-    my $container = $data->{slwp_garden_sacks} ? CONTAINER_GARDEN_SACK : $existing || CONTAINER_GARDEN_BIN;
-    my $container_actions = {
-        deliver => 1,
-        remove => 2
-    };
-
-    $c->set_param('Request_Type', $type);
-    $c->set_param('Subscription_Details_Containers', $container);
-    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
-    if ( $data->{new_bins} ) {
-        my $action = ($data->{new_bins} > 0) ? 'deliver' : 'remove';
-        $c->set_param('Bin_Delivery_Detail_Containers', $container_actions->{$action});
-        $c->set_param('Bin_Delivery_Detail_Container', $container);
-        $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
-    }
-}
-
-sub waste_garden_subscribe_form_setup {
-    my ($self) = @_;
-    my $c = $self->{c};
-    if ($c->stash->{slwp_garden_sacks}) {
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks';
-    }
-}
-
-sub waste_garden_renew_form_setup {
-    my ($self) = @_;
-    my $c = $self->{c};
-    if ($c->stash->{slwp_garden_sacks}) {
-        $c->stash->{first_page} = 'sacks_choice';
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
     }
 }
 
@@ -367,12 +309,6 @@ sub waste_report_form_first_next {
         return 'notes' if $data->{"service-$bulky_service_id"};
         return 'about_you';
     };
-}
-
-# Same as full cost
-sub waste_get_pro_rata_cost {
-    my ($self, $bins, $end) = @_;
-    return $self->garden_waste_cost_pa($bins);
 }
 
 sub garden_waste_new_bin_admin_fee {

@@ -10,7 +10,7 @@
 <form method="post" id="renew">
 
   [% IF form.current_page.fields.grep('bins_wanted').size %]
-    [% PROCESS 'waste/garden/_sack_quantity.html' form_page='renew' %]
+    [% PROCESS 'waste/garden/_sack_quantity.html' form_page='renew' cost=per_sack_renewal_cost %]
   [% END %]
 
   <hr class="fieldset-hr">
