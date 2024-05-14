@@ -461,21 +461,18 @@ sub can_report_missed {
         my $now_dt
             = DateTime->now( time_zone => FixMyStreet->local_time_zone );
 
-        # For collections with prefix RCY- or PG- we need to check if the last
-        # collection was made over WORKING_DAYS_WINDOW ago because some
-        # collections are weekly and some fortnightly, but they share a round
-        # code prefix.
-        if ( $service->{round} =~ /^RCY-/ or $service->{round} =~ /^PG-/ ) {
-            return 0 if $last_expected_collection_dt < $min_dt;
-        }
+        # We need to check if the last collection was made over
+        # WORKING_DAYS_WINDOW ago because some collections are weekly and some
+        # fortnightly, but they share a round code prefix.
+        return 0 if $last_expected_collection_dt < $min_dt && !$service->{next}{is_today};
 
         return (   $log_for_round->{date} < $now_dt
                 && $log_for_round->{date} >= $min_dt ) ? 1 : 0
             if $log_for_round;
 
-        $service->{last}{is_delayed} = 1
-            if $last_expected_collection_dt < $today_dt
-            && $last_expected_collection_dt >= $min_dt;
+        $service->{last}{is_delayed} =
+            ($last_expected_collection_dt < $today_dt && $last_expected_collection_dt >= $min_dt)
+            || ($service->{next}{is_today} && $now_dt->hour >= 17) ? 1 : 0;
     }
 
     # At this point, missed report is not allowed because
