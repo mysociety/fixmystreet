@@ -213,14 +213,8 @@ sub roles_from_oidc {
     $user->user_roles->delete;
     $user->from_body($self->body->id);
 
-    my %role_map = (
-        BasicEditorViewers => 'Streetcare - Basic Editor Viewers',
-        Contractor => 'Streetcare - Contractor',
-        AgentInspector => 'Streetcare - Agent Inspector',
-        Admin => 'Streetcare - Admin',
-        CustomerServices => 'Streetcare - Customer Services',
-        CPOS => 'Streetcare - CPOS',
-    );
+    my $cfg = $self->feature('oidc_login') || {};
+    my $role_map = $cfg->{role_map} || {};
 
     my @body_roles;
     for ($user->from_body->roles->search(undef, { order_by => 'name' })->all) {
@@ -231,7 +225,7 @@ sub roles_from_oidc {
     }
 
     for my $assign_role (@$roles) {
-        my ($body_role) = grep { $role_map{$assign_role} && $_->{name} eq $role_map{$assign_role} } @body_roles;
+        my ($body_role) = grep { $role_map->{$assign_role} && $_->{name} eq $role_map->{$assign_role} } @body_roles;
 
         if ($body_role) {
             $user->user_roles->find_or_create({

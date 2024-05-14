@@ -237,8 +237,9 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('attribute[Action]'), '1';
-        is $cgi->param('attribute[Reason]'), '1';
+        # Not sure which one will have been sent last
+        like $cgi->param('attribute[Action]'), qr/^[13]$/;
+        like $cgi->param('attribute[Reason]'), qr/^[12]$/;
     };
 
     subtest 'Request refuse exchange' => sub {
