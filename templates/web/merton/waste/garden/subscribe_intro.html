@@ -1,0 +1,27 @@
+[% USE date %]
+[% INCLUDE waste/header.html %]
+
+<div class="waste__loading_wrapper">
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS title title=form.title %]
+  [% PROCESS errors %]
+
+<p>We offer a chargeable collection service for garden waste.</p>
+
+<ul>
+    <li><a href="https://www.merton.gov.uk/rubbish-and-recycling/bins-bags-and-collection-services/garden-waste/how-does-this-service-work">Cost and how it works</a>
+    <li><a href="https://www.merton.gov.uk/rubbish-and-recycling/bins-bags-and-collection-services/what-goes-in-your-bins-bags-and-recycling-boxes#titleCol12">What goes in your garden waste bin or sacks</a>
+</ul>
+
+<h2>Subscribe online</h2>
+
+<p>You will need a credit or debit card.</p>
+
+<form method="post" action="garden">
+  [% PROCESS form %]
+</form>
+
+</div>
+
+[% INCLUDE footer.html %]

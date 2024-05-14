@@ -10,7 +10,7 @@
 <form method="post" id="subscribe_details">
   <div style="margin-top: 1.5em;">
     [% IF form.current_page.fields.grep('bins_wanted').size %]
-        [% PROCESS 'waste/garden/_sack_quantity.html' form_page='subscribe' %]
+        [% PROCESS 'waste/garden/_sack_quantity.html' form_page='subscribe' cost=per_sack_cost %]
     [% END %]
 
     <hr class="fieldset-hr">
