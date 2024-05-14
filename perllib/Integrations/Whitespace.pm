@@ -63,11 +63,26 @@ sub call {
     my ($self, $method, @params) = @_;
 
     require SOAP::Lite;
+
+    # SOAP::Lite uses some global constants to set e.g. the request's
+    # Content-Type header and various envelope XML attributes. On new() it sets
+    # up those XML attributes, and even if you call soapversion on the object's
+    # serializer after, it does nothing if the global version matches the
+    # object's current version (which it will!), and then uses those same
+    # constants anyway. So we have to set the version globally before creating
+    # the object (during the call to self->endpoint), and also during the
+    # call() (because it uses the constants at that point to set the
+    # Content-Type header), and then set it back after so it doesn't break
+    # other users of SOAP::Lite.
+    SOAP::Lite->soapversion(1.1);
+
     @params = make_soap_structure(@params);
     my $som = $self->endpoint->call(
         $method => @params,
         $self->security
     );
+
+    SOAP::Lite->soapversion(1.2);
 
     # TODO: Better error handling
     die $som->faultstring if ($som->fault);
