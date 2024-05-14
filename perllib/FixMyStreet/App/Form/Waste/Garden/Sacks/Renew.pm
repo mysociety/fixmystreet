@@ -10,7 +10,10 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Garden::Renew';
 
-sub with_bins_wanted { 0 }
+sub with_bins_wanted {
+    my $cobrand = $_[0]->c->cobrand->moniker;
+    return $cobrand eq 'merton';
+}
 
 has_page sacks_choice => (
     title_ggw => 'Subscribe to the %s',
@@ -28,22 +31,7 @@ has_page sacks_choice => (
     },
 );
 
-has_field container_choice => (
-    type => 'Select',
-    label => 'Would you like to subscribe for bins or sacks?',
-    required => 1,
-    widget => 'RadioGroup',
-);
-
-sub options_container_choice {
-    my $cobrand = $_[0]->{c}->cobrand->moniker;
-    my $num = $cobrand eq 'sutton' ? 20 :
-        $cobrand eq 'kingston' ? 10 : '';
-    [
-        { value => 'bin', label => 'Bins', hint => '240L capacity, which is about the same size as a standard wheelie bin' },
-        { value => 'sack', label => 'Sacks', hint => "Buy a roll of $num sacks and use them anytime within your subscription year" },
-    ];
-}
+with 'FixMyStreet::App::Form::Waste::Garden::Sacks::Choice';
 
 has_page sacks_details => (
     title => 'Renew your green garden waste subscription',
