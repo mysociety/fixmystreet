@@ -14,6 +14,8 @@ use strict;
 use warnings;
 use Moo;
 
+use SOAP::Lite +trace => [qw(debug)];
+
 with 'Integrations::Roles::SOAP';
 with 'Integrations::Roles::ParallelAPI';
 
