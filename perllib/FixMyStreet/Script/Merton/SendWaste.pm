@@ -18,7 +18,10 @@ sub send_reports {
     my $problems = $self->_problems;
 
     while (my $row = $problems->next) {
-        $self->set_echo_id($row) or next; # skip if no echo_id
+        unless ($row->get_extra_metadata('no_echo')) {
+            $self->set_echo_id($row) or next; # skip if no echo_id
+        }
+
         my $item = FixMyStreet::Queue::Item::Report->new( report => $row );
         FixMyStreet::DB->schema->cobrand($item->cobrand);
         $item->cobrand->set_lang_and_domain($row->lang, 1);
