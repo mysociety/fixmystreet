@@ -589,4 +589,28 @@ sub bulky_location_photo_prompt {
         . 'Help us by attaching a photo of where the items will be left for collection.';
 }
 
+=item * Bulky collections can be amended up to a configurable time on the day before the day of collection
+
+This defaults to 2PM.
+
+=back
+
+=cut
+
+sub bulky_amendment_cutoff_time {
+    my $time = $_[0]->wasteworks_config->{amendment_cutoff_time} || "14:00";
+    my ($hours, $minutes) = split /:/, $time;
+    return { hours => $hours, minutes => $minutes };
+}
+
+sub _bulky_amendment_cutoff_date {
+    my ($self, $collection_date) = @_;
+    my $cutoff_time = $self->bulky_amendment_cutoff_time();
+    my $cutoff_dt = $collection_date->clone->set(
+        hour   => $cutoff_time->{hours},
+        minute => $cutoff_time->{minutes},
+    )->subtract( days => 1 );
+    return $cutoff_dt;
+}
+
 1;
