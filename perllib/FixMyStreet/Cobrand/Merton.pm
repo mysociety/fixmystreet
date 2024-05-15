@@ -168,4 +168,5 @@ sub open311_post_send {
         delete $self->{original_external_id};
     }
 }
+
 1;
