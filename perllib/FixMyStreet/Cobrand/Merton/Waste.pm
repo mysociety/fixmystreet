@@ -210,7 +210,10 @@ sub waste_munge_request_data {
     }
     $data->{detail} = "Quantity: $quantity\n\n$address";
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
-
+    if ($data->{request_reason_text}) {
+        $data->{detail} .= "\n\nAdditional details: " . $data->{request_reason_text};
+        $c->set_param('Notes', $data->{request_reason_text});
+    }
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
     $c->set_param('Container_Type', $id);

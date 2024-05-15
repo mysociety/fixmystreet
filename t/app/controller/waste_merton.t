@@ -260,6 +260,7 @@ FixMyStreet::override_config {
     subtest 'Request new build container' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-1' => 1 } });
+        $mech->content_lacks('request_reason_text', 'Staff only field for extra information absent');
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
@@ -273,6 +274,26 @@ FixMyStreet::override_config {
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '1';
         is $cgi->param('attribute[Reason]'), '4';
+    };
+
+    subtest 'Request new build container as staff' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-1' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build', 'request_reason_text' => 'Large household' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('request has been sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\nAdditional details: Large household";
+        is $report->title, 'Request new Black rubbish bin (140L)';
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[Action]'), '1';
+        is $cgi->param('attribute[Reason]'), '4';
+        $mech->log_out_ok;
     };
 
     subtest 'Report missed collection' => sub {

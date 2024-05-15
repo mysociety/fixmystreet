@@ -12,9 +12,17 @@ has_page about_you => (
 );
 
 has_page replacement => (
-    fields => ['request_reason', 'continue'],
+    fields => ['request_reason', 'request_reason_text', 'continue'],
     title => 'Reason for request',
     next => 'about_you',
+    field_ignore_list => sub {
+        my $page = shift;
+        if (!$page->form->{c}->stash->{is_staff}) {
+            return ['request_reason_text'];
+        } else {
+            return [];
+        };
+    },
 );
 
 has_field request_reason => (
@@ -22,6 +30,14 @@ has_field request_reason => (
     type => 'Select',
     widget => 'RadioGroup',
     label => 'Why do you need a replacement container?',
+);
+
+has_field request_reason_text => (
+    required => 0,
+    type => 'Text',
+    widget => 'Textarea',
+    label => 'Additional details',
+    tags => { hint => 'Please enter any additional details that will help us with the request' },
 );
 
 sub options_request_reason {
