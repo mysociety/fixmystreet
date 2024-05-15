@@ -204,7 +204,7 @@
             name="[% field.html_name %]" value="[% item.value %]"[% ' aria-describedby="' _ field.id _ '-item-hint"' IF hint %]
             [% 'data-show="' _ item.data_show _ '"' IF item.data_show %]
             [% 'data-hide="' _ item.data_hide _ '"' IF item.data_hide %]
-            [% 'checked' IF field.fif == item.value OR only_one_option %]
+            [% 'checked' IF field.fif == item.value OR only_one_option OR item.selected %]
             [% 'disabled' IF item.disabled %]>
         <label class="govuk-label govuk-radios__label" for="[% field.id %]-[% loop.index %]">
           [% item.label %]
