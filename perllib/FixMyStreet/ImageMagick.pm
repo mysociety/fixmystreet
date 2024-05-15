@@ -66,7 +66,8 @@ sub shrink {
 # Shrinks a picture to the specified percentage of the original, but keeping in proportion.
 sub shrink_to_percentage {
     my ($self, $percentage) = @_;
-    return $self->image->Scale(geometry => "$percentage%");
+    $self->image->Scale(geometry => "$percentage%");
+    return $self;
 }
 
 # Shrinks a picture to a given dimension (defaults to 90x60(, cropping so that
