@@ -162,6 +162,16 @@ sub waste_garden_sub_payment_params {
     }
 }
 
+sub staff_override_request_options {
+    my ($self, $rows) = @_;
+    return unless $self->{c}->stash->{is_staff};
+
+    foreach my $row (@$rows) {
+        $row->{'request_allowed'} = 1;
+        $row->{'request_max'} = 3;
+    }
+}
+
 sub waste_request_form_first_next {
     my $self = shift;
     return sub {
@@ -177,7 +187,7 @@ sub waste_munge_request_data {
     my $c = $self->{c};
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
-    my $quantity = 1;
+    my $quantity = $data->{"quantity-$id"} || 1;
     my $reason = $data->{request_reason} || '';
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 
