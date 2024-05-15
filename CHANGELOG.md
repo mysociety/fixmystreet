@@ -28,6 +28,7 @@
         - Added support for 'datetime' extra category questions using a datetime picker.
         - Added option to make a phone number required for a category.
         - Add way to pick multiple categories in the dashboard.
+        - Allow h1, h2, h3 tags in contact notices/questions. #4959
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456
