@@ -69,18 +69,6 @@ sub bulky_collection_time {
     }
 }
 
-=item * Bulky collections can be amended up to 2pm before the day of collection
-
-=back
-
-=cut
-
-sub bulky_amendment_cutoff_time {
-    my $time = $_[0]->wasteworks_config->{amendment_cutoff_time} || "14:00";
-    my ($hours, $minutes) = split /:/, $time;
-    return { hours => $hours, minutes => $minutes };
-}
-
 sub bulky_daily_slots { $_[0]->wasteworks_config->{daily_slots} || 40 }
 
 # XXX
@@ -281,16 +269,6 @@ sub _bulky_refund_cutoff_date {
     my $cutoff_dt       = $collection_dt->clone->set(
         hour   => $collection_time->{hours},
         minute => $collection_time->{minutes},
-    )->subtract( days => 1 );
-    return $cutoff_dt;
-}
-
-sub _bulky_amendment_cutoff_date {
-    my ($self, $collection_date) = @_;
-    my $cutoff_time = $self->bulky_amendment_cutoff_time();
-    my $cutoff_dt = $collection_date->clone->set(
-        hour   => $cutoff_time->{hours},
-        minute => $cutoff_time->{minutes},
     )->subtract( days => 1 );
     return $cutoff_dt;
 }
