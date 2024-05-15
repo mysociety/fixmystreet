@@ -65,6 +65,13 @@ create_contact({ category => 'Request additional collection', email => 'addition
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
+my $no_echo_contact = $mech->create_contact_ok(
+    body => $merton,
+    category => 'No Echo',
+    group => ['waste'],
+    email => 'noecho@example.org',
+);
+$no_echo_contact->set_extra_metadata( type => 'waste' );
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'merton',
@@ -137,23 +144,49 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Action]'), '3';
         is $cgi->param('attribute[Reason]'), '2';
     };
+
     subtest 'Test sending of reports to other endpoint' => sub {
         use_ok 'FixMyStreet::Script::Merton::SendWaste';
-        $e->mock('GetEvent', sub { { Id => 1928374 } });
+
         Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
-        my $send = FixMyStreet::Script::Merton::SendWaste->new;
-        $send->send_reports;
-        my $req = Open311->test_req_used;
-        my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('api_key'), 'api_key';
-        is $cgi->param('attribute[Action]'), '3';
-        is $cgi->param('attribute[Reason]'), '2';
-        is $cgi->param('attribute[echo_id]'), '1928374';
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_metadata('sent_to_crimson'), 1;
-        is $report->get_extra_metadata('crimson_external_id'), "359";
-        is $report->get_extra_field_value('echo_id'), "1928374";
-        is $report->external_id, "248";
+
+        subtest 'Test sending echo reports' => sub {
+            $e->mock('GetEvent', sub { { Id => 1928374 } });
+            my $send = FixMyStreet::Script::Merton::SendWaste->new;
+            $send->send_reports;
+            my $req = Open311->test_req_used;
+            my $cgi = CGI::Simple->new($req->content);
+            is $cgi->param('api_key'), 'api_key';
+            is $cgi->param('attribute[Action]'), '3';
+            is $cgi->param('attribute[Reason]'), '2';
+            is $cgi->param('attribute[echo_id]'), '1928374';
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->get_extra_metadata('sent_to_crimson'), 1;
+            is $report->get_extra_metadata('crimson_external_id'), "359";
+            is $report->get_extra_field_value('echo_id'), "1928374";
+            is $report->external_id, "248";
+        };
+
+        Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>360</service_request_id></request></service_requests>');
+
+        subtest 'Test sending non-echo reports' => sub {
+            my ($no_echo_report) = $mech->create_problems_for_body(1, $merton->id, 'No Echo Report', {
+                cobrand => 'merton',
+                cobrand_data => 'waste',
+                state => 'confirmed',
+                category => $no_echo_contact->category,
+            });
+            $no_echo_report->set_extra_metadata(no_echo => 1);
+            $no_echo_report->update;
+
+            my $send = FixMyStreet::Script::Merton::SendWaste->new;
+            $send->send_reports;
+
+            $no_echo_report->discard_changes;
+            is $no_echo_report->get_extra_metadata('sent_to_crimson'), 1;
+            is $no_echo_report->external_id, "360";
+            $no_echo_report->delete;
+        };
     };
     subtest 'Test sending of updates to other endpoint' => sub {
         use_ok 'FixMyStreet::Script::Merton::SendWaste';
