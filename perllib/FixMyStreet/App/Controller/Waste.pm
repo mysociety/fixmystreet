@@ -1050,6 +1050,15 @@ sub enquiry : Chained('property') : Args(0) {
     foreach (@{$contact->get_metadata_for_input}) {
         $staff_form = 1 if $_->{code} eq 'staff_form';
         next if ($_->{automated} || '') eq 'hidden_field';
+
+        # Handle notices.
+        if ($_->{variable} && $_->{variable} eq 'false') {
+            push @$field_list, "extra_$_->{code}" => {
+                type => 'Notice', label => $_->{description}, required => 0, widget => 'NoRender',
+            };
+            next;
+        }
+
         my %config = (type => 'Text');
         my $datatype = $_->{datatype} || '';
         if ($datatype eq 'text') {
@@ -1058,6 +1067,7 @@ sub enquiry : Chained('property') : Args(0) {
             my @options = map { { label => $_->{name}, value => $_->{key} } } @{$_->{values}};
             %config = (type => 'Multiple', widget => 'CheckboxGroup', options => \@options);
         }
+
         my $required = $_->{required} eq 'true' ? 1 : 0;
         push @$field_list, "extra_$_->{code}" => {
             %config, label => $_->{description}, required => $required
@@ -1657,6 +1667,8 @@ sub add_report : Private {
         }
         $c->forward('/report/new/redirect_or_confirm_creation', [ 1 ]);
     }
+
+    $c->cobrand->call_hook('waste_post_report_creation', $report);
 
     $c->user->update({ name => $original_name }) if $original_name;
 

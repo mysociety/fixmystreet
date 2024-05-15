@@ -78,5 +78,11 @@
             <input type="submit" value="Cancel your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
           </form>
       [% END %]
+
+  [% IF c.cobrand.moniker == 'merton' AND is_staff %]
+      <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Garden+Subscription+Address+Change&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report an address change</a>
+  [% END %]
+
+
   [% END %]
 [% END %]
