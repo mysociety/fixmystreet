@@ -169,10 +169,11 @@ sub _get_dates {
         my $date = $c->cobrand->collection_date($_);
         $dates_booked{$date} = 1;
     }
+    my $existing_date;
     if (my $amend = $c->stash->{amending_booking}) {
         # Want to allow amendment without changing the date
-        my $date = $c->cobrand->collection_date($amend);
-        delete $dates_booked{$date};
+        $existing_date = $c->cobrand->collection_date($amend);
+        delete $dates_booked{$existing_date};
     }
 
     my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
@@ -183,6 +184,13 @@ sub _get_dates {
             label => $dt->strftime('%d %B'),
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             disabled => $dates_booked{$_->{date}},
+            # The default behaviour in the fields.html template is to mark a radio
+            # button as checked if the existing value matches the option value. However,
+            # for Echo bulky dates the option value is a concatenation of the date and
+            # the reference, so the comparison won't ever match because we've got a new
+            # set of references. So we need to do the comparison here of just the dates
+            # and set the selected flag accordingly.
+            selected => $existing_date && $existing_date eq $_->{date},
             }
             : undef
         } @{
