@@ -145,7 +145,6 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Reason]'), '2';
     };
 
-    my $echo_report;
     subtest 'Test sending of reports to other endpoint' => sub {
         use_ok 'FixMyStreet::Script::Merton::SendWaste';
 
@@ -161,11 +160,11 @@ FixMyStreet::override_config {
             is $cgi->param('attribute[Action]'), '3';
             is $cgi->param('attribute[Reason]'), '2';
             is $cgi->param('attribute[echo_id]'), '1928374';
-            $echo_report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-            is $echo_report->get_extra_metadata('sent_to_crimson'), 1;
-            is $echo_report->get_extra_metadata('crimson_external_id'), "359";
-            is $echo_report->get_extra_field_value('echo_id'), "1928374";
-            is $echo_report->external_id, "248";
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->get_extra_metadata('sent_to_crimson'), 1;
+            is $report->get_extra_metadata('crimson_external_id'), "359";
+            is $report->get_extra_field_value('echo_id'), "1928374";
+            is $report->external_id, "248";
         };
 
         Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>360</service_request_id></request></service_requests>');
@@ -186,12 +185,12 @@ FixMyStreet::override_config {
             $no_echo_report->discard_changes;
             is $no_echo_report->get_extra_metadata('sent_to_crimson'), 1;
             is $no_echo_report->external_id, "360";
+            $no_echo_report->delete;
         };
-
     };
     subtest 'Test sending of updates to other endpoint' => sub {
         use_ok 'FixMyStreet::Script::Merton::SendWaste';
-        my $report = $echo_report;
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         my $comment = $report->add_to_comments({
             text => "Let's imagine this update is from Echo",
             user => $report->user,
