@@ -325,7 +325,11 @@ sub validate {
         my @fields = qw(chosen_date location location_photo);
         push @fields, map { ("item_$_", "item_photo_$_") } 1 .. $max_items;
         foreach (@fields) {
-            $same = 0 if ($old->{$_} || '') ne ($new->{$_} || '');
+            my $new = $new->{$_} || '';
+            if ($_ eq 'chosen_date') {
+                $new =~ s/;.*//; # Strip ref+expiry if present (Echo)
+            }
+            $same = 0 if ($old->{$_} || '') ne $new;
             last unless $same;
         }
         if ($same) {
