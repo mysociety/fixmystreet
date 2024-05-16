@@ -56,6 +56,8 @@ sub contact_extra_fields { [ 'display_name' ] }
 
 sub suppress_reporter_alerts { 1 }
 
+sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' }
+
 
 =head2 get_town
 
