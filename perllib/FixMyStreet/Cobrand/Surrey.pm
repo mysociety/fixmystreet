@@ -50,6 +50,13 @@ sub report_age {
 
 sub contact_extra_fields { [ 'display_name' ] }
 
+=item * We do not send alerts to report authors.
+
+=cut
+
+sub suppress_reporter_alerts { 1 }
+
+
 =head2 get_town
 
 Returns the name of the town from the problem's geocode information, if present.
