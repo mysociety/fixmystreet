@@ -2,11 +2,21 @@ package FixMyStreet::Cobrand::Merton::Waste;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SLWP';
+with 'FixMyStreet::Roles::Cobrand::Adelante';
 
 use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
 
 has lpi_value => ( is => 'ro', default => 'MERTON' );
+
+sub waste_check_staff_payment_permissions {
+    my $self = shift;
+    my $c = $self->{c};
+
+    return unless $c->stash->{is_staff};
+
+    $c->stash->{staff_payments_allowed} = 'cnp';
+}
 
 sub waste_auto_confirm_report { 1 }
 
@@ -120,13 +130,32 @@ sub _closed_event {
 }
 
 # TODO
-sub garden_container_data_extract { }
 sub waste_bulky_missed_blocked_codes {}
+
+sub garden_collection_time { '6:30am' }
+sub garden_waste_new_bin_admin_fee { 0 }
 
 sub waste_quantity_max {
     return (
         2247 => 3, # Garden waste maximum
     );
+}
+
+# Not in the function below because it needs to set things needed before then
+# (perhaps could be refactored better at some point). Used for new/renew
+sub waste_garden_sub_payment_params {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    # Special sack form handling
+    my $container = $data->{container_choice} || '';
+    if ($container eq 'sack') {
+        $data->{bin_count} = $data->{bins_wanted};
+        $data->{new_bins} = $data->{bins_wanted};
+        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $data->{bin_count};
+        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
+        $c->set_param('payment', $cost_pa);
+    }
 }
 
 sub waste_request_form_first_next {
@@ -218,6 +247,28 @@ sub waste_munge_enquiry_data {
     }
     $detail .= $address;
     $data->{detail} = $detail;
+}
+
+=head2 Payment information
+
+=cut
+
+sub waste_payment_ref_council_code { 'LBM' }
+
+sub waste_cc_payment_reference {
+    my ($self, $p) = @_;
+    my $type = 'GWS'; # Garden
+    $type = 'BWC' if $p->category eq 'Bulky collection';
+    return $self->waste_payment_ref_council_code . "-$type-" . $p->id;
+}
+
+sub waste_post_report_creation {
+    my ($self, $report) = @_;
+    if ($report->contact->category eq 'Garden Subscription Address Change') {
+        $report->set_extra_metadata(no_echo => 1);
+        $report->mark_as_sent;
+        $report->update({ external_id => 'no_echo' });
+    }
 }
 
 1;

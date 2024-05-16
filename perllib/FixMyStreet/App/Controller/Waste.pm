@@ -1036,6 +1036,15 @@ sub enquiry : Chained('property') : Args(0) {
     foreach (@{$contact->get_metadata_for_input}) {
         $staff_form = 1 if $_->{code} eq 'staff_form';
         next if ($_->{automated} || '') eq 'hidden_field';
+
+        # Handle notices.
+        if ($_->{variable} && $_->{variable} eq 'false') {
+            push @$field_list, "extra_$_->{code}" => {
+                type => 'Notice', label => $_->{description}, required => 0, widget => 'NoRender',
+            };
+            next;
+        }
+
         my $type = 'Text';
         $type = 'TextArea' if 'text' eq ($_->{datatype} || '');
         my $required = $_->{required} eq 'true' ? 1 : 0;
@@ -1160,7 +1169,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
     $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
 
-    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
+    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == 28) { # SLWP Sack
         if ($c->cobrand->moniker eq 'kingston') {
             my $payment_method = 'credit_card';
             $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
@@ -1290,8 +1299,6 @@ sub process_garden_cancellation : Private {
     if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == 26 || $service->{garden_container} == 27) {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
-    } else {
-        $data->{slwp_garden_sacks} = 1;
     }
     $c->forward('setup_garden_sub_params', [ $data, undef ]);
 
@@ -1383,8 +1390,7 @@ sub process_garden_modification : Private {
     my $payment_method;
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
-    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
-        $data->{slwp_garden_sacks} = 1;
+    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == 28) { # SLWP Sack
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
         $payment = $c->cobrand->garden_waste_sacks_cost_pa();
@@ -1640,6 +1646,8 @@ sub add_report : Private {
         }
         $c->forward('/report/new/redirect_or_confirm_creation', [ 1 ]);
     }
+
+    $c->cobrand->call_hook('waste_post_report_creation', $report);
 
     $c->user->update({ name => $original_name }) if $original_name;
 

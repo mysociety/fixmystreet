@@ -33,6 +33,8 @@
         [% PROCESS photo %]
     [% ELSIF field.type == 'Upload' OR field.type == 'FileIdUpload' %]
         [% PROCESS upload %]
+    [% ELSIF field.type == 'Notice' %]
+        [% PROCESS notice %]
     [% ELSE %]
         [% field.html_name %] [% field.widget %] NOT HANDLED
     [% END %]
@@ -359,4 +361,8 @@
   <div>
   <input class="govuk-file-upload" id="[% field.id %]" name="[% field.id %]" type="file">
   </div>
+[% END %]
+
+[% BLOCK notice %]
+    <p class="govuk-body-l">[% field.label %]</p>
 [% END %]
