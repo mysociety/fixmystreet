@@ -7,7 +7,7 @@ IF bodyclass.match('mappage');
 END
 %]
 
-[% IF c.config.BASE_URL == "https://www.fixmystreet.com" OR c.config.BASE_URL == 'https://staging.fixmystreet.com';
+[% IF bodyclass != 'offlinepage' AND (c.config.BASE_URL == "https://www.fixmystreet.com" OR c.config.BASE_URL == 'https://staging.fixmystreet.com');
     scripts.push( version('/cobrands/westminster/vendor/banner.js') );
 %]
 <div class="westminster-cookie-banner">
