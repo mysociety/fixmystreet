@@ -4,13 +4,13 @@
     [% IF unit.report_url %] – <a href="[% unit.report_url %]" class="waste-service-link">check status</a>[% END %]
   </span>
 [% ELSIF unit.report_locked_out %]
-<span class="waste-service-descriptor">A missed collection cannot be reported;
+<div class="waste-service-descriptor">
+  <p>A missed collection cannot be reported.</p>
   [% IF unit.report_locked_out_reason %]
-      [% unit.report_locked_out_reason %]
-  [% ELSE %]
-      please see the service status at the top of this page.
+  <p><b>Reason</b>: <i>[% unit.report_locked_out_reason %]</i></p>
   [% END %]
-</span>
+  <p>Please see the service status at the top of this page for further information.</p>
+</div>
 [% ELSIF unit.report_allowed %]
   [% any_report_allowed = 1 %]
   <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">

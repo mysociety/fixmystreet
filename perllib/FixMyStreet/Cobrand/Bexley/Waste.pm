@@ -336,8 +336,17 @@ sub bin_services_for_address {
         $filtered_service->{report_allowed}
             = $self->can_report_missed( $property, $filtered_service );
 
-        $filtered_service->{report_locked_out}
-            = $property->{round_exceptions}{ $filtered_service->{round} } ? 1 : 0;
+        $filtered_service->{report_locked_out} = 0;
+        $filtered_service->{report_locked_out_reason} = '';
+        my $log_reason_prefix = $self->get_in_cab_logs_reason_prefix($filtered_service->{service_id});
+        if ($log_reason_prefix) {
+            my @relevant_logs = grep { $_->{reason} =~ /^$log_reason_prefix/ } @$property_logs;
+            if (@relevant_logs) {
+                $filtered_service->{report_locked_out} = 1;
+                $filtered_service->{report_locked_out_reason} = $relevant_logs[0]->{reason};
+            }
+
+        }
 
         push @site_services_filtered, $filtered_service;
     }
@@ -1036,6 +1045,31 @@ sub _bin_location_options {
             'Next to refuse bins',
         ],
     };
+}
+
+sub in_cab_logs_reason_prefixes {
+    {
+        'Clear Sacks' => ['MDR-SACK', 'CW-SACK'],
+        'Paper & Card' => ['PA-1100', 'PA-1280', 'PA-140', 'PA-240', 'PA-55', 'PA-660', 'PA-940', 'PC-180', 'PC-55'],
+        'Food' => ['FO-140', 'FO-23'],
+        'Garden' => ['GA-140', 'GA-240'],
+        'Plastics & Glass' => ['GL-1100', 'GL-1280', 'GL-55', 'GL-660', 'PG-1100', 'PG-1280', 'PG-240', 'PG-360', 'PG-55', 'PG-660', 'PG-940', 'PL-1100', 'PL-1280', 'PL-140', 'PL-55', 'PL-660', 'PL-940'],
+        'Refuse' => ['RES-1100', 'RES-1280', 'RES-140', 'RES-180', 'RES-240', 'RES-660', 'RES-720', 'RES-940', 'RES-CHAM', 'RES-DBIN', 'RES-SACK'],
+    }
+}
+
+sub get_in_cab_logs_reason_prefix {
+    my ($self, $service_name) = @_;
+
+    my $prefixes = in_cab_logs_reason_prefixes();
+
+    foreach my $prefix (keys %$prefixes) {
+        if (grep { $_ eq $service_name } @{$prefixes->{$prefix}}) {
+            return $prefix;
+        }
+    }
+
+    return '';
 }
 
 1;
