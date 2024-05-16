@@ -5,8 +5,6 @@ use Test::MockModule;
 
 use_ok 'Integrations::Adelante';
 
-my %sent;
-
 my $lwp = Test::MockModule->new('LWP::UserAgent');
 $lwp->mock(request => sub {
     my ($self, $req) = @_;
