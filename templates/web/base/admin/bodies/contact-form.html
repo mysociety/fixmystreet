@@ -30,20 +30,17 @@
 
     <label for="destination">[% loc('Destination') %]</label>
     <p class="form-hint" id="destination-hint">
-      [% SET field_type = 'text' %]
       [% IF body.can_be_devolved %]
         [% loc('An email address or service ID (Open311 or similar).') %]
       [% ELSIF body.send_method == 'Open311' %]
         [% loc('A service ID (Open311 or similar).') %]
       [% ELSIF body.send_method.match('Email') OR NOT body.send_method %]
         [% loc('An email address.') %]
-        [% SET field_type = 'email' %]
       [% ELSE %]
         [% loc('An email address or service ID (Open311 or similar).') %]
       [% END %]
     </p>
-    <input type="[% field_type %]" [% IF field_type == 'email' %]
-autocomplete="email" [% END %] class="form-control" id="destination" aria-describedby="destination-hint" name="email" size="30" value="[% contact.email | html %]" required>
+    <input type="text" class="form-control" id="destination" aria-describedby="destination-hint" name="email" size="30" value="[% contact.email | html %]" required>
 
     [% TRY %][% PROCESS 'admin/bodies/_type_field.html' %][% CATCH file %][% END %]
 

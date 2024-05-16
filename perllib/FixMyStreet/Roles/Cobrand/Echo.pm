@@ -7,7 +7,7 @@ use DateTime::Format::Strptime;
 use List::Util qw(min);
 use Moo::Role;
 use POSIX qw(floor);
-use Sort::Key::Natural qw(natkeysort_inplace);
+# use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::DateRange;
 use FixMyStreet::DB;
 use FixMyStreet::WorkingDays;
@@ -47,7 +47,7 @@ sub bin_addresses_for_postcode {
         value => $_->{Id},
         label => FixMyStreet::Template::title($_->{Description}),
     } } @$points ];
-    natkeysort_inplace { $_->{label} } @$data;
+    # natkeysort_inplace { $_->{label} } @$data;
     return $data;
 }
 
