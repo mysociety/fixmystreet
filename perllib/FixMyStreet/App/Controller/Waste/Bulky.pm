@@ -258,6 +258,15 @@ sub process_bulky_data : Private {
             my $no_confirm = !$c->cobrand->bulky_send_before_payment;
             $c->forward('/waste/add_report', [ $data, $no_confirm ]) or return;
         }
+
+        # Need to record stuff here if we're amending a booking and might be redirected elsewhere...
+        if (my $amending = $c->stash->{amending_booking}) {
+            my $p = $c->stash->{report};
+            $p->set_extra_metadata(previous_booking_id => $amending->id);
+            $p->detail($p->detail . " | Previously submitted as " . $amending->external_id);
+            $p->update;
+        }
+
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
             $c->stash->{message} = 'Payment skipped on staging';
             $c->stash->{reference} = $c->stash->{report}->id;
@@ -316,9 +325,17 @@ sub process_bulky_amend : Private {
     if ($c->cobrand->bulky_cancel_by_update) {
         # In this case we want to update the event to mark it as cancelled,
         # then create a new event with the amended booking data from the form
-        add_cancellation_update($c, $p);
+        my $update = add_cancellation_update($c, $p, 'delayed');
 
         $c->forward('process_bulky_data', [ $form ]);
+        # If there wasn't payment, we can set the things here too
+        $c->forward('cancel_collection', [ $p ]);
+        my $new = $c->stash->{report};
+        $new->set_extra_metadata(previous_booking_id => $p->id);
+        $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
+        $new->update;
+        $update->confirm;
+        $update->update;
     } else {
         $p->create_related( moderation_original_data => {
             title => $p->title,
@@ -374,6 +391,7 @@ sub amend_extra_data {
     $p->photo( join(',', @bulky_photo_data) );
 }
 
+# bulky_cancel_by_update is false if this is called
 sub add_cancellation_report : Private {
     my ($self, $c) = @_;
 
@@ -384,41 +402,38 @@ sub add_cancellation_report : Private {
     );
     $c->cobrand->call_hook( "waste_munge_bulky_cancellation_data", \%data );
 
-    if ($c->cobrand->bulky_cancel_by_update) {
-        add_cancellation_update($c, $collection_report);
-    } else {
-        $c->forward( '/waste/add_report', [ \%data ] ) or return;
-        if ($c->stash->{amending_booking}) {
-            $c->stash->{report}->set_extra_metadata(bulky_amendment_cancel => 1);
-            $c->stash->{report}->update;
-        }
+    $c->forward( '/waste/add_report', [ \%data ] ) or return;
+    if ($c->stash->{amending_booking}) {
+        $c->stash->{report}->set_extra_metadata(bulky_amendment_cancel => 1);
+        $c->stash->{report}->update;
     }
     return 1;
 }
 
 sub add_cancellation_update {
-    my ($c, $p) = @_;
+    my ($c, $p, $type) = @_;
 
     my $description = $c->stash->{non_user_cancel} ? "Booking cancelled" : "Booking cancelled by customer";
-    $p->add_to_comments({
+    my $update = $p->add_to_comments({
         text => $description,
         user => $c->cobrand->body->comment_user || $p->user,
         extra => { bulky_cancellation => 1 },
+        $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
     });
+    return $update;
 }
 
 sub process_bulky_cancellation : Private {
     my ( $self, $c, $form ) = @_;
 
-    $c->forward('add_cancellation_report') or return;
     my $collection_report = $c->stash->{cancelling_booking} || $c->stash->{amending_booking};
+    if ($c->cobrand->bulky_cancel_by_update) {
+        add_cancellation_update($c, $collection_report, 'immediate');
+    } else {
+        $c->forward('add_cancellation_report') or return;
+    }
 
-    # Mark original report as closed
-    $collection_report->state('closed');
-    my $description = $c->stash->{non_user_cancel} ? "Cancelled" : "Cancelled at user request";
-    $collection_report->detail(
-        $collection_report->detail . " | " . $description );
-    $collection_report->update;
+    $c->forward('cancel_collection', [ $collection_report ]);
 
     $c->cobrand->call_hook('bulky_send_cancellation_confirmation' => $collection_report);
 
@@ -431,6 +446,16 @@ sub process_bulky_cancellation : Private {
     }
 
     return 1;
+}
+
+# Mark original report as closed
+sub cancel_collection : Private {
+    my ($self, $c, $report) = @_;
+
+    $report->state('closed');
+    my $description = $c->stash->{non_user_cancel} ? "Cancelled" : "Cancelled at user request";
+    $report->detail($report->detail . " | " . $description);
+    $report->update;
 }
 
 __PACKAGE__->meta->make_immutable;
