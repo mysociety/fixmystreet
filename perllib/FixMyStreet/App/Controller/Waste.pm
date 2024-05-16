@@ -352,6 +352,14 @@ sub confirm_subscription : Private {
         });
         $p->cancel_update_alert($comment->id);
     }
+
+    if (my $previous = $p->get_extra_metadata('previous_booking_id')) {
+        $previous = FixMyStreet::DB->resultset("Problem")->find($previous);
+        $c->forward('bulky/cancel_collection', [ $previous ]);
+        my $update = $c->cobrand->bulky_is_cancelled($previous);
+        $update->confirm;
+        $update->update;
+    }
 }
 
 sub cancel_subscription : Private {
