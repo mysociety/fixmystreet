@@ -28,6 +28,14 @@ sub disambiguate_location {
 
 sub report_sent_confirmation_email { 'id' }
 
+=item * We do not send alerts to report authors.
+
+=cut
+
+sub suppress_reporter_alerts { 1 }
+
+sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' }
+
 
 =head2 get_town
 
