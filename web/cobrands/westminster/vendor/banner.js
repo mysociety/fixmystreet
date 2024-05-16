@@ -13,16 +13,12 @@ const loadGoogleAnalyticsScripts = () => {
   script1.async = true;
   script1.src = googleTagManagerUrl;
 
-  var script2 = document.createElement("script");
-  script2.innerHTML = `
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-89XXDEKFEX');
-`;
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-89XXDEKFEX');
 
   document.body.appendChild(script1);
-  document.body.appendChild(script2);
 };
 
 const isScriptAdded = (scriptUrl) => {
