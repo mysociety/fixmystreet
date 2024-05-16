@@ -162,14 +162,43 @@ sub waste_garden_sub_payment_params {
     }
 }
 
+=item staff_override_request_options
+
+Merton want staff to be able to request any domestic container
+for a property and also to not be restricted to only ordering
+one container.
+
+=cut
+
 sub staff_override_request_options {
     my ($self, $rows) = @_;
     return unless $self->{c}->stash->{is_staff};
 
+    my @containers_on_property;
+
     foreach my $row (@$rows) {
-        $row->{'request_allowed'} = 1;
-        $row->{'request_max'} = 3;
+        push @containers_on_property, @{$row->{request_containers}};
+        $row->{request_allowed} = 1;
+        $row->{request_max} = 3;
     }
+
+    my %new_row = (
+        service_id => 'other_containers',
+        service_name => 'Other containers',
+        request_containers => [],
+        request_only => 1,
+        request_allowed => 1,
+        request_max => 3,
+    );
+
+    my %all_containers = %{$self->waste_containers};
+    foreach my $k (sort { $a <=> $b } keys %all_containers) {
+        next if $all_containers{$k} =~ /Communal/;
+        next if grep { $k == $_ } @containers_on_property;
+        push @{$new_row{request_containers}}, $k;
+    }
+
+    push @$rows, \%new_row;
 }
 
 sub waste_request_form_first_next {
