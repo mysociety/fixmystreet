@@ -51,6 +51,22 @@ SQL
     return [ sort _sort_addresses @$addresses ];
 }
 
+sub usrn_for_uprn {
+    my $uprn = shift;
+
+    my $db = connect_db() or return '';
+
+    return ( $db->selectrow_hashref(
+        <<"SQL",
+  SELECT usrn
+    FROM postcodes
+   WHERE uprn = ?
+SQL
+        { Slice => {} },
+        $uprn,
+    ) // {} )->{usrn};
+}
+
 sub address_for_uprn {
     my $uprn = shift;
 
