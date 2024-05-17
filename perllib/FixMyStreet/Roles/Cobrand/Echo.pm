@@ -350,7 +350,6 @@ sub _parse_events {
         my $closed = $self->_closed_event($_);
         next if $type eq 'request' && $closed && !$params->{include_closed_requests};
         next if $type eq 'enquiry' && $closed;
-        next if $type eq 'bulky' && !$closed;
 
         if ($type eq 'request') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
