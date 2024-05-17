@@ -6,6 +6,7 @@ use warnings;
 use Moo;
 with 'FixMyStreet::Roles::CobrandOpenUSRN';
 with 'FixMyStreet::Cobrand::Merton::Waste';
+with 'FixMyStreet::Roles::Open311Multi';
 
 sub council_area_id { 2500 }
 sub council_area { 'Merton' }
@@ -90,6 +91,9 @@ sub open311_update_missing_data {
     }
 
     return [];
+}
+
+sub open311_munge_update_params {
 }
 
 sub report_new_munge_before_insert {
