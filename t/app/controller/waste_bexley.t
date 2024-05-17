@@ -61,24 +61,32 @@ $dbi_mock->mock( 'connect', sub {
         }
     } );
     $dbh->mock( 'selectrow_hashref', sub {
-        return {
-            postcode          => 'DA13NP',
-            sao_start_number  => 98,
-            sao_start_suffix  => 'A',
-            sao_end_number    => 99,
-            sao_end_suffix    => 'B',
-            sao_text          => 'Flat',
-            pao_start_number  => 1,
-            pao_start_suffix  => 'a',
-            pao_end_number    => 2,
-            pao_end_suffix    => 'b',
-            pao_text          => 'The Court',
-            street_descriptor => 'THE AVENUE',
-            locality_name     => 'Little Bexlington',
-            town_name         => 'Bexley',
+        my ( undef, $sql ) = @_;
 
-            parent_uprn => 999999,
-        };
+        if ( $sql =~ /SELECT usrn/ ) { # usrn_for_uprn
+            return {
+                usrn => 321,
+            };
+        } else { # address_for_uprn
+            return {
+                postcode          => 'DA13NP',
+                sao_start_number  => 98,
+                sao_start_suffix  => 'A',
+                sao_end_number    => 99,
+                sao_end_suffix    => 'B',
+                sao_text          => 'Flat',
+                pao_start_number  => 1,
+                pao_start_suffix  => 'a',
+                pao_end_number    => 2,
+                pao_end_suffix    => 'b',
+                pao_text          => 'The Court',
+                street_descriptor => 'THE AVENUE',
+                locality_name     => 'Little Bexlington',
+                town_name         => 'Bexley',
+
+                parent_uprn => 999999,
+            };
+        }
     } );
     return $dbh;
 } );
@@ -255,7 +263,9 @@ FixMyStreet::override_config {
             $cobrand->{c}->mock( stash => sub { {} } );
             $cobrand->{c}->mock( cobrand => sub { $cobrand });
             my @sorted = $cobrand->service_sort(
-                @{  $cobrand->bin_services_for_address( { uprn => 10001 } )
+                @{  $cobrand->bin_services_for_address(
+                        { uprn => 10001, usrn => 321 }
+                    )
                 }
             );
             my %defaults = (

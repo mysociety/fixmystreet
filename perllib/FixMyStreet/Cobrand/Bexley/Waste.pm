@@ -135,6 +135,9 @@ sub look_up_property {
 
     my $site = $self->whitespace->GetSiteInfo($uprn);
 
+    # We assume USRN is the same between parent and child addresses
+    my $usrn = BexleyAddresses::usrn_for_uprn($uprn);
+
     # We need to call GetAccountSiteID to get parent UPRN
     my %parent_property;
     if ( my $site_parent_id = $site->{Site}{SiteParentID} ) {
@@ -143,8 +146,9 @@ sub look_up_property {
             parent_property => {
                 # NOTE 'AccountSiteUPRN' returned from GetSiteInfo,      but
                 #      'AccountSiteUprn' returned from GetAccountSiteID
-                id =>   $parent_data->{AccountSiteUprn},
+                id   => $parent_data->{AccountSiteUprn},
                 uprn => $parent_data->{AccountSiteUprn},
+                usrn => $usrn,
             }
         );
     }
@@ -171,6 +175,7 @@ sub look_up_property {
         # and 'uprn' in others, we set both here
         id => $site->{AccountSiteUPRN},
         uprn => $site->{AccountSiteUPRN},
+        usrn => $usrn,
         address => FixMyStreet::Template::title(
             BexleyAddresses::address_for_uprn($uprn) ),
         latitude => $site->{Site}->{SiteLatitude},
@@ -478,10 +483,14 @@ sub _in_cab_logs {
             $property->{uprn},
             $dt_from->stringify,
         );
-        my $cab_logs_usrn = $self->whitespace->GetInCabLogsByUsrn(
-            $cab_logs_uprn->[0]{Usrn},
-            $dt_from->stringify,
-        );
+
+        my $cab_logs_usrn
+            = $property->{usrn}
+            ? $self->whitespace->GetInCabLogsByUsrn(
+                $property->{usrn},
+                $dt_from->stringify,
+            ) : [];
+
         $cab_logs = [ @$cab_logs_uprn, @$cab_logs_usrn ];
 
         # Make cab logs unique by LogID
