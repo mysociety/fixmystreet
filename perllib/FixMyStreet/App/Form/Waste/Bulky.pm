@@ -34,9 +34,15 @@ has_page cannot_book => (
 
 has_page about_you => (
     intro => 'bulky/about_you_preamble.html',
-    fields => ['name', 'email', 'phone', 'continue'],
+    fields => ['name', 'email', 'phone', 'extra_bulky_text_reminders', 'continue'],
     title => 'About you',
     next => 'choose_date_earlier',
+    update_field_list => sub {
+        my $form = shift;
+        if ($form->{c}->stash->{waste_features}->{bulky_offer_text_updates}) {
+            $form->field('extra_bulky_text_reminders')->inactive(0);
+        };
+    },
 );
 
 with 'FixMyStreet::App::Form::Waste::AboutYou';

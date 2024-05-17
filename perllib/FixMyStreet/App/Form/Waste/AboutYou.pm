@@ -62,6 +62,14 @@ has_field email => (
     },
 );
 
+has_field extra_bulky_text_reminders => (
+    type => 'Checkbox',
+    label => 'Bulky text reminders',
+    option_label => 'Do you want to receive reminders about this collection by text message?',
+    inactive => 1,
+);
+
+
 sub default_email {
     my $self = shift;
     if (my $user = $self->non_staff_user) {
