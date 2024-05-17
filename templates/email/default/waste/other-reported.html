@@ -88,7 +88,11 @@ INCLUDE '_email_top.html';
 [% ELSE %]
 
     [% IF report.category == 'Report missed collection' %]
-      <p style="[% p_style %]">We will arrange another collection as soon as possible in the next 2 working days.</p>
+      [% IF cobrand.moniker == 'brent' %]
+        <p style="[% p_style %]">We will arrange another collection as soon as possible in the next two days. Please note that collections may also be attempted on a public holiday/weekend.</p>
+      [% ELSE %]
+        <p style="[% p_style %]">We will arrange another collection as soon as possible in the next 2 working days.</p>
+      [% END %]
     [% ELSIF report.category == 'Request new container' %]
       <p style="[% p_style %]">We aim to deliver this container to you within
       [% cobrand.wasteworks_config.request_timeframe || '20 working days' %].
