@@ -100,7 +100,7 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $time_banded = $self->{c}->stash->{property_time_banded};
 
-    return "$base/sack-black" if $service_id == 2242 && $time_banded;
+    return "$base/sack-black" if $service_id eq 2242 && $time_banded;
     if (my $container = $unit->{request_containers}[0]) {
         return "$base/sack-purple" if $container == 17;
     }
@@ -128,9 +128,6 @@ sub _closed_event {
     return 1 if $event->{ResolutionCodeId} && $event->{ResolutionCodeId} != 584; # Out of Stock
     return 0;
 }
-
-# TODO
-sub waste_bulky_missed_blocked_codes {}
 
 sub garden_collection_time { '6:30am' }
 sub garden_waste_new_bin_admin_fee { 0 }
@@ -269,6 +266,42 @@ sub waste_post_report_creation {
         $report->mark_as_sent;
         $report->update({ external_id => 'no_echo' });
     }
+}
+
+=head2 Bulky waste collection
+
+Merton has a 6am collection and cut-off for cancellation time.
+Everything else is configured in SLWPEcho.pm
+
+=cut
+
+sub bulky_collection_time { { hours => 6, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0 } }
+sub bulky_allowed_property {
+    my ( $self, $property ) = @_;
+    return 1 if $self->bulky_enabled && $property->{has_bulky_service};
+}
+sub bulky_collection_window_days { 28 }
+
+=item bulky_open_overdue
+
+Returns true if the booking is open and after 6pm on the day of the collection.
+
+=cut
+
+sub bulky_open_overdue {
+    my ($self, $event) = @_;
+
+    if ($event->{state} eq 'open' && $self->_bulky_collection_overdue($event)) {
+        return 1;
+    }
+}
+
+sub _bulky_collection_overdue {
+    my $collection_due_date = $_[1]->{date};
+    $collection_due_date->truncate(to => 'day')->set_hour(18);
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    return $today > $collection_due_date;
 }
 
 1;
