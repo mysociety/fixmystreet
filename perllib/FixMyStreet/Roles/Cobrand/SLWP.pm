@@ -21,7 +21,7 @@ around look_up_property => sub {
     my $data = $orig->($self, $id);
 
     my $cfg = $self->feature('echo');
-    if ($cfg->{nlpg} && $data->{uprn} && !$self->{c}->stash->{partial_loading}) {
+    if ($cfg->{nlpg} && $data->{uprn}) {
         my $uprn_data = get(sprintf($cfg->{nlpg}, $data->{uprn}));
         $uprn_data = JSON::MaybeXS->new->decode($uprn_data) if $uprn_data;
         if (!$uprn_data || $uprn_data->{results}[0]{LPI}{LOCAL_CUSTODIAN_CODE_DESCRIPTION} ne $self->lpi_value) {

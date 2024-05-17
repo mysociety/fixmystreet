@@ -642,7 +642,6 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my $loading = ($c->req->{headers}->{'hx-request'} || "") eq "true";
     # non-JS page loads include a page_loading=1 request param
     $loading ||= $c->get_param('page_loading');
-    $c->stash->{partial_loading} = $loading;
 
     if ( $c->req->path =~ m#^waste/[:\w %]+$#i && !$loading) {
         $c->cobrand->call_hook( clear_cached_lookups_property => $id );
