@@ -1266,6 +1266,7 @@ FixMyStreet::override_config {
         $echo->mock('GetEventsForObject', sub { [ {
             Guid => 'a-guid',
             EventTypeId => 2936,
+            ResolvedDate => { DateTime => '2024-05-17T12:00:00Z' },
             Data => { ExtensibleDatum => { ChildData => { ExtensibleDatum => {
                 DatatypeName => 'Container Type',
                 Value => 11,
