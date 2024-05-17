@@ -31,6 +31,9 @@ input {
 input[type="text"],
 textarea {
   color: #222; // requested by Surrey
+  // workaround for Edge bug where autocomplete text is white
+  // https://stackoverflow.com/questions/78490541/how-do-i-override-the-being-autocompleted-input-color-in-microsoft-edge
+  -webkit-text-fill-color: #222;
 }
 
 
