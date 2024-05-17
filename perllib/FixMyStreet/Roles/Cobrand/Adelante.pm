@@ -56,7 +56,7 @@ sub waste_cc_get_redirect_url {
     my $result = try {
         $payment->pay({
             returnUrl => $c->uri_for_action('/waste/pay_complete', [ $p->id, $redirect_id ] ) . '',
-            reference => $ref,
+            reference => $ref . '-' . time(), # Has to be unique
             name => $p->name,
             email => $p->user->email,
             phone => $p->user->phone,
