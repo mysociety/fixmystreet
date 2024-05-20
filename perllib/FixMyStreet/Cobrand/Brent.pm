@@ -561,6 +561,7 @@ sub open311_update_missing_data {
 Reports made via the app probably won't have a NSGRef because we don't
 display the road layer. Instead we'll look up the closest asset from the
 WFS service at the point we're sending the report over Open311.
+We also might need to map one value to another.
 
 =cut
 
@@ -569,6 +570,12 @@ WFS service at the point we're sending the report over Open311.
             if (my $ref = $self->lookup_site_code($row, 'usrn')) {
                 $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
             }
+        }
+
+        my $ref = $row->get_extra_field_value('NSGRef') || '';
+        my $cfg = $self->feature('area_code_mapping') || {};
+        if ($cfg->{$ref}) {
+            $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $cfg->{$ref} });
         }
 
 =item * Adds NSGRef from WFS service as app doesn't include road layer for Echo

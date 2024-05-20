@@ -358,20 +358,24 @@ subtest "Open311 attribute changes" => sub {
             }
         );
         $problem->update_extra_field( { name => 'UnitID', value => '234' } );
+        $problem->update_extra_field( { name => 'NSGRef', value => 'BadUSRN' } );
         $problem->update;
 
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => 'brent',
             MAPIT_URL        => 'http://mapit.uk/',
             STAGING_FLAGS    => { send_reports => 1 },
-            COBRAND_FEATURES =>
-                { anonymous_account => { brent => 'anonymous' }, },
+            COBRAND_FEATURES => {
+                anonymous_account => { brent => 'anonymous' },
+                area_code_mapping => { brent => { BadUSRN => 'GoodUSRN' } },
+            },
         }, sub {
             FixMyStreet::Script::Reports::send();
             my $req = Open311->test_req_used;
             my $c   = CGI::Simple->new( $req->content );
             is $c->param('attribute[UnitID]'), undef,
                 'UnitID removed from attributes';
+            is $c->param('attribute[NSGRef]'), 'GoodUSRN', 'USRN updated';
             like $c->param('description'), qr/ukey: 234/,
                 'UnitID on gully sent across in detail';
             my $title = $problem->title
