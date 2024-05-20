@@ -62,6 +62,7 @@ sub waste_containers {
         13 => 'Green recycling bin (360L)',
         16 => 'Green recycling box (55L)',
 
+        17 => 'Recycling Purple Bag',
         18 => 'Recycling Blue Stripe Bag',
         29 => 'Recycling Single Use Bag',
 
