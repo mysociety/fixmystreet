@@ -1378,7 +1378,7 @@ sub _in_cab_logs {
             Usrn => '321',
         },
         {
-            LogID => 2,
+            LogID => 1,
             Reason => 'N/A',
             RoundCode => 'RND-6',
             LogDate => '2024-03-28T06:10:09.417',
