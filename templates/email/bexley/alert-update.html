@@ -1,0 +1,44 @@
+[% is_missed_collection = report.category == 'Report missed collection' %]
+[%
+
+title = report.title | html;
+email_summary
+  = is_missed_collection
+  ? "New updates on your missed collection report"
+  : "New updates on “" _ title _ "”";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">New updates on <a href="[% problem_url %]">[% is_missed_collection ? 'your missed collection report' : title %]</a></h1>
+  [%~ INCLUDE '_email_comment_list.html' %]
+  [% IF is_missed_collection %]
+      <p style="border-bottom: 1px solid #D2D2D2; padding-bottom: 20px; margin: 20px auto; text-align: center">
+        <a style="[% button_style %]" href="https://mybexley.bexley.gov.uk/service/rubbish_and_recycling_enquiries">
+          Contact us
+        </a>
+      </p>
+  [% END %]
+  [% IF unsubscribe_url %]
+    <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Unsubscribe from alerts about this report</a></p>
+  [% END %]
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    [% IF is_missed_collection %]
+      [% INCLUDE 'waste/_sidebar_content.html' %]
+      [% INCLUDE 'waste/_council_reference_alert_update.html' problem=report p_style=secondary_p_style %]
+    [% ELSE  %]
+      <h2 style="[% h2_style %]">[% title %]</h2>
+      [% report.detail | html_para_email(secondary_p_style) %]
+      [% INCLUDE '_council_reference_alert_update.html' problem=report p_style=secondary_p_style %]
+    [% END %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]
