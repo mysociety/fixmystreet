@@ -345,7 +345,7 @@ sub bin_services_for_address {
         $filtered_service->{report_locked_out_reason} = '';
         my $log_reason_prefix = $self->get_in_cab_logs_reason_prefix($filtered_service->{service_id});
         if ($log_reason_prefix) {
-            my @relevant_logs = grep { $_->{reason} =~ /^$log_reason_prefix/ } @$property_logs;
+            my @relevant_logs = grep { $_->{reason} =~ /^$log_reason_prefix/ && $_->{round} eq $filtered_service->{round} } @$property_logs;
             if (@relevant_logs) {
                 $filtered_service->{report_locked_out} = 1;
                 $filtered_service->{report_locked_out_reason} = $relevant_logs[0]->{reason};
@@ -493,9 +493,9 @@ sub _in_cab_logs {
 
         $cab_logs = [ @$cab_logs_uprn, @$cab_logs_usrn ];
 
-        # Make cab logs unique by LogID
+        # Make cab logs unique by LogID and Reason
         my %seen;
-        @$cab_logs = grep { !$seen{ $_->{LogID} }++ } @$cab_logs;
+        @$cab_logs = grep { !$seen{ $_->{LogID} . $_->{Reason} }++ } @$cab_logs;
 
         $self->{c}->stash->{cab_logs} = $cab_logs;
     } else {
