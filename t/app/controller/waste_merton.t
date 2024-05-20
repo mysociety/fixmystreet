@@ -386,10 +386,8 @@ FixMyStreet::override_config {
 
         $mech->content_contains( 'Put your bags out between 6pm and 8pm',
             'Property has time-banded message' );
-        $mech->content_contains( 'sack-purple.png',
-            'Property has purple sack' );
-        $mech->content_contains( 'sack-black.png',
-            'Property has black sack' );
+        $mech->content_contains( 'color: #BD63D1', 'Property has purple sack' );
+        $mech->content_contains( 'color: #3B3B3A', 'Property has black sack' );
         $mech->content_contains( 'You need to buy your own black sacks',
             'Property has black sack message' );
 
