@@ -2,6 +2,9 @@ use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 
+use_ok( 'Open311::GetUpdates' );
+use_ok( 'Open311' );
+
 use t::Mock::Twilio;
 my $twilio = t::Mock::Twilio->new;
 LWP::Protocol::PSGI->register($twilio->to_psgi_app, host => 'api.twilio.com');
@@ -1044,5 +1047,83 @@ FixMyStreet::override_config {
   };
 };
 
+subtest 'check state update line included in auto response template alerts' => sub {
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests>
+    <request>
+    <service_request_id>1234</service_request_id>
+    <status>investigating</status>
+    <service_name>Test Service</service_name>
+    <service_code>test_service_code</service_code>
+    <description></description>
+    <agency_responsible></agency_responsible>
+    <service_notice></service_notice>
+    <requested_datetime>2010-04-14T06:37:38-08:00</requested_datetime>
+    <updated_datetime>UPDATED_DATETIME</updated_datetime>
+    <lat>37.762221815</lat>
+    <long>-122.4651145</long>
+    </request>
+    </service_requests>
+    };
+    my $dt = DateTime->now->add( minutes => -30 );
+
+    my $system_user = FixMyStreet::DB->resultset('User')->find_or_create(
+        {
+            email => 'system_user@example.com'
+        }
+    );
+    my $template = FixMyStreet::DB->resultset("ResponseTemplate")->create({
+        body => $body,
+        state => 'investigating',
+        title => 'Investigating email response',
+        text => "Cheers we'll have a gander.",
+        email_text => "Cheers we'll have a gander.",
+        auto_response => 1,
+    });
+    my $resident_user = $mech->create_user_ok('response-template-test@example.org');
+    my $contact = $mech->create_contact_ok( body_id => $body->id, category => 'Whatever', email => 'WHATEVER' );
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Testing', {
+        user => $resident_user,
+        state => 'confirmed',
+        external_id => 1234,
+        lastupdate => $dt->add( minutes => -1),
+        category => $contact->category,
+    });
+
+
+    my $alert = FixMyStreet::DB->resultset('Alert')->create({
+        user       => $resident_user,
+        alert_type => 'new_updates',
+        parameter  => $report->id,
+        confirmed  => 1,
+        whensubscribed => $dt,
+    });
+    ok $alert, "alert created";
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+
+    $requests_xml =~ s/UPDATED_DATETIME/$dt/;
+    Open311->_inject_response('/requests.xml', $requests_xml);
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+    }, sub {
+        my $updates = Open311::GetUpdates->new(
+            system_user => $system_user,
+            current_open311 => $o,
+            current_body => $body,
+            blank_updates_permitted => 1,
+        );
+        $updates->update_reports( [ $report ] );
+        $report->discard_changes;
+        FixMyStreet::Script::Alerts::send_updates();
+    };
+
+    $mech->email_count_is(1);
+    my $email = $mech->get_text_body_from_email;
+    like $email, qr/Cheers we'll have a gander/, '';
+    like $email, qr/State changed to: Investigating/, '';
+
+};
 
 done_testing();
