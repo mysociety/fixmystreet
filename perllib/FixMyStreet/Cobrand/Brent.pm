@@ -14,6 +14,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use Moo;
 
 # We use the functionality of bulky waste, though it's called small items
+with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
 use strict;
@@ -1182,15 +1183,15 @@ sub image_for_unit {
 
     my $base = '/i/waste-containers';
     my $images = {
-        262 => "$base/bin-grey",
-        265 => "$base/bin-grey-blue-lid-recycling",
+        262 => svg_container_bin("wheelie", '#767472'),
+        265 => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
         316 => "$base/caddy-green-recycling",
-        317 => "$base/bin-green",
-        263 => "$base/large-communal-black",
-        266 => "$base/large-communal-blue-recycling",
-        271 => "$base/bin-brown",
-        267 => "$base/sack-black",
-        269 => "$base/sack-clear",
+        317 => svg_container_bin("wheelie", '#41B28A'),
+        263 => svg_container_bin("communal", '#333333'),
+        266 => svg_container_bin("communal", '#00A6D2', undef, 1),
+        271 => svg_container_bin("wheelie", '#8B5E3D'),
+        267 => svg_container_sack("normal", '#333333'),
+        269 => svg_container_sack("normal", '#d8d8d8'),
         807 => "$base/bag-blue",
         bulky => "$base/electricals-batteries-textiles",
     };

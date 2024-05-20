@@ -31,6 +31,7 @@ with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::Cobrand::SCP';
+with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Cobrand::Peterborough::Bulky';
 
 =head2 Defaults
@@ -591,9 +592,9 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $base = '/i/waste-containers';
     my $images = {
-        6533 => "$base/bin-black",
-        6534 => "$base/bin-green",
-        6579 => "$base/bin-brown",
+        6533 => svg_container_bin('wheelie', '#333333'),
+        6534 => svg_container_bin("wheelie", '#41B28A'),
+        6579 => svg_container_bin("wheelie", '#8B5E3D'),
         bulky => "$base/bulky-white",
     };
     return $images->{$service_id};

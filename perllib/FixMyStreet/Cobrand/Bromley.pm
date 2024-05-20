@@ -16,6 +16,7 @@ with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::Pay360';
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::Cobrand::SCP';
+with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
 sub council_area_id { return [2482]; }
@@ -445,8 +446,8 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $base = '/i/waste-containers';
     my $images = {
-        531 => "$base/sack-black",
-        532 => "$base/sack-black",
+        531 => svg_container_sack("normal", '#333333'),
+        532 => svg_container_sack("normal", '#333333'),
         533 => "$base/large-communal-grey-black-lid",
         535 => "$base/box-green-mix",
         536 => "$base/bin-grey-green-lid-recycling",
