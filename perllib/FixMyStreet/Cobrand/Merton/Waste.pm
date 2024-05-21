@@ -126,7 +126,7 @@ sub image_for_unit {
         2243 => "$base/large-communal-grey-black-lid", # Communal refuse
         2246 => _svg_sack('sack-stripe', '#3E50FA'), # domestic recycling bag
         2247 => "$base/bin-brown", # garden
-        2248 => "$base/caddy-brown-small", # Communal food
+        2248 => "$base/bin-brown", # Communal food
         #2249 => "$base/bin-grey-blue-lid-recycling", # Communal paper
         2250 => "$base/large-communal-green", # Communal recycling
         2632 => _svg_sack('sack', '#D8D8D8'), # domestic paper bag
