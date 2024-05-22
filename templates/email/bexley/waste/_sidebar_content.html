@@ -1,7 +1,7 @@
 [% # Hacky string munging :-( %]
 [%
+  address = report.get_extra_metadata.property_address;
   title = report.title;
-  address = report.detail.remove(".+\n\n");
   title = title.remove('Report missed ');
 %]
 <h2 style="[% h2_style %]">Bins reported as missed:</h2>
