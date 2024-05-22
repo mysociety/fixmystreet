@@ -167,6 +167,45 @@ sub waste_garden_sub_payment_params {
     }
 }
 
+=item staff_override_request_options
+
+Merton want staff to be able to request any domestic container
+for a property and also to not be restricted to only ordering
+one container.
+
+=cut
+
+sub staff_override_request_options {
+    my ($self, $rows) = @_;
+    return unless $self->{c}->stash->{is_staff};
+
+    my @containers_on_property;
+
+    foreach my $row (@$rows) {
+        push @containers_on_property, @{$row->{request_containers}};
+        $row->{request_allowed} = 1;
+        $row->{request_max} = 3;
+    }
+
+    my %new_row = (
+        service_id => 'other_containers',
+        service_name => 'Other containers',
+        request_containers => [],
+        request_only => 1,
+        request_allowed => 1,
+        request_max => 3,
+    );
+
+    my %all_containers = %{$self->waste_containers};
+    foreach my $k (sort { $a <=> $b } keys %all_containers) {
+        next if $all_containers{$k} =~ /Communal/;
+        next if grep { $k == $_ } @containers_on_property;
+        push @{$new_row{request_containers}}, $k;
+    }
+
+    push @$rows, \%new_row;
+}
+
 sub waste_request_form_first_next {
     my $self = shift;
     return sub {
@@ -182,7 +221,7 @@ sub waste_munge_request_data {
     my $c = $self->{c};
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
-    my $quantity = 1;
+    my $quantity = $data->{"quantity-$id"} || 1;
     my $reason = $data->{request_reason} || '';
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 
@@ -215,7 +254,10 @@ sub waste_munge_request_data {
     }
     $data->{detail} = "Quantity: $quantity\n\n$address";
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
-
+    if ($data->{request_reason_text}) {
+        $data->{detail} .= "\n\nAdditional details: " . $data->{request_reason_text};
+        $c->set_param('Notes', $data->{request_reason_text});
+    }
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
     $c->set_param('Container_Type', $id);
