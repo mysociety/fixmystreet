@@ -23,12 +23,14 @@ LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org'
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
+my $standard_user = $mech->create_user_ok('test@example.com', name => 'Bob Betts');
 my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
     send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
 }, {
     cobrand => 'bromley'
 });
+my $lewisham = $mech->create_body_ok( 2492, 'Lewisham Borough Council');
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect', 'contribute_as_body'] });
@@ -46,7 +48,17 @@ $contact->set_extra_fields(
     { code => 'service_request_id_ext', datatype => 'number', },
 );
 $contact->update;
-my $tfl = $mech->create_body_ok( 2482, 'TfL');
+my $streetlights = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Streetlights',
+    email => 'LIGHT',
+);
+$streetlights->set_extra_fields(
+    { code => 'feature_id', datatype => 'string', automated => 'hidden_field' },
+);
+$streetlights->update;
+
+my $tfl = $mech->create_body_ok( 2482, 'TfL', {}, { cobrand => 'tfl' });
 $mech->create_contact_ok(
     body_id => $tfl->id,
     category => 'Traffic Lights',
@@ -611,5 +623,52 @@ for my $test (
         is $extra_fields[0][2]->{code}, $test->{result}, $test->{description};
     };
 }
+
+subtest 'Can select asset that is in Lewisham area on Bromley Cobrand' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_in_ok('test@example.com');
+        $mech->get_ok('/report/new/?longitude=0.005357&latitude=51.418776');
+        $mech->content_contains('That location is not covered by Bromley Council', 'Area in Lewisham not reportable on Bromley cobrand');
+        $mech->get_ok('/report/new/?longitude=-0.071410&latitude=51.419275&category=Streetlights');
+        $mech->submit_form_ok( { with_fields => {
+                title => 'Lamp issue in Lewisham on Bromley',
+                detail => 'Lamp issue over the border',
+                feature_id => 'A-48-24',
+                longitude => 0.005357,
+                latitude => 51.418776,
+                fms_extra_title => 'Mr'
+            }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
+        my $problem = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $problem->title, 'Lamp issue in Lewisham on Bromley', 'Report has been made';
+        is $problem->body, 'Bromley Council', 'Problem on correct body';
+    };
+};
+
+subtest 'Can select asset that is in Lewisham area on FMS' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['fixmystreet', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_in_ok('test@example.com');
+        $mech->get_ok('/report/new/?longitude=0.005357&latitude=51.418776');
+        $mech->content_contains('We do not yet have details for the council that covers this location', 'Lewisham does not have Bromley categories');
+        $mech->get_ok('/report/new/?longitude=-0.071410&latitude=51.419275&category=Streetlights');
+        $mech->submit_form_ok( { with_fields => {
+                title => 'Lamp issue in Lewisham on FMS',
+                detail => 'Lamp issue over the border',
+                feature_id => 'A-48-26',
+                longitude => 0.005357,
+                latitude => 51.418776,
+                fms_extra_title => 'Mr'
+            }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
+        my $problem = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $problem->title, 'Lamp issue in Lewisham on FMS', 'Report has been made';
+        is $problem->body, 'Bromley Council', 'Problem on correct body';
+    };
+};
+
 
 done_testing();

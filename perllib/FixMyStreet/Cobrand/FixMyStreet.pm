@@ -210,6 +210,11 @@ sub munge_report_new_bodies {
         my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
         $brent->munge_overlapping_asset_bodies($bodies);
     }
+
+    if ( $bodies{'Lewisham Borough Council'} ) {
+        my $bromley = FixMyStreet::Cobrand::Bromley->new({ c => $self->{c} });
+        $bromley->munge_overlapping_asset_bodies($bodies);
+    }
 }
 
 sub munge_report_new_contacts {

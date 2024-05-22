@@ -18,7 +18,7 @@ with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::Cobrand::SCP';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
-sub council_area_id { return 2482; }
+sub council_area_id { return [2482]; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
@@ -146,6 +146,32 @@ sub tweak_all_reports_map {
 
 sub title_list {
     return ["MR", "MISS", "MRS", "MS", "DR", 'PCSO', 'PC', 'N/A'];
+}
+
+sub check_report_is_on_cobrand_asset {
+    my ($self, $council_area) = shift @_;
+
+    if ($self->{c}->get_param('feature_id') && $self->{c}->get_param('feature_id') =~ /A-48-24|A-48-26|A-48-27/) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    # in_bromley will be true if the point is within the administrative area of Bromley
+    my $in_bromley = grep ($self->council_area_id->[0] == $_, keys %{$self->{c}->stash->{all_areas}});
+
+    # cobrand will be true if the point is within an area of different responsibility from the norm
+    my $cobrand = $self->check_report_is_on_cobrand_asset;
+    if (!$in_bromley && $cobrand) {
+        my $bromley = FixMyStreet::DB->resultset('Body')->find({ name => $self->council_name });
+        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Lewisham Borough Council' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->name ne 'TfL' } values %$bodies;
+        $$bodies{$bromley->id} = $bromley;
+    }
 }
 
 sub waste_check_staff_payment_permissions {
