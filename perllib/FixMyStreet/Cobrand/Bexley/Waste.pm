@@ -208,8 +208,10 @@ sub bin_services_for_address {
     $property->{missed_collection_reports}
         = $self->_missed_collection_reports($property);
     $property->{recent_collections} = $self->_recent_collections($property);
-    my ($property_logs, $street_logs) = $self->_in_cab_logs($property);
 
+    my ( $property_logs, $street_logs, $successful_collections )
+        = $self->_in_cab_logs($property);
+    $property->{successful_collections} = $successful_collections;
     $property->{red_tags} = $property_logs;
     $property->{service_updates} = grep { $_->{service_update} } @$street_logs;
 
@@ -260,6 +262,16 @@ sub bin_services_for_address {
         }
 
         my ($round) = split / /, $service->{RoundSchedule};
+
+        # 'Next collection date' could be today; successful collection logs
+        # will tell us if the collection has already been made
+        my $successful_collection_dt
+            = $property->{successful_collections}{$round};
+        my $collected_today = $successful_collection_dt
+            && $now_dt->delta_days($successful_collection_dt)
+            ->in_units('days') == 0
+            ? 1 : 0;
+
         my $filtered_service = {
             id             => $service->{SiteServiceID},
             service_id     => $service->{ServiceItemName},
@@ -267,11 +279,12 @@ sub bin_services_for_address {
             service_description => $container->{description},
             round_schedule => $service->{RoundSchedule},
             round          => $round,
-            next           => {
-                date    => $service->{NextCollectionDate},
-                ordinal => ordinal( $next_dt->day ),
-                changed => 0,
-                is_today => $now_dt->ymd eq $next_dt->ymd,
+            next => {
+                date              => $service->{NextCollectionDate},
+                ordinal           => ordinal( $next_dt->day ),
+                changed           => 0,
+                is_today          => $now_dt->ymd eq $next_dt->ymd,
+                already_collected => $collected_today,
             },
             assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
         };
@@ -426,7 +439,9 @@ sub _missed_collection_reports {
 }
 
 # Returns a hash of recent collections, mapping Round + Schedule to collection
-# date
+# date.
+# NOTE These denote *scheduled* recent collections; *actual* recent
+# collections are recorded in the in-cab logs.
 sub _recent_collections {
     my ( $self, $property ) = @_;
 
@@ -469,7 +484,7 @@ sub _recent_collections {
 # Returns a hashref of recent in-cab logs for the property, split by USRN and
 # UPRN
 sub _in_cab_logs {
-    my ( $self, $property, $all_logs ) = @_;
+    my ( $self, $property ) = @_;
 
     # Logs are recorded against parent properties, not children
     $property = $property->{parent_property} if $property->{parent_property};
@@ -502,35 +517,46 @@ sub _in_cab_logs {
 
     my @property_logs;
     my @street_logs;
+    my %successful_collections;
 
-    return ( \@property_logs, \@street_logs ) unless $cab_logs;
+    return ( \@property_logs, \@street_logs, \%successful_collections )
+        unless $cab_logs;
 
     for (@$cab_logs) {
-        # Skip non-exceptional logs
-        next if (!$_->{Reason} || $_->{Reason} eq 'N/A') && !$all_logs;
-
         my $logdate = DateTime::Format::Strptime->new( pattern => '%Y-%m-%dT%H:%M:%S' )->parse_datetime( $_->{LogDate} );
 
-        if ( $_->{Uprn} && $_->{Uprn} eq $property->{uprn} ) {
-            push @property_logs, {
-                uprn   => $_->{Uprn},
-                round  => $_->{RoundCode},
-                reason => $_->{Reason},
-                date   => $logdate,
-                ordinal => ordinal( $logdate->day ),
-            };
-        } else {
-            push @street_logs, {
-                service_update => $_->{Uprn} ? 0 : 1,
-                round  => $_->{RoundCode},
-                reason => $_->{Reason},
-                date   => $logdate,
-                ordinal => ordinal( $logdate->day ),
-            };
+        # There aren't necessarily round completion logs; the presence of any
+        # log against a round code should be taken as a sign that the round
+        # has been completed or at least attempted for the property.
+        # Overwrite entry for given round if a later logdate is found.
+        $successful_collections{ $_->{RoundCode} } = $logdate
+            if !$successful_collections{ $_->{RoundCode} }
+            || $successful_collections{ $_->{RoundCode} } < $logdate;
+
+        # Gather property-level and street-level exceptions
+        if ( $_->{Reason} && $_->{Reason} ne 'N/A' ) {
+            if ( $_->{Uprn} && $_->{Uprn} eq $property->{uprn} ) {
+                push @property_logs, {
+                    uprn   => $_->{Uprn},
+                    round  => $_->{RoundCode},
+                    reason => $_->{Reason},
+                    date   => $logdate,
+                    ordinal => ordinal( $logdate->day ),
+                };
+            } else {
+                push @street_logs, {
+                    # TODO This shouldn't be needed
+                    service_update => $_->{Uprn} ? 0 : 1,
+                    round  => $_->{RoundCode},
+                    reason => $_->{Reason},
+                    date   => $logdate,
+                    ordinal => ordinal( $logdate->day ),
+                };
+            }
         }
     }
 
-    return ( \@property_logs, \@street_logs );
+    return ( \@property_logs, \@street_logs, \%successful_collections );
 }
 
 sub can_report_missed {
@@ -554,18 +580,16 @@ sub can_report_missed {
         = $property->{recent_collections}{ $service->{round_schedule} };
 
     if ($last_expected_collection_dt) {
-        # We need to consider both property and street logs here,
-        # as either type may log a successful collection
-        # (i.e. 'Reason' = 'N/A' for given round)
-        my ( $property_logs, $street_logs )
-            = $self->_in_cab_logs( $property, 1 );
+        # TODO We can probably get successful collections directly off the
+        # property rather than query _in_cab_logs again
+        my ( undef, undef, $successful_collections )
+            = $self->_in_cab_logs($property);
 
         # If there is a log for this collection, that is when
         # the round was completed so we can make a report if
         # we're within that time
-        my ($log_for_round)
-            = grep { $_->{round} eq $service->{round} }
-            ( @$property_logs, @$street_logs );
+        my $logged_time_for_round
+            = $successful_collections->{ $service->{round} };
 
         # log time needs to be greater than or equal to 3 working days ago,
         # less than today
@@ -580,9 +604,9 @@ sub can_report_missed {
         # fortnightly, but they share a round code prefix.
         return 0 if $last_expected_collection_dt < $min_dt && !$service->{next}{is_today};
 
-        return (   $log_for_round->{date} < $now_dt
-                && $log_for_round->{date} >= $min_dt ) ? 1 : 0
-            if $log_for_round;
+        return (   $logged_time_for_round < $now_dt
+                && $logged_time_for_round >= $min_dt ) ? 1 : 0
+            if $logged_time_for_round;
 
         $service->{last}{is_delayed} =
             ($last_expected_collection_dt < $today_dt && $last_expected_collection_dt >= $min_dt)

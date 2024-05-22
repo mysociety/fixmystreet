@@ -92,18 +92,32 @@ $dbi_mock->mock( 'connect', sub {
 } );
 
 my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
+sub default_mocks {
+    # These are overridden for some tests
+    $whitespace_mock->mock(
+        'GetSiteCollections',
+        sub {
+            my ( $self, $uprn ) = @_;
+            return _site_collections()->{$uprn};
+        }
+    );
+    $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
+        my ( $self, $uprn ) = @_;
+        return [ grep { $_->{Uprn} eq $uprn } @{ _in_cab_logs() } ];
+    });
+    $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
+        my ( $self, $usrn ) = @_;
+        return _in_cab_logs();
+    });
+};
+
+default_mocks();
+
 $whitespace_mock->mock(
     'GetSiteInfo',
     sub {
         my ( $self, $uprn ) = @_;
         return _site_info()->{$uprn};
-    }
-);
-$whitespace_mock->mock(
-    'GetSiteCollections',
-    sub {
-        my ( $self, $uprn ) = @_;
-        return _site_collections()->{$uprn};
     }
 );
 $whitespace_mock->mock( 'GetAccountSiteID', &_account_site_id );
@@ -122,14 +136,6 @@ $whitespace_mock->mock(
         return _worksheet_detail_service_items()->{$worksheet_id};
     }
 );
-$whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
-    my ( $self, $uprn ) = @_;
-    return [ grep { $_->{Uprn} eq $uprn } @{ _in_cab_logs() } ];
-});
-$whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
-    my ( $self, $usrn ) = @_;
-    return _in_cab_logs();
-});
 my $comment_user = $mech->create_user_ok('comment');
 my $body = $mech->create_body_ok(
     2494,
@@ -274,6 +280,7 @@ FixMyStreet::override_config {
                     ordinal => ignore(),
                     date => ignore(),
                     is_today => ignore(),
+                    already_collected => 0,
                 },
                 last => {
                     ordinal => ignore(),
@@ -434,17 +441,96 @@ FixMyStreet::override_config {
     };
 
     subtest 'Shows when a collection is due today' => sub {
+        $whitespace_mock->mock( 'GetSiteCollections', sub {
+            return [
+                {   SiteServiceID          => 8,
+                    ServiceItemDescription => 'Service 8',
+                    ServiceItemName      => 'PC-55',  # Blue Recycling Box
+                    ServiceName          => 'Blue Recycling Box',
+                    NextCollectionDate   => '2024-04-01T00:00:00',
+                    SiteServiceValidFrom => '2024-03-31T00:59:59',
+                    SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                    RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
+                },
+            ];
+        } );
+        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
+
         set_fixed_time('2024-04-01T07:00:00'); # April 1st, 08:00 BST
-
-        $mech->get_ok('/waste');
-        $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
-        $mech->submit_form_ok( { with_fields => { address => 10001 } } );
-
-        # Blue and green recycling boxes are due today
+        $mech->get_ok('/waste/10001');
         $mech->content_contains('Being collected today');
+        $mech->content_lacks('Collection completed or attempted earlier today');
 
-        # Put time back to previous value
+        # Set time to later in the day
+        set_fixed_time('2024-04-01T16:01:00'); # April 1st, 17:01 BST
+
+        # Successful collection has occurred
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
+            return [
+                {
+                    LogID => 1,
+                    Reason => 'N/A',
+                    RoundCode => 'RND-8-9',
+                    LogDate => '2024-04-01T12:00:00.417',
+                    Uprn => '',
+                    Usrn => '321',
+                },
+            ];
+        });
+        $mech->get_ok('/waste/10001');
+        $mech->content_lacks(
+            'Our collection teams have reported the following problems with your bins:'
+        );
+        $mech->content_lacks('Being collected today');
+        $mech->content_contains('Collection completed or attempted earlier today');
+
+        # Property has red tag on collection attempted earlier today
+        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
+            return [
+                {
+                    LogID => 1,
+                    Reason => 'Bin has gone feral',
+                    RoundCode => 'RND-8-9',
+                    LogDate => '2024-04-01T12:00:00.417',
+                    Uprn => '10001',
+                    Usrn => '321',
+                },
+            ];
+        });
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains(
+            'Our collection teams have reported the following problems with your bins:'
+        );
+        $mech->content_lacks('Being collected today');
+        $mech->content_contains('Collection completed or attempted earlier today');
+
+        # Red tag on other property on same street
+        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
+            return [
+                {
+                    LogID => 1,
+                    Reason => 'Bin has gone feral',
+                    RoundCode => 'RND-8-9',
+                    LogDate => '2024-04-01T12:00:00.417',
+                    Uprn => '19991',
+                    Usrn => '321',
+                },
+            ];
+        });
+        $mech->get_ok('/waste/10001');
+        $mech->content_lacks(
+            'Our collection teams have reported the following problems with your bins:'
+        );
+        $mech->content_lacks('Being collected today');
+        $mech->content_contains('Collection completed or attempted earlier today');
+
+        # Reinstate original mocks
         set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
+        default_mocks();
     };
 
     subtest 'Asks user for location of bins on missed collection form' => sub {
@@ -638,7 +724,7 @@ FixMyStreet::override_config {
                         {   LogDate   => '2024-04-19T10:00:00.977',
                             Reason    => 'N/A',
                             RoundCode => 'RES-R4',    # For RES-660
-                            Uprn      => '123456',
+                            Uprn      => '10001',
                         },
                         # Successful collection earlier than allowed window
                         {   LogDate   => '2024-04-16T10:00:00.977',
