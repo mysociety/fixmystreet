@@ -274,6 +274,7 @@ FixMyStreet::override_config {
                     ordinal => ignore(),
                     date => ignore(),
                     is_today => ignore(),
+                    already_collected => 0,
                 },
                 last => {
                     ordinal => ignore(),
@@ -638,7 +639,7 @@ FixMyStreet::override_config {
                         {   LogDate   => '2024-04-19T10:00:00.977',
                             Reason    => 'N/A',
                             RoundCode => 'RES-R4',    # For RES-660
-                            Uprn      => '123456',
+                            Uprn      => '10001',
                         },
                         # Successful collection earlier than allowed window
                         {   LogDate   => '2024-04-16T10:00:00.977',
