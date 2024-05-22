@@ -295,6 +295,7 @@ FixMyStreet::override_config {
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '1::1';
         is $cgi->param('attribute[Reason]'), '4::4';
+        is $cgi->param('attribute[contributed_by]'), $staff_user->email;
         $mech->log_out_ok;
     };
 

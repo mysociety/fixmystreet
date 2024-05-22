@@ -93,6 +93,23 @@ sub open311_update_missing_data {
     return [];
 }
 
+sub open311_extra_data_include {
+    my ($self, $row, $h) = @_;
+
+    my $open311_only = [];
+
+    my $contributed_by = $row->get_extra_metadata('contributed_by');
+    my $contributing_user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by });
+    if ($contributing_user) {
+        push @$open311_only, {
+            name => 'contributed_by',
+            value => $contributing_user->email,
+        };
+    }
+
+    return $open311_only;
+};
+
 sub open311_munge_update_params {
 }
 
