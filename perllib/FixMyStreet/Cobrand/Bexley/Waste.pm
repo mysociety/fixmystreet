@@ -212,8 +212,6 @@ sub bin_services_for_address {
 
     $property->{red_tags} = $property_logs;
     $property->{service_updates} = grep { $_->{service_update} } @$street_logs;
-    my %round_exceptions = map { $_->{round} => 1 } @$property_logs;
-    $property->{round_exceptions} = \%round_exceptions;
 
     # Set certain things outside of services loop
     my $containers = $self->_containers($property);
@@ -338,9 +336,6 @@ sub bin_services_for_address {
             $filtered_service->{report_open} = 0;
         }
 
-        $filtered_service->{report_allowed}
-            = $self->can_report_missed( $property, $filtered_service );
-
         $filtered_service->{report_locked_out} = 0;
         $filtered_service->{report_locked_out_reason} = '';
         my $log_reason_prefix = $self->get_in_cab_logs_reason_prefix($filtered_service->{service_id});
@@ -352,6 +347,9 @@ sub bin_services_for_address {
             }
 
         }
+
+        $filtered_service->{report_allowed}
+            = $self->can_report_missed( $property, $filtered_service );
 
         push @site_services_filtered, $filtered_service;
     }
@@ -541,8 +539,12 @@ sub can_report_missed {
     # Cannot make a report if there is already an open one for this service
     return 0 if $property->{missed_collection_reports}{ $service->{service_id} };
 
-    # Can't make a report if an exception has been logged for the service's round
-    return 0 if $property->{round_exceptions}{ $service->{round} };
+    # Prevent reporting if there are service updates
+    return 0 if $property->{service_updates};
+
+    # Prevent reporting if there are red tags on the service
+    # Red tags are matched to services based on prefix
+    return 0 if $service->{report_locked_out};
 
     # Needs to be within 3 working days of the last completed round, today
     # not included.

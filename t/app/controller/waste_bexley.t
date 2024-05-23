@@ -602,9 +602,6 @@ FixMyStreet::override_config {
             missed_collection_reports => {
                 'RES-SACK' => 1,
             },
-            round_exceptions => {
-                'MDR-R1' => 1, # MDR-SACK
-            },
             recent_collections => {
                 'RCY-R1 Mon' => DateTime->today, # FO-23
                 'RCY-R2 Mon' => DateTime->today, # FO-140
