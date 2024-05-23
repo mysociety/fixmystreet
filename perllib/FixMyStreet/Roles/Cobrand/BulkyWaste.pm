@@ -3,6 +3,7 @@ package FixMyStreet::Roles::Cobrand::BulkyWaste;
 use Moo::Role;
 use JSON::MaybeXS;
 use FixMyStreet::Map;
+use List::Util qw(max);
 
 =head1 NAME
 
@@ -205,7 +206,44 @@ sub bulky_total_cost {
             $c->stash->{payment} = $cfg->{base_price};
         }
     }
-    return $c->stash->{payment};
+
+    # Calculate the difference in cost for this booking compared to the whatever
+    # the user may have already paid for any previous versions of this booking.
+    my $previous = $c->stash->{amending_booking};
+    my $already_paid;
+    if ($previous && $c->stash->{payment}) {
+        $already_paid = get_total_paid($previous);
+        my $new_cost = $c->stash->{payment} - $already_paid;
+        # no refunds if they've already paid more than the new booking would cost
+        $c->stash->{payment} = max(0, $new_cost);
+    }
+    return {
+        amount => $c->stash->{payment},
+        already_paid => $already_paid,
+    }
+}
+
+=head2 get_total_paid
+
+Recursively calculate the total amount paid for a booking and any previous
+versions of it.
+
+=cut
+
+sub get_total_paid {
+    my $previous = shift;
+
+    return 0 unless $previous;
+
+    my $total = $previous->get_extra_field_value('payment') || 0;
+
+    if ($previous->get_extra_metadata('previous_booking_id')) {
+        my $previous_id = $previous->get_extra_metadata('previous_booking_id');
+        my $previous_report = FixMyStreet::DB->schema->resultset('Problem')->find($previous_id);
+        $total += get_total_paid($previous_report);
+    }
+
+    return $total;
 }
 
 sub find_unconfirmed_bulky_collections {
@@ -603,6 +641,30 @@ sub bulky_location_photo_prompt {
     my $self = shift;
     'Please check the <a href="' . $self->call_hook('bulky_tandc_link') . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
         . 'Help us by attaching a photo of where the items will be left for collection.';
+}
+
+=item * Bulky collections can be amended up to a configurable time on the day before the day of collection
+
+This defaults to 2PM.
+
+=back
+
+=cut
+
+sub bulky_amendment_cutoff_time {
+    my $time = $_[0]->wasteworks_config->{amendment_cutoff_time} || "14:00";
+    my ($hours, $minutes) = split /:/, $time;
+    return { hours => $hours, minutes => $minutes };
+}
+
+sub _bulky_amendment_cutoff_date {
+    my ($self, $collection_date) = @_;
+    my $cutoff_time = $self->bulky_amendment_cutoff_time();
+    my $cutoff_dt = $collection_date->clone->set(
+        hour   => $cutoff_time->{hours},
+        minute => $cutoff_time->{minutes},
+    )->subtract( days => 1 );
+    return $cutoff_dt;
 }
 
 1;

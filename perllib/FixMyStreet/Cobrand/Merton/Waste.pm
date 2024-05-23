@@ -96,6 +96,12 @@ sub waste_containers {
     };
 }
 
+sub _waste_containers_no_request { {
+    4 => 1, # Refuse blue bag
+    29 => 1, # Recycling Single Use Bag
+    21 => 1, # Paper & Card Reusable bag
+} }
+
 sub _svg_sack {
     my ($type, $col) = @_;
     my $dir = path(FixMyStreet->path_to("web/i/waste-containers"));

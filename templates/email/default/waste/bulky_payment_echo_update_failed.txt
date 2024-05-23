@@ -16,7 +16,9 @@ Collection date: [% collection_date %]
 Items to be collected:
 [% INCLUDE 'waste/_bulky_list.txt' %]
 
+[% IF payment %]
 Amount paid: £[% pounds(payment / 100) %]
+[% END %]
 
 Payment ref: [% report.get_extra_metadata('payment_reference') %]
 
