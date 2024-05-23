@@ -154,14 +154,10 @@ sub waste_extra_service_info {
     }
 }
 
-my %waste_containers_no_request = (
-    6 => 1, # Red stripe bag
-    29 => 1, # Recycling Single Use Bag
-    21 => 1, # Paper & Card Reusable bag
-);
-
 sub waste_service_containers {
     my ($self, $service) = @_;
+
+    my $waste_containers_no_request = $self->_waste_containers_no_request;
 
     my $task = $service->{ServiceTask};
     my $service_id = $service->{ServiceId};
@@ -179,11 +175,7 @@ sub waste_service_containers {
             $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
         }
 
-        next if $waste_containers_no_request{$container};
-
-        # Merton allows purple bags to be requested, and not blue bags
-        next if $container == CONTAINER_RECYCLING_PURPLE_BAG && $self->moniker ne 'merton';
-        next if $container == CONTAINER_REFUSE_BLUE_BAG && $self->moniker eq 'merton';
+        next if $waste_containers_no_request->{$container};
 
         next if $container == CONTAINER_RECYCLING_BLUE_BAG && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
 
