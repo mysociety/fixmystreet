@@ -94,6 +94,9 @@
   [% IF c.cobrand.moniker == 'bromley' %]
     <li>Source: [% problem.get_extra_field_value('Source') %]
   [% END %]
+  [% IF c.cobrand.moniker == 'merton' %]
+    <li>Dynamics ID: [% problem.get_extra_metadata('crimson_external_id') OR 'None' %]
+  [% END %]
 
   [%~ IF extra_fields.size ~%]
     [%~ FOREACH field IN extra_fields ~%]
