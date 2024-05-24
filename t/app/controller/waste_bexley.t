@@ -431,6 +431,41 @@ FixMyStreet::override_config {
     };
 
     subtest 'Asks user for location of bins on missed collection form' => sub {
+        subtest 'when not staff, assisted, communal, or above shop' => sub {
+            $whitespace_mock->mock(
+                'GetSiteCollections',
+                sub {
+                    [   {   SiteServiceID          => 8,
+                            ServiceItemDescription => 'Service 8',
+                            ServiceItemName => 'PC-55',   # Blue Recycling Box
+                            ServiceName          => 'Blue Recycling Box',
+                            NextCollectionDate   => '2024-04-01T00:00:00',
+                            SiteServiceValidFrom => '2024-03-31T00:59:59',
+                            SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                            RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
+                        },
+                    ];
+                }
+            );
+
+
+            $mech->get_ok('/waste/10001/report');
+            $mech->content_contains(
+                '<input type="hidden" name="extra_detail" id="extra_detail" value="Front of property">',
+                'Hidden location field has default value'
+            );
+
+            # Original mock
+            $whitespace_mock->mock(
+                'GetSiteCollections',
+                sub {
+                    my ( $self, $uprn ) = @_;
+                    return _site_collections()->{$uprn};
+                }
+            );
+        };
+
         $mech->get_ok('/waste/10001/report');
         $mech->content_contains('Please select bin location');
         $mech->content_contains('name="extra_detail"');

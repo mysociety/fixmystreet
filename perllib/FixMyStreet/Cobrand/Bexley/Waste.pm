@@ -948,8 +948,8 @@ sub waste_munge_report_form_fields {
         };
     } else {
         push @$field_list, extra_detail => {
-            type => 'Hidden',
-            value => 'Front of property',
+            type    => 'Hidden',
+            default => 'Front of property',
         };
     }
 }
