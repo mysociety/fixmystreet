@@ -125,7 +125,28 @@ my $parks_contact2 = $mech->create_contact_ok(body_id => $brent->id, category =>
 my $parks_contact3 = $mech->create_contact_ok(body_id => $brent->id, category => 'Ponds',
     email => 'ponds@example.org', group => 'Parks and open spaces');
 my $user1 = $mech->create_user_ok('user1@example.org', email_verified => 1, name => 'User 1');
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $brent,
+    name => 'Role',
+    permissions => ['moderate', 'user_edit'],
+});
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $brent, name => 'Staff User');
+$staff_user->user_roles->find_or_create({ role_id => $role->id });
+
+subtest 'role report shows staff problem when staff logged in during problem reporting process' => sub {
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => ['brent'],
+    MAPIT_URL => 'http://mapit.uk/',
+  }, sub {
+    $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904");
+    $mech->submit_form_ok( { with_fields => { category => 'Graffiti', title => 'Spraypaint on wall', detail => 'Some kind of picture', name => 'Staff User', username_register => $mech->uniquify_email('staff@example.org') } }, 'Staff user logs in whilst making report' );
+    $mech->get_ok($mech->get_link_from_email($mech->get_email));
+    $mech->get_ok('/dashboard?body=' . $brent->id . '&state=&role=' . $role->id . '&start_date=&end_date=&group_by=category+state&export=1');
+    $mech->content_contains('"Spraypaint on wall","Some kind of picture"', 'Report has contributed_by set and so shows in roles report');
+    $mech->clear_emails_ok;
+    $mech->log_out_ok;
+  };
+};
 
 # Add location_name field to parks categories
 for my $contact ($parks_contact, $parks_contact2, $parks_contact3) {
