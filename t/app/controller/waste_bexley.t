@@ -440,7 +440,7 @@ FixMyStreet::override_config {
         }
     };
 
-    subtest 'Shows when a collection is due today' => sub {
+    subtest 'Various logs for today' => sub {
         $whitespace_mock->mock( 'GetSiteCollections', sub {
             return [
                 {   SiteServiceID          => 8,
@@ -459,14 +459,17 @@ FixMyStreet::override_config {
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
 
         set_fixed_time('2024-04-01T07:00:00'); # April 1st, 08:00 BST
+
+        note 'No in-cab logs';
         $mech->get_ok('/waste/10001');
+        $mech->content_lacks('Service status');
         $mech->content_contains('Being collected today');
         $mech->content_lacks('Collection completed or attempted earlier today');
 
         # Set time to later in the day
         set_fixed_time('2024-04-01T16:01:00'); # April 1st, 17:01 BST
 
-        # Successful collection has occurred
+        note 'Successful collection has occurred';
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
             return [
                 {
@@ -480,13 +483,11 @@ FixMyStreet::override_config {
             ];
         });
         $mech->get_ok('/waste/10001');
-        $mech->content_lacks(
-            'Our collection teams have reported the following problems with your bins:'
-        );
+        $mech->content_lacks('Service status');
         $mech->content_lacks('Being collected today');
         $mech->content_contains('Collection completed or attempted earlier today');
 
-        # Property has red tag on collection attempted earlier today
+        note 'Property has red tag on collection attempted earlier today';
         $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
             return [
                 {
@@ -501,13 +502,14 @@ FixMyStreet::override_config {
         });
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
         $mech->get_ok('/waste/10001');
+        $mech->content_contains('Service status');
         $mech->content_contains(
             'Our collection teams have reported the following problems with your bins:'
         );
         $mech->content_lacks('Being collected today');
         $mech->content_contains('Collection completed or attempted earlier today');
 
-        # Red tag on other property on same street
+        note 'Red tag on other property on same street';
         $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
             return [
@@ -522,6 +524,27 @@ FixMyStreet::override_config {
             ];
         });
         $mech->get_ok('/waste/10001');
+        $mech->content_lacks('Service status');
+        $mech->content_lacks('Being collected today');
+        $mech->content_contains('Collection completed or attempted earlier today');
+
+        note 'Service update on street';
+        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
+            return [
+                {
+                    LogID => 1,
+                    Reason => 'Streetwide fox invasion',
+                    RoundCode => 'RND-8-9',
+                    LogDate => '2024-04-01T12:00:00.417',
+                    Uprn => '',
+                    Usrn => '321',
+                },
+            ];
+        });
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains('Service status');
+        $mech->content_contains('Streetwide fox invasion');
         $mech->content_lacks(
             'Our collection teams have reported the following problems with your bins:'
         );
