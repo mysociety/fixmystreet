@@ -133,6 +133,9 @@ sub send_alert_type {
                 $row->{item_text_original} = $row->{item_text};
                 $row->{item_text} = $row->{item_text} ? $row->{item_text} . "\n\n" . $update :
                                                         $update;
+                if ($row->{item_private_email_text} && $report->cobrand_data ne 'waste') {
+                    $row->{item_private_email_text} = $row->{item_private_email_text} . "\n\n" . $update;
+                }
                 $last_problem_state = $row->{item_problem_state};
             }
             next unless $row->{item_text};

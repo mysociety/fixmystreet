@@ -45,6 +45,7 @@
         - Switch to OpenStreetMap for reverse geocoding. #4444
         - Convert all uploaded images to JPEGs.
         - Redirect after POST when creating reports. #4362
+        - Include status change line in report update emails using auto response templates.
 
 * v5.0 (10th May 2023)
     - Front end improvements:
