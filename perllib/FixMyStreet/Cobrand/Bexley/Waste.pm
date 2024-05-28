@@ -209,10 +209,9 @@ sub bin_services_for_address {
         = $self->_missed_collection_reports($property);
     $property->{recent_collections} = $self->_recent_collections($property);
 
-    my ( $property_logs, $street_logs, $successful_collection_logs )
+    my ( $property_logs, $street_logs, $successful_collections )
         = $self->_in_cab_logs($property);
-    $property->{successful_collections}
-        = { map { $_->{round} => $_->{date} } @$successful_collection_logs };
+    $property->{successful_collections} = $successful_collections;
     $property->{red_tags} = $property_logs;
     $property->{service_updates} = grep { $_->{service_update} } @$street_logs;
 
@@ -518,46 +517,46 @@ sub _in_cab_logs {
 
     my @property_logs;
     my @street_logs;
-    my @successful_collection_logs;
+    my %successful_collections;
 
-    return ( \@property_logs, \@street_logs, \@successful_collection_logs )
+    return ( \@property_logs, \@street_logs, \%successful_collections )
         unless $cab_logs;
 
     for (@$cab_logs) {
         my $logdate = DateTime::Format::Strptime->new( pattern => '%Y-%m-%dT%H:%M:%S' )->parse_datetime( $_->{LogDate} );
 
-        # Successful collection log should:
-        # not have a reason
-        # AND
-        # should have property's UPRN OR no URPN
-        if (
-                ( !$_->{Reason} || $_->{Reason} eq 'N/A')
-            &&  ( !$_->{Uprn}   || $_->{Uprn} eq $property->{uprn} )
-        ) {
-            push @successful_collection_logs, {
-                round   => $_->{RoundCode},
-                date    => $logdate,
-            };
-        } elsif ( $_->{Uprn} && $_->{Uprn} eq $property->{uprn} ) {
-            push @property_logs, {
-                uprn   => $_->{Uprn},
-                round  => $_->{RoundCode},
-                reason => $_->{Reason},
-                date   => $logdate,
-                ordinal => ordinal( $logdate->day ),
-            };
-        } else {
-            push @street_logs, {
-                service_update => $_->{Uprn} ? 0 : 1,
-                round  => $_->{RoundCode},
-                reason => $_->{Reason},
-                date   => $logdate,
-                ordinal => ordinal( $logdate->day ),
-            };
+        # There aren't necessarily round completion logs; the presence of any
+        # log against a round code should be taken as a sign that the round
+        # has been completed or at least attempted for the property.
+        # Overwrite entry for given round if a later logdate is found.
+        $successful_collections{ $_->{RoundCode} } = $logdate
+            if !$successful_collections{ $_->{RoundCode} }
+            || $successful_collections{ $_->{RoundCode} } < $logdate;
+
+        # Gather property-level and street-level exceptions
+        if ( $_->{Reason} && $_->{Reason} ne 'N/A' ) {
+            if ( $_->{Uprn} && $_->{Uprn} eq $property->{uprn} ) {
+                push @property_logs, {
+                    uprn   => $_->{Uprn},
+                    round  => $_->{RoundCode},
+                    reason => $_->{Reason},
+                    date   => $logdate,
+                    ordinal => ordinal( $logdate->day ),
+                };
+            } else {
+                push @street_logs, {
+                    # TODO This shouldn't be needed
+                    service_update => $_->{Uprn} ? 0 : 1,
+                    round  => $_->{RoundCode},
+                    reason => $_->{Reason},
+                    date   => $logdate,
+                    ordinal => ordinal( $logdate->day ),
+                };
+            }
         }
     }
 
-    return ( \@property_logs, \@street_logs, \@successful_collection_logs );
+    return ( \@property_logs, \@street_logs, \%successful_collections );
 }
 
 sub can_report_missed {
@@ -583,15 +582,14 @@ sub can_report_missed {
     if ($last_expected_collection_dt) {
         # TODO We can probably get successful collections directly off the
         # property rather than query _in_cab_logs again
-        my ( undef, undef, $successful_collection_logs )
+        my ( undef, undef, $successful_collections )
             = $self->_in_cab_logs($property);
 
         # If there is a log for this collection, that is when
         # the round was completed so we can make a report if
         # we're within that time
-        my ($log_for_round)
-            = grep { $_->{round} eq $service->{round} }
-            @$successful_collection_logs;
+        my $logged_time_for_round
+            = $successful_collections->{ $service->{round} };
 
         # log time needs to be greater than or equal to 3 working days ago,
         # less than today
@@ -606,9 +604,9 @@ sub can_report_missed {
         # fortnightly, but they share a round code prefix.
         return 0 if $last_expected_collection_dt < $min_dt && !$service->{next}{is_today};
 
-        return (   $log_for_round->{date} < $now_dt
-                && $log_for_round->{date} >= $min_dt ) ? 1 : 0
-            if $log_for_round;
+        return (   $logged_time_for_round < $now_dt
+                && $logged_time_for_round >= $min_dt ) ? 1 : 0
+            if $logged_time_for_round;
 
         $service->{last}{is_delayed} =
             ($last_expected_collection_dt < $today_dt && $last_expected_collection_dt >= $min_dt)

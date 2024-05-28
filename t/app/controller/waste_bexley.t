@@ -480,6 +480,51 @@ FixMyStreet::override_config {
             ];
         });
         $mech->get_ok('/waste/10001');
+        $mech->content_lacks(
+            'Our collection teams have reported the following problems with your bins:'
+        );
+        $mech->content_lacks('Being collected today');
+        $mech->content_contains('Collection completed or attempted earlier today');
+
+        # Property has red tag on collection attempted earlier today
+        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
+            return [
+                {
+                    LogID => 1,
+                    Reason => 'Bin has gone feral',
+                    RoundCode => 'RND-8-9',
+                    LogDate => '2024-04-01T12:00:00.417',
+                    Uprn => '10001',
+                    Usrn => '321',
+                },
+            ];
+        });
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains(
+            'Our collection teams have reported the following problems with your bins:'
+        );
+        $mech->content_lacks('Being collected today');
+        $mech->content_contains('Collection completed or attempted earlier today');
+
+        # Red tag on other property on same street
+        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
+            return [
+                {
+                    LogID => 1,
+                    Reason => 'Bin has gone feral',
+                    RoundCode => 'RND-8-9',
+                    LogDate => '2024-04-01T12:00:00.417',
+                    Uprn => '19991',
+                    Usrn => '321',
+                },
+            ];
+        });
+        $mech->get_ok('/waste/10001');
+        $mech->content_lacks(
+            'Our collection teams have reported the following problems with your bins:'
+        );
         $mech->content_lacks('Being collected today');
         $mech->content_contains('Collection completed or attempted earlier today');
 
