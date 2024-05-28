@@ -213,7 +213,7 @@ sub bin_services_for_address {
         = $self->_in_cab_logs($property);
     $property->{successful_collections} = $successful_collections;
     $property->{red_tags} = $property_logs;
-    $property->{service_updates} = grep { $_->{service_update} } @$street_logs;
+    $property->{service_updates} = $street_logs;
 
     # Set certain things outside of services loop
     my $containers = $self->_containers($property);
@@ -543,10 +543,8 @@ sub _in_cab_logs {
                     date   => $logdate,
                     ordinal => ordinal( $logdate->day ),
                 };
-            } else {
+            } elsif ( !$_->{Uprn} ) {
                 push @street_logs, {
-                    # TODO This shouldn't be needed
-                    service_update => $_->{Uprn} ? 0 : 1,
                     round  => $_->{RoundCode},
                     reason => $_->{Reason},
                     date   => $logdate,
@@ -566,7 +564,7 @@ sub can_report_missed {
     return 0 if $property->{missed_collection_reports}{ $service->{service_id} };
 
     # Prevent reporting if there are service updates
-    return 0 if $property->{service_updates};
+    return 0 if @{ $property->{service_updates} // [] };
 
     # Prevent reporting if there are red tags on the service
     # Red tags are matched to services based on prefix
