@@ -1,4 +1,4 @@
-Subject: New [% site_name %] updates on report: '[% report.title %]'
+Subject: New updates on your missed collection report
 
 You asked us to send you an email every time an update was made to the
 [% site_name %] report: [% report.title %].
