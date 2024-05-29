@@ -754,12 +754,14 @@ ul.error {
 }
 
 .skiplink:focus {
-  outline: 3px solid transparent;
+  outline: none; // Using box-shadow instead. This will allows us to have a dual-color outline, that will cover scenarios where the navbar bg colour and the outline have a similar brightness.
   color: $primary_text;
   background-color: $primary;
   text-decoration: none;
-  left: 0;
+  left: 0.4375rem; // Box-shadow will be completely visible
+  top: 0.4375rem; // Box-shadow will be completely visible
   z-index: 999; //Higher value than the map
+  box-shadow:  0 0 0 0.125rem $button-primary-focus-bg-top, 0 0 0 0.3125rem $button-primary-focus-text, 0 0 0 0.4375rem; // If .button-primary in focus state is accessible. Then using these two colours will make sure at least one of the outline colours will have a good contrast with the navigation bar.
 }
 
 .dev-site-notice {
