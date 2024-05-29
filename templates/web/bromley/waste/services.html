@@ -58,9 +58,3 @@
   </form>
   [% END %]
 [% END %]
-
-  <form method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">
-    <input type="hidden" name="service_id" value="[% unit.service_id %]">
-    <input type="hidden" name="category" id="category" value="General Enquiry">
-    <input type="submit" value="Contact us about a [% unit.service_name FILTER lower %] collection" class="waste-service-descriptor waste-service-link">
-  </form>
