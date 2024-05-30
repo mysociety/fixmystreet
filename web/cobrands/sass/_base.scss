@@ -42,6 +42,7 @@ $col_fixed_label_light: mix($col_fixed_label, #fff, 10%) !default;
 $form-control-border-color: #aaaaaa !default;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
+$header-height: 3.75rem;
 
 $container-max-width: 60em !default;
 
@@ -801,11 +802,11 @@ ul.error {
 
 #site-logo {
   display: block;
-  width: 175px;
-  height: 60px;
+  width: 10.9375rem;
+  height: $header-height;
   background-position: 0 50%;
   background-repeat: no-repeat;
-  background-size: 175px 35px;
+  background-size: 10.9375rem 2.1875rem;
   @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
   text-indent: -999999px;
 }
@@ -2431,7 +2432,7 @@ div.assigned-to {
 .map-fullscreen {
   #map_box {
     position: absolute;
-    top: calc(60px + 0.25em);
+    top: calc($header-height + 0.25em);
     #{$left}: 0;
     #{$right}: 0;
     bottom: 0;
@@ -3329,5 +3330,5 @@ $site-message-border: 1px solid #525252 !default;
 @import "_top-banner";
 @import "_search-help";
 @import "_page-with-sticky-content-bar";
-
+@import "_zoom-reflow";
 @import "govuk-frontend/forms";
