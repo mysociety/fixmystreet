@@ -492,23 +492,16 @@ sub _in_cab_logs {
     my $dt_from = $self->_subtract_working_days(WORKING_DAYS_WINDOW);
     my $cab_logs;
     if ( !$self->{c}->stash->{cab_logs} ) {
-        my $cab_logs_uprn = $self->whitespace->GetInCabLogsByUprn(
-            $property->{uprn},
-            $dt_from->stringify,
-        );
-
-        my $cab_logs_usrn
+        # Property should always have a USRN, but return UPRN logs in case not
+        $cab_logs
             = $property->{usrn}
             ? $self->whitespace->GetInCabLogsByUsrn(
                 $property->{usrn},
                 $dt_from->stringify,
-            ) : [];
-
-        $cab_logs = [ @$cab_logs_uprn, @$cab_logs_usrn ];
-
-        # Make cab logs unique by LogID and Reason
-        my %seen;
-        @$cab_logs = grep { !$seen{ $_->{LogID} . $_->{Reason} }++ } @$cab_logs;
+            ) : $self->whitespace->GetInCabLogsByUprn(
+                $property->{uprn},
+                $dt_from->stringify,
+            );
 
         $self->{c}->stash->{cab_logs} = $cab_logs;
     } else {

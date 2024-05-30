@@ -101,10 +101,6 @@ sub default_mocks {
             return _site_collections()->{$uprn};
         }
     );
-    $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
-        my ( $self, $uprn ) = @_;
-        return [ grep { $_->{Uprn} eq $uprn } @{ _in_cab_logs() } ];
-    });
     $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
         my ( $self, $usrn ) = @_;
         return _in_cab_logs();
@@ -455,7 +451,6 @@ FixMyStreet::override_config {
                 },
             ];
         } );
-        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
 
         set_fixed_time('2024-04-01T07:00:00'); # April 1st, 08:00 BST
@@ -488,7 +483,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Collection completed or attempted earlier today');
 
         note 'Property has red tag on collection attempted earlier today';
-        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub {
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
             return [
                 {
                     LogID => 1,
@@ -500,7 +495,6 @@ FixMyStreet::override_config {
                 },
             ];
         });
-        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
         $mech->get_ok('/waste/10001');
         $mech->content_contains('Service status');
         $mech->content_contains(
@@ -510,7 +504,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Collection completed or attempted earlier today');
 
         note 'Red tag on other property on same street';
-        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
             return [
                 {
@@ -529,7 +522,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Collection completed or attempted earlier today');
 
         note 'Service update on street';
-        $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
             return [
                 {
