@@ -209,9 +209,10 @@ sub bin_services_for_address {
         = $self->_missed_collection_reports($property);
     $property->{recent_collections} = $self->_recent_collections($property);
 
-    my ( $property_logs, $street_logs, $successful_collections )
+    my ( $property_logs, $street_logs, $completed_or_attempted_collections )
         = $self->_in_cab_logs($property);
-    $property->{successful_collections} = $successful_collections;
+    $property->{completed_or_attempted_collections}
+        = $completed_or_attempted_collections;
     $property->{red_tags} = $property_logs;
     $property->{service_updates} = $street_logs;
 
@@ -265,10 +266,10 @@ sub bin_services_for_address {
 
         # 'Next collection date' could be today; successful collection logs
         # will tell us if the collection has already been made
-        my $successful_collection_dt
-            = $property->{successful_collections}{$round};
-        my $collected_today = $successful_collection_dt
-            && $now_dt->delta_days($successful_collection_dt)
+        my $completed_or_attempted_collection_dt
+            = $property->{completed_or_attempted_collections}{$round};
+        my $collected_today = $completed_or_attempted_collection_dt
+            && $now_dt->delta_days($completed_or_attempted_collection_dt)
             ->in_units('days') == 0
             ? 1 : 0;
 
@@ -510,9 +511,9 @@ sub _in_cab_logs {
 
     my @property_logs;
     my @street_logs;
-    my %successful_collections;
+    my %completed_or_attempted_collections;
 
-    return ( \@property_logs, \@street_logs, \%successful_collections )
+    return ( \@property_logs, \@street_logs, \%completed_or_attempted_collections )
         unless $cab_logs;
 
     for (@$cab_logs) {
@@ -522,9 +523,9 @@ sub _in_cab_logs {
         # log against a round code should be taken as a sign that the round
         # has been completed or at least attempted for the property.
         # Overwrite entry for given round if a later logdate is found.
-        $successful_collections{ $_->{RoundCode} } = $logdate
-            if !$successful_collections{ $_->{RoundCode} }
-            || $successful_collections{ $_->{RoundCode} } < $logdate;
+        $completed_or_attempted_collections{ $_->{RoundCode} } = $logdate
+            if !$completed_or_attempted_collections{ $_->{RoundCode} }
+            || $completed_or_attempted_collections{ $_->{RoundCode} } < $logdate;
 
         # Gather property-level and street-level exceptions
         if ( $_->{Reason} && $_->{Reason} ne 'N/A' ) {
@@ -547,7 +548,8 @@ sub _in_cab_logs {
         }
     }
 
-    return ( \@property_logs, \@street_logs, \%successful_collections );
+    return ( \@property_logs, \@street_logs,
+        \%completed_or_attempted_collections );
 }
 
 sub can_report_missed {
@@ -573,14 +575,14 @@ sub can_report_missed {
     if ($last_expected_collection_dt) {
         # TODO We can probably get successful collections directly off the
         # property rather than query _in_cab_logs again
-        my ( undef, undef, $successful_collections )
+        my ( undef, undef, $completed_or_attempted_collections )
             = $self->_in_cab_logs($property);
 
         # If there is a log for this collection, that is when
         # the round was completed so we can make a report if
         # we're within that time
         my $logged_time_for_round
-            = $successful_collections->{ $service->{round} };
+            = $completed_or_attempted_collections->{ $service->{round} };
 
         # log time needs to be greater than or equal to 3 working days ago,
         # less than today

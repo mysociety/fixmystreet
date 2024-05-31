@@ -121,7 +121,11 @@
           <dd class="govuk-summary-list__value">
             [% IF unit.next %]
               [% IF unit.next.already_collected %]
-                <strong>Collection completed or attempted earlier today</strong>
+                [% IF unit.report_locked_out %]
+                  <strong>Could not be collected today because it was red-tagged. See reason below.</strong>
+                [% ELSE  %]
+                  <strong>Reported as collected today</strong>
+                [% END %]
               [% ELSIF unit.next.is_today %]
                 <strong>Being collected today</strong>
               [% ELSE %]

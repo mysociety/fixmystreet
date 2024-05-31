@@ -459,7 +459,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/10001');
         $mech->content_lacks('Service status');
         $mech->content_contains('Being collected today');
-        $mech->content_lacks('Collection completed or attempted earlier today');
+        $mech->content_lacks('Reported as collected today');
+        $mech->content_lacks('Could not be collected today because it was red-tagged. See reason below.');
 
         # Set time to later in the day
         set_fixed_time('2024-04-01T16:01:00'); # April 1st, 17:01 BST
@@ -480,14 +481,15 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/10001');
         $mech->content_lacks('Service status');
         $mech->content_lacks('Being collected today');
-        $mech->content_contains('Collection completed or attempted earlier today');
+        $mech->content_contains('Reported as collected today');
+        $mech->content_lacks('Could not be collected today because it was red-tagged. See reason below.');
 
         note 'Property has red tag on collection attempted earlier today';
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
             return [
                 {
                     LogID => 1,
-                    Reason => 'Bin has gone feral',
+                    Reason => 'Paper & Card - Bin has gone feral',
                     RoundCode => 'RND-8-9',
                     LogDate => '2024-04-01T12:00:00.417',
                     Uprn => '10001',
@@ -501,14 +503,15 @@ FixMyStreet::override_config {
             'Our collection teams have reported the following problems with your bins:'
         );
         $mech->content_lacks('Being collected today');
-        $mech->content_contains('Collection completed or attempted earlier today');
+        $mech->content_lacks('Reported as collected today');
+        $mech->content_contains('Could not be collected today because it was red-tagged. See reason below.');
 
         note 'Red tag on other property on same street';
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
             return [
                 {
                     LogID => 1,
-                    Reason => 'Bin has gone feral',
+                    Reason => 'Paper & Card - Bin has gone feral',
                     RoundCode => 'RND-8-9',
                     LogDate => '2024-04-01T12:00:00.417',
                     Uprn => '19991',
@@ -519,7 +522,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/10001');
         $mech->content_lacks('Service status');
         $mech->content_lacks('Being collected today');
-        $mech->content_contains('Collection completed or attempted earlier today');
+        $mech->content_contains('Reported as collected today');
+        $mech->content_lacks('Could not be collected today because it was red-tagged. See reason below.');
 
         note 'Service update on street';
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
@@ -541,7 +545,8 @@ FixMyStreet::override_config {
             'Our collection teams have reported the following problems with your bins:'
         );
         $mech->content_lacks('Being collected today');
-        $mech->content_contains('Collection completed or attempted earlier today');
+        $mech->content_contains('Reported as collected today');
+        $mech->content_lacks('Could not be collected today because it was red-tagged. See reason below.');
 
         # Reinstate original mocks
         set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
