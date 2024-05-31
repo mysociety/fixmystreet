@@ -461,7 +461,7 @@ sub image_for_unit {
 
 =head2 waste_on_the_day_criteria
 
-If it's before 5pm on the day of collection, treat an Outstanding task as if
+If it's before 5pm on the day of collection, treat an Outstanding/Delayed task as if
 it's the next collection and in progress, and do not allow missed collection
 reporting if the task is not completed.
 
@@ -471,7 +471,7 @@ sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 
     return unless $now->hour < 17;
-    if ($state eq 'Outstanding') {
+    if ($state eq 'Outstanding' || $state eq 'Delayed') {
         $row->{next} = $row->{last};
         $row->{next}{state} = 'In progress';
         delete $row->{last};
