@@ -48,4 +48,10 @@ sub privacy_policy_url {
     'https://www.nottinghamshire.pcc.police.uk/Document-Library/Public-Information/Policies-and-Procedures/People/Privacy-Notice-OPCCN-Feb-2023.pdf'
 }
 
+=item * Users with a notts.police.uk email can always be found in the admin.
+
+=cut
+
+sub admin_user_domain { 'notts.police.uk' }
+
 1;
