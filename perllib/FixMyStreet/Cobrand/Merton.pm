@@ -162,9 +162,11 @@ sub open311_post_send {
 
     # restore original external_id for this report, and store new Dynamics ID
     if ( $self->{original_external_id} ) {
-        $row->set_extra_metadata( crimson_external_id => $row->external_id );
-        $row->external_id($self->{original_external_id});
-        $row->update;
+        if ($row->external_id ne $self->{original_external_id}) {
+            $row->set_extra_metadata( crimson_external_id => $row->external_id );
+            $row->external_id($self->{original_external_id});
+            $row->update;
+        }
         delete $self->{original_external_id};
     }
 }
