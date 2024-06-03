@@ -44,4 +44,8 @@ sub disambiguate_location {
 
 sub enter_postcode_text { 'Enter a Nottinghamshire postcode, street name or area' }
 
+sub privacy_policy_url {
+    'https://www.nottinghamshire.pcc.police.uk/Document-Library/Public-Information/Policies-and-Procedures/People/Privacy-Notice-OPCCN-Feb-2023.pdf'
+}
+
 1;
