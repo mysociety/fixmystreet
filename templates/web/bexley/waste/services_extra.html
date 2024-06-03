@@ -13,7 +13,7 @@
       END;
     END;
   %]
-  [% UNLESS property.parent_property OR has_blocked_service %]
+  [% UNLESS property.parent_property OR has_blocked_service OR services.size == 0 %]
   <h3 class="govuk-heading-m waste-service-name">
     Brown Wheelie Bin
   </h3>

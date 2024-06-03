@@ -201,6 +201,7 @@ subtest 'updating of waste reports' => sub {
                     { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 15003 },
                     { CoreState => 'Closed', Name => 'Completed', Id => 15004 },
                     { CoreState => 'Closed', Name => 'Partially Completed', Id => 15005 },
+                    { CoreState => 'Closed', Name => 'Not Completed', Id => 15006 },
                 ] } },
             });
         } else {
@@ -255,6 +256,14 @@ subtest 'updating of waste reports' => sub {
         $report->discard_changes;
         is $report->comments->count, 1, 'No new update';
         is $report->state, 'investigating', 'State unchanged';
+
+        $report->update({ external_id => 'waste-15006-' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Fetching data for report/;
+        $report->discard_changes;
+        is $report->comments->count, 1, 'No new update';
+        is $report->state, 'investigating', 'No state change';
 
         $report->update({ external_id => 'waste-15004-' });
         stdout_like {
