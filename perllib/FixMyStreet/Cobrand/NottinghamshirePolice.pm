@@ -42,4 +42,6 @@ sub disambiguate_location {
     };
 }
 
+sub enter_postcode_text { 'Enter a Nottinghamshire postcode, street name or area' }
+
 1;
