@@ -54,4 +54,41 @@ sub privacy_policy_url {
 
 sub admin_user_domain { 'notts.police.uk' }
 
+=item problems_restriction
+
+Only shows reports made on it, not those from FMS.com or others.
+
+=cut
+
+sub problems_restriction {
+    my ($self, $rs) = @_;
+
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    return $rs->search({
+        "$table.cobrand" => "nottinghamshirepolice"
+    });
+}
+
+sub problems_sql_restriction {
+    my ($self, $item_table) = @_;
+
+    return "AND cobrand = 'nottinghamshirepolice'";
+}
+
+=item problems_on_map_restriction
+
+Same restriction on map as problems_restriction above.
+
+=cut
+
+sub problems_on_map_restriction {
+    my ($self, $rs) = @_;
+    $self->problems_restriction($rs);
+}
+
+sub updates_restriction {
+    my ($self, $rs) = @_;
+    return $rs->search({ 'problem.cobrand' => 'nottinghamshirepolice' }, { join => 'problem' });
+}
+
 1;
