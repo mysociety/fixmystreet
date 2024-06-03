@@ -48,6 +48,12 @@ sub privacy_policy_url {
     'https://www.nottinghamshire.pcc.police.uk/Document-Library/Public-Information/Policies-and-Procedures/People/Privacy-Notice-OPCCN-Feb-2023.pdf'
 }
 
+=item * Never allows anonymous reports.
+
+=cut
+
+sub allow_anonymous_reports { 0 }
+
 =item * Users with a notts.police.uk email can always be found in the admin.
 
 =cut
