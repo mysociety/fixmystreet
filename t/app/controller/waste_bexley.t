@@ -449,6 +449,16 @@ FixMyStreet::override_config {
 
                     RoundSchedule => 'RND-8-9 Mon, RND-8-9 Wed',
                 },
+                {   SiteServiceID          => 6,
+                    ServiceItemDescription => 'Service 6',
+                    ServiceItemName => 'RES-CHAM', # Residual Chamberlain
+
+                    NextCollectionDate   => '2024-05-01T00:00:00',
+                    SiteServiceValidFrom => '2024-03-31T00:59:59',
+                    SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                    RoundSchedule => 'RND-6 Wed Wk 2',
+                },
             ];
         } );
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
@@ -461,6 +471,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Being collected today');
         $mech->content_lacks('Reported as collected today');
         $mech->content_lacks('Could not be collected today because it was red-tagged. See reason below.');
+        $mech->content_contains('Please note that missed collections can only be reported within 3 working days of your last collection day');
 
         # Set time to later in the day
         set_fixed_time('2024-04-01T16:01:00'); # April 1st, 17:01 BST
