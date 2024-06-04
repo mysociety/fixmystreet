@@ -159,7 +159,7 @@ sub check_existing_update : Private {
     my $cfg = { updates => $updates };
     $c->detach('soap_ok')
         unless $c->cobrand->waste_check_last_update(
-            $cfg, $p, $request->{status}, $request->{external_status_code});
+            'push', $cfg, $p, $request->{status}, $request->{external_status_code});
 }
 
 __PACKAGE__->meta->make_immutable;
