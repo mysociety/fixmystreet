@@ -7,3 +7,20 @@
 .postcode-form-box {
     color: #fff;
 }
+
+.border-wrapper {
+    border: 0.5rem solid $black;
+    padding: 1rem;
+    margin: 3rem 0rem;
+
+    h3 {
+        font-family: $heading-font;
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
