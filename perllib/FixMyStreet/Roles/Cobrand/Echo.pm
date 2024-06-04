@@ -738,7 +738,7 @@ sub waste_fetch_events {
 
         next if !$request->{status} || $request->{status} eq 'confirmed'; # Still in initial state
         next unless $self->waste_check_last_update(
-            $cfg, $report, $request->{status}, $request->{external_status_code});
+            'fetch', $cfg, $report, $request->{status}, $request->{external_status_code});
 
         my $last_updated = construct_bin_date($event->{LastUpdatedDate});
         $request->{comment_time} = $last_updated;
@@ -806,7 +806,7 @@ sub waste_get_event_type {
 # We only have the report's current state, no history, so must check current
 # against latest received update to see if state the same, and skip if so
 sub waste_check_last_update {
-    my ($self, $cfg, $report, $status, $resolution_id) = @_;
+    my ($self, $type, $cfg, $report, $status, $resolution_id) = @_;
 
     my $latest = $report->comments->search(
         { external_id => 'waste', },
@@ -815,7 +815,9 @@ sub waste_check_last_update {
     if ($latest) {
         my $state = $cfg->{updates}->current_open311->map_state($status);
         my $code = $latest->get_extra_metadata('external_status_code') || '';
-        if ($latest->problem_state eq $state && $code eq $resolution_id) {
+        my $problem_state = $latest->problem->state;
+        if ($latest->problem_state eq $state && $code eq $resolution_id
+            && !($type eq 'push' && $problem_state ne $state)) {
             print "  Latest update matches fetched state, skipping\n" if $cfg->{verbose};
             return;
         }
