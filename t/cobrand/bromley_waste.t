@@ -677,50 +677,12 @@ subtest 'updating of waste reports' => sub {
         $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $mech->res->code, 400, 'Bad auth';
 
-        $in = <<EOF;
-<?xml version="1.0" encoding="UTF-8"?>
-<Envelope>
-  <Header>
-    <Action>action</Action>
-    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
-  </Header>
-  <Body>
-    <NotifyEventUpdated>
-      <event>
-        <Guid>waste-15005-XXX</Guid>
-        <EventTypeId>2104</EventTypeId>
-        <EventStateId>15006</EventStateId>
-        <ResolutionCodeId>207</ResolutionCodeId>
-      </event>
-    </NotifyEventUpdated>
-  </Body>
-</Envelope>
-EOF
-
+        $in = $mech->echo_notify_xml('waste-15005-XXX', 2104, 15006, 207);
         $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $mech->res->code, 200, 'OK response, even though event does not exist';
         is $report->comments->count, $comment_count, 'No new update';
 
-        $in = <<EOF;
-<?xml version="1.0" encoding="UTF-8"?>
-<Envelope>
-  <Header>
-    <Action>action</Action>
-    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
-  </Header>
-  <Body>
-    <NotifyEventUpdated>
-      <event>
-        <Guid>waste-15005-205</Guid>
-        <ClientReference>FMS-%%%</ClientReference>
-        <EventTypeId>2104</EventTypeId>
-        <EventStateId>15006</EventStateId>
-        <ResolutionCodeId>207</ResolutionCodeId>
-      </event>
-    </NotifyEventUpdated>
-  </Body>
-</Envelope>
-EOF
+        $in = $mech->echo_notify_xml('waste-15005-205', 2104, 15006, 207, 'FMS-%%%');
         my $report_id = $report->id;
         $in =~ s/%%%/$report_id/;
 

@@ -754,25 +754,7 @@ subtest 'redirecting of reports between backends' => sub {
             whensent => DateTime->now,
         });
 
-        my $in = <<EOF;
-<?xml version="1.0" encoding="UTF-8"?>
-<Envelope>
-  <Header>
-    <Action>action</Action>
-    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
-  </Header>
-  <Body>
-    <NotifyEventUpdated>
-      <event>
-        <Guid>guid</Guid>
-        <EventTypeId>2104</EventTypeId>
-        <EventStateId>15004</EventStateId>
-        <ResolutionCodeId>1252</ResolutionCodeId>
-      </event>
-    </NotifyEventUpdated>
-  </Body>
-</Envelope>
-EOF
+        my $in = $mech->echo_notify_xml('guid', 2104, 15004, 1252);
 
         subtest 'A report sent to Confirm, then redirected to Echo' => sub {
             $report->update({ external_id => 12345 });
@@ -816,7 +798,7 @@ EOF
             is $report->category, 'Environmental Services';
             isnt $report->whensent, undef;
 
-        Open311->_inject_response('/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>42</update_id></request_update></service_request_updates>');
+            Open311->_inject_response('/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>42</update_id></request_update></service_request_updates>');
 
             my $updates = Open311::PostServiceRequestUpdates->new();
             $updates->send;
