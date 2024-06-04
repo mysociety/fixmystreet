@@ -828,66 +828,81 @@ subtest 'redirecting of reports between backends' => sub {
             is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
             like $c->param('description'), qr/Handover notes - Outgoing notes from Echo/;
         };
+
+        subtest "comment on a closed echo report result in a resend under 'Referred to Veolia Streets'" => sub {
+            my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
+            my $event_id = 123;
+
+            my $echo = Test::MockModule->new('Integrations::Echo');
+
+            $echo->mock('GetEvent', sub { {
+                Guid => $event_guid,
+                ResolvedDate => { DateTime => '2024-03-21T12:00:00Z' },
+                Id => $event_id,
+            } } );
+
+            ($report) = $mech->create_problems_for_body(1, $body->id, 'echo report', {
+                    cobrand => 'bromley',
+                    whensent => 'now()',
+                    send_state => 'sent',
+                    send_method_used => 'Open311',
+                    external_id => $event_guid,
+                });
+            $report->add_to_comments({
+                text => 'Completed',
+                user => $user,
+                send_state => 'processed',
+                problem_state => 'fixed - council',
+                external_id => 'waste',
+            });
+            $report->state('fixed - council');
+            my $comment = $report->add_to_comments({
+                text => 'comment on closed event',
+                user => $user,
+                mark_open => 1,
+            });
+            $report->update;
+            FixMyStreet::override_config {
+                ALLOWED_COBRANDS => 'bromley',
+            }, sub {
+                my $updates = Open311::PostServiceRequestUpdates->new();
+                $updates->send;
+            };
+
+            $report->discard_changes;
+            is $report->get_extra_metadata('open311_category_override'), 'Referred to Veolia Streets', 'category override applied';
+            is $report->send_state, 'unprocessed', 'report set to be resent';
+
+            $comment->discard_changes;
+            is $comment->send_state, 'skipped', "skipped sending comment";
+
+            FixMyStreet::override_config {
+                STAGING_FLAGS => { send_reports => 1 },
+                ALLOWED_COBRANDS => [ 'bromley' ],
+                MAPIT_URL => 'http://mapit.uk/',
+            }, sub {
+                FixMyStreet::Script::Reports::send();
+            };
+
+            $report->discard_changes;
+            is $report->send_state, 'sent', 'report was resent';
+
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            my $detail = $report->detail;
+            is $c->param('attribute[Event_ID]'), $event_id, 'old event ID included in attributes';
+            like $c->param('description'), qr/Closed report has a new comment: comment on closed event\r\nBromley pkg-tcobrandbromleyt-bromley\@example.com\r\n$detail/, 'Comment on closed report included in new report description';
+        };
+
+        subtest "Another update from Echo on this new sent report closes it again" => sub {
+            $report->update({ external_id => 'guid' });
+            my $in = $mech->echo_notify_xml('guid', 2104, 15004, '');
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 3, 'A new update';
+            $report->discard_changes;
+            is $report->state, 'fixed - council', 'A state change';
+        };
     };
-
-};
-
-subtest "comment on a closed echo report result in a resend under 'Referred to Veolia Streets'" => sub {
-    my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
-    my $event_id = 123;
-
-    my $echo = Test::MockModule->new('Integrations::Echo');
-
-    $echo->mock('GetEvent', sub { {
-        Guid => $event_guid,
-        ResolvedDate => { DateTime => '2024-03-21T12:00:00Z' },
-        Id => $event_id,
-    } } );
-
-    my ($report) = $mech->create_problems_for_body(1, $body->id, 'echo report', {
-            cobrand => 'bromley',
-            whensent => 'now()',
-            send_state => 'sent',
-            send_method_used => 'Open311',
-            external_id => $event_guid,
-        });
-    $report->state('closed');
-    my $comment = $report->add_to_comments({
-        text => 'comment on closed event',
-        user => $user,
-        mark_open => 1,
-    });
-    $report->update;
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'bromley',
-    }, sub {
-        my $updates = Open311::PostServiceRequestUpdates->new();
-        $updates->send;
-    };
-
-    $report->discard_changes;
-    is $report->get_extra_metadata('open311_category_override'), 'Referred to Veolia Streets', 'category override applied';
-    is $report->send_state, 'unprocessed', 'report set to be resent';
-
-    $comment->discard_changes;
-    is $comment->send_state, 'skipped', "skipped sending comment";
-
-    FixMyStreet::override_config {
-        STAGING_FLAGS => { send_reports => 1 },
-        ALLOWED_COBRANDS => [ 'bromley' ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        FixMyStreet::Script::Reports::send();
-    };
-
-    $report->discard_changes;
-    is $report->send_state, 'sent', 'report was resent';
-
-    my $req = Open311->test_req_used;
-    my $c = CGI::Simple->new($req->content);
-    my $detail = $report->detail;
-    is $c->param('attribute[Event_ID]'), $event_id, 'old event ID included in attributes';
-    like $c->param('description'), qr/Closed report has a new comment: comment on closed event\r\nBromley pkg-tcobrandbromleyt-bromley\@example.com\r\n$detail/, 'Comment on closed report included in new report description';
 };
 
 done_testing();
