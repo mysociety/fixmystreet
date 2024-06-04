@@ -1081,7 +1081,8 @@ sub in_cab_logs_reason_prefixes {
         'Paper & Card' => ['PA-1100', 'PA-1280', 'PA-140', 'PA-240', 'PA-55', 'PA-660', 'PA-940', 'PC-180', 'PC-55'],
         'Food' => ['FO-140', 'FO-23'],
         'Garden' => ['GA-140', 'GA-240'],
-        'Plastics & Glass' => ['GL-1100', 'GL-1280', 'GL-55', 'GL-660', 'PG-1100', 'PG-1280', 'PG-240', 'PG-360', 'PG-55', 'PG-660', 'PG-940', 'PL-1100', 'PL-1280', 'PL-140', 'PL-55', 'PL-660', 'PL-940'],
+        'Plastics & Glass' => ['PG-1100', 'PG-1280', 'PG-240', 'PG-360', 'PG-55', 'PG-660', 'PG-940', 'PL-1100', 'PL-1280', 'PL-140', 'PL-55', 'PL-660', 'PL-940'],
+        'Glass' => ['GL-1100', 'GL-1280', 'GL-55', 'GL-660'],
         'Refuse' => ['RES-1100', 'RES-1280', 'RES-140', 'RES-180', 'RES-240', 'RES-660', 'RES-720', 'RES-940', 'RES-CHAM', 'RES-DBIN', 'RES-SACK'],
     }
 }
