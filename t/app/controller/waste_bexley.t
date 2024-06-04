@@ -101,6 +101,14 @@ sub default_mocks {
             return _site_collections()->{$uprn};
         }
     );
+    $whitespace_mock->mock(
+        'GetCollectionByUprnAndDate',
+        sub {
+            my ( $self, $property_id, $from_date ) = @_;
+
+            return _collection_by_uprn_date()->{$from_date} // [];
+        }
+    );
     $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
         my ( $self, $usrn ) = @_;
         return _in_cab_logs();
@@ -117,13 +125,6 @@ $whitespace_mock->mock(
     }
 );
 $whitespace_mock->mock( 'GetAccountSiteID', &_account_site_id );
-$whitespace_mock->mock( 'GetCollectionByUprnAndDate',
-    sub {
-        my ( $self, $property_id, $from_date ) = @_;
-
-        return _collection_by_uprn_date()->{$from_date} // [];
-    }
-);
 $whitespace_mock->mock( 'GetSiteWorksheets', &_site_worksheets );
 $whitespace_mock->mock(
     'GetWorksheetDetailServiceItems',
@@ -648,6 +649,143 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
 
         is $report->get_extra_field_value('uprn'), '10001', 'Report is against the parent property';
+    };
+
+    subtest 'Make sure missed collection cannot be made against ineligible container when page is not refreshed'
+    => sub {
+
+        $mech->delete_problems_for_body( $body->id );
+
+        # Thursday 4th April, 13:00 BST
+        set_fixed_time('2024-04-04T12:00:00');
+
+        $whitespace_mock->mock(
+            'GetSiteCollections',
+            sub {
+                [   {   SiteServiceID          => 1,
+                        ServiceItemDescription => 'Service 1',
+                        ServiceItemName => 'FO-140',    # Communal Food Bin
+
+                        NextCollectionDate   => '2024-04-08T00:00:00',
+                        SiteServiceValidFrom => '2024-03-31T00:59:59',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                        RoundSchedule => 'RND-1 Mon',
+                    },
+                    {   SiteServiceID          => 2,
+                        ServiceItemDescription => 'Service 2',
+                        ServiceItemName        => 'FO-23',       # Brown Caddy
+
+                        NextCollectionDate   => '2024-04-10T00:00:00',
+                        SiteServiceValidFrom => '2024-03-31T00:59:59',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                        RoundSchedule => 'RND-2 Wed',
+                    },
+                ];
+            }
+        );
+        $whitespace_mock->mock(
+            'GetCollectionByUprnAndDate',
+            sub {
+                [   {   Date     => '01/04/2024 00:00:00', # Mon
+                        Round    => 'RND-1',
+                        Schedule => 'Mon',
+                        Service  => 'Service 1 Collection',
+                    },
+                    {   Date     => '03/04/2024 00:00:00', # Wed
+                        Round    => 'RND-2',
+                        Schedule => 'Wed',
+                        Service  => 'Service 2 Collection',
+                    },
+                ];
+            }
+        );
+        $whitespace_mock->mock(
+            'GetInCabLogsByUsrn',
+            sub {
+                [
+                    {
+                        Reason => 'N/A',
+                        RoundCode => 'RND-1',
+                        LogDate => '2024-04-01T06:10:09.417', # Mon
+                        Uprn => '',
+                        Usrn => '321',
+                    },
+                    {
+                        Reason => 'N/A',
+                        RoundCode => 'RND-2',
+                        LogDate => '2024-04-03T06:10:09.417', # Wed
+                        Uprn => '',
+                        Usrn => '321',
+                    },
+                ]
+            }
+        );
+
+        $mech->get_ok('/waste/10001');
+
+        # Check for presence of two missed collection links
+        $mech->content_contains('Report a communal food bin collection as missed');
+        $mech->content_contains('Report a brown caddy collection as missed');
+        $mech->content_unlike(
+            qr/id="service-FO-23-0".*checked/s,
+            'Brown caddy not preselected',
+        );
+
+        # Friday 5th April, 13:00 BST
+        set_fixed_time('2024-04-05T12:00:00');
+
+        $mech->submit_form( form_name => 'FO-140-missed' );
+
+        $mech->content_contains('Select your missed collection');
+        $mech->content_lacks( 'name="service-FO-140"',
+            'Communal food bin checkbox not shown' );
+        $mech->content_contains( 'name="service-FO-23"',
+            'Brown caddy checkbox shown' );
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    'service-FO-23' => 1
+                }
+            },
+            'Selecting missed collection for brown caddy',
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    name  => 'John Doe',
+                    phone => '44 07 111 111 111',
+                    email => 'test@example.com'
+                }
+            },
+            'Submitting contact details'
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    submit   => 'Report collection as missed',
+                    category => 'Report missed collection'
+                }
+            },
+            'Submitting missed collection report'
+        );
+        $mech->content_contains('Missed collection has been reported');
+
+        my @reports = FixMyStreet::DB->resultset("Problem")->all;
+        is @reports, 1, 'only one report created';
+
+        # Check that if eligible link followed, service is
+        # pre-selected
+        $mech->get_ok('/waste/10001');
+        $mech->submit_form( form_name => 'FO-23-missed' );
+        $mech->content_like(
+            qr/id="service-FO-23-0".*checked/s,
+            'Brown caddy preselected',
+        );
+
+        # Reset
+        set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
+        $mech->delete_problems_for_body( $body->id );
+        default_mocks();
     };
 
     subtest 'Missed collection eligibility checks' => sub {
