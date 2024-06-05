@@ -134,7 +134,7 @@ my $contact2b = $mech->create_contact_ok(
 
 my $contact3 = $mech->create_contact_ok(
     body_id => $body->id,
-    category => 'Pothole',
+    category => 'Pothole (major)',
     email => 'pothole@example.com',
 );
 $contact3->set_extra_fields({
@@ -1006,7 +1006,7 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         internal_ips => { tfl => [ '127.0.0.1' ] },
         safety_critical_categories => { tfl => {
-            Pothole => 1,
+            'Pothole (major)' => 1,
             Flooding => {
                 location => [ "carriageway" ],
             },
@@ -1037,7 +1037,7 @@ for my $test (
             'Flooding',
             'Flytipping (Bromley)', # In the 'Street cleaning' group
             'Grit bins',
-            'Pothole',
+            'Pothole (major)',
             'Private Category',
             'Timings',
             'Traffic lights',
@@ -1074,7 +1074,7 @@ for my $test (
             'Bus stops',
             'Flooding',
             'Grit bins',
-            'Pothole',
+            'Pothole (major)',
             'Private Category',
             'Timings',
             'Traffic lights',
@@ -1092,7 +1092,7 @@ for my $test (
             'Bus stops',
             'Flooding',
             'Grit bins',
-            'Pothole',
+            'Pothole (major)',
             'Private Category',
             'Timings',
             'Traffic lights',
@@ -1112,7 +1112,7 @@ for my $test (
             'Flooding',
             'Flytipping (Bromley)',
             'Grit bins',
-            'Pothole',
+            'Pothole (major)',
             'Private Category',
             'Timings',
             'Traffic lights',
@@ -1148,7 +1148,7 @@ for my $test (
             'Bus stops',
             'Flooding',
             'Grit bins',
-            'Pothole',
+            'Pothole (major)',
             'Private Category',
             'Timings',
             'Traffic lights',
@@ -1175,8 +1175,8 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
         {
             name => "test safety critical category",
             safety_critical => 'yes',
-            category => "Pothole",
-            subject => "Dangerous Pothole Report: Test Report",
+            category => "Pothole (major)",
+            subject => "Dangerous Pothole (major) Report: Test Report",
             pc => "BR1 3EF", # this is on a red route (according to Mock::MapIt and Mock::Tilma anyway)
         },
         {

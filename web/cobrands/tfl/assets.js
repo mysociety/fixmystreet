@@ -228,7 +228,7 @@ var tlrn_categories = [
     "Other (TfL)",
     "Pavement Defect (uneven surface / cracked paving slab)",
     "Pavement Overcrowding",
-    "Pothole",
+    "Pothole (major)",
     "Pothole (minor)",
     "Roadworks",
     "Scaffold complaint",

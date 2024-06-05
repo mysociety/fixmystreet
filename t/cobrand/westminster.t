@@ -25,7 +25,7 @@ my $body = $mech->create_body_ok(2504, 'Westminster City Council', {
 my $tfl = $mech->create_body_ok(2504, 'TfL', {}, { cobrand => 'tfl' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned bike', email => "BIKE");
 $mech->create_contact_ok(body_id => $body->id, category => 'Car parking', email => 'cars@example.org', send_method => 'Email');
-$mech->create_contact_ok(body_id => $tfl->id, category => 'Pothole', email => 'pothole@example.org');
+$mech->create_contact_ok(body_id => $tfl->id, category => 'Pothole (major)', email => 'pothole@example.org');
 $mech->create_contact_ok(body_id => $tfl->id, category => 'Traffic light', email => 'trafficlight@example.org');
 
 my $superuser = $mech->create_user_ok(
