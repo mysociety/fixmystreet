@@ -3365,6 +3365,29 @@ $site-message-border: 1px solid #525252 !default;
   }
 }
 
+.js-post-category-messages,
+.extra-category-questions {
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  h3, h4 {
+    font-weight: bold;
+  }
+
+  img {
+    margin-bottom: 1rem;
+  }
+
+  :first-child {
+    margin-top: 0; //Avoids extra spacing caused by inherited margins
+  }
+}
+
 .keyboard-instructions-wrapper, .keyboard-pin {
   display: none;
 }
