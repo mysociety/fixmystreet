@@ -272,6 +272,16 @@ sub bin_services_for_address {
             && $now_dt->delta_days($completed_or_attempted_collection_dt)
             ->in_units('days') == 0
             ? 1 : 0;
+        my $scheduled_for_today = $now_dt->ymd eq $next_dt->ymd;
+
+        my $min_dt = $self->_subtract_working_days(WORKING_DAYS_WINDOW);
+        my $last_expected_collection_dt = $property->{recent_collections}{$service->{RoundSchedule}};
+        # If the last expected collection was more than three days ago and
+        # it's not scheduled for collection today, then we don't consider
+        # it to have been collected today.
+        if ($last_expected_collection_dt < $min_dt && !$scheduled_for_today) {
+            $collected_today = 0;
+        }
 
         my $filtered_service = {
             id             => $service->{SiteServiceID},
@@ -284,7 +294,7 @@ sub bin_services_for_address {
                 date              => $service->{NextCollectionDate},
                 ordinal           => ordinal( $next_dt->day ),
                 changed           => 0,
-                is_today          => $now_dt->ymd eq $next_dt->ymd,
+                is_today          => $scheduled_for_today,
                 already_collected => $collected_today,
             },
             assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
