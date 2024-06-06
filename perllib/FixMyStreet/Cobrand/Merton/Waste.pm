@@ -134,6 +134,7 @@ sub image_for_unit {
         #2249 => "$base/bin-grey-blue-lid-recycling", # Communal paper
         2250 => "$base/large-communal-green", # Communal recycling
         2632 => _svg_sack('sack', '#D8D8D8'), # domestic paper bag
+        bulky => "$base/bulky-black",
     };
     return $images->{$service_id};
 }
