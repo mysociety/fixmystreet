@@ -37,8 +37,6 @@ sub service_name_override {
         2249 => "Paper and card",
         2250 => "Mixed recycling",
         2632 => 'Paper and card',
-        3571 => 'Mixed recycling',
-        3576 => 'Non-recyclable Refuse',
         2256 => '', # Deliver refuse bags
         2257 => '', # Deliver recycling bags
     );
@@ -184,6 +182,7 @@ one container.
 sub staff_override_request_options {
     my ($self, $rows) = @_;
     return unless $self->{c}->stash->{is_staff};
+    return if $self->{c}->stash->{schedule2_property};
 
     my @containers_on_property;
 
