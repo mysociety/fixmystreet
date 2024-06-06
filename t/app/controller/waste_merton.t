@@ -98,6 +98,23 @@ FixMyStreet::override_config {
         $mech->content_contains('Friday, 2nd September');
         $mech->content_contains('Report a mixed recycling collection as missed');
     };
+
+    subtest 'Schedule 2 property' => sub {
+        my $dupe = dclone($bin_data);
+        # Give the entry schedule 2 tasks
+        foreach (@$dupe) {
+            my $tasks = $_->{ServiceTasks}{ServiceTask};
+            $tasks = [ $tasks ] unless ref $tasks eq 'ARRAY';
+            foreach (@$tasks) {
+                $_->{TaskTypeId} = 3571;
+            }
+        }
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('not available at this property');
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
     subtest 'In progress collection' => sub {
         $e->mock('GetTasks', sub { [ {
             Ref => { Value => { anyType => [ 17430692, 8287 ] } },
