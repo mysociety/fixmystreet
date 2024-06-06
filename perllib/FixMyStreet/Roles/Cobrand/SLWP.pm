@@ -92,6 +92,10 @@ sub waste_relevant_serviceunits {
         my $servicetasks = $self->_get_service_tasks($_);
         foreach my $task (@$servicetasks) {
             my $service_id = $task->{TaskTypeId};
+
+            # Sneak this in here before it's ignored for not having a service name
+            $self->{c}->stash->{schedule2_property} = 1 if $service_id == 3576 || $service_id == 3571 || $service_id == 4004;
+
             my $service_name = $self->service_name_override({ ServiceId => $service_id });
             next unless $service_name;
 
