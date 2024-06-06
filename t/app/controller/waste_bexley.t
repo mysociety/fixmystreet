@@ -812,6 +812,9 @@ FixMyStreet::override_config {
                 next => {
                     is_today => 1,
                 },
+                last => {
+                    date => DateTime->today,
+                }
             },
             # Had a collection earlier today
             'FO-140' => {
@@ -821,34 +824,52 @@ FixMyStreet::override_config {
                 next => {
                     is_today => 1,
                 },
+                last => {
+                    date => DateTime->today,
+                },
             },
             # Collection due last working day but it did not happen
             'RES-180' => {
                 service_id => 'RES-180',
                 round => 'RES-R2',
                 round_schedule => 'RES-R2 Fri',
+                last => {
+                    date => DateTime->today->subtract( days => 3 ),
+                },
             },
             # Collections due last working day and they happened
             'RES-240' => {
                 service_id => 'RES-240',
                 round => 'RES-R3',
                 round_schedule => 'RES-R3 Fri',
+                last => {
+                    date => DateTime->today->subtract( days => 3 ),
+                },
             },
             'RES-660' => {
                 service_id => 'RES-660',
                 round => 'RES-R4',
                 round_schedule => 'RES-R4 Fri',
+                last => {
+                    date => DateTime->today->subtract( days => 3 ),
+                },
             },
             # Collection too old
             'GA-240' => {
                 service_id => 'GA-240',
                 round => 'GDN-R1',
                 round_schedule => 'GDN-R1 Tue',
+                last => {
+                    date => DateTime->today->subtract( days => 6 ),
+                },
             },
             'PG-240' => {
                 service_id => 'PG-240',
                 round => 'RCY-R2',
                 round_schedule => 'RCY-R2 Mon PG Wk 2',
+                last => {
+                    date => DateTime->today->subtract( days => 7 ),
+                },
             },
         );
 
@@ -856,17 +877,6 @@ FixMyStreet::override_config {
             uprn => 10001,
             missed_collection_reports => {
                 'RES-SACK' => 1,
-            },
-            recent_collections => {
-                'RCY-R1 Mon' => DateTime->today, # FO-23
-                'RCY-R2 Mon' => DateTime->today, # FO-140
-                'RES-R2 Fri' => DateTime->today->subtract( days => 3 ), # RES-180
-                'RES-R3 Fri' => DateTime->today->subtract( days => 3 ), # RES-240
-                'RES-R4 Fri' => DateTime->today->subtract( days => 3 ), # RES-240
-                'GDN-R1 Tue' => DateTime->today->subtract( days => 6 ), # GA-240
-                'RCY-R2 Mon PG Wk 2' => DateTime->today->subtract( days => 7 ), # PG-240
-                'RCY-R1 Mon' => DateTime->today->subtract( days => 14 ), # FO-23
-                'RCY-R2 Mon' => DateTime->today->subtract( days => 14 ), # FO-140
             },
         };
 

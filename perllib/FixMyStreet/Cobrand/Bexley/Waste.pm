@@ -262,52 +262,6 @@ sub bin_services_for_address {
             next if $now_dt > $to_dt;
         }
 
-        my ($round) = split / /, $service->{RoundSchedule};
-
-        # 'Next collection date' could be today; successful collection logs
-        # will tell us if the collection has already been made
-        my $completed_or_attempted_collection_dt
-            = $property->{completed_or_attempted_collections}{$round};
-        my $collected_today = $completed_or_attempted_collection_dt
-            && $now_dt->delta_days($completed_or_attempted_collection_dt)
-            ->in_units('days') == 0
-            ? 1 : 0;
-        my $scheduled_for_today = $now_dt->ymd eq $next_dt->ymd;
-
-        my $min_dt = $self->_subtract_working_days(WORKING_DAYS_WINDOW);
-        my $last_expected_collection_dt = $property->{recent_collections}{$service->{RoundSchedule}};
-        # If the last expected collection was more than three days ago and
-        # it's not scheduled for collection today, then we don't consider
-        # it to have been collected today.
-        if ($last_expected_collection_dt < $min_dt && !$scheduled_for_today) {
-            $collected_today = 0;
-        }
-
-        my $filtered_service = {
-            id             => $service->{SiteServiceID},
-            service_id     => $service->{ServiceItemName},
-            service_name        => $container->{name},
-            service_description => $container->{description},
-            round_schedule => $service->{RoundSchedule},
-            round          => $round,
-            next => {
-                date              => $service->{NextCollectionDate},
-                ordinal           => ordinal( $next_dt->day ),
-                changed           => 0,
-                is_today          => $scheduled_for_today,
-                already_collected => $collected_today,
-            },
-            assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
-        };
-
-        # Set some flags on property as well; these are used for missed
-        # collection location options
-        $property->{has_assisted} = 1
-            if !$property->{has_assisted}
-            && $filtered_service->{assisted_collection};
-        $property->{above_shop} = 1
-            if $filtered_service->{service_id} eq 'MDR-SACK';
-
         # Get the last collection date from recent collections.
         #
         # Some services may have two collections a week; these are concatenated
@@ -329,12 +283,57 @@ sub bin_services_for_address {
             }
         }
 
+        my ($round) = split / /, $service->{RoundSchedule};
+
+        # 'Next collection date' could be today; successful collection logs
+        # will tell us if the collection has already been made
+        my $completed_or_attempted_collection_dt
+            = $property->{completed_or_attempted_collections}{$round};
+        my $collected_today = $completed_or_attempted_collection_dt
+            && $now_dt->delta_days($completed_or_attempted_collection_dt)
+            ->in_units('days') == 0
+            ? 1 : 0;
+        my $scheduled_for_today = $now_dt->ymd eq $next_dt->ymd;
+
+        my $min_dt = $self->_subtract_working_days(WORKING_DAYS_WINDOW);
+        # If the last expected collection was more than three days ago and
+        # it's not scheduled for collection today, then we don't consider
+        # it to have been collected today.
+        if ($last_dt && $last_dt < $min_dt && !$scheduled_for_today) {
+            $collected_today = 0;
+        }
+
+        my $filtered_service = {
+            id             => $service->{SiteServiceID},
+            service_id     => $service->{ServiceItemName},
+            service_name        => $container->{name},
+            service_description => $container->{description},
+            round_schedule => $service->{RoundSchedule},
+            round          => $round,
+            next => {
+                date              => $service->{NextCollectionDate},
+                ordinal           => ordinal( $next_dt->day ),
+                changed           => 0,
+                is_today          => $scheduled_for_today,
+                already_collected => $collected_today,
+            },
+            assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
+        };
+
         if ($last_dt) {
             $filtered_service->{last} = {
                 date    => $last_dt,
                 ordinal => ordinal( $last_dt->day ),
             };
         }
+
+        # Set some flags on property as well; these are used for missed
+        # collection location options
+        $property->{has_assisted} = 1
+            if !$property->{has_assisted}
+            && $filtered_service->{assisted_collection};
+        $property->{above_shop} = 1
+            if $filtered_service->{service_id} eq 'MDR-SACK';
 
         # Frequency of collection
         if ( @round_schedules > 1 ) {
@@ -577,10 +576,9 @@ sub can_report_missed {
 
     # Needs to be within 3 working days of the last completed round, today
     # not included.
-    # NOTE recent_collections shows the 'ideal'/expected collection date,
-    # not actual. So we need to check cab logs for actual collection date.
-    my $last_expected_collection_dt
-        = $property->{recent_collections}{ $service->{round_schedule} };
+    # NOTE last expected collection is the 'ideal'/expected collection date,
+    # not actual. So we need to check cab logs below for actual collection date.
+    my $last_expected_collection_dt = $service->{last} && $service->{last}{date};
 
     if ($last_expected_collection_dt) {
         # TODO We can probably get successful collections directly off the
