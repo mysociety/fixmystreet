@@ -20,6 +20,13 @@
 [% END %]
 </p>
 
+[% IF body.name == 'TfL' AND c.user.is_superuser %]
+<p class="fms-admin-warning">
+    Renaming, adding, or removing categories that can only be made on red routes requires extra steps. See
+    <a href="https://wiki.mysociety.org/wiki/Transport_for_London_(TfL)#TLRN_categories">wiki</a>.
+</p>
+[% END %]
+
 [% INCLUDE 'admin/bodies/contact-form.html' %]
 
 <h2>[% loc('History') %]</h2>
