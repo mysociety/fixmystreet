@@ -28,7 +28,7 @@ sub waste_check_staff_payment_permissions {
 
     return unless $c->stash->{is_staff};
 
-    $c->stash->{staff_payments_allowed} = 'cnp';
+    $c->stash->{staff_payments_allowed} = 'paye';
 }
 
 has lpi_value => ( is => 'ro', default => 'KINGSTON UPON THAMES' );
