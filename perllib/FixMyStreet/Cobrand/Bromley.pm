@@ -556,6 +556,7 @@ sub should_skip_sending_update {
             $report->update_extra_field({ name => 'Event_ID', value => $event->{Id} });
             $report->set_extra_metadata('open311_category_override' => REFERRED_TO_VEOLIA);
             $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
+            $report->unset_extra_metadata('external_status_code');
             $report->state('confirmed');
             $report->resend;
             $report->update;

@@ -736,6 +736,20 @@ subtest 'redirecting of reports between backends' => sub {
         email => '3045',
     );
 
+    my $contact = $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Street issue',
+        email => 'Conf_irm',
+    );
+    FixMyStreet::DB->resultset("ResponseTemplate")->create({
+        body_id => $body->id,
+        title => 'Completed',
+        text => 'Template text',
+        auto_response => 1,
+        state => '',
+        external_status_code => 67,
+    });
+
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
         COBRAND_FEATURES => {
@@ -856,6 +870,7 @@ subtest 'redirecting of reports between backends' => sub {
                 external_id => 'waste',
             });
             $report->state('fixed - council');
+            $report->set_extra_metadata(external_status_code => 67);
             my $comment = $report->add_to_comments({
                 text => 'comment on closed event',
                 user => $user,
@@ -871,6 +886,8 @@ subtest 'redirecting of reports between backends' => sub {
 
             $report->discard_changes;
             is $report->get_extra_metadata('open311_category_override'), 'Referred to Veolia Streets', 'category override applied';
+            is $report->get_extra_metadata('external_status_code'), undef;
+            is $report->state, 'confirmed';
             is $report->send_state, 'unprocessed', 'report set to be resent';
 
             $comment->discard_changes;
@@ -896,11 +913,14 @@ subtest 'redirecting of reports between backends' => sub {
 
         subtest "Another update from Echo on this new sent report closes it again" => sub {
             $report->update({ external_id => 'guid' });
-            my $in = $mech->echo_notify_xml('guid', 2104, 15004, '');
+            my $in = $mech->echo_notify_xml('guid', 2104, 15004, 67);
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 3, 'A new update';
             $report->discard_changes;
             is $report->state, 'fixed - council', 'A state change';
+            is $report->get_extra_metadata('external_status_code'), 67;
+            my $comment = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $comment->text, 'Template text';
         };
     };
 };
