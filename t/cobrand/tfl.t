@@ -416,6 +416,30 @@ subtest "test report creation anonymously by staff user" => sub {
     $mech->log_out_ok;
 };
 
+subtest "test report creation as body by staff user" => sub {
+    $mech->log_in_ok( $staffuser->email );
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form_ok({ with_fields => {
+        title => 'Test Report 3',
+        detail => 'Test report details.',
+        category => 'Bus stops',
+    } }, "submit report");
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 3'});
+    ok $report, "Found the report";
+    is $report->name, 'TfL';
+    is $report->user->email, $staffuser->email;
+    is $report->anonymous, 0;
+    is $report->get_extra_metadata('contributed_as'), 'body';
+
+    $mech->content_contains('Your issue is on its way to Transport for London');
+    $mech->content_contains('Your reference for this report is FMS' . $report->id);
+    $mech->log_out_ok;
+};
+
 FixMyStreet::DB->resultset("Problem")->delete_all;
 
 my $tfl_staff = FixMyStreet::DB->resultset("User")->find({ email => 'test@tfl.gov.uk'});
