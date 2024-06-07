@@ -1049,6 +1049,26 @@ sub waste_munge_report_form_fields {
     }
 }
 
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+
+    my $address = $self->{c}->stash->{property}->{address};
+    $data->{title} = $data->{category};
+
+    my $detail;
+    foreach (sort grep { /^extra_/ } keys %$data) {
+        my $extra = $data->{$_};
+        if (ref $extra eq 'ARRAY') {
+            my $value = join(', ', @$extra);
+            $detail .= "$value\n\n";
+        } else {
+            $detail .= "$extra\n\n";
+        }
+    }
+    $detail .= $address;
+    $data->{detail} = $detail;
+}
+
 sub _bin_location_options {
     return {
         staff_or_assisted => [
