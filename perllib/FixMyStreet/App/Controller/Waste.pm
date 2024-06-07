@@ -1033,7 +1033,7 @@ sub enquiry : Chained('property') : Args(0) {
 
     my $category = $c->get_param('category');
     my $service = $c->get_param('service_id');
-    $c->detach('property_redirect') unless $category && $service && $c->stash->{services}{$service};
+    $c->detach('property_redirect') unless $category;
 
     my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};
     $c->detach('property_redirect') unless $contact;
@@ -1052,11 +1052,17 @@ sub enquiry : Chained('property') : Args(0) {
             next;
         }
 
-        my $type = 'Text';
-        $type = 'TextArea' if 'text' eq ($_->{datatype} || '');
+        my %config = (type => 'Text');
+        my $datatype = $_->{datatype} || '';
+        if ($datatype eq 'text') {
+            %config = (type => 'TextArea');
+        } elsif ($datatype eq 'multivaluelist') {
+            my @options = map { { label => $_->{name}, value => $_->{key} } } @{$_->{values}};
+            %config = (type => 'Multiple', widget => 'CheckboxGroup', options => \@options);
+        }
         my $required = $_->{required} eq 'true' ? 1 : 0;
         push @$field_list, "extra_$_->{code}" => {
-            type => $type, label => $_->{description}, required => $required
+            %config, label => $_->{description}, required => $required
         };
     }
 
