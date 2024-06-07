@@ -444,6 +444,20 @@ sub report_new_munge_before_insert {
     $report->set_extra_fields(@$extra);
 }
 
+=head2 report_validation
+
+Allow through "TfL" as a name if reporting as staff.
+
+=cut
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    if ($errors->{name} && $report->name eq 'TfL' && $report->user->from_body) {
+        delete $errors->{name};
+    }
+}
+
 sub report_new_is_on_tlrn {
     my ( $self ) = @_;
 
