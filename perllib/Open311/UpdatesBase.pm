@@ -247,6 +247,10 @@ sub _process_update {
         $p->set_extra_metadata( customer_reference => $customer_reference );
     }
 
+    foreach (grep { /^fms_extra_/ } keys %$request) {
+        $comment->set_extra_metadata( $_ => $request->{$_} );
+    }
+
     $open311->add_media($request->{media_url}, $comment)
         if $request->{media_url};
 
