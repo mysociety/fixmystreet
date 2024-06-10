@@ -613,6 +613,7 @@ sub _tlrn_categories { [
     "Manhole Cover - Missing",
     "Mobile Crane Operation",
     "Other (TfL)",
+    "Overgrown vegetation",
     "Pavement Defect (uneven surface / cracked paving slab)",
     "Pavement Overcrowding",
     "Pothole (major)",
