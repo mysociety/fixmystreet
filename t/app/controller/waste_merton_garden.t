@@ -1000,6 +1000,9 @@ FixMyStreet::override_config {
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_with_sacks);
 
     subtest 'sacks, renewing' => sub {
+        FixMyStreet::Script::Reports::send();
+        $mech->clear_emails_ok;
+
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
@@ -1028,6 +1031,13 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Garden waste sack collection: 2 rolls/;
+        unlike $body, qr/Number of bin subscriptions/;
+        like $body, qr/Total:.*?179\.56/
     };
 
     subtest 'sacks, cannot modify, cannot buy more' => sub {
