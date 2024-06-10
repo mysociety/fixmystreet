@@ -12,6 +12,10 @@ Camden is a London borough using FMS with a Symology integration
 package FixMyStreet::Cobrand::Camden;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
+use Moo;
+with 'FixMyStreet::Roles::ConfirmValidation';
+with 'FixMyStreet::Roles::ConfirmOpen311';
+
 use strict;
 use warnings;
 
