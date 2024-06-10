@@ -22,7 +22,7 @@ use Moo;
 
 =cut
 
-sub council_area_id { 2236 }
+sub council_area_id { [ 2236, 2565 ] }
 sub council_area { 'Nottinghamshire'; }
 sub council_name { 'Nottinghamshire Police' }
 sub council_url { 'nottinghamshirepolice' }
