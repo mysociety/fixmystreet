@@ -91,7 +91,7 @@ FixMyStreet::override_config {
         like $body, qr/Heard from: Facebook/, 'where hear included in email';
         like $body, qr/Road: M1/, 'road data included in email';
         like $body, qr/Area: Area 1/, 'area data included in email';
-        unlike $body, qr/Never retype another FixMyStreet report/, 'FMS not mentioned in email';
+        unlike $body, qr/FixMyStreet is an independent service/, 'FMS not mentioned in email';
     };
 
     subtest "check things redacted appropriately" => sub {
@@ -134,7 +134,7 @@ FixMyStreet::override_config {
         $mech->email_count_is(1);
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
-        like $body, qr/Never retype another FixMyStreet report/, 'FMS template used for email';
+        like $body, qr/FixMyStreet is an independent service/, 'FMS template used for email';
     };
 
     my ($problem) = $mech->create_problems_for_body(1, $highways->id, 'Title', { created => '2021-11-30T12:34:56' });
