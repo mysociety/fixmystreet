@@ -726,6 +726,8 @@ sub construct_waste_open311_update {
         update_id => 'waste',
         external_status_code => $external_status_code,
         prefer_template => 1,
+        fms_extra_resolution_code => $event_type->{resolution}{$resolution_id} || '',
+        fms_extra_event_status => $event_type->{states}{$state_id}{name} || '',
         %extra,
     }
 }

@@ -521,6 +521,14 @@ sub _populate_service_request_update_params {
         $params->{last_name} = $comment->extra->{last_name} if $comment->extra->{last_name};
     }
 
+    my $extra = $comment->get_extra_metadata;
+    foreach (grep { /^fms_extra_/ } keys %$extra) {
+        my $attr_name = $_;
+        $attr_name =~ s/fms_extra_//;
+        my $name = sprintf( 'attribute[%s]', $attr_name );
+        $params->{ $name } = $extra->{$_};
+    }
+
     return $params;
 }
 
