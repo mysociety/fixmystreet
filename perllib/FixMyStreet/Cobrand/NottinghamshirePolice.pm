@@ -60,4 +60,17 @@ sub allow_anonymous_reports { 0 }
 
 sub admin_user_domain { 'notts.police.uk' }
 
+=head2 pin_colour
+
+Yellow for open, green for closed or fixed.
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p ) = @_;
+
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'yellow';
+}
+
 1;
