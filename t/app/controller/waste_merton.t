@@ -420,7 +420,8 @@ FixMyStreet::override_config {
             } },
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A paper and card collection has been reported as missed');
+        $mech->content_contains('only be reported within 2 working days');
+        $mech->content_lacks('A paper and card collection has been reported as missed');
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
