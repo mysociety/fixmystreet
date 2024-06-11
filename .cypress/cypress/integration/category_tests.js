@@ -90,5 +90,18 @@ describe('Basic categories', function() {
         cy.get('[value="Road traffic signs"]').should('be.visible');
         cy.get('[value="Street lighting"]').should('be.visible');
         cy.get('[value="Traffic lights"]').should('not.be.visible');
+        cy.get('#category-filter').type('{selectAll}Abad');
+        cy.contains('Please try another search');
+        cy.get('[value="Abandoned vehicles"]').should('not.be.visible');
+        cy.get('.js-reporting-page--next:visible').should('be.disabled');
+        cy.get('#category-filter').type('{backspace}');
+        cy.get('[value="Abandoned vehicles"]').should('be.visible');
+        cy.get('#filter-category-error').should('not.exist'); // Contains the text for 'Please try another search'
+        cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
+        cy.get('#category-filter').type('{selectAll}Abad');
+        cy.get('[value="Abandoned vehicles"]').should('not.be.visible');
+        cy.get('#category-filter').type('{selectAll}{backspace}');
+        cy.get('#filter-category-error').should('not.exist'); // Contains the text for 'Please try another search'
+
     });
 });
