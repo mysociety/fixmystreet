@@ -5,7 +5,7 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Bulky::Shared';
 
 has_page intro => (
-    title => 'Amend bulky goods collection',
+    title => 'Amend bulky waste collection',
     intro => 'bulky/intro_amend.html',
     fields => ['continue'],
     next => 'choose_date_earlier',
