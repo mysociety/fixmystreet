@@ -19,8 +19,14 @@
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
             <label for="pc">[% question %]:</label>
             [% INCLUDE 'around/_postcode_form_examples.html' %]
+            [% IF location_error_pc_lookup %]
+            <p id="pc-error" class="form-error">
+                <span class="visuallyhidden">Error:</span>
+                [% loc('Please enter a valid postcode or area') %]
+            </p>
+            [% END %]
             <div>
-                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint"
+                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint [% IF location_error_pc_lookup %]search-help pc-error[% END %]"
                 [%~ IF c.cobrand.moniker == 'oxfordshire' %] placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]"[% END %]>
                 [% INCLUDE 'around/_postcode_submit_button.html' %]
             </div>
