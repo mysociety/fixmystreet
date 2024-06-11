@@ -30,7 +30,7 @@ my $super = $mech->create_user_ok( 'super@example.com', name => 'Super User', is
 $staff->alerts->create({
     alert_type => 'council_problems',
     parameter => $body->id,
-    whensubscribed => \"current_timestamp - '1 hour'::interval",
+    whensubscribed => DateTime->now->subtract( hours => 1 ),
     cobrand => 'cyclinguk',
     confirmed => 1,
 });
