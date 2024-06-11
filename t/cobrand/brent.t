@@ -143,6 +143,7 @@ subtest 'role report shows staff problem when staff logged in during problem rep
     $mech->get_ok($mech->get_link_from_email($mech->get_email));
     $mech->get_ok('/dashboard?body=' . $brent->id . '&state=&role=' . $role->id . '&start_date=&end_date=&group_by=category+state&export=1');
     $mech->content_contains('"Spraypaint on wall","Some kind of picture"', 'Report has contributed_by set and so shows in roles report');
+    FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first->delete;
     $mech->clear_emails_ok;
     $mech->log_out_ok;
   };
