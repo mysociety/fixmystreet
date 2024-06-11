@@ -952,8 +952,23 @@ sub construct_bin_report_form {
 
     my $show_all_services = $c->stash->{is_staff} && $c->get_param('additional');
     foreach (@{$c->stash->{service_data}}) {
-        next unless ( $_->{last} && $_->{report_allowed} && !$_->{report_open}) || $_->{report_only} || $show_all_services;
         my $id = $_->{service_id};
+
+        unless (
+            ( $_->{last}
+            && $_->{report_allowed}
+            && !$_->{report_open} )
+            || $_->{report_only}
+            || $show_all_services )
+        {
+            # Missed collection link may have passed in a hidden param for
+            # a service that is no longer eligible for collection (e.g. if
+            # user hasn't refreshed page), so unset that
+            $c->set_param( "service-$id", undef );
+
+            next;
+        }
+
         my $name = $_->{service_name};
         push @$field_list, "service-$id" => {
             type => 'Checkbox',
