@@ -1,8 +1,10 @@
-[% service_name = "bulky goods" %]
-
-[% IF c.cobrand.moniker == 'brent' %]
-    [% service_name = "small items" %]
-[% END %]
+[% IF c.cobrand.moniker == 'brent' ~%]
+    [% service_name = "small items" ~%]
+[% ELSIF c.cobrand.moniker == 'merton' ~%]
+    [% service_name = "bulky waste" ~%]
+[% ELSE ~%]
+    [% service_name = "bulky goods" ~%]
+[% END ~%]
 
 <h3>Before you start your booking</h3>
 <ol>

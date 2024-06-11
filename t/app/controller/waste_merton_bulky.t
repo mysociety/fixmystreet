@@ -225,7 +225,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/bulky');
 
         subtest 'Intro page' => sub {
-            $mech->content_contains('Book bulky goods collection');
+            $mech->content_contains('Book a bulky waste collection');
             $mech->content_contains('Before you start your booking');
             $mech->content_contains('You can request up to <strong>six items per collection');
             $mech->content_contains('The price you pay depends how many items you would like collected:');
