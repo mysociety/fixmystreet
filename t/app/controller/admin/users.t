@@ -774,7 +774,7 @@ subtest "Send login email from admin for unverified email" => sub {
 
     my $test_user = FixMyStreet::DB->resultset('User')->search({
         email => $user->email
-    }, { order_by => [ { -desc => 'id' } ] } );
+    })->order_by('-id');
     $user->discard_changes;
 
     is $test_user->count, 1, "only one user";

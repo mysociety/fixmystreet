@@ -1259,9 +1259,7 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
                 "submit report form"
             );
 
-            my $report = FixMyStreet::App->model('DB::Problem')->to_body( $body->id )->search(undef, {
-                order_by => { -desc => 'id' },
-            })->first;
+            my $report = FixMyStreet::App->model('DB::Problem')->to_body( $body->id )->order_by('-id')->first;
             ok $report, "Found the report";
 
             is $report->get_extra_field_value('safety_critical'), $test->{safety_critical}, "safety critical flag set to " . $test->{safety_critical};

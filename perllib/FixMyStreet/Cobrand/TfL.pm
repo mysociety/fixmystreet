@@ -217,7 +217,7 @@ sub roles_from_oidc {
     my $role_map = $cfg->{role_map} || {};
 
     my @body_roles;
-    for ($user->from_body->roles->search(undef, { order_by => 'name' })->all) {
+    for ($user->from_body->roles->order_by('name')->all) {
         push @body_roles, {
             id => $_->id,
             name => $_->name,
@@ -285,7 +285,7 @@ sub dashboard_export_problems_add_columns {
     );
     $csv->splice_csv_column('fixed', action_scheduled => 'Action scheduled');
 
-    my @contacts = $csv->body->contacts->search(undef, { order_by => [ 'category' ] } )->all;
+    my @contacts = $csv->body->contacts->order_by('category')->all;
     my %extra_columns;
     if (@{$csv->category}) {
         my %picked_cats = map { $_ => 1} @{$csv->category};

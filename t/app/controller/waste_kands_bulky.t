@@ -450,7 +450,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'Bulky goods email confirmation' => sub {
-            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
             my $today = $report->confirmed->strftime('%A %d %B %Y');
             my $id = $report->id;
             is $catch_email->header('Subject'), "Your bulky waste collection - reference RBK-$id";
@@ -481,7 +481,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'Confirmation page' => sub {
-            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('Our contractor will collect the items you have requested on Saturday 08 July 2023.');
             $mech->content_contains('Item collection starts from 6:30am.&nbsp;Please have your items ready for collection.');
@@ -567,7 +567,7 @@ FixMyStreet::override_config {
 
     subtest 'Bulky goods email reminders' => sub {
         set_fixed_time('2023-07-05T05:44:59Z');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         my $cobrand = $body->get_cobrand_handler;
         # Check no payment reference, no email
         $report->unset_extra_metadata('payment_reference');
@@ -690,7 +690,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ form_number => 3 });
 
-        my $missed = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $missed = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $missed->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
         is $missed->title, 'Report missed bulky collection';
         is $missed->get_extra_field_value('Original_Event_ID'), 'a-guid';
@@ -755,7 +755,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Payment reference field is required');
         $mech->submit_form_ok({ with_fields => { tandc => 1, payment_method => 'cheque', cheque_reference => '12345' } });
         $mech->content_contains('Bulky collection booking confirmed');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_metadata('chequeReference'), 12345;
         is $report->get_extra_field_value('payment_method'), 'cheque';
     }
@@ -910,7 +910,7 @@ FixMyStreet::override_config {
         );
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('payment_method'), 'csc';
         $mech->submit_form_ok({ with_fields => { payenet_code => '54321' } });
         my $email = $mech->get_email;

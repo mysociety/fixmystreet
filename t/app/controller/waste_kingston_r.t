@@ -332,7 +332,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('collection has been reported');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Report missed Food waste\n\n2 Example Street, Kingston, KT1 1AA";
         is $report->title, 'Report missed Food waste';
@@ -418,7 +418,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "2 Example Street, Kingston, KT1 1AA";
         is $report->category, 'Request new container';

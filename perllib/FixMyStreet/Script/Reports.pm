@@ -120,10 +120,7 @@ sub end_summary_failures {
         state => [ FixMyStreet::DB::Result::Problem::open_states() ],
         bodies_str => { '!=', undef },
         send_fail_count => { '>', 0 }
-    },
-    {
-        order_by => { -desc => 'confirmed' }
-    });
+    })->order_by('-confirmed');
     my %bodies;
     while (my $row = $unsent->next) {
         my $base_url = FixMyStreet->config('BASE_URL');

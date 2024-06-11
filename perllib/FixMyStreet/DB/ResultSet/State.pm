@@ -1,5 +1,5 @@
 package FixMyStreet::DB::ResultSet::State;
-use base 'DBIx::Class::ResultSet';
+use base 'FixMyStreet::DB::ResultSet';
 
 use utf8;
 use strict;
@@ -49,7 +49,7 @@ sub states {
     my %trans;
     $trans{$_->object_id}{$_->lang} = { id => $_->id, msgstr => $_->msgstr } foreach $q->all;
 
-    my @states = ($rs->_hardcoded_states, $rs->search(undef, { order_by => 'label' })->all);
+    my @states = ($rs->_hardcoded_states, $rs->order_by('label')->all);
     $_->translated->{name} = $trans{$_->id} || {} foreach @states;
     $states = \@states;
     $cache->{states} = $states;

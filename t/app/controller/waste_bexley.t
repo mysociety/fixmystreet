@@ -652,7 +652,7 @@ FixMyStreet::override_config {
 
         $mech->content_contains('Missed collection has been reported');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
         ok $report->confirmed;
         is $report->state, 'confirmed';
@@ -674,7 +674,7 @@ FixMyStreet::override_config {
             { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
             'Submitting missed collection report');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
         is $report->get_extra_field_value('uprn'), '10001', 'Report is against the parent property';
     };

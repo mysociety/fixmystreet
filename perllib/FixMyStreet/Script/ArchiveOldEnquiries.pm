@@ -181,9 +181,7 @@ sub send_email_and_close {
     my ($user) = @_;
 
     my $problems = $user->problems;
-    $problems = query($problems)->search(undef, {
-        order_by => { -desc => 'confirmed' },
-    });
+    $problems = query($problems)->order_by('-confirmed');
 
     my @problems = $problems->all;
 

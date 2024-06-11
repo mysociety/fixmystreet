@@ -557,7 +557,7 @@ FixMyStreet::override_config {
         }, "submit details");
         $mech->content_contains('Nearly done');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->title, 'Test Redact report from [phone removed]';
         is $report->detail, 'Please could you email me on [email removed] or ring me on [phone removed].';
 

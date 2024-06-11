@@ -59,11 +59,8 @@ my $log_entries = FixMyStreet::DB->resultset('AdminLog')->search(
     {
         object_type => 'problem',
         object_id   => $report->id
-    },
-    {
-        order_by => { -desc => 'id' },
     }
-);
+)->order_by('-id');
 
 is $log_entries->count, 0, 'no admin log entries';
 

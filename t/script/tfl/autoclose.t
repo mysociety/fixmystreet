@@ -98,7 +98,7 @@ subtest "check that reports are updated" => sub {
     is $problems{not_category_state}->state, 'action scheduled', 'ignores incorrect category';
     is $problems{category_state_not_old}->state, 'action scheduled', 'ignores newer reports';
 
-    my $comment = ( $problems{category_state}->comments->search({}, { order_by => 'id' })->all )[-1];
+    my $comment = ( $problems{category_state}->comments->order_by('id')->all )[-1];
     is $comment->text, "Text 2", "correct template used when closing";
 };
 

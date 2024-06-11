@@ -1350,10 +1350,7 @@ sub get_original_sub : Private {
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
         state => { '!=' => 'hidden' },
-    },
-    {
-        order_by => { -desc => 'id' }
-    })->to_body($c->cobrand->body);
+    })->order_by('-id')->to_body($c->cobrand->body);
 
     if ($type eq 'user' && !$c->stash->{is_staff}) {
         $p = $p->search({

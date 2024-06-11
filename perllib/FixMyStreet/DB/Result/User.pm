@@ -251,8 +251,8 @@ sub questionnaire_notify {
 
 sub latest_anonymity {
     my $self = shift;
-    my $p = $self->problems->search(undef, { rows => 1, order_by => { -desc => 'id' } } )->first;
-    my $c = $self->comments->search(undef, { rows => 1, order_by => { -desc => 'id' } } )->first;
+    my $p = $self->problems->order_by('-id')->search(undef, { rows => 1 } )->first;
+    my $c = $self->comments->order_by('-id')->search(undef, { rows => 1 } )->first;
     my $p_created = $p ? $p->created->epoch : 0;
     my $c_created = $c ? $c->created->epoch : 0;
     my $obj = $p_created >= $c_created ? $p : $c;
@@ -263,9 +263,7 @@ sub latest_visible_problem {
     my $self = shift;
     return $self->problems->search({
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
-    }, {
-        order_by => { -desc => 'id' }
-    })->first;
+    })->order_by('-id')->first;
 }
 
 =head2 check_for_errors
