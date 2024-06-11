@@ -94,6 +94,7 @@ sub call {
         Content => $data
     );
 
+    $ENV{PERL_LWP_SSL_CA_PATH} = '/etc/ssl/certs' unless $ENV{DEV_USE_SYSTEM_CA_PATH};
     my $ua = LWP::UserAgent->new;
     my $response = $ua->request($req);
     $response = $response->decoded_content;
