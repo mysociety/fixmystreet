@@ -3,7 +3,7 @@ $search-help-background: transparent !default;
 $search-help-color: inherit !default;
 $search-help-margin: -1em -1em 0 -1em !default; // overlap .container padding
 $search-help-margin-desktop: -1em -1em -2em -1em !default; // overlap .content and .tablewrapper padding-bottoms
-$search-help-header-background: #DB3914 !default;
+$search-help-header-background: $error_color !default;
 $search-help-header-color: #fff !default;
 $search-help-header-font-weight: bold !default;
 $search-help-header-font-size: 1em !default;
