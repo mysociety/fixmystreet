@@ -2,6 +2,7 @@ use utf8;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
+use CGI::Simple;
 use Path::Tiny;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Alerts;
@@ -59,6 +60,8 @@ FixMyStreet::override_config {
                 bulky_event_type_id => 1636,
                 url => 'http://example.org',
                 nlpg => 'https://example.com/%s',
+                open311_endpoint => 'http://example.net/api/',
+                open311_api_key => 'api_key',
             },
         },
         payment_gateway => { merton => {
@@ -1014,6 +1017,41 @@ FixMyStreet::override_config {
     #     is $report->get_extra_metadata('chequeReference'), 12345;
     #     is $report->get_extra_field_value('payment_method'), 'cheque';
     # }
+    #
+    subtest 'Test sending of bulky report to other endpoint' => sub {
+        use_ok 'FixMyStreet::Script::Merton::SendWaste';
+
+        $echo->mock('GetEvent', sub { { Id => 1928374 } });
+
+        my $send = FixMyStreet::Script::Merton::SendWaste->new;
+        $send->send_reports; # Clear any others
+
+        Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
+
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Bulky Report', {
+            cobrand => 'merton',
+            cobrand_data => 'waste',
+            state => 'confirmed',
+            category => 'Bulky collection',
+            external_id => '123',
+        });
+        $report->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => '3::83::3' });
+        $report->update;
+
+        $send->send_reports;
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('api_key'), 'api_key';
+        is $cgi->param('attribute[Bulky_Collection_Bulky_Items]'), 'BBQ::Bath::BBQ';
+        is $cgi->param('attribute[Current_Item_Count]'), 3;
+        $report->discard_changes;
+        is $report->get_extra_metadata('sent_to_crimson'), 1;
+        is $report->get_extra_metadata('crimson_external_id'), "359";
+        is $report->get_extra_field_value('echo_id'), "1928374";
+        is $report->external_id, "123";
+        $report->delete;
+    };
+
 };
 
 done_testing;
