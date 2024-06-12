@@ -61,4 +61,36 @@ sub get_town {
     return $town;
 }
 
+sub open311_config {
+    my ($self, $row, $h, $params, $contact) = @_;
+
+    $params->{multi_photos} = 1;
+}
+
+sub open311_extra_data_include {
+    my ($self, $row, $h) = @_;
+
+    my $open311_only = [
+        { name => 'fixmystreet_id',
+          value => $row->id },
+        { name => 'easting',
+          value => $h->{easting} },
+        { name => 'northing',
+          value => $h->{northing} },
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'category',
+          value => $row->category },
+        { name => 'group',
+          value => $row->get_extra_metadata('group', '') },
+    ];
+
+    return $open311_only;
+}
+
+
 1;
