@@ -107,6 +107,16 @@ sub open311_extra_data_include {
         };
     }
 
+    if ($row->category eq 'Bulky collection' && $h->{sending_to_crimson}) {
+        my @items_list = @{ $self->bulky_items_master_list };
+        my %items = map { $_->{bartec_id} => $_->{name} } @items_list;
+        my @ids = split /::/, $row->get_extra_field_value('Bulky_Collection_Bulky_Items'), -1;
+        @ids = map { $items{$_} } @ids;
+        my $ids = join('::', @ids);
+        push @$open311_only, { name => 'Bulky_Collection_Bulky_Items', value => $ids };
+        push @$open311_only, { name => 'Current_Item_Count', value => scalar @ids };
+    }
+
     return $open311_only;
 };
 
