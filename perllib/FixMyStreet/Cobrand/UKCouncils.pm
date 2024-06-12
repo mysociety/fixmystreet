@@ -721,6 +721,24 @@ sub csv_active_planned_reports {
     return \%reports_to_user;
 }
 
+sub csv_update_alerts {
+    my ($self) = @_;
+
+    my %ids_to_alert;
+
+    my @results = FixMyStreet::DB->resultset('Alert')->search({
+        alert_type => 'new_updates',
+        confirmed => 1,
+        whendisabled => undef,
+    }, {columns => ['parameter']})->all;
+
+    if (@results) {
+        %ids_to_alert = map { $_->parameter, ++$ids_to_alert{$_->parameter} } @results;
+    };
+
+    return \%ids_to_alert;
+}
+
 sub nearby_distances {
     my $self = shift;
     return $self->feature('nearby_distances') || $self->next::method();
