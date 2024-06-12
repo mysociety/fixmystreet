@@ -51,15 +51,19 @@ sub bin_addresses_for_postcode {
     return $data;
 }
 
+sub _allow_async_echo_lookup {
+    my $self = shift;
+    my $action = $self->{c}->action;
+    return 0 if $action eq 'waste/pay_retry' || $action eq 'waste/direct_debit_error' || $action eq 'waste/calendar';
+    return 1;
+}
+
 sub look_up_property {
     my ($self, $id) = @_;
 
-    my $action = $self->{c}->action;
-    my $background = 1;
-    $background = 0 if $action eq 'waste/pay_retry' || $action eq 'waste/direct_debit_error';
-
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
+    my $background = $self->_allow_async_echo_lookup;
     my $calls = $echo->call_api($self->{c}, $self->moniker,
         "look_up_property:$id",
         $background,
@@ -148,7 +152,10 @@ sub bin_services_for_address {
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, $self->moniker, 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
+    my $background = $self->_allow_async_echo_lookup;
+    my $calls = $echo->call_api($self->{c}, $self->moniker,
+        'bin_services_for_address:' . $property->{id},
+        $background, @to_fetch);
 
     if ($self->can('bulky_enabled')) {
         $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
