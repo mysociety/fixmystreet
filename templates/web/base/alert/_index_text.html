@@ -10,12 +10,6 @@ within a certain distance of a particular location.', "%s is the site name"), si
 [% END %]
 </p>
 
-[% IF location_error %]
-  <div class="error">[% location_error | safe %]</div>
-[% ELSE %]
-  [% INCLUDE 'errors.html' %]
-[% END %]
-
 <p>
 [% IF c.cobrand.is_council %]
 [% tprintf(loc('To find out what local alerts we have for you, please enter your %s postcode or street name and area:'), c.cobrand.council_area) %]
