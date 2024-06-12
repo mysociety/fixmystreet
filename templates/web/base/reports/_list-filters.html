@@ -1,4 +1,3 @@
-[% select_status = PROCESS 'reports/_list-filter-status.html' %]
 [% PROCESS 'govuk/fields.html' %]
 
 [%# We want to only select things that match all filters, if filters are provided ~%]
@@ -37,12 +36,14 @@
         <fieldset>
             <div class="multi-select-filter-group">
                 <div class="report-list-filters">
-                    [% tprintf(loc('<label for="statuses">Report status</label> %s', "Dropdown of all/fixed/etc"), mark_safe(select_status)) %]
+                    <label for="statuses">[% loc('Report status') %]</label>
+                    [% PROCESS 'reports/_list-filter-status.html' %]
                     <input type="submit" name="filter_update" value="[% loc('Go') %]">
                 </div>
 
                 <div class="report-list-filters">
-                    [% tprintf(loc('<label for="filter_categories">Category</label> %s', "Dropdown of categories"), mark_safe(select_category)) %]
+                    <label for="filter_categories">[% loc('Category') %]</label>
+                    [% mark_safe(select_category) %]
                     <input type="submit" name="filter_update" value="[% loc('Go') %]">
                 </div>
             </div>
