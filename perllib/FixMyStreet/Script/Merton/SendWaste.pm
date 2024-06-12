@@ -26,6 +26,7 @@ sub send_reports {
         FixMyStreet::DB->schema->cobrand($item->cobrand);
         $item->cobrand->set_lang_and_domain($row->lang, 1);
         $item->_create_vars;
+        $item->h->{sending_to_crimson} = 1;
 
         my $cfg = $item->cobrand->feature('echo');
         my $body = FixMyStreet::DB->resultset("Body")->new({
