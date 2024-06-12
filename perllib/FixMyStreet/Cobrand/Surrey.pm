@@ -46,4 +46,28 @@ sub get_town {
     return $town;
 }
 
+=head2 dashboard_export_problems_add_columns
+
+Surrey has an extra column in their stats export showing the number of subscribers to a report.
+They are set up not to subscribe the original reporter to their own report so the alert number
+is the number of users who have subscribed to the report for updates
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        alerts => "Subscribers",
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        return {
+            alerts => $report->alerts || '0',
+        };
+    });
+}
+
 1;
