@@ -59,6 +59,7 @@ my $EXTRAS = {
     user_details => { bathnes => 1, bexley => 1, brent => 1, camden => 1, cyclinguk => 1, highwaysengland => 1, kingston => 1, sutton => 1 },
     comment_content => { highwaysengland => 1 },
     db_state => { peterborough => 1 },
+    alerts_count => { surrey => 1 },
 };
 
 my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;
@@ -228,6 +229,11 @@ EOF
     if ($EXTRAS->{comment_content}{$cobrand->moniker}) {
         push @sql_select, "comments.text as comment_text", "comments.extra as comment_extra", "comment_user.name as comment_name", "row_number() over (partition by comments.problem_id order by comments.confirmed,comments.id) as comment_rn";
         push @sql_join, '"users" "comment_user" ON "comments"."user_id" = "comment_user"."id"';
+    }
+    if ($EXTRAS->{alerts_count}{$cobrand->moniker}) {
+        push @sql_select, '"alerts_table"."alerts_count"';
+        push @sql_join, '"alerts_table" ON CAST("alerts_table"."parameter" AS INTEGER) = "me"."id"';
+        push @sql_with, "alerts_table AS (select parameter, count(*) AS alerts_count FROM alert WHERE alert_type='new_updates' AND confirmed IS NOT NULL AND whendisabled IS NULL GROUP BY 1)";
     }
 
     my $sql_select = join(', ', @sql_select);
