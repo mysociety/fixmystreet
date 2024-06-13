@@ -1,0 +1,1 @@
+[% IF report.cobrand_data == 'waste' || c.get_param('r').match('waste') %]WasteWorks[% ELSE %]FixMyStreet[% END %]
