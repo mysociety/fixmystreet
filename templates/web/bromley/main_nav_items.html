@@ -3,7 +3,7 @@
     [%~ IF c.user_exists ~%]
         [%~ INCLUDE navitem uri='/my' label=loc('Your account') ~%]
     [%~ ELSE ~%]
-        [%~ INCLUDE navitem uri='/auth' label=loc('Sign in') ~%]
+        [%~ INCLUDE navitem uri='/auth?r=' _ c.req.uri.path_query label=loc('Sign in') ~%]
     [%~ END ~%]
     [% RETURN %]
 [% END %]

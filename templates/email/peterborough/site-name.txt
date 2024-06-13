@@ -1,1 +1,0 @@
-[% IF report.cobrand_data == 'waste' %]WasteWorks[% ELSE %]FixMyStreet[% END %]

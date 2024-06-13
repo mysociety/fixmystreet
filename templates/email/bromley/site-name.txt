@@ -1,1 +1,1 @@
-[% IF report.cobrand_data == 'waste' %]Bromley Recycling Services[% ELSE %]Bromley FixMyStreet[% END %]
+[% IF report.cobrand_data == 'waste' || c.get_param('r').match('waste') %]Bromley Recycling Services[% ELSE %]Bromley FixMyStreet[% END %]
