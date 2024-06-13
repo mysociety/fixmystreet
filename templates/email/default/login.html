@@ -15,8 +15,14 @@ INCLUDE '_email_top.html';
   <p style="margin: 20px auto; text-align: center">
     <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) %]">Yes, this is my address</a>
   </p>
-  <p style="[% p_style %]">Once you&rsquo;ve done this, you&rsquo;ll be able to view and manage all reports and
-updates you&rsquo;ve made from the &ldquo;Your account&rdquo; menu on [% site_name %].</p>
+  <p style="[% p_style %]">
+    [% IF c.get_param('r').match('waste') %]
+    Once you&rsquo;ve done this, you&rsquo;ll be able to view or amend your waste subscriptions and collections.
+    [% ELSE %]
+    Once you&rsquo;ve done this, you&rsquo;ll be able to view and manage all reports and
+    updates you&rsquo;ve made from the &ldquo;Your account&rdquo; menu on [% site_name %].
+    [% END %]
+  </p>
 </th>
 
 [% INCLUDE '_email_bottom.html' %]
