@@ -257,4 +257,29 @@ sub _part {
     }
 }
 
+=head2 Regular expressions
+
+Useful regular expressions
+
+=over 4
+=cut
+
+=item email_regex
+
+Pattern for matching email addresses. Email::Utils can test an email
+address but doesn't provide a method for matching one
+
+=back
+=cut
+
+sub email_regex {
+    my $atext = "[A-Za-z0-9!#\$%&'*+\-/=?^_`{|}~]";
+    my $atom = "$atext+";
+    my $local_part = "$atom(\\s*\\.\\s*$atom)*";
+    my $sub_domain = '[A-Za-z0-9][A-Za-z0-9-]*';
+    my $domain = "$sub_domain(\\s*\\.\\s*$sub_domain)*";
+
+    return "$local_part\@$domain";
+}
+
 1;
