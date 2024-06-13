@@ -73,4 +73,16 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    my $regex = Utils::email_regex;
+
+    if ($report->detail =~ /$regex/ || $report->title =~ /$regex/) {
+        $errors->{detail} = 'Please remove any email addresses from report';
+    }
+
+    return $errors;
+}
+
 1;
