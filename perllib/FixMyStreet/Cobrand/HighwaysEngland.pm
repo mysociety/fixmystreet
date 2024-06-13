@@ -186,12 +186,9 @@ sub report_new_munge_after_insert {
 sub _redact {
     my $s = shift;
 
-    my $atext = "[A-Za-z0-9!#\$%&'*+\-/=?^_`{|}~]";
-    my $atom = "$atext+";
-    my $local_part = "$atom(\\s*\\.\\s*$atom)*";
-    my $sub_domain = '[A-Za-z0-9][A-Za-z0-9-]*';
-    my $domain = "$sub_domain(\\s*\\.\\s*$sub_domain)*";
-    $s =~ s/$local_part\@$domain/[email removed]/g;
+    my $regex = Utils::email_regex;
+
+    $s =~ s/$regex/[email removed]/g;
 
     $s =~ s/\(?\+?[0-9](?:[\s()-]*[0-9]){9,}/[phone removed]/g;
     return $s;
