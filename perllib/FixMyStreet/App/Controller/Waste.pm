@@ -943,8 +943,22 @@ sub construct_bin_report_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        next unless ( $_->{last} && $_->{report_allowed} && !$_->{report_open}) || $_->{report_only};
         my $id = $_->{service_id};
+
+        unless (
+            ( $_->{last}
+            && $_->{report_allowed}
+            && !$_->{report_open} )
+            || $_->{report_only} )
+        {
+            # Missed collection link may have passed in a hidden param for
+            # a service that is no longer eligible for collection (e.g. if
+            # user hasn't refreshed page), so unset that
+            $c->set_param( "service-$id", undef );
+
+            next;
+        }
+
         my $name = $_->{service_name};
         push @$field_list, "service-$id" => {
             type => 'Checkbox',
@@ -1023,7 +1037,7 @@ sub enquiry : Chained('property') : Args(0) {
 
     my $category = $c->get_param('category');
     my $service = $c->get_param('service_id');
-    $c->detach('property_redirect') unless $category && $service && $c->stash->{services}{$service};
+    $c->detach('property_redirect') unless $category;
 
     my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};
     $c->detach('property_redirect') unless $contact;
@@ -1033,11 +1047,17 @@ sub enquiry : Chained('property') : Args(0) {
     foreach (@{$contact->get_metadata_for_input}) {
         $staff_form = 1 if $_->{code} eq 'staff_form';
         next if ($_->{automated} || '') eq 'hidden_field';
-        my $type = 'Text';
-        $type = 'TextArea' if 'text' eq ($_->{datatype} || '');
+        my %config = (type => 'Text');
+        my $datatype = $_->{datatype} || '';
+        if ($datatype eq 'text') {
+            %config = (type => 'TextArea');
+        } elsif ($datatype eq 'multivaluelist') {
+            my @options = map { { label => $_->{name}, value => $_->{key} } } @{$_->{values}};
+            %config = (type => 'Multiple', widget => 'CheckboxGroup', options => \@options);
+        }
         my $required = $_->{required} eq 'true' ? 1 : 0;
         push @$field_list, "extra_$_->{code}" => {
-            type => $type, label => $_->{description}, required => $required
+            %config, label => $_->{description}, required => $required
         };
     }
 
@@ -1330,10 +1350,7 @@ sub get_original_sub : Private {
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
         state => { '!=' => 'hidden' },
-    },
-    {
-        order_by => { -desc => 'id' }
-    })->to_body($c->cobrand->body);
+    })->order_by('-id')->to_body($c->cobrand->body);
 
     if ($type eq 'user' && !$c->stash->{is_staff}) {
         $p = $p->search({

@@ -79,7 +79,7 @@ FixMyStreet::override_config {
         });
 
         # Get the latest report
-        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         ok $report, 'found report';
 
         # Check the user is not shown

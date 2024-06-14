@@ -61,7 +61,7 @@ sub export {
         }
     }
 
-    my $templates = $body->response_templates->search(undef, { order_by => 'title' });
+    my $templates = $body->response_templates->order_by('title');
     if (@categories) {
         $templates = $templates->search({
             'contact.category' => { -in => \@categories }
@@ -81,14 +81,14 @@ sub export {
         };
     }
 
-    for ($body->roles->search(undef, { order_by => 'name' })->all) {
+    for ($body->roles->order_by('name')->all) {
         push @{$out{roles}}, {
             permissions => $_->permissions,
             name => $_->name,
         };
     }
 
-    for ($body->users->search(undef, { order_by => 'name' })->all) {
+    for ($body->users->order_by('name')->all) {
         my $cats = $_->get_extra_metadata('categories');
         my @cat_names = sort map { $body->contacts->find({id => $_})->category } @$cats;
         push @{$out{users}}, {

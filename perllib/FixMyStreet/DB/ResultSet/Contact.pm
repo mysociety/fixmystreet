@@ -1,5 +1,5 @@
 package FixMyStreet::DB::ResultSet::Contact;
-use base 'DBIx::Class::ResultSet';
+use base 'FixMyStreet::DB::ResultSet';
 
 use strict;
 use warnings;

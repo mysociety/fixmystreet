@@ -38,7 +38,56 @@
   [%# Allow superusers to see red tags and service updates for debugging purposes %]
   [% IF c.user.is_superuser %]
   <details>
-    <summary>Red tags</summary>
+    <summary>🐞 Superuser debugging</summary>
+    <h2>Property</h2>
+    <dl>
+      <dt>UPRN</dt>
+      <dd>[% property.uprn %]</dd>
+      [% IF property.parent_property %]
+      <dt>Parent UPRN</dt>
+      <dd>[% property.parent_property.uprn %]</dd>
+      [% END %]
+      <dt>USRN</dt>
+      <dd>[% property.usrn %]</dd>
+    </dl>
+    <h2>Services</h2>
+    [% FOREACH service IN service_data %]
+    <dl>
+      <dt>ID</dt>
+      <dd>[% service.service_id %]</dd>
+      <dt>Name</dt>
+      <dd>[% service.service_name %]</dd>
+      <dt>Description</dt>
+      <dd>[% service.service_description %]</dd>
+      <dt>Round schedule</dt>
+      <dd>[% service.round_schedule %]</dd>
+    </dl>
+    <hr>
+    [% END %]
+    <h2>Recent scheduled collections</h2>
+    [% FOREACH round IN property.recent_collections.keys %]
+    <dl>
+      <dt>[% round %]</dt>
+      <dd>[% property.recent_collections.$round %]</dd>
+    </dl>
+    [% END %]
+    <h2>Completed or attempted collections</h2>
+    [% FOREACH round IN property.completed_or_attempted_collections.keys %]
+    <dl>
+      <dt>[% round %]</dt>
+      <dd>[% property.completed_or_attempted_collections.$round %]</dd>
+    </dl>
+    [% END %]
+    <h2>Missed collection reports</h2>
+    [% IF property.missed_collection_reports && property.missed_collection_reports.size %]
+    [% FOREACH report IN property.missed_collection_reports %]
+        <p>[% report.key %]: [% report.value %]</p>
+      [% END %]
+    [% ELSE %]
+    <p>No existing missed collection reports</p>
+    [% END %]
+    <h2>Red tags</h2>
+    [% IF property.red_tags && property.red_tags.size %]
     [% FOREACH tag IN property.red_tags %]
     <h3>[% tag.reason %]</h3>
     <dl>
@@ -56,9 +105,10 @@
     </dl>
     <hr>
     [% END %]
-  </details>
-  <details>
-    <summary>Service updates</summary>
+    [% ELSE %]
+    <p>No red tags</p>
+    [% END %]
+    <h2>Service updates</h2>
     [% IF property.service_updates && property.service_updates.size %]
     [% FOREACH update IN property.service_updates %]
     <h3>[% update.reason %]</h3>

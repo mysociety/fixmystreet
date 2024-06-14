@@ -1633,7 +1633,15 @@ sub process_confirmation : Private {
                 }
             }
         }
+
+        if ($problem->user->is_superuser || $problem->user->from_body) {
+            if (!$problem->get_extra_metadata('contributed_by')) {
+                $problem->set_extra_metadata( contributed_by => $problem->user->id );
+                $problem->update;
+            }
+        }
     }
+
     # log the problem creation user in to the site
     if ($problem->user->email_verified) {
         $c->authenticate( { email => $problem->user->email, email_verified => 1 }, 'no_password' );

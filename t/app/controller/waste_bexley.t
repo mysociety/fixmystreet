@@ -101,6 +101,14 @@ sub default_mocks {
             return _site_collections()->{$uprn};
         }
     );
+    $whitespace_mock->mock(
+        'GetCollectionByUprnAndDate',
+        sub {
+            my ( $self, $property_id, $from_date ) = @_;
+
+            return _collection_by_uprn_date()->{$from_date} // [];
+        }
+    );
     $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
         my ( $self, $usrn ) = @_;
         return _in_cab_logs();
@@ -117,13 +125,6 @@ $whitespace_mock->mock(
     }
 );
 $whitespace_mock->mock( 'GetAccountSiteID', &_account_site_id );
-$whitespace_mock->mock( 'GetCollectionByUprnAndDate',
-    sub {
-        my ( $self, $property_id, $from_date ) = @_;
-
-        return _collection_by_uprn_date()->{$from_date} // [];
-    }
-);
 $whitespace_mock->mock( 'GetSiteWorksheets', &_site_worksheets );
 $whitespace_mock->mock(
     'GetWorksheetDetailServiceItems',
@@ -133,6 +134,7 @@ $whitespace_mock->mock(
     }
 );
 my $comment_user = $mech->create_user_ok('comment');
+my $user = $mech->create_user_ok('test@example.com', name => 'Test User', email_verified => 1);
 my $body = $mech->create_body_ok(
     2494,
     'London Borough of Bexley',
@@ -183,6 +185,33 @@ $contact->set_extra_fields(
 );
 
 $contact->update;
+
+my $contact2 = $mech->create_contact_ok(
+    body => $body,
+    category => 'Missed collection enquiry',
+    email => 'waste-enquiry@example.org',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+);
+$contact2->set_extra_fields(
+    {
+        code => "waste_types",
+        description => "Which collections would you like to report as missed?",
+        datatype => "multivaluelist",
+        required => "true",
+        values => [
+            map { { key => $_, name => $_ } } (
+                "Refuse",
+                "Paper/card recycling",
+                "Plastics/glass recycling",
+                "Food waste",
+                "Garden waste",
+                "Mixed recycling"
+            )
+        ],
+    }
+);
+$contact2->update;
 
 my ($existing_missed_collection_report1) = $mech->create_problems_for_body(1, $body->id, 'Report missed collection', {
     external_id => "Whitespace-4",
@@ -623,7 +652,7 @@ FixMyStreet::override_config {
 
         $mech->content_contains('Missed collection has been reported');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
         ok $report->confirmed;
         is $report->state, 'confirmed';
@@ -645,9 +674,146 @@ FixMyStreet::override_config {
             { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
             'Submitting missed collection report');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
         is $report->get_extra_field_value('uprn'), '10001', 'Report is against the parent property';
+    };
+
+    subtest 'Make sure missed collection cannot be made against ineligible container when page is not refreshed'
+    => sub {
+
+        $mech->delete_problems_for_body( $body->id );
+
+        # Thursday 4th April, 13:00 BST
+        set_fixed_time('2024-04-04T12:00:00');
+
+        $whitespace_mock->mock(
+            'GetSiteCollections',
+            sub {
+                [   {   SiteServiceID          => 1,
+                        ServiceItemDescription => 'Service 1',
+                        ServiceItemName => 'FO-140',    # Communal Food Bin
+
+                        NextCollectionDate   => '2024-04-08T00:00:00',
+                        SiteServiceValidFrom => '2024-03-31T00:59:59',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                        RoundSchedule => 'RND-1 Mon',
+                    },
+                    {   SiteServiceID          => 2,
+                        ServiceItemDescription => 'Service 2',
+                        ServiceItemName        => 'FO-23',       # Brown Caddy
+
+                        NextCollectionDate   => '2024-04-10T00:00:00',
+                        SiteServiceValidFrom => '2024-03-31T00:59:59',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                        RoundSchedule => 'RND-2 Wed',
+                    },
+                ];
+            }
+        );
+        $whitespace_mock->mock(
+            'GetCollectionByUprnAndDate',
+            sub {
+                [   {   Date     => '01/04/2024 00:00:00', # Mon
+                        Round    => 'RND-1',
+                        Schedule => 'Mon',
+                        Service  => 'Service 1 Collection',
+                    },
+                    {   Date     => '03/04/2024 00:00:00', # Wed
+                        Round    => 'RND-2',
+                        Schedule => 'Wed',
+                        Service  => 'Service 2 Collection',
+                    },
+                ];
+            }
+        );
+        $whitespace_mock->mock(
+            'GetInCabLogsByUsrn',
+            sub {
+                [
+                    {
+                        Reason => 'N/A',
+                        RoundCode => 'RND-1',
+                        LogDate => '2024-04-01T06:10:09.417', # Mon
+                        Uprn => '',
+                        Usrn => '321',
+                    },
+                    {
+                        Reason => 'N/A',
+                        RoundCode => 'RND-2',
+                        LogDate => '2024-04-03T06:10:09.417', # Wed
+                        Uprn => '',
+                        Usrn => '321',
+                    },
+                ]
+            }
+        );
+
+        $mech->get_ok('/waste/10001');
+
+        # Check for presence of two missed collection links
+        $mech->content_contains('Report a communal food bin collection as missed');
+        $mech->content_contains('Report a brown caddy collection as missed');
+        $mech->content_unlike(
+            qr/id="service-FO-23-0".*checked/s,
+            'Brown caddy not preselected',
+        );
+
+        # Friday 5th April, 13:00 BST
+        set_fixed_time('2024-04-05T12:00:00');
+
+        $mech->submit_form( form_name => 'FO-140-missed' );
+
+        $mech->content_contains('Select your missed collection');
+        $mech->content_lacks( 'name="service-FO-140"',
+            'Communal food bin checkbox not shown' );
+        $mech->content_contains( 'name="service-FO-23"',
+            'Brown caddy checkbox shown' );
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    'service-FO-23' => 1
+                }
+            },
+            'Selecting missed collection for brown caddy',
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    name  => 'John Doe',
+                    phone => '44 07 111 111 111',
+                    email => 'test@example.com'
+                }
+            },
+            'Submitting contact details'
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    submit   => 'Report collection as missed',
+                    category => 'Report missed collection'
+                }
+            },
+            'Submitting missed collection report'
+        );
+        $mech->content_contains('Missed collection has been reported');
+
+        my @reports = FixMyStreet::DB->resultset("Problem")->all;
+        is @reports, 1, 'only one report created';
+
+        # Check that if eligible link followed, service is
+        # pre-selected
+        $mech->get_ok('/waste/10001');
+        $mech->submit_form( form_name => 'FO-23-missed' );
+        $mech->content_like(
+            qr/id="service-FO-23-0".*checked/s,
+            'Brown caddy preselected',
+        );
+
+        # Reset
+        set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
+        $mech->delete_problems_for_body( $body->id );
+        default_mocks();
     };
 
     subtest 'Missed collection eligibility checks' => sub {
@@ -674,6 +840,9 @@ FixMyStreet::override_config {
                 next => {
                     is_today => 1,
                 },
+                last => {
+                    date => DateTime->today,
+                }
             },
             # Had a collection earlier today
             'FO-140' => {
@@ -683,34 +852,52 @@ FixMyStreet::override_config {
                 next => {
                     is_today => 1,
                 },
+                last => {
+                    date => DateTime->today,
+                },
             },
             # Collection due last working day but it did not happen
             'RES-180' => {
                 service_id => 'RES-180',
                 round => 'RES-R2',
                 round_schedule => 'RES-R2 Fri',
+                last => {
+                    date => DateTime->today->subtract( days => 3 ),
+                },
             },
             # Collections due last working day and they happened
             'RES-240' => {
                 service_id => 'RES-240',
                 round => 'RES-R3',
                 round_schedule => 'RES-R3 Fri',
+                last => {
+                    date => DateTime->today->subtract( days => 3 ),
+                },
             },
             'RES-660' => {
                 service_id => 'RES-660',
                 round => 'RES-R4',
                 round_schedule => 'RES-R4 Fri',
+                last => {
+                    date => DateTime->today->subtract( days => 3 ),
+                },
             },
             # Collection too old
             'GA-240' => {
                 service_id => 'GA-240',
                 round => 'GDN-R1',
                 round_schedule => 'GDN-R1 Tue',
+                last => {
+                    date => DateTime->today->subtract( days => 6 ),
+                },
             },
             'PG-240' => {
                 service_id => 'PG-240',
                 round => 'RCY-R2',
                 round_schedule => 'RCY-R2 Mon PG Wk 2',
+                last => {
+                    date => DateTime->today->subtract( days => 7 ),
+                },
             },
         );
 
@@ -718,17 +905,6 @@ FixMyStreet::override_config {
             uprn => 10001,
             missed_collection_reports => {
                 'RES-SACK' => 1,
-            },
-            recent_collections => {
-                'RCY-R1 Mon' => DateTime->today, # FO-23
-                'RCY-R2 Mon' => DateTime->today, # FO-140
-                'RES-R2 Fri' => DateTime->today->subtract( days => 3 ), # RES-180
-                'RES-R3 Fri' => DateTime->today->subtract( days => 3 ), # RES-240
-                'RES-R4 Fri' => DateTime->today->subtract( days => 3 ), # RES-240
-                'GDN-R1 Tue' => DateTime->today->subtract( days => 6 ), # GA-240
-                'RCY-R2 Mon PG Wk 2' => DateTime->today->subtract( days => 7 ), # PG-240
-                'RCY-R1 Mon' => DateTime->today->subtract( days => 14 ), # FO-23
-                'RCY-R2 Mon' => DateTime->today->subtract( days => 14 ), # FO-140
             },
         };
 
@@ -858,6 +1034,23 @@ FixMyStreet::override_config {
         set_fixed_time('2024-03-31T02:00:00'); # March 31st, 02:00 BST
     };
 
+    subtest 'Enquiry form for properties with no collections' => sub {
+        $mech->get_ok('/waste/10006');
+        $mech->content_contains('/waste/10006/enquiry?template=no-collections', 'link to no collections form present');
+        $mech->get_ok('/waste/10006/enquiry?template=no-collections');
+        $mech->submit_form_ok( { with_fields => { category => 'Missed collection enquiry' } } );
+        $mech->content_contains('Which collections would you like to report as missed?');
+        $mech->content_contains('Paper/card recycling');
+        $mech->submit_form_ok( { with_fields => { extra_waste_types => 'Refuse' } } );
+        $mech->content_contains('Full name');
+        $mech->submit_form_ok( { with_fields => { name => 'Test User', email => 'test@example.org' } } );
+        $mech->content_contains('Refuse');
+        $mech->content_contains('Test User');
+        $mech->content_contains('test@example.org');
+        $mech->content_contains('Please review the information you’ve provided before you submit your enquiry.');
+        $mech->submit_form_ok( { with_fields => { submit => 'Submit' } } );
+        $mech->content_contains('Nearly done! Now check your email');
+    };
 };
 
 FixMyStreet::override_config {
@@ -1159,6 +1352,15 @@ sub _site_info {
                 SiteLongitude    => 0.181108,
             },
         },
+        10006 => {
+            AccountSiteID   => 6,
+            AccountSiteUPRN => 10006,
+            Site            => {
+                SiteShortAddress => ', 6, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
     };
 }
 
@@ -1318,6 +1520,7 @@ sub _site_collections {
                 RoundSchedule => 'N/A',
             },
         ],
+        10006 => [],
     };
 }
 

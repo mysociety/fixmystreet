@@ -169,7 +169,7 @@ subtest "test report creation anonymously by button" => sub {
 
     is_deeply $mech->page_errors, [], "check there were no errors";
 
-    my $report = FixMyStreet::DB->resultset("Problem")->search({}, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
 
     is $report->state, 'confirmed', "report confirmed";
@@ -268,7 +268,7 @@ subtest "test report creation anonymously by button, per category" => sub {
     }, "submit good details");
     $mech->content_contains('Thank you');
 
-    my $report = FixMyStreet::DB->resultset("Problem")->search({}, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
 
     is $report->state, 'confirmed', "report confirmed";
@@ -315,7 +315,7 @@ subtest "test report creation anonymously by button, per category from metadata"
     }, "submit good details");
     $mech->content_contains('Your issue is on its way to the council');
 
-    my $report = FixMyStreet::DB->resultset("Problem")->search({}, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
 
     is $report->state, 'confirmed', "report confirmed";

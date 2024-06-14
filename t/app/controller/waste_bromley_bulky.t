@@ -340,7 +340,7 @@ FixMyStreet::override_config {
         subtest 'Confirmation page' => sub {
             $mech->content_contains('Bulky collection booking confirmed');
 
-            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
             is $report->detail, "Address: 2 Example Street, Bromley, BR1 1AF";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
@@ -359,7 +359,7 @@ FixMyStreet::override_config {
             is $report->photo,
                 '685286eab13ad917f614937170661171b488f280.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         };
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $report->confirmed('2023-08-30T00:00:00');
         $report->update;
         my $id = $report->id;

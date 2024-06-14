@@ -33,6 +33,13 @@
     <a href="[% c.uri_for_action( 'admin/bodies/edit', [ body_id ], { text => 1 } ) %]">[% loc('Text only version') %]</a>
 </p>
 
+[% IF body.name == 'TfL' AND c.user.is_superuser %]
+<p class="fms-admin-warning">
+    Renaming, adding, or removing categories that can only be made on red routes requires extra steps. See
+    <a href="https://wiki.mysociety.org/wiki/Transport_for_London_(TfL)#TLRN_categories">wiki</a>.
+</p>
+[% END %]
+
 
 [% IF body.send_method == 'Open311' %]
   <h2>
@@ -138,6 +145,13 @@
 <div class="admin-box">
   [% IF NOT contact %]
     <h2>[% loc('Add new category') %]</h2>
+  [% END %]
+
+  [% IF body.name == 'TfL' AND c.user.is_superuser %]
+  <p class="fms-admin-warning">
+      Renaming, adding, or removing categories that can only be made on red routes requires extra steps. See
+      <a href="https://wiki.mysociety.org/wiki/Transport_for_London_(TfL)#TLRN_categories">wiki</a>.
+  </p>
   [% END %]
 
   [% IF errors %]

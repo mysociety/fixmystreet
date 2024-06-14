@@ -212,7 +212,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Missing";
         is $report->title, 'Request replacement Mixed Recycling Green Box (55L)';
@@ -229,7 +229,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('collection has been reported');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Report missed Food waste\n\n2 Example Street, Sutton, SM1 1AA";
         is $report->title, 'Report missed Food waste';
@@ -371,7 +371,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Additional bag required";
         is $report->category, 'Request new container';

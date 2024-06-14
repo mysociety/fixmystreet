@@ -37,9 +37,7 @@ sub send_questionnaires_period {
         \"(select max(whenanswered) from questionnaire where me.id=problem_id) < current_timestamp - '$period'::interval",
     ];
 
-    my $unsent = FixMyStreet::DB->resultset('Problem')->search( $q_params, {
-        order_by => { -desc => 'confirmed' }
-    } );
+    my $unsent = FixMyStreet::DB->resultset('Problem')->search( $q_params)->order_by('-confirmed');
 
     while (my $row = $unsent->next) {
 

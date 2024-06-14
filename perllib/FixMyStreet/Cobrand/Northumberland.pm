@@ -41,6 +41,11 @@ sub disambiguate_location {
 
 sub admin_user_domain { 'northumberland.gov.uk' }
 
+sub is_defect {
+    my ($self, $p) = @_;
+    return $p->service eq 'Open311';
+}
+
 =item * The default map zoom is a bit more zoomed-in
 
 =cut
@@ -206,6 +211,16 @@ sub dashboard_export_problems_add_columns {
             response_time => $response_time->($hashref),
         };
     });
+}
+
+=item * Updates on reports fetched from Alloy are not sent.
+
+=cut
+
+sub should_skip_sending_update {
+    my ($self, $comment) = @_;
+    my $p = $comment->problem;
+    return $self->is_defect($p);
 }
 
 =back

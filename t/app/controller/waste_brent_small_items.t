@@ -214,7 +214,7 @@ FixMyStreet::override_config {
         subtest 'Confirmation page' => sub {
             $mech->content_contains('Small items collection booking confirmed');
 
-            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
             is $report->category, 'Small items collection', 'correct category on report';
             is $report->title, 'Small items collection', 'correct title on report';
@@ -239,7 +239,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Bulky goods email confirmation and reminders' => sub {
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $report->confirmed('2023-08-30T00:00:00');
         $report->update;
         my $id = $report->id;
@@ -491,7 +491,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your missed collection has been reported');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->category, 'Report missed collection';
         is $report->get_extra_field_value('service_id'), 787;
         is $report->title, 'Report missed small items / clinical';

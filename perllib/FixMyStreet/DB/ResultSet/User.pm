@@ -1,5 +1,5 @@
 package FixMyStreet::DB::ResultSet::User;
-use base 'DBIx::Class::ResultSet';
+use base 'FixMyStreet::DB::ResultSet';
 
 use strict;
 use warnings;

@@ -587,8 +587,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->get_extra_field_value('End_Date'), '2021-03-09', 'cancel date set to current date';
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
