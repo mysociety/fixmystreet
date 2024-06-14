@@ -546,7 +546,7 @@ You can also always edit any user from the table at the top of the Users page by
 Select the roles or permissions you wish that user to have, and click ‘submit changes’.
 
 
-#### Setting categories or areas
+#### Setting categories to users and roles
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff; ‘Assign users to areas’ must be ticked (for areas).</span>
 
@@ -559,7 +559,12 @@ staff user only deals with reports of a specific type.
 
 Roles can also have categories associated with them. This works in the same way as assigning categories
 to a user. You can assign categories to a role by editing the role and checking the relevant category
-boxes. Users will then only be able to see categories relevant to their role.
+boxes. By default, users will then be shown a filtered list of categories relevant to their role. 
+
+**Please note:** there is no restriction functionality to prevent users from seeing other categories by removing the default filter. However, this can be done if required by:
+
+1. Ticking "Frontend staff access only to users assigned to this category" on a particular category page - this restricts the category, so that only staff assigned to that category will see staff-related features.
+2. Ticking "Assigned categories only" on a user's page - this restricts that user to only see front end staff features in their assigned categories.
 
 #### Removing staff status from accounts
 
