@@ -61,11 +61,13 @@ sub dashboard_export_problems_add_columns {
         alerts => "Subscribers",
     );
 
+    my $alerts_lookup = $self->csv_update_alerts;
+
     $csv->csv_extra_data(sub {
         my $report = shift;
 
         return {
-            alerts => $report->alerts || '0',
+            alerts => $alerts_lookup->{$report->id} || '0',
         };
     });
 }
