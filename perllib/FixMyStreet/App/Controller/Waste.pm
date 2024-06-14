@@ -960,10 +960,11 @@ sub construct_bin_report_form {
         }
 
         my $name = $_->{service_name};
+        my $description = $_->{service_description};
         push @$field_list, "service-$id" => {
             type => 'Checkbox',
             label => $name,
-            option_label => $name,
+            option_label => $description ? $description : $name,
         };
     }
 
