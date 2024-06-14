@@ -638,6 +638,11 @@ FixMyStreet::override_config {
                 ->{staff_or_assisted} };
     };
 
+    subtest 'Correct labels used when reporting missed collection' => sub {
+        $mech->get_ok('/waste/10001/report');
+        $mech->content_contains('Non-recyclable waste', 'includes service description in the checkbox label');
+    };
+
     subtest 'Making a missed collection report' => sub {
         $mech->get_ok('/waste/10001/report');
         $mech->submit_form_ok(
