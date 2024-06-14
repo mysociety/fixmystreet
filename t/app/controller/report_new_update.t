@@ -77,7 +77,6 @@ subtest "test report creation with initial auto-update and alternative email tex
     $mech->clear_emails_ok;
 
     my $user3 = $mech->log_in_ok('test-3@example.com');
-    $mech->log_in_ok($user3->email);
     $mech->get_ok("/report/$report_id");
     $mech->submit_form_ok({ button => 'alert', with_fields => { type => 'updates' } });
     $mech->log_out_ok;
