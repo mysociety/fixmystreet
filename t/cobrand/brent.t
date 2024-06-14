@@ -830,25 +830,7 @@ subtest 'push updating of reports' => sub {
             waste => { brent => 1 }
         },
     }, sub {
-        my $in = <<EOF;
-<?xml version="1.0" encoding="UTF-8"?>
-<Envelope>
-  <Header>
-    <Action>action</Action>
-    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
-  </Header>
-  <Body>
-    <NotifyEventUpdated>
-      <event>
-        <Guid>waste-7681-67</Guid>
-        <EventTypeId>943</EventTypeId>
-        <EventStateId>7672</EventStateId>
-        <ResolutionCodeId>100</ResolutionCodeId>
-      </event>
-    </NotifyEventUpdated>
-  </Body>
-</Envelope>
-EOF
+        my $in = $mech->echo_notify_xml('waste-7681-67', 943, 7672, 100);
         my $mech2 = $mech->clone;
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $report->comments->count, 4, 'A new update';
