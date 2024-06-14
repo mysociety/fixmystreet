@@ -316,6 +316,28 @@ sub open311_contact_meta_override {
     } if $service->{service_name} eq 'Flytipping';
 }
 
+sub open311_get_update_munging {
+    my ($self, $comment) = @_;
+
+    if ($comment->get_extra_metadata('external_status_code', '') eq '713') {
+        my $p = $comment->problem;
+        my %areas = map { $_ => 1 } split ',', $p->areas;
+        my $parish_id;
+        foreach my $id (@{ $self->_parish_ids }) {
+            $parish_id = $id if $areas{$id};
+        }
+        if ($parish_id) {
+            if (my $body = FixMyStreet::DB->resultset("Body")->for_areas($parish_id)->first) {
+                $p->bodies_str($body->id);
+                $p->category('Street lighting');
+                $p->external_id(undef);
+                $p->resend;
+                $p->update;
+            }
+        }
+    }
+}
+
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 

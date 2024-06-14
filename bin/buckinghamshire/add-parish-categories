@@ -5,7 +5,8 @@
 #
 # The CSV file needs to have 'name' and 'email' columns with the name of
 # the parish council (which should match the existing body) and the email
-# address that reports should be sent to.
+# address that reports should be sent to, and 'devolved' column set to true
+# if it has the devolved services.
 
 use strict;
 use warnings;
@@ -32,6 +33,13 @@ my $speed_limit_q = {
 };
 
 my $contacts = [
+    {
+        category => 'Street lighting',
+        staff_only => 1,
+    },
+];
+
+my $devolved_contacts = [
     {
         category => 'Hedge problem',
         extra_metadata => {
@@ -92,7 +100,7 @@ while (my $row = $csv->getline_hr($fh)) {
         die "Error: Couldn't find body called $name\n";
     }
 
-    push @parishes, { name => $name, email => $row->{email}, body => $body };
+    push @parishes, { %$row, body => $body };
 }
 
 my $db = FixMyStreet::DB->schema->storage;
@@ -100,28 +108,12 @@ $db->txn_do(sub {
     # Create categories for parishes.
     foreach my $parish (@parishes) {
         foreach my $contact (@$contacts) {
-            my $new_contact = FixMyStreet::DB->resultset('Contact')->find_or_new({
-                body_id => $parish->{body}->id,
-                category => $contact->{category},
-            });
-
-            $new_contact->email($parish->{email});
-            $new_contact->state('confirmed');
-
-            if ($contact->{extra_metadata}) {
-                $new_contact->set_extra_metadata(%{$contact->{extra_metadata}});
+            add_contact($parish, $contact);
+        }
+        if ($parish->{devolved}) {
+            foreach my $contact (@$devolved_contacts) {
+                add_contact($parish, $contact);
             }
-
-            if ($contact->{extra_fields}) {
-                $new_contact->set_extra_fields(@{$contact->{extra_fields}});
-            }
-
-            my $action = $new_contact->in_storage ? 'Updated' : 'Created';
-
-            $new_contact->add_note("$action by script", basename($0));
-            $new_contact->update_or_insert;
-
-            print "$action $contact->{category} for $parish->{name}\n";
         }
 
         # Make sure body has correct send method and isn't marked as deleted
@@ -129,3 +121,30 @@ $db->txn_do(sub {
         print "\n";
     }
 });
+
+sub add_contact {
+    my ($parish, $contact) = @_;
+
+    my $new_contact = FixMyStreet::DB->resultset('Contact')->find_or_new({
+        body_id => $parish->{body}->id,
+        category => $contact->{category},
+    });
+
+    $new_contact->email($parish->{email});
+    $new_contact->state($contact->{staff_only} ? 'staff' : 'confirmed');
+
+    if ($contact->{extra_metadata}) {
+        $new_contact->set_extra_metadata(%{$contact->{extra_metadata}});
+    }
+
+    if ($contact->{extra_fields}) {
+        $new_contact->set_extra_fields(@{$contact->{extra_fields}});
+    }
+
+    my $action = $new_contact->in_storage ? 'Updated' : 'Created';
+
+    $new_contact->add_note("$action by script", basename($0));
+    $new_contact->update_or_insert;
+
+    print "$action $contact->{category} for $parish->{name}\n";
+}
