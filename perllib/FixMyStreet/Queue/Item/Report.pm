@@ -337,7 +337,8 @@ sub _add_confirmed_update {
     my $problem = $self->report;
     my $existing = $problem->comments->search({ external_id => 'auto-internal' })->first;
     if ($existing) {
-        $existing->update({ state => 'confirmed' });
+        $existing->confirm;
+        $existing->update;
     }
 }
 

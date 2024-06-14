@@ -21,6 +21,7 @@
         - Fixes default status report filter text on Your Account page. #4558
         - Don't zoom to bounds when searching for a postcode.
         - Fix restoring a draft with no location.
+        - Create reporter alert before creating first unconfirmed auto-update.
     - Admin improvements:
         - Rename emergency message to site message.
         - Added a category control for overriding the text of the new report details field.

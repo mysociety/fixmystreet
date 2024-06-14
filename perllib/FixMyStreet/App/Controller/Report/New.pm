@@ -1972,13 +1972,23 @@ sub redirect_or_confirm_creation : Private {
 sub create_related_things : Private {
     my ( $self, $c, $problem ) = @_;
 
+    # Set up a reporter alert
+    unless ($c->stash->{no_reporter_alert} || $c->cobrand->call_hook('suppress_reporter_alerts', $problem)) {
+        $c->model('DB::Alert')->find_or_create( {
+            user         => $problem->user,
+            alert_type   => 'new_updates',
+            parameter    => $problem->id,
+            cobrand      => $problem->cobrand,
+            cobrand_data => $problem->cobrand_data,
+            lang         => $problem->lang,
+        } )->confirm;
+    }
+
     # If there is a special template, create a comment using that
     foreach my $body (values %{$problem->bodies}) {
         my $user = $body->comment_user or next;
 
         my $updates = Open311::GetServiceRequestUpdates->new(
-            system_user => $user,
-            current_body => $body,
             blank_updates_permitted => 1,
         );
 
@@ -1986,30 +1996,16 @@ sub create_related_things : Private {
         my ($description, $email_text) = $updates->comment_text_for_request($template, {}, $problem);
         next unless $description;
 
-        my $request = {
-            service_request_id => $problem->id,
-            update_id => 'auto-internal',
-            comment_time => DateTime->from_epoch( epoch => Time::HiRes::time ),
-            status => 'open',
-            email_text => $email_text,
-            description => $description,
-        };
-        my $update = $updates->process_update($request, $problem);
-        $update->update({ state => 'unconfirmed' });
+        $problem->add_to_comments({
+            user => $user,
+            external_id => 'auto-internal',
+            send_state => 'processed',
+            text => $description,
+            private_email_text => $email_text,
+            problem_state => 'confirmed',
+            state => 'unconfirmed',
+        });
     }
-
-    # And now the reporter alert
-    return if $c->stash->{no_reporter_alert};
-    return if $c->cobrand->call_hook('suppress_reporter_alerts', $problem);
-
-    my $alert = $c->model('DB::Alert')->find_or_create( {
-        user         => $problem->user,
-        alert_type   => 'new_updates',
-        parameter    => $problem->id,
-        cobrand      => $problem->cobrand,
-        cobrand_data => $problem->cobrand_data,
-        lang         => $problem->lang,
-    } )->confirm;
 }
 
 =head2 redirect_to_around
