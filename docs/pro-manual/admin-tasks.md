@@ -20,7 +20,7 @@ via a role) for you to be able to perform this task.
 
 ### Further help
 
-- If you’re a member of council staff using FixMyStreet Pro, questions should be addressed
+- If you’re a member of council staff using FixMyStreet Pro, questions should first be addressed
 to your Administrator.
 - For any technical problems and queries, Administrators may contact the
-  FixMyStreet team by raising a ticket through their helpdesk system.
+  SocietyWorks team by raising a ticket through the helpdesk system.
