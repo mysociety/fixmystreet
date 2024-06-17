@@ -7,14 +7,15 @@ user-guide: true
 
 # WasteWorks deep linking
 
-Residents will most likely be finding your WasteWorks service from your own website. That may be a generic waste services information page, or another landing page for search terms such as “report missed bin” or “green garden waste”.
+Residents will most likely be directed to your WasteWorks service from your own website, either from a generic waste services information page, or another landing page for search terms such as “report missed bin” or “green garden waste”.
 
-### Important notice:
-There may be small differences in how WasteWorks functions for different councils, depending on the integrations you have selected, and the individual processes reflected in your workflow. This manual provides a **general overview** of how WasteWorks works, but may not directly reflect your unique set up.
+This section of the manual provides guidance on different ways to deep link to WasteWorks from your website. 
 
-## Generic waste page
+***
 
-On a generic page, you can link directly to the WasteWorks front page with a normal link, or embed a WasteWorks search form into the page, taking the user straight to a “Your bin days” page.
+## Linking from a generic waste page
+
+On a generic page about your waste services, you can link directly to the WasteWorks front page with a normal link, or embed a WasteWorks search form into the page, taking the user straight to a “Your bin days” page.
 
 #### Direct Link
 
@@ -32,9 +33,11 @@ An embedded form should be a normal HTML form whose action is `https://your.wast
 </form>
 ```
 
-## Specific waste type page
+## Linking from a specific waste type page
 
-You may want to be able to direct residents directly to pages within your WasteWorks service.
+You may also want to link to WasteWorks from pages about specific waste services, such as a landing page about reporting a missed collection, or one about green waste subscriptions (if included in your WasteWorks package). 
+
+In these instances, you can link directly to the corresponding page on WasteWorks to create a seamless user journey for residents, and for staff operating on behalf of residents who require extra support. See examples below:
 
 #### Linking to ‘reporting a missed collection’ page
 

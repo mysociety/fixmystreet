@@ -39,11 +39,19 @@ Select the roles or permissions you wish that user to have, and click ‘submit 
 
 #### Removing staff status from accounts
 
-To remove the staff status from an account visit the user page and uncheck the ‘staff’ checkbox. To prevent a user from logging in uncheck the ‘email verified’ checkbox.
+To remove the staff status from an account visit the Users page, select the user you want to remove and uncheck the ‘staff’ checkbox. 
 
-You can do this in bulk on the Users screen by selecting the checkbox next to the user’s name on the users page, selecting the ‘Remove staff permission’ checkbox and clicking submit.
+<img alt="Staff tick box" src="/assets/img/ww-user-guide/WasteWorks%20staff%20user%20tick%20box.png" />
 
-Note that if a user has access to the email address associated with an account they can re-enable their account, but will not have staff permissions.
+To prevent a user from logging in uncheck the ‘email verified’ checkbox.
+
+<img alt="Email verified tick box" src="/assets/img/ww-user-guide/WasteWorks%20email%20verified%20tick%20box.png" />
+
+You can do this in bulk on the Users screen by selecting the checkbox next to the user’s name on the Users page, selecting the ‘Remove staff permission’ checkbox and clicking submit.
+
+<img alt="Bulk user removal" src="/assets/img/ww-user-guide/WasteWorks%20bulk%20user%20removal.png" />
+
+**Please note:** If a user has access to the email address associated with an account they can re-enable their account, but will not have staff permissions.
 
 #### Removing accounts
 
@@ -63,7 +71,7 @@ If you wish your organisation to have mandated two-factor authentication, please
 
 ### Navigating WasteWorks as a staff user
 
-If your Administrator has already given you staff permissions, you may see an additional admin button on the top menu when you’re logged in. If not, your access may be only in the frontend (e.g. moderation does not require any backend admin access), or your Administrator can add these permissions at any time: see ‘Creating a Staff Account’.
+If your Administrator has already given you staff permissions, you may see an additional admin button on the top menu when you’re logged in. If not, your access may be only in the frontend (e.g. moderation does not require any backend admin access), or your Administrator can add these permissions at any time: see <a href="https://www.societyworks.org/manuals/wasteworks/admin-tasks/#administrating-staff-accounts">‘Creating a Staff Account’</a>.
 
 <img alt="Navigating WasteWorks as a staff user" src="/assets/img/ww-user-guide/WasteWorks-navigating-as-staff.png" />
 
@@ -76,7 +84,9 @@ If your Administrator has already given you staff permissions, you may see an ad
 <span class="admin-task__permissions">Permissions required: User must be marked
 as staff; “Edit users’ details/search for their reports” must be ticked</span>
 
-In the admin, enter any part of the user’s name or email address in the ‘Search users’ box. You may click on ‘Edit’ beside any user to view or change their account details, click the user’s email address to view a list of all reports and updates made by that user, or click ‘Timeline’ to see a timeline of that user’s activities on the site.
+From the WasteWorks admin homepage, enter any part of the user’s name or email address in the ‘Search users’ box. You may click on ‘Edit’ beside any user to view or change their account details, click the user’s email address to view a list of all reports and updates made by that user, or click ‘Timeline’ to see a timeline of that user’s activities on the site.
+
+<img alt="User search" src="/assets/img/ww-user-guide/WasteWorks%20user%20search.png" />
 
 </div>
 
@@ -101,7 +111,7 @@ If a resident makes a report or request by phone or in person, staff members wit
 
 Staff should make a new report/request or subscription just as a member of the public would (see the <a href="https://www.societyworks.org/ww-manual/resident-experience/">resident’s experience section</a>).
 
-**The process for setting up, renewing or cancelling subscriptions for users will differ depending on the payment provider you are using.**
+**Please note:** The process for setting up, renewing or cancelling subscriptions for users will differ depending on the payment provider you are using.
 
 </div>
 
@@ -114,7 +124,7 @@ as staff; optionally, one or more of ‘Create reports/updates on a user’s beh
 
 Staff users are able to cancel subscriptions on behalf of residents in the same way the resident would do this (see the <a href="https://www.societyworks.org/ww-manual/resident-experience/">resident’s experience section</a>)
 
-**The process for setting up, renewing or cancelling subscriptions for users will differ depending on the payment provider you are using.**
+**Please note:** The process for setting up, renewing or cancelling subscriptions for users will differ depending on the payment provider you are using.
 
 </div>
 
@@ -132,17 +142,27 @@ Staff users with the appropriate permissions may create and edit pre-written res
 
 Click on ‘Templates’ in the admin menu. You will see a table of any existing templates. Click on the button below, marked ‘New template’.
 
-Common template responses deal with statuses such as: Report received; Collection scheduled; Container ordered; Report under investigation.
+<img alt="New template button" src="/assets/img/ww-user-guide/WasteWorks%20new%20template%20button.png" />
 
-If available from your backend, templates can also be created to provide better messaging on the ‘Your bin days’ page as to why a particular collection did not happen instead of your backend’s default text, such as explaining permissible items or if the bin wasn’t presented.
+To create a template:
+1. Input a title. This should be something easy to understand like ‘Bin not presented’.
+2. Write more detail in the ‘Text’ box. This will be displayed on the WasteWorks page concerning the reported missed collection or container request.
+3. If you want different text sent in the email to the user than displayed on the page, you can include different text in the ‘Text for email alert field’, but this is optional, as WasteWorks reports are all private.
+4. Set which categories the template should apply to. You may create different templates for each category, or use the same templates across multiple categories.
+5. Optionally assign a 'State' to the template if you want to use it to prefill the manual update field when changing a report’s state (e.g. 'investigating').
+6. Optionally provide an external status code if you want to use the backend’s external status when deciding which response template to use.
+7. Optionally tick 'Auto response' if you want this template to be used for updates from your backend that put problems in this state.
+  
+Common template responses deal with statuses such as but not limited to: **Report received**; **Collection scheduled**; **Container ordered**; **Report under investigation**.
 
-There is no limit to the number of template responses you can create. When creating templates, you should consider:
+If available from your integrated backend system, templates can also be created to provide better messaging on the ‘Your bin days’ page as to why a particular collection did not happen instead of your backend’s default text, such as explaining permissible items or if the bin wasn’t presented.
+
+There is no limit to the number of template responses you can create. 
+
+When creating templates, you should consider:
 
 - What are the most common response types that you send back to report makers? It may be worth examining recent responses to find out.
 - How should you word your response template text to make it as easy as possible for the report maker to understand the status of their issue?
-- Input a title and some text for your template, then set which categories it should apply to. You may create different templates for each category, or use the same templates across multiple categories.
-
-If you enter text in the ‘Text for email alert field’, the template text will update the report on the website and the email text will be sent to the user if they have opted into alerts.
 
 #### Editing or deleting a template
 
@@ -164,9 +184,9 @@ Refer to the section “HTML Content in notices” above for details of what tag
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff</span>
 
-When you log in to the Admin area and click Stats in the admin navigation, you’ll see some top-level statistics, including the number of reports published on the site, the number of updates, and the number of alerts set up. This can be useful for a quick snapshot of activity.
+When you log in to the Admin area and click ‘Stats’ in the admin navigation. From here you’ll see some top-level statistics, including the number of reports published on the site, the number of updates, and the number of alerts set up. This can be useful for a quick snapshot of activity.
 
-For a more detailed breakdown, visit the stats dashboard. This can be accessed by going to “Summary statistics” from the admin stats page, or by typing ‘/dashboard’ on the end of your WasteWorks URL.
+For a more detailed breakdown, from the ‘Stats’ page click ‘Summary statistics’ or type ‘/dashboard’ on the end of your WasteWorks URL.
 
 From here, you can access statistics on:
 
@@ -187,6 +207,20 @@ You can also group the results by:
 
 These statistics can be downloaded as a CSV document, suitable for use in a spreadsheet program such as Excel or your own reporting tools.
 
+#### Understanding report statuses
+
+As mentioned above, you can view and filter statistics by report status. Report statuses may vary between different councils, depending on how your instance of WasteWorks is set up and integrated with your in-cab system. However, standard statuses can be defined as:
+
+- **Created**: When the report was created by the user on the website
+- **Confirmed**: When the report has been confirmed (normally the same as created, unless you have email confirmation)
+- **Acknowledged**: When the first update was added to a report (this might be the same as fixed/closed if there's just one update that fixes/closes it)
+- **Fixed**: When the report was fixed (i.e. the missed collection was collected, or the requested containers were delivered etc)
+- **Closed**: When the report was closed (if the report wasn't fixed for some reason)
+
+If you have other statuses these have likely been set up specifically for your instance of WasteWorks. Please speak to your Administrator about what they mean.
+
+Ideally each report status should have a response template assgined to it to let the resident know what it means. <a href="https://www.societyworks.org/manuals/wasteworks/admin-tasks/#creating-and-editing-response-templates">See the Creating and editing response templates section</a>. 
+
 #### Importing dashboard data automatically
 
 You may wish to automatically import data from the dashboard into your system on a regular basis.
@@ -205,7 +239,7 @@ Reports can take some time to generate, so there are two different values for th
 
 #### Heatmap
 
-Also accessible from the admin stats page is our heatmap. This can provide an overview of reporting in your area, filtered by state, category, or ward, for a particular date range:
+Also accessible from the 'Stats' page is a heatmap. This provides an overview of reporting in your area, filtered by state, category, or ward, for a particular date range.
 
 <img alt="Screenshot of Bromley heatmap showing clusters in the north and north west." src="/assets/img/ww-user-guide/WasteWorks-heatmap.png">
 
@@ -217,8 +251,9 @@ Also accessible from the admin stats page is our heatmap. This can provide an ov
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff and ‘Add/edit site message’ must be ticked.</span>
 
-This feature allows you to set site messages which will be displayed on
-the homepage or reporting pages; you can have different messages for in/out of hours.
+This feature allows you to set site messages which will be displayed on the homepage or reporting pages; you can have different messages for in/out of hours. For example, you may want to pre-emptively inform residents of any expected changes to collection schedules due to bank holidays, adverse weather conditions or other operational disruptions. You can also use this feature to signpost residents to other services. 
+
+<img alt="Screenshot of Bromley heatmap showing clusters in the north and north west." src="/assets/img/ww-user-guide/WasteWorks%20site%20wide%20messaging.png">
 
 Certain HTML tags can be used for formatting purposes. These are limited to the same set as described in ["HTML content in notices"](#html-content-in-notices). You should not use block-level HTML elements (e.g. `div`,`p`, etc) in the input field, as linebreaks are automatically converted to HTML tags. If you want multiple paragraphs they should be separated with blank lines as in the below example.
 
@@ -230,8 +265,7 @@ To clear the message simply delete any contents in the box.
 <img alt="A site message can be shown to users on the WasteWorkshomepage."
     src="/assets/img/ww-user-guide/WasteWorks-site-message-frontend.png" class="admin-screenshot" />
 
-You can set the time periods that will count as out of hours on the same page. For example,
-if your out of hours were 6pm to 8am Monday to Friday, all day weekends and Bank Holidays,
+You can set the time periods that will count as out of hours on the same page. For example, if your out of hours were 6pm to 8am Monday to Friday, all day weekends and Bank Holidays,
 plus Christmas Eve, you would set it up as the following screenshot:
 
 <img alt="Saturday, Sunday, Bank Holidays, and a special Christmas Eve, 00:00-24:00; Monday to Friday 00:00-08:00 and 18:00-24:00."  src="/assets/img/ww-user-guide/WasteWorks-out-of-hours.png">
