@@ -619,6 +619,10 @@ small.or:after {
     padding-top: 0.6em;
     padding-bottom: 0.5em;
   }
+
+  &:has(.form-error) {
+    @include flex-direction(column);
+  }
 }
 
 .checkbox-group {
