@@ -187,6 +187,20 @@ You can also group the results by:
 
 These statistics can be downloaded as a CSV document, suitable for use in a spreadsheet program such as Excel or your own reporting tools.
 
+#### Understanding report statuses
+
+As mentioned above, you can view and filter statistics by report status. Report statuses may vary between different councils, depending on how your instance of WasteWorks is set up and integrated with your in-cab system. However, standard statuses can be defined as:
+
+- **Created**: When the report was created by the user on the website
+- **Confirmed**: When the user clicked the confirmation link in the email (will be the same as created if the user has made a report previously)
+- **Acknowledged**: When the first update was added to a report (this might be the same as fixed/closed if there's just one update that fixes/closes it)
+- **Fixed**: When the report was fixed (i.e. the missed collection was collected, or the requested containers were delivered etc)
+- **Closed**: When the report was closed (if the report wasn't fixed for some reason)
+
+If you have other statuses these have likely been set up specifically for your instance of WasteWorks. Please speak to your Administrator about what they mean.
+
+Ideally each report status should have a response template assgined to it to let the resident know what it means. <a href="https://www.societyworks.org/manuals/wasteworks/admin-tasks/#creating-and-editing-response-templates">See the Creating and editing response templates section</a>. 
+
 #### Importing dashboard data automatically
 
 You may wish to automatically import data from the dashboard into your system on a regular basis.
