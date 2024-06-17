@@ -50,6 +50,10 @@
             <input type="submit" value="Modify your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
          [% END %]
           </form>
+      [% ELSIF c.cobrand.moniker == 'brent' AND NOT is_staff %]
+          <p>
+            If you are looking to add another service, please contact our customer services team on 020 8937 5050 who will be able to do this for you.
+          </p>
       [% END %]
       [% IF c.cobrand.call_hook('waste_garden_allow_cancellation') == 'staff' AND is_staff %]
           <form method="post" action="[% c.uri_for_action('waste/garden_cancel', [ property.id ]) %]">
