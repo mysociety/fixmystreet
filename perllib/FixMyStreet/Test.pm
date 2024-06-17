@@ -5,6 +5,7 @@ use parent qw(Exporter);
 use strict;
 use warnings FATAL => 'all';
 use utf8;
+use Data::Dumper::Concise::Sugar;
 use Test::More;
 use mySociety::Locale;
 
@@ -22,6 +23,7 @@ sub import {
     strict->import;
     warnings->import(FATAL => 'all');
     utf8->import;
+    Data::Dumper::Concise::Sugar->export_to_level(1);
     Test::More->export_to_level(1);
     $db->txn_begin;
 }

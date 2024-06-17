@@ -12,4 +12,9 @@ if [ -z "$1" ]; then
     set -- --listen :3000 --Reload perllib,conf
 fi
 
-bin/cron-wrapper local/bin/plackup -s Starman $@
+DWARN=""
+if [ -n "$FIXMYSTREET_APP_DEBUG" -a "$FIXMYSTREET_APP_DEBUG" != "0" ]; then
+    DWARN="-MDevel::Dwarn"
+fi
+
+bin/cron-wrapper perl $DWARN local/bin/plackup -s Starman $@

@@ -7,6 +7,7 @@ sub import {
     strict->import;
     warnings->import(FATAL => 'all');
     utf8->import;
+    Data::Dumper::Concise::Sugar->export_to_level(1);
     Test::More->export_to_level(1);
 }
 
