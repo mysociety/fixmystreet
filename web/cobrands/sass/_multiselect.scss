@@ -189,42 +189,6 @@ $govuk-small-input-visible-size: 24px;
         line-height: $govuk-small-input-visible-size;
     }
 
-    &:has(> input[type="checkbox"]:checked),
-    &:has(> input[type="radio"]:checked) {
-        &::after {
-        opacity: 1;
-        }
-    }
-
-    &:has(> input[type="checkbox"]){
-        &:after {
-        // Check icon
-        content: "";
-        box-sizing: border-box;
-        position: absolute;
-        top: $govuk-small-input-visible-size / 2;
-        left: $govuk-small-input-visible-size / 2;
-        clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
-        border: solid 10px $govuk-input-border-color;
-        opacity: 0;
-        }
-    }
-
-    &:has(> input[type="radio"]){
-        &:after {
-        // Circle icon
-        content: "";
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        width: 14px;
-        height: 14px;
-        clip-path: circle(50%);
-        opacity: 0;
-        background-color: $govuk-input-border-color;
-        }
-    }
-
     &:before {
         content: "";
         box-sizing: border-box;
@@ -253,6 +217,82 @@ $govuk-small-input-visible-size: 24px;
     &:focus-within:hover {
         &:before {
         box-shadow: 0 0 0 5px $govuk-input-focus-box-shadow, 0 0 0 10px $govuk-input-hover-box-shadow;
+        }
+    }
+
+    @supports( #{"selector(:has(*))"} ) {
+        &:has(> input[type="checkbox"]:checked),
+        &:has(> input[type="radio"]:checked) {
+            &::after {
+            opacity: 1;
+            }
+        }
+    
+        &:has(> input[type="checkbox"]){
+            &:after {
+            // Check icon
+            content: "";
+            box-sizing: border-box;
+            position: absolute;
+            top: $govuk-small-input-visible-size / 2;
+            left: $govuk-small-input-visible-size / 2;
+            clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
+            border: solid 10px $govuk-input-border-color;
+            opacity: 0;
+            }
+        }
+    
+        &:has(> input[type="radio"]){
+            &:after {
+            // Circle icon
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 14px;
+            height: 14px;
+            clip-path: circle(50%);
+            opacity: 0;
+            background-color: $govuk-input-border-color;
+            }
+        }
+    }
+
+    // When has() selector is not available
+    &.govuk-multi-select__label--checked {
+        &::after {
+        opacity: 1;
+        }
+    }
+
+    // When has() selector is not available
+    &.govuk-multi-select__label--checkbox {
+        &:after {
+        // Check icon
+        content: "";
+        box-sizing: border-box;
+        position: absolute;
+        top: $govuk-small-input-visible-size / 2;
+        left: $govuk-small-input-visible-size / 2;
+        clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
+        border: solid 10px $govuk-input-border-color;
+        opacity: 0;
+        }
+    }
+
+    // When has() selector is not available
+    &.govuk-multi-select__label--radio {
+        &:after {
+        // Circle icon
+        content: "";
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 14px;
+        height: 14px;
+        clip-path: circle(50%);
+        opacity: 0;
+        background-color: $govuk-input-border-color;
         }
     }
 }

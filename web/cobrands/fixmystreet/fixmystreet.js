@@ -1100,6 +1100,35 @@ $.extend(fixmystreet.set_up, {
     update_label('#filter_categories', translation_strings.select_category_aria_label);
   },
 
+  has_selector_checker: function() {
+    var supportsHas = CSS.supports('selector(:has(*))');
+
+    if (!supportsHas) {
+        $('.govuk-multi-select__label').each(function() {
+            var label = $(this);
+            var input = label.find('input[type="checkbox"], input[type="radio"]');
+      
+            if (input.attr('type') === 'checkbox') {
+              label.addClass('govuk-multi-select__label--checkbox');
+            } else if (input.attr('type') === 'radio') {
+              label.addClass('govuk-multi-select__label--radio');
+            }
+      
+            if (input.prop('checked')) {
+              label.addClass('govuk-multi-select__label--checked');
+            }
+      
+            input.on('change', function() {
+              if (this.checked) {
+                label.addClass('govuk-multi-select__label--checked');
+              } else {
+                label.removeClass('govuk-multi-select__label--checked');
+              }
+            });
+          });
+    }
+  },
+
   label_accessibility_update: function() {
     // Replace unnecessary labels with a span and include a
     // proper aria-label to improve accessibility.
