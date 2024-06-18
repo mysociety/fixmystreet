@@ -96,7 +96,8 @@ sub find_available_bulky_slots {
         = 'peterborough:bartec:available_bulky_slots:'
         . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
         . $property->{uprn};
-    return $c->session->{$key} if $c->session->{$key};
+    my $data = $c->waste_cache_get($key);
+    return $data if $data;
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
@@ -176,9 +177,7 @@ sub find_available_bulky_slots {
         }
     }
 
-    $c->session->{$key} = \@available_slots;
-
-    return \@available_slots;
+    return $c->waste_cache_set($key, \@available_slots);
 }
 
 sub collection_date {
