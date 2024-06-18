@@ -176,13 +176,13 @@ $govuk-small-input-visible-size: 24px;
 }
 
 .govuk-multi-select__label {
-display: inline-block;
-padding: 10px 0px 10px $govuk-small-input-size;
-cursor: pointer;
-touch-action: manipulation;
-font-size: 1.1875rem;
-line-height: 1.3157894737;
-position: relative;
+    display: inline-block;
+    padding: 10px 0px 10px $govuk-small-input-size;
+    cursor: pointer;
+    touch-action: manipulation;
+    font-size: 1.1875rem;
+    line-height: 1.3157894737;
+    position: relative;
 
     .govuk-small & {
         font-size: 1rem;
