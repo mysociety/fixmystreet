@@ -1,6 +1,6 @@
 [% IF unit.report_open %]
   <span class="waste-service-descriptor">
-    A [% unit.service_name FILTER lower %] collection has been reported as missed
+    A [% unit.service_name FILTER lower %] collection has already been reported, our waste contractor will return shortly to complete this collection
     [% IF unit.report_url %] – <a href="[% unit.report_url %]" class="waste-service-link">check status</a>[% END %]
   </span>
 [% ELSIF unit.report_locked_out %]
