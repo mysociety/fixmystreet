@@ -103,3 +103,17 @@ ol.big-numbers > li:before {
     background: url(/cobrands/bexley/images/logo.png) 0 50% no-repeat;
     background-size: 150px 60px;
 }
+
+/* WasteWorks */
+.waste__address {
+    margin-bottom: 1em;
+}
+
+.link-no-visited-style {
+    &:visited {
+        color: $link-color;
+        &:hover {
+            color: $link-hover-color;
+        }
+    }
+}
