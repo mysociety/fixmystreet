@@ -25,6 +25,7 @@ GetOptions(
 
 my $rs = FixMyStreet::DB->resultset("Session")->search(undef, { cursor_page_size => 1000 });
 my $now = time();
+my $waste_cutoff = $now - 86400;
 
 # Delete expired sessions (including from in User object)
 # And update last active time of current sessions
@@ -47,6 +48,24 @@ while (my $session = $rs->next) {
     if ($user) {
         update_user_last_active($user, $expires);
         $user->update;
+    }
+
+    next unless $session->in_storage;
+
+    # Check old waste cache
+    my $any = 0;
+    my $data = $session->data;
+    my $waste_data = $data->{waste};
+    foreach (keys %$waste_data) {
+        my $time = $waste_data->{$_}[0];
+        if ($time < $waste_cutoff) {
+            delete $waste_data->{$_};
+            $any = 1;
+        }
+    }
+    if ($any) {
+        $session->data($data);
+        $session->update;
     }
 }
 
