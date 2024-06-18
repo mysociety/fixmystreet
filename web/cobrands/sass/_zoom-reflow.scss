@@ -1,0 +1,8 @@
+// Style to comply with WCAG 1.4.10 Reflow
+//https://www.w3.org/WAI/WCAG21/Understanding/reflow.html
+
+@media (max-width: 500px)  {
+     html {
+      font-size: 100% !important;
+     }
+}

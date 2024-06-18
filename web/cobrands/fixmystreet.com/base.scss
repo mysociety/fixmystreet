@@ -19,7 +19,7 @@
 
     // Vertically centre the 35px SVG in the 60px mobile header.
     svg {
-        margin-top: ((60px - 35px) / 2);
+        margin-top: (($header-height - 2.1875rem) / 2);
     }
 }
 
@@ -40,13 +40,13 @@ svg|g.site-logo__svg {
 // and on the homepage when a browser doesn't support inline SVGs.
 .site-logo__fallback {
     display: block;
-    width: 175px;
+    width: 10.9375rem;
     height: 0;
-    padding-top: 60px;
+    padding-top: $header-height;
     overflow: hidden;
     background-position: 0 50%;
     background-repeat: no-repeat;
-    background-size: 175px 35px;
+    background-size: 10.9375rem 2.1875rem;
     @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
 }
 
