@@ -134,6 +134,7 @@ $whitespace_mock->mock(
     }
 );
 my $comment_user = $mech->create_user_ok('comment');
+my $user = $mech->create_user_ok('test@example.com', name => 'Test User', email_verified => 1);
 my $body = $mech->create_body_ok(
     2494,
     'London Borough of Bexley',
@@ -184,6 +185,33 @@ $contact->set_extra_fields(
 );
 
 $contact->update;
+
+my $contact2 = $mech->create_contact_ok(
+    body => $body,
+    category => 'Missed collection enquiry',
+    email => 'waste-enquiry@example.org',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+);
+$contact2->set_extra_fields(
+    {
+        code => "waste_types",
+        description => "Which collections would you like to report as missed?",
+        datatype => "multivaluelist",
+        required => "true",
+        values => [
+            map { { key => $_, name => $_ } } (
+                "Refuse",
+                "Paper/card recycling",
+                "Plastics/glass recycling",
+                "Food waste",
+                "Garden waste",
+                "Mixed recycling"
+            )
+        ],
+    }
+);
+$contact2->update;
 
 my ($existing_missed_collection_report1) = $mech->create_problems_for_body(1, $body->id, 'Report missed collection', {
     external_id => "Whitespace-4",
@@ -256,7 +284,7 @@ FixMyStreet::override_config {
             'Correct address string displayed',
         );
         $mech->content_contains(
-            'Your rotation schedule is Week 1',
+            'Your schedule is Week 1',
             'Correct rotation schedule displayed',
         );
 
@@ -430,7 +458,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
             $mech->submit_form_ok( { with_fields => { address => $test->{address} } } );
             $mech->content_contains(
-                "Your rotation schedule is Week $test->{link}",
+                "Your schedule is Week $test->{link}",
                 'Correct rotation schedule displayed',
             );
             $mech->content_contains('<li><a target="_blank" href="PDF '. $test->{link} . '">View and download collection calendar', 'PDF link ' . $test->{link} . ' shown');
@@ -610,6 +638,11 @@ FixMyStreet::override_config {
                 ->{staff_or_assisted} };
     };
 
+    subtest 'Correct labels used when reporting missed collection' => sub {
+        $mech->get_ok('/waste/10001/report');
+        $mech->content_contains('Non-recyclable waste', 'includes service description in the checkbox label');
+    };
+
     subtest 'Making a missed collection report' => sub {
         $mech->get_ok('/waste/10001/report');
         $mech->submit_form_ok(
@@ -624,7 +657,7 @@ FixMyStreet::override_config {
 
         $mech->content_contains('Missed collection has been reported');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
         ok $report->confirmed;
         is $report->state, 'confirmed';
@@ -646,7 +679,7 @@ FixMyStreet::override_config {
             { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
             'Submitting missed collection report');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
         is $report->get_extra_field_value('uprn'), '10001', 'Report is against the parent property';
     };
@@ -1006,6 +1039,23 @@ FixMyStreet::override_config {
         set_fixed_time('2024-03-31T02:00:00'); # March 31st, 02:00 BST
     };
 
+    subtest 'Enquiry form for properties with no collections' => sub {
+        $mech->get_ok('/waste/10006');
+        $mech->content_contains('/waste/10006/enquiry?template=no-collections', 'link to no collections form present');
+        $mech->get_ok('/waste/10006/enquiry?template=no-collections');
+        $mech->submit_form_ok( { with_fields => { category => 'Missed collection enquiry' } } );
+        $mech->content_contains('Which collections would you like to report as missed?');
+        $mech->content_contains('Paper/card recycling');
+        $mech->submit_form_ok( { with_fields => { extra_waste_types => 'Refuse' } } );
+        $mech->content_contains('Full name');
+        $mech->submit_form_ok( { with_fields => { name => 'Test User', email => 'test@example.org' } } );
+        $mech->content_contains('Refuse');
+        $mech->content_contains('Test User');
+        $mech->content_contains('test@example.org');
+        $mech->content_contains('Please review the information you’ve provided before you submit your enquiry.');
+        $mech->submit_form_ok( { with_fields => { submit => 'Submit' } } );
+        $mech->content_contains('Nearly done! Now check your email');
+    };
 };
 
 FixMyStreet::override_config {
@@ -1307,6 +1357,15 @@ sub _site_info {
                 SiteLongitude    => 0.181108,
             },
         },
+        10006 => {
+            AccountSiteID   => 6,
+            AccountSiteUPRN => 10006,
+            Site            => {
+                SiteShortAddress => ', 6, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
     };
 }
 
@@ -1466,6 +1525,7 @@ sub _site_collections {
                 RoundSchedule => 'N/A',
             },
         ],
+        10006 => [],
     };
 }
 

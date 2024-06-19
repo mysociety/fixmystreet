@@ -1352,7 +1352,7 @@ $.extend(fixmystreet.set_up, {
         $('.js-new-report-user-hidden')[0].scrollIntoView({behavior: "smooth"});
         hide('.js-new-report-user-hidden');
         show('.js-new-report-user-shown').then(function(){
-            focusFirstVisibleInput();
+            $(this).find('.form-section-preview h2').trigger('focus');
         });
     });
 
@@ -1512,12 +1512,23 @@ $.extend(fixmystreet.set_up, {
     });
     $('body').on('click', '#alert_email_button', function(e) {
         e.preventDefault();
+
+        var emailInput = $(this).closest('.js-alert-list').find('input[type=email]');
+        emailInput[0].required = true;
+
+        if (!$(this).closest('form').validate().form()) {
+            emailInput.focus();
+            return;
+        }
+
         var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
         form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
+
         $(this).closest('.js-alert-list').find('textarea, input[type=email], input[type=text], input[type=hidden], input[type=radio]:checked').each(function() {
             var $v = $(this);
             $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
         });
+
         $('body').append(form);
         form.trigger('submit');
     });

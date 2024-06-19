@@ -32,13 +32,18 @@ foreach my $test (
     },
     {
         pc              => 'xxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        errors          => ['Sorry, we could not find that location.'],
+        errors => [
+            'Error: Please enter a valid postcode or area',
+            'Sorry, we could not find that location.',
+        ],
         pc_alternatives => [],
     },
     {
         pc => 'Glenthorpe Ct, Katy, TX 77494, USA',
-        errors =>
-          ['Sorry, we could not find that location.'],
+        errors => [
+            'Error: Please enter a valid postcode or area',
+            'Sorry, we could not find that location.',
+        ],
         pc_alternatives => [],
     },
   )

@@ -233,7 +233,7 @@ FixMyStreet::override_config {
             update => "This is a second public update, of normal update form, no actual change.",
         } });
         $report->discard_changes;
-        my $comment = ($report->comments( undef, { order_by => { -desc => 'id' } } )->all)[1]->text;
+        my $comment = ($report->comments->order_by('-id')->all)[1]->text;
         is $comment, "This is a public update.", 'Update was created';
         $mech->get_ok("/report/$report_id");
         my $meta = $mech->extract_update_metas;
@@ -620,7 +620,7 @@ FixMyStreet::override_config {
             photo1 => [ [ $sample_file, undef, Content_Type => 'image/jpeg' ], 1 ],
         } });
         $report->discard_changes;
-        my $comment = $report->comments(undef, { rows => 1, order_by => { -desc => "id" }})->first;
+        my $comment = $report->comments->order_by('-id')->first;
         is $comment->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg', 'photo added to comment';
         $mech->get_ok("/report/$report_id");
         $mech->content_contains("/photo/c/" . $comment->id . ".0.jpeg");

@@ -896,7 +896,7 @@ subtest 'Can select asset that is in Lewisham area on Bromley Cobrand' => sub {
                 latitude => 51.418776,
                 fms_extra_title => 'Mr'
             }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
-        my $problem = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $problem->title, 'Lamp issue in Lewisham on Bromley', 'Report has been made';
         is $problem->body, 'Bromley Council', 'Problem on correct body';
     };
@@ -919,7 +919,7 @@ subtest 'Can select asset that is in Lewisham area on FMS' => sub {
                 latitude => 51.418776,
                 fms_extra_title => 'Mr'
             }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
-        my $problem = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $problem->title, 'Lamp issue in Lewisham on FMS', 'Report has been made';
         is $problem->body, 'Bromley Council', 'Problem on correct body';
     };

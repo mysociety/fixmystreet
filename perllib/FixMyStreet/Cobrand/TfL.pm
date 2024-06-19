@@ -217,7 +217,7 @@ sub roles_from_oidc {
     my $role_map = $cfg->{role_map} || {};
 
     my @body_roles;
-    for ($user->from_body->roles->search(undef, { order_by => 'name' })->all) {
+    for ($user->from_body->roles->order_by('name')->all) {
         push @body_roles, {
             id => $_->id,
             name => $_->name,
@@ -285,7 +285,7 @@ sub dashboard_export_problems_add_columns {
     );
     $csv->splice_csv_column('fixed', action_scheduled => 'Action scheduled');
 
-    my @contacts = $csv->body->contacts->search(undef, { order_by => [ 'category' ] } )->all;
+    my @contacts = $csv->body->contacts->order_by('category')->all;
     my %extra_columns;
     if (@{$csv->category}) {
         my %picked_cats = map { $_ => 1} @{$csv->category};
@@ -444,6 +444,20 @@ sub report_new_munge_before_insert {
     $report->set_extra_fields(@$extra);
 }
 
+=head2 report_validation
+
+Allow through "TfL" as a name if reporting as staff.
+
+=cut
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    if ($errors->{name} && $report->name eq 'TfL' && $report->user->from_body) {
+        delete $errors->{name};
+    }
+}
+
 sub report_new_is_on_tlrn {
     my ( $self ) = @_;
 
@@ -599,6 +613,7 @@ sub _tlrn_categories { [
     "Manhole Cover - Missing",
     "Mobile Crane Operation",
     "Other (TfL)",
+    "Overgrown vegetation",
     "Pavement Defect (uneven surface / cracked paving slab)",
     "Pavement Overcrowding",
     "Pothole (major)",

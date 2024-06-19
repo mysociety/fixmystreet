@@ -116,7 +116,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Claim submitted');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->title, "Claim";
         is $report->bodies_str, $body->id;
         my $report_id = $report->id;
@@ -219,7 +219,7 @@ EOF
         $mech->submit_form_ok({ with_fields => { process => 'summary' } }, "Claim submitted");
         $mech->content_contains('Claim submitted');
         $mech->content_contains('is a lengthy process');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         my $report_id = $report->id;
         is $report->comments->count, 0, 'No updates added to report';
         FixMyStreet::Script::Reports::send();

@@ -246,7 +246,7 @@ subtest "changing of categories" => sub {
     is( $report->category, "Cat1", "Category set to Cat1" );
 
     # get the latest comment
-    my $comments_rs = $report->comments->search({},{ order_by => { -desc => "created" } });
+    my $comments_rs = $report->comments->order_by('-created');
     ok ( !$comments_rs->first, "There are no comments yet" );
 
     # change the category via the web interface
@@ -801,7 +801,7 @@ my $internal;
 subtest 'test flagged users make internal reports' => sub {
     $user->update({ flagged => 1 });
     $mech->submit_form( with_fields => { phone => "01234", category => 'Cat1', detail => 'Details' } );
-    $internal = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' }, rows => 1 })->single;
+    $internal = FixMyStreet::DB->resultset('Problem')->order_by('-id')->search(undef, { rows => 1 })->single;
     is $internal->non_public, 1;
     $mech->clear_emails_ok;
 };

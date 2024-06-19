@@ -404,9 +404,7 @@ sub _process_reference {
             id => $id,
             extra => { '@>' => encode_json({ payerReference => $payer }) },
         ]
-    }, {
-        order_by => { -desc => 'created' }
-    })->to_body( $self->body );
+    })->order_by('-created')->to_body( $self->body );
 
     return ($uprn, $rs);
 }

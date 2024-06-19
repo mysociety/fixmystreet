@@ -349,7 +349,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Dear West Northamptonshire Council,/;
         like $body, qr/http:\/\/www\.example\.org/, 'correct link';
-        like $body, qr/Never retype another FixMyStreet report/, 'Has FMS promo text';
+        like $body, qr/FixMyStreet is an independent service/, 'Has FMS promo text';
     };
 
     subtest 'Check report emails to police use correct branding' => sub {
@@ -364,7 +364,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Dear Northamptonshire Police,/;
         like $body, qr/http:\/\/www\.example\.org/, 'correct link';
-        like $body, qr/Never retype another FixMyStreet report/, 'Has FMS promo text';
+        like $body, qr/FixMyStreet is an independent service/, 'Has FMS promo text';
     };
 
     subtest 'Check report emails to highways use correct branding' => sub {

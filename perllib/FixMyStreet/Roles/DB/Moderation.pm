@@ -12,7 +12,7 @@ sub latest_moderation {
 
     return $self->moderation_original_datas->search(
         $self->moderation_filter,
-        { order_by => { -desc => 'id' } })->first;
+    )->order_by('-id')->first;
 }
 
 sub latest_moderation_log_entry {
@@ -28,7 +28,7 @@ sub latest_moderation_log_entry {
     })->first;
     return $log if $log;
 
-    return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => { -desc => 'id' } })->first;
+    return $self->admin_log_entries->search({ action => 'moderation' })->order_by('-id')->first;
 }
 
 =head2 moderation_history
@@ -41,7 +41,7 @@ sub moderation_history {
     my $self = shift;
     return $self->moderation_original_datas->search(
         $self->moderation_filter,
-        { order_by => { -desc => 'id' } })->all;
+    )->order_by('-id')->all;
 }
 
 1;

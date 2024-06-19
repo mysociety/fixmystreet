@@ -202,7 +202,7 @@ sub add : Local : Args(0) {
 sub fetch_body_roles : Private {
     my ($self, $c, $body ) = @_;
 
-    my $roles = $body->roles->search(undef, { order_by => 'name' });
+    my $roles = $body->roles->order_by('name');
     unless ($roles) {
         delete $c->stash->{roles}; # Body doesn't have any roles
         return;

@@ -767,8 +767,7 @@ sub waste_check_last_update {
 
     my $latest = $report->comments->search(
         { external_id => 'waste', },
-        { order_by => { -desc => 'id' } }
-    )->first;
+    )->order_by('-id')->first;
 
     if ($latest) {
         my $state = $cfg->{updates}->current_open311->map_state($status);

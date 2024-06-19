@@ -1015,7 +1015,7 @@ subtest 'check that external_status_code is stored correctly' => sub {
     $problem->discard_changes;
     is $problem->comments->count, 2, 'two comments after fetching updates';
 
-    my @comments = $problem->comments->search(undef, { order_by => [ 'created' ] } )->all;
+    my @comments = $problem->comments->order_by('created')->all;
 
     is $comments[0]->get_extra_metadata('external_status_code'), "060", "correct external status code on first comment";
     is $comments[1]->get_extra_metadata('external_status_code'), "101", "correct external status code on second comment";
@@ -1327,7 +1327,7 @@ foreach my $test (
 
         is $problem->comments->count, 2, 'two comment after fetching updates';
 
-        my @updates = $problem->comments->search(undef, { order_by => { -asc => 'created' } })->all;
+        my @updates = $problem->comments->order_by('created')->all;
         is $updates[0]->external_id, 'auto-internal', "Automatic update is the earlier update";
         is $updates[1]->created, $updates[0]->created->add( seconds => 1), "New update is one second later than automatic update";
         $problem->comments->delete;
@@ -1404,7 +1404,7 @@ for my $test (
         $problem->discard_changes;
         is $problem->comments->count, 2, 'two comment after fetching updates';
 
-        my @comments = $problem->comments->search(undef, { order_by => 'confirmed' });
+        my @comments = $problem->comments->order_by('confirmed');
 
         is $comments[0]->text, "Thank you for your report. We will provide an update within 48 hours.", "correct external status code on first comment";
         is $comments[1]->text, "Thank you for your report. We will provide an update within 24 hours.", "correct external status code on second comment";
@@ -1755,7 +1755,7 @@ subtest 'check matching on fixmystreet_id overrides service_request_id' => sub {
     $problem->discard_changes;
     is $problem->comments->count, 2, 'two comments after fetching updates';
 
-    my @comments = $problem->comments->search(undef, { order_by => [ 'created' ] } )->all;
+    my @comments = $problem->comments->order_by('created')->all;
 
     is $comments[0]->external_id, 638344, "correct first comment added";
     is $comments[1]->external_id, 638356, "correct second comment added";

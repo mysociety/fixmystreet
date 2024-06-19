@@ -544,7 +544,7 @@ FixMyStreet::override_config {
         subtest 'Confirmation page' => sub {
             $mech->content_contains('Payment successful');
 
-            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
             is $report->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
@@ -1011,7 +1011,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { payenet_code => 123456 } });
         $mech->content_contains('Collection booked');
 
-        $report2 = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $report2 = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report2->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
         is $report2->category, 'Bulky collection';
         is $report2->title, 'Bulky goods collection';
@@ -1379,7 +1379,7 @@ FixMyStreet::override_config {
         $mech->content_contains("Confirm Booking");
         $mech->content_lacks("Confirm Payment");
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
         subtest 'Retrying failed payments' => sub {
             $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });
@@ -1468,7 +1468,7 @@ FixMyStreet::override_config {
         $mech->get_ok($link);
         $mech->content_contains('Collection booked');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
         is $report->category, 'Bulky collection';
         is $report->title, 'Bulky goods collection';

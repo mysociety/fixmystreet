@@ -970,10 +970,11 @@ sub construct_bin_report_form {
         }
 
         my $name = $_->{service_name};
+        my $description = $_->{service_description};
         push @$field_list, "service-$id" => {
             type => 'Checkbox',
             label => $name,
-            option_label => $name,
+            option_label => $description ? $description : $name,
         };
     }
 
@@ -1368,10 +1369,7 @@ sub get_original_sub : Private {
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
         state => { '!=' => 'hidden' },
-    },
-    {
-        order_by => { -desc => 'id' }
-    })->to_body($c->cobrand->body);
+    })->order_by('-id')->to_body($c->cobrand->body);
 
     if ($type eq 'user' && !$c->stash->{is_staff}) {
         $p = $p->search({

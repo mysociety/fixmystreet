@@ -372,7 +372,7 @@ sub add_report {
     # Anonymous test done as superuser, which redirects
     $mech->content_contains('Thank you for reporting this issue')
         unless $permission eq 'contribute_as_anonymous_user';
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->state, 'confirmed', "report is now confirmed";
     return $report;
@@ -406,7 +406,7 @@ sub add_update {
         }, "submit details");
     };
     $mech->content_contains('Thank you for updating this issue');
-    my $update = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
     ok $update, "Found the update";
     is $update->state, 'confirmed', "update is now confirmed";
     return $update;

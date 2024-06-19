@@ -57,7 +57,7 @@ create_contact({ category => 'Request new container', email => '1635' }, 'Waste'
     { code => 'payment', required => 0, automated => 'hidden_field' },
 );
 
-my $sent_params;
+my ($sent_params, $sent_data);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'kingston',
@@ -180,7 +180,9 @@ FixMyStreet::override_config {
 
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
         my $pay_params = $sent_params;
-        is scalar @{$pay_params->{items}}, 5, 'right number of line items';
+        is scalar @{$pay_params->{items}}, 4, 'right number of line items';
+
+        is $sent_data->{sale}{'scpbase:saleSummary'}{'scpbase:amountInMinorUnits'}, 4500, 'correct total';
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
@@ -190,7 +192,7 @@ FixMyStreet::override_config {
         is $report->detail, "2 Example Street, Kingston, KT1 1AA";
         is $report->category, 'Request new container';
         is $report->title, 'Request Green recycling bin (240L) collection';
-        is $report->get_extra_field_value('payment'), 1800, 'correct payment';
+        is $report->get_extra_field_value('payment'), '', 'correct payment';
         is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $report->get_extra_field_value('Container_Type'), 12, 'correct bin type';
         is $report->get_extra_field_value('Action'), 2, 'correct container request action';
@@ -198,27 +200,30 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
         my $sent_count = 0;
-        is $pay_params->{items}[$sent_count]{amount}, 1800;
-        is $pay_params->{items}[$sent_count]{lineId}, 'RBK-CCH-' . $report->id . '-Bob Marge';
-        $sent_count++;
-
         foreach (@{ $report->get_extra_metadata('grouped_ids') }) {
             my $report = FixMyStreet::DB->resultset("Problem")->find($_);
             is $report->get_extra_field_value('uprn'), 1000000002;
             if ($report->title =~ /^Request Green recycling box/) {
                 is $report->get_extra_field_value('Container_Type'), 16, 'correct bin type';
+                if ($report->title =~ /delivery/) {
+                    is $report->get_extra_field_value('payment'), 1800, 'correct payment';
+                } else {
+                    is $report->get_extra_field_value('payment'), 900, 'correct payment';
+                }
             } elsif ($report->title eq 'Request Black rubbish bin delivery') {
                 is $report->get_extra_field_value('Container_Type'), 2, 'correct bin type';
+                is $report->get_extra_field_value('payment'), 900, 'correct payment';
             } elsif ($report->title eq 'Request Food waste bin (outdoor) delivery') {
                 is $report->get_extra_field_value('Container_Type'), 24, 'correct bin type';
+                is $report->get_extra_field_value('payment'), "", 'correct payment';
             } elsif ($report->title eq 'Request Blue lid paper and cardboard bin (240L) replacement') {
                 is $report->get_extra_field_value('Container_Type'), 19, 'correct bin type';
+                is $report->get_extra_field_value('payment'), 900, 'correct payment';
             } else {
                 is $report->title, 'BAD';
             }
             is $report->detail, "2 Example Street, Kingston, KT1 1AA";
             is $report->category, 'Request new container';
-            is $report->get_extra_field_value('payment'), $report->title =~ /Food/ ? "" : 900, 'correct payment';
             is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             if ($report->title =~ /replacement$/) {
                 is $report->get_extra_field_value('Action'), 3, 'correct container request action';
@@ -230,7 +235,7 @@ FixMyStreet::override_config {
             next if $report->title =~ /Food/;
             is $pay_params->{items}[$sent_count]{description}, $report->title;
             is $pay_params->{items}[$sent_count]{lineId}, 'RBK-CCH-' . $report->id . '-Bob Marge';
-            is $pay_params->{items}[$sent_count]{amount}, 900;
+            is $pay_params->{items}[$sent_count]{amount}, $sent_count == 0 ? 1800 : 900;
             $sent_count++;
         }
 
@@ -332,7 +337,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('collection has been reported');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Report missed Food waste\n\n2 Example Street, Kingston, KT1 1AA";
         is $report->title, 'Report missed Food waste';
@@ -418,7 +423,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "2 Example Street, Kingston, KT1 1AA";
         is $report->category, 'Request new container';
@@ -492,9 +497,12 @@ sub shared_echo_mocks {
 sub shared_scp_mocks {
     my $pay = Test::MockModule->new('Integrations::SCP');
 
-    $pay->mock(pay => sub {
+    # Mocking out only the pay response
+    $pay->mock(credentials => sub { {} });
+    $pay->mock(call => sub {
         my $self = shift;
-        $sent_params = shift;
+        my $method = shift;
+        $sent_data = { @_ };
         return {
             transactionState => 'IN_PROGRESS',
             scpReference => '12345',
@@ -503,6 +511,11 @@ sub shared_scp_mocks {
                 redirectUrl => 'http://example.org/faq'
             }
         };
+    });
+    $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return $pay->original('pay')->($self, $sent_params);
     });
     $pay->mock(query => sub {
         my $self = shift;

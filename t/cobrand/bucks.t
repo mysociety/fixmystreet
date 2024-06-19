@@ -194,7 +194,7 @@ subtest 'Flytipping not on a road gets recategorised' => sub {
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council.');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping (off-road)", 'Report was recategorised correctly';
 };
@@ -211,7 +211,7 @@ subtest 'Flytipping not on a road on .com gets recategorised' => sub {
         }
     }, "submit details");
     $mech->content_contains('on its way to the council right now');
-    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping (off-road)", 'Report was recategorised correctly';
     ok $mech->host("buckinghamshire.fixmystreet.com"), "change host to bucks";
@@ -239,7 +239,7 @@ subtest 'Flytipping not on a road going to HE does not get recategorised' => sub
         }
     }, "submit details");
     $mech->content_contains('From the information you have given, we have passed this report on to:');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping", 'Report was not recategorised';
 
@@ -472,7 +472,7 @@ subtest 'sends grass cutting reports on roads under 30mph to the parish' => sub 
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
-    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 1', 'Got the correct report';
     is $report->bodies_str, $parish->id, 'Report was sent to parish';
@@ -507,7 +507,7 @@ subtest '.com reports get the logged email too' => sub {
         }
     }, "submit details");
     $mech->content_contains('Thank you for reporting');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 1b', 'Got the correct report';
     is $report->bodies_str, $parish->id, 'Report was sent to parish';
@@ -529,7 +529,7 @@ subtest 'sends grass cutting reports on roads 30mph or more to the council' => s
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 2', 'Got the correct report';
     is $report->bodies_str, $body->id, 'Report was sent to council';
@@ -548,7 +548,7 @@ subtest "server side speed limit lookup for council grass cutting report" => sub
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 3', 'Got the correct report';
     is $report->bodies_str, $body->id, 'Report was sent to council';
@@ -566,7 +566,7 @@ subtest "server side speed limit lookup for parish grass cutting report" => sub 
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 4', 'Got the correct report';
     is $report->bodies_str, $parish->id, 'Report was sent to parish';
@@ -584,7 +584,7 @@ subtest "server side speed limit lookup with unknown speed limit" => sub {
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 5', 'Got the correct report';
     is $report->bodies_str, $body->id, 'Report was sent to council';
@@ -601,7 +601,7 @@ subtest 'treats problems sent to parishes as owned by Bucks' => sub {
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
 
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test Dirty signs report', 'Got the correct report';
 

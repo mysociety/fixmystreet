@@ -1291,6 +1291,7 @@ subtest "report confirmation page" => sub {
     }, sub {
         my ($report, $report2) = $mech->create_problems_for_body(2, $body_ids{2226}, 'Title',{
             category => 'Potholes', cobrand => 'fixmystreet',
+            dt => DateTime->now(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone),
         });
         $report->discard_changes;
 

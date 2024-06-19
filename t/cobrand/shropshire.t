@@ -182,7 +182,7 @@ FixMyStreet::override_config {
             from_body => $body, password => 'password');
 
         $mech->log_in_ok( $staffuser->email );
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $report->non_public(1);
         $report->update;
         $mech->get_ok('/dashboard?export=1');

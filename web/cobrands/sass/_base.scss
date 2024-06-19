@@ -619,6 +619,10 @@ small.or:after {
     padding-top: 0.6em;
     padding-bottom: 0.5em;
   }
+
+  &:has(.form-error) {
+    @include flex-direction(column);
+  }
 }
 
 .checkbox-group {
@@ -644,6 +648,7 @@ p.form-error {
   background: $error_color;
   color: #fff;
   padding: 0 0.5em;
+  margin-bottom: 0;
   @include border-radius(0.25em 0.25em 0 0);
   a {
     color: white;

@@ -608,6 +608,7 @@ sub image_for_unit {
         542 => "$base/caddy-green-recycling",
         544 => "$base/bin-brown-recycling",
         545 => "$base/bin-black-brown-lid-recycling",
+        bulky => "$base/bulky-white",
     };
     return $images->{$service_id};
 }

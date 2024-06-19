@@ -10,8 +10,13 @@
     <legend class="visuallyhidden">[% loc('Search for location of email alert or RSS feed') %]</legend>
     <label for="pc">[% loc('Postcode or street name and area') %]</label>
     <p class="form-hint" id="pc-hint">[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]</p>
+    [% IF location_error %]
+      <p id="email-error" class="form-error">[% location_error | safe %]</p>
+    [% ELSE %]
+      [% INCLUDE 'errors.html' %]
+    [% END %]
     <div>
-      <input type="text" id="pc" name="pc" value="[% pc | html %]" aria-describedby="pc-hint">
+      <input type="text" id="pc" name="pc" value="[% pc | html %]" aria-describedby="pc-hint [% IF location_error %]email-error[% END %]" required>
       [% INCLUDE 'around/_postcode_submit_button.html' %]
     </div>
   </fieldset>

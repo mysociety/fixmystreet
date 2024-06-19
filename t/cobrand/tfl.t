@@ -431,6 +431,30 @@ subtest "test report creation anonymously by staff user" => sub {
     $mech->log_out_ok;
 };
 
+subtest "test report creation as body by staff user" => sub {
+    $mech->log_in_ok( $staffuser->email );
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'BR1 3UH', } }, "submit location" );
+    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+    $mech->submit_form_ok({ with_fields => {
+        title => 'Test Report 3',
+        detail => 'Test report details.',
+        category => 'Bus stops',
+    } }, "submit report");
+    is_deeply $mech->page_errors, [], "check there were no errors";
+
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 3'});
+    ok $report, "Found the report";
+    is $report->name, 'TfL';
+    is $report->user->email, $staffuser->email;
+    is $report->anonymous, 0;
+    is $report->get_extra_metadata('contributed_as'), 'body';
+
+    $mech->content_contains('Your issue is on its way to Transport for London');
+    $mech->content_contains('Your reference for this report is FMS' . $report->id);
+    $mech->log_out_ok;
+};
+
 FixMyStreet::DB->resultset("Problem")->delete_all;
 
 my $tfl_staff = FixMyStreet::DB->resultset("User")->find({ email => 'test@tfl.gov.uk'});
@@ -1250,9 +1274,7 @@ for my $host ( 'tfl.fixmystreet.com', 'www.fixmystreet.com', 'bromley.fixmystree
                 "submit report form"
             );
 
-            my $report = FixMyStreet::App->model('DB::Problem')->to_body( $body->id )->search(undef, {
-                order_by => { -desc => 'id' },
-            })->first;
+            my $report = FixMyStreet::App->model('DB::Problem')->to_body( $body->id )->order_by('-id')->first;
             ok $report, "Found the report";
 
             is $report->get_extra_field_value('safety_critical'), $test->{safety_critical}, "safety critical flag set to " . $test->{safety_critical};

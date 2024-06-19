@@ -668,8 +668,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $sent_params, undef, "no one off payment if reducing bin count";
         check_extra_data_pre_confirm($new_report, type => 'Amend', state => 'confirmed', action => 2);
@@ -842,8 +841,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
@@ -866,8 +864,7 @@ FixMyStreet::override_config {
         extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => '12345' } ] }) }
     },
     {
-        order_by => { -desc => 'id' }
-    })->first;
+    })->order_by('-id')->first;
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_only_refuse_sacks);
 
@@ -1027,8 +1024,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
@@ -1106,8 +1102,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
@@ -1225,10 +1220,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
-        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        my $new_report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
@@ -1349,8 +1341,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';

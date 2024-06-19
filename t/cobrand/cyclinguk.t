@@ -30,7 +30,7 @@ my $super = $mech->create_user_ok( 'super@example.com', name => 'Super User', is
 $staff->alerts->create({
     alert_type => 'council_problems',
     parameter => $body->id,
-    whensubscribed => \"current_timestamp - '1 hour'::interval",
+    whensubscribed => DateTime->now->subtract( hours => 1 ),
     cobrand => 'cyclinguk',
     confirmed => 1,
 });
@@ -191,7 +191,7 @@ subtest 'New report user info fields' => sub {
         },
         'submit report form ok'
     );
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     is $report->name, "First Last";
     $mech->log_out_ok;
 
@@ -213,7 +213,7 @@ subtest 'New report user info fields' => sub {
         },
         'submit report form ok'
     );
-    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     is $report->name, "Brand New";
     is $report->get_extra_metadata('CyclingUK_marketing_opt_in'), 'yes';
 
@@ -235,7 +235,7 @@ subtest 'New report user info fields' => sub {
         },
         'submit report form ok'
     );
-    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     is $report->name, "Brand New";
     is $report->get_extra_metadata('CyclingUK_marketing_opt_in'), 'no';
 };

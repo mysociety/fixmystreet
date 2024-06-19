@@ -384,7 +384,7 @@ sub _fetch_features_url {
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
-    my @contacts = $csv->body->contacts->search(undef, { order_by => [ 'category' ] } )->all;
+    my @contacts = $csv->body->contacts->order_by('category')->all;
     my %extra_columns;
     foreach my $contact (@contacts) {
         foreach (@{$contact->get_metadata_for_storage}) {

@@ -315,7 +315,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest "special send handling" => sub {
         my $cbr = Test::MockModule->new('FixMyStreet::Cobrand::Hackney');
-        my $p = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $p = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $contact2->update({ email => 'park:parks@example;estate:estates@example;other:OTHER', send_method => '' });
 
         subtest 'in a park' => sub {
@@ -448,7 +448,7 @@ Rubble";
         (my $c_title = $c->param('attribute[title]')) =~ s/\r\n/\n/g;
         is $c_title, $expected_title;
 
-        my $p = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $p = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $c->param('attribute[requested_datetime]'), DateTime::Format::W3CDTF->format_datetime($p->confirmed->set_nanosecond(0));
     };
 };

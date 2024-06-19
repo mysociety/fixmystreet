@@ -1,5 +1,5 @@
 package FixMyStreet::DB::ResultSet::ResponseTemplate;
-use base 'DBIx::Class::ResultSet';
+use base 'FixMyStreet::DB::ResultSet';
 
 use Moo;
 

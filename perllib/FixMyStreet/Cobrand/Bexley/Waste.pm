@@ -103,8 +103,7 @@ sub waste_check_last_update {
 
     my $last_update = $report->comments->search(
         { external_id => { like => 'Whitespace%' } },
-        { order_by => { -desc => 'id' } }
-    )->first;
+    )->order_by('-id')->first;
 
     if ( $last_update && $new_state->{fms_state} eq $last_update->problem_state ) {
         print "  Latest update matches fetched state, skipping\n" if $params->{verbose};

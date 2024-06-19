@@ -197,7 +197,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
 sub fetch_contacts : Private {
     my ( $self, $c ) = @_;
 
-    my $contacts = $c->stash->{body}->contacts->search(undef, { order_by => [ 'category' ] } );
+    my $contacts = $c->stash->{body}->contacts->order_by('category');
     $c->stash->{contacts} = $contacts;
     $c->stash->{live_contacts} = $contacts->not_deleted_admin;
     $c->stash->{any_not_confirmed} = $contacts->search({ state => 'unconfirmed' })->count;

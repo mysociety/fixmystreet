@@ -143,6 +143,7 @@ subtest 'role report shows staff problem when staff logged in during problem rep
     $mech->get_ok($mech->get_link_from_email($mech->get_email));
     $mech->get_ok('/dashboard?body=' . $brent->id . '&state=&role=' . $role->id . '&start_date=&end_date=&group_by=category+state&export=1');
     $mech->content_contains('"Spraypaint on wall","Some kind of picture"', 'Report has contributed_by set and so shows in roles report');
+    FixMyStreet::DB->resultset('Problem')->order_by('-id')->first->delete;
     $mech->clear_emails_ok;
     $mech->log_out_ok;
   };
@@ -804,7 +805,7 @@ subtest 'push updating of reports' => sub {
         is $report->comments->count, 2, 'A new update';
         is $report->state, 'unable to fix', 'Changed to no further action';
 
-        $update = $report->comments->search(undef, { order_by => { -desc => 'id' } })->first;
+        $update = $report->comments->order_by('-id')->first;
         my $sent = FixMyStreet::DB->resultset("AlertSent")->search({ alert_id => $alert->id, parameter => $update->id })->first;
         is $sent, undef;
 
@@ -817,7 +818,7 @@ subtest 'push updating of reports' => sub {
         is $report->state, 'fixed - council', 'Changed to fixed';
         $report->update({ external_id => 'Echo-waste-7681-67' });
 
-        $update = $report->comments->search(undef, { order_by => { -desc => 'id' } })->first;
+        $update = $report->comments->order_by('-id')->first;
         $sent = FixMyStreet::DB->resultset("AlertSent")->search({ alert_id => $alert->id, parameter => $update->id })->first;
         isnt $sent, undef;
     };
@@ -841,7 +842,7 @@ subtest 'push updating of reports' => sub {
         $report->discard_changes;
         is $report->state, 'closed', 'A state change';
 
-        my $update = $report->comments->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $update = $report->comments->order_by('-id')->first;
         my $sent = FixMyStreet::DB->resultset("AlertSent")->search({ alert_id => $alert->id, parameter => $update->id })->first;
         is $sent, undef;
 
@@ -853,7 +854,7 @@ subtest 'push updating of reports' => sub {
         $report->discard_changes;
         is $report->state, 'fixed - council', 'A state change';
 
-        $update = $report->comments->search(undef, { order_by => { -desc => 'id' } })->first;
+        $update = $report->comments->order_by('-id')->first;
         $sent = FixMyStreet::DB->resultset("AlertSent")->search({ alert_id => $alert->id, parameter => $update->id })->first;
         isnt $sent, undef;
 
@@ -946,7 +947,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
 
         # Get the most recent report
-        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         is $report->get_extra_field_value('location_name'), 'King Edward VII Park, Wembley', 'Location name is set';
     };
 
@@ -964,7 +965,7 @@ FixMyStreet::override_config {
 
 
         # Get the most recent report and set the location_name
-        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         $report->update_extra_field( { name => 'location_name', value => 'Test location name' } );
         $report->update;
 
@@ -989,7 +990,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
 
         # Get the most recent report
-        my $report = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         is $report->get_extra_field_value('location_name'), 'King Edward VII Park, Wembley', 'Location name is set';
     };
 };
@@ -1220,7 +1221,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
         $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
         $mech->content_contains('Your container request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Container_Request_Container_Type'), '6::6';
         is $report->get_extra_field_value('Container_Request_Action'), '2::1';
@@ -1312,7 +1313,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry has been submitted');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->detail, "Behind the garden gate\n\n2 Example Street, Brent, NW2 1AA";
         is $report->user->email, 'anne@example.org';
         is $report->name, 'Anne Assist';
@@ -1330,7 +1331,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry has been submitted');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->detail, "Please do another collection for this address\n\n2 Example Street, Brent, NW2 1AA";
         is $report->user->email, 'anne@example.org';
         is $report->name, 'Anne Assist';
@@ -1348,7 +1349,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => "Staff User", email => 'staff@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Enquiry has been submitted');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->detail, "Domestic rubbish often missed at this address\n\n2 Example Street, Brent, NW2 1AA";
         is $report->user->email, 'staff@example.org';
         is $report->name, 'Staff User';
@@ -1390,7 +1391,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
         $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
         $mech->content_contains('Your container request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Container_Request_Container_Type'), '8';
         is $report->get_extra_field_value('Container_Request_Action'), '1';

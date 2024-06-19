@@ -253,9 +253,7 @@ sub find_unconfirmed_bulky_collections {
         category => 'Bulky collection',
         extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
         state => 'unconfirmed',
-    }, {
-        order_by => { -desc => 'id' }
-    });
+    })->order_by('-id');
 }
 
 sub find_pending_bulky_collections {
@@ -265,9 +263,7 @@ sub find_pending_bulky_collections {
         category => ['Bulky collection', 'Small items collection'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
         state => [ FixMyStreet::DB::Result::Problem->open_states ],
-    }, {
-        order_by => { -desc => 'id' }
-    });
+    })->order_by('-id');
 
     return wantarray ? $self->_since_last_week($rs) : $rs;
 }
@@ -279,9 +275,7 @@ sub find_recent_bulky_collections {
         category => ['Bulky collection', 'Small items collection'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
         state => [ FixMyStreet::DB::Result::Problem->closed_states, FixMyStreet::DB::Result::Problem->fixed_states ],
-    }, {
-        order_by => { -desc => 'id' }
-    });
+    })->order_by('-id');
 
     return wantarray ? $self->_since_last_week($rs) : $rs;
 }

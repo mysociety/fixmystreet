@@ -148,7 +148,7 @@ FixMyStreet::override_config {
             }
         }, "submit details");
         $mech->content_contains('Thank you for reporting');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         my $id = $report->id;
         ok $report, "Found the report";
         is $report->title, 'Test graffiti', 'Got the correct report';
@@ -322,7 +322,7 @@ subtest 'updating of waste reports' => sub {
         is $report->comments->count, 5, 'A new update';
         $report->discard_changes;
         is $report->state, 'fixed - council', 'A state change';
-        my $update = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
         is $update->photo, '34c2a90ba9eb225b87ca1bac05fddd0e08ac865f.jpeg';
 
         FixMyStreet::Script::Alerts::send_updates();

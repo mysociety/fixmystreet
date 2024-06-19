@@ -141,7 +141,7 @@ subtest 'Problem moderation' => sub {
         is $report->title, 'Good bad good';
         is $report->detail, 'Good bad bad bad good bad';
 
-        my @history = $report->moderation_original_datas->search(undef, { order_by => 'id' })->all;
+        my @history = $report->moderation_original_datas->order_by('id')->all;
         is @history, 2, 'Right number of entries';
         is $history[0]->title, 'Good bad good', 'Correct original title';
         is $history[1]->title, 'Good good', 'Correct second title';

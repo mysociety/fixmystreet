@@ -256,7 +256,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Containers typically arrive within two weeks,');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Quantity'), 2;
         is $report->get_extra_field_value('Container_Type'), 1;
@@ -277,7 +277,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your container request has been sent');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->title, 'Request new Garden Waste Container';
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Quantity'), 1;
@@ -305,7 +305,7 @@ FixMyStreet::override_config {
         is $emails[1]->header('To'), $user->email;
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Your report to Bromley Council has been logged/;
-        my @reports = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' }, rows => 2 });
+        my @reports = FixMyStreet::DB->resultset("Problem")->order_by('-id')->search(undef, { rows => 2 });
         is $reports[0]->state, 'confirmed';
         is $reports[0]->get_extra_field_value('uprn'), 1000000002;
         is $reports[0]->get_extra_field_value('Quantity'), 2;
@@ -351,7 +351,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('Notes'), 'Some notes';
         is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, $user->email;
@@ -374,7 +374,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('Notes'), 'Some notes';
         is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, $staff_user->email;
@@ -391,7 +391,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('Reason'), 'Reason';
         is $report->detail, "Behind the garden gate\n\nReason\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, 'anne@example.org';
@@ -1355,8 +1355,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
         is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
@@ -1402,8 +1401,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
         is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
@@ -1442,8 +1440,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
         is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
@@ -1507,8 +1504,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->state, 'unconfirmed', 'report confirmed';
@@ -1823,8 +1819,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
@@ -1953,10 +1948,7 @@ FixMyStreet::override_config {
         category => 'Garden Subscription',
         title => 'Garden Subscription - New',
         extra => { '@>' => '{"_fields":[{"name":"property_id","value":"12345"}]}' },
-    },
-    {
-        order_by => { -desc => 'id' }
-    })->first;
+    })->order_by('-id')->first;
     $report->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
     $report->update;
 
@@ -2143,10 +2135,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
-        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        my $new_report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
@@ -2661,8 +2650,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
