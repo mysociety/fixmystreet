@@ -11,6 +11,7 @@ $merton-green-g1: #7bbb58;
 $merton-neutrals-n1: #000000;
 $merton-headline: #333333;
 $merton-dark-green: #044925;
+$merton-white: #fff;
 
 $link-color: #078141;
 $link-hover-color: $merton-neutrals-n1;
@@ -19,13 +20,13 @@ $primary: $merton-lavender-l1;
 $primary_b: #676767;
 $primary_text: #676767;
 
-$base_bg: $merton-grey-g2;
+$base_bg: $merton-white;
 $base_fg: #000;
 
 $error_color: #e00;
 
-$nav_background_colour: #fff;
-$nav_colour: #676767;
+$nav_background_colour: $merton-white;
+$nav_colour: $merton-dark-green;
 $nav_hover_background_colour: #f4f4f4;
 
 $header-top-border-width: 0;
@@ -34,6 +35,33 @@ $header-top-border: none;
 $body-font: Helvetica, Arial, sans-serif;
 $meta-font: $body-font;
 $heading-font: $body-font;
+
+$button-border-radius: 0;
+$button-primary-bg-top: $merton-jade-j2;
+$button-primary-bg-bottom: $merton-jade-j2;
+$button-primary-border: transparent;
+$button-primary-text: $merton-white;
+$button-primary-hover-bg-bottom:$merton-dark-green;
+$button-primary-hover-bg-top:$merton-dark-green;
+$button-primary-hover-border:$merton-dark-green;
+$button-primary-hover-text: $merton-white;
+$button-primary-focus-bg-bottom: $merton-dark-green;
+$button-primary-focus-bg-top: $merton-dark-green;
+$button-primary-focus-border:$merton-headline;
+$button-primary-focus-text: $merton-white;
+
+$button-secondary-bg-top: $merton-jade-j3;
+$button-secondary-bg-bottom: $merton-jade-j3;
+$button-secondary-border: $merton-jade-j3;
+$button-secondary-text: $merton-jade-j2;
+$button-secondary-hover-bg-bottom: $merton-jade-j2;
+$button-secondary-hover-bg-top: $merton-jade-j2;
+$button-secondary-hover-border: $merton-jade-j2;
+$button-secondary-hover-text: $merton_white;
+$button-secondary-focus-bg-bottom: $merton-jade-j2;
+$button-secondary-focus-bg-top: $merton-jade-j2;
+$button-secondary-focus-border: $merton-jade-j2;
+$button-secondary-focus-text: $merton-white;
 
 // Colour used for front page 'how to report a problem' steps
 $col_big_numbers: #ccc;
@@ -46,13 +74,16 @@ $container-max-width: 60em;
 
 $dropzone-button-text: $merton-jade-j3;
 
-$front-main-color: #fff;
-$front-main-h2-color: $merton-headline;
-$front-main-background: $merton-jade-j3;
-$postcodeform-background: $merton-jade-j1;
-$postcodeform-color:#fff;
-$front-main-background-desktop: #fff;
-$front-main-h2-color-desktop: transparentize($merton-headline, 0.2);
-$form-hint-color-desktop: transparentize($merton-headline, 0.2);
+$postcodeform-background: white;
+$postcodeform-color: $primary_b;
+$front-main-h2-color: $primary_b;
+$form-hint-color: $primary_b;
+$front-main-color-desktop: $primary_b;
+$front-main-background-desktop: white;
+$front-main-container-background-desktop: white;
+$postcodeform-background-desktop: white;
+$postcodeform-color-desktop: $primary_b;
+$form-hint-color-desktop: $primary_b;
+$front-main-h2-color-desktop: $primary_b;
 
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
