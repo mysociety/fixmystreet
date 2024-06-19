@@ -15,6 +15,7 @@ use strict;
 use warnings;
 
 use Moo;
+with 'FixMyStreet::Roles::BoroughEmails';
 
 # Copying of functions from UKCouncils that can be used here also
 sub suggest_duplicates { FixMyStreet::Cobrand::UKCouncils::suggest_duplicates($_[0]) }
@@ -133,5 +134,25 @@ sub body_disallows_state_change {
 
     return 1;
 }
+=item * Category change to/from "Council referral" category will resend the report
+
+=cut
+
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+    my $referral = 'Council referral';
+    return 1 if $old eq $referral || $new eq $referral;
+    return 0;
+}
+
+around 'munge_sendreport_params' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
+
+    $self->$orig($row, $h, $params);
+
+    if ($params->{To}[0][0] =~ /gov\.uk/) {
+        $params->{To}[0][1] = 'Council';
+    }
+};
 
 1;
