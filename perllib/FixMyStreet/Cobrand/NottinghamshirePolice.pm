@@ -9,12 +9,17 @@ FixMyStreet::Cobrand::NottinghamshirePolice - code specific to the Nottinghamshi
 =cut
 
 package FixMyStreet::Cobrand::NottinghamshirePolice;
-use base 'FixMyStreet::Cobrand::UKCouncils';
+use base 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
 
 use Moo;
+
+# Copying of functions from UKCouncils that can be used here also
+sub suggest_duplicates { FixMyStreet::Cobrand::UKCouncils::suggest_duplicates($_[0]) }
+sub all_reports_single_body { FixMyStreet::Cobrand::UKCouncils::all_reports_single_body($_[0], $_[1]) }
+sub admin_show_creation_graph { 0 }
 
 =head2 Defaults
 
@@ -25,7 +30,29 @@ use Moo;
 sub council_area_id { [ 2236, 2565 ] }
 sub council_area { 'Nottinghamshire'; }
 sub council_name { 'Nottinghamshire Police' }
-sub council_url { 'nottinghamshirepolice' }
+
+=item * Any superuser or staff user can access the admin
+
+=cut
+
+sub admin_allow_user {
+    my ( $self, $user ) = @_;
+    return 1 if $user->is_superuser || $user->from_body;
+}
+
+=item * Don't allow reports outside Nottinghamshire
+
+=cut
+
+sub area_check {
+    my ( $self, $params, $context ) = @_;
+    return 1 if FixMyStreet->staging_flag('skip_checks');
+    my $councils = $params->{all_areas};
+    foreach (@{$self->council_area_id}) {
+        return 1 if defined $councils->{$_};
+    }
+    return ( 0, "That location is not covered by Nottinghamshire Police." );
+}
 
 sub disambiguate_location {
     my $self    = shift;
@@ -54,15 +81,7 @@ sub privacy_policy_url {
 
 sub allow_anonymous_reports { 0 }
 
-=item * Users with a notts.police.uk email can always be found in the admin.
-
-=cut
-
-sub admin_user_domain { 'notts.police.uk' }
-
-=head2 pin_colour
-
-Yellow for open, green for closed or fixed.
+=item * Yellow pins for open, green for closed or fixed
 
 =cut
 
@@ -72,6 +91,12 @@ sub pin_colour {
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'yellow';
 }
+
+=item * Do not allow email addresses in title or detail
+
+=back
+
+=cut
 
 sub report_validation {
     my ($self, $report, $errors) = @_;
