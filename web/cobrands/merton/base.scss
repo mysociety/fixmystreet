@@ -5,8 +5,18 @@
 @import "../sass/base";
 @import "../sass/waste";
 
-.content a {
-    text-decoration: underline;
+// GENERAL COMPONENTS
+
+h1, h2, h3 {
+    font-weight: bold;
+}
+
+.content {
+    margin-top: 1em;
+    padding-top: 1em;
+    a {
+        text-decoration: underline;
+    }
 }
 
 .item-list--wards__item a,
@@ -46,40 +56,48 @@ input[type=reset],
 input[type=submit] :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
 .postcode-form-box div input#sub,
 a#geolocate_link,
-:not(.segmented-control--radio) > .btn {
-    color: #ffffff !important;
-    background-color: $merton-jade-j2;
+:not(.segmented-control--radio) > .btn,
+.govuk-button  {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+    @include border-radius(0);
+    border-bottom: 3px solid $merton-dark-green;
     background-image: none;
-    border-bottom: 2px solid $merton-dark-green;
-    border-top-color: transparent;
-    border-right-color: transparent;
-    border-left-color: transparent;
-    border-radius: 0;
     font-size: 1.2rem;
     font-weight: bold;
+    padding: 12px 15px 10px;
 }
 
-.button:hover,
-.btn:hover,
-.green-btn:hover,
-.btn-primary:hover,
-input[type=button]:hover,
-input[type=reset]:hover,
-input[type=submit]:hover :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
-.postcode-form-box div input#sub:hover,
-a#geolocate_link:hover,
-.button:focus, 
-.green-btn:focus,
-.btn:focus,
-input[type=button]:focus,
-input[type=reset]:focus,
-input[type=submit]:focus :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
-.postcode-form-box div input#sub:focus,
-a#geolocate_link:focus {
-    border-color: $merton-dark-green;
-    background-color: $merton-dark-green;
-    background-image: none;
-    color: #ffffff !important;
+.btn-primary, .govuk-button {
+    padding: 12px 15px 10px;
+    margin-bottom: 32px;
+    line-height: 1;
+    box-shadow: 0 3px 0 $merton-dark-green;
+    border: 0 !important;
+}
+
+.my-account-buttons a,
+.btn-secondary, .govuk-button--secondary {
+    @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+    line-height: 1;
+    padding: 12px 15px 10px;
+    box-shadow: 0 3px 0 $merton-jade-j2;
+    border: 0;
+    width: auto;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 0;
+}
+
+.btn-secondary:disabled {
+    opacity: 0.4;
+}
+
+li .my-account-buttons a {
+  font-size: 1rem;
+  text-decoration: underline;
+  box-shadow: none;
+  padding: 0.2em 0.5em;
 }
 
 input.fake-link {
@@ -102,15 +120,84 @@ textarea.form-control {
     box-shadow: none;
 }
 
-a.skiplink:focus {
-    color: black;
-    background-color: #ffd302;
+// GOVUK STYLIN
+.govuk-checkboxes__label::before {
+    color: $merton-jade-j2;
+  }
+
+.govuk-checkboxes__input:focus + .govuk-checkboxes__label::before {
+    color: #222;
+}
+
+.govuk-radios__label::before {
+    color: $merton-jade-j2;
+}
+
+.govuk-radios__input:focus + .govuk-radios__label::before {
+    color: #222;
+}
+
+input[type=text].govuk-input,
+input[type=text].autocomplete__input {
+  border: 1px solid #A9A9A9;
+  border-bottom: 3px solid $merton-jade-j2;
+}
+
+// HEADER
+#site-header {
+    background: $merton-jade-j3;
 }
 
 .merton-header {
-    padding: 15px 0;
+    padding: 0;
     background: $merton-lavender-l2;
-    border-top: 10px solid $merton-lavender-l1;
+    border-top: 3px solid $merton-lavender-l1;
+}
+
+.merton-header__logo {
+    box-sizing: border-box;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-top: 60px;
+    width: 150px;
+    background-position-y: 11px;
+    height: 0;
+    background: $merton-lavender-l2 url(/cobrands/merton/images/merton-logo.png) center center no-repeat;
+    background-size: contain;
+}
+
+#main-nav {
+    overflow: visible;
+}
+
+.nav-menu {
+    background-color: $merton-jade-j3;
+    padding: 0.5em 0;
+
+    a, span {
+        background: transparent;
+        border-bottom: none;
+        font-size: 1em;
+        color: $merton-dark-green;
+    }
+
+    a:visited {
+        color: $merton-dark-green;
+    }
+    a:hover {
+        color: #fff;
+    }
+}
+
+#site-logo {
+    color: $merton-dark-green;
+    display: inline-block;
+    background: transparent;
+    font-size: 1.5em;
+    line-height: 60px;
+    width: auto;
+    text-indent: 0;
 }
 
 .map-fullscreen {
@@ -121,18 +208,6 @@ a.skiplink:focus {
     #map_box {
         top: 60px; // think this is fixing a bug in _base.scss, where calc() includes hard-coded 0.25em border-top
     }
-}
-
-.merton-header__logo {
-    box-sizing: border-box;
-    display: block;
-    overflow: hidden;
-    white-space: nowrap;
-    padding-top: 60px;
-    width: 220px;
-    height: 0;
-    background: $merton-lavender-l2 url(/cobrands/merton/images/merton-logo.png) center center no-repeat;
-    background-size: contain;
 }
 
 a {
@@ -154,6 +229,7 @@ html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.s
     padding: 0.4em 0.6em;
 }
 
+// HOMEPAGE
 .frontpage #report-cta,
 .frontpage .report-a-problem-btn {
     display: none;
@@ -164,33 +240,17 @@ html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.s
     padding: 1em;
 
     h1 {
-        font-weight: bold;
         color: $merton-headline;
     }
 }
 
-.nav-menu {
-    background-color: $merton-jade-j3;
-    padding: 0.5em 0;
-
-    a, span {
-        background: transparent;
-        border-bottom: none;
-        font-size: 1em;
-    }
+.postcode-form-box div {
+    border-color: transparent;
 }
 
-#site-logo {
-    display: inline-block;
-    background: transparent;
-    font-size: 1.5em;
-    line-height: 60px;
-    width: auto;
-    text-indent: 0;
-}
-
-#site-logo, .nav-menu a, .nav-menu span {
-    color: $merton-dark-green;
+.postcode-form-box div input#pc {
+    border-top: 1px solid #A9A9A9;
+    border-left: 1px solid #A9A9A9;
 }
 
 html.js .form-section-preview {
@@ -216,10 +276,6 @@ ol.big-numbers {
             color: $merton-lavender-l2;
         }
     }
-}
-
-.segmented-control--radio input:checked + label {
-    background: $merton-jade-j3;
 }
 
 .confirmation-header h1 a {
@@ -273,3 +329,60 @@ table.googlecookies {
     background-color: #f4f4f4;
 }
 
+// MY ACCOUNT
+.segmented-control--radio {
+    border: 2px solid $merton-jade-j2;
+    border-radius: 20px;
+    max-width: 12em;
+}
+
+.segmented-control--radio .btn {
+    border-width: 0 !important;
+    padding: 6px 4px;
+    margin: 6px 6px;
+    border-radius: 16px !important;
+    background-image: none;
+}
+
+.segmented-control--radio input+label {
+    color: $merton-jade-j2 !important;
+}
+
+.segmented-control--radio input:checked+label {
+    color: $merton-white !important;
+    background-color: #333333;
+}
+
+// WASTEWORKS
+body.waste h1.govuk-heading-xl:not(:empty) {
+    font-size: 2rem;
+    border-bottom: 2px solid $merton-grey-g2;
+    padding-bottom: 1rem;
+}
+
+.waste-service-descriptor, .waste-service-name.govuk-heading-m, .govuk-summary-list__row {
+    border-color: $merton-grey-g2;
+    border-width: 1px;
+}
+
+.waste-services-launch-panel input[type="submit"] {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.govuk-grid-column-one-third > .aside {
+    border-top: 5px solid $primary;
+    background-color: #f6f6f6;
+    padding: 0 20px 1px;
+  }
+
+.govuk-grid-column-one-third > .aside ul {
+    margin-left: 0;
+}
+.govuk-grid-column-one-third > .aside li {
+    list-style-type: none;
+}
+
+.govuk-grid-column-one-third > .aside li a {
+    font-weight: normal;
+}
