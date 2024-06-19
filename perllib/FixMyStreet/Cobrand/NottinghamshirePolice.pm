@@ -73,6 +73,30 @@ sub pin_colour {
     return 'yellow';
 }
 
+=head2 body_disallows_state_change
+
+Determines whether state of a report can be updated, based on user and current
+report state.
+
+The original reporter can reopen a closed/fixed report.
+
+Note: Staff permissions are handled separately, via relevant_staff_user
+check.
+
+=cut
+
+sub body_disallows_state_change {
+    my ( $self, $problem ) = @_;
+
+    if (   $self->{c}->user_exists
+        && $self->{c}->user->id eq $problem->user->id )
+    {
+        return $problem->is_open ? 1 : 0;
+    }
+
+    return 1;
+}
+
 sub report_validation {
     my ($self, $report, $errors) = @_;
 
