@@ -2005,6 +2005,7 @@ sub create_related_things : Private {
             private_email_text => $email_text,
             problem_state => 'confirmed',
             state => 'unconfirmed',
+            confirmed => \'current_timestamp', # So that it will always be first
         });
     }
 }
