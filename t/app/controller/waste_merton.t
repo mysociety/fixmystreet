@@ -295,6 +295,10 @@ FixMyStreet::override_config {
     };
 
     subtest 'Request new build container as staff' => sub {
+        # Clear these first
+        my $send = FixMyStreet::Script::Merton::SendWaste->new;
+        $send->send_reports;
+
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-1' => 1, 'quantity-1' => 2 } });
@@ -313,6 +317,24 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Reason]'), '4::4';
         is $cgi->param('attribute[contributed_by]'), $staff_user->email;
         $mech->log_out_ok;
+    };
+
+    subtest 'Test sending of multiple quantity request to other endpoint' => sub {
+        Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
+
+        my $send = FixMyStreet::Script::Merton::SendWaste->new;
+        $send->send_reports;
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('api_key'), 'api_key';
+        is $cgi->param('attribute[Action]'), '1';
+        is $cgi->param('attribute[Reason]'), '4';
+        is $cgi->param('attribute[echo_id]'), '1928374';
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_metadata('sent_to_crimson'), 1;
+        is $report->get_extra_metadata('crimson_external_id'), "359";
+        is $report->get_extra_field_value('echo_id'), "1928374";
+        is $report->external_id, "248";
     };
 
     subtest 'Request large paper bin as staff' => sub {
