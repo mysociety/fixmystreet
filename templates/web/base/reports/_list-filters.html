@@ -43,7 +43,6 @@
                 <div class="report-list-filters">
                     <label for="filter_categories">[% loc('Category') %]</label>
                     [% mark_safe(select_category) %]
-                    <input type="submit" name="filter_update" value="[% loc('Go') %]">
                 </div>
             </div>
 
@@ -55,10 +54,10 @@
                 <p class="govuk-checkboxes__item" style="float: none;">
                   <input class="govuk-checkboxes__input" type="checkbox" name="show_old_reports" id="show_old_reports" value="1"[% ' checked' IF show_old_reports %]>
                   <label class="govuk-label govuk-checkboxes__label" for="show_old_reports">[% loc('Show older reports') %]</label>
-                  <input type="submit" name="filter_update" value="[% loc('Go') %]">
                 </p>
               </div>
               [% END %]
+              <input type="submit" name="filter_update" value="[% loc('Go') %]">
             </div>
         </fieldset>
 

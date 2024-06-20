@@ -1087,7 +1087,7 @@ $.extend(fixmystreet.set_up, {
   report_list_filters: function() {
     // Hide the pin filter submit button. Not needed because we'll use JS
     // to refresh the map when the filter inputs are changed.
-    $(".report-list-filters [type=submit]").hide();
+    $(".report-list-filters-wrapper [type=submit]").hide();
 
     // There are also other uses of this besides report list filters activated here
     $('.js-multiple').make_multi();
