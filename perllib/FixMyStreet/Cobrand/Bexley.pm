@@ -15,6 +15,7 @@ sub council_name { 'London Borough of Bexley' }
 sub council_url { 'bexley' }
 sub get_geocoder { 'Bexley' }
 sub default_map_zoom { 4 }
+sub send_questionnaires { 0 }
 
 sub disambiguate_location {
     my $self    = shift;
