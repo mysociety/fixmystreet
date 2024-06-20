@@ -8,7 +8,9 @@
 
 <h3>Before you start your booking</h3>
 <ol>
+  [% IF c.cobrand.moniker != 'brent' %]
     <li>Requesting a [% service_name %] collection usually takes around <strong>10 minutes</strong></li>
+  [% END %]
   [% IF c.cobrand.moniker != 'brent' AND c.cobrand.moniker != 'bromley' %]
     <li>You can request up to <strong>[% c.cobrand.bulky_items_maximum | numwords %] items per collection</strong></li>
   [% END %]
