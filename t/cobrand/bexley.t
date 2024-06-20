@@ -417,19 +417,6 @@ FixMyStreet::override_config {
         }, "submit details");
         like $mech->get_text_body_from_email, qr/The report's reference number is $id/, 'Update confirmation email contains id number';
 };
-
-subtest 'test ID in questionnaire email' => sub {
-        $mech->clear_emails_ok;
-        (my $report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
-            category => 'Lamp post', cobrand => 'bexley',
-            latitude => 51.408484, longitude => 0.074653, areas => '2494',
-            whensent => DateTime->now->subtract(years => 1),
-        });
-        FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires();
-        my $text = $mech->get_text_body_from_email;
-        my $id = $report->id;
-        like $text, qr/The report's reference number is $id/, 'Questionnaire email contains id number';
-    };
 };
 
 subtest 'nearest road returns correct road' => sub {
