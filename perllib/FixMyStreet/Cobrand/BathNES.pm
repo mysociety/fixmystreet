@@ -40,6 +40,16 @@ sub contact_extra_fields_validation {
     }
 }
 
+=item * Geocoder results are somewhat munged to display more cleanly
+
+=cut
+
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+    $result->{display_name} =~ s/, United Kingdom$//;
+    $result->{display_name} =~ s/, Bath and North East Somerset, West of England, England//;
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
