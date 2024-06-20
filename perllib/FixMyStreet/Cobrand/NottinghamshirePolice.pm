@@ -141,6 +141,14 @@ sub body_disallows_state_change {
 sub category_change_force_resend {
     my ($self, $old, $new) = @_;
     my $referral = 'Council referral';
+
+    # if being referred to council, keep a note of the original category
+    # so it can be included in email sent to council.
+    if ($new eq $referral) {
+        $self->{c}->stash->{problem}->update_extra_metadata(original_category => $old);
+    } elsif ($old eq $referral) {
+        $self->{c}->stash->{problem}->update_extra_metadata(original_category => undef);
+    }
     return 1 if $old eq $referral || $new eq $referral;
     return 0;
 }
