@@ -67,8 +67,6 @@ sub send_questionnaires { 0 }
 
 =item * Add display_name as an extra contact field.
 
-=back
-
 =cut
 
 sub contact_extra_fields { [ 'display_name' ] }
@@ -82,6 +80,18 @@ sub contact_extra_fields_validation {
     if ($display_names{$contact->get_extra_metadata('display_name')}) {
         $errors->{display_name} = 'That display name is already in use';
     }
+}
+
+=item * Geocoder results are somewhat munged to display more cleanly
+
+=back
+
+=cut
+
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+    $result->{display_name} =~ s/, United Kingdom$//;
+    $result->{display_name} =~ s/, Bath and North East Somerset, West of England, England//;
 }
 
 =head2 disambiguate_location
