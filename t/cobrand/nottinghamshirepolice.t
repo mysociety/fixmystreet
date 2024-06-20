@@ -76,10 +76,17 @@ FixMyStreet::override_config {
         is $report->whensent, undef;
         is $report->category, 'Council referral';
         is $report->get_extra_metadata('sent_to_council'), undef;
+        is $report->get_extra_metadata('original_category'), 'Graffiti';
 
         FixMyStreet::Script::Reports::send();
         $email = $mech->get_email;
         is $email->header('To'), '"Gedling Borough Council" <gedling@gov.uk.example.net>';
+        my $body = $mech->get_text_body_from_email($email);
+        my $html = $mech->get_html_body_from_email($email);
+        like $body, qr/Category: Graffiti/;
+        unlike $body, qr/Council referral/;
+        like $html, qr{">Graffiti</p>};
+        unlike $html, qr/Council referral/;
 
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('Sent to Gedling Borough Council');
