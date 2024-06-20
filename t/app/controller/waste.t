@@ -136,6 +136,8 @@ FixMyStreet::override_config {
         $mech->content_contains('A paper &amp; cardboard collection has been reported as missed'); # as part of service unit, not property
     };
     subtest 'Report a missed bin' => sub {
+        my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Bromley');
+        $cobrand->mock('send_questionnaires', sub { 1 }); # To test that questionnaires aren't sent, despite being enabled on the cobrand.
         $mech->content_contains('service-531', 'Can report, last collection was 27th');
         $mech->content_lacks('service-537', 'Cannot report, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'Cannot report, last collection was 20th');
@@ -193,6 +195,9 @@ FixMyStreet::override_config {
 
         is $user->alerts->count, 1;
         $mech->clear_emails_ok;
+
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        is $report->send_questionnaire, 0;
     };
     subtest 'About You form is pre-filled when logged in' => sub {
         $mech->log_in_ok($user->email);
