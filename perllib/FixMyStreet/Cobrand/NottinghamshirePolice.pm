@@ -151,8 +151,31 @@ around 'munge_sendreport_params' => sub {
     $self->$orig($row, $h, $params);
 
     if ($params->{To}[0][0] =~ /gov\.uk/) {
-        $params->{To}[0][1] = 'Council';
+        # being sent to a council, so lookup the name on MapIt
+        my ($lat, $lon) = ($row->latitude, $row->longitude);
+        my $council = FixMyStreet::MapIt::call( 'point', "4326/$lon,$lat", type => 'DIS,UTA');
+        ($council) = values %$council;
+        my $name = $council->{name};
+
+        # address email to the correct council name
+        $params->{To}[0][1] = $name;
+
+        # and store council name in the report extra for front end display
+        $row->update_extra_metadata(sent_to_council => $name);
+    } else {
+        # being sent (back?) to the police, so remove the council name
+        $row->update_extra_metadata(sent_to_council => undef);
     }
 };
+
+=item * Display district/city council name on report page if that's where the report was referred to
+
+=cut
+
+sub link_to_council_cobrand {
+    my ( $self, $problem ) = @_;
+
+    return $problem->get_extra_metadata('sent_to_council', '');
+}
 
 1;
