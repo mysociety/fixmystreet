@@ -1628,6 +1628,9 @@ sub add_report : Private {
 
     my $report = $c->stash->{report};
 
+    # Never send questionnaires for waste reports
+    $report->send_questionnaire(0);
+
     # store photos
     foreach (grep { /^(item|location)_photo/ } keys %$data) {
         next unless $data->{$_};
