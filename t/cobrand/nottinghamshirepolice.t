@@ -60,6 +60,8 @@ FixMyStreet::override_config {
             category => 'Graffiti',
             areas => ',2236,2412,',
             cobrand => 'nottinghamshirepolice',
+            latitude => 52.956196,
+            longitude => -1.151204,
         });
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_email;
@@ -73,10 +75,16 @@ FixMyStreet::override_config {
         $report->discard_changes;
         is $report->whensent, undef;
         is $report->category, 'Council referral';
+        is $report->get_extra_metadata('sent_to_council'), undef;
 
         FixMyStreet::Script::Reports::send();
         $email = $mech->get_email;
-        is $email->header('To'), 'Council <gedling@gov.uk.example.net>';
+        is $email->header('To'), '"Gedling Borough Council" <gedling@gov.uk.example.net>';
+
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Sent to Gedling Borough Council');
+        $report->discard_changes;
+        is $report->get_extra_metadata('sent_to_council'), 'Gedling Borough Council';
     };
 };
 
