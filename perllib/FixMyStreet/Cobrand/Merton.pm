@@ -107,14 +107,25 @@ sub open311_extra_data_include {
         };
     }
 
-    if ($row->category eq 'Bulky collection' && $h->{sending_to_crimson}) {
-        my @items_list = @{ $self->bulky_items_master_list };
-        my %items = map { $_->{bartec_id} => $_->{name} } @items_list;
-        my @ids = split /::/, $row->get_extra_field_value('Bulky_Collection_Bulky_Items'), -1;
-        @ids = map { $items{$_} } @ids;
-        my $ids = join('::', @ids);
-        push @$open311_only, { name => 'Bulky_Collection_Bulky_Items', value => $ids };
-        push @$open311_only, { name => 'Current_Item_Count', value => scalar @ids };
+    if ($h->{sending_to_crimson}) {
+        # Want to send bulky item names rather than IDs
+        if ($row->category eq 'Bulky collection') {
+            my @items_list = @{ $self->bulky_items_master_list };
+            my %items = map { $_->{bartec_id} => $_->{name} } @items_list;
+            my @ids = split /::/, $row->get_extra_field_value('Bulky_Collection_Bulky_Items'), -1;
+            @ids = map { $items{$_} } @ids;
+            my $ids = join('::', @ids);
+            $row->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => $ids });
+            push @$open311_only, { name => 'Current_Item_Count', value => scalar @ids };
+        }
+        # Do not want to send multiple Action/Reason codes
+        foreach (qw(Action Reason)) {
+            my $var = $row->get_extra_field_value($_) || '';
+            if ($var =~ /::/) {
+                $var =~ s/::.*//;
+                $row->update_extra_field({ name => $_, value => $var });
+            }
+        }
     }
 
     return $open311_only;
