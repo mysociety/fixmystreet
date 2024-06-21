@@ -1,8 +1,10 @@
       <div class="inspect-section">
-        <p style="float: right">
-          <label for="non_public">[% loc('Private') %]</label>
-          <input type="checkbox" id="non_public" name="non_public" value="1"[% ' checked' IF problem.non_public %]>
-        </p>
+        [% IF c.cobrand.moniker != 'nottinghamshirepolice' %]
+          <p style="float: right">
+            <label for="non_public">[% loc('Private') %]</label>
+            <input type="checkbox" id="non_public" name="non_public" value="1"[% ' checked' IF problem.non_public %]>
+          </p>
+        [% END %]
         <p>
           <strong>[% loc('Report ID:') %]</strong>
           <span class="js-report-id">[% problem.id %]</span>
