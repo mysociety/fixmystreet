@@ -186,4 +186,8 @@ sub link_to_council_cobrand {
     return $problem->get_extra_metadata('sent_to_council', '');
 }
 
+sub example_places {
+    return [ 'NG2 3DZ', 'Meadows Way, Nottingham' ];
+}
+
 1;
