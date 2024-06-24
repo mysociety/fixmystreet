@@ -157,7 +157,7 @@ body:not(.admin, .mappage.with-actions) {
     @include input-reset;
   }
 
-  select {
+  select:not(#sort) {
     // This makes that the arrow is the same as .multi-select-container
     position: relative;
     background: transparent;
@@ -209,10 +209,7 @@ body:not(.admin, .mappage.with-actions) {
     }
   }
 
-  .multi-select-button,
-  .report-list-filters .multi-select-button,
-  .form-control#sort,
-  select {
+  select:not(#sort) {
     @include one-line-input-height;
   }
 
