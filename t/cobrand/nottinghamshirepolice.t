@@ -90,6 +90,7 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('Sent to Gedling Borough Council');
+        $mech->content_lacks('FixMyStreet ref');
         $report->discard_changes;
         is $report->get_extra_metadata('sent_to_council'), 'Gedling Borough Council';
     };
