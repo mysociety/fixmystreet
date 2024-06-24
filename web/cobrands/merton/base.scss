@@ -73,6 +73,11 @@ a#geolocate_link,
     line-height: 1;
     box-shadow: 0 3px 0 $merton-dark-green;
     border: 0 !important;
+
+    &:focus {
+        // Overrides the .govuk-button:focus:not(:active):not(:hover) rule
+        background-color: $button-primary-focus-bg-bottom !important;
+    }
 }
 
 .my-account-buttons a,
