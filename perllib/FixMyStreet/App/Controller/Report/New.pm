@@ -1615,8 +1615,11 @@ sub process_confirmation : Private {
                 $problem->user->phone( $data->{phone} ) if $data->{phone};
             }
             $problem->user->password( $data->{password}, 1 ) if $data->{password};
-            for (qw(name title facebook_id twitter_id)) {
+            for (qw(title facebook_id twitter_id)) {
                 $problem->user->$_( $data->{$_} ) if $data->{$_};
+            }
+            if ($data->{name} && !$problem->user->from_body) {
+                $problem->user->name($data->{name});
             }
             $problem->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
             $problem->user->extra({
