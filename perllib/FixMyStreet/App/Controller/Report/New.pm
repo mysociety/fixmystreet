@@ -1168,7 +1168,12 @@ sub process_report : Private {
         $report->anonymous(1);
     } else {
         $report->send_questionnaire( $c->cobrand->send_questionnaires() );
-        $report->anonymous( $params{may_show_name} ? 0 : 1 );
+        my $anonymous = $params{may_show_name} ? 0 : 1;
+        if ($params{non_public}) {
+            # Always default to anonymous if not public.
+            $anonymous = 1;
+        }
+        $report->anonymous($anonymous);
     }
 
     $report->non_public($params{non_public} ? 1 : 0);
