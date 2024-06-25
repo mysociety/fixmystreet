@@ -26,7 +26,29 @@ Go to the ‘Roles’ tab in the admin menu.
 
 Here you can create a group of permissions, called a ‘role’. You should choose role titles and definitions that make sense to your own organisation.
 
-Once you have created a role, you can then assign a user to one or more roles to give that user access to all the permissions of those roles, without having to assign permissions individually for each user.
+Roles enable you to more easily assign permissions to different staff users. For example, you can give all customer services staff the same permsissions by assigning them the same role, without having to assign permissions individually for each user.
+
+Once you've created a role, use the tick boxes to assign its permissions.
+
+WasteWorks permissions include:
+
+| Permission      | Description |
+| ----------- | ----------- |
+| Edit reports | Allow the user to edit reports |
+| View/Mark private reports | Allow the user to view private reports and mark reports as private |
+| Create reports/updates on a user's behalf | Allow the user to create reports, requests or bookings on behalf of residents |
+| Create reports/updates as anonymous user | Allow the user to create reports anonymously |
+| Create reports/updates as the council | Allow the user to create reports or submit updates as the council |
+| Edit users' details/search for their reports | Allow the user to edit other users’ details and search for their reports |
+| Edit other users' permissions | Allow the user edit the permissions of other users |
+| Grant access to the admin |  Allow the user to give other staff admin access |
+| Add/edit response templates | Allow the user to add or edit response templates (see <a href="#creating-and-editing-response-templates">Creating and editing response templates section</a>) |
+| Add/edit site message | Allow the user to add or edit messages to be displayed on the homepage or other pages of the website (see <a href="#site-message">Displaying a site message section</a>) |
+| Can edit WasteWorks configuration | Allow the user to make changes to the configuration of your WasteWorks service |
+
+By not assigning a permission to a role or to an indivudal user, they will not be able to complete the associated admin task. Users cannot edit their own permissions.
+
+Once you have created some roles, you can then assign a user to one or more roles to give that user access to all the permissions of those roles.
 
 #### Assigning roles and permissions
 
