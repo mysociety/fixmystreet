@@ -684,16 +684,37 @@ $.extend(fixmystreet.set_up, {
         });
         fixmystreet.hidden_elements = [];
 
-        // apply hide element rules
+        // Hide shown elements (that were previously triggered via
+        // show_element_rules). This prevents elements from remaining
+        // displayed if user clicks back to select another category.
+        $.each(fixmystreet.shown_elements, function(index, element) {
+            element.hide();
+        });
+        fixmystreet.shown_elements = [];
+
+        // apply hide & show element rules
+        var selectors;
         $.each(fixmystreet.bodies, function(index, body) {
             if ( typeof hide_element_rules !== 'undefined' && hide_element_rules[body] && hide_element_rules[body][category] ) {
-                var selectors = hide_element_rules[body][category];
+                selectors = hide_element_rules[body][category];
                 $(selectors.join(',')).each(function () {
                     if ($(this).css('display') === 'none') {
                         return;
                     }
                     $(this).hide();
                     fixmystreet.hidden_elements.push($(this));
+                });
+            }
+
+            if ( typeof show_element_rules !== 'undefined' &&
+                show_element_rules[body] &&
+                show_element_rules[body][category] )
+            {
+                selectors = show_element_rules[body][category];
+                $(selectors.join(',')).each(function () {
+                    $(this).show();
+                    this.classList.remove('hidden');
+                    fixmystreet.shown_elements.push($(this));
                 });
             }
         });
