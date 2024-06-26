@@ -107,6 +107,8 @@ use constant CONTAINER_GARDEN_SACK => 28;
 
 sub garden_due_days { 30 }
 
+sub garden_staff_provide_email { 1 }
+
 sub service_name_override {
     my ($self, $service) = @_;
 
