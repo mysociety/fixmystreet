@@ -1,5 +1,7 @@
 [% site_message = c.cobrand.site_message('reporting') %]
 [% IF site_message %]
-    [% site_message | safe %]
+<div class="site-message__reporting">
+    [% site_message | safe | html_para %]
+</div>
 [% END %]
 

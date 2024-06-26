@@ -26,6 +26,19 @@ h1, h2, h3 {
   background-image: url(/cobrands/lincolnshire/images/logo.png);
 }
 
+.site-message {
+  background-color: $lincs-pop;
+  color: #fff;
+  border: 0;
+}
+
+.site-message__reporting {
+  background-color: $lincs-pop;
+  color: #fff;
+  padding: 1em;
+  margin: 1em 0;
+}
+
 .body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   #site-logo {
     @media (min-width: 48em) {
@@ -81,7 +94,7 @@ h1, h2, h3 {
   }
 }
 
-.form-box, 
+.form-box,
 .alerts__cta-box {
   background-color: $lincs-panel;
 }
@@ -130,7 +143,7 @@ body.mappage .big-green-banner {
 }
 
 .fms-admin-warning {
-  background-color: $lincs-error; 
+  background-color: $lincs-error;
   border-color: darken($lincs-error, 10%);
 }
 
