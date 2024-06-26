@@ -321,7 +321,6 @@ sub waste_munge_report_data {
 
 sub garden_service_name { 'garden waste collection service' }
 sub garden_echo_container_name { 'SLWP - Containers' }
-sub garden_staff_provide_email { 1 }
 
 sub garden_subscription_email_renew_reminder_opt_in { 0 }
 
