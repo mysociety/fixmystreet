@@ -34,6 +34,8 @@ use URI;
 use Try::Tiny;
 use Utils;
 
+use constant VEHICLE_LITTERING_CATEGORY => 'Littering From Vehicles';
+
 sub council_area_id { return 163793; }
 sub council_area { return 'Buckinghamshire'; }
 sub council_name { return 'Buckinghamshire Council'; }
@@ -143,6 +145,21 @@ sub category_change_force_resend { 1 }
 
 sub send_questionnaires {
     return 0;
+}
+
+=head2 post_report_sent
+
+Bucks have a special 'Littering From Vehicles' category; any reports made in
+that category are automatically set to 'Investigating'.
+
+=cut
+
+sub post_report_sent {
+    my ( $self, $problem ) = @_;
+
+    if ( $problem->category eq VEHICLE_LITTERING_CATEGORY ) {
+        $problem->update( { state => 'investigating' } );
+    }
 }
 
 sub open311_extra_data_exclude { [ 'road-placement' ] }
