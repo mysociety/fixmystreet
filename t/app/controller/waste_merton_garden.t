@@ -1085,10 +1085,6 @@ FixMyStreet::override_config {
                 bins_wanted => 1,
                 payment_method => 'credit_card',
             }});
-            if (!$_->{email}) {
-                $mech->content_contains("Please provide an email");
-                next;
-            }
             $mech->content_contains('89.78');
 
             $mech->waste_submit_check({ with_fields => { tandc => 1 } });
