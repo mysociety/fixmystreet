@@ -27,6 +27,7 @@
         - Fix display of user in assignment dropdown. #4855
         - Fix setting of fixed timestamp in CSV export. #5119
         - Fix CSV export of reports with only hidden/unconfirmed updates. #5119
+        - Stop wrapping category notices in a label.
     - Admin improvements:
         - Rename emergency message to site message.
         - Added a category control for overriding the text of the new report details field.
