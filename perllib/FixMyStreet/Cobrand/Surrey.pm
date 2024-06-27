@@ -44,6 +44,12 @@ sub report_age {
     };
 }
 
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
+
 =head2 get_town
 
 Returns the name of the town from the problem's geocode information, if present.
