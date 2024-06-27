@@ -25,6 +25,7 @@
         - Fix restoring a draft with no location.
         - Create reporter alert before creating first unconfirmed auto-update.
         - Fix display of user in assignment dropdown. #4855
+        - Stop wrapping category notices in a label.
     - Admin improvements:
         - Rename emergency message to site message.
         - Added a category control for overriding the text of the new report details field.
