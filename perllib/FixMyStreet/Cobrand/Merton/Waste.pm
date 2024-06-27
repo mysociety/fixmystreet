@@ -21,6 +21,8 @@ sub waste_check_staff_payment_permissions {
 
 sub waste_auto_confirm_report { 1 }
 
+sub waste_cancel_asks_staff_for_user_details { 1 }
+
 sub service_name_override {
     my ($self, $service) = @_;
 
