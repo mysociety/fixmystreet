@@ -6,9 +6,17 @@
 
     <p>
     [% IF email_type == 'problem' %]
-        We’ve sent you a confirmation email. Click the link to publish your problem.
+        [% IF non_public %]
+            We've sent you a confirmation email. Click the link to submit your problem.
+        [% ELSE %]
+            We've sent you a confirmation email. Click the link to publish your problem.
+        [% END %]
     [% ELSIF email_type == 'update' %]
-        We’ve sent you a confirmation email. Click the link to publish your update.
+        [% IF non_public %]
+            We've sent you a confirmation email. Click the link to submit your update.
+        [% ELSE %]
+            We've sent you a confirmation email. Click the link to publish your update.
+        [% END %]
     [% ELSIF email_type == 'alert' %]
         We’ve sent you a confirmation email. Click the link to activate your alert.
     [% END %]

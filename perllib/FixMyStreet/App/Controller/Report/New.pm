@@ -547,6 +547,7 @@ sub report_import : Path('/import') {
     $c->send_email( 'partial.txt', { to => $report->user->email, } );
 
     if ($format eq 'web') {
+        $c->stash->{non_public} = $report->non_public;
         $c->stash->{template}   = 'email_sent.html';
         $c->stash->{email_type} = 'problem';
     } else {
@@ -1961,6 +1962,7 @@ sub redirect_or_confirm_creation : Private {
     if ($report->user->email_verified) {
         $c->forward( 'send_problem_confirm_email' );
         # tell user that they've been sent an email
+        $c->stash->{non_public} = $report->non_public;
         $c->stash->{template}   = 'email_sent.html';
         $c->stash->{email_type} = 'problem';
         unless ($no_redirect) {
