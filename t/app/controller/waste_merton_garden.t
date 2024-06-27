@@ -804,10 +804,10 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
-        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest', email => 'test@example.org', confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { user_id => $staff_user->id },
+            undef,
             { order_by => { -desc => 'id' } },
         )->first;
 
@@ -982,10 +982,10 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
-        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest', email => 'test@example.org', confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { user_id => $staff_user->id },
+            undef,
             { order_by => { -desc => 'id' } },
         )->first;
 
@@ -1054,10 +1054,10 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
-        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest', email => 'test@example.org', confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { user_id => $staff_user->id },
+            undef,
             { order_by => { -desc => 'id' } },
         )->first;
 
@@ -1196,7 +1196,7 @@ FixMyStreet::override_config {
     subtest 'cancel staff sub' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_cancel');
-        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest', email => 'test@example.org', confirm => 1 } });
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
@@ -1208,7 +1208,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
-        is $new_report->get_extra_metadata('contributed_as'), 'anonymous_user';
+        is $new_report->get_extra_metadata('contributed_as'), 'another_user';
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
@@ -1311,10 +1311,10 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
-        $mech->submit_form_ok({ with_fields => { confirm => 1 } });
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest', email => 'test@example.org', confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { user_id => $staff_user->id },
+            undef,
             { order_by => { -desc => 'id' } },
         )->first;
 
