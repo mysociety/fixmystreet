@@ -178,8 +178,8 @@ sub open311_pre_send {
     $self->{original_external_id} = $row->external_id;
 }
 
-sub open311_post_send {
-    my ($self, $row, $h, $sender) = @_;
+around open311_post_send => sub {
+    my ($orig, $self, $row, $h, $sender) = @_;
 
     # restore original external_id for this report, and store new Dynamics ID
     if ( $self->{original_external_id} ) {
@@ -190,6 +190,8 @@ sub open311_post_send {
         }
         delete $self->{original_external_id};
     }
-}
+
+    return $orig->($self, $row, $h, $sender);
+};
 
 1;
