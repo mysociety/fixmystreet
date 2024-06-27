@@ -28,6 +28,7 @@
         - Fix setting of fixed timestamp in CSV export. #5119
         - Fix CSV export of reports with only hidden/unconfirmed updates. #5119
         - Fix displaying category page if over 1,000 history entries.
+        - Stop wrapping category notices in a label.
     - Admin improvements:
         - Rename emergency message to site message.
         - Added a category control for overriding the text of the new report details field.
