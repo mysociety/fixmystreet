@@ -26,8 +26,11 @@ sub disambiguate_location {
     };
 }
 
-sub report_sent_confirmation_email { 'id' }
+=item * We include the C<external_id> (Zendesk reference) in the acknowledgement email.
 
+=cut
+
+sub report_sent_confirmation_email { 'external_id' }
 
 =head2 get_town
 
