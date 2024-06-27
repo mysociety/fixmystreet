@@ -1,6 +1,7 @@
 package FixMyStreet::Cobrand::Bexley::Waste;
 
 use Moo::Role;
+with 'FixMyStreet::Roles::Cobrand::Waste';
 
 use BexleyAddresses;
 use Integrations::Whitespace;

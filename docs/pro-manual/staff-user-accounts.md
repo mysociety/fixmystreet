@@ -31,7 +31,7 @@ will be sent to the email address you provided.
 
 ### Password security
 
-Your password must contain 6 or more characters, and must not be one of the most commonly
+Your password must contain 8 or more characters, and must not be one of the most commonly
 used combinations (such as ‘Password’ or ‘123456’). Your council may also have password policies
 which you are expected to abide by.
 

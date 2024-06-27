@@ -972,7 +972,7 @@ sub clear_cached_lookups_property {
         $self->council_url . ":echo:bin_services_for_address:$id",
         $self->council_url . ":echo:bulky_event_guid:$id",
     ) {
-        delete $self->{c}->session->{$key};
+        $self->{c}->waste_cache_delete($key);
     }
 }
 
@@ -980,15 +980,14 @@ sub clear_cached_lookups_bulky_slots {
     my ( $self, $id, $skip_echo ) = @_;
 
     for (qw/earlier later/) {
-        delete $self->{c}->session->{ $self->council_url
-                . ":echo:available_bulky_slots:$_:$id" };
+        $self->{c}->waste_cache_delete($self->council_url . ":echo:available_bulky_slots:$_:$id");
     }
 
     return if $skip_echo;
 
     # We also need to cancel the reserved slots in Echo
     my $guid_key = $self->council_url . ":echo:bulky_event_guid:$id";
-    my $guid = $self->{c}->session->{$guid_key};
+    my $guid = $self->{c}->waste_cache_get($guid_key);
 
     return unless $guid;
 
@@ -1096,8 +1095,10 @@ sub find_available_bulky_slots {
         = $self->council_url . ":echo:available_bulky_slots:"
         . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
         . $property->{id};
-    return $self->{c}->session->{$key}
-        if $self->{c}->session->{$key} && !$no_cache;
+    if (!$no_cache) {
+        my $data = $self->{c}->waste_cache_get($key);
+        return $data if $data;
+    }
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
@@ -1106,10 +1107,11 @@ sub find_available_bulky_slots {
     my $event_type_id = $cfg->{bulky_event_type_id};
 
     my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $property->{id};
-    my $guid = $self->{c}->session->{$guid_key};
+    my $guid = $self->{c}->waste_cache_get($guid_key);
     unless ($guid) {
         require UUID::Tiny;
-        $self->{c}->session->{$guid_key} = $guid = UUID::Tiny::create_uuid_as_string();
+        $guid = UUID::Tiny::create_uuid_as_string();
+        $self->{c}->waste_cache_set($guid_key, $guid);
     }
 
     my $window = $self->_bulky_collection_window($last_earlier_date_str);
@@ -1126,7 +1128,7 @@ sub find_available_bulky_slots {
         $self->{c}->session->{first_date_returned} //= $date;
     }
 
-    $self->{c}->session->{$key} = \@available_slots if !$no_cache;
+    $self->{c}->waste_cache_set($key, \@available_slots) if !$no_cache;
 
     return \@available_slots;
 }

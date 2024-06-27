@@ -7,6 +7,7 @@ use DateTime;
 use DateTime::Format::Strptime;
 use FixMyStreet::TestMech;
 use FixMyStreet::Cobrand::Peterborough;
+use Catalyst::Plugin::FixMyStreet::Session::WasteCache;
 
 subtest '_bulky_collection_window' => sub {
     my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
@@ -65,6 +66,12 @@ subtest 'find_available_bulky_slots' => sub {
     my $cobrand = FixMyStreet::Cobrand::Peterborough->new;
     $cobrand->{c} = Test::MockObject->new;
     my %session_hash;
+    $cobrand->{c}->mock( waste_cache_get => sub {
+        Catalyst::Plugin::FixMyStreet::Session::WasteCache::waste_cache_get(@_);
+    });
+    $cobrand->{c}->mock( waste_cache_set => sub {
+        Catalyst::Plugin::FixMyStreet::Session::WasteCache::waste_cache_set(@_);
+    });
     $cobrand->{c}->mock( session => sub { \%session_hash } );
     $cobrand->{c}->mock( stash => sub { {} } );
 
@@ -104,7 +111,7 @@ subtest 'find_available_bulky_slots' => sub {
     );
 
     is_deeply(
-        [ sort keys %session_hash ],
+        [ sort keys %{$session_hash{waste}} ],
         [   'peterborough:bartec:available_bulky_slots:earlier:123456789',
             'peterborough:bartec:available_bulky_slots:later:123456789',
         ],

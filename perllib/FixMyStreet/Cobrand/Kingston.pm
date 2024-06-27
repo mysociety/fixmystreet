@@ -3,6 +3,7 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use utf8;
 use Moo;
+with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Roles::Cobrand::KingstonSutton';
 with 'FixMyStreet::Roles::Cobrand::SCP';
 
@@ -40,7 +41,7 @@ sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
     if (my $container = $unit->{garden_container}) {
-        return "$base/bin-grey-green-lid-recycling" if $container == 26 || $container == 27;
+        return svg_container_bin('wheelie', '#767472', '#41B28A', 1) if $container == 26 || $container == 27;
         return "";
     }
 
@@ -50,22 +51,22 @@ sub image_for_unit {
 
     # Base mixed recycling (2241) on the container itself
     my %containers = map { $_ => 1 } @{$unit->{request_containers}};
-    return "$base/bin-green" if $containers{+CONTAINER_RECYCLING_BIN};
+    return svg_container_bin("wheelie", '#41B28A') if $containers{+CONTAINER_RECYCLING_BIN};
     return "$base/box-green-mix" if $containers{+CONTAINER_RECYCLING_BOX};
 
     my $service_id = $unit->{service_id};
     my $images = {
-        2238 => "$base/bin-black", # refuse
+        2238 => svg_container_bin('wheelie', '#333333'), # refuse
         2239 => "$base/caddy-brown-large", # food
-        2240 => "$base/bin-grey-blue-lid-recycling", # paper and card
-        2241 => "$base/bin-green", # dry mixed
-        2242 => "$base/sack-clear-red", # domestic refuse bag
-        2243 => "$base/large-communal-grey-black-lid", # Communal refuse
-        2246 => "$base/sack-clear-blue", # domestic recycling bag
-        2248 => "$base/bin-brown", # Communal food
-        2249 => "$base/large-communal-grey-blue-lid", # Communal paper
-        2250 => "$base/large-communal-green", # Communal recycling
-        2632 => "$base/sack-clear", # domestic paper bag
+        2240 => svg_container_bin("wheelie", '#767472', '#00A6D2', 1), # paper and card
+        2241 => svg_container_bin("wheelie", '#41B28A'), # dry mixed
+        2242 => svg_container_sack('stripe', '#E83651'), # domestic refuse bag
+        2243 => svg_container_bin('communal', '#767472', '#333333'), # Communal refuse
+        2246 => svg_container_sack('stripe', '#4f4cf0'), # domestic recycling bag
+        2248 => svg_container_bin('wheelie', '#8B5E3D'), # Communal food
+        2249 => svg_container_bin("communal", '#767472', '#00A6D2'), # Communal paper
+        2250 => svg_container_bin('communal', '#41B28A'), # Communal recycling
+        2632 => svg_container_sack('normal', '#d8d8d8'), # domestic paper bag
     };
     return $images->{$service_id};
 }

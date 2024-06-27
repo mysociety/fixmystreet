@@ -47,7 +47,10 @@ sub call_api {
 
     my $type = $self->backend_type;
     $key = "$cobrand:$type:$key";
-    return $c->session->{$key} if !FixMyStreet->test_mode && $c->session->{$key};
+    if (!FixMyStreet->test_mode) {
+        my $cached = $c->waste_cache_get($key);
+        return $cached if $cached;
+    }
 
     my $calls = encode_json(\@_);
 
@@ -109,7 +112,7 @@ sub call_api {
     }
 
     if ($data) {
-        $c->session->{$key} = $data;
+        $c->waste_cache_set($key, $data);
         my $time = Time::HiRes::time() - $start;
         $c->log->info("[$cobrand] call_api $key took $time seconds");
     } elsif ($background) {

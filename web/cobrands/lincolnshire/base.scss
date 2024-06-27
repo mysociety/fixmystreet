@@ -26,6 +26,12 @@ h1, h2, h3 {
   background-image: url(/cobrands/lincolnshire/images/logo.png);
 }
 
+.site-message {
+  background-color: $lincs-pop;
+  color: #fff;
+  border: 0;
+}
+
 .body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   #site-logo {
     @media (min-width: 48em) {

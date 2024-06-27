@@ -31,6 +31,7 @@ with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::Cobrand::SCP';
+with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Cobrand::Peterborough::Bulky';
 
 =head2 Defaults
@@ -498,34 +499,35 @@ sub _premises_for_postcode {
 
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
 
-    unless ( $c->session->{$key} ) {
-        my $cfg = $self->feature('bartec');
-        my $bartec = Integrations::Bartec->new(%$cfg);
-        my $response = $bartec->Premises_Get($pc);
+    my $data = $c->waste_cache_get($key);
+    return $data if $data;
 
-        if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
-            my $blocked = $cfg->{blocked_uprns} || [];
-            my %blocked = map { $_ => 1 } @$blocked;
-            @$response = grep { !$blocked{$_->{UPRN}} } @$response;
-        }
+    my $cfg = $self->feature('bartec');
+    my $bartec = Integrations::Bartec->new(%$cfg);
+    my $response = $bartec->Premises_Get($pc);
 
-        $c->session->{$key} = [ map { {
-            id => $pc . ":" . $_->{UPRN},
-            uprn => $_->{UPRN},
-            usrn => $_->{USRN},
-            address => $self->_format_address($_),
-            latitude => $_->{Location}->{Metric}->{Latitude},
-            longitude => $_->{Location}->{Metric}->{Longitude},
-        } } @$response ];
+    if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
+        my $blocked = $cfg->{blocked_uprns} || [];
+        my %blocked = map { $_ => 1 } @$blocked;
+        @$response = grep { !$blocked{$_->{UPRN}} } @$response;
     }
 
-    return $c->session->{$key};
+    $data = [ map { {
+        id => $pc . ":" . $_->{UPRN},
+        uprn => $_->{UPRN},
+        usrn => $_->{USRN},
+        address => $self->_format_address($_),
+        latitude => $_->{Location}->{Metric}->{Latitude},
+        longitude => $_->{Location}->{Metric}->{Longitude},
+    } } @$response ];
+
+    return $c->waste_cache_set($key, $data);
 }
 
 sub clear_cached_lookups_postcode {
     my ($self, $pc) = @_;
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
-    delete $self->{c}->session->{$key};
+    $self->{c}->waste_cache_delete($key);
 }
 
 sub clear_cached_lookups_property {
@@ -534,8 +536,8 @@ sub clear_cached_lookups_property {
     # might be prefixed with postcode if it's come straight from the URL
     $uprn =~ s/^.+\://g;
 
-    foreach ( qw/look_up_property bin_services_for_address/ ) {
-        delete $self->{c}->session->{"peterborough:bartec:$_:$uprn"};
+    foreach ( qw/bin_services_for_address/ ) {
+        $self->{c}->waste_cache_delete("peterborough:bartec:$_:$uprn");
     }
 
     $self->clear_cached_lookups_bulky_slots($uprn);
@@ -548,8 +550,7 @@ sub clear_cached_lookups_bulky_slots {
     $uprn =~ s/^.+\://g;
 
     for (qw/earlier later/) {
-        delete $self->{c}
-            ->session->{"peterborough:bartec:available_bulky_slots:$_:$uprn"};
+        $self->{c}->waste_cache_delete("peterborough:bartec:available_bulky_slots:$_:$uprn");
     }
 }
 
@@ -595,9 +596,9 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $base = '/i/waste-containers';
     my $images = {
-        6533 => "$base/bin-black",
-        6534 => "$base/bin-green",
-        6579 => "$base/bin-brown",
+        6533 => svg_container_bin('wheelie', '#333333'),
+        6534 => svg_container_bin("wheelie", '#41B28A'),
+        6579 => svg_container_bin("wheelie", '#8B5E3D'),
         bulky => "$base/bulky-white",
     };
     return $images->{$service_id};

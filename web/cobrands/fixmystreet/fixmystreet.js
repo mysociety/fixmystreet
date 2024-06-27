@@ -851,6 +851,7 @@ $.extend(fixmystreet.set_up, {
              * a bug in the web browser but I doubt it is going to be fixed any
              * time soon. Introduce some padding so this does not happen. */
             category_row.style.paddingBottom = window.innerHeight + 'px';
+            disable_on_empty();
         } else {
             // Hide all the copied subcategories
             document.querySelectorAll('.js-filter-subcategory').forEach(function(fieldset) {
@@ -861,6 +862,19 @@ $.extend(fixmystreet.set_up, {
                 items[i].classList.remove('js-filter-disabled');
             }
             category_row.style.paddingBottom = null;
+            disable_on_empty();
+        }
+
+        function disable_on_empty() {
+            // If there are no items found, give a message and disable the Continue button
+            if (items.length === document.querySelectorAll(".hidden-category-filter").length) {
+                $('#js-top-message').html('<p class="form-error" id="filter-category-error">Please try another search or delete your search and choose from the categories</p>');
+                $('.js-reporting-page--next').prop("disabled",true);
+                category_row.style.paddingBottom = null;
+            } else {
+                $('#filter-category-error').remove();
+                $('.js-reporting-page--next').prop("disabled",false);
+            }
         }
     };
 
