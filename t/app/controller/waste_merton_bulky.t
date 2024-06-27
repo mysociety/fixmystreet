@@ -883,7 +883,7 @@ FixMyStreet::override_config {
         $mech->get_ok($base_path);
         $mech->content_contains('Cancel booking');
         $mech->get_ok("$base_path/bulky/cancel/" . $report->id);
-        $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+        $mech->submit_form_ok( { with_fields => { name => 'Test McTest', email => 'test@example.net', confirm => 1 } } );
         $mech->content_contains('Your booking has been cancelled');
         $mech->follow_link_ok( { text => 'Show upcoming bin days' } );
         is $mech->uri->path, $base_path, 'Returned to bin days';
