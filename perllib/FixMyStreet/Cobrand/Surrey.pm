@@ -32,6 +32,18 @@ sub disambiguate_location {
 
 sub report_sent_confirmation_email { 'external_id' }
 
+=item * The default map view shows closed/fixed reports for 31 days
+
+=cut
+
+sub report_age {
+    return {
+        open => '90 days',
+        closed => '31 days',
+        fixed  => '31 days',
+    };
+}
+
 =head2 get_town
 
 Returns the name of the town from the problem's geocode information, if present.
