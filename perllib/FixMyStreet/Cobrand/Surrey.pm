@@ -28,6 +28,27 @@ sub disambiguate_location {
 
 sub report_sent_confirmation_email { 'id' }
 
+=item * We do not send alerts to report authors.
+
+=cut
+
+sub suppress_reporter_alerts { 1 }
+
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
+sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' }
+
+=item * The privacy policy is held on Surrey's own site
+
+=cut
+
+sub privacy_policy_url {
+    return 'https://www.surreycc.gov.uk/council-and-democracy/your-privacy/our-privacy-notices/fixmystreet'
+}
 
 =head2 get_town
 
