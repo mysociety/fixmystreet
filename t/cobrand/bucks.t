@@ -780,7 +780,7 @@ subtest 'Littering From Vehicles report' => sub {
     my $tmpl_lfv = $body->response_templates->create(
         {   title         => 'Littering From Vehicles Template',
             text          => 'Thank you; we are investigating this.',
-            state         => 'investigating',
+            state         => 'confirmed',
             auto_response => 1,
         }
     );
@@ -788,7 +788,6 @@ subtest 'Littering From Vehicles report' => sub {
 
     $mech->log_in_ok( $publicuser->email );
 
-    note 'No comment when initially created';
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
     $mech->submit_form_ok(
         {   with_fields => {
@@ -803,17 +802,19 @@ subtest 'Littering From Vehicles report' => sub {
         = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     is $report->category, 'Littering From Vehicles', 'correct category';
     is $report->state,    'confirmed',               'correct initial state';
-    is $report->comments, 0,                         'no initial comment';
+    is $report->comments, 1, 'initial comment created';
+    my $comment = $report->comments->first;
+    is $comment->text,          'Thank you; we are investigating this.';
+    is $comment->state,         'unconfirmed';
+    is $comment->problem_state, 'confirmed';
 
     FixMyStreet::Script::Reports::send();
     $report->discard_changes;
 
     is $report->state,    'investigating', 'state changed to investigating';
-    is $report->comments, 1,               'comment added';
-    my $comment = $report->comments->first;
-    is $comment->text,          'Thank you; we are investigating this.';
-    is $comment->state,         'confirmed';
-    is $comment->problem_state, 'investigating';
+    is $report->comments, 1,               'no more comments added';
+    $comment = $report->comments->first;
+    is $comment->state, 'confirmed', 'comment now confirmed';
 };
 
 };

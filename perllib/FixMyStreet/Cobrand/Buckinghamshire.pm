@@ -158,21 +158,7 @@ sub post_report_sent {
     my ( $self, $problem ) = @_;
 
     if ( $problem->category eq VEHICLE_LITTERING_CATEGORY ) {
-        my $new_state = 'investigating';
-        $problem->update( { state => $new_state } );
-
-        my $template = $problem->response_template_for( $new_state, 'dummy' );
-
-        my $user = $self->body->comment_user;
-
-        $problem->add_to_comments(
-            {   user          => $user,
-                send_state    => 'processed',
-                text          => $template->text,
-                problem_state => $new_state,
-                state         => 'confirmed',
-            }
-        );
+        $problem->update( { state => 'investigating' } );
     }
 }
 
