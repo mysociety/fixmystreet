@@ -1490,7 +1490,7 @@ sub process_garden_renew : Private {
     if (!$c->get_param('payment')) {
         my $bin_count = $data->{bins_wanted};
         $data->{bin_count} = $bin_count;
-        $data->{new_bins} = $bin_count - $data->{current_bins};
+        $data->{new_bins} = $bin_count - ($data->{current_bins} || 0);
 
         my $cost_pa = $c->cobrand->garden_waste_renewal_cost_pa($service->{end_date}, $bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
