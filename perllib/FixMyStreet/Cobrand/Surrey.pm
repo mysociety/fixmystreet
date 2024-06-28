@@ -58,6 +58,13 @@ sub suppress_reporter_alerts { 1 }
 
 sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' }
 
+=item * The privacy policy is held on Surrey's own site
+
+=cut
+
+sub privacy_policy_url {
+    return 'https://www.surreycc.gov.uk/council-and-democracy/your-privacy/our-privacy-notices/fixmystreet'
+}
 
 =head2 get_town
 
@@ -75,5 +82,44 @@ sub get_town {
     my $town = $address->{town} || $address->{city} || $address->{TOWN_NAME} || $address->{locality} || $address->{village} || $address->{suburb};
     return $town;
 }
+
+sub open311_config {
+    my ($self, $row, $h, $params, $contact) = @_;
+
+    $params->{multi_photos} = 1;
+}
+
+sub open311_extra_data_include {
+    my ($self, $row, $h, $contact) = @_;
+
+    my $open311_only = [
+        { name => 'fixmystreet_id',
+          value => $row->id },
+        { name => 'easting',
+          value => $h->{easting} },
+        { name => 'northing',
+          value => $h->{northing} },
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'category',
+          value => $row->category },
+        { name => 'group',
+          value => $row->get_extra_metadata('group', '') },
+    ];
+
+    # Surrey Open311 doesn't actually use the service_code value we send, but it
+    # must pass the input schema validation of open311-adapter. The majority of the
+    # Surrey contacts currently have actual email addresses, so we instead send
+    # the contact row ID.
+    # XXX this feels a bit hacky, is there a better way?
+    $contact->email($contact->id);
+
+    return $open311_only;
+}
+
 
 1;
