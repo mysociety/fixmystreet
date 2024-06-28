@@ -14,6 +14,10 @@
         <th>[% loc('Name') %]</th>
         <th>[% loc('Body') %]</th>
         <th>[% loc('State') %]</th>
+        [% TRY %]
+            [% INCLUDE 'admin/reports/_index_col_assigned.html' %]
+        [% CATCH %]
+        [% END %]
         <th>*</th>
     </tr>
     [% INCLUDE 'admin/problem_row.html' %]
