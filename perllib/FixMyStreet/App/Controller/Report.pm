@@ -838,7 +838,15 @@ sub stash_category_groups : Private {
                 my $contact = $category_groups{$_}[0];
                 push @list, [ $contact->category_display, $contact ];
             } else {
-                push @list, [ $_, { id => $id, name => $_, categories => $category_groups{$_} } ];
+                my $cats = $category_groups{$_};
+                @$cats = sort {
+                    my $aa = $a->category_display;
+                    return 1 if $aa eq _('Other');
+                    my $bb = $b->category_display;
+                    return -1 if $bb eq _('Other');
+                    $aa cmp $bb;
+                } @$cats;
+                push @list, [ $_, { id => $id, name => $_, categories => $cats } ];
             }
         }
         @list = sort {
