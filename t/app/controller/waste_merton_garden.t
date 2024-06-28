@@ -683,7 +683,7 @@ FixMyStreet::override_config {
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
 
-        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 27, new_bins => 0);
+        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 27, new_bins => '1::1', action => '1::2', bin_type_delivery => '27::26');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
 
@@ -761,7 +761,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 27, action => 2);
+        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 27, action => '1::2', new_bins => '1::2', bin_type_delivery => '27::26' );
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         check_extra_data_post_confirm($new_report);
@@ -960,6 +960,34 @@ FixMyStreet::override_config {
         check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 27, new_bins => 0);
     };
 
+    subtest 'garden bin, renewing as sacks' => sub {
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
+        $mech->submit_form_ok({ with_fields => {
+            bins_wanted => 1,
+            name => 'Test McTest',
+            email => 'test@example.net',
+            payment_method => 'credit_card',
+        } });
+        $mech->content_contains('1 sack subscription');
+        $mech->content_contains('89.78');
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
+        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 28, action => '1::2', new_bins => '1::1', bin_type_delivery => '28::26');
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+
+        check_extra_data_post_confirm($new_report);
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Garden waste sack collection: 1 roll/;
+        like $body, qr/Total:.*?89\.78/;
+    };
+
     subtest 'refuse sacks, garden bin, can modify' => sub {
         set_fixed_time('2021-01-09T17:00:00Z');
         $mech->log_in_ok($user->email);
@@ -1037,6 +1065,37 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Garden waste sack collection: 2 rolls/;
         unlike $body, qr/Number of bin subscriptions/;
+        like $body, qr/Total:.*?179\.56/
+    };
+
+    subtest 'sacks, renewing as a bin' => sub {
+        $mech->clear_emails_ok;
+
+        $mech->get_ok('/waste/12345/garden_renew');
+        $mech->submit_form_ok({ with_fields => { container_choice => 'bin140' } });
+        $mech->submit_form_ok({ with_fields => {
+            bins_wanted => 2,
+            name => 'Test McTest',
+            email => 'test@example.net',
+            payment_method => 'credit_card',
+        } });
+        $mech->content_contains('2 140L bins');
+        $mech->content_contains('179.56');
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
+        is $sent_params->{items}[0]{amount}, 17956, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 27, quantity => 2, new_bins => 2);
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+
+        check_extra_data_post_confirm($new_report);
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        unlike $body, qr/Garden waste sack collection/;
+        like $body, qr/Number of bin subscriptions: 2/;
         like $body, qr/Total:.*?179\.56/
     };
 
@@ -1371,7 +1430,7 @@ sub check_extra_data_pre_confirm {
     is $report->get_extra_field_value('Subscription_Details_Quantity'), $params{quantity}, 'correct bin count';
     is $report->get_extra_field_value('Subscription_Details_Containers'), $params{bin_type}, 'correct bin type';
     if ($params{new_bins}) {
-        is $report->get_extra_field_value('Bin_Delivery_Detail_Container'), $params{bin_type}, 'correct container request bin type';
+        is $report->get_extra_field_value('Bin_Delivery_Detail_Container'), $params{bin_type_delivery} || $params{bin_type}, 'correct container request bin type';
         is $report->get_extra_field_value('Bin_Delivery_Detail_Containers'), $params{action}, 'correct container request action';
         is $report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), $params{new_bins}, 'correct container request count';
     }
