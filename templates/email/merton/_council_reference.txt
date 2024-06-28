@@ -1,0 +1,3 @@
+[% IF sent_confirm_id_ref ~%]
+Reference: [% sent_confirm_id_ref %]
+[%~ END %]

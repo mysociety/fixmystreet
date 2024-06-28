@@ -1,0 +1,90 @@
+[% USE date %]
+[% INCLUDE waste/header.html %]
+
+<div class="waste__loading_wrapper">
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS title title=form.title %]
+  [% PROCESS errors %]
+
+<p>
+You can subscribe to our garden waste collection service if you are a frequent gardener, or if you can’t home compost your own garden waste.
+</p>
+
+<h2>Costs</h2>
+
+<p>
+It costs
+£[% tprintf('%.2f', per_bin_cost / 100 ) %]
+for a 12-month subscription.
+[% IF next_month_cost %]
+From [% date.format(next_month_cost.start_date, '%e %B') %], subscribers will pay
+£[% tprintf('%.2f', next_month_cost.cost / 100 ) %]
+for a 12-month subscription.
+[% END %]
+</p>
+
+[% IF slwp_garden_sacks %]
+<p>
+A roll of 25 garden waste sacks also costs £[% tprintf('%.2f', per_sack_cost / 100 ) %].
+</p>
+[% END %]
+
+<h2>Delivery time</h2>
+
+[% IF slwp_garden_sacks %]
+<p>
+We will aim to deliver your garden waste bin or roll of sacks within 20 working days.
+</p>
+<p>
+The bags are biodegradable and break down with the garden waste. Store them in a dry place away from direct sunlight so they don’t start to break down before you use them.
+</p>
+[% ELSE %]
+<p>
+We will aim to deliver your garden waste bin within 20 working days.
+</p>
+[% END %]
+
+<h2>We can collect</h2>
+
+<ul>
+<li>grass cuttings
+<li>garden or house plants
+<li>twigs and leaves
+<li>hedge trimmings
+<li>flowers and weeds
+<li>garden prunings
+</ul>
+
+<p>We can’t accept:</p>
+
+<ul>
+<li>rubble
+<li>soil
+<li>food or household waste
+<li>flower pots or anything made of plastic
+</ul>
+
+<h2>How often we collect your garden waste</h2>
+
+<p>
+We collect garden waste every 2 weeks.
+</p>
+
+[% IF slwp_garden_sacks %]
+<p>
+You can fill your sacks whenever you need to during your 12 month subscription and put them out on your next garden waste collection day.
+</p>
+[% END %]
+
+<p>
+You can <a href="https://www.merton.gov.uk/rubbish-and-recycling/collection-days-and-times">check your garden waste collection day on our website</a>.
+</p>
+
+<form method="post" action="garden">
+  [% PROCESS form %]
+</form>
+
+</div>
+
+[% INCLUDE footer.html %]

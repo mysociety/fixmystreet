@@ -1,0 +1,15 @@
+[% IF form.field('category').value == 'Request new container' %]
+<p>
+    If we have a problem resolving your request we may need to contact you. We
+    will only use this information to contact you in relation to your request.
+    You must provide an email address if you would like a confirmation of your
+    request and updates as the case progresses.
+</p>
+[% ELSE %]
+<p>
+    If we have a problem resolving your report we may need to contact you. We
+    will only use this information to contact you in relation to your missed
+    bin report. You must provide an email address if you would like a
+    confirmation of your report and updates as the case progresses.
+</p>
+[% END %]

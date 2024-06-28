@@ -117,7 +117,7 @@ END; END %]
     <hr>
   </div>
   [% END %]
-  [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' %]
+  [% IF c.cobrand.bulky_pricing_strategy.strategy == 'banded' %]
   <p id="band-pricing-info"></p>
   [% END %]
   <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+

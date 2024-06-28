@@ -10,7 +10,6 @@ package FixMyStreet::Roles::Cobrand::KingstonSutton;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SLWP';
-with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
@@ -97,9 +96,6 @@ sub available_permissions {
 
 sub waste_auto_confirm_report { 1 }
 
-sub waste_staff_choose_payment_method { 1 }
-sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
-
 use constant CONTAINER_REFUSE_140 => 1;
 use constant CONTAINER_REFUSE_180 => 35;
 use constant CONTAINER_REFUSE_240 => 2;
@@ -110,6 +106,8 @@ use constant CONTAINER_GARDEN_BIN => 26;
 use constant CONTAINER_GARDEN_SACK => 28;
 
 sub garden_due_days { 30 }
+
+sub garden_staff_provide_email { 1 }
 
 sub service_name_override {
     my ($self, $service) = @_;
@@ -213,33 +211,17 @@ sub waste_containers {
     }
 }
 
+sub _waste_containers_no_request { {
+    6 => 1, # Red stripe bag
+    17 => 1, # Recycling purple sack
+    29 => 1, # Recycling Single Use Bag
+    21 => 1, # Paper & Card Reusable bag
+} }
+
 sub waste_quantity_max {
     return (
         2247 => 5, # Garden waste maximum
     );
-}
-
-sub waste_bulky_missed_blocked_codes {
-    return {
-        # Partially completed
-        12399 => {
-            507 => 'Not all items presented',
-            380 => 'Some items too heavy',
-        },
-        # Completed
-        12400 => {
-            606 => 'More items presented than booked',
-        },
-        # Not Completed
-        12401 => {
-            460 => 'Nothing out',
-            379 => 'Item not as described',
-            100 => 'No access',
-            212 => 'Too heavy',
-            473 => 'Damage on site',
-            234 => 'Hazardous waste',
-        },
-    };
 }
 
 sub waste_munge_bin_services_open_requests {
@@ -261,20 +243,6 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
-sub garden_container_data_extract {
-    my ($self, $data, $containers, $quantities, $schedules) = @_;
-    # Assume garden will only have one container data
-    my $garden_container = $containers->[0];
-    my $garden_bins = $quantities->{$containers->[0]};
-    if ($garden_container == CONTAINER_GARDEN_SACK) {
-        my $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
-        return ($garden_bins, 1, $garden_cost, $garden_container);
-    } else {
-        my $garden_cost = $self->garden_waste_renewal_cost_pa($schedules->{end_date}, $garden_bins) / 100;
-        return ($garden_bins, 0, $garden_cost, $garden_container);
-    }
-}
-
 # Not in the function below because it needs to set things needed before then
 # (perhaps could be refactored better at some point). Used for new/renew
 sub waste_garden_sub_payment_params {
@@ -284,52 +252,11 @@ sub waste_garden_sub_payment_params {
     # Special sack form handling
     my $container = $data->{container_choice} || '';
     if ($container eq 'sack') {
-        $data->{slwp_garden_sacks} = 1;
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
         ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
         $c->set_param('payment', $cost_pa);
-    }
-}
-
-sub waste_garden_sub_params {
-    my ($self, $data, $type) = @_;
-    my $c = $self->{c};
-
-    my $service = $self->garden_current_subscription;
-    my $existing = $service ? $service->{garden_container} : undef;
-    my $container = $data->{slwp_garden_sacks} ? CONTAINER_GARDEN_SACK : $existing || CONTAINER_GARDEN_BIN;
-    my $container_actions = {
-        deliver => 1,
-        remove => 2
-    };
-
-    $c->set_param('Request_Type', $type);
-    $c->set_param('Subscription_Details_Containers', $container);
-    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
-    if ( $data->{new_bins} ) {
-        my $action = ($data->{new_bins} > 0) ? 'deliver' : 'remove';
-        $c->set_param('Bin_Delivery_Detail_Containers', $container_actions->{$action});
-        $c->set_param('Bin_Delivery_Detail_Container', $container);
-        $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
-    }
-}
-
-sub waste_garden_subscribe_form_setup {
-    my ($self) = @_;
-    my $c = $self->{c};
-    if ($c->stash->{slwp_garden_sacks}) {
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks';
-    }
-}
-
-sub waste_garden_renew_form_setup {
-    my ($self) = @_;
-    my $c = $self->{c};
-    if ($c->stash->{slwp_garden_sacks}) {
-        $c->stash->{first_page} = 'sacks_choice';
-        $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
     }
 }
 
@@ -360,12 +287,6 @@ sub waste_report_form_first_next {
         return 'notes' if $data->{"service-$bulky_service_id"};
         return 'about_you';
     };
-}
-
-# Same as full cost
-sub waste_get_pro_rata_cost {
-    my ($self, $bins, $end) = @_;
-    return $self->garden_waste_cost_pa($bins);
 }
 
 sub garden_waste_new_bin_admin_fee {
@@ -495,166 +416,6 @@ sub dashboard_export_problems_add_columns {
             quantity => $fields{Subscription_Details_Quantity},
         };
     });
-}
-
-=head2 Bulky waste collection
-
-SLWP looks 8 weeks ahead for collection dates, and cancels by sending an
-update, not a new report. It sends the event to the backend before collecting
-payment, and does not refund on cancellations. It has a hard-coded list of
-property types allowed to book collections.
-
-=cut
-
-sub bulky_collection_window_days { 56 }
-
-sub bulky_cancel_by_update { 1 }
-sub bulky_send_before_payment { 1 }
-sub bulky_show_location_field_mandatory { 1 }
-
-sub bulky_can_refund { 0 }
-sub _bulky_refund_cutoff_date { }
-
-=head2 bulky_collection_window_start_date
-
-K&S have an 11pm cut-off for looking to book next day collections.
-
-=cut
-
-sub bulky_collection_window_start_date {
-    my $self = shift;
-    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
-    # If past 11pm, push start date one day later
-    if ($now->hour >= 23) {
-        $start_date->add( days => 1 );
-    }
-    return $start_date;
-}
-
-sub bulky_allowed_property {
-    my ( $self, $property ) = @_;
-
-    return if $property->{has_no_services};
-    my $cfg = $self->feature('echo');
-
-    my $type = $property->{type_id} || 0;
-    my $valid_type = grep { $_ == $type } @{ $cfg->{bulky_address_types} || [] };
-    my $domestic_farm = $type != 7 || $property->{domestic_refuse_bin};
-    return $self->bulky_enabled && $valid_type && $domestic_farm;
-}
-
-sub collection_date {
-    my ($self, $p) = @_;
-    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
-}
-
-sub bulky_free_collection_available { 0 }
-
-sub bulky_hide_later_dates { 1 }
-
-sub _bulky_date_to_dt {
-    my ($self, $date) = @_;
-    $date = (split(";", $date))[0];
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
-    my $dt = $parser->parse_datetime($date);
-    return $dt ? $dt->truncate( to => 'day' ) : undef;
-}
-
-=head2 Sending to Echo
-
-We use the reserved slot GUID and reference,
-and the provided date/location information.
-Items are sent through with their notes as individual entries
-
-=cut
-
-sub waste_munge_bulky_data {
-    my ($self, $data) = @_;
-
-    my $c = $self->{c};
-    my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
-
-    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
-    $data->{extra_GUID} = $self->{c}->waste_cache_get($guid_key);
-    $data->{extra_reservation} = $ref;
-
-    $data->{title} = "Bulky goods collection";
-    $data->{detail} = "Address: " . $c->stash->{property}->{address};
-    $data->{category} = "Bulky collection";
-    $data->{extra_Collection_Date} = $date;
-    $data->{extra_Exact_Location} = $data->{location};
-
-    my $first_date = $self->{c}->session->{first_date_returned};
-    $first_date = DateTime::Format::W3CDTF->parse_datetime($first_date);
-    my $dt = DateTime::Format::W3CDTF->parse_datetime($date);
-    $data->{'extra_First_Date_Returned_to_Customer'} = $first_date->strftime("%d/%m/%Y");
-    $data->{'extra_Customer_Selected_Date_Beyond_SLA?'} = $dt > $first_date ? 1 : 0;
-
-    my @items_list = @{ $self->bulky_items_master_list };
-    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
-
-    my @notes;
-    my @ids;
-    my @photos;
-
-    my $max = $self->bulky_items_maximum;
-    for (1..$max) {
-        if (my $item = $data->{"item_$_"}) {
-            push @notes, $data->{"item_notes_$_"} || '';
-            push @ids, $items{$item};
-            push @photos, $data->{"item_photos_$_"} || '';
-        };
-    }
-    $data->{extra_Bulky_Collection_Notes} = join("::", @notes);
-    $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
-    $data->{extra_Image} = join("::", @photos);
-    $self->bulky_total_cost($data);
-}
-
-sub waste_reconstruct_bulky_data {
-    my ($self, $p) = @_;
-
-    my $saved_data = {
-        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
-        "location" => $p->get_extra_field_value('Exact_Location'),
-        "location_photo" => $p->get_extra_metadata("location_photo"),
-    };
-
-    my @fields = split /::/, $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
-    my @notes = split /::/, $p->get_extra_field_value('Bulky_Collection_Notes');
-    for my $id (1..@fields) {
-        $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
-        $saved_data->{"item_notes_$id"} = $notes[$id-1];
-        $saved_data->{"item_photo_$id"} = $p->get_extra_metadata("item_photo_$id");
-    }
-
-    $saved_data->{name} = $p->name;
-    $saved_data->{email} = $p->user->email;
-    $saved_data->{phone} = $p->phone_waste;
-
-    return $saved_data;
-}
-
-=head2 suppress_report_sent_email
-
-For Bulky Waste reports, we want to send the email after payment has been confirmed, so we
-suppress the email here.
-
-=cut
-
-sub suppress_report_sent_email {
-    my ($self, $report) = @_;
-
-    if ($report->cobrand_data eq 'waste' && $report->category eq 'Bulky collection') {
-        return 1;
-    }
-
-    return 0;
-}
-
-sub bulky_location_photo_prompt {
-    'Help us by attaching a photo of where the items will be left for collection.';
 }
 
 1;

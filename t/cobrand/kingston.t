@@ -27,6 +27,18 @@ my $body = $mech->create_body_ok( 2480, 'Kingston upon Thames Council', {
     cobrand => 'kingston',
 });
 
+foreach ([ 1638 => 'Garden Subscription' ]) {
+    $mech->create_contact_ok(
+        body => $body,
+        email => $_->[0],
+        category => $_->[1],
+        send_method => 'Open311',
+        endpoint => 'waste-endpoint',
+        extra => { type => 'waste' },
+        group => ['Waste'],
+    );
+}
+
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
 sub new { my $c = shift; bless { @_ }, $c; }

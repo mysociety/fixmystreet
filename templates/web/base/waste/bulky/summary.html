@@ -160,11 +160,16 @@ SET data = form.saved_data;
       <dl>
         <dt>Price</dt>
         [% IF problem %]
-            [% payment = problem.get_extra_field_value('payment') %]
+            [% payment = problem.get_extra_field_value('payment') OR 0 %]
         [% ELSE %]
-            [% payment = cobrand.bulky_total_cost(data) %]
+            [% payments = cobrand.bulky_total_cost(data);
+            payment = payments.amount;
+            already_paid = payments.already_paid; %]
         [% END %]
-        <dd>£[% pounds(payment / 100) %]</dd>
+        <dd>£[% pounds(payment / 100) %] [% IF already_paid ~%]
+                (£[% pounds(already_paid / 100) %] already paid)
+            [%~ END %]
+        </dd>
       </dl>
       [% END %]
       <div class="govuk-!-margin-bottom-4">

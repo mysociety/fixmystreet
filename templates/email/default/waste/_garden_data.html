@@ -1,13 +1,15 @@
 [%
 
-IF cobrand.moniker == 'brent';
-    SET container = report.get_extra_field_value('Paid_Collection_Container_Type');
+SET container = report.get_extra_field_value('Paid_Collection_Container_Type');
+IF container;
     SET sacks = (container == 2);
     SET quantity = report.get_extra_field_value('Paid_Collection_Container_Quantity');
-ELSIF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton';
+ELSE;
     SET container = report.get_extra_field_value('Subscription_Details_Containers');
-    SET sacks = (container == 28);
-    SET quantity = report.get_extra_field_value('Subscription_Details_Quantity');
+    IF container;
+        SET sacks = (container == 28);
+        SET quantity = report.get_extra_field_value('Subscription_Details_Quantity');
+    END;
 END;
 SET new_bins = report.get_extra_field_value('new_containers') || 0;
 

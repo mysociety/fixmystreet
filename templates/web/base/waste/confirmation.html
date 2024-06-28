@@ -3,6 +3,8 @@ IF report.category == 'Request new container';
     title = 'Container request has been sent';
 ELSIF report.category == 'Report missed collection';
     title = 'Missed collection has been reported';
+ELSIF report.category == 'Request additional collection';
+    title = 'Additional collection has been requested';
 ELSE;
     title = 'Enquiry has been submitted';
 END ~%]

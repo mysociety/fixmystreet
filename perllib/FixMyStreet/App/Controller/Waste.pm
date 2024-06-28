@@ -346,6 +346,14 @@ sub confirm_subscription : Private {
         });
         $p->cancel_update_alert($comment->id);
     }
+
+    if (my $previous = $p->get_extra_metadata('previous_booking_id')) {
+        $previous = FixMyStreet::DB->resultset("Problem")->find($previous);
+        $c->forward('bulky/cancel_collection', [ $previous ]);
+        my $update = $c->cobrand->bulky_is_cancelled($previous);
+        $update->confirm;
+        $update->update;
+    }
 }
 
 sub cancel_subscription : Private {
@@ -942,6 +950,7 @@ sub construct_bin_report_form {
 
     my $field_list = [];
 
+    my $show_all_services = $c->stash->{is_staff} && $c->get_param('additional');
     foreach (@{$c->stash->{service_data}}) {
         my $id = $_->{service_id};
 
@@ -949,7 +958,8 @@ sub construct_bin_report_form {
             ( $_->{last}
             && $_->{report_allowed}
             && !$_->{report_open} )
-            || $_->{report_only} )
+            || $_->{report_only}
+            || $show_all_services )
         {
             # Missed collection link may have passed in a hidden param for
             # a service that is no longer eligible for collection (e.g. if
@@ -1005,6 +1015,7 @@ sub report : Chained('property') : Args(0) {
             next => $next,
         },
     ];
+    $c->cobrand->call_hook("waste_munge_report_form_pages", $c->stash->{page_list}, $field_list);
     $c->stash->{field_list} = $field_list;
     $c->forward('form');
 }
@@ -1047,6 +1058,15 @@ sub enquiry : Chained('property') : Args(0) {
     foreach (@{$contact->get_metadata_for_input}) {
         $staff_form = 1 if $_->{code} eq 'staff_form';
         next if ($_->{automated} || '') eq 'hidden_field';
+
+        # Handle notices.
+        if ($_->{variable} && $_->{variable} eq 'false') {
+            push @$field_list, "extra_$_->{code}" => {
+                type => 'Notice', label => $_->{description}, required => 0, widget => 'NoRender',
+            };
+            next;
+        }
+
         my %config = (type => 'Text');
         my $datatype = $_->{datatype} || '';
         if ($datatype eq 'text') {
@@ -1055,6 +1075,7 @@ sub enquiry : Chained('property') : Args(0) {
             my @options = map { { label => $_->{name}, value => $_->{key} } } @{$_->{values}};
             %config = (type => 'Multiple', widget => 'CheckboxGroup', options => \@options);
         }
+
         my $required = $_->{required} eq 'true' ? 1 : 0;
         push @$field_list, "extra_$_->{code}" => {
             %config, label => $_->{description}, required => $required
@@ -1177,7 +1198,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
     $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
 
-    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
+    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == 28) { # SLWP Sack
         if ($c->cobrand->moniker eq 'kingston') {
             my $payment_method = 'credit_card';
             $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
@@ -1307,8 +1328,6 @@ sub process_garden_cancellation : Private {
     if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == 26 || $service->{garden_container} == 27) {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
-    } else {
-        $data->{slwp_garden_sacks} = 1;
     }
     $c->forward('setup_garden_sub_params', [ $data, undef ]);
 
@@ -1397,8 +1416,7 @@ sub process_garden_modification : Private {
     my $payment_method;
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
-    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
-        $data->{slwp_garden_sacks} = 1;
+    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == 28) { # SLWP Sack
         $data->{bin_count} = 1;
         $data->{new_bins} = 1;
         $payment = $c->cobrand->garden_waste_sacks_cost_pa();
@@ -1477,7 +1495,7 @@ sub process_garden_renew : Private {
     if (!$c->get_param('payment')) {
         my $bin_count = $data->{bins_wanted};
         $data->{bin_count} = $bin_count;
-        $data->{new_bins} = $bin_count - $data->{current_bins};
+        $data->{new_bins} = $bin_count - ($data->{current_bins} || 0);
 
         my $cost_pa = $c->cobrand->garden_waste_renewal_cost_pa($service->{end_date}, $bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
@@ -1657,6 +1675,8 @@ sub add_report : Private {
         }
         $c->forward('/report/new/redirect_or_confirm_creation', [ 1 ]);
     }
+
+    $c->cobrand->call_hook('waste_post_report_creation', $report);
 
     $c->user->update({ name => $original_name }) if $original_name;
 

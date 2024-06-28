@@ -1,0 +1,76 @@
+[%~
+    SET garden_container = c.cobrand.garden_current_subscription.garden_container;
+    IF garden_container == 26;
+        SET old_container_name = '240L';
+    ELSIF garden_container == 27;
+        SET old_container_name = '140L';
+    END;
+    IF form.saved_data.container_choice == 'bin140';
+        SET new_container_name = '140L';
+    ELSIF form.saved_data.container_choice == 'bin240';
+        SET new_container_name = '240L';
+    END;
+
+~%]
+  <!-- [% PROCESS form override_fields=['current_bins'] %] -->
+    <div class="fieldset-container">
+      <div class="fieldset-item">
+        <label class="govuk-label" for="[% field.id %]">
+            Number of [% old_container_name %] garden waste bins currently at this address
+        </label>
+      [% IF error %]
+        <span id="[% field.id %]-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> [% error %]
+        </span>
+      [% END %]
+      </div>
+
+    <div class="fieldset-item">
+      <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="current_bins" name="current_bins" type="number"
+      value="[% field.fif %]"
+      [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
+      [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
+      [%~ IF field.disabled %] disabled[% END ~%]
+      [%~ IF field.readonly %] readonly[% END ~%]
+      [%~ IF error %] aria-describedby="[% field.id %]-error" [%~ END %]>
+    </div>
+
+    <div class="fieldset-item">
+      [% IF form_page == 'subscribe' %]
+          <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" name="goto-existing" value="Change answer">
+      [% END %]
+    </div>
+  </div>
+
+  <!-- [% PROCESS form override_fields=['bins_wanted'] %] -->
+    <hr class="fieldset-hr">
+    <div class="fieldset-container">
+      <div class="fieldset-item">
+        <label class="govuk-label" for="[% field.id %]">
+            How many [% new_container_name %] bins do you want to subscribe&nbsp;to?
+        </label>
+      [% IF error %]
+        <span id="[% field.id %]-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> [% error %]
+        </span>
+      [% END %]
+      </div>
+
+    <div class="fieldset-item">
+      <input class="govuk-input[% IF error %] govuk-input--error[% END %]" id="bins_wanted" name="bins_wanted" type="number"
+      value="[% field.fif %]"
+      [%~ IF field.get_tag('number') %] pattern="[0-9]*" inputmode="numeric"[% END ~%]
+      [%~ IF field.get_tag('autofocus') %] autofocus[% END ~%]
+      [%~ IF field.disabled %] disabled[% END ~%]
+      [%~ IF error %] aria-describedby="[% field.id %]" [%~ END %]>
+    </div>
+
+    <div class="fieldset-item">
+      [% IF form_page == 'renew';
+            SET cost = per_bin_renewal_cost;
+        ELSE;
+            SET cost = per_bin_cost;
+        END %]
+        <span class="cost-pa">£[% tprintf('%.2f', cost / 100 ) %] per bin per year</span>
+    </div>
+  </div>

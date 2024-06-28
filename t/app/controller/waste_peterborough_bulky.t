@@ -762,7 +762,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('you can add up to 2 more items');
-            $mech->content_contains('£23.50');
+            $mech->content_contains('£0.00 (£23.50 already paid)');
             $mech->content_contains("<dd>Friday 26 August 2022</dd>");
             $mech->content_contains("15:00 on 25 August 2022");
             $mech->content_lacks('Cancel this booking');
@@ -803,7 +803,7 @@ FixMyStreet::override_config {
         $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Wardrobes/s);
         $mech->content_contains('2 items requested for collection');
         $mech->content_contains('you can add up to 3 more items');
-        $mech->content_contains('£23.50');
+        $mech->content_contains('£0.00 (£23.50 already paid)');
         $mech->content_contains("<dd>Friday 26 August 2022</dd>");
         $mech->content_contains("15:00 on 25 August 2022");
         $mech->content_lacks('Cancel this booking');

@@ -158,6 +158,11 @@ subtest 'Updates on waste reports still have munged params' => sub {
 
         is $report->comments->count, 1, 'comment was added';
         my $comment = $report->comments->first;
+        $comment->set_extra_metadata(
+            'fms_extra_resolution_code' => 207,
+            'fms_extra_event_status' => 'Rejected',
+        );
+        $comment->update;
 
         $report->update({ cobrand_data => 'waste' });
         my $updates = Open311::PostServiceRequestUpdates->new();
@@ -170,6 +175,8 @@ subtest 'Updates on waste reports still have munged params' => sub {
         is $c->param('service_request_id_ext'), $report->id;
         is $c->param('public_anonymity_required'), 'FALSE';
         is $c->param('email_alerts_requested'), undef;
+        is $c->param('attribute[resolution_code]'), 207;
+        is $c->param('attribute[event_status]'), 'Rejected';
 
         $report->update({ cobrand_data => '' });
         $mech->log_out_ok;
@@ -706,6 +713,9 @@ EOF
         $report->discard_changes;
         is $report->state, 'closed', 'A state change';
 
+        my $comment = FixMyStreet::DB->resultset('Comment')->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $comment->get_extra_metadata('fms_extra_event_status'), 'Rejected';
+        is $comment->get_extra_metadata('fms_extra_resolution_code'), 'Duplicate';
         FixMyStreet::App->log->enable('info');
     };
 };

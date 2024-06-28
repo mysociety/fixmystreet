@@ -36,16 +36,16 @@ You have signed up for:
 
 [% report.detail %]
 
-[% IF quantity AND NOT sacks ~%]
+[% IF quantity ~%]
+[% IF sacks ~%]
+Garden waste sack collection: [% quantity %] [% nget('roll', 'rolls', quantity) %]
+[% ELSE ~%]
 Number of bin subscriptions: [% quantity %]
+[% END ~%]
 [% END %]
 
-[% IF new_bins > 0 ~%]
-[% IF sacks ~%]
-Garden waste sack collection: 1 roll
-[% ELSE ~%]
+[% IF new_bins > 0 AND NOT sacks ~%]
 Bins to be delivered: [% new_bins %]
-[% END ~%]
 [% ELSIF new_bins < 0 AND NOT sacks ~%]
 Bins to be removed: [% 0 - new_bins %]
 [% END %]

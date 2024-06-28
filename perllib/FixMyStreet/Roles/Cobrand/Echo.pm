@@ -51,14 +51,22 @@ sub bin_addresses_for_postcode {
     return $data;
 }
 
+sub _allow_async_echo_lookup {
+    my $self = shift;
+    my $action = $self->{c}->action;
+    return 0 if $action eq 'waste/pay_retry' || $action eq 'waste/direct_debit_error' || $action eq 'waste/calendar';
+    return 1;
+}
+
 sub look_up_property {
     my ($self, $id) = @_;
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
+    my $background = $self->_allow_async_echo_lookup;
     my $calls = $echo->call_api($self->{c}, $self->moniker,
         "look_up_property:$id",
-        1,
+        $background,
         GetPointAddress => [ $id ],
         GetServiceUnitsForObject => [ $id ],
         GetEventsForObject => [ 'PointAddress', $id ],
@@ -128,9 +136,7 @@ sub bin_services_for_address {
     my %seen_service_units;
     foreach (@rows) {
         my $schedules = $_->{Schedules};
-        if ($self->moniker ne 'sutton' && $self->moniker ne 'kingston') { # K&S don't use overdue
-            $_->{expired} = 1 if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
-        }
+        $_->{expired} = 1 if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
         next unless $schedules->{next} or $schedules->{last};
         $_->{active} = 1;
@@ -144,7 +150,10 @@ sub bin_services_for_address {
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, $self->moniker, 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
+    my $background = $self->_allow_async_echo_lookup;
+    my $calls = $echo->call_api($self->{c}, $self->moniker,
+        'bin_services_for_address:' . $property->{id},
+        $background, @to_fetch);
 
     if ($self->can('bulky_enabled')) {
         $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
@@ -234,6 +243,7 @@ sub bin_services_for_address {
     }
 
     $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
+    $self->call_hook('staff_override_request_options' => \@out);
 
     return \@out;
 
@@ -348,7 +358,6 @@ sub _parse_events {
         # Only care about open requests/enquiries
         my $closed = $self->_closed_event($_);
         next if $type ne 'missed' && $type ne 'bulky' && $closed;
-        next if $type eq 'bulky' && !$closed;
 
         if ($type eq 'request') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
@@ -366,13 +375,20 @@ sub _parse_events {
             $self->parse_event_missed($_, $closed, $events);
         } elsif ($type eq 'bulky') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $resolved_date = construct_bin_date($_->{ResolvedDate});
-            $events->{enquiry}{$event_type}{$_->{Guid}} = {
-                date => $resolved_date,
-                report => $report,
-                resolution => $_->{ResolutionCodeId},
-                state => $_->{EventStateId},
-            };
+            if ($report) {
+                my $row = {
+                    report => $report,
+                    resolution => $_->{ResolutionCodeId},
+                };
+                if ($closed) {
+                    $row->{date} = construct_bin_date($_->{ResolvedDate});
+                    $row->{state} = $_->{EventStateId};
+                } else {
+                    $row->{date} = $self->collection_date($report);
+                    $row->{state} = 'open';
+                }
+                $events->{enquiry}{$event_type}{$_->{Guid}} = $row;
+            }
         } else { # General enquiry of some sort
             $events->{enquiry}->{$event_type} = 1;
         }
@@ -626,6 +642,11 @@ sub waste_fetch_events {
         $report_params = { external_id => { like => 'Echo%' } };
     } else {
         $conf = $body;
+        my @contacts = $body->contacts->search({
+            extra => { '@>' => '{"type":"waste"}' }
+        })->all;
+        die "Could not find any waste contacts\n" unless @contacts;
+        $report_params = { category => [ map { $_->category } @contacts ] };
     }
 
     my %open311_conf = (
@@ -659,7 +680,6 @@ sub waste_fetch_events {
     my $reports = $self->problems->search({
         external_id => { '!=', '' },
         state => [ FixMyStreet::DB::Result::Problem->open_states() ],
-        # TODO Should know which categories to use somehow, even in non-devolved case
         %$report_params,
     });
 
@@ -703,6 +723,8 @@ sub construct_waste_open311_update {
         update_id => 'waste',
         external_status_code => $external_status_code,
         prefer_template => 1,
+        fms_extra_resolution_code => $event_type->{resolution}{$resolution_id} || '',
+        fms_extra_event_status => $event_type->{states}{$state_id}{name} || '',
         %extra,
     }
 }
@@ -772,6 +794,12 @@ sub waste_get_next_dd_day {
     return $next_day;
 }
 
+=head2 waste_sub_due
+
+Returns true/false if now is less than garden_due_days before DATE.
+
+=cut
+
 sub waste_sub_due {
     my ($self, $date) = @_;
 
@@ -781,6 +809,13 @@ sub waste_sub_due {
     my $diff = $now->delta_days($sub_end)->in_units('days');
     return $diff <= $self->garden_due_days;
 }
+
+=head2 waste_sub_overdue
+
+Returns true/false if now is past DATE and (if provided)
+less than COUNT INTERVAL after.
+
+=cut
 
 sub waste_sub_overdue {
     my ($self, $date, $interval, $count) = @_;
@@ -1035,10 +1070,15 @@ sub bulky_check_missed_collection {
                 }
             }
         }
+
+        # Open events are coming through and we only want to continue under specific circumstances with an open event
+        next unless (!$event->{state} || $event->{state} ne 'open') || $self->{c}->cobrand->call_hook('bulky_open_overdue', $event);
+
         $row->{report_allowed} = $in_time && !$row->{report_locked_out};
 
         my $recent_events = $self->_events_since_date($event->{date}, $missed_events);
         $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
+
         $self->{c}->stash->{bulky_missed}{$guid} = $row;
     }
 }
@@ -1266,5 +1306,13 @@ sub per_photo_size_limit_for_report_in_bytes {
 
     return min($max_size_per_image, $max_size_per_image_from_total);
 };
+
+sub _bulky_date_to_dt {
+    my ($self, $date) = @_;
+    $date = (split(";", $date))[0];
+    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
+    my $dt = $parser->parse_datetime($date);
+    return $dt ? $dt->truncate( to => 'day' ) : undef;
+}
 
 1;
