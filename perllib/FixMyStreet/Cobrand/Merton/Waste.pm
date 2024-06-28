@@ -156,6 +156,9 @@ sub waste_garden_sub_payment_params {
     # Special sack form handling
     my $container = $data->{container_choice} || '';
     if ($container eq 'sack') {
+        # If renewing from bin to sacks, need to know bins to remove - better place for this?
+        my $sub = $c->cobrand->garden_current_subscription;
+        $data->{current_bins} = $sub->{garden_bins} if $sub;
         $data->{bin_count} = $data->{bins_wanted};
         $data->{new_bins} = $data->{bins_wanted};
         my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $data->{bin_count};

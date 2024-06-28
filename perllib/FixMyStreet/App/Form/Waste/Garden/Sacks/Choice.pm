@@ -3,6 +3,10 @@ package FixMyStreet::App::Form::Waste::Garden::Sacks::Choice;
 use utf8;
 use HTML::FormHandler::Moose::Role;
 
+use constant CONTAINER_GARDEN_BIN => 26;
+use constant CONTAINER_GARDEN_BIN_140 => 27;
+use constant CONTAINER_GARDEN_SACK => 28;
+
 has_field container_choice => (
     type => 'Select',
     label => 'Would you like to subscribe for bins or sacks?',
@@ -16,6 +20,22 @@ my %sack_num = (
     merton => 25,
     brent => '',
 );
+
+sub default_container_choice {
+    my $self = shift;
+    my $cobrand = $self->{c}->cobrand;
+    if ($cobrand->moniker eq 'merton') {
+        my $sub = $cobrand->garden_current_subscription;
+        my $container = $sub->{garden_container} || 0;
+        if ($container == CONTAINER_GARDEN_SACK) {
+            return 'sack';
+        } elsif ($container == CONTAINER_GARDEN_BIN_140) {
+            return 'bin140';
+        } elsif ($container == CONTAINER_GARDEN_BIN) {
+            return 'bin240';
+        }
+    }
+}
 
 sub options_container_choice {
     my $cobrand = $_[0]->{c}->cobrand->moniker;

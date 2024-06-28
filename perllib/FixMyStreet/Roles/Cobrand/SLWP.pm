@@ -344,11 +344,11 @@ sub garden_container_data_extract {
     my ($self, $data, $containers, $quantities, $schedules) = @_;
     # Assume garden will only have one container data
     my $garden_container = $containers->[0];
-    my $garden_bins = $quantities->{$containers->[0]};
     if ($garden_container == CONTAINER_GARDEN_SACK) {
         my $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
-        return ($garden_bins, 1, $garden_cost, $garden_container);
+        return (undef, 1, $garden_cost, $garden_container);
     } else {
+        my $garden_bins = $quantities->{$containers->[0]};
         my $garden_cost = $self->garden_waste_renewal_cost_pa($schedules->{end_date}, $garden_bins) / 100;
         return ($garden_bins, 0, $garden_cost, $garden_container);
     }
@@ -393,7 +393,17 @@ sub waste_garden_sub_params {
     $c->set_param('Request_Type', $type);
     $c->set_param('Subscription_Details_Containers', $container);
     $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
-    if ( $data->{new_bins} ) {
+
+    if ($c->cobrand->moniker eq 'merton'        # Might work okay for K/S too, but only Merton have asked
+        && $existing                            # This is a renewal, not a new subscription
+        && $existing != $container              # We're changing container type
+        && $existing != CONTAINER_GARDEN_SACK   # If currently sack, there's nothing to remove, same as new
+    ) {
+        # We need to ask for both a delivery and a removal of the old bins
+        $c->set_param('Bin_Delivery_Detail_Containers', join('::', 1, 2)); # deliver and remove
+        $c->set_param('Bin_Delivery_Detail_Container', join('::', $container, $existing));
+        $c->set_param('Bin_Delivery_Detail_Quantity', join('::', $data->{bin_count}, $data->{current_bins}));
+    } elsif ( $data->{new_bins} ) {
         my $action = ($data->{new_bins} > 0) ? 'deliver' : 'remove';
         $c->set_param('Bin_Delivery_Detail_Containers', $container_actions->{$action});
         $c->set_param('Bin_Delivery_Detail_Container', $container);
