@@ -26,7 +26,29 @@ sub disambiguate_location {
     };
 }
 
-sub report_sent_confirmation_email { 'id' }
+=item * We include the C<external_id> (Zendesk reference) in the acknowledgement email.
+
+=cut
+
+sub report_sent_confirmation_email { 'external_id' }
+
+=item * The default map view shows closed/fixed reports for 31 days
+
+=cut
+
+sub report_age {
+    return {
+        open => '90 days',
+        closed => '31 days',
+        fixed  => '31 days',
+    };
+}
+
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
 
 =item * We do not send alerts to report authors.
 
