@@ -27,8 +27,8 @@ has_page intro => (
         my $form = shift;
         my $c = $form->{c};
         my $data = $c->stash->{garden_form_data};
-        my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $data->{bins};
-        my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins};
+        my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $data->{bins} || 0;
+        my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins} || 1;
         my $new_bins = $bin_count - $current_bins;
 
         my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
