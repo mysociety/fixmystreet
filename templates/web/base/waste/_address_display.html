@@ -2,3 +2,6 @@
   <dt class="waste__address__title">Address</dt>
   <dd class="waste__address__property">[% property.address %]</dd>
 </dl>
+[% IF c.cobrand.moniker == 'bexley' %]
+<div><p><b><a href="[% c.uri_for_action('waste/index') %]">Change address</a></b></p></div>
+[% END %]

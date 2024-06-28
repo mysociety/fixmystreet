@@ -1,9 +1,6 @@
 [% USE date(format='%Y%m%d') %]
 <h3>More services</h3>
 <ul>
-  [% IF any_report_allowed %]
-    <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
-  [% END %]
   [% IF any_request_allowed %]
     <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
   [% END %]
@@ -11,4 +8,8 @@
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
   [% END %]
   <li><a [% external_new_tab | safe %] href="https://mybexley.bexley.gov.uk/service/rubbish_and_recycling_enquiries">Report an issue with your collection service</a></li>
+  <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/find-your-collection-day-and-report-missed-bin/replace-damaged-or-missing-bins">Order replacement bins, boxes or sacks</a></li>
+  <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/recycling/which-bin-should-i-use">Which bin should I use?</a></li>
+  <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/bulky-or-large-item-collections/arrange-bulky-or-large-item-collection">Arrange a bulky waste collection</a></li>
+  <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/assisted-collections/help-putting-bins-out">Get help with putting your bins out</a></li>
 </ul>

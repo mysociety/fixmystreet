@@ -284,7 +284,7 @@ FixMyStreet::override_config {
             'Correct address string displayed',
         );
         $mech->content_contains(
-            'Your rotation schedule is Week 1',
+            'Your schedule is Week 1',
             'Correct rotation schedule displayed',
         );
 
@@ -458,7 +458,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
             $mech->submit_form_ok( { with_fields => { address => $test->{address} } } );
             $mech->content_contains(
-                "Your rotation schedule is Week $test->{link}",
+                "Your schedule is Week $test->{link}",
                 'Correct rotation schedule displayed',
             );
             $mech->content_contains('<li><a target="_blank" href="PDF '. $test->{link} . '">View and download collection calendar', 'PDF link ' . $test->{link} . ' shown');
@@ -636,6 +636,11 @@ FixMyStreet::override_config {
             for
             @{ FixMyStreet::Cobrand::Bexley::Waste::_bin_location_options()
                 ->{staff_or_assisted} };
+    };
+
+    subtest 'Correct labels used when reporting missed collection' => sub {
+        $mech->get_ok('/waste/10001/report');
+        $mech->content_contains('Non-recyclable waste', 'includes service description in the checkbox label');
     };
 
     subtest 'Making a missed collection report' => sub {
