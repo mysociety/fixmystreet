@@ -141,30 +141,24 @@ sub _closed_event {
 sub garden_collection_time { '6:30am' }
 sub garden_waste_new_bin_admin_fee { 0 }
 
+=item * SLWP Echo uses End_Date for garden cancellations
+
+=cut
+
+sub alternative_backend_field_names {
+    my ($self, $field) = @_;
+
+    my %alternative_name = (
+        'Subscription_End_Date' => 'End_Date',
+    );
+
+    return $alternative_name{$field};
+}
+
 sub waste_quantity_max {
     return (
         2247 => 3, # Garden waste maximum
     );
-}
-
-# Not in the function below because it needs to set things needed before then
-# (perhaps could be refactored better at some point). Used for new/renew
-sub waste_garden_sub_payment_params {
-    my ($self, $data) = @_;
-    my $c = $self->{c};
-
-    # Special sack form handling
-    my $container = $data->{container_choice} || '';
-    if ($container eq 'sack') {
-        # If renewing from bin to sacks, need to know bins to remove - better place for this?
-        my $sub = $c->cobrand->garden_current_subscription;
-        $data->{current_bins} = $sub->{garden_bins} if $sub;
-        $data->{bin_count} = $data->{bins_wanted};
-        $data->{new_bins} = $data->{bins_wanted};
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $data->{bin_count};
-        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
-        $c->set_param('payment', $cost_pa);
-    }
 }
 
 =item staff_override_request_options

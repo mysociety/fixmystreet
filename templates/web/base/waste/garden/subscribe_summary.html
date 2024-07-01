@@ -21,7 +21,6 @@ END;
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Green garden waste collection</dt>
         <dd class="govuk-summary-list__value">
-          [% IF data.bins_wanted %]
             [% data.bins_wanted %] [% IF data.container_choice == 'sack' ~%]
               [% nget('sack subscription', 'sack subscriptions', data.bins_wanted) %]
             [% ELSIF data.container_choice == 'bin140' ~%]
@@ -31,9 +30,6 @@ END;
             [% ELSE ~%]
               [% nget('bin', 'bins', data.bins_wanted) %]
             [% END %]
-          [% ELSE %]
-            Sacks
-          [% END %]
         </dd>
     </div>
   [% IF data.cost_pa %]

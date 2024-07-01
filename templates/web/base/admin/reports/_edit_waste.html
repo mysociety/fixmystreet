@@ -124,7 +124,7 @@ BLOCK show_fields;
 END
 %]
 
-[% IF (c.cobrand.moniker == 'bromley' OR c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') AND problem.get_extra_field_value('Container_Type') %]
+[% IF (c.cobrand.moniker == 'bromley' OR c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' OR c.cobrand.moniker == 'merton') AND problem.get_extra_field_value('Container_Type') %]
 <h2>Request information</h2>
 <ul>
 [% INCLUDE show_fields fields=[
@@ -153,7 +153,7 @@ END
 </ul>
 [% END %]
 
-[% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') AND problem.get_extra_field_value('Subscription_Details_Containers') %]
+[% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' OR c.cobrand.moniker == 'merton') AND problem.get_extra_field_value('Subscription_Details_Containers') %]
 <h2>Subscription information</h2>
 <ul>
 [% INCLUDE show_fields fields=[
@@ -164,6 +164,7 @@ END
     [ 'Delivery container', 'Bin_Delivery_Detail_Container' ],
     [ 'Delivery quantity', 'Bin_Delivery_Detail_Quantity' ],
     [ 'End date', 'Subscription_End_Date' ],
+    [ 'End date', 'End_Date' ],
     [ 'Current containers', 'current_containers' ],
     [' New containers', 'new_containers' ],
 ] %]
