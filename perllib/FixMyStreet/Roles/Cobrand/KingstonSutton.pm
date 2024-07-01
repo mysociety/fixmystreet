@@ -243,23 +243,6 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
-# Not in the function below because it needs to set things needed before then
-# (perhaps could be refactored better at some point). Used for new/renew
-sub waste_garden_sub_payment_params {
-    my ($self, $data) = @_;
-    my $c = $self->{c};
-
-    # Special sack form handling
-    my $container = $data->{container_choice} || '';
-    if ($container eq 'sack') {
-        $data->{bin_count} = 1;
-        $data->{new_bins} = 1;
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
-        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
-        $c->set_param('payment', $cost_pa);
-    }
-}
-
 =head2 waste_munge_report_form_fields
 
 We use a custom report form to add some text to the "About you" page.

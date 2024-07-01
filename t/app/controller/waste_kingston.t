@@ -936,7 +936,7 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('Test McTest');
         $mech->content_contains('£41.00');
-        $mech->content_contains('Sacks');
+        $mech->content_contains('1 sack subscription');
         $mech->submit_form_ok({ with_fields => { goto => 'sacks_details' } });
         $mech->content_contains('<span id="cost_pa">41.00');
         $mech->submit_form_ok({ with_fields => {
@@ -1045,7 +1045,7 @@ FixMyStreet::override_config {
             email => 'test@example.net',
             payment_method => 'credit_card',
         } });
-        $mech->content_contains('Sacks');
+        $mech->content_contains('1 sack subscription');
         $mech->content_contains('41.00');
         $mech->submit_form_ok({ with_fields => { goto => 'sacks_choice' } });
         $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
@@ -1541,7 +1541,7 @@ FixMyStreet::override_config {
                 email => 'test@example.net',
                 payment_method => 'credit_card',
             } });
-            $mech->content_contains('Sacks');
+            $mech->content_contains('1 sack subscription');
             $mech->content_contains($test->{sack_price} . '.00');
         };
     }
