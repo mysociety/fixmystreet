@@ -67,4 +67,51 @@ sub get_town {
     return $town;
 }
 
+sub open311_config {
+    my ($self, $row, $h, $params, $contact) = @_;
+
+    $params->{multi_photos} = 1;
+}
+
+sub open311_extra_data_include {
+    my ($self, $row, $h, $contact) = @_;
+
+    my $open311_only = [
+        { name => 'fixmystreet_id',
+          value => $row->id },
+        { name => 'easting',
+          value => $h->{easting} },
+        { name => 'northing',
+          value => $h->{northing} },
+        { name => 'report_url',
+          value => $h->{url} },
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
+        { name => 'category',
+          value => $row->category },
+        { name => 'group',
+          value => $row->get_extra_metadata('group', '') },
+    ];
+
+    # Surrey Open311 doesn't actually use the service_code value we send, but it
+    # must pass the input schema validation of open311-adapter. The majority of the
+    # Surrey contacts currently have actual email addresses, so we instead send
+    # the contact row ID.
+    # XXX this feels a bit hacky, is there a better way?
+    $contact->email($contact->id);
+
+    return $open311_only;
+}
+
+sub lookup_by_ref {
+    my ($self, $ref) = @_;
+
+    return [
+          id => $ref,
+          external_id => "Zendesk_" . $ref
+      ];
+}
+
 1;
