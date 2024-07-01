@@ -1471,22 +1471,6 @@ sub waste_cc_payment_admin_fee_line_item_ref {
     return "Brent-" . $p->id;
 }
 
-
-sub waste_garden_sub_payment_params {
-    my ($self, $data) = @_;
-    my $c = $self->{c};
-
-    my $container = $data->{container_choice} || '';
-    if ($container eq 'sack') {
-        my $bin_count = 1; # $data->{bins_wanted};
-        $data->{bin_count} = $bin_count;
-        $data->{new_bins} = $bin_count;
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
-        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
-        $c->set_param('payment', $cost_pa);
-    }
-}
-
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};
@@ -1494,7 +1478,7 @@ sub waste_garden_sub_params {
     my $container = $data->{container_choice} || '';
     $container = $container eq 'sack' ? GARDEN_WASTE_PAID_COLLECTION_SACK : GARDEN_WASTE_PAID_COLLECTION_BIN;
     $c->set_param('Paid_Collection_Container_Type', $container);
-    $c->set_param('Paid_Collection_Container_Quantity', $data->{bin_count});
+    $c->set_param('Paid_Collection_Container_Quantity', $data->{bins_wanted});
     $c->set_param('Payment_Value', $data->{cost_pa});
     if ( $data->{new_bins} > 0 && $container != GARDEN_WASTE_PAID_COLLECTION_SACK ) {
         $c->set_param('Container_Type', $container);

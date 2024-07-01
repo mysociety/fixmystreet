@@ -656,7 +656,7 @@ sub waste_garden_sub_params {
 
     $c->set_param('Subscription_Type', $type);
     $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste Container'});
-    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
+    $c->set_param('Subscription_Details_Quantity', $data->{bins_wanted});
     if ( $data->{new_bins} ) {
         if ( $data->{new_bins} > 0 ) {
             $c->set_param('Container_Instruction_Action', $container_actions->{deliver} );
