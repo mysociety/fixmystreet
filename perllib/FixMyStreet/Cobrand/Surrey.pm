@@ -99,5 +99,13 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+sub lookup_by_ref {
+    my ($self, $ref) = @_;
+
+    return [
+          id => $ref,
+          external_id => "Zendesk_" . $ref
+      ];
+}
 
 1;
