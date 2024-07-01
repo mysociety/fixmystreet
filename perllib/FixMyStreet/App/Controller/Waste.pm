@@ -1417,7 +1417,7 @@ sub process_garden_modification : Private {
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
     if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == 28) { # SLWP Sack
-        $data->{bin_count} = 1;
+        $data->{bins_wanted} = 1;
         $data->{new_bins} = 1;
         $payment = $c->cobrand->garden_waste_sacks_cost_pa();
         $payment_method = 'credit_card';
@@ -1425,7 +1425,6 @@ sub process_garden_modification : Private {
         $pro_rata = $payment; # Set so goes through flow below
     } else {
         my $bin_count = $data->{bins_wanted};
-        $data->{bin_count} = $bin_count;
         my $new_bins = $bin_count - $data->{current_bins};
         $data->{new_bins} = $new_bins;
 
@@ -1491,21 +1490,7 @@ sub process_garden_renew : Private {
         $type = $c->stash->{garden_subs}->{Renew};
     }
 
-    $c->cobrand->call_hook(waste_garden_sub_payment_params => $data);
-    if (!$c->get_param('payment')) {
-        my $bin_count = $data->{bins_wanted};
-        $data->{bin_count} = $bin_count;
-        $data->{new_bins} = $bin_count - ($data->{current_bins} || 0);
-
-        my $cost_pa = $c->cobrand->garden_waste_renewal_cost_pa($service->{end_date}, $bin_count);
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
-        ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
-            $cost_pa, $cost_now_admin) if $data->{apply_discount};
-
-        $c->set_param('payment', $cost_pa);
-        $c->set_param('admin_fee', $cost_now_admin);
-    }
-
+    $c->forward('garden_calculate_subscription_payment', [ 'renew', $data ]);
     $c->forward('setup_garden_sub_params', [ $data, $type ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
@@ -1545,20 +1530,7 @@ sub process_garden_data : Private {
     $data->{category} = 'Garden Subscription';
     $data->{title} = 'Garden Subscription - New';
 
-    $c->cobrand->call_hook(waste_garden_sub_payment_params => $data);
-    if (!$c->get_param('payment')) {
-        my $bin_count = $data->{bins_wanted};
-        $data->{bin_count} = $bin_count;
-        $data->{new_bins} = $bin_count - $data->{current_bins};
-
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
-        ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
-            $cost_pa, $cost_now_admin) if $data->{apply_discount};
-        $c->set_param('payment', $cost_pa);
-        $c->set_param('admin_fee', $cost_now_admin);
-    }
-
+    $c->forward('garden_calculate_subscription_payment', [ 'new', $data ]);
     $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{New} ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
@@ -1582,6 +1554,42 @@ sub process_garden_data : Private {
         }
     }
     return 1;
+}
+
+sub garden_calculate_subscription_payment : Private {
+    my ($self, $c, $type, $data) = @_;
+
+    # Sack form handling
+    my $container = $data->{container_choice} || '';
+    if ($container eq 'sack') {
+        if ($c->cobrand->moniker eq 'merton') {
+            # If renewing from bin to sacks, need to know bins to remove - better place for this?
+            my $sub = $c->cobrand->garden_current_subscription;
+            $data->{current_bins} = $sub->{garden_bins} if $sub;
+        }
+        $data->{new_bins} = $data->{bins_wanted}; # Always want all of them delivered
+
+        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $data->{bins_wanted};
+        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
+        $c->set_param('payment', $cost_pa);
+    } else {
+        my $bin_count = $data->{bins_wanted};
+        $data->{new_bins} = $bin_count - ($data->{current_bins} || 0);
+
+        my $cost_pa;
+        if ($type eq 'renew') {
+            my $service = $c->cobrand->garden_current_subscription;
+            $cost_pa = $c->cobrand->garden_waste_renewal_cost_pa($service->{end_date}, $bin_count);
+        } else {
+            $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+        }
+        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
+        ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
+            $cost_pa, $cost_now_admin) if $data->{apply_discount};
+
+        $c->set_param('payment', $cost_pa);
+        $c->set_param('admin_fee', $cost_now_admin);
+    }
 }
 
 sub add_report : Private {

@@ -62,6 +62,13 @@ has_page sacks_details => (
             bins_wanted => { default => 1 },
         };
     },
+    post_process => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        unless ($form->with_bins_wanted) {
+            $data->{bins_wanted} = 1;
+        }
+    },
     next => 'summary',
 );
 
