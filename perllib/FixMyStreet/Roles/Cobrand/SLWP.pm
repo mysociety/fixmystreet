@@ -409,6 +409,12 @@ sub waste_garden_sub_params {
         $c->set_param('Bin_Delivery_Detail_Container', $container);
         $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
     }
+
+    if ($c->cobrand->moniker eq 'merton' && $data->{new_bins} && !$type) { # Cancellation
+        $c->set_param('Bin_Detail_Type', $container_actions->{remove});
+        $c->set_param('Bin_Detail_Container', $existing);
+        $c->set_param('Bin_Detail_Quantity', abs($data->{new_bins}));
+    }
 }
 
 sub waste_garden_subscribe_form_setup {

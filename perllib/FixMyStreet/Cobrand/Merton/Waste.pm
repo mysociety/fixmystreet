@@ -141,6 +141,20 @@ sub _closed_event {
 sub garden_collection_time { '6:30am' }
 sub garden_waste_new_bin_admin_fee { 0 }
 
+=item * SLWP Echo uses End_Date for garden cancellations
+
+=cut
+
+sub alternative_backend_field_names {
+    my ($self, $field) = @_;
+
+    my %alternative_name = (
+        'Subscription_End_Date' => 'End_Date',
+    );
+
+    return $alternative_name{$field};
+}
+
 sub waste_quantity_max {
     return (
         2247 => 3, # Garden waste maximum
