@@ -687,8 +687,8 @@ $.extend(fixmystreet.set_up, {
         // Hide shown elements (that were previously triggered via
         // show_element_rules). This prevents elements from remaining
         // displayed if user clicks back to select another category.
-        $.each(fixmystreet.shown_elements, function(index, element) {
-            element[0].classList.add('hidden');
+        $.each(fixmystreet.shown_elements, function() {
+            this.classList.add('hidden');
         });
         fixmystreet.shown_elements = [];
 
@@ -713,7 +713,7 @@ $.extend(fixmystreet.set_up, {
                 selectors = show_element_rules[body][category];
                 $(selectors.join(',')).each(function () {
                     this.classList.remove('hidden');
-                    fixmystreet.shown_elements.push($(this));
+                    fixmystreet.shown_elements.push(this);
                 });
             }
         });
