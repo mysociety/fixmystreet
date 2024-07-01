@@ -1,5 +1,7 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::CSVExport;
+use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -13,9 +15,11 @@ $mech->create_contact_ok(body_id => $surrey->id, category => 'Potholes', email =
             latitude => 51.293415, longitude => -0.441269, areas => '2242',
         });
 
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'surrey' ],
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
 }, sub {
         subtest 'CSV has Subscribers column populated by "alerts" registered on problem' => sub {
             $mech->log_in_ok($surrey_staff_user->email);
@@ -49,7 +53,14 @@ FixMyStreet::override_config {
                 $mech->log_out_ok;
                 $mech->clear_emails_ok;
             }
+            FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+            $mech->log_in_ok($surrey_staff_user->email);
+            $mech->get_ok("/dashboard?export=1");
+            $mech->content_contains('website,surrey,,2', 'CSV Subscriber number is 2 from pre-generated csv');
+            $mech->log_out_ok;
         }
 };
+
+
 
 done_testing();

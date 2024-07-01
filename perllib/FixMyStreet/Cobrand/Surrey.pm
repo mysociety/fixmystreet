@@ -58,17 +58,19 @@ sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
     $csv->add_csv_columns(
-        alerts => "Subscribers",
+        alerts_count => "Subscribers",
     );
 
-    my $alerts_lookup = $self->csv_update_alerts;
+    my $alerts_lookup = $csv->dbi ? undef : $self->csv_update_alerts;
 
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        return {
-            alerts => $alerts_lookup->{$report->id} || '0',
-        };
+        if ($alerts_lookup) {
+            return { alerts_count => ($alerts_lookup->{$report->id} || 0) };
+        } else {
+            return { alerts_count => ($report->{alerts_count} || 0) };
+        }
     });
 }
 

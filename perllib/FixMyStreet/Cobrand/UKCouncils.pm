@@ -729,7 +729,6 @@ sub csv_update_alerts {
     my @results = FixMyStreet::DB->resultset('Alert')->search({
         alert_type => 'new_updates',
         confirmed => 1,
-        cobrand => $self->moniker,
         whendisabled => undef,
     }, {columns => ['parameter']})->all;
 
