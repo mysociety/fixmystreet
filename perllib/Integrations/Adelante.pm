@@ -24,7 +24,7 @@ has log_ident => (
 sub pay {
     my ($self, $args) = @_;
 
-    my $method = $args->{staff} ? 'PAYGUI' : 'PAY';
+    my $method = $args->{staff} ? 'PAY3DS' : 'PAY';
 
     my @items;
     foreach (@{$args->{items}}) {
