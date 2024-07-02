@@ -110,7 +110,7 @@ SET data = form.saved_data;
       </dl>
 
       [% IF !problem
-        || cobrand.bulky_collection_can_be_cancelled( problem, 1 ) %]
+        || cobrand.bulky_can_cancel_collection( problem, 1 ) %]
         <div class="govuk-warning-text due">
           <div class="govuk-warning-text__img">
             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -264,7 +264,7 @@ SET data = form.saved_data;
         <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/amend', [ property.id, problem.id ] ) %]">Amend this booking</a>
       </p>
     [% END %]
-    [% IF cobrand.bulky_collection_can_be_cancelled(problem) %]
+    [% IF cobrand.bulky_can_cancel_collection(problem) %]
       <p>
         <a class="govuk-button govuk-button--secondary" href="[%
             IF problem.category == 'Small items collection';

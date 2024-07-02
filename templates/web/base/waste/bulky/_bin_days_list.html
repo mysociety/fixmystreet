@@ -26,7 +26,7 @@
         [% IF c.cobrand.bulky_can_amend_collection(booking) %]
           <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/amend', [ property.id, booking.id ]) %]">Amend booking</a>
         [% END %]
-        [% IF c.cobrand.bulky_collection_can_be_cancelled(booking) %]
+        [% IF c.cobrand.bulky_can_cancel_collection(booking) %]
           [% IF c.cobrand.moniker != 'brent' %]
             <a class="btn btn-primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel', [ property.id, booking.id ]) %]">Cancel booking</a>
           [% ELSE %]
