@@ -17,8 +17,18 @@ END { FixMyStreet::App->log->enable('info'); }
 
 FixMyStreet::DB->resultset('State')->create({ label => 'for triage', type => 'open' ,name => 'For triage' });
 
-my $body = $mech->create_body_ok(163793, 'Buckinghamshire Council', {
-    send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 }, { cobrand => 'buckinghamshire' });
+my $body = $mech->create_body_ok(
+    163793,
+    'Buckinghamshire Council',
+    {   send_method     => 'Open311',
+        api_key         => 'key',
+        endpoint        => 'endpoint',
+        jurisdiction    => 'fms',
+        can_be_devolved => 1,
+        comment_user    => $mech->create_user_ok('comment_user@example.com'),
+    },
+    { cobrand => 'buckinghamshire' }
+);
 my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
 my $parish2 = $mech->create_body_ok(58815, 'Aylesbury Town Council');
 my $deleted_parish = $mech->create_body_ok(58815, 'Aylesbury Parish Council');
@@ -847,6 +857,54 @@ subtest 'triage reports do not get the logged email' => sub {
     isnt $report->whensent, undef;
     is $report->state, 'confirmed';
     $mech->get_email; # The email to the council
+};
+
+subtest 'Littering From Vehicles report' => sub {
+    my $contact_lfv = $mech->create_contact_ok(
+        body_id     => $body->id,
+        category    => 'Littering From Vehicles',
+        email       => 'vehicle_littering@example.org',
+        send_method => 'Email',
+        non_public  => 1,
+    );
+    my $tmpl_lfv = $body->response_templates->create(
+        {   title         => 'Littering From Vehicles Template',
+            text          => 'Thank you; we are investigating this.',
+            state         => 'confirmed',
+            auto_response => 1,
+        }
+    );
+    $tmpl_lfv->add_to_contacts($contact_lfv);
+
+    $mech->log_in_ok( $publicuser->email );
+
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
+    $mech->submit_form_ok(
+        {   with_fields => {
+                title    => 'Bad Volvo',
+                detail   => 'Spewing litter everywhere',
+                category => 'Littering From Vehicles',
+            },
+        },
+    );
+
+    my $report
+        = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+    is $report->category, 'Littering From Vehicles', 'correct category';
+    is $report->state,    'confirmed',               'correct initial state';
+    is $report->comments, 1, 'initial comment created';
+    my $comment = $report->comments->first;
+    is $comment->text,          'Thank you; we are investigating this.';
+    is $comment->state,         'unconfirmed';
+    is $comment->problem_state, 'confirmed';
+
+    FixMyStreet::Script::Reports::send();
+    $report->discard_changes;
+
+    is $report->state,    'investigating', 'state changed to investigating';
+    is $report->comments, 1,               'no more comments added';
+    $comment = $report->comments->first;
+    is $comment->state, 'confirmed', 'comment now confirmed';
 };
 
 };
