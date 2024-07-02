@@ -284,6 +284,7 @@ sub auth_preview : Path('/_dev/auth') : Args(0) {
 
 sub report_new_preview : Path('/_dev/report_new') : Args(0) {
     my ( $self, $c ) = @_;
+    $c->stash->{non_public} = $c->get_param('non_public');
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = $c->get_param('email_type');
 }

@@ -698,6 +698,7 @@ sub confirmation : Path('confirmation') : Args(1) {
         $c->stash->{created_report} = "loggedin";
         $c->stash->{report} = $c->stash->{problem};
     } else {
+        $c->stash->{non_public} = $report->non_public;
         $c->stash->{template} = 'email_sent.html';
         $c->stash->{email_type} = 'problem';
     }

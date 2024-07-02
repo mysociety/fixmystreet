@@ -1,0 +1,25 @@
+<h1>[% loc("Nearly done! Now check your email&hellip;") %]</h1>
+
+<p>
+[% IF email_type == 'problem' %]
+    [% IF non_public %]
+        [% loc("Click the link in our confirmation email to submit your problem.") %]
+    [% ELSE %]
+        [% loc("Click the link in our confirmation email to publish your problem.") %]
+    [% END %]
+[% ELSIF email_type == 'update' %]
+    [% IF non_public %]
+        [% loc("Click the link in our confirmation email to submit your update.") %]
+    [% ELSE %]
+        [% loc("Click the link in our confirmation email to publish your update.") %]
+    [% END %]
+[% ELSIF email_type == 'alert' %]
+    [% loc("Click the link in our confirmation email to activate your alert.") %]
+[% END %]
+</p>
+
+[% TRY %][% INCLUDE '_email_sent_extra.html' %][% CATCH file %][% END %]
+
+<p>
+    [% loc("Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time.") %]
+</p>

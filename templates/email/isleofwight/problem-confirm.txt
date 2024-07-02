@@ -3,8 +3,10 @@ Subject: Confirm your report on [% site_name %]
 Hello [% report.name %],
 
 Please click on the link below to confirm that you want to send your report to
-Island Roads.[% UNLESS report.non_public %] Note that your report will also
-appear on the [% site_name %] website.[% END %]
+Island Roads.
+[% IF report.non_public %]Note that your report will not be
+published for public viewing on the [% site_name %] website but will be sent to [% report.body %].
+[% ELSE %]Note that your report will also appear on the [% site_name %] website.[% END %]
 
 [% token_url %]
 

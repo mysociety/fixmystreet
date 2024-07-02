@@ -567,6 +567,7 @@ sub redirect_or_confirm_creation : Private {
     if ($update->user->email_verified) {
         $c->forward('send_confirmation_email');
         # tell user that they've been sent an email
+        $c->stash->{non_public} = $update->problem->non_public;
         $c->stash->{template}   = 'email_sent.html';
         $c->stash->{email_type} = 'update';
     } elsif ($update->user->phone_verified) {

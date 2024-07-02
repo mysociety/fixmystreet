@@ -16,7 +16,11 @@ INCLUDE '_email_top.html';
 
 [% TRY %][% INCLUDE '_problem-confirm_extra.html' %][% CATCH file %][% END %]
   </p>
-  [% UNLESS report.non_public %]<p style="[% p_style %]">Your report will also appear on the [% site_name %] website.</p>[% END %]
+  [% IF report.non_public %]
+      <p style="[% p_style %]">Your report will not be published for public viewing on the [% site_name %] website but will be sent to [% report.body %].</p>
+  [% ELSE %]
+      <p style="[% p_style %]">Your report will also appear on the [% site_name %] website.</p>
+  [% END %]
   <p style="margin: 20px auto; text-align: center">
     <a style="[% button_style %]" href="[% token_url %]">Yes, send my report</a>
   </p>
