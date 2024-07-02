@@ -208,8 +208,7 @@ sub cancel : Chained('setup') : Args(1) {
 
     my $collection = $c->cobrand->find_pending_bulky_collections($c->stash->{property}{uprn})->find($id);
     $c->detach('/waste/property_redirect')
-        if !$c->cobrand->call_hook('bulky_can_view_collection', $collection)
-            || !$c->cobrand->call_hook('bulky_collection_can_be_cancelled', $collection);
+        if !$c->cobrand->call_hook('bulky_can_cancel_collection', $collection);
 
     $c->stash->{cancelling_booking} = $collection;
     $c->stash->{first_page} = 'intro';
