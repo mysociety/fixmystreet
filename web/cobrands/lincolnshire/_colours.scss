@@ -60,4 +60,12 @@ $search-help-margin-desktop: -2em -2em 0 -2em;
 $form-hint-color: transparentize(#000, 0.3);
 $form-hint-color-desktop: transparentize(#000, 0.3);
 
+$button-primary-bg-top: $primary;
+$button-primary-border: $primary;
 $button-primary-text: $lincs-text;
+
+$button-primary-hover-bg-top: darken($primary, 10%);
+$button-primary-hover-bg-bottom: darken($primary, 10%);
+$button-primary-hover-border: darken($primary, 10%);
+$button-primary-hover-text: #fff;
+

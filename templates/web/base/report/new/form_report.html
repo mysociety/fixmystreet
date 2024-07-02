@@ -20,7 +20,7 @@
     [% PROCESS "report/new/category_wrapper.html" %]
     [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
-    <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next"
+    <button class="btn btn--block btn--final btn--primary hidden-nojs js-reporting-page--next"
         [% ' disabled' IF disable_form_message %]>[% loc('Continue') %]</button>
 </div>
 
@@ -32,7 +32,7 @@
     </div>
 
     <div class="js-post-category-messages"></div>
-    <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
+    <button class="btn btn--block btn--final btn--primary hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
 </div>
 
 [% PROCESS "report/new/duplicate_suggestions.html" %]
@@ -43,7 +43,7 @@
     [% PROCESS "report/new/category_extras.html" %]
   [% END %]
     <div class="js-post-category-messages"></div>
-    <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
+    <button class="btn btn--block btn--final btn--primary hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
 </div>
 
 [% IF form_show_category_only %]
@@ -61,7 +61,7 @@
         [% PROCESS 'report/form/photo_upload.html' type='report' %]
         [% PROCESS 'report/new/after_photo.html' %]
 
-        <button class="btn btn--block btn--final hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
+        <button class="btn btn--block btn--final btn--primary hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
     </div>
 [% END %]
 
