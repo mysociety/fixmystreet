@@ -10,6 +10,8 @@ use File::Temp 'tempdir';
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+my $notify = Test::MockModule->new('FixMyStreet::SMS');
+
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
 $mock->mock('_fetch_features', sub { ok 0, 'This should not be called by waste'; });
 
@@ -64,6 +66,7 @@ create_contact(
     { code => 'payment' },
     { code => 'payment_method' },
     { code => 'property_id' },
+    { code => 'bulky_text_reminders' },
 );
 create_contact(
     { category => 'Bulky cancel', email => 'Bartec-545' },
@@ -107,7 +110,8 @@ FixMyStreet::override_config {
             bulky_amend_enabled => 'staff',
             bulky_multiple_bookings => 1,
             bulky_retry_bookings => 1,
-            bulky_tandc_link => 'peterborough-bulky-waste-tandc.com'
+            bulky_tandc_link => 'peterborough-bulky-waste-tandc.com',
+            bulky_offer_text_updates => 1,
         } },
         payment_gateway => { peterborough => {
             cc_url => 'https://example.org/scp/',
@@ -118,6 +122,10 @@ FixMyStreet::override_config {
             hmac_id => 789,
             hmac => 'bmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXAKbmV2ZXIgZ29ubmEgbGV0IHlvdSBkb3duCm5ldmVyIGdvbm5hIHJ1bg==',
         } },
+        govuk_notify => { peterborough => [
+            { type => 'default', key => 'default_key', template_id => 'default_template' },
+            { type => 'waste', key => 'waste_key', template_id => 'waste_template' },
+        ]},
     },
     STAGING_FLAGS => {
         send_reports => 1,
@@ -370,7 +378,15 @@ FixMyStreet::override_config {
             $mech->content_contains('Aragon Direct Services may contact you to obtain more');
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge' } });
             $mech->content_contains('Please provide an email address');
-            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+            $mech->content_contains('Do you want to receive reminders about this collection by text message?');
+            $mech->submit_form(with_fields => { name => 'Bob Marge', email => '', phone => '44 07 111 111 111' });
+            $mech->content_contains('Please provide an email address', 'Can not proceed without email if text notifications unchecked');
+            $mech->submit_form(with_fields => { name => 'Bob Marge', email => $user->email, phone => '', extra_bulky_text_reminders => '1' });
+            $mech->content_contains('Please enter a mobile phone number to receive text updates', 'Can not proceed without mobile number if text notifications checked');
+            $mech->submit_form(with_fields => { name => 'Bob Marge', email => '', phone => '44 07 111 111 111', extra_bulky_text_reminders => '1' });
+            $mech->content_contains('Choose date for collection', "Can proceed without email if mobile number and text notifications checked");
+            $mech->back;
+            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111', extra_bulky_text_reminders => '1' }});
         };
 
         subtest 'Choose date page' => sub {
@@ -877,6 +893,20 @@ FixMyStreet::override_config {
     subtest 'Bulky goods email confirmation and reminders' => sub {
 
         my $report_id = $report->id;
+
+        $notify->mock('send', sub {
+            my $self = shift;
+            my %params = @_;
+
+            is $params{'to'} eq '44 07 111 111 111', 1, "Correct text 'to' value";
+            is $params{'body'} =~ /^Bulky waste booking/, 1, 'Correct text title';
+            is $params{'body'} =~ /Date: Friday 26 August 2022/, 1, 'Correct text date';
+            is $params{'body'} =~ /Items: 2/, 1, 'Correct text item count';
+            is $params{'body'} =~ /Address: 1 Pope Way, Peterborough, PE1 3NA/, 1, 'Correct text address';
+            is $params{'body'} =~ m#View more details or cancel: http://peterborough.example.org/report/$report_id#, 1, 'Correct text link';
+            return 1;
+        });
+
         subtest 'Email confirmation of booking' => sub {
             FixMyStreet::Script::Reports::send();
             my $email = $mech->get_email->as_string;
@@ -887,6 +917,21 @@ FixMyStreet::override_config {
         };
 
         sub reminder_check {
+
+            $notify->mock('send', sub {
+            my $self = shift;
+            my %params = @_;
+
+            is $params{'to'} eq '44 07 111 111 111', 1, "Correct text 'to' value";
+            is $params{'body'} =~ /^Bulky waste reminder/, 1, 'Correct text title';
+            is $params{'body'} =~ /Date: Friday 26 August 2022/, 1, 'Correct text date';
+            is $params{'body'} =~ /Items: 2/, 1, 'Correct text item count';
+            is $params{'body'} =~ /Address: 1 Pope Way, Peterborough, PE1 3NA/, 1, 'Correct text address';
+            is $params{'body'} =~ m#View more details or cancel: http://peterborough.example.org/M.*#, 1, 'Correct text link';
+            is $params{'body'} =~ /^Bulky waste reminder/, 1, 'Correct text title';
+            return 1;
+        });
+
             my ($day, $time, $days, $report_id) = @_;
             set_fixed_time("2022-08-$day" . "T$time:00:00Z");
             $cobrand->bulky_reminders;
