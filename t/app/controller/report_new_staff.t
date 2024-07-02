@@ -73,7 +73,7 @@ subtest "report_mark_private allows users to mark reports as private" => sub {
     }
 };
 
-my $inspector = $mech->create_user_ok('inspector@example.org', name => 'inspector', from_body => $body_ids{2651});
+my $inspector = $mech->create_user_ok('inspector@example.org', name => 'Inspector Bloggs', from_body => $body_ids{2651});
 foreach my $test (
   { non_public => 0 },
   { non_public => 1 },
@@ -110,7 +110,6 @@ foreach my $test (
                     title         => "Inspector report",
                     detail        => 'Inspector report details.',
                     photo1        => '',
-                    name          => 'Joe Bloggs',
                     may_show_name => '1',
                     phone         => '07903 123 456',
                     category      => 'Trees',
@@ -273,6 +272,30 @@ subtest 'staff-only categories when reporting' => sub {
         $mech->log_out_ok;
         $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=55.952055&longitude=-3.189579' );
         is_deeply [ sort keys %{$extra_details->{by_category}} ], [ 'Street lighting' ], 'Normal user cannot see staff-only category';
+    };
+};
+
+subtest 'staff cannot update their name whilst reporting when logged out' => sub {
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        MAPIT_TYPES => ['UTA'],
+    }, sub {
+        $mech->get_ok( '/report/new?latitude=55.952055&longitude=-3.189579' );
+        $mech->submit_form_ok({ with_fields => {
+            title => 'Title',
+            detail => 'Detail',
+            username_register => $inspector->email,
+            name => 'A NEW NAME',
+        } });
+
+        my $email = $mech->get_email;
+        like $mech->get_text_body_from_email($email), qr/confirm that you want to send your\s+report/i, "confirm the problem";
+        my $url = $mech->get_link_from_email($email);
+        $mech->get_ok($url);
+
+        my $report = $inspector->problems->order_by('-id')->first;
+        is $report->name, 'A NEW NAME', 'name correct on report';
+        is $report->user->name, 'Inspector Bloggs', 'staff user name not updated';
     };
 };
 
