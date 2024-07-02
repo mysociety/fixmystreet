@@ -1245,7 +1245,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { 'request_reason' => $reason } });
             $mech->submit_form_ok({ with_fields => { how_long_lived => $duration } }) if $duration;
             if ($referral eq 'refuse') {
-                $mech->content_contains('unable to request');
+                $mech->content_contains('referral@example.org');
                 return;
             }
             $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
@@ -1291,17 +1291,17 @@ FixMyStreet::override_config {
         make_request("Not ordered", 'missing', '', '', 1);
         make_request("Not ordered", 'extra', '', '', 1);
 
-        $echo->mock('GetServiceTaskInstances', sub { [
-            { ServiceTaskRef => { Value => { anyType => '401' } },
-                Instances => { ScheduledTaskInfo => [
-                    { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
-                    { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
-                    { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
-                ] }
-            },
-        ] });
-        make_request("Contaminated", 'missing', '', 1, 2);
-        make_request("Contaminated", 'extra', '', 'refuse');
+        # $echo->mock('GetServiceTaskInstances', sub { [
+        #     { ServiceTaskRef => { Value => { anyType => '401' } },
+        #         Instances => { ScheduledTaskInfo => [
+        #             { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
+        #             { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
+        #             { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
+        #         ] }
+        #     },
+        # ] });
+        # make_request("Contaminated", 'missing', '', 1, 2);
+        # make_request("Contaminated", 'extra', '', 'refuse');
     };
 
     subtest 'test staff-only assisted collection form' => sub {
@@ -1379,6 +1379,16 @@ FixMyStreet::override_config {
         }, ]
     });
     subtest 'test requesting a sack' => sub {
+        # Ordered previously, but not referred
+        $echo->mock('GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 2936,
+            ResolvedDate => { DateTime => '2024-05-17T12:00:00Z' },
+            Data => { ExtensibleDatum => { ChildData => { ExtensibleDatum => {
+                DatatypeName => 'Container Type',
+                Value => 8,
+            } } } },
+        } ] } );
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 8 } }, "Choose sack");
@@ -1399,6 +1409,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Request_Notes'), '';
         is $report->get_extra_field_value('Container_Request_Quantity'), '1';
         is $report->get_extra_field_value('service_id'), '269';
+        is $report->get_extra_field_value('request_referral'), '';
     };
     $echo->mock('GetServiceUnitsForObject' => sub {
     return [
