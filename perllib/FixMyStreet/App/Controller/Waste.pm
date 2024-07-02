@@ -945,6 +945,7 @@ sub construct_bin_report_form {
     foreach (@{$c->stash->{service_data}}) {
         my $id = $_->{service_id};
 
+# TODO?
         unless (
             ( $_->{last}
             && $_->{report_allowed}

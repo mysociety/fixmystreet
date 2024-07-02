@@ -352,8 +352,7 @@ sub bin_services_for_address {
             { $filtered_service->{service_id} };
 
         if ($report_details) {
-            # FIXME Not necessarily open
-            $filtered_service->{report_open} = 1;
+            # $filtered_service->{report_open} = 1;
 
             # $report = $self->problems->search({ external_id => "Whitespace-$existing_report_id" })->first;
             # if ($report) {
@@ -361,6 +360,8 @@ sub bin_services_for_address {
             # }
 
             $filtered_service->{report_details} = $report_details;
+
+            $filtered_service->{report_open} = $report_details->{open};
         } else {
             $filtered_service->{report_open} = 0;
         }
@@ -376,7 +377,7 @@ sub bin_services_for_address {
             }
 
         }
-
+# TODO Use this to determine whether report details can be displayed?
         $filtered_service->{report_allowed}
             = $self->can_report_missed( $property, $filtered_service );
 
@@ -486,6 +487,7 @@ warn "====\n\t" . "$service_item_name" . "\n====";
         my $report_details = {
             id                => $report->id,
             external_id       => $report->external_id,
+            open              => $report->is_open,
             reported          => (
                 $ws->{WorksheetStartDate} eq WHITESPACE_UNDEF_DATE
                 ? ''
@@ -645,10 +647,12 @@ sub _in_cab_logs {
 
 sub can_report_missed {
     my ( $self, $property, $service ) = @_;
-return 1;
+
     # Cannot make a report if there is already an open one for this service
-    # FIXME May not be open
-    return 0 if $property->{missed_collection_reports}{ $service->{service_id} };
+# FIXME May not be open
+    my $report = $service->{report_details};
+    return 0 if $report && $report->{open};
+    # return 0 if $property->{missed_collection_reports}{ $service->{service_id} };
 
     # Prevent reporting if there are service updates
     return 0 if @{ $property->{service_updates} // [] };
