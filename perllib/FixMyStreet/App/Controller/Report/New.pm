@@ -547,6 +547,7 @@ sub report_import : Path('/import') {
     $c->send_email( 'partial.txt', { to => $report->user->email, } );
 
     if ($format eq 'web') {
+        $c->stash->{non_public} = $report->non_public;
         $c->stash->{template}   = 'email_sent.html';
         $c->stash->{email_type} = 'problem';
     } else {
@@ -1169,7 +1170,12 @@ sub process_report : Private {
         $report->anonymous(1);
     } else {
         $report->send_questionnaire( $c->cobrand->send_questionnaires() );
-        $report->anonymous( $params{may_show_name} ? 0 : 1 );
+        my $anonymous = $params{may_show_name} ? 0 : 1;
+        if ($params{non_public}) {
+            # Always default to anonymous if not public.
+            $anonymous = 1;
+        }
+        $report->anonymous($anonymous);
     }
 
     $report->non_public($params{non_public} ? 1 : 0);
@@ -1952,6 +1958,7 @@ sub redirect_or_confirm_creation : Private {
     if ($report->user->email_verified) {
         $c->forward( 'send_problem_confirm_email' );
         # tell user that they've been sent an email
+        $c->stash->{non_public} = $report->non_public;
         $c->stash->{template}   = 'email_sent.html';
         $c->stash->{email_type} = 'problem';
         unless ($no_redirect) {

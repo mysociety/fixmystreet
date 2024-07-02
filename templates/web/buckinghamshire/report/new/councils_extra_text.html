@@ -1,2 +1,4 @@
+[% SET is_non_public = non_public_categories.$category %]
+
 Some services provided have been <a href="https://www.buckinghamshire.gov.uk/community-and-safety/devolved-services/">devolved</a> to your local Parish/Town Council.
-Please do not enter any personal information or private contact details.
+[% UNLESS is_non_public %]Please do not enter any personal information or private contact details.[% END %]
