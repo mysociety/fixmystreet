@@ -15,18 +15,6 @@
     background-color: white;
 }
 
-.btn-primary,
-.green-btn,
-.btn--primary {
-    border: none;
-    background: $green;
-
-    &:hover,
-    &:active {
-        background: lighten($green, 5%);
-    }
-}
-
 .general-notes {
     .box-warning {
       font-size: 1.2em;
