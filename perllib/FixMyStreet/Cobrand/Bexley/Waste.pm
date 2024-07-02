@@ -18,6 +18,9 @@ has 'whitespace' => (
 
 use constant WORKING_DAYS_WINDOW => 3;
 
+# 0001-01-01T00:00:00 seems to represent an undefined date
+use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
+
 sub waste_fetch_events {
     my ( $self, $params ) = @_;
 
@@ -61,7 +64,7 @@ sub waste_fetch_events {
             = $missed_collection_properties
             ? $missed_collection_properties->{ServicePropertyValue}
             : '';
-
+$whitespace_state_string = 'Overweight';
         my $config = $self->feature('whitespace');
         my $new_state
             = $config->{missed_collection_state_mapping}
@@ -249,8 +252,7 @@ sub bin_services_for_address {
         }
         next if $now_dt < $from_dt;
 
-        # 0001-01-01T00:00:00 seems to represent an undefined date
-        if ( $service->{SiteServiceValidTo} ne '0001-01-01T00:00:00' ) {
+        if ( $service->{SiteServiceValidTo} ne WHITESPACE_UNDEF_DATE ) {
             my $to_dt = eval {
                 DateTime::Format::W3CDTF->parse_datetime(
                     $service->{SiteServiceValidTo} );
@@ -346,15 +348,20 @@ sub bin_services_for_address {
             $filtered_service->{schedule} = 'Weekly';
         }
 
-        my $existing_report_id = $property->{missed_collection_reports}{ $filtered_service->{service_id} };
+        my $report_details = $property->{missed_collection_reports}
+            { $filtered_service->{service_id} };
 
-        my $report;
-        if ($existing_report_id) {
-            $filtered_service->{report_open} = 1;
-            $report = $self->problems->search({ external_id => "Whitespace-$existing_report_id" })->first;
-            if ($report) {
-                $filtered_service->{report_url} = $report->url;
-            }
+        if ($report_details) {
+            # $filtered_service->{report_open} = 1;
+
+            # $report = $self->problems->search({ external_id => "Whitespace-$existing_report_id" })->first;
+            # if ($report) {
+            #     $filtered_service->{report_url} = $report->url;
+            # }
+
+            $filtered_service->{report_details} = $report_details;
+
+            $filtered_service->{report_open} = $report_details->{open};
         } else {
             $filtered_service->{report_open} = 0;
         }
@@ -370,7 +377,7 @@ sub bin_services_for_address {
             }
 
         }
-
+# TODO Use this to determine whether report details can be displayed?
         $filtered_service->{report_allowed}
             = $self->can_report_missed( $property, $filtered_service );
 
@@ -418,9 +425,14 @@ sub _remove_service_if_assisted_exists {
     return values %service_by_service_id;
 }
 
+# TODO NEXT Handle dates:
+# what format
+# timezone consistency
+# tests
+# 0001-01-01T00:00:00 as 'undef' date
 
-# Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.) that have
-# open missed collection reports against them on the given property
+# Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.), each mapped
+# to details of a missed collection report
 sub _missed_collection_reports {
     my ( $self, $property ) = @_;
 
@@ -430,20 +442,92 @@ sub _missed_collection_reports {
         ? $property->{parent_property}{uprn}
         : $property->{uprn};
 
+    # TODO Order by desc?
     my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
+
+warn "====\n\t" . "DUMP:" . "\n====";
+use Data::Dumper;
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Maxdepth = 3;
+$Data::Dumper::Sortkeys = 1;
+warn Dumper $worksheets;
 
     my %missed_collection_reports;
     for my $ws (@$worksheets) {
-        if (   $ws->{WorksheetStatusName} eq 'Open'
-            && $ws->{WorksheetSubject} =~ /^Missed/ )
-        {
-            for ( @{  $self->whitespace->GetWorksheetDetailServiceItems(
-                        $ws->{WorksheetID} ) } )
-            {
-                $missed_collection_reports{ $_->{ServiceItemName} } = $ws->{WorksheetID};
-            }
-        }
+        # Check if it exists in our DB
+
+        # TODO Cutoff date for fetching past/closed reports
+
+        my $external_id = 'Whitespace-' . $ws->{WorksheetID};
+        my $report
+            = $self->problems->search( { external_id => $external_id } )
+            ->first;
+
+        next unless $report;
+
+        # Skip if there is already a report stashed against the service item
+        # name
+        my $service_item_name
+            = $report->get_extra_field_value('service_item_name');
+warn "====\n\t" . "$service_item_name" . "\n====";
+        next if $missed_collection_reports{$service_item_name};
+
+        my $latest_comment = $report->comments->search(
+            {},
+            { order_by => { -desc => 'id' } },
+        )->first;
+
+        # TODO Get consistent date formats
+        # TODO Check timezone
+        # TODO Tests
+        # yyyy-mm-ddTHH:MM:SS
+
+        # TODO What if comment has HTML in it?
+
+        my $report_details = {
+            id                => $report->id,
+            external_id       => $report->external_id,
+            open              => $report->is_open,
+            reported          => (
+                $ws->{WorksheetStartDate} eq WHITESPACE_UNDEF_DATE
+                ? ''
+                : $ws->{WorksheetStartDate}
+            ),
+            will_be_completed => (
+                $ws->{WorksheetEscallatedDate} eq WHITESPACE_UNDEF_DATE
+                ? ''
+                : $ws->{WorksheetEscallatedDate}
+            ),
+            collected         => (
+                $ws->{WorksheetCompletedDate} eq WHITESPACE_UNDEF_DATE
+                ? ''
+                : $ws->{WorksheetCompletedDate}
+            ),
+            latest_comment =>
+                ( $latest_comment ? $latest_comment->text : '' ),
+        };
+
+        $missed_collection_reports{$service_item_name} = $report_details;
     }
+
+    # for my $ws (@$worksheets) {
+    #     if (   $ws->{WorksheetStatusName} eq 'Open'
+    #         && $ws->{WorksheetSubject} =~ /^Missed/ )
+    #     {
+    #         for ( @{  $self->whitespace->GetWorksheetDetailServiceItems(
+    #                     $ws->{WorksheetID} ) } )
+    #         {
+    #             $missed_collection_reports{ $_->{ServiceItemName} } = $ws->{WorksheetID};
+    #         }
+    #     }
+    # }
+
+warn "====\n\t" . "DUMP:" . "\n====";
+use Data::Dumper;
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Maxdepth = 3;
+$Data::Dumper::Sortkeys = 1;
+warn Dumper \%missed_collection_reports;
 
     return \%missed_collection_reports;
 }
@@ -565,7 +649,10 @@ sub can_report_missed {
     my ( $self, $property, $service ) = @_;
 
     # Cannot make a report if there is already an open one for this service
-    return 0 if $property->{missed_collection_reports}{ $service->{service_id} };
+# FIXME May not be open
+    my $report = $service->{report_details};
+    return 0 if $report && $report->{open};
+    # return 0 if $property->{missed_collection_reports}{ $service->{service_id} };
 
     # Prevent reporting if there are service updates
     return 0 if @{ $property->{service_updates} // [] };
