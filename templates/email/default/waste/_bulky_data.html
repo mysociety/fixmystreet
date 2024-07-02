@@ -19,6 +19,6 @@ SET payment = report.get_extra_field_value('payment');
 SET collection_date = cobrand.bulky_nice_collection_date(report);
 SET report_date = report.confirmed.strftime('%A %d %B %Y');
 SET item_list = cobrand.bulky_nice_item_list(report);
-SET staff_cancellation = cobrand.feature('waste_features').bulky_enabled == 'staff';
+SET staff_cancellation = cobrand.feature('waste_features').bulky_enabled == 'staff' || cobrand.feature('waste_features').bulky_cancel_enabled == 'staff';
 
 ~%]

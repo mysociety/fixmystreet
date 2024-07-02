@@ -45,8 +45,10 @@ INCLUDE '_email_top.html';
 [% END %]
 
 <p style="[% p_style %]">
-  [%~ IF staff_cancellation && cobrand.moniker == 'peterborough' %]
-    If you wish to cancel your booking, please call 01733 74 74 74.
+  [%~ IF staff_cancellation %]
+    [% IF cobrand.moniker == 'peterborough' %]
+      If you wish to cancel your booking, please call 01733 74 74 74.
+    [% END %]
   [% ELSE %]
     If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/[% bulky_cancel_url %]/[% report.id %]">this link</a>.
 

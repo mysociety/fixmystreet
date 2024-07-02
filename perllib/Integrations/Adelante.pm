@@ -40,6 +40,7 @@ sub pay {
     my $obj = {
         Function => $method,
         Channel => $self->config->{channel},
+        MID => $self->config->{mid},
         PaymentReference => $args->{reference},
         Name => $args->{name},
         Address => $args->{address},

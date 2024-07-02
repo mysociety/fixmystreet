@@ -48,6 +48,7 @@ FixMyStreet::override_config {
             merton => {
                 bulky_enabled => 1,
                 bulky_amend_enabled => 'staff',
+                bulky_cancel_enabled => 'staff',
                 bulky_missed => 1,
                 bulky_tandc_link => 'tandc_link',
                 echo_update_failure_email => 'fail@example.com',
@@ -405,7 +406,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/Total cost: £37.00/, 'Includes price';
             like $confirmation_email_txt, qr/Address: 2 Example Street, Merton, KT1 1AA/, 'Includes collection address';
             like $confirmation_email_txt, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date';
-            like $confirmation_email_txt, qr#http://merton.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link';
+            unlike $confirmation_email_txt, qr#http://merton.example.org/waste/12345/bulky/cancel#, 'No cancellation link';
             like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
             like $confirmation_email_html, qr#Reference: <strong>$id</strong>#, 'Includes reference number (html mail)';
             like $confirmation_email_html, qr/Items to be collected:/, 'Includes header for items (html mail)';
@@ -415,7 +416,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Total cost: £37.00/, 'Includes price (html mail)';
             like $confirmation_email_html, qr/Address: 2 Example Street, Merton, KT1 1AA/, 'Includes collection address (html mail)';
             like $confirmation_email_html, qr/Collection date: Saturday 08 July 2023/, 'Includes collection date (html mail)';
-            like $confirmation_email_html, qr#http://merton.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link (html mail)';
+            unlike $confirmation_email_html, qr#http://merton.example.org/waste/12345/bulky/cancel#, 'No cancellation link (html mail)';
             like $confirmation_email_html, qr/a href="tandc_link"/, 'Includes terms and conditions (html mail)';
         };
 
@@ -492,8 +493,9 @@ FixMyStreet::override_config {
             $report->external_id('Echo-123');
             $report->update;
             $mech->get_ok('/report/' . $report->id);
-            $mech->content_contains('/waste/12345/bulky/cancel');
-            $mech->content_contains('Cancel this booking');
+            # Still not present, because cancelling is staff only
+            $mech->content_lacks('/waste/12345/bulky/cancel');
+            $mech->content_lacks('Cancel this booking');
         };
 
         subtest "Can follow link to booking from bin days page" => sub {
@@ -545,6 +547,9 @@ FixMyStreet::override_config {
             $mech->log_in_ok( $contact_centre_user->email );
             $mech->get_ok($base_path);
             $mech->content_contains('Amend booking');
+            $mech->get_ok("/report/" . $report->id);
+            $mech->content_contains("$base_path/bulky/cancel");
+            $mech->content_contains('Cancel this booking');
             $mech->get_ok("$base_path/bulky/amend/" . $report->id);
             is $mech->uri->path, "$base_path/bulky/amend/" . $report->id;
         };
@@ -825,11 +830,11 @@ FixMyStreet::override_config {
         my $reminder_email_html = $mech->get_html_body_from_email($email);
         like $reminder_email_txt, qr/Address: 2 Example Street, Merton, KT1 1AA/, 'Includes collection address';
         like $reminder_email_txt, qr/Saturday 08 July 2023/, 'Includes collection date';
-        like $reminder_email_txt, qr#http://merton.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link';
+        unlike $reminder_email_txt, qr#http://merton.example.org/waste/12345/bulky/cancel#, 'No cancellation link';
         like $reminder_email_html, qr/Thank you for booking a bulky waste collection with Merton Council/, 'Includes Merton greeting (html mail)';
         like $reminder_email_html, qr/Address: 2 Example Street, Merton, KT1 1AA/, 'Includes collection address (html mail)';
         like $reminder_email_html, qr/Saturday 08 July 2023/, 'Includes collection date (html mail)';
-        like $reminder_email_html, qr#http://merton.example.org/waste/12345/bulky/cancel#, 'Includes cancellation link (html mail)';
+        unlike $reminder_email_html, qr#http://merton.example.org/waste/12345/bulky/cancel#, 'No cancellation link (html mail)';
         $mech->clear_emails_ok;
     };
 

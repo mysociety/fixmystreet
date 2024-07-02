@@ -36,9 +36,12 @@ Total cost: £[% pounds(payment / 100) %]
 
 [% END ~%]
 
-[%~ IF staff_cancellation && cobrand.moniker == 'peterborough' %]
+[%~ IF staff_cancellation %]
+[%~ IF cobrand.moniker == 'peterborough' %]
 
 If you wish to cancel your booking, please call 01733 74 74 74.
+
+[% END %]
 
 [% ELSE %]
 

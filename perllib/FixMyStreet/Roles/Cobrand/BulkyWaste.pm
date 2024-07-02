@@ -368,14 +368,14 @@ sub bulky_can_view_collection {
 
 sub bulky_can_amend_collection {
     my ( $self, $p ) = @_;
-    my $c = $self->{c};
-    return unless $c->user_exists;
+    return unless $self->bulky_can_view_collection($p);
 
     my $cfg = $self->feature('waste_features') || {};
     return unless $cfg->{bulky_amend_enabled};
 
     my $can_be = $self->bulky_collection_can_be_amended($p);
     if ($cfg->{bulky_amend_enabled} eq 'staff') {
+        my $c = $self->{c};
         my $staff = $c->user->is_superuser || $c->user->belongs_to_body($self->body->id);
         return $can_be && $staff;
     }
@@ -416,6 +416,24 @@ sub bulky_can_view_cancellation {
     return 1
         if $c->user->is_superuser
         || $c->user->belongs_to_body( $self->body->id );
+}
+
+# Cancel is on by default, but config can turn off or make staff-only
+sub bulky_can_cancel_collection {
+    my ( $self, $p, $ignore_external_id ) = @_;
+    return unless $self->bulky_can_view_collection($p);
+
+    my $cfg = $self->feature('waste_features') || {};
+    my $enabled = $cfg->{bulky_cancel_enabled} // 1;
+    return unless $enabled;
+
+    my $can_be = $self->bulky_collection_can_be_cancelled($p, $ignore_external_id);
+    if ($enabled eq 'staff') {
+        my $c = $self->{c};
+        my $staff = $c->user->is_superuser || $c->user->belongs_to_body($self->body->id);
+        return $can_be && $staff;
+    }
+    return $can_be;
 }
 
 # Returns whether a collection can be cancelled, irrespective of logged-in
