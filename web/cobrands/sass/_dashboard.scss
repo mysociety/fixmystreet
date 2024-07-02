@@ -295,6 +295,13 @@
     }
 }
 
+.dashboard-filters {
+    .multi-select-button {
+        height: 28px;
+        line-height: 100%;
+    }
+}
+
 .dashboard-options-tabs {
     @include clearfix();
     @include list-reset-soft();
