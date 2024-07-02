@@ -1,5 +1,9 @@
+// List of variables that controls multi-select inputs with GOVUK styling
+$govuk-input-border-color: #000 !default;
+$govuk-input-hover-box-shadow: #b1b4b6 !default;
+$govuk-input-focus-box-shadow: #fd0 !default;
+
 .report-list-filters-wrapper, #bulk-assign-form {
-  color: #666;
   border-top: 1px solid #e5e5e5;
   border-bottom: 1px solid #e5e5e5;
 
@@ -17,7 +21,6 @@
 }
 
 .report-list-filters, #bulk-assign-form {
-  padding: 16px;
   margin-bottom: 0;
   font-size: 14px;
   line-height: 1.8em;
@@ -54,7 +57,6 @@
   }
 
   .multi-select-container {
-    margin: 0 0.2em;
     color: #000;
   }
 
@@ -64,9 +66,8 @@
   }
 
   .multi-select-button {
-    max-width: 10em;
-    padding: flip(0 1.5em 0 0.6em, 0 0.6em 0 1.5em);
-    line-height: 1.8em;
+    box-sizing: border-box;
+    padding: flip(0.4em 1.5em 0.4em 0.6em, 0.4em 0.6em 0.4em 1.5em);
     vertical-align: top;
   }
 
@@ -91,10 +92,84 @@
     content: none;
   }
 
+  &.sort-select {
+    width: fit-content;
+  }
+
+}
+
+#bulk-assign-form {
+  padding: 16px;
 }
 
 input.bulk-assign {
     float: right;
     margin: 2em;
     transform: scale(2);
+}
+
+.multi-select-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+}
+
+.sort-container {
+  float: left;
+}
+
+#show_old_reports_wrapper {
+  align-self: flex-end;
+  .govuk-label.govuk-checkboxes__label {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 48em) {
+  .report-list-filters {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+
+    &.sort-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+
+  #show_old_reports_wrapper {
+    .govuk-label.govuk-checkboxes__label {
+      font-size: 1rem;
+    }
+  }
+}
+
+.govuk-fieldset-wrapper {
+  padding: 1rem;
+
+  .filter-group {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .report-list-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    flex-basis: 50%;
+  }
+
+  .multi-select-button, .govuk-select {
+    width: 150px;
+  }
+
+  @media (min-width: 48em) {
+    .multi-select-button, .govuk-select {
+      width: 200px;
+    }
+  }
 }

@@ -1,6 +1,6 @@
-<p class="report-list-filters">
+<p class="report-list-filters sort-container">
     <label for="sort">[% loc('Sort by') %]</label>
-    <select class="form-control" name="sort" id="sort">
+    <select class="govuk-select sort-select" name="sort" id="sort">
       [% IF shortlist %]
         <option value="shortlist"[% ' selected' IF sort_key == 'shortlist' %]>[% loc('Manual order') %]</option>
       [% END %]

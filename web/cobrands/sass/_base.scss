@@ -3336,3 +3336,4 @@ $site-message-border: 1px solid #525252 !default;
 @import "_page-with-sticky-content-bar";
 
 @import "govuk-frontend/forms";
+@import "_govuk"; // Adds some overrides to the default GOVUK behaviour

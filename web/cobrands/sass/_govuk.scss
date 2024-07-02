@@ -1,0 +1,24 @@
+@mixin govuk-select-dropdown {
+  // This will make the arrow for the multi-select component and GOVUK look the same.
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: inline-image("../fixmystreet/images/chevron-black-down.svg");
+  background-repeat: no-repeat;
+  background-size: 11px;
+  background-position: right 0.5em center;
+  background-color: #fff;
+}
+
+.govuk-select {
+  @include govuk-select-dropdown;
+}
+
+.govuk-select {
+  font-family: $body-font;
+  font-size: 0.875rem;
+  line-height: 150%;
+  @media (min-width: 48em) {
+    font-size: 1rem;
+  }
+}

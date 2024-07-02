@@ -1,5 +1,6 @@
 [% SET show_all_states = c.cobrand.filter_show_all_states OR (c.user_exists AND (c.user.is_superuser OR c.user.belongs_to_body(body.id))) %]
 
+<div id="filter-announcement" class="screen-reader-only" role="alert">[% loc('Information: Filters in use. The current view is customized based on selected filters.') %]</div>
 <select class="form-control js-multiple" name="status" id="statuses" multiple
     data-all="[% loc('All') %]"
     [% IF show_all_states %]
