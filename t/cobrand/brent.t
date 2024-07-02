@@ -1397,6 +1397,16 @@ FixMyStreet::override_config {
         }, ]
     });
     subtest 'test requesting a sack' => sub {
+        # Ordered previously, but not referred
+        $echo->mock('GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 2936,
+            ResolvedDate => { DateTime => '2024-05-17T12:00:00Z' },
+            Data => { ExtensibleDatum => { ChildData => { ExtensibleDatum => {
+                DatatypeName => 'Container Type',
+                Value => 8,
+            } } } },
+        } ] } );
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 8 } }, "Choose sack");
@@ -1417,6 +1427,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Request_Notes'), '';
         is $report->get_extra_field_value('Container_Request_Quantity'), '1';
         is $report->get_extra_field_value('service_id'), '269';
+        is $report->get_extra_field_value('request_referral'), '';
     };
     $echo->mock('GetServiceUnitsForObject' => sub {
     return [
