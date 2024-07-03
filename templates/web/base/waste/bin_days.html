@@ -31,8 +31,8 @@
 
     [% DEFAULT any_report_allowed = 0 ~%]
     [% SET any_request_allowed = 0 ~%]
-    [% IF NOT waste_features.garden_disabled AND pending_subscription %]
-        <p>You have a pending
+    [% IF NOT waste_features.garden_disabled AND pending_subscription AND NOT c.cobrand.garden_current_subscription %]
+        <p class="govuk-body-l">You have a pending
             [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
                 garden subscription renewal.
             [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
@@ -82,6 +82,17 @@
           <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
          [% END %]
       [% END %]
+
+    [% IF NOT waste_features.garden_disabled AND pending_subscription AND unit.garden_waste %]
+        <p class="govuk-body-l">You have a pending
+            [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
+                garden subscription renewal.
+            [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
+                garden subscription.
+            [%~ END %]
+        </p>
+
+    [% END %]
 
     [% IF !unit.garden_overdue %]
 
