@@ -58,8 +58,14 @@ has_page sacks_details => (
         }
         $form->{c}->stash->{cost_pa} = $cost_pa / 100;
         $form->{c}->stash->{cost_now} = $cost_pa / 100;
+
+        my $bins_wanted_opts = { default => 1 };
+        if ($form->with_bins_wanted) {
+            my $max_bins = $c->stash->{garden_form_data}->{max_bins};
+            $bins_wanted_opts->{range_end} = $max_bins;
+        }
         return {
-            bins_wanted => { default => 1 },
+            bins_wanted => $bins_wanted_opts,
         };
     },
     post_process => sub {
@@ -70,22 +76,6 @@ has_page sacks_details => (
         }
     },
     next => 'summary',
-);
-
-has_field bins_wanted => (
-    type => 'Integer',
-    build_label_method => sub {
-        my $self = shift;
-        my $choice = $self->form->saved_data->{container_choice} || '';
-        if ($choice eq 'sack') {
-            return "Number of sack subscriptions",
-        } else {
-            return $self->SUPER::bins_wanted_label_method;
-        }
-    },
-    tags => { number => 1 },
-    required => 1,
-    range_start => 1,
 );
 
 has_field continue => (
