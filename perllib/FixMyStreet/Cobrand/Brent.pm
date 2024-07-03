@@ -428,9 +428,9 @@ sub dashboard_export_problems_add_columns {
             container_req_reason => 'Container Request Reason',
 
             email_renewal_reminders_opt_in => 'Email Renewal Reminders Opt-In',
-
             missed_collection_id => 'Service ID',
-            map { "item_" . $_ => "Small Item $_" } (1..11)
+            staff_role => 'Staff Role',
+            map { "item_" . $_ => "Small Item $_" } (1..11),
         )
     );
 
@@ -470,6 +470,14 @@ sub dashboard_export_problems_add_columns {
         $id = $csv->_extra_field($report, 'Container_Request_Reason') || '';
         my $container_req_reason = $request_lookups->{reason}{$id} || $id;
 
+        my ($by, $userroles, $staff_role);
+        if (!$csv->dbi) {
+            $by = $report->get_extra_metadata('contributed_by');
+            my $user_lookup = $self->csv_staff_users;
+            $userroles = $self->csv_staff_roles($user_lookup);
+            $staff_role = join(',', @{$userroles->{$by} || []}) if $by;
+        }
+
         my $data = {
             location_name => $csv->_extra_field($report, 'location_name'),
             $csv->dbi ? (
@@ -481,6 +489,7 @@ sub dashboard_export_problems_add_columns {
                 user_email => $report->user->email || '',
                 image_included => $report->photo ? 'Y' : 'N',
                 external_id => $report->external_id || '',
+                staff_role => $staff_role || '',
             ),
             usrn => $csv->_extra_field($report, 'usrn'),
             uprn => $csv->_extra_field($report, 'uprn'),
