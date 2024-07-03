@@ -12,6 +12,8 @@
             [%- tprintf('Reference:&nbsp;%s', problem.external_id) %].
         [%- ELSIF c.cobrand.moniker == 'isleofwight' %]
             [%- tprintf('Enquiry ref:&nbsp;%s', problem.external_id) %].
+        [%- ELSIF problem.to_body_named('Surrey County') %]
+            Council ref: [% problem.external_id.replace("Zendesk_", "") %].
         [%- ELSE %]
             [%- tprintf(loc('Council ref:&nbsp;%s'), problem.external_id) %].
         [%- END %]
@@ -32,6 +34,8 @@
             [%- ELSE %]
                 [%- tprintf(loc('FixMyStreet ref:&nbsp;%s'), problem.id) %].
             [%- END -%]
+        [%- ELSIF c.cobrand.moniker == 'surrey' %]
+            [% # don't display anything until report is sent to Surrey %]
         [%- ELSIF problem.cobrand_data == 'waste' %]
             [%- tprintf('WasteWorks ref:&nbsp;%s', problem.id) %].
         [%- ELSE %]

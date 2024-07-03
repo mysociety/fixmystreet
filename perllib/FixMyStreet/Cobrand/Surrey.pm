@@ -87,6 +87,7 @@ sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
 }
 
 sub open311_extra_data_include {
