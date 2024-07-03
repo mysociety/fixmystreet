@@ -195,8 +195,8 @@ has_field current_bins => (
 );
 
 sub bins_wanted_label_method {
-    my $self = shift;
-    my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+    my ($self, $max_bins) = @_;
+    $max_bins ||= $self->parent->{c}->stash->{garden_form_data}->{max_bins};
     return "Number of bins to be emptied (including bins already on site) (0-$max_bins)";
 }
 

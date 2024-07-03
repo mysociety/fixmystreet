@@ -54,4 +54,27 @@ sub options_container_choice {
     return \@containers;
 }
 
+# Things using this will always need customised bins_wanted
+
+has_field bins_wanted => (
+    type => 'Integer',
+    build_label_method => sub {
+        my $self = shift;
+        my $choice = $self->form->saved_data->{container_choice} || '';
+        my $max = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+        if ($choice eq 'sack') {
+            if ($self->form->with_bins_wanted) {
+                return "Number of sack subscriptions (maximum $max)",
+            } else {
+                return "Number of sack subscriptions",
+            }
+        } else {
+            return $self->form->bins_wanted_label_method($max);
+        }
+    },
+    tags => { number => 1 },
+    required => 1,
+    range_start => 1,
+);
+
 1;
