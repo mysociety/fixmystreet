@@ -1076,8 +1076,13 @@ sub bulky_check_missed_collection {
 
         $row->{report_allowed} = $in_time && !$row->{report_locked_out};
 
-        my $recent_events = $self->_events_since_date($event->{date}, $missed_events);
-        $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
+        # Loop through the missed events and see if any of them is for this bulky event
+        foreach (@$missed_events) {
+            next unless $_->{report};
+            my $reported_guid = $_->{report}->get_extra_field_value('Original_Event_ID');
+            next unless $reported_guid;
+            $row->{report_open} = 1 if $reported_guid eq $guid;
+        }
 
         $self->{c}->stash->{bulky_missed}{$guid} = $row;
     }
