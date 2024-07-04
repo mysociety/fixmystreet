@@ -131,4 +131,49 @@ sub lookup_by_ref {
       ];
 }
 
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    if (!$row->get_extra_field_value('USRN')) {
+        if (my $ref = $self->lookup_site_code($row, 'USRN,ROADNAME')) {
+          my $props = $ref->{properties} || {};
+          $row->update_extra_field({ name => 'USRN', value => $props->{USRN} }) if $props->{USRN};
+          $row->update_extra_field({ name => 'ROADNAME', value => $props->{ROADNAME} }) if $props->{ROADNAME};
+        }
+    }
+}
+
+sub lookup_site_code_config {
+    my ( $self, $field ) = @_;
+    # uncoverable subroutine
+    # uncoverable statement
+    my $layer = '2'; # 2 is USRN
+
+    my %cfg = (
+        buffer => 1000, # metres
+        proxy_url => "https://to.eu.ngrok.io/tilma.mysociety.org/resource-proxy/proxy.php",
+        url => "https://surrey.assets/$layer/query",
+        outFields => $field, # use this instead of 'properties' so we get the entire feature returned from lookup_site_code, which we need for accessing USRN and ROADNAME
+        accept_feature => sub { 1 },
+    );
+    return \%cfg;
+}
+
+sub _fetch_features_url {
+    my ($self, $cfg) = @_;
+
+    # Surrey's asset proxy has a slightly different calling style to
+    # a standard WFS server.
+    my $uri = URI->new($cfg->{url});
+    $uri->query_form(
+        inSR => "27700",
+        outSR => "27700",
+        f => "geojson",
+        outFields => $cfg->{outFields},
+        geometry => $cfg->{bbox},
+    );
+
+    return $cfg->{proxy_url} . "?" . $uri->as_string;
+}
+
 1;
