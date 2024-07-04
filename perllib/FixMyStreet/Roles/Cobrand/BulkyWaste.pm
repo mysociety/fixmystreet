@@ -271,10 +271,11 @@ sub find_pending_bulky_collections {
 sub find_recent_bulky_collections {
     my ( $self, $uprn ) = @_;
 
+    my @closed = grep { $_ ne 'cancelled' } FixMyStreet::DB::Result::Problem->closed_states;
     my $rs = $self->problems->search({
         category => ['Bulky collection', 'Small items collection'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
-        state => [ FixMyStreet::DB::Result::Problem->closed_states, FixMyStreet::DB::Result::Problem->fixed_states ],
+        state => [ @closed, FixMyStreet::DB::Result::Problem->fixed_states ],
     })->order_by('-id');
 
     return wantarray ? $self->_since_last_week($rs) : $rs;
