@@ -309,7 +309,7 @@ FixMyStreet::override_config {
         is $emails[0]->header('To'), '"Bromley Council" <request@example.org>';
         is $emails[1]->header('To'), $user->email;
         my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Your report to Bromley Council has been logged/;
+        like $body, qr/Your request to Bromley Council has been logged/;
         my @reports = FixMyStreet::DB->resultset("Problem")->order_by('-id')->search(undef, { rows => 2 });
         is $reports[0]->state, 'confirmed';
         is $reports[0]->get_extra_field_value('uprn'), 1000000002;
