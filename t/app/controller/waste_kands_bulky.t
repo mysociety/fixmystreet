@@ -696,6 +696,8 @@ FixMyStreet::override_config {
         is $missed->get_extra_field_value('Original_Event_ID'), 'a-guid';
         is $missed->get_extra_field_value('Notes'), 'They left the mattress';
 
+        $missed->update({ external_id => 'guid' });
+
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
             EventTypeId => 1636,
