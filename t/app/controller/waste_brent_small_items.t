@@ -63,6 +63,7 @@ create_contact(
 );
 create_contact(
     { category => 'Report missed collection', email => 'missed@test.com' },
+    { code => 'Original_Event_ID', required => 0, automated => 'hidden_field' },
 );
 
 FixMyStreet::override_config {
@@ -485,7 +486,7 @@ FixMyStreet::override_config {
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a small items collection as missed', 'In time, normal completion');
-        $mech->get_ok('/waste/12345/report');
+        $mech->submit_form_ok({ with_fields => { 'service-787' => 1 } });
         $mech->content_contains('Small items collection');
         $mech->submit_form_ok({ with_fields => { 'service-787' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
@@ -495,6 +496,8 @@ FixMyStreet::override_config {
         is $report->category, 'Report missed collection';
         is $report->get_extra_field_value('service_id'), 787;
         is $report->title, 'Report missed small items / clinical';
+
+        $report->update({ external_id => 'guid' });
 
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
