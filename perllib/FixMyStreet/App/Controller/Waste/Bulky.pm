@@ -328,7 +328,7 @@ sub process_bulky_amend : Private {
 
         $c->forward('process_bulky_data', [ $form ]);
         # If there wasn't payment, we can set the things here too
-        $c->forward('cancel_collection', [ $p ]);
+        $c->forward('cancel_collection', [ $p, 'amendment' ]);
         my $new = $c->stash->{report};
         $new->set_extra_metadata(previous_booking_id => $p->id);
         $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
@@ -412,7 +412,7 @@ sub add_cancellation_report : Private {
 sub add_cancellation_update {
     my ($c, $p, $type) = @_;
 
-    my $description = $c->stash->{non_user_cancel} ? "Booking cancelled" : "Booking cancelled by customer";
+    my $description = $c->stash->{non_user_cancel} ? "Booking cancelled" : $type eq 'delayed' ? "Booking cancelled due to amendment" : "Booking cancelled by customer";
     my $update = $p->add_to_comments({
         text => $description,
         user => $c->cobrand->body->comment_user || $p->user,
@@ -432,7 +432,7 @@ sub process_bulky_cancellation : Private {
         $c->forward('add_cancellation_report') or return;
     }
 
-    $c->forward('cancel_collection', [ $collection_report ]);
+    $c->forward('cancel_collection', [ $collection_report, 'cancellation' ]);
 
     $c->cobrand->call_hook('bulky_send_cancellation_confirmation' => $collection_report);
 
@@ -449,10 +449,11 @@ sub process_bulky_cancellation : Private {
 
 # Mark original report as closed
 sub cancel_collection : Private {
-    my ($self, $c, $report) = @_;
+    my ($self, $c, $report, $type) = @_;
 
     $report->state('closed');
-    my $description = $c->stash->{non_user_cancel} ? "Cancelled" : "Cancelled at user request";
+    my $description = $c->stash->{non_user_cancel}
+        ? "Cancelled" : $type eq 'amendment' ? 'Cancelled due to amendment' : "Cancelled at user request";
     $report->detail($report->detail . " | " . $description);
     $report->update;
 }
