@@ -660,7 +660,7 @@ FixMyStreet::override_config {
             $mech->get_ok($path);
             $mech->content_contains('Updates');
             $mech->content_contains('This collection has been cancelled');
-            $mech->content_contains('Booking cancelled by customer');
+            $mech->content_contains('Booking cancelled due to amendment');
             $report->discard_changes;
             is $report->state, 'closed';
         };
@@ -784,7 +784,7 @@ FixMyStreet::override_config {
             $mech->get_ok($path);
             $mech->content_contains('Updates');
             $mech->content_contains('This collection has been cancelled');
-            $mech->content_contains('Booking cancelled by customer');
+            $mech->content_contains('Booking cancelled due to amendment');
             $report->discard_changes;
             is $report->state, 'closed';
         };

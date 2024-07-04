@@ -349,7 +349,7 @@ sub confirm_subscription : Private {
 
     if (my $previous = $p->get_extra_metadata('previous_booking_id')) {
         $previous = FixMyStreet::DB->resultset("Problem")->find($previous);
-        $c->forward('bulky/cancel_collection', [ $previous ]);
+        $c->forward('bulky/cancel_collection', [ $previous, 'amendment' ]);
         my $update = $c->cobrand->bulky_is_cancelled($previous);
         $update->confirm;
         $update->update;
