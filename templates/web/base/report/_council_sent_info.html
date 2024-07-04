@@ -32,6 +32,7 @@
             [%- ELSE %]
                 [%- tprintf(loc('FixMyStreet ref:&nbsp;%s'), problem.id) %].
             [%- END -%]
+        [%- ELSIF c.cobrand.moniker == 'nottinghamshirepolice' %]
         [%- ELSIF problem.cobrand_data == 'waste' %]
             [%- tprintf('WasteWorks ref:&nbsp;%s', problem.id) %].
         [%- ELSE %]
