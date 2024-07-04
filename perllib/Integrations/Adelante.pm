@@ -24,7 +24,7 @@ has log_ident => (
 sub pay {
     my ($self, $args) = @_;
 
-    my $method = $args->{staff} ? 'PAY3DS' : 'PAY';
+    my $method = $args->{staff} ? 'PAY' : 'PAY3DS';
 
     my @items;
     foreach (@{$args->{items}}) {
@@ -40,7 +40,7 @@ sub pay {
     my $obj = {
         Function => $method,
         Channel => $self->config->{channel},
-        MID => $self->config->{mid},
+        $args->{staff} ? (MID => $self->config->{mid}) : (),
         PaymentReference => $args->{reference},
         Name => $args->{name},
         Address => $args->{address},
