@@ -176,4 +176,6 @@ sub _fetch_features_url {
     return $cfg->{proxy_url} . "?" . $uri->as_string;
 }
 
+sub default_map_zoom { 3 }
+
 1;
