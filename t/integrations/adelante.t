@@ -11,7 +11,7 @@ $lwp->mock(request => sub {
 
     my ($function) = $req->content =~ /"Function":"(.*?)"/;
     my $return = '"Result":"OK",';
-    if ($function eq 'PAY') {
+    if ($function eq 'PAY3DS') {
         like $req->content, qr/"Ref1":"CC"/;
         like $req->content, qr/"Ref2":"reference"/;
         like $req->content, qr/"Amount":1000/;

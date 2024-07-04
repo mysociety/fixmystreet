@@ -31,28 +31,7 @@
 
     [% DEFAULT any_report_allowed = 0 ~%]
     [% SET any_request_allowed = 0 ~%]
-    [% IF NOT waste_features.garden_disabled AND pending_subscription %]
-
-      [% IF c.cobrand.moniker == 'merton' %]
-          [% image = PROCESS 'waste/wheelie.svg' %]
-          <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-quarter text-centered">
-                  <span style="--primary-color: #8B5E3D;">[% image.replace('<svg', '<svg class="waste-service-image"') | safe %]</span>
-              </div>
-              <div class="govuk-grid-column-three-quarters">
-                <div class="govuk-warning-text">
-                  <p class="govuk-body-l">
-                    You have a pending
-                    [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
-                        garden subscription renewal.
-                    [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
-                        garden subscription.
-                    [%~ END %]
-                  </p>
-                </div>
-              </div>
-          </div>
-      [% ELSE %]
+    [% IF NOT waste_features.garden_disabled AND pending_subscription AND NOT c.cobrand.garden_current_subscription %]
         <p class="govuk-body-l">You have a pending
             [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
                 garden subscription renewal.
@@ -60,8 +39,6 @@
                 garden subscription.
             [%~ END %]
         </p>
-      [% END %]
-
     [% END %]
     [% FOR unit IN service_data %]
     [% UNLESS unit.request_only %]
@@ -105,6 +82,17 @@
           <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
          [% END %]
       [% END %]
+
+    [% IF NOT waste_features.garden_disabled AND pending_subscription AND unit.garden_waste %]
+        <p class="govuk-body-l">You have a pending
+            [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
+                garden subscription renewal.
+            [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
+                garden subscription.
+            [%~ END %]
+        </p>
+
+    [% END %]
 
     [% IF !unit.garden_overdue %]
 
