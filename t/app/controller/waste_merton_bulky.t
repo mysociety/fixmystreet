@@ -641,13 +641,16 @@ FixMyStreet::override_config {
             is $new_report->title, 'Bulky goods collection', 'correct title on report';
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $new_report->state, 'confirmed', 'report confirmed';
+            is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
             $mech->clear_emails_ok;
             FixMyStreet::Script::Reports::send();
             $mech->email_count_is(1); # Only email is 'email' to council
             $mech->clear_emails_ok;
 
-            is $new_report->comments->count, 0;
+            is $new_report->comments->count, 1; # Payment confirmed update
+            my $comment = $new_report->comments->first;
+            is $comment->text, 'Payment confirmed, reference 54321, amount £0.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(0);
 
@@ -688,6 +691,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('Booking cancelled by customer');
         };
 
+        $report->set_extra_metadata('payment_reference' => '6789'); # So will be changed
         $report->update({ external_id => 'Echo-123' }); # So can be amended
 
         subtest 'Amend the date and items above the lower limit' => sub {
@@ -768,6 +772,7 @@ FixMyStreet::override_config {
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
+            is $new_report->comments->count, 1; # Payment confirmed update
             my $update = $new_report->comments->first;
             is $update->state, 'confirmed';
             is $update->text, 'Payment confirmed, reference 54321, amount £23.75';
