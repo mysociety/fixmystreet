@@ -216,9 +216,24 @@ $contact2->update;
 my ($existing_missed_collection_report1) = $mech->create_problems_for_body(1, $body->id, 'Report missed collection', {
     external_id => "Whitespace-4",
 });
+$existing_missed_collection_report1->set_extra_fields(
+    { name => 'service_item_name', value => 'PC-55' } );
+$existing_missed_collection_report1->update;
+
 my ($existing_missed_collection_report2) = $mech->create_problems_for_body(1, $body->id, 'Report missed collection', {
     external_id => "Whitespace-5",
 });
+$existing_missed_collection_report2->set_extra_fields(
+    { name => 'service_item_name', value => 'PA-55' } );
+$existing_missed_collection_report2->update;
+$existing_missed_collection_report2->add_to_comments(
+    {
+        external_id   => $existing_missed_collection_report2->external_id,
+        problem_state => $existing_missed_collection_report2->state,
+        text          => 'Preexisting comment',
+        user          => $comment_user,
+    }
+);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bexley',
@@ -288,6 +303,17 @@ FixMyStreet::override_config {
             'Correct rotation schedule displayed',
         );
 
+        note 'Missed collection displays';
+        $mech->content_contains(
+            'A blue recycling box collection has been reported as missed');
+        $mech->content_contains('Reported on: N/A');
+        $mech->content_contains('Will be completed by: N/A');
+        $mech->content_contains('Comments: N/A');
+
+        $mech->content_contains(
+            'A green recycling box collection has been reported as missed');
+        $mech->content_contains('Comments: Preexisting comment');
+
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
             $cobrand->{c} = Test::MockObject->new;
@@ -321,7 +347,14 @@ FixMyStreet::override_config {
                     round          => 'RND-8-9',
                     report_allowed => 0,
                     report_open    => 1,
-                    report_url     => '/report/' . $existing_missed_collection_report1->id,
+                    report_details => {
+                        id                => ignore(),
+                        external_id       => 'Whitespace-4',
+                        open              => 1,
+                        reported          => '',
+                        will_be_completed => '',
+                        latest_comment    => '',
+                    },
                     report_locked_out => 0,
                     report_locked_out_reason => '',
                     assisted_collection => 1, # Has taken precedence over PC-55 non-assisted collection
@@ -336,7 +369,14 @@ FixMyStreet::override_config {
                     round          => 'RND-8-9',
                     report_allowed => 0,
                     report_open    => 1,
-                    report_url     => '/report/' . $existing_missed_collection_report2->id,
+                    report_details => {
+                        id                => ignore(),
+                        external_id       => 'Whitespace-5',
+                        open              => 1,
+                        reported          => '2024-03-31T01:00:00',
+                        will_be_completed => '2024-04-02T01:00:00',
+                        latest_comment    => 'Preexisting comment',
+                    },
                     report_locked_out => 0,
                     report_locked_out_reason => '',
                     assisted_collection => 0,
@@ -1651,22 +1691,37 @@ sub _site_worksheets {
         {   WorksheetID         => 1,
             WorksheetStatusName => 'Complete',
             WorksheetSubject    => 'Missed Collection Plastics & Glass',
+
+            WorksheetStartDate      => '',
+            WorksheetEscallatedDate => '',
         },
         {   WorksheetID         => 2,
             WorksheetStatusName => 'Open',
             WorksheetSubject    => 'Hotspot Location',
+
+            WorksheetStartDate      => '',
+            WorksheetEscallatedDate => '',
         },
         {   WorksheetID         => 3,
             WorksheetStatusName => 'Open',
             WorksheetSubject    => 'Missed Collection Plastics & Glass',
+
+            WorksheetStartDate      => '',
+            WorksheetEscallatedDate => '',
         },
         {   WorksheetID         => 4,
             WorksheetStatusName => 'Open',
             WorksheetSubject    => 'Missed Collection Paper',
+
+            WorksheetStartDate      => '0001-01-01T00:00:00',
+            WorksheetEscallatedDate => '',
         },
         {   WorksheetID         => 5,
             WorksheetStatusName => 'Open',
             WorksheetSubject    => 'Missed Collection Mixed Dry Recycling',
+
+            WorksheetStartDate      => '2024-03-31T01:00:00',
+            WorksheetEscallatedDate => '2024-04-02T01:00:00',
         },
     ];
 }
