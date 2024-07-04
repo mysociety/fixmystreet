@@ -338,19 +338,7 @@ sub confirm_subscription : Private {
     }
 
     if ($already_confirmed) {
-        my $payment = $p->get_extra_field_value('payment');
-        $payment = sprintf( '%.2f', $payment / 100 );
-        my $reference_text = 'reference ';
-        if (!$reference) {
-            $reference_text .= $p->get_extra_metadata('chequeReference') . ' (phone/cheque)';
-        } else {
-            $reference_text .= $reference;
-        }
-        my $comment = $p->add_to_comments({
-            text => "Payment confirmed, $reference_text, amount £$payment",
-            user => $c->cobrand->body->comment_user || $p->user,
-        });
-        $p->cancel_update_alert($comment->id);
+        $c->forward('add_payment_confirmation_update', [ $p, $reference ]);
     }
 
     if (my $previous = $p->get_extra_metadata('previous_booking_id')) {
@@ -360,6 +348,24 @@ sub confirm_subscription : Private {
         $update->confirm;
         $update->update;
     }
+}
+
+sub add_payment_confirmation_update : Private {
+    my ($self, $c, $p, $reference) = @_;
+
+    my $payment = $p->get_extra_field_value('payment') || 0;
+    $payment = sprintf( '%.2f', $payment / 100 );
+    my $reference_text = 'reference ';
+    if (!$reference) {
+        $reference_text .= $p->get_extra_metadata('chequeReference') . ' (phone/cheque)';
+    } else {
+        $reference_text .= $reference;
+    }
+    my $comment = $p->add_to_comments({
+        text => "Payment confirmed, $reference_text, amount £$payment",
+        user => $c->cobrand->body->comment_user || $p->user,
+    });
+    $p->cancel_update_alert($comment->id);
 }
 
 sub cancel_subscription : Private {

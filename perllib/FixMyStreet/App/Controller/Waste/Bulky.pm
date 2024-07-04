@@ -331,10 +331,14 @@ sub process_bulky_amend : Private {
         $c->forward('cancel_collection', [ $p, 'amendment' ]);
         my $new = $c->stash->{report};
         $new->set_extra_metadata(previous_booking_id => $p->id);
+        foreach (qw(payment_reference chequeReference)) {
+            $new->set_extra_metadata($_ => $p->get_extra_metadata($_)) if $p->get_extra_metadata($_);
+        }
         $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
         $new->update;
         $update->confirm;
         $update->update;
+        $c->forward('/waste/add_payment_confirmation_update', [ $new, $p->get_extra_metadata('payment_reference') ]);
     } else {
         $p->create_related( moderation_original_data => {
             title => $p->title,
