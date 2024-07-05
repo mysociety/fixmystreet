@@ -13,7 +13,7 @@
 })();
 
 body_validation_rules = {
-    'Nottinghamshire Police': {
+    'Immediate Justice Team': {
         title: {
             required: true,
             notContainsEmail: true

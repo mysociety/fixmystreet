@@ -30,7 +30,7 @@ sub admin_show_creation_graph { 0 }
 
 sub council_area_id { [ 2236, 2565 ] }
 sub council_area { 'Nottinghamshire'; }
-sub council_name { 'Nottinghamshire Police' }
+sub council_name { 'Immediate Justice Team' }
 
 =item * Any superuser or staff user can access the admin
 
@@ -52,7 +52,7 @@ sub area_check {
     foreach (@{$self->council_area_id}) {
         return 1 if defined $councils->{$_};
     }
-    return ( 0, "That location is not covered by Nottinghamshire Police." );
+    return ( 0, "That location is not covered by the Immediate Justice Team." );
 }
 
 sub disambiguate_location {
