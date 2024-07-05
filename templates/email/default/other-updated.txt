@@ -2,8 +2,11 @@ Subject: Your update has been logged
 
 Hello [% update.name %],
 
+[% IF cobrand.moniker == 'northnorthants' %]
+Your update has been logged on the Highways reporting system:
+[% ELSE %]
 Your update has been logged on [% site_name %]:
-
+[% END %]
 [% cobrand.base_url_for_report(problem) %][% update.url %]
 
 [% TRY %][% INCLUDE '_council_reference.txt' %][% CATCH file %][% END %]
