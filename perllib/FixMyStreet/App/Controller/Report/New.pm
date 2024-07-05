@@ -1208,6 +1208,9 @@ sub process_report : Private {
     my $areas = $c->stash->{all_areas_mapit};
     $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );
 
+    my $cobrand_data = $c->stash->{cobrand_data} || '';
+    $report->cobrand_data($cobrand_data);
+
     if ( $report->category ) {
         my @contacts = grep { $_->category eq $report->category } @{$c->stash->{contacts}};
         unless ( @contacts ) {
@@ -1241,7 +1244,7 @@ sub process_report : Private {
 
         $report->bodies_str($body_string);
         # Record any body IDs which might have meant to match, but had no contact
-        if ($body_string ne '-1' && @{ $c->stash->{missing_details_bodies} }) {
+        if ($cobrand_data ne 'waste' && $body_string ne '-1' && @{ $c->stash->{missing_details_bodies} }) {
             my $missing = join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } );
             $report->bodies_missing($missing);
         }
@@ -1286,7 +1289,6 @@ sub process_report : Private {
 
     # save the cobrand and language related information
     $report->cobrand( $c->cobrand->moniker );
-    $report->cobrand_data( $c->stash->{cobrand_data} || '' );
     $report->lang( $c->stash->{lang_code} );
 
     return 1;
@@ -1620,8 +1622,11 @@ sub process_confirmation : Private {
                 $problem->user->phone( $data->{phone} ) if $data->{phone};
             }
             $problem->user->password( $data->{password}, 1 ) if $data->{password};
-            for (qw(name title facebook_id twitter_id)) {
+            for (qw(title facebook_id twitter_id)) {
                 $problem->user->$_( $data->{$_} ) if $data->{$_};
+            }
+            if ($data->{name} && !$problem->user->from_body) {
+                $problem->user->name($data->{name});
             }
             $problem->user->add_oidc_id($data->{oidc_id}) if $data->{oidc_id};
             $problem->user->extra({

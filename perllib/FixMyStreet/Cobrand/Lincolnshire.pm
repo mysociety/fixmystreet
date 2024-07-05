@@ -92,8 +92,6 @@ sub new_report_title_field_label {
 =item * The front page text is tweaked to explain existing report numbers
 can be looked up.
 
-=back
-
 =cut
 
 sub enter_postcode_text {
@@ -111,6 +109,16 @@ sub disambiguate_location {
         span   => '0.976148231905086,1.17860658530345',
         bounds => [ 52.6402179235688, -0.820651304784901, 53.6163661554738, 0.357955280518546 ],
     };
+}
+
+=item * Uses OSM as the geocoder as Bing returns addresses for non-existent searches
+
+=back
+
+=cut
+
+sub get_geocoder {
+    return 'OSM';
 }
 
 =head2 lookup_site_code_config

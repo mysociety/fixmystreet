@@ -711,6 +711,7 @@ sub open311_post_send {
     if ($row->category eq 'Request new container' && $row->get_extra_field_value('request_referral') && !$row->get_extra_metadata('extra_email_sent')) {
         my $emails = $self->feature('open311_email');
         if (my $dest = $emails->{$row->category}) {
+            $h->{missing} = "Dear team, you have received this notification because a resident has tried to request a container but the system believes a similar request was recently made against this address. Please assess the request against Echo and then inform the customer of your decision. If authorising the request, please add it to Echo as a container request.\n\n";
             my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ]);
             $sender->send($row, $h);
             if ($sender->success) {
