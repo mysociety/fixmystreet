@@ -18,8 +18,11 @@ INCLUDE '_email_top.html';
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
   <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
+  [% IF cobrand.moniker == 'northnorthants' %]
+  <p style="[% p_style %]">Your report to [% report.body %] has been logged on the Highways reporting system.</p>
+  [% ELSE %]
   <p style="[% p_style %]">Your report to [% report.body %] has been logged on [% site_name %].</p>
-
+  [% END %]
 [% IF report.non_public %]
 <p style="[% p_style %]">It has been marked as private and will not be visible
 to the general public; you may view it using the link below, or if you sign in
