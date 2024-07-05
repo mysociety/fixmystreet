@@ -129,7 +129,7 @@ sub lookup_site_code_config {
 
     my %cfg = (
         buffer => 1000, # metres
-        proxy_url => "https://to.eu.ngrok.io/tilma.mysociety.org/resource-proxy/proxy.php",
+        proxy_url => "https://tilma.mysociety.org/resource-proxy/proxy.php",
         url => "https://surrey.assets/$layer/query",
         outFields => $field, # use this instead of 'properties' so we get the entire feature returned from lookup_site_code, which we need for accessing USRN and ROADNAME
         accept_feature => sub { 1 },
