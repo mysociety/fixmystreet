@@ -119,4 +119,11 @@ html.js .form-section-preview {
     text-transform: none;
 }
 
+// Tree category has green assets
+#category_meta_message_HousingCommunalTrees, #category_meta_message_Trees {
+    .asset-spot:before {
+        background-color: #55BB00;
+    }
+}
+
 @import "../fixmystreet-uk-councils/societyworks-footer";
