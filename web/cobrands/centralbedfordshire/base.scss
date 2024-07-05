@@ -119,4 +119,19 @@ html.js .form-section-preview {
     text-transform: none;
 }
 
+// Tree category has green assets
+#category_meta_message_HousingCommunalTrees {
+    .asset-spot:before {
+        content: "";
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border: 2px solid #000;
+        background-color: #55BB00;
+        margin: 0 0.3em 0 0.2em;
+        border-radius: 100%;
+        vertical-align: -2px;
+    }
+}
+
 @import "../fixmystreet-uk-councils/societyworks-footer";
