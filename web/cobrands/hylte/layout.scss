@@ -1,0 +1,12 @@
+@import "_colours";
+@import "../sass/layout";
+
+#geolocate_link {
+    border-color: $white !important;
+    color: $white !important;
+}
+
+.alertpage #geolocate_link {
+    border-color: #000 !important;
+    color: #000 !important;
+}

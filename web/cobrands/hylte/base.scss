@@ -1,0 +1,35 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+.btn {
+    @include button-variant($focus-bg-bottom: #e6f2f8, $focus-bg-top: #e6f2f8);
+}
+
+.btn-primary,
+.green-btn,
+.btn--primary {
+    @include button-variant($bg-top: #0078bb, $bg-bottom: #006ba7, $border: #006ba7, $text: #fff, $hover-bg-bottom: #0078bb, $hover-bg-top: #006ba7, $hover-border: #006ba7, $hover-text: #fff, $focus-bg-bottom: #0078bb, $focus-bg-top: #006ba7, $focus-border: #006ba7, $focus-text: #fff);
+}
+
+#site-logo {
+    background-image: url('/cobrands/hylte/images/Hylte kommun logotyp.svg') !important;
+}
+
+.nav-menu a:hover {
+    color: #000;
+}
+
+#nav-link {
+    background-color: #0078bb;
+}
+
+#report-cta {
+    margin-right: 1em;
+}
+
+.sticky-sidebar li:last-child {
+    margin-bottom: 0;
+}

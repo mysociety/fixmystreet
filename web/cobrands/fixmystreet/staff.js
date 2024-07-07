@@ -107,9 +107,7 @@ fixmystreet.staff_set_up = {
             $emailOptionalLabel.addClass('hidden');
             $nameInput.val($nameInput.prop('defaultValue')).prop('disabled', false).prop('readonly', true);
             $phoneInput.val($phoneInput.prop('defaultValue')).prop('disabled', true);
-            if (fixmystreet.cobrand !== 'fixamingata') {
-                $showNameCheckbox.prop('checked', false);
-            }
+            $showNameCheckbox.prop('checked', false);
             $showNameCheckbox.prop('disabled', false);
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
         } else if (val === 'another_user') {
@@ -139,7 +137,12 @@ fixmystreet.staff_set_up = {
             $nameInput.val(txt).prop('disabled', true);
             $phoneInput.val('-').prop('disabled', true);
             $showNameCheckbox.prop('checked', true).prop('disabled', true);
-            $addAlertCheckbox.prop('checked', false).prop('disabled', true);
+
+            if (fixmystreet.cobrand !== 'fixamingata' && fixmystreet.cobrand !== 'hylte') {
+              $addAlertCheckbox.prop('checked', false).prop('disabled', true);
+            } else {
+              $addAlertCheckbox.prop('checked', true).prop('disabled', false);
+            }
         }
     });
     $('.js-contribute-as').trigger('change');
