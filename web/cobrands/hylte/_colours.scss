@@ -1,0 +1,33 @@
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+
+$darkblue: rgb(0, 120, 187);
+$lightblue: rgb(230, 242, 248);
+$lightgrey: rgba(255, 255, 255, 0.8);
+$darkgrey: rgb(16, 24, 40);
+$black: rgb(0, 0, 0);
+$white: rgb(255, 255, 255);
+
+$primary: $darkblue;
+$primary_b: $white;
+$primary_text: $white;
+
+$base_bg: $white;
+$base_fg: $black;
+
+$nav_background_colour: $white;
+$nav_colour: $black;
+$nav_hover_background_colour: $lightblue;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: $darkgrey;
+
+$col_click_map: $darkblue;
+
+#pc-hint {
+    display: none;
+}
