@@ -391,6 +391,29 @@ sub bin_services_for_address {
     }
 
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
+
+    # A property might have two services for basically the same thing
+    # as indicated by the service name being the same.
+    # In this case, we surface just one of these services.
+    my %service_name_to_ids;
+    for my $service (@site_services_filtered) {
+        push @{$service_name_to_ids{$service->{service_name}}}, $service->{service_id};
+    }
+
+    my %service_ids_to_remove;
+    while (my ($service_name, $service_ids) = each %service_name_to_ids) {
+        next unless scalar @{$service_ids} > 1;
+
+        # Always choose the first one alphabetically to be consistent.
+        my @sorted_ids = sort @{$service_ids};
+        my @ids_to_remove = @sorted_ids[1 .. $#sorted_ids];
+
+        foreach my $id (@ids_to_remove) {
+            $service_ids_to_remove{$id} = 1;
+        }
+    }
+    @site_services_filtered = grep { !$service_ids_to_remove{$_->{service_id}} } @site_services_filtered;
+
     @site_services_filtered = $self->service_sort(@site_services_filtered);
 
     return \@site_services_filtered;
