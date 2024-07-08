@@ -53,7 +53,7 @@ tror medborgaren behöver er uppmärksamhet.</p>
       <a href="[% osm_url %]" title="Se den här platsen på OpenStreetMap">
         [%~ report.latitude %], [% report.longitude ~%]
       </a>
-      [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
+      [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", " ") %][% END %]
     </p>
 [% END %]
 
