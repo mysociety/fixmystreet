@@ -201,12 +201,6 @@ sub state_groups_inspect {
     ]
 }
 
-sub always_view_body_contribute_details {
-    my ( $self, $contributed_as ) = @_;
-
-    return $contributed_as eq '';
-}
-
 # Average responsiveness will only be calculated if a body
 # has at least this many fixed reports.
 # (Used in the Top 5 list in /reports)
@@ -215,8 +209,6 @@ sub body_responsiveness_threshold {
 }
 
 sub suggest_duplicates { 1 }
-
-sub default_show_name { 1 }
 
 sub path_to_email_templates {
     my ( $self, $lang_code ) = @_;
