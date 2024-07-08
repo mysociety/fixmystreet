@@ -8,10 +8,10 @@ $(function(){
 
     var colours = [
         '#FF4343', // red
-        '#F4A140', // orange
+        '#D97B0C', // orange
         '#FFD000', // yellow
-        '#62B356', // green
-        '#4D96E5', // blue
+        '#56A54A', // green
+        '#269AE9', // blue
         '#B446CA', // purple
         '#7B8B98', // gunmetal
         '#BCB590', // taupe
