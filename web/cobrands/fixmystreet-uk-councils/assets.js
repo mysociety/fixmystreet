@@ -592,8 +592,17 @@ fixmystreet.assets.centralbedfordshire.streetlight_stylemap = new OpenLayers.Sty
     'select': fixmystreet.assets.construct_named_select_style("${lighting_c}")
 });
 
+fixmystreet.assets.centralbedfordshire.style_default_green = new OpenLayers.Style({
+    fillColor: "#55BB00",
+    fillOpacity: 0.6,
+    strokeColor: "#000000",
+    strokeOpacity: 0.8,
+    strokeWidth: 2,
+    pointRadius: 6
+});
+
 fixmystreet.assets.centralbedfordshire.tree_stylemap = new OpenLayers.StyleMap({
-    'default': fixmystreet.assets.style_default_hover,
+    'default': fixmystreet.assets.centralbedfordshire.style_default_green,
     'hover': fixmystreet.assets.style_default_hover,
     'select': fixmystreet.assets.style_default_select
 });
