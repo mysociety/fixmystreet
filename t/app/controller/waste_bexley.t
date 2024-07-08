@@ -1566,6 +1566,18 @@ sub _site_collections {
             },
         ],
         10006 => [],
+        10007 => [ # Filtered out because we already have a Brown Wheelie Bin service'.
+            {   SiteServiceID          => 2,
+                ServiceItemDescription => 'Service 4',
+                ServiceItemName => 'GA-240', # Brown Wheelie Bin
+
+                NextCollectionDate   => '2024-04-30T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '2024-03-31T03:00:00',
+
+                RoundSchedule => 'N/A',
+            },
+        ],
     };
 }
 
