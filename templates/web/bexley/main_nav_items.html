@@ -1,5 +1,5 @@
 [%~ IF bodyclass.match('waste') OR (problem AND problem.cobrand_data == 'waste') ~%]
-    [% INCLUDE navitem uri='/waste' label='Lookup address' %]
+    [% INCLUDE navitem uri='/waste' label='Look up address' %]
 
     [%~ IF c.user_exists ~%]
         [%~ INCLUDE navitem uri='/my' label=loc('Your account') ~%]
