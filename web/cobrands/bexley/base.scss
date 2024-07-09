@@ -108,3 +108,12 @@ ol.big-numbers > li:before {
 .waste__address {
     margin-bottom: 1em;
 }
+
+.link-no-visited-style {
+    &:visited {
+        color: $link-color;
+        &:hover {
+            color: $link-hover-color;
+        }
+    }
+}
