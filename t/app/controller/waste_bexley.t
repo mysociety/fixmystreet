@@ -284,7 +284,7 @@ FixMyStreet::override_config {
             'Correct address string displayed',
         );
         $mech->content_contains(
-            'Your schedule is Week 1',
+            'Your collection schedule is Week 1',
             'Correct rotation schedule displayed',
         );
 
@@ -458,7 +458,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
             $mech->submit_form_ok( { with_fields => { address => $test->{address} } } );
             $mech->content_contains(
-                "Your schedule is Week $test->{link}",
+                "Your collection schedule is Week $test->{link}",
                 'Correct rotation schedule displayed',
             );
             $mech->content_contains('<li><a target="_blank" href="PDF '. $test->{link} . '">View and download collection calendar', 'PDF link ' . $test->{link} . ' shown');
