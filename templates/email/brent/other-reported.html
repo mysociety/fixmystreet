@@ -1,13 +1,12 @@
 [% IF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' ~%]
 [% PROCESS 'waste/other-reported-garden.html' ~%]
-[% ELSIF report.category == 'Bulky collection' ~%]
+[% ELSIF report.category == 'Small items collection' ~%]
 [% PROCESS 'waste/other-reported-bulky.html' ~%]
 [% ELSIF report.cobrand_data == 'waste' ~%]
 [% PROCESS 'waste/other-reported.html' ~%]
 [% ELSE ~%]
 [%
 
-email_summary = "Thanks for logging your report";
 email_columns = 2;
 
 PROCESS '_email_settings.html';
@@ -17,11 +16,11 @@ INCLUDE '_email_top.html';
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
-  <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
-  <p style="[% p_style %]">Your report to [% report.body %] has been logged on [% site_name %].</p>
+  <p style="[% p_style %]">Your report to [% report.body %] regarding <strong>[% report.category %]: [% report.title %]</strong>
+  has been logged on [% site_name %].</p>
 
 [% IF report.non_public %]
-<p style="[% p_style %]">It has been marked as <b>private</b> and will not be visible
+<p style="[% p_style %]">It has been marked as private and will not be visible
 to the general public; you may view it using the link below, or if you sign in
 using the email address associated with the report.</p>
 [% END %]
