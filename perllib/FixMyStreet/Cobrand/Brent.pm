@@ -1654,6 +1654,25 @@ sub waste_reconstruct_bulky_data {
     return $saved_data;
 }
 
+=item bulky_open_overdue
+Returns true if the booking is open and after 6pm on the day of the collection.
+=cut
+
+sub bulky_open_overdue {
+    my ($self, $event) = @_;
+
+    if ($event->{state} eq 'open' && $self->_bulky_collection_overdue($event)) {
+        return 1;
+    }
+}
+
+sub _bulky_collection_overdue {
+    my $collection_due_date = $_[1]->{date};
+    $collection_due_date->truncate(to => 'day')->set_hour(18);
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    return $today > $collection_due_date;
+}
+
 sub _barnet_non_street {
     return [
         'Abandoned vehicles',
