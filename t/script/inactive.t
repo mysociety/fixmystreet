@@ -35,6 +35,7 @@ for (my $m = 1; $m <= 12; $m++) {
 
 $mech->create_comment_for_problem($problems[0], $user, 'Name', 'Update', 0, 'confirmed', $problems[0]->state);
 FixMyStreet::DB->resultset("Alert")->create({ alert_type => 'new_updates', parameter => $problems[2]->id, user => $user });
+$user->add_to_planned_reports($problems[1]);
 
 subtest 'Anonymization of inactive fixed/closed reports' => sub {
     $in->reports;
@@ -108,6 +109,7 @@ subtest 'Anonymization of inactive users' => sub {
     $user->discard_changes;
     is $user->email, 'removed-' . $user->id . '@example.org', 'User has been anonymized';
     is $user->from_body, undef;
+    isnt $user->user_planned_reports->first->removed, undef;
 
     stdout_is { $in->users } '', 'No output second time';
 

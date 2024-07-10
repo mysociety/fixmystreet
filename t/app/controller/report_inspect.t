@@ -646,6 +646,7 @@ FixMyStreet::override_config {
     $ian->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
     $ian->update;
 
+    $ex_employee->add_to_planned_reports($report);
 
     my $role_a = FixMyStreet::DB->resultset("Role")->create({
     body => $oxon,
@@ -673,6 +674,7 @@ FixMyStreet::override_config {
         my @ians = $mech->content =~ /Inspector Ian/g;
         is @ians, 1, "Inspector should only be in dropdown once regardless of multiple permission assignment";
 
+        $mech->content_lacks('Shortlisted by');
         $mech->content_lacks("option value='$ex_employee_id'", "Anonymised ex-staff do not appear in dropdown");
 
         $mech->content_contains('Assign to:');
