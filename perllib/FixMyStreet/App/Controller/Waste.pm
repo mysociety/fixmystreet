@@ -943,22 +943,16 @@ sub construct_bin_report_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        my $id = $_->{service_id};
-
         unless (
             ( $_->{last}
             && $_->{report_allowed}
             && !$_->{report_open} )
             || $_->{report_only} )
         {
-            # Missed collection link may have passed in a hidden param for
-            # a service that is no longer eligible for collection (e.g. if
-            # user hasn't refreshed page), so unset that
-            $c->set_param( "service-$id", undef );
-
             next;
         }
 
+        my $id = $_->{service_id};
         my $name = $_->{service_name};
         my $description = $_->{service_description};
         push @$field_list, "service-$id" => {
