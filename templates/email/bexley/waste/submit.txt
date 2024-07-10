@@ -1,0 +1,35 @@
+[% # NOTE Currently, Bexley only get sent this email for no-collections enquiries ~%]
+[% is_no_collections_enquiry = 1 ~%]
+Subject: New [% report.category %] - Reference number: [% report.id %]
+
+Dear [% bodies_name %],
+
+A user of [% site_name %] has submitted a [% report.category %].
+
+[% fuzzy %], or to provide an update on the problem,
+please visit the following link:
+
+    [% url %]
+
+----------
+
+Trying to report missed collection
+for business or organisation? [% report.category == 'Business or organisation missed collection enquiry' ? 'Yes' : 'No' %]
+
+Name: [% report.name %]
+
+Email: [% report.user.email OR "None provided" %]
+
+Phone: [% report.user.phone OR "None provided" %]
+
+----------
+
+[% INCLUDE 'waste/_report_details.txt' %]
+
+----------
+
+[% signature %]
+
+If there is a more appropriate email address for messages about
+[% category_footer %], please let us know. This will help improve the
+service for local people. We also welcome any other feedback you may have.

@@ -48,7 +48,16 @@ sub build_recipient_list {
 }
 
 sub get_template {
-    my ( $self, $row ) = @_;
+    my ( $self, $row, $cobrand ) = @_;
+
+    if (
+        $cobrand
+        && $cobrand->call_hook('separate_submit_email_for_waste_reports')
+        && $row->cobrand_data eq 'waste'
+    ) {
+        return 'waste/submit.txt';
+    }
+
     return 'submit.txt';
 }
 
@@ -115,7 +124,7 @@ sub send {
     $cobrand->call_hook(munge_sendreport_params => $row, $h, $params);
 
     my $result = FixMyStreet::Email::send_cron($row->result_source->schema,
-        $self->get_template($row), {
+        $self->get_template($row, $cobrand), {
             %$h,
             cobrand => $cobrand, # For correct logo that uses cobrand object
         },
