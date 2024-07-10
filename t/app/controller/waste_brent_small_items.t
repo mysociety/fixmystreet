@@ -461,7 +461,7 @@ FixMyStreet::override_config {
         my $report_id = $report->id;
         $report->update({ external_id => 'a-guid' });
 
-        # Fixed date still set to 5th July
+        # Fixed date still set to 25th June
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a small items collection as missed');
         $mech->get_ok('/waste/12345/report');
@@ -477,6 +477,17 @@ FixMyStreet::override_config {
         $mech->content_lacks('Report a small items collection as missed', 'Too long ago');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Small items collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 2964,
+        } ] } );
+        ok set_fixed_time('2023-07-01T22:59:59Z'), 'Set current date to 1st July';
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a small items collection as missed', 'Can not report on due date when no resolution');
+        ok set_fixed_time('2023-07-02T05:44:59Z'), 'Set current date to 2nd July';
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a small items collection as missed', 'Can report when due date passed and no resolution');
+        ok set_fixed_time('2023-06-25T05:44:59Z'), 'Reset current date to 25th June for consistency';
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
             EventTypeId => 2964,
