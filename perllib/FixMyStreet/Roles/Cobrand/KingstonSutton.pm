@@ -329,6 +329,23 @@ sub waste_cc_payment_sale_ref {
     return "GGW" . $p->get_extra_field_value('uprn');
 }
 
+=head2 bulky_collection_window_start_date
+
+K&S have an 11pm cut-off for looking to book next day collections.
+
+=cut
+
+sub bulky_collection_window_start_date {
+    my $self = shift;
+    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
+    # If past 11pm, push start date one day later
+    if ($now->hour >= 23) {
+        $start_date->add( days => 1 );
+    }
+    return $start_date;
+}
+
 =head2 Dashboard export
 
 The CSV export includes all reports, including unconfirmed and hidden, and is
