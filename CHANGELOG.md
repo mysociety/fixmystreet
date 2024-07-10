@@ -50,6 +50,7 @@
         - Convert all uploaded images to JPEGs.
         - Redirect after POST when creating reports. #4362
         - Include status change line in report update emails using auto response templates.
+        - Don't display a translation banner in front of important UI elements on Android. #4153
 
 * v5.0 (10th May 2023)
     - Front end improvements:
