@@ -7,7 +7,6 @@
     [% END ~%]
 [% ELSIF cobrand.moniker == 'sutton' %][% SET prefix = 'LBS-' ~%]
 [% ELSE %][% SET prefix = '' %][% END ~%]
-[% is_missed_collection = report.category == 'Report missed collection' ~%]
 Subject: [% subject_text ~%], reference [% prefix %][% report.id %]
 
 Dear [% report.name %],

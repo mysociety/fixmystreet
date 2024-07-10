@@ -1,3 +1,6 @@
+[% IF cobrand.moniker == 'bexley' && report.cobrand_data == 'waste' ~%]
+[% PROCESS 'waste/submit.txt' ~%]
+[% ELSE ~%]
 Subject: Problem Report: [% report.title %]
 
 Dear [% bodies_name %],
@@ -87,4 +90,5 @@ How can FixMyStreet connect directly with council systems?
 3. You can become a FixMyStreet Pro <https://www.societyworks.org/services/highways/> user. FixMyStreet Pro is a more advanced version of FixMyStreet, which seeks to eliminate the significant costs councils incur from duplicate reporting, unnecessary contact and failure demand (we have the stats to prove it!).
 
 As a charity our goal is to help improve services for citizens and local authorities. To find out more about connecting FixMyStreet to your own systems, please get in touch at <support@fixmystreet.com>.
+[% END %]
 [% END %]
