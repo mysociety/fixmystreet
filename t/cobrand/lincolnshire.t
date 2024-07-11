@@ -32,7 +32,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest "custom homepage text" => sub {
         $mech->get_ok('/');
-        $mech->content_contains('like potholes, broken paving slabs, or street lighting');
+        $mech->content_contains('like potholes, broken paving slabs, street lighting, or flooding');
     };
 
     subtest "fetching problems from Open311 includes user information" => sub {
