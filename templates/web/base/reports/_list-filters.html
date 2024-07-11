@@ -1,4 +1,4 @@
-[% select_status = PROCESS 'reports/_list-filter-status.html' %]
+[% PROCESS 'govuk/fields.html' %]
 
 [%# We want to only select things that match all filters, if filters are provided ~%]
 [% BLOCK category_options %]
@@ -27,26 +27,39 @@
   [% END %]
 [% END %]
 
-<div class="report-list-filters-wrapper">
+<div class="report-list-filters-wrapper govuk-fieldset-wrapper govuk-small">
 
 [% IF use_form_wrapper %]
     <form method="get" action="">
 [% END %]
 
-        <p class="report-list-filters">
-          [% tprintf(loc('<label for="statuses">Show</label> %s reports <label for="filter_categories">about</label> %s', "The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories"), mark_safe(select_status), mark_safe(select_category)) %]
-          <input type="submit" name="filter_update" value="[% loc('Go') %]">
-        </p>
+        <fieldset>
+            <div class="filter-group">
+                <div class="report-list-filters">
+                    <label for="statuses">[% loc('Report status') %]</label>
+                    [% PROCESS 'reports/_list-filter-status.html' %]
+                </div>
 
-        [% PROCESS 'reports/_list-filters-sort.html' %]
+                <div class="report-list-filters">
+                    <label for="filter_categories">[% loc('Category') %]</label>
+                    [% mark_safe(select_category) %]
+                </div>
+            </div>
 
-        [% IF page == 'around' %]
-        <p id="show_old_reports_wrapper" class="report-list-filters[% ' hidden' UNLESS num_old_reports > 0 %]">
-            <label for="show_old_reports">[% loc('Show older reports') %]</label>
-            <input type="checkbox" name="show_old_reports" id="show_old_reports" value="1"[% ' checked' IF show_old_reports %]>
-            <input type="submit" name="filter_update" value="[% loc('Go') %]">
-        </p>
-        [% END %]
+            <div class="filter-group">
+              [% PROCESS 'reports/_list-filters-sort.html' %]
+
+              [% IF page == 'around' %]
+              <div id="show_old_reports_wrapper" class="govuk-checkboxes govuk-checkboxes--small report-list-filters[% ' hidden' UNLESS num_old_reports > 0 %]">
+                <p class="govuk-checkboxes__item" style="float: none;">
+                  <input class="govuk-checkboxes__input" type="checkbox" name="show_old_reports" id="show_old_reports" value="1"[% ' checked' IF show_old_reports %]>
+                  <label class="govuk-label govuk-checkboxes__label" for="show_old_reports">[% loc('Show older reports') %]</label>
+                </p>
+              </div>
+              [% END %]
+              <input type="submit" name="filter_update" value="[% loc('Go') %]">
+            </div>
+        </fieldset>
 
 [% IF use_form_wrapper %]
     </form>
