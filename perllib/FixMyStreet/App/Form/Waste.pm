@@ -46,8 +46,11 @@ before after_build => sub {
 
     my $c = $self->c;
 
-    map { $saved_data->{$_} = 1 } grep { /^(service|container)-/ && $c->req->params->{$_} } keys %{$c->req->params};
-    $saved_data->{'container-choice'} = $c->get_param('container-choice') if $c->get_param('container-choice');
+    my %fields = map { $_->name => 1 } @{$self->fields};
+    map { $saved_data->{$_} = 1 } grep { /^(service|container)-/ && $fields{$_} && $c->req->params->{$_} } keys %{$c->req->params};
+    if (my $choice = $c->get_param('container-choice')) {
+        $saved_data->{'container-choice'} = $choice if $fields{'container-choice'};
+    }
 };
 
 sub validate {

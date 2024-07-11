@@ -207,7 +207,9 @@ sub GetSiteContracts {
 
     my $res = $self->call('GetSiteContracts', sitecontractInput => ixhash( Uprn => $uprn ));
 
-    return $res->{SiteContracts}->{SiteContract};
+    my $contracts = force_arrayref($res->{SiteContracts}, 'SiteContract');
+
+    return $contracts;
 }
 
 sub GetFullWorksheetDetails {

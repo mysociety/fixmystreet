@@ -14,6 +14,7 @@
         - Add code to enable category filtering box.
         - Don't display 'Show my name publicly' checkbox when making a private reports to prevent confusion.
         - Improved the display of the map filters. #4728
+        - Don't display 'Show my name publicly' checkbox when making a private reports to prevent confusion.
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
         - Fix RSS feed subscription from alert page button.

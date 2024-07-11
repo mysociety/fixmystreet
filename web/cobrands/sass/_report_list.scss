@@ -20,7 +20,7 @@ $govuk-input-focus-box-shadow: #fd0 !default;
   }
 }
 
-.report-list-filters, #bulk-assign-form {
+.report-list-filters {
   margin-bottom: 0;
   font-size: 14px;
   line-height: 1.8em;
@@ -100,6 +100,10 @@ $govuk-input-focus-box-shadow: #fd0 !default;
 
 #bulk-assign-form {
   padding: 16px;
+
+  label {
+    margin-top: 0;
+  }
 }
 
 input.bulk-assign {
