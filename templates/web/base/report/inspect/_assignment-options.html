@@ -1,5 +1,7 @@
 [% SET user_found = 0 ~%]
-[% FOR user IN inspectors %]
+[% FOR user IN inspectors;
+    NEXT UNLESS user.name OR user.username;
+%]
     <option value='[% user.id %]'
     [%- IF problem AND (user.id == problem.shortlisted_user.id);
         SET user_found = 1;
