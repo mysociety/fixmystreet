@@ -637,6 +637,11 @@ FixMyStreet::override_config {
     $ex_employee->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
     my $ex_employee_id = $ex_employee->id;
 
+    my $ex_employee_2 = $mech->create_user_ok('exemployee2@example.com', name => 'Ex Employee 2');
+    $ex_employee_2->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+    $ex_employee_2->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+    my $ex_employee_2_id = $ex_employee_2->id;
+
     my $ian = $mech->create_user_ok('inspector@example.com', name => 'Inspector Ian', from_body => $oxon);
 
     $user->user_body_permissions->create({ body => $oxon, permission_type => 'assign_report_to_user' });
@@ -646,7 +651,7 @@ FixMyStreet::override_config {
     $ian->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
     $ian->update;
 
-    $ex_employee->add_to_planned_reports($report);
+    $ex_employee_2->add_to_planned_reports($report);
 
     my $role_a = FixMyStreet::DB->resultset("Role")->create({
     body => $oxon,
@@ -674,7 +679,8 @@ FixMyStreet::override_config {
         my @ians = $mech->content =~ /Inspector Ian/g;
         is @ians, 1, "Inspector should only be in dropdown once regardless of multiple permission assignment";
 
-        $mech->content_lacks('Shortlisted by');
+        $mech->content_contains('Shortlisted by Ex Employee 2');
+        $mech->content_contains("option value='$ex_employee_2_id'", "Ex-staff does appear in dropdown as current holder");
         $mech->content_lacks("option value='$ex_employee_id'", "Anonymised ex-staff do not appear in dropdown");
 
         $mech->content_contains('Assign to:');
