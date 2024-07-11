@@ -1,6 +1,7 @@
 <div class="waste-service-hint-banner">
     <div class="waste-service-hint-banner__image">
-        <img src="/i/waste-containers/bin-brown.png" alt="">
+        [% image = PROCESS "waste/garden/wheelie.svg" %]
+        <span style="--primary-color: #8B5E3D;">[% image.replace('<svg', '<svg style="height:auto;max-width:100%;"') | safe %]</span>
     </div>
     <div class="waste-service-hint__content">
         <p>
