@@ -141,6 +141,7 @@ my $body = $mech->create_body_ok(
     {
         comment_user           => $comment_user,
         send_extended_statuses => 1,
+        can_be_devolved        => 1,
     },
     { cobrand      => 'bexley' },
 );
@@ -192,6 +193,7 @@ my $contact2 = $mech->create_contact_ok(
     email => 'waste-enquiry@example.org',
     extra => { type => 'waste' },
     group => ['Waste'],
+    send_method => 'Email::Bexley',
 );
 $contact2->set_extra_fields(
     {
@@ -1080,6 +1082,8 @@ FixMyStreet::override_config {
     };
 
     subtest 'Enquiry form for properties with no collections' => sub {
+        $mech->delete_problems_for_body( $body->id );
+
         $mech->get_ok('/waste/10006');
         $mech->content_contains('/waste/10006/enquiry?template=no-collections', 'link to no collections form present');
         $mech->get_ok('/waste/10006/enquiry?template=no-collections');
@@ -1095,6 +1099,21 @@ FixMyStreet::override_config {
         $mech->content_contains('Please review the information you’ve provided before you submit your enquiry.');
         $mech->submit_form_ok( { with_fields => { submit => 'Submit' } } );
         $mech->content_contains('Nearly done! Now check your email');
+
+        my $report = FixMyStreet::DB->resultset('Problem')->first;
+        $report->confirm;
+        $report->update;
+        $mech->clear_emails_ok; # Clear initial confirmation email
+        FixMyStreet::Script::Reports::send();
+
+        $mech->email_count_is(2);
+        for ($mech->get_email) {
+            if ( $_->header('To') =~ /waste-enquiry\@example.org/ ) {
+                is $_->header('From'),
+                    '"London Borough of Bexley" <do-not-reply@example.org>',
+                    'email sent to client is marked as being from council';
+            }
+        }
     };
 };
 

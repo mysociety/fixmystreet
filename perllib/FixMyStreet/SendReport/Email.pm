@@ -49,7 +49,6 @@ sub build_recipient_list {
 
 sub get_template {
     my ( $self, $row ) = @_;
-
     return 'submit.txt';
 }
 
