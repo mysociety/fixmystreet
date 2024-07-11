@@ -63,6 +63,16 @@ sub get_template {
 
 sub send_from {
     my ( $self, $row ) = @_;
+
+    my $cobrand = $row->get_cobrand_logged;
+
+    my $from_council
+        = ( $cobrand->call_hook('submit_email_from_council') // {} )
+        ->{ $row->cobrand_data };
+
+    return [ $cobrand->do_not_reply_email, $cobrand->council_name ]
+        if $from_council;
+
     return [ $row->user->email, $row->name ];
 }
 
@@ -70,7 +80,12 @@ sub envelope_sender {
     my ($self, $row) = @_;
 
     my $cobrand = $row->get_cobrand_logged;
-    if ($self->use_verp && $row->user->email && $row->user->email_verified) {
+
+    my $from_council
+        = ( $cobrand->call_hook('submit_email_from_council') // {} )
+        ->{ $row->cobrand_data };
+
+    if (!$from_council && $self->use_verp && $row->user->email && $row->user->email_verified) {
         return FixMyStreet::Email::unique_verp_id([ 'report', $row->id ], $cobrand->call_hook('verp_email_domain'));
     }
     return $cobrand->do_not_reply_email;

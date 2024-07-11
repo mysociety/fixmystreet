@@ -47,6 +47,9 @@ sub disable_resend_button { 1 }
 # Bexley uses a separate waste/submit.(html|txt) template for waste reports
 sub separate_submit_email_for_waste_reports { 1 }
 
+# submit.(html|txt) emails for waste are from council
+sub submit_email_from_council { { waste => 1 } }
+
 # We can resend reports upon category change, unless it will be going to the
 # same Symology database, because that will reject saying it already has the
 # ID.
