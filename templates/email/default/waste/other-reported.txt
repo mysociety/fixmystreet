@@ -47,7 +47,11 @@ crew to remove it. We aim for this to be the same day as we deliver your new bin
 [% ELSE %]
 
 [% IF report.category == 'Report missed collection' %]
-We will arrange another collection as soon as possible in the next 2 working days.
+[% IF cobrand.moniker == 'brent' %]
+We will arrange another collection as soon as possible over the next two days. Please note that collections may also be attempted on a public holiday/weekend.
+[% ELSE %]
+We will arrange another collection as soon as possible over the next 2 working days.
+[% END %]
 [% ELSIF report.category == 'Request new container' %]
 We aim to deliver this container to you within
 [% cobrand.wasteworks_config.request_timeframe || '20 working days' %]. If
