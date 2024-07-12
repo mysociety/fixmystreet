@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use FixMyStreet::Geocode::Address;
+use JSON::MaybeXS;
 
 sub council_area_id { 2242 }
 sub council_area { 'Surrey' }
@@ -155,5 +156,20 @@ sub _fetch_features_url {
 }
 
 sub default_map_zoom { 3 }
+
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    # Surrey want the value *and* the question label to be passed to their API,
+    # so we do a slightly horrid thing and encode those two values into a JSON
+    # object which we pass as the extra field value over Open311.
+    my $extra = $row->get_extra_fields();
+    foreach my $field (@$extra) {
+        if ($field->{description}) {
+            $field->{value} = encode_json({ description => $field->{description}, value => $field->{value} });
+        }
+    }
+    $row->set_extra_fields( @$extra ) if @$extra;
+}
 
 1;
