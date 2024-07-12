@@ -1,4 +1,2 @@
 The report's reference number is [% problem.id %]. Please quote this if
 you need to contact the council about this report.
-
-The report was made on [% problem.confirmed.strftime('%A %d %B %Y') %]
