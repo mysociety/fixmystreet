@@ -1,11 +1,11 @@
 [% IF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' ~%]
 [% PROCESS 'waste/other-reported-garden.txt' ~%]
-[% ELSIF report.category == 'Bulky collection' ~%]
+[% ELSIF report.category == 'Small items collection' ~%]
 [% PROCESS 'waste/other-reported-bulky.txt' ~%]
 [% ELSIF report.cobrand_data == 'waste' ~%]
 [% PROCESS 'waste/other-reported.txt' ~%]
 [% ELSE ~%]
-Subject: Your report has been logged: [% report.title %]
+Subject: Your [% report.category | lower %] report has been logged
 
 Hello [% report.name %],
 
