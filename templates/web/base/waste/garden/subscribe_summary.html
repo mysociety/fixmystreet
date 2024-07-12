@@ -4,7 +4,11 @@ thing = 'garden subscription';
 summary_title = 'Subscription';
 IF form_class.match('Renew');
     IF form.saved_data.container_choice == 'sack';
-        step1 = 'sacks_choice';
+        IF c.cobrand.moniker == 'merton'; # No choice on renewal
+            step1 = 'sacks_details';
+        ELSE;
+            step1 = 'sacks_choice';
+        END;
     ELSE;
         step1 = 'intro';
     END;
