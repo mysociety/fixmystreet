@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use FixMyStreet::Geocode::Address;
+use JSON::MaybeXS;
 
 sub council_area_id { 2242 }
 sub council_area { 'Surrey' }
@@ -205,5 +206,37 @@ sub _fetch_features_url {
 }
 
 sub default_map_zoom { 3 }
+
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    # Surrey want the value *and* the field label to be passed to their API,
+    # so we do a slightly horrid thing and encode those two values into a JSON
+    # object which we pass as the extra field value over Open311.
+    # Additionally, they want the user-visible answer rather than the internal
+    # key to be sent, so we have to look that up from the contact extra fields.
+    my $extra = $row->get_extra_fields();
+    my $contact_extra = $row->contact->get_extra_fields();
+    my %fields = map { $_->{code} => { map({ $_->{key} => $_->{name} } @{ $_->{values} }) } } grep { $_->{variable} && $_->{variable} eq 'true' && $_->{values} } @$contact_extra;
+
+    foreach my $field (@$extra) {
+        next unless $field->{description};
+        my @vals;
+        my $val = $field->{value};
+        # treat everything as an array because that's how Boomi wants it and
+        # it makes it easier to deal with multivaluelist fields here.
+        $val = [ $val ] unless ref $val eq 'ARRAY';
+
+        foreach my $v (@$val) {
+          if ( $fields{$field->{name}} && $fields{$field->{name}}->{$v} ) {
+            push @vals, $fields{$field->{name}}->{$v};
+          } else {
+            push @vals, $v;
+          }
+        }
+        $field->{value} = encode_json({ description => $field->{description}, value => \@vals });
+    }
+    $row->set_extra_fields( @$extra ) if @$extra;
+}
 
 1;
