@@ -9,7 +9,7 @@ Subject: Your [% report.category | lower %] report has been logged
 
 Hello [% report.name %],
 
-Your report to [% report.body %] has been logged on [% site_name %].
+Your report to [% report.body %] regarding [% report.category %]: [% report.title %] has been logged on [% site_name %].
 
 [% IF report.non_public ~%]
 It has been marked as private and will not be visible to the general public;
