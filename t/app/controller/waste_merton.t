@@ -130,15 +130,15 @@ FixMyStreet::override_config {
         $mech->content_like(qr/Friday, 9th September\s+\(this collection has been adjusted from its usual time\)\s+\(In progress\)/);
         $mech->content_contains(', at  4:00pm');
         $mech->content_lacks('Report a mixed recycling collection as missed');
-        $mech->content_contains('Report a non-recyclable refuse collection as missed');
+        $mech->content_contains('Report a non-recyclable waste collection as missed');
         set_fixed_time('2022-09-09T19:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains(', at  4:00pm');
         $mech->content_lacks('Report a mixed recycling collection as missed');
-        $mech->content_contains('Report a non-recyclable refuse collection as missed');
+        $mech->content_contains('Report a non-recyclable waste collection as missed');
         set_fixed_time('2022-09-13T19:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a non-recyclable refuse collection as missed');
+        $mech->content_contains('Report a non-recyclable waste collection as missed');
         $e->mock('GetTasks', sub { [] });
     };
     subtest 'Request a new bin' => sub {
@@ -365,7 +365,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/report');
         $mech->content_contains('Food waste');
         $mech->content_contains('Mixed recycling');
-        $mech->content_contains('Non-recyclable Refuse');
+        $mech->content_contains('Non-recyclable waste');
         $mech->content_lacks('Paper and card');
 
         $mech->submit_form_ok({ with_fields => { 'service-2239' => 1 } });

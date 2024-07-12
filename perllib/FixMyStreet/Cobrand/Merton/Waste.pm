@@ -27,14 +27,14 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        2238 => 'Non-recyclable Refuse',
+        2238 => 'Non-recyclable waste',
         2239 => 'Food waste',
         2240 => 'Paper and card',
         2241 => 'Mixed recycling',
-        2242 => 'Non-recyclable Refuse',
-        2243 => 'Non-recyclable Refuse',
+        2242 => 'Non-recyclable waste',
+        2243 => 'Non-recyclable waste',
         2246 => 'Mixed recycling',
-        2247 => 'Garden Waste',
+        2247 => 'Garden waste',
         2248 => "Food waste",
         2249 => "Paper and card",
         2250 => "Mixed recycling",
