@@ -434,8 +434,16 @@ sub waste_garden_renew_form_setup {
     my ($self) = @_;
     my $c = $self->{c};
     if ($c->stash->{slwp_garden_sacks}) {
-        $c->stash->{first_page} = 'sacks_choice';
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
+        my $service = $c->cobrand->garden_current_subscription;
+        if ($self->moniker eq 'merton') {
+            if ($service->{garden_container} == 28) {
+                $c->stash->{first_page} = 'sacks_details';
+            }
+            # Else default to 'intro' from the main code
+        } else {
+            $c->stash->{first_page} = 'sacks_choice';
+        }
     }
 }
 

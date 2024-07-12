@@ -74,6 +74,9 @@ has_page sacks_details => (
         unless ($form->with_bins_wanted) {
             $data->{bins_wanted} = 1;
         }
+        # Normally set by first page of this form (to then get sent to this
+        # page), but Merton is currently skipping that
+        $data->{container_choice} = 'sack';
     },
     next => 'summary',
 );
