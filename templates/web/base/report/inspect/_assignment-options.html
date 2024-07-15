@@ -1,10 +1,18 @@
-[% FOR user IN inspectors %]
+[% SET user_found = 0 ~%]
+[% FOR user IN inspectors;
+    NEXT UNLESS user.name OR user.username;
+%]
     <option value='[% user.id %]'
-    [%- IF problem AND (user.id == problem.shortlisted_user.id) -%]
+    [%- IF problem AND (user.id == problem.shortlisted_user.id);
+        SET user_found = 1;
+    -%]
         selected="selected"
     [%- END -%]>
     [% user.name OR user.username %]
     </option>
+[% END %]
+[% IF problem AND problem.shortlisted_user AND NOT user_found %]
+<option value='[% problem.shortlisted_user.id %]' selected>[% problem.shortlisted_user.name OR problem.shortlisted_user.username %]</option>
 [% END %]
 <option value='unassigned'
 [%- UNLESS problem.shortlisted_user -%] selected="selected"[%- END -%]

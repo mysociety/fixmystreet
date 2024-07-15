@@ -10,6 +10,8 @@ use FixMyStreet::App::Form::Waste::Request::Merton;
 
 has lpi_value => ( is => 'ro', default => 'MERTON' );
 
+sub bin_day_format { '%A %-d %B' }
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
@@ -140,6 +142,8 @@ sub _closed_event {
 
 sub garden_collection_time { '6:30am' }
 sub garden_waste_new_bin_admin_fee { 0 }
+
+sub waste_renewal_bins_wanted_disabled { 1 }
 
 =item * SLWP Echo uses End_Date for garden cancellations
 

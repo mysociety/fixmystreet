@@ -49,6 +49,7 @@ has_page sacks_details => (
     update_field_list => sub {
         my $form = shift;
         my $c = $form->{c};
+        my $bins_wanted_disabled = $c->cobrand->call_hook('waste_renewal_bins_wanted_disabled');
         my $data = $form->saved_data;
         my $bin_count = $c->get_param('bins_wanted') || $data->{bins_wanted} || 1;
         my $end_date = $c->stash->{garden_form_data}->{end_date};
@@ -63,6 +64,9 @@ has_page sacks_details => (
         if ($form->with_bins_wanted) {
             my $max_bins = $c->stash->{garden_form_data}->{max_bins};
             $bins_wanted_opts->{range_end} = $max_bins;
+        }
+        if ($bins_wanted_disabled) {
+            $bins_wanted_opts->{disabled} = 1;
         }
         return {
             bins_wanted => $bins_wanted_opts,

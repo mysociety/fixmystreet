@@ -1076,6 +1076,7 @@ sub enquiry : Chained('property') : Args(0) {
             my @options = map { { label => $_->{name}, value => $_->{key} } } @{$_->{values}};
             %config = (type => 'Multiple', widget => 'CheckboxGroup', options => \@options);
         }
+
         my $required = $_->{required} eq 'true' ? 1 : 0;
         push @$field_list, "extra_$_->{code}" => {
             %config, label => $_->{description}, required => $required

@@ -427,6 +427,7 @@ sub remove_staff {
     $self->user_roles->delete;
     $self->admin_user_body_permissions->delete;
     $self->from_body(undef);
+    $self->user_planned_reports->active->remove();
     $self->area_ids(undef);
 }
 
