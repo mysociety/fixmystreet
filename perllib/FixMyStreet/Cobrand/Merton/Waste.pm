@@ -10,6 +10,8 @@ use FixMyStreet::App::Form::Waste::Request::Merton;
 
 has lpi_value => ( is => 'ro', default => 'MERTON' );
 
+sub bin_day_format { '%A %-d %B' }
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};

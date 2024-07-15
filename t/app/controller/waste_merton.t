@@ -95,7 +95,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('2 Example Street, Merton');
         $mech->content_contains('Every Friday fortnightly');
-        $mech->content_contains('Friday, 2nd September');
+        $mech->content_contains('Friday 2 September');
         $mech->content_contains('Report a mixed recycling collection as missed');
     };
 
@@ -127,7 +127,7 @@ FixMyStreet::override_config {
         } ] });
         set_fixed_time('2022-09-09T16:30:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_like(qr/Friday, 9th September\s+\(this collection has been adjusted from its usual time\)\s+\(In progress\)/);
+        $mech->content_like(qr/Friday 9 September\s+\(this collection has been adjusted from its usual time\)\s+\(In progress\)/);
         $mech->content_contains(', at  4:00pm');
         $mech->content_lacks('Report a mixed recycling collection as missed');
         $mech->content_contains('Report a non-recyclable waste collection as missed');
