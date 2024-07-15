@@ -32,6 +32,7 @@ has_page intro => (
         my $new_bins = $bin_count - $current_bins;
 
         my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
+        my $bins_wanted_disabled = $c->cobrand->call_hook('waste_renewal_bins_wanted_disabled');
         my $cost_pa = $c->cobrand->garden_waste_renewal_cost_pa($data->{end_date}, $bin_count);
         my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
         if ($form->saved_data->{apply_discount}) {
@@ -47,7 +48,7 @@ has_page intro => (
 
         return {
             current_bins => { %bin_params, $edit_current_allowed ? (disabled=>0) : () },
-            bins_wanted => { %bin_params },
+            bins_wanted => { %bin_params, $bins_wanted_disabled ? (disabled=>1) : () },
         };
     },
     next => 'summary',

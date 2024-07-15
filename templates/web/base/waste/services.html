@@ -53,8 +53,14 @@
   [% IF ( unit.garden_due ) AND NOT waste_features.garden_renew_disabled %]
   <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="submit" value="Renew your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
+    <input type="submit" value="[% IF c.cobrand.moniker == 'merton' %]Renew without making changes[% ELSE %]Renew your [% unit.service_name FILTER lower %] subscription[% END %]" class="waste-service-descriptor waste-service-link">
   </form>
+    [% IF c.cobrand.moniker == 'merton' %]
+        <p class="govuk-body-s govuk-!-margin-top-2">
+        If you do wish to make changes, please wait and reapply after
+        [% date.format(unit.end_date _ ' 00:00:00', '%A %-d %B') %].
+        </p>
+    [% END %]
   [% END %]
 
   [% IF NOT pending_cancellation %]

@@ -108,8 +108,20 @@
           Avoid disruption to your service.
           <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
             <input type="hidden" name="token" value="[% csrf_token %]">
-            <input type="submit" value="Renew subscription today" class="govuk-button">
+            <input type="submit" value="[%
+                IF c.cobrand.moniker == 'merton';
+                    'Renew without making changes';
+                ELSE;
+                    'Renew subscription today';
+                END;
+            %]" class="govuk-button">
           </form>
+          [% IF c.cobrand.moniker == 'merton' %]
+            <p class="govuk-body-s govuk-!-margin-top-2">
+            If you do wish to make changes, please wait and reapply after
+            [% date.format(unit.end_date _ ' 00:00:00', '%A %-d %B') %].
+            </p>
+          [% END %]
           [% END %]
       </div>
     </div>
