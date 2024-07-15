@@ -143,6 +143,8 @@ sub _closed_event {
 sub garden_collection_time { '6:30am' }
 sub garden_waste_new_bin_admin_fee { 0 }
 
+sub waste_renewal_bins_wanted_disabled { 1 }
+
 =item * SLWP Echo uses End_Date for garden cancellations
 
 =cut
