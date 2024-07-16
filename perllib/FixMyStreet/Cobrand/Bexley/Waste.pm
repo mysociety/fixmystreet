@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Bexley::Waste - code specific to Bexley WasteWorks
+
+=head1 SYNOPSIS
+
+Bexley integrates with Whitespace for its waste data.
+
+Address lookup is handled in L<BexleyAddresses>.
+
+=cut
+
 package FixMyStreet::Cobrand::Bexley::Waste;
 
 use Moo::Role;
@@ -16,9 +28,28 @@ has 'whitespace' => (
     default => sub { Integrations::Whitespace->new(%{shift->feature('whitespace')}) },
 );
 
+=head2 Constants
+
+=over 4
+
+=cut
+
+=item * WORKING_DAYS_WINDOW
+
+Recent collections are defined as being 3 or fewer working days ago.
+
+=cut
+
 use constant WORKING_DAYS_WINDOW => 3;
 
-# 0001-01-01T00:00:00 represents an undefined date
+=item * WHITESPACE_UNDEF_DATE
+
+C<0001-01-01T00:00:00> represents an undefined date in Whitespace.
+
+=back
+
+=cut
+
 use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
 
 sub waste_fetch_events {
