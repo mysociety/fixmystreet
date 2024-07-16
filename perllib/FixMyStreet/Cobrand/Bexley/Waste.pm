@@ -228,11 +228,22 @@ sub bin_services_for_address {
 
     my @site_services_filtered;
 
+    my %seen_containers;
+
     for my $service (@$site_services) {
         next if !$service->{NextCollectionDate};
 
         my $container = $containers->{ $service->{ServiceItemName} };
         next unless $container;
+
+        # There may be duplicate container types; skip if container has been
+        # seen before.
+        # EXCEPTION for assisted collections, which are handled further down.
+        my $assisted_collection = $service->{ServiceName}
+            && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0;
+        next
+            if !$assisted_collection
+            && $seen_containers{ $container->{name} };
 
         my $next_dt = eval {
             DateTime::Format::W3CDTF->parse_datetime(
@@ -320,7 +331,7 @@ sub bin_services_for_address {
                 is_today          => $scheduled_for_today,
                 already_collected => $collected_today,
             },
-            assisted_collection => $service->{ServiceName} && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0,
+            assisted_collection => $assisted_collection,
         };
 
         if ($last_dt) {
@@ -375,6 +386,7 @@ sub bin_services_for_address {
             = $self->can_report_missed( $property, $filtered_service );
 
         push @site_services_filtered, $filtered_service;
+        $seen_containers{ $container->{name} } = 1;
     }
 
     $property->{frequency_types} = \%frequency_types;
@@ -391,6 +403,7 @@ sub bin_services_for_address {
     }
 
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
+
     @site_services_filtered = $self->service_sort(@site_services_filtered);
 
     return \@site_services_filtered;
