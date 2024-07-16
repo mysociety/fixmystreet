@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Bexley - code specific to the Bexley Cobrand
+
+=head1 SYNOPSIS
+
+Bexley is an FMS integration with Confirm, Uniform and Symology backends.
+
+Also has a waste integration with Whitespace in L<FixMyStreet::Cobrand::Bexley::Waste>.
+
+=cut
+
 package FixMyStreet::Cobrand::Bexley;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -13,8 +25,38 @@ sub council_area_id { 2494 }
 sub council_area { 'Bexley' }
 sub council_name { 'London Borough of Bexley' }
 sub council_url { 'bexley' }
+
+=head2 Defaults
+
+=over 4
+
+=cut
+
+=item * Admin user domain is C<bexley.gov.uk>
+
+=cut
+
+sub admin_user_domain { 'bexley.gov.uk' }
+
+=item * Bexley uses its own geocoder (L<FixMyStreet::Geocode::Bexley>)
+
+Bexley provides a layer containing street names that
+supplements the standard geocoder
+
+=cut
+
 sub get_geocoder { 'Bexley' }
+
+=item * It has a default map zoom of 4
+
+=cut
+
 sub default_map_zoom { 4 }
+
+=item * It doesn't sent questionnaires to reporters
+
+=cut
+
 sub send_questionnaires { 0 }
 
 sub disambiguate_location {
@@ -27,6 +69,13 @@ sub disambiguate_location {
         bounds => [ 51.408484, 0.074653, 51.515542, 0.2234676 ],
     };
 }
+
+=item * It overrides Dartford border postcodes
+
+Allows starting to make a report if postcode is in Dartford
+on the border
+
+=cut
 
 sub geocode_postcode {
     my ( $self, $s ) = @_;
@@ -42,11 +91,16 @@ sub geocode_postcode {
     return $self->next::method($s);
 }
 
+=item * Report resending
+
+Report resend button is disabled. But we can resend reports upon category change, unless it will be going to the
+same Symology database, because that will reject saying it already has the
+ID.
+
+=cut
+
 sub disable_resend_button { 1 }
 
-# We can resend reports upon category change, unless it will be going to the
-# same Symology database, because that will reject saying it already has the
-# ID.
 sub category_change_force_resend {
     my ($self, $old, $new) = @_;
 
@@ -61,6 +115,21 @@ sub category_change_force_resend {
     # Otherwise, okay if we're switching between Symology DBs, but not within
     return ($old =~ /^StreetLighting/ xor $new =~ /^StreetLighting/);
 }
+
+=item * Only show open reports on map page
+
+=back
+
+=cut
+
+sub on_map_default_status { 'open' }
+
+=head2 munge_report_new_category_list
+
+For some categories Bexley staff use a different URL
+from the public in the notices
+
+=cut
 
 sub munge_report_new_category_list {
     my ($self, $options, $contacts, $extras) = @_;
@@ -78,8 +147,6 @@ sub munge_report_new_category_list {
         }
     }
 }
-
-sub on_map_default_status { 'open' }
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
@@ -188,8 +255,6 @@ sub open311_extra_data_include {
 
     return $open311_only;
 }
-
-sub admin_user_domain { 'bexley.gov.uk' }
 
 sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
@@ -374,7 +439,7 @@ sub dashboard_export_problems_add_columns {
 
 =head2 waste_auto_confirm_report
 
-Missed collection reports are automatically confirmed.
+Missed collection reports are automatically confirmed
 
 =cut
 
