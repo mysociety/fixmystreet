@@ -66,6 +66,12 @@ a,
 }
 
 // HEADER
+header, .nav-wrapper {
+    .container {
+        max-width: none;
+    }
+}
+
 .nav-menu a,
 .nav-menu a:visited {
     background-color: $blue-900;
