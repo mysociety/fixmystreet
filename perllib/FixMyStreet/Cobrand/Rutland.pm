@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Rutland - code specific to the Rutland cobrand
+
+=head1 SYNOPSIS
+
+Rutland is a unitary authority, with a Salesforce backend.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::Rutland;
 use base 'FixMyStreet::Cobrand::UKCouncils';
 
@@ -8,6 +20,12 @@ sub council_area_id { return 2600; }
 sub council_area { return 'Rutland'; }
 sub council_name { return 'Rutland County Council'; }
 sub council_url { return 'rutland'; }
+
+=over 4
+
+=item * Rutland's endpoint only allows titles up to 254 characters and names up to 40 characters in length.
+
+=cut
 
 sub report_validation {
     my ($self, $report, $errors) = @_;
@@ -23,11 +41,19 @@ sub report_validation {
     return $errors;
 }
 
+=item * It copes with multiple photos.
+
+=cut
+
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
     $params->{multi_photos} = 1;
 }
+
+=item * It receives some extra data, such as the FixMyStreet ID, closest address, and title/detail in separate fields.
+
+=cut
 
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
@@ -39,6 +65,10 @@ sub open311_extra_data_include {
         $h->{closest_address} ? { name => 'closest_address', value => "$h->{closest_address}" } : (),
     ];
 }
+
+=item * It provides extra hints to be shown alongside category/group options in the reporting interface.
+
+=cut
 
 sub open311_contact_meta_override {
     my ($self, $service, $contact, $meta) = @_;
@@ -54,6 +84,10 @@ sub open311_contact_meta_override {
     );
 }
 
+=item * We try and restrict geocoding to the bounding box of Rutland.
+
+=cut
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -63,6 +97,10 @@ sub disambiguate_location {
     };
 }
 
+=item * Rutland does not send questionnaires, or ask whether you've reported before.
+
+=cut
+
 sub send_questionnaires {
     return 0;
 }
@@ -70,6 +108,12 @@ sub send_questionnaires {
 sub ask_ever_reported {
     return 0;
 }
+
+=item * Rutland's map defaults to showing open reports only.
+
+=back
+
+=cut
 
 sub on_map_default_status { 'open' }
 
