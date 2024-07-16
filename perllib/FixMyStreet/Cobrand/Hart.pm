@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Hart - code specific to the Hart cobrand
+
+=head1 SYNOPSIS
+
+Hart is a district council, within the county of Hampshire.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::Hart;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
@@ -9,6 +21,12 @@ sub council_area { return 'Hart'; }
 sub council_name { return 'Hart District Council'; }
 sub council_url { return 'hart'; }
 sub is_two_tier { return 1; }
+
+=over 4
+
+=item * We try and restrict reports to the area covered by Hart.
+
+=cut
 
 sub disambiguate_location {
     my $self    = shift;
@@ -26,10 +44,18 @@ sub disambiguate_location {
     };
 }
 
+=item * Hart do not want the 'Graffiti on bridges/subways' category showing on their cobrand.
+
+=cut
+
 sub categories_restriction {
     my ($self, $rs) = @_;
     return $rs->search( { category => { '!=' => 'Graffiti on bridges/subways' } } );
 }
+
+=item * We do not send questionnaires, or ask if someone has ever reported before.
+
+=cut
 
 sub send_questionnaires {
     return 0;
@@ -39,7 +65,15 @@ sub ask_ever_reported {
     return 0;
 }
 
+=item * The default map zoom is always 3.
+
+=cut
+
 sub default_map_zoom { 3 }
+
+=item * We only show 20 reports per page.
+
+=cut
 
 sub reports_per_page { return 20; }
 
