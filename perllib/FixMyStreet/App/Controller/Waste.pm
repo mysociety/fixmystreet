@@ -36,6 +36,12 @@ sub auto : Private {
 
     $self->SUPER::auto($c);
 
+    # The check will exist by this point - let push endpoint through if needed
+    my $cobrand_check = $c->cobrand->feature( $self->feature );
+    $c->detach( '/page_error_404_not_found' )
+        if $cobrand_check eq 'echo-push-only'
+            && $c->action ne 'waste/echo/receive_echo_event_notification';
+
     $c->stash->{is_staff} = $c->user && $c->cobrand->admin_allow_user($c->user);
 
     my $features = $c->cobrand->feature('waste_features') || {};
