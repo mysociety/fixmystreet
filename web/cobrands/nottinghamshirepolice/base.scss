@@ -16,8 +16,8 @@ h1, h2, h3 {
 }
 
 /* BUTTONS */
-.btn-primary, 
-.btn--primary, 
+.btn-primary,
+.btn--primary,
 .postcode-form-box div input#sub,
 #report-cta {
   @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
@@ -28,8 +28,8 @@ h1, h2, h3 {
   @include nott-focus-state;
 }
 
-.btn--secondary, 
-.btn-secondary, 
+.btn--secondary,
+.btn-secondary,
 .nav-menu a.btn-secondary,
 a#geolocate_link,
 .my-account-buttons a{
@@ -216,9 +216,4 @@ a#geolocate_link {
     padding-top: 24px;
     padding-left: 75px;
     font-size: 1rem;
-
-    @include svg-background-image('/cobrands/nottinghamshirepolice/images/info-circle');
-    background-repeat: no-repeat;
-    background-size: 35px;
-    background-position: left 25px top 20px;
 }
