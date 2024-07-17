@@ -324,6 +324,9 @@ input.field, input.text,
   }
 }
 
+// Bromley do not show their cookie icon - FD-4356
+#ccc-icon { display: none; }
+
 @import "../sass/waste";
 
 // Waste style overrides
