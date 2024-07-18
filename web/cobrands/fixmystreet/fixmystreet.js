@@ -894,7 +894,7 @@ $.extend(fixmystreet.set_up, {
 
         function disable_on_empty() {
             // If there are no items found, give a message and disable the Continue button
-            if (items.length === document.querySelectorAll(".hidden-category-filter").length) {
+            if (items.length && items.length === document.querySelectorAll(".hidden-category-filter").length) {
                 $('#js-top-message').html('<p class="form-error" id="filter-category-error">Please try another search or delete your search and choose from the categories</p>');
                 $('.js-reporting-page--next').prop("disabled",true);
                 category_row.style.paddingBottom = null;
