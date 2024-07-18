@@ -44,9 +44,6 @@ sub geocode_postcode {
 
 sub disable_resend_button { 1 }
 
-# submit.(html|txt) emails for waste are from council
-sub submit_email_from_council { { waste => 1 } }
-
 # We can resend reports upon category change, unless it will be going to the
 # same Symology database, because that will reject saying it already has the
 # ID.
