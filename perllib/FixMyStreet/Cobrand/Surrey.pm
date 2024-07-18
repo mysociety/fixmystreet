@@ -136,10 +136,11 @@ sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
     if (!$row->get_extra_field_value('USRN')) {
-        if (my $ref = $self->lookup_site_code($row, 'USRN,ROADNAME')) {
+        if (my $ref = $self->lookup_site_code($row, 'USRN,ROADNAME,POSTTOWN')) {
           my $props = $ref->{properties} || {};
           $row->update_extra_field({ name => 'USRN', value => $props->{USRN} }) if $props->{USRN};
           $row->update_extra_field({ name => 'ROADNAME', value => $props->{ROADNAME} }) if $props->{ROADNAME};
+          $row->update_extra_field({ name => 'POSTTOWN', value => $props->{POSTTOWN} }) if $props->{POSTTOWN};
         }
     }
 }
