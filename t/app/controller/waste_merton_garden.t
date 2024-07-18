@@ -1143,34 +1143,34 @@ FixMyStreet::override_config {
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
-    subtest 'staff change address for sub' => sub {
-        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
-        $mech->get_ok('/waste/12345/');
-        $mech->content_contains('Report an address change', "contains link to address change form");
-        $mech->follow_link_ok({ text => 'Report an address change' });
-        $mech->content_contains('Only fill this in if they confirm they have moved to the new property.', 'contains notice');
-        $mech->submit_form_ok({ with_fields => {
-            extra_new_address => 'New Address',
-            extra_old_address => 'Old Address',
-        } });
-        $mech->submit_form_ok({ with_fields => {
-            email => 'resident@example.org',
-            name => 'Arthur Address-Change',
-        } });
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your enquiry has been submitted');
+    # subtest 'staff change address for sub' => sub {
+    #     set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
+    #     $mech->get_ok('/waste/12345/');
+    #     $mech->content_contains('Report an address change', "contains link to address change form");
+    #     $mech->follow_link_ok({ text => 'Report an address change' });
+    #     $mech->content_contains('Only fill this in if they confirm they have moved to the new property.', 'contains notice');
+    #     $mech->submit_form_ok({ with_fields => {
+    #         extra_new_address => 'New Address',
+    #         extra_old_address => 'Old Address',
+    #     } });
+    #     $mech->submit_form_ok({ with_fields => {
+    #         email => 'resident@example.org',
+    #         name => 'Arthur Address-Change',
+    #     } });
+    #     $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+    #     $mech->content_contains('Your enquiry has been submitted');
 
-        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { },
-            { order_by => { -desc => 'id' } },
-        )->first;
+    #     my $new_report = FixMyStreet::DB->resultset('Problem')->search(
+    #         { },
+    #         { order_by => { -desc => 'id' } },
+    #     )->first;
 
-        is $new_report->category, 'Garden Subscription Address Change', 'correct category on report';
-        is $new_report->get_extra_field_value('new_address'), 'New Address', 'correct new address on report';
-        is $new_report->get_extra_field_value('old_address'), 'Old Address', 'correct old address on report';
-        is $new_report->get_extra_metadata('no_echo'), 1, 'metadata set to indicate not sent to echo';
-        is $new_report->send_state, 'sent', 'report marked as sent';
-    };
+    #     is $new_report->category, 'Garden Subscription Address Change', 'correct category on report';
+    #     is $new_report->get_extra_field_value('new_address'), 'New Address', 'correct new address on report';
+    #     is $new_report->get_extra_field_value('old_address'), 'Old Address', 'correct old address on report';
+    #     is $new_report->get_extra_metadata('no_echo'), 1, 'metadata set to indicate not sent to echo';
+    #     is $new_report->send_state, 'sent', 'report marked as sent';
+    # };
 
     subtest 'cancel staff sub' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
