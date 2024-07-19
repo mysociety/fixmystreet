@@ -212,4 +212,32 @@ sub open311_pre_send {
     $row->set_extra_fields( @$extra ) if @$extra;
 }
 
+=head2 dashboard_export_problems_add_columns
+
+Surrey has an extra column in their stats export showing the number of subscribers to a report.
+They are set up not to subscribe the original reporter to their own report so the alert number
+is the number of users who have subscribed to the report for updates
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        alerts_count => "Subscribers",
+    );
+
+    my $alerts_lookup = $csv->dbi ? undef : $self->csv_update_alerts;
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        if ($alerts_lookup) {
+            return { alerts_count => ($alerts_lookup->{$report->id} || 0) };
+        } else {
+            return { alerts_count => ($report->{alerts_count} || 0) };
+        }
+    });
+}
+
 1;
