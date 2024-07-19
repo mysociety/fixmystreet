@@ -1,9 +1,23 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::BathNES - code specific to the BathNES cobrand
+
+=head1 SYNOPSIS
+
+=cut
+
 package FixMyStreet::Cobrand::BathNES;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
 use utf8;
+
+=head2 Defaults
+
+=over 4
+
+=cut
 
 use Moo;
 with 'FixMyStreet::Roles::ConfirmValidation';
@@ -19,13 +33,43 @@ sub council_area { return 'Bath and North East Somerset'; }
 sub council_name { return 'Bath and North East Somerset Council'; }
 sub council_url { return 'bathnes'; }
 
+=item * Users with a bathnes.gov.uk email can always be found in the admin.
+
+=cut
+
 sub admin_user_domain { 'bathnes.gov.uk' }
+
+=item * /around map shows only open reports by default.
+
+=cut
 
 sub on_map_default_status { 'open' }
 
+=item * Uses OSM because default of Bing gives poor results.
+
+=cut
+
 sub get_geocoder {
-    return 'OSM'; # default of Bing gives poor results, let's try overriding.
+    return 'OSM';
 }
+
+=item * Sends out confirmation emails when a report is sent.
+
+=cut
+
+sub report_sent_confirmation_email { 'id' }
+
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
+=item * Add display_name as an extra contact field.
+
+=back
+
+=cut
 
 sub contact_extra_fields { [ 'display_name' ] }
 
@@ -49,6 +93,13 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, United Kingdom$//;
     $result->{display_name} =~ s/, Bath and North East Somerset, West of England, England//;
 }
+
+=head2 disambiguate_location
+
+Geocoder tweaked to always search in Bath and NES areas.
+Also applies some replacements for common typos and local names.
+
+=cut
 
 sub disambiguate_location {
     my $self    = shift;
@@ -99,6 +150,24 @@ sub new_report_detail_field_hint {
     "e.g. ‘This pothole has been here for two months and…’"
 }
 
+=head2 pin_colour
+
+BathNES uses the following pin colours:
+
+=over 4
+
+=item * grey: closed as 'not responsible'
+
+=item * green: fixed or otherwise closed
+
+=item * red: newly open
+
+=item * yellow: any other open state
+
+=back
+
+=cut
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'grey' if $p->state eq 'not responsible';
@@ -107,17 +176,25 @@ sub pin_colour {
     return 'yellow';
 }
 
-sub send_questionnaires { 0 }
+=head2 default_map_zoom
+
+If we're displaying the map at the user's GPS location we
+want to start a bit more zoomed in than if they'd entered
+a postcode/address.
+
+=cut
 
 sub default_map_zoom {
     my $self = shift;
-
-    # If we're displaying the map at the user's GPS location we
-    # want to start a bit more zoomed in than if they'd entered
-    # a postcode/address.
     return 3 unless $self->{c}; # no c for batch job calling static_map
     return $self->{c}->get_param("geolocate") ? 5 : 3;
 }
+
+=head2 available_permissions
+
+Sets-up custom permissions for rejecting reports and exporting extra columns in CSVs.
+
+=cut
 
 sub available_permissions {
     my $self = shift;
@@ -130,7 +207,13 @@ sub available_permissions {
     return $permissions;
 }
 
-sub report_sent_confirmation_email { 'id' }
+=head2 lookup_site_code
+
+Looks up a site code from a BathNES server.
+
+=cut
+
+# TODO: Maybe refactor to a lookup_site_code_config.
 
 sub lookup_site_code {
     my $self = shift;
@@ -171,16 +254,23 @@ sub enter_postcode_text {
     return 'Enter a location in ' . $self->council_area;
 }
 
+=head2 categories_restriction
+
+Categories covering BANES have a mixture of Open311 and Email
+send methods. BANES only want specific categories to be visible on their
+cobrand, not the email categories from FMS.com.
+
+The FMS.com categories have a devolved send_method set to Email, so we can
+filter these out.
+
+NB. BANES have a 'Street Light Fault' category that has its
+send_method set to 'Email::BathNES' (to use a custom template) which must
+be show on the cobrand.
+
+=cut
+
 sub categories_restriction {
     my ($self, $rs) = @_;
-    # Categories covering BANES have a mixture of Open311 and Email
-    # send methods. BANES only want specific categories to be visible on their
-    # cobrand, not the email categories from FMS.com.
-    # The FMS.com categories have a devolved send_method set to Email, so we can
-    # filter these out.
-    # NB. BANES have a 'Street Light Fault' category that has its
-    # send_method set to 'Email::BathNES' (to use a custom template) which must
-    # be show on the cobrand.
     return $rs->search( { -or => [
         'me.send_method' => undef, # Open311 categories, or National Highways
         'me.send_method' => '', # Open311 categories that have been edited in the admin
@@ -188,6 +278,13 @@ sub categories_restriction {
         'me.send_method' => 'Blackhole', # Parks categories
     ] } );
 }
+
+=head2 dashboard_export_updates_add_columns
+
+Adds 'Staff User' and 'User Email' columns for users with the 'Export Extra Columns'
+permission.
+
+=cut
 
 sub dashboard_export_updates_add_columns {
     my ($self, $csv) = @_;
@@ -216,6 +313,13 @@ sub dashboard_export_updates_add_columns {
         };
     });
 }
+
+=head2 dashboard_export_updates_add_columns
+
+Adds a 'Staff User', 'User Email', 'User Phone' and 'Attribute Data' column for
+users with the 'Export Extra Columns'permission.
+
+=cut
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
@@ -249,6 +353,12 @@ sub dashboard_export_problems_add_columns {
         };
     });
 }
+
+=head2 post_report_report_problem_link
+
+Overrides the 'post-report' report another problem here button with one linking back to the front page, rather than the report view at the same location.
+
+=cut
 
 sub post_report_report_problem_link {
     return {

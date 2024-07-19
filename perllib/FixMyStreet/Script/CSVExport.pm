@@ -76,7 +76,8 @@ sub process {
     my %opts = @_;
     $opts{dbh} ||= do {
         my @args = FixMyStreet->dbic_connect_info;
-        DBI->connect(@args[0..3], { RaiseError => 1 }) or die $!;
+        $args[3]{RaiseError} = 1;
+        DBI->connect(@args[0..3]) or die $!;
     };
     if ($opts{body}) {
         process_body($opts{body}, \%opts);

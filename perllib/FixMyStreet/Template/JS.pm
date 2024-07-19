@@ -66,7 +66,7 @@ sub _add_layer {
         # On .com we change the categories depending on where is clicked; on
         # the cobrand we use the standard 'Please click on a road' message
         # which needs the body to be set so is_only_body passes.
-        $default_lookup->{default} = { %{$default_lookup->{default}}, body => 'TfL' };
+        $default_lookup->{road} = { %{$default_lookup->{road}}, body => 'TfL' };
     }
 
     return {

@@ -55,6 +55,10 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
 
     my $event = $env->result;
 
+    # Return okay if we're in endpoint test mode
+    my $cobrand_check = $c->cobrand->feature('waste');
+    $c->detach('soap_ok') if $cobrand_check eq 'echo-push-only';
+
     my $cfg = { echo => Integrations::Echo->new(%$echo) };
     my $request = $c->cobrand->construct_waste_open311_update($cfg, $event);
     $c->detach('soap_ok') if !$request->{status} || $request->{status} eq 'confirmed'; # Ignore new events

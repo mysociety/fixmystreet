@@ -391,12 +391,13 @@ shropshire:
       not_found: 'fixmystreet.assets.shropshire.street_not_found'
 tfl:
   - - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/tfl"
+      name: 'road'
       asset_type: 'spot'
       max_resolution: 2.388657133579254
       geometryName: 'msGeometry'
       srsName: "EPSG:3857"
     - name: 'assets'
-      template: 'default'
+      template: 'road'
       class: OpenLayers.Layer.VectorAssetMove
       body: 'TfL'
       actions:
@@ -452,7 +453,7 @@ tfl:
     actions:
       asset_found: fixmystreet.assets.tfl.roadworks_asset_found
       asset_not_found: fixmystreet.assets.tfl.roadworks_asset_not_found
-  - template: 'default'
+  - template: 'road'
     wfs_feature: "RedRoutes"
     name: "Red Routes"
     max_resolution: 9.554628534317017
@@ -465,7 +466,7 @@ tfl:
     actions:
       found: fixmystreet.message_controller.road_found
       not_found: fixmystreet.assets.tfl.red_routes_not_found
-  - template: 'default'
+  - template: 'road'
     wfs_feature: "A13TLRN_DBFO"
     max_resolution: 9.554628534317017
     road: true
