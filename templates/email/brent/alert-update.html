@@ -1,0 +1,33 @@
+[% is_missed_collection = report.category == 'Report missed collection' %]
+[%
+
+title = report.title | html;
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <p style="[% p_style %]">New updates on your report regarding <a href="[% problem_url %]"><strong>[% report.category %]: [% title %]</strong></a></h1>
+  [%~ INCLUDE '_email_comment_list.html' %]
+  [% TRY %][% INCLUDE '_alert_update_after_updates.html' %][% CATCH file %][% END %]
+ [% IF unsubscribe_url %]
+  <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Unsubscribe from alerts about this report</a></p>
+ [% END %]
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    [% IF cobrand.moniker == 'bexley' && is_missed_collection %]
+      [% INCLUDE 'waste/_sidebar_content.html' %]
+    [% ELSE  %]
+      <h2 style="[% h2_style %]">[% title %]</h2>
+      [% report.detail | html_para_email(secondary_p_style) %]
+    [% END %]
+    [% TRY %][% INCLUDE '_council_reference_alert_update.html' problem=report p_style=secondary_p_style %][% CATCH file %][% END %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]
