@@ -1,0 +1,34 @@
+Subject: New [% site_name %] updates on your [% report.category | lower %] report
+
+You asked us to send you an email every time an update was made to the report
+[% report.category %]: [% report.title %] on [% site_name %].
+
+The following updates have been left on this report:
+
+[% INCLUDE '_email_comment_list.txt' %]
+
+[% state_message %]
+
+[% TRY %][% INCLUDE '_alert_update_after_updates.txt' %][% CATCH file %][% END %]
+
+If you would like to view or reply to these updates, please visit the following URL:
+
+    [% problem_url %]
+
+[% TRY %][% INCLUDE '_council_reference_alert_update.txt' problem=report %][% CATCH file %][% END %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
+
+[% signature %]
+
+
+[% IF unsubscribe_url %]
+Unsubscribe?
+
+We currently email you whenever someone leaves an update on the
+[% site_name %] report: [% report.title %].
+
+If you no longer wish to receive an email whenever this report is updated,
+please follow this link: [% unsubscribe_url %]
+[% END %]
