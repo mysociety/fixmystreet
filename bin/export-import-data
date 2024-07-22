@@ -24,6 +24,7 @@ my ($opt, $usage) = describe_options(
     [ 'commit', "Actually commit changes to the database" ],
     [ 'update-templates', "Update existing templates (default is to skip)" ],
     [ 'categories=s', "pipe-separated list of categories to export contacts for and filter templates by" ],
+    [ 'all-categories', "Use instead of --categories to export all contacts & templates" ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
 );
 print($usage->text), exit if $opt->help;
@@ -43,13 +44,13 @@ if ($opt->import) {
 sub export {
     my %out;
 
-    if (@categories) {
+    if (@categories || $opt->all_categories) {
         my @contacts = $body->contacts->search({
-            category => { -in => \@categories },
+            $opt->all_categories ? () : ( category => { -in => \@categories } ),
         }, {
             order_by => 'category',
         })->all;
-        die "Categories mismatch" unless scalar @categories == scalar @contacts;
+        die "Categories mismatch" unless (scalar @categories == scalar @contacts) || $opt->all_categories;
         for (@contacts) {
             push @{$out{contacts}}, {
                 category => $_->category,
