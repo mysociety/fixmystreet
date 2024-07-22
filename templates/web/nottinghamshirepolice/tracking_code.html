@@ -1,0 +1,44 @@
+[% IF c.config.BASE_URL == "https://www.immediatejusticenotts.co.uk" %]
+<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.x.min.js" type="text/javascript"></script>
+<script>
+    var config = {
+        apiKey: 'a05348395dd17da619203d89e1bf2cc54be49786',
+        product: 'PRO',
+        consentCookieExpiry: 90,
+        encodeCookie: false,
+        necessaryCookies: ['Contensis*', 'CookieControl', 'varnish*'],
+        sameSiteCookie: true, // if false, cookie set as SameSite=None;secure;
+        sameSiteValue: 'Strict', // either 'Strict', 'Lax', or 'None'
+        subDomains: false, // If false sets for exact host address rather than TLD
+        logConsent: true, // also requires acceptance of CIVIC's DPA
+        statement: {
+            description: 'For more information visit our',
+            name: 'Privacy Statement',
+            url: 'https://www.nottinghamshire.pcc.police.uk/Privacy-and-Cookie-Policies.aspx',
+            updated: '13/05/2024',
+        },
+        optionalCookies: [
+            {
+                name: 'performance',
+                label: 'Performance Cookies',
+                description: 'Performance cookies help us to improve our website by collecting and reporting information on its usage.',
+                cookies: ['_ga', '_gid', '_gat', '__utma', '__utmt', '__utmb', '__utmc', '__utmz', '__utmv'],
+                onAccept: function(){
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', 'G-BW7XJF9LEX');
+                },
+                onRevoke: function (){
+                    //Disable Google Analytics
+                    window['ga-disable-G-BW7XJF9LEX'] = true;
+                    //End Google Analytics
+                }
+            }
+         ]
+    };
+    CookieControl.load( config );
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BW7XJF9LEX"></script>
+[% END %]
