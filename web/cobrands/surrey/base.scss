@@ -172,6 +172,10 @@ a#geolocate_link,
     input#sub, input#pc  {
       border: 1px solid $primary;
     }
+
+    label {
+      color: $primary_b;
+    }
   }
 }
 
