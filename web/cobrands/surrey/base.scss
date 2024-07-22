@@ -180,6 +180,10 @@ a#geolocate_link,
     div input#sub, div input#pc  {
       border: 1px solid $primary;
     }
+
+    label {
+      color: $primary_b;
+    }
   }
 }
 
