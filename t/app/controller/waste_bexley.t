@@ -1013,6 +1013,17 @@ FixMyStreet::override_config {
             'cannot report missed collection against service due yesterday whose round is not logged as collected';
         ok $services{'RES-180'}{last}{is_delayed}, 'marked delayed';
 
+        FixMyStreet::override_config {
+            COBRAND_FEATURES => { whitespace => { bexley => {
+                use_expected_collection_datetime => 1,
+                } },
+            },
+        }, sub {
+            is $cobrand->can_report_missed( $property, $services{'RES-180'} ), 1,
+                'can report missed collection against service due yesterday whose round is not logged as collected when '
+                . '"use_expected_collections_datetime" is set, so it is considered to have been collected';
+        };
+
         is $cobrand->can_report_missed( $property, $services{'RES-240'} ), 1,
             'can report missed collection against service due yesterday whose round *is* logged as collected';
         ok !$services{'RES-240'}{last}{is_delayed}, 'not marked delayed';
