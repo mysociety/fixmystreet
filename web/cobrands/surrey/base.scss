@@ -148,10 +148,12 @@ a#geolocate_link,
   overflow: visible; // So outlines don't look cropped
 }
 
-.postcode-form-box div {
-  border-width: 0;
-  input#sub  {
-    border-color: $primary_text;
+.postcode-form-box {
+  div {
+    border-width: 0;
+    input#sub  {
+      border-color: $primary_text;
+    }
   }
 }
 
@@ -170,6 +172,15 @@ a#geolocate_link,
   background-repeat: no-repeat;
   background-size: 35px;
   background-position: left 25px top 20px;
+}
+
+/* ALERT PAGE */
+.alertpage {
+  .postcode-form-box {
+    div input#sub, div input#pc  {
+      border: 1px solid $primary;
+    }
+  }
 }
 
 /* FOOTER */
