@@ -140,7 +140,7 @@ sub _closed_event {
     return 0;
 }
 
-sub garden_collection_time { '6:30am' }
+sub garden_collection_time { '6:00am' }
 sub garden_waste_new_bin_admin_fee { 0 }
 
 sub waste_renewal_bins_wanted_disabled { 1 }

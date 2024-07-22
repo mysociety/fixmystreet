@@ -38,11 +38,6 @@ suitable for that situation, though please do search through the other issues
 to see if what you're after has been suggested or discussed - or feel free to
 add your own issue if not.
 
-## Mobile apps
-
-We've extracted all of the mobile apps from this repository into the
-[fixmystreet-mobile repository](https://github.com/mysociety/fixmystreet-mobile).
-
 ## Acknowledgements
 
 Thanks to [Browserstack](https://www.browserstack.com/) who let us use their

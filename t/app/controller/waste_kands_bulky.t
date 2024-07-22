@@ -161,7 +161,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { postcode => 'KT1 1AA' } } );
         $mech->submit_form_ok( { with_fields => { address => '12345' } } );
 
-        $mech->content_lacks('Bulky Waste');
+        $mech->content_lacks('Bulky waste');
     };
 
     subtest 'Ineligible farm' => sub {
@@ -173,7 +173,7 @@ FixMyStreet::override_config {
             };
         });
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Bulky Waste');
+        $mech->content_lacks('Bulky waste');
     };
 
     subtest 'Ineligible property as no services (new build)' => sub {
@@ -201,7 +201,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste');
         $mech->submit_form_ok( { with_fields => { postcode => 'KT1 1AA' } } );
         $mech->submit_form_ok( { with_fields => { address => '12345' } } );
-        $mech->content_lacks('Bulky Waste');
+        $mech->content_lacks('Bulky waste');
         $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
     };
 
@@ -231,7 +231,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { postcode => 'KT1 1AA' } } );
         $mech->submit_form_ok( { with_fields => { address => '12345' } } );
 
-        $mech->content_contains('Bulky Waste');
+        $mech->content_contains('Bulky waste');
         $mech->submit_form_ok; # 'Book Collection'
         $mech->content_contains( 'Before you start your booking',
             'Should be able to access the booking form' );

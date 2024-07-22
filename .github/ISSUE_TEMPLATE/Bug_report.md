@@ -4,11 +4,6 @@ about: Create a report to help us improve
 
 ---
 
-Note if the bug is about the mobile native app (not the website, whether that
-is desktop or mobile), please leave it in the
-[https://github.com/mysociety/fixmystreet-mobile/issues](fixmystreet-mobile
-repository).
-
 **Describe the bug**
 A clear and concise description of what the bug is.
 
