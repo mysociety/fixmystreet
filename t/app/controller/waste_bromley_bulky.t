@@ -254,7 +254,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { postcode => 'BR1 1AF' } } );
         $mech->submit_form_ok( { with_fields => { address => '12345' } } );
 
-        $mech->content_contains('Bulky Waste');
+        $mech->content_contains('Bulky waste');
         $mech->submit_form_ok; # 'Book Collection'
         $mech->content_contains( 'Before you start your booking',
             'Should be able to access the booking form' );
