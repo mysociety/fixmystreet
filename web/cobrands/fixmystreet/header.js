@@ -11,7 +11,10 @@ fixmystreet.cobrand = '[% c.cobrand.moniker %]';
     if ('IntersectionObserver' in window) {
         E.className += ' lazyload';
     }
-    if (type == 'mobile') {
-        E.className += ' mobile[% " map-fullscreen only-map map-reporting" IF page == "around" || page == "new" %]';
+    var isShortScreen = Modernizr.mq('(max-height: 30em)');
+    if (!isShortScreen) {
+        if (type === 'mobile') {
+            E.className += ' mobile[% " map-fullscreen only-map map-reporting" IF page == "around" || page == "new" %]';
+        }
     }
 })(document);
