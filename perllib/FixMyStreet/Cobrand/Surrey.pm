@@ -45,6 +45,19 @@ sub privacy_policy_url {
     return 'https://www.surreycc.gov.uk/council-and-democracy/your-privacy/our-privacy-notices/fixmystreet'
 }
 
+=item * Doesn't allow the reopening of reports
+
+=cut
+
+sub reopening_disallowed { 1 }
+
+=item * Allows anonymous reporting
+
+=cut
+
+sub allow_anonymous_reports { 'button' }
+
+
 =head2 get_town
 
 Returns the name of the town from the problem's geocode information, if present.
