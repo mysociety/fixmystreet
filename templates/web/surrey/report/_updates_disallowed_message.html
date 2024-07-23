@@ -1,0 +1,7 @@
+<p>
+    [% IF !problem.is_open %]
+        [% tprintf(loc('If the issue is still ongoing, you can <a href="%s">make a new report in the same location</a>.'),
+            c.uri_for( '/report/new', { longitude = longitude, latitude = latitude } )
+        ) %]
+    [% END %]
+</p>
