@@ -20,6 +20,11 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'surrey' ],
     MAPIT_URL => 'http://mapit.uk/',
     PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+    COBRAND_FEATURES => {
+        anonymous_account => {
+            surrey => 'anonymous',
+        },
+    },
 }, sub {
         subtest 'CSV has Subscribers column populated by "alerts" registered on problem' => sub {
             $mech->log_in_ok($surrey_staff_user->email);
