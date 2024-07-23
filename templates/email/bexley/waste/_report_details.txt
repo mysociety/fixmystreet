@@ -9,8 +9,8 @@
     title = title.remove('Report missed ');
   END
 %]
-<h2 style="[% h2_style %]">Bins reported as missed:</h2>
-[% title | html_para_email(secondary_p_style) %]
-<br>
-<h2 style="[% h2_style %]">Address:</h2>
-[% address | html_para_email(secondary_p_style) %]
+Bins reported as missed:
+[% title %]
+
+Address:
+[% address %]

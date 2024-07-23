@@ -1,0 +1,31 @@
+[% is_missed_collection = report.category == 'Report missed collection' ~%]
+[%
+  is_no_collections_enquiry
+    =  report.category == 'Business or organisation missed collection enquiry'
+    || report.category == 'Missed collection enquiry'
+~%]
+Subject: [% IF is_missed_collection %]Thank you for reporting a missed collection[% ELSE %]Thank you for your [% report.category %][% END %]
+
+Dear [% report.name %],
+
+[% IF is_missed_collection %]Thank you for reporting a missed collection[% ELSE %]Thank you for your [% report.category %][% END %]
+
+[% INCLUDE 'waste/_council_reference.txt' problem=report %]
+
+[% IF is_missed_collection %]
+Our waste contractor will return within 2 working days to collect your bin(s).
+Please leave your bin(s) out until our contractor returns.
+If you need to contact us about this report, please quote your reference number.
+[% ELSIF is_no_collections_enquiry %]
+We will look into your enquiry and get back to you as soon as possible.
+If you need to contact us about this enquiry, please quote your reference number.
+[% END %]
+
+Contact us: https://mybexley.bexley.gov.uk/service/rubbish_and_recycling_enquiries
+
+[% INCLUDE 'waste/_report_details.txt' %]
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
