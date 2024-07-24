@@ -310,11 +310,11 @@ FixMyStreet::override_config {
             'A blue recycling box collection has already been reported');
         $mech->content_contains('Reported on: N/A');
         $mech->content_contains('Will be completed by: N/A');
-        $mech->content_contains('Comments: N/A');
+        $mech->content_contains('Action: N/A');
 
         $mech->content_contains(
             'A green recycling box collection has already been reported');
-        $mech->content_contains('Comments: Preexisting comment');
+        $mech->content_contains('Action: Preexisting comment');
 
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
