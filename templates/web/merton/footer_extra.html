@@ -2,7 +2,11 @@
     <div class="container site-footer">
         <span>
             Powered by
+          [% IF bodyclass.match('waste') OR (problem AND problem.cobrand_data == 'waste') %]
+            <a class="societyworks-footer__logo" href="https://www.societyworks.org/services/waste/">SocietyWorks</a>
+          [% ELSE %]
             <a class="societyworks-footer__logo societyworks-footer__logo--fms-pro" href="https://www.societyworks.org/services/highways/">FixMyStreet Pro</a>
+          [% END %]
         </span>
         <span>
             <a href="[%~ cobrand.privacy_policy_url ~%]">Privacy and Cookies</a> | <a href="https://www.merton.gov.uk/accessibility/fixmystreet">Accessibility</a>
