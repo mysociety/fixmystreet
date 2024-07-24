@@ -307,13 +307,13 @@ FixMyStreet::override_config {
 
         note 'Missed collection displays';
         $mech->content_contains(
-            'A blue recycling box collection has already been reported');
+            'A blue recycling box collection has already been reported as missed');
         $mech->content_contains('Reported on: N/A');
         $mech->content_contains('Will be completed by: N/A');
         $mech->content_contains('Action: Please leave your waste out, our contractor will return soon');
 
         $mech->content_contains(
-            'A green recycling box collection has already been reported');
+            'A green recycling box collection has already been reported as missed');
         $mech->content_contains('Action: Preexisting comment');
 
         subtest 'service_sort sorts correctly' => sub {
