@@ -6,6 +6,7 @@ INSERT INTO state (label, type, name) VALUES ('unable to fix', 'closed', 'No fur
 INSERT INTO state (label, type, name) VALUES ('not responsible', 'closed', 'Not responsible');
 INSERT INTO state (label, type, name) VALUES ('duplicate', 'closed', 'Duplicate');
 INSERT INTO state (label, type, name) VALUES ('internal referral', 'closed', 'Internal referral');
+INSERT INTO state (label, type, name) VALUES ('cancelled', 'closed', 'Cancelled');
 INSERT INTO state (label, type, name) VALUES ('fixed', 'fixed', 'Fixed');
 
 -- New updates on a particular problem report

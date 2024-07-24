@@ -469,6 +469,8 @@ sub _populate_service_request_update_params {
             $status = 'FOR_TRIAGE';
         } elsif ( $state eq 'closed' ) {
             $status = 'CLOSED';
+        } elsif ( $state eq 'cancelled' ) {
+            $status = 'CANCELLED';
         } elsif ($comment->mark_open && $self->mark_reopen) {
             $status = 'REOPEN';
         }

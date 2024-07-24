@@ -25,7 +25,7 @@ subtest 'Open/closed database data is as expected' => sub {
     my $open = $rs->open;
     is @$open, 5;
     my $closed = $rs->closed;
-    is @$closed, 5;
+    is @$closed, 6;
 };
 
 # No language set at this point
@@ -61,7 +61,7 @@ subtest 'msgstr gets translated if available when the language changes' => sub {
 is_deeply [ sort FixMyStreet::DB::Result::Problem->open_states ],
     ['action scheduled', 'confirmed', 'in progress', 'investigating', 'planned'], 'open states okay';
 is_deeply [ sort FixMyStreet::DB::Result::Problem->closed_states ],
-    ['closed', 'duplicate', 'internal referral', 'not responsible', 'unable to fix'], 'closed states okay';
+    ['cancelled', 'closed', 'duplicate', 'internal referral', 'not responsible', 'unable to fix'], 'closed states okay';
 is_deeply [ sort FixMyStreet::DB::Result::Problem->fixed_states ],
     ['fixed', 'fixed - council', 'fixed - user'], 'fixed states okay';
 
