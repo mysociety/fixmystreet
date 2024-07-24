@@ -27,12 +27,6 @@ sub disambiguate_location {
     };
 }
 
-=item * We include the C<external_id> (Zendesk reference) in the acknowledgement email.
-
-=cut
-
-sub report_sent_confirmation_email { 'external_id' }
-
 =item * The default map view shows closed/fixed reports for 31 days
 
 =cut
