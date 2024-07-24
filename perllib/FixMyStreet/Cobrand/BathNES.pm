@@ -298,7 +298,7 @@ sub dashboard_export_updates_add_columns {
         my $staff_user = $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup);
 
         return {
-            user_email => $report->user->email || '',
+            user_email => $report->user ? $report->user->email : '',
             staff_user => $staff_user,
         };
     });
@@ -336,8 +336,8 @@ sub dashboard_export_problems_add_columns {
         return {
             attribute_data => $attribute_data,
             $csv->dbi ? () : (
-                user_email => $report->user->email || '',
-                user_phone => $report->user->phone || '',
+                user_email => $report->user ? $report->user->email : '',
+                user_phone => $report->user ? $report->user->phone : '',
                 staff_user => $self->csv_staff_user_lookup($report->get_extra_metadata('contributed_by'), $user_lookup),
             ),
         };

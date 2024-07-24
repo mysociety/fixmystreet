@@ -370,8 +370,8 @@ sub dashboard_export_problems_add_columns {
 
         my $fields = $initial_extra_data->($report);
         $fields->{user_name_display} = $report->name;
-        $fields->{user_email} = $report->user->email || '';
-        $fields->{user_phone} = $report->user->phone || '';
+        $fields->{user_email} = $report->user ? $report->user->email : '';
+        $fields->{user_phone} = $report->user ? $report->user->phone : '';
 
         my $i = 1;
         my @updates = $report->comments->all;
