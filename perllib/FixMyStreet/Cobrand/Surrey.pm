@@ -27,8 +27,6 @@ sub disambiguate_location {
     };
 }
 
-sub report_sent_confirmation_email { 'id' }
-
 =item * We do not send alerts to report authors.
 
 =cut
