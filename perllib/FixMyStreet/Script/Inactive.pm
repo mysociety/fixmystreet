@@ -178,7 +178,19 @@ sub anonymize_users {
         email => { -not_like => 'removed-%@' . FixMyStreet->config('EMAIL_DOMAIN') },
     });
 
+    my $features = FixMyStreet->config('COBRAND_FEATURES');
+    my $cfg = $features->{anonymous_account} || {};
+    my %anon_accounts;
+    foreach (keys %$cfg) {
+        my $local = $cfg->{$_};
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($_)->new;
+        my $domain = $cobrand->call_hook('anonymous_domain') || $cobrand->call_hook('admin_user_domain') || 'unknown';
+        my $email = $local . '@' . $domain;
+        $anon_accounts{$email} = 1;
+    }
+
     while (my $user = $users->next) {
+        next if $anon_accounts{$user->email}; # Don't anonymize the anonymous accounts
         say "Anonymizing user #" . $user->id if $self->verbose;
         next if $self->dry_run;
         $user->anonymize_account;
