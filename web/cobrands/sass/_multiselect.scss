@@ -157,6 +157,10 @@
     }
 }
 
+.js #filter_categories ~ .multi-select-container legend {
+    cursor: pointer;
+}
+
 $govuk-small-input-size: 44px;
 $govuk-small-input-visible-size: 24px;
 
@@ -176,7 +180,6 @@ $govuk-small-input-visible-size: 24px;
 }
 
 .govuk-multi-select__label {
-    display: inline-block;
     padding: 10px 0px 10px $govuk-small-input-size;
     cursor: pointer;
     touch-action: manipulation;

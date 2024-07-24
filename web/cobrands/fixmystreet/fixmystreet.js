@@ -1126,6 +1126,22 @@ $.extend(fixmystreet.set_up, {
     // There are also other uses of this besides report list filters activated here
     $('.js-multiple').make_multi();
 
+    // Make clicking on the legends toggle all the checkboxes underneath
+    var container = $('#filter_categories').next('.multi-select-container');
+    container.on('click', 'legend', function(){
+        var labels = $(this).nextAll('label');
+        var inputs = labels.children('input');
+        var inputs_checked = inputs.filter(':checked');
+        console.log(inputs.length, inputs_checked.length);
+        if (inputs.length === inputs_checked.length) {
+            // Switch them all off
+            inputs_checked.click();
+        } else {
+            // Switch them all on
+            inputs.not(inputs_checked).click();
+        }
+    });
+
     function update_label(id, str) {
         $(id).prevAll('label').addClass('hidden-js').attr('for', id.slice(1)).after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
         $(id).next('.multi-select-container').children('.multi-select-button').attr('aria-label', str);
