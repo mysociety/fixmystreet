@@ -1,6 +1,6 @@
 [% IF unit.report_open %]
   <span class="waste-service-descriptor">
-    A [% unit.service_name FILTER lower %] collection has already been reported, our waste contractor will return shortly to complete this collection. Check status below:
+    A missed [% unit.service_name FILTER lower %] collection has already been reported, our waste contractor will return shortly to complete this collection. Check status below:
     <ul>
       <li>Reported on: [% unit.report_details.reported ? date.format(unit.report_details.reported) : 'N/A' %]</li>
       <li>Will be completed by: [% unit.report_details.will_be_completed ? date.format(unit.report_details.will_be_completed) : 'N/A' %]</li>
