@@ -23,3 +23,8 @@ END;
   [% site_message | html_para %]
 </div>
 [% END %]
+[% IF site_message_upcoming_downtime %]
+<div class="site-message">
+  [% site_message_upcoming_downtime | html_para %]
+</div>
+[% END %]
