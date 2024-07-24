@@ -437,57 +437,57 @@ sub _remove_service_if_assisted_exists {
 sub _missed_collection_reports {
     my ( $self, $property ) = @_;
 
-    # If property has parent, use that instead
-    my $uprn
-        = $property->{parent_property}
-        ? $property->{parent_property}{uprn}
-        : $property->{uprn};
-
-    my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
+    my @uprns = ($property->{uprn});
+    push @uprns, $property->{parent_property}{uprn} if $property->{parent_property};
 
     my %missed_collection_reports;
-    for my $ws (@$worksheets) {
-        next
-            unless $ws->{WorksheetStatusName} eq 'Open'
-            && $ws->{WorksheetSubject} =~ /^Missed/;
 
-        # Check if it exists in our DB
-        my $external_id = 'Whitespace-' . $ws->{WorksheetID};
-        my $report
-            = $self->problems->search( { external_id => $external_id } )
-            ->first;
+    foreach my $uprn (@uprns) {
+        my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
 
-        next unless $report;
+        for my $ws (@$worksheets) {
+            next
+                unless $ws->{WorksheetStatusName} eq 'Open'
+                && $ws->{WorksheetSubject} =~ /^Missed/;
 
-        # Skip if there is already a report stashed against the service item
-        # name
-        my $service_item_name
-            = $report->get_extra_field_value('service_item_name') // '';
-        next if $missed_collection_reports{$service_item_name};
+            # Check if it exists in our DB
+            my $external_id = 'Whitespace-' . $ws->{WorksheetID};
+            my $report
+                = $self->problems->search( { external_id => $external_id } )
+                ->first;
 
-        my $latest_comment
-            = $report->comments->search(
-                {},
-                { order_by => { -desc => 'id' } },
-        )->first;
+            next unless $report;
 
-        my $report_details = {
-            id          => $report->id,
-            external_id => $report->external_id,
-            open        => $report->is_open,
-            reported    => (
-                $ws->{WorksheetStartDate} eq WHITESPACE_UNDEF_DATE ?
-                '' : $ws->{WorksheetStartDate}
-            ),
-            will_be_completed => (
-                $ws->{WorksheetEscallatedDate} eq WHITESPACE_UNDEF_DATE ?
-                '' : $ws->{WorksheetEscallatedDate}
-            ),
-            latest_comment =>
-                ( $latest_comment ? $latest_comment->text : '' ),
-        };
+            # Skip if there is already a report stashed against the service item
+            # name
+            my $service_item_name
+                = $report->get_extra_field_value('service_item_name') // '';
+            next if $missed_collection_reports{$service_item_name};
 
-        $missed_collection_reports{$service_item_name} = $report_details;
+            my $latest_comment
+                = $report->comments->search(
+                    {},
+                    { order_by => { -desc => 'id' } },
+            )->first;
+
+            my $report_details = {
+                id          => $report->id,
+                external_id => $report->external_id,
+                open        => $report->is_open,
+                reported    => (
+                    $ws->{WorksheetStartDate} eq WHITESPACE_UNDEF_DATE ?
+                    '' : $ws->{WorksheetStartDate}
+                ),
+                will_be_completed => (
+                    $ws->{WorksheetEscallatedDate} eq WHITESPACE_UNDEF_DATE ?
+                    '' : $ws->{WorksheetEscallatedDate}
+                ),
+                latest_comment =>
+                    ( $latest_comment ? $latest_comment->text : '' ),
+            };
+
+            $missed_collection_reports{$service_item_name} = $report_details;
+        }
     }
 
     return \%missed_collection_reports;
