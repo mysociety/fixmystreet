@@ -55,6 +55,12 @@ sub reopening_disallowed { 1 }
 
 sub allow_anonymous_reports { 'button' }
 
+=item * Anyone with a surreycc.gov.uk email shows up in the admin
+
+=cut
+
+sub admin_user_domain { 'surreycc.gov.uk' }
+
 
 =head2 get_town
 
