@@ -59,7 +59,7 @@ requires 'Crypt::Eksblowfish::Bcrypt';
 requires 'Crypt::JWT';
 requires 'Crypt::Digest::SHA256';
 requires 'Data::Password::Common';
-requires 'DateTime', '1.51';
+requires 'DateTime', '1.65';
 requires 'DateTime::Format::Flexible';
 requires 'DateTime::Format::HTTP';
 requires 'DateTime::Format::ISO8601';
