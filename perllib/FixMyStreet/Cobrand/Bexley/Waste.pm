@@ -193,14 +193,15 @@ sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
 
-    my $site_services = $self->whitespace->GetSiteCollections($property->{uprn});
+    my $uprn = $property->{uprn};
+    my $site_services = $self->whitespace->GetSiteCollections($uprn);
 
     # Get parent property services if no services found
     if ( !@{ $site_services // [] }
         && $property->{parent_property} )
     {
-        $site_services = $self->whitespace->GetSiteCollections(
-            $property->{parent_property}{uprn} );
+        $uprn = $property->{parent_property}{uprn};
+        $site_services = $self->whitespace->GetSiteCollections($uprn);
 
         # A property is only communal if it has a parent property AND doesn't
         # have its own list of services
@@ -331,6 +332,7 @@ sub bin_services_for_address {
                 already_collected => $collected_today,
             },
             assisted_collection => $assisted_collection,
+            uprn => $uprn,
         };
 
         if ($last_dt) {
@@ -1045,7 +1047,7 @@ sub waste_munge_report_data {
 
     my $address = $c->stash->{property}->{address};
     my $service = $c->stash->{services}{$id}{service_name};
-    my $uprn = $c->stash->{property}{parent_property} ? $c->stash->{property}{parent_property}{uprn} : $c->stash->{property}{uprn};
+    my $uprn = $c->stash->{services}{$id}{uprn};
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('uprn', $uprn);
