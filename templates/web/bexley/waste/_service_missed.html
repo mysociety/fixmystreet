@@ -4,7 +4,7 @@
     <ul>
       <li>Reported on: [% unit.report_details.reported ? date.format(unit.report_details.reported) : 'N/A' %]</li>
       <li>Will be completed by: [% unit.report_details.will_be_completed ? date.format(unit.report_details.will_be_completed) : 'N/A' %]</li>
-      <li>Comments: [% unit.report_details.latest_comment || 'N/A' %]</li>
+      <li>Action: [% unit.report_details.latest_comment || 'Please leave your waste out, our contractor will return soon.' %]</li>
     </ul>
   </span>
 [% ELSIF unit.report_locked_out %]
