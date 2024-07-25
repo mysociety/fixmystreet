@@ -176,7 +176,13 @@ sub create_problems {
             $request->{description} = $filtered if defined $filtered;
         }
 
-        my @contacts = grep { $request->{service_code} eq $_->email } $contacts->all;
+        my @contacts = do {
+            if ( $cobrand && $cobrand->can('open311_contacts_for_fetched_report') ) {
+                $cobrand->call_hook('open311_contacts_for_fetched_report', $request, $contacts);
+            } else {
+                grep { $request->{service_code} eq $_->email } $contacts->all;
+            }
+        };
         my $contact = $contacts[0] ? $contacts[0]->category : 'Other';
 
         my $state = $open311->map_state($request->{status});

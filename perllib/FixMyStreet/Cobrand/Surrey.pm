@@ -253,4 +253,19 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+
+=head2 open311_contacts_for_fetched_report
+
+Surrey matches category based on category name, not service code.
+
+=cut
+
+sub open311_contacts_for_fetched_report {
+    my ($self, $request, $contacts) = @_;
+
+    my @contacts = grep { $request->{service_name} eq $_->category } $contacts->all;
+
+    return @contacts;
+}
+
 1;
