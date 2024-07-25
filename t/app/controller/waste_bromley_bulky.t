@@ -272,8 +272,8 @@ FixMyStreet::override_config {
         };
 
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->content_contains('01 July');
-        $mech->content_contains('08 July');
+        $mech->content_contains('1 July');
+        $mech->content_contains('8 July');
         $mech->submit_form_ok(
             { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
         );
@@ -437,7 +437,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_lacks('you can add up to 5 more items');
             $mech->content_contains('£30.00');
-            $mech->content_contains('01 July');
+            $mech->content_contains('1 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');

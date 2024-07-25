@@ -238,8 +238,8 @@ FixMyStreet::override_config {
             $mech->submit_form_ok;
         };
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
-        $mech->content_contains('01 July');
-        $mech->content_contains('08 July');
+        $mech->content_contains('1 July');
+        $mech->content_contains('8 July');
         $mech->submit_form_ok(
             { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
         );
@@ -471,7 +471,7 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*BBQ/s);
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('£37.00');
-            $mech->content_contains('08 July');
+            $mech->content_contains('8 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');
@@ -484,7 +484,7 @@ FixMyStreet::override_config {
 
             set_fixed_time($good_date);
             $mech->get_ok('/report/' . $report->id);
-            $mech->content_contains("08 July 2023");
+            $mech->content_contains("8 July 2023");
 
             # Presence of external_id in report implies we have sent request
             # to Echo
@@ -562,8 +562,8 @@ FixMyStreet::override_config {
         subtest 'Do not change anything' => sub {
             $mech->content_contains('Choose date for collection');
             $mech->content_contains('Available dates');
-            $mech->content_contains('08 July'); # Existing date should always be there
-            $mech->content_contains('01 July');
+            $mech->content_contains('8 July'); # Existing date should always be there
+            $mech->content_contains('1 July');
             $mech->content_contains('15 July');
             $mech->submit_form_ok; # Date page
             $mech->content_contains('Add items for collection');
@@ -594,8 +594,8 @@ FixMyStreet::override_config {
             $mech->submit_form_ok;
             $mech->content_contains('Choose date for collection');
             $mech->content_contains('Available dates');
-            $mech->content_contains('08 July'); # Existing date should always be there
-            $mech->content_contains('01 July');
+            $mech->content_contains('8 July'); # Existing date should always be there
+            $mech->content_contains('1 July');
             $mech->content_contains('15 July');
             $mech->submit_form_ok(
                 { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
@@ -700,8 +700,8 @@ FixMyStreet::override_config {
             $mech->submit_form_ok;
             $mech->content_contains('Choose date for collection');
             $mech->content_contains('Available dates');
-            $mech->content_contains('01 July'); # Existing date should always be there
-            $mech->content_contains('08 July');
+            $mech->content_contains('1 July'); # Existing date should always be there
+            $mech->content_contains('8 July');
             $mech->content_contains('15 July');
             $mech->submit_form_ok(
                 { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve2==;2023-06-25T10:10:00' } }
