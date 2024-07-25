@@ -28,10 +28,10 @@
     <li>The price you pay depends how many items you would like collected:
         <ul class="bulky-intro-pricing">
             <li class="bulky-intro-pricing">
-                Up to [% band1_items %] items = £[% pounds(band1_price) %]
+                1–[% band1_items %] items = £[% pounds(band1_price) %]
             </li>
             <li class="bulky-intro-pricing">
-                Up to [% max_items %] items = £[% pounds(base_price) %]
+                [% band1_items+1 %]–[% max_items %] items = £[% pounds(base_price) %]
             </li>
         </ul>
     </li>

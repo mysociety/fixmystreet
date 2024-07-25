@@ -233,8 +233,8 @@ FixMyStreet::override_config {
             $mech->content_contains('Before you start your booking');
             $mech->content_contains('You can request up to <strong>six items per collection');
             $mech->content_contains('The price you pay depends how many items you would like collected:');
-            $mech->content_contains('Up to 3 items = £37.00');
-            $mech->content_contains('Up to 6 items = £60.75');
+            $mech->content_contains('1–3 items = £37.00');
+            $mech->content_contains('4–6 items = £60.75');
             $mech->submit_form_ok;
         };
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});

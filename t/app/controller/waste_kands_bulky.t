@@ -285,8 +285,8 @@ FixMyStreet::override_config {
             $mech->content_contains('you may wish to add pictures');
             $mech->content_contains('You can request up to <strong>eight items per collection');
             $mech->content_contains('The price you pay depends how many items you would like collected:');
-            $mech->content_contains('Up to 4 items = £40.00');
-            $mech->content_contains('Up to 8 items = £61.00');
+            $mech->content_contains('1–4 items = £40.00');
+            $mech->content_contains('5–8 items = £61.00');
             $mech->content_contains('Bookings are final and non refundable');
             $mech->submit_form_ok;
         };
