@@ -194,14 +194,15 @@ sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
 
-    my $site_services = $self->whitespace->GetSiteCollections($property->{uprn});
+    my $uprn = $property->{uprn};
+    my $site_services = $self->whitespace->GetSiteCollections($uprn);
 
     # Get parent property services if no services found
     if ( !@{ $site_services // [] }
         && $property->{parent_property} )
     {
-        $site_services = $self->whitespace->GetSiteCollections(
-            $property->{parent_property}{uprn} );
+        $uprn = $property->{parent_property}{uprn};
+        $site_services = $self->whitespace->GetSiteCollections($uprn);
 
         # A property is only communal if it has a parent property AND doesn't
         # have its own list of services
@@ -332,6 +333,7 @@ sub bin_services_for_address {
                 already_collected => $collected_today,
             },
             assisted_collection => $assisted_collection,
+            uprn => $uprn,
         };
 
         if ($last_dt) {
@@ -436,57 +438,57 @@ sub _remove_service_if_assisted_exists {
 sub _missed_collection_reports {
     my ( $self, $property ) = @_;
 
-    # If property has parent, use that instead
-    my $uprn
-        = $property->{parent_property}
-        ? $property->{parent_property}{uprn}
-        : $property->{uprn};
-
-    my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
+    my @uprns = ($property->{uprn});
+    push @uprns, $property->{parent_property}{uprn} if $property->{parent_property};
 
     my %missed_collection_reports;
-    for my $ws (@$worksheets) {
-        next
-            unless $ws->{WorksheetStatusName} eq 'Open'
-            && $ws->{WorksheetSubject} =~ /^Missed/;
 
-        # Check if it exists in our DB
-        my $external_id = 'Whitespace-' . $ws->{WorksheetID};
-        my $report
-            = $self->problems->search( { external_id => $external_id } )
-            ->first;
+    foreach my $uprn (@uprns) {
+        my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
 
-        next unless $report;
+        for my $ws (@$worksheets) {
+            next
+                unless $ws->{WorksheetStatusName} eq 'Open'
+                && $ws->{WorksheetSubject} =~ /^Missed/;
 
-        # Skip if there is already a report stashed against the service item
-        # name
-        my $service_item_name
-            = $report->get_extra_field_value('service_item_name') // '';
-        next if $missed_collection_reports{$service_item_name};
+            # Check if it exists in our DB
+            my $external_id = 'Whitespace-' . $ws->{WorksheetID};
+            my $report
+                = $self->problems->search( { external_id => $external_id } )
+                ->first;
 
-        my $latest_comment
-            = $report->comments->search(
-                {},
-                { order_by => { -desc => 'id' } },
-        )->first;
+            next unless $report;
 
-        my $report_details = {
-            id          => $report->id,
-            external_id => $report->external_id,
-            open        => $report->is_open,
-            reported    => (
-                $ws->{WorksheetStartDate} eq WHITESPACE_UNDEF_DATE ?
-                '' : $ws->{WorksheetStartDate}
-            ),
-            will_be_completed => (
-                $ws->{WorksheetEscallatedDate} eq WHITESPACE_UNDEF_DATE ?
-                '' : $ws->{WorksheetEscallatedDate}
-            ),
-            latest_comment =>
-                ( $latest_comment ? $latest_comment->text : '' ),
-        };
+            # Skip if there is already a report stashed against the service item
+            # name
+            my $service_item_name
+                = $report->get_extra_field_value('service_item_name') // '';
+            next if $missed_collection_reports{$service_item_name};
 
-        $missed_collection_reports{$service_item_name} = $report_details;
+            my $latest_comment
+                = $report->comments->search(
+                    {},
+                    { order_by => { -desc => 'id' } },
+            )->first;
+
+            my $report_details = {
+                id          => $report->id,
+                external_id => $report->external_id,
+                open        => $report->is_open,
+                reported    => (
+                    $ws->{WorksheetStartDate} eq WHITESPACE_UNDEF_DATE ?
+                    '' : $ws->{WorksheetStartDate}
+                ),
+                will_be_completed => (
+                    $ws->{WorksheetEscallatedDate} eq WHITESPACE_UNDEF_DATE ?
+                    '' : $ws->{WorksheetEscallatedDate}
+                ),
+                latest_comment =>
+                    ( $latest_comment ? $latest_comment->text : '' ),
+            };
+
+            $missed_collection_reports{$service_item_name} = $report_details;
+        }
     }
 
     return \%missed_collection_reports;
@@ -1046,7 +1048,7 @@ sub waste_munge_report_data {
 
     my $address = $c->stash->{property}->{address};
     my $service = $c->stash->{services}{$id}{service_name};
-    my $uprn = $c->stash->{property}{parent_property} ? $c->stash->{property}{parent_property}{uprn} : $c->stash->{property}{uprn};
+    my $uprn = $c->stash->{services}{$id}{uprn};
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('uprn', $uprn);

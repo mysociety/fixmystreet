@@ -339,6 +339,7 @@ FixMyStreet::override_config {
                     ordinal => ignore(),
                     date => ignore(),
                 },
+                uprn => ignore(),
             );
             cmp_deeply \@sorted, [
                 {   id             => 8,
@@ -356,6 +357,7 @@ FixMyStreet::override_config {
                         reported          => '',
                         will_be_completed => '',
                         latest_comment    => '',
+                        uprn              => '10001',
                     },
                     report_locked_out => 0,
                     report_locked_out_reason => '',
@@ -378,6 +380,7 @@ FixMyStreet::override_config {
                         reported          => '2024-03-31T01:00:00',
                         will_be_completed => '2024-04-02T01:00:00',
                         latest_comment    => 'Preexisting comment',
+                        uprn              => '10001',
                     },
                     report_locked_out => 0,
                     report_locked_out_reason => '',
