@@ -620,10 +620,13 @@ sub can_report_missed {
     # Red tags are matched to services based on prefix
     return 0 if $service->{report_locked_out};
 
+    my $config = $self->feature('whitespace');
+
     # Needs to be within 3 working days of the last completed round, today
     # not included.
     # NOTE last expected collection is the 'ideal'/expected collection date,
-    # not actual. So we need to check cab logs below for actual collection date.
+    # not actual. So we need to check cab logs below for actual collection date, unless
+    # the 'use_expected_collection_datetime' flag is set.
     my $last_expected_collection_dt = $service->{last} && $service->{last}{date};
 
     if ($last_expected_collection_dt) {
@@ -632,11 +635,20 @@ sub can_report_missed {
         my ( undef, undef, $completed_or_attempted_collections )
             = $self->_in_cab_logs($property);
 
-        # If there is a log for this collection, that is when
-        # the round was completed so we can make a report if
-        # we're within that time
-        my $logged_time_for_round
-            = $completed_or_attempted_collections->{ $service->{round} };
+        my $logged_time_for_round;
+        if (!$config->{use_expected_collection_datetime}) {
+            # If there is a log for this collection, that is when
+            # the round was completed so we can make a report if
+            # we're within that time.
+            $logged_time_for_round
+                = $completed_or_attempted_collections->{ $service->{round} };
+        } else {
+            # A flag has been set for us to ignore in-cab logs and
+            # treat the expected collection date time as the actual collection time.
+            # This is useful for debugging missed collections on staging where there are no
+            # in-cab logs.
+            $logged_time_for_round = $last_expected_collection_dt;
+        }
 
         # log time needs to be greater than or equal to 3 working days ago,
         # less than today
