@@ -236,6 +236,7 @@ select,
 input,
 textarea {
   font-size: 99%;
+  font-family: $meta-font;
 }
 
 // To deal with bug from drop-down being wider than holder
