@@ -285,7 +285,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('£37.00');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
-            $mech->content_contains("06:00 on 30 June 2023", 'Can cancel up until 6am previous day');
+            $mech->content_lacks("06:00 on 30 June 2023");
             $mech->content_contains('Bob Marge', 'name shown');
             $mech->content_contains('44 07 111 111 111', 'phone shown');
         }
@@ -334,7 +334,6 @@ FixMyStreet::override_config {
 
             subtest 'date info has changed on summary page' => sub {
                 $mech->content_contains("<dd>Saturday 08 July 2023</dd>");
-                $mech->content_contains("06:00 on 07 July 2023", "Can cancel up until 6am previous day");
             };
         };
 
@@ -581,7 +580,6 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_contains('£0.00 (£37.00 already paid)');
             $mech->content_contains("<dd>Saturday 08 July 2023</dd>");
-            $mech->content_contains("06:00 on 07 July 2023");
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -622,7 +620,6 @@ FixMyStreet::override_config {
             $mech->content_contains('2 items requested for collection');
             $mech->content_contains('£0.00 (£37.00 already paid)');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
-            $mech->content_contains("06:00 on 30 June 2023");
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
         };
@@ -729,7 +726,6 @@ FixMyStreet::override_config {
             $mech->content_contains('4 items requested for collection');
             $mech->content_contains('£23.75 (£37.00 already paid)');
             $mech->content_contains("<dd>Saturday 08 July 2023</dd>");
-            $mech->content_contains("06:00 on 07 July 2023");
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
         };
