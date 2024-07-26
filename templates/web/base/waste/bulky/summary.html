@@ -109,7 +109,7 @@ SET data = form.saved_data;
           <dd>[% cobrand.bulky_nice_collection_date(data.chosen_date) %]</dd>
       </dl>
 
-      [% IF !problem
+      [% IF (!problem AND cobrand.bulky_cancel_enabled == 'public')
         || cobrand.bulky_can_cancel_collection( problem, 1 ) %]
         <div class="govuk-warning-text due">
           <div class="govuk-warning-text__img">

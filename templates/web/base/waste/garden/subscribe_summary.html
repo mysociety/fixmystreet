@@ -1,5 +1,5 @@
 [%
-title = 'Subscribe to green garden waste collections';
+title = 'Subscribe to garden waste collections';
 thing = 'garden subscription';
 summary_title = 'Subscription';
 IF form_class.match('Renew');
@@ -23,7 +23,7 @@ END;
 
 [% BLOCK answers %]
     <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Green garden waste collection</dt>
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Garden waste collection</dt>
         <dd class="govuk-summary-list__value">
             [% data.bins_wanted %] [% IF data.container_choice == 'sack' ~%]
               [% nget('sack subscription', 'sack subscriptions', data.bins_wanted) %]

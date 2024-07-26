@@ -5,7 +5,7 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
-    title => 'Cancel your green garden waste subscription',
+    title => 'Cancel your garden waste subscription',
     template => 'waste/garden/cancel.html',
     fields => ['name', 'phone', 'email', 'confirm', 'submit'],
     field_ignore_list => sub {

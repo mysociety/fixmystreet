@@ -996,12 +996,12 @@ FixMyStreet::override_config {
         set_fixed_time('2021-04-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Garden Waste');
-        $mech->content_lacks('Modify your garden waste subscription');
+        $mech->content_lacks('Change your garden waste subscription');
         $mech->content_contains('Your subscription is now overdue', "overdue link if after expired");
         set_fixed_time('2021-03-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Your subscription is soon due for renewal', "due soon link if within 7 weeks of expiry");
-        $mech->content_lacks('Modify your garden waste subscription');
+        $mech->content_lacks('Change your garden waste subscription');
         $mech->get_ok('/waste/12345/garden_modify');
         is $mech->uri->path, '/waste/12345', 'link redirect to bin list if modify in renewal period';
         set_fixed_time('2021-02-10T17:00:00Z');
@@ -1010,7 +1010,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-02-08T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Your subscription is soon due for renewal', "no renewal notice if over 7 weeks before expiry");
-        $mech->content_contains('Modify your garden waste subscription');
+        $mech->content_contains('Change your garden waste subscription');
         $mech->log_out_ok;
     };
 
@@ -2714,10 +2714,10 @@ FixMyStreet::override_config {
     set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
     $mech->log_in_ok($staff_user->email);
     $mech->get_ok('/waste/12345');
-    $mech->content_contains('Modify your garden waste subscription');
+    $mech->content_contains('Change your garden waste subscription');
     $mech->log_out_ok;
     $mech->get_ok('/waste/12345');
-    $mech->content_lacks('Modify your garden waste subscription');
+    $mech->content_lacks('Change your garden waste subscription');
 };
 
 FixMyStreet::override_config {
@@ -2732,10 +2732,10 @@ FixMyStreet::override_config {
 }, sub {
     $mech->log_in_ok($staff_user->email);
     $mech->get_ok('/waste/12345');
-    $mech->content_lacks('Modify your garden waste subscription');
+    $mech->content_lacks('Change your garden waste subscription');
     $mech->log_out_ok;
     $mech->get_ok('/waste/12345');
-    $mech->content_lacks('Modify your garden waste subscription');
+    $mech->content_lacks('Change your garden waste subscription');
 };
 
 sub get_report_from_redirect {

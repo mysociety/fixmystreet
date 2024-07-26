@@ -70,7 +70,7 @@
          [% IF c.cobrand.moniker == 'kingston' AND (slwp_garden_sacks AND unit.garden_sacks) %]
              <input type="submit" value="Order more garden sacks" class="waste-service-descriptor waste-service-link">
          [% ELSE %]
-            <input type="submit" value="Modify your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
+            <input type="submit" value="Change your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
          [% END %]
           </form>
       [% ELSIF c.cobrand.moniker == 'brent' AND NOT is_staff %]

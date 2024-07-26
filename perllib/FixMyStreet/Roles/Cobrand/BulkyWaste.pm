@@ -419,14 +419,34 @@ sub bulky_can_view_cancellation {
         || $c->user->belongs_to_body( $self->body->id );
 }
 
+=head2 bulky_cancel_enabled
+
+Returns the configuration entry of the same name, defaulting to 'public'
+if undefined. Config should be one of 'none', 'staff', 'public'.
+
+=cut
+
+sub bulky_cancel_enabled {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return $cfg->{bulky_cancel_enabled} // 'public';
+}
+
+=head2 bulky_can_cancel_collection REPORT IGNORE_EXTERNAL_ID
+
+Returns boolean of whether a particular collection can be cancelled or not.
+It combines the conditions on the collection itself with the current user's
+status if required.
+
+=cut
+
 # Cancel is on by default, but config can turn off or make staff-only
 sub bulky_can_cancel_collection {
     my ( $self, $p, $ignore_external_id ) = @_;
     return unless $self->bulky_can_view_collection($p);
 
-    my $cfg = $self->feature('waste_features') || {};
-    my $enabled = $cfg->{bulky_cancel_enabled} // 1;
-    return unless $enabled;
+    my $enabled = $self->bulky_cancel_enabled;
+    return unless $enabled eq 'staff' || $enabled eq 'public';
 
     my $can_be = $self->bulky_collection_can_be_cancelled($p, $ignore_external_id);
     if ($enabled eq 'staff') {

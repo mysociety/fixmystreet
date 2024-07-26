@@ -1,5 +1,5 @@
 [%
-title = 'Subscribe to green garden waste collections';
+title = 'Subscribe to garden waste collections';
 thing = 'garden subscription';
 summary_title = 'Subscription';
 step1 = 'alter';
@@ -7,7 +7,7 @@ step1 = 'alter';
 
 [% BLOCK answers %]
     <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Green garden waste collection</dt>
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Garden waste collection</dt>
         <dd class="govuk-summary-list__value">[% data.bins_wanted %] [% nget('bin', 'bins', data.bins_wanted) %]</dd>
     </div>
     <div class="govuk-summary-list__row">
