@@ -12,7 +12,7 @@ has_page discount => (
 );
 
 has_page intro => (
-    title => 'Renew your green garden waste subscription',
+    title => 'Renew your garden waste subscription',
     template => 'waste/garden/renew.html',
     fields => ['current_bins', 'bins_wanted', 'payment_method', 'cheque_reference', 'name', 'phone', 'email', 'email_renewal_reminders', 'continue_review'],
     field_ignore_list => sub {
@@ -58,7 +58,7 @@ with 'FixMyStreet::App::Form::Waste::Garden::EmailRenewalReminders';
 
 has_page summary => (
     fields => ['tandc', 'submit'],
-    title => 'Renew your green garden waste subscription',
+    title => 'Renew your garden waste subscription',
     template => 'waste/garden/subscribe_summary.html',
     update_field_list => sub {
         my $form = shift;

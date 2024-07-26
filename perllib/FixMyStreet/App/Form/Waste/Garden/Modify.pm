@@ -5,7 +5,7 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
-    title => 'Modify your green garden waste subscription',
+    title => 'Change your garden waste subscription',
     template => 'waste/garden/modify_pick.html',
     fields => ['task', 'apply_discount', 'continue'],
     next => 'alter',
@@ -19,7 +19,7 @@ has_page intro => (
 );
 
 has_page alter => (
-    title => 'Modify your green garden waste subscription',
+    title => 'Change your garden waste subscription',
     template => 'waste/garden/modify.html',
     fields => ['current_bins', 'bins_wanted', 'name', 'phone', 'email', 'continue_review'],
     field_ignore_list => sub {
@@ -72,7 +72,7 @@ with 'FixMyStreet::App::Form::Waste::AboutYou';
 
 has_page summary => (
     fields => ['tandc', 'submit'],
-    title => 'Modify your green garden waste subscription',
+    title => 'Change your garden waste subscription',
     template => 'waste/garden/modify_summary.html',
     update_field_list => sub {
         my $form = shift;
@@ -131,7 +131,7 @@ has_field task => (
     widget => 'RadioGroup',
     options => [
         { value => 'modify', label => 'Increase or reduce the number of bins in your subscription' },
-        { value => 'cancel', label => 'Cancel your green garden waste subscription' },
+        { value => 'cancel', label => 'Cancel your garden waste subscription' },
     ],
 );
 

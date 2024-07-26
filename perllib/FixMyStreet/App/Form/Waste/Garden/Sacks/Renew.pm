@@ -34,7 +34,7 @@ has_page sacks_choice => (
 with 'FixMyStreet::App::Form::Waste::Garden::Sacks::Choice';
 
 has_page sacks_details => (
-    title => 'Renew your green garden waste subscription',
+    title => 'Renew your garden waste subscription',
     template => 'waste/garden/sacks/renew.html',
     fields => ['bins_wanted', 'payment_method', 'cheque_reference', 'name', 'phone', 'email', 'apply_discount', 'continue_review'],
     field_ignore_list => sub {

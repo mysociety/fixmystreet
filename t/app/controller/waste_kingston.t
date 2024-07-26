@@ -389,12 +389,12 @@ FixMyStreet::override_config {
         set_fixed_time('2021-04-05T17:00:00Z');
         $mech->get_ok('/waste/12345?1');
         $mech->content_contains('Subscribe to garden waste collection');
-        $mech->content_lacks('Modify your garden waste subscription');
+        $mech->content_lacks('Change your garden waste subscription');
         $mech->content_lacks('Your subscription is now overdue', "No overdue link if after expired");
         set_fixed_time('2021-03-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Your subscription is soon due for renewal', "due soon link if within 30 days of expiry");
-        $mech->content_lacks('Modify your garden waste subscription');
+        $mech->content_lacks('Change your garden waste subscription');
         $mech->get_ok('/waste/12345/garden_modify');
         is $mech->uri->path, '/waste/12345', 'link redirect to bin list if modify in renewal period';
         set_fixed_time('2021-02-28T17:00:00Z');
@@ -403,7 +403,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-02-27T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Your subscription is soon due for renewal', "no renewal notice if over 30 days before expiry");
-        $mech->content_contains('Modify your garden waste subscription');
+        $mech->content_contains('Change your garden waste subscription');
         $mech->log_out_ok;
     };
 
@@ -1001,7 +1001,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-01-09T17:00:00Z');
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Modify your garden waste subscription');
+        $mech->content_contains('Change your garden waste subscription');
         $mech->content_lacks('Order more garden sacks');
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
@@ -1073,7 +1073,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-01-09T17:00:00Z');
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Modify your garden waste subscription');
+        $mech->content_lacks('Change your garden waste subscription');
         $mech->content_contains('Order more garden sacks');
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->content_contains('<span id="pro_rata_cost">41.00');
@@ -1624,7 +1624,7 @@ FixMyStreet::override_config {
     subtest 'check no modify when disabled' => sub {
         set_fixed_time('2021-01-09T17:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Modify your garden waste subscription', "modify disabled");
+        $mech->content_lacks('Change your garden waste subscription', "modify disabled");
         $mech->get_ok('/waste/12345/garden_modify');
         is $mech->uri->path, '/waste/12345', 'link redirect to bin list if modify when disabled';
     };
