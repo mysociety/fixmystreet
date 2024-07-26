@@ -58,6 +58,11 @@ sub auto : Private {
     $c->stash->{staff_payments_allowed} = '';
     $c->cobrand->call_hook( 'waste_check_staff_payment_permissions' );
 
+    $c->cobrand->call_hook( 'waste_check_downtime' )
+        if $c->action ne 'waste/echo/receive_echo_event_notification'
+            && $c->action ne 'waste/pay'
+            && $c->action ne 'waste/pay_complete';
+
     return 1;
 }
 

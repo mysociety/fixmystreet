@@ -393,7 +393,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('The list displays the available collection dates for your address');
             $mech->content_contains('Choose date for collection');
             $mech->content_contains('Available dates');
-            $mech->content_contains('05 August');
+            $mech->content_contains('5 August');
             $mech->content_contains('12 August');
             $mech->content_lacks('19 August'); # Max of 2 dates fetched
             $mech->submit_form_ok(
@@ -754,7 +754,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Choose date for collection');
             $mech->content_contains('Available dates');
             $mech->content_contains('26 August'); # Existing date should always be there
-            $mech->content_contains('05 August');
+            $mech->content_contains('5 August');
             $mech->content_contains('19 August');
             $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
             $mech->content_contains('Add items for collection');
@@ -794,7 +794,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Choose date for collection');
         $mech->content_contains('Available dates');
         $mech->content_contains('26 August'); # Existing date should always be there
-        $mech->content_contains('05 August');
+        $mech->content_contains('5 August');
         $mech->content_contains('19 August');
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_contains('Add items for collection');
@@ -983,14 +983,14 @@ FixMyStreet::override_config {
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->content_contains('05 August');
+        $mech->content_contains('5 August');
         $mech->content_lacks('12 August'); # Still full from above
         $mech->content_contains('19 August'); # Max of 2 dates fetched
         # Test going later
         $mech->form_number(0)->action($mech->form_number(0)->action . '?later_dates=1');
         $mech->submit_form_ok({ with_fields => { show_later_dates => 1 } });
         $mech->content_like(qr/name="chosen_date" value="2022-08-26T00:00:00"\s+disabled/, 'Already booked date disabled');
-        $mech->content_contains('02 September');
+        $mech->content_contains('2 September');
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-09-02T00:00:00' } });
         $mech->submit_form_ok({ with_fields => { 'item_1' => 'Chest of drawers' } });
         $mech->content_contains('Request a bulky waste collection');

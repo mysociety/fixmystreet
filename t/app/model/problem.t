@@ -39,6 +39,7 @@ is_deeply $visible_states, {
     'unable to fix'               => 1,
     'not responsible'             => 1,
     'duplicate'                   => 1,
+    'cancelled'                   => 1,
     'closed'                      => 1,
     'internal referral'           => 1,
     }, 'visible_states is correct';

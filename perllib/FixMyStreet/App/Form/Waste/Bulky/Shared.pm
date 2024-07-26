@@ -181,7 +181,7 @@ sub _get_dates {
         my $dt = $parser->parse_datetime( $_->{date} );
         $dt
             ? {
-            label => $dt->strftime('%d %B'),
+            label => $dt->strftime('%A %e %B'),
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             disabled => $dates_booked{$_->{date}},
             # The default behaviour in the fields.html template is to mark a radio

@@ -6,6 +6,7 @@ use DateTime;
 use DateTime::Format::Strptime;
 use List::Util qw(min);
 use Moo::Role;
+use Path::Tiny;
 use POSIX qw(floor);
 # use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::DateRange;
@@ -32,7 +33,42 @@ requires 'waste_bulky_missed_blocked_codes';
 
 FixMyStreet::Roles::Cobrand::Echo - shared code between cobrands using an Echo backend
 
+=head2 waste_check_downtime
+
+Echo has regular periods of scheduled downtime; we record these
+in a file and check it here to show appropriate messaging.
+
 =cut
+
+sub waste_check_downtime {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $parser = DateTime::Format::W3CDTF->new;
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+
+    my $cfg = $self->feature('echo');
+    my $downtime_csv = $cfg->{downtime_csv};
+    my @lines = eval { path(FixMyStreet->path_to($downtime_csv))->lines({ chomp => 1 }) };
+    foreach (@lines) {
+        my ($start, $end) = map { eval { $parser->parse_datetime($_) } } split /,/;
+        next unless $start && $end && $start < $end;
+        my $start_hour = $start->strftime('%l%P');
+        my $end_hour = $end->strftime('%l%P');
+        my $message = "Due to planned maintenance, this waste service will be unavailable from $start_hour until $end_hour.";
+
+        $end->add( minutes => 15 ); # Add a buffer, sometimes they go past their end time
+        if ($now >= $start && $now < $end) {
+            $message .= " Please accept our apologies for the disruption and try again later.";
+            $c->detach('/page_error', [ $message, 503 ]);
+        }
+
+        my $start_warning = $start->clone->subtract( hours => 2 );
+        if ($now >= $start_warning && $now < $start) {
+            $c->stash->{site_message_upcoming_downtime} = $message;
+        }
+    }
+}
 
 sub bin_day_format { '%A, %-d~~~ %B' }
 

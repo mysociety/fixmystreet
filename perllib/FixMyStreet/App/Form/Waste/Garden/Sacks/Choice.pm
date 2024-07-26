@@ -43,7 +43,7 @@ sub options_container_choice {
     my @containers;
     if ($cobrand eq 'merton') {
         push @containers,
-            { value => 'bin140', label => '140L bin', hint => 'About the same size as a small wheelie bin' },
+            { value => 'bin140', label => '140L bin', hint => 'Smaller than a standard wheelie bin' },
             { value => 'bin240', label => '240L bin', hint => 'About the same size as a standard wheelie bin' };
     } else {
         push @containers,

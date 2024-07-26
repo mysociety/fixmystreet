@@ -367,7 +367,7 @@ sub dashboard_export_problems_add_columns {
         my $report = shift;
 
         return {
-            user_email => $report->user->email || '',
+            user_email => $report->user ? $report->user->email : '',
         };
     });
 }
