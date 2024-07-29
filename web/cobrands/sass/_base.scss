@@ -3323,7 +3323,8 @@ $site-message-border: 1px solid #525252 !default;
   }
 }
 
-.js-post-category-messages {
+.js-post-category-messages,
+.extra-category-questions {
   h2 {
     font-size: 1.3rem;
   }
