@@ -982,10 +982,20 @@ sub construct_bin_report_form {
         my $id = $_->{service_id};
         my $name = $_->{service_name};
         my $description = $_->{service_description};
+        my $contains_html = $_->{service_description_contains_html};
         push @$field_list, "service-$id" => {
             type => 'Checkbox',
             label => $name,
-            option_label => $description ? $description : $name,
+
+            build_option_label_method => sub {
+                return $name
+                    unless $description;
+
+                return $description
+                    unless $contains_html;
+
+                return FixMyStreet::Template::SafeString->new($description);
+            },
         };
     }
 

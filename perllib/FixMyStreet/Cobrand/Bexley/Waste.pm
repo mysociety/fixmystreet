@@ -323,6 +323,8 @@ sub bin_services_for_address {
             service_id     => $service->{ServiceItemName},
             service_name        => $container->{name},
             service_description => $container->{description},
+            service_description_contains_html =>
+                $container->{description_contains_html},
             round_schedule => $service->{RoundSchedule},
             round          => $round,
             next => {
@@ -887,8 +889,9 @@ HTML
             description => 'Glass bottles and jars',
         },
         'MDR-SACK' => {
-            name => 'Clear Sack(s)',
-            description => $clear_sack_desc,
+            name                      => 'Clear Sack(s)',
+            description               => $clear_sack_desc,
+            description_contains_html => 1,
         },
         'PA-1100' => {
             name        => 'Blue Recycling Bin',

@@ -328,6 +328,7 @@ FixMyStreet::override_config {
                 }
             );
             my %defaults = (
+                service_description_contains_html => undef,
                 next => {
                     changed => 0,
                     ordinal => ignore(),
