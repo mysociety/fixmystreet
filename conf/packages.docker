@@ -16,3 +16,5 @@ libssl-dev
 zlib1g-dev
 libxml2-dev
 libreadline-dev
+language-pack-sv
+language-pack-de

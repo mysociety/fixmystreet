@@ -42,6 +42,7 @@
         - A cobrand level text override for the details field label on new reports can now be configured.
         - Cobrands can provide per-category custom distances for duplicate lookup. #4746
         - Add perl 5.38 support.
+        - Add German and Swiss language packs to default
     - Performance improvements:
         - Reduce database queries on shortlist page.
         - Provide ResultSet fallback translation in lookup.
