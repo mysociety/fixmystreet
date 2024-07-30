@@ -105,7 +105,7 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h, $contact) = @_;
+    my ($self, $row, $h) = @_;
 
     my $open311_only = [
         { name => 'fixmystreet_id',
@@ -125,13 +125,6 @@ sub open311_extra_data_include {
         { name => 'group',
           value => $row->get_extra_metadata('group', '') },
     ];
-
-    # Surrey Open311 doesn't actually use the service_code value we send, but it
-    # must pass the input schema validation of open311-adapter. The majority of the
-    # Surrey contacts currently have actual email addresses, so we instead send
-    # the contact row ID.
-    # XXX this feels a bit hacky, is there a better way?
-    $contact->email($contact->id);
 
     return $open311_only;
 }
