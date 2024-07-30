@@ -169,9 +169,21 @@ sub index : Path : Args(0) {
             }
         };
 
+        # Have to convert ampersand to web style here, but only
+        # should be done for group members as group names have
+        # this is done in the template
+        my %convert;
+        while (my ($key, $value) = each %display_categories) {
+            if ($key =~ /-group-/) {
+                $key =~ s/ & / &amp; /g;
+            };
+            $convert{$key} = $value;
+        };
+        %display_categories = %convert;
+
         $c->stash->{category} = \@categories;
         $c->stash->{groups_selected_from} = \@groups_selected_from;
-        $c->stash->{display_categories} = { reverse %display_categories };
+        $c->stash->{display_categories} = \%display_categories;
         $c->stash->{ward} = [ $c->get_param_list('ward') ];
 
         if ($c->user_exists) {
@@ -274,8 +286,8 @@ sub generate_grouped_data : Private {
         %grouped = map { $_->category => {} } @{$c->stash->{contacts}};
     }
     my $problems = $c->stash->{objects_rs}->search(undef, {
-        group_by => [ map { ref $_ ? $_->{-as} : $_ } (@groups, 'me.extra') ],
-        select   => [ @groups, { count => 'me.id' }, 'me.extra' ],
+        group_by => [ map { ref($_) eq 'HASH'  ? $_->{-as} : $_ } (@groups,  \"me.extra->>'group'") ],
+        select   => [ @groups, { count => 'me.id' }, \"me.extra->>'group'" ],
         as       => [ @groups == 2 ? qw/key1 key2 count extra/ : qw/key1 count extra/ ],
     } );
     $c->stash->{group_by} = $group_by;
@@ -288,10 +300,9 @@ sub generate_grouped_data : Private {
             $col2 = $state_map->{$cols{key2}};
         }
         if ($group_by eq 'category+state' || $group_by eq 'category') {
-            if ($col3 && decode_json($col3)->{group}) {
-                my $group = decode_json($col3)->{group};
-                if (grep { /$group/ } @{$c->stash->{groups_selected_from}} ) {
-                    $col1 = decode_json($col3)->{group} . "::" . $col1;
+            if ($col3) {
+                if (!@{$c->stash->{groups_selected_from}} || grep { /$col3/ } @{$c->stash->{groups_selected_from}} ) {
+                    $col1 = $col3 . "::" . $col1;
                 } else {
                     next;
                 }

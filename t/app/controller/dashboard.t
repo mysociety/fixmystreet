@@ -194,7 +194,6 @@ FixMyStreet::override_config {
         test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 1, 0, 0, 1, 3, 0, 4, 7);
         $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Litter-group-");
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 1, 0, 0, 1, 4, 0, 4, 8);
-
         my ($sub_pothole_pavement) = $mech->create_problems_for_body(1, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'no2fat' });
         $sub_pothole_pavement->set_extra_metadata( group => 'Pavements');
         $sub_pothole_pavement->update;
@@ -206,8 +205,8 @@ FixMyStreet::override_config {
         $sub_pothole_road->update;
         $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Litter-group-");
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 2, 0, 4, 6, 1, 0, 0, 1, 4, 1, 4, 9);
-        $sub_pothole_pavement->delete; $sub_pothole_pavement->update;
-        $sub_pothole_road->delete; $sub_pothole_road->update;
+        $sub_pothole_pavement->delete;
+        $sub_pothole_road->delete;
     };
 
     subtest 'test grouping' => sub {
