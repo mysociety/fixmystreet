@@ -31,7 +31,7 @@ my ($opts, $usage) = describe_options(
     ['verbose|v', 'more verbose output'],
     ['nomail', 'do not send any email, print instead'],
     ['debug', 'always try and send reports (no back-off skipping)'],
-    ['id', 'only try and send report with this ID (implies debug)'],
+    ['id=i', 'only try and send report with this ID (implies debug)'],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;
