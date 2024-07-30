@@ -610,7 +610,8 @@ sub bin_future_collections {
     }
 
     my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
-    my $end = $start->clone->add(months => 3);
+    my %timeframe = $self->bin_future_timeframe;
+    my $end = $start->clone->add(%timeframe);
 
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
@@ -629,6 +630,8 @@ sub bin_future_collections {
     }
     return $events;
 }
+
+sub bin_future_timeframe { ( months => 3 ) }
 
 sub split_echo_external_status_code { 1 }
 

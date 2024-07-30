@@ -8,9 +8,25 @@ with 'FixMyStreet::Roles::Cobrand::Adelante';
 use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
 
+=over 4
+
+=item * As Merton shares An Echo, we use NLPG to restrict results to Merton
+
+=cut
+
 has lpi_value => ( is => 'ro', default => 'MERTON' );
 
+=item * Merton has a Saturday 1 July date format
+
+=cut
+
 sub bin_day_format { '%A %-d %B' }
+
+=item * Merton calendars only look two weeks into the future
+
+=cut
+
+sub bin_future_timeframe { ( days => 15 ) }
 
 sub waste_check_staff_payment_permissions {
     my $self = shift;
