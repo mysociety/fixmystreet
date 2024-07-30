@@ -604,6 +604,7 @@ sub bin_future_collections {
     my @tasks;
     my %names;
     foreach (@$services) {
+        next unless $_->{service_task_id};
         push @tasks, $_->{service_task_id};
         $names{$_->{service_task_id}} = $_->{service_name};
     }
