@@ -56,6 +56,27 @@ use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
 use constant MISSED_COLLECTION_SERVICE_PROPERTY_ID => 68;
 use constant REQUEST_SERVICE_PROPERTY_ID => 69;
 
+sub fetch_whitespace_data {
+    my ($self, $method, $uprn) = @_;
+
+    my $c = $self->{c};
+
+    # Check if we've already fetched the data for this UPRN
+    if (!$c->stash->{whitespace_data} || $c->stash->{whitespace_data_uprn} ne $uprn) {
+        # If not, fetch all the data and store it in the stash
+        my $data = $self->whitespace->call_api($c, "bexley", "bin_days_page:$uprn", 0,
+            GetSiteInfo => [$uprn],
+            GetSiteCollections => [$uprn],
+            GetSiteWorksheets => [$uprn],
+            GetSiteContracts => [$uprn],
+        );
+        $c->stash->{whitespace_data} = $data;
+        $c->stash->{whitespace_data_uprn} = $uprn;
+    }
+
+    return $c->stash->{whitespace_data}->{"$method $uprn"};
+}
+
 sub waste_fetch_events {
     my ( $self, $params ) = @_;
 
@@ -182,7 +203,7 @@ sub bin_addresses_for_postcode {
 sub look_up_property {
     my ( $self, $uprn ) = @_;
 
-    my $site = $self->whitespace->GetSiteInfo($uprn);
+    my $site = $self->fetch_whitespace_data('GetSiteInfo', $uprn);
 
     # We assume USRN is the same between parent and child addresses
     my $usrn = BexleyAddresses::usrn_for_uprn($uprn);
@@ -240,14 +261,14 @@ sub bin_services_for_address {
     my $property = shift;
 
     my $uprn = $property->{uprn};
-    my $site_services = $self->whitespace->GetSiteCollections($uprn);
+    my $site_services = $self->fetch_whitespace_data('GetSiteCollections', $uprn);
 
     # Get parent property services if no services found
     if ( !@{ $site_services // [] }
         && $property->{parent_property} )
     {
         $uprn = $property->{parent_property}{uprn};
-        $site_services = $self->whitespace->GetSiteCollections($uprn);
+        $site_services = $self->fetch_whitespace_data('GetSiteCollections', $uprn);
 
         # A property is only communal if it has a parent property AND doesn't
         # have its own list of services
@@ -522,7 +543,7 @@ sub _open_reports {
     my %open_reports;
 
     foreach my $uprn (@uprns) {
-        my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
+        my $worksheets = $self->fetch_whitespace_data('GetSiteWorksheets', $uprn);
 
         for my $ws (@$worksheets) {
             next
