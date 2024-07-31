@@ -20,7 +20,7 @@
     <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
     [% IF service_data.size %]
       [% TRY %][% PROCESS waste/_calendar.html %][% CATCH file %]
-      <a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar (.ics file)</a>
+      <a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar</a>
       [% END %]
     [% END %]
   </div>
