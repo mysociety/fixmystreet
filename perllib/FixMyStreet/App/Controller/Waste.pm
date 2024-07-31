@@ -302,6 +302,7 @@ sub confirm_subscription : Private {
     $c->stash->{override_template} = $c->stash->{template};
 
     return unless $p->state eq 'unconfirmed' || $already_confirmed;
+    return if $already_confirmed && $p->get_extra_metadata('payment_reference'); # Already confirmed
 
     if ($c->cobrand->suppress_report_sent_email($p)) {
         # Send bulky confirmation email after report confirmation (see

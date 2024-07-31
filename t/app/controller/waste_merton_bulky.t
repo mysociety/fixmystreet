@@ -383,11 +383,15 @@ FixMyStreet::override_config {
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
+            is $new_report->comments->count, 1;
             my $update = $new_report->comments->first;
             is $update->state, 'confirmed';
             is $update->text, 'Payment confirmed, reference 54321, amount £37.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(0);
+
+            $mech->get_ok("/waste/pay_complete/$report_id/$token");
+            is $new_report->comments->count, 1;
         };
 
         subtest 'Bulky goods email confirmation' => sub {
