@@ -5,7 +5,7 @@ SET ics_link = c.uri_for_action('waste/calendar_ics', [ property.id ]);
 
 <script type="module" src="[% version('/vendor/clipboard-copy-element.js') %]"></script>
 
-<script>
+<script nonce="[% csp_nonce %]">
 (function(){
     var userAgent = navigator.userAgent,
         os = 'pc';
@@ -43,7 +43,7 @@ clipboard-copy:defined .ics-loading { display: none; }
 <p class="phone-only">Or press and hold <a href="[% ics_link %]">this link</a> until a menu appears, then tap “Copy Link” or “Copy Link Address”.</p>
 <p class="computer-only">Or right-click <span class="mac-only">/ Ctrl-click</span> <a href="[% ics_link %]">this link</a>, then click “Copy Link” or “Copy Link Address”.</p>
 
-<script>
+<script nonce="[% csp_nonce %]">
 document.addEventListener('clipboard-copy', function(event) {
     const t = event.target;
     t.textContent = 'Copied!';
