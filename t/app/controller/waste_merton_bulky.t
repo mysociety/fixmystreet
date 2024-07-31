@@ -386,6 +386,7 @@ FixMyStreet::override_config {
             my $update = $new_report->comments->first;
             is $update->state, 'confirmed';
             is $update->text, 'Payment confirmed, reference 54321, amount £37.00';
+            is $update->get_extra_metadata('fms_extra_payments'), '54321|37.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(0);
         };
@@ -648,6 +649,7 @@ FixMyStreet::override_config {
             is $new_report->comments->count, 1; # Payment confirmed update
             my $comment = $new_report->comments->first;
             is $comment->text, 'Payment confirmed, reference 54321, amount £0.00';
+            is $comment->get_extra_metadata('fms_extra_payments'), '54321|0.00|54321|37.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(0);
 
@@ -772,6 +774,7 @@ FixMyStreet::override_config {
             my $update = $new_report->comments->first;
             is $update->state, 'confirmed';
             is $update->text, 'Payment confirmed, reference 54321, amount £23.75';
+            is $update->get_extra_metadata('fms_extra_payments'), '54321|23.75|6789|0.00|54321|37.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(1); # Cancellation update should come through now
             $mech->clear_emails_ok;
