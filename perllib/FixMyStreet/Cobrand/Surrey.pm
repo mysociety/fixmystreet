@@ -115,6 +115,11 @@ sub open311_config {
     $params->{upload_files} = 1;
 }
 
+sub open311_config_updates {
+    my ($self, $params) = @_;
+    $params->{multi_photos} = 1;
+}
+
 sub open311_extra_data_include {
     my ($self, $row, $h) = @_;
 
