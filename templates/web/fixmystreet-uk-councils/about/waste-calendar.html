@@ -1,4 +1,7 @@
-[% PROCESS 'waste/header.html', title = 'Add your waste collection days to your online calendar' %]
+[%
+PROCESS 'waste/header.html', title = 'Add your waste collection days to your online calendar';
+SET ics_link = c.uri_for_action('waste/calendar_ics', [ property.id ]);
+%]
 
 <script type="module" src="[% version('/vendor/clipboard-copy-element.js') %]"></script>
 
@@ -30,17 +33,15 @@ clipboard-copy:defined .ics-loading { display: none; }
 <h2>Step 1: copy the link to the calendar</h2>
 
 <div aria-live="polite" id="ics-announce"></div>
-<p>Click the Copy button below to copy the calendar link shown to your clipboard:
-<p style="display:flex; gap: 1em; justify-content: center; align-items: center;">
-    <clipboard-copy id="ics-copy" for="ics-path" class="btn">
-        <span class="ics-loading">Loading...</span>
-        <span class="ics-loaded">Copy</span>
-    </clipboard-copy>
-    <a href="[% c.uri_for_action('waste/calendar_ics', [ property.id ]) %]" id="ics-path">[% c.uri_for_action('waste/calendar_ics', [ property.id ]) %]</a>
+<p>Click the Copy button below to copy the calendar link to your clipboard:
+<p><clipboard-copy id="ics-copy" value="[% ics_link %]" class="btn">
+    <span class="ics-loading">Loading...</span>
+    <span class="ics-loaded">Copy</span>
+</clipboard-copy>
 </p>
 
-<p class="phone-only">Or press and hold the link until a menu appears, then tap “Copy Link” or “Copy Link Address”.</p>
-<p class="computer-only">Or right-click <span class="mac-only">/ Ctrl-click</span> the link, then click “Copy Link” or “Copy Link Address”.</p>
+<p class="phone-only">Or press and hold <a href="[% ics_link %]">this link</a> until a menu appears, then tap “Copy Link” or “Copy Link Address”.</p>
+<p class="computer-only">Or right-click <span class="mac-only">/ Ctrl-click</span> <a href="[% ics_link %]">this link</a>, then click “Copy Link” or “Copy Link Address”.</p>
 
 <script>
 document.addEventListener('clipboard-copy', function(event) {
