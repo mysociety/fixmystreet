@@ -69,6 +69,20 @@ html {
   border-top: 0.1rem solid $base_bg;
 }
 
+.report-list-filters {
+  #filter_categories + .multi-select-container--open {
+    .govuk-multi-select__label {
+      display: block;
+    }
+
+    .multi-select-menu {
+      width: 250px !important;
+      left: auto;
+      right: 0; 
+    }
+  }
+}
+
 /* FOOTER */
 .scc-footer {
   .footer-upper-section {
