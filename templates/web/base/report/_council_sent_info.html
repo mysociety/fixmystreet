@@ -36,6 +36,7 @@
             [%- END -%]
         [%- ELSIF c.cobrand.moniker == 'surrey' %]
             [% # don't display anything until report is sent to Surrey %]
+        [%- ELSIF c.cobrand.moniker == 'nottinghamshirepolice' %]
         [%- ELSIF problem.cobrand_data == 'waste' %]
             [%- tprintf('WasteWorks ref:&nbsp;%s', problem.id) %].
         [%- ELSE %]

@@ -1,2 +1,67 @@
 @import "_variables";
 @import "../sass/layout";
+
+#site-logo {
+  background-size: contain;
+  height: $mappage-header-height;
+  width: 16.5rem;
+}
+
+.postcode-form-box {
+  overflow: visible; // Doesn't cover the outline when focusing elements
+}
+
+// GENERAL
+
+.alertpage {
+  p {
+    max-width: 59.5rem;
+  }
+}
+
+// HEADER
+.nav-menu--main a, .nav-menu--main span {
+  padding: 1em;
+}
+
+.nav-menu--main span,
+.nav-menu--main span.report-a-problem-btn:hover {
+  background-color: $blue-1000;
+  color: $primary_text;
+  text-decoration: none;
+}
+
+// FOOTER
+footer.main-footer {
+  padding-top: 5rem;
+  .main-content {
+    gap: 2.5rem;
+    flex-direction: row;
+    -webkit-box-align: start;
+    align-items: start;
+    padding-bottom: 7.5rem;
+  }
+
+  .list-wrapper {
+    -webkit-box-align: start;
+    align-items: start;
+  }
+
+  ul {
+    -webkit-box-align: start;
+    align-items: start;
+    text-align: start;
+  }
+}
+
+// HOMEPAGE
+
+#front-main {
+  padding-bottom: 4rem;
+}
+
+.site-message {
+  font-size: 1rem;
+  padding: 20px;
+  padding-top: 10px;
+}
