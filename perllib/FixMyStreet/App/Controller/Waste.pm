@@ -742,7 +742,13 @@ sub bin_day_deny : Private {
     $c->detach('/page_error_403_access_denied', [ $msg ]);
 }
 
-sub calendar : Chained('property') : PathPart('calendar.ics') : Args(0) {
+sub calendar : Chained('property') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->forward('/about/page', ['waste-calendar']);
+}
+
+sub calendar_ics : Chained('property') : PathPart('calendar.ics') : Args(0) {
     my ($self, $c) = @_;
     $c->res->header(Content_Type => 'text/calendar');
     require Data::ICal::RFC7986;
