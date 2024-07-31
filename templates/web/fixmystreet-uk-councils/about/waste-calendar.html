@@ -1,0 +1,63 @@
+[% PROCESS 'waste/header.html', title = 'Add your waste collection days to your online calendar' %]
+
+<script type="module" src="[% version('/vendor/clipboard-copy-element.js') %]"></script>
+
+<script>
+(function(){
+    var userAgent = navigator.userAgent,
+        os = 'pc';
+    if (userAgent.indexOf('Mobi') > -1) os = 'phone';
+    else if (userAgent.indexOf('Mac') > -1) os = 'mac';
+    document.documentElement.classList.add('os-' + os);
+})();
+</script>
+
+<style>
+clipboard-copy:not(:defined) .ics-loaded { display: none; }
+clipboard-copy:defined .ics-loading { display: none; }
+.mac-only { display: none; }
+.os-mac .mac-only { display: initial; }
+.os-pc .phone-only, .os-mac .phone-only { display: none; }
+.os-phone .computer-only { display: none; }
+</style>
+
+<div class="waste__loading_wrapper">
+
+<h1>Add your waste collection days to your online calendar</h1>
+
+<p>Subscribe using your smartphone or computer, and your online calendar will always show your next collection days.</p>
+
+<h2>Step 1: copy the link to the calendar</h2>
+
+<div aria-live="polite" id="ics-announce"></div>
+<p>Click the Copy button below to copy the calendar link shown to your clipboard:
+<p style="display:flex; gap: 1em; justify-content: center; align-items: center;">
+    <clipboard-copy id="ics-copy" for="ics-path" class="btn">
+        <span class="ics-loading">Loading...</span>
+        <span class="ics-loaded">Copy</span>
+    </clipboard-copy>
+    <a href="[% c.uri_for_action('waste/calendar_ics', [ property.id ]) %]" id="ics-path">[% c.uri_for_action('waste/calendar_ics', [ property.id ]) %]</a>
+</p>
+
+<p class="phone-only">Or press and hold the link until a menu appears, then tap “Copy Link” or “Copy Link Address”.</p>
+<p class="computer-only">Or right-click <span class="mac-only">/ Ctrl-click</span> the link, then click “Copy Link” or “Copy Link Address”.</p>
+
+<script>
+document.addEventListener('clipboard-copy', function(event) {
+    const t = event.target;
+    t.textContent = 'Copied!';
+    document.getElementById('ics-announce').setAttribute('aria-label', 'Copied');
+});
+</script>
+
+<h2>Step 2: subscribe to the calendar</h2>
+<p>Follow these instructions and paste in the link you just copied when it asks you for the calendar’s address or URL.</p>
+<ul>
+<li><a href="https://support.apple.com/en-gb/HT202361">iPhone, iPad, Mac</a></li>
+<li><a href="https://support.google.com/calendar/answer/37100?hl=en&amp;co=GENIE.Platform%3DDesktop#:~:text=Use%20a%20link%20to%20add%20a%20public%20calendar">Google Calendar</a></li>
+<li><a href="https://support.office.com/en-us/article/import-or-subscribe-to-a-calendar-in-outlook-com-cff1429c-5af6-41ec-a5b4-74f2c278e98c">Outlook</a></li>
+</ul>
+
+</div>
+
+[% INCLUDE footer.html %]
