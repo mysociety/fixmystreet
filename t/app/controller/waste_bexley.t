@@ -457,7 +457,7 @@ FixMyStreet::override_config {
 
     subtest 'Checking calendar' => sub {
         $mech->follow_link_ok({ text => 'Add to your calendar' });
-        $mech->follow_link_ok({ text_regex => qr/calendar\.ics/ });
+        $mech->follow_link_ok({ text_regex => qr/this link/ });
         $mech->content_contains('BEGIN:VCALENDAR');
         my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
         shift @events; # Header
