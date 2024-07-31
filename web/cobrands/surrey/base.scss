@@ -169,6 +169,16 @@ a#geolocate_link,
   background-repeat: no-repeat;
   background-size: 35px;
   background-position: left 25px top 20px;
+
+  h3 {
+    font-weight: bold;
+  }
+
+  &.error-message {
+    @include svg-background-image('/cobrands/surrey/images/info-circle-red');
+
+    border: 0.3571428571rem solid $surrey_red;
+  }
 }
 
 /* ALERT PAGE */
