@@ -1,2 +1,4 @@
 <h2>We have received your report.</h2>
-<p>You will receive an email with a reference number for this report soon, please quote it in any enquiries.</p>
+[% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
+    <p>You will receive an email with a reference number for this report soon, please quote it in any enquiries.</p>
+[% END %]
