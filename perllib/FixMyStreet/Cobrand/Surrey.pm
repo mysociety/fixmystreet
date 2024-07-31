@@ -33,6 +33,12 @@ sub disambiguate_location {
 
 sub suppress_reporter_alerts { 1 }
 
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
 sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' }
 
 =item * The privacy policy is held on Surrey's own site
