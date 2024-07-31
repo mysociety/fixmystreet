@@ -344,6 +344,7 @@ sub confirm_subscription : Private {
     }
 
     if ($already_confirmed) {
+        $p->discard_changes;
         $c->forward('add_payment_confirmation_update', [ $p, $reference ]);
     }
 
@@ -367,9 +368,14 @@ sub add_payment_confirmation_update : Private {
     } else {
         $reference_text .= $reference;
     }
+    my $payments = $c->cobrand->get_all_payments($p);
+    $payments = join('|', map { "$_->{ref}|$_->{amount}" } @$payments);
     my $comment = $p->add_to_comments({
         text => "Payment confirmed, $reference_text, amount £$payment",
         user => $c->cobrand->body->comment_user || $p->user,
+        extra => {
+            fms_extra_payments => $payments,
+        }
     });
     $p->cancel_update_alert($comment->id);
 }
