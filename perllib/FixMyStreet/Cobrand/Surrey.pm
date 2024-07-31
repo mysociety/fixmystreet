@@ -17,13 +17,18 @@ sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
 
+    # Searching for an A-road (e.g. A3) unhelpfully results in only "Surrey"
+    # being shown in the results. Searching for "A3 Road" returns something
+    # slightly more useful, so append " Road" to the search string if needed.
+    $string .= ' Road' if $string =~ /^A[0-9 ]+$/i;
+
     return {
         %{ $self->SUPER::disambiguate_location() },
         centre => '51.2478663,-0.4205895',
         span   => '0.4000678,0.9071629',
         bounds => [ 51.0714965, -0.8489465, 51.4715643, 0.0582164 ],
         town => 'Surrey',
-
+        string => $string,
     };
 }
 
