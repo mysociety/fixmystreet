@@ -445,7 +445,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Cancel booking');
 
         $report->discard_changes;
-        is $report->state, 'closed', 'Original report closed';
+        is $report->state, 'cancelled', 'Original report cancelled';
         like $report->detail, qr/Cancelled at user request/, 'Original report detail field updated';
 
         subtest 'Viewing original report summary after cancellation' => sub {
@@ -459,7 +459,7 @@ FixMyStreet::override_config {
 
     subtest 'Missed collections' => sub {
         my $report_id = $report->id;
-        $report->update({ external_id => 'a-guid' });
+        $report->update({ external_id => 'a-guid', state => 'closed' }); # Cancelled can't be reported
 
         # Fixed date still set to 5th July
         $mech->get_ok('/waste/12345');

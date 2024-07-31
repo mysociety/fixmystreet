@@ -776,7 +776,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });
         $mech->content_contains('Payment Failed');
         $report->discard_changes;
-        is $report->state, 'closed', "report cancelled after staff marked as payment failed";
+        is $report->state, 'cancelled', "report cancelled after staff marked as payment failed";
         my $cancellation_update = $report->comments->first;
         is $cancellation_update->text, "Booking cancelled";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;

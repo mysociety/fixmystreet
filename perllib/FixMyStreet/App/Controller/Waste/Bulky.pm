@@ -451,11 +451,11 @@ sub process_bulky_cancellation : Private {
     return 1;
 }
 
-# Mark original report as closed
+# Mark original report as cancelled
 sub cancel_collection : Private {
     my ($self, $c, $report, $type) = @_;
 
-    $report->state('closed');
+    $report->state('cancelled');
     my $description = $c->stash->{non_user_cancel}
         ? "Cancelled" : $type eq 'amendment' ? 'Cancelled due to amendment' : "Cancelled at user request";
     $report->detail($report->detail . " | " . $description);
