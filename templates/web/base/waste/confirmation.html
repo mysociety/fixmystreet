@@ -21,10 +21,8 @@ END ~%]
           [% END %]
         </p>
         <p>
-          [% IF report.category == 'Request new container' %]
-            [% IF c.cobrand.moniker == 'kingston' || c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'bromley' %]
+          [% IF report.category == 'Request new container' AND c.cobrand.wasteworks_config.request_timeframe %]
               Containers typically arrive within [% c.cobrand.wasteworks_config.request_timeframe %], but this may vary due to demand.
-            [% END %]
           [% END %]
           [% INCLUDE 'waste/_report_ids.html' %]
         </p>
