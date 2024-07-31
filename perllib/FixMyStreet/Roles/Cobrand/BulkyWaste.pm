@@ -244,6 +244,30 @@ sub get_total_paid {
     return $total;
 }
 
+=head2 get_all_payments
+
+Recursively locate the payments made.
+
+=cut
+
+sub get_all_payments {
+    my ($self, $p, $refs) = @_;
+
+    return $refs unless $p;
+
+    my $payment = $p->get_extra_field_value('payment') || 0;
+    $payment = sprintf( '%.2f', $payment / 100 );
+    my $ref = $p->get_extra_metadata('chequeReference') || $p->get_extra_metadata('payment_reference') || '';
+    push @$refs, { ref => $ref, amount => $payment };
+
+    if (my $previous_id = $p->get_extra_metadata('previous_booking_id')) {
+        my $previous = FixMyStreet::DB->schema->resultset('Problem')->find($previous_id);
+        $self->get_all_payments($previous, $refs)
+    }
+
+    return $refs;
+}
+
 sub find_unconfirmed_bulky_collections {
     my ( $self, $uprn ) = @_;
 

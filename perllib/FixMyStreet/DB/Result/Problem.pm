@@ -1572,6 +1572,7 @@ sub waste_confirm_payment {
     }
 
     if ($already_confirmed) {
+        $self->discard_changes;
         $self->bulky_add_payment_confirmation_update($reference);
     }
 
@@ -1596,9 +1597,14 @@ sub bulky_add_payment_confirmation_update {
     } else {
         $reference_text .= $reference;
     }
+    my $payments = $cobrand->get_all_payments($self);
+    $payments = join('|', map { "$_->{ref}|$_->{amount}" } @$payments);
     my $comment = $self->add_to_comments({
         text => "Payment confirmed, $reference_text, amount £$payment",
         user => $cobrand->body->comment_user || $self->user,
+        extra => {
+            fms_extra_payments => $payments,
+        }
     });
     $self->cancel_update_alert($comment->id);
 }
