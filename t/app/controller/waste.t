@@ -333,7 +333,8 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/waste/12345';
     };
     subtest 'Checking calendar' => sub {
-        $mech->follow_link_ok({ text => 'Add to your calendar (.ics file)' });
+        $mech->follow_link_ok({ text => 'Add to your calendar' });
+        $mech->follow_link_ok({ text_regex => qr/this link/ });
         $mech->content_contains('BEGIN:VCALENDAR');
         my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
         shift @events; # Header
