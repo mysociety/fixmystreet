@@ -887,7 +887,8 @@ you give e.g. estimated timescales or other useful information up front.
 
 If you enter text in the ‘Text for email alert field’, the template text will update
 the report on the website and the email text will be sent to the user if they have
-opted into alerts.
+opted into alerts. Otherwise the email text will be the same as the template text
+that has updated the report.
 
 
 
