@@ -21,7 +21,7 @@ use Moo;
 # checks for Confirm.
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Alloy';
-with 'FixMyStreet::Roles::CobrandNorthants';
+with 'FixMyStreet::Roles::Cobrand::Northants';
 with 'FixMyStreet::Roles::BoroughEmails';
 
 =head2 Defaults
