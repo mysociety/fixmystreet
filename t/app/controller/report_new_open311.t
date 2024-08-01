@@ -89,9 +89,10 @@ $mech->create_contact_ok(
 my $staff_user = $mech->create_user_ok('staff@example.org', name => 'staff', from_body => $body->id);
 
 my $body3 = $mech->create_body_ok(164186, 'Northamptonshire Highways', {}, { cobrand => 'northamptonshire' });
-my $ncc_staff_user = $mech->create_user_ok('ncc_staff@example.org', name => 'ncc staff', from_body => $body3->id);
+my $body4 = $mech->create_body_ok(164186, 'West Northamptonshire Council', {}, { cobrand => 'westnorthants' });
+my $wnc_staff_user = $mech->create_user_ok('wnc_staff@example.org', name => 'WNC staff', from_body => $body4->id);
 $mech->create_contact_ok(
-    body_id => $body3->id,
+    body_id => $body4->id,
     category => 'Flooding',
     email => '104',
     extra => { _fields => [
@@ -526,18 +527,18 @@ subtest "Staff users still see disable form categories" => sub {
 
 subtest "Staff users disable form categories" => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'northamptonshire',
+        ALLOWED_COBRANDS => 'westnorthants',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->log_out_ok;
-        $mech->log_in_ok($ncc_staff_user->email);
+        $mech->log_in_ok($wnc_staff_user->email);
 
         $mech->get_ok('/report/new?latitude=52.236251&longitude=-0.892052');
         $mech->submit_form_ok({ with_fields => {
             category => 'Flooding', title => 'Title', detail => 'Detail',
         } });
 
-        my $prob = $ncc_staff_user->problems->first;
+        my $prob = $wnc_staff_user->problems->first;
         ok $prob, 'problem created';
         is $prob->title, "Title", 'Report title correct';
     };

@@ -41,7 +41,7 @@ for my $body (
     { area_id => 2232, name => 'Lincolnshire County Council', cobrand => 'lincolnshire' },
     { area_id => 2237, name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
     { area_id => 2600, name => 'Rutland County Council', cobrand => 'rutland' },
-    { area_id => 164186, name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
+    { area_id => 164186, name => 'West Northamptonshire Council', cobrand => 'westnorthants' },
     { area_id => 2566, name => 'Peterborough City Council', cobrand => 'peterborough' },
     { area_id => 2508, name => 'Hackney Council', cobrand => 'hackney' },
 ) {
@@ -92,7 +92,7 @@ $mech->create_contact_ok(
     email => 'trees-2600@example.com',
 );
 $mech->create_contact_ok(
-    body_id => $body_ids{164186}, # Northamptonshire
+    body_id => $body_ids{164186}, # West Northants
     category => 'Trees',
     email => 'trees-164186@example.com',
 );
@@ -652,7 +652,7 @@ foreach my $test (
         errors => [ 'Please enter a subject', 'Please enter some details', 'Emails are limited to 50 characters in length.', 'Phone numbers are limited to 20 characters in length.', 'Names are limited to 50 characters in length.'],
     },
     {
-        msg    => 'Northamptonshire validation',
+        msg    => 'West Northamptonshire validation',
         pc     => 'NN1 1NS',
         fields => {
             title         => 'This is a very long title that should fail the validation as it is really much too long to pass the validation of 120 characters',
@@ -700,7 +700,7 @@ foreach my $test (
 
         # submit initial pc form
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ { fixmystreet => '.' }, 'bromley', 'oxfordshire', 'rutland', 'lincolnshire', 'buckinghamshire', 'northamptonshire', 'peterborough', 'hackney' ],
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' }, 'bromley', 'oxfordshire', 'rutland', 'lincolnshire', 'buckinghamshire', 'westnorthants', 'peterborough', 'hackney' ],
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },

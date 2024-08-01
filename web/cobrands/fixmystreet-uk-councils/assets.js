@@ -956,8 +956,6 @@ fixmystreet.assets.northamptonshire.stylemap_barriers = new OpenLayers.StyleMap(
     'hover': fixmystreet.assets.style_default_hover
 });
 
-fixmystreet.message_controller.add_ignored_body("Northamptonshire Highways");
-
 /* Oxfordshire */
 
 fixmystreet.assets.oxfordshire = {};

@@ -130,13 +130,7 @@ sub dashboard_export_problems_add_columns {
 
 =cut
 
-sub report_validation {
-    my ($self, $report, $errors) = @_;
-
-    if ( length( $report->title ) > 120 ) {
-        $errors->{title} = sprintf( _('Summaries are limited to %s characters in length. Please shorten your summary'), 120 );
-    }
-}
+has '+max_title_length' => ( is => 'ro', default => 120 );
 
 =item * We allow staff to bypass stoppers.
 
