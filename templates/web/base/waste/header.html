@@ -5,6 +5,7 @@ IF c.cobrand.call_hook('bulky_enabled');
 END;
 %]
 [% extra_js = [
+    [ version('/vendor/clipboard-copy-element.js'), { type = "module" } ],
     version('/vendor/accessible-autocomplete.min.js'),
     version('/js/waste.js')
 ] -%]
