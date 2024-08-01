@@ -31,7 +31,7 @@ sub report_validation {
     }
 
     if ( $self->max_title_length > 0 && length( $report->title ) > $self->max_title_length ) {
-        $errors->{title} = sprintf( _('Summaries are limited to %d characters in length. Please shorten your summary'), 50 );
+        $errors->{title} = sprintf( _('Summaries are limited to %d characters in length. Please shorten your summary'), $self->max_title_length );
     }
 
     if ( length( $report->detail ) > $self->max_report_length ) {
