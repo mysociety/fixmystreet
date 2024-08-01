@@ -250,4 +250,16 @@ while( my $row = $csv->getline($fh) ) {
     }
 }
 
+# It is possible for UPRNs in child_uprns to not occur in the postcodes table
+# (an 'empty' address).
+# At least one address, UPRN 100020276242, was not being picked up
+# by Bexley WW's address lookup, because it appeared as a parent_uprn in this
+# table, but its 'child' addresses were empty.
+$db->do(<<SQL);
+DELETE FROM child_uprns
+      WHERE uprn NOT IN (
+        SELECT uprn FROM postcodes
+      )
+SQL
+
 say 'Tables populated';
