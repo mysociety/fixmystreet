@@ -77,18 +77,6 @@ sub _problems_restriction_areas { [
     '%,164186,%', # West Northamptonshire.
 ] }
 
-=item * Defects are coloured blue.
-
-Ideally this would be in Roles::CobrandNorthants, but that can't call $self->SUPER.
-
-=cut
-
-sub pin_colour {
-    my ($self, $p, $context) = @_;
-    return 'blue' if $self->is_defect($p);
-    return $self->SUPER::pin_colour($p, $context);
-}
-
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 

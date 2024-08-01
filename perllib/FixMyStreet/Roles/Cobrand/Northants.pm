@@ -94,6 +94,16 @@ sub is_defect {
     return $p->user_id == $self->body->comment_user_id;
 }
 
+=item * Defects are coloured blue.
+
+=cut
+
+around 'pin_colour' => sub {
+    my ($orig, $self, $p, $context) = @_;
+    return 'blue' if $self->is_defect($p);
+    return $self->$orig($p, $context);
+};
+
 =item * We include external IDs in dashboard exports.
 
 =cut
