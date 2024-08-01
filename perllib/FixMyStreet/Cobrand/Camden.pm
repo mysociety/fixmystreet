@@ -114,6 +114,32 @@ sub open311_munge_update_params {
     $params->{service_code} = $contact->email;
 }
 
+=head2 open311_extra_data_include
+
+Include nearest_address with the title which goes
+to Confirm's location field
+
+=cut
+
+around open311_extra_data_include => sub {
+    my ($orig, $self, $row, $h, $contact) = @_;
+
+    my $open311_only = $self->$orig($row, $h);
+
+    if ($contact->email =~ /^ConfirmTrees/) {
+
+        if (my $address = $row->nearest_address) {
+            for my $field (@$open311_only) {
+                if ($field->{name} eq 'title') {
+                    $field->{value} = $field->{value} . "; $address";
+                }
+            }
+        }
+    }
+
+    return $open311_only;
+};
+
 =head2 should_skip_sending_update
 
 If we fail a couple of times to send an update, stop trying.

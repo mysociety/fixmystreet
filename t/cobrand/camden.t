@@ -22,6 +22,9 @@ my $camden = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Camden Council', {
     cobrand => 'camden'
 });
 
+my $problem = Test::MockModule->new('FixMyStreet::DB::Result::Problem');
+$problem->mock('nearest_address', sub { return '1 High Street, City Centre' });
+
 $mech->create_contact_ok(body_id => $camden->id, category => 'Potholes', email => 'potholes@camden.fixmystreet.com');
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffer', from_body => $camden );
 
@@ -148,6 +151,28 @@ FixMyStreet::override_config {
         like $p->comments->first->text, qr/This has been forwarded to/, 'correct comment text';
 
         $mech->email_count_is(1);
+    };
+
+    my $tree_cat = $mech->create_contact_ok(
+        body_id  => $camden->id,
+        category => 'Tree overhanging',
+        email    => 'ConfirmTrees-100',
+    );
+
+    subtest 'open311_extra_data_include' => sub {
+        my $cobrand = FixMyStreet::Cobrand::Camden->new;
+
+        my ($report) = $mech->create_problems_for_body(
+            1,
+            $camden->id,
+            'My report',
+            {   cobrand => 'camden',
+                user    => $staffuser,
+                category => $tree_cat->category,
+            },
+        );
+
+        is $cobrand->open311_extra_data_include($report, undef, $tree_cat)->[1]->{value}, $report->title . '; 1 High Street, City Centre', "Location data added to title for sending to Confirm";
     };
 };
 
