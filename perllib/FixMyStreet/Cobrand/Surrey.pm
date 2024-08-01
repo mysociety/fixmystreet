@@ -17,10 +17,12 @@ sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
 
-    # Searching for an A-road (e.g. A3) unhelpfully results in only "Surrey"
-    # being shown in the results. Searching for "A3 Road" returns something
-    # slightly more useful, so append " Road" to the search string if needed.
-    $string .= ' Road' if $string =~ /^A[0-9 ]+$/i;
+    if ($self->get_geocoder() eq 'Bing') {
+        # Searching for an A-road (e.g. A3) unhelpfully results in only "Surrey"
+        # being shown in the results. Searching for "A3 Road" returns something
+        # slightly more useful, so append " Road" to the search string if needed.
+        $string .= ' Road' if $string =~ /^A[0-9 ]+$/i;
+    }
 
     return {
         %{ $self->SUPER::disambiguate_location() },
@@ -89,6 +91,15 @@ sub get_town {
     my $town = $address->{town} || $address->{city} || $address->{TOWN_NAME} || $address->{locality} || $address->{village} || $address->{suburb};
     return $town;
 }
+
+sub get_geocoder {
+    my ($self) = @_;
+    my $c = $self->{c};
+    # XXX Surrey are comparing Bing and OSM geocoders. For now, use Bing by default
+    # but for logged-in staff and superusers use OSM.
+    return ($c->user_exists && ($c->user->from_body || $c->user->is_superuser)) ? 'OSM' : 'Bing';
+}
+
 
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
