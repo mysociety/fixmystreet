@@ -157,9 +157,10 @@ sub category : Chained('body') : PathPart('') {
             contact_id => $c->stash->{contact}->id,
         },
         {
-            order_by => ['contacts_history_id']
+            rows => 1000,
         },
-    );
+    )->order_by('-contacts_history_id')->as_subselect_rs->order_by('contacts_history_id');
+
     $c->stash->{history} = $history;
     my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } sort keys %{ FixMyStreet::SendReport->get_senders };
     $c->stash->{send_methods} = \@methods;
