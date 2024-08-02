@@ -14,11 +14,9 @@
 <em>[% updated %]</em>
 </p>
 
-<p>
-[% IF example_pc %]
-<a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]" class="admin-offsite-link">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a>
+[% IF NOT contact %]
+    <h2>[% loc('Add new category') %]</h2>
 [% END %]
-</p>
 
 [% IF body.name == 'TfL' AND c.user.is_superuser %]
 <p class="fms-admin-warning">
@@ -27,8 +25,14 @@
 </p>
 [% END %]
 
+[% IF errors %]
+  <div class="fms-admin-warning">
+    [% FOR error IN errors.values %][% error %][% IF NOT loop.last %]<br>[% END %][% END %]
+  </div>
+[% END %]
 [% INCLUDE 'admin/bodies/contact-form.html' %]
 
+[% IF history %]
 <h2>[% loc('History') %]</h2>
 <table border="1">
     <tr>
@@ -50,5 +54,6 @@
         [%- prev = contact %]
     [%- END %]
 </table>
+[% END %]
 
 [% INCLUDE 'admin/footer.html' %]

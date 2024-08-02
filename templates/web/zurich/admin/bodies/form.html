@@ -1,4 +1,4 @@
-    <form method="post" action="[% body ? c.uri_for_action('admin/bodies/edit', [ body.id ]) : c.uri_for_action('admin/bodies/index') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<form method="post">
 
     <p>
         <label for="name">[% loc('Name') %]</label>
@@ -57,10 +57,8 @@
         <input type="hidden" id="can_be_devolved" name="can_be_devolved" value="[% body.can_be_devolved %]">
 
     <p>
-    <input type="hidden" name="posted" value="body">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <p>
     <input type="submit" class="btn" value="[% body ? loc('Update body') : loc('Add body') %]">
     </p>
-    </form>
-
+</form>

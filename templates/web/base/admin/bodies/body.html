@@ -10,9 +10,7 @@
 
 [% IF body_errors.size %]
     <p class="error">[% loc('Please correct the errors below') %]</p>
-[% END %]
-
-[% IF NOT errors %]
+[% ELSE %]
 
 <p>
   [% IF example_pc %]
@@ -73,7 +71,7 @@
   </p>
 [% END %]
 
-<form method="post" action="[% c.uri_for_action('admin/bodies/edit', [ body_id ] ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<form method="post" action="[% c.uri_for_action('admin/bodies/confirm_contacts', [ body_id ] ) %]">
 
   <table cellspacing="0" cellpadding="2" border="1" id="admin_contacts">
     <tr>
@@ -88,7 +86,7 @@
 
     [% BLOCK category_row %]
       <tr [% IF cat.state == 'deleted' %]class="is-deleted"[% END %]>
-        <td class="contact-category"><a href="[% c.uri_for_action( '/admin/bodies/edit', [ body_id ], cat.category_safe ) %]">[% cat.category_display %]</a>
+        <td class="contact-category"><a href="[% c.uri_for_action( '/admin/bodies/category', [ body_id ], cat.category_safe ) %]">[% cat.category_display %]</a>
             <br>[% cat.email.replace('([;,])', '$1 ') %]</td>
         <td>
             [% cat.state %]
@@ -126,7 +124,6 @@
 
   [% IF any_not_confirmed %]
   <p>
-    <input type="hidden" name="posted" value="update">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" class="btn" name="Update statuses" value="[% loc('Update statuses') %]">
   </p>
@@ -140,35 +137,17 @@
     ") %]
 </p>
 
+[% IF NOT contact %]
+<a class="btn" href="[% c.uri_for_action('/admin/bodies/add_category', [ body.id ]) %]">[% loc('Add new category') %]</a>
+[% END %]
+
 [% END %][%# Only show all the above if no errors with below form %]
 
-<div class="admin-box">
-  [% IF NOT contact %]
-    <h2>[% loc('Add new category') %]</h2>
-  [% END %]
-
-  [% IF body.name == 'TfL' AND c.user.is_superuser %]
-  <p class="fms-admin-warning">
-      Renaming, adding, or removing categories that can only be made on red routes requires extra steps. See
-      <a href="https://wiki.mysociety.org/wiki/Transport_for_London_(TfL)#TLRN_categories">wiki</a>.
-  </p>
-  [% END %]
-
-  [% IF errors %]
-  <div class="fms-admin-warning">
-    [% FOR error IN errors.values %][% error %][% IF NOT loop.last %]<br>[% END %][% END %]
-  </div>
-  [% INCLUDE 'admin/bodies/contact-form.html' translations=contact_translations %]
-  [% ELSE  %]
-  [% INCLUDE 'admin/bodies/contact-form.html' translations={} %]
-  [% END %]
-</div>
-
-[% IF NOT errors and c.user.is_superuser %]
+[% IF c.user.is_superuser %]
 <div class="admin-box">
   <h2>[% loc('Edit body details') %]</h2>
   [% INCLUDE 'admin/bodies/form.html' %]
 </div>
-[% END %][%# Only show all the above if no errors with category form %]
+[% END %]
 
 [% INCLUDE 'admin/footer.html' %]

@@ -22,6 +22,10 @@ Admin pages
 
 =head1 METHODS
 
+=head2 index
+
+This shows a list of bodies to superusers, or redirects to a body's category list page if not.
+
 =cut
 
 sub index : Path : Args(0) {
@@ -35,8 +39,6 @@ sub index : Path : Args(0) {
         return $c->res->redirect( $c->uri_for_action('admin/bodies/edit', [ $c->user->from_body->id ] ) );
     }
 
-    $c->forward( '/auth/get_csrf_token' );
-
     my $edit_activity = $c->model('DB::ContactsHistory')->search(
         undef,
         {
@@ -48,14 +50,6 @@ sub index : Path : Args(0) {
     );
 
     $c->stash->{edit_activity} = $edit_activity;
-
-    $c->forward( '/admin/fetch_languages' );
-    $c->forward( 'fetch_translations' );
-
-    my $posted = $c->get_param('posted') || '';
-    if ( $posted eq 'body' ) {
-        $c->forward('update_body', [ undef, _('New body added') ]);
-    }
 
     $c->forward( '/admin/fetch_all_bodies' );
 
@@ -71,13 +65,14 @@ sub index : Path : Args(0) {
     );
 
     my %council_info = map { $_->{body_id} => $_ } $contacts->all;
-
     $c->stash->{counts} = \%council_info;
-
-    $c->forward( 'body_form_dropdowns' );
-
-    return 1;
 }
+
+=head2 body
+
+Captures the body ID from the URL and fetches that body from the database.
+
+=cut
 
 sub body : Chained('/') : PathPart('admin/body') : CaptureArgs(1) {
     my ( $self, $c, $body_id ) = @_;
@@ -95,6 +90,33 @@ sub body : Chained('/') : PathPart('admin/body') : CaptureArgs(1) {
     }
 }
 
+=head2 add
+
+Controller for adding a new body.
+
+=cut
+
+sub add : Path('add') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->forward('check_for_super_user');
+    $c->forward('/auth/get_csrf_token');
+    $c->forward('/admin/fetch_all_bodies');
+    $c->forward('body_form_dropdowns');
+    $c->forward('/admin/fetch_languages');
+    $c->forward('fetch_translations');
+
+    if ($c->req->method eq 'POST') {
+        $c->forward('update_body', [ undef, _('New body added') ]);
+    }
+}
+
+=head2 edit
+
+Controller for showing a list of categories for a body, and editing that body.
+
+=cut
+
 sub edit : Chained('body') : PathPart('') : Args(0) {
     my ( $self, $c ) = @_;
 
@@ -107,24 +129,13 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
     $c->forward( 'body_form_dropdowns' );
     $c->forward('/admin/fetch_languages');
 
-    if ( $c->get_param('posted') ) {
-        $c->forward('update_contacts');
-    }
-
     $c->stash->{object} = $c->stash->{body};
     $c->stash->{translation_col} = 'name';
-
-    # if there's a contact then it's because we're displaying error
-    # messages about adding a contact so grabbing translations will
-    # fetch the contact submitted translations. So grab them, stash
-    # them and then clear posted so we can fetch the body translations
-    if ($c->stash->{contact}) {
-        $c->forward('fetch_translations');
-        $c->stash->{contact_translations} = $c->stash->{translations};
-    }
-    $c->set_param('posted', '');
-
     $c->forward('fetch_translations');
+
+    if ($c->req->method eq 'POST') {
+        $c->forward('update_body', [ $c->stash->{body}, _('Values updated') ]);
+    }
 
     # don't set this last as fetch_contacts might over-ride it
     # to display email addresses as text
@@ -133,8 +144,30 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
     $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
     $c->forward('/report/stash_category_groups', [ $c->stash->{contacts} ]);
 
+    if ( defined $c->flash->{status_message} ) {
+        $c->stash->{updated} = $c->flash->{status_message};
+    }
+
     return 1;
 }
+
+=head2 add_category
+
+Controller for adding a new category.
+
+=cut
+
+sub add_category : Chained('body') : PathPart('_add') : Args(0) {
+    my ($self, $c) = @_;
+    $c->stash->{template} = 'admin/bodies/category.html';
+    $c->forward('category');
+}
+
+=head2 category
+
+Controller for showing/editing a new category.
+
+=cut
 
 sub category : Chained('body') : PathPart('') {
     my ( $self, $c, @category ) = @_;
@@ -142,28 +175,40 @@ sub category : Chained('body') : PathPart('') {
 
     $c->forward( '/auth/get_csrf_token' );
 
-    my $contact = $c->stash->{body}->contacts->search( { category => $category } )->first;
-    $c->detach( '/page_error_404_not_found', [] ) unless $contact;
-    $c->stash->{contact} = $c->stash->{current_contact} = $contact;
+    if ($category) {
+        my $contact = $c->stash->{body}->contacts->search( { category => $category } )->first;
+        $c->detach( '/page_error_404_not_found', [] ) unless $contact;
+        $c->stash->{contact} = $c->stash->{current_contact} = $contact;
+        $c->stash->{object} = $c->stash->{contact};
+    }
 
     $c->stash->{translation_col} = 'category';
-    $c->stash->{object} = $c->stash->{contact};
 
     $c->forward('/admin/fetch_languages');
     $c->forward('fetch_translations');
 
-    my $history = $c->model('DB::ContactsHistory')->search(
-        {
-            contact_id => $c->stash->{contact}->id,
-        },
-        {
-            rows => 1000,
-        },
-    )->order_by('-contacts_history_id')->as_subselect_rs->order_by('contacts_history_id');
+    if ($c->req->method eq 'POST') {
+        $c->forward('update_contact');
+    }
 
-    $c->stash->{history} = $history;
+    if ($category) {
+        my $history = $c->model('DB::ContactsHistory')->search(
+            {
+                contact_id => $c->stash->{contact}->id,
+            },
+            {
+                rows => 1000,
+            },
+        )->order_by('-contacts_history_id')->as_subselect_rs->order_by('contacts_history_id');
+        $c->stash->{history} = $history;
+    }
+
     my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } sort keys %{ FixMyStreet::SendReport->get_senders };
     $c->stash->{send_methods} = \@methods;
+
+    if ( defined $c->flash->{status_message} ) {
+        $c->stash->{updated} = $c->flash->{status_message};
+    }
 
     return 1;
 }
@@ -203,19 +248,6 @@ sub check_for_super_user : Private {
 
     unless ( $superuser ) {
         $c->detach('/page_error_403_access_denied', []);
-    }
-}
-
-sub update_contacts : Private {
-    my ( $self, $c ) = @_;
-
-    my $posted = $c->get_param('posted') || '';
-    if ( $posted eq 'new' ) {
-        $c->forward('update_contact');
-    } elsif ( $posted eq 'update' ) {
-        $c->forward('confirm_contacts');
-    } elsif ( $posted eq 'body' ) {
-        $c->forward('update_body', [ $c->stash->{body}, _('Values updated') ]);
     }
 }
 
@@ -367,12 +399,12 @@ sub update_contact : Private {
         $c->stash->{contact} = $contact;
         $c->stash->{errors} = \%errors;
     } elsif ( $contact->in_storage ) {
-        $c->stash->{updated} = _('Values updated');
+        $c->flash->{status_message} = _('Values updated');
         $c->forward('/admin/log_edit', [ $contact->id, 'category', 'edit' ]);
         # NB: History is automatically stored by a trigger in the database
         $contact->update;
     } else {
-        $c->stash->{updated} = _('New category contact added');
+        $c->flash->{status_message} = _('New category contact added');
         $contact->insert;
         $c->forward('/admin/log_edit', [ $contact->id, 'category', 'add' ]);
     }
@@ -381,12 +413,22 @@ sub update_contact : Private {
         $c->stash->{translation_col} = 'category';
         $c->stash->{object} = $contact;
         $c->forward('update_translations');
+        $c->res->redirect($c->uri_for_action('/admin/bodies/edit', [ $contact->body_id ]));
     }
-
 }
 
-sub confirm_contacts : Private {
+sub confirm_contacts : Chained('body') : PathPart('_confirm') : Args(0) {
     my ( $self, $c ) = @_;
+
+    my $body_id = $c->stash->{body_id};
+    unless ($c->user->has_permission_to('category_edit', $body_id)) {
+        $c->forward('check_for_super_user');
+    }
+
+    unless ($c->req->method eq 'POST') {
+        $c->res->redirect($c->uri_for_action('/admin/bodies/edit', [ $body_id ]));
+        $c->detach;
+    }
 
     $c->forward('/auth/check_csrf_token');
 
@@ -394,7 +436,7 @@ sub confirm_contacts : Private {
 
     my $contacts = $c->model('DB::Contact')->search(
         {
-            body_id => $c->stash->{body_id},
+            body_id => $body_id,
             category => { -in => \@categories },
         }
     );
@@ -409,8 +451,9 @@ sub confirm_contacts : Private {
         }
     );
 
-    $c->forward('/admin/log_edit', [ $c->stash->{body_id}, 'body', 'edit' ]);
-    $c->stash->{updated} = _('Values updated');
+    $c->forward('/admin/log_edit', [ $body_id, 'body', 'edit' ]);
+    $c->flash->{status_message} = _('Values updated');
+    $c->res->redirect($c->uri_for_action('/admin/bodies/edit', [ $body_id ]));
 }
 
 sub update_body : Private {
@@ -418,7 +461,6 @@ sub update_body : Private {
 
     $c->forward('check_for_super_user');
     $c->forward('/auth/check_csrf_token');
-    $c->forward('body_form_dropdowns');
 
     my $values = $c->forward('body_params');
     return if %{$c->stash->{body_errors}};
@@ -454,7 +496,8 @@ sub update_body : Private {
     $c->stash->{object} = $body;
     $c->forward('update_translations');
 
-    $c->stash->{updated} = $msg;
+    $c->flash->{status_message} = $msg;
+    $c->res->redirect($c->uri_for_action('/admin/bodies/edit', [ $body->id ]));
 }
 
 sub body_params : Private {
@@ -525,7 +568,7 @@ sub fetch_translations : Private {
     my ( $self, $c ) = @_;
 
     my $translations = {};
-    if ($c->get_param('posted')) {
+    if ($c->req->method eq 'POST') {
         foreach my $lang (keys %{$c->stash->{languages}}) {
             if (my $msgstr = $c->get_param('translation_' . $lang)) {
                 $translations->{$lang} = { msgstr => $msgstr };

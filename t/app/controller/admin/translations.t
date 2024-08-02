@@ -56,6 +56,7 @@ subtest 'check add category with translation' => sub {
 
     $mech->content_contains('DE Arun');
 
+    $mech->follow_link_ok({ text => 'Add new category' });
     $mech->submit_form_ok( { with_fields => {
         category => 'Potholes',
         translation_de => 'DE potholes',
@@ -166,7 +167,7 @@ subtest 'delete body translation' => sub {
 };
 
 subtest 'check add body with translation' => sub {
-    $mech->get_ok('/admin/bodies/');
+    $mech->get_ok('/admin/bodies/add');
     $mech->submit_form_ok( { with_fields => {
         area_ids => 2643,
         send_method => 'email',
@@ -183,7 +184,6 @@ subtest 'check add body with translation' => sub {
         translation_de => 'DE A Body',
     } } );
 
-    $mech->follow_link_ok({ text => 'A body' });
     $mech->content_contains( 'DE A Body' );
 }
 };

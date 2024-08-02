@@ -36,6 +36,7 @@
         - Staff cannot update name reporting when logged out. #5031
         - Allow h1, h2, h3 tags in contact notices/questions. #4959
         - Move navigation to sidebar.
+        - Move add new body/category to their own admin pages.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456
