@@ -194,6 +194,8 @@ sub open311_extra_data_include {
           value => $row->title },
         { name => 'description',
           value => $row->detail },
+        { name => 'subCategory_display',
+          value => $row->category_display },
         { name => 'category',
           value => $row->category },
         { name => 'group',
