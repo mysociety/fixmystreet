@@ -818,6 +818,13 @@ fixmystreet.assets.gloucestershire.street_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+fixmystreet.assets.gloucestershire.traffic_asset_details = function() {
+    var a = this.attributes;
+    return "Install No: " + a.install_no + "\n" +
+        "Equipment type: " + a.equip_type + "\n" +
+        "LED/Halogen: " + a.led_halogen;
+};
+
 /* Hounslow */
 
 fixmystreet.assets.hounslow = {};
