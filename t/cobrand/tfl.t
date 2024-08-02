@@ -1420,7 +1420,7 @@ FixMyStreet::override_config {
 subtest 'check contact creation allows email from borough email addresses' => sub {
 
     $mech->log_in_ok($staffuser->email);
-    $mech->get_ok('/admin/body/' . $body->id);
+    $mech->get_ok('/admin/body/' . $body->id . '/_add');
 
     $mech->submit_form_ok( { with_fields => {
         category   => 'test category',

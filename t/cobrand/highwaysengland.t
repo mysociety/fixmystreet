@@ -264,7 +264,7 @@ FixMyStreet::override_config {
 
         my $expected_error = 'Category must end with (NH).';
 
-        $mech->get_ok('/admin/body/' . $highways->id);
+        $mech->get_ok('/admin/body/' . $highways->id . '/_add');
         $mech->submit_form_ok( { with_fields => {
             category   => 'no suffix category',
             title_hint => 'test',

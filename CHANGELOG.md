@@ -40,6 +40,7 @@
         - Tweak config page display. #5139
         - Minor display improvements to report/update pages. #5141
         - Minor display and performance improvements to user pages. #5138
+        - Move add new body/category to their own admin pages.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456
