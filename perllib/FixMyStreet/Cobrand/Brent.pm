@@ -1671,7 +1671,7 @@ sub bulky_open_overdue {
 sub _bulky_collection_overdue {
     my $collection_due_date = $_[1]->{date};
 
-    $collection_due_date->add(days => 1)->truncate(to => 'day')->set_hour(0);
+    $collection_due_date->add(days => 1)->truncate(to => 'day');
     my $today = DateTime->now->set_time_zone($collection_due_date->time_zone);
 
     return $today > $collection_due_date;
