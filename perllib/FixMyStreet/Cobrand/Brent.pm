@@ -1655,7 +1655,9 @@ sub waste_reconstruct_bulky_data {
 }
 
 =item bulky_open_overdue
-Returns true if the booking is open and after 6pm on the day of the collection.
+
+Returns true if the booking is open the day after the day the collection was due.
+
 =cut
 
 sub bulky_open_overdue {
@@ -1668,8 +1670,10 @@ sub bulky_open_overdue {
 
 sub _bulky_collection_overdue {
     my $collection_due_date = $_[1]->{date};
-    $collection_due_date->truncate(to => 'day')->set_hour(18);
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+
+    $collection_due_date->add(days => 1)->truncate(to => 'day')->set_hour(0);
+    my $today = DateTime->now->set_time_zone($collection_due_date->time_zone);
+
     return $today > $collection_due_date;
 }
 
