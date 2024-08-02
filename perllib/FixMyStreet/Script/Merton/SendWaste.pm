@@ -17,7 +17,11 @@ sub send_reports {
 
     my $problems = $self->_problems;
 
+    my $recent = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(minutes => 15);
     while (my $row = $problems->next) {
+        if ($row->category eq 'Bulky collection' && $row->confirmed >= $recent) {
+            next;
+        }
         unless ($row->get_extra_metadata('no_echo')) {
             $self->set_echo_id($row) or next; # skip if no echo_id
         }

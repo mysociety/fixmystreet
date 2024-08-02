@@ -1037,21 +1037,29 @@ FixMyStreet::override_config {
 
         my $send = FixMyStreet::Script::Merton::SendWaste->new;
         $send->send_reports; # Clear any others
+        Open311->test_req_used; # Clear any use
 
         Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
 
+        my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
         my ($report) = $mech->create_problems_for_body(1, $body->id, 'Bulky Report', {
             cobrand => 'merton',
             cobrand_data => 'waste',
             state => 'confirmed',
             category => 'Bulky collection',
             external_id => '123',
+            dt => $dt,
         });
         $report->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => '3::83::3' });
         $report->update;
 
         $send->send_reports;
         my $req = Open311->test_req_used;
+        is $req, undef;
+
+        $report->update({ confirmed => $dt->subtract(minutes => 20) });
+        $send->send_reports;
+        $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'api_key';
         is $cgi->param('attribute[Bulky_Collection_Bulky_Items]'), 'BBQ::Bath::BBQ';
