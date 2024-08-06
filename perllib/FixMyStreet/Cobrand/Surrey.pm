@@ -262,18 +262,4 @@ sub open311_pre_send {
     $row->set_extra_fields( @$extra ) if @$extra;
 }
 
-=head2 open311_contacts_for_fetched_report
-
-Surrey matches category based on category name, not service code.
-
-=cut
-
-sub open311_contacts_for_fetched_report {
-    my ($self, $request, $contacts) = @_;
-
-    my @contacts = grep { $request->{service_name} eq $_->category } $contacts->all;
-
-    return @contacts;
-}
-
 1;
