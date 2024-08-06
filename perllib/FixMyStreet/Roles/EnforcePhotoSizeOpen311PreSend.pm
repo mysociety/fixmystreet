@@ -30,10 +30,10 @@ Returns the max number of bytes for each photo on the report.
 
 requires 'per_photo_size_limit_for_report_in_bytes';
 
-sub open311_pre_send { }
+sub open311_update_missing_data { }
 
-after open311_pre_send => sub {
-    my ($self, $report, $open311) = @_;
+after open311_update_missing_data => sub {
+    my ($self, $report, $h, $contact) = @_;
     my $photoset = $report->get_photoset;
     return unless $photoset->num_images > 0;
 
@@ -47,11 +47,10 @@ after open311_pre_send => sub {
     my ($new, $shrunk) = $photoset->shrink_all_to_size($limit, 90);
 
     if ($shrunk) {
-        $report->update({ photo => $new->data });
+        $report->photo($new->data);
     }
 
     $report->set_extra_metadata( $limit_applied_flag => 1 );
-    $report->update;
 };
 
 1;
