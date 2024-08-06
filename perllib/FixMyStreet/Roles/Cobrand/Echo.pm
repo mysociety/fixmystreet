@@ -44,6 +44,20 @@ sub waste_check_downtime {
     my $self = shift;
     my $c = $self->{c};
 
+    my $result = $self->waste_check_downtime_file;
+    if ($result->{state} eq 'down') {
+        $c->stash->{title} = 'Planned maintenance';
+        $c->stash->{header_class} = 'blank';
+        $c->response->header('X-Custom-Error-Provided' => 'yes');
+        $c->detach('/page_error', [ $result->{message}, 503 ]);
+    } elsif ($result->{state} eq 'upcoming') {
+        $c->stash->{site_message_upcoming_downtime} = $result->{message}
+    }
+}
+
+sub waste_check_downtime_file {
+    my $self = shift;
+
     my $parser = DateTime::Format::W3CDTF->new;
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
 
@@ -60,17 +74,15 @@ sub waste_check_downtime {
         $end->add( minutes => 15 ); # Add a buffer, sometimes they go past their end time
         if ($now >= $start && $now < $end) {
             $message .= " Please accept our apologies for the disruption and try again later.";
-            $c->stash->{title} = 'Planned maintenance';
-            $c->stash->{header_class} = 'blank';
-            $c->response->header('X-Custom-Error-Provided' => 'yes');
-            $c->detach('/page_error', [ $message, 503 ]);
+            return { state => 'down', message => $message };
         }
 
         my $start_warning = $start->clone->subtract( hours => 2 );
         if ($now >= $start_warning && $now < $start) {
-            $c->stash->{site_message_upcoming_downtime} = $message;
+            return { state => 'upcoming', message => $message };
         }
     }
+    return { state => 'up' };
 }
 
 sub bin_day_format { '%A, %-d~~~ %B' }
