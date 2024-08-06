@@ -2,6 +2,12 @@ package FixMyStreet::Roles::DB::Extra;
 use Moo::Role;
 use JSON::MaybeXS;
 
+with 'FixMyStreet::Roles::Syslog';
+has log_ident => (
+    is => 'ro',
+    default => 'db_extra'
+);
+
 =head1 NAME
 
 FixMyStreet::Roles::DB::Extra - role for accessing {extra} field
@@ -51,6 +57,12 @@ sub set_extra_metadata {
     my ($self, %new) = @_;
     my $extra = $self->get_extra();
 
+    if ($self->id) {
+        $self->log('set_extra_metadata on ' . $self->id);
+        $self->log($extra);
+        $self->log(%new);
+    }
+
     $self->extra({ %$extra, %new });
 };
 
@@ -66,6 +78,14 @@ sub set_extra_metadata_if_undefined {
     my $extra = $self->get_extra();
 
     return if defined $extra->{$key};
+
+    if ($self->id) {
+        $self->log('set_extra_metadata_if_undefined on ' . $self->id);
+        $self->log($extra);
+        $self->log($key);
+        $self->log($value);
+    }
+
     $self->extra({ %$extra, $key => $value });
 };
 
@@ -149,6 +169,12 @@ sub set_extra_fields {
     my ($self, @fields) = @_;
     my $extra = $self->get_extra();
 
+    if ($self->id) {
+        $self->log('set_extra_fields on ' . $self->id);
+        $self->log($extra);
+        $self->log(@fields);
+    }
+
     $self->extra({ %$extra, $META_FIELD => \@fields });
 }
 
@@ -165,6 +191,13 @@ sub push_extra_fields {
     my $extra = $self->get_extra();
 
     my $existing = $self->get_extra_fields;
+
+    if ($self->id) {
+        $self->log('push_extra_fields on ' . $self->id);
+        $self->log($extra);
+        $self->log(@fields);
+        $self->log($existing);
+    }
 
     $self->extra({ %$extra, $META_FIELD => [ @$existing, @fields ] });
 }
