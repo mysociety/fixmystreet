@@ -1,5 +1,6 @@
 use Test::MockTime qw(set_fixed_time);
 use FixMyStreet::TestMech;
+use FixMyStreet::Cobrand::Merton;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -44,6 +45,7 @@ subtest 'Echo downtime' => sub {
             echo => { merton => { downtime_csv => 't/fixtures/echo-downtime.csv' } },
         },
     }, sub {
+        my $cobrand = FixMyStreet::Cobrand::Merton->new;
         my $now = DateTime->new( year => 2024, month => 7, day => 23, time_zone => FixMyStreet->local_time_zone );
         subtest 'before a period' => sub {
             $now->set_hour(16);
@@ -51,6 +53,7 @@ subtest 'Echo downtime' => sub {
             $mech->get_ok('/waste');
             $mech->content_lacks('Due to planned maintenance');
             $mech->content_lacks('Please accept our apologies');
+            is $cobrand->waste_check_downtime_file->{state}, 'up';
         };
         subtest 'in warning period' => sub {
             $now->set_hour(18);
@@ -59,6 +62,7 @@ subtest 'Echo downtime' => sub {
             $mech->content_contains('Due to planned maintenance');
             $mech->content_contains('from  8pm until 11pm');
             $mech->content_lacks('Please accept our apologies');
+            is $cobrand->waste_check_downtime_file->{state}, 'upcoming';
         };
         subtest 'in closure period' => sub {
             $now->set_hour(20);
@@ -68,6 +72,7 @@ subtest 'Echo downtime' => sub {
             $mech->content_contains('Due to planned maintenance');
             $mech->content_contains('from  8pm until 11pm');
             $mech->content_contains('Please accept our apologies');
+            is $cobrand->waste_check_downtime_file->{state}, 'down';
         };
         subtest 'end of closure period, in buffer' => sub {
             $now->set_hour(23);
@@ -77,6 +82,7 @@ subtest 'Echo downtime' => sub {
             $mech->content_contains('Due to planned maintenance');
             $mech->content_contains('from  8pm until 11pm');
             $mech->content_contains('Please accept our apologies');
+            is $cobrand->waste_check_downtime_file->{state}, 'down';
         };
         subtest 'after closure period buffer' => sub {
             $now->set_minute(15);
@@ -84,6 +90,7 @@ subtest 'Echo downtime' => sub {
             $mech->get_ok('/waste');
             $mech->content_lacks('Due to planned maintenance');
             $mech->content_lacks('Please accept our apologies');
+            is $cobrand->waste_check_downtime_file->{state}, 'up';
         };
     };
 };
