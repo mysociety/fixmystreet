@@ -2919,6 +2919,7 @@ a#geolocate_link {
 .alerts__nearby-activity__photos {
   white-space: nowrap;
   overflow: hidden;
+  overflow-x: scroll;
   margin: 0 -1rem;
 
   a {
