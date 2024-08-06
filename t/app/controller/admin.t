@@ -172,7 +172,7 @@ subtest "Users with from_body can access their own council's admin" => sub {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
         $mech->get_ok('/admin');
-        $mech->content_contains( 'FixMyStreet admin:' );
+        $mech->content_contains( 'Summary' );
     };
 };
 

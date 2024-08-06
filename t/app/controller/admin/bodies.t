@@ -37,8 +37,21 @@ $mech->content_contains('Aberdeen City Council');
 $mech->content_like(qr{AB\d\d});
 $mech->content_contains("http://www.example.org/around");
 
+subtest 'check body creation' => sub {
+    $mech->get_ok('/admin/bodies');
+    $mech->follow_link_ok({ text => 'Add body' });
+
+    $mech->submit_form_ok( { with_fields => {
+        name => 'New body',
+    } } );
+    $mech->content_contains('New body');
+    $mech->get_ok('/admin/bodies');
+    $mech->content_contains('New body');
+};
+
 subtest 'check contact creation' => sub {
     $mech->get_ok('/admin/body/' . $body->id);
+    $mech->follow_link_ok({ text => 'Add new category' });
 
     $mech->submit_form_ok( { with_fields => {
         category   => 'test category',
@@ -54,6 +67,7 @@ subtest 'check contact creation' => sub {
     $mech->content_contains( '<td>test note' );
     $mech->content_like( qr/<td>\s*unconfirmed\s*<\/td>/ ); # No private
 
+    $mech->follow_link_ok({ text => 'Add new category' });
     $mech->submit_form_ok( { with_fields => {
         category   => 'private category',
         email      => 'test@example.com',
@@ -64,6 +78,7 @@ subtest 'check contact creation' => sub {
     $mech->content_contains( 'private category' );
     $mech->content_like( qr{test\@example.com\s*</td>\s*<td>\s*confirmed\s*<br>\s*<small>\s*Private\s*</small>\s*</td>} );
 
+    $mech->follow_link_ok({ text => 'Add new category' });
     $mech->submit_form_ok( { with_fields => {
         category => 'test/category',
         email    => 'test@example.com',
@@ -71,6 +86,7 @@ subtest 'check contact creation' => sub {
         non_public => 'on',
     } } );
 
+    $mech->follow_link_ok({ text => 'Add new category' });
     $mech->submit_form_ok( { with_fields => {
         category => 'test \' ’ category',
         email    => 'test@example.com',
@@ -408,6 +424,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'group editing works' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
+        $mech->follow_link_ok({ text => 'Add new category' });
         $mech->content_contains('Parent categories');
 
         $mech->submit_form_ok( { with_fields => {
@@ -425,6 +442,7 @@ FixMyStreet::override_config {
 
     subtest 'group can be unset' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
+        $mech->follow_link_ok({ text => 'Add new category' });
         $mech->content_contains('Parent categories');
 
         $mech->submit_form_ok( { with_fields => {
@@ -452,12 +470,12 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'multi group editing works' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
+        $mech->follow_link_ok({ text => 'Add new category' });
         $mech->content_contains('Parent categories');
 
         # have to do this as a post as adding a second group requires
         # javascript
-        $mech->post_ok( '/admin/body/' . $body->id, {
-            posted     => 'new',
+        $mech->post_ok( '/admin/body/' . $body->id . '/_add', {
             token      => $mech->form_id('category_edit')->value('token'),
             category   => 'grouped category',
             email      => 'test@example.com',
@@ -681,8 +699,8 @@ subtest 'check editing a contact when category groups disabled does not remove e
            category_groups => { default => 1 },
         }
     }, sub {
-        $mech->post_ok( '/admin/body/' . $body->id, {
-            posted     => 'new',
+        $mech->get_ok( '/admin/body/' . $body->id . '/_add');
+        $mech->post_ok( '/admin/body/' . $body->id . '/_add', {
             token      => $mech->form_id('category_edit')->value('token'),
             category   => 'group editing test category',
             email      => 'test@example.com',

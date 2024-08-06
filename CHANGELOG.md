@@ -25,6 +25,7 @@
         - Fix restoring a draft with no location.
         - Create reporter alert before creating first unconfirmed auto-update.
         - Fix display of user in assignment dropdown. #4855
+        - Fix displaying category page if over 1,000 history entries.
     - Admin improvements:
         - Rename emergency message to site message.
         - Added a category control for overriding the text of the new report details field.
@@ -34,6 +35,8 @@
         - Add way to pick multiple categories in the dashboard.
         - Staff cannot update name reporting when logged out. #5031
         - Allow h1, h2, h3 tags in contact notices/questions. #4959
+        - Move navigation to sidebar.
+        - Move add new body/category to their own admin pages.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456
