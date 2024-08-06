@@ -60,6 +60,9 @@ sub waste_check_downtime {
         $end->add( minutes => 15 ); # Add a buffer, sometimes they go past their end time
         if ($now >= $start && $now < $end) {
             $message .= " Please accept our apologies for the disruption and try again later.";
+            $c->stash->{title} = 'Planned maintenance';
+            $c->stash->{header_class} = 'blank';
+            $c->response->header('X-Custom-Error-Provided' => 'yes');
             $c->detach('/page_error', [ $message, 503 ]);
         }
 
