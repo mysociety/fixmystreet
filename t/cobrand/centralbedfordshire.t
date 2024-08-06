@@ -110,6 +110,7 @@ FixMyStreet::override_config {
     subtest "it doesn't show old reports on the cobrand" => sub {
         $mech->create_problems_for_body(1, $body->id, 'An old problem made before Central Beds FMS launched', {
             state => 'fixed - user',
+            created => '2018-12-25 09:00',
             confirmed => '2018-12-25 09:00',
             lastupdate => '2018-12-25 09:00',
             latitude => 52.030692,

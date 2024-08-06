@@ -68,7 +68,7 @@ sub problems_restriction {
     if (my $date = $self->cut_off_date) {
         my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
         $rs = $rs->search({
-            "$table.confirmed" => { '>=', $date }
+            "$table.created" => { '>=', $date }
         });
     }
     return $rs;
@@ -82,7 +82,7 @@ sub problems_sql_restriction {
         $q .= "AND regexp_split_to_array(bodies_str, ',') && ARRAY['$body_id']";
     }
     if (my $date = $self->cut_off_date) {
-        $q .= " AND confirmed >= '$date'";
+        $q .= " AND created >= '$date'";
     }
     return $q;
 }
