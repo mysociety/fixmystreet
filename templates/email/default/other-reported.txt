@@ -9,7 +9,11 @@ Subject: Your report has been logged: [% report.title %]
 
 Hello [% report.name %],
 
+[% IF cobrand.moniker == 'northnorthants' %]
+Your report to [% report.body %] has been logged on the Highways reporting system.
+[% ELSE %]
 Your report to [% report.body %] has been logged on [% site_name %].
+[% END %]
 
 [% IF report.non_public ~%]
 It has been marked as private and will not be visible to the general public;
