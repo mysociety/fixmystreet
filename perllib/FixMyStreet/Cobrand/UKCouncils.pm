@@ -94,6 +94,15 @@ sub problems_on_map_restriction {
     return $self->is_two_tier ? $rs : $self->problems_restriction($rs);
 }
 
+sub report_can_have_text_only_notifcations {
+    my ($self, $phone, $text_updates) = @_;
+
+    return unless $phone && $text_updates;
+
+    return 1 if $text_updates->value && FixMyStreet::SMS->parse_username($phone->value)->{may_be_mobile};
+
+}
+
 sub updates_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');
