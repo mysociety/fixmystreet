@@ -491,7 +491,24 @@ FixMyStreet::override_config {
         is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
         check_extra_data_pre_confirm($new_report, bin_type => 27);
 
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        subtest 'Error checking payment confirmation' => sub {
+            $pay->mock(query => sub {
+                my $self = shift;
+                $sent_params = shift;
+                die "Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.\n";
+            });
+            $mech->get_ok("/waste/pay_complete/$report_id/$token");
+            $mech->content_contains('Press Retry below');
+            # Set back to original
+            $pay->mock(query => sub {
+                my $self = shift;
+                $sent_params = shift;
+                return $query_return;
+            });
+            $mech->submit_form_ok({ form_number => 1 });
+            $mech->content_contains('Payment successful');
+        };
+
         check_extra_data_post_confirm($new_report);
 
         $mech->content_contains('Containers typically arrive within two weeks');

@@ -20,6 +20,7 @@ $mech->create_contact_ok(
 );
 
 $mech->create_problems_for_body(1, $hounslow_id, 'An old problem made before Hounslow FMS launched', {
+    created => '2018-12-25 09:00',
     confirmed => '2018-12-25 09:00',
     lastupdate => '2018-12-25 09:00',
     latitude => 51.482286,

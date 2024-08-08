@@ -112,6 +112,9 @@ sub garden_cc_check_payment_status {
 
     my ($error, $data) = $self->cc_check_payment_status($reference);
     if ($error) {
+        if ($error =~ /Execution Timeout Expired/) {
+            $c->stash->{retry_confirmation} = 1;
+        }
         $c->stash->{error} = $error;
         return undef;
     }
