@@ -11,6 +11,8 @@
       [% IF  meta.datatype == 'multivaluelist' %]
         <fieldset class="group-error-propagate-end">
             <legend class="group-error-place-after">[% (meta.description OR meta.code) | safe %]</legend>
+      [% ELSIF meta.variable == 'false' %]
+        [% (meta.description OR meta.code) | safe %]
       [% ELSE %]
         <label for="[% cat_prefix %]form_[% meta_name %]">[% (meta.description OR meta.code) | safe %]</label>
       [% END %]

@@ -114,6 +114,13 @@ END;
         </div>
     [% END %]
 
+[%- IF c.cobrand.moniker == 'surrey' AND bodyclass.match('frontpage') %]
+  [% town = c.cobrand.get_town(problem) %]
+  [% IF town %]
+    <small>[% town %]</small>
+  [% END %]
+[%- END %]
+
 
 </a>
 [% IF item_action ~%]
