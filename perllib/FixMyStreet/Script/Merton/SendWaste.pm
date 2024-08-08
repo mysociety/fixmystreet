@@ -12,6 +12,14 @@ has body => (
     default => sub { FixMyStreet::DB->resultset('Body')->find( { name => 'Merton Council' } ) or die $! }
 );
 
+sub echo_available {
+    my $self = shift;
+    my $cobrand = FixMyStreet::Cobrand::Merton->new;
+    my $result = $cobrand->waste_check_downtime_file;
+    return 0 if $result->{state} eq 'down';
+    return 1;
+}
+
 sub send_reports {
     my ($self) = @_;
 
