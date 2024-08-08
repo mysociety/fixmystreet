@@ -55,7 +55,7 @@ sub get_geocoder { 'Bexley' }
 
 sub default_map_zoom { 4 }
 
-=item * It doesn't sent questionnaires to reporters
+=item * It doesn't send questionnaires to reporters
 
 =cut
 
