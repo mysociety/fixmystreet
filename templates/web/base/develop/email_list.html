@@ -4,7 +4,13 @@
 
 <ul>
 [% FOR template IN templates %]
-<li><a href="[% template.url %]">[% template.name %]</a></li>
+<li>
+    [% template.name %]
+    <ul>
+        <li><a href="[% template.url %]">HTML</a></li>
+        <li><a href="[% template.url_plaintext %]">Plain text</a></li>
+    </ul>
+</li>
 [% END %]
 </ul>
 

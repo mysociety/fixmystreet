@@ -71,9 +71,17 @@ sub email_list : Path('/_dev/email') : Args(0) {
     $c->stash->{templates} = [];
     foreach (sort keys %templates) {
         my $url = $c->uri_for('/_dev/email', $_);
-        $url .= "?problem=" . $problem->id if $problem && $with_problem{$_};
-        $url .= "?update=" . $update->id if $update && $with_update{$_};
-        push @{$c->stash->{templates}}, { name => $_, url => $url };
+
+        my %query;
+        $query{problem} = $problem->id if $problem && $with_problem{$_};
+        $query{update}  = $update->id  if $update  && $with_update{$_};
+        $url->query_form(%query);
+
+        my $url_plaintext = $url->clone;
+        $url_plaintext->query_form( %query, text => 1 );
+
+        push @{ $c->stash->{templates} },
+            { name => $_, url => $url, url_plaintext => $url_plaintext };
     }
 }
 
@@ -336,4 +344,3 @@ sub asset_layers_yml : Path('/_dev/asset_layers.yml') : Args(0) {
 __PACKAGE__->meta->make_immutable;
 
 1;
-
