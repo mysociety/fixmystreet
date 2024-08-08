@@ -199,11 +199,14 @@ a#geolocate_link,
 }
 
 /* FOOTER */
+#happy-or-not-smiley-section {
+  background: #f3f6f9;
+}
+
 .scc-subscribe {
   background-color: #e0e7cf;
-  border-top: .1rem solid #fff;
   padding: 0.9375rem 0;
-  margin: 1rem auto 0 auto;
+  margin: 0 auto;
 
   p {
     margin-bottom: 0;
