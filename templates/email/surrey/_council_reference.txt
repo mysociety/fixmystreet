@@ -1,2 +1,0 @@
-[% IF problem.external_id %]The report's reference number is [% problem.external_id %]. Please quote this if
-you need to contact the council about this report.[% END %]
