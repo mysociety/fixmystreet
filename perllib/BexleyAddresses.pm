@@ -1,3 +1,33 @@
+=head1 NAME
+
+BexleyAddresses - handles address lookup for Bexley WasteWorks.
+
+=head1 SYNOPSIS
+
+Bexley provide us with a CSV file of LLPG (Local Land and Property Gazetteer) data which we pull into an SQLite database file.
+
+This is done by running the CSV on C<bin/bexley/make-bexley-ww-postcode-db>.
+
+That script shows the setup of the database in more detail, but to explain briefly, there are three tables:
+
+=over 4
+
+=item * postcodes
+
+Stores postcode, UPRN, USRN, and address portions (e.g. house number and name) for each property (properties are uniquely identified by their UPRN)
+
+=item * street_descriptors
+
+Stores address data (e.g. street & town name) for each USRN (street identifier)
+
+=item * child_uprns
+
+Captures mapping between parent and child properties (e.g. if a building contains multiple flats, the building is the parent, the children are the flats)
+
+=back
+
+=cut
+
 package BexleyAddresses;
 
 use strict;
@@ -6,6 +36,12 @@ use warnings;
 use DBI;
 use FixMyStreet;
 use mySociety::PostcodeUtil;
+
+=head2 database_file
+
+Database is in C<../data/bexley-ww-postcodes.sqlite>
+
+=cut
 
 sub database_file {
     FixMyStreet->path_to('../data/bexley-ww-postcodes.sqlite');
@@ -17,6 +53,13 @@ sub connect_db {
     return DBI->connect( 'dbi:SQLite:dbname=' . database_file(),
         undef, undef );
 }
+
+=head2 addresses_for_postcode
+
+We only fetch child addresses. These are displayed in a dropdown after user
+has input a postcode.
+
+=cut
 
 sub addresses_for_postcode {
     my $postcode = shift;

@@ -1126,20 +1126,33 @@ $.extend(fixmystreet.set_up, {
     // There are also other uses of this besides report list filters activated here
     $('.js-multiple').make_multi();
 
+    // Make clicking on Everything when selected un-select everything (workaround)
+    var $elt = $('#filter_categories');
+    var all_label = $elt.data('all');
+    $('label:contains("' + all_label + '") input[name="filter_category_presets"]').on('click', function(e) {
+        var options = $elt.find('option').length;
+        var selected = $elt.find('option:selected').length;
+        if (selected === options) {
+            $elt.val([]);
+            $elt.trigger('change');
+        }
+    });
+
     // Make clicking on the legends toggle all the checkboxes underneath
-    var container = $('#filter_categories').next('.multi-select-container');
+    var container = $elt.next('.multi-select-container');
     container.on('click', 'legend', function(){
-        var labels = $(this).nextAll('label');
-        var inputs = labels.children('input');
-        var inputs_checked = inputs.filter(':checked');
-        console.log(inputs.length, inputs_checked.length);
-        if (inputs.length === inputs_checked.length) {
+        var optgroup = $elt.find('optgroup[label="' + this.textContent + '"]');
+        var options = optgroup.find('option');
+        var options_selected = options.filter(':selected');
+
+        if (options.length === options_selected.length) {
             // Switch them all off
-            inputs_checked.click();
+            options_selected.prop('selected', false);
         } else {
             // Switch them all on
-            inputs.not(inputs_checked).click();
+            options.not(options_selected).prop('selected', true);
         }
+        $elt.trigger('change');
     });
 
     function update_label(id, str) {

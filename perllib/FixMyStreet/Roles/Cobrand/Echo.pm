@@ -60,6 +60,9 @@ sub waste_check_downtime {
         $end->add( minutes => 15 ); # Add a buffer, sometimes they go past their end time
         if ($now >= $start && $now < $end) {
             $message .= " Please accept our apologies for the disruption and try again later.";
+            $c->stash->{title} = 'Planned maintenance';
+            $c->stash->{header_class} = 'blank';
+            $c->response->header('X-Custom-Error-Provided' => 'yes');
             $c->detach('/page_error', [ $message, 503 ]);
         }
 
@@ -90,7 +93,7 @@ sub bin_addresses_for_postcode {
 sub _allow_async_echo_lookup {
     my $self = shift;
     my $action = $self->{c}->action;
-    return 0 if $action eq 'waste/pay_retry' || $action eq 'waste/direct_debit_error' || $action eq 'waste/calendar';
+    return 0 if $action eq 'waste/pay_retry' || $action eq 'waste/direct_debit_error' || $action eq 'waste/calendar_ics';
     return 1;
 }
 
@@ -604,12 +607,14 @@ sub bin_future_collections {
     my @tasks;
     my %names;
     foreach (@$services) {
+        next unless $_->{service_task_id};
         push @tasks, $_->{service_task_id};
         $names{$_->{service_task_id}} = $_->{service_name};
     }
 
     my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
-    my $end = $start->clone->add(months => 3);
+    my %timeframe = $self->bin_future_timeframe;
+    my $end = $start->clone->add(%timeframe);
 
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
@@ -628,6 +633,8 @@ sub bin_future_collections {
     }
     return $events;
 }
+
+sub bin_future_timeframe { ( months => 3 ) }
 
 sub split_echo_external_status_code { 1 }
 

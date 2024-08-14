@@ -102,7 +102,7 @@ sub call {
 
     $response = JSON::MaybeXS->new->utf8->decode($response);
     if ($response->{Result} ne 'OK') {
-        die $response->{Result};
+        die $response->{Result} . "\n";
     }
     return $response;
 }

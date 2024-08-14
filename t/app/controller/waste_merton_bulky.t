@@ -383,12 +383,16 @@ FixMyStreet::override_config {
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
+            is $new_report->comments->count, 1;
             my $update = $new_report->comments->first;
             is $update->state, 'confirmed';
             is $update->text, 'Payment confirmed, reference 54321, amount £37.00';
             is $update->get_extra_metadata('fms_extra_payments'), '54321|37.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(0);
+
+            $mech->get_ok("/waste/pay_complete/$report_id/$token");
+            is $new_report->comments->count, 1;
         };
 
         subtest 'Bulky goods email confirmation' => sub {
@@ -1039,21 +1043,29 @@ FixMyStreet::override_config {
 
         my $send = FixMyStreet::Script::Merton::SendWaste->new;
         $send->send_reports; # Clear any others
+        Open311->test_req_used; # Clear any use
 
         Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
 
+        my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
         my ($report) = $mech->create_problems_for_body(1, $body->id, 'Bulky Report', {
             cobrand => 'merton',
             cobrand_data => 'waste',
             state => 'confirmed',
             category => 'Bulky collection',
             external_id => '123',
+            dt => $dt,
         });
         $report->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => '3::83::3' });
         $report->update;
 
         $send->send_reports;
         my $req = Open311->test_req_used;
+        is $req, undef;
+
+        $report->update({ confirmed => $dt->subtract(minutes => 20) });
+        $send->send_reports;
+        $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'api_key';
         is $cgi->param('attribute[Bulky_Collection_Bulky_Items]'), 'BBQ::Bath::BBQ';

@@ -1128,19 +1128,14 @@ FixMyStreet::override_config {
         $mech->content_contains('20.00');
 
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
-        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:cardHolderName'}, 'a user', 'Correct name';
-        is $call_params->{'scpbase:billing'}{'scpbase:cardHolderDetails'}{'scpbase:contact'}{'scpbase:email'}, 'a_user@example.net', 'Correct email';
-        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
-        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
+        $mech->submit_form_ok({ with_fields => { payenet_code => 54321 } });
 
-        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number\s*<br><strong>RBK-(\d+)<#);
+        ok $id, "confirmation page contains id";
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
 
-        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0, payment_method => 'csc');
-
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
-
+        check_extra_data_pre_confirm($report, type => 'Renew', new_bins => 0, payment_method => 'csc', state => 'confirmed');
         check_extra_data_post_confirm($report, LastPayMethod => 1);
         $report->delete; # Otherwise next test sees this as latest
     };
@@ -1159,14 +1154,14 @@ FixMyStreet::override_config {
         $mech->content_contains('15.00');
         $mech->content_contains('35.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
+        $mech->submit_form_ok({ with_fields => { payenet_code => 54321 } });
 
-        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number\s*<br><strong>RBK-(\d+)<#);
+        ok $id, "confirmation page contains id";
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
 
-        check_extra_data_pre_confirm($report, type => 'Amend', quantity => 2, payment_method => 'csc');
-
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+        check_extra_data_pre_confirm($report, type => 'Amend', quantity => 2, payment_method => 'csc', state => 'confirmed');
 
         check_extra_data_post_confirm($report, LastPayMethod => 1);
         is $report->name, 'Test McTest', 'non staff user name';
@@ -1252,16 +1247,14 @@ FixMyStreet::override_config {
         # external redirects make Test::WWW::Mechanize unhappy so clone
         # the mech for the redirect
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->submit_form_ok({ with_fields => { payenet_code => 54321 } });
 
-        is $call_params->{'scpbase:panEntryMethod'}, 'CNP', 'Correct cardholder-not-present flag';
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number\s*<br><strong>RBK-(\d+)<#);
+        ok $id, "confirmation page contains id";
+        my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
 
-        my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-
-        check_extra_data_pre_confirm($report, payment_method => 'csc');
-
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
-
+        check_extra_data_pre_confirm($report, payment_method => 'csc', state => 'confirmed');
         check_extra_data_post_confirm($report, LastPayMethod => 1);
         is $report->name, 'Test McTest', 'non staff user name';
         is $report->user->email, 'test@example.net', 'non staff email';
@@ -1364,18 +1357,20 @@ FixMyStreet::override_config {
 
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->submit_form_ok({ with_fields => { payenet_code => 54321 } });
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        my $content = $mech->content;
+        my ($id) = ($content =~ m#reference number\s*<br><strong>RBK-(\d+)<#);
+        ok $id, "confirmation page contains id";
+        my $new_report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
 
-        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0, payment_method => 'csc');
-
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
+        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0, payment_method => 'csc', state => 'confirmed');
         check_extra_data_post_confirm($new_report, LastPayMethod => 1);
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
     subtest 'check CSV export' => sub {
+        $mech->log_out_ok;
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             name => 'a user 2',
@@ -1387,8 +1382,10 @@ FixMyStreet::override_config {
         $mech->content_contains('40.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-        check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2, payment_method => 'csc');
 
+        check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2);
+
+        $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/dashboard?export=1');
         $mech->content_lacks("Garden Subscription\n\n");
         $mech->content_contains('"a user"');

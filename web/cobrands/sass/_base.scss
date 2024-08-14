@@ -2986,6 +2986,10 @@ a#geolocate_link {
     background-image: url(/cobrands/fixmystreet/images/phone-in-circle-100px.png);
   }
 
+  &.confirmation-header--blank {
+    background-image: none;
+  }
+
   h1,
   h2 {
     margin: 0;
