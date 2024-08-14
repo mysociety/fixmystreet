@@ -1958,6 +1958,13 @@ html.js #map .noscript {
   filter: none !important; // Override OpenLayers PNG handling of the navigation
   background-color: #222222;
   color: transparent !important;
+
+  &:focus {
+    background-color: #222; // In case there is rule in a cobrand overriding the background of links.
+    filter: invert(1) !important; // See filter rule for the default state.
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+  }
 }
 
 #ns_fms_pan_zoom_panup,
@@ -2105,6 +2112,14 @@ html.js #map .noscript {
       white-space: nowrap;
     }
   }
+
+  a:focus {
+    background-color: #222; // In case there is rule in a cobrand overriding the background of links.
+    filter: invert(1);
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+  }
+
 
   .map-layer-toggle {
     @include svg-background-image("/cobrands/fixmystreet/images/map-layer-aerial");
