@@ -106,12 +106,15 @@ sub set_echo_id {
         my $event = $echo->GetEvent($problem->external_id);
         return unless $event && $event->{Id};
 
-        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $problem->id }, { for => \'UPDATE' })->single;
-        $row2->update_extra_field({
-            name => 'echo_id',
-            value => $event->{Id},
+        my $db = FixMyStreet::DB->schema->storage;
+        $db->txn_do(sub {
+            my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $problem->id }, { for => \'UPDATE' })->single;
+            $row2->update_extra_field({
+                name => 'echo_id',
+                value => $event->{Id},
+            });
+            $row2->update;
         });
-        $row2->update;
     }
 
     return 1;
