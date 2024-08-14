@@ -19,5 +19,6 @@ my $send = FixMyStreet::Script::Merton::SendWaste->new;
 
 exit unless $send->echo_available;
 
+$send->check_payments;
 $send->send_reports;
 $send->send_comments;
