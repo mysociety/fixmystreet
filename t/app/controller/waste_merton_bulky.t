@@ -692,6 +692,7 @@ FixMyStreet::override_config {
             $mech->get_ok($path);
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('Booking cancelled by customer');
+            $mech->content_contains('£0.00 (£37.00 already paid)');
         };
 
         $report->set_extra_metadata('payment_reference' => '6789'); # So will be changed
@@ -793,6 +794,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Updates');
             $mech->content_contains('This collection has been cancelled');
             $mech->content_contains('Booking cancelled due to amendment');
+            $mech->content_contains('£0.00 (£37.00 already paid)');
             $report->discard_changes;
             is $report->state, 'closed';
         };
@@ -818,6 +820,7 @@ FixMyStreet::override_config {
             $mech->get_ok($path);
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('Booking cancelled by customer');
+            $mech->content_contains('£23.75 (£37.00 already paid)');
         };
     };
 
@@ -1033,15 +1036,18 @@ FixMyStreet::override_config {
     #     is $report->get_extra_field_value('payment_method'), 'cheque';
     # }
     #
+
+    my $previous_id = $report->id;
     subtest 'Test sending of bulky report to other endpoint' => sub {
         use_ok 'FixMyStreet::Script::Merton::SendWaste';
 
-        $echo->mock('GetEvent', sub { { Id => 1928374 } });
+        $echo->mock('GetEvent', sub { { Id => 1928373 } });
 
         my $send = FixMyStreet::Script::Merton::SendWaste->new;
         $send->send_reports; # Clear any others
         Open311->test_req_used; # Clear any use
 
+        $echo->mock('GetEvent', sub { { Id => 1928374 } });
         Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
 
         my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
@@ -1054,6 +1060,7 @@ FixMyStreet::override_config {
             dt => $dt,
         });
         $report->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => '3::83::3' });
+        $report->set_extra_metadata(previous_booking_id => $previous_id);
         $report->update;
 
         $send->send_reports;
@@ -1067,6 +1074,9 @@ FixMyStreet::override_config {
         is $cgi->param('api_key'), 'api_key';
         is $cgi->param('attribute[Bulky_Collection_Bulky_Items]'), 'BBQ::Bath::BBQ';
         is $cgi->param('attribute[Current_Item_Count]'), 3;
+        is $cgi->param('attribute[previous_booking_id]'), $previous_id;
+        is $cgi->param('attribute[previous_echo_id]'), 1928373;
+
         $report->discard_changes;
         is $report->get_extra_metadata('sent_to_crimson'), 1;
         is $report->get_extra_metadata('crimson_external_id'), "359";
