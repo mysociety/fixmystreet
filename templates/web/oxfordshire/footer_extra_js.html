@@ -6,6 +6,8 @@ IF bodyclass.match('mappage');
     );
 END;
 IF bodyclass.match('frontpage');
-    scripts.push( version('/vendor/lite-youtube-embed/lite-yt-embed.js') );
+    scripts.push(
+        [ version('/vendor/lite-youtube-embed/lite-yt-embed.min.js'), { type = 'module' } ]
+    );
 END;
 %]

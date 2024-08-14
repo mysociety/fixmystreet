@@ -18,17 +18,16 @@ class LiteYTEmbed extends HTMLElement {
         // A label for the button takes priority over a [playlabel] attribute on the custom-element
         this.playLabel = (playBtnEl && playBtnEl.textContent.trim()) || this.getAttribute('playlabel') || 'Play';
 
+        this.dataset.title = this.getAttribute('title') || "";
+
         /**
-         * Lo, the youtube placeholder image!  (aka the thumbnail, poster image, etc)
+         * Lo, the youtube poster image!  (aka the thumbnail, image placeholder, etc)
          *
          * See https://github.com/paulirish/lite-youtube-embed/blob/master/youtube-thumbnail-urls.md
-         *
-         * TODO: Do the sddefault->hqdefault fallback
-         *       - When doing this, apply referrerpolicy (https://github.com/ampproject/amphtml/pull/3940)
-         * TODO: Consider using webp if supported, falling back to jpg
          */
         if (!this.style.backgroundImage) {
           this.style.backgroundImage = `url("https://i.ytimg.com/vi/${this.videoId}/hqdefault.jpg")`;
+          this.upgradePosterImage();
         }
 
         // Set up play button, and its visually hidden label
@@ -44,21 +43,37 @@ class LiteYTEmbed extends HTMLElement {
             playBtnLabelEl.textContent = this.playLabel;
             playBtnEl.append(playBtnLabelEl);
         }
-        playBtnEl.removeAttribute('href');
+
+        this.addNoscriptIframe();
+
+        // for the PE pattern, change anchor's semantics to button
+        if(playBtnEl.nodeName === 'A'){
+            playBtnEl.removeAttribute('href');
+            playBtnEl.setAttribute('tabindex', '0');
+            playBtnEl.setAttribute('role', 'button');
+            // fake button needs keyboard help
+            playBtnEl.addEventListener('keydown', e => {
+                if( e.key === 'Enter' || e.key === ' ' ){
+                    e.preventDefault();
+                    this.activate();
+                }
+            });
+        }
 
         // On hover (or tap), warm up the TCP connections we're (likely) about to use.
         this.addEventListener('pointerover', LiteYTEmbed.warmConnections, {once: true});
+        this.addEventListener('focusin', LiteYTEmbed.warmConnections, {once: true});
 
         // Once the user clicks, add the real iframe and drop our play button
         // TODO: In the future we could be like amp-youtube and silently swap in the iframe during idle time
         //   We'd want to only do this for in-viewport or near-viewport ones: https://github.com/ampproject/amphtml/pull/5003
-        this.addEventListener('click', this.addIframe);
+        this.addEventListener('click', this.activate);
 
         // Chrome & Edge desktop have no problem with the basic YouTube Embed with ?autoplay=1
         // However Safari desktop and most/all mobile browsers do not successfully track the user gesture of clicking through the creation/loading of the iframe,
         // so they don't autoplay automatically. Instead we must load an additional 2 sequential JS files (1KB + 165KB) (un-br) for the YT Player API
         // TODO: Try loading the the YT API in parallel with our iframe and then attaching/playing it. #82
-        this.needsYTApiForAutoplay = navigator.vendor.includes('Apple') || navigator.userAgent.includes('Mobi');
+        this.needsYTApi = this.hasAttribute("js-api") || navigator.vendor.includes('Apple') || navigator.userAgent.includes('Mobi');
     }
 
     /**
@@ -113,39 +128,71 @@ class LiteYTEmbed extends HTMLElement {
         });
     }
 
-    async addYTPlayerIframe(params) {
+    /** Return the YT Player API instance. (Public L-YT-E API) */
+    async getYTPlayer() {
+        if(!this.playerPromise) {
+            await this.activate();
+        }
+
+        return this.playerPromise;
+    }
+
+    async addYTPlayerIframe() {
         this.fetchYTPlayerApi();
         await this.ytApiPromise;
 
         const videoPlaceholderEl = document.createElement('div')
         this.append(videoPlaceholderEl);
 
-        const paramsObj = Object.fromEntries(params.entries());
+        const paramsObj = Object.fromEntries(this.getParams().entries());
 
-        new YT.Player(videoPlaceholderEl, {
-            width: '100%',
-            videoId: this.videoId,
-            playerVars: paramsObj,
-            events: {
-                'onReady': event => {
-                    event.target.playVideo();
+        this.playerPromise = new Promise(resolve => {
+            let player = new YT.Player(videoPlaceholderEl, {
+                width: '100%',
+                videoId: this.videoId,
+                playerVars: paramsObj,
+                events: {
+                    'onReady': event => {
+                        event.target.playVideo();
+                        resolve(player);
+                    }
                 }
-            }
+            });
         });
     }
 
-    async addIframe(){
-        if (this.classList.contains('lyt-activated')) return;
-        this.classList.add('lyt-activated');
+    // Add the iframe within <noscript> for indexability discoverability. See https://github.com/paulirish/lite-youtube-embed/issues/105
+    addNoscriptIframe() {
+        const iframeEl = this.createBasicIframe();
+        const noscriptEl = document.createElement('noscript');
+        // Appending into noscript isn't equivalant for mysterious reasons: https://html.spec.whatwg.org/multipage/scripting.html#the-noscript-element
+        noscriptEl.innerHTML = iframeEl.outerHTML;
+        this.append(noscriptEl);
+    }
 
+    getParams() {
         const params = new URLSearchParams(this.getAttribute('params') || []);
         params.append('autoplay', '1');
         params.append('playsinline', '1');
+        return params;
+    }
 
-        if (this.needsYTApiForAutoplay) {
-            return this.addYTPlayerIframe(params);
+    async activate(){
+        if (this.classList.contains('lyt-activated')) return;
+        this.classList.add('lyt-activated');
+
+        if (this.needsYTApi) {
+            return this.addYTPlayerIframe(this.getParams());
         }
 
+        const iframeEl = this.createBasicIframe();
+        this.append(iframeEl);
+
+        // Set focus for a11y
+        iframeEl.focus();
+    }
+
+    createBasicIframe(){
         const iframeEl = document.createElement('iframe');
         iframeEl.width = 560;
         iframeEl.height = 315;
@@ -155,11 +202,36 @@ class LiteYTEmbed extends HTMLElement {
         iframeEl.allowFullscreen = true;
         // AFAIK, the encoding here isn't necessary for XSS, but we'll do it only because this is a URL
         // https://stackoverflow.com/q/64959723/89484
-        iframeEl.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(this.videoId)}?${params.toString()}`;
-        this.append(iframeEl);
+        iframeEl.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(this.videoId)}?${this.getParams().toString()}`;
+        return iframeEl;
+    }
 
-        // Set focus for a11y
-        iframeEl.focus();
+    /**
+     * In the spirit of the `lowsrc` attribute and progressive JPEGs, we'll upgrade the reliable
+     * poster image to a higher resolution one, if it's available.
+     * Interestingly this sddefault webp is often smaller in filesize, but we will still attempt it second
+     * because getting _an_ image in front of the user if our first priority.
+     *
+     * See https://github.com/paulirish/lite-youtube-embed/blob/master/youtube-thumbnail-urls.md for more details
+     */
+    upgradePosterImage() {
+         // Defer to reduce network contention.
+        setTimeout(() => {
+            const webpUrl = `https://i.ytimg.com/vi_webp/${this.videoId}/sddefault.webp`;
+            const img = new Image();
+            img.fetchPriority = 'low'; // low priority to reduce network contention
+            img.referrerpolicy = 'origin'; // Not 100% sure it's needed, but https://github.com/ampproject/amphtml/pull/3940
+            img.src = webpUrl;
+            img.onload = e => {
+                // A pretty ugly hack since onerror won't fire on YouTube image 404. This is (probably) due to
+                // Youtube's style of returning data even with a 404 status. That data is a 120x90 placeholder image.
+                // … per "annoying yt 404 behavior" in the .md
+                const noAvailablePoster = e.target.naturalHeight == 90 && e.target.naturalWidth == 120;
+                if (noAvailablePoster) return;
+
+                this.style.backgroundImage = `url("${webpUrl}")`;
+            }
+        }, 100);
     }
 }
 // Register custom element
