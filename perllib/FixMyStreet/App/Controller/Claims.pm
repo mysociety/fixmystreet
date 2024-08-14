@@ -97,7 +97,7 @@ sub process_claim : Private {
 
     $object->confirm;
     $object->insert;
-    $c->forward('/report/new/create_related_things', [ $object ]);
+    $object->create_related_things();
     my $template = $object->response_templates->search({ 'me.state' => $object->state })->first;
     $c->stash->{auto_response} = $template->text if $template;
     return 1;

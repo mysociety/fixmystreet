@@ -162,7 +162,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 
     my $report = $c->stash->{report};
     if ( $report->confirmed ) {
-        $c->forward( 'create_related_things', [ $report ] );
+        $report->create_related_things($c->stash->{no_reporter_alert});
         $c->stash->{ json_response } = { success => 1, report => $report->id };
     } else {
         $c->forward( 'send_problem_confirm_email' );
@@ -1604,7 +1604,7 @@ sub process_confirmation : Private {
             $problem->update({ lastupdate => \'current_timestamp' });
 
             # Subscribe problem reporter to email updates
-            $c->forward( '/report/new/create_related_things', [ $problem ] );
+            $problem->create_related_things($c->stash->{no_reporter_alert});
         }
 
         if ($token_redeem_cooldown_seconds) {
@@ -1918,7 +1918,7 @@ sub redirect_or_confirm_creation : Private {
     # If confirmed send the user straight there.
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
-        $c->forward( 'create_related_things', [ $report ] );
+        $report->create_related_things($c->stash->{no_reporter_alert});
         if ($c->stash->{contributing_as_another_user} && $report->user->email
             && $report->user->id != $c->user->id
             && !$c->cobrand->report_sent_confirmation_email($report)
@@ -1978,46 +1978,6 @@ sub redirect_or_confirm_creation : Private {
     $c->log->info($report->user->id . ' created ' . $report->id . ", $thing sent, " . ($c->stash->{token_data}->{password} ? 'password set' : 'password not set'));
     if ($redirect) {
         return $c->res->redirect($redirect);
-    }
-}
-
-sub create_related_things : Private {
-    my ( $self, $c, $problem ) = @_;
-
-    # Set up a reporter alert
-    unless ($c->stash->{no_reporter_alert} || $c->cobrand->call_hook('suppress_reporter_alerts', $problem)) {
-        $c->model('DB::Alert')->find_or_create( {
-            user         => $problem->user,
-            alert_type   => 'new_updates',
-            parameter    => $problem->id,
-            cobrand      => $problem->cobrand,
-            cobrand_data => $problem->cobrand_data,
-            lang         => $problem->lang,
-        } )->confirm;
-    }
-
-    # If there is a special template, create a comment using that
-    foreach my $body (values %{$problem->bodies}) {
-        my $user = $body->comment_user or next;
-
-        my $updates = Open311::GetServiceRequestUpdates->new(
-            blank_updates_permitted => 1,
-        );
-
-        my $template = $problem->response_template_for('confirmed', 'dummy', '', '');
-        my ($description, $email_text) = $updates->comment_text_for_request($template, {}, $problem);
-        next unless $description;
-
-        $problem->add_to_comments({
-            user => $user,
-            external_id => 'auto-internal',
-            send_state => 'processed',
-            text => $description,
-            private_email_text => $email_text,
-            problem_state => 'confirmed',
-            state => 'unconfirmed',
-            confirmed => \'current_timestamp', # So that it will always be first
-        });
     }
 }
 

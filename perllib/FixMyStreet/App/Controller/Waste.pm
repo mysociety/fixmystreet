@@ -286,10 +286,8 @@ sub confirm_subscription : Private {
 
     $c->stash->{property_id} = $p->get_extra_field_value('property_id');
 
-    my $already_confirmed;
     if ($p->category eq 'Bulky collection' || $p->category eq 'Small items collection') {
         $c->stash->{template} = 'waste/bulky/confirmation.html';
-        $already_confirmed = $c->cobrand->bulky_send_before_payment;
     } elsif ($p->category eq 'Request new container') {
         $c->stash->{template} = 'waste/request_confirm.html';
     } else {
@@ -301,77 +299,8 @@ sub confirm_subscription : Private {
     # rather than the default 'done' form one
     $c->stash->{override_template} = $c->stash->{template};
 
-    return unless $p->state eq 'unconfirmed' || $already_confirmed;
-    return if $already_confirmed && $p->get_extra_metadata('payment_reference'); # Already confirmed
-
-    if ($c->cobrand->suppress_report_sent_email($p)) {
-        # Send bulky confirmation email after report confirmation (see
-        # the suppress_report_sent_email for SLWP)
-        $p->send_logged_email({ %{$c->stash} }, 0, $c->cobrand);
-    }
-
-    $c->stash->{no_reporter_alert} = 1 if
-        $p->get_extra_metadata('contributed_as') &&
-        $p->get_extra_metadata('contributed_as') eq 'anonymous_user';
-
-    my $db = FixMyStreet::DB->schema->storage;
-
-    my @problems = ($p);
-    if (my $grouped_ids = $p->get_extra_metadata('grouped_ids')) {
-        foreach my $id (@$grouped_ids) {
-            my $problem = $c->model('DB::Problem')->find({ id => $id }) or next;
-            push @problems, $problem;
-        }
-    }
-    foreach my $p (@problems) {
-        $db->txn_do(sub {
-            $p = FixMyStreet::DB->resultset('Problem')->search({ id => $p->id }, { for => \'UPDATE' })->single;
-            $p->update_extra_field( {
-                name => 'LastPayMethod',
-                description => 'LastPayMethod',
-                value => $c->cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
-            });
-            $p->update_extra_field( {
-                name => 'PaymentCode',
-                description => 'PaymentCode',
-                value => $reference
-            });
-            $p->set_extra_metadata('payment_reference', $reference) if $reference;
-            $p->confirm;
-            $c->forward( '/report/new/create_related_things', [ $p ] );
-            $p->update;
-        });
-    }
-
-    if ($already_confirmed) {
-        $c->forward('add_payment_confirmation_update', [ $p, $reference ]);
-    }
-
-    if (my $previous = $p->get_extra_metadata('previous_booking_id')) {
-        $previous = FixMyStreet::DB->resultset("Problem")->find($previous);
-        $c->forward('bulky/cancel_collection', [ $previous, 'amendment' ]);
-        my $update = $c->cobrand->bulky_is_cancelled($previous);
-        $update->confirm;
-        $update->update;
-    }
-}
-
-sub add_payment_confirmation_update : Private {
-    my ($self, $c, $p, $reference) = @_;
-
-    my $payment = $p->get_extra_field_value('payment') || 0;
-    $payment = sprintf( '%.2f', $payment / 100 );
-    my $reference_text = 'reference ';
-    if (!$reference) {
-        $reference_text .= $p->get_extra_metadata('chequeReference') . ' (phone/cheque)';
-    } else {
-        $reference_text .= $reference;
-    }
-    my $comment = $p->add_to_comments({
-        text => "Payment confirmed, $reference_text, amount £$payment",
-        user => $c->cobrand->body->comment_user || $p->user,
-    });
-    $p->cancel_update_alert($comment->id);
+    # Do everything needed to confirm a waste payment
+    $p->waste_confirm_payment($reference);
 }
 
 sub cancel_subscription : Private {

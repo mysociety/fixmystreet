@@ -1429,5 +1429,140 @@ sub confirmation_token {
     return $hash;
 }
 
+sub create_related_things {
+    my ($self, $no_reporter_alert) = @_;
+
+    # Set up a reporter alert
+    unless ($no_reporter_alert || $self->get_cobrand_logged->call_hook('suppress_reporter_alerts', $self)) {
+        FixMyStreet::DB->resultset("Alert")->find_or_create( {
+            user         => $self->user,
+            alert_type   => 'new_updates',
+            parameter    => $self->id,
+            cobrand      => $self->cobrand,
+            cobrand_data => $self->cobrand_data,
+            lang         => $self->lang,
+        } )->confirm;
+    }
+
+    # If there is a special template, create a comment using that
+    foreach my $body (values %{$self->bodies}) {
+        my $user = $body->comment_user or next;
+
+        my $updates = Open311::GetServiceRequestUpdates->new(
+            blank_updates_permitted => 1,
+        );
+
+        my $template = $self->response_template_for('confirmed', 'dummy', '', '');
+        my ($description, $email_text) = $updates->comment_text_for_request($template, {}, $self);
+        next unless $description;
+
+        $self->add_to_comments({
+            user => $user,
+            external_id => 'auto-internal',
+            send_state => 'processed',
+            text => $description,
+            private_email_text => $email_text,
+            problem_state => 'confirmed',
+            state => 'unconfirmed',
+            confirmed => \'current_timestamp', # So that it will always be first
+        });
+    }
+}
+
+=head2 Waste related activity
+
+=cut
+
+sub waste_confirm_payment {
+    my ($self, $reference) = @_;
+    my $cobrand = $self->get_cobrand_logged;
+
+    my $already_confirmed;
+    if ($self->category eq 'Bulky collection' || $self->category eq 'Small items collection') {
+        $already_confirmed = $cobrand->bulky_send_before_payment;
+    }
+
+    return unless $self->state eq 'unconfirmed' || $already_confirmed;
+    return if $already_confirmed && $self->get_extra_metadata('payment_reference'); # Already confirmed
+
+    my $rs = $self->result_source->schema->resultset('Problem');
+    my $db = $self->result_source->storage;
+    my $no_reporter_alert = ($self->get_extra_metadata('contributed_as') || '') eq 'anonymous_user';
+
+    my @problems = ($self);
+    if (my $grouped_ids = $self->get_extra_metadata('grouped_ids')) {
+        foreach my $id (@$grouped_ids) {
+            my $problem = $rs->find({ id => $id }) or next;
+            push @problems, $problem;
+        }
+    }
+
+    if ($cobrand->suppress_report_sent_email($self)) {
+        # Send bulky confirmation email after report confirmation (see
+        # the suppress_report_sent_email for SLWP)
+        $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
+    }
+
+    foreach my $p (@problems) {
+        $db->txn_do(sub {
+            $p = $rs->search({ id => $p->id }, { for => \'UPDATE' })->single;
+            $p->update_extra_field( {
+                name => 'LastPayMethod',
+                description => 'LastPayMethod',
+                value => $cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
+            });
+            $p->update_extra_field( {
+                name => 'PaymentCode',
+                description => 'PaymentCode',
+                value => $reference
+            });
+            $p->set_extra_metadata('payment_reference', $reference) if $reference;
+            $p->confirm;
+            $p->create_related_things($no_reporter_alert);
+            $p->update;
+        });
+    }
+
+    if ($already_confirmed) {
+        $self->bulky_add_payment_confirmation_update($reference);
+    }
+
+    if (my $previous = $self->get_extra_metadata('previous_booking_id')) {
+        $previous = $rs->find($previous);
+        $previous->bulky_cancel_collection('amendment');
+        my $update = $cobrand->bulky_is_cancelled($previous);
+        $update->confirm;
+        $update->update;
+    }
+}
+
+sub bulky_add_payment_confirmation_update {
+    my ($self, $reference) = @_;
+    my $cobrand = $self->get_cobrand_logged;
+
+    my $payment = $self->get_extra_field_value('payment') || 0;
+    $payment = sprintf( '%.2f', $payment / 100 );
+    my $reference_text = 'reference ';
+    if (!$reference) {
+        $reference_text .= $self->get_extra_metadata('chequeReference') . ' (phone/cheque)';
+    } else {
+        $reference_text .= $reference;
+    }
+    my $comment = $self->add_to_comments({
+        text => "Payment confirmed, $reference_text, amount £$payment",
+        user => $cobrand->body->comment_user || $self->user,
+    });
+    $self->cancel_update_alert($comment->id);
+}
+
+sub bulky_cancel_collection {
+    my ($self, $type, $non_user_cancel) = @_;
+
+    $self->state('closed');
+    my $description = $non_user_cancel
+        ? "Cancelled" : $type eq 'amendment' ? 'Cancelled due to amendment' : "Cancelled at user request";
+    $self->detail($self->detail . " | " . $description);
+    $self->update;
+}
 
 1;

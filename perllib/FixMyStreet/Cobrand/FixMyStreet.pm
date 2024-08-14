@@ -475,9 +475,7 @@ sub problem_state_processed {
 }
 
 sub suppress_reporter_alerts {
-    my $self = shift;
-    my $c = $self->{c};
-    my $problem = $c->stash->{report};
+    my ($self, $problem) = @_;
     if ($problem->to_body_named('Westminster')) {
         return 1;
     }

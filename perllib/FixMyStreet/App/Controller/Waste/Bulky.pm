@@ -338,7 +338,7 @@ sub process_bulky_amend : Private {
         $new->update;
         $update->confirm;
         $update->update;
-        $c->forward('/waste/add_payment_confirmation_update', [ $new, $p->get_extra_metadata('payment_reference') ]);
+        $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference'));
     } else {
         $p->create_related( moderation_original_data => {
             title => $p->title,
@@ -454,12 +454,7 @@ sub process_bulky_cancellation : Private {
 # Mark original report as closed
 sub cancel_collection : Private {
     my ($self, $c, $report, $type) = @_;
-
-    $report->state('closed');
-    my $description = $c->stash->{non_user_cancel}
-        ? "Cancelled" : $type eq 'amendment' ? 'Cancelled due to amendment' : "Cancelled at user request";
-    $report->detail($report->detail . " | " . $description);
-    $report->update;
+    $report->bulky_cancel_collection($type, $c->stash->{non_user_cancel});
 }
 
 __PACKAGE__->meta->make_immutable;
