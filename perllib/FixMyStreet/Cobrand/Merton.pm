@@ -117,6 +117,13 @@ sub open311_extra_data_include {
             my $ids = join('::', @ids);
             $row->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => $ids });
             push @$open311_only, { name => 'Current_Item_Count', value => scalar @ids };
+
+            if (my $previous = $row->get_extra_metadata('previous_booking_id')) {
+                $previous = FixMyStreet::DB->resultset("Problem")->find($previous);
+                push @$open311_only, { name => 'previous_booking_id', value => $previous->id };
+                my $echo_id = $previous->get_extra_field_value('echo_id');
+                push @$open311_only, { name => 'previous_echo_id', value => $echo_id };
+            }
         }
         # Do not want to send multiple Action/Reason codes
         foreach (qw(Action Reason)) {

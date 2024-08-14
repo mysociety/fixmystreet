@@ -387,6 +387,7 @@ FixMyStreet::override_config {
             my $update = $new_report->comments->first;
             is $update->state, 'confirmed';
             is $update->text, 'Payment confirmed, reference 54321, amount £37.00';
+            is $update->get_extra_metadata('fms_extra_payments'), '54321|37.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(0);
 
@@ -652,6 +653,7 @@ FixMyStreet::override_config {
             is $new_report->comments->count, 1; # Payment confirmed update
             my $comment = $new_report->comments->first;
             is $comment->text, 'Payment confirmed, reference 54321, amount £0.00';
+            is $comment->get_extra_metadata('fms_extra_payments'), '54321|0.00|54321|37.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(0);
 
@@ -690,6 +692,7 @@ FixMyStreet::override_config {
             $mech->get_ok($path);
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('Booking cancelled by customer');
+            $mech->content_contains('£0.00 (£37.00 already paid)');
         };
 
         $report->set_extra_metadata('payment_reference' => '6789'); # So will be changed
@@ -776,6 +779,7 @@ FixMyStreet::override_config {
             my $update = $new_report->comments->first;
             is $update->state, 'confirmed';
             is $update->text, 'Payment confirmed, reference 54321, amount £23.75';
+            is $update->get_extra_metadata('fms_extra_payments'), '54321|23.75|6789|0.00|54321|37.00';
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(1); # Cancellation update should come through now
             $mech->clear_emails_ok;
@@ -790,6 +794,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Updates');
             $mech->content_contains('This collection has been cancelled');
             $mech->content_contains('Booking cancelled due to amendment');
+            $mech->content_contains('£0.00 (£37.00 already paid)');
             $report->discard_changes;
             is $report->state, 'closed';
         };
@@ -815,6 +820,7 @@ FixMyStreet::override_config {
             $mech->get_ok($path);
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('Booking cancelled by customer');
+            $mech->content_contains('£23.75 (£37.00 already paid)');
         };
     };
 
@@ -1030,6 +1036,10 @@ FixMyStreet::override_config {
     #     is $report->get_extra_field_value('payment_method'), 'cheque';
     # }
     #
+
+    $report->update_extra_field({ name => 'echo_id', value => 'EchoID' });
+    $report->update;
+    my $previous_id = $report->id;
     subtest 'Test sending of bulky report to other endpoint' => sub {
         use_ok 'FixMyStreet::Script::Merton::SendWaste';
 
@@ -1051,6 +1061,7 @@ FixMyStreet::override_config {
             dt => $dt,
         });
         $report->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => '3::83::3' });
+        $report->set_extra_metadata(previous_booking_id => $previous_id);
         $report->update;
 
         $send->send_reports;
@@ -1064,6 +1075,9 @@ FixMyStreet::override_config {
         is $cgi->param('api_key'), 'api_key';
         is $cgi->param('attribute[Bulky_Collection_Bulky_Items]'), 'BBQ::Bath::BBQ';
         is $cgi->param('attribute[Current_Item_Count]'), 3;
+        is $cgi->param('attribute[previous_booking_id]'), $previous_id;
+        is $cgi->param('attribute[previous_echo_id]'), 'EchoID';
+
         $report->discard_changes;
         is $report->get_extra_metadata('sent_to_crimson'), 1;
         is $report->get_extra_metadata('crimson_external_id'), "359";
