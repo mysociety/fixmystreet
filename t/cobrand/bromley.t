@@ -769,6 +769,7 @@ subtest 'redirecting of reports between backends' => sub {
         });
 
         my $in = $mech->echo_notify_xml('guid', 2104, 15004, 1252);
+        my $detail = $report->detail;
 
         subtest 'A report sent to Confirm, then redirected to Echo' => sub {
             $report->update({ external_id => 12345 });
@@ -799,8 +800,14 @@ subtest 'redirecting of reports between backends' => sub {
             $report->discard_changes;
             is $report->comments->count, 1;
             is $report->whensent, undef;
-            is $report->get_extra_field_value('Notes'), 'This is a handover note';
+            is $report->get_extra_metadata('handover_notes'), 'This is a handover note';
             is $report->category, 'Street Services';
+
+            FixMyStreet::Script::Reports::send();
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('service_code'), 3045;
+            is $c->param('description'), "$detail | Handover notes - This is a handover note";
         };
         subtest '...then redirected back to Confirm' => sub {
             $report->update({ external_id => 'guid', whensent => DateTime->now, send_method_used => 'Open311' });
@@ -839,7 +846,7 @@ subtest 'redirecting of reports between backends' => sub {
             my $req = Open311->test_req_used;
             my $c = CGI::Simple->new($req->content);
             is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
-            like $c->param('description'), qr/Handover notes - Outgoing notes from Echo/;
+            is $c->param('description'), "$detail | Handover notes - Outgoing notes from Echo";
         };
 
         subtest "comment on a closed echo report result in a resend under 'Street Services'" => sub {

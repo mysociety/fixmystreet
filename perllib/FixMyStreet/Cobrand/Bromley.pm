@@ -410,7 +410,7 @@ sub open311_get_update_munging {
         $problem->state('in progress');
         $comment->problem_state('in progress');
         $problem->set_extra_metadata( original_bromley_external_id => $problem->external_id );
-        $problem->update_extra_field({ name => 'Notes', value => $comment->text });
+        $problem->set_extra_metadata(handover_notes => $comment->text);
         # Resending report, don't need comment to be public
         $comment->state('hidden');
         $problem->resend;
