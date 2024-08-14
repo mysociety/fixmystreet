@@ -163,13 +163,14 @@ SET data = form.saved_data;
       [% IF c.cobrand.moniker != 'brent' %]
       <dl>
         <dt>Price</dt>
-        [% IF problem %]
-            [% payment = problem.get_extra_field_value('payment') OR 0 %]
-        [% ELSE %]
-            [% payments = cobrand.bulky_total_cost(data);
+        [% IF problem;
+            payment = problem.get_extra_field_value('payment') OR 0;
+            already_paid = cobrand.get_total_paid(problem) - payment;
+        ELSE;
+            payments = cobrand.bulky_total_cost(data);
             payment = payments.amount;
-            already_paid = payments.already_paid; %]
-        [% END %]
+            already_paid = payments.already_paid;
+        END %]
         <dd>£[% pounds(payment / 100) %] [% IF already_paid ~%]
                 (£[% pounds(already_paid / 100) %] already paid)
             [%~ END %]

@@ -210,7 +210,7 @@ sub bulky_total_cost {
     my $previous = $c->stash->{amending_booking};
     my $already_paid;
     if ($previous && $c->stash->{payment}) {
-        $already_paid = get_total_paid($previous);
+        $already_paid = $self->get_total_paid($previous);
         my $new_cost = $c->stash->{payment} - $already_paid;
         # no refunds if they've already paid more than the new booking would cost
         $c->stash->{payment} = max(0, $new_cost);
@@ -229,7 +229,7 @@ versions of it.
 =cut
 
 sub get_total_paid {
-    my $previous = shift;
+    my ($self, $previous) = @_;
 
     return 0 unless $previous;
 
@@ -238,7 +238,7 @@ sub get_total_paid {
     if ($previous->get_extra_metadata('previous_booking_id')) {
         my $previous_id = $previous->get_extra_metadata('previous_booking_id');
         my $previous_report = FixMyStreet::DB->schema->resultset('Problem')->find($previous_id);
-        $total += get_total_paid($previous_report);
+        $total += $self->get_total_paid($previous_report);
     }
 
     return $total;

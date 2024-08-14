@@ -695,6 +695,7 @@ FixMyStreet::override_config {
             $mech->get_ok($path);
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('Booking cancelled by customer');
+            $mech->content_contains('£0.00 (£37.00 already paid)');
         };
 
         $report->set_extra_metadata('payment_reference' => '6789'); # So will be changed
@@ -798,6 +799,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Updates');
             $mech->content_contains('This collection has been cancelled');
             $mech->content_contains('Booking cancelled due to amendment');
+            $mech->content_contains('£0.00 (£37.00 already paid)');
             $report->discard_changes;
             is $report->state, 'cancelled';
         };
@@ -823,6 +825,7 @@ FixMyStreet::override_config {
             $mech->get_ok($path);
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('Booking cancelled by customer');
+            $mech->content_contains('£23.75 (£37.00 already paid)');
         };
     };
 
