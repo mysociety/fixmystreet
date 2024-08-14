@@ -1037,17 +1037,18 @@ FixMyStreet::override_config {
     # }
     #
 
+    $report->update_extra_field({ name => 'echo_id', value => 'EchoID' });
+    $report->update;
     my $previous_id = $report->id;
     subtest 'Test sending of bulky report to other endpoint' => sub {
         use_ok 'FixMyStreet::Script::Merton::SendWaste';
 
-        $echo->mock('GetEvent', sub { { Id => 1928373 } });
+        $echo->mock('GetEvent', sub { { Id => 1928374 } });
 
         my $send = FixMyStreet::Script::Merton::SendWaste->new;
         $send->send_reports; # Clear any others
         Open311->test_req_used; # Clear any use
 
-        $echo->mock('GetEvent', sub { { Id => 1928374 } });
         Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
 
         my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
@@ -1075,7 +1076,7 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Bulky_Collection_Bulky_Items]'), 'BBQ::Bath::BBQ';
         is $cgi->param('attribute[Current_Item_Count]'), 3;
         is $cgi->param('attribute[previous_booking_id]'), $previous_id;
-        is $cgi->param('attribute[previous_echo_id]'), 1928373;
+        is $cgi->param('attribute[previous_echo_id]'), 'EchoID';
 
         $report->discard_changes;
         is $report->get_extra_metadata('sent_to_crimson'), 1;
