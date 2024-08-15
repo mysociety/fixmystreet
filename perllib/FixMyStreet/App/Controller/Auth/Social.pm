@@ -308,7 +308,11 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
         $c->log->info("Social::oidc_callback no id_token: " . $oidc->{last_response}->{_content});
         $c->detach('oauth_failure');
     }
-
+    my $message = '';
+    for my $key (sort keys %{$id_token->payload}) {
+        $message .= $key . " : " . $id_token->payload->{$key} . "\n" if $id_token->payload->{$key};
+    }
+    $c->log->info($message) if $message;
     # sanity check the token audience is us...
     unless ($id_token->payload->{aud} eq $c->forward('oidc_config')->{client_id}) {
         $c->log->info("Social::oidc_callback invalid id_token: expected aud to be " . $c->forward('oidc_config')->{client_id} . " but it was " . $id_token->payload->{aud});
