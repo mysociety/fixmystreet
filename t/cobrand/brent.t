@@ -1273,7 +1273,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('request_referral'), $referral;
             is $report->get_extra_field_value('request_how_long_lived'), $duration;
             is $report->get_extra_field_value('request_ordered_previously'), $test_name eq 'Ordered' ? 1 : '';
-            is $report->get_extra_field_value('request_contamination_reports'), $test_name eq 'Contaminated' ? 3 : '';
+            is $report->get_extra_field_value('request_contamination_reports'), $test_name eq 'Contaminated' ? 1 : '';
             FixMyStreet::Script::Reports::send();
             my @email = $mech->get_email;
             is @email, $emails;
@@ -1309,17 +1309,13 @@ FixMyStreet::override_config {
         make_request("Not ordered", 'missing', '', '', 1);
         make_request("Not ordered", 'extra', '', '', 1);
 
-        # $echo->mock('GetServiceTaskInstances', sub { [
-        #     { ServiceTaskRef => { Value => { anyType => '401' } },
-        #         Instances => { ScheduledTaskInfo => [
-        #             { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
-        #             { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
-        #             { Resolution => 1148, CurrentScheduledDate => { DateTime => '2020-07-01T00:00:00Z' } },
-        #         ] }
-        #     },
-        # ] });
-        # make_request("Contaminated", 'missing', '', 1, 2);
-        # make_request("Contaminated", 'extra', '', 'refuse');
+        $echo->mock('GetEventsForObject', sub { [ {
+            Guid => 'b-guid',
+            EventTypeId => 2923,
+            ResolvedDate => { DateTime => '2024-05-17T12:00:00Z' },
+        } ] } );
+        make_request("Contaminated", 'missing', '', 1, 2);
+        make_request("Contaminated", 'extra', '', 'refuse');
     };
 
     subtest 'test staff-only assisted collection form' => sub {

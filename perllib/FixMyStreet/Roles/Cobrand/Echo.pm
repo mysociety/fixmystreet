@@ -395,8 +395,7 @@ sub _parse_events {
 
         # Only care about open requests/enquiries
         my $closed = $self->_closed_event($_);
-        next if $type eq 'request' && $closed && !$params->{include_closed_requests};
-        next if $type eq 'enquiry' && $closed;
+        next if ($type eq 'request' || $type eq 'enquiry') && $closed && !$params->{include_closed_events};
 
         if ($type eq 'request') {
             my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
