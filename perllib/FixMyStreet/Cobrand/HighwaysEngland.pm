@@ -194,6 +194,35 @@ sub _redact {
     return $s;
 }
 
+=head1 OIDC single sign on
+
+Noational Highways has a single-sign on option
+
+=over 4
+
+=item * Single sign on is enabled if the configuration is set up
+
+=cut
+
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+}
+
+=item * Different single sign-ons send user details differently, user_from_oidc extracts the relevant parts
+
+=cut
+
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    my $name = $payload->{name} ? $payload->{name} : '';
+    my $email = $payload->{email} ? lc($payload->{email}) : '';
+
+    return ($name, $email);
+}
+
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
     # On the cobrand there is only the HE body
