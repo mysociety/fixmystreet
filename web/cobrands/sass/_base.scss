@@ -1958,6 +1958,7 @@ html.js #map .noscript {
   filter: none !important; // Override OpenLayers PNG handling of the navigation
   background-color: #222222;
   color: transparent !important;
+  text-indent: -9999px; // This prevent the odd extra rectangles when the button is being focused. Screen readers still announce the content.
 
   &:focus {
     background-color: #222; // In case there is rule in a cobrand overriding the background of links.
