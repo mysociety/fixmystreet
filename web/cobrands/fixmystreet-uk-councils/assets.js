@@ -1404,6 +1404,24 @@ fixmystreet.assets.shropshire.streetlight_asset_message = function(asset) {
     return out;
 };
 
+/* Surrey */
+
+fixmystreet.assets.surrey = {};
+
+fixmystreet.assets.surrey.road_not_found = function(layer) {
+    var currentCategory = fixmystreet.reporting.selectedCategory().category;
+    if (!fixmystreet.reporting_data || currentCategory === '') {
+        // Skip checks until category has been selected.
+        fixmystreet.message_controller.road_found(layer);
+        return;
+    }
+    if (layer.fixmystreet.permissive_categories && layer.fixmystreet.permissive_categories.indexOf(fixmystreet.reporting.selectedCategory().category) !== -1) {
+        fixmystreet.message_controller.road_found(layer);
+    } else {
+        fixmystreet.message_controller.road_not_found(layer);
+    }
+};
+
 /* TfL */
 
 fixmystreet.assets.tfl = {};
