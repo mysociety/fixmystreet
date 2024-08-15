@@ -60,6 +60,11 @@ $geolocation-link: #222 !default;
 $geolocation-link-border: $geolocation-link !default;
 $geolocation-link-background-color: transparent !default;
 
+$footer-main-nav-font-size: 1rem !default;
+$footer-main-nav-padding: 2em 0 !default;
+$footer-main-nav-background: #2E3033 !default;
+$footer-main-nav-color: #fff !default;
+
 @import "_mixins";
 @import "_report_list";
 
@@ -1075,6 +1080,34 @@ footer {
         font-size: 0.75em;
         margin-bottom: 0;
       }
+    }
+  }
+}
+
+.footer-main-nav {
+  padding: $footer-main-nav-padding;
+  background-color: $footer-main-nav-background;
+  .nav-footer {
+    display: flex;
+    column-gap: 2rem;
+    row-gap: 1rem;
+    font-size: $footer-main-nav-font-size;
+    justify-content: center;
+    margin: 0;
+    flex-wrap: wrap;
+  
+    li {
+        list-style: none;
+        margin-bottom: 0;
+    }
+
+    a {
+        color: $footer-main-nav-color;
+  
+        &:focus {
+            background-color: #ffff00;
+            color: #000;
+        }
     }
   }
 }
