@@ -11,12 +11,43 @@ $societyworks-footer-logo-vertical-align: -7px !default;
     background: $societyworks-footer-background;
     box-shadow: 0 1000px 0 1000px $societyworks-footer-background;
     color: $societyworks-footer-color;
+    text-align: center;
 
     p {
         margin: 0;
         font-family: $societyworks-footer-font-family;
         font-size: $societyworks-footer-font-size;
         line-height: $societyworks-footer-line-height;
+    }
+
+    .nav-footer {
+        display: flex;
+        column-gap: 2rem;
+        row-gap: 1rem;
+        font-size: $societyworks-footer-font-size;
+        justify-content: center;
+        margin: 1.5rem 0 0 0;
+        flex-wrap: wrap;
+
+        li {
+            list-style: none;
+        }
+
+        .frontpage & {
+            // In frontpage users can't interact with 'Report a problem' link
+            li:first-child {
+                display: none;
+            }
+        }
+
+        a {
+            color: #fff;
+
+            &:focus {
+                background-color: #ffff00;
+                color: #000;
+            }
+        }
     }
 }
 

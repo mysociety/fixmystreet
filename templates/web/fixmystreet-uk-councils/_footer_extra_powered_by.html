@@ -1,3 +1,7 @@
+[%
+    SET ul_class="nav-footer" UNLESS ul_class.defined;
+%]
+
 <div class="societyworks-footer">
   <div class="container">
       <p>
@@ -8,6 +12,23 @@
           <a class="societyworks-footer__logo societyworks-footer__logo--fms-pro" href="https://www.societyworks.org/services/highways/">FixMyStreet Pro</a>
         [% END %]
       </p>
+
+      <ul class="[% ul_class %]"[% " id='" _ ul_id _ "'" IF ul_id %]>
+          [% INCLUDE 'main_nav_items.html' %]
+      </ul>
+
+      [% BLOCK navitem ~%]
+          <li [% liattrs | safe %]>
+            [%~ IF c.req.uri.path == uri AND NOT always_url ~%]
+                <span [% attrs | safe %]>[% label %]
+                  <span class="screen-reader-only">(current page)</span>
+                </span>
+            [%~ ELSE ~%]
+                <a href="[% uri %][% suffix IF suffix %]" [% attrs | safe %]>[% label %]</a>
+            [%~ END ~%]
+          </li>
+      [%~ END %]
+
   </div>
 </div>
 
