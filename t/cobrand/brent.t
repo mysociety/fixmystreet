@@ -134,9 +134,11 @@ my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $brent,
 $staff_user->user_roles->find_or_create({ role_id => $role->id });
 
 subtest 'role report shows staff problem when staff logged in during problem reporting process' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
   FixMyStreet::override_config {
-    ALLOWED_COBRANDS => ['brent'],
+    ALLOWED_COBRANDS => 'brent',
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
   }, sub {
     $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904");
     $mech->submit_form_ok( { with_fields => { category => 'Graffiti', title => 'Spraypaint on wall', detail => 'Some kind of picture', name => 'Staff User', username_register => $mech->uniquify_email('staff@example.org') } }, 'Staff user logs in whilst making report' );

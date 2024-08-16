@@ -197,16 +197,14 @@ sub _csv_parameters_problems {
     my $self = shift;
 
     my $groups = $self->cobrand->enable_category_groups ? 1 : 0;
-    my $join = ['comments'];
-    my $columns = ['comments.id', 'comments.problem_state', 'comments.confirmed', 'comments.mark_fixed'];
+    my $join = ['confirmed_comments'];
+    my $columns = ['confirmed_comments.id', 'confirmed_comments.problem_state', 'confirmed_comments.confirmed', 'confirmed_comments.mark_fixed'];
     if ($groups) {
         push @$join, 'contact';
         push @$columns, 'contact.id', 'contact.extra';
     }
 
-    my $rs = $self->objects_rs->search({
-        "comments.state" => ['confirmed', undef],
-    }, {
+    my $rs = $self->objects_rs->search(undef, {
         join => $join,
         collapse => 1,
         '+columns' => $columns,
@@ -293,7 +291,8 @@ sub generate_csv {
             my @updates = $obj->comments->all;
             @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
             for my $comment (@updates) {
-                my $problem_state = $comment->problem_state or next;
+                next unless $comment->problem_state || $comment->mark_fixed;
+                my $problem_state = $comment->problem_state || '';
                 next if $problem_state eq 'confirmed';
                 $hashref->{acknowledged} //= $comment->confirmed;
                 $hashref->{action_scheduled} //= $problem_state eq 'action scheduled' ? $comment->confirmed : undef;
@@ -467,6 +466,10 @@ sub filter_premade_csv {
         formatter => FixMyStreet::DB->schema->storage->datetime_parser,
     );
 
+    my $all_states = $self->cobrand->call_hook('dashboard_export_include_all_states');
+    my $wards_re = join ('|', @{$self->wards});
+    my $category_re = join('|', map { quotemeta } @{$self->category});
+
     my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
     open my $fh, "<:encoding(utf8)", $self->premade_csv_filename;
     my $arr = $csv->getline($fh);
@@ -478,16 +481,10 @@ sub filter_premade_csv {
         # Perform the same filtering as what construct_rs_filter does
         # by skipping rows from the CSV file that do not match
 
-        if (@{$self->wards}) {
-            my $match = 0;
-            foreach (@{$self->wards}) {
-                $match = 1 if $row->{Areas} =~ /,$_,/;
-            }
-            next unless $match;
-        }
+        next if $wards_re && $row->{Areas} !~ /,($wards_re),/;
 
         my $category = $row->{Subcategory} || $row->{Category};
-        next if @{$self->category} && !grep { /\Q$category\E/ } @{$self->category};
+        next if @{$self->category} && $category !~ /^($category_re)$/;
 
         if ( $self->state && $fixed_states->{$self->state} ) { # Probably fixed - council
             next unless $fixed_states->{$row->{$state_column}};
@@ -495,7 +492,6 @@ sub filter_premade_csv {
             next if $row->{$state_column} ne $self->state;
         }
 
-        my $all_states = $self->cobrand->call_hook('dashboard_export_include_all_states');
         if ($all_states) {
             # Has to use created, because unconfirmed ones won't have a confirmed timestamp
             next if $row->{Created} lt $range->start_formatted;

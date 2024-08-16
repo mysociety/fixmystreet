@@ -103,6 +103,20 @@ sub cc_check_payment_status {
     return ($error, $data);
 }
 
+sub cc_check_payment_and_update {
+    my ($self, $reference, $p) = @_;
+
+    my ($error, $data) = $self->cc_check_payment_status($reference);
+    if ($data) {
+        for (qw(MPOSID AuthCode)) {
+            $p->update_extra_field({ name => $_, value => $data->{$_} }) if $data->{$_};
+        }
+        $p->update;
+        return (undef, $data->{PaymentID});
+    }
+    return ($error, undef);
+}
+
 sub garden_cc_check_payment_status {
     my ($self, $c, $p) = @_;
 
@@ -110,7 +124,7 @@ sub garden_cc_check_payment_status {
     my $reference = $p->get_extra_metadata('scpReference');
     $c->detach( '/page_error_404_not_found' ) unless $reference;
 
-    my ($error, $data) = $self->cc_check_payment_status($reference);
+    my ($error, $id) = $self->cc_check_payment_and_update($reference, $p);
     if ($error) {
         if ($error =~ /Execution Timeout Expired/) {
             $c->stash->{retry_confirmation} = 1;
@@ -119,13 +133,8 @@ sub garden_cc_check_payment_status {
         return undef;
     }
 
-    for (qw(MPOSID AuthCode)) {
-        $p->update_extra_field({ name => $_, value => $data->{$_} }) if $data->{$_};
-    }
-    $p->update;
-
     # create sub in echo
-    return $data->{PaymentID};
+    return $id;
 }
 
 1;

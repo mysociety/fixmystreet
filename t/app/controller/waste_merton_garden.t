@@ -10,7 +10,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2500, 'Merton Borough Council', {}, { cobrand => 'merton' });
+my $body = $mech->create_body_ok(2500, 'Merton Council', {}, { cobrand => 'merton' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
@@ -548,7 +548,13 @@ FixMyStreet::override_config {
         is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
         check_extra_data_pre_confirm($new_report, new_bins => 0);
 
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        $new_report->update({ created => \"current_timestamp - '30 minutes'::interval" });
+
+        # Someone never made it to the complete page, test fallback
+        use_ok 'FixMyStreet::Script::Merton::SendWaste';
+        my $send = FixMyStreet::Script::Merton::SendWaste->new;
+        $send->check_payments;
+
         check_extra_data_post_confirm($new_report);
 
         $mech->clear_emails_ok;

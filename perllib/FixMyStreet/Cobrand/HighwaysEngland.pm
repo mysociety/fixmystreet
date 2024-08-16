@@ -334,12 +334,12 @@ sub dashboard_export_problems_add_columns {
 
     $csv->objects_attrs({
         '+columns' => [
-            'comments.text', 'comments.extra',
-            {'comments.user.name' => 'user.name'},
+            'confirmed_comments.text', 'confirmed_comments.extra',
+            {'confirmed_comments.user.name' => 'user.name'},
             {'user.email' => 'user_2.email'},
             {'user.phone' => 'user_2.phone'},
         ],
-        join => ['user', { comments => 'user' }],
+        join => ['user', { confirmed_comments => 'user' }],
     });
 
     $csv->add_csv_columns(
@@ -400,7 +400,7 @@ sub dashboard_export_problems_add_columns {
         $fields->{user_phone} = $report->user ? $report->user->phone : '';
 
         my $i = 1;
-        my @updates = $report->comments->all;
+        my @updates = $report->confirmed_comments->all;
         @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
         for my $update (@updates) {
             last if $i > 5;

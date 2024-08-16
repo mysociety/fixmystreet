@@ -192,6 +192,7 @@ FixMyStreet::override_config {
                 cobrand_data => 'waste',
                 state => 'confirmed',
                 category => $no_echo_contact->category,
+                external_id => 'no_echo',
             });
             $no_echo_report->set_extra_metadata(no_echo => 1);
             $no_echo_report->update;
@@ -201,7 +202,8 @@ FixMyStreet::override_config {
 
             $no_echo_report->discard_changes;
             is $no_echo_report->get_extra_metadata('sent_to_crimson'), 1;
-            is $no_echo_report->external_id, "360";
+            is $no_echo_report->get_extra_metadata('crimson_external_id'), 360;
+            is $no_echo_report->external_id, "no_echo";
             $no_echo_report->delete;
         };
     };

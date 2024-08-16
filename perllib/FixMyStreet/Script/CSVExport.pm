@@ -197,7 +197,7 @@ staff_roles AS (
 EOF
     my @sql_join = (
         '"contacts" "contact" ON CAST( "contact"."body_id" AS text ) = (regexp_split_to_array( "me"."bodies_str", \',\'))[1] AND "contact"."category" = "me"."category"',
-        '"comment" "comments" ON "comments"."problem_id" = "me"."id"',
+        '"comment" "comments" ON "comments"."problem_id" = "me"."id" AND "comments"."state" = \'confirmed\'',
         '"users" "contributed_by_user" ON "contributed_by_user"."id" = ("me"."extra"->>\'contributed_by\')::integer',
         'staff_roles ON contributed_by_user.id = staff_roles.user_id',
     );
@@ -245,8 +245,6 @@ EOF
     return <<EOF;
 DECLARE csr CURSOR WITH HOLD FOR $sql_with SELECT $sql_select FROM "problem" "me" $sql_join
 WHERE regexp_split_to_array("me"."bodies_str", ',') && ARRAY['$body_id']
-    -- Ignore non-confirmed comments, and ones with no or confirmed problem_state
-    AND ("comments"."state" = 'confirmed' OR "comments"."state" IS NULL)
     $where_states
 ORDER BY "me"."confirmed", "me"."id", "comments"."confirmed", "comments"."id";
 EOF
@@ -308,7 +306,8 @@ row timestamps.
 sub process_comment {
     my ($hashref, $obj) = @_;
     return if $hashref->{closed}; # Once closed is set, ignore further more comments
-    my $problem_state = $obj->{problem_state} or return;
+    return unless $obj->{problem_state} || $obj->{mark_fixed};
+    my $problem_state = $obj->{problem_state} || '';
     return if $problem_state eq 'confirmed';
     $hashref->{acknowledged} //= $obj->{comment_confirmed};
     $hashref->{action_scheduled} //= $problem_state eq 'action scheduled' ? $obj->{comment_confirmed} : undef;
