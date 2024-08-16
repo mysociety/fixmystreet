@@ -87,6 +87,7 @@ sub _problems {
     my $self = shift;
     FixMyStreet::DB->resultset('Problem')->to_body($self->body->id)->search({
         state => { -not_in => [ FixMyStreet::DB::Result::Problem::hidden_states ] },
+        external_id => { '!=' => undef },
         cobrand_data => 'waste',
         cobrand => 'merton',
         -not => { extra => { '\?' => 'sent_to_crimson' } },
