@@ -24,6 +24,8 @@ my ($update) = $mech->create_comment_for_problem(
 );
 $update->update({ problem_state => '' }); # simulate a questionnaire response which has mark_fixed true and no problem_state
 
+# Have it so problem1 only has hidden updates
+$mech->create_comment_for_problem($problem1, $staffuser, 'Title', 'text', 0, 'hidden', '');
 
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {

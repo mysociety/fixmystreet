@@ -197,16 +197,14 @@ sub _csv_parameters_problems {
     my $self = shift;
 
     my $groups = $self->cobrand->enable_category_groups ? 1 : 0;
-    my $join = ['comments'];
-    my $columns = ['comments.id', 'comments.problem_state', 'comments.confirmed', 'comments.mark_fixed'];
+    my $join = ['confirmed_comments'];
+    my $columns = ['confirmed_comments.id', 'confirmed_comments.problem_state', 'confirmed_comments.confirmed', 'confirmed_comments.mark_fixed'];
     if ($groups) {
         push @$join, 'contact';
         push @$columns, 'contact.id', 'contact.extra';
     }
 
-    my $rs = $self->objects_rs->search({
-        "comments.state" => ['confirmed', undef],
-    }, {
+    my $rs = $self->objects_rs->search(undef, {
         join => $join,
         collapse => 1,
         '+columns' => $columns,

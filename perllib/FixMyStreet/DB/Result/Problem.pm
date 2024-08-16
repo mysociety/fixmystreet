@@ -241,6 +241,18 @@ __PACKAGE__->has_many(
   },
 );
 
+__PACKAGE__->has_many(
+  confirmed_comments => "FixMyStreet::DB::Result::Comment",
+  sub {
+      my $args = shift;
+      return {
+          "$args->{foreign_alias}.problem_id" => { -ident => "$args->{self_alias}.id" },
+          "$args->{foreign_alias}.state" => 'confirmed',
+      };
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 __PACKAGE__->might_have(
   contributed_by => "FixMyStreet::DB::Result::User",
   sub {
