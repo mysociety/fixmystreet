@@ -293,7 +293,8 @@ sub generate_csv {
             my @updates = $obj->comments->all;
             @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
             for my $comment (@updates) {
-                my $problem_state = $comment->problem_state or next;
+                next unless $comment->problem_state || $comment->mark_fixed;
+                my $problem_state = $comment->problem_state || '';
                 next if $problem_state eq 'confirmed';
                 $hashref->{acknowledged} //= $comment->confirmed;
                 $hashref->{action_scheduled} //= $problem_state eq 'action scheduled' ? $comment->confirmed : undef;

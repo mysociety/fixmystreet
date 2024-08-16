@@ -22,6 +22,7 @@ my ($update) = $mech->create_comment_for_problem(
     $problem2, $staffuser, 'Title', 'text', 0, 'confirmed', 'fixed',
     { confirmed => $problem2->confirmed->add(days => 1, hours => 3, minutes => 37) }
 );
+$update->update({ problem_state => '' }); # simulate a questionnaire response which has mark_fixed true and no problem_state
 
 
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );

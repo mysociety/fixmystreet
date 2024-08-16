@@ -302,7 +302,8 @@ row timestamps.
 sub process_comment {
     my ($hashref, $obj) = @_;
     return if $hashref->{closed}; # Once closed is set, ignore further more comments
-    my $problem_state = $obj->{problem_state} or return;
+    return unless $obj->{problem_state} || $obj->{mark_fixed};
+    my $problem_state = $obj->{problem_state} || '';
     return if $problem_state eq 'confirmed';
     $hashref->{acknowledged} //= $obj->{comment_confirmed};
     $hashref->{action_scheduled} //= $problem_state eq 'action scheduled' ? $obj->{comment_confirmed} : undef;
