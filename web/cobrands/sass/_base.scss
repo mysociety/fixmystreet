@@ -2965,18 +2965,18 @@ a#geolocate_link {
   padding: 140px 0 2em;
   text-align: center;
 
-  background: transparent url(/cobrands/fixmystreet/images/tick-in-circle-100px.png) center 1em no-repeat;
+  background: transparent url(/cobrands/fixmystreet/images/tick-in-circle.svg) center 1em / 100px no-repeat;
 
   &.confirmation-header--failure {
-    background-image: url(/cobrands/fixmystreet/images/sad-face-in-circle-100px.png);
+    background-image: url(/cobrands/fixmystreet/images/sad-face-in-circle.svg);
   }
 
   &.confirmation-header--inbox {
-    background-image: url(/cobrands/fixmystreet/images/inbox-in-circle-100px.png);
+    background-image: url(/cobrands/fixmystreet/images/inbox-in-circle.svg);
   }
 
   &.confirmation-header--phone {
-    background-image: url(/cobrands/fixmystreet/images/phone-in-circle-100px.png);
+    background-image: url(/cobrands/fixmystreet/images/phone-in-circle.svg);
   }
 
   &.confirmation-header--blank {
