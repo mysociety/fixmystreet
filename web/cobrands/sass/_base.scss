@@ -3011,6 +3011,7 @@ a#geolocate_link {
     color: #666666;
     font-size: 1.2em;
     margin-bottom: 0.5em;
+    word-break: break-word; // It prevents screen overflow when there is a long url, when a page has not been found.
   }
 
   & > :last-child {
