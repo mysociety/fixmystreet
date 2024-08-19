@@ -72,15 +72,6 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
     }
   }
 
-  span.report-a-problem-btn {
-    cursor:auto;
-    border-radius: 0.25em;
-    &:hover, &:focus {
-      color: $nav_colour !important;
-      background-color: $nav_hover_background_colour !important;
-    }
-  }
-
   span {
     color: $nav_colour;
     background-color: $nav_hover_background_colour;

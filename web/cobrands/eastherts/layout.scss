@@ -63,8 +63,7 @@
         font-size: 1em;
     }
 
-    span,
-    span.report-a-problem-btn {
+    span {
         cursor: default;
     }
 
@@ -75,8 +74,7 @@
         text-decoration: underline;
     }
 
-    a.report-a-problem-btn,
-    span.report-a-problem-btn {
+    a.report-a-problem-btn {
         padding: 0.75em;
         margin: 0;
         color: $eh_green;

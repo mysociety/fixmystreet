@@ -30,8 +30,7 @@
     }
   }
 
-  span,
-  span.report-a-problem-btn {
+  span {
     text-decoration: underline;
     &:hover {
       color: $nav_colour;

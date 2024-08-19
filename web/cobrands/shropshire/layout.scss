@@ -25,8 +25,7 @@ body {
 
     a,
     span,
-    a.report-a-problem-btn,
-    span.report-a-problem-btn {
+    a.report-a-problem-btn {
         padding: 0.5em 0.4em;
         margin: 0 4px;
         border-radius: 4px;
@@ -53,8 +52,7 @@ body {
     }
 
     // darken background for selected nav item
-    span,
-    span.report-a-problem-btn {
+    span {
         &, &:hover {
             background-color: $nav_hover_background_colour;
         }
