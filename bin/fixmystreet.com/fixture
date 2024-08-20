@@ -151,6 +151,7 @@ if ($opt->test_fixtures) {
         { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting' ], name => 'Merton Council', cobrand => 'merton' },
         { area_id => 2488, categories => [ 'Grass verges / shrub beds - littering' , 'Pavement damage', 'Fly-tipping', 'Dog fouling'], name => 'Brent Council', cobrand => 'brent' },
         { area_id => 2535, categories => [ 'Abandoned vehicles', 'Graffiti', 'Street lights'], name => 'Sandwell Borough Council' },
+        { area_id => 2242, categories => [ 'Abandoned vehicles', 'Graffiti', 'Street lights', 'Flooding inside a building'], name => 'Surrey County Council' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         if ($_->{cobrand}) {

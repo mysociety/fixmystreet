@@ -389,6 +389,39 @@ shropshire:
     actions:
       found: 'fixmystreet.assets.shropshire.street_found'
       not_found: 'fixmystreet.assets.shropshire.street_not_found'
+surrey:
+  - asset_type: 'spot'
+    max_resolution: 4.777314267158508
+    asset_id_field: 'assetNo'
+    srsName: "EPSG:4326"
+    body: "Surrey County Council"
+    format_class: OpenLayers.Format.GeoJSON
+    format_options: {ignoreExtraDims: true}
+    protocol_class: OpenLayers.Protocol.ArcgisHTTP
+    class: OpenLayers.Layer.VectorAssetMove
+    http_options:
+      params:
+        inSR: '4326'
+        f: 'geojson'
+  - always_visible: true
+    asset_type: road
+    road: true
+    actions:
+      found: fixmystreet.message_controller.road_found
+      not_found: fixmystreet.assets.surrey.road_not_found
+    permissive_categories: ['Flooding inside a building', 'Flooding not on the highway but in a park or private land']
+    no_asset_msg_id: '#js-not-a-road'
+    http_options:
+      params:
+        outFields: USRN
+        where: MAINTAINED_BY='Surrey CC'
+      url: https://tilma.mysociety.org/resource-proxy/proxy.php?https://surrey.assets/2/query?
+    non_interactive: true
+    class: OpenLayers.Layer.VectorNearest
+    stylemap: fixmystreet.assets.stylemap_invisible
+    usrn:
+      attribute: USRN
+      field: site_code
 tfl:
   - - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/tfl"
       name: 'road'
