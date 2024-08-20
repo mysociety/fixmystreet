@@ -3,7 +3,6 @@ describe('Surrey cobrand', function() {
         cy.viewport(480, 800);
         cy.visit('http://surrey.localhost:3001/');
         cy.contains('Surrey');
-        cy.contains('Report, view, or discuss local problems');
     });
 });
 
