@@ -1,7 +1,7 @@
 {
   "baseUrl": "http://fixmystreet.localhost:3001",
   "projectId": "y8vvs1",
-  "blacklistHosts": ["gaze.mysociety.org", "*.openstreetmap.org", "portal.roadworks.org", "tilma.mysociety.org", "tilma.staging.mysociety.org", "isharemaps.bathnes.gov.uk", "consent.cookiebot.com", "assets.adobedtm.com", "www.googletagmanager.com", "www.googleadservices.com", "*.virtualearth.net"],
+  "blacklistHosts": ["gaze.mysociety.org", "*.openstreetmap.org", "portal.roadworks.org", "tilma.mysociety.org", "tilma.staging.mysociety.org", "isharemaps.bathnes.gov.uk", "consent.cookiebot.com", "assets.adobedtm.com", "www.googletagmanager.com", "www.googleadservices.com", "*.virtualearth.net", "feedback.happy-or-not.com"],
   "env": {
      "postcode": "BS10 5EE"
   },
