@@ -211,6 +211,11 @@ sub munge_report_new_bodies {
         $brent->munge_overlapping_asset_bodies($bodies);
     }
 
+    if ( $bodies{'Camden Borough Council'} ) {
+        my $camden = FixMyStreet::Cobrand::Camden->new({ c => $self->{c} });
+        $camden->munge_overlapping_asset_bodies($bodies);
+    }
+
     if ( $bodies{'Lewisham Borough Council'} ) {
         my $bromley = FixMyStreet::Cobrand::Bromley->new({ c => $self->{c} });
         $bromley->munge_overlapping_asset_bodies($bodies);

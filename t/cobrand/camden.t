@@ -14,9 +14,10 @@ my $tilma = t::Mock::Tilma->new;
 LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
 
 use constant CAMDEN_MAPIT_ID => 2505;
+use constant BARNET_MAPIT_ID => 2489;
 
 my $comment_user = $mech->create_user_ok('camden@example.net');
-my $camden = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Camden Council', {
+my $camden = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Camden Borough Council', {
     comment_user => $comment_user,
 }, {
     cobrand => 'camden'
@@ -149,6 +150,104 @@ FixMyStreet::override_config {
 
         $mech->email_count_is(1);
     };
+};
+
+    my $barnet = $mech->create_body_ok(BARNET_MAPIT_ID, 'Barnet Borough Council');
+    my $tfl = FixMyStreet::DB->resultset('Body')->search({ name => 'TfL'})->first;
+    $mech->create_contact_ok(body_id => $tfl->id, category => 'Bus stops', email => 'tfl@example.org');
+
+    FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => BARNET_MAPIT_ID, body_id => $tfl->id }); # TfL covers Barnet, already set to cover Camden
+    FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => BARNET_MAPIT_ID, body_id => $camden->id }); # Camden covers Barnet
+    FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => CAMDEN_MAPIT_ID, body_id => $barnet->id }); # Barnet covers Camden
+
+    $mech->create_contact_ok(
+        body_id => $barnet->id,
+        category => 'Flytipping',
+        email => 'barnetflytipping@example.org',
+        send_method => 'Email'
+    );
+
+for my $test (
+    {
+        description =>  'reporting in Camden area, not on boundary asset',
+        result => 'shows only Camden and TfL categories',
+        asset_returned => undef,
+        location => '/report/new/ajax?latitude=51.529432&longitude=-0.124514',
+        categories => ['Abandoned yellow bike', 'Bus stops', 'Potholes', 'River Piers', 'River Piers - Cleaning', 'River Piers Damage doors and glass'],
+    },
+    {
+        description =>  'reporting in Camden area, on boundary asset labelled Camden',
+        result => 'shows only Camden and TfL categories',
+        asset_returned => 'LB Camden',
+        location => '/report/new/ajax?latitude=51.529432&longitude=-0.124514',
+        categories => ['Abandoned yellow bike', 'Bus stops', 'Potholes', 'River Piers', 'River Piers - Cleaning', 'River Piers Damage doors and glass'],
+    },
+    {
+        description =>  'reporting in Camden area, on boundary asset labelled Barnet',
+        result => 'shows only Barnet and TfL categories',
+        asset_returned => 'LB Barnet',
+        location => '/report/new/ajax?latitude=51.529432&longitude=-0.124514',
+        categories => [ 'Bus stops', 'Flytipping', 'River Piers', 'River Piers - Cleaning', 'River Piers Damage doors and glass'],
+    },
+    {
+        description =>  'reporting in Barnet area, not on boundary asset',
+        result => 'not Camden\'s responsibility',
+        asset_returned => undef,
+        location => '/report/new/ajax?latitude=51.558568&longitude=-0.207702',
+        barnet_categories => [ 'Bus stops', 'Flytipping', 'River Piers', 'River Piers - Cleaning', 'River Piers Damage doors and glass']
+    },
+    {
+        description =>  'reporting in Barnet area, on asset labelled Barnet',
+        result => 'shows only Barnet and TfL categories',
+        asset_returned => ['LB Barnet'],
+        location => '/report/new/ajax?latitude=51.558568&longitude=-0.207702',
+        categories => [ 'Bus stops', 'Flytipping', 'River Piers', 'River Piers - Cleaning', 'River Piers Damage doors and glass'],
+    })
+{
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'tfl', 'camden', 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $camden_mock = Test::MockModule->new('FixMyStreet::Cobrand::Camden');
+        for my $host ('fixmystreet.com', 'camden.fixmystreet.com') {
+            $mech->host($host);
+            if ($host =~ /camden/ && $test->{categories} ) {
+                    @{$test->{categories}} = grep { $_ !~ /River Piers/ } @{$test->{categories}};
+            }
+            subtest $test->{description} => sub {
+                $camden_mock->mock('check_report_is_on_cobrand_asset', sub { $test->{asset_returned} });
+                my $json = $mech->get_ok_json($test->{location});
+                if ($test->{categories}) {
+                    is_deeply [sort keys %{$json->{by_category}}], $test->{categories}, $host . ': ' . $test->{result};
+                } else {
+                    if ($host =~ /camden/) {
+                        $mech->content_contains('That location is not covered by Camden Council', 'camden.fixmystreet.com: can\'t make Barnet report');
+                    } else {
+                        is_deeply [sort keys %{$json->{by_category}}], $test->{barnet_categories}, 'fixmystreet.com: making report in Barnet';
+                    }
+                }
+            };
+        }
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'camden', 'tfl' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    subtest 'Make a report to Barnet from Camden' => sub {
+        $mech->host('camden.fixmystreet.com');
+        my $camden_mock = Test::MockModule->new('FixMyStreet::Cobrand::Camden');
+        $camden_mock->mock('check_report_is_on_cobrand_asset', sub { 'LB Barnet' });
+        $mech->get_ok('/report/new?latitude=51.529432&longitude=-0.124514');
+        $mech->submit_form_ok({ with_fields => {
+            title => 'Report for Barnet',
+            detail => 'Test report details.',
+            category => 'Flytipping',
+            name => 'Gavin Stacey',
+        } }, "submit report");
+        $mech->content_like(qr/passed this report on to.*<b>Barnet Borough Council<\/b>/s);
+    }
 };
 
 done_testing;
