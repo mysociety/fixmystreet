@@ -613,7 +613,7 @@ FixMyStreet::override_config {
                     'item_3' => '',
                 },
             });
-            $mech->submit_form_ok; # Location page
+            $mech->submit_form_ok({ with_fields => { 'location' => 'location ' x 20, } });
 
             $mech->content_contains('Booking Summary');
             $mech->content_lacks('You will be redirected to the council’s card payments provider.');
@@ -631,8 +631,12 @@ FixMyStreet::override_config {
         my $new_report;
         subtest 'Confirm amendment' => sub {
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+            $mech->content_contains('is too long');
+            $mech->submit_form_ok({ form_number => 3 });
+            $mech->submit_form_ok({ with_fields => { 'location' => 'in the middle of the drive' } });
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
-            is $report->comments->count, 2; # Confirmation and then cancellation
+            is $report->comments->search({ state => 'confirmed' })->count, 2; # Confirmation and then cancellation
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(1); # Cancellation update on original
             $mech->clear_emails_ok;

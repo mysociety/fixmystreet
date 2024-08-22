@@ -43,7 +43,8 @@ sub report_validation {
     foreach my $extra ( @extra_fields ) {
         my $max = $max{$extra->{name}} || 100;
         if ( length($extra->{value}) > $max ) {
-            $errors->{'x' . $extra->{name}} = qq+Your answer to the question: "$extra->{description}" is too long. Please use a maximum of $max characters.+;
+            my $desc = $extra->{description} || $extra->{name};
+            $errors->{'x' . $extra->{name}} = qq+Your answer to the question: "$desc" is too long. Please use a maximum of $max characters.+;
         }
     }
 
