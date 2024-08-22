@@ -10,7 +10,6 @@
         <td>
             [% PROCESS value_or_nbsp value=problem.name %]
             <br>[% PROCESS value_or_nbsp value=problem.user.email %]
-            <br>[% loc('Anonymous') %]: [% IF problem.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
         </td>
         <td>
             [% PROCESS value_or_nbsp value=problem.category_display %]

@@ -18,7 +18,7 @@
 <textarea class='form-control' name='email_detail' id='email_detail' cols=60 rows=10 readonly>[% update.private_email_text | html %]</textarea></li>
 [% END %]
 
-<li><label for="anonymous">[% loc('Anonymous:') %]</label>
+<li><label for="anonymous">[% loc('Show name publicly?') %]</label>
 <select class="form-control" name="anonymous" id="anonymous">
 <option [% 'selected ' IF update.anonymous %]value="1">[% loc('Yes') %]</option>
 <option [% 'selected ' IF !update.anonymous %]value="0">[% loc('No') %]</option>
