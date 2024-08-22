@@ -39,7 +39,7 @@
 
   <p id="rss_local_alt">
     <label class="inline" for="distance">[% loc('Or specify a different radius distance:') %]</label>
-    <input class="form-control" name="distance" id="distance" type="text" inputmode="numeric" pattern="[0-9]*"> km
+    <input class="form-control" name="distance" id="distance" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="[% loc('Specify a radius in kilometers') %]"> km
     <a href="[% rss_feed_uri %]" class="alerts-rss-link js-alert-local" id="rss-[% rss_feed_id %]">
       <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed of nearby problems') %]" alt="[% loc('RSS feed') %]">
     </a>

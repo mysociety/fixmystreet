@@ -14,6 +14,6 @@
     [% END  %]
 [%~ ELSIF homepage_template ~%]
     [%~ INCLUDE navitem uri='/report' label=loc('Report a problem') attrs='class="report-a-problem-btn"' ~%]
-[%~ ELSE ~%]
+[%~ ELSIF c.req.uri.path != '/'  ~%]
     [%~ INCLUDE navitem uri='/' label=loc('Report a problem') attrs='class="report-a-problem-btn"' ~%]
 [%~ END ~%]

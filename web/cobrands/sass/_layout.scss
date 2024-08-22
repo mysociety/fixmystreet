@@ -164,14 +164,6 @@ h1 {
   span {
     color:$primary;
   }
-  /* Stop mobile-only things */
-  span.report-a-problem-btn {
-    cursor: auto;
-  }
-  span.report-a-problem-btn:hover {
-    background-color: transparent;
-    color: $primary;
-  }
 }
 
 // .content Is the white box
@@ -911,6 +903,10 @@ textarea.form-error {
     text-align: $left;
     padding: flip(3em 0 3em 132px, 3em 132px 3em 0); // for tick icon
     background-position: $left 2em;
+
+    p {
+      word-break: normal;
+    }
 }
 
 // Offline reporting UI
