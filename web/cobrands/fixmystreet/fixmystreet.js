@@ -1037,6 +1037,10 @@ $.extend(fixmystreet.set_up, {
               $originalInput.show();
             },
             init: function() {
+              // Add aria-label for accessibility
+              // From https://github.com/dropzone/dropzone/pull/2214
+              this.hiddenFileInput.setAttribute("aria-label", "hidden file upload");
+
               this.on("addedfile", function(file) {
                 if (max_photos == 1 && prevFile) {
                     this.removeFile(prevFile);
