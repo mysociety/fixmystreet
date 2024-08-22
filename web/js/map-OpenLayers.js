@@ -1426,7 +1426,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             return true;
         }
 
-        if (!$("html").hasClass("mobile")) {
+        if (!$("html").hasClass("map-reporting")) {
             var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
             fixmystreet.display.begin_report(lonlat);
         }

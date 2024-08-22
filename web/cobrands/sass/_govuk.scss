@@ -15,9 +15,11 @@
 }
 
 .govuk-select {
+  // This class also affects .multi-select-button
   font-family: $body-font;
   font-size: 0.875rem;
   line-height: 150%;
+  padding: flip(0.4em 1.5em 0.4em 0.6em, 0.4em 0.6em 0.4em 1.5em);
   @media (min-width: 48em) {
     font-size: 1rem;
   }

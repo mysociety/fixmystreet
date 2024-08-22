@@ -231,7 +231,7 @@ fixmystreet.mobile_reporting = {
 fixmystreet.resize_to = {
   mobile_page: function() {
     $('html').addClass('mobile');
-    if (typeof fixmystreet !== 'undefined' && (fixmystreet.page === 'around' || fixmystreet.page === 'new')) {
+    if (typeof fixmystreet !== 'undefined' && (fixmystreet.page === 'around' || fixmystreet.page === 'new') && Modernizr.mq('(min-height: 30em)')) {
         fixmystreet.mobile_reporting.apply_ui();
     }
 

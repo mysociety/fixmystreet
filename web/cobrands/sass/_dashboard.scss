@@ -297,8 +297,12 @@
 
 .dashboard-filters {
     .multi-select-button {
-        height: 28px;
-        line-height: 100%;
+        max-width: 10em;
+    }
+
+    .form-control {
+        // To make them have the same height as the .multi-select-button
+        height: 3.3em;
     }
 }
 

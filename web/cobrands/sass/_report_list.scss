@@ -67,7 +67,6 @@ $govuk-input-focus-box-shadow: #fd0 !default;
 
   .multi-select-button {
     box-sizing: border-box;
-    padding: flip(0.4em 1.5em 0.4em 0.6em, 0.4em 0.6em 0.4em 1.5em);
     vertical-align: top;
   }
 
@@ -157,6 +156,11 @@ input.bulk-assign {
     flex-direction: row;
     gap: 1rem;
     margin-bottom: 1rem;
+
+    @media (max-height: 30em) {
+      // To avoid horizontal scrolling when zooming >300%
+      flex-direction: column;
+    }
   }
 
   .report-list-filters {
