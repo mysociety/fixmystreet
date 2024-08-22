@@ -107,9 +107,10 @@ requires 'bulky_free_collection_available';
 sub bulky_cancel_by_update { 0 }
 
 sub bulky_is_cancelled {
-    my ($self, $p) = @_;
+    my ($self, $p, $state) = @_;
+    $state ||= 'confirmed';
     if ($self->bulky_cancel_by_update) {
-        return $p->comments->find({ extra => { '@>' => '{"bulky_cancellation":1}' } });
+        return $p->comments->find({ state => $state, extra => { '@>' => '{"bulky_cancellation":1}' } });
     } else {
         return $self->bulky_cancellation_report($p);
     }
