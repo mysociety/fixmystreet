@@ -5,6 +5,11 @@ IF c.cobrand.moniker == 'brent';
 ELSE;
     SET index_url = c.uri_for_action('waste/bulky/index', [ property.id ]);
 END;
+IF c.action == 'waste/bulky/amend';
+    SET amend_form_url = c.uri_for_action('waste/bulky/amend', [ property.id, amending_booking.id ]);
+ELSE;
+    SET amend_form_url = index_url;
+END;
 SET user_details_main_column = 0;
 IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton';
     SET user_details_main_column = 1;
@@ -20,7 +25,7 @@ SET data = form.saved_data;
 
 [% BLOCK change_answers_button %]
   [% UNLESS problem %]
-    <form method="post" action="[% index_url %]">
+    <form method="post" action="[% amend_form_url %]">
       <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
       <input type="hidden" name="goto" value="[% goto %]">
       <input type="submit" class="fake-link" value="Change answers">
@@ -283,13 +288,7 @@ SET data = form.saved_data;
     [% INCLUDE 'waste/_button_show_upcoming.html' %]
 
   [% ELSE %]
-    <form class="waste" method="post" action="[%
-      IF c.action == 'waste/bulky/amend';
-        c.uri_for_action('waste/bulky/amend', [ property.id, amending_booking.id ]);
-      ELSE;
-        index_url;
-      END;
-    %]">
+    <form class="waste" method="post" action="[% amend_form_url %]">
       [% PROCESS form %]
     </form>
   [% END %]
