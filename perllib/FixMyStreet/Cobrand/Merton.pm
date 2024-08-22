@@ -32,6 +32,8 @@ sub disambiguate_location {
 sub report_validation {
     my ($self, $report, $errors) = @_;
 
+    return if ($report->cobrand_data || '') eq 'waste';
+
     my @extra_fields = @{ $report->get_extra_fields() };
 
     my %max = (
