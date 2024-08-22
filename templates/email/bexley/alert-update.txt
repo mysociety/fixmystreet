@@ -1,7 +1,12 @@
+[% is_missed_collection = report.category == 'Report missed collection' ~%]
+[%~ IF is_missed_collection ~%]
 Subject: New updates on your missed collection report
+[%~ ELSE ~%]
+Subject: New [% site_name %] updates on report: '[% report.title %]'
+[%~ END %]
 
-You asked us to send you an email every time an update was made to the
-[% site_name %] report: [% report.title %].
+You asked us to send you an email every time an update was made to
+[% IF is_missed_collection %]your missed collection report[% ELSE %]the [% site_name %] report: [% report.title %][% END %].
 
 The following updates have been left on this report:
 
