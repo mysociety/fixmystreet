@@ -168,14 +168,28 @@ sub _body_users {
     return $body_users;
 }
 
+sub _anon_users {
+    my @email;
+    foreach (FixMyStreet::Cobrand->available_cobrand_classes) {
+        next unless $_->{class};
+        my $d = $_->{class}->anonymous_account or next;
+        push @email, $d->{email};
+    }
+    return \@email;
+}
+
 sub anonymize_users {
     my $self = shift;
 
     my $body_users = _body_users();
+    my $anon_users = _anon_users();
     my $users = FixMyStreet::DB->resultset("User")->search({
         last_active => { '<', interval($self->anonymize) },
         id => { -not_in => $body_users->as_query },
-        email => { -not_like => 'removed-%@' . FixMyStreet->config('EMAIL_DOMAIN') },
+        email => [ -and =>
+            { -not_like => 'removed-%@' . FixMyStreet->config('EMAIL_DOMAIN') },
+            { -not_in => $anon_users },
+        ],
     });
 
     while (my $user = $users->next) {
@@ -189,10 +203,12 @@ sub email_inactive_users {
     my $self = shift;
 
     my $body_users = _body_users();
+    my $anon_users = _anon_users();
     my $users = FixMyStreet::DB->resultset("User")->search({
         last_active => [ -and => { '<', interval($self->email) },
             { '>=', interval($self->anonymize) } ],
         id => { -not_in => $body_users->as_query },
+        email => { -not_in => $anon_users },
     });
     while (my $user = $users->next) {
         next if $user->get_extra_metadata('inactive_email_sent');
