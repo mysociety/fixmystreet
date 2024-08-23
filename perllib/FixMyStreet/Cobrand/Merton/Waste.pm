@@ -134,6 +134,16 @@ sub image_for_unit {
     my $images = {
         2238 => svg_container_bin('wheelie', '#333333'), # refuse
         2239 => "$base/caddy-brown-large", # food
+        '2239-textiles' => {
+            alt => 'These should be presented in a tied carrier bag.',
+            type => 'png1',
+            src => "$base/merton/bag-tied-orange",
+        },
+        '2239-batteries' => {
+            alt => 'These should be presented in an untied carrier bag.',
+            type => 'png1',
+            src => "$base/merton/bag-untied-orange",
+        },
         2240 => svg_container_bin("wheelie", '#767472', '#00A6D2', 1), # paper and card
         2241 => "$base/box-green-mix", # dry mixed
         2242 => svg_container_sack('stripe', '#F1506D'), # domestic refuse bag
@@ -185,18 +195,47 @@ sub waste_quantity_max {
 
 Merton want staff to be able to request any domestic container
 for a property and also to not be restricted to only ordering
-one container.
+one container. And they want to show special textile/battery
+options.
 
 =cut
 
 sub staff_override_request_options {
     my ($self, $rows) = @_;
-    return unless $self->{c}->stash->{is_staff};
+
     return if $self->{c}->stash->{schedule2_property};
+
+    foreach (@$rows) {
+        if ($_->{service_id} eq 2239) { # Domestic food
+            # Add textiles and battery options at the bottom
+            my $new_row = {
+                %$_,
+                report_allowed => 0,
+                report_locked_out => 0,
+                report_open => 0,
+                request_allowed => 0,
+                requests_open => {},
+                request_containers => [], # request_allowed not enough
+                orange_bag => 1,
+                service_id => '2239-textiles',
+                service_name => 'Textiles and shoes',
+            }; # shallow copy
+            push @$rows, $new_row;
+            $new_row = {
+                %$new_row,
+                service_id => '2239-batteries',
+                service_name => 'Batteries',
+            };
+            push @$rows, $new_row;
+        }
+    }
+
+    return unless $self->{c}->stash->{is_staff};
 
     my @containers_on_property;
 
     foreach my $row (@$rows) {
+        next if $row->{orange_bag}; # Ignore batteries/textiles
         push @containers_on_property, @{$row->{request_containers}};
         $row->{request_allowed} = 1;
         $row->{request_max} = 3;

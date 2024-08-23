@@ -98,6 +98,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Every Friday fortnightly');
         $mech->content_contains('Friday 2 September');
         $mech->content_contains('Report a mixed recycling collection as missed');
+        $mech->content_contains('Textiles and shoes');
     };
 
     subtest 'Schedule 2 property' => sub {
