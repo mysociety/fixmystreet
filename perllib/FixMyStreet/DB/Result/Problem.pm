@@ -1543,7 +1543,7 @@ sub waste_confirm_payment {
     if (my $previous = $self->get_extra_metadata('previous_booking_id')) {
         $previous = $rs->find($previous);
         $previous->bulky_cancel_collection('amendment');
-        my $update = $cobrand->bulky_is_cancelled($previous);
+        my $update = $cobrand->bulky_is_cancelled($previous, 'unconfirmed');
         $update->confirm;
         $update->update;
     }

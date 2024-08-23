@@ -326,7 +326,7 @@ sub process_bulky_amend : Private {
         # then create a new event with the amended booking data from the form
         my $update = add_cancellation_update($c, $p, 'delayed');
 
-        $c->forward('process_bulky_data', [ $form ]);
+        $c->forward('process_bulky_data', [ $form ]) or return;
         # If there wasn't payment, we can set the things here too
         $c->forward('cancel_collection', [ $p, 'amendment' ]);
         my $new = $c->stash->{report};
