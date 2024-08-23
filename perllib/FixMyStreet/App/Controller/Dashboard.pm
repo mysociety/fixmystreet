@@ -181,12 +181,12 @@ sub index : Path : Args(0) {
     my $reporting = $c->forward('construct_rs_filter', [ $c->get_param('updates') ]);
 
     if ( my $export = $c->get_param('export') ) {
-        $reporting->csv_parameters;
         if ($export == 1) {
             # Existing method, generate and serve
             if ($reporting->premade_csv_exists) {
                 $reporting->filter_premade_csv_http($c);
             } else {
+                $reporting->csv_parameters;
                 $reporting->generate_csv_http($c);
             }
         } elsif ($export == 2) {

@@ -662,7 +662,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains(',12345,,no,busstops@example.com,,', "Bike number added to csv");
     $mech->content_contains('"Council User",,,98756', "Stop code added to csv for all categories report");
     $mech->get_ok('/dashboard?export=1&category=Bus+stops');
-    $mech->content_contains('"Council User",,98756', "Stop code added to csv for bus stop category report");
+    $mech->content_contains('"Council User",,,98756', "Stop code added to csv for bus stop category report");
 
     $report->set_extra_fields({ name => 'leaning', value => 'Yes' }, { name => 'safety_critical', value => 'yes' },
         { name => 'stop_code', value => '98756' }, { name => 'Question', value => '12345' });
