@@ -20,6 +20,9 @@ use utf8;
 use DateTime;
 use JSON::MaybeXS;
 use LWP::UserAgent;
+use Moo;
+
+with 'FixMyStreet::Roles::BoroughEmails';
 
 sub council_name { 'National Highways' }
 
@@ -268,6 +271,23 @@ sub _redact {
 }
 
 =back
+
+=head2 munge_sendreport_params
+
+We are directing reports based upon the stored NH area name, not the usual
+MapIt areas, so update the row's areas to that for BoroughEmails to handle.
+
+=cut
+
+around 'munge_sendreport_params' => sub {
+    my ($orig, $self, $row, $h, $params) = @_;
+
+    my $area = $row->get_extra_field_value('area_name') || '_fallback';
+    my $original_areas = $row->areas;
+    $row->areas($area);
+    $self->$orig($row, $h, $params);
+    $row->areas($original_areas);
+};
 
 =head1 OIDC single sign on
 
