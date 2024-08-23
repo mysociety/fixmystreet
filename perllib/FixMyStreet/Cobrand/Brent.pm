@@ -1374,7 +1374,7 @@ sub waste_munge_request_data {
 sub request_referral {
     my ($id, $data) = @_;
 
-    # return 1 if ($data->{contamination_reports} || 0) >= 3; # Will be present on missing only
+    return 1 if $data->{contamination_reports}; # Will be present on missing only
     return 1 if ($data->{how_long_lived} || '') eq '3more'; # Will be present on new build only
     return 1 if $data->{ordered_previously};
 }
