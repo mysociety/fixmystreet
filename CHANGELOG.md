@@ -38,6 +38,7 @@
         - Allow h1, h2, h3 tags in contact notices/questions. #4959
         - Tweak config page display. #5139
         - Minor display improvements to report/update pages. #5141
+        - Minor display and performance improvements to user pages. #5138
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456
