@@ -9,6 +9,7 @@
     <ul class="no-bullets">
         [% PROCESS 'admin/users/_form_details.html' %]
 
+        [% IF user.id %]
         <li>
           <div class="admin-hint">
             <p>
@@ -35,6 +36,7 @@
            <input type="submit" class="btn" name="banuser" value="[% loc('Ban user') %]">
           [% END %]
         </li>
+        [% END %]
 
       [% IF c.user.is_superuser %]
         <li>
