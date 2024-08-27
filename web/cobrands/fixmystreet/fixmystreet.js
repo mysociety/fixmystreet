@@ -1413,6 +1413,10 @@ $.extend(fixmystreet.set_up, {
         $('.js-sign-in-password').show().css('visibility', 'visible');
     });
 
+    $('[name=sign_in_by_code]').on('click', function() {
+        $('#password_sign_in').removeClass('required');
+    });
+
     var show = function(selector) {
         var deferred = $.Deferred();
         $(selector).hide().removeClass('hidden-js').slideDown(400, function(){
