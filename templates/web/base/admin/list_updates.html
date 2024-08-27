@@ -27,7 +27,7 @@
         <td>[% IF update.user.id == update.problem.user_id %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
         <td>[% IF update.user.belongs_to_body( update.problem.bodies_str ) %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
         <td>[% update.cobrand %]<br>[% update.cobrand_data | html %]</td> 
-        <td>[% prettify_state(update.state) %]<br><small>
+        <td>[% IF update.state == 'confirmed'; loc('Confirmed'); ELSIF update.state == 'hidden'; loc('Hidden'); ELSIF update.state == 'unconfirmed'; loc('Unconfirmed'); END %]<br><small>
             [% loc('Created:') %] [% PROCESS format_time time=update.created %]
             <br>[% loc('Confirmed:') %] [% PROCESS format_time time=update.confirmed %]
         </small></td>

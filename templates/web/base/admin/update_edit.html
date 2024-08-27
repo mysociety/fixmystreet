@@ -25,7 +25,7 @@
 </select></li>
 <li><label for="state">[% loc('State:') %]</label>
 <select class="form-control" name="state"  id="state">
-    [% FOREACH state IN [ ['confirmed', loc('Open')], ['hidden', loc('Hidden')], ['unconfirmed',loc('Unconfirmed')] ] %]
+    [% FOREACH state IN [ ['confirmed', loc('Confirmed')], ['hidden', loc('Hidden')], ['unconfirmed',loc('Unconfirmed')] ] %]
         <option [% 'selected ' IF state.0 == update.state %] value="[% state.0 %]">[% state.1 %]</option>
     [% END %]
 </select></li>
