@@ -1,8 +1,9 @@
 <div class="waste-service-hint-banner">
   <div class="waste-service-hint-banner__image">
-      <img src="/i/waste-containers/bin-green.png" alt="">
+      [% image = PROCESS "waste/garden/wheelie.svg" %]
+      <span style="--primary-color: #41B28A;">[% image | safe %]</span>
   </div>
-  <div class="waste-service-hint__content">
+  <div class="waste-service-hint-banner__content">
       <p>
         Our 240 litre wheelie bins are green, and hold the equivalent of 5 or 6 bags of green garden waste.
       </p>

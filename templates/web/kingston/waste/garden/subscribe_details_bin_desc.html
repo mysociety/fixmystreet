@@ -1,8 +1,9 @@
 <div class="waste-service-hint-banner">
   <div class="waste-service-hint-banner__image">
-      <img src="/i/waste-containers/bin-grey-green-lid-recycling.png" alt="">
+      [% image = PROCESS "waste/garden/wheelie.svg" %]
+      <span style="--primary-color: #767472; --lid-color: #41B28A; --recycling-logo: 1;">[% image | safe %]</span>
   </div>
-  <div class="waste-service-hint__content">
+  <div class="waste-service-hint-banner__content">
       <p>
         Each garden waste bin holds 240 litres of waste. We collect them every 2 weeks.
       </p>

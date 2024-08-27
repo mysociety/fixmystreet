@@ -233,18 +233,20 @@ input[type="submit"].waste-service-link {
   max-width: 48em;
   background-color: $base_bg;
   padding: 1em;
-  justify-items: center;
+  justify-content: center;
   align-items: center;
   border-radius: 3px;
 
   &__image {
-    align-items: center;
     margin-right: 1em;
     flex: 0 0 80px;
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
   }
 
   &__content {
-    align-self: center;
     p {
       margin: 0;
     }

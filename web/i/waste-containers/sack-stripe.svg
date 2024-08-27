@@ -21,7 +21,7 @@
 <path class="fill-primary" d="M204.716 51.7336L152.288 51.7336V57.4486L204.716 58.9472V51.7336Z"/>
 <path class="fill-primary blend-plus-screen" d="M204.716 51.7336L152.288 51.7336V57.4486L204.716 58.9472V51.7336Z"/>
 <path class="blend-overlay fill-secondary" d="M76.3939 81.427L152.5 57.5L89.8752 88.9203L45.4369 148.367L76.3939 81.427Z"/>
-<path class="blend-multiply" d="M117.201 105.019L152.547 57.1731L131.318 106.904L112.843 153.363L117.201 105.019Z"/>
+<path class="fill-secondary blend-multiply" d="M117.201 105.019L152.547 57.1731L131.318 106.904L112.843 153.363L117.201 105.019Z"/>
 <path class="blend-overlay fill-secondary" d="M242.712 121.75L236.135 152.716L222.99 111.986L197.561 58.7338L242.712 121.75Z" fill="white"/>
 <path class="blend-overlay fill-secondary" d="M277.615 81.9265L309.071 148.866L265.631 89.4198L204.673 59.0222L277.615 81.9265Z"/>
 <path class="blend-overlay fill-secondary" d="M73.3981 290.592L19.4731 236.735L69.9031 266.614L106.833 242.278L73.3981 290.592Z"/>

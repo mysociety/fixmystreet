@@ -1,8 +1,9 @@
 <div class="waste-service-hint-banner">
     <div class="waste-service-hint-banner__image">
-        <img src="/i/waste-containers/bin-green-brown-lid.png" alt="">
+        [% image = PROCESS "waste/garden/wheelie.svg" %]
+        <span style="--primary-color: #41B28A; --lid-color: #8B5E3D;">[% image | safe %]</span>
     </div>
-    <div class="waste-service-hint__content">
+    <div class="waste-service-hint-banner__content">
         <p>
             Our 240 litre wheelie bins are green with a brown lid.
             If you do not have one of these please request a replacement container(s).
