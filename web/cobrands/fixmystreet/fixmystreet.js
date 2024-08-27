@@ -495,11 +495,11 @@ $.extend(fixmystreet.set_up, {
 
     /* set correct required status depending on what we submit */
     $('.js-submit_sign_in').on('click', function(e) {
-        $('.js-form-name').removeClass('required');
+        $('.js-form-name').removeClass('required').removeAttr('aria-required');
     } );
 
     $('.js-submit_register').on('click', function(e) {
-        $('.js-form-name').addClass('required');
+        $('.js-form-name').addClass('required').attr('aria-required', true);
     } );
 
     $('#facebook_sign_in, #twitter_sign_in, #oidc_sign_in').on('click', function(e){
@@ -926,6 +926,9 @@ $.extend(fixmystreet.set_up, {
                   $el.attr('maxlength', rule.maxlength);
                 } else {
                   $el.removeAttr('maxlength');
+                }
+                if (rule.required) {
+                  $el.attr('aria-required', true);
                 }
             }
         });
