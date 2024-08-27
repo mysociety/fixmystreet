@@ -83,7 +83,10 @@ sub index :Path : Args(0) {
     }
 
     $users = $users->search(undef, {
+        '+columns' => { 'from_body.msgstr' => \'COALESCE(translations.msgstr, from_body.name)' },
         prefetch => 'from_body',
+        join => { from_body => 'translations' },
+        bind => [ 'name', $c->stash->{lang_code}, 'body' ],
         order_by => [ \"me.name = ''", 'me.name' ],
     });
     my @users = $users->all;
@@ -95,6 +98,11 @@ sub index :Path : Args(0) {
     my $rs;
     if ($c->user->is_superuser) {
         $rs = $c->model('DB::Role')->search_rs({}, { join => 'body', order_by => ['body.name', 'me.name'] });
+        $rs = $rs->search(undef, {
+            '+columns' => { 'body.msgstr' => \'COALESCE(translations.msgstr, body.name)' },
+            join => { body => 'translations' },
+            bind => [ 'name', $c->stash->{lang_code}, 'body' ],
+        });
     } elsif ($c->user->from_body) {
         $rs = $c->user->from_body->roles->search_rs({}, { order_by => 'name' });
     }
