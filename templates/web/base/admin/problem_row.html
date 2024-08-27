@@ -34,11 +34,11 @@
             [%- END -%]
         </td>
         <td>[% prettify_state(problem.state, 1) %]<small>
-            [% IF problem.whensent %]<br>[% loc('When sent') %]:&nbsp;[% PROCESS format_time time=problem.whensent %][% END %]
+            [% IF problem.whensent AND problem.confirmed AND problem.whensent.epoch - problem.confirmed.epoch > 60 %]<br>[% loc('When sent') %]:&nbsp;[% PROCESS format_time time=problem.whensent %][% END %]
             [%- send_fail_bodies = problem.send_fail_bodies -%]
             [%- IF send_fail_bodies.size %]<br>[% loc('Failed bodies:') %]&nbsp;[% send_fail_bodies.join(', ') %][% END -%]
             <br>[% loc('Created') %]:&nbsp;[% PROCESS format_time time=problem.created %]
-            [%- IF problem.is_visible %]<br>[% loc('Confirmed:' ) %]&nbsp;[% PROCESS format_time time=problem.confirmed %][% END -%]
+            [%- IF problem.is_visible AND problem.created != problem.confirmed %]<br>[% loc('Confirmed:') %]&nbsp;[% PROCESS format_time time=problem.confirmed %][% END -%]
             [%- IF problem.is_fixed %]<br>[% prettify_state('fixed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
             [%- IF problem.is_closed %]<br>[% prettify_state('closed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
             [%- IF problem.is_open AND problem.lastupdate != problem.whensent %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]
