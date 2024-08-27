@@ -57,8 +57,9 @@ sub index :Path : Args(0) {
 
     my $search = $c->get_param('search');
     my $role = $c->get_param('role');
-    my $users = $c->cobrand->users;
+    my $users;
     if ($search || $role) {
+        $users = $c->cobrand->users;
         if ($search) {
             $search = $self->trim($search);
             $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
@@ -79,7 +80,7 @@ sub index :Path : Args(0) {
         $c->cobrand->call_hook('admin_user_edit_extra_data');
 
         # Admin users by default
-        $users = $users->search({ from_body => { '!=', undef } });
+        $users = $c->cobrand->users_staff_admin;
     }
 
     $users = $users->search(undef, {

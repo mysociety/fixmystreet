@@ -215,6 +215,17 @@ sub users {
     return $self->users_restriction(FixMyStreet::DB->resultset('User'));
 }
 
+=item users_staff_admin
+
+Returns a ResultSet of Users, restricted to staff users.
+
+=cut
+
+sub users_staff_admin {
+    my $self = shift;
+    return FixMyStreet::DB->resultset('User')->search({ from_body => { '!=', undef } });
+}
+
 =item users_restriction
 
 Used to restricts users in the admin in a cobrand in a particular way. Do
