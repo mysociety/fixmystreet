@@ -45,7 +45,7 @@ ok $r->{error}, "searching for lowecase road only generates error";
 my $mech = FixMyStreet::TestMech->new;
 my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method => 'Email::Highways' }, { cobrand => 'highwaysengland' });
 
-$mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole (NH)');
+$mech->create_contact_ok(email => 'testareaemail@nh', body_id => $highways->id, category => 'Pothole (NH)');
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'highwaysengland', 'fixmystreet' ],
@@ -53,6 +53,14 @@ FixMyStreet::override_config {
     CONTACT_EMAIL => 'fixmystreet@example.org',
     COBRAND_FEATURES => {
         contact_email => { highwaysengland => 'highwaysengland@example.org' },
+        borough_email_addresses => {
+            highwaysengland => {
+                'testareaemail@nh' => [ {
+                    'areas' => [ 'Area 1' ],
+                    'email' => 'area1email@example.org',
+                } ],
+            },
+        },
         updates_allowed => {
             highwaysengland => 'open',
         },
@@ -87,6 +95,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         $mech->email_count_is(1);
         my $email = $mech->get_email;
+        is $email->header('To'), '"National Highways" <area1email@example.org>';
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Heard from: Facebook/, 'where hear included in email';
         like $body, qr/Road: M1/, 'road data included in email';
