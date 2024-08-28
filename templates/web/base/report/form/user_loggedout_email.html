@@ -15,6 +15,7 @@
 <input type="[% username_type %]" name="[% username_field %]" id="form_[% name %]"
        value="[% c.get_param(username_field) %]"
     class="form-control required"
+    aria-required="true"
     [% IF NOT c.cobrand.sms_authentication %]
         autocomplete="[% username_type %]"
     [% END %]

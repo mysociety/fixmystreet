@@ -391,6 +391,12 @@ body.mappage.admin {
   border-bottom: 1px solid #E7E1C0;
   background: #FDF4C5;
 
+  a {
+    display: block;
+    width: fit-content;
+    margin-top: 0.5rem;
+  }
+
   em {
     font-style: normal;
     text-decoration: underline;
