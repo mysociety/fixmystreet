@@ -221,8 +221,15 @@ sub munge_overlapping_asset_bodies {
                 $_->name ne 'Harrow Borough Council'
                 } values %$bodies;
         } else {
+            # Camden wants sole responsibility of Camden agreed areas
+            if ($cobrand eq 'Camden') {
+                %$bodies = map { $_->id => $_ } grep {
+                    $_->name eq 'Camden Borough Council' || $_->name eq 'TfL' || $_->name eq 'National Highways'
+                } values %$bodies;
+                return;
+            }
             # ...someone else's responsibility, take out the ones definitely not responsible
-            my %cobrands = (Harrow => 'Harrow Borough Council', Camden => 'Camden Borough Council', Barnet => 'Barnet Borough Council');
+            my %cobrands = (Harrow => 'Harrow Borough Council', Barnet => 'Barnet Borough Council');
             my $selected = $cobrands{$cobrand};
             %$bodies = map { $_->id => $_ } grep {
                 $_->name eq $selected || $_->name eq 'Brent Council' || $_->name eq 'TfL' || $_->name eq 'National Highways'
@@ -236,7 +243,12 @@ sub munge_overlapping_asset_bodies {
                 $_->name ne 'Brent Council'
                 } values %$bodies;
         } else {
-            # ...Brent's responsibility - leave (both) bodies alone
+            # If it's for Brent shared with Camden, make wholly Brent's responsibility
+            if (grep { $_->name eq 'Camden Borough Council' } values %$bodies) {
+                %$bodies = map { $_->id => $_ } grep {
+                    $_->name eq 'Brent Council' || $_->name eq 'TfL' || $_->name eq 'National Highways'
+                } values %$bodies;
+            }
         }
     }
 }
@@ -254,7 +266,6 @@ sub munge_cobrand_asset_categories {
     my %bodies = map { $_->body->name => $_->body } @$contacts;
     my %non_street = (
         'Barnet' => { map { $_ => 1 } @{ $self->_barnet_non_street } },
-        'Camden' => { map { $_ => 1 } @{ $self->_camden_non_street } },
         'Harrow' => { map { $_ => 1 } @{ $self->_harrow_non_street } },
     );
 
@@ -262,14 +273,16 @@ sub munge_cobrand_asset_categories {
     my $in_area = grep ($self->council_area_id->[0] == $_, keys %{$self->{c}->stash->{all_areas}});
     # cobrand will be true if the point is within an area of different responsibility from the norm
     my $cobrand = $self->check_report_is_on_cobrand_asset || '';
+
     return unless $cobrand;
 
     my $brent_body = $self->body->id;
     if (!$in_area && $cobrand eq 'Brent') {
         # Outside the area of Brent, but Brent's responsibility
         my $area;
+        # Camden do not mix categories with Brent
         if (grep {$_->{name} eq 'Camden Borough Council'} values %{$self->{c}->stash->{all_areas}}){
-            $area = 'Camden';
+            return;
         } elsif (grep {$_->{name} eq 'Harrow Borough Council'} values %{$self->{c}->stash->{all_areas}}) {
             $area = 'Harrow';
         }  elsif (grep {$_->{name} eq 'Barnet Borough Council'} values %{$self->{c}->stash->{all_areas}}) {
@@ -283,6 +296,9 @@ sub munge_cobrand_asset_categories {
         @$contacts = grep { !(!$non_street{$area}{$_->category} && $_->body_id == $other_body->id) } @$contacts
             if $other_body;
     } elsif ($in_area && $cobrand ne 'Brent') {
+        if ($cobrand eq 'Camden') {
+            return;
+        }
         # Inside the area of Brent, but not Brent's responsibility
         my $other_body = $bodies{$cobrand . " Borough Council"};
         # Remove the street contacts of Brent
@@ -1671,20 +1687,6 @@ sub _barnet_non_street {
         'Overhanging foliage',
     ]
 };
-
-sub _camden_non_street {
-    return [
-        'Abandoned Vehicles',
-        'Dead animal',
-        'Flyposting',
-        'Public toilets',
-        'Recycling & rubbish (Missed bin)',
-        'Dott e-bike / e-scooter',
-        'Human Forest e-bike',
-        'Lime e-bike / e-scooter',
-        'Tier e-bike / e-scooter',
-    ]
-}
 
 sub _harrow_non_street {
     return [

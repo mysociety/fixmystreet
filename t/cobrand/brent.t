@@ -523,12 +523,13 @@ FixMyStreet::override_config {
                 subtest "categories on $host cobrand in Brent on Camden cobrand layer" => sub {
                     $mech->host("$host.fixmystreet.com");
                     $brent_mock->mock('_fetch_features', sub { [{ 'ms:BrentDiffs' => { 'ms:name' => 'Camden' } } ]});
+                    $camden_mock->mock('_fetch_features', sub { [ { 'ms:AgreementBoundaries' => { 'ms:RESPBOROUG' => 'LB Camden' } } ] });
                     $mech->get_ok("/report/new/ajax?longitude=-0.28168&latitude=51.55904");
-                    is $mech->content_contains("Potholes"), 1, 'Brent category present';
+                    is $mech->content_lacks("Potholes"), 1, 'Brent category not present';
                     is $mech->content_lacks("Gully grid missing"), 1, 'Brent Symology category not present';
                     is $mech->content_contains("Sweeping"), 1, 'TfL category present';
                     is $mech->content_contains("Fly-tipping"), 1, 'Camden category present';
-                    is $mech->content_lacks("Dead animal"), 1, 'Camden non-street category not present';
+                    is $mech->content_contains("Dead animal"), 1, 'Camden non-street category present';
                     is $mech->content_lacks("Abandoned vehicles"), 1, 'Barnet non-street category not present';
                     is $mech->content_lacks("Parking"), 1, 'Barnet street category not present';
                 }
@@ -570,13 +571,13 @@ FixMyStreet::override_config {
                     $brent_mock->mock('_fetch_features',
                         sub { [ { 'ms:BrentDiffs' => { 'ms:name' => 'Brent' } } ] });
                     $camden_mock->mock('_fetch_features',
-                        sub { [ { 'ms:BrentDiffs' => { 'ms:name' => 'Brent' } } ] });
+                        sub { [ { 'ms:AgreementBoundaries' => { 'ms:RESPBOROUG' => 'LB Brent' } } ] });
                     $mech->get_ok("/report/new/ajax?longitude=-0.124514&latitude=51.529432");
-                    is $mech->content_lacks("Potholes"), 1, 'Brent category not present';
+                    is $mech->content_contains("Potholes"), 1, 'Brent category present';
                     is $mech->content_contains("Gully grid missing"), 1, 'Brent Symology category present';
                     is $mech->content_contains("Sweeping"), 1, 'TfL category present';
                     is $mech->content_lacks("Fly-tipping"), 1, 'Camden street category not present';
-                    is $mech->content_contains("Dead animal"), 1, 'Camden non-street category present';
+                    is $mech->content_lacks("Dead animal"), 1, 'Camden non-street category not present';
                 }
             };
 
@@ -609,20 +610,6 @@ FixMyStreet::override_config {
                     sub { [{ 'ms:BrentDiffs' => { 'ms:name' => 'Brent' } }] });
                 $mech->get_ok("/report/new?longitude=-0.124514&latitude=51.529432");
                 is $mech->content_lacks('That location is not covered by Brent Council'), 1, 'Can not make report in Camden off asset';
-            };
-
-            subtest "can access Brent from Camden on Camden asset layer" => sub {
-                $mech->host("camden.fixmystreet.com");
-                $camden_mock->mock('_fetch_features', sub { [{ 'ms:BrentDiffs' => { 'ms:name' => 'Camden' } }] });
-                $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904");
-                is $mech->content_lacks('That location is not covered by Camden Council'), 1, "Can make a report on Camden asset";
-            };
-
-            subtest "can not access Brent from Camden not on asset layer" => sub {
-                $mech->host("camden.fixmystreet.com");
-                $camden_mock->mock('_fetch_features', sub { [] });
-                $mech->get_ok("/report/new?longitude=-0.28168&latitude=51.55904");
-                is $mech->content_contains('That location is not covered by Camden Council'), 1, "Can make a report on Camden asset";
             };
 
             for my $test (
