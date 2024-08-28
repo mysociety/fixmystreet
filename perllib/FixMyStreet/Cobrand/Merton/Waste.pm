@@ -216,6 +216,7 @@ sub staff_override_request_options {
                 request_allowed => 0,
                 requests_open => {},
                 request_containers => [], # request_allowed not enough
+                orange_bag => 1,
                 service_id => '2239-textiles',
                 service_name => 'Textiles and shoes',
             }; # shallow copy
@@ -234,7 +235,7 @@ sub staff_override_request_options {
     my @containers_on_property;
 
     foreach my $row (@$rows) {
-        next if $row->{service_id} =~ /^2239-/; # Ignore batteries/textiles
+        next if $row->{orange_bag}; # Ignore batteries/textiles
         push @containers_on_property, @{$row->{request_containers}};
         $row->{request_allowed} = 1;
         $row->{request_max} = 3;
