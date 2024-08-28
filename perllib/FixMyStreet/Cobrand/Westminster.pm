@@ -25,7 +25,7 @@ use URI;
 
 =cut
 
-sub council_area_id { return 2504; }
+sub council_area_id { return [2504, 2505] } # 2505 Camden
 sub council_area { return 'Westminster'; }
 sub council_name { return 'Westminster City Council'; }
 sub council_url { return 'Westminster'; }

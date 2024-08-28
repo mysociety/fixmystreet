@@ -15,14 +15,17 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
-use constant BRENT_MAPIT_ID => 2488;
-use constant BARNET_MAPIT_ID => 2489;
-use constant WESTMINSTER_MAPIT_ID => 2504;
-use constant ISLINGTON_MAPIT_ID => 2507;
-use constant HARINGEY_MAPIT_ID => 2509;
-use constant CITY_MAPIT_ID => 2512;
-
-sub council_area_id { return [2505, BRENT_MAPIT_ID, BARNET_MAPIT_ID, WESTMINSTER_MAPIT_ID, ISLINGTON_MAPIT_ID, HARINGEY_MAPIT_ID, CITY_MAPIT_ID]; }
+sub council_area_id {
+    return [
+        2505, # Camden
+        2488, # Brent
+        2489, # Barnet
+        2504, # Westminster
+        2507, # Islington
+        2509, # Haringey
+        2512, # City of London
+    ];
+}
 sub council_area { return 'Camden'; }
 sub council_name { return 'Camden Council'; }
 sub council_url { return 'camden'; }
