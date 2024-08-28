@@ -95,4 +95,21 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=back
+
+=head2 Open311
+
+=over 1
+
+=item * Fetched reports via Open311 use the service name as their title
+
+=cut
+
+sub open311_title_fetched_report {
+    my ($self, $request) = @_;
+    return $request->{service_name};
+}
+
 1;
+
+=back
