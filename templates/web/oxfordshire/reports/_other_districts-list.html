@@ -11,7 +11,7 @@
       [% FOR child IN parish_ward.values.sort('name') %]
       [% IF child.type == 'CPC' %]
       <li class="item-list__item item-list--wards__item">
-        <label class="[% show_parish_shown_class %]">
+        <label class="[% show_parish_shown_class %] govuk-fms-input__label govuk-fms-input__label--checkbox">
             <input type="checkbox" name="ward" value="[% child.name | html %]">
           [% child.name %]
         </label>
@@ -41,7 +41,7 @@
         [% FOR child IN parish_ward.values.sort('name') %]
         [% IF child.type == 'DIW' %]
         <li class="item-list__item item-list--wards__item">
-          <label class="[% show_district_shown_class %]">
+          <label class="[% show_district_shown_class %] govuk-fms-input__label govuk-fms-input__label--checkbox">
             <input type="checkbox" name="ward" value="[% child.name | html %]">
             [% child.name %]
           </label>
@@ -71,7 +71,7 @@
         [% FOR child IN parish_ward.values.sort('name') ~%]
         [% IF child.type == 'DIS' %]
         <li class="item-list__item item-list--wards__item">
-          <label class="[% show_district_shown_class %]">
+          <label class="[% show_district_shown_class %] govuk-fms-input__label govuk-fms-input__label--checkbox">
             <input type="checkbox" name="ward" value="[% child.name | html %]">
             [% child.name %]
           </label>

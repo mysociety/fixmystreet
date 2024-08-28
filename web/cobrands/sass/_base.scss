@@ -1316,7 +1316,7 @@ input.final-submit {
   a {
     color: #222222;
     display: block;
-    padding: 0.5em 1em;
+    padding: 0.5em 0;
   }
   a:hover,
   a:focus,
@@ -1326,14 +1326,18 @@ input.final-submit {
   }
 }
 
-.item-list--wards__item {
-  @extend %item-list__item--link;
+.item-list--wards {
+  padding: 0 1rem;
+  .item-list--wards__item {
+    @extend %item-list__item--link;
 
-  label {
-    margin: 0;
-    padding: 0.5em 1em;
+    label {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
   }
 }
+
 
 .item-list--reports__item {
   @extend %item-list__item--link;

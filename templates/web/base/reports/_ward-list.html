@@ -11,7 +11,7 @@
     <ul class="item-list item-list--wards">
       [% FOR child IN children.values.sort('name') %]
         <li class="item-list__item item-list--wards__item">
-          <label class="[% show_wards_shown_class %]">
+          <label class="[% show_wards_shown_class %] govuk-fms-input__label govuk-fms-input__label--checkbox">
             <input type="checkbox" name="ward" value="[% child.name | html %]">
             [% child.name %]
           </label>
