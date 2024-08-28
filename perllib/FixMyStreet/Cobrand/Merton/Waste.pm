@@ -234,6 +234,7 @@ sub staff_override_request_options {
     my @containers_on_property;
 
     foreach my $row (@$rows) {
+        next if $row->{service_id} =~ /^2239-/; # Ignore batteries/textiles
         push @containers_on_property, @{$row->{request_containers}};
         $row->{request_allowed} = 1;
         $row->{request_max} = 3;
