@@ -133,8 +133,8 @@ function isR2L() {
         }
 
         if ($select.attr("id") == 'filter_categories' || $select.attr("id") == 'statuses') {
-            settings.menuItemsHTML = '<div class="govuk-multi-select govuk-multi-select--checkboxes">';
-            settings.menuItemHTML = '<label class="govuk-multi-select__label">';
+            settings.menuItemsHTML = '<div class="govuk-fms-input govuk-fms-input--checkboxes">';
+            settings.menuItemHTML = '<label class="govuk-fms-input__label">';
             settings.menuFieldsetHTML = '<fieldset class="multi-select-fieldset govuk-fieldset">';
             settings.menuFieldsetLegendHTML = '<legend class="multi-select-fieldset govuk-fieldset__legend govuk-fieldset__legend--s">';
         }
@@ -1171,25 +1171,25 @@ $.extend(fixmystreet.set_up, {
     var supportsHas = CSS.supports('selector(:has(*))');
 
     if (!supportsHas) {
-        $('.govuk-multi-select__label').each(function() {
+        $('.govuk-fms-input__label').each(function() {
             var label = $(this);
             var input = label.find('input[type="checkbox"], input[type="radio"]');
       
             if (input.attr('type') === 'checkbox') {
-              label.addClass('govuk-multi-select__label--checkbox');
+              label.addClass('govuk-fms-input__label--checkbox');
             } else if (input.attr('type') === 'radio') {
-              label.addClass('govuk-multi-select__label--radio');
+              label.addClass('govuk-fms-input__label--radio');
             }
       
             if (input.prop('checked')) {
-              label.addClass('govuk-multi-select__label--checked');
+              label.addClass('govuk-fms-input__label--checked');
             }
       
             input.on('change', function() {
               if (this.checked) {
-                label.addClass('govuk-multi-select__label--checked');
+                label.addClass('govuk-fms-input__label--checked');
               } else {
-                label.removeClass('govuk-multi-select__label--checked');
+                label.removeClass('govuk-fms-input__label--checked');
               }
             });
           });

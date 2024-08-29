@@ -1,21 +1,17 @@
-@mixin govuk-select-dropdown {
+/* GOVUK SELECT */
+
+.govuk-select {
+  // This class also affects span.multi-select-button. We could have use govuk-select in form.css, but only works on <select> elements.
   // This will make the arrow for the multi-select component and GOVUK look the same.
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+
   background-image: inline-image("../fixmystreet/images/chevron-black-down.svg");
   background-repeat: no-repeat;
   background-size: 11px;
   background-position: right 0.5em center;
   background-color: #fff;
-}
-
-.govuk-select {
-  @include govuk-select-dropdown;
-}
-
-.govuk-select {
-  // This class also affects .multi-select-button
   font-family: $body-font;
   font-size: 0.875rem;
   line-height: 150%;
@@ -25,6 +21,164 @@
   }
 }
 
+
+/* OVERRIDES TO FORM.CSS */
+
 .govuk-radios__label {
-  margin-top: 0; // Override the label element margin-top property
+  margin-top: 0; // Override the label element in _base.scsss
+}
+
+.govuk-fieldset__legend {
+  padding: 0.5rem 0 0 0.5rem;
+}
+
+
+/* GOVUK FMS RADIO & CHECKBOXES */
+
+// FMS use a slightly different markup than GOVUK, whereas GOVUK uses input and label as siblings, FMS sometimes puts the input as a child of the label; reason why can't just reuse the GOVUK classes contained in forms.css
+// So classes don't cause a conflict with the ones use in forms.css(GOVUK) they have been added the suffix 'govuk-fms'
+
+// USAGE checkbox: <label class="govuk-fms-input__label govuk-fms-input__label--checkbox">
+// USAGE Radio: <label class="govuk-fms-input__label govuk-fms-input__label--radio">
+
+// Using variables for the spacing to make more evident the relationship the dependencies between elements.
+
+$govuk-fms-input-size: 44px;
+$govuk-fms-input-visible-size: 24px; // By default GOVUK uses 44px, 24px it's the size for the GOVUK small version
+
+.govuk-fms-input__label {
+  padding: 10px 0px 10px $govuk-fms-input-size;
+  cursor: pointer;
+  touch-action: manipulation;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+  position: relative;
+  font-weight: normal;
+
+  input[type="checkbox"], input[type="radio"] {
+      width: $govuk-fms-input-size;
+      height: $govuk-fms-input-size;
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+  }
+
+  &:before {
+      content: "";
+      box-sizing: border-box;
+      position: absolute;
+      top: ($govuk-fms-input-size - $govuk-fms-input-visible-size) / 2;
+      left: ($govuk-fms-input-size - $govuk-fms-input-visible-size) / 2;
+      width: $govuk-fms-input-visible-size;
+      height: $govuk-fms-input-visible-size;
+      border: 2px solid $govuk-input-border-color;
+  }
+
+  &:hover {
+      &:before {
+      box-shadow: 0 0 0 10px $govuk-input-hover-box-shadow;
+      }
+  }
+
+  &:focus-within {
+      &:before {
+      outline: 3px solid $govuk-input-border-color;
+      box-shadow: 0 0 0 7px $govuk-input-focus-box-shadow;
+      outline-offset: -1px;
+      }
+  }
+
+  &:focus-within:hover {
+      &:before {
+      box-shadow: 0 0 0 5px $govuk-input-focus-box-shadow, 0 0 0 10px $govuk-input-hover-box-shadow;
+      }
+  }
+
+  @supports( #{"selector(:has(*))"} ) {
+      &:has(> input[type="checkbox"]:checked),
+      &:has(> input[type="radio"]:checked) {
+          &::after {
+          opacity: 1;
+          }
+      }
+  
+      &:has(> input[type="checkbox"]){
+          &:after {
+          // Check icon
+          content: "";
+          box-sizing: border-box;
+          position: absolute;
+          top: $govuk-fms-input-visible-size / 2;
+          left: $govuk-fms-input-visible-size / 2;
+          clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
+          border: solid 10px $govuk-input-border-color;
+          opacity: 0;
+          }
+      }
+  
+      &:has(> input[type="radio"]){
+          &:after {
+          // Circle icon
+          content: "";
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          width: 14px;
+          height: 14px;
+          clip-path: circle(50%);
+          opacity: 0;
+          background-color: $govuk-input-border-color;
+          }
+      }
+  }
+
+  // When has() selector is not available
+  &.govuk-fms-input__label--checked {
+      &::after {
+      opacity: 1;
+      }
+  }
+
+  // When has() selector is not available
+  &.govuk-fms-input__label--checkbox {
+      &:after {
+      // Check icon
+      content: "";
+      box-sizing: border-box;
+      position: absolute;
+      top: $govuk-fms-input-visible-size / 2;
+      left: $govuk-fms-input-visible-size / 2;
+      clip-path: polygon(28% 38%, 41% 53%, 75% 24%, 86% 38%, 40% 78%, 15% 50%);
+      border: solid 10px $govuk-input-border-color;
+      opacity: 0;
+      }
+  }
+
+  // When has() selector is not available
+  &.govuk-fms-input__label--radio {
+      &:after {
+      // Circle icon
+      content: "";
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 14px;
+      height: 14px;
+      clip-path: circle(50%);
+      opacity: 0;
+      background-color: $govuk-input-border-color;
+      }
+      &:before {
+        border-radius: 50%;
+      }
+  }
+
+  .govuk-fms-small & {
+    line-height: $govuk-fms-input-visible-size;
+    font-size: 1rem;
+  }
 }
