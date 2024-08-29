@@ -323,34 +323,42 @@ sub _handle_assigned_user {
     my ($self, $request, $p) = @_;
     my $body = $self->current_body;
 
-    # Assign admin user to report if 'assigned_user_*' fields supplied
-    if ( $request->{extras} && $request->{extras}{assigned_user_email} ) {
-        my $assigned_user_email = $request->{extras}{assigned_user_email};
-        my $assigned_user_name  = $request->{extras}{assigned_user_name};
+    if ( $request->{extras} ) {
+        # Assign admin user to report if 'assigned_user_*' fields supplied
+        if ( $request->{extras}{assigned_user_email} ) {
+            my $assigned_user_email = $request->{extras}{assigned_user_email};
+            my $assigned_user_name  = $request->{extras}{assigned_user_name};
 
-        my $assigned_user
-            = FixMyStreet::DB->resultset('User')
-            ->find( { email => $assigned_user_email } );
+            my $assigned_user
+                = FixMyStreet::DB->resultset('User')
+                ->find( { email => $assigned_user_email } );
 
-        unless ($assigned_user) {
-            $assigned_user = FixMyStreet::DB->resultset('User')->create(
-                {   email          => $assigned_user_email,
-                    name           => $assigned_user_name,
-                    from_body      => $body->id,
-                    email_verified => 1,
-                },
-            );
+            unless ($assigned_user) {
+                $assigned_user = FixMyStreet::DB->resultset('User')->create(
+                    {   email          => $assigned_user_email,
+                        name           => $assigned_user_name,
+                        from_body      => $body->id,
+                        email_verified => 1,
+                    },
+                );
 
-            # Make them an inspector
-            # TODO Other permissions required?
-            $assigned_user->user_body_permissions->create(
-                {   body_id         => $body->id,
-                    permission_type => 'report_inspect',
-                }
-            );
+                # Make them an inspector
+                # TODO Other permissions required?
+                $assigned_user->user_body_permissions->create(
+                    {   body_id         => $body->id,
+                        permission_type => 'report_inspect',
+                    }
+                );
+            }
+
+            $assigned_user->add_to_planned_reports($p);
         }
-
-        $assigned_user->add_to_planned_reports($p);
+        if ( exists $request->{extras}{detailed_information} ) {
+            $request->{extras}{detailed_information}
+                ? $p->set_extra_metadata( detailed_information =>
+                    $request->{extras}{detailed_information} )
+                : $p->unset_extra_metadata('detailed_information');
+        }
     }
 }
 
