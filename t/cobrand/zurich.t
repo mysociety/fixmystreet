@@ -269,6 +269,7 @@ subtest "private categories" => sub {
     $mech->log_in_ok( 'super@example.org' );
     $mech->get_ok('/admin/bodies');
     $mech->follow_link_ok({ text => 'Division 1' });
+    $mech->follow_link_ok({ text => 'Füge neue Kategorie hinzu' });
     $mech->submit_form_ok({ with_fields => {
         category => 'Allgemein',
         state => 'inactive',

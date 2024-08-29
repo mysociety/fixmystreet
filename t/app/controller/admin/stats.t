@@ -24,7 +24,7 @@ subtest "test refused stats page works" => sub {
     }, sub {
         $mech->get_ok('/admin/stats/refused');
     };
-    $mech->content =~ /class="content"(.*)<!-- .content/s;
+    $mech->content =~ /<h1>(.*)<!-- .content/s;
     my @lines = split /<li>/, $1;
     is @lines, 7;
     like $lines[1], qr/Edinburgh/;

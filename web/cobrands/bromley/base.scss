@@ -178,19 +178,10 @@ input.field, input.text,
   font-family: $body-font;
 }
 
-.btn-primary,
-.green-btn,
 .btn--primary {
   $bg: $bromley_blue;
   $hover-bg: darken($bromley_blue, 10%);
   @include button-variant($bg, $bg, false, #fff, $hover-bg, $hover-bg, false, #fff);
-  border-color: $bromley_blue !important;
-}
-
-.btn-primary--bg-white {
-  $bg: #fff;
-  $hover-bg: darken($bromley_blue, 10%);
-  @include button-variant($bg, $bg, false, $bromley_blue, $hover-bg, $hover-bg, false, $bg);
   border-color: $bromley_blue !important;
 }
 

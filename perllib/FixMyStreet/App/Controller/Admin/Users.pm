@@ -57,8 +57,9 @@ sub index :Path : Args(0) {
 
     my $search = $c->get_param('search');
     my $role = $c->get_param('role');
-    my $users = $c->cobrand->users;
+    my $users;
     if ($search || $role) {
+        $users = $c->cobrand->users;
         if ($search) {
             $search = $self->trim($search);
             $search =~ s/^<(.*)>$/$1/; # In case email wrapped in <...>
@@ -79,11 +80,14 @@ sub index :Path : Args(0) {
         $c->cobrand->call_hook('admin_user_edit_extra_data');
 
         # Admin users by default
-        $users = $users->search({ from_body => { '!=', undef } });
+        $users = $c->cobrand->users_staff_admin;
     }
 
     $users = $users->search(undef, {
+        '+columns' => { 'from_body.msgstr' => \'COALESCE(translations.msgstr, from_body.name)' },
         prefetch => 'from_body',
+        join => { from_body => 'translations' },
+        bind => [ 'name', $c->stash->{lang_code}, 'body' ],
         order_by => [ \"me.name = ''", 'me.name' ],
     });
     my @users = $users->all;
@@ -95,6 +99,11 @@ sub index :Path : Args(0) {
     my $rs;
     if ($c->user->is_superuser) {
         $rs = $c->model('DB::Role')->search_rs({}, { join => 'body', order_by => ['body.name', 'me.name'] });
+        $rs = $rs->search(undef, {
+            '+columns' => { 'body.msgstr' => \'COALESCE(translations.msgstr, body.name)' },
+            join => { body => 'translations' },
+            bind => [ 'name', $c->stash->{lang_code}, 'body' ],
+        });
     } elsif ($c->user->from_body) {
         $rs = $c->user->from_body->roles->search_rs({}, { order_by => 'name' });
     }

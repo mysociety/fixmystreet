@@ -1,11 +1,19 @@
-<div class="full-width full-width--top">
-    <p>
-        <strong>[% tprintf(loc('%s admin:', "%s here is the site name"), site_name) %]</strong>
-      [%- FOREACH link IN allowed_links %]
-        <a href="[% c.uri_for( '/admin/' _ link ) %]">[% allowed_pages.$link.0 %]</a>
-        [% IF NOT loop.last %]|[% END %]
-      [% END %]
-    </p>
+[% INCLUDE 'about/_sticky-button-content-navbar.html' %]
+<div class="sticky-sidebar">
+    <aside>
+        <ul>
+          [% FOREACH link IN allowed_links %]
+            [%~ SET text = allowed_pages.$link.0 ~%]
+            <li>
+              [% IF c.req.uri.path == '/admin/' _ link OR (link == 'summary' AND c.action == 'admin/index') %]
+                <strong>[% text %]</strong>
+              [% ELSE %]
+                <a href="[% c.uri_for( '/admin/' _ link ) %]">[% text %]</a>
+              [% END %]
+            </li>
+          [% END %]
+        </ul>
+    </aside>
 </div>
 
 <h1>[% title %]</h1>

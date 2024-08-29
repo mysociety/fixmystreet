@@ -89,7 +89,7 @@ $button-border-radius: 2rem; // This var doesn't exist in other cobrands
 
 // Usage 
 /*
-  .btn, .btn--primary, .btn--primary {
+  .btn--primary {
       @include border-radius($button-border-radius);
       @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
   }
@@ -108,7 +108,7 @@ $button-primary-focus-border: $yellow-600;
 $button-primary-focus-text: $primary_text;
 
 /*
-  .btn, .btn--secondary, .btn--secondary {
+  .btn, .btn-secondary {
       @include border-radius($button-border-radius);
       @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
   }

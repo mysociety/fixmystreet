@@ -172,8 +172,7 @@ p.form-error {
     font-weight: 800;
 }
 
-.btn,
-.green-btn {
+.btn {
     @include peabody-button-primary();
 }
 

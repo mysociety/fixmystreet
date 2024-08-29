@@ -111,7 +111,7 @@ dl dt {
 }
 
 
-.btn-primary, .green-btn, .btn--primary {
+.btn--primary {
   background: none;
   color: $bucks_charcoal !important;
   @include bucks-button();

@@ -43,7 +43,7 @@
         <th>[% loc('Name') %]</th>
         <th>[% loc('Email') %]</th>
         <th>[% loc('Body') %]</th>
-      [% IF c.cobrand.moniker != 'zurich' %]
+      [% IF c.cobrand.moniker != 'zurich' AND (searched OR role_selected) %]
         <th>[% loc('Flagged') %]</th>
       [% END %]
         <th colspan="2">*</th>
@@ -61,7 +61,7 @@
         <td>[% PROCESS value_or_nbsp value=user.from_body.name %]
             [% IF user.is_superuser %] * [% END %]
         </td>
-      [% IF c.cobrand.moniker != 'zurich' %]
+      [% IF c.cobrand.moniker != 'zurich' AND (searched OR role_selected) %]
         <td>[% user.flagged == 2 ? loc('User in abuse table') : user.flagged ? loc('Yes') : '&nbsp;' %]</td>
       [% END %]
         <td>[% IF user.id %]<a href="[% c.uri_for_action( 'admin/users/edit', [ user.id ] ) %]">[% loc('Edit') %]</a>[% END %]</td>

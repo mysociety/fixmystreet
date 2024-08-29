@@ -169,6 +169,10 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </ul>
 
 <div class="clearfix full-width" style="background-color: #eee; padding: 1em 1em 0;">
+[% IF problem.user.email == cobrand.anonymous_account.email %]
+    <p>[% loc('User:') %] [% loc('Anonymous user') %]</p>
+[% ELSE %]
+
   [% IF allowed_pages.user_edit %]
     <p style="float:right"><a href="[% c.uri_for_action('/admin/users/edit', [ problem.user.id ]) %]">[% loc('Edit user') %]</a>
   [% END %]
@@ -176,8 +180,8 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <ul class="plain-list">
 <li><label class="inline-text" for="anonymous">[% loc('Show name publicly?') %]</label>
 <select class="form-control" name="anonymous"  id="anonymous">
-<option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>
-<option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('No') %]</option>
+<option [% 'selected ' IF problem.anonymous %]value="1">[% loc('No') %]</option>
+<option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('Yes') %]</option>
 </select></li>
 <li><label class="inline-text" for="name">[% loc('Name:') %]</label>
     [% loc('(for this report)') %]
@@ -197,6 +201,8 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </li>
 [% END %]
 </ul>
+
+[% END %]
 </div>
 
 <p><input type="submit" class="btn btn--block btn--final" name="Submit changes" value="[% loc('Submit changes') %]">

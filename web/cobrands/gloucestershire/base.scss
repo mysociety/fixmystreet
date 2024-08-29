@@ -56,7 +56,7 @@ a#geolocate_link {
     border-color: $primary_text;
 }
 
-.green-btn {
+.btn--primary {
     @include button-variant($bg-top: $gloucestershire_blue_button, $bg-bottom: $gloucestershire_blue_button, $border: $gloucestershire_blue_button, $text: $primary_text, $hover-bg-bottom: $primary_text, $hover-bg-top: $primary_text, $hover-border: $button-primary-hover-border, $hover-text: $gloucestershire_blue_button);
     border-width: $button-border-width;
     @include focus-state;

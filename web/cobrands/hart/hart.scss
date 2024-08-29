@@ -117,23 +117,23 @@ a {
 }
 
 .btn, 
-.btn--primary, .btn--primary,
-.btn--secondary, .btn--secondary,
+.btn--primary,
+.btn-secondary,
 #front-main #postcodeForm div input#sub {
   @include border-radius($button-border-radius);
   @extend .h6;
 }
 
-.btn ,.btn--primary, .btn--primary, .green-btn {
+.btn, .btn--primary {
   @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
   @include hart-boxshadow(6px, 6px, 0 , 0, $hart_primary_light);
 }
 
-.btn--secondary, .btn--secondary, .form-submit {
+.btn-secondary, .form-submit {
   @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
 }
 
-// Green button not the same as .green-btn
+// Green button not the same as .btn--primary
 .postcode-form-box div input#sub {
   @include button-variant($bg-top: $primary, $bg-bottom: $primary, $border: $primary, $text: $primary_text, $hover-bg-bottom: $primary_b, $hover-bg-top: $primary_b, $hover-border: $primary_text, $hover-text: $primary_text);
 }

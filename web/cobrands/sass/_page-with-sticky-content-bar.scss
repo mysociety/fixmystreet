@@ -41,8 +41,8 @@ body.twothirdswidthpage {
         position: fixed;
         bottom: 5em;
         right: 0;
-        width: 13em;
-        padding: 1em;
+        width: 15em;
+        padding: 0.5em 0;
 
         h2 {
           margin-top: 0;
@@ -52,12 +52,31 @@ body.twothirdswidthpage {
         }
       }
 
+      ul {
+        @include list-reset-soft;
+      }
+
       li:last-child {
         margin-bottom: 0;
       }
 
+      a, strong {
+        display: block;
+      }
       a {
         color: $sticky-sidebar-link-color;
+        padding: 0.5em 1em;
+      }
+      a:hover, a:focus {
+        color: $sticky-sidebar-bg-color;
+        background-color: $sticky-sidebar-link-color;
+        text-decoration: none;
+      }
+      strong {
+        color: #000;
+        background-color: #fff;
+        padding: 0.5em 1em 0.5em 0.5em;
+        border-left: solid 0.5em $sticky-sidebar-bg-color;
       }
     }
 

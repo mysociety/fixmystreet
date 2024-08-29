@@ -149,6 +149,11 @@ sub users_restriction {
     return $rs->search($query);
 }
 
+sub users_staff_admin {
+    my $self = shift;
+    return FixMyStreet::DB->resultset('User')->search({ is_superuser => 0, from_body => $self->body->id });
+}
+
 sub base_url {
     my $self = shift;
 
