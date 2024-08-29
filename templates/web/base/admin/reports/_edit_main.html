@@ -174,7 +174,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
   [% END %]
 
 <ul class="plain-list">
-<li><label class="inline-text" for="anonymous">[% loc('Anonymous:') %]</label>
+<li><label class="inline-text" for="anonymous">[% loc('Show name publicly?') %]</label>
 <select class="form-control" name="anonymous"  id="anonymous">
 <option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>
 <option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('No') %]</option>

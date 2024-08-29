@@ -55,7 +55,7 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 [% INCLUDE just_value value="ALLOWED_COBRANDS" conf = allowed_conf %]
 <tr>
 <td>Web templates</td>
-<td colspan=2>
+<td colspan=2 style="overflow-wrap:anywhere">
     [% FOR path IN c.cobrand.path_to_web_templates %]
         [% path %]
         [% IF NOT loop.last %]<br>[% END %]
@@ -95,8 +95,15 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
     cob = discob %]
 
 [% INCLUDE subsection heading="MapIt" %]
-[% INCLUDE just_value value="MAPIT_URL"
-    conf = "<a href='" _ c.config.MAPIT_URL _ "'>" _ c.config.MAPIT_URL _ "</a>" %]
+
+<tr>
+    <td>MAPIT_URL</td>
+    <td colspan=2>
+    <a href="[% c.config.MAPIT_URL %]">[% c.config.MAPIT_URL %]</a>
+    </td>
+</tr>
+
+
 [% IF c.config.MAPIT_API_KEY %]
     [% INCLUDE just_value value="MAPIT_API_KEY" %]
 [% END %]
