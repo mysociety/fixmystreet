@@ -25,6 +25,7 @@ my $camden = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Camden Borough Council', {
 
 $mech->create_contact_ok(body_id => $camden->id, category => 'Potholes', email => 'potholes@camden.fixmystreet.com');
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffer', from_body => $camden );
+$staffuser->user_body_permissions->create( { body => $camden, permission_type => 'report_edit' } );
 
 $mech->create_contact_ok(
     body_id => $camden->id,
@@ -32,6 +33,12 @@ $mech->create_contact_ok(
     email => 'yellowbikes@example.org',
     send_method => 'Email',
     group => 'Hired e-bike or e-scooter',
+);
+
+$mech->create_contact_ok(
+    body_id => $camden->id,
+    category => 'Tree',
+    email => 'ConfirmTrees-trees',
 );
 
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
@@ -50,7 +57,7 @@ FixMyStreet::override_config {
         ok $mech->host('camden.fixmystreet.com'), 'set host';
 
         my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.529432&longitude=-0.124514');
-        is_deeply [sort keys %{$json->{by_category}}], ['Abandoned yellow bike', 'Potholes'], "Camden doesn't have River Piers category";
+        is_deeply [sort keys %{$json->{by_category}}], ['Abandoned yellow bike', 'Potholes', 'Tree'], "Camden doesn't have River Piers category";
     };
 
     subtest "show my name publicly checkbox doesn't appear on Camden's cobrand" => sub {
@@ -97,17 +104,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/report/' . $report->id);
         $mech->content_lacks('Show my name publicly');
         $mech->content_lacks('may_show_name');
-    };
-
-    subtest "reports that aren't anonymous still don't show the name" => sub {
-        my ($report) = $mech->create_problems_for_body(1, $camden->id, {
-            anonymous => 0,
-            cobrand => 'camden',
-            name => 'Test User',
-        });
-
-        $mech->get_ok('/report/' . $report->id);
-        $mech->content_lacks('Test User');
+        $mech->content_lacks('Test User', "still don't show the name");
     };
 
     subtest "updates that aren't anonymous still don't show the name" => sub {
@@ -137,6 +134,7 @@ FixMyStreet::override_config {
         my ($p) = $mech->create_problems_for_body(1, $camden->id, 'Title', {
             cobrand => 'camden',
             category => 'Abandoned yellow bike',
+            areas => ',2505,', # So admin categories_for_point can get Camden results
         } );
 
         FixMyStreet::Script::Reports::send();
@@ -149,6 +147,19 @@ FixMyStreet::override_config {
         like $p->comments->first->text, qr/This has been forwarded to/, 'correct comment text';
 
         $mech->email_count_is(1);
+    };
+
+    subtest 're-categorising auto-resends' => sub {
+        my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
+        is $report->send_state, 'sent';
+        $mech->get_ok('/admin/report_edit/' . $report->id);
+        $mech->submit_form_ok({ with_fields => { category => 'Tree' } });
+        $report->discard_changes;
+        is $report->send_state, 'unprocessed';
+        $report->update({ send_state => 'sent' });
+        $mech->submit_form_ok({ with_fields => { category => 'Potholes' } });
+        $report->discard_changes;
+        is $report->send_state, 'unprocessed';
     };
 };
 

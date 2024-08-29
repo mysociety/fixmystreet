@@ -53,6 +53,12 @@ sub disambiguate_location {
     };
 }
 
+=over 4
+
+=item * We customise the default report title field label and hint
+
+=cut
+
 sub new_report_title_field_label {
     "Location of the problem"
 }
@@ -61,15 +67,53 @@ sub new_report_title_field_hint {
     "e.g. outside no.18, or near postbox"
 }
 
+=item * We do not send questionnaires
+
+=cut
+
 sub send_questionnaires {
     return 0;
 }
+
+=item * We link to Camden's site for the privacy policy
+
+=cut
 
 sub privacy_policy_url {
     'https://www.camden.gov.uk/data-protection-privacy-and-cookies'
 }
 
+=item * camden.gov.uk users can always be found in the admin
+
+=cut
+
 sub admin_user_domain { 'camden.gov.uk' }
+
+=item * A category change from one backend type to another is auto-resent
+
+=back
+
+=cut
+
+sub _contact_type {
+    my $contact = shift;
+    return 'Confirm' if $contact->email =~ /^ConfirmTrees-/;
+    return 'Email' if ($_->send_method || '') eq 'Email';
+    return 'Symology';
+}
+
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+
+    # Get the Open311 identifiers
+    my $contacts = $self->{c}->stash->{contacts};
+    ($old) = map { _contact_type($_) } grep { $_->category eq $old } @$contacts;
+    ($new) = map { _contact_type($_) } grep { $_->category eq $new } @$contacts;
+
+    return 0 if $old eq 'Confirm' && $new eq 'Confirm';
+    return 0 if $old eq 'Symology' && $new eq 'Symology';
+    return 1;
+}
 
 sub lookup_site_code_config {
     my ($self, $property) = @_;
@@ -86,22 +130,34 @@ sub lookup_site_code_config {
     }
 }
 
+=head2 open311_update_missing_data
+
+Overrides Roles::ConfirmOpen311::open311_update_missing_data to
+include NSGRef setting for all Camden reports.
+
+Reports made via the app probably won't have a NSGRef because we don't
+display the road layer. Instead we'll look up the closest asset from the
+WFS service at the point we're sending the report over Open311.
+
+If there is a site_code extra data field and it is empty, then
+we'll add the NSGRef into that to replicate what is happening
+on the front-end when an NSGRef is found.
+
+=cut
+
 sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
-    # Reports made via the app probably won't have a NSGRef because we don't
-    # display the road layer. Instead we'll look up the closest asset from the
-    # WFS service at the point we're sending the report over Open311.
     if (!$row->get_extra_field_value('NSGRef')) {
         if (my $ref = $self->lookup_site_code($row, 'NSG_REF')) {
             $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
         }
     }
-}
 
-sub open311_config {
-    my ($self, $row, $h, $params, $contact) = @_;
-    $params->{multi_photos} = 1;
+    if ($row->get_extra_field('site_code') && !$row->get_extra_field_value('site_code')) {
+        $row->update_extra_field({ name => 'site_code', value => $row->get_extra_field_value('NSGRef') });
+    }
+
 }
 
 sub open311_munge_update_params {
