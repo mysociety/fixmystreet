@@ -165,8 +165,6 @@ dd, p {
 // No border and slightly different padding for *all* types of button.
 .btn,
 .postcode-form-box div input#sub,
-.green-btn,
-.btn-primary,
 .occlss-button--primary {
     border: none;
     padding: 0.7em 1em 0.85em 1em;
@@ -186,8 +184,6 @@ dd, p {
 
 // Override all the "primary" buttons across the site!
 .postcode-form-box div input#sub,
-.green-btn,
-.btn-primary,
 .occlss-button--primary,
 .btn--primary {
     @include button-variant(

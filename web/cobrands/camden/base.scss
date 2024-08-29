@@ -105,7 +105,7 @@ a {
   background-color: $link-focus-background-colour;
 }
 
-.btn, .btn--primary, .btn-primary, .green-btn, #report-cta {
+.btn, .btn--primary, #report-cta {
   @include cobrand-btn-primary;
 }
 

@@ -113,7 +113,7 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
             <input type="text" class="form-control" name="moderation_reason" value="[% (c.req.params.moderation_reason || '') | html %]">
         </p>
         <p>
-            <input type="submit" class="green-btn" value="[% loc('Save changes') %]">
+            <input type="submit" class="btn btn--primary" value="[% loc('Save changes') %]">
             <input type="button" class="hidden-nojs btn cancel" value="[% loc('Discard changes') %]">
         </p>
     </div>

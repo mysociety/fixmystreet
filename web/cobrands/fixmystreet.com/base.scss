@@ -189,7 +189,6 @@ body.frontpage {
 }
 
 // Yellow primary buttons on FMS.com, rather than green.
-.btn-primary,
 .btn--primary {
     @include button-variant(
         mix($primary, #fff, 50%),

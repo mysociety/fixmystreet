@@ -40,7 +40,7 @@ a {
   background-color: $link-focus-color;
 }
 
-.btn, .btn--primary, .btn-primary, .green-btn, #report-cta {
+.btn, .btn--primary, #report-cta {
   @include brent-btn-primary;
 }
 

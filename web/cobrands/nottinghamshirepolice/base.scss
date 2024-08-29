@@ -16,7 +16,6 @@ h1, h2, h3 {
 }
 
 /* BUTTONS */
-.btn-primary,
 .btn--primary,
 .postcode-form-box div input#sub,
 #report-cta {
@@ -28,7 +27,6 @@ h1, h2, h3 {
   @include nott-focus-state;
 }
 
-.btn--secondary,
 .btn-secondary,
 .nav-menu a.btn-secondary,
 a#geolocate_link,

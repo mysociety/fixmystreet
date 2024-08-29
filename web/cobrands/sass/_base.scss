@@ -1118,28 +1118,15 @@ footer {
   @include button-reset();
 }
 
-// Deprecated
-// Try to use `btn btn--primary` etc instead of `btn-primary` where possible.
-.btn-primary,
-.green-btn,
-.btn-danger,
-.red-btn {
-  @include button-size();
-}
-
 .btn + .btn {
   // Ensure extra space between inline buttons placed next to each other.
   margin-#{$left}: 0.5em;
 }
 
-.btn-primary,
-.green-btn,
 .btn--primary {
   @include button-variant($button-primary-bg-top, $button-primary-bg-bottom, $button-primary-border, $button-primary-text, $button-primary-hover-bg-top, $button-primary-hover-bg-bottom, $button-primary-hover-border, $button-primary-hover-text,$button-primary-focus-bg-bottom,$button-primary-focus-bg-top, $button-primary-focus-border, $button-primary-focus-text);
 }
 
-.btn-danger,
-.red-btn,
 .btn--danger {
   @include button-variant(#ff0038, #bf002a, #80001c, #fff, #ff0038, #bf002a, #80001c, #fff);
 }
@@ -2606,8 +2593,7 @@ label .muted {
     margin-bottom: 0;
   }
 
-  .btn,
-  .btn-primary {
+  .btn {
     margin: 0.5em 0 1em 0;
 
     &:first-child {

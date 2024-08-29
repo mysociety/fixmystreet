@@ -36,8 +36,6 @@ a:focus,
 input:focus,
 button:focus,
 .btn:focus,
-.green-btn:focus,
-.btn-primary:focus,
 select:focus,
 textarea:focus,
 .multi-select-button:focus,
@@ -49,9 +47,6 @@ textarea:focus,
     box-shadow: 0 0 0 5px #333 !important;
 }
 
-.button,
-.green-btn,
-.btn-primary,
 input[type=button],
 input[type=reset],
 input[type=submit] :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
@@ -68,7 +63,7 @@ a#geolocate_link,
     padding: 12px 15px 10px;
 }
 
-.btn-primary, .govuk-button {
+.btn--primary, .govuk-button {
     padding: 12px 15px 10px;
     margin-bottom: 32px;
     line-height: 1;

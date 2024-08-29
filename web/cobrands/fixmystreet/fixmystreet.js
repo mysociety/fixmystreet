@@ -1045,10 +1045,10 @@ $.extend(fixmystreet.set_up, {
                 if (max_photos == 1 && prevFile) {
                     this.removeFile(prevFile);
                 }
-                $('input[type=submit]', $context).prop("disabled", true).removeClass('green-btn');
+                $('input[type=submit]', $context).prop("disabled", true);
               });
               this.on("queuecomplete", function() {
-                $('input[type=submit]', $context).prop('disabled', false).addClass('green-btn');
+                $('input[type=submit]', $context).prop('disabled', false);
               });
               this.on("success", function(file, xhrResponse) {
                 var $upload_fileids = $('input[name="' + $fileid_input + '"]', $context);

@@ -18,17 +18,17 @@
       <label for="alert_rznvy">[% loc('Email') %]</label>
       <div class="form-txt-submit-box">
           <input type="email" class="form-control" name="rznvy" id="alert_rznvy" value="[% email %]" size="30" autocomplete="email">
-          <input class="green-btn" type="submit" name="alert" value="[% loc('Subscribe') %]">
+          <input class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
       </div>
     [% ELSE %]
-      <input class="green-btn" type="submit" name="alert" value="[% loc('Subscribe') %]">
+      <input class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
     [% END %]
   [% ELSE %]
     <label for="alert_rznvy">[% loc('Your email') %]</label>
 
     <div class="form-txt-submit-box">
         <input type="email" class="form-control" name="rznvy" id="alert_rznvy" value="[% email %]" size="30">
-        <input class="green-btn" type="submit" name="alert" value="[% loc('Subscribe') %]">
+        <input class="btn btn--primary" type="submit" name="alert" value="[% loc('Subscribe') %]">
     </div>
   [% END %]
 
