@@ -55,9 +55,7 @@ h3 {
     line-height: 1.238095238em; //26px
 }
 
-.btn--primary,
-.btn,
-.green-btn {
+.btn--primary, .btn {
     @include tflbutton;
 }
 

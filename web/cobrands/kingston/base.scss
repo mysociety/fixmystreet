@@ -230,8 +230,7 @@ p.form-error {
     background: transparent;
 }
 
-.btn,
-.green-btn {
+.btn {
     @include kingston-button-primary();
 }
 

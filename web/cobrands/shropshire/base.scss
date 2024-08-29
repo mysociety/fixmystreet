@@ -242,8 +242,7 @@ p.form-error {
     padding: 1.5em;
 }
 
-.btn,
-.green-btn {
+.btn {
     @include shropshire-button-primary();
 }
 

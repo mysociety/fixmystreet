@@ -103,7 +103,7 @@ a {
   background-color: $link-focus-background-colour;
 }
 
-.btn, .btn--primary, .btn-primary, .green-btn {
+.btn, .btn--primary {
   @include cobrand-btn-primary;
 }
 

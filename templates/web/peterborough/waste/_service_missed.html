@@ -45,7 +45,7 @@
       <input type="hidden" name="token" value="[% csrf_token %]">
       <input type="hidden" name="service-[% unit.service_id %]" value="1">
       [% IF c.cobrand.call_hook('bulky_enabled') %]
-        <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Report a [% unit.service_name FILTER lower %] collection as missed" value="Report a missed collection" class="waste-service-descriptor waste-service-link">
+        <input class="btn btn--primary govuk-!-margin-bottom-2" type="submit" aria-label="Report a [% unit.service_name FILTER lower %] collection as missed" value="Report a missed collection" class="waste-service-descriptor waste-service-link">
       [% ELSE %]
         <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
       [% END %]

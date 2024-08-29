@@ -263,12 +263,12 @@ body.authpage, body.twothirdswidthpage {
 
 body.alertpage, body.authpage, body.twothirdswidthpage {
     .form-txt-submit-box {
-        input.green-btn, input.btn-primary {
+        input.btn--primary {
             @include btn-medium-primary
         }
     }
 
-    input.green-btn {
+    input.btn--primary {
         @include btn-medium-primary
     }
 }

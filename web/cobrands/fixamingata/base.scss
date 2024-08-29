@@ -216,8 +216,6 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
     padding: 0;
 }
 
-.btn-primary,
-.green-btn,
 .btn--primary {
     @include button-variant(#1a9ab8, #05617a, #05617a, #fff, #045369, #1a9ab8, #05617a, #fff);
 }
