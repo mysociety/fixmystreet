@@ -43,6 +43,12 @@ sub disambiguate_location {
     };
 }
 
+=over 4
+
+=item * We customise the default report title field label and hint
+
+=cut
+
 sub new_report_title_field_label {
     "Location of the problem"
 }
@@ -51,15 +57,53 @@ sub new_report_title_field_hint {
     "e.g. outside no.18, or near postbox"
 }
 
+=item * We do not send questionnaires
+
+=cut
+
 sub send_questionnaires {
     return 0;
 }
+
+=item * We link to Camden's site for the privacy policy
+
+=cut
 
 sub privacy_policy_url {
     'https://www.camden.gov.uk/data-protection-privacy-and-cookies'
 }
 
+=item * camden.gov.uk users can always be found in the admin
+
+=cut
+
 sub admin_user_domain { 'camden.gov.uk' }
+
+=item * A category change from one backend type to another is auto-resent
+
+=back
+
+=cut
+
+sub _contact_type {
+    my $contact = shift;
+    return 'Confirm' if $contact->email =~ /^ConfirmTrees-/;
+    return 'Email' if ($_->send_method || '') eq 'Email';
+    return 'Symology';
+}
+
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+
+    # Get the Open311 identifiers
+    my $contacts = $self->{c}->stash->{contacts};
+    ($old) = map { _contact_type($_) } grep { $_->category eq $old } @$contacts;
+    ($new) = map { _contact_type($_) } grep { $_->category eq $new } @$contacts;
+
+    return 0 if $old eq 'Confirm' && $new eq 'Confirm';
+    return 0 if $old eq 'Symology' && $new eq 'Symology';
+    return 1;
+}
 
 sub lookup_site_code_config {
     my ($self, $property) = @_;
