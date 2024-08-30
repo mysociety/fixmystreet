@@ -1,7 +1,7 @@
-[% INCLUDE 'header.html', title => 'För kommuner', bodyclass => 'twothirdswidthpage' %]
+[% INCLUDE 'header.html', title = 'För kommuner', bodyclass = 'twothirdswidthpage' sidebar='sidebar' %]
 
+[% BLOCK sidebar %]
 [% INCLUDE 'about/_sticky-button-content-navbar.html' %]
-
 <div class="sticky-sidebar">
     <aside>
         <ul>
@@ -16,6 +16,7 @@
         </ul>
     </aside>
 </div>
+[% END %]
 
 <h1>Information för kommuner</h1>
 <p>FixaMinGata är en e-tjänst som drivs av <a href="http://sambruk.se/">Föreningen Sambruk</a> och är framtagen i samarbete med <a href="http://kivos.se/">KIVOS</a> och <a href="http://ffkp.se/">FFKP</a>. ALLA kan använda e-tjänsten för att rapportera fel till kommuner. Tjänsten är en molntjänst och kan snabbt anpassas för en ny kommun. Fel som rapporteras skickas via e-post till berörd enhet på kommunen. För kommuner som har befintliga verksamhetssystem för rapportering och uppföljning finns flera möjligheter att integrera systemen.</p>

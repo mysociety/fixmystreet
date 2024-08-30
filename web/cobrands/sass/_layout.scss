@@ -457,16 +457,6 @@ a.platform-logo {
     padding-#{$right}: 0.25em;
 }
 
-// two thirds width page, also has option for a sidebar which can be sticky or not
-body.twothirdswidthpage {
-  #site-header + .container {
-    // This used to be on all containers, but there was a bug in Chrome, so now
-    // it's just here so that the sidebar links are still clickable with their
-    // negative z-index.
-    z-index: 1;
-  }
-}
-
 // Centre the login and password change pages,
 // but keep them narrow to match the report sidebar
 body.authpage {

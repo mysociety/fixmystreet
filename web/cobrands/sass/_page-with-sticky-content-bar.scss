@@ -3,86 +3,72 @@ $sticky-sidebar-link-color: mix($primary, #000, 40%) !default;
 $mobile-sticky-sidebar-button-bg: $primary !default;
 $mobile-sticky-sidebar-button-menu-image: "menu-black" !default;
 
-body.twothirdswidthpage {
-  #site-header + .container {
-    // This used to be on all containers, but there was a bug in Chrome, so now
-    // it's just here so that the sidebar links are still clickable with their
-    // negative z-index.
-    z-index: 1;
+.container--sidebar {
+  #mobile-sticky-sidebar-button {
+    background: $mobile-sticky-sidebar-button-bg inline-image("../fixmystreet/images/#{$mobile-sticky-sidebar-button-menu-image}.svg") center center no-repeat;
+    border-radius: 50%;
+    min-width: 44px;
+    padding: 0;
+    padding-top: 44px;
+    box-sizing: content-box;
+    position: fixed;
+    #{$right}: 1em;
+    bottom: 1em;
+
+    @if ($mobile-sticky-sidebar-button-menu-image == "menu-black") {
+      border: 2px solid #222;
+    } @else {
+      border: 2px solid #fff;
+    }
   }
+  .sticky-sidebar {
+    display: none;
+    background-color: $sticky-sidebar-bg-color;
+    z-index: 1;
+    position: absolute;
+    width: 100%;
 
-  .content {
-    #mobile-sticky-sidebar-button {
-      background: $mobile-sticky-sidebar-button-bg inline-image("../fixmystreet/images/#{$mobile-sticky-sidebar-button-menu-image}.svg") center center no-repeat;
-      border-radius: 50%;
-      min-width: 44px;
-      padding: 0;
-      padding-top: 44px;
-      box-sizing: content-box;
-      position: fixed;
-      #{$right}: 1em;
-      bottom: 1em;
-
-      @if ($mobile-sticky-sidebar-button-menu-image == "menu-black") {
-        border: 2px solid #222;
-      } @else {
-        border: 2px solid #fff;
-      }
-    }
-    .sticky-sidebar {
-      display: none;
+    aside {
       background-color: $sticky-sidebar-bg-color;
-      z-index: 1;
-      position: absolute;
-      width: 100%;
+      position: fixed;
+      bottom: 5em;
+      right: 0;
+      width: 15em;
+      padding: 0.5em 0;
 
-      aside {
-        background-color: $sticky-sidebar-bg-color;
-        position: fixed;
-        bottom: 5em;
-        right: 0;
-        width: 15em;
-        padding: 0.5em 0;
-
-        h2 {
-          margin-top: 0;
-        }
-        img {
-          margin-bottom: 0.25em;
-        }
+      h2 {
+        margin-top: 0;
       }
-
-      ul {
-        @include list-reset-soft;
-      }
-
-      li:last-child {
-        margin-bottom: 0;
-      }
-
-      a, strong {
-        display: block;
-      }
-      a {
-        color: $sticky-sidebar-link-color;
-        padding: 0.5em 1em;
-      }
-      a:hover, a:focus {
-        color: $sticky-sidebar-bg-color;
-        background-color: $sticky-sidebar-link-color;
-        text-decoration: none;
-      }
-      strong {
-        color: #000;
-        background-color: #fff;
-        padding: 0.5em 1em 0.5em 0.5em;
-        border-left: solid 0.5em $sticky-sidebar-bg-color;
+      img {
+        margin-bottom: 0.25em;
       }
     }
 
-    h2 {
-      padding-top: 1em;
-      border-top: 1px solid $sticky-sidebar-bg-color;
+    ul {
+      @include list-reset-soft;
+    }
+
+    li:last-child {
+      margin-bottom: 0;
+    }
+
+    a, strong {
+      display: block;
+    }
+    a {
+      color: $sticky-sidebar-link-color;
+      padding: 0.5em 1em;
+    }
+    a:hover, a:focus {
+      color: $sticky-sidebar-bg-color;
+      background-color: $sticky-sidebar-link-color;
+      text-decoration: none;
+    }
+    strong {
+      color: #000;
+      background-color: #fff;
+      padding: 0.5em 1em 0.5em 0.5em;
+      border-left: solid 0.5em $sticky-sidebar-bg-color;
     }
   }
 
@@ -91,41 +77,41 @@ body.twothirdswidthpage {
       display: none;
     }
 
+    display: flex;
+
     .content {
-      position: relative;
-      padding: flip(1em 2em 1em 16em, 1em 16em 1em 2em);
+      flex: auto;
 
       & > :last-child {
         margin-bottom: 0;
       }
+    }
 
-      .sticky-sidebar {
-        display: block;
-        #{$left}: 0;
+    .sticky-sidebar {
+      display: block;
+      position: static;
+      width: 15em;
+      margin-top: 1em;
+
+      aside {
+        position: sticky; // prevents overflowing with big lists
         top: 0;
-        bottom: 0;
-        position: absolute;
-        width: 15em;
+        right: inherit;
 
-        aside {
-          position: sticky; // prevents overflowing with big lists
-          top: 0;
-          right: inherit;
-
-          h2 {
-            margin-top: 0;
-          }
-          img {
-            margin-bottom: 0.25em;
-          }
+        h2 {
+          margin-top: 0;
+        }
+        img {
+          margin-bottom: 0.25em;
         }
       }
     }
+  }
+}
 
-    @supports( #{"selector(:has(*))"} ) {
-      .content:not(:has(div.sticky-sidebar)) {
-        padding: 1em;
-      }
-    }
+body.twothirdswidthpage {
+  h2 {
+    padding-top: 1em;
+    border-top: 1px solid $sticky-sidebar-bg-color;
   }
 }
