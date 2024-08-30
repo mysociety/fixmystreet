@@ -8,7 +8,7 @@
     padding: 0.5em 0;
     width: (313px * 0.7);
     height: (51px * 0.7);
-    @include svg-background-image('/cobrands/warwickshire/images/logo');
+    background-image: url("/cobrands/warwickshire/images/logo.svg");
     background-repeat: no-repeat;
     background-position: 50% 50%;
     background-size: (313px * 0.7) (51px * 0.7);
@@ -45,7 +45,7 @@
             height: auto;
             width: 40px;
             background-color: transparent;
-            @include svg-background-image('/cobrands/warwickshire/images/search');
+            background-image: url("/cobrands/warwickshire/images/search.svg");
             background-repeat: no-repeat;
             background-position: 50% 50%;
             background-size: 20px 20px;
@@ -59,7 +59,7 @@
             &:hover,
             &:focus {
                 background-color: $primary;
-                @include svg-background-image('/cobrands/warwickshire/images/search');
+                background-image: url("/cobrands/warwickshire/images/search.svg");
                 background-repeat: no-repeat;
                 background-position: 50% 50%;
                 background-size: 20px 20px;
@@ -100,7 +100,7 @@ a#geolocate_link {
         height: 45px;
         max-width: 100%;
         width: 264px;
-        @include svg-background-image('/cobrands/warwickshire/images/logo');
+        background-image: url("/cobrands/warwickshire/images/logo.svg");
         background-repeat: no-repeat;
         background-position: 50% 50%;
         background-size: contain;

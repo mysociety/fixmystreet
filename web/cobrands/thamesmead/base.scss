@@ -54,7 +54,7 @@ html.js-nav-open #nav-link {
     width: 144px;
     // height: 61px; // see below
     background-size: cover;
-    @include svg-background-image('/cobrands/thamesmead/images/peabody_logo');
+    background-image: url("/cobrands/thamesmead/images/peabody_logo.svg");
 
     // text-indent doesn’t play nicely with focus outline,
     // so use padding overflow trick instead

@@ -18,14 +18,14 @@
 .site-logo {
     width: 150px;
     height: 45px;
-    @include svg-background-image('/cobrands/highwaysengland/images/logo');
+    background-image: url("/cobrands/highwaysengland/images/logo.svg");
     background-position: 50% 50%;
     background-repeat: no-repeat;
     background-size: 150px 45px;
 }
 
 #nav-link {
-    @include svg-background-image('/cobrands/highwaysengland/images/menu');
+    background-image: url("/cobrands/highwaysengland/images/menu.svg");
 }
 
 #report-cta {
@@ -46,7 +46,7 @@
 %warning-icon {
     content: "";
     display: block;
-    @include svg-background-image('/cobrands/highwaysengland/images/warning-red');
+    background-image: url("/cobrands/highwaysengland/images/warning-red.svg");
     background-position: 0 0;
     background-repeat: no-repeat;
     background-size: 20px 20px;

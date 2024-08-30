@@ -89,7 +89,7 @@ header, .nav-wrapper {
     background-size: 9.0625rem;
     height: 5.5rem;
     width: 16.5rem;
-    @include svg-background-image("/cobrands/nottinghamshirepolice/images/logo");
+    background-image: url("/cobrands/nottinghamshirepolice/images/logo.svg");
 }
 
 // FOOTER

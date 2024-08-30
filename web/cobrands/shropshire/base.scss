@@ -41,7 +41,7 @@ a:focus,
     width:  $logo-width;
     // height: 61px; // see below
     background-size:  $logo-width  $logo-height;
-    @include svg-background-image("/cobrands/shropshire/images/sc-logo-v3");
+    background-image: url("/cobrands/shropshire/images/sc-logo-v3.svg");
 
     // text-indent doesn’t play nicely with focus outline,
     // so use padding overflow trick instead

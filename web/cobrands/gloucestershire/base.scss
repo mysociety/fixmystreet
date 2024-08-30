@@ -68,7 +68,7 @@ a#geolocate_link {
 }
 
 #site-logo {
-    @include svg-background-image("/cobrands/gloucestershire/images/gloucestershire-logo");
+    background-image: url("/cobrands/gloucestershire/images/gloucestershire-logo.svg");
     background-size: contain;
 }
 
@@ -180,19 +180,19 @@ a#geolocate_link {
         background-size: 26px;
 
         &.icon-facebook {
-            @include svg-background-image("/cobrands/gloucestershire/images/facebook");
+            background-image: url("/cobrands/gloucestershire/images/facebook.svg");
         }
         &.icon-twitter {
-            @include svg-background-image("/cobrands/gloucestershire/images/twitter");
+            background-image: url("/cobrands/gloucestershire/images/twitter.svg");
         }
         &.icon-instagram {
-            @include svg-background-image("/cobrands/gloucestershire/images/instagram");
+            background-image: url("/cobrands/gloucestershire/images/instagram.svg");
         }
         &.icon-youtube-play {
-            @include svg-background-image("/cobrands/gloucestershire/images/youtube");
+            background-image: url("/cobrands/gloucestershire/images/youtube.svg");
         }
         &.icon-rss {
-            @include svg-background-image("/cobrands/gloucestershire/images/rss");
+            background-image: url("/cobrands/gloucestershire/images/rss.svg");
         }
     }
 

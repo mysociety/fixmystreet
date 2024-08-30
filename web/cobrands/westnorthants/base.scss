@@ -7,7 +7,7 @@
 
 // HEADER
 #site-logo {
-  @include svg-background-image('/cobrands/westnorthants/images/logo');
+  background-image: url("/cobrands/westnorthants/images/logo.svg");
   background-size: contain;
   height: $mappage-header-height;
   width: 175px;
@@ -131,7 +131,7 @@ a,
 
   .footer-council-logo {
     display: block;
-    @include svg-background-image('/cobrands/westnorthants/images/logo-white');
+    background-image: url("/cobrands/westnorthants/images/logo-white.svg");
     background-size: contain;
     background-repeat: no-repeat;
     height: 80px;

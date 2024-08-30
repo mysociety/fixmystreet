@@ -40,7 +40,7 @@ h4 {
 // Put the logo in place, and reveal the text alongside it
 #site-logo {
   @extend %normal-font;
-  @include svg-background-image("/cobrands/buckinghamshire/img/bucks-logo");
+  background-image: url("/cobrands/buckinghamshire/img/bucks-logo.svg");
   background-position: 0 50%;
   background-repeat: no-repeat;
   background-size: 178px 45px;

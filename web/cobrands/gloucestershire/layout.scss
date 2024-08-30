@@ -99,7 +99,7 @@ footer.council-footer {
     &--logos {
         .council-logo {
             display: block;
-            @include svg-background-image("/cobrands/gloucestershire/images/gloucestershire-logo-white");
+            background-image: url("/cobrands/gloucestershire/images/gloucestershire-logo-white.svg");
             background-size: 274px 42px;
             background-repeat: no-repeat;
             background-position: top left;

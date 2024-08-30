@@ -43,7 +43,7 @@ a:not([class]):focus {
 }
 
 #site-logo {
-    @include svg-background-image("/cobrands/oxfordshire/images/site-logo-mobile");
+    background-image: url("/cobrands/oxfordshire/images/site-logo-mobile.svg");
     background-color: $nav_background_colour;
     background-size: 175px 38px;
     background-repeat: no-repeat;
@@ -352,7 +352,7 @@ textarea {
         vertical-align: -0.25em;
         background-size: 112px 16px;
         background-repeat: no-repeat;
-        @include svg-background-image("/cobrands/fixmystreet/images/report-tools");
+        background-image: url("/cobrands/fixmystreet/images/report-tools.svg");
       }
 
       &.abuse:after {

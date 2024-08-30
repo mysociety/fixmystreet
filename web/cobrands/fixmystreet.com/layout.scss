@@ -213,8 +213,7 @@ body.frontpage {
     .site-logo__fallback {
         width: $fms-logo-width;
         padding-top: $fms-logo-height;
-        // No need for svg-background-image() here because the
-        // logo on the homepage is an inline SVG, and the only browsers
+        // The logo on the homepage is an inline SVG, and the only browsers
         // not to show it will be IE8 and below, which are @1x.
         background-image: url("/cobrands/fixmystreet.com/images/site-logo-homepage.png");
         background-size: $fms-logo-width $fms-logo-height;

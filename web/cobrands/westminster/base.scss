@@ -141,7 +141,7 @@ ol.big-numbers > li:before {
         background-size: $image-width $image-height;
         background-position: center center;
         background-repeat: no-repeat;
-        @include svg-background-image("/cobrands/westminster/images/footer-logo");
+        background-image: url("/cobrands/westminster/images/footer-logo.svg");
     }
 }
 .westminster-footer-logo__desktop {
@@ -190,19 +190,19 @@ ol.big-numbers > li:before {
 }
 
 .westminster-social-links__linkedin {
-    @include svg-background-image("/cobrands/westminster/images/westminster_linkedin");
+    background-image: url("/cobrands/westminster/images/westminster_linkedin.svg");
 }
 
 .westminster-social-links__twitter {
-    @include svg-background-image("/cobrands/westminster/images/westminster_twitter");
+    background-image: url("/cobrands/westminster/images/westminster_twitter.svg");
 }
 
 .westminster-social-links__instagram {
-    @include svg-background-image("/cobrands/westminster/images/westminster_instagram");
+    background-image: url("/cobrands/westminster/images/westminster_instagram.svg");
 }
 
 .westminster-social-links__facebook {
-    @include svg-background-image("/cobrands/westminster/images/westminster_facebook");
+    background-image: url("/cobrands/westminster/images/westminster_facebook.svg");
 }
 
 .westminster-tertiary-links {

@@ -7,7 +7,7 @@
     top: 14px;
     margin: 0;
     padding: 0;
-    @include svg-background-image("/cobrands/greenwich/images/greenwich-logo");
+    background-image: url("/cobrands/greenwich/images/greenwich-logo.svg");
     background-size: contain;
     width: 170px;
     height: 83px;
@@ -377,7 +377,7 @@ footer {
                     .icon-logo-white {
                         background-position: center center;
                         background-repeat: no-repeat;
-                        @include svg-background-image("/cobrands/greenwich/images/greenwich-logo-reversed");
+                        background-image: url("/cobrands/greenwich/images/greenwich-logo-reversed.svg");
                     }
                     .visually-hidden {
                         border: 0;
@@ -452,7 +452,7 @@ footer {
         background-position: 0 0;
         background-repeat: no-repeat;
         background-size: 115px 24px;
-        @include svg-background-image("/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo");
+        background-image: url("/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo.svg");
         vertical-align: -7px;
         margin-left: 0.5em;
     }
@@ -460,7 +460,7 @@ footer {
         padding-top: 23px;
         width: 123px;
         background-size: 123px 23px;
-        @include svg-background-image("/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo-fms-pro");
+        background-image: url("/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo-fms-pro.svg");
         vertical-align: -7px;
     }
 }

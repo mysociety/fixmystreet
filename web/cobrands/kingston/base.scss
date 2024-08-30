@@ -34,7 +34,7 @@ body {
 #site-logo {
     width: 3.43rem;
     height: 4rem;
-    @include svg-background-image('https://www.kingston.gov.uk/site/dist/images/site-logo');
+    background-image: url("https://www.kingston.gov.uk/site/dist/images/site-logo.svg");
     background-size: contain;
 
     .mappage & {
@@ -399,7 +399,7 @@ p.form-error {
         display: block;
         width: 6.25em;
         height: 7.25em;
-        @include svg-background-image('https://www.kingston.gov.uk/site/dist/images/site-logo-white');
+        background-image: url("https://www.kingston.gov.uk/site/dist/images/site-logo-white.svg");
         background-size: contain;
         margin-bottom: 0.75em;
     }

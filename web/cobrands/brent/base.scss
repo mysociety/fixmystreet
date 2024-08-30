@@ -124,7 +124,7 @@ a {
   $logo-height: 55px;
   $nav-height: 70px;
   font-family: $body-font-family;
-  @include svg-background-image("/cobrands/brent/images/brent-logo");
+  background-image: url("/cobrands/brent/images/brent-logo.svg");
   background-position: 0;
   background-size: auto $logo-height;
   background-repeat: no-repeat;
@@ -347,7 +347,7 @@ dl dt {
   }
 
   .footer__logo {
-    @include svg-background-image("/cobrands/brent/images/brent-logo-dark-bg");
+    background-image: url("/cobrands/brent/images/brent-logo-dark-bg.svg");
     display: block;
     background-repeat: no-repeat;
     font-size: 0;
@@ -434,19 +434,19 @@ dl dt {
       transition: all .2s ease;
 
       &.footer__social-network_facebook {
-        @include svg-background-image("/cobrands/brent/images/facebook");
+        background-image: url("/cobrands/brent/images/facebook.svg");
       }
       &.footer__social-network_instagram {
-        @include svg-background-image("/cobrands/brent/images/instagram");
+        background-image: url("/cobrands/brent/images/instagram.svg");
       }
       &.footer__social-network_linkedin {
-        @include svg-background-image("/cobrands/brent/images/linkedin");
+        background-image: url("/cobrands/brent/images/linkedin.svg");
       }
       &.footer__social-network_twitter {
-        @include svg-background-image("/cobrands/brent/images/twitter");
+        background-image: url("/cobrands/brent/images/twitter.svg");
       }
       &.footer__social-network_youtube {
-        @include svg-background-image("/cobrands/brent/images/youtube");
+        background-image: url("/cobrands/brent/images/youtube.svg");
       }
 
       &:focus {
@@ -541,7 +541,7 @@ dl dt {
 
 .place-banner_horizon .place-banner__horizon:before {
   padding-top: calc((1/9.6)*100%);
-  @include svg-background-image("/cobrands/brent/images/default-horizon");
+  background-image: url("/cobrands/brent/images/default-horizon.svg");
 }
 
 .place-banner__horizon:before {

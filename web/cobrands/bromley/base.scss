@@ -16,7 +16,7 @@
   $logo-height: 60px;
   width: 95px;
   height: 0;
-  @include svg-background-image("/cobrands/bromley/images/site-logo");
+  background-image: url("/cobrands/bromley/images/site-logo.svg");
   background-size: 95px $logo-height;
   background-position: center;
   background-repeat: no-repeat;
@@ -137,7 +137,7 @@ a:active {
     background-color: darken(#f5f5f5, 10%);
 
     &:after {
-      @include svg-background-image("/cobrands/bromley/images/report-tools");
+      background-image: url("/cobrands/bromley/images/report-tools.svg");
     }
   }
 }
@@ -229,7 +229,7 @@ input.field, input.text,
 
 // Bromley's footer
 .site-footer {
-  @include svg-background-image("/cobrands/bromley/images/footer-blue-bg");
+  background-image: url("/cobrands/bromley/images/footer-blue-bg.svg");
   background-repeat: no-repeat;
   background-position: bottom right;
   background-color: #f5f3ed;

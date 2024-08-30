@@ -23,14 +23,9 @@ p, span {
 
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
   #site-logo {
-    @include svg-background-image("/cobrands/camden/images/camden-logo-white");
     background-size: $logo-width-desktop $logo-height-desktop;
     width: $logo-width-desktop;
     padding-top: $header-height-desktop;
-
-    &:focus {
-      @include svg-background-image("/cobrands/camden/images/camden-logo-black");
-    }
   }
 
   #front-main {
@@ -90,12 +85,6 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
 body.mappage {
   #site-header {
     @include box-sizing(border-box);
-  }
-
-  #site-logo {
-    &:focus {
-      @include svg-background-image("/cobrands/camden/images/camden-logo-black");
-    }
   }
 
   // Reinstate the floated nav bar on map pages

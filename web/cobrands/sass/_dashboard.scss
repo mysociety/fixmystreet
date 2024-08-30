@@ -186,7 +186,7 @@
         height: 16px;
         background-repeat: no-repeat;
         background-size: 112px 16px;
-        @include svg-background-image('/cobrands/fixmystreet/images/button-icons');
+        background-image: url("/cobrands/fixmystreet/images/button-icons.svg");
         background-position: -96px 0;
         margin-#{$right}: 0.5em;
         vertical-align: -0.1em;

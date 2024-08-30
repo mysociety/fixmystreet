@@ -277,8 +277,3 @@ $right: right;
   -ms-order: $order;
   order: $order;
 }
-
-@mixin svg-background-image($path) {
-  background-image: url("#{$path}.png");
-  background-image: url("#{$path}.svg"), none;
-}

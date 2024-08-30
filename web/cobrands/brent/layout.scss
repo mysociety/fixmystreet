@@ -10,7 +10,7 @@
 
 .nav-wrapper {
   &:after {
-    @include svg-background-image("/cobrands/brent/images/bg-pattern");
+    background-image: url("/cobrands/brent/images/bg-pattern.svg");
     content: '';
     position: absolute;
     z-index: -1;
@@ -42,7 +42,6 @@ $nav-height: 90px;
 
 body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body.waste {
   #site-logo {
-    @include svg-background-image("/cobrands/brent/images/brent-logo");
     background-size: 165px $logo-height;
     width: 165px;
     padding: 0;
@@ -125,9 +124,6 @@ body.mappage {
 
   #site-logo {
     margin-top: 0.250em;
-    &:focus {
-      @include svg-background-image("/cobrands/brent/images/brent-logo-black");
-    }
   }
 
   // Reinstate the floated nav bar on map pages

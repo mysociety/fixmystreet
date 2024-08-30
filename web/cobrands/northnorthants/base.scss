@@ -6,7 +6,7 @@
 
 // HEADER
 #site-logo {
-  @include svg-background-image('/cobrands/northnorthants/images/logo');
+  background-image: url("/cobrands/northnorthants/images/logo.svg");
   background-size: contain;
   height: $mappage-header-height;
   width: 175px;
@@ -239,7 +239,7 @@ input {
 
   .footer-council-logo {
     display: block;
-    @include svg-background-image('/cobrands/northnorthants/images/logo-white');
+    background-image: url("/cobrands/northnorthants/images/logo-white.svg");
     background-size: contain;
     background-repeat: no-repeat;
     height: 80px;

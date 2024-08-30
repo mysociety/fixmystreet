@@ -274,17 +274,17 @@ a {
               }
   
               &.social-media-link-icon--facebook > span:not(.extlink) {
-                  @include svg-background-image('/cobrands/hart//images/social-fb');
+                  background-image: url("/cobrands/hart//images/social-fb.svg");
                   width: 16px;
               }
   
               &.social-media-link-icon--twitter > span:not(.extlink) {
-                  @include svg-background-image('/cobrands/hart//images/social-tw');
+                  background-image: url("/cobrands/hart//images/social-tw.svg");
                   width: 29px;
               }
   
               &.social-media-link-icon--youtube > span:not(.extlink) {
-                  @include svg-background-image('/cobrands/hart//images/social-yt');
+                  background-image: url("/cobrands/hart//images/social-yt.svg");
                   width: 33px;
               }
   
@@ -300,7 +300,7 @@ a {
                   height: 15px;
                   background-size: contain;
                   background-repeat: no-repeat;
-                  @include svg-background-image('/cobrands/hart//images/external-link');
+                  background-image: url("/cobrands/hart//images/external-link.svg");
               }
           }
       }
@@ -361,7 +361,7 @@ a {
           a {
               display: block;
               width: auto;
-              @include svg-background-image('/cobrands/hart/images/logo');
+              background-image: url("/cobrands/hart/images/logo.svg");
               background-size: contain;
               background-repeat: no-repeat;
               width: 71px;

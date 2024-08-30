@@ -12,7 +12,7 @@
 #site-logo {
     width: (240px * 0.75);
     height: (60px * 0.75);
-    @include svg-background-image('/cobrands/borsetshire/images/logo');
+    background-image: url("/cobrands/borsetshire/images/logo.svg");
     background-position: 50% 50%;
     background-repeat: no-repeat;
     background-size: (240px * 0.75) (60px * 0.75);
