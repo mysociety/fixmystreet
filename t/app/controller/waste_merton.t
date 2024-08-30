@@ -435,7 +435,7 @@ FixMyStreet::override_config {
             ] },
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling collection has been reported as missed');
+        $mech->content_contains('A missed mixed recycling collection has been reported');
         $mech->content_contains('Request a mixed recycling container');
 
         $e->mock('GetEventsForObject', sub { [ {

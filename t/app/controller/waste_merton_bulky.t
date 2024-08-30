@@ -997,7 +997,7 @@ FixMyStreet::override_config {
             EventDate => { DateTime => '2023-07-05T00:00:00Z' },
         } ] } );
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A bulky waste collection has been reported as missed');
+        $mech->content_contains('A missed bulky waste collection has been reported');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [] } );
