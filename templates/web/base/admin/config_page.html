@@ -32,7 +32,7 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 <p><a href="[% c.uri_for_action('admin/config_page_cobrand') %]">View <code>COBRAND_FEATURES</code> configuration</a></p>
 [% END %]
 
-<table>
+<table class="admin--config">
 <tr><th>Variable</th>
     <th>general.yml value</th>
     <th>Cobrand module override</th>
@@ -55,7 +55,7 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 [% INCLUDE just_value value="ALLOWED_COBRANDS" conf = allowed_conf %]
 <tr>
 <td>Web templates</td>
-<td colspan=2 style="overflow-wrap:anywhere">
+<td colspan=2>
     [% FOR path IN c.cobrand.path_to_web_templates %]
         [% path %]
         [% IF NOT loop.last %]<br>[% END %]
