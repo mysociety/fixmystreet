@@ -13,21 +13,14 @@ body {
 
 // Alter the logo and the header on every page *but* the map page. On the map
 // page it stays small like in base.css
-body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
+body:not(.mappage) {
   #site-logo {
     $logo-height-desktop: 88px;
     width: 157px;
     height: 0;
     background-size: 157px $logo-height-desktop;
-    background-position: center;
-    background-repeat: no-repeat;
-  
     //Not displaying the text
     padding-top: calc(#{$logo-height-desktop} + 10px);
-    overflow: hidden;
-    white-space: nowrap;
-    text-indent: -999999px;
-    z-index:2;
   }
 }
 

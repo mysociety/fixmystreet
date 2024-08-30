@@ -1,5 +1,4 @@
 [%
-    SET bodyclass = bodyclass || 'twothirdswidthpage';
     SET admin = 1;
     SET sidebar = bodyclass.match('mappage') ? '' : 'admin/navigation.html';
     INCLUDE 'header.html' bodyclass = bodyclass _ ' admin';

@@ -50,10 +50,7 @@ html.js-nav-open #nav-link {
     padding: 5px 0;
 }
 
-body.mappage,
-body.authpage,
-body.twothirdswidthpage,
-body.alertpage {
+body:not(.frontpage) {
     .page-header-container,
     .fms-menu-container {
         display: none;

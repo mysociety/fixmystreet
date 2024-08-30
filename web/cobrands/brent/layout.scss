@@ -40,19 +40,12 @@ $nav-height: 90px;
   background-color: $base_bg;
 }
 
-body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body.waste {
+body:not(.mappage) {
   #site-logo {
     background-size: 165px $logo-height;
     width: 165px;
-    padding: 0;
     padding-top: $nav-height;
     height: 0px;
-    overflow: hidden;
-    white-space: nowrap;
-
-    &:focus {
-      background-color: $link-focus-color;
-    }
   }
 
   #main-nav {
@@ -120,10 +113,6 @@ body.mappage {
   #site-header {
     @include box-sizing(border-box);
     border-bottom: none;
-  }
-
-  #site-logo {
-    margin-top: 0.250em;
   }
 
   // Reinstate the floated nav bar on map pages

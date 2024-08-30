@@ -364,7 +364,7 @@ html.lazyload .js-lazyload {
 }
 
 // Gets rid of the homepage styling for pages like contact
-body.twothirdswidthpage .content {
+.container--sidebar .content {
   footer {
     background: none;
     margin: 0;

@@ -109,9 +109,7 @@ $mobile-sticky-sidebar-button-menu-image: "menu-black" !default;
   }
 }
 
-body.twothirdswidthpage {
-  h2 {
-    padding-top: 1em;
-    border-top: 1px solid $sticky-sidebar-bg-color;
-  }
+.sticky-sidebar--help + .content h2 {
+  padding-top: 1em;
+  border-top: 1px solid $sticky-sidebar-bg-color;
 }

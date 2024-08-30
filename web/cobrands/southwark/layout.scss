@@ -21,19 +21,19 @@ p, span {
   }
 }
 
-body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+body:not(.mappage) {
   #site-logo {
     background-size: $logo-width-desktop $logo-height-desktop;
     width: $logo-width-desktop;
     padding-top: $header-height-desktop;
   }
+}
 
-  #front-main {
-    padding-top: 40px;
+#front-main {
+  padding-top: 40px;
 
-    h2 {
-      max-width: 650px;
-    }
+  h2 {
+    max-width: 650px;
   }
 }
 

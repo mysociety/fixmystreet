@@ -39,16 +39,6 @@ h1, h2, h3 {
   margin: 1em 0;
 }
 
-.body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
-  #site-logo {
-    @media (min-width: 48em) {
-      height: 100px;
-      width: 249px;
-      background-size: 249px 82px;
-    }
-  }
-}
-
 #report-cta {
   border: 0;
   background-color: #fff;

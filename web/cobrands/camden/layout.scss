@@ -21,7 +21,7 @@ p, span {
   }
 }
 
-body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+body:not(.mappage) {
   #site-logo {
     background-size: $logo-width-desktop $logo-height-desktop;
     width: $logo-width-desktop;

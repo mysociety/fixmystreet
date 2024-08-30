@@ -229,6 +229,10 @@ ol.big-numbers > li:before {
     display: none;
 }
 
+.btn--primary {
+    @include btn-medium-primary;
+}
+
 body.mappage {
     h1 {
         font-weight: 600;
@@ -249,28 +253,8 @@ body.mappage {
     }
 }
 
-body.authpage, body.twothirdswidthpage {
-    .form-control {
-        outline-color: $westminster_yellow;
-    }
-
-    #form_sign_in {
-        input.btn {
-            @include btn-medium-primary
-        }
-    }
-}
-
-body.alertpage, body.authpage, body.twothirdswidthpage {
-    .form-txt-submit-box {
-        input.btn--primary {
-            @include btn-medium-primary
-        }
-    }
-
-    input.btn--primary {
-        @include btn-medium-primary
-    }
+.form-control {
+    outline-color: $westminster_yellow;
 }
 
 .westminster-cookie-banner {

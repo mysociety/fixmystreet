@@ -190,26 +190,26 @@ ol.big-numbers {
 dl {
   margin: 0;
   padding: 0;
+}
+dt {
+  font-size: 1em;
+  line-height: 1.5em;
+  font-weight: bold;
+}
+dd {
+  font-size: 1em;
+  line-height: 1.5em;
+  margin: 0 0 1em;
+}
+
+.sticky-sidebar--help + .content {
   dt {
-    font-size: 1em;
-    line-height: 1.5em;
-    font-weight: bold;
+    font-size: 1.125em;
+    margin-bottom: 0.5em;
   }
+
   dd {
-    font-size: 1em;
-    line-height: 1.5em;
-    margin: 0 0 1em;
-  }
-
-  .twothirdswidthpage & {
-    dt {
-      font-size: 1.125em;
-      margin-bottom: 0.5em;
-    }
-
-    dd {
-      margin: 0 0 1.2em;
-    }
+    margin: 0 0 1.2em;
   }
 }
 

@@ -38,8 +38,7 @@
     }
 }
 
-body.authpage, body.twothirdswidthpage, body.alertpage {
-
+body:not(.frontpage) {
     #site-header {
         .container:first-child {
             min-height: 0;
