@@ -91,13 +91,9 @@ a,
 }
 
 /* Front page */
-#front-main {
-  #postcodeForm {
-    div {
-      input#sub {
-        background: $green;
-      }
-    }
+.postcode-form-box {
+  input#sub {
+    background: $green;
   }
 }
 

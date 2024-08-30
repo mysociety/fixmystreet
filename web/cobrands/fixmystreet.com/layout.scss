@@ -132,28 +132,29 @@ body.mappage {
     h2 {
         font-family: $body-font;
     }
-    #postcodeForm {
-        div {
-            font-size: 1.3em;
-            width: 24em;
-            label {
-                font-family: $body-font;
-            }
-            input#pc {
-                color: #777;
-                font-size: 0.9em;
-                height: 2.6em;
-                &:focus {
-                    outline: 0;
-                }
-            }
-            input#sub {
-                font-size: 1.1em;
-                height: 2.4em;
-                font-family: $body-font;
-                font-weight: bold;
-            }
+}
+
+.postcode-form-box {
+    div {
+        font-size: 1.3em;
+        width: 24em;
+    }
+    label {
+        font-family: $body-font;
+    }
+    input#pc {
+        color: #777;
+        font-size: 0.9em;
+        height: 2.6em;
+        &:focus {
+            outline: 0;
         }
+    }
+    input#sub {
+        font-size: 1.1em;
+        height: 2.4em;
+        font-family: $body-font;
+        font-weight: bold;
     }
 }
 

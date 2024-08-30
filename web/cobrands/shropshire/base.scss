@@ -180,16 +180,16 @@ a:focus,
 .postcode-form-box {
     div {
         border: none;
+    }
 
-        input#pc {
-            @include shropshire-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
-            font-size: 1.25em;
-        }
+    input#pc {
+        @include shropshire-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+        font-size: 1.25em;
+    }
 
-        input#sub {
-            @include shropshire-button-primary();
-            font-size: 1.25em;
-        }
+    input#sub {
+        @include shropshire-button-primary();
+        font-size: 1.25em;
     }
 }
 

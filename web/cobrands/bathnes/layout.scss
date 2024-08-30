@@ -53,9 +53,6 @@
         font-weight: normal;
         font-size: 1.5em;
     }
-    .postcode-form-box {
-        padding-top: 0; // The UL above has a large margin bottom
-    }
 
     a {
         color: $primary_b;
@@ -82,6 +79,10 @@
             }
         }
     }
+}
+
+.postcode-form-box {
+    padding-top: 0; // The UL above has a large margin bottom
 }
 
 // Map page

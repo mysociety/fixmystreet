@@ -2757,13 +2757,7 @@ label .muted {
     font-family: $meta-font;
     font-size: 1.1875em;
     color: $front-main-h2-color;
-  }
-  .form-hint {
-    margin-bottom: 0.5em;
-    color: $form-hint-color;
-  }
-  p {
-    margin: 0.5em 0 0;
+    margin-top: 0;
   }
   a {
     text-decoration: $primary_link_decoration;
@@ -2787,30 +2781,34 @@ label .muted {
   label {
     margin-top: 0;
   }
+  .form-hint {
+    margin-bottom: 0.5em;
+    color: $form-hint-color;
+  }
   div {
     @include flex-container;
     @include flex-wrap(wrap);
     width: 100%;
     background: #fff;
     border: 1px solid $primary_b;
-    input#pc {
-      @include flex(86 0 auto);
-      width: 50%;
-      border: none;
-      background: none;
-      line-height: 1.5em;
-    }
-    input#sub {
-      border: none;
-      padding: 0.5em;
-      @include flex(14 0 auto);
-      background: #000;
-      color: #fff;
-      @include border-radius(0);
-      &:hover,
-      &:focus {
-        background: #333;
-      }
+  }
+  input#pc {
+    @include flex(86 0 auto);
+    width: 50%;
+    border: none;
+    background: none;
+    line-height: 1.5em;
+  }
+  input#sub {
+    border: none;
+    padding: 0.5em;
+    @include flex(14 0 auto);
+    background: #000;
+    color: #fff;
+    @include border-radius(0);
+    &:hover,
+    &:focus {
+      background: #333;
     }
   }
 

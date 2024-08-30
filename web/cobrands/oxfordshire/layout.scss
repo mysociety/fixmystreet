@@ -114,20 +114,19 @@ $mappage-header-height: 10em;
 
 .postcode-form-box {
     margin-right: 0;
-    overflow: visible;
 
     div {
         width: auto;
         max-width: 38em;
         margin: 0.75em 0 0 0;
+    }
 
-        input#pc {
-            max-width: 80%;
-        }
+    input#pc {
+        max-width: 80%;
+    }
 
-        input#sub {
-            padding: 0.6em 1.5em;
-        }
+    input#sub {
+        padding: 0.6em 1.5em;
     }
 }
 

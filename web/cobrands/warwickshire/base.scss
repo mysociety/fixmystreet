@@ -30,44 +30,44 @@
         margin-top: 0.5em;
         max-width: 24em;
         box-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.2);
+    }
 
-        input#pc {
-            font-family: inherit;
-            color: $primary_text;
+    input#pc {
+        font-family: inherit;
+        color: $primary_text;
 
-            &:focus {
-                outline: 3px solid $warwickshire-yellow;
-            }
+        &:focus {
+            outline: 3px solid $warwickshire-yellow;
         }
+    }
 
-        input#sub {
-            display: block;
-            height: auto;
-            width: 40px;
-            background-color: transparent;
+    input#sub {
+        display: block;
+        height: auto;
+        width: 40px;
+        background-color: transparent;
+        background-image: url("/cobrands/warwickshire/images/search.svg");
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        background-size: 20px 20px;
+
+        // TODO: I'd really prefer to do padding-top/overflow:hidden
+        // here, but that doesn't work with flex children. Maybe we
+        // should just update the markup to include the image directly,
+        // or wrap the text content in an element we can hide?
+        text-indent: -9000px;
+
+        &:hover,
+        &:focus {
+            background-color: $primary;
             background-image: url("/cobrands/warwickshire/images/search.svg");
             background-repeat: no-repeat;
             background-position: 50% 50%;
             background-size: 20px 20px;
+        }
 
-            // TODO: I'd really prefer to do padding-top/overflow:hidden
-            // here, but that doesn't work with flex children. Maybe we
-            // should just update the markup to include the image directly,
-            // or wrap the text content in an element we can hide?
-            text-indent: -9000px;
-
-            &:hover,
-            &:focus {
-                background-color: $primary;
-                background-image: url("/cobrands/warwickshire/images/search.svg");
-                background-repeat: no-repeat;
-                background-position: 50% 50%;
-                background-size: 20px 20px;
-            }
-
-            &:focus {
-                background-color: $warwickshire-yellow;
-            }
+        &:focus {
+            background-color: $warwickshire-yellow;
         }
     }
 }

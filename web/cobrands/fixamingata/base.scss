@@ -220,12 +220,12 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
     @include button-variant(#1a9ab8, #05617a, #05617a, #fff, #045369, #1a9ab8, #05617a, #fff);
 }
 
-#front-main #postcodeForm label {
+.postcode-form-box label {
     margin-bottom: 8px;
     padding-top: 0.5em;
 }
 
-.mobile #front-main #postcodeForm label {
+.mobile .postcode-form-box label {
     padding-top: 0;
 }
 

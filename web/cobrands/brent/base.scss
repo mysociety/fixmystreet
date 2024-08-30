@@ -232,46 +232,43 @@ dl dt {
 }
 
 .postcode-form-box {
+  $border-width:1px;
+  $max-height: 45px;
 
-  div {
-    $border-width:1px;
-    $max-height: 45px;
+  input#sub {
+    background: $link-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
+    border: $border-width solid $primary_b;
+    border-left: none;
+    max-height: $max-height;
+    padding: 0;
+    padding-top: $max-height;
+    height: 0;
+    overflow: hidden;
 
-    input#sub {
-      background: $link-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
-      border: $border-width solid $primary_b;
-      border-left: none;
-      max-height: $max-height;
-      padding: 0;
-      padding-top: $max-height;
-      height: 0;
-      overflow: hidden;
-
-      &:hover {
-        background: $link-hover-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
-        border-color: $link-hover-color;
-      }
-
-      &:focus {
-        background:$link-focus-color inline-image("../fixmystreet/images/search-black.svg") center no-repeat;
-        text-decoration-thickness: $link-text-decoration-thickness;
-        border: 2px solid $primary_b;
-        outline: none;
-        border-left: 0px;
-        $text-underline-offset: 5px;
-        box-shadow: none;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
+    &:hover {
+      background: $link-hover-color inline-image("../fixmystreet/images/search-white.svg") center no-repeat;
+      border-color: $link-hover-color;
     }
 
-    input#pc {
-      border: $border-width solid $primary_b !important;
-      background: $white !important;
-      &:focus {
-        outline:  2px solid $link-focus-color;
+    &:focus {
+      background:$link-focus-color inline-image("../fixmystreet/images/search-black.svg") center no-repeat;
+      text-decoration-thickness: $link-text-decoration-thickness;
+      border: 2px solid $primary_b;
+      outline: none;
+      border-left: 0px;
+      $text-underline-offset: 5px;
+      box-shadow: none;
+      &:hover {
+        text-decoration: underline;
       }
+    }
+  }
+
+  input#pc {
+    border: $border-width solid $primary_b !important;
+    background: $white !important;
+    &:focus {
+      outline:  2px solid $link-focus-color;
     }
   }
 }

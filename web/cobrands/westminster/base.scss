@@ -45,42 +45,43 @@ body.frontpage {
     div {
         position: relative;
         border: none;
+    }
 
-        input#pc {
-            box-sizing: border-box;
-            padding: 10px 22px;
-            border: 1px solid $form-border;
-            border-radius: 4.5px;
-            background: #fff;
+    input#pc {
+        box-sizing: border-box;
+        padding: 10px 22px;
+        border: 1px solid $form-border;
+        border-radius: 4.5px;
+        background: #fff;
 
-            &:focus {
-                box-shadow: 0 0 0 3px $westminster-yellow;
-                outline: 0;
-            }
-        }
-
-        input#sub {
-            width: 40px;
-            height: 46px;
-            padding: 0 0 0 50px; // So value 'Go' doesn't display inside search icon
-            overflow: hidden;
-            @include flex(0 0 auto);
-            background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50% 50%;
-            background-size: 42px 32px;
-            position: absolute;
-            border-top-right-radius: 4.5px;
-            border-bottom-right-radius: 4.5px;
-            top: 0;
-            right: 0;
-
-            &:hover,
-            &:focus {
-                background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50%
-                    50%;
-                background-size: 42px 32px;
-            }
+        &:focus {
+            box-shadow: 0 0 0 3px $westminster-yellow;
+            outline: 0;
         }
     }
+
+    input#sub {
+        width: 40px;
+        height: 46px;
+        padding: 0 0 0 50px; // So value 'Go' doesn't display inside search icon
+        overflow: hidden;
+        @include flex(0 0 auto);
+        background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50% 50%;
+        background-size: 42px 32px;
+        position: absolute;
+        border-top-right-radius: 4.5px;
+        border-bottom-right-radius: 4.5px;
+        top: 0;
+        right: 0;
+
+        &:hover,
+        &:focus {
+            background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50%
+                50%;
+            background-size: 42px 32px;
+        }
+    }
+
     label {
         font-size: 1.1em;
         font-weight: 600;

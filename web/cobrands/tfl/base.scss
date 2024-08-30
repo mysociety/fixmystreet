@@ -115,16 +115,16 @@ h3 {
     div {
         display: block;
         border: 0;
-        input#sub {
-            @include tflbutton;
-            flex: unset;
-            margin-top: 1em;
-        }
-        input#pc {
-            width: 100%;
-            flex: unset;
-            @include tflfield;
-        }
+    }
+    input#sub {
+        @include tflbutton;
+        flex: unset;
+        margin-top: 1em;
+    }
+    input#pc {
+        width: 100%;
+        flex: unset;
+        @include tflfield;
     } 
 }
 

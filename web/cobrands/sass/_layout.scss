@@ -819,13 +819,8 @@ textarea.form-error {
       padding: 0;
     }
   }
-  .form-hint {
-    margin-top: -0.25em;
-    color: $form-hint-color-desktop;
-  }
   h2 {
     font-style:normal;
-    margin:0;
     color: $front-main-h2-color-desktop;
   }
 }
@@ -840,9 +835,10 @@ textarea.form-error {
     padding: 0;
     margin: 1em auto 0;
   }
-  overflow:hidden;
-  label {
-    margin:0.5em 0;
+  overflow: visible; // Doesn't cover the outline when focusing elements
+  .form-hint {
+    margin-top: -0.25em;
+    color: $form-hint-color-desktop;
   }
   div {
     width:20em;
@@ -911,6 +907,7 @@ textarea.form-error {
 // Offline reporting UI
 #front-main {
   .draft-info-box p {
+      margin: 0.5em 0 0 0;
       background-color: white;
       border: solid 2px #ff3333;
   }

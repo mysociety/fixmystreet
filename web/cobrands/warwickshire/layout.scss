@@ -19,14 +19,12 @@
 }
 
 .postcode-form-box {
-    overflow: visible;
-
     div {
         width: auto;
         max-width: 38em;
-        input#pc {
-            max-width: none;
-        }
+    }
+    input#pc {
+        max-width: none;
     }
 
     label {

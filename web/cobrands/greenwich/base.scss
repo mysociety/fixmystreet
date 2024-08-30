@@ -63,10 +63,8 @@ body:not(.frontpage) {
 
 .postcode-form-box {
     margin-top: 1em;
-    div {
-        input#sub {
-            background: $greenwich_red;
-        }
+    input#sub {
+        background: $greenwich_red;
     }
 }
 

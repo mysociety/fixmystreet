@@ -140,12 +140,14 @@ body.frontpage {
     }
 }
 
-.postcode-form-box div {
+.postcode-form-box {
+  div {
     border-color: $dark_blue;
-    input#pc {
-      max-width: none;
-    }
   }
+  input#pc {
+    max-width: none;
+  }
+}
 
 .tablewrapper {
     padding: 1em;

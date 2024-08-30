@@ -122,26 +122,26 @@ a,
     border-color: $white;
 }
 
-#front-main {
-    #postcodeForm {
-        div {
-            border: none;
-            background: transparent;
-
-            input#pc {
-                @include kingston-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
-                font-size: 1.25em;
-                background: #fff;
-            }
-
-            input#sub {
-                @include kingston-button-primary();
-                border-radius: 5px;
-                font-size: 1.25em;
-            }
-        }
+.postcode-form-box {
+    div {
+        border: none;
+        background: transparent;
     }
 
+    input#pc {
+        @include kingston-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+        font-size: 1.25em;
+        background: #fff;
+    }
+
+    input#sub {
+        @include kingston-button-primary();
+        border-radius: 5px;
+        font-size: 1.25em;
+    }
+}
+
+#front-main {
     h2 {
         font-style: inherit;
     }

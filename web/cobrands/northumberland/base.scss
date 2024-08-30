@@ -96,17 +96,15 @@ a#geolocate_link {
 
 /* FRONTPAGE */
 .postcode-form-box {
-    div {
-        input#sub {
-            border: $button-border-width solid $button-primary-text;
-            font-family: $body-font;
-            font-weight: 600;
-            background-color: $button-primary-text;
+    input#sub {
+        border: $button-border-width solid $button-primary-text;
+        font-family: $body-font;
+        font-weight: 600;
+        background-color: $button-primary-text;
 
-            &:hover {
-                background-color: $primary_text;
-                color: $button-primary-text;
-            }
+        &:hover {
+            background-color: $primary_text;
+            color: $button-primary-text;
         }
     }
 }

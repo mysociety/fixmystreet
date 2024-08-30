@@ -64,15 +64,13 @@ p.form-error {
 }
 
 .postcode-form-box {
-    overflow: visible;
-
     div {
         width: 100%;
         max-width: 30em;
+    }
 
-        input#sub {
-            padding: 0.5em 1.5em;
-        }
+    input#sub {
+        padding: 0.5em 1.5em;
     }
 }
 

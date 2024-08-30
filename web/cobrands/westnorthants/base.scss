@@ -22,10 +22,12 @@
 }
 
 // FRONT PAGE
-.postcode-form-box div {
-  border-width: 2px;
-  border-radius: 6px;
-  overflow: hidden;
+.postcode-form-box {
+  div {
+    border-width: 2px;
+    border-radius: 6px;
+    overflow: hidden;
+  }
 
   input#sub {
     background: $primary;

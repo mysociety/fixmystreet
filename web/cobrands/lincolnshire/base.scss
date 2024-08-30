@@ -50,8 +50,10 @@ h1, h2, h3 {
   }
 }
 
-.postcode-form-box div {
-  border-color: $lincs-border;
+.postcode-form-box {
+  div {
+    border-color: $lincs-border;
+  }
   input#sub {
     background-color: $lincs-link;
     font-family: 'Roboto', 'Arial', sans-serif;
