@@ -452,10 +452,6 @@ sub dashboard_export_problems_add_columns {
 
     my @contacts = $csv->body->contacts->order_by('category')->all;
     my %extra_columns;
-    if (@{$csv->category}) {
-        my %picked_cats = map { $_ => 1} @{$csv->category};
-        @contacts = grep { $picked_cats{$_->category} } @contacts;
-    }
     foreach my $contact (@contacts) {
         foreach (@{$contact->get_metadata_for_storage}) {
             next if $_->{code} eq 'safety_critical';

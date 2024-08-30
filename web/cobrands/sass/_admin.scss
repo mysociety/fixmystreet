@@ -68,6 +68,13 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     }
 }
 
+// Make sure config tables can't overflow
+.admin--config {
+    td + td {
+        overflow-wrap: anywhere;
+    }
+}
+
 .js #admin_contacts tr.is-deleted {
   display: none;
 }

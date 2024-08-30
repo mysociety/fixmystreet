@@ -1,7 +1,7 @@
-[% INCLUDE 'header.html', title => loc('Vanliga Frågor'), bodyclass => 'twothirdswidthpage' %]
+[% INCLUDE 'header.html', title = loc('Vanliga Frågor'), bodyclass = 'twothirdswidthpage' sidebar='sidebar' %]
 
+[% BLOCK sidebar %]
 [% INCLUDE 'about/_sticky-button-content-navbar.html' %]
-
 <div class="sticky-sidebar">
     <aside>
         <ul>
@@ -13,7 +13,7 @@
         </ul>
     </aside>
 </div>
-
+[% END %]
 
 <h1>Sekretess och kakor</h1>
 <p><strong>Vår användning av din information och vad du behöver veta.</strong></p>

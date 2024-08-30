@@ -8,12 +8,14 @@
 [% INCLUDE header.html
     title = 'Promote FixMyStreet with our free goodies: posters, flyers, and kids activity packs'
     bodyclass = 'twothirdswidthpage goodies'
+    sidebar = 'sidebar'
 %]
 
 [%
     badge = '<a href="https://www.fixmystreet.com/"> <img src="https://www.fixmystreet.com/i/fms-badge.jpeg" alt="FixMyStreet - report, view or discuss local problems" border="0"></a>'
 %]
 
+[% BLOCK sidebar %]
 <div class="sticky-sidebar">
     <aside>
         <ul>
@@ -27,6 +29,7 @@
         </ul>
     </aside>
 </div>
+[% END %]
 
 <h1 id="goodies">Promotional material</h1>
 

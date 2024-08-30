@@ -20,7 +20,7 @@ has body => ( is => 'ro', isa => Maybe[InstanceOf['FixMyStreet::DB::Result::Body
 has wards => ( is => 'ro', isa => ArrayRef[Int], default => sub { [] } );
 has category => ( is => 'ro', isa => ArrayRef[Str], default => sub { [] } );
 has state => ( is => 'ro', isa => Maybe[Str] );
-has start_date => ( is => 'ro',
+has start_date => ( is => 'rwp',
     isa => Str,
     default => sub {
         my $days30 = DateTime->now(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(days => 30);
@@ -268,10 +268,10 @@ Generates a CSV output to a file handler provided
 =cut
 
 sub generate_csv {
-    my ($self, $handle) = @_;
+    my ($self, $handle, $exclude_header) = @_;
 
     my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
-    $csv->print($handle, $self->csv_headers);
+    $csv->print($handle, $self->csv_headers) unless $exclude_header;
 
     my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;
     my $closed_states = FixMyStreet::DB::Result::Problem->closed_states;
@@ -460,9 +460,17 @@ sub filter_premade_csv {
         $state_column = 'DBState';
     }
 
+    my $add_on_today = 0;
+    my $today = DateTime->today(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone);
+    my $end_date = $self->end_date;
+    if (!$end_date || $end_date ge $today->strftime('%Y-%m-%d')) {
+        $add_on_today = 1;
+        $end_date = $today->subtract(days => 1)->strftime('%Y-%m-%d');
+    }
+
     my $range = FixMyStreet::DateRange->new(
         start_date => $self->start_date,
-        end_date => $self->end_date,
+        end_date => $end_date,
         formatter => FixMyStreet::DB->schema->storage->datetime_parser,
     );
 
@@ -510,6 +518,14 @@ sub filter_premade_csv {
         # fields etc have already been included. Exclude the first two columns,
         # Areas and Roles, that were only included for the filtering above
         $csv->print($handle, [ (@{$row}{@$arr})[$first_column..@$arr-$last_column-1] ]);
+    }
+
+    if ($add_on_today) {
+        # Add in any information from today the 'live' way
+        $self->_set_start_date($today->strftime('%Y-%m-%d'));
+        $self->construct_rs_filter;
+        $self->csv_parameters;
+        $self->generate_csv($handle, 1);
     }
 }
 
