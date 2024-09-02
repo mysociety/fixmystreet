@@ -19,8 +19,10 @@
 <h1>[% title %]</h1>
 
 [% IF photos.size %]
+<script type="module" src="[% version('/js/overflow-focus-scroll.js') %]"></script>
 <div class="alerts__nearby-activity">
     <h2>[% loc('Photos of recent nearby reports') %]</h2>
+    <overflow-focus-scroll>
     <div class="alerts__nearby-activity__photos">
       [% FOREACH p IN photos %]
         <a href="/report/[% p.id %]">
@@ -29,6 +31,7 @@
         </a>
       [% END %]
     </div>
+    </overflow-focus-scroll>
 </div>
 [% END %]
 
