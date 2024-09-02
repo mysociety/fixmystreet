@@ -20,6 +20,7 @@ IF bodyclass.match('frontpage');
 ELSIF bodyclass.match('alertpage');
     scripts.push(
         version('/js/geolocation.js'),
+        version('/cobrands/fixmystreet/img_gallery_keyboard_view.js'),
     );
 ELSIF bodyclass.match('offlinepage');
     scripts.push(
