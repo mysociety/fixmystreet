@@ -479,12 +479,18 @@ FixMyStreet::override_config {
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers', email => 'tfl@example.org');
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers - Cleaning', email => 'tfl@example.org');
         $mech->create_contact_ok(body_id => $tfl->id, category => 'River Piers Damage doors and glass', email => 'tfl@example.org');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'Bus Station Cleaning - General', email => 'tfl@example.org');
+        $mech->create_contact_ok(body_id => $tfl->id, category => 'Graffiti / Flyposting (Response Desk Buses to Action)', email => 'tfl@example.org');
+
         $mech->create_contact_ok(body_id => $tfl->id, category => 'Sweeping', email => 'tfl@example.org');
         ok $mech->host('brent.fixmystreet.com'), 'set host';
         my $json = $mech->get_ok_json('/report/new/ajax?latitude=51.55904&longitude=-0.28168');
         is $json->{by_category}->{"River Piers"}, undef, "Brent doesn't have River Piers category";
         is $json->{by_category}->{"River Piers - Cleaning"}, undef, "Brent doesn't have River Piers with hyphen and extra text category";
         is $json->{by_category}->{"River Piers Damage doors and glass"}, undef, "Brent doesn't have River Piers with extra text category";
+        is $json->{by_category}->{"Bus Station Cleaning - General"}, undef, "Brent doesn't have Bus Station category beginning with 'Bus Station'";
+        is $json->{by_category}->{"Graffiti / Flyposting (Response Desk Buses to Action)"}, undef, "Brent doesn't have Bus Station category including 'Response Desk Buses to Action'";
+
     };
 
     subtest "has the correct pin colours" => sub {
