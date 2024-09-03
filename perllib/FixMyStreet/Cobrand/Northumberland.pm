@@ -229,4 +229,21 @@ sub should_skip_sending_update {
 
 =cut
 
+=head2 open311_munge_update_params
+
+We pass a report's 'detailed_information' (from its
+extra_metadata) to Alloy, as an 'extra_details' attribute.
+
+=cut
+
+sub open311_munge_update_params {
+    my ( $self, $params, $comment, undef ) = @_;
+
+    my $p = $comment->problem;
+    my $detailed_information
+        = $p->get_extra_metadata('detailed_information') || '';
+
+    $params->{extra_details} = $detailed_information;
+}
+
 1;
