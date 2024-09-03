@@ -39,13 +39,13 @@ $content-background-desktop: #fff !default;
     top: -2em;
 }
 
-//hacks for desk/mob only stuff
-.desk-only {
+// Show .desk-width-only and hide .mob-width-only if this CSS is loaded.
+.desk-width-only {
     display: block;
 }
-.mob-only {
-    // Override `display: block` etc if other classes are defined
-    display: none !important ;
+.mob-width-only {
+    // Override `display: block` etc if other classes are defined.
+    display: none !important;
 }
 
 .js-back { display: none; }

@@ -1194,8 +1194,10 @@ sub process_report : Private {
         $report->service($service);
     } elsif ($c->get_param('submit_register_mobile')) {
         $report->service('mobile');
+    } elsif ($c->get_param('submit_register_pwa')) {
+        $report->service('pwa');
     } elsif ($c->get_param('submit_register')) {
-        $report->service('desktop');
+        $report->service('browser');
     }
 
     # set these straight from the params

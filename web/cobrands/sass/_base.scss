@@ -2713,9 +2713,47 @@ label .muted {
   color: #666;
 }
 
-// this is a bit of a hack to get some differentation between desk and mobile
-.desk-only {
-  display: none;
+/* Conditional display classes */
+/*
+ * One of desk-only, mob-only and pwa-only will be displayed depending on which platform we think
+ * the device is.
+ * Really, desk-only means 'browser' here but the name is kept for legacy reasons.
+*/
+
+
+// Hide all conditional display classes by default.
+.desk-only,
+.mob-only,
+.mob-only,
+.desk-width-only,
+.mob-width-only {
+  // Override `display: block` etc if other classes are defined.
+  display: none !important;
+}
+
+// Show .pwa-only when display mode is 'minimal-ui'
+@media (display-mode: minimal-ui) {
+  .pwa-only {
+    display: block;
+  }
+}
+// Show .mob-only if the display is no wider than 48em.
+@media not (display-mode: minimal-ui) and not (min-width: 48em) {
+  .mob-only {
+    display: block;
+  }
+}
+// Otherwise show .desk-only, if screen.
+@media screen and not (display-mode: minimal-ui) and (min-width: 48em) {
+  .desk-only {
+    display: block;
+  }
+}
+
+// Show .mob-witdh-only.
+// Overriden by layout.css if loaded.
+.mob-width-only {
+  display:block
 }
 
 // hide anything with this class if js is working
