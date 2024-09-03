@@ -175,9 +175,11 @@ a {
 }
 
 #hart_hants_note {
-    background-color: lighten($hart_primary, 30%);
+    background-color: $hart_primary;
     padding: 0.5em;
-    font-size: 0.8em;
+    font-size: 1em;
+    color: #fff;
+    font-weight: bold;
 }
 
 // Footer
@@ -449,3 +451,12 @@ a.bbd-web-chat {
   height: 1px;
   word-wrap: normal;
 }
+
+.site-message {
+    background-color: #FBA553;
+    color: #000;
+    border: none;
+    p {
+        font-weight: bold;
+    }
+  }
