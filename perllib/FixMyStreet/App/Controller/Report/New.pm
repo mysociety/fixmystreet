@@ -1198,6 +1198,10 @@ sub process_report : Private {
         $report->service('desktop');
     }
 
+    if (($report->service eq 'mobile' || $report->service eq 'desktop') && $c->get_param('probably_pwa')) {
+        $report->service($report->service  . " (probably PWA)");
+    }
+
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
     $report->set_extra_metadata(group => $params{group}) if $params{group};

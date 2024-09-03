@@ -476,6 +476,11 @@ $.extend(fixmystreet.set_up, {
         submitHandler: function(form) {
             if (form.submit_problem) {
                 $('input[type=submit]', form).prop("disabled", true);
+                if (window.matchMedia('(display-mode: minimal-ui)').matches) {
+                    $('.enabled-if-probably-pwa', form).prop("disabled", false);
+                } else {
+                    $('.enabled-if-probably-pwa', form).prop("disabled", true);
+                }
             }
             form.submit();
         },
