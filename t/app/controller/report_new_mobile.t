@@ -57,6 +57,7 @@ for my $test (
     { param => 'ios', service => 'iOS' },
     { param => 'android', service => 'Android' },
     { param => 'unknown', service => 'mobile' },
+    { param => 'no pwa param', service => 'PWA' },
     { param => undef, service => 'mobile' },
 ) {
 
@@ -66,6 +67,10 @@ for my $test (
         $mech->log_in_ok($user->email);
 
         my $url = $test->{param} ? "/?pwa=" . $test->{param} : "/";
+        if ($test->{param} && $test->{param} eq 'no pwa param') {
+            $url = '/?pwa';
+        }
+
         $mech->get_ok($url);
 
         $mech->get_ok('/around');
