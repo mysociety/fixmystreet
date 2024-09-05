@@ -2907,19 +2907,6 @@ a#geolocate_link {
   }
 }
 
-#alerts {
-  ul {
-    margin-bottom: 1em;
-  }
-  li {
-    padding: 0em;
-    margin-bottom: 0.5em;
-  }
-  .a {
-    background: #f6f6f6;
-  }
-}
-
 .alerts-rss-link {
   position: relative;
   z-index: 1; // stack in front of the position:relative .label-containing-checkbox

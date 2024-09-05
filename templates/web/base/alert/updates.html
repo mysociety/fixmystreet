@@ -1,5 +1,5 @@
-[% title = loc('Local RSS feeds and email alerts') %]
-[% INCLUDE 'header.html' %]
+[% SET bodyclass = 'alertpage' %]
+[% INCLUDE 'header.html' title = loc('Local RSS feeds and email alerts') %]
 [% INCLUDE 'errors.html' %]
 [% permissions = {
     contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", problem.bodies_str_ids)
