@@ -169,7 +169,7 @@ a#geolocate_link,
   padding-left: 75px;
   font-size: 1rem;
 
-  @include svg-background-image('/cobrands/surrey/images/info-circle');
+  background-image: url('/cobrands/surrey/images/info-circle.svg');
   background-repeat: no-repeat;
   background-size: 35px;
   background-position: left 25px top 20px;
@@ -179,7 +179,7 @@ a#geolocate_link,
   }
 
   &.error-message {
-    @include svg-background-image('/cobrands/surrey/images/info-circle-red');
+    background-image: url('/cobrands/surrey/images/info-circle-red.svg');
 
     border: 0.3571428571rem solid $surrey_red;
   }
