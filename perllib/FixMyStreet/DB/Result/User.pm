@@ -133,6 +133,18 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:03:44
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FturQPxHq1lLoflaefwmyg
 
+__PACKAGE__->has_many(
+  active_user_planned_reports => "FixMyStreet::DB::Result::UserPlannedReport",
+  sub {
+      my $args = shift;
+      return {
+          "$args->{foreign_alias}.user_id" => { -ident => "$args->{self_alias}.id" },
+          "$args->{foreign_alias}.removed" => undef,
+      };
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 # These are not fully unique constraints (they only are when the *_verified
 # is true), but this is managed in ResultSet::User's find() wrapper.
 __PACKAGE__->add_unique_constraint("users_email_verified_key", ["email", "email_verified"]);
@@ -649,19 +661,10 @@ sub active_planned_reports {
     $self->planned_reports->search({ removed => undef });
 }
 
-has active_user_planned_reports => (
-    is => 'ro',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        [ $self->user_planned_reports->search({ removed => undef })->all ];
-    },
-);
-
 sub is_planned_report {
     my ($self, $problem) = @_;
     my $id = $problem->id;
-    return scalar grep { $_->report_id == $id } @{$self->active_user_planned_reports};
+    return scalar grep { $_->report_id == $id } $self->active_user_planned_reports->all;
 }
 
 has categories => (
