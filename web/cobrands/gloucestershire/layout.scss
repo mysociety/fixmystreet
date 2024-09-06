@@ -48,13 +48,14 @@ body.mappage {
 #front-main {
   margin: 0 0 45px 0;
   padding: 5em 1em 5em 1em;
-  #postcodeForm {
-    div {
-      margin: 0;
-    }
-  }
   h1 {
     font-size: 2.5em;
+  }
+}
+
+.postcode-form-box {
+  div {
+    margin: 0;
   }
 }
 
@@ -99,7 +100,7 @@ footer.council-footer {
     &--logos {
         .council-logo {
             display: block;
-            @include svg-background-image("/cobrands/gloucestershire/images/gloucestershire-logo-white");
+            background-image: url("/cobrands/gloucestershire/images/gloucestershire-logo-white.svg");
             background-size: 274px 42px;
             background-repeat: no-repeat;
             background-position: top left;

@@ -119,7 +119,7 @@ a {
 .btn, 
 .btn--primary,
 .btn-secondary,
-#front-main #postcodeForm div input#sub {
+.postcode-form-box input#sub {
   @include border-radius($button-border-radius);
   @extend .h6;
 }
@@ -134,7 +134,7 @@ a {
 }
 
 // Green button not the same as .btn--primary
-.postcode-form-box div input#sub {
+.postcode-form-box input#sub {
   @include button-variant($bg-top: $primary, $bg-bottom: $primary, $border: $primary, $text: $primary_text, $hover-bg-bottom: $primary_b, $hover-bg-top: $primary_b, $hover-border: $primary_text, $hover-text: $primary_text);
 }
 
@@ -276,17 +276,17 @@ a {
               }
   
               &.social-media-link-icon--facebook > span:not(.extlink) {
-                  @include svg-background-image('/cobrands/hart//images/social-fb');
+                  background-image: url("/cobrands/hart//images/social-fb.svg");
                   width: 16px;
               }
   
               &.social-media-link-icon--twitter > span:not(.extlink) {
-                  @include svg-background-image('/cobrands/hart//images/social-tw');
+                  background-image: url("/cobrands/hart//images/social-tw.svg");
                   width: 29px;
               }
   
               &.social-media-link-icon--youtube > span:not(.extlink) {
-                  @include svg-background-image('/cobrands/hart//images/social-yt');
+                  background-image: url("/cobrands/hart//images/social-yt.svg");
                   width: 33px;
               }
   
@@ -302,7 +302,7 @@ a {
                   height: 15px;
                   background-size: contain;
                   background-repeat: no-repeat;
-                  @include svg-background-image('/cobrands/hart//images/external-link');
+                  background-image: url("/cobrands/hart//images/external-link.svg");
               }
           }
       }
@@ -363,7 +363,7 @@ a {
           a {
               display: block;
               width: auto;
-              @include svg-background-image('/cobrands/hart/images/logo');
+              background-image: url("/cobrands/hart/images/logo.svg");
               background-size: contain;
               background-repeat: no-repeat;
               width: 71px;

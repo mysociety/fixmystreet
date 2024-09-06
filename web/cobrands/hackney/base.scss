@@ -43,29 +43,29 @@
       border: none;
       position: relative;
       box-shadow: 1px 1px 5px 1px rgba(104, 104, 104, 0.4);
+  }
 
-      input#pc {
-          box-sizing: border-box;
-          padding: 10px 22px;
-      }
+  input#pc {
+      box-sizing: border-box;
+      padding: 10px 22px;
+  }
 
-      input#sub {
-          width: 0;
-          padding-left: 50px;
-          overflow: hidden;
-          @include flex(0 0 auto);
-          background: $black url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
+  input#sub {
+      width: 0;
+      padding-left: 50px;
+      overflow: hidden;
+      @include flex(0 0 auto);
+      background: $black url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
+      background-size: 25px 25px;
+      color: $black;
+      &:hover,
+      &:focus {
+          background: $dark-green url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
           background-size: 25px 25px;
-          color: $black;
-          &:hover,
-          &:focus {
-              background: $dark-green url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
-              background-size: 25px 25px;
-              color: $dark_green;
-          }
-          &:focus {
-              outline: 4px solid $yellow;
-          }
+          color: $dark_green;
+      }
+      &:focus {
+          outline: 4px solid $yellow;
       }
   }
 }

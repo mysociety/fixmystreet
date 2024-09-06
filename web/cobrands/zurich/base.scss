@@ -83,8 +83,10 @@
 //  a percentage width on input#pc breaks iPhone landscape/portrait switching
 //  and the other changes make this fix pretty
 
-.postcode-form-box div {
-  border-color:transparent;
+.postcode-form-box {
+  div {
+    border-color:transparent;
+  }
   input#pc {
     max-width: 15em;
     background-color: #fff;

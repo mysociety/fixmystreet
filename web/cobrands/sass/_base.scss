@@ -190,26 +190,26 @@ ol.big-numbers {
 dl {
   margin: 0;
   padding: 0;
+}
+dt {
+  font-size: 1em;
+  line-height: 1.5em;
+  font-weight: bold;
+}
+dd {
+  font-size: 1em;
+  line-height: 1.5em;
+  margin: 0 0 1em;
+}
+
+.sticky-sidebar--help + .content {
   dt {
-    font-size: 1em;
-    line-height: 1.5em;
-    font-weight: bold;
+    font-size: 1.125em;
+    margin-bottom: 0.5em;
   }
+
   dd {
-    font-size: 1em;
-    line-height: 1.5em;
-    margin: 0 0 1em;
-  }
-
-  .twothirdswidthpage & {
-    dt {
-      font-size: 1.125em;
-      margin-bottom: 0.5em;
-    }
-
-    dd {
-      margin: 0 0 1.2em;
-    }
+    margin: 0 0 1.2em;
   }
 }
 
@@ -472,7 +472,7 @@ select.form-control {
     width: 16px;
     height: 18px;
     background-repeat: no-repeat;
-    @include svg-background-image("/cobrands/fixmystreet/images/padlock");
+    background-image: url("/cobrands/fixmystreet/images/padlock.svg");
     background-size: 16px 18px;
     margin-#{$right}: 0.5em;
   }
@@ -592,11 +592,11 @@ small.or:after {
 }
 
 .change_location__map {
-  @include svg-background-image("/cobrands/fixmystreet/images/change-location-arrow");
+  background-image: url("/cobrands/fixmystreet/images/change-location-arrow.svg");
 }
 
 .change_location__search {
-  @include svg-background-image("/cobrands/fixmystreet/images/change-location-search");
+  background-image: url("/cobrands/fixmystreet/images/change-location-search.svg");
 }
 
 // Space between the .change_location list and any
@@ -817,7 +817,7 @@ ul.error {
   background-position: 0 50%;
   background-repeat: no-repeat;
   background-size: 175px 35px;
-  @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
+  background-image: url("/cobrands/fixmystreet/images/site-logo.svg");
   text-indent: -999999px;
 }
 
@@ -990,7 +990,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
       vertical-align: -0.25em;
       background-size: 112px 16px;
       background-repeat: no-repeat;
-      @include svg-background-image("/cobrands/fixmystreet/images/report-tools");
+      background-image: url("/cobrands/fixmystreet/images/report-tools.svg");
     }
 
     &.abuse:after {
@@ -1191,7 +1191,7 @@ input.final-submit {
     height: 16px;
     background-repeat: no-repeat;
     background-size: 112px 16px;
-    @include svg-background-image("/cobrands/fixmystreet/images/button-icons");
+    background-image: url("/cobrands/fixmystreet/images/button-icons.svg");
     margin-#{$right}: 0.5em;
     vertical-align: -0.1em; // vertically centre icon in button
   }
@@ -1463,31 +1463,31 @@ input.final-submit {
 
 .item-list__item__shortlist-add {
   @extend %list-item-action-button;
-  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-inactive");
+  background-image: url("/cobrands/fixmystreet/images/icon-shortlist-inactive.svg");
 
   &:hover,
   &:focus {
-    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-inactive-hover");
+    background-image: url("/cobrands/fixmystreet/images/icon-shortlist-inactive-hover.svg");
   }
 }
 
 .item-list__item__shortlist-remove {
   @extend %list-item-action-button;
-  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-active");
+  background-image: url("/cobrands/fixmystreet/images/icon-shortlist-active.svg");
 
   &:hover,
   &:focus {
-    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-active-hover");
+    background-image: url("/cobrands/fixmystreet/images/icon-shortlist-active-hover.svg");
   }
 }
 
 .item-list__item__shortlist-take {
   @extend %list-item-action-button;
-  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-taken");
+  background-image: url("/cobrands/fixmystreet/images/icon-shortlist-taken.svg");
 
   &:hover,
   &:focus {
-    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-taken-hover");
+    background-image: url("/cobrands/fixmystreet/images/icon-shortlist-taken-hover.svg");
   }
 }
 
@@ -1497,18 +1497,18 @@ input.final-submit {
   padding-top: 24px; // half the normal height, because shorter icon
   background-size: 24px 14px;
 
-  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-up");
+  background-image: url("/cobrands/fixmystreet/images/icon-shortlist-up.svg");
 
   &:hover,
   &:focus {
-    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-up-hover");
+    background-image: url("/cobrands/fixmystreet/images/icon-shortlist-up-hover.svg");
   }
 
   &[disabled] {
     opacity: 0.5;
     cursor: default;
 
-    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-up");
+    background-image: url("/cobrands/fixmystreet/images/icon-shortlist-up.svg");
   }
 }
 
@@ -1519,18 +1519,18 @@ input.final-submit {
   padding-top: 24px; // half the normal height, because shorter icon
   background-size: 24px 14px;
 
-  @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-down");
+  background-image: url("/cobrands/fixmystreet/images/icon-shortlist-down.svg");
 
   &:hover,
   &:focus {
-    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-down-hover");
+    background-image: url("/cobrands/fixmystreet/images/icon-shortlist-down-hover.svg");
   }
 
   &[disabled] {
     opacity: 0.5;
     cursor: default;
 
-    @include svg-background-image("/cobrands/fixmystreet/images/icon-shortlist-down");
+    background-image: url("/cobrands/fixmystreet/images/icon-shortlist-down.svg");
   }
 }
 
@@ -1751,7 +1751,7 @@ input.final-submit {
       background-repeat: no-repeat;
       background-position: 50% 50%;
       background-size: 16px 16px;
-      @include svg-background-image("/cobrands/fixmystreet/images/magnify");
+      background-image: url("/cobrands/fixmystreet/images/magnify.svg");
     }
 
     &:hover span {
@@ -1793,7 +1793,7 @@ input.final-submit {
     vertical-align: -0.15em;
     background-size: 112px 16px;
     background-repeat: no-repeat;
-    @include svg-background-image("/cobrands/fixmystreet/images/report-tools");
+    background-image: url("/cobrands/fixmystreet/images/report-tools.svg");
     background-position: flip(0 0, -16px 0);
   }
 }
@@ -1883,7 +1883,7 @@ input.final-submit {
   background-position: 1em 50%;
   background-repeat: no-repeat;
   background-size: 2em 2em;
-  @include svg-background-image("/cobrands/fixmystreet/images/shortlist");
+  background-image: url("/cobrands/fixmystreet/images/shortlist.svg");
 
   h3 {
     margin: 0;
@@ -2143,22 +2143,22 @@ html.js #map .noscript {
 
 
   .map-layer-toggle {
-    @include svg-background-image("/cobrands/fixmystreet/images/map-layer-aerial");
+    background-image: url("/cobrands/fixmystreet/images/map-layer-aerial.svg");
   }
 
   .map-layer-toggle.roads {
-    @include svg-background-image("/cobrands/fixmystreet/images/map-layer-roads");
+    background-image: url("/cobrands/fixmystreet/images/map-layer-roads.svg");
   }
 
   .map-pins-toggle {
-    @include svg-background-image("/cobrands/fixmystreet/images/hide-pins-link");
+    background-image: url("/cobrands/fixmystreet/images/hide-pins-link.svg");
   }
 
   .js-recentre-map {
-    @include svg-background-image("/cobrands/fixmystreet/images/geolocate-link-icon");
+    background-image: url("/cobrands/fixmystreet/images/geolocate-link-icon.svg");
 
     &.loading {
-      @include svg-background-image("/cobrands/fixmystreet/images/geolocate-link-loading");
+      background-image: url("/cobrands/fixmystreet/images/geolocate-link-loading.svg");
     }
   }
 }
@@ -2171,7 +2171,7 @@ html.js #map .noscript {
   margin-#{$left}: 8px;
   vertical-align: -0.1em;
   background-size: 108px 12px;
-  @include svg-background-image("/cobrands/fixmystreet/images/map-tools");
+  background-image: url("/cobrands/fixmystreet/images/map-tools.svg");
 }
 
 // Generic component for presenting a semi-transparent black toolbar
@@ -2301,7 +2301,7 @@ html.js #map .noscript {
     background-size: 106px 106px;
     background-position: center center;
     background-repeat: no-repeat;
-    @include svg-background-image("/i/crosshairs");
+    background-image: url("/i/crosshairs.svg");
     .map-with-crosshairs1 &, .map-with-crosshairs2 &, .map-with-crosshairs3 & {
         display: block;
     }
@@ -2757,13 +2757,7 @@ label .muted {
     font-family: $meta-font;
     font-size: 1.1875em;
     color: $front-main-h2-color;
-  }
-  .form-hint {
-    margin-bottom: 0.5em;
-    color: $form-hint-color;
-  }
-  p {
-    margin: 0.5em 0 0;
+    margin-top: 0;
   }
   a {
     text-decoration: $primary_link_decoration;
@@ -2787,30 +2781,34 @@ label .muted {
   label {
     margin-top: 0;
   }
+  .form-hint {
+    margin-bottom: 0.5em;
+    color: $form-hint-color;
+  }
   div {
     @include flex-container;
     @include flex-wrap(wrap);
     width: 100%;
     background: #fff;
     border: 1px solid $primary_b;
-    input#pc {
-      @include flex(86 0 auto);
-      width: 50%;
-      border: none;
-      background: none;
-      line-height: 1.5em;
-    }
-    input#sub {
-      border: none;
-      padding: 0.5em;
-      @include flex(14 0 auto);
-      background: #000;
-      color: #fff;
-      @include border-radius(0);
-      &:hover,
-      &:focus {
-        background: #333;
-      }
+  }
+  input#pc {
+    @include flex(86 0 auto);
+    width: 50%;
+    border: none;
+    background: none;
+    line-height: 1.5em;
+  }
+  input#sub {
+    border: none;
+    padding: 0.5em;
+    @include flex(14 0 auto);
+    background: #000;
+    color: #fff;
+    @include border-radius(0);
+    &:hover,
+    &:focus {
+      background: #333;
     }
   }
 
@@ -2909,19 +2907,6 @@ a#geolocate_link {
   }
 }
 
-#alerts {
-  ul {
-    margin-bottom: 1em;
-  }
-  li {
-    padding: 0em;
-    margin-bottom: 0.5em;
-  }
-  .a {
-    background: #f6f6f6;
-  }
-}
-
 .alerts-rss-link {
   position: relative;
   z-index: 1; // stack in front of the position:relative .label-containing-checkbox
@@ -2994,9 +2979,15 @@ a#geolocate_link {
   }
 }
 
+.cta-box__input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 #rss_local_alt {
   // Match .label-containing-checkbox
-  padding-#{$left}: 24px;
+  padding-#{$left}: 56px;
 
   // Close up space between this and #rss_local
   margin-top: -0.5em;
@@ -3005,6 +2996,13 @@ a#geolocate_link {
     width: 4em;
     display: inline-block;
   }
+}
+
+.alert-option-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .confirmation-header {

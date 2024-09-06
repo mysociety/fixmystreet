@@ -1,6 +1,6 @@
 [% DEFAULT title = loc('Error') %]
 [% DEFAULT header_class = 'failure' %]
-[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = title %]
+[% INCLUDE 'header.html', title = title %]
 
 [% IF csrf_token ~%]
 <input type="hidden" name="token" value="[% csrf_token %]">

@@ -22,7 +22,7 @@ a:not([class]):focus {
 }
 
 .form-control,
-.postcode-form-box div input#pc {
+.postcode-form-box input#pc {
     @include border-radius(none);
     box-shadow: none;
 
@@ -43,7 +43,7 @@ a:not([class]):focus {
 }
 
 #site-logo {
-    @include svg-background-image("/cobrands/oxfordshire/images/site-logo-mobile");
+    background-image: url("/cobrands/oxfordshire/images/site-logo-mobile.svg");
     background-color: $nav_background_colour;
     background-size: 175px 38px;
     background-repeat: no-repeat;
@@ -85,10 +85,10 @@ a:not([class]):focus {
         font-size: 1.25em;
         margin-top: 0.5em;
         max-width: 24em;
+    }
 
-        input#pc {
-            margin: 0 0.5em 0 0;
-        }
+    input#pc {
+        margin: 0 0.5em 0 0;
     }
 }
 
@@ -164,7 +164,7 @@ dd, p {
 
 // No border and slightly different padding for *all* types of button.
 .btn,
-.postcode-form-box div input#sub,
+.postcode-form-box input#sub,
 .occlss-button--primary {
     border: none;
     padding: 0.7em 1em 0.85em 1em;
@@ -183,7 +183,7 @@ dd, p {
 }
 
 // Override all the "primary" buttons across the site!
-.postcode-form-box div input#sub,
+.postcode-form-box input#sub,
 .occlss-button--primary,
 .btn--primary {
     @include button-variant(
@@ -352,7 +352,7 @@ textarea {
         vertical-align: -0.25em;
         background-size: 112px 16px;
         background-repeat: no-repeat;
-        @include svg-background-image("/cobrands/fixmystreet/images/report-tools");
+        background-image: url("/cobrands/fixmystreet/images/report-tools.svg");
       }
 
       &.abuse:after {

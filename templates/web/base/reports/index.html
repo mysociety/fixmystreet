@@ -12,7 +12,7 @@
     last_seven_fixed = last_seven_days.fixed_total | format_number;
     other_categories_formatted = other_categories | format_number;
 -%]
-[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass => 'dashboard fullwidthpage' %]
+[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass = 'dashboard' %]
 
 <div class="dashboard-header">
     <h1>[% loc('Dashboard') %]

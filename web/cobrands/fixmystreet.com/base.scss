@@ -47,7 +47,7 @@ svg|g.site-logo__svg {
     background-position: 0 50%;
     background-repeat: no-repeat;
     background-size: 175px 35px;
-    @include svg-background-image("/cobrands/fixmystreet/images/site-logo");
+    background-image: url("/cobrands/fixmystreet/images/site-logo.svg");
 }
 
 #site-logo,
@@ -290,7 +290,7 @@ html.lazyload .js-lazyload {
   width: 205px;
   background-repeat: no-repeat;
   background-size: 205px 32px;
-  @include svg-background-image('#{$mysoc-footer-image-path}logo-fms-platform');
+  background-image: url("#{$mysoc-footer-image-path}logo-fms-platform.svg");
 }
 
 .fms-app-badges {
@@ -307,10 +307,10 @@ html.lazyload .js-lazyload {
   margin-right: 0.5em;
 }
 .fms-app-badge--ios {
-  @include svg-background-image('/cobrands/fixmystreet/images/itunes_store_logo');
+  background-image: url("/cobrands/fixmystreet/images/itunes_store_logo.svg");
 }
 .fms-app-badge--android {
-  @include svg-background-image('/cobrands/fixmystreet/images/google_play_logo');
+  background-image: url("/cobrands/fixmystreet/images/google_play_logo.svg");
 }
 
 .fms-footer-cta {
@@ -364,7 +364,7 @@ html.lazyload .js-lazyload {
 }
 
 // Gets rid of the homepage styling for pages like contact
-body.twothirdswidthpage .content {
+.container--sidebar .content {
   footer {
     background: none;
     margin: 0;
@@ -385,7 +385,7 @@ body.twothirdswidthpage .content {
 
 .healthcheck-unit {
     padding-left: 50px;
-    @include svg-background-image('/cobrands/fixmystreet.com/images/healthcheck-good');
+    background-image: url("/cobrands/fixmystreet.com/images/healthcheck-good.svg");
     background-size: 32px;
     background-repeat: no-repeat;
     background-position: $left 0;
@@ -404,7 +404,7 @@ body.twothirdswidthpage .content {
 }
 
 .healthcheck-unit--bad {
-    @include svg-background-image('/cobrands/fixmystreet.com/images/healthcheck-bad');
+    background-image: url("/cobrands/fixmystreet.com/images/healthcheck-bad.svg");
 }
 
 .healthcheck-cta-trio {

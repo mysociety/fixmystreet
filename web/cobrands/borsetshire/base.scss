@@ -12,7 +12,7 @@
 #site-logo {
     width: (240px * 0.75);
     height: (60px * 0.75);
-    @include svg-background-image('/cobrands/borsetshire/images/logo');
+    background-image: url("/cobrands/borsetshire/images/logo.svg");
     background-position: 50% 50%;
     background-repeat: no-repeat;
     background-size: (240px * 0.75) (60px * 0.75);
@@ -39,41 +39,39 @@
     background: $primary;
     border-bottom: 1px solid $color-societyworks-borders;
 
-    #postcodeForm {
-        background: transparent;
-        padding: 0;
-        margin: 0;
-        color: inherit;
-        font-family: inherit;
-
-        div {
-            border: none;
-            background: transparent;
-
-            input#pc {
-                background: #fff;
-                border-radius: 4px;
-                margin-right: 0.5em;
-                padding: 0.5em;
-                border: 1px solid #aaa;
-            }
-
-            input#sub {
-                border-radius: 4px;
-                background: $color-societyworks-yellow;
-                color: #000;
-                font-weight: bold;
-                padding: 0.5em 1em;
-
-                &:hover, &:focus {
-                    background: darken($color-societyworks-yellow, 10%);
-                }
-            }
-        }
-    }
-
     h1 {
         margin-top: 0;
+    }
+}
+
+.postcode-form-box {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    font-family: inherit;
+
+    div {
+        border: none;
+        background: transparent;
+    }
+    input#pc {
+        background: #fff;
+        border-radius: 4px;
+        margin-right: 0.5em;
+        padding: 0.5em;
+        border: 1px solid #aaa;
+        }
+    input#sub {
+        border-radius: 4px;
+        background: $color-societyworks-yellow;
+        color: #000;
+        font-weight: bold;
+        padding: 0.5em 1em;
+
+        &:hover, &:focus {
+            background: darken($color-societyworks-yellow, 10%);
+        }
     }
 }
 

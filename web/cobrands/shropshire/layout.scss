@@ -72,7 +72,7 @@ body {
     width: 240px;
     // height: 61px; // see below
     background-size: 240px 74px;
-    @include svg-background-image("/cobrands/shropshire/images/sc-logo-swoosh-v1_257x80");
+    background-image: url("/cobrands/shropshire/images/sc-logo-swoosh-v1_257x80.svg");
 
     // text-indent doesn’t play nicely with focus outline,
     // so use padding overflow trick instead
@@ -87,7 +87,7 @@ body {
         width:  $logo-width;
         // height: 61px; // see below
         background-size:  $logo-width  $logo-height;
-        @include svg-background-image("/cobrands/shropshire/images/sc-logo-v3");
+        background-image: url("/cobrands/shropshire/images/sc-logo-v3.svg");
     
         // text-indent doesn’t play nicely with focus outline,
         // so use padding overflow trick instead
@@ -106,10 +106,6 @@ body {
         padding: 2em;
         border-radius: 7px;
     }
-}
-
-.postcode-form-box {
-    overflow: visible;
 }
 
 .frontpage .content {

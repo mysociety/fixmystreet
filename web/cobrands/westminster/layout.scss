@@ -35,10 +35,6 @@ body.frontpage {
     }
 }
 
-.postcode-form-box {
-    overflow: visible;
-}
-
 .content {
     #front-howto {
         #front_stats {
@@ -137,7 +133,7 @@ body.mappage {
         background-size: $image-width $image-height;
         background-position: center center;
         background-repeat: no-repeat;
-        @include svg-background-image('/cobrands/westminster/images/footer-logo');
+        background-image: url("/cobrands/westminster/images/footer-logo.svg");
     }
 }
 

@@ -17,7 +17,7 @@ body.frontpage {
 }
 
 #site-logo {
-    @include svg-background-image("/cobrands/greenwich/images/greenwich-logo");
+    background-image: url("/cobrands/greenwich/images/greenwich-logo.svg");
     // background: url("/cobrands/greenwich/images/greenwich-logo.svg") 0 50% no-repeat;
     background-size: 77px 40px;
     width: 80px;
@@ -26,7 +26,7 @@ body.frontpage {
 
 #nav-link {
     // Custom menu image to match the official Greenwich site.
-    @include svg-background-image("/cobrands/greenwich/images/menu");
+    background-image: url("/cobrands/greenwich/images/menu.svg");
     background-size: 20px 20px;
 
     // Don't vertically centre, as Greenwich #site-header
@@ -40,7 +40,7 @@ body.frontpage {
 }
 
 html.js-nav-open #nav-link {
-    @include svg-background-image("/cobrands/greenwich/images/menu-close");
+    background-image: url("/cobrands/greenwich/images/menu-close.svg");
     background-size: 20px 20px;
 }
 
@@ -50,10 +50,7 @@ html.js-nav-open #nav-link {
     padding: 5px 0;
 }
 
-body.mappage,
-body.authpage,
-body.twothirdswidthpage,
-body.alertpage {
+body:not(.frontpage) {
     .page-header-container,
     .fms-menu-container {
         display: none;
@@ -66,10 +63,8 @@ body.alertpage {
 
 .postcode-form-box {
     margin-top: 1em;
-    div {
-        input#sub {
-            background: $greenwich_red;
-        }
+    input#sub {
+        background: $greenwich_red;
     }
 }
 

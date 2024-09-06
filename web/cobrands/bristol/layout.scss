@@ -16,7 +16,7 @@
   }
 }
 
-body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+body:not(.mappage) {
   // Display the BCC logo and header correctly
   #site-logo {
     background: url(/cobrands/bristol/img/bcclogo.png) 0 14px no-repeat;

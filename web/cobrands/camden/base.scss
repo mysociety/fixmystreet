@@ -290,7 +290,7 @@ body:not(.admin, .mappage.with-actions) {
   }
 
   #show_old_reports_wrapper input[type="checkbox"]:checked:after {
-    @include svg-background-image("/cobrands/fixmystreet/images/check-white");
+    background-image: url("/cobrands/fixmystreet/images/check-white.svg");
   }
 }
 
@@ -314,7 +314,7 @@ body:not(.admin, .mappage.with-actions) {
 #site-logo {
   display: block;
   font-family: $body-font;
-  @include svg-background-image("/cobrands/camden/images/camden-logo-white");
+  background-image: url("/cobrands/camden/images/camden-logo-white.svg");
   background-position: 0;
   background-size: $logo-width-mobile $logo-height-mobile;
   background-repeat: no-repeat;
@@ -326,7 +326,7 @@ body:not(.admin, .mappage.with-actions) {
   white-space: nowrap;
 
   &:focus {
-    @include svg-background-image("/cobrands/camden/images/camden-logo-black");
+    background-image: url("/cobrands/camden/images/camden-logo-black.svg");
   }
 }
 
@@ -595,7 +595,7 @@ border-right-width: 3px;
   .footer-logo {
     display: block;
     $logo-height: 20px;
-    @include svg-background-image("/cobrands/camden/images/camden-logo-white");
+    background-image: url("/cobrands/camden/images/camden-logo-white.svg");
     background-repeat: no-repeat;
     background-position: 0;
     background-size: 100px $logo-height;
@@ -607,7 +607,7 @@ border-right-width: 3px;
     white-space: nowrap;
 
     &:focus {
-      @include svg-background-image("/cobrands/camden/images/camden-logo-black");
+      background-image: url("/cobrands/camden/images/camden-logo-black.svg");
     }
   }
 

@@ -1,6 +1,6 @@
 [% INCLUDE 'header.html',
     title = loc('Hide my name'),
-    bodyclass = 'twothirdswidthpage' %]
+%]
 
 <form method="post" action="/my/anonymize" class="box-warning hide-name-form">
     <input type="hidden" name="token" value="[% csrf_token %]">
