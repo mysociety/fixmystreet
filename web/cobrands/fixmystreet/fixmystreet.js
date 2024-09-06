@@ -1045,10 +1045,10 @@ $.extend(fixmystreet.set_up, {
                 if (max_photos == 1 && prevFile) {
                     this.removeFile(prevFile);
                 }
-                $('input[type=submit]', $context).prop("disabled", true).removeClass('green-btn');
+                $('input[type=submit]', $context).prop("disabled", true);
               });
               this.on("queuecomplete", function() {
-                $('input[type=submit]', $context).prop('disabled', false).addClass('green-btn');
+                $('input[type=submit]', $context).prop('disabled', false);
               });
               this.on("success", function(file, xhrResponse) {
                 var $upload_fileids = $('input[name="' + $fileid_input + '"]', $context);
@@ -1620,20 +1620,23 @@ $.extend(fixmystreet.set_up, {
     $('body').on('click', '#alert_email_button', function(e) {
         e.preventDefault();
 
-        var emailInput = $(this).closest('.js-alert-list').find('input[type=email]');
-        emailInput[0].required = true;
+        var wrapper = this.closest('.js-alert-list');
+        var emailInput = wrapper.querySelector('input[type="email"]');
+        if (emailInput) {
+            emailInput.required = true;
 
-        if (!$(this).closest('form').validate().form()) {
-            emailInput.focus();
-            return;
+            if (!$(this).closest('form').validate().form()) {
+                emailInput.focus();
+                return;
+            }
         }
 
         var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
         form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
 
-        $(this).closest('.js-alert-list').find('textarea, input[type=email], input[type=text], input[type=hidden], input[type=radio]:checked').each(function() {
-            var $v = $(this);
-            $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
+        var inputs = wrapper.querySelectorAll('textarea, input[type=email], input[type=text], input[type=hidden], input[type=radio]:checked');
+        [].forEach.call(inputs, function(i) {
+            $('<input/>').attr({ name:i.name, value:i.value, type:'hidden' }).appendTo(form);
         });
 
         $('body').append(form);

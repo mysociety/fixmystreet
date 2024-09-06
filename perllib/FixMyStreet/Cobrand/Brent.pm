@@ -319,14 +319,16 @@ sub pin_colour {
 
 =head2 categories_restriction
 
-Doesn't show TfL's River Piers category as no piers in Brent
+Doesn't show TfL's River Piers category as no piers in Brent.
+Also don't show bus station category as only one in Brent and
+never been used to report anything.
 
 =cut
 
 sub categories_restriction {
     my ($self, $rs) = @_;
 
-    return $rs->search( { 'me.category' => { '-not_like' => 'River Piers%' } } );
+    return $rs->search( { 'me.category' => [ '-and' => { '-not_like' => 'River Piers%' }, { '-not_like' => 'Bus Station%' }, { '-not_like' => '%(Response Desk Buses to Action)' } ] } );
 }
 
 =head2 social_auth_enabled, user_from_oidc, and oidc_config

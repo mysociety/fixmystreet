@@ -58,7 +58,7 @@ a#geolocate_link {
     padding: 0.75em;
 }
 
-.green-btn {
+.btn--primary {
     @include button-variant($bg-top: $northumber_blue_button, $bg-bottom: $northumber_blue_button, $border: $northumber_blue_button, $text: $primary_text, $hover-bg-bottom: $primary_text, $hover-bg-top: $primary_text, $hover-border: $button-primary-hover-border, $hover-text: $northumber_blue_button);
     border-width: $button-border-width;
     @include focus-state;
@@ -77,7 +77,7 @@ a#geolocate_link {
 }
 
 #site-logo {
-    @include svg-background-image("/cobrands/northumberland/images/northumberland-logo");
+    background-image: url("/cobrands/northumberland/images/northumberland-logo.svg");
     background-size: contain;
 }
 
@@ -96,17 +96,15 @@ a#geolocate_link {
 
 /* FRONTPAGE */
 .postcode-form-box {
-    div {
-        input#sub {
-            border: $button-border-width solid $button-primary-text;
-            font-family: $body-font;
-            font-weight: 600;
-            background-color: $button-primary-text;
+    input#sub {
+        border: $button-border-width solid $button-primary-text;
+        font-family: $body-font;
+        font-weight: 600;
+        background-color: $button-primary-text;
 
-            &:hover {
-                background-color: $primary_text;
-                color: $button-primary-text;
-            }
+        &:hover {
+            background-color: $primary_text;
+            color: $button-primary-text;
         }
     }
 }
@@ -152,7 +150,7 @@ footer.council-footer {
         &--logos {
             .council-logo {
                 display: block;
-                @include svg-background-image("/cobrands/northumberland/images/northumberland-logo-white");
+                background-image: url("/cobrands/northumberland/images/northumberland-logo-white.svg");
                 background-size: contain;
                 background-repeat: no-repeat;
                 background-position: center left;
@@ -178,16 +176,16 @@ footer.council-footer {
                 background-repeat: no-repeat;
                 background-position: center;
                 &.is--facebook {
-                    @include svg-background-image("/cobrands/northumberland/images/icon-facebook");
+                    background-image: url("/cobrands/northumberland/images/icon-facebook.svg");
                 }
                 &.is--twitter {
-                    @include svg-background-image("/cobrands/northumberland/images/icon-twitter");
+                    background-image: url("/cobrands/northumberland/images/icon-twitter.svg");
                 } 
                 &.is--instagram {
-                    @include svg-background-image("/cobrands/northumberland/images/icon-instagram");
+                    background-image: url("/cobrands/northumberland/images/icon-instagram.svg");
                 } 
                 &.is--youtube {
-                    @include svg-background-image("/cobrands/northumberland/images/icon-youtube");
+                    background-image: url("/cobrands/northumberland/images/icon-youtube.svg");
                 } 
             }
         }

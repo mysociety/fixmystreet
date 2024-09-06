@@ -1,10 +1,10 @@
-[% INCLUDE 'header.html', title => loc('Frequently Asked Questions'), bodyclass => 'twothirdswidthpage' %]
+[% INCLUDE 'header.html', title = loc('Frequently Asked Questions'), sidebar='sidebar' %]
 
+[% BLOCK sidebar %]
 [% INCLUDE 'about/_sticky-button-content-navbar.html' %]
-
-<div class="sticky-sidebar">
+<div class="sticky-sidebar sticky-sidebar--help">
     <aside>
-        <ul class="plain-list">
+        <ul>
             <li><a href="#faq">Vanliga frågor</a></li>
             <li><a href="#practical">Praktiska frågor</a></li>
             <li><a href="#organisation">Organisation</a></li>
@@ -13,6 +13,7 @@
         </ul>
     </aside>
 </div>
+[% END %]
 
 <h1><a name="faq"></a>Vanliga frågor</h1>
 <dl>

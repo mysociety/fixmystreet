@@ -71,6 +71,8 @@
             ">[% image.data.replace('<svg', '<svg class="waste-service-image"') | safe %]</span>
         [% ELSIF c.cobrand.waste_images_2x_unavailable %]
           <img src="[% image %].png" alt="" class="waste-service-image">
+        [% ELSIF image.type == 'png1' %]
+          <img src="[% image.src %].png" alt="[% image.alt %]" class="waste-service-image">
         [% ELSE  %]
           <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
         [% END %]

@@ -54,7 +54,7 @@ html.js-nav-open #nav-link {
     width: 144px;
     // height: 61px; // see below
     background-size: cover;
-    @include svg-background-image('/cobrands/thamesmead/images/peabody_logo');
+    background-image: url("/cobrands/thamesmead/images/peabody_logo.svg");
 
     // text-indent doesn’t play nicely with focus outline,
     // so use padding overflow trick instead
@@ -108,17 +108,17 @@ html.js-nav-open #nav-link {
     div {
         border: none;
         background: transparent;
+    }
 
-        input#pc {
-            @include peabody-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
-            font-size: 1.25em;
-            background-color: $peabody-white;
-        }
+    input#pc {
+        @include peabody-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+        font-size: 1.25em;
+        background-color: $peabody-white;
+    }
 
-        input#sub {
-            @include peabody-button-primary();
-            font-size: 1.25em;
-        }
+    input#sub {
+        @include peabody-button-primary();
+        font-size: 1.25em;
     }
 }
 
@@ -172,8 +172,7 @@ p.form-error {
     font-weight: 800;
 }
 
-.btn,
-.green-btn {
+.btn {
     @include peabody-button-primary();
 }
 

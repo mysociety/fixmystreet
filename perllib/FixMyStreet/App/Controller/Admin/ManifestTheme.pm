@@ -10,7 +10,7 @@ sub auto :Private {
     my ($self, $c) = @_;
 
     if ( $c->cobrand->moniker eq 'fixmystreet' ) {
-        $c->stash(rs => $c->model('DB::ManifestTheme')->search_rs({}), show_all => 1);
+        $c->stash(rs => $c->model('DB::ManifestTheme')->search_rs({}, { order_by => 'cobrand' }), show_all => 1);
     } else {
         $c->stash(rs => $c->model('DB::ManifestTheme')->search_rs({ cobrand => $c->cobrand->moniker }));
     }

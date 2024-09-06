@@ -1,4 +1,4 @@
-<form method="post" action="[% c.uri_for_action('admin/bodies/edit', [ body_id ] ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="category_edit">
+<form method="post" id="category_edit">
 
   [% IF contact.in_storage %]
     <h1>[% contact.category_display | html %]</h1>
@@ -46,7 +46,6 @@
 
     <p><strong>[% loc('Note:') %] </strong><textarea class="form-control" name="note" rows="3" cols="40"></textarea>
 
-    <input type="hidden" name="posted" value="new">
     <input type="hidden" name="token" value="[% csrf_token %]" >
     <p><input type="submit" class="btn" name="Create category" value="[% contact.in_storage ? loc('Save changes') : loc('Create category') %]">
   </p>

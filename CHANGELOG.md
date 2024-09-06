@@ -27,6 +27,7 @@
         - Fix display of user in assignment dropdown. #4855
         - Fix setting of fixed timestamp in CSV export. #5119
         - Fix CSV export of reports with only hidden/unconfirmed updates. #5119
+        - Fix displaying category page if over 1,000 history entries.
         - Stop wrapping category notices in a label.
     - Admin improvements:
         - Rename emergency message to site message.
@@ -39,6 +40,9 @@
         - Allow h1, h2, h3 tags in contact notices/questions. #4959
         - Tweak config page display. #5139
         - Minor display improvements to report/update pages. #5141
+        - Minor display and performance improvements to user pages. #5138
+        - Move add new body/category to their own admin pages.
+        - Move navigation to sidebar.
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
         - Cobrands can provide custom distances for duplicate lookup. #4456

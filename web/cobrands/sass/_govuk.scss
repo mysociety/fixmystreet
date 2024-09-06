@@ -24,3 +24,7 @@
     font-size: 1rem;
   }
 }
+
+.govuk-radios__label {
+  margin-top: 0; // Override the label element margin-top property
+}

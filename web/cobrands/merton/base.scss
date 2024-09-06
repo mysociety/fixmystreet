@@ -36,8 +36,6 @@ a:focus,
 input:focus,
 button:focus,
 .btn:focus,
-.green-btn:focus,
-.btn-primary:focus,
 select:focus,
 textarea:focus,
 .multi-select-button:focus,
@@ -49,13 +47,10 @@ textarea:focus,
     box-shadow: 0 0 0 5px #333 !important;
 }
 
-.button,
-.green-btn,
-.btn-primary,
 input[type=button],
 input[type=reset],
 input[type=submit] :not(.item-list__item__shortlist-add) :not(item-list__item__shortlist-remove),
-.postcode-form-box div input#sub,
+.postcode-form-box input#sub,
 a#geolocate_link,
 :not(.segmented-control--radio) > .btn,
 .govuk-button  {
@@ -68,7 +63,7 @@ a#geolocate_link,
     padding: 12px 15px 10px;
 }
 
-.btn-primary, .govuk-button {
+.btn--primary, .govuk-button {
     padding: 12px 15px 10px;
     margin-bottom: 32px;
     line-height: 1;
@@ -254,7 +249,7 @@ html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.s
     border-color: transparent;
 }
 
-.postcode-form-box div input#pc {
+.postcode-form-box input#pc {
     border-top: 1px solid #A9A9A9;
     border-left: 1px solid #A9A9A9;
 }

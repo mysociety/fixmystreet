@@ -16,7 +16,7 @@
 
 #site-logo {
     height: 35px;
-    @include svg-background-image("/cobrands/fixamingata/images/site-logo");
+    background-image: url("/cobrands/fixamingata/images/site-logo.svg");
 }
 
 #report-cta {
@@ -148,7 +148,7 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
   width: 205px;
   background-repeat: no-repeat;
   background-size: 205px 32px;
-  @include svg-background-image('#{$mysoc-footer-image-path}logo-fms-platform');
+  background-image: url("#{$mysoc-footer-image-path}logo-fms-platform.svg");
 }
 
 .fms-app-badges {
@@ -165,10 +165,10 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
   margin-right: 0.5em;
 }
 .fms-app-badge--ios {
-  @include svg-background-image('/cobrands/fixmystreet/images/itunes_store_logo');
+  background-image: url("/cobrands/fixmystreet/images/itunes_store_logo.svg");
 }
 .fms-app-badge--android {
-  @include svg-background-image('/cobrands/fixmystreet/images/google_play_logo');
+  background-image: url("/cobrands/fixmystreet/images/google_play_logo.svg");
 }
 
 .fms-pro-promo {
@@ -216,18 +216,16 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
     padding: 0;
 }
 
-.btn-primary,
-.green-btn,
 .btn--primary {
     @include button-variant(#1a9ab8, #05617a, #05617a, #fff, #045369, #1a9ab8, #05617a, #fff);
 }
 
-#front-main #postcodeForm label {
+.postcode-form-box label {
     margin-bottom: 8px;
     padding-top: 0.5em;
 }
 
-.mobile #front-main #postcodeForm label {
+.mobile .postcode-form-box label {
     padding-top: 0;
 }
 

@@ -20,8 +20,8 @@
 
 <li><label for="anonymous">[% loc('Show name publicly?') %]</label>
 <select class="form-control" name="anonymous" id="anonymous">
-<option [% 'selected ' IF update.anonymous %]value="1">[% loc('Yes') %]</option>
-<option [% 'selected ' IF !update.anonymous %]value="0">[% loc('No') %]</option>
+<option [% 'selected ' IF update.anonymous %]value="1">[% loc('No') %]</option>
+<option [% 'selected ' IF !update.anonymous %]value="0">[% loc('Yes') %]</option>
 </select></li>
 <li><label for="state">[% loc('State:') %]</label>
 <select class="form-control" name="state"  id="state">

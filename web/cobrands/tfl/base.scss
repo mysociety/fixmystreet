@@ -55,9 +55,7 @@ h3 {
     line-height: 1.238095238em; //26px
 }
 
-.btn--primary,
-.btn,
-.green-btn {
+.btn--primary, .btn {
     @include tflbutton;
 }
 
@@ -77,14 +75,14 @@ h3 {
 .btn--shortlist,
 .btn--shortlisted {
     &:before {
-        @include svg-background-image('/cobrands/fixmystreet/images/button-icons-white');
+        background-image: url("/cobrands/fixmystreet/images/button-icons-white.svg");
     }
 }
 
 /* Header */
 
 #site-logo {
-    @include svg-background-image("/cobrands/tfl/images/Tfl_Logo_Blue-banner");
+    background-image: url("/cobrands/tfl/images/Tfl_Logo_Blue-banner.svg");
     background-repeat: no-repeat;
     background-size: 170px 60px;
     height: 60px;
@@ -117,16 +115,16 @@ h3 {
     div {
         display: block;
         border: 0;
-        input#sub {
-            @include tflbutton;
-            flex: unset;
-            margin-top: 1em;
-        }
-        input#pc {
-            width: 100%;
-            flex: unset;
-            @include tflfield;
-        }
+    }
+    input#sub {
+        @include tflbutton;
+        flex: unset;
+        margin-top: 1em;
+    }
+    input#pc {
+        width: 100%;
+        flex: unset;
+        @include tflfield;
     } 
 }
 

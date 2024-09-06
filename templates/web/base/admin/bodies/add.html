@@ -1,0 +1,9 @@
+[% INCLUDE 'admin/header.html' title=loc('Add body') -%]
+
+[% IF body_errors.size %]
+    <p class="error">[% loc('Please correct the errors below') %]</p>
+[% END %]
+
+[% INCLUDE 'admin/bodies/form.html' %]
+
+[% INCLUDE 'admin/footer.html' %]

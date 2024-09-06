@@ -82,7 +82,6 @@ body.frontpage {
         width: 300px;
         height: 55px;
         background-size: 275px 55px;
-        @include svg-background-image("/cobrands/fixamingata/images/site-logo");
     }
 
     #main-nav {
@@ -149,19 +148,11 @@ body.mappage {
     }
 }
 
-body.twothirdswidthpage {
-    .content {
-       aside {
-           background:#fff;
-       }
-    }
-}
-
 #front-main {
     margin: 1em 0 2em;
 }
 
-#front-main #postcodeForm .form-hint {
+.postcode-form-box .form-hint {
     font-size: .9em;
     margin-top: .5em;
 }

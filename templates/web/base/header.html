@@ -27,5 +27,8 @@
             [% pre_container_extra | safe %]
 
 
-            <div class="container">
+            <div class="container[% IF sidebar %] container--sidebar[% END %]">
+              [% IF sidebar %]
+                [% INCLUDE $sidebar %]
+              [% END %]
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">

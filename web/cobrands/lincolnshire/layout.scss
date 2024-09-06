@@ -24,7 +24,13 @@
     padding: 2em 0;
 }
 
-body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+body:not(.mappage) {
+
+    #site-logo {
+        height: 100px;
+        width: 249px;
+        background-size: 249px 82px;
+    }
 
     // White "nav bar" with red border-top, below the logo
     #site-header {

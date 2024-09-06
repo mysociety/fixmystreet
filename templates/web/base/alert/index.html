@@ -1,4 +1,4 @@
-[% SET bodyclass = 'alertpage fullwidthpage' %]
+[% SET bodyclass = 'alertpage' %]
 [% INCLUDE 'header.html', title = loc('Local RSS feeds and email alerts') %]
 
 <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
@@ -24,7 +24,9 @@
 </form>
 
 [% IF photos.size %]
+<script type="module" src="[% version('/js/overflow-focus-scroll.js') %]"></script>
 <h2>[% loc('Some photos of recent reports') %]</h2>
+<overflow-focus-scroll>
 <div class="alerts__nearby-activity__photos">
   [% FOREACH p IN photos %]
     <a href="/report/[% p.id %]">
@@ -33,6 +35,7 @@
     </a>
   [% END %]
 </div>
+</overflow-focus-scroll>
 [% END %]
 
 [% INCLUDE 'footer.html' %]

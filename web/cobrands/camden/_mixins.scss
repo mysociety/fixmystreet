@@ -97,7 +97,7 @@
 
     &[type="checkbox"]:checked {
         &:after {
-            @include svg-background-image('/cobrands/fixmystreet/images/check-black');
+            background-image: url("/cobrands/fixmystreet/images/check-black.svg");
         }
     }
 
@@ -108,7 +108,7 @@
     &[type="radio"]:checked {
         &:after {
             background-size: 11px;
-            @include svg-background-image('/cobrands/fixmystreet/images/dot-black');
+            background-image: url("/cobrands/fixmystreet/images/dot-black.svg");
         }
     }
 }

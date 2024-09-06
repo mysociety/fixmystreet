@@ -23,7 +23,7 @@ button:focus {
     width: 91px;
     height: 0;
     padding-top: 84px;
-    @include svg-background-image('/cobrands/eastherts/logo');
+    background-image: url("/cobrands/eastherts/logo.svg");
     background-size: 91px 84px;
 }
 
@@ -65,7 +65,7 @@ button:focus {
         display: inline-block;
         width: 16px;
         height: 16px;
-        @include svg-background-image('/cobrands/eastherts/search');
+        background-image: url("/cobrands/eastherts/search.svg");
         background-size: 16px 16px;
         margin: 0 auto;
     }
@@ -85,13 +85,13 @@ button:focus {
 .eh-header__nav-link {
     position: absolute;
     right: 1em;
-    // top: 40px; // vertically centre alongside logo
+    top: 2.5em;
     display: block;
     overflow: hidden;
     width: 40px;
     height: 0;
     padding-top: 40px;
-    @include svg-background-image('/cobrands/eastherts/menu');
+    background-image: url("/cobrands/eastherts/menu.svg");
     background-position: center center;
     background-repeat: no-repeat;
 }
@@ -144,10 +144,10 @@ button:focus {
     h1 {
         font-size: 1.75em;
     }
+}
 
-    #postcodeForm {
-        margin-top: 1em;
-    }
+.postcode-form-box {
+    margin-top: 1em;
 }
 
 .map-fullscreen {

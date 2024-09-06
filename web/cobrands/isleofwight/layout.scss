@@ -26,6 +26,13 @@
     padding-bottom: 3em;
 }
 
+.alertpage .postcode-form-box {
+    color: #222;
+    .form-hint {
+        color: #222;
+    }
+}
+
 a#geolocate_link {
     border-color: white;
 }

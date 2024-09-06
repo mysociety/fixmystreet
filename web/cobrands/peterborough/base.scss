@@ -7,7 +7,7 @@
     width: 162px;
     height: 56px;
     padding: 0.5em 0;
-    @include svg-background-image('/cobrands/peterborough/images/logo');
+    background-image: url("/cobrands/peterborough/images/logo.svg");
     background-position: 0 50%;
     background-repeat: no-repeat;
     background-size: 162px 56px;
@@ -33,8 +33,6 @@ h1, h2 {
     color: $alt-green;
 }
 
-.btn-primary,
-.green-btn,
 .btn--primary, .btn-secondary {
     border: 0.2em solid $primary;
     padding: 0.55em 1em;
@@ -64,8 +62,6 @@ h1, h2 {
     }
 }
 
-.btn-primary,
-.green-btn,
 .btn--primary {
     background: $primary;
 
@@ -112,7 +108,7 @@ h1, h2 {
 }
 
 .postcode-form-box {
-    div input#sub {
+    input#sub {
         background-color: $link-color;
     }
 }
@@ -198,7 +194,7 @@ h1, h2 {
       &[href*="societyworks"] {
         width: 193px;
         background: transparent none 0 0 no-repeat;
-        @include svg-background-image('/cobrands/fixmystreet-uk-councils/images/logo-societyworks');
+        background-image: url("/cobrands/fixmystreet-uk-councils/images/logo-societyworks.svg");
         background-size: 193px 40px;
         vertical-align: -4px;
       }
@@ -216,11 +212,11 @@ h1, h2 {
     padding-left: 30px;
 
     &.is--calendar {
-        @include svg-background-image('/cobrands/peterborough/images/calendar');
+        background-image: url("/cobrands/peterborough/images/calendar.svg");
         background-size: 22px;
 
         &:hover, &:focus {
-            @include svg-background-image('/cobrands/peterborough/images/calendar-hover');
+            background-image: url("/cobrands/peterborough/images/calendar-hover.svg");
         }
     }
 }

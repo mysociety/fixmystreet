@@ -18,14 +18,14 @@
 .site-logo {
     width: 150px;
     height: 45px;
-    @include svg-background-image('/cobrands/highwaysengland/images/logo');
+    background-image: url("/cobrands/highwaysengland/images/logo.svg");
     background-position: 50% 50%;
     background-repeat: no-repeat;
     background-size: 150px 45px;
 }
 
 #nav-link {
-    @include svg-background-image('/cobrands/highwaysengland/images/menu');
+    background-image: url("/cobrands/highwaysengland/images/menu.svg");
 }
 
 #report-cta {
@@ -46,7 +46,7 @@
 %warning-icon {
     content: "";
     display: block;
-    @include svg-background-image('/cobrands/highwaysengland/images/warning-red');
+    background-image: url("/cobrands/highwaysengland/images/warning-red.svg");
     background-position: 0 0;
     background-repeat: no-repeat;
     background-size: 20px 20px;
@@ -115,16 +115,19 @@ p.form-error {
         // Both padding and margin avoid the horizontal overflowing of this element.
         padding: 0;
         margin: 0;
-    
-        .front-blurb {
-            color:$white;
-            max-width: 28em;
-            opacity: 0.85;
-            background: transparentize($color-he-black, $amount: 0.5);
-            padding: 1em;
-            border-radius: 4px;
-            margin: 0 -1em;
-        }
+    }
+}
+
+.front-blurb {
+    color:$white;
+    max-width: 28em;
+    opacity: 0.85;
+    background: transparentize($color-he-black, $amount: 0.5);
+    padding: 1em;
+    border-radius: 4px;
+    margin: 0 -1em;
+    & > :last-child {
+        margin-bottom: 0;
     }
 }
 
@@ -136,29 +139,29 @@ p.form-error {
     div {
         border: none;
         background: transparent;
+    }
 
-        input#pc {
-            background: #fff;
-            border-radius: 4em;
-            margin-right: 0.5em;
-            padding: 0.5em 1.5em;
-            border: 2px solid $color-he-grey-3;
+    input#pc {
+        background: #fff;
+        border-radius: 4em;
+        margin-right: 0.5em;
+        padding: 0.5em 1.5em;
+        border: 2px solid $color-he-grey-3;
 
-            &:focus {
-                border-color: $black;
-                box-shadow: 0 0 0 4px $color-he-yellow;
-            }
+        &:focus {
+            border-color: $black;
+            box-shadow: 0 0 0 4px $color-he-yellow;
         }
+    }
 
-        input#sub {
-            border-radius: 4em;
-            background: $color-he-blue;
-            font-weight: bold;
-            padding: 0.5em 1em;
+    input#sub {
+        border-radius: 4em;
+        background: $color-he-blue;
+        font-weight: bold;
+        padding: 0.5em 1em;
 
-            &:hover, &:focus {
-                background: darken($color-he-blue, 10%);
-            }
+        &:hover, &:focus {
+            background: darken($color-he-blue, 10%);
         }
     }
 }
@@ -215,8 +218,6 @@ p.form-error {
     margin: 0 0 0.5em 1em;
 }
 
-.btn-primary,
-.green-btn,
 .btn--primary {
     background: $color-he-blue;
     border: none;

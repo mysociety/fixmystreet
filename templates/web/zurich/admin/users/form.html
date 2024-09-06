@@ -33,10 +33,10 @@
 
   [% IF user AND NOT user.from_body %]
     <ul class="no-bullets danger-zone">
-      <li><input class="btn-danger" type="submit" name="logout_everywhere" value="[% loc('Log out of all sessions') %]">
-      <li><input class="btn-danger" type="submit" name="anon_everywhere" value="[% loc('Make anonymous on all reports and updates') %]">
-      <li><input class="btn-danger" type="submit" name="hide_everywhere" value="[% loc('Hide all reports and updates') %]">
-      <li><input class="btn-danger" type="submit" name="remove_account" value="[% loc('Remove account details') %]">
+      <li><input class="btn btn--danger" type="submit" name="logout_everywhere" value="[% loc('Log out of all sessions') %]">
+      <li><input class="btn btn--danger" type="submit" name="anon_everywhere" value="[% loc('Make anonymous on all reports and updates') %]">
+      <li><input class="btn btn--danger" type="submit" name="hide_everywhere" value="[% loc('Hide all reports and updates') %]">
+      <li><input class="btn btn--danger" type="submit" name="remove_account" value="[% loc('Remove account details') %]">
     </ul>
   [% END %]
 

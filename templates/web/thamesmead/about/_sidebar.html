@@ -1,8 +1,8 @@
 [% INCLUDE 'about/_sticky-button-content-navbar.html' %]
 
-<div class="sticky-sidebar">
+<div class="sticky-sidebar sticky-sidebar--help">
     <aside>
-        <ul class="plain-list">
+        <ul>
             <li>[% INCLUDE link h='/faq' t=loc('Frequently Asked Questions') %]</li>
             <li>[% INCLUDE link h='/about/privacy' t=loc('Privacy and cookies') %]</li>
             [% IF c.cobrand.feature('contact_us_url') %]

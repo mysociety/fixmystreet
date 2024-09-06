@@ -45,42 +45,43 @@ body.frontpage {
     div {
         position: relative;
         border: none;
+    }
 
-        input#pc {
-            box-sizing: border-box;
-            padding: 10px 22px;
-            border: 1px solid $form-border;
-            border-radius: 4.5px;
-            background: #fff;
+    input#pc {
+        box-sizing: border-box;
+        padding: 10px 22px;
+        border: 1px solid $form-border;
+        border-radius: 4.5px;
+        background: #fff;
 
-            &:focus {
-                box-shadow: 0 0 0 3px $westminster-yellow;
-                outline: 0;
-            }
-        }
-
-        input#sub {
-            width: 40px;
-            height: 46px;
-            padding: 0 0 0 50px; // So value 'Go' doesn't display inside search icon
-            overflow: hidden;
-            @include flex(0 0 auto);
-            background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50% 50%;
-            background-size: 42px 32px;
-            position: absolute;
-            border-top-right-radius: 4.5px;
-            border-bottom-right-radius: 4.5px;
-            top: 0;
-            right: 0;
-
-            &:hover,
-            &:focus {
-                background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50%
-                    50%;
-                background-size: 42px 32px;
-            }
+        &:focus {
+            box-shadow: 0 0 0 3px $westminster-yellow;
+            outline: 0;
         }
     }
+
+    input#sub {
+        width: 40px;
+        height: 46px;
+        padding: 0 0 0 50px; // So value 'Go' doesn't display inside search icon
+        overflow: hidden;
+        @include flex(0 0 auto);
+        background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50% 50%;
+        background-size: 42px 32px;
+        position: absolute;
+        border-top-right-radius: 4.5px;
+        border-bottom-right-radius: 4.5px;
+        top: 0;
+        right: 0;
+
+        &:hover,
+        &:focus {
+            background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50%
+                50%;
+            background-size: 42px 32px;
+        }
+    }
+
     label {
         font-size: 1.1em;
         font-weight: 600;
@@ -141,7 +142,7 @@ ol.big-numbers > li:before {
         background-size: $image-width $image-height;
         background-position: center center;
         background-repeat: no-repeat;
-        @include svg-background-image("/cobrands/westminster/images/footer-logo");
+        background-image: url("/cobrands/westminster/images/footer-logo.svg");
     }
 }
 .westminster-footer-logo__desktop {
@@ -190,19 +191,19 @@ ol.big-numbers > li:before {
 }
 
 .westminster-social-links__linkedin {
-    @include svg-background-image("/cobrands/westminster/images/westminster_linkedin");
+    background-image: url("/cobrands/westminster/images/westminster_linkedin.svg");
 }
 
 .westminster-social-links__twitter {
-    @include svg-background-image("/cobrands/westminster/images/westminster_twitter");
+    background-image: url("/cobrands/westminster/images/westminster_twitter.svg");
 }
 
 .westminster-social-links__instagram {
-    @include svg-background-image("/cobrands/westminster/images/westminster_instagram");
+    background-image: url("/cobrands/westminster/images/westminster_instagram.svg");
 }
 
 .westminster-social-links__facebook {
-    @include svg-background-image("/cobrands/westminster/images/westminster_facebook");
+    background-image: url("/cobrands/westminster/images/westminster_facebook.svg");
 }
 
 .westminster-tertiary-links {
@@ -229,6 +230,10 @@ ol.big-numbers > li:before {
     display: none;
 }
 
+.btn--primary {
+    @include btn-medium-primary;
+}
+
 body.mappage {
     h1 {
         font-weight: 600;
@@ -249,28 +254,8 @@ body.mappage {
     }
 }
 
-body.authpage, body.twothirdswidthpage {
-    .form-control {
-        outline-color: $westminster_yellow;
-    }
-
-    #form_sign_in {
-        input.btn {
-            @include btn-medium-primary
-        }
-    }
-}
-
-body.alertpage, body.authpage, body.twothirdswidthpage {
-    .form-txt-submit-box {
-        input.green-btn, input.btn-primary {
-            @include btn-medium-primary
-        }
-    }
-
-    input.green-btn {
-        @include btn-medium-primary
-    }
+.form-control {
+    outline-color: $westminster_yellow;
 }
 
 .westminster-cookie-banner {

@@ -12,7 +12,9 @@
 
 <div id="map_sidebar">
 
-[% INCLUDE 'admin/navigation.html' title = tprintf(loc('Editing report %d'), problem.id ) %]
+      &larr; <a href="[% c.uri_for_action( 'admin/reports/index' ) %]">[% loc('All reports') %]</a>
+
+<h1>[% tprintf(loc('Editing report %d'), problem.id ) %]</h1>
 
 [% IF problem.cobrand_data == 'waste' %]
     [% PROCESS 'admin/reports/_edit_waste.html' %]

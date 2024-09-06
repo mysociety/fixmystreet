@@ -20,7 +20,7 @@
  [% IF is_staff AND waste_features.bulky_retry_bookings %]
     <form method="post" style="display:flex;gap:0.25em;align-items:center">
         Unpaid booking reference: <input type="text" name="continue_id" value="[% continue_id %]" style="max-width:10em;">
-        <input type="submit" value="Retry bulky payment" class="btn btn-primary">
+        <input type="submit" value="Retry bulky payment" class="btn btn--primary">
     </form>
  [% END %]
 

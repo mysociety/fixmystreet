@@ -1,5 +1,5 @@
 [%
-INCLUDE 'header.html', title = loc('Two-factor authentication'), bodyclass = 'fullwidthpage'
+INCLUDE 'header.html', title = loc('Two-factor authentication')
 %]
 
 <div class="confirmation-header confirmation-header--phone">
@@ -17,7 +17,7 @@ INCLUDE 'header.html', title = loc('Two-factor authentication'), bodyclass = 'fu
       [% ELSE # stage is intro %]
       <p align="center">[% loc('Your account requires two-factor authentication to be set up.') %]</p>
         <p align="center">
-            <input class="btn-primary" type="submit" value="[% loc('Activate two-factor authentication') %]">
+            <input class="btn btn--primary" type="submit" value="[% loc('Activate two-factor authentication') %]">
         </p>
         <input type="hidden" name="2fa_action" value="activate">
       [% END %]

@@ -31,7 +31,7 @@ $societyworks-footer-logo-vertical-align: -7px !default;
     background-position: 0 0;
     background-repeat: no-repeat;
     background-size: 115px 24px;
-    @include svg-background-image('/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo');
+    background-image: url("/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo.svg");
     vertical-align: $societyworks-footer-logo-vertical-align - 2px;
     margin-#{$left}: 0.5em;
 }
@@ -40,6 +40,6 @@ $societyworks-footer-logo-vertical-align: -7px !default;
     padding-top: 23px;
     width: 123px;
     background-size: 123px 23px;
-    @include svg-background-image('/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo-fms-pro');
+    background-image: url("/cobrands/fixmystreet-uk-councils/images/societyworks-footer-logo-fms-pro.svg");
     vertical-align: $societyworks-footer-logo-vertical-align;
 }

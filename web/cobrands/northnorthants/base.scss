@@ -6,7 +6,7 @@
 
 // HEADER
 #site-logo {
-  @include svg-background-image('/cobrands/northnorthants/images/logo');
+  background-image: url("/cobrands/northnorthants/images/logo.svg");
   background-size: contain;
   height: $mappage-header-height;
   width: 175px;
@@ -48,25 +48,25 @@
 .postcode-form-box {
   div {
     border-width: 0px;
+  }
 
-    input#pc {
-      border: 2px solid black;
-      border-top-left-radius: 6px;
-      border-bottom-left-radius: 6px;
+  input#pc {
+    border: 2px solid black;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+
+  input#sub {
+    background: $primary;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+
+    &:hover {
+        background: $primary_link_hover_color;
     }
-  
-    input#sub {
-      background: $primary;
-      border-top-right-radius: 6px;
-      border-bottom-right-radius: 6px;
-  
-      &:hover {
-          background: $primary_link_hover_color;
-      }
-      &:focus {
-        background: $focus-bg-top;
-        color: $focus-text;
-      }
+    &:focus {
+      background: $focus-bg-top;
+      color: $focus-text;
     }
   }
 }
@@ -90,9 +90,8 @@ h1 {
 }
 
 .btn, 
-.btn-primary, 
 .btn--primary, 
-.postcode-form-box div input#sub,
+.postcode-form-box input#sub,
 #report-cta,
 .nav-menu--main a.report-a-problem-btn  {
     @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
@@ -105,7 +104,6 @@ h1 {
     }
 }
 
-.btn--secondary, 
 .btn-secondary, 
 .nav-menu a.btn-secondary,
 a#geolocate_link,
@@ -241,7 +239,7 @@ input {
 
   .footer-council-logo {
     display: block;
-    @include svg-background-image('/cobrands/northnorthants/images/logo-white');
+    background-image: url("/cobrands/northnorthants/images/logo-white.svg");
     background-size: contain;
     background-repeat: no-repeat;
     height: 80px;

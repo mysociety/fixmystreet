@@ -4,10 +4,8 @@
 [% INCLUDE 'header.html',
     title = loc('Contact Us')
     robots = 'noindex,nofollow'
-    bodyclass = 'twothirdswidthpage'
+    sidebar = 'about/_sidebar.html'
 %]
-
-[% INCLUDE 'about/_sidebar.html' %]
 
 [% IF c.cobrand.moniker == 'fixmystreet' %]
 <h1>FixMyStreet technical support</h1>
@@ -138,7 +136,7 @@
 
     [% PROCESS 'auth/form_extra.html' %]
 
-    <input class="final-submit green-btn" type="submit" value="[% loc('Send') %]">
+    <input class="final-submit btn btn--primary" type="submit" value="[% loc('Send') %]">
 
 </form>
 
