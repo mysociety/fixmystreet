@@ -465,7 +465,7 @@ sub filter_premade_csv {
     my $end_date = $self->end_date;
     if (!$end_date || $end_date ge $today->strftime('%Y-%m-%d')) {
         $add_on_today = 1;
-        $end_date = $today->subtract(days => 1)->strftime('%Y-%m-%d');
+        $end_date = $today->clone->subtract(days => 1)->strftime('%Y-%m-%d');
     }
 
     my $range = FixMyStreet::DateRange->new(
