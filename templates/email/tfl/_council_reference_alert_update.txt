@@ -1,1 +1,1 @@
-[% INCLUDE '_council-reference.txt' %]
+_council_reference.txt
