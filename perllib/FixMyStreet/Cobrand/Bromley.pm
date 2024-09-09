@@ -979,7 +979,7 @@ sub waste_munge_bulky_data {
     my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
 
     my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
-    $data->{extra_GUID} = $self->{c}->waste_cache_get($guid_key);
+    $data->{extra_GUID} = $data->{$guid_key};
     $data->{extra_reservation} = $ref;
 
     $data->{title} = "Bulky goods collection";

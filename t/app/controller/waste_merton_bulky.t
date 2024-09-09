@@ -1072,7 +1072,56 @@ FixMyStreet::override_config {
         $report->delete;
     };
 
+    my $uids = ['fdb15723-6f7b-11ef-bb48-92d49edc2d82', 'fb5c8c62-6f7b-11ef-bb48-9583e9688b31'];
+    my $uidtiny = Test::MockModule->new('UUID::Tiny');
+    $uidtiny->mock('create_uuid_as_string', sub { return pop @$uids });
+
+    subtest 'Bulky goods data survives dual session' => sub {
+        $mech->get_ok('/waste/12345/bulky');
+
+        subtest 'Intro page' => sub {
+            $mech->content_contains('Book a bulky waste collection');
+            $mech->content_contains('Before you start your booking');
+            $mech->content_contains('You can request up to <strong>six items per collection');
+            $mech->content_contains('The price you pay depends how many items you would like collected:');
+            $mech->content_contains('1–3 items = £37.00');
+            $mech->content_contains('4–6 items = £60.75');
+            $mech->submit_form_ok;
+        };
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->content_contains('1 July');
+        $mech->content_contains('8 July');
+        $mech->submit_form_ok(
+            { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    'item_1' => 'BBQ',
+                    'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
+                    'item_2' => 'Bicycle',
+                    'item_3' => 'Bath',
+                },
+            },
+        );
+        $mech->content_contains('Items must be out for collection by 6am on the collection day.');
+        my $mech2 = $mech->clone;
+        $mech2->get_ok('/waste/12345', 'Visit property waste page in another window');
+        $mech->submit_form_ok({ with_fields => { location => '' } }, 'Will error with a blank location');
+        $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
+        subtest 'Summary page' => \&test_summary;
+    };
+
+    subtest 'Summary submission' => \&test_summary_submission;
+
+    subtest 'Payment page' => sub {
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        is $new_report->get_extra_field_value('GUID'), 'fb5c8c62-6f7b-11ef-bb48-9583e9688b31', 'Using original GUID';
+    };
+
 };
+
 
 done_testing;
 

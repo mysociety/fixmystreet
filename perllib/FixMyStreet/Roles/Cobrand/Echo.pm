@@ -1023,7 +1023,6 @@ sub clear_cached_lookups_property {
     foreach my $key (
         $self->council_url . ":echo:look_up_property:$id",
         $self->council_url . ":echo:bin_services_for_address:$id",
-        $self->council_url . ":echo:bulky_event_guid:$id",
     ) {
         $self->{c}->waste_cache_delete($key);
     }
@@ -1031,6 +1030,7 @@ sub clear_cached_lookups_property {
 
 sub clear_cached_lookups_bulky_slots {
     my ( $self, $id, $skip_echo ) = @_;
+    my $form = $self->{c}->stash->{form};
 
     for (qw/earlier later/) {
         $self->{c}->waste_cache_delete($self->council_url . ":echo:available_bulky_slots:$_:$id");
@@ -1040,8 +1040,7 @@ sub clear_cached_lookups_bulky_slots {
 
     # We also need to cancel the reserved slots in Echo
     my $guid_key = $self->council_url . ":echo:bulky_event_guid:$id";
-    my $guid = $self->{c}->waste_cache_get($guid_key);
-
+    my $guid = $form->{saved_data}->{$guid_key};
     return unless $guid;
 
     my $cfg = $self->feature('echo');
@@ -1147,7 +1146,7 @@ sub bulky_check_missed_collection {
 }
 
 sub find_available_bulky_slots {
-    my ( $self, $property, $last_earlier_date_str, $no_cache ) = @_;
+    my ( $self, $property, $last_earlier_date_str, $no_cache, $form ) = @_;
 
     my $key
         = $self->council_url . ":echo:available_bulky_slots:"
@@ -1165,11 +1164,13 @@ sub find_available_bulky_slots {
     my $event_type_id = $cfg->{bulky_event_type_id};
 
     my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $property->{id};
-    my $guid = $self->{c}->waste_cache_get($guid_key);
+    use Data::Dumper; warn Dumper $form->{saved_data};
+    my $guid = $form->{saved_data}->{$guid_key};
     unless ($guid) {
         require UUID::Tiny;
         $guid = UUID::Tiny::create_uuid_as_string();
-        $self->{c}->waste_cache_set($guid_key, $guid);
+        $form->{saved_data}->{$guid_key} = $guid;
+        warn Dumper $form->{saved_data};
     }
 
     my $window = $self->_bulky_collection_window($last_earlier_date_str);
@@ -1214,7 +1215,7 @@ sub check_bulky_slot_available {
         $self->clear_cached_lookups_bulky_slots($property->{id});
 
         my $available_slots = $self->find_available_bulky_slots(
-            $property, undef, 'no_cache' );
+            $property, undef, 'no_cache', $form );
 
         my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
 
