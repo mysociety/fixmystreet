@@ -686,6 +686,10 @@ subtest 'Dashboard CSV extra columns' => sub {
     $contact5->update({ category => 'Trees (brown)' });
     my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Trees test', { category => "Trees (brown)", cobrand => 'tfl' });
 
+    my $yesterday = DateTime->now()->subtract( days => 1 );
+    my ($y_rep) = $mech->create_problems_for_body(1, $body->id, 'Yesterday', { category => "Bus stops", cobrand => 'tfl', dt => $yesterday, state => 'duplicate' });
+    my $y_id = $y_rep->id;
+
     FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
 
     $mech->get_ok('/dashboard?export=1&category=Not+present');
@@ -699,6 +703,8 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('"Bus things","Bus stops"');
     $mech->content_contains('"BR1 3UH",Bromley,');
     $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",Yes,,98756');
+    my $c = () = $mech->encoded_content =~ /^$y_id/mg;
+    is $c, 1, 'Only one report from yesterday';
 
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains('Category,Subcategory');
@@ -1010,7 +1016,7 @@ subtest 'Test user reports are visible on cobrands appropriately' => sub {
     $mech->host('tfl.fixmystreet.com');
     $mech->log_in_ok('test@example.com');
     $mech->get_ok('/my');
-    $mech->content_contains('1 to 2 of 2');
+    $mech->content_contains('1 to 3 of 3');
     $mech->content_contains('Test TfL report made on .com');
     $mech->content_contains('Test TfL report made on TfL');
     $mech->content_lacks('Test Bromley report');

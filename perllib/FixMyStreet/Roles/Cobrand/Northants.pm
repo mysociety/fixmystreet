@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::CobrandNorthants;
+package FixMyStreet::Roles::Cobrand::Northants;
 
 use v5.14;
 use warnings;
@@ -8,7 +8,7 @@ use FixMyStreet::DB;
 
 =head1 NAME
 
-FixMyStreet::Roles::CobrandNorthants - shared code between West & Northants cobrands
+FixMyStreet::Roles::Cobrand::Northants - shared code between West & Northants cobrands
 
 =cut
 

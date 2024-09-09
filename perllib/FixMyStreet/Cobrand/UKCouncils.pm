@@ -727,10 +727,13 @@ sub csv_active_planned_reports {
     my ($self) = @_;
 
     my %reports_to_user;
-    my @cobrand_users = FixMyStreet::DB->resultset('User')->search({ from_body => $self->body->id});
+    my @cobrand_users = FixMyStreet::DB->resultset('User')->search(
+        { from_body => $self->body->id },
+        { prefetch => 'active_user_planned_reports' },
+    );
 
     for my $user (@cobrand_users) {
-        map { $reports_to_user{$_->report_id} = $user->name } @{$user->active_user_planned_reports};
+        map { $reports_to_user{$_->report_id} = $user->name } $user->active_user_planned_reports->all;
     }
     return \%reports_to_user;
 }
