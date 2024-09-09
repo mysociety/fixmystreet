@@ -21,7 +21,7 @@ use Moo;
 # checks for Confirm.
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Alloy';
-with 'FixMyStreet::Roles::CobrandNorthants';
+with 'FixMyStreet::Roles::Cobrand::Northants';
 with 'FixMyStreet::Roles::BoroughEmails';
 
 =head2 Defaults
@@ -79,7 +79,7 @@ sub _problems_restriction_areas { [
 
 =item * Defects are coloured blue.
 
-Ideally this would be in Roles::CobrandNorthants, but that can't call $self->SUPER.
+Ideally this would be in Roles::Cobrand::Northants, but that can't call $self->SUPER.
 
 =cut
 

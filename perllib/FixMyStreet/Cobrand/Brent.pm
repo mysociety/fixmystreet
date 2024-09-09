@@ -43,7 +43,7 @@ use FixMyStreet::App::Form::Waste::Request::Brent;
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 with 'FixMyStreet::Roles::Open311Multi';
-with 'FixMyStreet::Roles::CobrandOpenUSRN';
+with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::SCP';
 use Integrations::Paye;

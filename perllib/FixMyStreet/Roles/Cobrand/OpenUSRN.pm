@@ -1,4 +1,4 @@
-package FixMyStreet::Roles::CobrandOpenUSRN;
+package FixMyStreet::Roles::Cobrand::OpenUSRN;
 
 use Moo::Role;
 
