@@ -2,8 +2,6 @@
 [% USE pounds = format('%.2f'); ~%]
 [% PROCESS 'waste/header.html' %]
 
-<div class="waste__loading_wrapper">
-
 [% IF c.cobrand.moniker != 'sutton' %]
 <h1 class="govuk-heading-xl">Your bin days</h1>
 [% END %]
@@ -254,5 +252,5 @@
   </div>
  [% END %]
 </div>
-</div>
+
 [% INCLUDE footer.html %]
