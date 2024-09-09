@@ -4,6 +4,11 @@
 <meta name="viewport" content="initial-scale=1.0, width=device-width, viewport-fit=cover">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 [% IF page_refresh %]
+    <script type="module" src="[% version('/cobrands/fixmystreet-uk-councils/refresh.js') %]"
+        id="page-refresh" data-every="[% page_refresh %]"></script>
+    <script nomodule>
+        setTimeout(function(){ location.reload() }, [% page_refresh %] * 1000);
+    </script>
     <noscript>
         <meta http-equiv="refresh" content="[% page_refresh %];url=?page_loading=1">
     </noscript>

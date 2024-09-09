@@ -1,24 +1,16 @@
-[% USE date(format = c.cobrand.bin_day_format) %]
-[% USE pounds = format('%.2f'); ~%]
 [% PROCESS 'waste/header.html' %]
 
-<div class="waste__loading_wrapper"
-  hx-get="[% c.req.uri.path_query %]"
-  hx-swap="outerHTML"
-  hx-select=".waste__loading_wrapper"
-  hx-trigger="every [% page_refresh %]s">
-
-  [% IF c.cobrand.moniker != 'sutton' %]
+[% IF c.cobrand.moniker != 'sutton' %]
     <h1 class="govuk-heading-xl">Your bin days</h1>
-  [% END %]
+[% END %]
 
-    <div class="waste__collections">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full text-centered">
-            <img id="loading-indicator" aria-hidden="true" src="/i/loading.svg" alt="Loading...">
-            <h2>Loading your bin days...</h2>
-          </div>
-        </div>
+<div class="waste__collections">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full text-centered">
+        <img id="loading-indicator" aria-hidden="true" src="/i/loading.svg" alt="Loading...">
+        <h2>Loading your bin days...</h2>
+      </div>
     </div>
 </div>
+
 [% INCLUDE footer.html %]

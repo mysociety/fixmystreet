@@ -1,11 +1,9 @@
 [% USE date %]
 [% INCLUDE waste/header.html %]
 
-<div class="waste__loading_wrapper">
-
-  [% PROCESS 'govuk/fields.html' %]
-  [% PROCESS title title=form.title %]
-  [% PROCESS errors %]
+[% PROCESS 'govuk/fields.html' %]
+[% PROCESS title title=form.title %]
+[% PROCESS errors %]
 
 <p>
 You can subscribe to our garden waste collection service if you are a frequent gardener, or if you can’t home compost your own garden waste.
@@ -84,7 +82,5 @@ You can <a href="https://www.sutton.gov.uk/-/check-your-bin-collection-days">che
 <form method="post" action="garden">
   [% PROCESS form %]
 </form>
-
-</div>
 
 [% INCLUDE footer.html %]

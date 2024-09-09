@@ -1,7 +1,5 @@
 [% INCLUDE waste/header.html %]
 
-<div class="waste__loading_wrapper">
-
   [% PROCESS 'govuk/fields.html' %]
   [% PROCESS title title=form.title %]
   [% PROCESS errors %]
@@ -64,7 +62,5 @@
 <form method="post" action="garden">
   [% PROCESS form %]
 </form>
-
-</div>
 
 [% INCLUDE footer.html %]
