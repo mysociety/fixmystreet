@@ -77,5 +77,11 @@ sub default_map_zoom { 3 }
 
 sub reports_per_page { return 20; }
 
+=item * Use own privacy policy link
+
+=cut
+
+sub privacy_policy_url { 'https://www.hart.gov.uk/privacy/corporate-services-privacy' }
+
 1;
 
