@@ -46,7 +46,7 @@
         - Add `send_state` column to reports. #4048
         - Return random unprocessed row to daemon.
         - A cobrand level text override for the details field label on new reports can now be configured.
-        - Cobrands can provide per-category custom distances for duplicate lookup. #4746
+        - Cobrands can provide per-category custom distances for duplicate lookup. #4746 #5162
         - Add perl 5.38 support.
         - Add plain text template previews to /_dev/email. #5105
     - Performance improvements:
