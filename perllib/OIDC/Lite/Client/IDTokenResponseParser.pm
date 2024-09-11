@@ -50,6 +50,10 @@ sub parse {
             message => sprintf("Response doesn't include 'id_token'")
         ) unless exists $result->{id_token};
 
+        print STDERR "Response token\n";
+        print STDERR $http_res->content;
+        print STDERR "END Response token\n";
+
         $token = OIDC::Lite::Model::IDToken->load($result->{id_token});
 
     } else {
