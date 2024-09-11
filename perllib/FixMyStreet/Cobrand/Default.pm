@@ -1474,6 +1474,8 @@ inspector de-duplication and report duplicate suggestions features.
 
 Defaults to 1000m for inspectors, 250m for duplicate suggestions.
 
+Returning a distance of 0 means no nearby reports will be returned at all.
+
 Should return a hashref of the form
 
 {
