@@ -288,7 +288,7 @@ sub generate_csv {
             ? '(anonymous)' : $obj->name;
 
         if ($asked_for{acknowledged}) {
-            my @updates = $obj->comments->all;
+            my @updates = $obj->confirmed_comments->all;
             @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
             for my $comment (@updates) {
                 next unless $comment->problem_state || $comment->mark_fixed;
