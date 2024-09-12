@@ -6,6 +6,7 @@ use Test::MockTime 'set_fixed_time';
 use Test::Output;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Alerts;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -846,7 +847,13 @@ FixMyStreet::override_config {
             'Submitting missed collection report'
         );
         $mech->content_contains('Missed collection has been reported');
-
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $email;
+        for my $mail (@emails) {
+            $email = $mail->as_string if $mail->header('To') =~ 'test@example.com';
+        };
+        like $email, qr/Brown Caddy \(Food waste\)/, 'Service added to title';
         my @reports = FixMyStreet::DB->resultset("Problem")->all;
         is @reports, 1, 'only one report created';
 

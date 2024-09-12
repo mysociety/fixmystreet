@@ -6,7 +6,7 @@
     title = title.remove(address);
   ELSIF is_missed_collection;
     title = report.title;
-    title = title.remove('Report missed ');
+    title = title.remove('Report missed '); # For any older reports
   END
 %]
 <h2 style="[% h2_style %]">Bins reported as missed:</h2>
