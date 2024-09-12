@@ -499,6 +499,8 @@ sub _updates_disallowed_check {
         return $cfg unless !$body_comment_user && $open;
     } elsif ($cfg eq 'reporter-not-open/staff-open') {
         return $cfg unless ( $reporter && !$open ) || ( $staff && $open );
+    } elsif ($cfg eq 'reporter/staff/notopen311-open') {
+        return $cfg unless ($reporter || $staff || !$body_comment_user) && $open;
     }
     return '';
 }
