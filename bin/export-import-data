@@ -23,6 +23,7 @@ my ($opt, $usage) = describe_options(
     [ 'import=s', "File to import" ],
     [ 'commit', "Actually commit changes to the database" ],
     [ 'update-templates', "Update existing templates (default is to skip)" ],
+    [ 'update-contacts', "Update existing contacts (default is to skip)" ],
     [ 'categories=s', "pipe-separated list of categories to export contacts for and filter templates by" ],
     [ 'all-categories', "Use instead of --categories to export all contacts & templates" ],
     [ 'help', "print usage message and exit", { shortcircuit => 1 } ],
@@ -36,7 +37,7 @@ my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opt->name }) or d
 my @categories = split(/\|/, ($opt->{categories} || ''));
 
 if ($opt->import) {
-    import($opt->import, $opt->update_templates);
+    import($opt->import, $opt->update_templates, $opt->update_contacts);
 } else {
     export();
 }
@@ -108,6 +109,7 @@ sub export {
 sub import {
     my $file = shift;
     my $update_templates = shift;
+    my $update_contacts = shift;
 
     my $json = path($file)->slurp;
     my $out = $J->decode($json);
@@ -118,20 +120,33 @@ sub import {
     foreach (@{$out->{contacts}}) {
         my $existing = $body->contacts->search({ category => $_->{category} })->single;
         if ($existing) {
-            warn "Category $_->{category} already exists, skipping";
-            next;
+            if ($update_contacts) {
+                $existing->update({
+                    note => "Updated from $file",
+                    editor => 'export-import-data',
+                    whenedited => \'current_timestamp',
+                    email => $_->{email},
+                    state => $_->{state},
+                    non_public => $_->{non_public},
+                    extra => $_->{extra},
+                });
+            } else {
+                warn "Category $_->{category} already exists, skipping";
+                next;
+            }
+        } else {
+            my $contact = $body->contacts->new({
+                note => "Imported from $file",
+                editor => 'export-import-data',
+                whenedited => \'current_timestamp',
+                category => $_->{category},
+                email => $_->{email},
+                state => $_->{state},
+                non_public => $_->{non_public},
+                extra => $_->{extra},
+            });
+            $contact->insert;
         }
-        my $contact = $body->contacts->new({
-            note => "Imported from $file",
-            editor => 'export-import-data',
-            whenedited => \'current_timestamp',
-            category => $_->{category},
-            email => $_->{email},
-            state => $_->{state},
-            non_public => $_->{non_public},
-            extra => $_->{extra},
-        });
-        $contact->insert;
     }
 
     foreach (@{$out->{templates}}) {
