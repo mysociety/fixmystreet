@@ -351,7 +351,9 @@ sub _handle_assigned_user {
                 );
             }
 
-            $assigned_user->add_to_planned_reports($p);
+            $assigned_user->add_to_planned_reports($p, 'no_comment');
+
+            # TODO Unassign?
         }
         if ( exists $request->{extras}{detailed_information} ) {
             $request->{extras}{detailed_information}
