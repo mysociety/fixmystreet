@@ -472,6 +472,8 @@ sub inspect : Private {
                             $c->cobrand->max_detailed_info_length
                         );
                 }
+            } elsif ( $c->get_param('detailed_information') eq '' ) {
+                $problem->unset_extra_metadata('detailed_information');
             }
 
             if ( $c->get_param('include_update') or $c->get_param('raise_defect') ) {
