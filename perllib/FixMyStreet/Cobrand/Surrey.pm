@@ -103,6 +103,17 @@ sub get_town {
     return $town;
 }
 
+=head2 categories_restriction
+
+Surrey don't want a particular district category on their cobrand.
+
+=cut
+
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    return $rs->search( { 'me.category' => {  -not_in => [ 'Rubbish (refuse and recycling)' ] } } );
+}
+
 =head2 dashboard_export_problems_add_columns
 
 Surrey has an extra column in their stats export showing the number of subscribers to a report.
