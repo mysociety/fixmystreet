@@ -460,6 +460,8 @@ sub inspect : Private {
         if ($permissions->{report_inspect}) {
             $problem->set_extra_metadata( traffic_information => $c->get_param('traffic_information') );
 
+            my $old_detailed_information
+                = $problem->get_extra_metadata('detailed_information') // '';
             if ( my $info = $c->get_param('detailed_information') ) {
                 $problem->set_extra_metadata( detailed_information => $info );
                 if ($c->cobrand->max_detailed_info_length &&
@@ -474,6 +476,20 @@ sub inspect : Private {
                 }
             } elsif ( $c->get_param('detailed_information') eq '' ) {
                 $problem->unset_extra_metadata('detailed_information');
+            }
+
+            my $handler
+                = $c->cobrand->call_hook(
+                    get_body_handler_for_problem => $problem
+                ) || $c->cobrand;
+            my $record_extra
+                = $handler->call_hook('record_update_extra_fields');
+            if (
+                $record_extra->{detailed_information}
+                && ( $problem->get_extra_metadata('detailed_information') // '' )
+                ne $old_detailed_information
+            ) {
+                $update_params{extra}{detailed_information} = 1;
             }
 
             if ( $c->get_param('include_update') or $c->get_param('raise_defect') ) {
@@ -523,7 +539,7 @@ sub inspect : Private {
             # If the state has been changed to action scheduled and they've said
             # they want to raise a defect, consider the report to be inspected.
             if ($problem->state eq 'action scheduled' && $c->get_param('raise_defect') && !$problem->get_extra_metadata('inspected')) {
-                $update_params{extra} = { 'defect_raised' => 1 };
+                $update_params{extra}{defect_raised} = 1;
                 $problem->set_extra_metadata( inspected => 1 );
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
             }

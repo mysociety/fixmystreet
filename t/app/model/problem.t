@@ -5,6 +5,12 @@ use FixMyStreet::DB;
 use FixMyStreet::Script::Reports;
 use Open311::GetUpdates;
 use Sub::Override;
+use Test::MockModule;
+
+my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Default');
+$cobrand->mock(
+    record_update_extra_fields => sub { { shortlisted_user => 1 } }
+);
 
 my $problem_rs = FixMyStreet::DB->resultset('Problem');
 
@@ -284,6 +290,10 @@ for my $test (
                 is $problem->shortlisted_user->email,
                     $assigned_user_email,
                     'assigned user actually assigned to problem';
+                is $problem->comments->count, 1, 'initial comment only';
+                for ( $problem->comments ) {
+                    is $_->extra, undef, 'No extra data';
+                }
             }
 
             my $detailed_information = $extras->{detailed_information};

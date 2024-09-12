@@ -227,6 +227,19 @@ sub should_skip_sending_update {
 
 =cut
 
+=head2 record_update_extra_fields
+
+We want to create comments when assigned (= shortlisted) user or
+extra details (= detail_information) are updated for a report.
+
+=cut
+
+sub record_update_extra_fields {
+    {   shortlisted_user     => 1,
+        detailed_information => 1,
+    };
+}
+
 =head2 open311_munge_update_params
 
 We pass a report's 'detailed_information' (from its

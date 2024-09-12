@@ -1,3 +1,4 @@
+use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::CSVExport;
 use Test::MockModule;
@@ -109,6 +110,124 @@ FixMyStreet::override_config {
         $mech->content_contains('Trees\'>');
         $mech->content_contains('value=\'Flytipping\' data-nh="1"');
     };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'northumberland', 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    my $o = Open311->new( fixmystreet_body => $body );
+
+    my $superuser = $mech->create_user_ok(
+        'superuser@example.com',
+        name         => 'Super User',
+        is_superuser => 1,
+    );
+    $mech->log_in_ok( $superuser->email );
+
+    for my $host ( 'northumberland', 'fixmystreet' ) {
+        ok $mech->host($host), "change host to $host";
+
+        my ($problem_to_update) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'Test',
+            { cobrand => $host },
+        );
+
+        subtest "User assignment on $host site" => sub {
+            $mech->get_ok( '/report/' . $problem_to_update->id );
+            $mech->click_ok('.btn--shortlist');
+            my $comment
+                = $problem_to_update->comments->order_by('-id')->first;
+            is_deeply $comment->get_extra_metadata, {
+                shortlisted_user => $superuser->email,
+                is_superuser     => 1,
+            }, 'Comment created for user assignment';
+
+            my $id = $o->post_service_request_update($comment);
+            my $cgi = CGI::Simple->new($o->test_req_used->content);
+            is $cgi->param('attribute[assigned_to_user_email]'),
+                $superuser->email,
+                'correct assigned_to_user_email attribute';
+            is $cgi->param('attribute[extra_details]'),
+                '',
+                'correct extra_details attribute';
+
+            $mech->get_ok( '/report/' . $problem_to_update->id );
+            $mech->click_ok('.btn--shortlisted');
+            $comment
+                = $problem_to_update->comments->order_by('-id')->first;
+            is_deeply $comment->get_extra_metadata, {
+                shortlisted_user => undef,
+                is_superuser     => 1,
+            }, 'Comment created for user un-assignment';
+
+            $id = $o->post_service_request_update($comment);
+            $cgi = CGI::Simple->new($o->test_req_used->content);
+            is $cgi->param('attribute[assigned_to_user_email]'),
+                '',
+                'correct assigned_to_user_email attribute';
+            is $cgi->param('attribute[extra_details]'),
+                '',
+                'correct extra_details attribute';
+        };
+
+        subtest "Extra details on $host site" => sub {
+            $mech->get_ok( '/report/' . $problem_to_update->id );
+            $mech->submit_form(
+                button  => 'save',
+                form_id => 'report_inspect_form',
+                fields  => {
+                    detailed_information => 'ABC',
+                    include_update       => 0,
+                },
+            );
+            my $comment
+                = $problem_to_update->comments->order_by('-id')->first;
+            is_deeply $comment->get_extra_metadata, {
+                detailed_information => 1,
+                is_superuser         => 1,
+            }, 'Comment created for extra details';
+
+            my $id = $o->post_service_request_update($comment);
+            my $cgi = CGI::Simple->new($o->test_req_used->content);
+            is $cgi->param('attribute[assigned_to_user_email]'),
+                '',
+                'correct assigned_to_user_email attribute';
+            is $cgi->param('attribute[extra_details]'),
+                'ABC',
+                'correct extra_details attribute';
+
+            $mech->get_ok( '/report/' . $problem_to_update->id );
+            $mech->submit_form(
+                button  => 'save',
+                form_id => 'report_inspect_form',
+                fields  => {
+                    detailed_information => '',
+                    include_update       => 0,
+                },
+            );
+            $comment
+                = $problem_to_update->comments->order_by('-id')->first;
+            is_deeply $comment->get_extra_metadata, {
+                detailed_information => 1,
+                is_superuser         => 1,
+            }, 'Comment created for extra details unsetting';
+            is_deeply $problem_to_update->get_extra_metadata,
+                {},
+                'Extra details unset on problem';
+
+            $id = $o->post_service_request_update($comment);
+            $cgi = CGI::Simple->new($o->test_req_used->content);
+            is $cgi->param('attribute[assigned_to_user_email]'),
+                '',
+                'correct assigned_to_user_email attribute';
+            is $cgi->param('attribute[extra_details]'),
+                '',
+                'correct extra_details attribute';
+        };
+    }
 };
 
 done_testing();
