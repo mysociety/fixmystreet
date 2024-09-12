@@ -4,6 +4,7 @@ use Test::MockTime qw(:all);
 use Test::Output;
 use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::SendReport::Open311;
 use Catalyst::Test 'FixMyStreet::App';
@@ -250,16 +251,35 @@ FixMyStreet::override_config {
         is $c->param('service_code'), 'StreetLightingLAMP', 'Report resent';
     };
 
-    subtest 'extra CSV columns present' => sub {
+    subtest 'extra CSV columns present, and questionnaire answers work' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->first;
+        my $fly = FixMyStreet::DB->resultset("Problem")->search({ category => 'Flytipping' })->single;
+        $fly->update({ confirmed => $fly->confirmed->clone->subtract(days => 2), state => 'fixed - user' });
+
+        FixMyStreet::DB->resultset("Questionnaire")->create({
+            problem => $fly,
+            whensent => $fly->confirmed,
+            whenanswered => $fly->confirmed->clone->add(hours => 1),
+            old_state => 'confirmed',
+            new_state => 'fixed - user',
+        });
+
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains(',Category,Subcategory,');
         $mech->content_contains('"Danger things","Something dangerous"');
-
-        my $report = FixMyStreet::DB->resultset("Problem")->first;
         $mech->content_contains(',"User Email"');
         $mech->content_contains(',' . $report->user->email);
-    };
+        $mech->content_like(qr/Flytipping,,[^,]*,2019-10-14T17:00:00,,2019-10-14T18:00:00,,"fixed - user"/);
 
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains(',Category,Subcategory,');
+        $mech->content_contains('"Danger things","Something dangerous"');
+        $mech->content_contains(',"User Email"');
+        $mech->content_contains(',' . $report->user->email);
+        $mech->content_like(qr/Flytipping,,[^,]*,2019-10-14T17:00:00,,2019-10-14T18:00:00,,"fixed - user"/);
+    };
 
     subtest 'testing special Open311 behaviour', sub {
         my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {

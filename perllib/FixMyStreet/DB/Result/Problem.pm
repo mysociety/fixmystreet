@@ -253,6 +253,18 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+__PACKAGE__->has_many(
+  answered_questionnaires => "FixMyStreet::DB::Result::Questionnaire",
+  sub {
+      my $args = shift;
+      return {
+          "$args->{foreign_alias}.problem_id" => { -ident => "$args->{self_alias}.id" },
+          "$args->{foreign_alias}.whenanswered" => { '!=' => undef },
+      };
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 __PACKAGE__->might_have(
   contributed_by => "FixMyStreet::DB::Result::User",
   sub {

@@ -197,8 +197,9 @@ sub _csv_parameters_problems {
     my $self = shift;
 
     my $groups = $self->cobrand->enable_category_groups ? 1 : 0;
-    my $join = ['confirmed_comments'];
-    my $columns = ['confirmed_comments.id', 'confirmed_comments.problem_state', 'confirmed_comments.confirmed', 'confirmed_comments.mark_fixed'];
+    my $join = ['confirmed_comments', 'answered_questionnaires'];
+    my $columns = ['confirmed_comments.id', 'confirmed_comments.problem_state', 'confirmed_comments.confirmed', 'confirmed_comments.mark_fixed',
+        'answered_questionnaires.id', 'answered_questionnaires.whenanswered', 'answered_questionnaires.new_state'];
     if ($groups) {
         push @$join, 'contact';
         push @$columns, 'contact.id', 'contact.extra';
@@ -301,6 +302,16 @@ sub generate_csv {
                 if ($closed_states->{ $problem_state }) {
                     $hashref->{closed} = $comment->confirmed;
                     last;
+                }
+            }
+            my @questionnaires = $obj->answered_questionnaires->all;
+            @questionnaires = sort { $a->whenanswered <=> $b->whenanswered || $a->id <=> $b->id } @questionnaires;
+            for my $questionnaire (@questionnaires) {
+                my $problem_state = $questionnaire->new_state || '';
+                if ($fixed_states->{ $problem_state }) {
+                    if (!$hashref->{fixed} || $questionnaire->whenanswered lt $hashref->{fixed}) {
+                        $hashref->{fixed} = $questionnaire->whenanswered;
+                    }
                 }
             }
         }

@@ -147,6 +147,7 @@ sub process_body {
                 $hashref = initial_hashref($obj, $cobrand, $children);
             }
             process_comment($hashref, $obj);
+            process_questionnaire($hashref, $obj);
             if (my $fn = $reporting->csv_extra_data) {
                 my $extra = $fn->($obj, $hashref);
                 $hashref = { %$hashref, %$extra };
@@ -175,8 +176,10 @@ sub generate_sql {
         "to_json(date_trunc('second', me.created))#>>'{}' as created",
         "to_json(date_trunc('second', me.confirmed))#>>'{}' as confirmed",
         "to_json(date_trunc('second', me.whensent))#>>'{}' as whensent",
-        # Fetch the relevant bits of comments we need for timestamps
+        # Fetch the relevant bits of comments and questionnaires we need for timestamps
         "comments.id as comment_id, comments.problem_state, to_json(date_trunc('second', comments.confirmed))#>>'{}' as comment_confirmed, comments.mark_fixed",
+        "questionnaire.id as questionnaire_id, questionnaire.new_state as questionnaire_new_state",
+        "to_json(date_trunc('second', questionnaire.whenanswered))#>>'{}' as questionnaire_whenanswered",
         # Older reports did not store the group on the report, so fetch it from contacts
         "contact.extra->'group' AS group",
         # Fetch any relevant staff user and their roles
@@ -199,6 +202,7 @@ EOF
         '"comment" "comments" ON "comments"."problem_id" = "me"."id" AND "comments"."state" = \'confirmed\'',
         '"users" "contributed_by_user" ON "contributed_by_user"."id" = ("me"."extra"->>\'contributed_by\')::integer',
         'staff_roles ON contributed_by_user.id = staff_roles.user_id',
+        'questionnaire ON questionnaire.problem_id = me.id AND questionnaire.whenanswered IS NOT NULL',
     );
 
     if ($EXTRAS->{reassigned}{$cobrand->moniker}) {
@@ -305,9 +309,31 @@ sub process_comment {
     return if $problem_state eq 'confirmed';
     $hashref->{acknowledged} //= $obj->{comment_confirmed};
     $hashref->{action_scheduled} //= $problem_state eq 'action scheduled' ? $obj->{comment_confirmed} : undef;
-    $hashref->{fixed} //= $fixed_states->{ $problem_state } || $obj->{mark_fixed} ?  $obj->{comment_confirmed} : undef;
+    if ($fixed_states->{ $problem_state } || $obj->{mark_fixed}) {
+        if (!$hashref->{fixed} || $obj->{comment_confirmed} lt $hashref->{fixed}) {
+            $hashref->{fixed} = $obj->{comment_confirmed};
+        }
+    }
     if ($closed_states->{ $problem_state }) {
         $hashref->{closed} = $obj->{comment_confirmed};
+    }
+}
+
+
+=head2 process_questionnaire
+
+Given a result row, look at the questionnaire entry to see if we need to set any
+row timestamps.
+
+=cut
+
+sub process_questionnaire {
+    my ($hashref, $obj) = @_;
+    my $new_state = $obj->{questionnaire_new_state} || '';
+    if ($fixed_states->{$new_state}) {
+        if (!$hashref->{fixed} || $obj->{comment_confirmed} lt $hashref->{fixed}) {
+            $hashref->{fixed} = $obj->{questionnaire_whenanswered};
+        }
     }
 }
 
