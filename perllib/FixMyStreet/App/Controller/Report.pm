@@ -727,38 +727,42 @@ sub _nearby_json :Private {
         # This is for the list template, this is a list on that page.
         $c->stash->{page} = 'report';
 
-        my $dist = $self->_find_distance($c, $params);
-        $params->{distance} = $dist / 1000 unless $params->{distance}; # DB measures in km
+        if (my $dist = $self->_find_distance($c, $params)) { # distance of 0 means we can skip lookup entirely
+            $params->{distance} = $dist / 1000 unless $params->{distance}; # DB measures in km
 
-        my $pin_size = $c->get_param('pin_size') || '';
-        $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;
+            my $pin_size = $c->get_param('pin_size') || '';
+            $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;
 
-        $params->{extra} = $c->cobrand->call_hook('display_location_extra_params');
-        $params->{limit} = 5;
+            $params->{extra} = $c->cobrand->call_hook('display_location_extra_params');
+            $params->{limit} = 5;
 
-        my $nearby = $c->model('DB::Nearby')->nearby($c, %$params);
+            my $nearby = $c->model('DB::Nearby')->nearby($c, %$params);
 
-        # Want to treat these as if they were on map
-        $nearby = [ map { $_->problem } @$nearby ];
-        my @pins = map {
-            my $p = $_->pin_data('around');
-            [ $p->{latitude}, $p->{longitude}, $p->{colour},
-            $p->{id}, $p->{title}, $pin_size, JSON->false
-            ]
-        } @$nearby;
+            # Want to treat these as if they were on map
+            $nearby = [ map { $_->problem } @$nearby ];
+            my @pins = map {
+                my $p = $_->pin_data('around');
+                [ $p->{latitude}, $p->{longitude}, $p->{colour},
+                $p->{id}, $p->{title}, $pin_size, JSON->false
+                ]
+            } @$nearby;
 
-        my @extra_pins = $c->cobrand->call_hook('extra_nearby_pins', $params->{latitude}, $params->{longitude}, $dist);
-        @pins = (@pins, @extra_pins) if @extra_pins;
+            my @extra_pins = $c->cobrand->call_hook('extra_nearby_pins', $params->{latitude}, $params->{longitude}, $dist);
+            @pins = (@pins, @extra_pins) if @extra_pins;
 
-        my $list_html = $c->render_fragment(
-            'report/nearby.html',
-            { reports => $nearby, inline_maps => $c->get_param("inline_maps") ? 1 : 0, extra_pins => \@extra_pins }
-        );
-        my $json = { pins => \@pins };
-        $json->{reports_list} = $list_html if $list_html;
-        my $body = encode_json($json);
-        $c->res->content_type('application/json; charset=utf-8');
-        $c->res->body($body);
+            my $list_html = $c->render_fragment(
+                'report/nearby.html',
+                { reports => $nearby, inline_maps => $c->get_param("inline_maps") ? 1 : 0, extra_pins => \@extra_pins }
+            );
+            my $json = { pins => \@pins };
+            $json->{reports_list} = $list_html if $list_html;
+            my $body = encode_json($json);
+            $c->res->content_type('application/json; charset=utf-8');
+            $c->res->body($body);
+        } else {
+            $c->res->content_type('application/json; charset=utf-8');
+            $c->res->body(encode_json({ 'pins' => []}));
+        }
     }
 }
 
@@ -769,7 +773,9 @@ sub _nearby_json :Private {
 # b) distances for a group/parent category
 # c) distances by mode
 #
-# NOTE: Distances for category or group only apply for the 'suggestions' mode.
+# NOTES:
+#  - Distances for category or group only apply for the 'suggestions' mode.
+#  - Returning a distance of 0 means we can skip the nearby lookup entirely.
 sub _find_distance {
     my ($self, $c, $params) = @_;
 
@@ -782,9 +788,9 @@ sub _find_distance {
             my $category = $params->{categories}[0];
             my $group    = $params->{group};
 
-            $dist = $category && $cobrand_distances->{$mode}{$category}
+            $dist = $category && defined $cobrand_distances->{$mode}{$category}
             ? $cobrand_distances->{$mode}{$category}
-            : $group && $cobrand_distances->{$mode}{$group}
+            : $group && defined $cobrand_distances->{$mode}{$group}
             ? $cobrand_distances->{$mode}{$group}
             : $cobrand_distances->{$mode}{_fallback};
         } else {
@@ -792,7 +798,7 @@ sub _find_distance {
         }
     }
 
-    $dist ||= $c->get_param('distance') || '';
+    $dist //= $c->get_param('distance') || '';
     $dist = 1000 unless $dist =~ /^\d+$/;
     $dist = 1000 if $dist > 1000;
 

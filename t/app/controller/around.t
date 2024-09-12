@@ -586,6 +586,7 @@ subtest 'check nearby lookup, cobrand custom distances per category' => sub {
                         _fallback => 800,
                         'Subcat 1 in Group 1' => 100,
                         'Group 1' => 400,
+                        'No suggestions category' => 0,
                     },
                 },
             },
@@ -610,6 +611,12 @@ subtest 'check nearby lookup, cobrand custom distances per category' => sub {
             latitude  => 51.754926,
             longitude => -1.256179,
             category => 'Subcat in Group 2',
+        });
+        $mech->create_problems_for_body( 1, $body->id, 'Around page', {
+            postcode  => 'OX20 1SZ',
+            latitude  => 51.754926,
+            longitude => -1.256179,
+            category => 'No suggestions category',
         });
 
         note 'filter_category = Subcat 1 in Group 1, filter_group = Group 1';
@@ -701,6 +708,21 @@ subtest 'check nearby lookup, cobrand custom distances per category' => sub {
                         . '","small",false]'
                 );
             }
+        }
+
+        note 'filter_category = No suggestions category';
+        for my $test (
+            { lat => 51.754926, lon => -1.256179 }, # 0m away
+            { lat => 51.7549, lon => -1.256 }, # 12m away
+            { lat => 51.752, lon => -1.256 }, # 325m away
+            { lat => 51.7485, lon => -1.256 }, # 714m away
+            { lat => 51.74, lon => -1.256 }, # 1660m away
+        ) {
+            my $json = $mech->get_ok_json( '/around/nearby?latitude=' . $test->{lat}
+                    . '&longitude=' . $test->{lon}
+                    . '&mode=suggestions'
+                    . '&filter_category=No suggestions category' );
+            is_deeply $json, { pins => [] }, 'No suggestions category should not be shown';
         }
     };
 };
