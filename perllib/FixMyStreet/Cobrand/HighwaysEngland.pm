@@ -5,6 +5,8 @@ use strict;
 use warnings;
 use utf8;
 use DateTime;
+use JSON::MaybeXS;
+use LWP::UserAgent;
 
 sub council_name { 'National Highways' }
 
@@ -215,10 +217,20 @@ sub social_auth_enabled {
 =cut
 
 sub user_from_oidc {
-    my ($self, $payload) = @_;
+    my ($self, $payload, $access_token) = @_;
 
     my $name = $payload->{name} ? $payload->{name} : '';
     my $email = $payload->{email} ? lc($payload->{email}) : '';
+
+    if ($payload->{oid} && $access_token) {
+        my $ua = LWP::UserAgent->new;
+        my $response = $ua->get(
+            'https://graph.microsoft.com/v1.0/users/' . $payload->{oid} . '?$select=displayName,department',
+            Authorization => 'Bearer ' . $access_token,
+        );
+        my $user = decode_json($response->decoded_content);
+        $payload->{roles} = [ $user->{department} ] if $user->{department};
+    }
 
     return ($name, $email);
 }
