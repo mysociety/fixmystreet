@@ -292,9 +292,8 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     # The only other valid state param is 'login' at this point.
     $c->detach('/page_error_400_bad_request', []) unless $c->get_param('state') eq 'login';
 
-    my $id_token;
-    eval {
-        $id_token = $oidc->get_access_token(
+    my $token = eval {
+        $oidc->get_access_token(
             code => $c->get_param('code'),
             redirect_uri => $c->uri_for('/auth/OIDC')
         );
@@ -303,6 +302,8 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
         (my $message = $@) =~ s/at [^ ]*Auth.pm.*//;
         $c->detach('/page_error_500_internal_error', [ $message ]);
     }
+    my $id_token = $token->{id_token};
+    my $access_token = $token->{access_token};
 
     if (!$id_token) {
         $c->log->info("Social::oidc_callback no id_token: " . $oidc->{last_response}->{_content});
@@ -341,7 +342,7 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     $c->session->{oauth}{id_token} = $id_token->token_string;
 
     # Cobrands can use different fields for name and email
-    my ($name, $email) = $c->cobrand->call_hook(user_from_oidc => $id_token->payload);
+    my ($name, $email) = $c->cobrand->call_hook(user_from_oidc => $id_token->payload, $access_token);
     $name = '' if $name && $name !~ /\w/;
 
     # There's a chance that a user may have multiple OIDC logins, so build a namespaced uid to prevent collisions
