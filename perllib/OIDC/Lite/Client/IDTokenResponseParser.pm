@@ -51,8 +51,8 @@ sub parse {
         ) unless exists $result->{id_token};
 
         print STDERR "Response token\n";
-        use Data::Dumper;
-        print STDERR Dumper($result);
+        print STDERR $result->{access_token} . "\n";;
+        print STDERR $result->{id_token} . "\n";;
         print STDERR "END Response token\n";
 
         $token = OIDC::Lite::Model::IDToken->load($result->{id_token});
