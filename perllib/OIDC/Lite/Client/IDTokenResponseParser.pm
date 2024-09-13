@@ -55,7 +55,10 @@ sub parse {
         print STDERR $result->{id_token} . "\n";;
         print STDERR "END Response token\n";
 
-        $token = OIDC::Lite::Model::IDToken->load($result->{id_token});
+        $token = {
+            id_token => OIDC::Lite::Model::IDToken->load($result->{id_token}),
+            access_token => $result->{access_token},
+        };
 
     } else {
 
