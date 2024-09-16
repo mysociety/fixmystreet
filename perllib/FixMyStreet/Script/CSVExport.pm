@@ -244,7 +244,7 @@ EOF
 DECLARE csr CURSOR WITH HOLD FOR $sql_with SELECT $sql_select FROM "problem" "me" $sql_join
 WHERE regexp_split_to_array("me"."bodies_str", ',') && ARRAY['$body_id']
     $where_states
-ORDER BY "me"."confirmed", "me"."id", "comments"."confirmed", "comments"."id";
+ORDER BY "me"."confirmed", "me"."id", "comments"."confirmed", "comments"."id", "questionnaire"."whenanswered", "questionnaire"."id";
 EOF
 }
 
@@ -331,7 +331,7 @@ sub process_questionnaire {
     my ($hashref, $obj) = @_;
     my $new_state = $obj->{questionnaire_new_state} || '';
     if ($fixed_states->{$new_state}) {
-        if (!$hashref->{fixed} || $obj->{comment_confirmed} lt $hashref->{fixed}) {
+        if (!$hashref->{fixed} || $obj->{questionnaire_whenanswered} lt $hashref->{fixed}) {
             $hashref->{fixed} = $obj->{questionnaire_whenanswered};
         }
     }
