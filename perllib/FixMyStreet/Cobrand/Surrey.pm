@@ -58,6 +58,14 @@ sub send_questionnaires { 0 }
 
 sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' }
 
+
+=item * Don't show reports before go live date
+
+=cut
+
+sub cut_off_date { '2024-09-16' }
+
+
 =item * The privacy policy is held on Surrey's own site
 
 =cut
