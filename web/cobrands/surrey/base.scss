@@ -31,10 +31,10 @@ input {
 input[type="text"],
 textarea {
   color: #222; // requested by Surrey
+  font-size: 1.175rem;
   // workaround for Edge bug where autocomplete text is white
   // https://stackoverflow.com/questions/78490541/how-do-i-override-the-being-autocompleted-input-color-in-microsoft-edge
   -webkit-text-fill-color: #222;
-  font-size: 1.175rem;
 }
 
 
@@ -110,8 +110,8 @@ input.form-error, textarea.form-error {
 }
 
 /* BUTTONS */
-.btn-primary,
-.btn--primary,
+.btn-primary, 
+.btn--primary, 
 .postcode-form-box input#sub,
 .mappage .btn{
   @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
@@ -126,8 +126,8 @@ input.form-error, textarea.form-error {
   }
 }
 
-.btn--secondary,
-.btn-secondary,
+.btn--secondary, 
+.btn-secondary, 
 .nav-menu a.btn-secondary,
 a#geolocate_link,
 .my-account-buttons a{

@@ -142,6 +142,21 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=back
+
+=head2 Open311
+
+=over 1
+
+=item * Fetched reports via Open311 use the service name as their title
+
+=cut
+
+sub open311_title_fetched_report {
+    my ($self, $request) = @_;
+    return $request->{service_name};
+}
+
 sub get_geocoder { 'OSM'}
 
 
@@ -271,19 +286,6 @@ sub open311_pre_send {
         $field->{value} = encode_json({ description => $field->{description}, value => \@vals });
     }
     $row->set_extra_fields( @$extra ) if @$extra;
-}
-
-=head2 Open311
-
-=over 1
-
-=item * Fetched reports via Open311 use the service name as their title
-
-=cut
-
-sub open311_title_fetched_report {
-    my ($self, $request) = @_;
-    return $request->{service_name};
 }
 
 1;
