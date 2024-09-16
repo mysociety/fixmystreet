@@ -25,7 +25,7 @@ $body->set_extra_metadata(
         item_list => [
             { bartec_id => '1', name => 'Tied bag of domestic batteries (min 10 - max 100)', max => '1' },
             { bartec_id => '2', name => 'Podback Bag' },
-            { bartec_id => '3', name => 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)' },
+            { bartec_id => '3', name => 'Paint, 1 can, up to 5 litres' },
             { bartec_id => '4', name => 'Textiles, up to 60 litres (one black sack / 3 carrier bags)' },
             { bartec_id => '5', name => 'Toaster', category => 'Small electrical items' },
             { bartec_id => '6', name => 'Kettle', category => 'Small electrical items' },
@@ -339,7 +339,7 @@ FixMyStreet::override_config {
     for my $test (
             {
                 items => &item_fields('Tied bag of domestic batteries (min 10 - max 100)', 'Toaster',
-                  'Podback Bag', 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)' ),
+                  'Podback Bag', 'Paint, 1 can, up to 5 litres' ),
                 content_contains => [$error_messages{categories}],
                 content_lacks => [$error_messages{weee}, $error_messages{peritem}]
             },

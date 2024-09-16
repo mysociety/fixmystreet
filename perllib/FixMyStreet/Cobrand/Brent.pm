@@ -1621,7 +1621,8 @@ sub waste_munge_bulky_data {
                 $data->{extra_Batteries} = 1;
             } elsif ($item eq 'Podback Bag') {
                 $data->{extra_Coffee_Pods} = 1;
-            } elsif ($item eq 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)') {
+            } elsif ($item eq 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)'
+                || $item eq 'Paint, 1 can, up to 5 litres') {
                 $data->{extra_Paint} = 1;
             } elsif ($item eq 'Textiles, up to 60 litres (one black sack / 3 carrier bags)') {
                 $data->{extra_Textiles} = 1;
