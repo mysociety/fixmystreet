@@ -91,7 +91,18 @@ sub problems_on_map_restriction {
     my ($self, $rs) = @_;
     # If we're a two-tier council show all problems on the map and not just
     # those for this cobrand's council to reduce duplicate reports.
-    return $self->is_two_tier ? $rs : $self->problems_restriction($rs);
+    # (but still respect the cut-off date)
+    if ($self->is_two_tier) {
+        if (my $date = $self->cut_off_date) {
+            my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+            $rs = $rs->search({
+                "$table.created" => { '>=', $date }
+            });
+        }
+        return $rs;
+    } else {
+        return $self->problems_restriction($rs);
+    }
 }
 
 sub report_can_have_text_only_notifcations {

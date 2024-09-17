@@ -23,7 +23,6 @@ sub disambiguate_location {
         span   => '0.4000678,0.9071629',
         bounds => [ 51.0714965, -0.8489465, 51.4715643, 0.0582164 ],
         town => 'Surrey',
-        string => $string,
     };
 }
 
@@ -58,6 +57,14 @@ sub suppress_reporter_alerts { 1 }
 sub send_questionnaires { 0 }
 
 sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' }
+
+
+=item * Don't show reports before go live date
+
+=cut
+
+sub cut_off_date { '2024-09-16' }
+
 
 =item * The privacy policy is held on Surrey's own site
 
@@ -102,6 +109,16 @@ sub get_town {
     my $town = $address->{town} || $address->{city} || $address->{TOWN_NAME} || $address->{locality} || $address->{village} || $address->{suburb};
     return $town;
 }
+
+
+=head2 get_geocoder
+
+The OSM geocoder is used for Surrey.
+
+=cut
+
+sub get_geocoder { 'OSM' }
+
 
 =head2 categories_restriction
 
@@ -156,9 +173,6 @@ sub open311_title_fetched_report {
     my ($self, $request) = @_;
     return $request->{service_name};
 }
-
-sub get_geocoder { 'OSM'}
-
 
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;

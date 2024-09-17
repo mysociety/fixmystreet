@@ -25,7 +25,7 @@ $body->set_extra_metadata(
         item_list => [
             { bartec_id => '1', name => 'Tied bag of domestic batteries (min 10 - max 100)', max => '1' },
             { bartec_id => '2', name => 'Podback Bag' },
-            { bartec_id => '3', name => 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)' },
+            { bartec_id => '3', name => 'Paint, 1 can, up to 5 litres' },
             { bartec_id => '4', name => 'Textiles, up to 60 litres (one black sack / 3 carrier bags)' },
             { bartec_id => '5', name => 'Toaster', category => 'Small electrical items' },
             { bartec_id => '6', name => 'Kettle', category => 'Small electrical items' },
@@ -339,7 +339,7 @@ FixMyStreet::override_config {
     for my $test (
             {
                 items => &item_fields('Tied bag of domestic batteries (min 10 - max 100)', 'Toaster',
-                  'Podback Bag', 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)' ),
+                  'Podback Bag', 'Paint, 1 can, up to 5 litres' ),
                 content_contains => [$error_messages{categories}],
                 content_lacks => [$error_messages{weee}, $error_messages{peritem}]
             },
@@ -461,7 +461,7 @@ FixMyStreet::override_config {
         my $report_id = $report->id;
         $report->update({ external_id => 'a-guid' });
 
-        # Fixed date still set to 5th July
+        # Fixed date still set to 25th June
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a small items collection as missed');
         $mech->get_ok('/waste/12345/report');
@@ -477,6 +477,17 @@ FixMyStreet::override_config {
         $mech->content_lacks('Report a small items collection as missed', 'Too long ago');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Small items collection');
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 2964,
+        } ] } );
+        ok set_fixed_time('2023-07-01T22:59:59Z'), 'Set current date to 1st July';
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a small items collection as missed', 'Can not report on due date when no resolution');
+        ok set_fixed_time('2023-07-02T05:44:59Z'), 'Set current date to 2nd July';
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a small items collection as missed', 'Can report when due date passed and no resolution');
+        ok set_fixed_time('2023-06-25T05:44:59Z'), 'Reset current date to 25th June for consistency';
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
             EventTypeId => 2964,

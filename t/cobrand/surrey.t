@@ -15,6 +15,9 @@ $mech->create_contact_ok(body_id => $surrey->id, category => 'Potholes', email =
             latitude => 51.293415, longitude => -0.441269, areas => '2242',
         });
 
+my $guildford = $mech->create_body_ok(2452, 'Guildford Borough Council');
+$mech->create_contact_ok(body_id => $guildford->id, category => 'Flytipping', email => 'flytipping@example.org');
+
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'surrey' ],
@@ -63,7 +66,32 @@ FixMyStreet::override_config {
             $mech->get_ok("/dashboard?export=1");
             $mech->content_contains('website,surrey,,2', 'CSV Subscriber number is 2 from pre-generated csv');
             $mech->log_out_ok;
-        }
+        };
+
+        subtest 'Old reports are not shown on Surrey cobrand' => sub {
+            note 'A newly created report is shown on Surrey cobrand';
+            my $json = $mech->get_ok_json('/around?ajax=1&bbox=-0.45869262976076,51.28481314324,-0.42367370886232,51.302390882532');
+            is_deeply($json->{pins}, [
+                [ "51.293415", "-0.441269", "yellow", $report->id, $report->title, "", 'false' ],
+            ], 'Problem is initially included in Surrey cobrand');
+
+            note 'Making the report predate the cut-off excludes it from Surrey cobrand';
+            my $dt = DateTime->new(year => 2024, month => 9, day => 1, hour => 12);
+            $report->update({
+                created => $dt,
+                confirmed => $dt,
+            });
+            $json = $mech->get_ok_json('/around?ajax=1&bbox=-0.45869262976076,51.28481314324,-0.42367370886232,51.302390882532');
+            is_deeply($json->{pins}, [], 'Problem is now excluded from Surrey cobrand');
+
+            note 'Borough reports are excluded from Surrey cobrand if old enough too.';
+            $report->update({
+                bodies_str => $guildford->id,
+                category => 'Flytipping',
+            });
+            $json = $mech->get_ok_json('/around?ajax=1&bbox=-0.45869262976076,51.28481314324,-0.42367370886232,51.302390882532');
+            is_deeply($json->{pins}, [], 'Borough problem is excluded from Surrey cobrand');
+        };
 };
 
 

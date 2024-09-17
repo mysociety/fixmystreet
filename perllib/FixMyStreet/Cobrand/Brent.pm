@@ -400,13 +400,17 @@ sub oidc_config {
     return $cfg;
 }
 
-=head2 Only show reports on map for last 3 months
-
-Brent only show 3 months of report history on the map rather than default 6 months
+=item * Show open reports for 3 months, closed/fixed for 1 month
 
 =cut
 
-sub report_age { '3 months' }
+sub report_age {
+    return {
+        open => '3 months',
+        closed => '1 month',
+        fixed  => '1 month',
+    };
+}
 
 =head2 dashboard_export_problems_add_columns
 
@@ -1151,6 +1155,15 @@ sub garden_container_data_extract {
     }
 }
 
+sub waste_extra_service_info_all_results {
+    my ($self, $property, $result) = @_;
+
+    if (!(@$result && grep { $_->{ServiceId} == $self->garden_service_id } @$result)) {
+        # No garden collection possible
+        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
+    }
+}
+
 sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
 
@@ -1646,7 +1659,8 @@ sub waste_munge_bulky_data {
                 $data->{extra_Batteries} = 1;
             } elsif ($item eq 'Podback Bag') {
                 $data->{extra_Coffee_Pods} = 1;
-            } elsif ($item eq 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)') {
+            } elsif ($item eq 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)'
+                || $item eq 'Paint, 1 can, up to 5 litres') {
                 $data->{extra_Paint} = 1;
             } elsif ($item eq 'Textiles, up to 60 litres (one black sack / 3 carrier bags)') {
                 $data->{extra_Textiles} = 1;
@@ -1679,6 +1693,29 @@ sub waste_reconstruct_bulky_data {
     $saved_data->{phone} = $p->phone_waste;
 
     return $saved_data;
+}
+
+=item bulky_open_overdue
+
+Returns true if the booking is open the day after the day the collection was due.
+
+=cut
+
+sub bulky_open_overdue {
+    my ($self, $event) = @_;
+
+    if ($event->{state} eq 'open' && $self->_bulky_collection_overdue($event)) {
+        return 1;
+    }
+}
+
+sub _bulky_collection_overdue {
+    my $collection_due_date = $_[1]->{date};
+
+    $collection_due_date->add(days => 1)->truncate(to => 'day');
+    my $today = DateTime->now->set_time_zone($collection_due_date->time_zone);
+
+    return $today > $collection_due_date;
 }
 
 sub _barnet_non_street {
