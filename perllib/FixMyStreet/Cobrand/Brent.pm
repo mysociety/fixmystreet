@@ -1142,6 +1142,15 @@ sub garden_container_data_extract {
     }
 }
 
+sub waste_extra_service_info_all_results {
+    my ($self, $property, $result) = @_;
+
+    if (!(@$result && grep { $_->{ServiceId} == $self->garden_service_id } @$result)) {
+        # No garden collection possible
+        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
+    }
+}
+
 sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
 

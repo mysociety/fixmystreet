@@ -72,8 +72,8 @@ sub new { my $c = shift; bless { @_ }, $c; }
 
 package main;
 
-sub garden_waste_no_bins {
-    return [ {
+sub food_waste_collection {
+    return {
         Id => 1001,
         ServiceId => 316,
         ServiceName => 'Food waste collection',
@@ -99,7 +99,13 @@ sub garden_waste_no_bins {
                 },
             } ] },
         } },
-    }, {
+    };
+}
+
+sub garden_waste_no_bins {
+    return [
+        food_waste_collection(),
+    {
         # Eligibility for garden waste, but no task
         Id => 1002,
         ServiceId => 317,
@@ -109,21 +115,21 @@ sub garden_waste_no_bins {
 }
 
 sub garden_waste_one_sack {
-    my $refuse_bin = garden_waste_no_bins();
+    my $refuse_bin = food_waste_collection();
     my $garden_bin = _garden_waste_service_units(1, 'sack');
-    return [ $refuse_bin->[0], $garden_bin->[0] ];
+    return [ $refuse_bin, $garden_bin ];
 }
 
 sub garden_waste_one_bin {
-    my $refuse_bin = garden_waste_no_bins();
+    my $refuse_bin = food_waste_collection();
     my $garden_bin = _garden_waste_service_units(1, 'bin');
-    return [ $refuse_bin->[0], $garden_bin->[0] ];
+    return [ $refuse_bin, $garden_bin ];
 }
 
 sub garden_waste_two_bins {
-    my $refuse_bin = garden_waste_no_bins();
+    my $refuse_bin = food_waste_collection();
     my $garden_bin = _garden_waste_service_units(2, 'bin');
-    return [ $refuse_bin->[0], $garden_bin->[0] ];
+    return [ $refuse_bin, $garden_bin ];
 }
 
 sub _garden_waste_service_units {
@@ -135,7 +141,7 @@ sub _garden_waste_service_units {
 
     my $bin_type_id = 1;
 
-    return [ {
+    return {
         Id => 1002,
         ServiceId => 317,
         ServiceName => 'Garden waste collection',
@@ -167,7 +173,7 @@ sub _garden_waste_service_units {
                     Ref => { Value => { anyType => [ 567, 890 ] } },
                 },
             } ] },
-        } } } ];
+        } } };
 }
 
 FixMyStreet::override_config {
@@ -322,6 +328,13 @@ FixMyStreet::override_config {
         set_fixed_time('2021-05-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Subscribe to Garden waste collection service', 'Subscribe link present if expired');
+    };
+
+    $echo->mock('GetServiceUnitsForObject', [ food_waste_collection() ]);
+    subtest 'check new sub bin limits' => sub {
+        $mech->get_ok('/waste/12345/garden');
+        is $mech->uri->path, '/waste/12345';
+        $mech->content_lacks('Subscribe to Garden waste collection service');
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
