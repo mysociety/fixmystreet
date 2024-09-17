@@ -86,6 +86,9 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     h2 { // only really want on first-child
         margin-top: 0;
     }
+    .multi-select-button {
+        white-space: normal;
+    }
 }
 
 .admin-offsite-link {
