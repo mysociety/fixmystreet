@@ -171,6 +171,9 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <div class="clearfix full-width" style="background-color: #eee; padding: 1em 1em 0;">
 [% IF problem.user.email == cobrand.anonymous_account.email %]
     <p>[% loc('User:') %] [% loc('Anonymous user') %]</p>
+    <input type='hidden' name='name' value='[% problem.name %]'></li>
+    <input type='hidden' name='username' value='[% problem.user.username %]'>
+    <input type='hidden' name='anonymous' value='[% IF problem.anonymous %]1[% ELSE %]0[% END %]'>
 [% ELSE %]
 
   [% IF allowed_pages.user_edit %]
