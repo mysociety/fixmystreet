@@ -133,6 +133,33 @@ sub upload : Local {
         $out = { id => $fileid };
     }
 
+    if ($c->get_param('get_latlon') && $c->stash->{photo_gps}) {
+        $out = {
+            %$out,
+            %{ $c->stash->{photo_gps} },
+        };
+    }
+
+    # Handle form submission with start_report parameter (non-AJAX flow)
+    if ($c->get_param('start_report')) {
+        if ($c->stash->{photo_gps}) {
+            # Has GPS -> /report/new with photo_first flag
+            my $url = $c->uri_for("/report/new", {
+                lat => $c->stash->{photo_gps}->{lat},
+                lon => $c->stash->{photo_gps}->{lon},
+                photo_id => $fileid,
+                photo_first => 1,
+            });
+            return $c->res->redirect($url);
+        } else {
+            # No GPS -> /around (no photo_first flag)
+            my $url = $c->uri_for("/around", {
+                photo_id => $fileid,
+            });
+            return $c->res->redirect($url);
+        }
+    }
+
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body(encode_json($out));
 }
