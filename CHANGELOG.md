@@ -53,6 +53,7 @@
         - Cobrands can provide per-category custom distances for duplicate lookup. #4746 #5162
         - Add perl 5.38 support.
         - Add plain text template previews to /_dev/email. #5105
+        - Add --exclude option to bin/open311-populate-service-list
     - Performance improvements:
         - Reduce database queries on shortlist page.
         - Provide ResultSet fallback translation in lookup.

@@ -17,6 +17,7 @@ use Getopt::Long::Descriptive;
 my ($opt, $usage) = describe_options(
     '%c %o',
     ['body|b:s',   "body name to only fetch this body"],
+    ['exclude|e:s@', 'body name(s) to exclude from fetching' ],
     ['verbose|v',  "print out all services as they are found"],
     ['warn|w',     "output warnings about any issues"],
     ['help',       "print usage message and exit" ],
@@ -28,6 +29,9 @@ my $bodies = FixMyStreet::DB->resultset('Body')->search( {
 } );
 if ($opt->body) {
     $bodies = $bodies->search({ name => $opt->body });
+}
+if (my $exclude = $opt->exclude) {
+    $bodies = $bodies->search({ name => { -not_in => $exclude } });
 }
 
 my $verbose = 0;
