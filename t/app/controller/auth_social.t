@@ -129,7 +129,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->submit_form_ok( { with_fields => { pc => $test->{pc} || 'SW1A1AA' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
                 $mech->submit_form(with_fields => {
-                    category => 'Bins',
+                    category => 'G|Bins',
                     'category.Bins' => 'Damaged bin',
                     title => 'Test title',
                     detail => 'Test detail',
@@ -174,7 +174,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
             if ($page eq 'report') {
                 $mech->content_contains('/report/new');
                 $mech->content_contains('Salt bin');
-                $mech->content_contains('name="category" value="Bins" data-subcategory="Bins" checked');
+                $mech->content_like(qr{value="G|Bins"\s+data-subcategory="Bins" checked});
                 $mech->content_contains('name="category.Bins" data-category_display="Damaged bin" value=\'Damaged bin\' checked');
             } elsif ($page eq 'update') {
                 $mech->content_contains('/report/update');
@@ -320,7 +320,7 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 $mech->submit_form_ok( { with_fields => { pc => 'SW1A1AA' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
                 $mech->submit_form(with_fields => {
-                    category => 'Bins',
+                    category => 'G|Bins',
                     'category.Bins' =>'Damaged bin',
                     title => 'Test title',
                     detail => 'Test detail',

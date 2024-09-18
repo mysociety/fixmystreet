@@ -160,6 +160,13 @@ if ($opt->test_fixtures) {
                 { category => 'Extra', send_method => 'Triage' },
             ], name => 'Isle of Wight Council', cobrand => 'isleofwight' },
         { area_id => 2232, categories => ['Damaged/missing cats eye'], name => 'Lincolnshire County Council', cobrand => 'lincolnshire' },
+        { area_id => 2226, categories => [
+                { group => 'A pothole in pavement', category => 'A pothole in pavement' },
+                { group => 'A pothole in road', category => 'A pothole in road' },
+            ],
+            name => 'Gloucestershire County Council', cobrand => 'gloucestershire' },
+        { area_id => 2326, categories => ['Flyposting', 'Graffiti'],
+            name => 'Cheltenham Borough Council' },
         { area_id => 2566, categories => [
                 { group => 'Trees', category => 'Fallen Tree' },
                 { group => 'Trees', category => 'Damaged Tree' },

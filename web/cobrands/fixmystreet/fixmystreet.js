@@ -747,18 +747,18 @@ $.extend(fixmystreet.set_up, {
         var $subcategory_page = $('.js-reporting-page--subcategory');
         var subcategory_id = $(this).data("subcategory");
         $(".js-subcategory").addClass('hidden-js');
-        var $input;
+        var val;
         if (subcategory_id === undefined) {
             $subcategory_page.addClass('js-reporting-page--skip');
-            $input = $(this);
+            val = $(this).data('valuealone'); // Don't want "H" hoisted bit of the submitted value
         } else {
             $subcategory_page.removeClass('js-reporting-page--skip');
             var $subcategory = $("#subcategory_" + subcategory_id);
             $subcategory.removeClass('hidden-js');
-            $input = $subcategory.find('input:checked');
+            val = $subcategory.find('input:checked').val();
         }
         if (!no_event) {
-            category_changed($input.val());
+            category_changed(val);
         }
     });
 
@@ -1847,12 +1847,13 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
 function re_select(group, category) {
     var group_id = group.replace(/[^a-z]+/gi, '');
     var cat_in_group = $("#subcategory_" + group_id + " input[value=\"" + category + "\"]");
+    // Want only the group/category name itself, not the G| H| prefixes
     if (cat_in_group.length) {
-        $('#form_category_fieldset input[value="' + group + '"]')[0].checked = true;
+        $('#form_category_fieldset input[data-valuealone="' + group + '"]')[0].checked = true;
         cat_in_group[0].checked = true;
     } else {
         var top_level = group || category;
-        var top_level_match = $("#form_category_fieldset input[value=\"" + top_level + "\"]");
+        var top_level_match = $("#form_category_fieldset input[data-valuealone=\"" + top_level + "\"]");
         if (top_level && top_level_match.length) {
             top_level_match[0].checked = true;
         }
@@ -1976,7 +1977,7 @@ fixmystreet.fetch_reporting_data = function() {
 fixmystreet.reporting = {};
 fixmystreet.reporting.selectedCategory = function() {
     var $group_or_cat_input = $('#form_category_fieldset input:checked'),
-        group_or_cat = $group_or_cat_input.val() || '',
+        group_or_cat = $group_or_cat_input.data('valuealone') || '', // Want only the group/category name itself, not the G| H| prefix
         group_id = group_or_cat.replace(/[^a-z]+/gi, ''),
         $subcategory = $("#subcategory_" + group_id),
         $subcategory_input = $subcategory.find('input:checked'),

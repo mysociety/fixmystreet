@@ -13,7 +13,7 @@ describe('Basic categories', function() {
         'Footpath/bridleway away from road',
         'Graffiti',
         'Offensive graffiti',
-        'Licensing',
+        'G|Licensing',
         'Parks/landscapes',
         'Pavements',
         'Potholes',
@@ -75,7 +75,7 @@ describe('Basic categories', function() {
         cy.get('[value="Abandoned vehicles"]').should('not.be.visible');
         cy.get('[value="Bus stops"]').should('not.be.visible');
         cy.get('[value="Flyposting"]').should('not.be.visible');
-        cy.get('[value="Licensing"]').should('be.visible');
+        cy.get('[value="G|Licensing"]').should('be.visible');
         cy.get('[value="Dropped Kerbs"]').should('be.visible');
         cy.get('[value="Skips"]').should('be.visible');
         cy.get('[value="Street lighting"]').should('be.visible');
@@ -84,7 +84,7 @@ describe('Basic categories', function() {
         cy.get('[value="Abandoned vehicles"]').should('not.be.visible');
         cy.get('[value="Bus stops"]').should('be.visible');
         cy.get('[value="Flyposting"]').should('not.be.visible');
-        cy.get('[value="Licensing"]').should('be.visible');
+        cy.get('[value="G|Licensing"]').should('be.visible');
         cy.get('[value="Dropped Kerbs"]').should('not.be.visible');
         cy.get('[value="Skips"]').should('be.visible');
         cy.get('[value="Road traffic signs"]').should('be.visible');

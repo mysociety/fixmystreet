@@ -843,6 +843,7 @@ sub stash_category_groups : Private {
             (my $id = $_) =~ s/[^a-zA-Z]+//g;
             if (@{$category_groups{$_}} == 1) {
                 my $contact = $category_groups{$_}[0];
+                $contact->set_extra_metadata(hoisted => $_);
                 push @list, [ $contact->category_display, $contact ];
             } else {
                 my $cats = $category_groups{$_};
