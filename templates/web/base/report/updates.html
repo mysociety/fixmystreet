@@ -9,6 +9,20 @@
 [%- IF update.get_extra_metadata('triage_report') == 1 AND ( NOT c.user OR ( NOT c.user.from_body AND NOT c.user.is_superuser ) ) %]
     [%- NEXT %]
 [%- END %]
+
+[%- IF NOT update.whenanswered AND update.type != 'moderation' %]
+    [%- SET update_state = update.problem_state_processed %]
+    [%- SET state_change = ( update_state AND update_state != global.last_state AND NOT (global.last_state == "" AND update.problem_state_processed == 'confirmed') ) OR update.mark_fixed OR update.mark_open %]
+    [%- IF NOT update.photo AND NOT update.text AND NOT state_change %]
+        [%- NEXT %]
+    [%- END %]
+    [%- IF state_change %]
+        [%- global.last_state = update_state %]
+        [%- IF update_state == "" AND update.mark_fixed %][% global.last_state = 'fixed - user' %][% END %]
+        [%- IF update_state == "" AND update.mark_open %][% global.last_state = 'confirmed' %][% END %]
+    [%- END %]
+[%- END %]
+
 [% INCLUDE 'report/update.html' %]
 [% END %]
 
