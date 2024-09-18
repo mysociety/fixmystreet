@@ -3,7 +3,10 @@
     <label id="photo-upload-label" for="form_photo">
         <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
         [% IF c.cobrand.moniker == 'zurich' %][% loc('(Defect &amp; location of defect)') %][% END %]
+        [% IF c.cobrand.moniker == 'nottinghamshirepolice' %][%# Nothing ~%]
+        [% ELSE ~%]
         <span class="js-hide-if-category-photo-required">[% loc('(optional)') %]</span>
+        [%~ END %]
     </label>
 
       [% IF field_errors.photo %]
