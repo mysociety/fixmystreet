@@ -1092,18 +1092,23 @@ sub waste_munge_report_data {
 
     my $c = $self->{c};
 
-    my $address = $c->stash->{property}->{address};
-    my $service = $c->stash->{services}{$id}{service_name};
+    my $property = $c->stash->{property};
+    my $address = $property->{address};
+    my $service_id = $c->stash->{services}{$id}{service_id};
+    my $service_name = $c->stash->{services}{$id}{service_name};
     my $uprn = $c->stash->{services}{$id}{uprn};
-    $data->{title} = "Report missed $service";
+    my $containers = $self->_containers($property);
+    my $service_description = $containers->{$service_id}->{description};
+    $service_description = 'Various' if $service_description =~ /<li>/;
+    $data->{title} = "$service_name ($service_description)";
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('uprn', $uprn);
     $c->set_param('service_id', $id);
     $c->set_param('location_of_containers', $data->{extra_detail}) if $data->{extra_detail};
-    $c->set_param('service_item_name', $c->stash->{services}{$id}{service_id});
+    $c->set_param('service_item_name', $service_id);
 
     # Check if this property has assisted collections
-    my $contracts = $self->whitespace->GetSiteContracts($c->stash->{property}{uprn});
+    my $contracts = $self->whitespace->GetSiteContracts($property->{uprn});
     $c->set_param('assisted_yn', (grep { $_->{ContractID} == 7 } @$contracts) ? 'Yes' : 'No');
 }
 

@@ -15,6 +15,9 @@
 <div class="waste__collections">
  [% IF c.cobrand.moniker != 'peterborough' %]
   <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
+  [% IF c.cobrand.moniker == 'brent' && service_data.size %]
+    <p>Please note all collections can take place between 7am &ndash; 10pm.</p>
+  [% END %]
  [% ELSE %]
   <div class="govuk-!-margin-bottom-8">
     <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
