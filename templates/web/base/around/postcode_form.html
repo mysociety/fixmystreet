@@ -16,6 +16,14 @@
             <p>To continue draft<span class="js-draft-name"></span> enter its location.<br>
             <a href="/" class="btn">Cancel</a>
         </div>
+        <form action="[% c.uri_for('/photo/upload') %]" method="post" name="photoForm" id="photoForm" class="postcode-form-box js-geolocate" enctype="multipart/form-data">
+            <label for="photo">[% loc('Upload a photo') %]:</label>
+            <input type="file" name="photo" id="photo" accept="image/*" required>
+            <input type="hidden" name="lat">
+            <input type="hidden" name="lon">
+            <input type="hidden" name="start_report" value="1">
+            <input type="submit" value="[% loc('Start report from photo') %]" class="btn btn--final">
+        </form>
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
             <label for="pc">[% question %]:</label>
             [% INCLUDE 'around/_postcode_form_examples.html' %]
