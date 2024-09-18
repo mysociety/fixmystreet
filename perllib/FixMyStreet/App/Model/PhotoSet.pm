@@ -177,6 +177,11 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     return ();
                 }
 
+                if ($type eq 'jpeg' && !$self->c->stash->{photo_gps}) {
+                    # only store GPS for the first uploaded photo
+                    $self->stash_gps_info($upload->tempname);
+                }
+
                 # Convert all images to JPEGs
                 my %params = ( magick => 'JPEG' );
 
@@ -205,6 +210,31 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
         return \@photos;
     },
 );
+
+sub stash_gps_info {
+    my ($self, $filename) = @_;
+
+    return unless can_run('jhead');
+
+    eval {
+        # run jhead on $filename and store in $stdout
+        my $stdout;
+        my $pid = open3(undef, $stdout, undef, 'jhead', $filename);
+        # parse lines like "GPS Latitude : N 51d 36m 52.32s
+        # GPS Longitude: W  0d 42m 27.24s"
+        my ($lat, $lon);
+        while (<$stdout>) {
+            if (/GPS Latitude : ([NS])\s+(\d+)d\s+(\d+)m\s+(\d+\.\d+)s/) {
+                $lat = $2 + $3/60 + $4/3600;
+                $lat = -$lat if $1 eq 'S';
+            } elsif (/GPS Longitude: ([EW])\s+(\d+)d\s+(\d+)m\s+(\d+\.\d+)s/) {
+                $lon = $2 + $3/60 + $4/3600;
+                $lon = -$lon if $1 eq 'W';
+            }
+        }
+        $self->c->stash->{photo_gps} = { lat => $lat, lon => $lon };
+    };
+}
 
 sub get_image_type {
     my ($self, $index) = @_;
