@@ -1848,11 +1848,11 @@ function re_select(group, category) {
     var group_id = group.replace(/[^a-z]+/gi, '');
     var cat_in_group = $("#subcategory_" + group_id + " input[value=\"" + category + "\"]");
     if (cat_in_group.length) {
-        $('#form_category_fieldset input[value="' + group + '"]')[0].checked = true;
+        $('#form_category_fieldset input[data-valuealone="' + group + '"]')[0].checked = true;
         cat_in_group[0].checked = true;
     } else {
         var top_level = group || category;
-        var top_level_match = $("#form_category_fieldset input[value=\"" + top_level + "\"]");
+        var top_level_match = $("#form_category_fieldset input[data-valuealone=\"" + top_level + "\"]");
         if (top_level && top_level_match.length) {
             top_level_match[0].checked = true;
         }
@@ -1976,7 +1976,7 @@ fixmystreet.fetch_reporting_data = function() {
 fixmystreet.reporting = {};
 fixmystreet.reporting.selectedCategory = function() {
     var $group_or_cat_input = $('#form_category_fieldset input:checked'),
-        group_or_cat = $group_or_cat_input.val() || '',
+        group_or_cat = $group_or_cat_input.data('valuealone') || '',
         group_id = group_or_cat.replace(/[^a-z]+/gi, ''),
         $subcategory = $("#subcategory_" + group_id),
         $subcategory_input = $subcategory.find('input:checked'),

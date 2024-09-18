@@ -680,9 +680,9 @@ subtest "category groups" => sub {
         my $div = '<div[^>]*>\s*';
         my $div_end = '</div>\s*';
         my $pavements_label = '<label[^>]* for="category_Pavements">Pavements</label>\s*' . $div_end;
-        my $pavements_input = '<input[^>]* value="Pavements" data-subcategory="Pavements">\s*';
-        my $pavements_input_checked = '<input[^>]* value="Pavements" data-subcategory="Pavements" checked>\s*';
-        my $roads = $div . '<input[^>]* value="Roads" data-subcategory="Roads">\s*<label[^>]* for="category_Roads">Roads</label>\s*' . $div_end;
+        my $pavements_input = '<input[^>]* value="G|Pavements"\s+data-subcategory="Pavements">\s*';
+        my $pavements_input_checked = '<input[^>]* value="G|Pavements"\s+data-subcategory="Pavements" checked>\s*';
+        my $roads = $div . '<input[^>]* value="G|Roads"\s+data-subcategory="Roads">\s*<label[^>]* for="category_Roads">Roads</label>\s*' . $div_end;
         my $trees_label = '<label [^>]* for="category_\d+">Trees</label>\s*' . $div_end;
         my $trees_input = $div . '<input[^>]* value=\'Trees\'>\s*';
         my $trees_input_checked = $div . '<input[^>]* value=\'Trees\' checked>\s*';
@@ -708,18 +708,28 @@ subtest "category groups" => sub {
         $mech->content_like(qr{$fieldset_pavements$options});
         $mech->content_like(qr{$fieldset_roads$options});
         # Server submission of pavement subcategory
-        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon&category=Pavements&category.Pavements=Potholes");
+        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon&category=G|Pavements&category.Pavements=Potholes");
         $mech->content_like(qr{$pavements_input_checked$pavements_label$roads$trees_input$trees_label</fieldset>});
         $mech->content_like(qr{$fieldset_pavements$optionsS});
         $mech->content_like(qr{$fieldset_roads$options});
 
         $contact9->update( { extra => { group => 'Lights' } } );
         $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon");
-        $streetlighting = $div . '<input[^>]*value=\'Street lighting\'>\s*<label[^>]* for="category_\d+">Street lighting</label>\s*' . $div_end;
+        $streetlighting = $div . '<input[^>]*value=\'H|Lights\|Street lighting\'>\s*<label[^>]* for="category_\d+">Street lighting</label>\s*' . $div_end;
+        $potholes_input = $div . '<input[^>]* value=\'H|Pavements\|Potholes\'>\s*';
         $potholes_label = '<label[^>]* for="category_\d+">Potholes</label>\s*' . $div_end;
         $mech->content_like(qr{$potholes_input$potholes_label$roads$streetlighting$trees_input$trees_label</fieldset>});
         $mech->content_unlike(qr{$fieldset_pavements});
         $mech->content_like(qr{$fieldset_roads$options});
+
+        $mech->submit_form_ok({ with_fields => {
+            category => 'H|Lights|Street lighting',
+            title => 'Test Report',
+            detail => 'Test report details',
+            username_register => 'jo@example.org',
+            name => 'Jo Bloggs',
+        } });
+        $mech->content_contains('Now check your email');
     };
 };
 

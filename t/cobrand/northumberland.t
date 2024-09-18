@@ -87,7 +87,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Main Carriageway');
         $mech->content_contains('Potholes');
         $mech->content_contains("Trees'>");
-        $mech->content_contains('value=\'Flytipping\' data-nh="1"');
+        $mech->content_contains('value=\'H|Staff Only - Out Of Hours|Flytipping\' data-nh="1"');
 
         # A-road where NH responsible for litter, council categories will also be present
         mock_road("A5103", 1);
@@ -97,7 +97,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Main Carriageway');
         $mech->content_contains('Potholes');
         $mech->content_contains('Trees\'>');
-        $mech->content_contains('value=\'Flytipping\' data-nh="1"');
+        $mech->content_contains('value=\'H|Staff Only - Out Of Hours|Flytipping\' data-nh="1"');
 
         # A-road where NH not responsible for litter, no NH litter categories
         mock_road("A34", 0);
@@ -107,7 +107,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Main Carriageway');
         $mech->content_contains('Potholes');
         $mech->content_contains('Trees\'>');
-        $mech->content_contains('value=\'Flytipping\' data-nh="1"');
+        $mech->content_contains('value=\'H|Staff Only - Out Of Hours|Flytipping\' data-nh="1"');
     };
 };
 

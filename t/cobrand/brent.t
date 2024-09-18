@@ -927,7 +927,7 @@ FixMyStreet::override_config {
             with_fields => {
                 title => "Test Report",
                 detail => 'Test report details.',
-                category => 'Parks and open spaces',
+                category => 'G|Parks and open spaces',
                 'category.Parksandopenspaces' => 'Overgrown grass',
             }
         }, "submit details");
@@ -951,7 +951,7 @@ FixMyStreet::override_config {
             with_fields => {
                 title => "Test Report",
                 detail => 'Test report details.',
-                category => 'Parks and open spaces',
+                category => 'G|Parks and open spaces',
                 'category.Parksandopenspaces' => 'Overgrown grass',
             }
         }, "submit details");
@@ -970,7 +970,7 @@ FixMyStreet::override_config {
             with_fields => {
                 title => "Test Report",
                 detail => 'Test report details.',
-                category => 'Parks and open spaces',
+                category => 'G|Parks and open spaces',
                 'category.Parksandopenspaces' => 'Overgrown grass',
             }
         }, "submit details");
@@ -994,7 +994,7 @@ FixMyStreet::override_config {
             with_fields => {
                 title => "Test Report",
                 detail => 'Test report details.',
-                category => 'Parks and open spaces',
+                category => 'G|Parks and open spaces',
                 'category.Parksandopenspaces' => 'Ponds',
             }
         }, "submit details");
