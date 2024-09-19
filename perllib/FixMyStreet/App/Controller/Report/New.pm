@@ -1189,13 +1189,26 @@ sub process_report : Private {
     }
     $report->detail( $detail );
 
-    # mobile device type
-    if ($service) {
+    if ($service && $service ne 'PWA') {
         $report->service($service);
-    } elsif ($c->get_param('submit_register_mobile')) {
-        $report->service('mobile');
-    } elsif ($c->get_param('submit_register')) {
-        $report->service('desktop');
+    } else {
+        # attempt to determine the device based on the submit button
+        # that was used
+        my $device_type = "";
+        if ($c->get_param('submit_register_mobile')) {
+            $device_type = "mobile";
+        } elsif ($c->get_param('submit_register')) {
+            $device_type = "desktop";
+        }
+        if ($service && $device_type) {
+            # PWA and we have device type - augment the service description
+            $report->service("$service ($device_type)");
+        } elsif ($service && !$device_type) {
+            # PWA but no we have device type
+            $report->service($service);
+        } elsif ($device_type) {
+            $report->service($device_type);
+        }
     }
 
     # set these straight from the params
