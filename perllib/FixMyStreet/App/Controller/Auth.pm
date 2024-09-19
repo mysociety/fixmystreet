@@ -44,10 +44,7 @@ sub general : Path : Args(0) {
 
     # decide which action to take
     $c->detach('code_sign_in') if $clicked_sign_in_by_code || ($data_email && !$data_password);
-    if (!$data_username && !$data_password && !$data_email && $c->get_param('social_sign_in')) {
-        $c->forward('social/handle_sign_in');
-    }
-
+    $c->detach('social/handle_sign_in') if $c->get_param('social_sign_in');
     $c->forward( 'sign_in', [ $data_username ] )
         && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
 

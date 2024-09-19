@@ -143,6 +143,7 @@ for my $state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                     update => 'Test update',
                 };
             }
+            $mech->form_with_fields('social_sign_in');
             $mech->submit_form(with_fields => $fields, button => 'social_sign_in');
 
             # As well as the cookie issue above, caused by this external
