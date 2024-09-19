@@ -603,8 +603,8 @@ FixMyStreet::override_config {
         $report->update;
         my $ex_id_comment
             = $mech->create_comment_for_problem( $report, $user, 'User',
-            'Test', undef, 'confirmed', undef, { external_id => 234 },
-            );
+            'Payment confirmed, reference', undef, 'confirmed', undef,
+            { external_id => 234 });
         $cobrand->send_bulky_payment_echo_update_failed;
         ok $mech->email_count_is(0),
             'No email if report has comment with external_id';

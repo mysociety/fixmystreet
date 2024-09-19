@@ -1300,9 +1300,11 @@ sub send_bulky_payment_echo_update_failed {
 
     while ( my $report = $rs->next ) {
         # Ignore if there is an update in Comment table with an external_id
-        if ( $report->comments->search( { external_id => { '!=', undef } } )
-            ->count > 0
-        ) {
+        if ( $report->comments->search({
+            external_id => { '!=', undef },
+            text => { like => 'Payment confirmed%' },
+            # Can be extra => { '\?' => 'fms_extra_payments' }, after that's added
+        })->count) {
             # Set flag so we don't repeatedly check the comments for this
             # report
             $report->set_extra_metadata( echo_update_sent => 1 );
@@ -1339,6 +1341,12 @@ sub send_bulky_payment_echo_update_failed {
             $report->set_extra_metadata(
                 echo_update_failure_email_sent => 1 );
             $report->update;
+
+            $report->comments->search({
+                external_id => undef,
+                text => { like => 'Payment confirmed%' },
+                # Can be extra => { '\?' => 'fms_extra_payments' }, after that's added
+            })->update({ send_state => 'skipped' });
 
             print 'Sending for report ' . $report->id . ": succeeded\n"
                 if $params->{verbose};

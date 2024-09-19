@@ -856,20 +856,26 @@ FixMyStreet::override_config {
         $report->update;
         my $ex_id_comment
             = $mech->create_comment_for_problem( $report, $user, 'User',
-            'Test', undef, 'confirmed', undef, { external_id => 234 },
+            'Payment confirmed, reference', undef, 'confirmed', undef,
+            { external_id => 234 },
             );
         $cobrand->send_bulky_payment_echo_update_failed;
         ok $mech->email_count_is(0),
             'No email if report has comment with external_id';
-
-        $ex_id_comment->delete;
         $report->discard_changes;
+        is $report->get_extra_metadata('echo_update_sent'), 1;
+
+        # Mark payment confirmed update as not sent
+        $ex_id_comment->update({ external_id => undef });
         $report->unset_extra_metadata('echo_update_sent');
         $report->update;
         $cobrand->send_bulky_payment_echo_update_failed;
+
+        $ex_id_comment->discard_changes;
+        is $ex_id_comment->send_state, 'skipped';
+
         my $email = $mech->get_email;
         like $email->as_string, qr/Collection date: Saturday 08 July 2023/;
-
         $mech->clear_emails_ok;
 
         $report->discard_changes;
