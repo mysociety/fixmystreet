@@ -6,16 +6,6 @@
 @import "../sass/base";
 @import "../sass/report_list_pins";
 
-body.frontpage {
-    color: $primary_text;
-    a,
-    .fake-link {
-        &:visited {
-            color: $links_visited;
-        }
-    }
-}
-
 #site-logo {
     background-image: url("/cobrands/greenwich/images/greenwich-logo.svg");
     // background: url("/cobrands/greenwich/images/greenwich-logo.svg") 0 50% no-repeat;
@@ -121,25 +111,6 @@ form#form_update_form {
         div {
             button.btn {
                 color: white !important;
-            }
-        }
-    }
-}
-
-// Sign in page
-form {
-    fieldset {
-        #form_sign_in {
-            p {
-                input.fake-link {
-                    color: $primary_text;
-                    &:hover {
-                        text-decoration: underline;
-                    }
-                    &:visited {
-                        color: $links_visited;
-                    }
-                }
             }
         }
     }
