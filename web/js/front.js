@@ -1,7 +1,51 @@
-document.getElementById('pc').focus();
+// document.getElementById('pc').focus();
 
 (function(){
 
+    function dropzoneSetup() {
+        console.log('dropzoneSetup');
+        if ('Dropzone' in window) {
+            Dropzone.autoDiscover = false;
+            console.log('Dropzone', Dropzone);
+        } else {
+            console.log('Dropzone not found');
+            return;
+        }
+
+        var dz = new Dropzone('#photoFormPhoto', {
+            url: '/photo/upload?get_latlon=1',
+            paramName: 'photo',
+            maxFiles: 1,
+            addRemoveLinks: true,
+            thumbnailHeight: 256,
+            thumbnailWidth: 256,
+            // resizeHeight: 2048,
+            // resizeWidth: 2048,
+            // resizeQuality: 0.6,
+            acceptedFiles: 'image/jpeg,image/pjpeg,image/gif,image/tiff,image/png,.png,.tiff,.tif,.gif,.jpeg,.jpg',
+            dictDefaultMessage: "Upload a photo to start a new report",
+            // dictCancelUploadConfirmation: translation_strings.upload_cancel_confirmation,
+            // dictInvalidFileType: translation_strings.upload_invalid_file_type,
+            // dictMaxFilesExceeded: translation_strings.upload_max_files_exceeded,
+            init: function() {
+                console.log('init', this);
+                var $f = $("#photoForm");
+                $("#photoForm label, #photoForm input[type=file], #photoForm input[type=submit]").hide();
+                $f.attr("method", "get");
+                $f.attr("action", "/report/new");
+                $f.attr("enctype", "");
+                this.on("success", function(file, xhrResponse) {
+                    console.log('success', file, xhrResponse);
+                    $("#photoForm label, #photoForm input[type=file], #photoForm input[type=submit]").remove();
+                    $f.find("input[name=photo_id]").val(xhrResponse.id);
+                    $f.find("input[name=lat]").val(xhrResponse.lat);
+                    $f.find("input[name=lon]").val(xhrResponse.lon);
+                    $f.submit();
+                });
+            }
+        });
+    }
+    dropzoneSetup();
     function set_up_mobile_nav() {
         var html = document.documentElement;
         if (!html.classList) {
