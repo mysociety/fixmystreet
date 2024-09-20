@@ -35,10 +35,10 @@ FixMyStreet::override_config {
     $mech->content_contains('rss/pc/EH11BB');
     $mech->content_contains('All reports within Edinburgh City');
     $mech->content_contains('All reports within City Centre ward');
-    $mech->content_contains('/rss/reports/Edinburgh');
-    $mech->content_contains('/rss/reports/Edinburgh/City+Centre');
-    $mech->content_contains('council:' . $body->id . ':Edinburgh', 'Council feed contains Edinburgh id and details');
-    $mech->content_contains('ward:' . $body->id . ':20728:Edinburgh:City_Centre', 'Ward feed contains Edinburgh id and details');
+    $mech->content_contains('/rss/area/Edinburgh');
+    $mech->content_contains('/rss/area/Edinburgh/City+Centre');
+    $mech->content_contains('area:2651:Edinburgh', 'Council feed contains Edinburgh id and details');
+    $mech->content_contains('area:2651:20728:Edinburgh:City_Centre', 'Ward feed contains Edinburgh id and details');
 
     subtest "Test Nominatim lookup" => sub {
         $mech->get_ok('/alert/list?pc=High Street');

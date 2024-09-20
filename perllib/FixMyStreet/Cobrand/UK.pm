@@ -233,7 +233,7 @@ sub council_rss_alert_options {
         foreach (values %$all_areas) {
             if ($councils{$_->{type}}) {
                 $council = $_;
-                $council->{id} = $body->id; # Want to use body ID, not MapIt area ID
+                $council->{body} = $body; # Want to use body ID, not MapIt area ID
                 $council->{short_name} = $self->short_name( $council );
                 ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
             } else {
@@ -253,18 +253,18 @@ sub council_rss_alert_options {
         }
 
         push @options, {
-            type      => 'council',
-            id        => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
+            type      => 'area',
+            id        => sprintf( 'area:%s:%s', $council->{id}, $council->{id_name} ),
             text      => $council_text,
             rss_text  => sprintf( _('RSS feed of problems within %s'), $council->{name}),
-            uri       => $c->uri_for( '/rss/reports/' . $council->{short_name} ),
+            uri       => $c->uri_for( '/rss/area/' . $council->{short_name} ),
         };
         push @options, {
-            type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
+            type     => 'area',
+            id       => sprintf( 'area:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of problems within %s ward'), $ward->{name}),
             text     => sprintf( _('All reports within %s ward'), $ward->{name}),
-            uri      => $c->uri_for( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
+            uri      => $c->uri_for( '/rss/area/' . $council->{short_name} . '/' . $ward->{short_name} ),
         } if $ward;
 
     } elsif ( $num_councils == 4 ) {
