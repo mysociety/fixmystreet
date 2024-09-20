@@ -429,12 +429,13 @@ sub open311_get_update_munging {
         my $echo = $self->feature('echo');
         $echo = Integrations::Echo->new(%$echo);
         my $event = $echo->GetEvent($problem->external_id);
+        $echo->log($event);
         my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
-        my $notes;
+        my $notes = "";
         foreach (@$data) {
             $notes = $_->{Value} if $_->{DatatypeName} eq 'Veolia Notes';
         }
-        $problem->set_extra_metadata(handover_notes => $notes) if $notes;
+        $problem->set_extra_metadata(handover_notes => $notes);
         if (my $original_external_id = $problem->get_extra_metadata('original_bromley_external_id')) {
             $problem->external_id($original_external_id);
             $comment->problem_state(REFERRED_TO_BROMLEY);
