@@ -189,9 +189,15 @@ sub dispatch_request {
         }
     },
 
-    sub (POST + /areas) {
+    sub (POST + /areas + %*) {
         my ($self, $areas) = @_;
-        $self->output({53319 => {parent_area => 2217, id => 53319, name => "Bradenham", type => "CPC"}});
+        my $out = {
+            53319 => { parent_area => 2217, id => 53319, name => "Bradenham", type => "CPC" },
+        };
+        if ($areas->{URL} =~ /59087/) {
+            $out->{59087} = { parent_area => 2538, id => 59087, name => "Castle Bromwich", type => "CPC" },
+        }
+        $self->output($out);
     },
 
     sub (GET + .geojson) {

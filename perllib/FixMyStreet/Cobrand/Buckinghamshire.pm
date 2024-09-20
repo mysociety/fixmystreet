@@ -575,7 +575,7 @@ sub _parish_ids {
 }
 
 # Enable adding/editing of parish councils in the admin
-sub add_extra_areas {
+sub add_extra_areas_for_admin {
     my ($self, $areas) = @_;
 
     my $ids_string = join ",", @{ $self->_parish_ids };
