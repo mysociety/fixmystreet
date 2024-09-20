@@ -223,23 +223,31 @@ sub council_rss_alert_options {
 
     my $num_councils = scalar keys %$all_areas;
 
+    my @bodies = FixMyStreet::DB->resultset('Body')->active->search({
+        name => { -not_in => ['TfL', 'National Highways'] }
+    }, {
+        prefetch => 'body_areas',
+    })->for_areas(keys %$all_areas)->all;
+    my %bodies = map { $_->id => $_ } @bodies;
+    $c->cobrand->call_hook(munge_report_new_bodies => \%bodies);
+
+    my %body_for_area;
+    foreach my $body (values %bodies) {
+        foreach my $area ($body->body_areas->all) {
+            $body_for_area{$area->area_id} = $body;
+        }
+    }
+
     my ( @options, @reported_to_options );
     if ( $num_councils == 1 or $num_councils == 2 ) {
         my ($council, $ward);
-        my $body = FixMyStreet::DB->resultset('Body')->active->search(
-            {
-                name => { -not_in => ['TfL', 'National Highways'] }
-            })->for_areas(keys %$all_areas)->first;
         foreach (values %$all_areas) {
+            $_->{short_name} = $self->short_name($_);
+            ($_->{id_name} = $_->{short_name}) =~ tr/+/_/;
             if ($councils{$_->{type}}) {
                 $council = $_;
-                $council->{body} = $body; # Want to use body ID, not MapIt area ID
-                $council->{short_name} = $self->short_name( $council );
-                ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
             } else {
                 $ward = $_;
-                $ward->{short_name} = $self->short_name( $ward );
-                ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
             }
         }
         $council->{name} = 'London Borough of Bromley'
@@ -271,8 +279,9 @@ sub council_rss_alert_options {
         # Two-tier council
         my ($county, $district, $c_ward, $d_ward);
         foreach (values %$all_areas) {
-            $_->{short_name} = $self->short_name( $_ );
-            ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
+            $_->{short_name} = $self->short_name($_);
+            ($_->{id_name} = $_->{short_name}) =~ tr/+/_/;
+            $_->{body} = $body_for_area{$_->{id}};
             if ($_->{type} eq 'CTY') {
                 $county = $_;
             } elsif ($_->{type} eq 'DIS') {
@@ -287,9 +296,6 @@ sub council_rss_alert_options {
         my $d_ward_name = $d_ward->{name};
         my $county_name = $county->{name};
         my $c_ward_name = $c_ward->{name};
-
-        my $body_dis = FixMyStreet::DB->resultset('Body')->active->for_areas($district->{id})->first;
-        my $body_cty = FixMyStreet::DB->resultset('Body')->active->for_areas($county->{id})->first;
 
         push @options, {
             title => $district_name,
@@ -323,34 +329,34 @@ sub council_rss_alert_options {
 
         push @reported_to_options, {
             type      => 'council',
-            id        => sprintf( 'council:%s:%s', $body_dis->id, $district->{id_name} ),
+            id        => sprintf( 'council:%s:%s', $district->{body}->id, $district->{id_name} ),
             text      => sprintf( _('Only reports sent to %s'), $district->{name} ),
             rss_text  => sprintf( _('RSS feed of %s'), $district->{name}),
             uri       => $c->uri_for( '/rss/reports/' . $district->{short_name} ),
         }, {
             type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $body_dis->id, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
+            id       => sprintf( 'ward:%s:%s:%s:%s', $district->{body}->id, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $district->{name}, $d_ward->{name}),
             text     => sprintf( _('Only reports sent to %s, within %s ward'), $district->{name}, $d_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $district->{short_name} . '/' . $d_ward->{short_name} ),
         }
-            if $body_dis;
-        push @reported_to_options, {}, {} unless $body_dis;
+            if $district->{body};
+        push @reported_to_options, {}, {} unless $district->{body};
 
         push @reported_to_options, {
             type      => 'council',
-            id        => sprintf( 'council:%s:%s', $body_cty->id, $county->{id_name} ),
+            id        => sprintf( 'council:%s:%s', $county->{body}->id, $county->{id_name} ),
             text      => sprintf( _('Only reports sent to %s'), $county->{name} ),
             rss_text  => sprintf( _('RSS feed of %s'), $county->{name}),
             uri       => $c->uri_for( '/rss/reports/' . $county->{short_name} ),
         }, {
             type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $body_cty->id, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
+            id       => sprintf( 'ward:%s:%s:%s:%s', $county->{body}->id, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $county->{name}, $c_ward->{name}),
             text     => sprintf( _('Only reports sent to %s, within %s ward'), $county->{name}, $c_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $county->{short_name} . '/' . $c_ward->{short_name} ),
         }
-            if $body_cty;
+            if $county->{body};
 
     } else {
         throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_areas));
