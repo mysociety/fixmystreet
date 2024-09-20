@@ -222,7 +222,7 @@ sub body_form_dropdowns : Private {
     if ( $whitelist && ref $whitelist eq 'ARRAY' && @$whitelist ) {
         $areas = FixMyStreet::MapIt::call('areas', $whitelist);
     } else {
-        $areas = FixMyStreet::MapIt::call('areas', $c->cobrand->area_types);
+        $areas = FixMyStreet::MapIt::call('areas', $c->cobrand->area_types_for_admin);
     }
 
     # Some cobrands may want to add extra areas at runtime beyond those
