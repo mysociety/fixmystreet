@@ -600,6 +600,26 @@ sub reopening_disallowed {
     return $self->next::method($problem);
 }
 
+=head2 add_extra_areas_for_admin
+
+Add the parish IDs from Buckinghamshire's cobrand, plus any other IDs from
+configuration, so that we can manually add specific parish councils.
+
+=cut
+
+sub add_extra_areas_for_admin {
+    my ($self, $areas) = @_;
+
+    my $bucks = FixMyStreet::Cobrand::Buckinghamshire->new;
+    my @extra = @{ $bucks->_parish_ids };
+    my $extra = $self->feature('extra_parishes') || [];
+    push @extra, @$extra;
+    my $ids_string = join ",", @extra;
+    my $extra_areas = mySociety::MaPit::call('areas', [ $ids_string ]);
+    my %all_areas = ( %$areas, %$extra_areas );
+    return \%all_areas;
+}
+
 =head2 fetch_area_children
 
 If we are looking at the All Reports page for one of the extra London (TfL)
