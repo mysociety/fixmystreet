@@ -57,6 +57,11 @@
         </div>
 
       [% FOREACH option IN options %]
+
+        [% IF option.title AND reported_to_options %]
+            <h3>[% option.title %]</h3>
+        [% END %]
+
         <div class="alert-option-wrapper govuk-!-margin-bottom-4">
           <div class="govuk-radios__item">
             <input class="govuk-radios__input" type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
@@ -68,13 +73,9 @@
             <img src="/i/feed.png" width="16" height="16" alt="[% option.rss_text %]">
           </a>
         </div>
-      [% END %]
 
-      [% IF reported_to_options %]
-
-        <h3>[% loc('Reports by destination') %]</h3>
-
-        [% FOREACH option IN reported_to_options %]
+        [% option = reported_to_options.${loop.index} %]
+        [% IF option AND option.text %]
           <div class="alert-option-wrapper govuk-!-margin-bottom-4">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
