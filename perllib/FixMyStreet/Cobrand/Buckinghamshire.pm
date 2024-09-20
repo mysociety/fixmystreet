@@ -589,17 +589,6 @@ sub add_extra_areas {
     return \%all_areas;
 }
 
-# Make sure CPC areas are included in point lookups for new reports
-sub add_extra_area_types {
-    my ($self, $types) = @_;
-
-    my @types = (
-        @$types,
-        'CPC',
-    );
-    return \@types;
-}
-
 sub is_two_tier { 1 }
 
 =head2 should_skip_sending_update
@@ -746,22 +735,6 @@ around 'munge_sendreport_params' => sub {
 
     $row->areas($original_areas);
 };
-
-sub council_rss_alert_options {
-    my ($self, @args) = @_;
-    my ($options) = super();
-
-    # rename old district councils to 'area' and remove 'ward' from their wards
-    # remove 'County' from Bucks Council name
-    for my $area (@$options) {
-        for my $key (qw(rss_text text)) {
-            $area->{$key} =~ s/District Council/area/ && $area->{$key} =~ s/ ward//;
-            $area->{$key} =~ s/ County//;
-        }
-    }
-
-    return ($options);
-}
 
 sub car_park_wfs_query {
     my ($self, $row) = @_;
