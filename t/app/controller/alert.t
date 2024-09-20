@@ -35,10 +35,10 @@ FixMyStreet::override_config {
     $mech->content_contains('rss/pc/EH11BB');
     $mech->content_contains('All reports within Edinburgh City');
     $mech->content_contains('All reports within City Centre ward');
-    $mech->content_contains('/rss/area/Edinburgh');
-    $mech->content_contains('/rss/area/Edinburgh/City+Centre');
-    $mech->content_contains('area:2651:Edinburgh', 'Council feed contains Edinburgh id and details');
-    $mech->content_contains('area:2651:20728:Edinburgh:City_Centre', 'Ward feed contains Edinburgh id and details');
+    $mech->content_contains('/rss/area/2651');
+    $mech->content_contains('/rss/area/20728');
+    $mech->content_contains('area:2651', 'Council feed contains Edinburgh id and details');
+    $mech->content_contains('area:20728', 'Ward feed contains Edinburgh id and details');
 
     subtest "Test Nominatim lookup" => sub {
         $mech->get_ok('/alert/list?pc=High Street');
@@ -58,11 +58,11 @@ FixMyStreet::override_config {
     $mech->get_ok('/alert/subscribe?rss=1&feed=invalid:1000:A_Locationtype=local&pc=EH1+1BB&rss=Give+me+an+RSS+feed&rznvy=');
     $mech->content_contains('Illegal feed selection');
 
-    $mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:Birmingham');
-    is $mech->uri->path, '/rss/reports/Birmingham';
+    $mech->get_ok('/alert/subscribe?rss=1&feed=area:1000');
+    is $mech->uri->path, '/rss/area/1000';
 
-    $mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:1001:Cheltenham:Lansdown');
-    is $mech->uri->path, '/rss/area/Cheltenham/Lansdown';
+    $mech->get_ok('/alert/subscribe?rss=1&feed=area:1001');
+    is $mech->uri->path, '/rss/area/1001';
 
     $mech->get_ok('/alert/subscribe?rss=1&feed=council:1000:Gloucestershire');
     is $mech->uri->path, '/rss/reports/Gloucestershire';

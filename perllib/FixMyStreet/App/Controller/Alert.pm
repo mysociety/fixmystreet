@@ -88,9 +88,8 @@ sub rss : Private {
     }
 
     my $url;
-    if ( $feed =~ /^area:(?:\d+:)+(.*)$/ ) {
-        ( my $id = $1 ) =~ tr{:_}{/+};
-        $url = $c->cobrand->base_url() . '/rss/area/' . $id;
+    if ( $feed =~ /^area:(\d+)/ ) {
+        $url = $c->cobrand->base_url() . '/rss/area/' . $1;
         $c->res->redirect($url);
     }
     elsif ( $feed =~ /^(?:council|ward):(?:\d+:)+(.*)$/ ) {
@@ -246,7 +245,7 @@ sub set_local_alert_options : Private {
     my $feed = $c->get_param('feed');
 
     my ( $type, @params, $alert );
-    if ( $feed =~ /^area:(?:\d+:)?(\d+)/ ) {
+    if ( $feed =~ /^area:(\d+)/ ) {
         $type = 'area_problems';
         push @params, $1;
     }

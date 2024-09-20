@@ -262,17 +262,17 @@ sub council_rss_alert_options {
 
         push @options, {
             type      => 'area',
-            id        => sprintf( 'area:%s:%s', $council->{id}, $council->{id_name} ),
+            id        => sprintf( 'area:%s', $council->{id} ),
             text      => $council_text,
             rss_text  => sprintf( _('RSS feed of problems within %s'), $council->{name}),
-            uri       => $c->uri_for( '/rss/area/' . $council->{short_name} ),
+            uri       => $c->uri_for( '/rss/area/' . $council->{id} ),
         };
         push @options, {
             type     => 'area',
-            id       => sprintf( 'area:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
+            id       => sprintf( 'area:%s', $ward->{id} ),
             rss_text => sprintf( _('RSS feed of problems within %s ward'), $ward->{name}),
             text     => sprintf( _('All reports within %s ward'), $ward->{name}),
-            uri      => $c->uri_for( '/rss/area/' . $council->{short_name} . '/' . $ward->{short_name} ),
+            uri      => $c->uri_for( '/rss/area/' . $ward->{id} ),
         } if $ward;
 
     } elsif ( $num_councils == 4 ) {
@@ -300,31 +300,31 @@ sub council_rss_alert_options {
         push @options, {
             title => $district_name,
             type  => 'area',
-            id    => sprintf( 'area:%s:%s', $district->{id}, $district->{id_name} ),
+            id    => sprintf( 'area:%s', $district->{id} ),
             text  => sprintf( _('All reports within %s'), $district_name ),
             rss_text => sprintf( _('RSS feed for %s'), $district_name ),
-            uri => $c->uri_for( '/rss/area/' . $district->{short_name}  )
+            uri => $c->uri_for( '/rss/area/' . $district->{id}  )
         }, {
             title => "$d_ward_name, $district_name",
             type      => 'area',
-            id        => sprintf( 'area:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
+            id        => sprintf( 'area:%s', $d_ward->{id} ),
             text      => sprintf( _('All reports within %s ward, %s'), $d_ward_name, $district_name ),
             rss_text  => sprintf( _('RSS feed for %s ward, %s'), $d_ward_name, $district_name ),
-            uri       => $c->uri_for( '/rss/area/' . $district->{short_name} . '/' . $d_ward->{short_name} )
+            uri       => $c->uri_for( '/rss/area/' . $d_ward->{id} )
         }, {
             title => $county_name,
             type  => 'area',
-            id    => sprintf( 'area:%s:%s', $county->{id}, $county->{id_name} ),
+            id    => sprintf( 'area:%s', $county->{id} ),
             text  => sprintf( _('All reports within %s'), $county_name ),
             rss_text => sprintf( _('RSS feed for %s'), $county_name ),
-            uri => $c->uri_for( '/rss/area/' . $county->{short_name}  )
+            uri => $c->uri_for( '/rss/area/' . $county->{id}  )
         }, {
             title => "$c_ward_name, $county_name",
             type      => 'area',
-            id        => sprintf( 'area:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
+            id        => sprintf( 'area:%s', $c_ward->{id} ),
             text      => sprintf( _('All reports within %s ward, %s'), $c_ward_name, $county_name ),
             rss_text  => sprintf( _('RSS feed for %s ward, %s'), $c_ward_name, $county_name ),
-            uri       => $c->uri_for( '/rss/area/' . $county->{short_name} . '/' . $c_ward->{short_name} )
+            uri       => $c->uri_for( '/rss/area/' . $c_ward->{id} )
         };
 
         push @reported_to_options, {

@@ -945,14 +945,12 @@ sub council_rss_alert_options {
 
     my ( @options, @reported_to_options );
     foreach (values %$all_areas) {
-        $_->{short_name} = $self->short_name( $_ );
-        ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
         push @options, {
             type      => 'council',
-            id        => sprintf( 'area:%s:%s', $_->{id}, $_->{id_name} ),
+            id        => sprintf( 'area:%s', $_->{id} ),
             text      => sprintf( _('Problems within %s'), $_->{name}),
             rss_text  => sprintf( _('RSS feed of problems within %s'), $_->{name}),
-            uri       => $c->uri_for( '/rss/area/' . $_->{short_name} ),
+            uri       => $c->uri_for( '/rss/area/' . $_->{id} ),
         };
     }
 

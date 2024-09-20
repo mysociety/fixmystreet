@@ -254,10 +254,20 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
 
     $c->stash->{rss} = 1;
 
-    # area_check
-
     $area =~ s/\+/ /g;
     $area =~ s/\.html//;
+
+    if ($area =~ /^[0-9]+$/) {
+        my $area = FixMyStreet::MapIt::call( 'area', $area );
+        $c->detach( 'redirect_index' ) unless $area;
+
+        $c->stash->{qs} = "";
+        $c->stash->{type} = 'area_problems';
+        $c->stash->{title_params} = { NAME => $area->{name} };
+        $c->stash->{db_params} = [ $area->{id} ];
+
+        $c->detach( '/rss/output' );
+    }
 
     # XXX Currently body/area overlaps here are a bit muddy.
     # We're checking an area here, but this function is currently doing that.
