@@ -66,6 +66,44 @@ sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' 
 sub cut_off_date { '2024-09-16' }
 
 
+=head2 problems_restriction/problems_sql_restriction/problems_on_map_restriction
+
+Reports made on FMS.com before the cut off date are not shown on the Surrey cobrand;
+however if a report is fetched over Open311 it is shown regardless of the cut off date.
+
+=cut
+
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+
+    $rs = $rs->to_body($self->body);
+
+    my $date = $self->cut_off_date;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    return $rs->search([
+        { "$table.created" => { '>=', $date } },
+        { "$table.service" => 'Open311' },
+    ]);
+}
+
+sub problems_sql_restriction {
+    my ($self, $item_table) = @_;
+    my $date = $self->cut_off_date;
+    return " AND ( created >= '$date' OR service = 'Open311' )";
+}
+
+sub problems_on_map_restriction {
+    my ($self, $rs) = @_;
+    my $date = $self->cut_off_date;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    return $rs->search([
+        { "$table.created" => { '>=', $date } },
+        { "$table.service" => 'Open311' },
+    ]);
+}
+
+
 =item * The privacy policy is held on Surrey's own site
 
 =cut
