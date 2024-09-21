@@ -83,6 +83,19 @@ textarea {
   }
 }
 
+/* ALERT PAGE */
+.alertpage {
+  .postcode-form-box {
+    color: $primary_b;
+    .form-hint {
+      color: $primary_b;
+    }
+    input#sub, input#pc {
+      border: 1px solid $primary;
+    }
+  }
+}
+
 /* FOOTER */
 .scc-footer {
   .footer-upper-section {
