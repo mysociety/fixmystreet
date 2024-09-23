@@ -45,6 +45,8 @@ $col_fixed_label_light: mix($col_fixed_label, #fff, 10%) !default;
 $form-control-border-color: #aaaaaa !default;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
+$header-link-text-decoration: none !default;
+$header-link-hover-text-decoration: none !default;
 
 $container-max-width: 60em !default;
 
@@ -930,6 +932,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
     color: #333;
     font-size: 1.25em;
     border-bottom: 1px solid #ccc;
+    text-decoration: $header-link-text-decoration;
   }
   a:visited {
     color: #333;
@@ -938,6 +941,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
     background-color: #333;
     color: #fff;
     text-decoration: none;
+    text-decoration: $header-link-hover-text-decoration;
   }
   span {
     background-color: mix(#fff, $primary, 70%);
