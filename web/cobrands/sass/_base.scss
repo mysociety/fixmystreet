@@ -6,11 +6,14 @@ $heading-font: "Museo300-display", MuseoSans, Helmet, Freesans, sans-serif !defa
 $menu-image: "menu-white" !default;
 $close-menu-image: "close-#{$menu-image}" !default;
 
-$link-color: #005ea5 !default;
-$link-hover-color: #2b8cc4 !default;
+$link-color: #005A9E !default;
+$link-hover-color: #024274 !default;
+$link-focus-color: #333 !default;
 $link-visited-color: $link-color !default;
-$link-text-decoration: none !default;
+$link-text-decoration: underline !default;
 $link-hover-text-decoration: underline !default;
+$link-focus-text-decoration: underline !default;
+$link-focus-background: #ffe100 !default;
 
 $error_color: #D50404 !default;
 
@@ -253,6 +256,11 @@ a,
 .fake-link {
   text-decoration: $link-text-decoration;
   color: $link-color;
+  text-underline-offset : .1578em; // Improves readability by not overlapping with the element
+  -webkit-text-decoration-skip-ink: none;
+  text-decoration-skip-ink: none;
+  -webkit-text-decoration-skip: none;
+  text-decoration-skip: none; // So the text-decoration doesn't get cut
 
   &:visited {
     color: $link-visited-color;
@@ -262,6 +270,14 @@ a,
   &:active {
     text-decoration: $link-hover-text-decoration;
     color: $link-hover-color;
+    text-decoration-thickness: 3px;
+  }
+
+  &:focus {
+    text-decoration: $link-focus-text-decoration;
+    color: $link-focus-color;
+    background-color: $link-focus-background;
+    text-decoration-thickness: 3px;
   }
 }
 
