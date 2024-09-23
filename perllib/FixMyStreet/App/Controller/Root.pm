@@ -223,6 +223,7 @@ sub store_app_platform : Private {
 
     my $referer = $c->req->referer || "";
     my $ua = $c->req->user_agent || "";
+    my $pwa = (grep { $_ eq 'pwa' } keys %{ $c->req->params }) ? 1 : 0;
     my $param = $c->get_param("pwa") || "";
     my $cfg = $c->cobrand->feature("android_assetlinks") || {};
     my $package = $cfg->{package} || "";
@@ -231,6 +232,8 @@ sub store_app_platform : Private {
         $c->session->{app_platform} = "iOS";
     } elsif ( $param =~ /android/i || $referer =~ m{android-app://$package/}i ) {
         $c->session->{app_platform} = "Android";
+    } elsif ( $pwa && !$param ) {
+        $c->session->{app_platform} = "PWA";
     }
 }
 

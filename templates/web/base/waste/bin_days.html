@@ -2,8 +2,6 @@
 [% USE pounds = format('%.2f'); ~%]
 [% PROCESS 'waste/header.html' %]
 
-<div class="waste__loading_wrapper">
-
 [% IF c.cobrand.moniker != 'sutton' %]
 <h1 class="govuk-heading-xl">Your bin days</h1>
 [% END %]
@@ -15,7 +13,7 @@
 <div class="waste__collections">
  [% IF c.cobrand.moniker != 'peterborough' %]
   <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
-  [% IF c.cobrand.moniker == 'brent' && service_data.size %]
+  [% IF c.cobrand.moniker == 'brent' && service_data.size &&  domestic_collection %]
     <p>Please note all collections can take place between 7am &ndash; 10pm.</p>
   [% END %]
  [% ELSE %]
@@ -254,5 +252,5 @@
   </div>
  [% END %]
 </div>
-</div>
+
 [% INCLUDE footer.html %]

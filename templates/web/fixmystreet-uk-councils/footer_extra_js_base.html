@@ -43,9 +43,4 @@ IF bodyclass.match('mappage') AND bodyclass.match('formflow');
         version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
     );
 END;
-IF page_refresh;
-    scripts.push(
-        version('/vendor/htmx.min.js'),
-    );
-END;
 ~%]

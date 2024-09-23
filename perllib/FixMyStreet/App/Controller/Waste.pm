@@ -593,10 +593,8 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     # clear this every time they visit this page to stop stale content,
     # unless this load has happened whilst waiting for async Echo/Bartec API
     # calls to complete.
-    # HTMX used for partial refreshes, sends a hx-request header
-    my $loading = ($c->req->{headers}->{'hx-request'} || "") eq "true";
     # non-JS page loads include a page_loading=1 request param
-    $loading ||= $c->get_param('page_loading');
+    my $loading = $c->stash->{ajax_loading} = $c->req->{headers}->{'x-requested-with'} || $c->get_param('page_loading');
 
     if ( $c->req->path =~ m#^waste/[:\w %]+$#i && !$loading) {
         $c->cobrand->call_hook( clear_cached_lookups_property => $id );

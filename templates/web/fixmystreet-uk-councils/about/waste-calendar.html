@@ -3,8 +3,6 @@ PROCESS 'waste/header.html', title = 'Add your waste collection days to your onl
 SET ics_link = c.uri_for_action('waste/calendar_ics', [ property.id ]);
 %]
 
-<div class="waste__loading_wrapper">
-
 <script type="module" src="[% version('/vendor/clipboard-copy-element.js') %]"></script>
 <script type="module" src="[% version('/cobrands/fixmystreet-uk-councils/calendar.js') %]"></script>
 <style>
@@ -40,7 +38,5 @@ clipboard-copy:defined .ics-loading { display: none; }
 <li><a href="https://support.google.com/calendar/answer/37100?hl=en&amp;co=GENIE.Platform%3DDesktop#:~:text=Use%20a%20link%20to%20add%20a%20public%20calendar">Google Calendar</a></li>
 <li><a href="https://support.office.com/en-us/article/import-or-subscribe-to-a-calendar-in-outlook-com-cff1429c-5af6-41ec-a5b4-74f2c278e98c">Outlook</a></li>
 </ul>
-
-</div>
 
 [% INCLUDE footer.html %]

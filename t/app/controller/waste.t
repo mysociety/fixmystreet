@@ -119,7 +119,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
         $mech->content_contains('13345'); # For comparing against type check below
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
-        $mech->content_contains('waste__loading_wrapper');
         $mech->content_contains('find your address in our records');
     };
     subtest 'Address lookup' => sub {
@@ -143,7 +142,6 @@ FixMyStreet::override_config {
         $mech->content_lacks('service-535', 'Cannot report, last collection was 20th');
         $mech->content_lacks('service-542', 'Cannot report, last collection was 18th');
         $mech->follow_link_ok({ text => 'Report a missed collection' });
-        $mech->content_contains('waste__loading_wrapper');
         $mech->content_contains('service-531', 'Checkbox, last collection was 27th');
         $mech->content_lacks('service-537', 'No checkbox, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'No checkbox, last collection was 20th');
