@@ -429,7 +429,7 @@ sub open311_get_update_munging {
         my $echo = $self->feature('echo');
         $echo = Integrations::Echo->new(%$echo);
         my $event = $echo->GetEvent($problem->external_id);
-        $echo->log($event);
+        $echo->log($event->{Data});
         my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
         my $notes = "";
         foreach (@$data) {
