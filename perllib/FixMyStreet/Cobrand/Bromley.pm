@@ -400,7 +400,7 @@ appropriately.
 =cut
 
 sub open311_get_update_munging {
-    my ($self, $comment, $state) = @_;
+    my ($self, $comment, $state, $request) = @_;
 
     # An update from Bromley with a special referral state
     if ($state eq 'referred to veolia streets') {
@@ -428,7 +428,7 @@ sub open311_get_update_munging {
         # Fetch outgoing notes
         my $echo = $self->feature('echo');
         $echo = Integrations::Echo->new(%$echo);
-        my $event = $echo->GetEvent($problem->external_id);
+        my $event = $echo->GetEvent($request->{service_request_id}); # From the event, not the report
         $echo->log($event->{Data});
         my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
         my $notes = "";
