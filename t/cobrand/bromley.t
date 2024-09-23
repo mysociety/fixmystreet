@@ -707,6 +707,9 @@ subtest 'redirecting of reports between backends' => sub {
                 ] } },
             });
         } elsif ($method eq 'GetEvent') {
+            my ($key, $type, $value) = ${$args[3]->value}->value;
+            my $external_id = ${$value->value}->value->value;
+            is $external_id, 'guid';
             return SOAP::Result->new(result => {
                 Guid => 'hmm',
                 Id => 'id',
@@ -769,7 +772,7 @@ subtest 'redirecting of reports between backends' => sub {
             whensent => DateTime->now,
         });
 
-        my $in = $mech->echo_notify_xml('guid', 2104, 15004, 1252);
+        my $in = $mech->echo_notify_xml('guid', 2104, 15004, 1252, 'FMS-' . $report->id);
         my $detail = $report->detail;
 
         subtest 'A report sent to Confirm, then redirected to Echo' => sub {
@@ -811,7 +814,7 @@ subtest 'redirecting of reports between backends' => sub {
             is $c->param('description'), "$detail | Handover notes - This is a handover note";
         };
         subtest '...then redirected back to Confirm' => sub {
-            $report->update({ external_id => 'guid', whensent => DateTime->now, send_method_used => 'Open311' });
+            $report->update({ external_id => 'parent-guid', whensent => DateTime->now, send_method_used => 'Open311' });
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 2, 'A new update';
             $report->discard_changes;
@@ -834,12 +837,12 @@ subtest 'redirecting of reports between backends' => sub {
         subtest 'A report sent to Echo, redirected to Confirm' => sub {
             $report->comments->delete;
             $report->unset_extra_metadata('original_bromley_external_id');
-            $report->update({ external_id => 'guid' });
+            $report->update({ external_id => 'original-guid' });
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 1, 'A new update';
             $report->discard_changes;
             is $report->whensent, undef;
-            is $report->external_id, 'guid', 'ID not changed';
+            is $report->external_id, 'original-guid', 'ID not changed';
             is $report->state, 'in progress', 'A state change';
             is $report->category, 'Referred to LB Bromley Streets';
             FixMyStreet::Script::Reports::send();
