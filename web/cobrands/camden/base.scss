@@ -113,7 +113,7 @@ a {
   @include cobrand-btn-secondary;
 }
 
-.item-list--wards__item a, .item-list--reports__item a {
+.item-list--reports__item a {
   text-decoration: none;
   &:hover {
     h3 {

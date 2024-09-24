@@ -193,11 +193,8 @@ input.field, input.text,
   }
 }
 
-.item-list--wards__item a:hover,
 .item-list--reports__item a:hover,
-.item-list--wards__item a:focus,
 .item-list--reports__item a:focus,
-.hovered.item-list--wards__item a,
 .hovered.item-list--reports__item a {
   background-color: mix($bromley_green, #fff, 30%);
 }

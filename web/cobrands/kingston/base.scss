@@ -68,8 +68,7 @@ a,
     text-decoration: underline;
 }
 
-.item-list--reports__item a,
-.item-list--wards__item a {
+.item-list--reports__item a {
     @extend .fake-link;
     text-decoration: none;
 
