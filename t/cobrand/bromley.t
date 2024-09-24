@@ -803,6 +803,7 @@ subtest 'redirecting of reports between backends' => sub {
             $update->process_body;
             $report->discard_changes;
             is $report->comments->count, 1;
+            is_deeply [ map { $_->state } $report->comments->all ], ['hidden'];
             is $report->whensent, undef;
             is $report->get_extra_metadata('handover_notes'), 'This is a handover note';
             is $report->category, 'Referred to Veolia Streets';
@@ -817,6 +818,7 @@ subtest 'redirecting of reports between backends' => sub {
             $report->update({ external_id => 'parent-guid', whensent => DateTime->now, send_method_used => 'Open311' });
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 2, 'A new update';
+            is_deeply [ map { $_->state } $report->comments->order_by('id')->all ], ['hidden', 'confirmed'];
             $report->discard_changes;
             is $report->external_id, 12345, 'ID changed back';
             is $report->state, 'in progress', 'A state change';
@@ -832,7 +834,9 @@ subtest 'redirecting of reports between backends' => sub {
             my $c = CGI::Simple->new($req->content);
             is $c->param('status'), 'REFERRED_TO_LBB_STREETS';
             is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
-            is $c->param('description'), "Completed | Handover notes - Outgoing notes from Echo";
+            is $c->param('description'), "Outgoing notes from Echo";
+
+            is_deeply [ map { $_->state } $report->comments->order_by('id')->all ], ['hidden', 'hidden'];
         };
         subtest 'A report sent to Echo, redirected to Confirm' => sub {
             $report->comments->delete;
@@ -840,6 +844,7 @@ subtest 'redirecting of reports between backends' => sub {
             $report->update({ external_id => 'original-guid' });
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 1, 'A new update';
+            is_deeply [ map { $_->state } $report->comments->all ], ['hidden'];
             $report->discard_changes;
             is $report->whensent, undef;
             is $report->external_id, 'original-guid', 'ID not changed';
