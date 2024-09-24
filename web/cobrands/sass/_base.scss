@@ -1326,12 +1326,23 @@ input.final-submit {
   }
 }
 
-.item-list--wards__item {
+.item-list--wards {
   @extend %item-list__item--link;
-
+  padding: 1em;
   label {
-    margin: 0;
-    padding: 0.5em 1em;
+    margin-top: inherit;
+  }
+
+  &.govuk-checkboxes--small {
+    .govuk-checkboxes__item {
+      float: none; // Overrides float:left from govuk-checkboxes--small
+    }
+  }
+
+  a {
+    display: block;
+    margin-left: calc(-1em + -34px); // for the padding-left on govuk-checkboxes__item + padding of item-list--wards
+    margin-bottom: 0.5rem;
   }
 }
 
