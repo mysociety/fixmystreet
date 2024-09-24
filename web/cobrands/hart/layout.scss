@@ -38,7 +38,7 @@
     }
 
     a.report-a-problem-btn {
-        @include border-radius(0);
+        border-radius: 0;
         &:hover {
             background-color: $primary_b;
             color: $nav_colour;

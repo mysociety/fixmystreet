@@ -7,7 +7,7 @@
 // so that it sits in front of the grey border-bottom from .eh-header
 
 .eh-header {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     height: $eh-header-height + $eh-nav-height;
     border-bottom: $eh-nav-height solid $eh_light_grey;
 }

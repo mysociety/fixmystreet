@@ -89,7 +89,7 @@ body.mappage {
 
 .nav-menu--main {
     a:hover {
-        @include linear-gradient(#000, #444 10%, #444 95%, #111);
+        background: linear-gradient(#000, #444 10%, #444 95%, #111);
     }
     a.report-a-problem-btn:hover {
         background: $primary/1.1;
@@ -109,7 +109,7 @@ body.mappage {
 }
 body.mappage {
     #site-header {
-        @include linear-gradient(#000, #222 10%, #222 90%, #000);
+        background: linear-gradient(#000, #222 10%, #222 90%, #000);
     }
 }
 
@@ -223,7 +223,7 @@ body.frontpage {
 }
 
 .next-steps {
-  @include flex-container();
+  display: flex;
   margin-bottom: 2em; // add some space between this and the footer
 }
 
@@ -357,12 +357,12 @@ footer {
 
 .dashboard-fms-case-studies {
     & > div {
-        @include flex-container();
-        @include flex-wrap(wrap);
-        @include justify-content(space-between);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
 
         a {
-            @include box-sizing(border-box);
+            box-sizing: border-box;
             display: block;
             width: 48%;
             margin-bottom: 0;

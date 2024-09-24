@@ -36,7 +36,7 @@ $button-margin-left: 0 !default;
     font-weight: bold;
     font-family: inherit;
     cursor: pointer;
-    @include border-radius(4px);
+    border-radius: 4px;
 
     &,
     &:hover,
@@ -54,7 +54,7 @@ $button-margin-left: 0 !default;
     color: $text !important; // !important to override more specific selectors like `a:link`
     background: $bg-bottom;
     @if $bg-top != $bg-bottom {
-        @include linear-gradient($bg-top, $bg-bottom);
+        background: linear-gradient($bg-top, $bg-bottom);
     }
     @if $border {
         border: 1px solid $border;
@@ -66,7 +66,7 @@ $button-margin-left: 0 !default;
         color: $hover-text !important;
         background: $hover-bg-bottom;
         @if $hover-bg-top != $hover-bg-bottom {
-            @include linear-gradient($hover-bg-top, $hover-bg-bottom);
+            background: linear-gradient($hover-bg-top, $hover-bg-bottom);
         }
         @if $hover-border {
             border-color: $hover-border;
@@ -79,7 +79,7 @@ $button-margin-left: 0 !default;
       color: $focus-text !important;
       background: $focus-bg-bottom;
       @if $focus-bg-top != $focus-bg-bottom {
-          @include linear-gradient($focus-bg-top, $focus-bg-bottom);
+          background: linear-gradient($focus-bg-top, $focus-bg-bottom);
       }
       @if $focus-border {
           border-color: $focus-border;
@@ -141,139 +141,8 @@ $right: right;
 
 // Compass-like mixins
 
-@mixin box-sizing($bs) {
-  $bs: unquote($bs);
-  @include experimental(box-sizing, $bs, -moz, -webkit, not -o, not -ms, official);
-}
-
-@mixin border-radius($radius: 5px) {
-  @include experimental(border-radius, $radius, -moz, -webkit, not -o, not -ms, official);
-}
-
-@mixin box-shadow($shadows...) {
-  @include experimental(box-shadow, $shadows, -moz, -webkit, not -o, not -ms, official);
-}
-
-@mixin experimental($property, $value, $moz: true, $webkit: true, $o: true, $ms: true, $official: true) {
-  @if $webkit   { -webkit-#{$property} : #{$value}; }
-  @if $moz      {    -moz-#{$property} : #{$value}; }
-  @if $ms       {     -ms-#{$property} : #{$value}; }
-  @if $o        {      -o-#{$property} : #{$value}; }
-  @if $official {         #{$property} : #{$value}; }
-}
-
-@mixin inline-block($alignment: middle) {
-  display: inline-block;
-  vertical-align: middle;
-  *vertical-align: auto;
-  zoom: 1;
-  *display: inline;
-}
-
 @mixin clearfix {
     &:before, &:after { content: " "; display: table; }
     &:after { clear: both; }
     & { *zoom: 1; }
-}
-
-@mixin linear-gradient($stops...) {
-  $webkit-gradient-stops: ();
-  $webkit-end-point: 100%;
-  @each $stop in $stops {
-    $pos: none;
-    @if length($stop) > 1 {
-      @if length($stops) == 2 && unit(nth($stop, 2)) == 'px' {
-        $webkit-end-point: nth($stop, 2);
-        $pos: 100%;
-      } @else {
-        $pos: nth($stop, 2);
-      }
-    } @else if (length($stop) == 1 && index($stops, $stop) == 1) {
-      $pos: 0%;
-    } @else {
-      $pos: 100%;
-    }
-    $webkit-gradient-stops: append($webkit-gradient-stops,
-                                   color-stop($pos, nth($stop, 1)),
-                                   comma);
-  }
-
-  background: -webkit-gradient(linear, 0% 0%, 0% $webkit-end-point, $webkit-gradient-stops);
-  @each $prefix in -moz-, -o-, -webkit-, "" {
-    background: #{$prefix}linear-gradient($stops);
-  }
-}
-
-@mixin flex-container() {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-}
-
-@mixin flex-container-inline() {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -moz-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-}
-
-@mixin flex($values, $values2009: 0) {
-  -webkit-box-flex: $values2009;
-  -moz-box-flex: $values2009;
-  -webkit-box-flex: $values;
-  -moz-box-flex: $values;
-  -webkit-flex: $values;
-  -ms-flex: $values;
-  flex: $values;
-}
-
-@mixin flex-wrap($wrap) {
-  -webkit-box-wrap: $wrap;
-  -webkit-flex-wrap: $wrap;
-  -ms-flex-wrap: $wrap;
-  flex-wrap: $wrap;
-}
-
-@mixin flex-align($alignment) {
-  -webkit-box-align: $alignment;
-  -webkit-align-items: $alignment;
-  -ms-flex-align: $alignment;
-  align-items: $alignment;
-}
-
-@mixin flex-direction($direction) {
-    @if ($direction == column) {
-        -webkit-box-orient: vertical;
-    } @elseif ($direction == row) {
-        -webkit-box-orient: horizontal;
-    }
-    -moz-flex-direction: $direction;
-    -ms-flex-direction: $direction;
-    -webkit-flex-direction: $direction;
-    flex-direction: $direction;
-}
-
-@mixin justify-content($alignment) {
-    -webkit-justify-content: $alignment;
-    -moz-justify-content: $alignment;
-    -ms-justify-content: $alignment;
-    justify-content: $alignment;
-}
-
-@mixin flex-order($order) {
-  // 2009 syntax
-  -webkit-box-ordinal-group: $order;
-  -moz-box-ordinal-group: $order;
-
-   // 2011 syntax https://www.w3.org/TR/2012/WD-css3-flexbox-20120322/#flex-order
-  -ms-flex-order: $order;
-  flex-order: $order;
-
-  // Modern syntax
-  -webkit-order: $order;
-  -ms-order: $order;
-  order: $order;
 }

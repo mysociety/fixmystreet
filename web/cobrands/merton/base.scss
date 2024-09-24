@@ -55,7 +55,7 @@ a#geolocate_link,
 :not(.segmented-control--radio) > .btn,
 .govuk-button  {
     @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
-    @include border-radius(0);
+    border-radius: 0;
     border-bottom: 3px solid $merton-dark-green;
     background-image: none;
     font-size: 1.2rem;

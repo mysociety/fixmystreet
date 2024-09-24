@@ -89,7 +89,7 @@ h1 {
 
 body.mappage {
   #site-header {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     top: 0;
   }
 

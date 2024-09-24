@@ -120,7 +120,7 @@ a {
 .btn--primary,
 .btn-secondary,
 .postcode-form-box input#sub {
-  @include border-radius($button-border-radius);
+  border-radius: $button-border-radius;
   @extend .h6;
 }
 

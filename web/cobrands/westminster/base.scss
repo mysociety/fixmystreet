@@ -65,7 +65,7 @@ body.frontpage {
         height: 46px;
         padding: 0 0 0 50px; // So value 'Go' doesn't display inside search icon
         overflow: hidden;
-        @include flex(0 0 auto);
+        flex: 0 0 auto;
         background: $westminster_blue_links url(/cobrands/westminster/images/search-white.svg) no-repeat 50% 50%;
         background-size: 42px 32px;
         position: absolute;

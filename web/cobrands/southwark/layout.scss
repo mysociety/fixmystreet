@@ -82,7 +82,7 @@ body:not(.mappage) {
 
 body.mappage {
   #site-header {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
   }
 
   // Reinstate the floated nav bar on map pages

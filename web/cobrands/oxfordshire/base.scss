@@ -23,7 +23,7 @@ a:not([class]):focus {
 
 .form-control,
 .postcode-form-box input#pc {
-    @include border-radius(none);
+    border-radius: 0;
     box-shadow: none;
 
     border: 1px solid $form-control-border-color;
@@ -176,10 +176,10 @@ dd, p {
         #ffffff, #ffffff, #ffffff, #000,
         #f3f3f3, #f3f3f3, #f3f3f3, #000
     );
-    @include box-shadow(
+    box-shadow:
         inset 0 -4px 0 #f3f3f3,
         0 2px 4px 0 rgba(26, 26, 26, 0.2)
-    );
+    ;
 }
 
 // Override all the "primary" buttons across the site!
@@ -190,10 +190,10 @@ dd, p {
         $color-oxfordshire-bright-blue, $color-oxfordshire-bright-blue, $color-oxfordshire-bright-blue, #fff,
         darken(#0e73d8, 15%), darken(#0e73d8, 15%), darken(#0e73d8, 15%), #fff
     );
-    @include box-shadow(
+    box-shadow:
         inset 0 -4px 0 darken(#0e73d8, 15%),
         0 2px 4px 0 rgba(26, 26, 26, 0.2)
-    );
+    ;
 }
 
 .form-txt-submit-box input[type="submit"] {

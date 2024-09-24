@@ -85,7 +85,7 @@ h1 {
 
 // BUTTONS
 .nav-menu--main a.report-a-problem-btn  {
-    @include border-radius($button-border-radius);
+    border-radius: $button-border-radius;
     text-transform: uppercase;
     font-weight: 400;
     line-height: 100%;

@@ -38,7 +38,7 @@
 
 #report-cta, #nav-link {
     background-color: $nav_hover_background_colour;
-    @include border-radius(0);
+    border-radius: 0;
     padding: 12px 10px;
     font-size: 18px;
     line-height: 100%;
