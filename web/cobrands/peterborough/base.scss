@@ -33,18 +33,19 @@ h1, h2 {
     color: $alt-green;
 }
 
-.btn--primary, .btn-secondary {
+.btn-secondary {
     border: 0.2em solid $primary;
-    padding: 0.55em 1em;
-    border-radius: 0.25em;
+    @include button-size();
     text-decoration: none !important;
     font-weight: bold;
     line-height: 100%;
     font-size: 1em;
+}
 
+.btn--primary, .btn-secondary {
     &:focus {
+        outline: transparent;
         box-shadow: #4c9aff 0px 0px 0px 3px;
-        outline: none;
     }
 }
 
@@ -62,20 +63,6 @@ h1, h2 {
     }
 }
 
-.btn--primary {
-    background: $primary;
-
-    &:hover,
-    &:active {
-        background: darken($green, 5%);
-        border-color: darken($green, 5%);
-    }
-
-    &:focus {
-        color: $primary_text;
-        background: $primary;
-    }
-}
 
 .btn-secondary, input.btn-secondary {
     color: $primary ;
