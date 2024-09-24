@@ -334,25 +334,27 @@ sub _include_user_title_in_extra {
 sub open311_pre_send_updates {
     my ($self, $row) = @_;
 
-    $self->{bromley_original_update_text} = $row->text;
-
-    my $private_comments = $row->get_extra_metadata('private_comments');
-    if ($private_comments) {
-        my $text = $row->text . "\n\nPrivate comments: $private_comments";
-        $row->text($text);
-    }
-
     return $self->_include_user_title_in_extra($row);
 }
 
 sub open311_post_send_updates {
-    my ($self, $row) = @_;
+    my ($self, $comment, $external_id) = @_;
 
-    $row->text($self->{bromley_original_update_text});
+    if (($comment->problem_state || '') eq REFERRED_TO_BROMLEY) {
+        if ($external_id) {
+            $comment->state('hidden');
+        }
+    }
 }
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
+
+    my $private_comments = $comment->get_extra_metadata('private_comments');
+    if ($private_comments) {
+        my $text = $params->{description} . "\n\nPrivate comments: $private_comments";
+        $params->{description} = $text;
+    }
 
     delete $params->{update_id};
     $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',
