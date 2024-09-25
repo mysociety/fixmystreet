@@ -1,5 +1,5 @@
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" OR c.config.BASE_URL == 'https://staging.fixmystreet.com' %]
-<script>
+<script nonce="[% csp_nonce %]">
   window.dataLayer = window.dataLayer || [];
   function gtag() {
     dataLayer.push(arguments);
@@ -21,7 +21,6 @@
         security_storage: "denied",
       });
     } else {
-      console.log('gtag');
       gtag(
         "consent",
         "default",
@@ -40,7 +39,7 @@
   src="https://www.googletagmanager.com/gtag/js?id=G-0Z09LP5XJ7"
 ></script>
 
-<script>
+<script nonce="[% csp_nonce %]">
   function updateCookies(consent) {
     const cookieBanner = document.getElementById("wncCookieBanner");
     cookieBanner.classList.remove("wnc-cookie-show");
@@ -63,32 +62,6 @@
     );
   }
 </script>
-
-<div class="wnc-cookie-banner wnc-cookie-hidden" id="wncCookieBanner">
-  <div class="wnc-cookie-banner-container">
-    <p class="wnc-cookie-title">
-      We use cookies on this site to enhance your user experience
-    </p>
-
-    <p>
-      By clicking the Accept button, you agree to us doing so. More info on our
-      <a href="https://www.westnorthants.gov.uk/about-website/cookies" class="wnc-cookie-link">cookie policy</a>
-    </p>
-
-    <div class="wnc-cookie-buttons">
-      <div>
-        <button class="wnc-cookie-button" onclick="updateCookies(true)">
-          Accept all cookies
-        </button>
-      </div>
-      <div>
-        <button class="wnc-cookie-button" onclick="updateCookies(false)">
-          Reject all cookies
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 [% ELSE %]
 <!-- Tracking code not inserted -->
 [% END %]
