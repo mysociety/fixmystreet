@@ -5,6 +5,12 @@ use FixMyStreet::DB;
 use FixMyStreet::Script::Reports;
 use Open311::GetUpdates;
 use Sub::Override;
+use Test::MockModule;
+
+my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Default');
+$cobrand->mock(
+    record_update_extra_fields => sub { { shortlisted_user => 1 } }
+);
 
 my $problem_rs = FixMyStreet::DB->resultset('Problem');
 
@@ -203,6 +209,31 @@ for my $test (
         },
         state => 'confirmed',
     },
+    {
+        desc    => 'adding detailed information',
+        request => {
+            comment_time => $comment_time,
+            status       => 'open',
+            description  => 'Adding detailed information',
+            extras       => {
+                detailed_information => 'Hello there',
+            },
+        },
+        state => 'confirmed',
+    },
+    {
+        desc    => 'deleting detailed information',
+        request => {
+            comment_time => $comment_time,
+            status       => 'open',
+            description  => 'Deleting detailed information',
+            extras       => {
+                detailed_information => '',
+            },
+        },
+        state => 'confirmed',
+        start_detailed_information => 'Goodbye here',
+    },
 ) {
     subtest $test->{desc} => sub {
         # makes testing easier;
@@ -210,6 +241,10 @@ for my $test (
         $problem->created( DateTime->now()->subtract( days => 1 ) );
         $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
         $problem->state( $test->{start_state} || 'confirmed' );
+        $problem->unset_extra_metadata('detailed_information');
+        $problem->set_extra_metadata( 'detailed_information',
+            $test->{start_detailed_information} )
+            if $test->{start_detailed_information};
         $problem->update;
         my $w3c = DateTime::Format::W3CDTF->new();
 
@@ -228,29 +263,44 @@ for my $test (
         is $problem->state, $test->{state}, 'problem state';
         is $update->text, $test->{request}->{description}, 'update text';
 
-        if ( my $assigned = $test->{request}{extras} ) {
-            my $assigned_user = FixMyStreet::DB->resultset('User')
-                ->search( { email => $assigned->{assigned_user_email} } )
-                    ->first;
+        if ( my $extras = $test->{request}{extras} ) {
+            my $assigned_user_name = $extras->{assigned_user_name};
+            my $assigned_user_email = $extras->{assigned_user_email};
 
-            # Check certain fields set for new user
-            if ( $assigned->{assigned_user_email} ne $existing_user->email ) {
-                is $assigned_user->from_body->id, $body->id,
-                    'assigned user body';
-                is $assigned_user->email_verified, 1,
-                    'assigned user email verified';
-                is_deeply $assigned_user->body_permissions,
-                    [ { body_id => $body->id, permission => 'report_inspect' }
-                    ],
-                    'assigned user permissions';
+            if ( $assigned_user_email ) {
+                my $assigned_user = FixMyStreet::DB->resultset('User')
+                    ->search( { email => $assigned_user_email } )
+                        ->first;
+
+                # Check certain fields set for new user
+                if ( $assigned_user_email ne $existing_user->email ) {
+                    is $assigned_user->from_body->id, $body->id,
+                        'assigned user body';
+                    is $assigned_user->email_verified, 1,
+                        'assigned user email verified';
+                    is_deeply $assigned_user->body_permissions,
+                        [ { body_id => $body->id, permission => 'report_inspect' }
+                        ],
+                        'assigned user permissions';
+                }
+
+                is $assigned_user->name, $assigned_user_name,
+                    'assigned user name';
+
+                is $problem->shortlisted_user->email,
+                    $assigned_user_email,
+                    'assigned user actually assigned to problem';
+                is $problem->comments->count, 1, 'initial comment only';
+                for ( $problem->comments ) {
+                    is $_->extra, undef, 'No extra data';
+                }
             }
 
-            is $assigned_user->name, $assigned->{assigned_user_name},
-                'assigned user name';
-
-            is $problem->shortlisted_user->email,
-                $assigned->{assigned_user_email},
-                'assigned user actually assigned to problem';
+            my $detailed_information = $extras->{detailed_information};
+            if ( defined $detailed_information ) {
+                is $problem->get_extra_metadata('detailed_information'),
+                    $detailed_information || undef;
+            }
         }
     };
 }
