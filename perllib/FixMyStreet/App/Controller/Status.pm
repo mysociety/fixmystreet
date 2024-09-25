@@ -4,6 +4,7 @@ use namespace::autoclean;
 
 use HTTP::Negotiate;
 use JSON::MaybeXS;
+use Try::Tiny;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -46,7 +47,6 @@ sub index : Path : Args(0) {
         $chosen = 'html' unless $chosen;
     }
 
-    # TODO Perform health checks here
 
     if ($chosen eq 'json') {
         $c->res->content_type('application/json; charset=utf-8');
@@ -67,6 +67,31 @@ sub index : Path : Args(0) {
 
     return 1;
 }
+
+sub health : Path('health') : Args(0) {
+    my ($self, $c) = @_;
+
+    # Just do a very simple and inexpensive query to confirm DB connectivity
+    my $id = try {
+        $c->model('DB::Problem')->search(undef, {
+            columns => [ "id" ],
+            rows => 1,
+            order_by => { -desc => 'id' },
+        })->first->id;
+    } catch {
+        undef;
+    };
+
+    $c->res->content_type('text/plain; charset=utf-8');
+    $c->res->headers->header('Cache-Control' => 'max-age=0');
+    if ($id) {
+        $c->res->body("OK: $id");
+    } else {
+        $c->response->status("500");
+        $c->res->body("ERROR: Couldn't get last problem ID from DB");
+    }
+}
+
 
 __PACKAGE__->meta->make_immutable;
 
