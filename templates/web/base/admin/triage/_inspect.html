@@ -1,16 +1,29 @@
 [% BLOCK category_list %]
-<select class="form-control" name="[% field_name %]" id="[% field_name %]">
+<select class="form-control" name="[% field_name %]" id="[% field_name %]" required>
   [% IF category_options.size %]
         [%~ IF category_groups.size ~%]
             [%~ FOREACH group IN category_groups ~%]
                 [% IF group.name %]<optgroup label="[% group.name %]">[% END %]
                 [% group_select = 0 %]
                 [% selected = 0 %]
-                [%~ FOREACH cat_op IN group.categories ~%]
+
+                [% SET categories = group.categories %]
+                [% IF c.cobrand.moniker == 'isleofwight' %]
+                  [%
+                    # Isle of Wight selects a blank option by default,
+                    # to force admin user to select a triage category
+                  %]
+                  [% categories.unshift(
+                      { id => '', category_display => loc('-- Please select --') }
+                    )
+                  %]
+                [% END %]
+
+                [%~ FOREACH cat_op IN categories ~%]
                     [% IF group_select == 0 AND problem.category == group.name %]
                         [% selected = 1; group_select = 1 %]
                     [% END %]
-                    <option value="[% cat_op.id %]"[% ' selected' IF selected OR problem.contact.id == cat_op.id %]>[% cat_op.category_display %] ([% cat_op.email %])</option>
+                    <option value="[% cat_op.id %]"[% ' selected' IF selected OR problem.contact.id == cat_op.id %]>[% cat_op.category_display %][% IF cat_op.email %] ([% cat_op.email %])[% END %]</option>
                     [% selected = 0 %]
                 [%~ END ~%]
                 [% IF group.name %]</optgroup>[% END %]
