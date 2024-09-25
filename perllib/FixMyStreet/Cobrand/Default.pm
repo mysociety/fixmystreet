@@ -1548,4 +1548,13 @@ Returns true when a report sent email should not be sent for the given report.
 
 sub suppress_report_sent_email { 0; }
 
+
+=head2 staff_cant_assign_to_disabled_categories
+
+Returns true when staff can assign a report to a disabled category.
+
+=cut
+
+sub staff_can_assign_reports_to_disabled_categories { 1; }
+
 1;

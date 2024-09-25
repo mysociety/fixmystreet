@@ -83,6 +83,7 @@ __PACKAGE__->has_many(
 
 use Moo;
 use namespace::clean -except => [ 'meta' ];
+use List::Util qw(any);
 
 with 'FixMyStreet::Roles::DB::Extra',
     'FixMyStreet::Roles::DB::Translatable';
@@ -184,6 +185,12 @@ sub disable_form_field {
     my $metadata = $self->get_all_metadata;
     my ($field) = grep { $_->{code} eq '_fms_disable_' } @$metadata;
     return $field;
+}
+
+sub is_disabled {
+    my $self = shift;
+    my $metadata = $self->get_all_metadata;
+    return any { ($_->{disable_form} || '') eq 'true' } @$metadata;
 }
 
 sub sent_by_open311 {
