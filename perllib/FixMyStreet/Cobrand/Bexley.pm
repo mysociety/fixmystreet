@@ -297,7 +297,7 @@ sub open311_post_send {
         $p1_email = 1 if $burnt eq 'Yes';
     } elsif ($row->category eq 'Dead animal') {
         my $reportType = $row->get_extra_field_value('reportType') || '';
-        if ($reportType eq 'Horse / Large Animal' || $reportType eq 'Cat / Dog') {
+        if ($reportType eq 'Horse / Large Animal') {
             $outofhours_email = 1;
         };
         $p1_email = 1;
