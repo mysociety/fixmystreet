@@ -54,6 +54,7 @@
         - Add perl 5.38 support.
         - Add plain text template previews to /_dev/email. #5105
         - Add --exclude option to bin/open311-populate-service-list
+        - Add /status/health page to indicate service health.
     - Performance improvements:
         - Reduce database queries on shortlist page.
         - Provide ResultSet fallback translation in lookup.
