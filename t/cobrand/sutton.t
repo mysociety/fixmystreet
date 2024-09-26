@@ -214,6 +214,7 @@ subtest 'updating of waste reports' => sub {
         user => $normal_user,
         category => 'Garden Subscription',
         cobrand_data => 'waste',
+        non_public => 1,
     });
     $reports[1]->update({ external_id => 'something-else' }); # To test loop
     $report = $reports[0];
@@ -390,11 +391,8 @@ EOF
         $mech->host('sutton.example.org');
         $mech->log_out_ok;
         $mech->get($token);
-        warn $mech->content;
-        (my $photo_link) = $mech->content =~ m#Photo of this report" src="(/photo/c/5.0.jpeg\?34c2a90b)"#;
-        warn $photo_link;
-        $mech->get($photo_link);
-        is $mech->response->is_success, 1;
+        $mech->get("/photo/c/5.0.full.jpeg?34c2a90b&amp;cookie_passthrough=1");
+        is $mech->status, 200;
     };
 };
 
