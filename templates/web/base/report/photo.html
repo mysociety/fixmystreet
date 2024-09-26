@@ -5,8 +5,13 @@
   [% FOR photo IN object.photos %]
     [% IF c.cobrand.allow_photo_display(object, photo.idx) %]
       <div class="update-img">
-          <a href="[% photo.url_full %]" rel="fancy">
-              <img alt="Photo of this report" src="[% photo.url %]">
+          [% IF alert_to_reporter %]
+          <a href="[% photo.url_temp_full %]" rel="fancy">
+              <img alt="Photo of this report" src="[% photo.url_temp %]">
+          [% ELSE %]
+          <a href="[% photo.url_full%]" rel="fancy">
+            <img alt="Photo of this report" src="[% photo.url %]">
+          [% END %]
           <span>zoom</span></a>
         [% IF can_moderate %]
           <p class="moderate-edit">
