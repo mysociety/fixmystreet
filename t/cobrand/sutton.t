@@ -378,14 +378,23 @@ EOF
         is $report->state, 'fixed - council', 'A state change';
         my $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
         is $update->photo, '34c2a90ba9eb225b87ca1bac05fddd0e08ac865f.jpeg';
-
         FixMyStreet::Script::Alerts::send_updates();
-        my $body = $mech->get_text_body_from_email;
+        my $email = $mech->get_email;
+        my $body = $email->as_string;
+        (my $token) = $body =~ m#(http://sutton.example.org/R/.*?)"#;
         my $id = $report->id;
         like $body, qr/Reference: LBS-$id/;
         like $body, qr/Armchair/;
         like $body, qr/26 September/;
         like $body, qr/Your collection has now been completed/;
+        $mech->host('sutton.example.org');
+        $mech->log_out_ok;
+        $mech->get($token);
+        warn $mech->content;
+        (my $photo_link) = $mech->content =~ m#Photo of this report" src="(/photo/c/5.0.jpeg\?34c2a90b)"#;
+        warn $photo_link;
+        $mech->get($photo_link);
+        is $mech->response->is_success, 1;
     };
 };
 
