@@ -587,16 +587,6 @@ sub munge_report_new_category_list {
     }
 }
 
-sub updates_disallowed {
-    my $self = shift;
-    my ($problem) = @_;
-
-    # No updates on waste reports
-    return 'waste' if $problem->cobrand_data eq 'waste';
-
-    return $self->next::method(@_);
-}
-
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $service_id = $unit->{service_id};

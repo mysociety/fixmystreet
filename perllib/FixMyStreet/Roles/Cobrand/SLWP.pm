@@ -550,19 +550,6 @@ sub open311_waste_update_extra {
     );
 }
 
-=item * No updates on waste reports
-
-=cut
-
-around updates_disallowed => sub {
-    my ($orig, $self, $problem) = @_;
-
-    # No updates on waste reports
-    return 'waste' if $problem->cobrand_data eq 'waste';
-
-    return $orig->($self, $problem);
-};
-
 =head2 Bulky waste collection
 
 SLWP looks 8 weeks ahead for collection dates, and cancels by sending an

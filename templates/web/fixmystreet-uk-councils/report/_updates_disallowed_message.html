@@ -1,3 +1,12 @@
+[% IF disallowed == 'waste';
+    SET property_id = problem.get_extra_field_value('property_id');
+%]
+<p>
+   <a href="/waste[% IF property_id %]/[% property_id %][% END %]">See your bin collections</a>.
+</p>
+    [% RETURN %]
+[% END %]
+
 [% IF disallowed.match('reporter') AND (NOT disallowed.match('open') OR problem.is_open) %]
     <p>
         Only the original reporter may leave updates.

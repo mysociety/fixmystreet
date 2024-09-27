@@ -3,6 +3,7 @@
 @import "../sass/mixins";
 
 @import "../sass/base";
+@import "cookies";
 
 // HEADER
 #site-logo {
@@ -81,7 +82,7 @@
 }
 
 a#geolocate_link {
-  border-width: 2px; 
+  border-width: 2px;
 }
 
 // GENERAL ELEMENTS
@@ -89,8 +90,8 @@ h1 {
   font-weight: 700;
 }
 
-.btn, 
-.btn--primary, 
+.btn,
+.btn--primary,
 .postcode-form-box input#sub,
 #report-cta,
 .nav-menu--main a.report-a-problem-btn  {
@@ -104,7 +105,7 @@ h1 {
     }
 }
 
-.btn-secondary, 
+.btn-secondary,
 .nav-menu a.btn-secondary,
 a#geolocate_link,
 .my-account-buttons a{
@@ -160,7 +161,7 @@ input {
     box-shadow: $yellow 0px 0px 0px 2px, $black 0px 0px 0px 4px;
     transition: box-shadow 0.3s ease 0s;
   }
-} 
+}
 
 #front_stats {
   background: $primary_b;

@@ -5,6 +5,7 @@ use namespace::autoclean;
 use HTTP::Negotiate;
 use JSON::MaybeXS;
 use Try::Tiny;
+use Time::HiRes;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -72,6 +73,11 @@ sub health : Path('health') : Args(0) {
     my ($self, $c) = @_;
 
     # Just do a very simple and inexpensive query to confirm DB connectivity
+    # and log if it took longer than 1 second.
+
+    my $threshold = 1; # seconds
+    my $t1 = Time::HiRes::time();
+
     my $id = try {
         $c->model('DB::Problem')->search(undef, {
             columns => [ "id" ],
@@ -79,8 +85,13 @@ sub health : Path('health') : Args(0) {
             order_by => { -desc => 'id' },
         })->first->id;
     } catch {
+        $c->log->info("Health check DB lookup failed: $_");
         undef;
     };
+
+    my $t2 = Time::HiRes::time();
+    $c->log->info("Health check DB lookup took " . ($t2 - $t1) . " seconds")
+        if ($t2 > $t1 + $threshold);
 
     $c->res->content_type('text/plain; charset=utf-8');
     $c->res->headers->header('Cache-Control' => 'max-age=0');

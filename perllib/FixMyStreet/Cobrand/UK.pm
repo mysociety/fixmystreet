@@ -451,12 +451,22 @@ sub report_new_munge_after_insert {
     }
 }
 
-# Allow cobrands to disallow updates on some things.
-# Note this only ever locks down more than the default.
+=head2 updates_disallowed
+
+Allow cobrands to disallow updates on some things -
+note this only ever locks down more than the default.
+It disallows all updates on waste reports, and also
+checks against the configuration.
+
+=cut
+
 sub updates_disallowed {
     my $self = shift;
     my ($problem) = @_;
     my $c = $self->{c};
+
+    # No updates on waste reports
+    return 'waste' if $problem->cobrand_data eq 'waste';
 
     # If closed due to problem/category closure, want that to take precedence
     my $parent = $self->next::method(@_);
