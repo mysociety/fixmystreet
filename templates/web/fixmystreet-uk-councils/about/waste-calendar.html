@@ -1,6 +1,6 @@
 [%
 PROCESS 'waste/header.html', title = 'Add your waste collection days to your online calendar';
-SET ics_link = c.uri_for_action('waste/calendar_ics', [ property.id ]);
+SET ics_link = c.uri_for_action('waste/calendar_ics', [ property_id ]);
 %]
 
 <script type="module" src="[% version('/vendor/clipboard-copy-element.js') %]"></script>

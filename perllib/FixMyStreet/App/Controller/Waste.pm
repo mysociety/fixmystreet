@@ -568,9 +568,14 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
     $c->detach;
 }
 
-sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
+sub property_id : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
+    $c->stash->{property_id} = $id;
+}
 
+sub property : Chained('property_id') : PathPart('') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+    my $id = $c->stash->{property_id};
 
     # Some actions chained off /waste/property require user to be logged in.
     # The redirect to /auth does not work if it follows the asynchronous
@@ -670,9 +675,8 @@ sub bin_day_deny : Private {
     $c->detach('/page_error_403_access_denied', [ $msg ]);
 }
 
-sub calendar : Chained('property') : Args(0) {
+sub calendar : Chained('property_id') : Args(0) {
     my ($self, $c) = @_;
-
     $c->forward('/about/page', ['waste-calendar']);
 }
 
