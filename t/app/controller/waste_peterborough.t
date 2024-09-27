@@ -221,6 +221,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1 3NA:100090215480/calendar.ics');
         $mech->content_contains('DTSTART;VALUE=DATE:20210808');
         $mech->content_contains('DTSTART;VALUE=DATE:20210819');
+        is $mech->response->header('Cache-Control'), 'max-age=86400', 'Cache-Control header set';
     };
     subtest 'No reporting/requesting if open request' => sub {
         $mech->log_in_ok($staff->email);

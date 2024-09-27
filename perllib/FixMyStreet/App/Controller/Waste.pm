@@ -679,6 +679,7 @@ sub calendar : Chained('property') : Args(0) {
 sub calendar_ics : Chained('property') : PathPart('calendar.ics') : Args(0) {
     my ($self, $c) = @_;
     $c->res->header(Content_Type => 'text/calendar');
+    $c->res->header(Cache_Control => 'max-age=86400');
     require Data::ICal::RFC7986;
     require Data::ICal::Entry::Event;
     my $calendar = Data::ICal::RFC7986->new(
