@@ -19,6 +19,8 @@
 
 [% ELSIF !problem.is_fixed AND has_fixed_state %]
 
+    [% RETURN IF c.cobrand.fixing_disallowed(problem) ~%]
+
     <div class="govuk-form-group">
       <div class="govuk-checkboxes govuk-checkboxes--small">
         <div class="govuk-checkboxes__item">

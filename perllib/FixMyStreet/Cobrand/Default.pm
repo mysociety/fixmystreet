@@ -572,6 +572,18 @@ sub reopening_disallowed {
     return 0;
 }
 
+=item fixing_disallowed
+
+Returns a boolean indicating whether fixing of a particular report is
+allowed or not. Default behaviour is allowed.
+
+=cut
+
+sub fixing_disallowed {
+    my ($self, $problem) = @_;
+    return 0;
+}
+
 =item geocode_postcode
 
 Given a QUERY, return LAT/LON and/or ERROR.

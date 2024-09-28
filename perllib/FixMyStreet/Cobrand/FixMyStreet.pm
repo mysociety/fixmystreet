@@ -444,7 +444,7 @@ sub updates_disallowed {
     return $parent if $parent;
 
     my ($type, $body) = $self->per_body_config('updates_allowed', $problem);
-    $type //= '';
+    return unless $type;
 
     my $body_user = $c->user_exists && $c->user->from_body && $c->user->from_body->name =~ /$body/;
     return $self->_updates_disallowed_check($type, $problem, $body_user);
@@ -601,6 +601,17 @@ sub reopening_disallowed {
     return 1 if $problem->to_body_named("Northumberland") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Northumberland County Council");
     return 1 if $problem->to_body_named("Gloucestershire") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Gloucestershire County Council");
     return $self->next::method($problem);
+}
+
+sub fixing_disallowed {
+    my ($self, $problem) = @_;
+    my $c = $self->{c};
+
+    my ($type, $body) = $self->per_body_config('update_fixing_disallowed', $problem);
+    return unless $type;
+
+    my $body_user = $c->user_exists && $c->user->from_body && $c->user->from_body->name =~ /$body/;
+    return $self->_updates_disallowed_check($type, $problem, $body_user);
 }
 
 # Make sure CPC areas are included in point lookups for new reports

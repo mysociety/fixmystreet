@@ -473,6 +473,7 @@ sub updates_disallowed {
     return $parent if $parent;
 
     my $cfg = $self->feature('updates_allowed') || '';
+    return unless $cfg;
 
     my $body_user = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
     return $self->_updates_disallowed_check($cfg, $problem, $body_user);
