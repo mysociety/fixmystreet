@@ -247,7 +247,12 @@ FixMyStreet::override_config {
             name => 'Gavin Stacey',
         } }, "submit report");
         $mech->content_like(qr/passed this report on to.*<b>Barnet Borough Council<\/b>/s);
-    }
+    };
+
+    subtest 'check correct area shown on map' => sub {
+        $mech->get_ok('/reports');
+        $mech->content_contains('data-area="2505"');
+    };
 };
 
 done_testing;
