@@ -45,6 +45,7 @@ $contact->set_extra_fields( ( {
     order => 1,
     datatype_description => 'datatype',
 } ) );
+$contact->set_extra_metadata( group => ['Roads'] );
 $contact->update;
 
 my $user = $mech->create_user_ok('user@example.org', name => 'Test User');
@@ -66,6 +67,10 @@ my $admin_user = $mech->create_user_ok('admin-user@example.org', name => 'Admin 
 $admin_user->user_body_permissions->create({
     body => $isleofwight,
     permission_type => 'triage'
+});
+$admin_user->user_body_permissions->create({
+    body => $isleofwight,
+    permission_type => 'report_inspect',
 });
 
 my @reports = $mech->create_problems_for_body(1, $isleofwight->id, 'An Isle of wight report', {
@@ -590,6 +595,37 @@ subtest "reports are marked for triage upon submission" => sub {
         my $email = $mech->get_email;
         like $mech->get_text_body_from_email($email),
             qr/submitted to Island Roads for review/, 'correct text for email sent for Triage';
+
+        $mech->log_in_ok( $admin_user->email );
+        $mech->get_ok( '/report/' . $report->id );
+        $mech->content_contains(
+            '<optgroup label="Roads">',
+            'there is a "Roads" optgroup',
+        );
+        $mech->content_contains(
+            '<option value="" selected>-- Please select --</option>',
+            'there is an empty-valued option selected by default',
+        );
+
+        $mech->submit_form( form_id => 'report_inspect_form' );
+        $mech->text_contains( 'Please choose a category',
+            'Form requires a category be chosen' );
+
+        $mech->submit_form(
+            form_id => 'report_inspect_form',
+            fields  => { category => $contact->id },    # Pothole
+        );
+        $mech->get_ok( '/report/' . $report->id );
+        $mech->text_contains(
+            'Report triaged from Roads to Potholes',
+            'Update message describes triage',
+        );
+        $mech->content_contains(
+            '<option value="Potholes" selected>',
+            'Potholes selected as category',
+        );
+        $mech->content_lacks( '-- Please select --',
+            'No blank category available anymore' );
     };
 };
 
