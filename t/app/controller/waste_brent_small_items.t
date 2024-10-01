@@ -502,7 +502,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'service-787' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your missed collection has been reported');
+        $mech->content_contains('Thank you for reporting a missed collection');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->category, 'Report missed collection';
         is $report->get_extra_field_value('service_id'), 787;
