@@ -840,6 +840,9 @@ sub group_reports {
     my $report = shift @reports;
     if (@reports) {
         $report->set_extra_metadata(grouped_ids => [ map { $_->id } @reports ]);
+        $report->set_extra_metadata(
+            grouped_titles => [ map { $_->title } @reports ] )
+            if $c->cobrand->call_hook('group_report_titles');
         $report->update;
     }
     $c->stash->{report} = $report;

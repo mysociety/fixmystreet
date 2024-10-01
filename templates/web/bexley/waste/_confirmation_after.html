@@ -1,0 +1,26 @@
+[% IF report.category == 'Report missed collection' %]
+
+  <h2>Bins reported as missed:</h2>
+  <p>
+    <ul>
+      [% FOR title IN report.get_extra_metadata('grouped_titles') %]
+        <li>[% title %]</li>
+      [% END %]
+    </ul>
+  </p>
+
+  <h2>Address:</h2>
+  <p>[% property.address %]</p>
+
+  <h2>What happens next?</h2>
+  <p>
+    Our waste contractor will return within 2 working days to collect your bin(s).
+    <br>
+    Please leave your bin(s) out until our contractor returns.
+    <br>
+    If you need to contact us about this report, please quote your reference number.
+  </p>
+
+  <br>
+
+[% END %]
