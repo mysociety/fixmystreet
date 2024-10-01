@@ -1311,7 +1311,7 @@ input.final-submit {
   margin-bottom: 0.5em;
 }
 
-%item-list__item--link {
+%item-list--link {
   padding: 0;
   a {
     color: #222222;
@@ -1327,8 +1327,7 @@ input.final-submit {
 }
 
 .item-list--wards {
-  @extend %item-list__item--link;
-  padding: 1em;
+  @extend %item-list--link;
   label {
     margin-top: inherit;
   }
@@ -1336,6 +1335,7 @@ input.final-submit {
   &.govuk-checkboxes--small {
     .govuk-checkboxes__item {
       float: none; // Overrides float:left from govuk-checkboxes--small
+      margin-left: 1em; // As otherwise no left margin
     }
   }
 
@@ -1347,7 +1347,7 @@ input.final-submit {
 }
 
 .item-list--reports__item {
-  @extend %item-list__item--link;
+  @extend %item-list--link;
 
   a {
     @include clearfix;
