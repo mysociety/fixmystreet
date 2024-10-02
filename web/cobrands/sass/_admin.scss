@@ -198,7 +198,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 }
 
 .extra-metadata-item__header {
-    @include flex-container();
+    display: flex;
     line-height: 1;
     background: #f3f3f3;
 
@@ -251,7 +251,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 }
 
 .extra-metadata-item__header__title {
-    @include flex(1 0 auto);
+    flex: 1 0 auto;
     cursor: pointer;
 }
 
@@ -265,13 +265,13 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     padding: 0 1em;
 
     .row {
-        @include flex-container();
+        display: flex;
         margin: 0 -1em;
     }
 
     .col {
-        @include box-sizing(border-box);
-        @include flex(1 0 auto);
+        box-sizing: border-box;
+        flex: 1 0 auto;
         padding: 0 1em;
         width: 50%;
     }

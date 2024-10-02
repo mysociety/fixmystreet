@@ -214,6 +214,7 @@ subtest 'updating of waste reports' => sub {
         user => $normal_user,
         category => 'Garden Subscription',
         cobrand_data => 'waste',
+        non_public => 1,
     });
     $reports[1]->update({ external_id => 'something-else' }); # To test loop
     $report = $reports[0];
@@ -303,6 +304,9 @@ subtest 'updating of waste reports' => sub {
         $report->update_extra_field({ name => 'Collection_Date', value => '2023-09-26T00:00:00Z' });
         $report->set_extra_metadata( item_1 => 'Armchair' );
         $report->set_extra_metadata( item_2 => 'BBQ' );
+        $report->push_extra_fields( # Add extra fields expected on a Bulky waste report
+            { name => 'Bulky_Collection_Bulky_Items', value => '3::85::83'}, { name => 'Bulky_Collection_Notes', value => 'One::Two::Three' }
+        );
         $report->update({ category => 'Bulky collection', external_id => 'waste-15005-' });
 
         $in = $mech->echo_notify_xml('waste-15005-', 1636, 15005, '');
@@ -324,14 +328,20 @@ subtest 'updating of waste reports' => sub {
         is $report->state, 'fixed - council', 'A state change';
         my $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
         is $update->photo, '34c2a90ba9eb225b87ca1bac05fddd0e08ac865f.jpeg';
-
         FixMyStreet::Script::Alerts::send_updates();
-        my $body = $mech->get_text_body_from_email;
+        my $body = $mech->get_email->as_string;
         my $id = $report->id;
         like $body, qr/Reference: LBS-$id/;
         like $body, qr/Armchair/;
         like $body, qr/26 September/;
         like $body, qr/Your collection has now been completed/;
+        $mech->host('sutton.example.org');
+        (my $token) = $body =~ m#http://sutton.example.org(/R/.*?)"#;
+        $mech->get_ok($token);
+        (my $photo_link_thumbnail) = $mech->content =~ m#Photo of this report" src="(/photo.*?1)"#;
+        (my $photo_link_full) = $mech->content =~ m#a href="(/photo.*?1)"#;
+        $mech->get_ok($photo_link_thumbnail, "Successfully call thumbnail image");
+        $mech->get_ok($photo_link_full, "Successfully call full image");
     };
 };
 

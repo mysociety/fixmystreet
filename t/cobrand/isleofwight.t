@@ -673,7 +673,7 @@ for my $cobrand ( 'fixmystreet', 'isleofwight' ) {
             my $cats = $f->find_input('category');
             ok $cats, 'found category element';
             my @values = $cats->possible_values;
-            is_deeply \@values, [ 'Potholes' ], 'correct category list';
+            is_deeply \@values, [ 'H|Roads|Potholes' ], 'correct category list';
         };
     };
 }

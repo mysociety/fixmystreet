@@ -46,13 +46,13 @@ $search-help-header-font-family: null !default;
     overflow: auto; // expand to include margin-bottom on last child
 
     @media (min-width: 48em) {
-        @include flex-container();
+        display: flex;
         @if ( $search-help-alignment == left ) {
-            @include justify-content(flex-start);
+            justify-content: flex-start;
         } @else if ( $search-help-alignment == right ) {
-            @include justify-content(flex-end);
+            justify-content: flex-end;
         } @else {
-            @include justify-content(center);
+            justify-content: center;
             padding: 1em 0;
         }
     }

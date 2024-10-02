@@ -43,7 +43,7 @@
 
 div.form-error,
 p.form-error {
-    @include flex-container();
+    display: flex;
 }
 
 #front-main {

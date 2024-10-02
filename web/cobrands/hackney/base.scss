@@ -54,7 +54,7 @@
       width: 0;
       padding-left: 50px;
       overflow: hidden;
-      @include flex(0 0 auto);
+      flex: 0 0 auto;
       background: $black url('/cobrands/hackney/hackney-search-icon.png') no-repeat 50% 50%;
       background-size: 25px 25px;
       color: $black;

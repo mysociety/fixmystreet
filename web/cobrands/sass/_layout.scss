@@ -81,8 +81,8 @@ h1 {
   position: static;
   min-height: $mappage-header-height; // defaults to map header height; should be height of #site-header (eg: #site-logo + any vertical padding)
   height: 1px; // flex `align-items: center` doesn't work in IE10 and IE11 unless flex container has an explicit height (even when min-height means this explicit height gets ignored!)
-  @include flex-container();
-  @include flex-align(center);
+  display: flex;
+  align-items: center;
   float: $right; // we could use justify-content here, but float degrades better for non-flexbox browsers
   @if ($header-top-border) {
     margin-top: $header-top-border-width * -1; // visually compensate for border on #site-header
@@ -156,7 +156,7 @@ h1 {
     background-color: $primary;
     padding:0.25em 0.5em;
     margin:0.5em;
-    @include border-radius(0.25em);
+    border-radius: 0.25em;
     &:hover {
       background-color:$primary/1.1;
     }
@@ -302,15 +302,15 @@ body.mappage.admin {
 // This goes inside #map_sidebar, and establishes a flex container allowing
 // us to split the sidebar into two side-by-side columns.
 .two_column_sidebar {
-  @include flex-container();
-  @include flex-align(stretch); // children will fill entire height of this element
+  display: flex;
+  align-items: stretch; // children will fill entire height of this element
   min-height: 100%; // this element will fill entire height of parent (#map_sidebar)
 
   & > * {
     // Columns should start at 50% width, and (eg: if scrollbars appear,
     // reducing the available width), shrink down to less than 50%.
-    @include box-sizing(border-box);
-    @include flex(0 1 auto);
+    box-sizing: border-box;
+    flex: 0 1 auto;
     width: 50%;
     padding: $mappage-sidebar-padding;
 
@@ -329,7 +329,7 @@ body.mappage.admin {
   // and leave the other column to shrink to the remaining space.
   #side-report {
     width: $mappage-sidebar-width;
-    @include flex(0 0 auto);
+    flex: 0 0 auto;
 
     @media (max-width: 79em) {
       width: $mappage-sidebar-width--medium;
@@ -681,7 +681,7 @@ body.authpage {
 #key-tools {
   border-top: 0.25em solid $primary;
   margin: 0;
-  @include box-shadow(0 0 1em 1em #fff);
+  box-shadow: 0 0 1em 1em #fff;
 
   li {
     border-#{$right}: none; // undo border-right/left from _base.scss
@@ -748,7 +748,7 @@ p.form-error {
 
 input.form-error,
 textarea.form-error {
-  @include border-radius(0 0 0.25em 0.25em);
+  border-radius: 0 0 0.25em 0.25em;
 }
 
 // If the form is .with-notes, limit the width of the inputs

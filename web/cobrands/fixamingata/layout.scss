@@ -76,7 +76,7 @@ body.mappage {
 }
 
 body.frontpage {
-    @include linear-gradient(white 5%, #9adfef 65%);
+    background: linear-gradient(white 5%, #9adfef 65%);
 
     #site-logo {
         width: 300px;

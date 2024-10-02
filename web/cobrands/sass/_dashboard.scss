@@ -21,7 +21,7 @@
 }
 
 .dashboard-item {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     padding: 1em;
 
     @media (min-width: 48em) {
@@ -82,7 +82,7 @@
 }
 
 .labelled-line-chart {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
 
     @media (min-width: 48em) {
         padding-right: 15%; // Same way round, regardless of text direction
@@ -115,7 +115,7 @@
     margin: 0 -1em;
 
     & > * {
-        @include box-sizing(border-box);
+        box-sizing: border-box;
         padding: 0 1em 1em 1em;
     }
 
@@ -157,7 +157,7 @@
 }
 
 .dashboard-search__input {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     width: 80%;
     float: $left;
     padding-#{$right}: 1em;
@@ -226,7 +226,7 @@
 
     // Force field elements onto a single line.
     @media (min-width: 48em) {
-        @include flex-container();
+        display: flex;
         flex-wrap: wrap;
     }
 

@@ -5,7 +5,7 @@
 
 .header-search .site-search .form-control {
     // overrides from default .form-control
-    @include border-radius(0);
+    border-radius: 0;
     box-shadow: none;
     border: solid 1px #bfc1c3;
     display: inline-block;

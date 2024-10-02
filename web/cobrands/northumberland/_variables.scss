@@ -59,7 +59,7 @@ $button-border-radius: 0; // This var doesn't exist in other cobrands
 // Usage 
 /*
   .btn, .btn--primary, .btn--primary {
-      @include border-radius($button-border-radius);
+      border-radius: $button-border-radius;
       @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
   }
 */

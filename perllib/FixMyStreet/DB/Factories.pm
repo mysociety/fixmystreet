@@ -219,7 +219,7 @@ __PACKAGE__->fields({
     contacts => __PACKAGE__->callback(sub {
         my $categories = shift->get('categories');
         push @$categories, 'Other' unless @$categories;
-        [ map { FixMyStreet::DB::Factory::Contact->get_fields({ category => $_ }) } @$categories ];
+        [ map { FixMyStreet::DB::Factory::Contact->get_fields(ref $_ ? $_ : { category => $_ }) } @$categories ];
     }),
 });
 
@@ -232,6 +232,8 @@ package FixMyStreet::DB::Factory::Contact;
 use parent -norequire, "FixMyStreet::DB::Factory::Base";
 
 __PACKAGE__->resultset(FixMyStreet::DB->resultset("Contact"));
+
+__PACKAGE__->exclude(['group']);
 
 __PACKAGE__->fields({
     body_id => __PACKAGE__->callback(sub {
@@ -248,6 +250,10 @@ __PACKAGE__->fields({
     editor => 'Factory',
     whenedited => \'current_timestamp',
     note => 'Created by factory',
+    extra => __PACKAGE__->callback(sub {
+        my $group = shift->get('group');
+        return { group => $group } if $group;
+    }),
 });
 
 sub key_field { 'id' }

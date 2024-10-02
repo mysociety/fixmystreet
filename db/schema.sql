@@ -257,6 +257,7 @@ create table problem (
     -- subcategory to enable filtering in reporting --
     subcategory text
 );
+create index problem_created_idx on problem(created);
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
 create index problem_external_id_idx on problem(external_id);

@@ -28,7 +28,7 @@ button:focus {
 }
 
 .eh-header__form {
-    @include flex-container();
+    display: flex;
     margin-top: 1em;
 }
 
@@ -56,9 +56,9 @@ button:focus {
 
     width: 20%;
 
-    @include flex-container();
-    @include flex-align(center);
-    @include justify-content(center);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
 
     i {

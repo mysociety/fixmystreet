@@ -369,4 +369,13 @@ sub post_report_report_problem_link {
 
 }
 
+=head2 staff_can_assign_reports_to_disabled_categories
+
+Staff users are unable to assign a report to a category that is disabled.
+
+=cut
+
+sub staff_can_assign_reports_to_disabled_categories { 0; }
+
+
 1;

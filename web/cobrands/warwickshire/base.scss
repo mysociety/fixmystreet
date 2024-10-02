@@ -119,8 +119,8 @@ a#geolocate_link {
 }
 
 .site-footer__container {
-    @include flex-container();
-    @include flex-wrap(wrap);
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .site-footer__text {

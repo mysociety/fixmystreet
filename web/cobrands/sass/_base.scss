@@ -338,7 +338,7 @@ input[type="time"],
 input[type="datetime"],
 input[type="url"],
 textarea {
-  @include box-sizing(border-box);
+  box-sizing: border-box;
   display: block;
   width: 100%;
   padding: 0.5em;
@@ -375,7 +375,7 @@ legend,
   display: block;
   background-color: #fff;
   border: 1px solid $form-control-border-color;
-  @include border-radius(4px);
+  border-radius: 4px;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
   font-family: inherit; // eg: stop Firefox and IE10-11 using Courier in textareas
   margin-bottom: 0.5em;
@@ -607,8 +607,8 @@ small.or:after {
 
 .form-txt-submit-box {
   @include clearfix();
-  @include flex-container();
-  @include flex-wrap(wrap);
+  display: flex;
+  flex-wrap: wrap;
   input[type="password"],
   input[type="tel"],
   input[type="number"],
@@ -617,17 +617,17 @@ small.or:after {
   select {
     width: auto;
     max-width: none;
-    @include flex(72 0 auto);
+    flex: 72 0 auto;
   }
   input[type="submit"] {
-    @include flex(28 0 auto);
+    flex: 28 0 auto;
     margin: 0 0.25em 0.5em;
     padding-top: 0.6em;
     padding-bottom: 0.5em;
   }
 
   &:has(.form-error) {
-    @include flex-direction(column);
+    flex-direction: column;
   }
 }
 
@@ -650,12 +650,13 @@ small.or:after {
 // form errors
 div.form-error,
 p.form-error {
-  @include inline-block;
+  display: inline-block;
+  vertical-align: middle;
   background: $error_color;
   color: #fff;
   padding: 0 0.5em;
   margin-bottom: 0;
-  @include border-radius(0.25em 0.25em 0 0);
+  border-radius: 0.25em 0.25em 0 0;
   a {
     color: white;
     text-decoration: underline;
@@ -668,7 +669,7 @@ p.form-error {
 input.form-error,
 textarea.form-error {
   border-color: $error_color;
-  @include border-radius(0 0.25em 0.25em 0.25em);
+  border-radius: 0 0.25em 0.25em 0.25em;
 }
 
 .form-error__box {
@@ -681,14 +682,14 @@ ul.error {
   background: $error_color;
   color: #fff;
   padding: 0 0.5em;
-  @include border-radius(0.25em);
+  border-radius: 0.25em;
 }
 
 .form-success {
   background: #009900;
   color: #fff;
   padding: 0 0.5em;
-  @include border-radius(0.25em);
+  border-radius: 0.25em;
 }
 
 .duplicate-report-suggestions {
@@ -1251,7 +1252,7 @@ input.final-submit {
   width: 100%;
   margin-left: 0;
   margin-right: 0;
-  @include box-sizing(border-box);
+  box-sizing: border-box;
 }
 
 // Don't want space between block-level buttons,
@@ -1366,14 +1367,14 @@ input.final-submit {
 
   @media print {
     display: block;
-    @include flex-container();
-    @include flex-wrap(wrap);
+    display: flex;
+    flex-wrap: wrap;
   }
 
   & > * {
     margin-top: 0.5em;
     width: 33%;
-    @include flex(0 0 auto);
+    flex: 0 0 auto;
   }
 
   h4 {
@@ -1664,10 +1665,10 @@ input.final-submit {
 
 .item-list__item--expandable__actions {
   clear: both; // clear floated .update-img images
-  @include flex-container();
+  display: flex;
 
   & > * {
-    @include flex(1); // Force equal width children
+    flex: 1; // Force equal width children
   }
 }
 
@@ -2181,7 +2182,7 @@ html.js #map .noscript {
 // in the mobile reporting view, and for the "Hide pins / Get updates"
 // etc links on mobile and desktop map pages.
 .sub-map-links {
-  @include flex-container();
+  display: flex;
 
   position: absolute;
   #{$left}: 0;
@@ -2190,8 +2191,8 @@ html.js #map .noscript {
   margin: 0;
 
   a {
-    @include box-sizing(border-box);
-    @include flex(1 1 auto);
+    box-sizing: border-box;
+    flex: 1 1 auto;
 
     display: inline-block; // fallback for non-flexbox browsers
     color: inherit;
@@ -2257,7 +2258,7 @@ html.js #map .noscript {
   margin-bottom: 5em;
   margin-bottom: calc(env(safe-area-inset-bottom) + 5em);
 
-  @include border-radius(0.5em);
+  border-radius: 0.5em;
 
   padding: 0.5em;
   font-size: 1em;
@@ -2786,14 +2787,14 @@ label .muted {
     color: $form-hint-color;
   }
   div {
-    @include flex-container;
-    @include flex-wrap(wrap);
+    display: flex;
+    flex-wrap: wrap;
     width: 100%;
     background: #fff;
     border: 1px solid $primary_b;
   }
   input#pc {
-    @include flex(86 0 auto);
+    flex: 86 0 auto;
     width: 50%;
     border: none;
     background: none;
@@ -2802,10 +2803,10 @@ label .muted {
   input#sub {
     border: none;
     padding: 0.5em;
-    @include flex(14 0 auto);
+    flex: 14 0 auto;
     background: #000;
     color: #fff;
-    @include border-radius(0);
+    border-radius: 0;
     &:hover,
     &:focus {
       background: #333;
@@ -2824,8 +2825,8 @@ a#geolocate_link {
   color: $geolocation-link;
   background-color: $geolocation-link-background-color;
   @include button-size($button-margin-top: 15px);
-  @include flex-container-inline();
-  @include flex-align(center);
+  display: inline-flex;
+  align-items: center;
 
   &:hover {
     border-color: $geolocation-link-background-color;
@@ -3111,7 +3112,7 @@ a#geolocate_link {
 
 .segmented-control {
   @include clearfix();
-  @include flex-container(); // fancy full-width buttons for browsers that support flexbox
+  display: flex; // fancy full-width buttons for browsers that support flexbox
 
   & > * {
     display: block;
@@ -3119,7 +3120,7 @@ a#geolocate_link {
     border-#{$right}-width: 0; // avoid double border between items
     float: #{$left}; // float fallback for browsers that don't support flexbox
     position: relative; // Make sure this is shown on legacy flexbox webkit
-    @include flex(1 0 auto, 1);
+    flex: 1 0 auto;
   }
 
   .btn {

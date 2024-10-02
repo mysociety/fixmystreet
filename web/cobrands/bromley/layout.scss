@@ -55,7 +55,7 @@ body:not(.mappage) {
     padding: 0.75em;
 
     margin: 0;
-    @include border-radius(0.25em);
+    border-radius: 0.25em;
     &:hover, &:focus {
       background: darken($bromley_blue, 10%);
       color: #fff;

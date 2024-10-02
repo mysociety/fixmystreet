@@ -17,7 +17,7 @@ a.platform-logo {
 .nav-menu {
   a, span, a.report-a-problem-btn {
     font-size: 1em;
-    @include border-radius($button-border-radius);
+    border-radius: $button-border-radius;
   }
 
   span {

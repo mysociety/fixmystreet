@@ -144,7 +144,7 @@ h2.static-with-rule {
 
 .admin-nav {
     background: #f4f4f4;
-    @include linear-gradient(#fbfbfb, #efefef);
+    background: linear-gradient(#fbfbfb, #efefef);
     border-bottom: 2px solid $table_border_color;
     ul {
         overflow:auto;

@@ -1,5 +1,8 @@
 [%~ BLOCK category_option ~%]
-<option value="[% cat.category | html %]"[% ' selected' IF problem.category == cat.category %]>[% cat.category_display | html %]</option>
+[% IF cat.is_disabled AND NOT cobrand.staff_can_assign_reports_to_disabled_categories %]
+    [% SET disable = 1 %]
+[% END %]
+<option value="[% cat.category | html %]"[% ' selected' IF problem.category == cat.category %][% ' disabled' IF disable %]>[% cat.category_display | html %][% ' (' _ loc('disabled')  _ ')' IF disable %]</option>
 [%~ END ~%]
 
 <select class="form-control" name="category" id="category">

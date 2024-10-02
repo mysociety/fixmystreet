@@ -33,6 +33,7 @@ sub check_payments {
     while (my $row = $problems->next) {
         my $cobrand = $row->get_cobrand_logged;
         $cobrand->set_lang_and_domain($row->lang, 1);
+        FixMyStreet::Map::set_map_class($cobrand);
         my $query_id = $row->get_extra_metadata('scpReference') or next; # Problem fetching unique ID from payment provider
         my ($error, $reference) = $cobrand->cc_check_payment_and_update($query_id, $row);
         if ($reference) {

@@ -88,7 +88,7 @@ body:not(.mappage) {
 body.mappage {
   // Add a red border-bottom *inside* the header
   #site-header {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     border-bottom: solid 5px $bcc_red;
   }
 

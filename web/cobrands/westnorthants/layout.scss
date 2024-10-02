@@ -19,11 +19,11 @@ a.platform-logo {
     padding: 0.25em 0.75em;
     margin:0.5em 0;
     font-size: 1em;
-    @include border-radius(3px);
+    border-radius: 3px;
   }
 
   a.report-a-problem-btn {
-    @include border-radius(3px);
+    border-radius: 3px;
   }
 
   span {

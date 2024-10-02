@@ -198,15 +198,18 @@ sub reports_body_check {
 sub munge_body_areas_practical {
     my ($self, $body, $area_ids) = @_;
 
-    if (@$area_ids == 4 && $area_ids->[1] == 2488) { # Brent
-        @$area_ids = (2488);
-    } elsif ($area_ids->[0] == 2487 && $area_ids->[1] == 2488) { # Harrow
-        @$area_ids = (2487);
-    } elsif ($area_ids->[0] == 2488 && $area_ids->[1] == 2489) { # Barnet
-        @$area_ids = (2489);
-    } elsif ($area_ids->[0] == 2488 && $area_ids->[1] == 2505) { # Camden
-        @$area_ids = (2505);
-    } elsif (@$area_ids == 3 && $area_ids->[0] == 2561) { # Bristol
+    my %ids = map { $_ => 1 } @$area_ids;
+    if ($ids{2505}) {
+        @$area_ids = (2488) if $body->name =~ /Brent/;
+        @$area_ids = (2489) if $body->name =~ /Barnet/;
+        @$area_ids = (2505) if $body->name =~ /Camden/;
+        @$area_ids = (2512) if $body->name =~ /City of London/;
+        @$area_ids = (2509) if $body->name =~ /Haringey/;
+        @$area_ids = (2507) if $body->name =~ /Islington/;
+        @$area_ids = (2504) if $body->name =~ /Westminster/;
+    } elsif ($ids{2488}) {
+        @$area_ids = (2487) if $body->name =~ /Harrow/;
+    } elsif ($ids{2561} && $body->name =~ /Bristol/) {
         @$area_ids = (2561);
     }
 }
