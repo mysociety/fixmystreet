@@ -455,7 +455,6 @@ $.extend(fixmystreet.set_up, {
         onfocusout: false,
         errorElement: 'div',
         errorClass: 'form-error',
-        escapeHtml: true,
         errorPlacement: function( error, element ) {
             if (element.hasClass('group-error-propagate')) {
                 var groupParent = element.parents('.group-error-propagate-end');

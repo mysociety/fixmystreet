@@ -68,8 +68,8 @@ DEFAULT behaviour = 'question';
                 <select class="form-control" name="metadata[[% i %]].datatype" id="metadata-[% i %]-datatype">
                     <option value="string" data-hide="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'string' %]>[% loc('Text field') %]</option>
                     <option value="text" data-hide="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'text' %]>[% loc('Textarea') %]</option>
-                    <option value="singlevaluelist" data-show="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'singlevaluelist' %]>[% loc('Drop-down list') %]</option>
-                    <option value="multivaluelist" data-show="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'multivaluelist' %]>[% loc('Checkboxes') %]</option>
+                    <option value="singlevaluelist" data-show="#metadata-[% i %]-options-group,.js-metadata-option-disable-toggle" [% 'selected' IF meta.datatype == 'singlevaluelist' %]>[% loc('Drop-down list') %]</option>
+                    <option value="multivaluelist" data-show="#metadata-[% i %]-options-group" data-hide=".js-metadata-option-disable-toggle" [% 'selected' IF meta.datatype == 'multivaluelist' %]>[% loc('Checkboxes') %]</option>
                     <option value="datetime" data-hide="#metadata-[% i %]-options-group" [% 'selected' IF meta.datatype == 'datetime' %]>[% loc('Datetime picker') %]</option>
                 </select>
             </div>
@@ -79,7 +79,7 @@ DEFAULT behaviour = 'question';
                 <div class="js-metadata-options">
                   [% SET options = meta.item('values') ? meta.values : [] %]
                   [% FOR option IN options %]
-                    [% INCLUDE 'admin/extra-metadata-option.html' type=meta.datatype option=option i=i j=loop.index %]
+                    [% INCLUDE 'admin/extra-metadata-option.html' option=option i=i j=loop.index %]
                   [% END %]
                 </div>
 
