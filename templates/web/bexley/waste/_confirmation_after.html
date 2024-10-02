@@ -3,7 +3,8 @@
   <h2>Bins reported as missed:</h2>
   <p>
     <ul>
-      [% FOR title IN report.get_extra_metadata('grouped_titles') %]
+      [% titles = [ report.title ]; titles.import( report.get_extra_metadata('grouped_titles') ) %]
+      [% FOR title IN titles %]
         <li>[% title %]</li>
       [% END %]
     </ul>
