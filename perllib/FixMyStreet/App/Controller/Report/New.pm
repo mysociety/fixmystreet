@@ -1225,6 +1225,9 @@ sub process_report : Private {
 
     if ( $report->category ) {
         my @contacts = grep { $_->category eq $report->category } @{$c->stash->{contacts}};
+        if (!@contacts) {
+            @contacts = @{ $c->cobrand->call_hook('report_on_private_contacts' => $report->category) || [] };
+        }
         unless ( @contacts ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
             $report->bodies_str( -1 );
@@ -1858,7 +1861,10 @@ sub check_for_category : Private {
     # Just check to see if the filter had an option
     $category ||= $c->get_param('filter_category') || '';
     $c->stash->{category} = $category;
-
+    if ($c->cobrand->moniker eq 'zurich') {
+        $c->stash->{prefill_category} = $c->get_param('prefill_category') if $c->get_param('prefill_category');
+        $c->stash->{report}->detail($c->get_param('prefill_description')) if $c->get_param('prefill_description');
+    }
     # Bit of a copy of set_report_extras, because we need the results here, but
     # don't want to run all of that fn until later as it e.g. alters field
     # errors at that point. Also, the report might already have some answers in
