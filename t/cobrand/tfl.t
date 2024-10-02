@@ -31,6 +31,10 @@ FixMyStreet::DB->resultset('BodyArea')->find_or_create({
     area_id => 2508, # Hackney
     body_id => $body->id,
 });
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({
+    area_id => 2504, # Westminster
+    body_id => $body->id,
+});
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
 
@@ -275,6 +279,15 @@ subtest "creating a user on TfL creates tfl_password extra_metadata" => sub {
         ok $tfl_user->get_extra_metadata('tfl_password'), "TfL encrypted password created";
         $mech->log_out_ok();
     }
+};
+
+subtest "test Victoria Coach Station" => sub {
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'VCS', } }, "submit location" );
+    $mech->content_contains('data-latitude=51.49228');
+    $mech->get_ok('/around');
+    $mech->submit_form_ok( { with_fields => { pc => 'victoria coach station', } }, "submit location" );
+    $mech->content_contains('data-longitude=-0.1488');
 };
 
 subtest "test report creation anonymously by button" => sub {
@@ -1483,14 +1496,14 @@ FixMyStreet::override_config {
         $mech->content_contains('Hounslow');
         $mech->content_lacks('Auriol'); # 2457
         $mech->content_lacks('Brownswood'); # 2508
-        $mech->content_contains('data-area="2482,2483,2508"'); # No 2457
+        $mech->content_contains('data-area="2482,2483,2504,2508"'); # No 2457
         $mech->host('fixmystreet.com');
         $mech->get_ok('/reports/TfL');
         $mech->content_contains('Bromley');
         $mech->content_contains('Hounslow');
         $mech->content_lacks('Auriol'); # 2457
         $mech->content_lacks('Brownswood'); # 2508
-        $mech->content_contains('data-area="2482,2483,2508"'); # No 2457
+        $mech->content_contains('data-area="2482,2483,2504,2508"'); # No 2457
     };
 };
 
