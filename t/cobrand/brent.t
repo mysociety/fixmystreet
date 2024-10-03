@@ -223,6 +223,8 @@ create_contact({ category => 'Additional collection', email => 'general@brent.go
     { code => 'service_id', required => 1, automated => 'hidden_field' },
 );
 
+my $echo = shared_echo_mocks();
+
 subtest "title is labelled 'location of problem' in open311 extended description" => sub {
     my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
         category => 'Graffiti' ,
@@ -698,6 +700,8 @@ FixMyStreet::override_config {
     $mech->host("brent.fixmystreet.com");
 };
 
+undef $echo; # Otherwise tests below fail
+
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
 sub new { my $c = shift; bless { @_ }, $c; }
@@ -905,6 +909,8 @@ FixMyStreet::override_config {
         is $closest->summary, 'Studio 1, 29, Buckingham Road, London, Brent, NW10 4RP';
     }
 };
+
+$echo = shared_echo_mocks();
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'brent', 'tfl' ],
@@ -1587,6 +1593,7 @@ sub shared_echo_mocks {
         };
     });
     $e->mock('GetEventsForObject', sub { [] });
+    $e->mock('GetEvent', sub { {} });
     $e->mock('GetTasks', sub { [] });
     return $e;
 }
