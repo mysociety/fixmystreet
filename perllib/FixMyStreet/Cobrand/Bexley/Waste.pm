@@ -52,16 +52,6 @@ C<0001-01-01T00:00:00> represents an undefined date in Whitespace.
 
 use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
 
-=head2 group_report_titles
-
-FixMyStreet/App/Controller/Waste.pm has a group_reports() sub that groups
-report IDs for display purposes. We want to do the same for report titles
-for Bexley.
-
-=cut
-
-sub group_report_titles { 1 }
-
 sub waste_fetch_events {
     my ( $self, $params ) = @_;
 
