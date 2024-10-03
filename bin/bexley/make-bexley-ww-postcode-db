@@ -52,13 +52,6 @@ CREATE VIRTUAL TABLE street_descriptors USING fts4 (
 )
 SQL
 
-$db->do(<<SQL) or die;
-CREATE VIRTUAL TABLE child_uprns USING fts4 (
-    uprn        INTEGER NOT NULL,
-    parent_uprn INTEGER NOT NULL
-)
-SQL
-
 # PAO = 'Primary Addressable Object'
 # SAO = 'Secondary Addressable Object' - used for child addresses
 $db->do(<<SQL) or die;
@@ -79,7 +72,7 @@ CREATE VIRTUAL TABLE postcodes USING fts4 (
     sao_end_suffix   TEXT,
     sao_text         TEXT,
 
-    blpu_class       TEXT
+    has_parent       INTEGER
 )
 SQL
 
@@ -95,16 +88,6 @@ my $query_sd = $db->prepare(
         town_name
     )
     VALUES (?,?,?,?)
-SQL
-);
-
-my $query_cu = $db->prepare(
-<<SQL
-    INSERT OR IGNORE INTO child_uprns (
-        uprn,
-        parent_uprn
-    )
-    VALUES (?,?)
 SQL
 );
 
@@ -127,7 +110,7 @@ my $query_postcodes = $db->prepare(
         sao_end_suffix,
         sao_text,
 
-        blpu_class
+        has_parent
     )
     VALUES (?,?,?,
             ?,?,?,?,?,
@@ -200,7 +183,7 @@ my @columns_lpi = (
 
 say 'Populating tables...';
 
-my %uprn_to_blpu_class;
+my %uprn_extra_data;
 
 # Cannot set column names / headers in usual way as CSV contains multiple
 # record types
@@ -221,25 +204,23 @@ while( my $row = $csv->getline($fh) ) {
     } elsif ( $record_id == $id_blpu ) {
         @row_h{@columns_blpu} = @$row;
 
-        $uprn_to_blpu_class{ $row_h{UPRN} } = $row_h{BLPU_CLASS};
-
-        next if ( $row_h{LOGICAL_STATUS} || 0 ) != 1;
-        next unless $row_h{PARENT_UPRN};
-
-        $query_cu->execute(
-            $row_h{UPRN},
-            $row_h{PARENT_UPRN},
-        );
+        $uprn_extra_data{ $row_h{UPRN} }{has_parent} = !!$row_h{PARENT_UPRN};
+        $uprn_extra_data{ $row_h{UPRN} }{blpu_class} = $row_h{BLPU_CLASS};
     } elsif ( $record_id == $id_lpi ) {
         @row_h{@columns_lpi} = @$row;
 
         next if ( $row_h{LOGICAL_STATUS} || 0 ) != 1;
         next unless $row_h{POSTCODE};
 
+        # 'P' or 'PP' mean the property is a 'parent shell' and so should not be
+        # offered as a selectable address.
+        my $blpu_class = $uprn_extra_data{ $row_h{UPRN} }{blpu_class} // '';
+        next if $blpu_class && ( $blpu_class eq 'P' || $blpu_class eq 'PP' );
+
         # Remove whitespace from postcode
         my $postcode = $row_h{POSTCODE} =~ s/ //gr;
 
-        my $blpu_class = $uprn_to_blpu_class{ $row_h{UPRN} } // '';
+        my $has_parent = $uprn_extra_data{ $row_h{UPRN} }{has_parent} // 0;
 
         $query_postcodes->execute(
             $postcode,
@@ -258,7 +239,7 @@ while( my $row = $csv->getline($fh) ) {
             $row_h{SAO_END_SUFFIX},
             $row_h{SAO_TEXT},
 
-            $blpu_class,
+            $has_parent,
         );
     }
 }

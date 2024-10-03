@@ -16,19 +16,12 @@ That script shows the setup of the database in more detail, but to explain brief
 
 Stores postcode, UPRN, USRN, and address portions (e.g. house number and name) for each property (properties are uniquely identified by their UPRN).
 
-Also stores 'blpu_class'; if it is 'P' or 'PP', it means the property is a
-'parent shell' and so should not be offered as a selectable address.
+The 'has_parent' flag is used to determine whether 'Secondary Addressable
+Object' or sao_* fields are included in the address.
 
 =item * street_descriptors
 
 Stores address data (e.g. street & town name) for each USRN (street identifier)
-
-=item * child_uprns
-
-Captures mapping between parent and child properties (e.g. if a building contains multiple flats, the building is the parent, the children are the flats).
-
-If a property has a parent, the parent's address details ('Secondary
-Addressable Object' or sao_* fields) are included in the address.
 
 =back
 
@@ -78,21 +71,16 @@ sub addresses_for_postcode {
 
     my $address_fields = _address_fields();
 
-    # If blpu_class is 'P' or 'PP', it means the property is a
-    # 'parent shell' and so should not be offered as an option
     my $addresses = $db->selectall_arrayref(
         <<"SQL",
-   SELECT p.uprn uprn,
-          p.usrn usrn,
+   SELECT p.uprn       uprn,
+          p.usrn       usrn,
+          p.has_parent has_parent,
           $address_fields
      FROM postcodes p
      JOIN street_descriptors sd
        ON sd.usrn = p.usrn
-     LEFT OUTER JOIN child_uprns cu
-       ON cu.uprn = p.uprn
     WHERE p.postcode = ?
-      AND p.blpu_class != 'P'
-      AND p.blpu_class != 'PP'
 SQL
         { Slice => {} },
         $postcode,
@@ -129,12 +117,11 @@ sub address_for_uprn {
     my $row = $db->selectrow_hashref(
         <<"SQL",
    SELECT postcode,
+          has_parent,
           $address_fields
      FROM postcodes p
      JOIN street_descriptors sd
        ON sd.usrn = p.usrn
-     LEFT OUTER JOIN child_uprns cu
-       ON cu.uprn = p.uprn
     WHERE p.uprn = ?
 SQL
         undef,
@@ -148,7 +135,7 @@ sub build_address_string {
     my $row = shift;
 
     my $sao;
-    if ( $row->{parent_uprn} ) {
+    if ( $row->{has_parent} ) {
         $sao = _join_extended(
             ', ',
             $row->{sao_text},
@@ -238,9 +225,7 @@ sub _address_fields {
 
         street_descriptor,
         locality_name,
-        town_name,
-
-        parent_uprn
+        town_name
 SQL
 }
 
