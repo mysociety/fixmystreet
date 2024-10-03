@@ -79,6 +79,19 @@ sub admin_allow_user {
     return $user->from_body->name eq 'National Highways';
 }
 
+=item * We reword a few admin permissions to be clearer
+
+=cut
+
+sub available_permissions {
+    my $self = shift;
+    my $perms = $self->next::method();
+    $perms->{Problems}->{default_to_body} = "Default to creating reports/updates as " . $self->council_name;
+    $perms->{Problems}->{contribute_as_body} = "Create reports/updates as " . $self->council_name;
+    $perms->{Problems}->{view_body_contribute_details} = "See user detail for reports created as " . $self->council_name;
+    return $perms;
+}
+
 =item * There is an extra question asking where you heard about the site
 
 =cut
