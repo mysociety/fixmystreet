@@ -1,3 +1,16 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::HighwaysEngland - code specific to the National Highways cobrand
+
+=head1 SYNOPSIS
+
+National Highways, previously Highways England, is the national roads
+authority, and responsible for motorways and major roads in England.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::HighwaysEngland;
 use parent 'FixMyStreet::Cobrand::UK';
 
@@ -24,7 +37,12 @@ sub suggest_duplicates { 1 }
 
 sub all_reports_single_body { { name => 'National Highways' } }
 
-# Copying of functions from UKCouncils that are needed here also - factor out to a role of some sort?
+=over 4
+
+=item * It is not a council, so inherits from UK, not UKCouncils, but a number of functions are shared with what councils do
+
+=cut
+
 sub cut_off_date { '2020-11-09' }
 sub problems_restriction { FixMyStreet::Cobrand::UKCouncils::problems_restriction($_[0], $_[1]) }
 sub problems_on_map_restriction { $_[0]->problems_restriction($_[1]) }
@@ -35,7 +53,10 @@ sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 sub contact_name { FixMyStreet::Cobrand::UKCouncils::contact_name($_[0]) }
 sub contact_email { FixMyStreet::Cobrand::UKCouncils::contact_email($_[0]) }
 
-# Make sure any reports made when site was only fully anonymous remain anonymous
+=item * Any report made when the site was only fully anonymous should remain anonymous
+
+=cut
+
 my $non_anon = DateTime->new( year => 2022, month => 10, day => 5 );
 
 sub munge_problem_list {
@@ -58,6 +79,10 @@ sub admin_allow_user {
     return $user->from_body->get_column('name') eq 'National Highways';
 }
 
+=item * There is an extra question asking where you heard about the site
+
+=cut
+
 sub report_form_extras {
     ( { name => 'where_hear' } )
 }
@@ -68,6 +93,10 @@ sub example_places {
     my $self = shift;
     return $self->feature('example_places') || $self->next::method();
 }
+
+=item * Provide nicer help if it looks like they're searching for a road name
+
+=cut
 
 sub geocode_postcode {
     my ( $self, $s ) = @_;
@@ -80,6 +109,10 @@ sub geocode_postcode {
 
     return $self->next::method($s);
 }
+
+=item * Allow lookup by FMSid
+
+=cut
 
 sub lookup_by_ref_regex {
     return qr/^\s*((?:FMS\s*)?\d+)\s*$/i;
@@ -95,13 +128,11 @@ sub lookup_by_ref {
     return 0;
 }
 
+=item * No photos
+
+=cut
+
 sub allow_photo_upload { 0 }
-
-sub allow_anonymous_reports { 'button' }
-
-sub admin_user_domain { ( 'highwaysengland.co.uk', 'nationalhighways.co.uk' ) }
-
-sub abuse_reports_only { 1 }
 
 # Bypass photo requirement, we have none
 sub recent_photos {
@@ -109,6 +140,28 @@ sub recent_photos {
     return $self->problems->recent if $area eq 'front';
     return [];
 }
+
+=item * Anonymous reporting is allowed
+
+=cut
+
+sub allow_anonymous_reports { 'button' }
+
+=item * Two domains for admin users
+
+=cut
+
+sub admin_user_domain { ( 'highwaysengland.co.uk', 'nationalhighways.co.uk' ) }
+
+=item * No contact form
+
+=cut
+
+sub abuse_reports_only { 1 }
+
+=item * Only works in England
+
+=cut
 
 sub area_check {
     my ( $self, $params, $context ) = @_;
@@ -149,6 +202,10 @@ sub new_report_title_field_hint {
 sub new_report_detail_field_hint {
     "eg ‘This road sign has been obscured for two months and…’"
 }
+
+=item * New reports are possibly redacted
+
+=cut
 
 sub report_new_munge_after_insert {
     my ($self, $report) = @_;
@@ -196,6 +253,8 @@ sub _redact {
     return $s;
 }
 
+=back
+
 =head1 OIDC single sign on
 
 Noational Highways has a single-sign on option
@@ -234,6 +293,15 @@ sub user_from_oidc {
 
     return ($name, $email);
 }
+
+=head2 Report categories
+
+
+There is special handling of NH body/contacts, to handle the fact litter is not
+NH responsibility on most, but not all, NH roads; NH categories must end "(NH)"
+(this is stripped for display).
+
+=cut
 
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
