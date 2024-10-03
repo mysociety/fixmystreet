@@ -77,7 +77,9 @@ CREATE VIRTUAL TABLE postcodes USING fts4 (
     sao_start_suffix TEXT,
     sao_end_number   TEXT,
     sao_end_suffix   TEXT,
-    sao_text         TEXT
+    sao_text         TEXT,
+
+    blpu_class       TEXT
 )
 SQL
 
@@ -123,11 +125,14 @@ my $query_postcodes = $db->prepare(
         sao_start_suffix,
         sao_end_number,
         sao_end_suffix,
-        sao_text
+        sao_text,
+
+        blpu_class
     )
     VALUES (?,?,?,
             ?,?,?,?,?,
-            ?,?,?,?,?)
+            ?,?,?,?,?,
+            ?)
 SQL
 );
 
@@ -195,6 +200,8 @@ my @columns_lpi = (
 
 say 'Populating tables...';
 
+my %uprn_to_blpu_class;
+
 # Cannot set column names / headers in usual way as CSV contains multiple
 # record types
 while( my $row = $csv->getline($fh) ) {
@@ -214,6 +221,8 @@ while( my $row = $csv->getline($fh) ) {
     } elsif ( $record_id == $id_blpu ) {
         @row_h{@columns_blpu} = @$row;
 
+        $uprn_to_blpu_class{ $row_h{UPRN} } = $row_h{BLPU_CLASS};
+
         next if ( $row_h{LOGICAL_STATUS} || 0 ) != 1;
         next unless $row_h{PARENT_UPRN};
 
@@ -229,6 +238,8 @@ while( my $row = $csv->getline($fh) ) {
 
         # Remove whitespace from postcode
         my $postcode = $row_h{POSTCODE} =~ s/ //gr;
+
+        my $blpu_class = $uprn_to_blpu_class{ $row_h{UPRN} } // '';
 
         $query_postcodes->execute(
             $postcode,
@@ -246,20 +257,10 @@ while( my $row = $csv->getline($fh) ) {
             $row_h{SAO_END_NUMBER},
             $row_h{SAO_END_SUFFIX},
             $row_h{SAO_TEXT},
+
+            $blpu_class,
         );
     }
 }
-
-# It is possible for UPRNs in child_uprns to not occur in the postcodes table
-# (an 'empty' address).
-# At least one address, UPRN 100020276242, was not being picked up
-# by Bexley WW's address lookup, because it appeared as a parent_uprn in this
-# table, but its 'child' addresses were empty.
-$db->do(<<SQL);
-DELETE FROM child_uprns
-      WHERE uprn NOT IN (
-        SELECT uprn FROM postcodes
-      )
-SQL
 
 say 'Tables populated';

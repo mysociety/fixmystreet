@@ -14,7 +14,10 @@ That script shows the setup of the database in more detail, but to explain brief
 
 =item * postcodes
 
-Stores postcode, UPRN, USRN, and address portions (e.g. house number and name) for each property (properties are uniquely identified by their UPRN)
+Stores postcode, UPRN, USRN, and address portions (e.g. house number and name) for each property (properties are uniquely identified by their UPRN).
+
+Also stores 'blpu_class'; if it is 'P' or 'PP', it means the property is a
+'parent shell' and so should not be offered as a selectable address.
 
 =item * street_descriptors
 
@@ -22,7 +25,10 @@ Stores address data (e.g. street & town name) for each USRN (street identifier)
 
 =item * child_uprns
 
-Captures mapping between parent and child properties (e.g. if a building contains multiple flats, the building is the parent, the children are the flats)
+Captures mapping between parent and child properties (e.g. if a building contains multiple flats, the building is the parent, the children are the flats).
+
+If a property has a parent, the parent's address details ('Secondary
+Addressable Object' or sao_* fields) are included in the address.
 
 =back
 
@@ -72,6 +78,8 @@ sub addresses_for_postcode {
 
     my $address_fields = _address_fields();
 
+    # If blpu_class is 'P' or 'PP', it means the property is a
+    # 'parent shell' and so should not be offered as an option
     my $addresses = $db->selectall_arrayref(
         <<"SQL",
    SELECT p.uprn uprn,
@@ -83,9 +91,8 @@ sub addresses_for_postcode {
      LEFT OUTER JOIN child_uprns cu
        ON cu.uprn = p.uprn
     WHERE p.postcode = ?
-      AND p.uprn NOT IN (
-        SELECT parent_uprn FROM child_uprns
-      )
+      AND p.blpu_class != 'P'
+      AND p.blpu_class != 'PP'
 SQL
         { Slice => {} },
         $postcode,
