@@ -419,9 +419,19 @@ if ($('#offline_list').length) {
 } else {
     fixmystreet.offlineBanner.make(false);
 
-    // On /my/planned, when online, cache all shortlisted
+    // On /my/planned, when online, cache all shortlisted automatically on mobile.
+    // On desktop, show a button to cache them.
     if (location.pathname === '/my/planned') {
-        fixmystreet.offline.updateCachedReports();
+        if ($("html").hasClass("mobile")) {
+            $(".js-cache-reports").closest(".shadow-wrap").hide();
+            fixmystreet.offline.updateCachedReports();
+        } else {
+            $(".js-cache-reports").on("click", function(e) {
+                e.preventDefault();
+                $(".js-cache-reports").closest(".shadow-wrap").hide();
+                fixmystreet.offline.updateCachedReports();
+            });
+        }
     }
 
     // Catch additions and removals from the shortlist

@@ -1009,6 +1009,12 @@ html.mobile.js-nav-open #js-menu-open-modal {
     &.chevron:after {
       background-position: flip(-16px 0, 0 0);
     }
+
+    &.offline:after {
+      background-size: 16px 16px;
+      background-position: 0 0;
+      background-image: url("/cobrands/fixmystreet/images/cloud-download.svg");
+    }
   }
 
   .sub-area-item {
