@@ -198,6 +198,7 @@ sub index : Path : Args(0) {
         })->active->translated->with_area_count->all_sorted;
         $c->stash->{ward} = [];
         $c->stash->{bodies} = \@bodies;
+        $c->stash->{groups_selected_from} = [];
     }
 
     my $days30 = DateTime->now(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(days => 30);
