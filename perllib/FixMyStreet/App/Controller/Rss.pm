@@ -86,9 +86,9 @@ sub local_problems_pc : Path('pc') : Args(1) {
 }
 
 sub local_problems_pc_distance : Path('pc') : Args(2) {
-    my ( $self, $c, $query, $d ) = @_;
+    my ( $self, $c, $query, $distance ) = @_;
 
-    $c->forward( 'get_query_parameters', [ $d ] );
+    $c->forward( 'get_query_parameters', [ $distance ] );
     unless ( $c->forward( '/location/determine_location_from_pc', [ $query ] ) ) {
         $c->res->redirect( '/alert' );
         $c->detach();
@@ -122,9 +122,9 @@ sub local_problems_no_dist : LocalRegex('^(n|l)/([\d.-]+)[,/]([\d.-]+)$') {
 }
 
 sub local_problems : Private {
-    my ( $self, $c, $type, $a, $b, $d ) = @_;
+    my ( $self, $c, $type, $a, $b, $distance ) = @_;
 
-    $c->forward( 'get_query_parameters', [ $d ] );
+    $c->forward( 'get_query_parameters', [ $distance ] );
 
     $c->detach( 'redirect_lat_lon', [ $a, $b ] )
         if $type eq 'n';
@@ -141,19 +141,19 @@ sub local_problems_ll : Private {
     # truncate the lat,lon for nicer urls
     ( $lat, $lon ) = map { Utils::truncate_coordinate($_) } ( $lat, $lon );
 
-    my $d = $c->stash->{distance};
-    if ( $d ) {
-        $c->stash->{qs} .= ";d=$d";
-        $d = 100 if $d > 100;
+    my $distance = $c->stash->{distance};
+    if ($distance) {
+        $c->stash->{qs} .= ";d=$distance";
+        $distance = 100 if $distance > 100;
     } else {
-        $d = FixMyStreet::Gaze::get_radius_containing_population($lat, $lon);
+        $distance = FixMyStreet::Gaze::get_radius_containing_population($lat, $lon);
         # Needs to be with a '.' for db passing
-        $d = mySociety::Locale::in_gb_locale {
-            sprintf("%f", $d);
+        $distance = mySociety::Locale::in_gb_locale {
+            sprintf("%f", $distance);
         }
     }
 
-    $c->stash->{db_params} = [ $lat, $lon, $d ];
+    $c->stash->{db_params} = [ $lat, $lon, $distance ];
 
     if ($c->stash->{state} ne 'all') {
         $c->stash->{type} .= '_state';
@@ -354,8 +354,8 @@ sub add_parameters : Private {
 
 sub local_problems_legacy : LocalRegex('^(\d+)[,/](\d+)(?:/(\d+))?$') {
     my ( $self, $c ) = @_;
-    my ($x, $y, $d) = @{ $c->req->captures };
-    $c->forward( 'get_query_parameters', [ $d ] );
+    my ($x, $y, $distance) = @{ $c->req->captures };
+    $c->forward( 'get_query_parameters', [ $distance ] );
 
     # 5000/31 as initial scale factor for these RSS feeds, now variable so redirect.
     my $e = int( ($x * 5000/31) + 0.5 );
@@ -364,10 +364,10 @@ sub local_problems_legacy : LocalRegex('^(\d+)[,/](\d+)(?:/(\d+))?$') {
 }
 
 sub get_query_parameters : Private {
-    my ( $self, $c, $d ) = @_;
+    my ( $self, $c, $distance ) = @_;
 
-    $d = '' unless $d && $d =~ /^\d+$/;
-    $c->stash->{distance} = $d;
+    $distance = '' unless $distance && $distance =~ /^\d+$/;
+    $c->stash->{distance} = $distance;
 
     my $state = $c->get_param('state') || 'all';
     $state = 'all' unless $state =~ /^(all|open|fixed)$/;
@@ -381,11 +381,11 @@ sub redirect_lat_lon : Private {
     my ( $self, $c, $e, $n ) = @_;
     my ($lat, $lon) = Utils::convert_en_to_latlon_truncated($e, $n);
 
-    my $d_str = '';
-    $d_str    = '/' . $c->stash->{distance} if $c->stash->{distance};
+    my $distance_str = '';
+    $distance_str = '/' . $c->stash->{distance} if $c->stash->{distance};
     my $state_qs = '';
     $state_qs    = $c->stash->{state_qs} if $c->stash->{state_qs};
-    $c->res->redirect( "/rss/l/$lat,$lon" . $d_str . $state_qs );
+    $c->res->redirect( "/rss/l/$lat,$lon" . $distance_str . $state_qs );
 }
 
 sub xsl : Path {
