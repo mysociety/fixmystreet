@@ -111,7 +111,7 @@ sub local_problems_pc_distance : Path('pc') : Args(2) {
 
 }
 
-sub local_problems_dist : LocalRegex('^(n|l)/([\d.-]+)[,/]([\d.-]+)/(\d+)$') {
+sub local_problems_dist : LocalRegex('^(n|l)/([\d.-]+)[,/]([\d.-]+)/(\d+(?:\.\d+)?)$') {
     my ( $self, $c ) = @_;
     $c->forward( 'local_problems', $c->req->captures );
 }
@@ -366,7 +366,7 @@ sub local_problems_legacy : LocalRegex('^(\d+)[,/](\d+)(?:/(\d+))?$') {
 sub get_query_parameters : Private {
     my ( $self, $c, $distance ) = @_;
 
-    $distance = '' unless $distance && $distance =~ /^\d+$/;
+    $distance = '' unless $distance && $distance =~ /^\d+(\.\d+)?$/;
     $c->stash->{distance} = $distance;
 
     my $state = $c->get_param('state') || 'all';
