@@ -1,16 +1,12 @@
 [%
 IF report.category == 'Request new container';
-    title = 'Container request has been sent';
+    title = 'Thank you for requesting a new container';
 ELSIF report.category == 'Report missed collection';
-    IF c.cobrand.moniker == 'bexley';
-        title = 'Thank you for reporting a missed collection';
-    ELSE;
-        title = 'Missed collection has been reported';
-    END;
+    title = 'Thank you for reporting a missed collection';
 ELSIF report.category == 'Request additional collection';
-    title = 'Additional collection has been requested';
+    title = 'Thank you for requesting an additional collection';
 ELSE;
-    title = 'Enquiry has been submitted';
+    title = 'Thank you for submitting an enquiry';
 END ~%]
 [% PROCESS 'waste/header.html' %]
 
@@ -20,16 +16,9 @@ END ~%]
     </h1>
     <div class="govuk-panel__body">
         <p>
-          [% IF c.cobrand.moniker == 'bexley' %]
             [% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
                 A copy has been sent to your email address, [% report.user.email %].
             [% END %]
-          [% ELSE %]
-            Your [% title | lower %];
-            [% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
-                a copy has been sent to your email address, [% report.user.email %].
-            [% END %]
-          [% END %]
         </p>
         <p>
           [% IF report.category == 'Request new container' AND c.cobrand.wasteworks_config.request_timeframe %]

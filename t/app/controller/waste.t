@@ -181,7 +181,7 @@ FixMyStreet::override_config {
 
         $mech->clear_emails_ok;
         $mech->get_ok($link);
-        $mech->content_contains('Your missed collection has been reported');
+        $mech->content_contains('Thank you for reporting a missed collection');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         FixMyStreet::Script::Reports::send();
@@ -255,7 +255,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your container request has been sent');
+        $mech->content_contains('Thank you for requesting a new container');
         $mech->content_contains('Containers typically arrive within two weeks,');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
@@ -277,7 +277,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Garden Waste');
         $mech->content_contains('Test McTest');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your container request has been sent');
+        $mech->content_contains('Thank you for requesting a new container');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
@@ -299,7 +299,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Now check your email');
         my $link = $mech->get_link_from_email; # Only one email sent, this also checks
         $mech->get_ok($link);
-        $mech->content_contains('Your container request has been sent');
+        $mech->content_contains('Thank you for requesting a new container');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         FixMyStreet::Script::Reports::send();
@@ -352,7 +352,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains($user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Thank you for submitting an enquiry');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
@@ -375,7 +375,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains($staff_user->email);
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Thank you for submitting an enquiry');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
@@ -392,7 +392,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { extra_Exact_Location => 'Behind the garden gate', extra_Reason => 'Reason' } });
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Thank you for submitting an enquiry');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
@@ -1834,7 +1834,7 @@ FixMyStreet::override_config {
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
 
-    for my $test ( 
+    for my $test (
         {
             return => {
                 transactionState => 'INVALID_REFERENCE',
