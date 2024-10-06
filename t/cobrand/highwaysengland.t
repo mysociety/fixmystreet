@@ -7,6 +7,8 @@ use HighwaysEngland;
 use DateTime;
 use File::Temp 'tempdir';
 use Test::MockModule;
+use t::Mock::OpenIDConnect;
+use t::Mock::MicrosoftGraph;
 
 my $he_mock = Test::MockModule->new('HighwaysEngland');
 $he_mock->mock('database_file', sub { FixMyStreet->path_to('t/geocode/roads.sqlite'); });
@@ -46,6 +48,12 @@ my $mech = FixMyStreet::TestMech->new;
 my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method => 'Email::Highways' }, { cobrand => 'highwaysengland' });
 
 $mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole (NH)');
+
+FixMyStreet::DB->resultset("Role")->create({
+    body => $highways,
+    name => 'Inspector',
+    permissions => ['moderate', 'user_edit'],
+});
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'highwaysengland', 'fixmystreet' ],
@@ -300,6 +308,56 @@ FixMyStreet::override_config {
         my $edited_contact = $highways->contacts->find({ category => "suffix category edited (NH)" });
         is defined($contact), 1, "Contact category was edited to one with a valid suffix.";
     };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'highwaysengland',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        oidc_login => {
+            highwaysengland => {
+                client_id => 'example_client_id',
+                secret => 'example_secret_key',
+                auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
+                token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
+                logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
+                display_name => 'MyAccount',
+                role_map => {
+                    'Department' => 'Inspector',
+                },
+            }
+        }
+    }
+}, sub {
+  subtest 'National Highways department lookup' => sub {
+    my $email = $mech->uniquify_email('oidc@nationalhighways.example.org');
+    my $redirect_pattern = qr{oidc\.example\.org/oauth2/v2\.0/authorize};
+
+    $mech->log_out_ok;
+    $mech->cookie_jar({});
+    $mech->host('oidc.example.org');
+
+    my $resolver = Test::MockModule->new('Email::Valid');
+    $resolver->mock('address', sub { $email });
+    my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
+    $social->mock('generate_nonce', sub { 'MyAwesomeRandomValue' });
+
+    my $mock_api = t::Mock::OpenIDConnect->new( host => 'oidc.example.org' );
+    LWP::Protocol::PSGI->register($mock_api->to_psgi_app, host => 'oidc.example.org');
+    $mock_api->cobrand('highwaysengland');
+
+    $mech->get_ok('/my');
+    $mech->submit_form(button => 'social_sign_in');
+    is $mech->res->previous->code, 302, "button redirected";
+    like $mech->res->previous->header('Location'), $redirect_pattern, "redirect to oauth URL";
+
+    $mech->get_ok('/auth/OIDC?code=response-code&state=login');
+    is $mech->uri->path, '/my', 'Successfully on /my page';
+
+    my $user = FixMyStreet::DB->resultset( 'User' )->find( { email => $email } );
+    my @roles = sort map { $_->name } $user->roles->all;
+    is_deeply ['Inspector'], \@roles, 'Correct roles assigned to user';
+  };
 };
 
 done_testing();
