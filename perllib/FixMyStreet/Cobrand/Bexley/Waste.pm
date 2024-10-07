@@ -51,6 +51,7 @@ C<0001-01-01T00:00:00> represents an undefined date in Whitespace.
 =cut
 
 use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
+use constant MISSED_COLLECTION_SERVICE_PROPERTY_ID => 68;
 
 sub waste_fetch_events {
     my ( $self, $params ) = @_;
@@ -67,59 +68,18 @@ sub waste_fetch_events {
         { order_by => 'id' },
     );
 
-    my $missed_collection_service_property_id = 68;
-    my $db = FixMyStreet::DB->schema->storage;
-
     while ( my $report = $missed_collection_reports->next ) {
         print 'Fetching data for report ' . $report->id . "\n" if $params->{verbose};
 
         my $worksheet_id = $report->external_id =~ s/Whitespace-//r;
-        my $worksheet
-            = $self->whitespace->GetFullWorksheetDetails($worksheet_id);
+        my $request = $self->construct_waste_open311_update($params, {
+            id => $worksheet_id,
+            report => $report,
+        });
+        next if !$request->{status} || $request->{status} eq 'confirmed'; # Still in initial state
+        next unless $self->waste_check_last_update($params, $report, $request->{status});
 
-        # Get info for missed collection
-        my $missed_collection_properties;
-        for my $service_properties (
-            @{  $worksheet->{WSServiceProperties}{WorksheetServiceProperty}
-                    // []
-            }
-        ) {
-            next
-                unless $service_properties->{ServicePropertyID}
-                == $missed_collection_service_property_id;
-
-            $missed_collection_properties = $service_properties;
-        }
-
-        my $whitespace_state_string
-            = $missed_collection_properties
-            ? $missed_collection_properties->{ServicePropertyValue}
-            : '';
-
-        my $config = $self->feature('whitespace');
-        my $new_state
-            = $config->{missed_collection_state_mapping}
-                {$whitespace_state_string};
-        unless ($new_state) {
-            print "  No new state, skipping\n" if $params->{verbose};
-            next;
-        }
-
-        next
-            unless $self->waste_check_last_update( $params, $report,
-            $new_state );
-
-        my $request = {
-            description => $new_state->{text},
-            # No data from Whitespace for this, so make it now
-            comment_time =>
-                DateTime->now->set_time_zone( FixMyStreet->local_time_zone ),
-            external_status_code => $whitespace_state_string,
-            prefer_template      => 1,
-            status               => $new_state->{fms_state},
-            # TODO Is there an ID for specific worksheet update?
-            update_id => $report->external_id,
-        };
+        $request->{comment_time} = DateTime->now->set_time_zone( FixMyStreet->local_time_zone ),
 
         print
             "  Updating report to state '$request->{status}' - '$request->{description}' ($request->{external_status_code})\n"
@@ -132,14 +92,61 @@ sub waste_fetch_events {
     }
 }
 
+sub construct_waste_open311_update {
+    my ($self, $params, $worksheet) = @_;
+
+    my $report = $worksheet->{report} || $self->problems->find($worksheet->{ref});
+    return unless $report;
+
+    $worksheet = $self->whitespace->GetFullWorksheetDetails($worksheet->{id});
+
+    # Get info for missed collection
+    my $missed_collection_properties;
+    for my $service_properties (
+        @{  $worksheet->{WSServiceProperties}{WorksheetServiceProperty}
+                // []
+        }
+    ) {
+        next
+            unless $service_properties->{ServicePropertyID}
+            == MISSED_COLLECTION_SERVICE_PROPERTY_ID;
+
+        $missed_collection_properties = $service_properties;
+    }
+
+    my $whitespace_state_string
+        = $missed_collection_properties
+        ? $missed_collection_properties->{ServicePropertyValue}
+        : '';
+
+    my $config = $self->feature('whitespace');
+    my $new_state
+        = $config->{missed_collection_state_mapping}
+            {$whitespace_state_string};
+    unless ($new_state) {
+        print "  No new state, skipping\n" if $params->{verbose};
+        return;
+    }
+
+    my $request = {
+        description => $new_state->{text},
+        status => $new_state->{fms_state},
+        update_id => 'waste',
+        external_status_code => $whitespace_state_string,
+        prefer_template => 1,
+        report => $report,
+    };
+    return $request;
+}
+
 sub waste_check_last_update {
-    my ( $self, $params, $report, $new_state ) = @_;
+    my ( $self, $params, $report, $state ) = @_;
 
     my $last_update = $report->comments->search(
-        { external_id => { like => 'Whitespace%' } },
+        { external_id => 'waste', },
     )->order_by('-id')->first;
 
-    if ( $last_update && $new_state->{fms_state} eq $last_update->problem_state ) {
+    if ( $last_update && $state eq $last_update->problem_state ) {
         print "  Latest update matches fetched state, skipping\n" if $params->{verbose};
         return;
     }
