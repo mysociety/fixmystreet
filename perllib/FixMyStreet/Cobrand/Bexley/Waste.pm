@@ -68,7 +68,6 @@ sub waste_fetch_events {
     );
 
     my $missed_collection_service_property_id = 68;
-    my $db = FixMyStreet::DB->schema->storage;
 
     while ( my $report = $missed_collection_reports->next ) {
         print 'Fetching data for report ' . $report->id . "\n" if $params->{verbose};
@@ -109,17 +108,10 @@ sub waste_fetch_events {
             unless $self->waste_check_last_update( $params, $report,
             $new_state );
 
-        my $request = {
-            description => $new_state->{text},
-            # No data from Whitespace for this, so make it now
-            comment_time =>
-                DateTime->now->set_time_zone( FixMyStreet->local_time_zone ),
-            external_status_code => $whitespace_state_string,
-            prefer_template      => 1,
-            status               => $new_state->{fms_state},
-            # TODO Is there an ID for specific worksheet update?
-            update_id => $report->external_id,
-        };
+        my $request = $self->construct_waste_open311_update($config, {
+            status => $whitespace_state_string,
+        });
+        $request->{comment_time} = DateTime->now->set_time_zone( FixMyStreet->local_time_zone ),
 
         print
             "  Updating report to state '$request->{status}' - '$request->{description}' ($request->{external_status_code})\n"
@@ -130,6 +122,19 @@ sub waste_fetch_events {
             $report,
         );
     }
+}
+
+sub construct_waste_open311_update {
+    my ($self, $cfg, $params) = @_;
+    my $status_hash = $cfg->{missed_collection_state_mapping}{$params->{status}};
+    my $request = {
+        description => $status_hash->{text},
+        status => $status_hash->{fms_state},
+        update_id => 'waste',
+        external_status_code => $params->{status},
+        prefer_template => 1,
+    };
+    return $request;
 }
 
 sub waste_check_last_update {
