@@ -69,7 +69,7 @@ BEGIN {
         my ($self, $path, $content, $code) = @_;
         my $test_res = HTTP::Response->new();
         $test_res->code($code || 200);
-        $test_res->content($content);
+        $test_res->content(encode_utf8($content));
         $injected{$path} = $test_res;
     }
 }
