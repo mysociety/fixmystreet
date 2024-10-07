@@ -205,11 +205,17 @@ while( my $row = $csv->getline($fh) ) {
         @row_h{@columns_blpu} = @$row;
 
         $uprn_extra_data{ $row_h{UPRN} }{has_parent} = !!$row_h{PARENT_UPRN};
+        $uprn_extra_data{ $row_h{UPRN} }{blpu_class} = $row_h{BLPU_CLASS};
     } elsif ( $record_id == $id_lpi ) {
         @row_h{@columns_lpi} = @$row;
 
         next if ( $row_h{LOGICAL_STATUS} || 0 ) != 1;
         next unless $row_h{POSTCODE};
+
+        # 'P' or 'PP' mean the property is a 'parent shell' and so should not be
+        # offered as a selectable address.
+        my $blpu_class = $uprn_extra_data{ $row_h{UPRN} }{blpu_class} // '';
+        next if $blpu_class eq 'P' || $blpu_class eq 'PP';
 
         # Remove whitespace from postcode
         my $postcode = $row_h{POSTCODE} =~ s/ //gr;
