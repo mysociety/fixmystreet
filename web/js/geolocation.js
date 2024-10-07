@@ -26,18 +26,22 @@ fixmystreet.geolocate = function(element, success_callback) {
     });
 };
 
-(function(){
-    var link = document.getElementById('geolocate_link');
-    if (!link) { return; }
+(function() {
+    var links = document.getElementsByClassName('js-geolocate-link');
+    if (!links.length) { return; }
     var https = window.location.protocol.toLowerCase() === 'https:';
     if ('geolocation' in navigator && https && window.addEventListener) {
-        fixmystreet.geolocate(link, function(pos) {
-            var latitude = pos.coords.latitude.toFixed(6);
-            var longitude = pos.coords.longitude.toFixed(6);
-            var coords = 'lat=' + latitude + '&lon=' + longitude;
-            location.href = link.href + (link.href.indexOf('?') > -1 ? ';' : '?') + coords;
+        Array.prototype.forEach.call(links, function(link) {
+            fixmystreet.geolocate(link, function(pos) {
+                var latitude = pos.coords.latitude.toFixed(6);
+                var longitude = pos.coords.longitude.toFixed(6);
+                var coords = 'lat=' + latitude + '&lon=' + longitude;
+                location.href = link.href + (link.href.indexOf('?') > -1 ? ';' : '?') + coords;
+            });
         });
     } else {
-        link.style.display = 'none';
+        Array.prototype.forEach.call(links, function(link) {
+            link.style.display = 'none';
+        });
     }
 })();
