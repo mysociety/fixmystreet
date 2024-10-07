@@ -336,6 +336,11 @@ sub _set_contact_from_keywords {
         push @actions, 'marked inactive';
     }
 
+    if ($contact->state ne 'staff' && $keywords{staff}) {
+        $contact->state('staff');
+        push @actions, 'marked staff';
+    }
+
     my $waste_only = $keywords{waste_only} ? 1 : 0;
     my $type = $contact->get_extra_metadata('type', '') eq 'waste';
     if ($waste_only != $type) { # If the same, nothing to do
