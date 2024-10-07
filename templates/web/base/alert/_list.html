@@ -23,12 +23,12 @@
         <p>
             [% loc('You can choose to subscribe to all problems reported in an area, or reports based on their destination.') %]
         </p>
-        <div class="alerts__columns">
-            <div>
+
         <h3>[% loc('Problems in an area') %]</h3>
       [% END %]
 
       
+      <div class="alert-option-wrapper">
         <div class="govuk-radios__item" id="rss_local">
           <input class="govuk-radios__input" type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]"[% IF rss_feed_id == selected_feed || selected_feed == '' %] checked[% END %]>
           <label class="govuk-label govuk-radios__label" for="[% rss_feed_id %]">
@@ -40,6 +40,10 @@
             [% loc('(covers roughly 200,000 people)') %]
           </label>
         </div>
+        <a href="[% rss_feed_uri %]" class="alerts-rss-link js-alert-local" id="rss-[% rss_feed_id %]">
+          <img src="/i/feed.png" width="16" height="16" alt="[% loc('RSS feed of nearby problems') %]">
+        </a>
+      </div>
 
         <div class="alert-option-wrapper govuk-!-margin-bottom-4">
           <div id="rss_local_alt" class="govuk-form-group">
@@ -50,12 +54,14 @@
             </div>
           </div>
 
-          <a href="[% rss_feed_uri %]" class="alerts-rss-link js-alert-local" id="rss-[% rss_feed_id %]">
-            <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed of nearby problems') %]" alt="[% loc('RSS feed') %]">
-          </a>
         </div>
 
       [% FOREACH option IN options %]
+
+        [% IF option.title AND reported_to_options %]
+            <h3>[% option.title %]</h3>
+        [% END %]
+
         <div class="alert-option-wrapper govuk-!-margin-bottom-4">
           <div class="govuk-radios__item">
             <input class="govuk-radios__input" type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
@@ -64,18 +70,12 @@
             </label>
           </div>
           <a href="[% option.uri %]" class="alerts-rss-link" id="rss-[% option.id %]">
-            <img src="/i/feed.png" width="16" height="16" title="[% option.rss_text %]" alt="[% loc('RSS feed') %]">
+            <img src="/i/feed.png" width="16" height="16" alt="[% option.rss_text %]">
           </a>
         </div>
-      [% END %]
 
-      [% IF reported_to_options %]
-            </div>
-            <div>
-
-        <h3>[% loc('Reports by destination') %]</h3>
-
-        [% FOREACH option IN reported_to_options %]
+        [% option = reported_to_options.${loop.index} %]
+        [% IF option AND option.text %]
           <div class="alert-option-wrapper govuk-!-margin-bottom-4">
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
@@ -84,12 +84,11 @@
               </label>
             </div>
             <a href="[% option.uri %]" class="alerts-rss-link" id="rss-[% option.id %]">
-              <img src="/i/feed.png" width="16" height="16" title="[% option.rss_text %]" alt="[% loc('RSS feed') %]">
+              <img src="/i/feed.png" width="16" height="16" alt="[% option.rss_text %]">
             </a>
           </div>
         [% END %]
-            </div>
-        </div>
+
       [% END %]
       </div>
     </fieldset>

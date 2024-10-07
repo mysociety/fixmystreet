@@ -254,10 +254,20 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
 
     $c->stash->{rss} = 1;
 
-    # area_check
-
     $area =~ s/\+/ /g;
     $area =~ s/\.html//;
+
+    if ($area =~ /^[0-9]+$/) {
+        my $area = FixMyStreet::MapIt::call( 'area', $area );
+        $c->detach( 'redirect_index' ) unless $area;
+
+        $c->stash->{qs} = "";
+        $c->stash->{type} = 'area_problems';
+        $c->stash->{title_params} = { NAME => $area->{name} };
+        $c->stash->{db_params} = [ $area->{id} ];
+
+        $c->detach( '/rss/output' );
+    }
 
     # XXX Currently body/area overlaps here are a bit muddy.
     # We're checking an area here, but this function is currently doing that.
@@ -285,15 +295,6 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
     my $url = $c->cobrand->short_name( $c->stash->{area} );
     $url .= '/' . $c->cobrand->short_name( $c->stash->{ward} ) if $c->stash->{ward};
     $c->stash->{qs} = "/$url";
-
-    if ($c->cobrand->moniker eq 'fixmystreet' && $c->stash->{area}{type} ne 'DIS' && $c->stash->{area}{type} ne 'CTY') {
-        # UK-specific types - two possibilites are the same for one-tier councils, so redirect one to the other
-        # With bodies, this should presumably redirect if only one body covers
-        # the area, and then it will need that body's name (rather than
-        # assuming as now it is the same as the area)
-        $c->stash->{body} = $c->stash->{area};
-        $c->detach( 'redirect_body' );
-    }
 
     $c->stash->{type} = 'area_problems';
     if ( $c->stash->{ward} ) {
