@@ -150,7 +150,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting a new container');
+        $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Damaged";
@@ -267,7 +267,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting a new container');
+        $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Missing";
@@ -287,7 +287,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting a new container');
+        $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container";
@@ -310,7 +310,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build', 'request_reason_text' => 'Large household' x 10 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting a new container');
+        $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\nAdditional details: " . "Large household" x 10;
@@ -353,7 +353,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build', 'request_reason_text' => 'Large household' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting a new container');
+        $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\nAdditional details: Large household";
@@ -459,7 +459,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-18' => 1 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting a new container');
+        $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Additional bag required";
@@ -504,7 +504,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { extra_Notes => 'It never turned up' } });
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for submitting an enquiry');
+        $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -523,7 +523,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'service-2239' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting an additional collection');
+        $mech->content_contains('additional collection has been requested');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Request additional Food waste collection\n\n2 Example Street, Merton, KT1 1AA";
@@ -536,7 +536,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { extra_Crew_Notes => 'Behind the garden gate' } });
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for submitting an enquiry');
+        $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;

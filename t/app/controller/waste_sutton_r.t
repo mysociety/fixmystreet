@@ -211,7 +211,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting a new container');
+        $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Missing";
@@ -370,7 +370,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 18 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting a new container');
+        $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Additional bag required";

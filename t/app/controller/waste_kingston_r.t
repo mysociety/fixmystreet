@@ -422,7 +422,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'removal-18' => 0 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Thank you for requesting a new container');
+        $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "2 Example Street, Kingston, KT1 1AA";

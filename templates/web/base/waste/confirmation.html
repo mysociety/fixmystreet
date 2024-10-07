@@ -1,12 +1,12 @@
 [%
 IF report.category == 'Request new container';
-    title = 'Thank you for requesting a new container';
+    title = 'Your container request has been sent';
 ELSIF report.category == 'Report missed collection';
     title = 'Thank you for reporting a missed collection';
 ELSIF report.category == 'Request additional collection';
-    title = 'Thank you for requesting an additional collection';
+    title = 'Your additional collection has been requested';
 ELSE;
-    title = 'Thank you for submitting an enquiry';
+    title = 'Your enquiry has been submitted';
 END ~%]
 [% PROCESS 'waste/header.html' %]
 
