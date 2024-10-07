@@ -33,13 +33,31 @@ has twilio => (
     },
 );
 
+has notify_choice => (
+    is => 'ro',
+    default => '',
+);
+
 has notify => (
     is => 'lazy',
     default => sub {
         my $self = shift;
         my $cfg = $self->cobrand->feature('govuk_notify');
-        my $key = $cfg->{key};
-        return unless $key;
+        my @cfg;
+        my $key;
+        if (ref $cfg eq 'ARRAY') {
+            if ($self->notify_choice) {
+                @cfg = grep { $_->{type} eq $self->notify_choice} @$cfg;
+            } else {
+                @cfg = grep { $_->{type} eq 'default' } @$cfg;
+            }
+            $cfg = $cfg[0];
+            $key = $cfg->{key};
+            return unless $key;
+        } else {
+            $key = $cfg->{key};
+            return unless $key;
+        }
         my $api = GovUkNotify->new(
             key => $key,
             template_id => $cfg->{template_id},
