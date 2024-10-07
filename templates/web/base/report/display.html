@@ -45,18 +45,19 @@
 [% END %]
 
 [% TRY %][% INCLUDE 'report/_message_manager.html' %][% CATCH file %][% END %]
-[% INCLUDE 'report/display_tools.html' %]
+[% INCLUDE 'report/display_tools_mobile.html' %]
 [% TRY %][% INCLUDE 'report/sharing.html' %][% CATCH file %][% END %]
 [% INCLUDE 'report/updates.html' %]
 
 [% IF problem.duplicate_of %]
-    [% INCLUDE 'report/duplicate-no-updates.html' %]
+[% INCLUDE 'report/duplicate-no-updates.html' %]
 [% ELSIF problem.cobrand_data == 'noise' %]
-    <p>[% loc('This report is now closed to updates from the public.') %]</p>
+<p>[% loc('This report is now closed to updates from the public.') %]</p>
 [% ELSIF NOT shown_form  %]
-    [% PROCESS 'report/update-form-wrapper.html' %]
+[% PROCESS 'report/update-form-wrapper.html' %]
 [% END %]
 
+[% INCLUDE 'report/display_tools.html' %]
   </div>
 
   [% second_column | safe %]

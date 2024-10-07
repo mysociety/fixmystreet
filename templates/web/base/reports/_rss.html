@@ -1,7 +1,7 @@
 <div id="key-tools-wrapper" class="shadow-wrap">
     <ul id="key-tools">
-        <li class="feed-list-wrapper"><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[%
-            SET monikers = ['bromley','hounslow'];
+        <li class="feed-list-wrappe"><a rel="nofollow" id="key-tool-updates-area" class="feed has-inline-svg" href="[% rss_url %]">
+            [% SET monikers = ['bromley','hounslow'];
             IF monikers.grep(c.cobrand.moniker).size AND thing == 'council';
                 'Get updates of reports in ' _ c.cobrand.moniker.ucfirst;
             ELSIF c.cobrand.moniker == 'isleofwight';
@@ -12,13 +12,17 @@
                 tprintf(loc('Get updates of %s problems'), thing);
             ELSE;
                 tprintf(loc('Get updates of problems in this %s'), thing);
-            END
-        %]</a></li>
+            END %]
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor" role="presentation" aria-hidden="true"><path d="M19.199 24C19.199 13.467 10.533 4.8 0 4.8V0c13.165 0 24 10.835 24 24h-4.801zM3.291 17.415c1.814 0 3.293 1.479 3.293 3.295 0 1.813-1.485 3.29-3.301 3.29C1.47 24 0 22.526 0 20.71s1.475-3.294 3.291-3.295zM15.909 24h-4.665c0-6.169-5.075-11.245-11.244-11.245V8.09c8.727 0 15.909 7.184 15.909 15.91z"/></svg>
+        </a></li>
         [% IF children.size %]
             [% TRY %]
                 [% INCLUDE 'reports/_rss_other_districts.html' %]
             [% CATCH %]
-                <li><a href="#council_wards" id="key-tool-wards" class="chevron">[% ward_text %]</a></li>
+                <li><a href="#council_wards" id="key-tool-wards" class="has-inline-svg">
+                    [% ward_text %]
+                    <svg role="presentation" aria-hidden="true" width="1.5em" height="1.5em" viewBox="0 0 13 16" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 0H0L6.5 8L0 16H6.5L13 8L6.5 0Z" fill="currentColor"/></svg>
+                </a></li>
             [% END %]
         [% END %]
     </ul>

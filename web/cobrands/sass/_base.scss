@@ -933,21 +933,17 @@ html.mobile.js-nav-open #js-menu-open-modal {
   margin: 0 -1em;
 }
 
-#key-tools {
+#key-tools, #key-tools-mobile {
   @include list-reset-soft;
   margin-bottom: 1em;
-  display: table;
+  display: flex;
+  flex-direction: row;
   width: 100%;
+  gap: 0.25rem;
+  box-sizing: border-box;
 
   li {
-    display: table-cell;
-    vertical-align: bottom;
     text-align: center;
-    border-#{$right}: 0.25em solid #fff;
-
-    &:last-child {
-      border-#{$right}: none;
-    }
 
     &.hidden-js {
       display: none;
@@ -962,17 +958,17 @@ html.mobile.js-nav-open #js-menu-open-modal {
 
   a,
   button {
-    display: block;
+    box-sizing: border-box;
+    height: 100%;
     background-color: #f5f5f5;
-    background-repeat: no-repeat;
     color: #333 !important;
-    padding: 1em;
+    padding: 1em 0.5em;
     font-size: 0.6875em;
     font-family: $meta-font;
     font-weight: normal;
     line-height: 1.2em;
-    white-space: normal;
-    border-radius: 0;
+    // Prevents elements with more than two words to break into multiple lines
+    white-space: nowrap;
 
     &:hover,
     &.hover,
@@ -980,34 +976,6 @@ html.mobile.js-nav-open #js-menu-open-modal {
       text-decoration: none;
       background-color: #333;
       color: #fff !important;
-    }
-
-    &:after {
-      content: "";
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      margin-#{$left}: 0.5em;
-      vertical-align: -0.25em;
-      background-size: 112px 16px;
-      background-repeat: no-repeat;
-      background-image: url("/cobrands/fixmystreet/images/report-tools.svg");
-    }
-
-    &.abuse:after {
-      background-position: -96px 0;
-    }
-
-    &.feed:after {
-      background-position: -64px 0;
-    }
-
-    &.share:after {
-      background-position: -80px 0;
-    }
-
-    &.chevron:after {
-      background-position: flip(-16px 0, 0 0);
     }
 
     &.offline:after {
@@ -1032,7 +1000,26 @@ html.mobile.js-nav-open #js-menu-open-modal {
   }
 }
 
+#key-tools-mobile {
+  padding: 0 1em;
+  li {
+    flex: 1;
+
+    a, button {
+      border-radius:4px;
+      border: 1px solid #ccc;
+    }
+  }
+}
+
+#key-tools {
+  html.js & {
+    display: none;
+  }
+}
+
 #report-updates-data {
+  box-sizing: border-box;
   img {
     float: $right;
   }
@@ -1044,6 +1031,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
 }
 
 #report-share {
+  box-sizing: border-box;
   .btn {
     padding-#{$left}: 1.5em;
     padding-#{$right}: 1.5em;
@@ -1794,7 +1782,6 @@ input.final-submit {
 }
 
 .problem-back {
-  display: block;
   font-size: 1em;
   line-height: 1.2em;
   margin: -1em -1em 1em -1em;
@@ -1805,19 +1792,6 @@ input.final-submit {
   &:visited,
   &:hover {
     color: #666;
-  }
-
-  &:before {
-    content: "";
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    margin-#{$right}: 0.5em;
-    vertical-align: -0.15em;
-    background-size: 112px 16px;
-    background-repeat: no-repeat;
-    background-image: url("/cobrands/fixmystreet/images/report-tools.svg");
-    background-position: flip(0 0, -16px 0);
   }
 }
 .problem-back--top {
