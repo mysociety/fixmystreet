@@ -1118,8 +1118,6 @@ subtest 'check attribute ordering' => sub {
         },
     ];
 
-    $contact->discard_changes;
-
     is_deeply $contact->get_extra_fields, $extra, 'meta data re-ordered correctly';
 };
 
@@ -1225,8 +1223,6 @@ subtest 'check Bromley skip code' => sub {
             description => 'Right of way reference'
     } ];
 
-    $contact->discard_changes;
-
     is_deeply $contact->get_extra_fields, $extra, 'only non std bromley meta data saved';
 
     FixMyStreet::override_config {
@@ -1276,8 +1272,6 @@ subtest 'check Bromley skip code' => sub {
             description => 'Easting',
         },
     ];
-
-    $contact->discard_changes;
 
     is_deeply $contact->get_extra_fields, $extra, 'all meta data saved for non bromley';
 };
@@ -1348,7 +1342,6 @@ subtest 'check Buckinghamshire extra code' => sub {
         ],
     } ];
 
-    $contact->discard_changes;
     is_deeply $contact->get_extra_fields, $extra, 'extra Bucks field returned for flytipping';
 
     $processor->_current_service( { service_code => 100, service_name => 'Street lights' } );
@@ -1365,7 +1358,6 @@ subtest 'check Buckinghamshire extra code' => sub {
         description => 'Type of bin'
     } ];
 
-    $contact->discard_changes;
     is_deeply $contact->get_extra_fields, $extra, 'no extra Bucks field returned otherwise';
 };
 

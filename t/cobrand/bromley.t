@@ -618,7 +618,6 @@ for my $test (
         };
         $processor->_current_service( { service_code => $test->{code}, service_name => 'Lamp on during day' } );
         $processor->_add_meta_to_contact( $contact );
-        $contact->discard_changes;
         my @extra_fields = $contact->get_extra_fields;
         is $extra_fields[0][2]->{code}, $test->{result}, $test->{description};
     };
