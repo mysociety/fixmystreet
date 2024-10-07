@@ -150,11 +150,16 @@ sub _handle_existing_contact {
     print $self->_current_body->id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n" if $self->verbose >= 2;
 
     my @actions;
-    if ( $contact->state eq 'deleted' || $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
+    if ( $contact->state eq 'deleted' ) {
         $contact->category($service_name) unless $protected;
         $contact->email($self->_current_service->{service_code});
+        $contact->send_method(undef); # Let us assume we want to remove any devolved send method in this case
         $contact->state('confirmed');
         push @actions, "undeleted";
+    } elsif ( $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
+        $contact->category($service_name) unless $protected;
+        $contact->email($self->_current_service->{service_code});
+        push @actions, "updated";
     }
 
     my $metadata = $self->_current_service->{metadata} || '';
