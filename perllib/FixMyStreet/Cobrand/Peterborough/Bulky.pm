@@ -39,6 +39,12 @@ a bulky waste collection
 
 sub max_bulky_collection_dates       {2}
 
+=item * Max length of location details text is 250 characters
+
+=cut
+
+sub location_max_length {250}
+
 =item * Bulky workpack name is of the form 'Waste-BULKY WASTE-<date>' or
 'Waste-WHITES-<date>'
 

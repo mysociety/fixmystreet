@@ -302,6 +302,18 @@ sub validate {
         }
     }
 
+    if ( $self->current_page->name eq 'location' ) {
+        my $maxlength
+            = $self->c->cobrand->call_hook('location_max_length');
+
+        my $location_field = $self->field('location');
+
+        if ( $maxlength && length $location_field->value > $maxlength ) {
+            $location_field->add_error(
+                "Text cannot be longer than $maxlength characters");
+        }
+    }
+
     if ($self->current_page->name eq 'add_items') {
         my $max_items = $self->c->cobrand->bulky_items_maximum;
         my %given;
