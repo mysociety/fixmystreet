@@ -26,6 +26,8 @@ sub string {
     my ( $cls, $s, $c ) = @_;
 
     my $params = $c->cobrand->disambiguate_location($s);
+    return $params->{result} if $params->{result};
+
     # Allow cobrand to fixup the user input
     $s = $params->{string} if $params->{string};
 

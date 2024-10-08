@@ -64,10 +64,19 @@ sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
 
+    if ($string =~ /victoria coach station|vcs/i) {
+        return { result => { latitude => 51.49228, longitude => -0.1488 } };
+    }
+
     return {
         %{ $self->SUPER::disambiguate_location() },
         town   => "London",
     };
+}
+
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+    $result->{display_name} =~ s/, London, Greater London, England//;
 }
 
 =item * We use OpenStreetMap for geocoding

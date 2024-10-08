@@ -53,9 +53,9 @@ sub send_alert_type {
                $item_table.confirmed as item_confirmed,
                $item_table.photo as item_photo,
                $item_table.problem_state as item_problem_state,
-               $item_table.cobrand as item_cobrand,
                $item_table.extra as item_extra,
                $item_table.private_email_text as item_private_email_text,
+               $head_table.cobrand as item_cobrand,
                $head_table.*
         from alert, $item_table, $head_table
             where alert.parameter::integer = $head_table.id
