@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
+use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Questionnaires;
@@ -704,6 +705,38 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('Trees (brown)');
     $contact5->update({ category => 'Trees' });
     $problem->delete;
+};
+
+subtest 'Test sending of updates' => sub {
+    my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test Report 1'});
+    my $update = $report->comments->first;
+    my $alert = $bromleyuser->alerts->create({
+        alert_type => 'new_updates',
+        parameter => $report->id,
+        whensubscribed => DateTime->now->subtract( hours => 2 ),
+        cobrand => 'fixmystreet',
+        confirmed => 1,
+    });
+
+    foreach (
+        { report => 'fixmystreet', update => '' },
+        { report => 'fixmystreet', update => 'tfl' },
+        { report => 'fixmystreet', update => 'fixmystreet' },
+        { report => 'tfl', update => '' },
+        { report => 'tfl', update => 'tfl' },
+    ) {
+        $report->update({ cobrand => $_->{report} });
+        $update->update({ cobrand => $_->{update} });
+        FixMyStreet::Script::Alerts::send_updates();
+        if ($_->{report} eq 'tfl') {
+            $mech->email_count_is(0);
+        } else {
+            my $text = $mech->get_text_body_from_email;
+            like $text, qr{Update text};
+            like $text, qr{report/@{[$report->id]}};
+        }
+        $alert->alerts_sent->delete;
+    }
 };
 
 subtest 'Inspect form state choices' => sub {

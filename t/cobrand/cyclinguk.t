@@ -164,10 +164,34 @@ subtest 'Admin users limited correctly' => sub {
 
 $mech->log_out_ok;
 
+$mech->create_comment_for_problem($problem2, $user2, $user2->name, 'This is a comment', 0, 'confirmed', 'confirmed');
+$staff->alerts->create({
+    alert_type => 'new_updates',
+    parameter => $problem2->id,
+    whensubscribed => DateTime->now->subtract( hours => 2 ),
+    cobrand => 'cyclinguk',
+    confirmed => 1,
+});
+$staff->alerts->create({
+    alert_type => 'new_updates',
+    parameter => $problem3->id,
+    whensubscribed => DateTime->now->subtract( hours => 2 ),
+    cobrand => 'cyclinguk',
+    confirmed => 1,
+});
+
 subtest 'Test alerts working okay' => sub {
     FixMyStreet::Script::Alerts::send_other();
     my $text = $mech->get_text_body_from_email;
     like $text, qr{report/@{[$problem->id]}};
+    unlike $text, qr{report/@{[$problem2->id]}};
+    like $text, qr{report/@{[$problem3->id]}};
+};
+
+subtest 'Test update alerts working okay' => sub {
+    FixMyStreet::Script::Alerts::send_updates();
+    my $text = $mech->get_text_body_from_email;
+    like $text, qr{This is a test comment};
     unlike $text, qr{report/@{[$problem2->id]}};
     like $text, qr{report/@{[$problem3->id]}};
 };
