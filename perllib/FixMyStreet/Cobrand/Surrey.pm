@@ -86,6 +86,24 @@ sub reopening_disallowed { 1 }
 
 sub allow_anonymous_reports { 'button' }
 
+=item * Do not allow email addresses in title or detail
+
+=back
+
+=cut
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    my $regex = Utils::email_regex;
+
+    if ($report->detail =~ /$regex/ || $report->title =~ /$regex/) {
+        $errors->{detail} = 'Please remove any email addresses and other personal information from your report';
+    }
+
+    return $errors;
+}
+
 =item * Anyone with a surreycc.gov.uk email shows up in the admin
 
 =cut

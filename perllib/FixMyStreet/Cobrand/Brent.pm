@@ -1562,12 +1562,11 @@ sub garden_waste_sacks_cost_pa {
 
 sub garden_waste_cost_pa {
     my ($self, $bin_count) = @_;
-
     $bin_count ||= 1;
+    my $per_bin_cost = $self->_get_cost('ggw_cost');
+    my $cost = $per_bin_cost * $bin_count;
 
-    my $cost = $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
     my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-
     if ($now->month =~ /^(10|11|12)$/ ) {
         $cost = $cost/2;
     }
@@ -1603,12 +1602,6 @@ sub apply_garden_waste_discount {
 }
 
 sub garden_waste_new_bin_admin_fee { 0 }
-
-sub waste_get_pro_rata_cost {
-    my $self = shift;
-
-    return $self->feature('payment_gateway')->{ggw_cost};
-}
 
 sub bulky_collection_time { { hours => 7, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59 } }

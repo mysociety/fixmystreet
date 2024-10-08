@@ -216,8 +216,12 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
     padding: 0;
 }
 
+.btn {
+    @include button-variant($focus-bg-bottom: #e6f2f8, $focus-bg-top: #e6f2f8);
+}
+
 .btn--primary {
-    @include button-variant(#1a9ab8, #05617a, #05617a, #fff, #045369, #1a9ab8, #05617a, #fff);
+    @include button-variant($bg-top: #0078bb, $bg-bottom: #006ba7, $border: #006ba7, $text: #fff, $hover-bg-bottom: #0078bb, $hover-bg-top: #006ba7, $hover-border: #006ba7, $hover-text: #fff, $focus-bg-bottom: #0078bb, $focus-bg-top: #006ba7, $focus-border: #006ba7, $focus-text: #fff);
 }
 
 .postcode-form-box label {
@@ -227,6 +231,14 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
 
 .mobile .postcode-form-box label {
     padding-top: 0;
+}
+
+#geolocate_link {
+    margin-top: 2em !important;
+}
+
+.mobile #geolocate_link {
+    margin-top: 15px !important;
 }
 
 #pc-hint {

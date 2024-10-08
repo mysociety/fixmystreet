@@ -362,12 +362,6 @@ sub garden_container_data_extract {
 # We don't have overdue renewals here
 sub waste_sub_overdue { 0 }
 
-# Same as full cost
-sub waste_get_pro_rata_cost {
-    my ($self, $bins, $end) = @_;
-    return $self->garden_waste_cost_pa($bins);
-}
-
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};

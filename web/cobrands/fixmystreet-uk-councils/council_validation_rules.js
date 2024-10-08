@@ -106,5 +106,15 @@ body_validation_rules = {
             maxlength: 20
         }
     },
-    'Southwark Council': confirm_validation_rules
+    'Southwark Council': confirm_validation_rules,
+    'Surrey County Council': {
+      title: {
+          required: true,
+          notEmail: true
+      },
+      detail: {
+          required: true,
+          notEmail: true
+      }
+  }
 };

@@ -92,6 +92,20 @@ FixMyStreet::override_config {
             $json = $mech->get_ok_json('/around?ajax=1&bbox=-0.45869262976076,51.28481314324,-0.42367370886232,51.302390882532');
             is_deeply($json->{pins}, [], 'Borough problem is excluded from Surrey cobrand');
         };
+
+    subtest 'Get error when email included in report' => sub {
+        $mech->get_ok('/report/new?longitude=-0.441269&latitude=51.293415');
+        $mech->submit_form_ok({ with_fields => { category => 'Potholes', title => 'Potholes', detail => 'On main road', name => 'Bob Betts', username_register => 'user@example.org' } });
+        $mech->content_contains('Click the link in our confirmation email to publish your problem', 'Detail field without email proceeds normally');
+        $mech->get_ok('/report/new?longitude=-0.441269&latitude=51.293415');
+        $mech->submit_form_ok({ with_fields => { category => 'Potholes', title => 'Potholes', detail => 'On main road. Contact me at user@example.org', name => 'Bob Betts', username_register => 'user@example.org' } });
+        $mech->content_contains("<p class='form-error'>Please remove any email addresses and other personal information from your report", "Report detail with email gives error");
+        $mech->get_ok('/report/new?longitude=-0.441269&latitude=51.293415');
+        $mech->submit_form_ok({ with_fields => { category => 'Potholes', title => 'Potholes contact me me@me.co.uk', detail => 'On main road', name => 'Bob Betts', username_register => 'user@example.org' } });
+        $mech->content_contains("<p class='form-error'>Please remove any email addresses and other personal information from your report", "Report title with email gives error");
+        $mech->clear_emails_ok;
+    };
+
 };
 
 

@@ -972,6 +972,12 @@ sub garden_waste_cost_pa {
     return $cost;
 }
 
+# Same as full cost
+sub waste_get_pro_rata_cost {
+    my ($self, $bins, $end) = @_;
+    return $self->garden_waste_cost_pa($bins);
+}
+
 =head2 garden_waste_cost_pa_in_one_month
 
 Returns the cost of garden waste in one month, if it differs from the usual

@@ -56,6 +56,7 @@ create_contact({ category => 'Amend Garden Subscription', email => 'garden@examp
     { code => 'System Notes', required => 0, automated => 'hidden_field' },
     { code => 'Paid_Collection_Container_Quantity', required => 1, automated => 'hidden_field' },
     { code => 'Payment_Value', required => 1, automated => 'hidden_field' },
+    { code => 'pro_rata', required => 0, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
     { code => 'email_renewal_reminders_opt_in', required => 0, automated => 'hidden_field' },
@@ -663,11 +664,13 @@ FixMyStreet::override_config {
             'bins_wanted' => 3,
             'container_type' => 1,
             'container_quantity' => 1,
+            cost => 2500,
         },
         {
             'bins_wanted' => 4,
             'container_type' => 1,
             'container_quantity' => 2,
+            cost => 5000,
         },
         {
             'bins_wanted' => 1,
@@ -689,9 +692,26 @@ FixMyStreet::override_config {
                 email => $user->email
                 } }, 'Request '. $test->{bins_wanted} . ' bins when currently have 2');
             $mech->submit_form_ok({ with_fields => { tandc => 1 }}, 'Submit request');
+
             my $report = FixMyStreet::DB->resultset('Problem')->find({category => 'Amend Garden Subscription'});
-            is($report->get_extra_field_value('Container_Type'), $test->{container_type}, $test->{container_type} ? "Container Type is set to request delivery" : "Container Type is not set");
-            is($report->get_extra_field_value('Container_Quantity'), $test->{container_quantity}, "Container Quantity is " . ($test->{container_quantity} ? $test->{container_quantity} : 'not set'));
+            my %check = (
+                type => 'Amend',
+                category => 'Amend Garden Subscription',
+                quantity => $test->{bins_wanted},
+                new_quantity => $test->{container_quantity},
+                new_bin_type => $test->{container_type},
+                bin_type => undef,
+                ref_type => 'apn',
+            );
+            if ($test->{bins_wanted} > 2) {
+                is $mech->res->previous->code, 302, 'payments issues a redirect';
+                is $mech->res->previous->header('Location'), 'http://paye.example.org/faq?apnReference=4ab5f886-de7d-4f5b-bbd8-42151a5deb82', "redirects to payment gateway";
+                is $sent_params->{items}[0]{amount}, $test->{cost}, 'correct amount used';
+                check_extra_data_pre_confirm($report, %check);
+            } else {
+                check_extra_data_pre_confirm($report, %check, state => 'confirmed', payment_method => 'csc');
+            }
+
             $report->delete;
         };
     };
@@ -871,10 +891,11 @@ sub check_extra_data_pre_confirm {
         new_quantity => '',
         new_bin_type => '',
         ref_type => 'scp',
+        category => 'Garden Subscription',
         @_
     );
     $report->discard_changes;
-    is $report->category, 'Garden Subscription', 'correct category on report';
+    is $report->category, $params{category}, 'correct category on report';
     is $report->title, "Garden Subscription - $params{type}", 'correct title on report';
     is $report->get_extra_field_value('payment_method'), $params{payment_method}, 'correct payment method on report';
     is $report->get_extra_field_value('Paid_Collection_Container_Quantity'), $params{quantity}, 'correct bin count';

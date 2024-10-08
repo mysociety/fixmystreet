@@ -61,6 +61,8 @@
         - Reduce database queries on shortlist page.
         - Provide ResultSet fallback translation in lookup.
         - Mark non-Open311 updates as processed by daemon. #4552
+        - Inspector/planned offline report caching now fetches URLs sequentially, not in parallel.
+        - Desktop browsers won't automatically cache reports offline when visiting /my/planned.
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
         - Convert all uploaded images to JPEGs.

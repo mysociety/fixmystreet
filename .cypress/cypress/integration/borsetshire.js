@@ -18,7 +18,9 @@ it('logs in without fuss', function() {
     cy.contains('Inspector').click();
     cy.url().should('include', '/my/planned');
     // Wait for offline stuff, which can take time
+    cy.contains('Save to this device for offline use').should('be.visible').click();
     cy.get('.top_banner--offline', { timeout: 10000 }).contains('Reports saved offline', { timeout: 10000 });
+    cy.contains('Save to this device for offline use').should('not.be.visible');
 
     cy.contains('Your account').click();
     cy.contains('Sign out').click();
