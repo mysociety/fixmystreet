@@ -74,7 +74,6 @@ subtest 'check Warwickshire override' => sub {
         description => 'How big is the pothole',
     } ];
 
-    $contact->discard_changes;
     is_deeply $contact->get_extra_fields, $extra, 'No closest_address field returned for Warks';
     is $contact->get_extra_metadata('id_field'), 'external_id', 'id_field set correctly';
 };

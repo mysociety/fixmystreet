@@ -84,6 +84,7 @@ subtest 'check services override' => sub {
     };
     $processor->_current_service( { service_code => 'HOLE' } );
     $processor->_add_meta_to_contact( $contact );
+    $contact->update;
 
     my $extra = [ {
         automated => 'server_set',
@@ -102,7 +103,6 @@ subtest 'check services override' => sub {
         description => 'How big is the pothole',
     } ];
 
-    $contact->discard_changes;
     is_deeply $contact->get_extra_fields, $extra, 'Easting has automated set';
 };
 

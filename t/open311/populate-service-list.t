@@ -671,6 +671,39 @@ subtest 'check existing inactive category does not get marked active' => sub {
     is $contact->state, 'inactive', 'contact remains inactive';
 };
 
+subtest 'check existing category gets marked as staff' => sub {
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+    is $contact->state, 'inactive', 'contact marked as inactive';
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>100</service_code>
+        <service_name>Cans left out 24x7</service_name>
+        <description>Garbage or recycling cans that have been left out for more than 24 hours after collection. Violators will be cited.</description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>staff</keywords>
+        <group>sanitation</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    my $processor = Open311::PopulateServiceList->new();
+    $processor->_current_body( $body );
+    $processor->process_services( $service_list );
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    $contact->discard_changes;
+    is $contact->email, '100', 'email correct';
+    is $contact->category, 'Cans left out 24x7', 'category correct';
+    is $contact->state, 'staff', 'contact is staff';
+};
+
 for my $test (
     {
         desc => 'check meta data added to existing contact',
@@ -1118,8 +1151,6 @@ subtest 'check attribute ordering' => sub {
         },
     ];
 
-    $contact->discard_changes;
-
     is_deeply $contact->get_extra_fields, $extra, 'meta data re-ordered correctly';
 };
 
@@ -1225,8 +1256,6 @@ subtest 'check Bromley skip code' => sub {
             description => 'Right of way reference'
     } ];
 
-    $contact->discard_changes;
-
     is_deeply $contact->get_extra_fields, $extra, 'only non std bromley meta data saved';
 
     FixMyStreet::override_config {
@@ -1276,8 +1305,6 @@ subtest 'check Bromley skip code' => sub {
             description => 'Easting',
         },
     ];
-
-    $contact->discard_changes;
 
     is_deeply $contact->get_extra_fields, $extra, 'all meta data saved for non bromley';
 };
@@ -1348,7 +1375,6 @@ subtest 'check Buckinghamshire extra code' => sub {
         ],
     } ];
 
-    $contact->discard_changes;
     is_deeply $contact->get_extra_fields, $extra, 'extra Bucks field returned for flytipping';
 
     $processor->_current_service( { service_code => 100, service_name => 'Street lights' } );
@@ -1365,7 +1391,6 @@ subtest 'check Buckinghamshire extra code' => sub {
         description => 'Type of bin'
     } ];
 
-    $contact->discard_changes;
     is_deeply $contact->get_extra_fields, $extra, 'no extra Bucks field returned otherwise';
 };
 

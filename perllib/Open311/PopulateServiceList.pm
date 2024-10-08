@@ -149,28 +149,22 @@ sub _handle_existing_contact {
 
     print $self->_current_body->id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n" if $self->verbose >= 2;
 
-    if ( $contact->state eq 'deleted' || $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
-        eval {
-            $contact->update(
-                {
-                    $protected ? () : (category => $service_name),
-                    email => $self->_current_service->{service_code},
-                    state => 'confirmed',
-                    %{ $self->_action_params("undeleted") },
-                }
-            );
-        };
-
-        if ( $@ ) {
-            warn "Failed to update contact for service code " . $self->_current_service->{service_code} . " for body @{[$self->_current_body->id]}: $@\n"
-                if $self->verbose >= 1;
-            return;
-        }
+    my @actions;
+    if ( $contact->state eq 'deleted' ) {
+        $contact->category($service_name) unless $protected;
+        $contact->email($self->_current_service->{service_code});
+        $contact->send_method(undef); # Let us assume we want to remove any devolved send method in this case
+        $contact->state('confirmed');
+        push @actions, "undeleted";
+    } elsif ( $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
+        $contact->category($service_name) unless $protected;
+        $contact->email($self->_current_service->{service_code});
+        push @actions, "updated";
     }
 
     my $metadata = $self->_current_service->{metadata} || '';
     if ( $contact and lc($metadata) eq 'true' ) {
-        $self->_add_meta_to_contact( $contact );
+        push @actions, $self->_add_meta_to_contact( $contact );
     } elsif ( $contact and $contact->extra and lc($metadata) eq 'false' ) {
         # check if there are any protected fields that we should not delete
         my @meta = (
@@ -178,13 +172,21 @@ sub _handle_existing_contact {
             @{ $contact->get_extra_fields }
         );
         $contact->set_extra_fields(@meta);
-        $contact->update;
+        push @actions, "removed extra fields" if $contact->is_column_changed('extra');
     }
 
-    $self->_set_contact_group($contact) unless $protected;
-    $self->_set_contact_non_public($contact);
-    $self->_set_contact_as_waste($contact);
-    $self->_set_contact_inactive($contact);
+    push @actions, $self->_set_contact_group($contact) unless $protected;
+    push @actions, $self->_set_contact_from_keywords($contact);
+
+    eval {
+        my $action = join("; ", grep { $_ } @actions);
+        $contact->update($self->_action_params($action)) if $action;
+    };
+    if ( $@ ) {
+        warn "Failed to update contact for service code " . $self->_current_service->{service_code} . " for body @{[$self->_current_body->id]}: $@\n"
+            if $self->verbose >= 1;
+        return;
+    }
 
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 }
@@ -194,39 +196,36 @@ sub _create_contact {
 
     my $service_name = $self->_normalize_service_name;
 
-    my $contact;
-    eval {
-        $contact = $self->schema->resultset('Contact')->create(
-            {
-                email => $self->_current_service->{service_code},
-                body_id => $self->_current_body->id,
-                category => $service_name,
-                state => 'confirmed',
-                %{ $self->_action_params("created") },
-            }
-        );
-    };
+    my @actions = ("created");
+    my $contact = $self->schema->resultset('Contact')->new({
+        email => $self->_current_service->{service_code},
+        body_id => $self->_current_body->id,
+        category => $service_name,
+        state => 'confirmed',
+        %{ $self->_action_params("created") },
+    });
 
+    my $metadata = $self->_current_service->{metadata} || '';
+    if ( $contact and lc($metadata) eq 'true' ) {
+        push @actions, $self->_add_meta_to_contact( $contact );
+    }
+
+    push @actions, $self->_set_contact_group($contact);
+    push @actions, $self->_set_contact_from_keywords($contact);
+
+    eval {
+        my $action = join("; ", grep { $_ } @actions);
+        $contact->note("$action automatically by script");
+        $contact->insert;
+    };
     if ( $@ ) {
         warn "Failed to create contact for service code " . $self->_current_service->{service_code} . " for body @{[$self->_current_body->id]}: $@\n"
             if $self->verbose >= 1;
         return;
     }
 
-    my $metadata = $self->_current_service->{metadata} || '';
-    if ( $contact and lc($metadata) eq 'true' ) {
-        $self->_add_meta_to_contact( $contact );
-    }
-
-    $self->_set_contact_group($contact);
-    $self->_set_contact_non_public($contact);
-    $self->_set_contact_as_waste($contact);
-    $self->_set_contact_inactive($contact);
-
-    if ( $contact ) {
-        push @{ $self->found_contacts }, $self->_current_service->{service_code};
-        print "created contact for service code " . $self->_current_service->{service_code} . " for body @{[$self->_current_body->id]}\n" if $self->verbose >= 2;
-    }
+    push @{ $self->found_contacts }, $self->_current_service->{service_code};
+    print "created contact for service code " . $self->_current_service->{service_code} . " for body @{[$self->_current_body->id]}\n" if $self->verbose >= 2;
 }
 
 sub _add_meta_to_contact {
@@ -283,7 +282,7 @@ sub _add_meta_to_contact {
         open311_contact_meta_override => $self->_current_service, $contact, \@meta);
 
     $contact->set_extra_fields(@meta);
-    $contact->update;
+    return "updated extra fields" if $contact->is_column_changed('extra');
 }
 
 sub _normalize_service_name {
@@ -310,60 +309,51 @@ sub _set_contact_group {
     if ($self->_groups_different($old_group, $new_group)) {
         if (@$new_group) {
             $contact->set_extra_metadata(group => @$new_group == 1 ? $new_group->[0] : $new_group);
-            $contact->update( $self->_action_params("group updated") );
+            return 'group updated';
         } else {
             $contact->unset_extra_metadata('group');
-            $contact->update( $self->_action_params("group removed") );
+            return 'group removed';
         }
     }
 }
 
-sub _set_contact_non_public {
-    my ($self, $contact) = @_;
-
-    # We never want to make a private category unprivate.
-    return if $contact->non_public;
-
-    my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
-    $contact->update({
-        non_public => 1,
-        %{ $self->_action_params("marked private") },
-    }) if $keywords{private};
-}
-
-sub _set_contact_inactive {
-    my ($self, $contact) = @_;
-
-    # We never want to make an inactive category active
-    return if $contact->state eq 'inactive';
-
-    my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
-    $contact->update({
-        state => 'inactive',
-        %{ $self->_action_params('marked inactive') },
-    }) if $keywords{inactive};
-}
-
-sub _set_contact_as_waste {
+sub _set_contact_from_keywords {
     my ($self, $contact) = @_;
 
     my %keywords = map { $_ => 1 } split /,/, ( $self->_current_service->{keywords} || '' );
+    my @actions;
+
+    # These are only one way, we don't e.g. unhide if private keyword goes
+    # missing, or mark confirmed if stops being marked inactive/staff - can be
+    # fixed manually
+    if (!$contact->non_public && $keywords{private}) {
+        $contact->non_public(1);
+        push @actions, 'marked private';
+    }
+
+    if ($contact->state ne 'inactive' && $keywords{inactive}) {
+        $contact->state('inactive');
+        push @actions, 'marked inactive';
+    }
+
+    if ($contact->state ne 'staff' && $keywords{staff}) {
+        $contact->state('staff');
+        push @actions, 'marked staff';
+    }
+
     my $waste_only = $keywords{waste_only} ? 1 : 0;
     my $type = $contact->get_extra_metadata('type', '') eq 'waste';
-
-    return if $waste_only == $type; # If the same, nothing to do
-
-    if ($waste_only) { # Newly waste
-        $contact->set_extra_metadata(type => 'waste');
-        $contact->update({
-            %{ $self->_action_params("set type to 'waste'") },
-        });
-    } else { # No longer waste
-        $contact->unset_extra_metadata('type');
-        $contact->update({
-            %{ $self->_action_params("removed 'waste' type") },
-        });
+    if ($waste_only != $type) { # If the same, nothing to do
+        if ($waste_only) { # Newly waste
+            $contact->set_extra_metadata(type => 'waste');
+            push @actions, "set type to 'waste'";
+        } else { # No longer waste
+            $contact->unset_extra_metadata('type');
+            push @actions, "removed 'waste' type";
+        }
     }
+
+    return @actions;
 }
 
 sub _get_new_groups {

@@ -164,7 +164,6 @@ subtest 'check services override' => sub {
         description => 'How big is the pothole',
     } ];
 
-    $open311_contact->discard_changes;
     is_deeply $open311_contact->get_extra_fields, $extra, 'Easting has automated set';
 };
 

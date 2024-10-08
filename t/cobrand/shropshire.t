@@ -163,7 +163,6 @@ subtest 'check open311_contact_meta_override' => sub {
     };
     $processor->_current_service( { service_code => 100, service_name => 'Abandoned vehicle' } );
     $processor->_add_meta_to_contact( $contact );
-    $contact->discard_changes;
     my @extra_fields = $contact->get_extra_fields;
 
     is $extra_fields[0][0]->{fieldtype}, 'date', "added fieldtype 'date' to 'Abandoned since'";
