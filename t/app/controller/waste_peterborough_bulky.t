@@ -1328,7 +1328,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Items must be out for collection by', 'Lacks Kingston/Sutton extra text');
         $mech->submit_form_ok({ with_fields => { location => ( 'a' x 251 ) } });
         $mech->content_contains(
-            'Text cannot be longer than 250 characters',
+            'Field should not exceed 250 characters',
             'Error for location that is too long',
         );
         $mech->submit_form_ok({ with_fields => { location => '' } });

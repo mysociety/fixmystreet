@@ -43,7 +43,7 @@ sub max_bulky_collection_dates       {2}
 
 =cut
 
-sub location_max_length {250}
+sub bulky_location_max_length {250}
 
 =item * Bulky workpack name is of the form 'Waste-BULKY WASTE-<date>' or
 'Waste-WHITES-<date>'

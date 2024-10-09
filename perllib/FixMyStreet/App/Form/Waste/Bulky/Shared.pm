@@ -53,6 +53,11 @@ has_page location => (
             $fields->{location}{label} = 'Please tell us where you will place the items for collection (include any access codes the crew will need)';
             $fields->{location}{tags}{hint} = 'For example, ‘On the driveway’';
         }
+
+        my $maxlength
+            = $form->c->cobrand->call_hook('bulky_location_max_length');
+        $fields->{location}{maxlength} = $maxlength if $maxlength;
+
         return $fields;
     },
 );
@@ -299,18 +304,6 @@ sub validate {
             $self->field('chosen_date')
                 ->add_error('Available dates field is required')
                 if !$self->field('chosen_date')->value;
-        }
-    }
-
-    if ( $self->current_page->name eq 'location' ) {
-        my $maxlength
-            = $self->c->cobrand->call_hook('location_max_length');
-
-        my $location_field = $self->field('location');
-
-        if ( $maxlength && length $location_field->value > $maxlength ) {
-            $location_field->add_error(
-                "Text cannot be longer than $maxlength characters");
         }
     }
 
