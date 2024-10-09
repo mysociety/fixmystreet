@@ -53,6 +53,11 @@ has_page location => (
             $fields->{location}{label} = 'Please tell us where you will place the items for collection (include any access codes the crew will need)';
             $fields->{location}{tags}{hint} = 'For example, ‘On the driveway’';
         }
+
+        my $maxlength
+            = $form->c->cobrand->call_hook('bulky_location_max_length');
+        $fields->{location}{maxlength} = $maxlength if $maxlength;
+
         return $fields;
     },
 );
