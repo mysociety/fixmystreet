@@ -1,1 +1,4 @@
 [% PROCESS 'waste/_service_missed.html' %]
+[% IF unit.allows_delivery || unit.allows_removal %]
+  [% PROCESS 'waste/_services_request.html' %]
+[% END %]

@@ -368,6 +368,9 @@ sub bin_services_for_address {
             uprn => $uprn,
         };
 
+        $self->_set_container_request_eligibility( $property,
+            $filtered_service );
+
         if ($last_dt) {
             $filtered_service->{last} = {
                 date    => $last_dt,
@@ -1068,6 +1071,166 @@ HTML
         'RES-SACK' => {
             name        => 'Black Sack(s)',
             description => 'Non-recyclable waste',
+        },
+    };
+}
+
+sub _set_container_request_eligibility {
+    my ( $self, $property, $service ) = @_;
+
+    my $container_info
+        = _containers_for_requests()->{ $service->{service_name} };
+
+    # TODO When on the /request page, we need to make sure that blue & white
+    # recycling boxes are offered to any property with any kind of box
+    # (maroon etc.)
+    #
+    # This may apply to other containers too.
+
+    if ( $container_info ) {
+        $service->{allows_delivery} = 1 unless $container_info->{no_delivery};
+        $service->{allows_removal}  = 1 unless $container_info->{no_removal};
+
+        # Also offer lids if recycling box
+        $property->{can_order_lids} = 1
+            if $service->{round_schedule} =~ 'BOX'
+            && !$property->{can_order_lids};
+    }
+}
+
+sub _containers_for_requests {
+    return {
+        'Green Wheelie Bin' => {
+            subtitle => 'Non-recyclable waste',
+            subtypes => [
+                {   size_description    => 'Small 140 litre',
+                    service_item_name   => 'RES-140',
+                    service_id_delivery => '272',
+                    service_id_removal  => '205',
+                },
+                {   size_description    => 'Medium 180 litre',
+                    service_item_name   => 'RES-180',
+                    service_id_delivery => '273',
+                    service_id_removal  => '206',
+                },
+                {   size_description    => 'Large 240 litre',
+                    service_item_name   => 'RES-240',
+                    service_id_delivery => '274',
+                    service_id_removal  => '207',
+                },
+            ],
+        },
+        'Blue Lidded Wheelie Bin' => {
+            subtitle => 'Paper and card',
+            subtypes => [
+                {   size_description    => 'Small 140 litre',
+                    service_item_name   => 'PC-140',
+                    service_id_delivery => '325',
+                    service_id_removal  => '333',
+                },
+                {   size_description    => 'Medium 180 litre',
+                    service_item_name   => 'PC-180',
+                    service_id_delivery => '326',
+                    service_id_removal  => '334',
+                },
+                {   size_description    => 'Large 240 litre',
+                    service_item_name   => 'PC-240',
+                    service_id_delivery => '327',
+                    service_id_removal  => '335',
+                },
+            ],
+        },
+        'White Lidded Wheelie Bin' => {
+            subtitle => 'Plastics, cans and glass',
+            subtypes => [
+                {   size_description    => 'Small 140 litre',
+                    service_item_name   => 'PG-140',
+                    service_id_delivery => '329',
+                    service_id_removal  => '337',
+                },
+                {   size_description    => 'Medium 180 litre',
+                    service_item_name   => 'PG-180',
+                    service_id_delivery => '330',
+                    service_id_removal  => '338',
+                },
+                {   size_description    => 'Large 240 litre',
+                    service_item_name   => 'PG-240',
+                    service_id_delivery => '331',
+                    service_id_removal  => '339',
+                },
+            ],
+        },
+        'Brown Caddy' => {
+            subtitle => 'Food waste',
+            subtypes => [
+                {   service_item_name     => 'FO-23',
+                    service_item_delivery => '224',
+                    service_id_removal    => '156',
+                },
+            ],
+        },
+        'Kitchen Caddy' => {
+            subtitle   => 'Food waste',
+            no_removal => 1,
+            subtypes   => [
+                {   service_item_name     => 'Kitchen 5 Ltr Caddy',
+                    service_item_delivery => '235',
+                },
+            ],
+        },
+        'Green Recycling Box' => {
+            subtitle    => 'Paper and card',
+            no_delivery => 1,
+            subtypes    => [
+                {   service_item_name    => 'PA-55',
+                    service_item_removal => '181',
+                },
+            ],
+        },
+        'Maroon Recycling Box' => {
+            subtitle    => 'Plastics and cans',
+            no_delivery => 1,
+            subtypes    => [
+                {   service_item_name    => 'PL-55',
+                    service_item_removal => '192',
+                },
+            ],
+        },
+        'Black Recycling Box' => {
+            subtitle    => 'Glass bottles and jars',
+            no_delivery => 1,
+            subtypes    => [
+                {   service_item_name    => 'GL-55',
+                    service_item_removal => '166',
+                },
+            ],
+        },
+        'White Recycling Box' => {
+            subtitle => 'Plastics, cans and glass',
+            subtypes => [
+                {   service_item_name     => 'PG-55',
+                    service_item_delivery => '328',
+                    service_item_removal  => '336',
+                },
+            ],
+        },
+        'Blue Recycling Box' => {
+            subtitle => 'Paper and card',
+            subtypes => [
+                {   service_item_name     => 'PC-55',
+                    service_item_delivery => '324',
+                    service_item_removal  => '332',
+                },
+            ],
+        },
+        'Clear Sack(s)' => {
+            subtitle   => 'Mixed recycling',
+            no_removal => 1,
+            subtypes   => [
+                {   service_item_name     => 'MDR-SACK',
+                    service_item_delivery => '243',
+                },
+            ],
         },
     };
 }
