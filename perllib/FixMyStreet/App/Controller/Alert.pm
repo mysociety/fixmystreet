@@ -101,7 +101,11 @@ sub rss : Private {
     elsif ( $feed =~ /^local:([\d\.-]+):([\d\.-]+)$/ ) {
         my $distance = $c->forward('get_distance');
         $url = $c->cobrand->base_url() . '/rss/l/' . $1 . ',' . $2;
-        $url .= "/$distance" if $distance;
+        if ($distance) {
+            $distance = mySociety::Locale::in_gb_locale { sprintf("%f", $distance); };
+            $distance =~ s/\.?0+$//;
+            $url .= "/$distance";
+        }
         $c->res->redirect($url);
     }
     else {
@@ -544,10 +548,10 @@ sub setup_request : Private {
 sub get_distance : Private {
     my ($self, $c) = @_;
 
-    my $distance = $c->get_param('distance') || '';
-    $distance = 0 unless $distance =~ /^\d+$/;
+    my $distance = $c->get_param('distance') || 0;
+    $distance = 0 unless $distance =~ /^\d*([,.]\d+)?$/;
     $distance = 150 if $distance > 150; # Match Gaze maximum
-    return $distance;
+    return $distance + 0;
 }
 
 =head1 AUTHOR
