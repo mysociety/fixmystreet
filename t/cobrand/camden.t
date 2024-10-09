@@ -184,14 +184,14 @@ for my $test (
         result => 'shows only Camden and TfL categories',
         asset_returned => undef,
         location => '/report/new/ajax?latitude=51.529432&longitude=-0.124514',
-        categories => ['Abandoned yellow bike', 'Bus stops', 'Potholes', 'River Piers', 'River Piers - Cleaning', 'River Piers Damage doors and glass'],
+        categories => ['Abandoned yellow bike', 'Bus stops', 'Potholes', 'River Piers', 'River Piers - Cleaning', 'River Piers Damage doors and glass', 'Tree'],
     },
     {
         description =>  'reporting in Camden area, on boundary asset labelled Camden',
         result => 'shows only Camden and TfL categories',
         asset_returned => 'LB Camden',
         location => '/report/new/ajax?latitude=51.529432&longitude=-0.124514',
-        categories => ['Abandoned yellow bike', 'Bus stops', 'Potholes', 'River Piers', 'River Piers - Cleaning', 'River Piers Damage doors and glass'],
+        categories => ['Abandoned yellow bike', 'Bus stops', 'Potholes', 'River Piers', 'River Piers - Cleaning', 'River Piers Damage doors and glass', 'Tree'],
     },
     {
         description =>  'reporting in Camden area, on boundary asset labelled Barnet',
