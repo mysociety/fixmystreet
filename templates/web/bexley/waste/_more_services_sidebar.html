@@ -13,3 +13,14 @@
   <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/bulky-or-large-item-collections/arrange-bulky-or-large-item-collection">Arrange a bulky waste collection</a></li>
   <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/assisted-collections/help-putting-bins-out">Get help with putting your bins out</a></li>
 </ul>
+
+[% IF (c.user.from_body OR c.user.is_superuser) %]
+    <h3>Assisted collection</h3>
+    <ul>
+      [% IF property.has_assisted %]
+        <li>This property is set up for assisted collections.</li>
+      [% ELSE  %]
+        <li>This property is <strong>not</strong> set up for assisted collections.</li>
+      [% END %]
+    </ul>
+[% END %]
