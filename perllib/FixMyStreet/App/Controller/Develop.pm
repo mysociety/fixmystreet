@@ -241,6 +241,36 @@ sub alert_confirm_previewer : Path('/_dev/confirm_alert') : Args(1) {
     $c->stash->{template} = 'tokens/confirm_alert.html';
 }
 
+sub waste_confirmation : Path('/_dev/confirm_waste') : Args(1) {
+    my ( $self, $c, $confirm_type ) = @_;
+
+    my $category =
+        $confirm_type eq 'missed' ? 'Report missed collection'
+        : $confirm_type eq 'request' ? 'Request new container'
+        : $confirm_type eq 'bulky' ? 'Bulky collection'
+        : '';
+
+    my $report = $c->stash->{report} = FixMyStreet::DB->resultset("Problem")->new({
+        id => 123456,
+        category => $category,
+        user => { email => 'test@example.org' },
+        extra => {
+            # For bulky confirmation page
+            _fields => [
+                { name => 'Collection_Date', value => DateTime->now },
+                { name => 'DATE', value => DateTime->now },
+            ],
+        },
+    });
+    $c->stash->{reference} = 'payment-ref'; # For payment mention
+    $c->stash->{action} = 'new_subscription'; # Garden
+    $c->stash->{template} =
+        $confirm_type eq 'bulky' ? 'waste/bulky/confirmation.html'
+        : $confirm_type eq 'garden' ? 'waste/garden/subscribe_confirm.html'
+        : $confirm_type eq 'request-paid' ? 'waste/request_confirm.html'
+        : 'waste/confirmation.html';
+}
+
 =item contact_submit_previewer
 
 Displays the contact submission page, with success based on the

@@ -181,7 +181,7 @@ FixMyStreet::override_config {
 
         $mech->clear_emails_ok;
         $mech->get_ok($link);
-        $mech->content_contains('Your missed collection has been reported');
+        $mech->content_contains('Thank you for reporting a missed collection');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         FixMyStreet::Script::Reports::send();

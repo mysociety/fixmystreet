@@ -416,13 +416,28 @@ FixMyStreet::override_config {
                     schedule => 'Fortnightly',
                     %defaults,
                 },
+                {   id             => 10,
+                    service_id     => 'PL-940',
+                    service_name   => 'White / Silver Recycling Bin',
+                    service_description => 'Plastics and cans',
+                    round_schedule => 'RND-6 Wed Wk 2',
+                    round          => 'RND-6',
+                    report_allowed => 1,
+                    report_open    => 0,
+                    report_locked_out => 0,
+                    report_locked_out_reason => '',
+                    assisted_collection => 0,
+                    schedule => 'Fortnightly',
+                    %defaults,
+                },
             ];
 
             my %expected_last_dates = (
-                8 => '2024-03-28T00:00:00',
-                9 => '2024-03-28T00:00:00',
-                1 => '2024-03-24T00:00:00',
-                6 => '2024-03-27T00:00:00',
+                8  => '2024-03-28T00:00:00',
+                9  => '2024-03-28T00:00:00',
+                1  => '2024-03-24T00:00:00',
+                6  => '2024-03-27T00:00:00',
+                10 => '2024-03-27T00:00:00',
             );
             for (@sorted) {
                 is $_->{last}{date}, $expected_last_dates{ $_->{id} };
@@ -449,6 +464,8 @@ FixMyStreet::override_config {
         $mech->content_lacks('Black Recycling Box');
         $mech->content_contains('Communal Refuse Bin(s)');
         $mech->content_contains('Wednesday 1 May 2024');
+        $mech->content_contains('White / Silver Recycling Bin');
+        $mech->content_contains('Wednesday 1 May 2024');
         $mech->content_lacks('Blue Lidded Wheelie Bin');
         $mech->content_contains('Blue Recycling Box');
         $mech->content_contains('Monday 1 April 2024');
@@ -463,7 +480,7 @@ FixMyStreet::override_config {
         my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
         shift @events; # Header
 
-        my $expected_num = 20;
+        my $expected_num = 24;
         is @events, $expected_num, "$expected_num events in calendar";
 
         my $i = 0;
@@ -472,6 +489,7 @@ FixMyStreet::override_config {
             $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Green Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240402/ && /SUMMARY:Communal Food Bin/;
             $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Communal Refuse Bin\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:White \/ Silver Recycling Bin/;
             $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Green Recycling Box/;
 
@@ -484,15 +502,18 @@ FixMyStreet::override_config {
             $i++ if /DTSTART;VALUE=DATE:20240415/ && /SUMMARY:Green Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240416/ && /SUMMARY:Communal Food Bin/;
             $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Communal Refuse Bin\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:White \/ Silver Recycling Bin/;
             $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240417/ && /SUMMARY:Green Recycling Box/;
 
             $i++ if /DTSTART;VALUE=DATE:20240501/ && /SUMMARY:Communal Refuse Bin\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240501/ && /SUMMARY:White \/ Silver Recycling Bin/;
 
             $i++ if /DTSTART;VALUE=DATE:20240506/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240506/ && /SUMMARY:Green Recycling Box/;
 
             $i++ if /DTSTART;VALUE=DATE:20240515/ && /SUMMARY:Communal Refuse Bin\(s\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240515/ && /SUMMARY:White \/ Silver Recycling Bin/;
         }
         is $i, $expected_num, 'Correct events in the calendar';
     };
@@ -689,10 +710,18 @@ FixMyStreet::override_config {
     };
 
     subtest 'Making a missed collection report' => sub {
+        $mech->delete_problems_for_body( $body->id );
+
         $mech->get_ok('/waste/10001/report');
         $mech->submit_form_ok(
-            { with_fields => { extra_detail => 'Front boundary of property', 'service-RES-CHAM' => 1 } },
-            'Selecting missed collection for clear sacks');
+            {   with_fields => {
+                    extra_detail       => 'Front boundary of property',
+                    'service-RES-CHAM' => 1,
+                    'service-PL-940'   => 1,
+                }
+            },
+            'Selecting missed collection for multiple container types',
+        );
         $mech->submit_form_ok(
             { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },
             'Submitting contact details');
@@ -700,16 +729,33 @@ FixMyStreet::override_config {
             { with_fields => { submit => 'Report collection as missed', category => 'Report missed collection' } },
             'Submitting missed collection report');
 
-        $mech->content_contains('Missed collection has been reported');
+        $mech->content_contains('Thank you for reporting a missed collection');
+        for (
+            'Communal Refuse Bin(s) (Non-recyclable waste)',
+            'White / Silver Recycling Bin (Plastics and cans)'
+            )
+        {
+            $mech->content_contains( "<li>$_</li>", 'Bin type displayed' );
+        }
+        $mech->content_contains( 'Flat, 98a-99b, The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP', 'Address displayed' );
+        $mech->content_contains(
+            'Our waste contractor will return',
+            'Additional message displayed',
+        );
 
-        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-
-        ok $report->confirmed;
-        is $report->state, 'confirmed';
-        is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
-        is $report->get_extra_field_value('service_item_name'), 'RES-CHAM', 'Service item name is correct';
-        is $report->get_extra_field_value('assisted_yn'), 'No', 'Assisted collection is correct';
-        is $report->get_extra_field_value('location_of_containers'), 'Front boundary of property', 'Location of containers is correct';
+        my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
+        my @service_item_names;
+        while ( my $report = $rows->next ) {
+            ok $report->confirmed;
+            is $report->state, 'confirmed';
+            is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+            is $report->get_extra_field_value('assisted_yn'), 'No', 'Assisted collection is correct';
+            is $report->get_extra_field_value('location_of_containers'), 'Front boundary of property', 'Location of containers is correct';
+            push @service_item_names, $report->get_extra_field_value('service_item_name');
+        }
+        cmp_deeply \@service_item_names,
+            [ 'PL-940', 'RES-CHAM' ],
+            'Service item names are correct';
     };
 
     subtest 'Missed collection reports are made against the parent property' => sub {
@@ -846,7 +892,9 @@ FixMyStreet::override_config {
             },
             'Submitting missed collection report'
         );
-        $mech->content_contains('Missed collection has been reported');
+        $mech->content_contains('Thank you for reporting a missed collection');
+        $mech->content_contains( '<li>Brown Caddy (Food waste)</li>', 'Bin type displayed' );
+
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         my $email;
@@ -1566,6 +1614,18 @@ sub _site_collections {
                 ServiceItemName        => 'CW-SACK',
 
                 NextCollectionDate   => '2024-04-01T00:00:00',
+            },
+
+            # Has same dates and schedule as RES-CHAM above
+            {   SiteServiceID          => 10,
+                ServiceItemDescription => 'Service 10',
+                ServiceItemName => 'PL-940', # White / Silver Recycling Bin
+
+                NextCollectionDate   => '2024-05-01T00:00:00',
+                SiteServiceValidFrom => '2024-03-31T00:59:59',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                RoundSchedule => 'RND-6 Wed Wk 2',
             },
         ],
         10003 => [

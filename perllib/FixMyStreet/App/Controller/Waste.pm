@@ -840,6 +840,8 @@ sub group_reports {
     my $report = shift @reports;
     if (@reports) {
         $report->set_extra_metadata(grouped_ids => [ map { $_->id } @reports ]);
+        $report->set_extra_metadata(
+            grouped_titles => [ map { $_->title } @reports ] );
         $report->update;
     }
     $c->stash->{report} = $report;
