@@ -50,29 +50,6 @@ sub new_problems : Path('problems') : Args(0) {
     $c->forward('output');
 }
 
-# FIXME I don't think this is used - check
-#sub reports_to_council : Private {
-#    my ( $self, $c ) = @_;
-#
-#    my $id                 = $c->stash->{id};
-#    $c->stash->{type}      = 'council_problems';
-#    $c->stash->{qs}        = '/' . $id;
-#    $c->stash->{db_params} = [ $id ];
-#    $c->forward('output');
-#}
-
-sub reports_in_area : LocalRegex('^area/(\d+)$') {
-    my ( $self, $c ) = @_;
-
-    my $id                    = $c->req->captures->[0];
-    my $area                  = FixMyStreet::MapIt::call('area', $id);
-    $c->stash->{type}         = 'area_problems';
-    $c->stash->{qs}           = '/' . $id;
-    $c->stash->{db_params}    = [ $id ];
-    $c->stash->{title_params} = { NAME => $area->{name} };
-    $c->forward('output');
-}
-
 sub all_problems : Private {
     my ( $self, $c ) = @_;
 

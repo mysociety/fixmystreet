@@ -828,6 +828,7 @@ The MaPit types this site handles
 
 sub area_types          { FixMyStreet->config('MAPIT_TYPES') || [ 'ZZZ' ] }
 sub area_types_children { FixMyStreet->config('MAPIT_TYPES_CHILDREN') || [] }
+sub area_types_for_admin { $_[0]->area_types }
 
 =item fetch_area_children
 
@@ -945,14 +946,12 @@ sub council_rss_alert_options {
 
     my ( @options, @reported_to_options );
     foreach (values %$all_areas) {
-        $_->{short_name} = $self->short_name( $_ );
-        ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
         push @options, {
             type      => 'council',
-            id        => sprintf( 'area:%s:%s', $_->{id}, $_->{id_name} ),
+            id        => sprintf( 'area:%s', $_->{id} ),
             text      => sprintf( _('Problems within %s'), $_->{name}),
             rss_text  => sprintf( _('RSS feed of problems within %s'), $_->{name}),
-            uri       => $c->uri_for( '/rss/area/' . $_->{short_name} ),
+            uri       => $c->uri_for( '/rss/area/' . $_->{id} ),
         };
     }
 
