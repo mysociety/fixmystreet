@@ -683,12 +683,12 @@ subtest 'redirecting of reports between backends' => sub {
 
     $mech->create_contact_ok(
         body_id => $body->id,
-        category => 'Referred to LB Bromley Streets',
+        category => 'Environmental Services',
         email => 'LBB_RRE_FROM_VEOLIA_STREETS',
     );
     $mech->create_contact_ok(
         body_id => $body->id,
-        category => 'Referred to Veolia Streets',
+        category => 'Street Services',
         email => '3045',
     );
 
@@ -759,7 +759,7 @@ subtest 'redirecting of reports between backends' => sub {
             is_deeply [ map { $_->state } $report->comments->all ], ['hidden'];
             is $report->whensent, undef;
             is $report->get_extra_metadata('handover_notes'), 'This is a handover note';
-            is $report->category, 'Referred to Veolia Streets';
+            is $report->category, 'Street Services';
 
             FixMyStreet::Script::Reports::send();
             my $req = Open311->test_req_used;
@@ -775,7 +775,7 @@ subtest 'redirecting of reports between backends' => sub {
             $report->discard_changes;
             is $report->external_id, 12345, 'ID changed back';
             is $report->state, 'in progress', 'A state change';
-            is $report->category, 'Referred to LB Bromley Streets';
+            is $report->category, 'Environmental Services';
             isnt $report->whensent, undef;
 
             Open311->_inject_response('/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>42</update_id></request_update></service_request_updates>');
@@ -802,7 +802,7 @@ subtest 'redirecting of reports between backends' => sub {
             is $report->whensent, undef;
             is $report->external_id, 'original-guid', 'ID not changed';
             is $report->state, 'in progress', 'A state change';
-            is $report->category, 'Referred to LB Bromley Streets';
+            is $report->category, 'Environmental Services';
             FixMyStreet::Script::Reports::send();
 
             my $req = Open311->test_req_used;
@@ -811,7 +811,7 @@ subtest 'redirecting of reports between backends' => sub {
             is $c->param('description'), "$detail | Handover notes - Outgoing notes from Echo";
         };
 
-        subtest "comment on a closed echo report result in a resend under 'Referred to Veolia Streets'" => sub {
+        subtest "comment on a closed echo report result in a resend under 'Street Services'" => sub {
             my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
             my $event_id = 123;
 
@@ -853,7 +853,7 @@ subtest 'redirecting of reports between backends' => sub {
             };
 
             $report->discard_changes;
-            is $report->get_extra_metadata('open311_category_override'), 'Referred to Veolia Streets', 'category override applied';
+            is $report->get_extra_metadata('open311_category_override'), 'Street Services', 'category override applied';
             is $report->get_extra_metadata('external_status_code'), undef;
             is $report->state, 'confirmed';
             is $report->send_state, 'unprocessed', 'report set to be resent';

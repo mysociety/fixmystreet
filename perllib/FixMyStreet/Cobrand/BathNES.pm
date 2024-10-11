@@ -67,8 +67,6 @@ sub send_questionnaires { 0 }
 
 =item * Add display_name as an extra contact field.
 
-=back
-
 =cut
 
 sub contact_extra_fields { [ 'display_name' ] }
@@ -85,6 +83,8 @@ sub contact_extra_fields_validation {
 }
 
 =item * Geocoder results are somewhat munged to display more cleanly
+
+=back
 
 =cut
 

@@ -24,8 +24,8 @@ sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
 
-use constant REFERRED_TO_BROMLEY => 'Referred to LB Bromley Streets';
-use constant REFERRED_TO_VEOLIA => 'Referred to Veolia Streets';
+use constant REFERRED_TO_BROMLEY => 'Environmental Services';
+use constant REFERRED_TO_VEOLIA => 'Street Services';
 
 sub report_validation {
     my ($self, $report, $errors) = @_;

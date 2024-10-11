@@ -1,6 +1,7 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::CSVExport;
+use Test::MockTime 'set_fixed_time';
 use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
@@ -69,6 +70,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'Old reports are not shown on Surrey cobrand' => sub {
+            set_fixed_time('2024-09-20T12:00:00');
             note 'A newly created report is shown on Surrey cobrand';
             my $json = $mech->get_ok_json('/around?ajax=1&bbox=-0.45869262976076,51.28481314324,-0.42367370886232,51.302390882532');
             is_deeply($json->{pins}, [
@@ -91,6 +93,20 @@ FixMyStreet::override_config {
             });
             $json = $mech->get_ok_json('/around?ajax=1&bbox=-0.45869262976076,51.28481314324,-0.42367370886232,51.302390882532');
             is_deeply($json->{pins}, [], 'Borough problem is excluded from Surrey cobrand');
+
+            note 'Reports fetched over Open311 are included even if they predate cut-off';
+            $dt = DateTime->new(year => 2024, month => 8, day => 1, hour => 12);
+            $report->update({
+                bodies_str => $surrey->id,
+                category => 'Potholes',
+                service => 'Open311',
+                created => $dt,
+                confirmed => $dt,
+            });
+            $json = $mech->get_ok_json('/around?ajax=1&bbox=-0.45869262976076,51.28481314324,-0.42367370886232,51.302390882532');
+            is_deeply($json->{pins}, [
+                [ "51.293415", "-0.441269", "yellow", $report->id, $report->title, "", 'false' ],
+            ], 'Open311 report is initially in Surrey cobrand');
         };
 
     subtest 'Get error when email included in report' => sub {
