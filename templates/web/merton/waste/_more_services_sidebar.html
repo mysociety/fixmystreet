@@ -42,5 +42,13 @@
         <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+add&amp;service_id=2238">Set up for assisted collection</a></li>
     [% END %]
     </ul>
+    <h3>Transfer GGW to property</h3>
+    [% IF !show_garden_subscribe %]
+    <p>There is already a garden waste subscription at this property or garden waste is not permitted</p>
+    [% ELSE %]
+    <ul>
+    <li><a href="[% c.uri_for_action('waste/garden_transfer', [ property.id ]) %]">Transfer GGW subscription</a></li>
+  </ul>
+  [% END %]
 [% END %]
 
