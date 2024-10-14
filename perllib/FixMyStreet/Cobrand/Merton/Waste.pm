@@ -376,6 +376,43 @@ sub waste_post_report_creation {
     }
 }
 
+sub check_ggw_transfer_applicable {
+    my ($self, $old_address) = @_;
+
+    # Check new address doesn't have a ggw subscription
+    return { error => 'current' } if $self->garden_current_subscription;
+
+    # Check that the old address has a ggw subscription and it's not
+    # in its expiry period
+    my $details = $self->look_up_property($old_address);
+    my $old_services = $self->{api_serviceunits};
+
+    my ($old_garden) = grep { $_->{ServiceId} eq '409' } @$old_services;
+    $old_garden->{transfer_uprn} = $details->{uprn};
+
+    my $servicetask = $self->garden_current_service_from_service_units($old_services);
+
+    return { error => 'no_previous' } unless $servicetask;
+
+    my $subscription_enddate = _parse_schedules($servicetask)->{end_date};
+    return { error => 'due_soon' } if ($subscription_enddate && $self->waste_sub_due($subscription_enddate));
+
+    my $old_subscription_bin_data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
+
+    foreach (@$old_subscription_bin_data) {
+        my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
+        foreach (@$moredata) {
+            if ($_->{DatatypeName} eq 'Quantity') {
+                $old_garden->{transfer_bin_number} = $_->{Value};
+            } elsif ($_->{DatatypeName} eq 'Container Type') {
+                $old_garden->{transfer_bin_type} = $_->{Value};
+            }
+        }
+    };
+    $old_garden->{subscription_enddate} = $subscription_enddate;
+    return $old_garden;
+}
+
 =head2 Bulky waste collection
 
 Merton has a 6am collection and cut-off for cancellation time.

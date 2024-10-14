@@ -18,6 +18,7 @@ use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
+use FixMyStreet::App::Form::Waste::Garden::Transfer;
 use Memcached;
 use JSON::MaybeXS;
 
@@ -835,6 +836,52 @@ sub process_request_data : Private {
     return 1;
 }
 
+sub process_garden_transfer : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    # Get the current subscription for the old address
+    my $old_property_id = $data->{previous_ggw_address}->{value};
+    #$c->forward('get_original_sub', ['', $old_property_id]);
+
+    my $base = {};
+    $base->{name} = $c->get_param('name');
+    $base->{email} = $c->get_param('email');
+    $base->{phone} = $c->get_param('phone');
+
+    # Cancel the old subscription
+    my $cancel = { %$base };
+    $cancel->{category} = 'Cancel Garden Subscription';
+    $cancel->{title} = 'Garden Subscription - Cancel';
+    $cancel->{address} = $data->{previous_ggw_address}->{label};
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
+    $c->set_param($end_date_field, $now->ymd);
+    $c->set_param('property_id', $old_property_id);
+    $c->set_param('uprn', $data->{transfer_old_ggw_sub}{transfer_uprn});
+    $c->forward('setup_garden_sub_params', [ $cancel, undef ]);
+    $c->forward('add_report', [ $cancel ]) or return;
+    $c->stash->{report}->confirm;
+    $c->stash->{report}->update;
+
+    # Create a report for it for the new address
+    my $new = { %$base };
+    $new->{category} = 'Garden Subscription';
+    $new->{title} = 'Garden Subscription - New';
+    $new->{current_bins} = $data->{transfer_old_ggw_sub}->{transfer_bin_number};
+    $new->{current_type} = $data->{transfer_old_ggw_sub}->{transfer_bin_type};
+
+    my $expiry = $data->{transfer_old_ggw_sub}->{subscription_enddate};
+    $expiry = DateTime::Format::W3CDTF->parse_datetime($expiry);
+    $c->set_param($end_date_field, $expiry->ymd);
+    $c->set_param('property_id', '');
+    $c->set_param('uprn', '');
+    $c->forward('setup_garden_sub_params', [ $new, $c->stash->{garden_subs}->{New} ]);
+    $c->forward('add_report', [ $new ]) or return;
+    $c->stash->{report}->confirm;
+    $c->stash->{report}->update;
+}
+
 sub group_reports {
     my ($c, @reports) = @_;
     my $report = shift @reports;
@@ -1269,6 +1316,15 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
     $c->forward('form');
 }
 
+sub garden_transfer : Chained('garden_setup') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->detach( '/page_error_403_access_denied', [] ) unless $c->stash->{is_staff};
+
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Transfer';
+    $c->forward('form');
+}
+
 sub process_garden_cancellation : Private {
     my ($self, $c, $form) = @_;
 
@@ -1342,6 +1398,7 @@ sub get_original_sub : Private {
     }
 
     my $r = $c->stash->{orig_sub} = $p->first;
+
     $c->cobrand->call_hook(waste_check_existing_dd => $r)
         if $r && ($r->get_extra_field_value('payment_method') || '') eq 'direct_debit';
 }
@@ -1349,7 +1406,7 @@ sub get_original_sub : Private {
 sub setup_garden_sub_params : Private {
     my ($self, $c, $data, $type) = @_;
 
-    my $address = $c->stash->{property}->{address};
+    my $address = $data->{address} || $c->stash->{property}->{address};
 
     $data->{detail} = "$data->{category}\n\n$address";
 
@@ -1599,7 +1656,7 @@ sub add_report : Private {
     $c->set_param('title', $data->{title});
     $c->set_param('detail', $data->{detail});
     $c->set_param('uprn', $c->stash->{property}{uprn}) unless $c->get_param('uprn');
-    $c->set_param('property_id', $c->stash->{property}{id});
+    $c->set_param('property_id', $c->stash->{property}{id}) unless $c->get_param('property_id');
 
     # Data may contain duplicate photo data under different keys e.g.
     # 'item_photo_1' => 'c8a965ad74acad4104341a8ea893b1a1275efa4d.jpeg',

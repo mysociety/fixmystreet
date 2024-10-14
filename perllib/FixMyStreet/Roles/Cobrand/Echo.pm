@@ -498,7 +498,6 @@ sub _parse_schedules {
         my $start_date = construct_bin_date($schedule->{StartDate})->strftime("%F");
         my $end_date = construct_bin_date($schedule->{EndDate})->strftime("%F");
         $max_end_date = $end_date if !defined($max_end_date) || $max_end_date lt $end_date;
-
         next if $end_date lt $today;
 
         my $next = $schedule->{NextInstance};
