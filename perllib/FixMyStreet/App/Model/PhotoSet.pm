@@ -442,7 +442,7 @@ sub shrink_all_to_size {
             $shrunk_blob = FixMyStreet::ImageMagick->new(blob => $original_blob)
                             ->shrink_to_percentage($percent)
                             ->as_blob;
-            $percent = $percent * $resize_percent;
+            $percent = $percent * $resize_percent / 100;
         } while (length $shrunk_blob > $size_bytes);
 
         $images[$i] = $shrunk_blob;
