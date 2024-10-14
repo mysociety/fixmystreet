@@ -335,7 +335,11 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         external_ref => 'HIAMS/Exor Ref',
         usrn => 'USRN',
+        staff_role => 'Staff Role',
     );
+
+    my $user_lookup = $self->csv_staff_users;
+    my $userroles = $self->csv_staff_roles($user_lookup);
 
     $csv->csv_extra_data(sub {
         my $report = shift;
@@ -352,12 +356,54 @@ sub dashboard_export_problems_add_columns {
                 $ref = $report->external_id if $report->id ne ( $report->external_id || '' );
             }
         }
+        my $by = $csv->_extra_metadata($report, 'contributed_by');
+        my $staff_role = '';
+        if ($by) {
+            $staff_role = join(',', @{$userroles->{$by} || []});
+        }
         return {
             external_ref => ( $ref || '' ),
             usrn => $usrn,
+            staff_role => $staff_role,
         };
     });
 }
+
+=head2 dashboard_export_updates_add_columns
+
+Adds 'Staff Role' column.
+
+=cut
+
+sub dashboard_export_updates_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        staff_role => 'Staff Role',
+    );
+
+    $csv->objects_attrs({
+        '+columns' => ['user.email'],
+        join => 'user',
+    });
+    my $user_lookup = $self->csv_staff_users;
+    my $userroles = $self->csv_staff_roles($user_lookup);
+
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $by = $csv->_extra_metadata($report, 'contributed_by');
+        my $staff_role = '';
+        if ($by) {
+            $staff_role = join(',', @{$userroles->{$by} || []});
+        }
+        return {
+            staff_role => $staff_role,
+        };
+    });
+}
+
 
 sub defect_wfs_query {
     my ($self, $bbox) = @_;
