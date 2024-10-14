@@ -16,11 +16,12 @@ use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Waste';
 
 use BexleyAddresses;
-use Integrations::Whitespace;
 use DateTime;
 use DateTime::Format::W3CDTF;
 use FixMyStreet;
+use FixMyStreet::App::Form::Waste::Request::Bexley;
 use FixMyStreet::Template;
+use Integrations::Whitespace;
 use Sort::Key::Natural qw(natkeysort_inplace);
 
 has 'whitespace' => (
@@ -439,6 +440,8 @@ sub bin_services_for_address {
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
 
     @site_services_filtered = $self->service_sort(@site_services_filtered);
+
+    $self->_set_request_containers( $property, @site_services_filtered );
 
     return \@site_services_filtered;
 }
@@ -1223,6 +1226,257 @@ sub get_in_cab_logs_reason_prefix {
     }
 
     return '';
+}
+
+# Container maintenance
+
+sub waste_request_form_first_next {
+    return 'replacement';
+}
+
+sub _set_request_containers {
+    my ( $self, $property, @services ) = @_;
+
+    return if $property->{is_communal};
+
+    my %all_service_ids = map { $_->{service_id} => 1 } @services;
+
+    my @containers_for_delivery;
+    my @containers_for_removal;
+    my $boxes_done;
+
+    for my $service ( @services ) {
+        # NB: 'service_id' here is equivalent to Whitespace ServiceItemName
+        # ('service_item_name' in _containers_for_requests())
+        my $service_id = $service->{service_id};
+        my $round_schedule = $service->{round_schedule};
+        my $container_info;
+        my $name;
+
+        if (   $service_id eq 'RES-140'
+            || $service_id eq 'RES-180'
+            || $service_id eq 'RES-240' )
+        {
+            $name = 'Green Wheelie Bin';
+            $container_info
+                = _containers_for_requests()->{$name};
+            push @containers_for_delivery, $container_info;
+            push @containers_for_removal,  $container_info;
+
+            $service->{delivery_allowed} = 1;
+            $service->{removal_allowed}  = 1;
+
+        } elsif ( $service_id eq 'PC-140'
+            || $service_id eq 'PC-180'
+            || $service_id eq 'PC-240' )
+        {
+            $name = 'Blue Lidded Wheelie Bin';
+            $container_info
+                = _containers_for_requests()->{$name};
+            push @containers_for_delivery, $container_info;
+            push @containers_for_removal,  $container_info;
+
+            $service->{delivery_allowed} = 1;
+            $service->{removal_allowed}  = 1;
+
+        } elsif ( $service_id eq 'PG-140'
+            || $service_id eq 'PG-180'
+            || $service_id eq 'PG-240' )
+        {
+            $name = 'White Lidded Wheelie Bin';
+            $container_info
+                = _containers_for_requests()->{$name};
+            push @containers_for_delivery, $container_info;
+            push @containers_for_removal,  $container_info;
+
+            $service->{delivery_allowed} = 1;
+            $service->{removal_allowed}  = 1;
+
+        } elsif ( $service_id eq 'FO-23' ) {
+            my $food_waste
+                = _containers_for_requests()->{'Food Waste'};
+            for ( @$food_waste ) {
+                # NOTE We always offer Kitchen Caddy as a deliverable
+                # container even though it is never shown on the bin days page
+                push @containers_for_delivery, $_;
+                push @containers_for_removal, $_
+                    if $_->{service_id_removal};
+            }
+
+            $service->{delivery_allowed} = 1;
+            $service->{removal_allowed}  = 1;
+
+        } elsif ( $service_id eq 'MDR-SACK' ) {
+            $container_info
+                = _containers_for_requests()->{'Clear Sack(s)'};
+            push @containers_for_delivery, $container_info;
+
+            $service->{delivery_allowed} = 1;
+
+        } elsif ( $round_schedule =~ /BOX/ ) {
+            $name = 'Recycling Boxes';
+            my $boxes = _containers_for_requests()->{$name};
+
+            for ( @$boxes ) {
+                # Any box with service_id_delivery is eligible for delivery
+                # even if property doesn't have that box currently.
+                if ( $_->{service_id_delivery} ) {
+                    push @containers_for_delivery, $_ unless $boxes_done;
+
+                    $service->{delivery_allowed} = 1
+                        if $service->{service_id} eq $_->{service_item_name};
+                }
+
+                # Conversely, property must have a given box already for
+                # it to be removable.
+                if ( $_->{service_id_removal} ) {
+                    push @containers_for_removal, $_
+                        if $all_service_ids{ $_->{service_item_name} }
+                        && !$boxes_done;
+
+                    $service->{removal_allowed} = 1
+                        if $service->{service_id} eq $_->{service_item_name};
+                }
+            }
+
+            # Any property with boxes can also order lids
+            unless ($boxes_done) {
+                push @containers_for_delivery,
+                    _containers_for_requests()->{'Recycling Box Lids'};
+
+                $property->{can_order_lids} = 1;
+            }
+
+            $boxes_done = 1;
+
+        }
+    }
+
+    $property->{containers_for_delivery} = \@containers_for_delivery;
+    $property->{containers_for_removal}  = \@containers_for_removal;
+}
+
+sub _containers_for_requests {
+    return {
+        'Green Wheelie Bin' => {
+            name        => 'Green Wheelie Bin',
+            description => 'Non-recyclable waste',
+            subtypes    => [
+                {   size                => 'Small 140 litre',
+                    service_item_name   => 'RES-140',
+                    service_id_delivery => '272',
+                    service_id_removal  => '205',
+                },
+                {   size                => 'Medium 180 litre',
+                    service_item_name   => 'RES-180',
+                    service_id_delivery => '273',
+                    service_id_removal  => '206',
+                },
+                {   size                => 'Large 240 litre',
+                    service_item_name   => 'RES-240',
+                    service_id_delivery => '274',
+                    service_id_removal  => '207',
+                },
+            ],
+        },
+        'Blue Lidded Wheelie Bin' => {
+            name        => 'Blue Lidded Wheelie Bin',
+            description => 'Paper and card',
+            subtypes    => [
+                {   size                => 'Small 140 litre',
+                    service_item_name   => 'PC-140',
+                    service_id_delivery => '325',
+                    service_id_removal  => '333',
+                },
+                {   size                => 'Medium 180 litre',
+                    service_item_name   => 'PC-180',
+                    service_id_delivery => '326',
+                    service_id_removal  => '334',
+                },
+                {   size                => 'Large 240 litre',
+                    service_item_name   => 'PC-240',
+                    service_id_delivery => '327',
+                    service_id_removal  => '335',
+                },
+            ],
+        },
+        'White Lidded Wheelie Bin' => {
+            name        => 'White Lidded Wheelie Bin',
+            description => 'Plastics, cans and glass',
+            subtypes    => [
+                {   size                => 'Small 140 litre',
+                    service_item_name   => 'PG-140',
+                    service_id_delivery => '329',
+                    service_id_removal  => '337',
+                },
+                {   size                => 'Medium 180 litre',
+                    service_item_name   => 'PG-180',
+                    service_id_delivery => '330',
+                    service_id_removal  => '338',
+                },
+                {   size                => 'Large 240 litre',
+                    service_item_name   => 'PG-240',
+                    service_id_delivery => '331',
+                    service_id_removal  => '339',
+                },
+            ],
+        },
+
+        'Recycling Boxes' => [
+            {   name               => 'Green Recycling Box',
+                description        => 'Paper and card',
+                service_item_name  => 'PA-55',
+                service_id_removal => '181',
+            },
+            {   name               => 'Maroon Recycling Box',
+                description        => 'Plastics and cans',
+                service_item_name  => 'PL-55',
+                service_id_removal => '192',
+            },
+            {   name               => 'Black Recycling Box',
+                description        => 'Glass bottles and jars',
+                service_item_name  => 'GL-55',
+                service_id_removal => '166',
+            },
+            {   name                => 'White Recycling Box',
+                description         => 'Plastics, cans and glass',
+                service_item_name   => 'PG-55',
+                service_id_delivery => '328',
+                service_id_removal  => '336',
+            },
+            {   name                => 'Blue Recycling Box',
+                description         => 'Paper and card',
+                service_item_name   => 'PC-55',
+                service_id_delivery => '324',
+                service_id_removal  => '332',
+            },
+        ],
+
+        'Clear Sack(s)' => {
+            name                => 'Clear Sack(s)',
+            description         => 'Mixed recycling',
+            service_item_name   => 'MDR-SACK',
+            service_id_delivery => '243',
+        },
+
+        'Food Waste' => [
+            {   name                => 'Brown Caddy',
+                service_item_name   => 'FO-23',
+                service_id_delivery => '224',
+                service_id_removal  => '156',
+            },
+            {   name                => 'Kitchen Caddy',
+                service_item_name   => 'Kitchen 5 Ltr Caddy',
+                service_id_delivery => '235',
+            },
+        ],
+
+        'Recycling Box Lids' => {
+            name                => 'Recycling Box Lids',
+            service_item_name   => 'Deliver Box lids 55L',
+            service_id_delivery => '216',
+        },
+    };
 }
 
 1;

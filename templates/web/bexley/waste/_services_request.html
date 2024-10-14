@@ -1,0 +1,29 @@
+[% IF unit.delivery_allowed %]
+  <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
+
+    [% # TODO %]
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+    [% form %]
+
+    [% # TODO %]
+    <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
+
+    <input type="submit" value="Request a new or replacement [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+  </form>
+[% END %]
+
+[% IF unit.removal_allowed %]
+  <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
+
+    [% # TODO %]
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+    [% form %]
+
+    [% # TODO %]
+    <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
+
+    <input type="submit" value="Request removal of a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+  </form>
+[% END %]
