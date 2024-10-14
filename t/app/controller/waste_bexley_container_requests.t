@@ -12,6 +12,13 @@ END { FixMyStreet::App->log->enable('info'); }
 
 set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
 
+my $dbi_mock = Test::MockModule->new('DBI');
+$dbi_mock->mock( 'connect', sub {
+    my $dbh = Test::MockObject->new;
+    $dbh->mock( 'selectrow_hashref', sub { {} } );
+    return $dbh;
+} );
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $cobrand = FixMyStreet::Cobrand::Bexley->new;

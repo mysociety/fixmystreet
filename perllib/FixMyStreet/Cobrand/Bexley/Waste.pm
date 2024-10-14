@@ -1230,6 +1230,84 @@ sub get_in_cab_logs_reason_prefix {
 
 # Container maintenance
 
+sub construct_bin_request_form {
+    my ( $self, $c ) = @_;
+
+    my $field_list = [];
+
+    my $request_type = $c->get_param('request-type');
+
+    if ( $request_type eq 'delivery' ) {
+        for my $container (
+            @{ $c->stash->{property}{containers_for_delivery} } )
+        {
+            if ( $container->{subtypes} ) {
+                my $id = lc $container->{name} =~ s/ /-/gr;
+
+                push @$field_list, "container-parent-$id" => {
+                    type         => 'Checkbox',
+                    label        => $container->{name},
+                    option_label => $container->{description},
+                    tags         => { toggle => "form-bin-size-$id-row" },
+
+                    # TODO
+                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
+                };
+
+                # TODO Green wheelie bins need a household size check
+
+                push @$field_list, "bin-size-$id" => {
+                    type    => 'Select',
+                    label   => 'Bin Size',
+                    tags    => { initial_hidden => 1 },
+                    options => [
+                        map {
+                            label     => $_->{size},
+                                value => $_->{service_item_name}
+                        },
+                        @{ $container->{subtypes} }
+                    ],
+                    required_when => { "container-$id" => 1 },
+                };
+            } else {
+                my $id = $container->{service_item_name};
+
+                push @$field_list, "container-$id" => {
+                    type         => 'Checkbox',
+                    label        => $container->{name},
+                    option_label => $container->{description},
+
+                    # TODO
+                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
+                };
+            }
+        }
+    } else {
+        # Removal
+        for my $container (
+            @{ $c->stash->{property}{containers_for_removal} } )
+        {
+            # TODO Use size/code for service that exists on property
+
+            my $id
+                = $container->{subtypes}
+                ? $container->{subtypes}[0]{service_item_name}
+                : $container->{service_item_name};
+
+            push @$field_list, "container-$id" => {
+                type         => 'Checkbox',
+                label        => $container->{name},
+                option_label => $container->{description},
+
+                # TODO
+                # disabled => $_->{requests_open}{$id} ? 1 : 0,
+            };
+        }
+    }
+
+    return $field_list;
+}
+
 sub waste_request_form_first_next {
     return 'replacement';
 }
