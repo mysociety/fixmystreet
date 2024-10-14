@@ -1,5 +1,17 @@
+[% SET show_garden_subscribe = NOT waste_features.garden_disabled AND NOT waste_features.garden_new_disabled AND NOT c.cobrand.garden_current_subscription %]
+
        [% IF service_data.size AND (c.cobrand.moniker != 'peterborough' OR NOT c.cobrand.call_hook('bulky_enabled')) %]
        <div class="aside-download">
+        [% IF c.cobrand.moniker == 'merton' AND is_staff %]
+        <h3>Transfer GGW to property</h3>
+          [% IF !show_garden_subscribe %]
+            <p>There is already a garden waste subscription at this property or garden waste is not permitted</p>
+          [% ELSE %]
+          <ul>
+            <li><a href="[% c.uri_for_action('waste/garden_transfer', [ property.id ]) %]">Transfer GGW subscription</a></li>
+          </ul>
+          [% END %]
+        [% END %]
          <h3>Download your collection schedule</h3>
          <ul>
            <li><a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar</a></li>
@@ -19,7 +31,7 @@
        </div>
        [% END %]
 
-       [% SET show_garden_subscribe = NOT waste_features.garden_disabled AND NOT waste_features.garden_new_disabled AND NOT c.cobrand.garden_current_subscription %]
+
     [% IF c.cobrand.moniker == 'bromley' %]
        [% message = WRAPPER 'waste/_garden_status_messages.html' %][% END %]
        [% show_garden_subscribe = show_garden_subscribe AND NOT message %]

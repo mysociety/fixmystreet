@@ -1,0 +1,17 @@
+[% PROCESS 'waste/header.html' %]
+[% PROCESS 'govuk/fields.html' %]
+[% PROCESS title title=form.title %]
+[% PROCESS errors %]
+
+<p>Please confirm that you want to transfer the green garden waste subscription:</p>
+<p>From: [% form.saved_data.previous_ggw_address.0.label %]</p>
+<p>To: [% property.address %]</p>
+
+<form method="post" id="transfer_confirm" >
+
+[% PROCESS form override_fields=['continue_done'] %]
+
+[% PROCESS form override_fields=['saved_data', 'token', 'process', 'unique_id'] %]
+</form>
+
+

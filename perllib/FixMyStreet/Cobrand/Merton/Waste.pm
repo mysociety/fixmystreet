@@ -376,6 +376,33 @@ sub waste_post_report_creation {
     }
 }
 
+sub check_ggw_transfer_applicable {
+    my ($self, $old_address) = @_;
+
+    my $error;
+    my $expiry;
+
+    # Check new address doesn't have a ggw subscription
+    $error = 'current' if $self->garden_current_subscription;
+
+    # Check that the old address has a ggw subscription and it's not
+    # in its expiry period
+    $self->look_up_property($old_address);
+    my $old_services = $self->{api_serviceunits};
+
+    # Reset things as this is still the property we're actually on
+    $self->look_up_property($self->{c}->stash->{property}{id});
+
+    my ($old_garden) = grep { $_->{ServiceId} eq '409' } @$old_services;
+
+    $error = 'no_previous' unless $error || ($old_garden && $old_garden->{ServiceTasks});
+    my $subscription_enddate = $old_garden->{ServiceTasks}->{ServiceTask}->{ServiceTaskSchedules}->{ServiceTaskSchedule}[0]->{EndDate}->{DateTime} unless $error;
+
+    $error = 'due_soon' if !$error && ($subscription_enddate && $self->waste_sub_due($subscription_enddate));
+
+    return [$error, $subscription_enddate];
+}
+
 =head2 Bulky waste collection
 
 Merton has a 6am collection and cut-off for cancellation time.

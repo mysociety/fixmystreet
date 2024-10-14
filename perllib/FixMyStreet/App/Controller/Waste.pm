@@ -18,6 +18,7 @@ use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
+use FixMyStreet::App::Form::Waste::Garden::Transfer;
 use Memcached;
 use JSON::MaybeXS;
 
@@ -835,6 +836,42 @@ sub process_request_data : Private {
     return 1;
 }
 
+sub ggw_transfer_subscription : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    # Get the current subscrition for the old address
+    my $old_property_id = $data->{previous_ggw_address}[0]->{value};
+    $c->forward('get_original_sub', ['', $old_property_id]);
+
+    my $base = {};
+    $base->{name} = $c->stash->{transfer_sub}->name;
+    $base->{email} = $c->stash->{transfer_sub}->user->email;
+    $base->{phone} = $c->stash->{transfer_sub}->user->phone;
+    $base->{payment_method} = $c->stash->{transfer_sub}->get_extra_field_value('payment_method') || 'Credit Card';
+
+    # Cancel the old subscription
+    my $cancel = { %$base };
+    $cancel->{category} = 'Cancel Garden Subscription';
+    $cancel->{title} = 'Garden Subscription - Cancel';
+    $cancel->{address} = $data->{previous_ggw_address}[0]->{label};
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
+    $c->set_param($end_date_field, $now->ymd);
+    $c->forward('setup_garden_sub_params', [ $cancel, 'transfer_cancel' ]);
+    $c->forward('add_report', [ $cancel ]) or return;
+
+    # Create a report for it for the new address
+    my $new = { %$base };
+    $new->{category} = 'Garden Subscription';
+    $new->{title} = 'Garden Subscription - New';
+    my $expiry = DateTime::Format::W3CDTF->parse_datetime($data->{transfer_ggw_expiry});
+    $c->set_param($end_date_field, $expiry->ymd);
+    $c->forward('setup_garden_sub_params', [ $new, 'new' ]);
+    $c->forward('add_report', [ $new ]) or return;
+    # Check how this will all be registered
+}
+
 sub group_reports {
     my ($c, @reports) = @_;
     my $report = shift @reports;
@@ -1269,6 +1306,15 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
     $c->forward('form');
 }
 
+sub garden_transfer : Chained('garden_setup') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->detach( '/page_error_403_access_denied', [] ) unless $c->stash->{is_staff};
+
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Transfer';
+    $c->forward('form');
+}
+
 sub process_garden_cancellation : Private {
     my ($self, $c, $form) = @_;
 
@@ -1326,12 +1372,12 @@ sub get_current_payment_method : Private {
 }
 
 sub get_original_sub : Private {
-    my ($self, $c, $type) = @_;
+    my ($self, $c, $type, $alternative_property) = @_;
 
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => ($alternative_property || $c->stash->{property}{id}) } ] }) },
         state => { '!=' => 'hidden' },
     })->order_by('-id')->to_body($c->cobrand->body);
 
@@ -1341,7 +1387,12 @@ sub get_original_sub : Private {
         });
     }
 
-    my $r = $c->stash->{orig_sub} = $p->first;
+    my $r;
+    if ($alternative_property) {
+        $r = $c->stash->{transfer_sub} = $p->first;
+    } else {
+        $r = $c->stash->{orig_sub} = $p->first;
+    }
     $c->cobrand->call_hook(waste_check_existing_dd => $r)
         if $r && ($r->get_extra_field_value('payment_method') || '') eq 'direct_debit';
 }
@@ -1349,7 +1400,7 @@ sub get_original_sub : Private {
 sub setup_garden_sub_params : Private {
     my ($self, $c, $data, $type) = @_;
 
-    my $address = $c->stash->{property}->{address};
+    my $address = $data->{address} || $c->stash->{property}->{address};
 
     $data->{detail} = "$data->{category}\n\n$address";
 

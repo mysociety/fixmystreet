@@ -1165,36 +1165,119 @@ FixMyStreet::override_config {
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
-    # subtest 'staff change address for sub' => sub {
-    #     set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
-    #     $mech->get_ok('/waste/12345/');
-    #     $mech->content_contains('Report an address change', "contains link to address change form");
-    #     $mech->follow_link_ok({ text => 'Report an address change' });
-    #     $mech->content_contains('Only fill this in if they confirm they have moved to the new property.', 'contains notice');
-    #     $mech->submit_form_ok({ with_fields => {
-    #         extra_new_address => 'New Address',
-    #         extra_old_address => 'Old Address',
-    #     } });
-    #     $mech->submit_form_ok({ with_fields => {
-    #         email => 'resident@example.org',
-    #         name => 'Arthur Address-Change',
-    #     } });
-    #     $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-    #     $mech->content_contains('Your enquiry has been submitted');
+    subtest 'staff transfer ggw subscription' => sub {
+        my ($p) = $mech->create_problems_for_body(1, $body->id, 'Garden Subscription - New', {
+            user_id => $user->id,
+            category => 'Garden Subscription',
+            whensent => \'current_timestamp',
+            send_state => 'sent',
+        });
+        $p->title('Garden Subscription - New');
+        $p->update_extra_field({ name => 'property_id', value => '11345' });
+        $p->update;
 
-    #     my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-    #         { },
-    #         { order_by => { -desc => 'id' } },
-    #     )->first;
+        set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
 
-    #     is $new_report->category, 'Garden Subscription Address Change', 'correct category on report';
-    #     is $new_report->get_extra_field_value('new_address'), 'New Address', 'correct new address on report';
-    #     is $new_report->get_extra_field_value('old_address'), 'Old Address', 'correct old address on report';
-    #     is $new_report->get_extra_metadata('no_echo'), 1, 'metadata set to indicate not sent to echo';
-    #     is $new_report->send_state, 'sent', 'report marked as sent';
-    # };
+        $mech->log_out_ok;
+        $mech->get_ok('/waste/12345/');
+        $mech->content_lacks('Transfer GGW to property', "No change address form for non-staff users");
+
+        $mech->get('/waste/12345/garden_transfer');
+        $mech->content_contains('Access denied', 'Direct access to form denied for non-staff users');
+
+        $mech->log_in_ok($staff_user->email);
+
+        $mech->get_ok('/waste/14345/');
+        $mech->content_contains('Transfer GGW to property', "change address details form present");
+        $mech->content_contains('There is already a garden waste subscription', 'Can not transfer to this property as has subscription');
+
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_only_refuse_sacks);
+        $mech->get_ok('/waste/14345/');
+        $mech->follow_link_ok({text => 'Transfer GGW subscription'});
+        $mech->content_contains('2 Example Street, Merton', 'Shows current address');
+        $mech->content_contains('Confirm that resident has moved to the address above', 'Contains conditions check');
+
+        $mech->submit_form_ok();
+        $mech->content_contains('Resident moved field is required', 'Must confirm resident is at new address with bin(s)');
+        $mech->submit_form_ok({ with_fields => {
+            resident_moved => 1,
+        } });
+
+        $mech->submit_form_ok({ with_fields => {
+            postcode => 'wrong postcode'
+        }});
+        $mech->content_contains('Sorry, we did not recognise that postcode', 'Warning if incorrect postcode');
+        $mech->submit_form_ok({ with_fields => {
+            postcode => 'SM2 5HF'
+        }});
+
+        $mech->submit_form_ok({ with_fields => {
+            addresses => '12345'
+        }});
+        $mech->content_contains('This should be the old address, not the new one',
+        'Can not transfer from current address');
+
+        $echo->mock('GetServiceUnitsForObject', sub {
+            if ($_[1] == '12345') {
+                return &garden_waste_only_refuse_sacks;
+            } else {
+                return &garden_waste_only_refuse_sacks;
+            }
+        });
+        $mech->submit_form_ok({ with_fields => {
+            addresses => '11345'
+        }});
+        $mech->content_contains('There is no garden subscription at this address',
+        'Can not transfer from property that does not have a ggw subscription');
+
+        $echo->mock('GetServiceUnitsForObject', sub {
+            if ($_[1] == '12345') {
+                return &garden_waste_one_bin;
+            } else {
+                return &garden_waste_one_bin;
+            }
+        });
+        $mech->submit_form_ok({ with_fields => {
+            addresses => '11345'
+        }});
+        $mech->content_contains('There is currently a garden subscription at the new address',
+        'Can not transfer to a property with a ggw subscription');
+
+        $echo->mock('GetServiceUnitsForObject', sub {
+            if ($_[1] == '12345') {
+                return &garden_waste_only_refuse_sacks;
+            } else {
+                return &garden_waste_one_bin;
+            }
+        });
+        $mech->submit_form_ok({ with_fields => {
+            addresses => '11345'
+        }});
+        $mech->content_contains('Subscription can not be transferred as is in the renewal period or expired',
+        'Subscription can not be transferred as it is due for renewal');
+
+        set_fixed_time('2021-02-09T17:00:00Z'); # After sample data collection
+        $mech->submit_form_ok({ with_fields => {
+            addresses => '11345'
+        }});
+        $mech->content_contains('Confirm transfer', 'Moved onto confirm page');
+        $mech->content_contains('From: 1 Example Street, Merton', 'Correct from address');
+        $mech->content_contains('To: 2 Example Street, Merton', 'Correct to address');
+
+        $mech->submit_form_ok;
+        my $recent_reports = FixMyStreet::DB->resultset('Problem')->search(
+            { },
+            { order_by => { -desc => 'id' }, rows => 2 },
+        );
+        my ($new_report, $cancel_report) = $recent_reports->all;
+        is $new_report->title, 'Garden Subscription - New', 'New report title correct';
+        is $new_report->detail, "Garden Subscription\n\n2 Example Street, Merton,", 'New report detail correct';
+        is $cancel_report->title, 'Garden Subscription - Cancel', 'Cancelled report title correct';
+        is $cancel_report->detail, "Cancel Garden Subscription\n\n1 Example Street, Merton, SM2 5HF", 'Cancelled report detail correct';
+    };
 
     subtest 'cancel staff sub' => sub {
+        $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_cancel');
         $mech->submit_form_ok({ with_fields => { name => 'Test McTest', email => 'test@example.org', confirm => 1 } });
