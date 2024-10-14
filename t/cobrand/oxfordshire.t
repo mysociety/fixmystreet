@@ -275,6 +275,7 @@ FixMyStreet::override_config {
     subtest 'extra CSV columns are present' => sub {
 
         $problems[1]->update_extra_field({ name => 'usrn', value => '20202020' });
+        $problems[1]->set_extra_metadata(contributed_by => $counciluser->id);
         $problems[1]->update({ external_id => $problems[1]->id });
         $problems[2]->update({ external_id => "123098123" });
 
@@ -284,7 +285,7 @@ FixMyStreet::override_config {
 
         my @rows = $mech->content_as_csv;
         is scalar @rows, 7, '1 (header) + 6 (reports) = 7 lines';
-        is scalar @{$rows[0]}, 23, '23 columns present';
+        is scalar @{$rows[0]}, 24, '24 columns present';
 
         is_deeply $rows[0],
             [
@@ -292,7 +293,7 @@ FixMyStreet::override_config {
                 'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
                 'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
                 'Easting', 'Northing', 'Report URL', 'Device Type', 'Site Used',
-                'Reported As', 'HIAMS/Exor Ref', 'USRN',
+                'Reported As', 'HIAMS/Exor Ref', 'USRN', 'Staff Role'
             ],
             'Column headers look correct';
 
@@ -300,7 +301,43 @@ FixMyStreet::override_config {
         is $rows[1]->[22], '', 'Report without USRN has empty usrn field';
         is $rows[2]->[21], '', 'Report without HIAMS ref has empty ref field';
         is $rows[2]->[22], '20202020', 'USRN included in row if present';
+        is $rows[2]->[23], 'Role', 'Correct staff role';
         is $rows[3]->[21], '123098123', 'Older Exor report has correct ref';
+    };
+
+    subtest 'extra update CSV columns are present' => sub {
+
+        $problems[1]->add_to_comments({
+            text => 'Test update',
+            user => $counciluser,
+            send_state => 'processed',
+            extra => {
+                contributed_by => $counciluser->id,
+            }
+        });
+
+        $mech->get_ok('/dashboard?export=1&updates=1');
+
+        diag $mech->content;
+        my @rows = $mech->content_as_csv;
+        is scalar @rows, 4, '1 (header) + 3 (updates) = 4 lines';
+        is scalar @{$rows[0]}, 9, '9 columns present';
+
+        is_deeply $rows[0],
+            [
+                'Report ID',
+                'Update ID',
+                'Date',
+                'Status',
+                'Problem state',
+                'Text',
+                'User Name',
+                'Reported As',
+                'Staff Role',
+            ],
+            'Column headers look correct';
+
+        is $rows[3]->[8], 'Role', 'Correct role in output';
     };
 
     subtest 'role filter works okay pre-generated' => sub {
