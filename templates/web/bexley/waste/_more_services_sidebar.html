@@ -12,10 +12,10 @@
   [% IF property.is_communal %]
     <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/find-your-collection-day-and-report-missed-bin/replace-damaged-or-missing-bins">Order replacement bins, boxes or sacks</a></li>
   [% ELSE %]
-    <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Order replacement bins, boxes or sacks</a></li>
-    <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Order removal of old containers</a></li>
+    <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request-type=delivery">Order replacement bins, boxes or sacks</a></li>
+    <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request-type=removal">Order removal of old containers</a></li>
     [% IF property.can_order_lids %]
-      <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Order lids for recycling boxes</a></li>
+      <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request-type=delivery">Order lids for recycling boxes</a></li>
     [% END %]
   [% END %]
 
