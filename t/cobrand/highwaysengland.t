@@ -49,6 +49,8 @@ my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method 
 
 $mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole (NH)');
 
+my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $highways, password => 'password');
+
 FixMyStreet::DB->resultset("Role")->create({
     body => $highways,
     name => 'Inspector',
@@ -213,8 +215,6 @@ subtest 'Dashboard CSV extra columns' => sub {
         cobrand => 'fixmystreet',
     });
 
-    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
-        from_body => $highways, password => 'password');
     $mech->log_in_ok( $staffuser->email );
 
     my $now = DateTime->now;
@@ -259,12 +259,24 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains(join ',', @row1);
     $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
 
+    $comment1->delete;
+    $comment2->delete;
 };
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'highwaysengland' ],
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
+    subtest 'update message' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->first;
+        $mech->create_comment_for_problem($report, $staffuser, 'Staff user', 'Normal update', 'f', 'confirmed', 'confirmed');
+        $mech->create_comment_for_problem($report, $staffuser, 'National Highways', 'Body update', 'f', 'confirmed', 'confirmed', { extra => { contributed_as => 'body' } });
+        $mech->get_ok('/report/' . $report->id);
+        my $metas = $mech->extract_update_metas;
+        like $metas->[0], qr/Posted by Staff user at/;
+        like $metas->[1], qr/Posted by National Highways at/;
+    };
+
     subtest 'Categories must end with (NH)' => sub {
         my $superuser = $mech->create_user_ok('super@example.com', name => 'Admin',
             from_body => $highways, password => 'password', is_superuser => 1);

@@ -310,6 +310,9 @@ sub meta_line {
                 $body = 'Island Roads';
             } elsif ($body eq 'Thamesmead') {
                $body = 'Peabody';
+            } elsif ($body eq 'National Highways') {
+                # Always use what was saved on the comment
+                $body = FixMyStreet::Template::html_filter($self->name);
             }
         }
         my $cobrand_always_view_body_user = $cobrand->call_hook(always_view_body_contribute_details => $contributed_as);
