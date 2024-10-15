@@ -549,7 +549,7 @@ sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $report = $update->problem;
-    if ($self->_has_report_been_sent_to_echo($report)) {
+    if ($self->_has_report_been_sent_to_echo($report) && $report->cobrand ne 'waste') {
         # We need to know whether to treat this as a normal update or a referral.
         # We have the GUID but not the ID so we look this up.
         my $cfg = $self->feature('echo');
