@@ -22,9 +22,9 @@ FixMyStreet::override_config {
 }, sub {
 
 for my $test (
-    { button => 'submit_register_mobile', service => 'PWA (mobile)' },
-    { button => 'submit_register', service => 'PWA (desktop)' },
-    { button => undef, service => 'PWA' },
+    { button => 'submit_register_mobile', service => 'PWA (mobile)', display => 'mobile' },
+    { button => 'submit_register', service => 'PWA (desktop)', display => 'desktop' },
+    { button => undef, service => 'PWA', display => 'mobile' },
 ) {
 
     subtest "App platform stored in service field" => sub {
@@ -56,6 +56,7 @@ for my $test (
 
         is $report->state, 'confirmed', "report confirmed";
         is $report->service, $test->{service}, "service is correct value";
+        is $report->service_display, $test->{display}, "service display is correct value";
         $mech->get_ok( '/report/' . $report->id );
 
         $mech->log_out_ok;

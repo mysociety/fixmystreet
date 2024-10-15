@@ -111,6 +111,11 @@ FixMyStreet::override_config {
             ], 'Open311 report is initially in Surrey cobrand');
         };
 
+        subtest 'Check "Open311" is not shown' => sub {
+            $mech->get_ok('/report/' . $report->id);
+            $mech->content_contains('Reported in the Potholes');
+        };
+
     subtest 'Get error when email included in report' => sub {
         $mech->get_ok('/report/new?longitude=-0.441269&latitude=51.293415');
         $mech->submit_form_ok({ with_fields => { category => 'Potholes', title => 'Potholes', detail => 'On main road', name => 'Bob Betts', username_register => 'user@example.org' } });
