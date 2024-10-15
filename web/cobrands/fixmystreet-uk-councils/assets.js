@@ -1805,6 +1805,32 @@ fixmystreet.assets.tfl.asset_not_found = function() {
     fixmystreet.assets.named_select_action_not_found.call(this);
 };
 
+fixmystreet.assets.tfl.construct_selected_asset_message = function(asset) {
+    var id = asset.attributes.STOP_CODE || '';
+    var road = asset.attributes.ROAD_NAME || '';
+
+    if (!id) {
+        // Clicked on a shelter, but always want to show the bus stop ID
+        var lonlat = asset.geometry.getBounds().getCenterLonLat();
+        var other_layer = fixmystreet.map.getLayersByName("TfL Bus Stops")[0];
+        var overlapping_features = other_layer.getFeaturesWithinDistance(
+            new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat), 1);
+        if (overlapping_features.length) {
+            id = overlapping_features[0].attributes.STOP_CODE;
+        }
+    }
+    if (!id) {
+        return;
+    }
+
+    var message = ['You have selected', this.fixmystreet.asset_item, '<b>' + id + '</b>'];
+    if (road) {
+        road = road.replace(/[^-\s]+/g, function(s) { return s.charAt(0).toUpperCase() + s.substring(1).toLowerCase(); });
+        message.push('(' + road + ')');
+    }
+    return message.join(' ');
+};
+
 // Roadworks asset layer
 
 fixmystreet.assets.tfl.roadworks_stylemap = new OpenLayers.StyleMap({
