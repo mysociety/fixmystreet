@@ -227,4 +227,43 @@ sub should_skip_sending_update {
 
 =cut
 
+=head2 record_update_extra_fields
+
+We want to create comments when assigned (= shortlisted) user or
+extra details (= detail_information) are updated for a report.
+
+=cut
+
+sub record_update_extra_fields {
+    {   shortlisted_user     => 1,
+        detailed_information => 1,
+    };
+}
+
+=head2 open311_munge_update_params
+
+We pass a report's 'detailed_information' (from its
+extra_metadata) to Alloy, as an 'extra_details' attribute.
+
+We pass the name and email address of the user assigned to the report (the
+user who has shortlisted the report).
+
+=cut
+
+sub open311_munge_update_params {
+    my ( $self, $params, $comment, undef ) = @_;
+
+    my $p = $comment->problem;
+
+    my $detailed_information
+        = $p->get_extra_metadata('detailed_information') // '';
+    $params->{'attribute[extra_details]'} = $detailed_information;
+
+    my $assigned_to = $p->shortlisted_user;
+    $params->{'attribute[assigned_to_user_email]'}
+        = $assigned_to
+        ? $assigned_to->email
+        : '';
+}
+
 1;
