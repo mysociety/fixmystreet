@@ -56,7 +56,7 @@ $dbi_mock->mock( 'connect', sub {
                     locality_name     => 'Little Bexlington',
                     town_name         => 'Bexley',
 
-                    parent_uprn => 999999,
+                    has_parent => 1,
                 },
             ];
         }
@@ -85,7 +85,7 @@ $dbi_mock->mock( 'connect', sub {
                 locality_name     => 'Little Bexlington',
                 town_name         => 'Bexley',
 
-                parent_uprn => 999999,
+                has_parent => 1,
             };
         }
     } );
