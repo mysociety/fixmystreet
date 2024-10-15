@@ -80,7 +80,7 @@ sub create_problems {
     my $requests = $open311->get_service_requests( $args );
 
     unless ( $open311->success ) {
-        warn "Failed to fetch ServiceRequest Updates for " . $body->name . ":\n" . $open311->error
+        warn "Failed to fetch ServiceRequests for " . $body->name . ":\n" . $open311->error
             if $self->verbose;
         return 0;
     }
