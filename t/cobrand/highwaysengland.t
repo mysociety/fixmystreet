@@ -56,6 +56,12 @@ FixMyStreet::DB->resultset("Role")->create({
     name => 'Inspector',
     permissions => ['moderate', 'user_edit'],
 });
+my $role_admin = FixMyStreet::DB->resultset("Role")->create({
+    body => $highways,
+    name => 'Admin',
+    permissions => ['moderate', 'user_edit'],
+});
+$staffuser->add_to_roles($role_admin);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'highwaysengland', 'fixmystreet' ],

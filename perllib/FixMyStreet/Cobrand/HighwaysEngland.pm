@@ -420,6 +420,19 @@ sub _report_new_is_on_he_road_not_litter {
     return scalar @$features ? 0 : 1;
 }
 
+=item * Only Admin roles can access the dashboard
+
+=cut
+
+sub dashboard_permission {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $admin = grep { $_->name eq 'Admin' } $c->user->obj->roles->all;
+    return 0 unless $admin;
+    return undef;
+}
+
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
