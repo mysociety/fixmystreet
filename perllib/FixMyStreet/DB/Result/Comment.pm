@@ -310,6 +310,8 @@ sub meta_line {
                 $body = 'Island Roads';
             } elsif ($body eq 'Thamesmead') {
                $body = 'Peabody';
+            } elsif ($body eq 'National Highways') {
+                $body = $user_name if $contributed_as ne 'body'; # Only show body if contributed_as body
             }
         }
         my $cobrand_always_view_body_user = $cobrand->call_hook(always_view_body_contribute_details => $contributed_as);

@@ -375,40 +375,6 @@ sub user_from_oidc {
     return ($name, $email);
 }
 
-=item * TfL sends the user role in the single sign-on payload, which we use to set the FMS role
-
-=cut
-
-sub roles_from_oidc {
-    my ($self, $user, $roles) = @_;
-
-    return unless $roles && @$roles;
-
-    $user->user_roles->delete;
-    $user->from_body($self->body->id);
-
-    my $cfg = $self->feature('oidc_login') || {};
-    my $role_map = $cfg->{role_map} || {};
-
-    my @body_roles;
-    for ($user->from_body->roles->order_by('name')->all) {
-        push @body_roles, {
-            id => $_->id,
-            name => $_->name,
-        }
-    }
-
-    for my $assign_role (@$roles) {
-        my ($body_role) = grep { $role_map->{$assign_role} && $_->{name} eq $role_map->{$assign_role} } @body_roles;
-
-        if ($body_role) {
-            $user->user_roles->find_or_create({
-                role_id => $body_role->{id},
-            });
-        }
-    }
-}
-
 sub state_groups_inspect {
     my $rs = FixMyStreet::DB->resultset("State");
     my @open = grep { $_ !~ /^(planned|investigating|for triage)$/ } FixMyStreet::DB::Result::Problem->open_states;
