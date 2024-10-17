@@ -1124,8 +1124,6 @@ sub collection_date {
     return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
 }
 
-sub _bulky_refund_cutoff_date { }
-
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
