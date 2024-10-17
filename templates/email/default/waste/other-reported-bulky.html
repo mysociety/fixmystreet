@@ -47,24 +47,18 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
       [% IF cobrand.moniker == 'peterborough' %]
         If you wish to cancel your booking, please call 01733 74 74 74.
       [% END %]
-    [% ELSIF cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston' %]
+    [% ELSIF cobrand.moniker != 'sutton' AND cobrand.moniker != 'kingston' AND cobrand.moniker != 'peterborough' %]
       If you wish to cancel your booking, please visit <a href="[% cancel_url %]">this link</a>.
     [% END %]
   </p>
 
-[% IF cobrand.moniker == 'peterborough' %]
-  <p style="[% p_style %]">
-    Please check the <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections">bulky waste collection</a>
-    page on the council’s website for information about this service.
-    This includes when and where to put your items out for collection, cancelling the service and obtaining a refund.
-  </p>
-[% ELSIF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+[% IF cobrand.moniker == 'peterborough' OR cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
   [% INCLUDE 'waste/_bulky_extra_text.html' %]
 [% END %]
 
 [% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
   <p style="[% p_style %]">Check you’ve read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a>.</p>
-[% ELSIF cobrand.feature('waste_features').bulky_tandc_link %]
+[% ELSIF cobrand.feature('waste_features').bulky_tandc_link AND cobrand.moniker != 'peterborough' %]
   <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a></p>
 [% END %]
 
