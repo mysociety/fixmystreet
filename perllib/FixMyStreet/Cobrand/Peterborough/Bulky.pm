@@ -59,21 +59,13 @@ collection
 
 =cut
 
-sub bulky_cancellation_cutoff_time {
-    {   hours   => 15,
-        minutes => 0,
-    }
-}
+sub bulky_cancellation_cutoff_time { { hours => 15, minutes => 0 } }
 
 =item * Bulky collections start at 6:45 each (working) day
 
 =cut
 
-sub bulky_collection_time {
-    {   hours   => 6,
-        minutes => 45,
-    }
-}
+sub bulky_collection_time { { hours => 6, minutes => 45 } }
 
 sub bulky_daily_slots { $_[0]->wasteworks_config->{daily_slots} || 40 }
 
