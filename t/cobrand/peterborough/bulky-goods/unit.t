@@ -402,7 +402,7 @@ sub _jobs_arrayref {
 
 ### end 'find_available_bulky_slots'
 
-subtest '_check_within_bulky_cancel_window' => sub {
+subtest '_bulky_check_within_a_window cancellation' => sub {
     my $now_dt;
     my $collection_date;
 
@@ -417,22 +417,22 @@ subtest '_check_within_bulky_cancel_window' => sub {
 
         subtest 'Now time earlier than 15:00' => sub {
             $now_dt->set( hour => 14, minute => 59, second => 59 );
-            ok( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
-                    $now_dt, $collection_date
+            ok( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
+                    $now_dt, $collection_date, 'cancellation'
                 )
             );
         };
         subtest 'Now time equals 15:00' => sub {
             $now_dt->set( hour => 15, minute => 0 );
-            ok!( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
-                    $now_dt, $collection_date
+            ok!( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
+                    $now_dt, $collection_date, 'cancellation'
                 )
             );
         };
         subtest 'Now time later than 15:00' => sub {
             $now_dt->set( hour => 15, minute => 1 );
-            ok!( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
-                    $now_dt, $collection_date
+            ok!( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
+                    $now_dt, $collection_date, 'cancellation'
                 )
             );
         };
@@ -447,8 +447,8 @@ subtest '_check_within_bulky_cancel_window' => sub {
         );
         $collection_date = DateTime->new(year => 2023, month => 4, day => 1);
 
-        ok !( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
-                $now_dt, $collection_date
+        ok !( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
+                $now_dt, $collection_date, 'cancellation'
             )
         );
     };
@@ -462,8 +462,8 @@ subtest '_check_within_bulky_cancel_window' => sub {
         );
         $collection_date = DateTime->new(year => 2023, month => 3, day => 31);
 
-        ok !( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
-                $now_dt, $collection_date
+        ok !( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
+                $now_dt, $collection_date, 'cancellation'
             )
         );
     };
@@ -478,8 +478,8 @@ subtest '_check_within_bulky_cancel_window' => sub {
         );
         $collection_date = DateTime->new(year => 2023, month => 4, day => 1);
 
-        ok( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
-                $now_dt, $collection_date
+        ok( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
+                $now_dt, $collection_date, 'cancellation'
             )
         );
     };
@@ -493,14 +493,14 @@ subtest '_check_within_bulky_cancel_window' => sub {
         );
         $collection_date = DateTime->new(year => 2023, month => 3, day => 31);
 
-        ok( FixMyStreet::Cobrand::Peterborough->_check_within_bulky_cancel_window(
-                $now_dt, $collection_date
+        ok( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
+                $now_dt, $collection_date, 'cancellation'
             )
         );
     };
 };
 
-subtest '_check_within_bulky_refund_window' => sub {
+subtest '_bulky_check_within_a_window refund' => sub {
     my $now_dt;
     my $collection_dt;
 
@@ -522,8 +522,8 @@ subtest '_check_within_bulky_refund_window' => sub {
             $now_dt->set( hour => 6, minute => 44 );
             ok !(
                 FixMyStreet::Cobrand::Peterborough
-                ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                 )
             );
         };
@@ -531,8 +531,8 @@ subtest '_check_within_bulky_refund_window' => sub {
             $now_dt->set( hour => 6, minute => 45 );
             ok !(
                 FixMyStreet::Cobrand::Peterborough
-                ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                 )
             );
         };
@@ -540,8 +540,8 @@ subtest '_check_within_bulky_refund_window' => sub {
             $now_dt->set( hour => 6, minute => 46 );
             ok !(
                 FixMyStreet::Cobrand::Peterborough
-                ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                 )
             );
         };
@@ -564,16 +564,16 @@ subtest '_check_within_bulky_refund_window' => sub {
         subtest 'before 6:45' => sub {
             $now_dt->set( hour => 6, minute => 44 );
             ok( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                    ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                     )
             );
         };
         subtest 'at 6:45' => sub {
             $now_dt->set( hour => 6, minute => 45 );
             ok !( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                    ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                     )
             );
         };
@@ -581,8 +581,8 @@ subtest '_check_within_bulky_refund_window' => sub {
             $now_dt->set( hour => 6, minute => 46 );
             ok !(
                 FixMyStreet::Cobrand::Peterborough
-                ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                 )
             );
         };
@@ -606,24 +606,24 @@ subtest '_check_within_bulky_refund_window' => sub {
         subtest 'before 6:45' => sub {
             $now_dt->set( hour => 6, minute => 44 );
             ok( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                    ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                     )
             );
         };
         subtest 'at 6:45' => sub {
             $now_dt->set( hour => 6, minute => 45 );
             ok( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                    ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                     )
             );
         };
         subtest 'after 6:45' => sub {
             $now_dt->set( hour => 6, minute => 46 );
             ok( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                    ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                     )
             );
         };
@@ -646,24 +646,24 @@ subtest '_check_within_bulky_refund_window' => sub {
         subtest 'before 6:45' => sub {
             $now_dt->set( hour => 6, minute => 44 );
             ok( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                    ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                     )
             );
         };
         subtest 'at 6:45' => sub {
             $now_dt->set( hour => 6, minute => 45 );
             ok( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                    ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                     )
             );
         };
         subtest 'after 6:45' => sub {
             $now_dt->set( hour => 6, minute => 46 );
             ok( FixMyStreet::Cobrand::Peterborough
-                    ->_check_within_bulky_refund_window(
-                    $now_dt, $collection_dt
+                    ->_bulky_check_within_a_window(
+                    $now_dt, $collection_dt, 'refund'
                     )
             );
         };

@@ -259,18 +259,6 @@ sub bulky_can_refund_collection {
         && $self->within_bulky_refund_window($p);
 }
 
-# A cancellation made less than 24 hours before the collection is scheduled to
-# begin is not entitled to a refund.
-sub _bulky_refund_cutoff_date {
-    my ($self, $collection_dt) = @_;
-    my $collection_time = $self->bulky_collection_time();
-    my $cutoff_dt       = $collection_dt->clone->set(
-        hour   => $collection_time->{hours},
-        minute => $collection_time->{minutes},
-    )->subtract( days => 1 );
-    return $cutoff_dt;
-}
-
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
