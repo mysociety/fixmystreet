@@ -91,7 +91,6 @@ Users of this role must supply the following:
 * time collections start;
 * number of days to look into the future for collection dates
 * function to return a report's collection date extra field as a DateTime
-* function to return the cancellation cutoff DateTime
 * function to return the refund cutoff DateTime
 * function to return whether free collection is available
 
@@ -508,7 +507,7 @@ sub within_bulky_refund_window {
 sub _check_within_bulky_refund_window {
     my ( $self, $now_dt, $collection_dt ) = @_;
     my $cutoff_dt = $self->_bulky_refund_cutoff_date($collection_dt);
-    return $now_dt <= $cutoff_dt;
+    return $now_dt < $cutoff_dt;
 }
 
 sub bulky_nice_collection_date {
