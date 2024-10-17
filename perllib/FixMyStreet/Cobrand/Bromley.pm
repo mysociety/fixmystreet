@@ -14,7 +14,6 @@ use FixMyStreet::DB;
 use Moo;
 with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::Pay360';
-with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::Cobrand::SCP';
 with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
@@ -349,6 +348,17 @@ sub open311_post_send_updates {
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
+
+    # Inline the Open311Multi code here, as we need to adjust it
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+
+    # If the report was sent to Bromley (external ID is digits), but now is
+    # Echo (contact starts with digits), use a dummy code so open311-adapter
+    # thinks it is a Passthrough service and the update goes to Bromley.
+    if ($comment->problem->external_id =~ /^\d+$/ && $contact->email =~ /^\d+/) {
+        $params->{service_code} = 'DUMMY';
+    }
 
     my $private_comments = $comment->get_extra_metadata('private_comments');
     if ($private_comments) {
