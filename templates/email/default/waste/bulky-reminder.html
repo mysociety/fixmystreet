@@ -58,7 +58,7 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
       You may still be able to cancel your booking.
     [% ELSE %]
       [% IF cobrand.moniker == 'peterborough' %]
-      You can obtain a refund if you cancel by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.
+      You can obtain a refund if you cancel by [% cobrand.bulky_nice_cancellation_cutoff_time %] on the working day prior to your collection.
       [% END %]
     [% END %]
   [% END %]

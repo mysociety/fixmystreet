@@ -2,12 +2,12 @@
 <ol>
     <li>Requesting a bulky waste collection usually takes approximately <strong>10 minutes</strong></li>
     <li>You can request up to <strong>[% c.cobrand.bulky_items_maximum | numwords %] items per collection</strong></li>
-    <li>Please ensure you have read the <strong><a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections" target="_blank">bulky waste collection</a></strong> page on the council’s website</li>
-    <li>In order to help us with your collection, we will ask you to optionally add pictures of the items to be collected and the location</li>
-    <li>Before confirming your booking, check all the info provided is correct</li>
+    <li>Please make sure you have read the <strong><a href="[% c.cobrand.call_hook('bulky_tandc_link') %]" target="_blank">bulky waste collection</a></strong> page on the council’s website</li>
+    <li>In order to help us with your collection, you may wish to add pictures of the items to be collected and the location</li>
+    <li>Before confirming your booking, you need to check all the information provided is correct</li>
     [% UNLESS cobrand.call_hook('bulky_enabled_staff_only') %]
         [% IF cobrand.moniker == 'peterborough' %]
-    <li><strong>Cancellations made by [% c.cobrand.bulky_nice_collection_time %]</strong> the day before collection is scheduled are entitled to a refund</li>
+    <li>You can cancel your collection (and receive a refund) up until [% c.cobrand.bulky_nice_cancellation_cutoff_time %] the working day before your collection.</li>
         [% END %]
     [% END %]
 </ol>

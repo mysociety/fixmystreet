@@ -54,12 +54,13 @@ sub bulky_workpack_name {
     qr/Waste-(BULKY WASTE|WHITES)-(?<date_suffix>\d{6})/;
 }
 
-=item * User can cancel bulky collection up to 15:00 before the day of
-collection
+=item * User can amend/refund/cancel up to 14:00 the working day before the bulky collection
 
 =cut
 
-sub bulky_cancellation_cutoff_time { { hours => 15, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 14, minutes => 0, working_days => 1 } }
+sub bulky_amendment_cutoff_time { { hours => 14, minutes => 0, working_days => 1 } }
+sub bulky_refund_cutoff_time { { hours => 14, minutes => 0, working_days => 1 } }
 
 =item * Bulky collections start at 6:45 each (working) day
 
