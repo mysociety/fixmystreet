@@ -337,15 +337,29 @@ will be one day later than tomorrow after 7am).
 
 sub bulky_collection_window_start_date {
     my ($self, $now) = @_;
-    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
+    my $start_date = $now->clone->truncate( to => 'day' );
+
     # If now is past cutoff time, push start date one day later
     my $cutoff_time = $self->bulky_cancellation_cutoff_time();
     my $days_before = $cutoff_time->{days_before} // 1;
-    my $cutoff_date_now = $now->clone->subtract( days => $days_before );
     my $cutoff_date = $self->_bulky_cancellation_cutoff_date($now);
-    if ($cutoff_date_now >= $cutoff_date) {
+    my $cutoff_date_now = $cutoff_date->clone->set( hour => $now->hour, minute => $now->minute );
+
+    if (!$cutoff_time->{working_days}) {
+        if ($cutoff_date_now >= $cutoff_date) {
+            $start_date->add( days => 1 );
+        }
         $start_date->add( days => $days_before );
+    } else {
+        my $wd = FixMyStreet::WorkingDays->new(
+            public_holidays => FixMyStreet::Cobrand::UK::public_holidays(),
+        );
+        if ($cutoff_date_now >= $cutoff_date || $wd->is_non_working_day($start_date)) {
+            $start_date = $wd->add_days($start_date, 1);
+        }
+        $start_date = $wd->add_days($start_date, $days_before);
     }
+
     return $start_date;
 }
 
@@ -484,7 +498,7 @@ sub within_bulky_refund_window {
 
 sub _bulky_refund_cutoff_date {
     my ($self, $collection_date) = @_;
-    return _bulky_time_object_to_datetime($collection_date, $self->bulky_collection_time());
+    return _bulky_time_object_to_datetime($collection_date, $self->bulky_refund_cutoff_time());
 }
 
 sub bulky_nice_collection_date {
