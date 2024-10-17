@@ -7,7 +7,7 @@
     <li>Before confirming your booking, check all the info provided is correct</li>
     [% UNLESS cobrand.call_hook('bulky_enabled_staff_only') %]
         [% IF cobrand.moniker == 'peterborough' %]
-    <li><strong>Cancellations made by [% c.cobrand.bulky_nice_collection_time %]</strong> the day before collection is scheduled are entitled to a refund</li>
+    <li><strong>Cancellations made by [% c.cobrand.bulky_nice_collection_time %]</strong> the working day before collection is scheduled are entitled to a refund</li>
         [% END %]
     [% END %]
 </ol>
