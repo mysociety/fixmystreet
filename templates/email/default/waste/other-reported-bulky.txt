@@ -51,17 +51,12 @@ If you wish to cancel your booking, please visit:
 
 [% END ~%]
 
-[% IF cobrand.moniker == 'peterborough' %]
-Please check the bulky waste collection page on the council’s website for information about this service. This includes when and where to put your items out for collection, cancelling the service and obtaining a refund:
-
-    https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
-
-[% ELSIF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+[% IF cobrand.moniker == 'peterborough' OR cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
 [% INCLUDE 'waste/_bulky_extra_text.txt' %]
 
 [% END %]
 
-[% IF cobrand.feature('waste_features').bulky_tandc_link %]
+[% IF cobrand.feature('waste_features').bulky_tandc_link AND NOT cobrand.moniker == 'peterborough' %]
 Please check you have read the terms and conditions [% cobrand.feature('waste_features').bulky_tandc_link %]
 [% END %]
 
