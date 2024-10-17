@@ -571,7 +571,7 @@ subtest '_check_within_bulky_refund_window' => sub {
         };
         subtest 'at 6:45' => sub {
             $now_dt->set( hour => 6, minute => 45 );
-            ok( FixMyStreet::Cobrand::Peterborough
+            ok !( FixMyStreet::Cobrand::Peterborough
                     ->_check_within_bulky_refund_window(
                     $now_dt, $collection_dt
                     )

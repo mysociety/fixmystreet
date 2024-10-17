@@ -8,6 +8,8 @@ email_columns = 2;
 PROCESS '_email_settings.html';
 INCLUDE '_email_top.html';
 
+property_id_uri = report.get_extra_field_value('property_id') | uri;
+cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel_url _ '/' _ report.id;
 %]
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
@@ -50,12 +52,10 @@ INCLUDE '_email_top.html';
       If you wish to cancel your booking, please call 01733 74 74 74.
     [% END %]
   [% ELSE %]
-    If you wish to cancel your booking, please visit <a href="[% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/[% bulky_cancel_url %]/[% report.id %]">this link</a>.
+    If you wish to cancel your booking, please visit <a href="[% cancel_url %]">this link</a>.
 
-    [% IF days == 1 && cobrand.moniker == 'brent' %]
+    [% IF days == 1 %]
       You may still be able to cancel your booking.
-    [% ELSIF days == 1 %]
-        You can still cancel your booking, but a refund is no longer available.
     [% ELSE %]
       [% IF cobrand.moniker == 'peterborough' %]
       You can obtain a refund if you cancel by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.
