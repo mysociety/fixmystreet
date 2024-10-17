@@ -766,9 +766,9 @@ textarea.form-error {
   // If the parent is .with-notes we know we have space to
   // float the sidebar content to the side of the form.
   .with-notes & {
-    float: #{$right};
+    position: absolute;
+    #{$right}: 1em;
     width: 13em;
-    margin-#{$right}: -15em;
   }
 
   div {
