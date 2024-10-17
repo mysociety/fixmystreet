@@ -37,6 +37,14 @@ has_page about_you => (
     fields => ['name', 'email', 'phone', 'continue'],
     title => 'About you',
     next => 'choose_date_earlier',
+    update_field_list => sub {
+        my $form = shift;
+        my $c = $form->c;
+        my $fields = {};
+        $fields->{phone}{tags}{hint} = 'Providing a phone number will allow Aragon Direct Services (who provide the service on behalf of the council) to contact you if there are any issues with the service.'
+            if $c->cobrand->moniker eq 'peterborough';
+        return $fields;
+    },
 );
 
 with 'FixMyStreet::App::Form::Waste::AboutYou';
