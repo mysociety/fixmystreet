@@ -340,11 +340,22 @@ sub bulky_collection_window_start_date {
     my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
     # If now is past cutoff time, push start date one day later
 
+    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
     my $cutoff_date = $self->_bulky_cancellation_cutoff_date($now);
-    my $cutoff_date_now = $cutoff_date->clone->set( hour => $now->hour, minute => $now->minute );
-    if ($cutoff_date_now >= $cutoff_date) {
-        $start_date->add( days => $now->delta_days($cutoff_date)->in_units('days') );
+
+    if (!$cutoff_time->{working_days}) {
+        my $days_before = $cutoff_time->{days_before} // 1;
+        my $cutoff_date_now = $now->clone->subtract( days => $days_before );
+        if ($cutoff_date_now >= $cutoff_date) {
+            $start_date->add( days => $days_before );
+        }
+    } else {
+        my $cutoff_date_now = $cutoff_date->clone->set( hour => $now->hour, minute => $now->minute );
+        if ($cutoff_date_now >= $cutoff_date) {
+            $start_date->add( days => $now->delta_days($cutoff_date)->in_units('days') );
+        }
     }
+
     return $start_date;
 }
 

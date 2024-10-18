@@ -403,8 +403,14 @@ sub _jobs_arrayref {
 ### end 'find_available_bulky_slots'
 
 subtest '_bulky_check_within_a_window cancellation' => sub {
+    my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
     my $now_dt;
     my $collection_date;
+    $mock_pbro->mock(
+        'bulky_cancellation_cutoff_time', sub {
+            { hours => 15, minutes => 0 }
+        },
+    );
 
     subtest 'Now one day earlier than collection date' => sub {
         $now_dt = DateTime->new(
@@ -501,9 +507,14 @@ subtest '_bulky_check_within_a_window cancellation' => sub {
 };
 
 subtest '_bulky_check_within_a_window refund' => sub {
+    my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
     my $now_dt;
     my $collection_dt;
-
+    $mock_pbro->mock(
+        'bulky_refund_cutoff_time', sub {
+            { hours => 06, minutes => 45 }
+        },
+    );
     subtest 'Now same day as collection date' => sub {
         $now_dt = DateTime->new(
             year      => 2023,
