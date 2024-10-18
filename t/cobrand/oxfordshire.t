@@ -307,7 +307,7 @@ FixMyStreet::override_config {
 
     subtest 'extra update CSV columns are present' => sub {
 
-        $problems[1]->add_to_comments({
+        my $comment = $problems[1]->add_to_comments({
             text => 'Test update',
             user => $counciluser,
             send_state => 'processed',
@@ -318,7 +318,6 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/dashboard?export=1&updates=1');
 
-        diag $mech->content;
         my @rows = $mech->content_as_csv;
         is scalar @rows, 4, '1 (header) + 3 (updates) = 4 lines';
         is scalar @{$rows[0]}, 9, '9 columns present';
@@ -338,6 +337,7 @@ FixMyStreet::override_config {
             'Column headers look correct';
 
         is $rows[3]->[8], 'Role', 'Correct role in output';
+        $comment->delete;
     };
 
     subtest 'role filter works okay pre-generated' => sub {
