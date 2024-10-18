@@ -408,15 +408,24 @@ subtest '_bulky_check_within_a_window cancellation' => sub {
     my $collection_date;
     $mock_pbro->mock(
         'bulky_cancellation_cutoff_time', sub {
-            { hours => 15, minutes => 0 }
+            { hours => 15, minutes => 0, working_days => 1}
         },
     );
 
-    subtest 'Now one day earlier than collection date' => sub {
+#      April 2023
+# Su Mo Tu We Th Fr Sa
+#                    1
+#  2  3  4  5  6  7  8
+#  9 10 11 12 13 14 15
+# 16 17 18 19 20 21 22
+# 23 24 25 26 27 28 29
+# 30
+
+    subtest 'Now one working day earlier than collection date' => sub {
         $now_dt = DateTime->new(
             year      => 2023,
-            month     => 4,
-            day       => 1,
+            month     => 3,
+            day       => 31,
             time_zone => FixMyStreet->local_time_zone,
         );
         $collection_date = DateTime->new(year => 2023, month => 4, day => 2);
@@ -429,7 +438,7 @@ subtest '_bulky_check_within_a_window cancellation' => sub {
             );
         };
         subtest 'Now time equals 15:00' => sub {
-            $now_dt->set( hour => 15, minute => 0 );
+            $now_dt->set( hour => 15, minute => 0, second => 0 );
             ok!( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
                     $now_dt, $collection_date, 'cancellation'
                 )
@@ -444,26 +453,31 @@ subtest '_bulky_check_within_a_window cancellation' => sub {
         };
     };
 
-    subtest 'Now same day as collection date' => sub {
-        $now_dt = DateTime->new(
-            year      => 2023,
-            month     => 4,
-            day       => 1,
-            time_zone => 'Europe/London',
-        );
-        $collection_date = DateTime->new(year => 2023, month => 4, day => 1);
+    for my $dates (
+        { day => 31, month => 3, desc => 'weekday' },
+        { day => 1, month => 4, desc => 'weekend' },
+    ) {
+        subtest 'Now same day as collection date on ' . $dates->{desc} => sub {
+            $now_dt = DateTime->new(
+                year      => 2023,
+                month     => $dates->{month},
+                day       => $dates->{day},
+                time_zone => 'Europe/London',
+            );
+            $collection_date = DateTime->new(year => 2023, month => $dates->{month}, day => $dates->{day});
 
-        ok !( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
-                $now_dt, $collection_date, 'cancellation'
-            )
-        );
+            ok !( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
+                    $now_dt, $collection_date, 'cancellation'
+                )
+            );
+        };
     };
 
     subtest 'Now later day than collection date' => sub {
         $now_dt = DateTime->new(
             year      => 2023,
             month     => 4,
-            day       => 1,
+            day       => 3,
             time_zone => 'Europe/London',
         );
         $collection_date = DateTime->new(year => 2023, month => 3, day => 31);
@@ -475,26 +489,31 @@ subtest '_bulky_check_within_a_window cancellation' => sub {
     };
 
     # Check we are taking year into account when considering day comparisons
-    subtest 'Now same date as collection date but year earlier' => sub {
-        $now_dt = DateTime->new(
-            year      => 2022,
-            month     => 4,
-            day       => 1,
-            time_zone => 'Europe/London',
-        );
-        $collection_date = DateTime->new(year => 2023, month => 4, day => 1);
+   for my $dates (
+        { day => 31, month => 3, desc => 'weekday' },
+        { day => 1, month => 4, desc => 'weekend' },
+    ) {
+        subtest 'Now same date as collection date but year earlier on ' . $dates->{desc} => sub {
+            $now_dt = DateTime->new(
+                year      => 2022,
+                month     => $dates->{month},
+                day       => $dates->{day},
+                time_zone => 'Europe/London',
+            );
+            $collection_date = DateTime->new(year => 2023, month => $dates->{month}, day => $dates->{day});
 
-        ok( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
-                $now_dt, $collection_date, 'cancellation'
-            )
-        );
+            ok( FixMyStreet::Cobrand::Peterborough->_bulky_check_within_a_window(
+                    $now_dt, $collection_date, 'cancellation'
+                )
+            );
+        };
     };
 
     subtest 'Now later date than collection date but year earlier' => sub {
         $now_dt = DateTime->new(
             year      => 2022,
             month     => 4,
-            day       => 1,
+            day       => 3,
             time_zone => 'Europe/London',
         );
         $collection_date = DateTime->new(year => 2023, month => 3, day => 31);
@@ -512,20 +531,20 @@ subtest '_bulky_check_within_a_window refund' => sub {
     my $collection_dt;
     $mock_pbro->mock(
         'bulky_refund_cutoff_time', sub {
-            { hours => 06, minutes => 45 }
+            { hours => 06, minutes => 45, working_days => 1 }
         },
     );
     subtest 'Now same day as collection date' => sub {
         $now_dt = DateTime->new(
             year      => 2023,
             month     => 4,
-            day       => 1,
+            day       => 3,
             time_zone => 'Europe/London',
         );
         $collection_dt = DateTime->new(
             year      => 2023,
             month     => 4,
-            day       => 1,
+            day       => 3,
             time_zone => 'Europe/London',
         );
 
@@ -558,11 +577,11 @@ subtest '_bulky_check_within_a_window refund' => sub {
         };
     };
 
-    subtest 'Now day before collection date' => sub {
+    subtest 'Now one working day before collection date' => sub {
         $now_dt = DateTime->new(
             year      => 2023,
-            month     => 4,
-            day       => 1,
+            month     => 3,
+            day       => 31,
             time_zone => 'Europe/London',
         );
         $collection_dt = DateTime->new(
@@ -679,6 +698,51 @@ subtest '_bulky_check_within_a_window refund' => sub {
             );
         };
     };
+};
+
+subtest 'bulky_collection_window_start_date' => sub {
+    my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
+    $mock_pbro->mock(
+        'bulky_cancellation_cutoff_time', sub {
+            { hours => 14, minutes => 0, working_days => 1}
+        },
+    );
+    my $mock_uk = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+    $mock_uk->mock('public_holidays', sub { return [ '2024-10-21' ]});
+    my $now_dt = DateTime->new(
+        year      => 2024,
+        month     => 10,
+        time_zone => 'Europe/London',
+    );
+    for my $test (
+        { day => 17, hour => 13, result => '2024-10-18T00:00:00'},
+        { day => 17, hour => 14, result => '2024-10-22T00:00:00'},
+        { day => 18, hour => 13, result => '2024-10-22T00:00:00'},
+        { day => 18, hour => 14, result => '2024-10-23T00:00:00'},
+        { day => 19, hour => 13, result => '2024-10-23T00:00:00'},
+        { day => 19, hour => 14, result => '2024-10-23T00:00:00'},
+        { day => 20, hour => 13, result => '2024-10-23T00:00:00'},
+        { day => 20, hour => 14, result => '2024-10-23T00:00:00'},
+        { day => 21, hour => 13, result => '2024-10-23T00:00:00'},
+        { day => 21, hour => 14, result => '2024-10-23T00:00:00'},
+        { day => 22, hour => 13, result => '2024-10-23T00:00:00'},
+        { day => 22, hour => 14, result => '2024-10-24T00:00:00'},
+        { day => 23, hour => 13, result => '2024-10-24T00:00:00'},
+        { day => 23, hour => 14, result => '2024-10-25T00:00:00'},
+        { day => 24, hour => 13, result => '2024-10-25T00:00:00'},
+        { day => 24, hour => 14, result => '2024-10-28T00:00:00'},
+        { day => 25, hour => 13, result => '2024-10-28T00:00:00'},
+        { day => 25, hour => 14, result => '2024-10-29T00:00:00'},
+        { day => 26, hour => 13, result => '2024-10-29T00:00:00'},
+        { day => 26, hour => 14, result => '2024-10-29T00:00:00'},
+    ) {
+        $now_dt->set(day => $test->{day}, hour => $test->{hour});
+        is( FixMyStreet::Cobrand::Peterborough
+            ->bulky_collection_window_start_date(
+                $now_dt
+            ), $test->{result}
+        );
+    }
 };
 
 done_testing;
