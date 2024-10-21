@@ -189,6 +189,7 @@ subtest '_set_request_containers' => sub {
             {   name                => 'Recycling Box Lids',
                 service_item_name   => 'Deliver Box lids 55L',
                 service_id_delivery => '216',
+                max                 => 5,
             },
 
             {   name                => 'Clear Sack(s)',
@@ -201,6 +202,7 @@ subtest '_set_request_containers' => sub {
                 service_item_name   => 'FO-23',
                 service_id_delivery => '224',
                 service_id_removal  => '156',
+                max                 => 3,
             },
             {   name                => 'Kitchen Caddy',
                 service_item_name   => 'Kitchen 5 Ltr Caddy',
@@ -291,6 +293,7 @@ subtest '_set_request_containers' => sub {
                 service_item_name   => 'FO-23',
                 service_id_delivery => '224',
                 service_id_removal  => '156',
+                max                 => 3,
             },
         ],
     };
@@ -311,11 +314,15 @@ subtest '_set_request_containers' => sub {
 subtest 'Munge data' => sub {
     my $data = {
         'category' => 'Request new container',
+
         'bin-size-Green-Wheelie-Bin' => 'RES-140',
         'container-Deliver-Box-lids-55L' => 1,
         'container-FO-23' => 1,
         'container-PC-55' => 0,
         'parent-Green-Wheelie-Bin' => 1,
+
+        'quantity-Deliver-Box-lids-55L' => 3,
+        'quantity-FO-23' => 2,
     };
 
     subtest 'waste_munge_request_form_data' => sub {
@@ -323,11 +330,15 @@ subtest 'Munge data' => sub {
 
         cmp_deeply $data, {
             'category' => 'Request new container',
+
             'bin-size-Green-Wheelie-Bin' => 'RES-140',
             'container-Deliver-Box-lids-55L' => 1,
             'container-FO-23' => 1,
             'container-PC-55' => 0,
             'parent-Green-Wheelie-Bin' => 1,
+
+            'quantity-Deliver-Box-lids-55L' => 3,
+            'quantity-FO-23' => 2,
 
             # New
             'container-RES-140' => 1,
@@ -345,6 +356,7 @@ subtest 'Munge data' => sub {
         } } );
         $cobrand->{c}->mock( stash => sub { {
             property =>  {
+                address => 'ABC',
                 uprn => 123456,
                 containers_for_delivery => [
                     {   name                => 'Recycling Box Lids',
@@ -394,31 +406,52 @@ subtest 'Munge data' => sub {
             (   {   id            => 'Deliver-Box-lids-55L',
                     expected_data => {
                         title  => 'Request new Recycling Box Lids',
-                        detail => '# TODO',
+                        detail => 'Request new Recycling Box Lids
+
+ABC
+
+Reason: TODO
+
+Quantity: 3',
                     },
                     expected_params => {
                         uprn              => 123456,
                         service_item_name => 'Deliver Box lids 55L',
+                        quantity          => 3,
                     },
                 },
                 {   id            => 'FO-23',
                     expected_data => {
                         title  => 'Request new Brown Caddy',
-                        detail => '# TODO',
-                    },
+                        detail => 'Request new Brown Caddy
+
+ABC
+
+Reason: TODO
+
+Quantity: 2',
+                },
                     expected_params => {
                         uprn              => 123456,
                         service_item_name => 'FO-23',
+                        quantity          => 2,
                     },
                 },
                 {   id            => 'RES-140',
                     expected_data => {
                         title  => 'Request new Green Wheelie Bin',
-                        detail => '# TODO',
-                    },
+                        detail => 'Request new Green Wheelie Bin
+
+ABC
+
+Reason: TODO
+
+Quantity: 1',
+                },
                     expected_params => {
                         uprn              => 123456,
                         service_item_name => 'RES-140',
+                        quantity          => 1,
                     },
                 },
             )
@@ -433,12 +466,16 @@ subtest 'Munge data' => sub {
 
             cmp_deeply $data, {
                 'category'                       => 'Request new container',
+
                 'bin-size-Green-Wheelie-Bin'     => 'RES-140',
                 'container-Deliver-Box-lids-55L' => 1,
                 'container-FO-23'                => 1,
                 'container-PC-55'                => 0,
                 'container-RES-140'              => 1,
                 'parent-Green-Wheelie-Bin'       => 1,
+
+                'quantity-Deliver-Box-lids-55L' => 3,
+                'quantity-FO-23' => 2,
 
                 # New
                 %{ $test->{expected_data} },
