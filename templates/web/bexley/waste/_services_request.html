@@ -1,5 +1,5 @@
 [% IF unit.delivery_allowed %]
-  <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
+  <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=delivery" id="form-[% unit.service_id %]-delivery">
 
     [% # TODO %]
     <input type="hidden" name="token" value="[% csrf_token %]">
@@ -7,15 +7,13 @@
     [% form %]
 
     <input type="hidden" name="container-[% unit.service_id %]" value="1">
-
-    <input type="hidden" name="request-type" value="delivery">
 
     <input type="submit" value="Request a new or replacement [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
   </form>
 [% END %]
 
 [% IF unit.removal_allowed %]
-  <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
+  <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=removal" id="form-[% unit.service_id %]-removal">
 
     [% # TODO %]
     <input type="hidden" name="token" value="[% csrf_token %]">
@@ -23,8 +21,6 @@
     [% form %]
 
     <input type="hidden" name="container-[% unit.service_id %]" value="1">
-
-    <input type="hidden" name="request-type" value="removal">
 
     <input type="submit" value="Request removal of a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
   </form>
