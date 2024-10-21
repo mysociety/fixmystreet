@@ -20,6 +20,7 @@ use Integrations::Whitespace;
 use DateTime;
 use DateTime::Format::W3CDTF;
 use FixMyStreet;
+use FixMyStreet::App::Form::Waste::Request::Bexley;
 use FixMyStreet::Template;
 use Sort::Key::Natural qw(natkeysort_inplace);
 
@@ -46,11 +47,19 @@ use constant WORKING_DAYS_WINDOW => 3;
 
 C<0001-01-01T00:00:00> represents an undefined date in Whitespace.
 
+=cut
+
+use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
+
+=item * CONTAINER_REQUEST_MAX
+
+We only allow customer to request 1 container per container type
+
 =back
 
 =cut
 
-use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
+use constant CONTAINER_REQUEST_MAX => 1;
 
 sub waste_fetch_events {
     my ( $self, $params ) = @_;
@@ -220,6 +229,82 @@ sub look_up_property {
     };
 }
 
+# Maps a container (ServiceItemID) to a ServiceID for delivery
+sub container_to_delivery_mapping {
+    return {
+        21  => 272,
+        22  => 273, # RES-180
+        23  => 274,
+        799 => 328,
+        800 => 329,
+        801 => 330,
+        802 => 331,
+        789 => 324,
+        790 => 325,
+        791 => 326,
+        792 => 327,
+        17  => 243,
+        33  => 224,
+        701 => 235,
+
+        591 => 216,    # Lids
+
+        # Not mentioned by Bexley
+        # FO-23 - Food 23 ltr Caddy - 'Brown Caddy'
+        33 => 224,
+
+        # TODO What about collections?
+        # We need to raise a worksheet for delivery of new bin AND a worksheet
+        # for collection of old bin, at the same time?
+    };
+}
+
+sub options_for_container_requests {
+    my ( $self, $property, $services ) = @_;
+
+    # TODO Direct communal properties to email form
+    return {} if $property->{is_communal};
+
+    return { 'MDR-SACK' => [ 'MDR-SACK' ] } if $property->{above_shop};
+
+    my $options = {};
+    for (@$services) {
+        warn "====\n\t" . $_->{round_schedule} . ' : ' . $_->{service_id} . ' : ' . $_->{service_name} . "\n====";
+
+        if ( $_->{round_schedule} =~ /BOX/ ) {
+            $options->{ $_->{service_id} } = {
+                'PG-55' => 'White recycling box',
+                'PC-55' => 'Blue recycling box',
+            };
+        } elsif ( $_->{round_schedule} =~ /RES/ ) {
+            $options->{ $_->{service_id} } = {
+                'RES-140' => 'Green wheelie bin 140L',
+                'RES-180' => 'Green wheelie bin 180L',
+                'RES-240' => 'Green wheelie bin 240L',
+            };
+        } elsif (
+                $_->{round_schedule} =~ /PG/
+            || $_->{service_id} =~ /^PG-/
+        ) {
+            $options->{ $_->{service_id} } = {
+                'PG-140' => 'White lidded wheelie bin 140L',
+                'PG-180' => 'White lidded wheelie bin 180L',
+                'PG-240' => 'White lidded wheelie bin 240L',
+            };
+        }
+        # etc...
+
+        # TODO Box lids
+        # TODO
+        # Multiple box lids can be requested. (Up to 5).
+        # Multiple food boxes(?) can be requested. (Up to 3).
+        # TODO/CHECKME
+        #
+    }
+
+    return $options;
+}
+
 sub bin_services_for_address {
     my $self = shift;
     my $property = shift;
@@ -366,6 +451,8 @@ sub bin_services_for_address {
             },
             assisted_collection => $assisted_collection,
             uprn => $uprn,
+            request_containers => [ $service->{ServiceItemName} ],
+            request_max => CONTAINER_REQUEST_MAX,
         };
 
         if ($last_dt) {
@@ -439,6 +526,9 @@ sub bin_services_for_address {
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
 
     @site_services_filtered = $self->service_sort(@site_services_filtered);
+
+    $property->{options_for_container_requests} =
+        $self->options_for_container_requests($property,\@site_services_filtered);
 
     return \@site_services_filtered;
 }
@@ -1223,6 +1313,30 @@ sub get_in_cab_logs_reason_prefix {
     }
 
     return '';
+}
+
+# For new container requests
+
+sub waste_request_form_first_next {
+    return 'replacement';
+}
+
+sub waste_munge_request_data {
+    my ($self, $id, $data) = @_;
+
+    my $c = $self->{c};
+    my $service = $c->stash->{services}{$id};
+
+    my $service_name      = $service->{service_name};
+    my $service_item_name = $service->{service_id};
+    my $uprn              = $service->{uprn};
+    my $reason            = $data->{request_reason} || '';
+
+    $data->{title} = "Request new $service_name";
+    $data->{detail} = "Reason: $reason";
+    $c->set_param('uprn', $uprn);
+    $c->set_param( 'service_item_name', $service->{service_id} );
+    # $c->set_param('service_id', $id);
 }
 
 1;

@@ -6,6 +6,23 @@
 <h1 class="govuk-heading-xl">Your bin days</h1>
 [% END %]
 
+[% IF c.cobrand.moniker == 'bexley' %]
+  [% FOR group IN property.options_for_container_requests.keys %]
+    [% FOR id IN property.options_for_container_requests.$group.keys %]
+      <div>
+        <ul>
+          <li>
+            ID: [% id %]
+          </li>
+          <li>
+            Type: [% property.options_for_container_requests.$group.$id %]
+          </li>
+        </ul>
+      </div>
+    [% END %]
+  [% END %]
+[% END %]
+
 [% TRY %][% PROCESS waste/_service_navigation_bar.html %][% CATCH file %][% END %]
 [% INCLUDE 'waste/_address_display.html' %]
 [% TRY %][% PROCESS waste/_rotation_schedule.html %][% CATCH file %][% END %]
@@ -53,6 +70,26 @@
      [% IF c.cobrand.moniker != 'peterborough' %]
       <h3 class="govuk-heading-m waste-service-name">
           [% unit.service_name %]
+<div style="color: skyblue">
+<br>
+[% unit.round_schedule %]
+<br>
+[% unit.service_id %]
+<br>
+[% IF unit.service_id == 'MDR-SACK' %]
+Order new clear sacks
+[% ELSIF unit.round_schedule.match('RES') && unit.service_id != 'RES-SACK' %]
+Order new green wheelie bin
+[% ELSIF unit.service_id.match('FO') %]
+Order new brown food bin
+[% ELSIF unit.round_schedule.match('BOX') %]
+Order new recycling box
+[% ELSIF unit.service_id.match('PG') %]
+Order new white lidded wheelie bin
+[% ELSIF unit.service_id.match('PC') %]
+Order new blue lidded wheelie bin
+[% END %]
+</div>
           [% IF c.cobrand.moniker == 'brent' %]collection[% END %]
           [% IF unit.service_description %]
             <div class="waste-service-subtitle">
