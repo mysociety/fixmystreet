@@ -583,7 +583,6 @@ sub bulky_send_before_payment { 1 }
 sub bulky_show_location_field_mandatory { 1 }
 
 sub bulky_can_refund { 0 }
-sub _bulky_refund_cutoff_date { }
 
 sub bulky_allowed_property {
     my ( $self, $property ) = @_;

@@ -215,7 +215,7 @@ while( my $row = $csv->getline($fh) ) {
         # 'P' or 'PP' mean the property is a 'parent shell' and so should not be
         # offered as a selectable address.
         my $blpu_class = $uprn_extra_data{ $row_h{UPRN} }{blpu_class} // '';
-        next if $blpu_class && ( $blpu_class eq 'P' || $blpu_class eq 'PP' );
+        next if $blpu_class eq 'P' || $blpu_class eq 'PP';
 
         # Remove whitespace from postcode
         my $postcode = $row_h{POSTCODE} =~ s/ //gr;

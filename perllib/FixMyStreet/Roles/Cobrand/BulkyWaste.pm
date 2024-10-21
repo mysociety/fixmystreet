@@ -91,8 +91,6 @@ Users of this role must supply the following:
 * time collections start;
 * number of days to look into the future for collection dates
 * function to return a report's collection date extra field as a DateTime
-* function to return the cancellation cutoff DateTime
-* function to return the refund cutoff DateTime
 * function to return whether free collection is available
 
 =cut
@@ -101,7 +99,6 @@ requires 'bulky_cancellation_cutoff_time';
 requires 'bulky_collection_time';
 requires 'bulky_collection_window_days';
 requires 'collection_date';
-requires '_bulky_refund_cutoff_date';
 requires 'bulky_free_collection_available';
 
 sub bulky_cancel_by_update { 0 }
@@ -340,7 +337,8 @@ sub _bulky_collection_window {
 
         $start_date->add( days => 1 );
     } else {
-        $start_date = $self->bulky_collection_window_start_date();
+        my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+        $start_date = $self->bulky_collection_window_start_date($now);
     }
 
     my $date_to
@@ -362,17 +360,30 @@ will be one day later than tomorrow after 7am).
 =cut
 
 sub bulky_collection_window_start_date {
-    my $self = shift;
-    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
+    my ($self, $now) = @_;
+    my $start_date = $now->clone->truncate( to => 'day' );
+
     # If now is past cutoff time, push start date one day later
     my $cutoff_time = $self->bulky_cancellation_cutoff_time();
     my $days_before = $cutoff_time->{days_before} // 1;
-    my $cutoff_date_now = $now->clone->subtract( days => $days_before );
     my $cutoff_date = $self->_bulky_cancellation_cutoff_date($now);
-    if ($cutoff_date_now >= $cutoff_date) {
+    my $cutoff_date_now = $cutoff_date->clone->set( hour => $now->hour, minute => $now->minute );
+
+    if (!$cutoff_time->{working_days}) {
+        if ($cutoff_date_now >= $cutoff_date) {
+            $start_date->add( days => 1 );
+        }
         $start_date->add( days => $days_before );
+    } else {
+        my $wd = FixMyStreet::WorkingDays->new(
+            public_holidays => FixMyStreet::Cobrand::UK::public_holidays(),
+        );
+        if ($cutoff_date_now >= $cutoff_date || $wd->is_non_working_day($start_date)) {
+            $start_date = $wd->add_days($start_date, 1);
+        }
+        $start_date = $wd->add_days($start_date, $days_before);
     }
+
     return $start_date;
 }
 
@@ -419,15 +430,7 @@ sub bulky_collection_can_be_amended {
 
 sub within_bulky_amend_window {
     my ( $self, $collection ) = @_;
-    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    my $collection_date = $self->collection_date($collection);
-    return $self->_check_within_bulky_amend_window($now_dt, $collection_date);
-}
-
-sub _check_within_bulky_amend_window {
-    my ( $self, $now_dt, $collection_date ) = @_;
-    my $cutoff_dt = $self->_bulky_amendment_cutoff_date($collection_date);
-    return $now_dt < $cutoff_dt;
+    return $self->_bulky_within_a_window($collection, 'amendment');
 }
 
 sub bulky_can_view_cancellation {
@@ -498,16 +501,7 @@ sub bulky_collection_can_be_cancelled {
 
 sub within_bulky_cancel_window {
     my ( $self, $collection ) = @_;
-
-    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    my $collection_date = $self->collection_date($collection);
-    return $self->_check_within_bulky_cancel_window($now_dt, $collection_date);
-}
-
-sub _check_within_bulky_cancel_window {
-    my ( $self, $now_dt, $collection_date ) = @_;
-    my $cutoff_dt = $self->_bulky_cancellation_cutoff_date($collection_date);
-    return $now_dt < $cutoff_dt;
+    return $self->_bulky_within_a_window($collection, 'cancellation');
 }
 
 sub bulky_can_refund {
@@ -522,17 +516,13 @@ sub bulky_can_refund_collection {
 }
 
 sub within_bulky_refund_window {
-    my ($self, $open_collection) = @_;
-
-    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    my $collection_dt = $self->collection_date($open_collection);
-    return $self->_check_within_bulky_refund_window($now_dt, $collection_dt);
+    my ($self, $collection) = @_;
+    return $self->_bulky_within_a_window($collection, 'refund');
 }
 
-sub _check_within_bulky_refund_window {
-    my ( $self, $now_dt, $collection_dt ) = @_;
-    my $cutoff_dt = $self->_bulky_refund_cutoff_date($collection_dt);
-    return $now_dt <= $cutoff_dt;
+sub _bulky_refund_cutoff_date {
+    my ($self, $collection_date) = @_;
+    return _bulky_time_object_to_datetime($collection_date, $self->bulky_refund_cutoff_time());
 }
 
 sub bulky_nice_collection_date {
@@ -574,13 +564,7 @@ sub bulky_nice_cancellation_cutoff_time {
 
 sub _bulky_cancellation_cutoff_date {
     my ($self, $collection_date) = @_;
-    my $cutoff_time = $self->bulky_cancellation_cutoff_time();
-    my $days_before = $cutoff_time->{days_before} // 1;
-    my $dt = $collection_date->clone->subtract( days => $days_before )->set(
-        hour   => $cutoff_time->{hours},
-        minute => $cutoff_time->{minutes},
-    );
-    return $dt;
+    return _bulky_time_object_to_datetime($collection_date, $self->bulky_cancellation_cutoff_time());
 }
 
 sub bulky_reminders {
@@ -717,12 +701,40 @@ sub bulky_amendment_cutoff_time {
 
 sub _bulky_amendment_cutoff_date {
     my ($self, $collection_date) = @_;
-    my $cutoff_time = $self->bulky_amendment_cutoff_time();
-    my $cutoff_dt = $collection_date->clone->set(
-        hour   => $cutoff_time->{hours},
-        minute => $cutoff_time->{minutes},
-    )->subtract( days => 1 );
-    return $cutoff_dt;
+    return _bulky_time_object_to_datetime($collection_date, $self->bulky_amendment_cutoff_time());
+}
+
+sub _bulky_within_a_window {
+    my ($self, $collection, $cutoff_fn) = @_;
+    my $now_dt = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+    my $collection_date = $self->collection_date($collection);
+    return $self->_bulky_check_within_a_window($now_dt, $collection_date, $cutoff_fn);
+}
+
+sub _bulky_check_within_a_window {
+    my ( $self, $now_dt, $collection_date, $cutoff_fn ) = @_;
+    $cutoff_fn = "_bulky_${cutoff_fn}_cutoff_date";
+    my $cutoff_dt = $self->$cutoff_fn($collection_date);
+    return $now_dt < $cutoff_dt;
+}
+
+sub _bulky_time_object_to_datetime {
+    my ($collection_date, $time) = @_;
+    my $days_before = $time->{days_before} // 1;
+    my $dt = $collection_date->clone->set(
+        hour   => $time->{hours},
+        minute => $time->{minutes},
+    );
+    if ($time->{working_days}) {
+        my $wd = FixMyStreet::WorkingDays->new(
+            public_holidays => FixMyStreet::Cobrand::UK::public_holidays(),
+        );
+        $dt = $wd->sub_days($dt, $days_before);
+    } else {
+        $dt->subtract(days => $days_before);
+    }
+
+    return $dt;
 }
 
 1;

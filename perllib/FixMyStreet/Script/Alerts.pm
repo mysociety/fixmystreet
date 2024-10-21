@@ -322,8 +322,8 @@ sub send_local {
         my $latitude  = $alert->parameter2;
         my $lon_rad = deg2rad($longitude);
         my $lat_rad = deg2rad(90 - $latitude);
-        my $d = $alert->parameter3;
-        $d ||= FixMyStreet::Gaze::get_radius_containing_population($latitude, $longitude);
+        my $distance = $alert->parameter3;
+        $distance ||= FixMyStreet::Gaze::get_radius_containing_population($latitude, $longitude);
         my %data = (
             template => $alert_type->template,
             data => [],
@@ -343,7 +343,7 @@ sub send_local {
             # Ignore alerts on reports by the same user
             next if $alert->user_id == $row->{user_id};
             # Ignore reports too far away
-            next if great_circle_distance($row->{lon_rad}, $row->{lat_rad}, $lon_rad, $lat_rad, 6372.8) > $d;
+            next if great_circle_distance($row->{lon_rad}, $row->{lat_rad}, $lon_rad, $lat_rad, 6372.8) > $distance;
             # Ignore reports already alerted on
             next if $schema->resultset('AlertSent')->search({ alert_id => $alert->id, parameter => $row->{id} })->count;
 

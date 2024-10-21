@@ -336,8 +336,7 @@ K&S have an 11pm cut-off for looking to book next day collections.
 =cut
 
 sub bulky_collection_window_start_date {
-    my $self = shift;
-    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+    my ($self, $now) = @_;
     my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
     # If past 11pm, push start date one day later
     if ($now->hour >= 23) {

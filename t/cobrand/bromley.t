@@ -844,7 +844,21 @@ subtest 'redirecting of reports between backends' => sub {
                 user => $user,
                 mark_open => 1,
             });
+            $report->cobrand_data('waste');
             $report->update;
+            FixMyStreet::override_config {
+                ALLOWED_COBRANDS => 'bromley',
+            }, sub {
+                my $updates = Open311::PostServiceRequestUpdates->new();
+                $updates->send;
+            };
+
+            $comment->discard_changes;
+            is $comment->send_state, 'unprocessed', "did not send";
+
+            $comment->update({ send_fail_count => 0 });
+            $report->update({ cobrand_data => '' });
+
             FixMyStreet::override_config {
                 ALLOWED_COBRANDS => 'bromley',
             }, sub {

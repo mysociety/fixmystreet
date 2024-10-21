@@ -382,7 +382,7 @@ $mech->create_body_ok(2326, 'Cheltenham Borough Council');
 subtest "Test two-tier council alerts" => sub {
     for my $alert (
         { feed => "local:51.896269:-2.093063",          result => '/rss/l/51.896269,-2.093063' },
-        { feed => "local:51.896269:-2.093063", result => '/rss/l/51.896269,-2.093063/4', distance => 4 },
+        { feed => "local:51.896269:-2.093063", result => '/rss/l/51.896269,-2.093063/4.5', distance => 4.5 },
         { feed => "area:2326:Cheltenham",               result => '/rss/area/Cheltenham' },
         { feed => "area:2326:4544:Cheltenham:Lansdown", result => '/rss/area/Cheltenham/Lansdown'  },
         { feed => "area:2226:Gloucestershire",          result => '/rss/area/Gloucestershire' },

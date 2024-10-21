@@ -54,26 +54,19 @@ sub bulky_workpack_name {
     qr/Waste-(BULKY WASTE|WHITES)-(?<date_suffix>\d{6})/;
 }
 
-=item * User can cancel bulky collection up to 15:00 before the day of
-collection
+=item * User can amend/refund/cancel up to 14:00 the working day before the bulky collection
 
 =cut
 
-sub bulky_cancellation_cutoff_time {
-    {   hours   => 15,
-        minutes => 0,
-    }
-}
+sub bulky_cancellation_cutoff_time { { hours => 14, minutes => 0, working_days => 1 } }
+sub bulky_amendment_cutoff_time { { hours => 14, minutes => 0, working_days => 1 } }
+sub bulky_refund_cutoff_time { { hours => 14, minutes => 0, working_days => 1 } }
 
 =item * Bulky collections start at 6:45 each (working) day
 
 =cut
 
-sub bulky_collection_time {
-    {   hours   => 6,
-        minutes => 45,
-    }
-}
+sub bulky_collection_time { { hours => 6, minutes => 45 } }
 
 sub bulky_daily_slots { $_[0]->wasteworks_config->{daily_slots} || 40 }
 
@@ -274,18 +267,6 @@ sub bulky_can_refund_collection {
 
     return $p->get_extra_field_value('CHARGEABLE') ne 'FREE'
         && $self->within_bulky_refund_window($p);
-}
-
-# A cancellation made less than 24 hours before the collection is scheduled to
-# begin is not entitled to a refund.
-sub _bulky_refund_cutoff_date {
-    my ($self, $collection_dt) = @_;
-    my $collection_time = $self->bulky_collection_time();
-    my $cutoff_dt       = $collection_dt->clone->set(
-        hour   => $collection_time->{hours},
-        minute => $collection_time->{minutes},
-    )->subtract( days => 1 );
-    return $cutoff_dt;
 }
 
 sub waste_munge_bulky_data {

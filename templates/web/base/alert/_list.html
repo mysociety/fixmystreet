@@ -45,7 +45,7 @@
           <div id="rss_local_alt" class="govuk-form-group">
             <label class="govuk-label govuk-!-margin-bottom-2" for="distance">[% loc('Or specify a different radius distance:') %]</label>
             <div class="govuk-input__wrapper">
-              <input class="govuk-input" name="distance" id="distance" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="[% loc('Specify a radius in kilometres') %]">
+              <input class="govuk-input" name="distance" id="distance" type="text" inputmode="numeric" pattern="[0-9]*([,.][0-9]+)?" aria-label="[% loc('Specify a radius in kilometres') %]">
               <div class="govuk-input__suffix" aria-hidden="true">Km</div>
             </div>
           </div>

@@ -1603,8 +1603,8 @@ $.extend(fixmystreet.set_up, {
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
     $('#distance').on('change', function() {
-        var dist = this.value;
-        if (!parseInt(dist)) {
+        var dist = this.value.replace(/,/, '.');
+        if (!parseFloat(dist)) {
             return;
         }
         var a = $('a.js-alert-local');

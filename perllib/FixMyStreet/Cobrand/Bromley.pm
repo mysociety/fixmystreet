@@ -14,7 +14,6 @@ use FixMyStreet::DB;
 use Moo;
 with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::Pay360';
-with 'FixMyStreet::Roles::Open311Multi';
 with 'FixMyStreet::Roles::Cobrand::SCP';
 with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
@@ -350,6 +349,17 @@ sub open311_post_send_updates {
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
+    # Inline the Open311Multi code here, as we need to adjust it
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+
+    # If the report was sent to Bromley (external ID is digits), but now is
+    # Echo (contact starts with digits), use a dummy code so open311-adapter
+    # thinks it is a Passthrough service and the update goes to Bromley.
+    if ($comment->problem->external_id =~ /^\d+$/ && $contact->email =~ /^\d+/) {
+        $params->{service_code} = 'DUMMY';
+    }
+
     my $private_comments = $comment->get_extra_metadata('private_comments');
     if ($private_comments) {
         my $text = $params->{description} . "\n\nPrivate comments: $private_comments";
@@ -549,7 +559,7 @@ sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $report = $update->problem;
-    if ($self->_has_report_been_sent_to_echo($report) && $report->cobrand ne 'waste') {
+    if ($self->_has_report_been_sent_to_echo($report) && $report->cobrand_data ne 'waste') {
         # We need to know whether to treat this as a normal update or a referral.
         # We have the GUID but not the ID so we look this up.
         my $cfg = $self->feature('echo');
@@ -1115,8 +1125,6 @@ sub collection_date {
     my ($self, $p) = @_;
     return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
 }
-
-sub _bulky_refund_cutoff_date { }
 
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
