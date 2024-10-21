@@ -1235,16 +1235,16 @@ sub construct_bin_request_form {
 
     my $field_list = [];
 
-    my $request_type = $c->get_param('request-type');
+    my $request_type = $c->get_param('request_type');
 
     if ( $request_type eq 'delivery' ) {
         for my $container (
             @{ $c->stash->{property}{containers_for_delivery} } )
         {
             if ( $container->{subtypes} ) {
-                my $id = lc $container->{name} =~ s/ /-/gr;
+                my $id = $container->{name} =~ s/ /-/gr;
 
-                push @$field_list, "container-parent-$id" => {
+                push @$field_list, "parent-$id" => {
                     type         => 'Checkbox',
                     label        => $container->{name},
                     option_label => $container->{description},
@@ -1263,14 +1263,14 @@ sub construct_bin_request_form {
                     options => [
                         map {
                             label     => $_->{size},
-                                value => $_->{service_item_name}
+                            value     => $_->{service_item_name},
                         },
                         @{ $container->{subtypes} }
                     ],
                     required_when => { "container-$id" => 1 },
                 };
             } else {
-                my $id = $container->{service_item_name};
+                my $id = $container->{service_item_name} =~ s/ /-/gr;
 
                 push @$field_list, "container-$id" => {
                     type         => 'Checkbox',
@@ -1309,7 +1309,73 @@ sub construct_bin_request_form {
 }
 
 sub waste_request_form_first_next {
-    return 'replacement';
+    return 'about_you';
+}
+
+sub waste_munge_request_form_data {
+    my ( $self, $data ) = @_;
+
+    # Populate subtype for any parent containers with a bin size
+    for ( keys %$data ) {
+        my ($parent_id) = /^parent-(.*)/;
+
+        next unless $parent_id;
+
+        my $subtype_id = $data->{"bin-size-$parent_id"};
+        $data->{"container-$subtype_id"} = 1 if $subtype_id;
+    }
+}
+
+sub waste_munge_request_data {
+    my ( $self, $id, $data ) = @_;
+
+    my $c  = $self->{c};
+    my $delivery_containers = $c->stash->{property}{containers_for_delivery};
+
+    my $service;
+    for my $dc (@$delivery_containers) {
+        $service = $dc if $id eq ( $dc->{service_item_name} // '' );
+
+        last if $service;
+
+        if ( @{ $dc->{subtypes} // [] } ) {
+            # The service we are looking for may be the subtype of
+            # a parent
+            # (e.g. 'RES-140' under 'Green Wheelie Bin')
+            for my $subtype ( @{ $dc->{subtypes} } ) {
+                if ( $id eq $subtype->{service_item_name} ) {
+                    $service = $subtype;
+                    # Use parent name
+                    $service->{name} = $dc->{name};
+                    last;
+                }
+            }
+        }
+
+        last if $service;
+
+        # Some containers have an original service_item_name (ID) with spaces.
+        # E.g. 'Deliver Box lids 55L'.
+        # We need to unhyphen string that was hyphenated in
+        # construct_bin_request_form().
+        my $id_spaced = $id =~ s/-/ /gr;
+
+        if ( $id_spaced eq ( $dc->{service_item_name} // '' ) ) {
+            $service = $dc;
+        }
+
+        last if $service;
+    }
+
+    my $service_item_name;
+
+    $data->{title}  = "Request new $service->{name}";
+
+    # TODO Reason, quantity, household size
+    $data->{detail} = "# TODO";
+
+    $c->set_param( 'uprn',              $c->stash->{property}{uprn} );
+    $c->set_param( 'service_item_name', $service->{service_item_name} );
 }
 
 sub _set_request_containers {
