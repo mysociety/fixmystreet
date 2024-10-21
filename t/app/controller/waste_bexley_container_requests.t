@@ -308,6 +308,145 @@ subtest '_set_request_containers' => sub {
     };
 };
 
+subtest 'Munge data' => sub {
+    my $data = {
+        'category' => 'Request new container',
+        'bin-size-Green-Wheelie-Bin' => 'RES-140',
+        'container-Deliver-Box-lids-55L' => 1,
+        'container-FO-23' => 1,
+        'container-PC-55' => 0,
+        'parent-Green-Wheelie-Bin' => 1,
+    };
+
+    subtest 'waste_munge_request_form_data' => sub {
+        $cobrand->waste_munge_request_form_data($data);
+
+        cmp_deeply $data, {
+            'category' => 'Request new container',
+            'bin-size-Green-Wheelie-Bin' => 'RES-140',
+            'container-Deliver-Box-lids-55L' => 1,
+            'container-FO-23' => 1,
+            'container-PC-55' => 0,
+            'parent-Green-Wheelie-Bin' => 1,
+
+            # New
+            'container-RES-140' => 1,
+        }, 'data munged from parent container options';
+    };
+
+    subtest 'waste_munge_request_data' => sub {
+        my %c_params;
+        $cobrand->{c} = Test::MockObject->new;
+        $cobrand->{c}->mock( set_param => sub { {
+            $c_params{$_[1]} = $_[2];
+        } } );
+        $cobrand->{c}->mock( get_param => sub { {
+            $c_params{$_[1]};
+        } } );
+        $cobrand->{c}->mock( stash => sub { {
+            property =>  {
+                uprn => 123456,
+                containers_for_delivery => [
+                    {   name                => 'Recycling Box Lids',
+                        service_item_name   => 'Deliver Box lids 55L',
+                        service_id_delivery => '216',
+                    },
+                    {   name                => 'Brown Caddy',
+                        service_item_name   => 'FO-23',
+                        service_id_delivery => '224',
+                        service_id_removal  => '156',
+                    },
+                    {   name        => 'Green Wheelie Bin',
+                        description => 'Non-recyclable waste',
+                        subtypes    => [
+                            {   size                => 'Small 140 litre',
+                                service_item_name   => 'RES-140',
+                                service_id_delivery => '272',
+                                service_id_removal  => '205',
+                            },
+                            {   size                => 'Medium 180 litre',
+                                service_item_name   => 'RES-180',
+                                service_id_delivery => '273',
+                                service_id_removal  => '206',
+                            },
+                            {   size                => 'Large 240 litre',
+                                service_item_name   => 'RES-240',
+                                service_id_delivery => '274',
+                                service_id_removal  => '207',
+                            },
+                        ],
+                    },
+                ],
+            }
+        } } );
+
+        my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
+
+        cmp_deeply \@services, [
+            qw/
+                container-Deliver-Box-lids-55L
+                container-FO-23
+                container-RES-140
+            /
+        ], 'correct list of services';
+
+        for my $test (
+            (   {   id            => 'Deliver-Box-lids-55L',
+                    expected_data => {
+                        title  => 'Request new Recycling Box Lids',
+                        detail => '# TODO',
+                    },
+                    expected_params => {
+                        uprn              => 123456,
+                        service_item_name => 'Deliver Box lids 55L',
+                    },
+                },
+                {   id            => 'FO-23',
+                    expected_data => {
+                        title  => 'Request new Brown Caddy',
+                        detail => '# TODO',
+                    },
+                    expected_params => {
+                        uprn              => 123456,
+                        service_item_name => 'FO-23',
+                    },
+                },
+                {   id            => 'RES-140',
+                    expected_data => {
+                        title  => 'Request new Green Wheelie Bin',
+                        detail => '# TODO',
+                    },
+                    expected_params => {
+                        uprn              => 123456,
+                        service_item_name => 'RES-140',
+                    },
+                },
+            )
+        ) {
+            note "For $test->{id}";
+            $cobrand->waste_munge_request_data( $test->{id}, $data );
+
+            for ( keys %{ $test->{expected_params} } ) {
+                is $cobrand->{c}->get_param($_),
+                    $test->{expected_params}{$_}, "param $_ set";
+            }
+
+            cmp_deeply $data, {
+                'category'                       => 'Request new container',
+                'bin-size-Green-Wheelie-Bin'     => 'RES-140',
+                'container-Deliver-Box-lids-55L' => 1,
+                'container-FO-23'                => 1,
+                'container-PC-55'                => 0,
+                'container-RES-140'              => 1,
+                'parent-Green-Wheelie-Bin'       => 1,
+
+                # New
+                %{ $test->{expected_data} },
+            }, 'new fields set on data';
+        }
+    };
+};
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bexley',
     MAPIT_URL => 'http://mapit.uk/',
