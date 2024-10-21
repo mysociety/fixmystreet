@@ -378,11 +378,6 @@ sub dashboard_export_problems_add_columns {
         if ($by) {
             $staff_role = join(',', @{$userroles->{$by} || []});
         }
-        my $by = $csv->_extra_metadata($report, 'contributed_by');
-        my $staff_role = '';
-        if ($by) {
-            $staff_role = join(',', @{$userroles->{$by} || []});
-        }
         return {
             external_ref => ( $ref || '' ),
             usrn => $usrn,
