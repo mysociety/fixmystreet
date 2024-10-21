@@ -190,6 +190,8 @@ sub _bulky_date_to_dt {
 sub check_bulky_slot_available {
     my ( $self, $date, %args ) = @_;
 
+    print STDERR "PBORO BULKY check_bulky_slot_available $date\n";
+
     my $bartec = $args{bartec};
 
     unless ($bartec) {
@@ -212,6 +214,8 @@ sub check_bulky_slot_available {
         date_to   => $date_to,
     );
 
+    print STDERR "PBORO BULKY WorkPacks_Get $date_from $date_to\n";
+
     my %jobs_per_uprn;
     for my $wpfd (@$workpacks_for_day) {
         next if $wpfd->{Name} !~ bulky_workpack_name();
@@ -225,13 +229,18 @@ sub check_bulky_slot_available {
 
         my $jobs = $bartec->Jobs_Get_for_workpack( $wpfd->{ID} ) || [];
 
+        print STDERR "PBORO BULKY Found workpack $wpfd->{Name} $wpfd->{ID}, with " . (scalar @$jobs) . " jobs\n";
+
         # Group jobs by UPRN. For a bulky workpack, a UPRN/premises may
         # have multiple jobs (equivalent to item slots); these all count
         # as a single bulky collection slot.
         $jobs_per_uprn{ $_->{Job}{UPRN} }++ for @$jobs;
+
+        print STDERR "PBORO BULKY jobs_per_uprn has " . (scalar keys %jobs_per_uprn) . " keys\n";
     }
 
     my $total_collection_slots = keys %jobs_per_uprn;
+    print STDERR "PBORO BULKY Total slots = $total_collection_slots\n";
 
     return $total_collection_slots < $self->bulky_daily_slots;
 }
