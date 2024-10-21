@@ -22,6 +22,7 @@ use FixMyStreet;
 use FixMyStreet::App::Form::Waste::Request::Bexley;
 use FixMyStreet::Template;
 use Integrations::Whitespace;
+use Lingua::EN::Inflect qw( NUMWORDS );
 use Sort::Key::Natural qw(natkeysort_inplace);
 
 has 'whitespace' => (
@@ -1276,10 +1277,28 @@ sub construct_bin_request_form {
                     type         => 'Checkbox',
                     label        => $container->{name},
                     option_label => $container->{description},
+                    tags => { toggle => "form-quantity-$id-row" },
 
                     # TODO
                     # disabled => $_->{requests_open}{$id} ? 1 : 0,
                 };
+
+                my $max = $container->{max} || 1;
+                if ( $max > 1 ) {
+                    push @$field_list, "quantity-$id" => {
+                        type => 'Select',
+                        label => 'Quantity',
+                        tags => {
+                            hint => "You can request a maximum of " . NUMWORDS($max) . " containers",
+                            initial_hidden => 1,
+                        },
+                        options => [
+                            map { { value => $_, label => $_ } }
+                                ( 1 .. $max ),
+                        ],
+                        required_when => { "container-$id" => 1 },
+                    };
+                }
             }
         }
     } else {
@@ -1367,15 +1386,22 @@ sub waste_munge_request_data {
         last if $service;
     }
 
-    my $service_item_name;
-
     $data->{title}  = "Request new $service->{name}";
 
-    # TODO Reason, quantity, household size
-    $data->{detail} = "# TODO";
+    # TODO Reason, household size
+    my $address = $c->stash->{property}{address};
+    my $reason = 'TODO';
+    my $quantity = $data->{"quantity-$id"} || 1;
+    my $household_size = '';
+    $data->{detail} = "$data->{title}\n\n$address";
+    $data->{detail} .= "\n\nReason: $reason";
+    $data->{detail} .= "\n\nQuantity: $quantity";
+    $data->{detail} .= "\n\nHousehold size: $household_size"
+        if $household_size;
 
     $c->set_param( 'uprn',              $c->stash->{property}{uprn} );
     $c->set_param( 'service_item_name', $service->{service_item_name} );
+    $c->set_param( 'quantity',          $quantity );
 }
 
 sub _set_request_containers {
@@ -1608,6 +1634,7 @@ sub _containers_for_requests {
                 service_item_name   => 'FO-23',
                 service_id_delivery => '224',
                 service_id_removal  => '156',
+                max                 => 3,
             },
             {   name                => 'Kitchen Caddy',
                 service_item_name   => 'Kitchen 5 Ltr Caddy',
@@ -1619,6 +1646,7 @@ sub _containers_for_requests {
             name                => 'Recycling Box Lids',
             service_item_name   => 'Deliver Box lids 55L',
             service_id_delivery => '216',
+            max                 => 5,
         },
     };
 }
