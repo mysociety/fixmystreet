@@ -161,13 +161,12 @@ sub geocoder_munge_results {
 =head2 check_report_is_on_cobrand_asset
 
 If the location is covered by an area of differing responsibility (e.g. Brent
-in Camden, or Camden in Brent), return true (either 1 if an area name is
-provided, or the name of the area if not).
+in Camden, or Camden in Brent), return the name of the area.
 
 =cut
 
 sub check_report_is_on_cobrand_asset {
-    my ($self, $council_area) = shift @_;
+    my $self = shift;
 
     my $lat = $self->{c}->stash->{latitude};
     my $lon = $self->{c}->stash->{longitude};
@@ -184,13 +183,7 @@ sub check_report_is_on_cobrand_asset {
     my $features = $self->_fetch_features($cfg, -1, -1, 1);
 
     if ($$features[0]) {
-        if ($council_area) {
-            if ($$features[0]->{'ms:BrentDiffs'}->{'ms:name'} eq $council_area) {
-                return 1;
-            }
-        } else {
-            return $$features[0]->{'ms:BrentDiffs'}->{'ms:name'};
-        }
+        return $$features[0]->{'ms:BrentDiffs'}->{'ms:name'};
     }
 }
 
