@@ -135,13 +135,10 @@ sub munge_around_category_where {
         # can't determine the body
         $where->{send_method} = [ { '!=' => 'Triage' }, undef ];
     }
-    my $waste = grep { $_->name =~ /Bromley Council|Peterborough City Council/ } @{ $self->{c}->stash->{around_bodies} };
-    if ($waste) {
-        $where->{'-or'} = [
-            extra => undef,
-            -not => { extra => { '@>' => '{"type":"waste"}' } }
-        ];
-    }
+    $where->{'-or'} = [
+        extra => undef,
+        -not => { extra => { '@>' => '{"type":"waste"}' } }
+    ];
 }
 
 sub _iow_category_munge {
