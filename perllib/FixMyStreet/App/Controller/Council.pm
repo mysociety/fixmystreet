@@ -53,11 +53,8 @@ sub load_and_check_areas : Private {
 
     # Cobrand may wish to add area types to look up for a point at runtime.
     # This can be used for, e.g., parish councils on a particular council
-    # cobrand. NB three-tier councils break the alerts pages, so don't run the
-    # hook if we're on an alerts page.
-    unless ($c->stash->{area_check_action} eq 'alert') {
-        $area_types = $c->cobrand->call_hook("add_extra_area_types" => $area_types) || $area_types;
-    }
+    # cobrand.
+    $area_types = $c->cobrand->call_hook("add_extra_area_types" => $area_types) || $area_types;
 
     my $all_areas;
 
