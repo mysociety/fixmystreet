@@ -16,7 +16,7 @@ FixMyStreet::override_config {
     };
 
     subtest "body doesn't return cobrand if not allowed" => sub {
-        $body->set_extra_metadata(cobrand => "buckinghamshire");
+        $body->cobrand("buckinghamshire");
         is $body->get_cobrand_handler, undef;
     };
 };

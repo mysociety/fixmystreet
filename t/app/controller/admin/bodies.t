@@ -379,7 +379,7 @@ FixMyStreet::override_config {
 
 subtest 'allow anonymous reporting' => sub {
     $body->discard_changes;
-    $body->set_extra_metadata(cobrand => "anonallowedbycategory");
+    $body->cobrand("anonallowedbycategory");
     $body->update;
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => {
@@ -389,7 +389,7 @@ subtest 'allow anonymous reporting' => sub {
     $mech->content_contains('Values updated');
     my $contact = $body->contacts->find({ category => 'test category' });
     is $contact->get_extra_metadata('anonymous_allowed'), 1, 'Anonymous reports allowed flag set';
-    $body->unset_extra_metadata('cobrand');
+    $body->cobrand(undef);
     $body->update;
 };
 
@@ -606,7 +606,7 @@ subtest 'check setting cobrand on body' => sub {
 
         subtest "superuser can set body's cobrand" => sub {
             $body2->discard_changes;
-            $body2->unset_extra_metadata('cobrand');
+            $body2->cobrand(undef);
             $body2->update;
 
             $mech->get_ok('/admin/body/' . $body2->id);
@@ -616,14 +616,14 @@ subtest 'check setting cobrand on body' => sub {
             $mech->submit_form_ok(
                 {
                     with_fields => {
-                        'extra[cobrand]' => 'oxfordshire'
+                        'cobrand' => 'oxfordshire'
                     }
                 }
             );
             $mech->content_contains('Values updated');
 
             $body2->discard_changes;
-            is $body2->get_extra_metadata('cobrand'), 'oxfordshire';
+            is $body2->cobrand, 'oxfordshire';
         };
 
         subtest "superuser can unset body's cobrand" => sub {
@@ -632,18 +632,18 @@ subtest 'check setting cobrand on body' => sub {
             $mech->submit_form_ok(
                 {
                     with_fields => {
-                        'extra[cobrand]' => undef
+                        'cobrand' => undef
                     }
                 }
             );
             $mech->content_contains('Values updated');
 
             $body2->discard_changes;
-            is $body2->get_extra_metadata('cobrand'), '';
+            is $body2->cobrand, undef;
         };
 
         subtest "cannot use the same cobrand for multiple bodies" => sub {
-            $body2->set_extra_metadata('cobrand', 'oxfordshire');
+            $body2->cobrand('oxfordshire');
             $body2->update;
 
             $mech->get_ok('/admin/body/' . $body->id);
@@ -651,7 +651,7 @@ subtest 'check setting cobrand on body' => sub {
             $mech->submit_form_ok(
                 {
                     with_fields => {
-                        'extra[cobrand]' => 'oxfordshire'
+                        'cobrand' => 'oxfordshire'
                     }
                 }
             );
@@ -659,9 +659,9 @@ subtest 'check setting cobrand on body' => sub {
             $mech->content_contains('This cobrand is already assigned to another body: Oxfordshire County Council');
 
             $body->discard_changes;
-            is $body->get_extra_metadata('cobrand'), undef;
+            is $body->cobrand, undef;
             $body2->discard_changes;
-            is $body2->get_extra_metadata('cobrand'), 'oxfordshire';
+            is $body2->cobrand, 'oxfordshire';
         };
     };
 };

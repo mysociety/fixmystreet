@@ -82,7 +82,7 @@ sub process {
     if ($opts{body}) {
         process_body($opts{body}, \%opts);
     } else {
-        my $bodies = $opts{dbh}->selectcol_arrayref("select id from body where extra->>'cobrand' !='' order by id");
+        my $bodies = $opts{dbh}->selectcol_arrayref("select id from body where cobrand != '' order by id");
         process_body($_, \%opts) foreach @$bodies;
     }
 }
