@@ -403,7 +403,7 @@ for my $body (
     { area_id => 14279, name => 'TransportNI (Western)' },
 ) {
     my $aid = $body->{area_id};
-    my $body = $mech->create_body_ok($aid, $body->{name}, {}, { cobrand => $body->{cobrand} });
+    my $body = $mech->create_body_ok($aid, $body->{name}, { cobrand => $body->{cobrand} });
     if ($body_ids{$aid}) {
         $body_ids{$aid} = [ $body_ids{$aid}, $body->id ];
     } else {

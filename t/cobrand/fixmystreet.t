@@ -16,8 +16,8 @@ my $mech = FixMyStreet::TestMech->new;
 my $resolver = Test::MockModule->new('Email::Valid');
 $resolver->mock('address', sub { $_[1] });
 
-my $body = $mech->create_body_ok( 2514, 'Birmingham', {}, { cobrand => 'birmingham' } );
-$mech->create_body_ok( 2482, 'Bromley', {}, { cobrand => 'bromley' });
+my $body = $mech->create_body_ok( 2514, 'Birmingham', { cobrand => 'birmingham' } );
+$mech->create_body_ok( 2482, 'Bromley', { cobrand => 'bromley' });
 
 $mech->create_body_ok(2482, 'Bike provider');
 

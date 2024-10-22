@@ -27,8 +27,7 @@ my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
 my $standard_user = $mech->create_user_ok('test@example.com', name => 'Bob Betts');
 my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
-    send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
-}, {
+    send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1,
     cobrand => 'bromley'
 });
 my $lewisham = $mech->create_body_ok( 2492, 'Lewisham Borough Council');
@@ -59,7 +58,7 @@ $streetlights->set_extra_fields(
 );
 $streetlights->update;
 
-my $tfl = $mech->create_body_ok( 2482, 'TfL', {}, { cobrand => 'tfl' });
+my $tfl = $mech->create_body_ok( 2482, 'TfL', { cobrand => 'tfl' });
 $mech->create_contact_ok(
     body_id => $tfl->id,
     category => 'Traffic Lights',

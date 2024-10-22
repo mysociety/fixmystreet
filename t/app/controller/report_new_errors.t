@@ -46,7 +46,7 @@ for my $body (
     { area_id => 2508, name => 'Hackney Council', cobrand => 'hackney' },
 ) {
     my $extra = { cobrand => $body->{cobrand} } if $body->{cobrand};
-    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, {}, $extra);
+    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, $extra);
     $body_ids{$body->{area_id}} = $body_obj->id;
 }
 

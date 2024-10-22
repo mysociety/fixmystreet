@@ -23,12 +23,12 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
     can_be_devolved => 1,
+    cobrand => 'sutton',
 };
 my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, {
-    cobrand => 'sutton',
     wasteworks_config => { request_timeframe => '20 working days' }
 });
-my $kingston = $mech->create_body_ok(2480, 'Kingston Council', $params, { cobrand => 'kingston' });
+my $kingston = $mech->create_body_ok(2480, 'Kingston Council', { %$params, cobrand => 'kingston' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $kingston->id);
 $staff->user_body_permissions->create({ body => $kingston, permission_type => 'report_edit' });

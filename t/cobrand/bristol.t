@@ -15,7 +15,6 @@ my $bristol = $mech->create_body_ok( 2561, 'Bristol City Council', {
     send_method => 'Open311',
     can_be_devolved => 1,
     comment_user => $comment_user,
-}, {
     cobrand => 'bristol',
 });
 $comment_user->update({ from_body => $bristol->id });

@@ -14,7 +14,7 @@ set_fixed_time('2023-01-09T17:00:00Z'); # Set a date when garden service full pr
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2488, 'Brent', {}, { cobrand => 'brent' });
+my $body = $mech->create_body_ok(2488, 'Brent', { cobrand => 'brent' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });

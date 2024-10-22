@@ -12,7 +12,7 @@ my $mech = FixMyStreet::TestMech->new;
 use open ':std', ':encoding(UTF-8)';
 
 my $nh = $mech->create_body_ok(164186, 'Northamptonshire Highways', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1 }, { cobrand => 'northamptonshire' });
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1, cobrand => 'northamptonshire' });
 # Associate body with North Northamptonshire area
 FixMyStreet::DB->resultset('BodyArea')->find_or_create({
     area_id => 164185,

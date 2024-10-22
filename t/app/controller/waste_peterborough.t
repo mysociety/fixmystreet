@@ -18,8 +18,9 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
     can_be_devolved => 1,
+    cobrand => 'peterborough',
 };
-my $body = $mech->create_body_ok(2566, 'Peterborough City Council', $params, { cobrand => 'peterborough' });
+my $body = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $user2 = $mech->create_user_ok('test2@example.net', name => 'Very Normal User');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
@@ -29,7 +30,7 @@ $staff->user_body_permissions->create({ body => $body, permission_type => 'plann
 $staff->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 my $super = $mech->create_user_ok('super@example.net', name => 'Super User', is_superuser => 1);
 
-my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
+my $bromley = $mech->create_body_ok(2482, 'Bromley Council', { cobrand => 'bromley' });
 
 sub create_contact {
     my ($params, $group, @extra) = @_;

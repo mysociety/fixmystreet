@@ -91,10 +91,10 @@
     [% END %]
     <p>
         <label for="send_method">[% loc('Cobrand') %]</label>
-        <select class="form-control" name="extra[cobrand]" id="cobrand">
+        <select class="form-control" name="cobrand" id="cobrand">
             <option value="">[% loc(' -- Select a cobrand -- ') %]</option>
               [% FOR cobrand IN cobrands %]
-                <option value="[% cobrand %]"[% ' selected' IF body.get_extra_metadata('cobrand') == cobrand %]>[% cobrand %]</option>
+                <option value="[% cobrand %]"[% ' selected' IF body.cobrand == cobrand %]>[% cobrand %]</option>
               [% END %]
         </select>
     </p>

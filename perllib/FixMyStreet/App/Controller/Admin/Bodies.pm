@@ -516,11 +516,12 @@ sub body_params : Private {
         can_be_devolved => 0,
         parent => undef,
         deleted => 0,
+        cobrand => undef,
     );
     my %params = map { $_ => $c->get_param($_) || $defaults{$_} } keys %defaults;
     $c->forward('check_body_params', [ \%params ]);
 
-    my @extras = qw/fetch_all_problems cobrand/;
+    my @extras = qw/fetch_all_problems/;
     my $cobrand_extras = $c->cobrand->call_hook('body_extra_fields');
     push @extras, @$cobrand_extras if $cobrand_extras;
 
@@ -538,20 +539,21 @@ sub check_body_params : Private {
     unless ($params->{name}) {
         $c->stash->{body_errors}->{name} = _('Please enter a name for this body');
     }
+
+    if ($params->{cobrand}) {
+        if (my $b = $c->model('DB::Body')->find({
+            id => { '!=', $c->stash->{body_id} },
+            cobrand => $params->{cobrand},
+        })) {
+            $c->stash->{body_errors}->{cobrand} = _('This cobrand is already assigned to another body: ' . $b->name);
+        }
+    }
 }
 
 sub check_body_extras : Private {
     my ( $self, $c, $extras ) = @_;
 
     $c->stash->{body_errors} ||= {};
-
-    return unless $extras->{cobrand};
-    if (my $b = $c->model('DB::Body')->find({
-        id => { '!=', $c->stash->{body_id} },
-        extra => { '@>' => encode_json({ "cobrand" => $extras->{cobrand} }) },
-    })) {
-        $c->stash->{body_errors}->{cobrand} = _('This cobrand is already assigned to another body: ' . $b->name);
-    }
 }
 
 sub contact_cobrand_extra_fields : Private {

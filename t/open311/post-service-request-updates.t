@@ -19,9 +19,9 @@ my $params = {
 my $bromley = $mech->create_body_ok(2482, 'Bromley', { %$params,
     endpoint => '//www.bromley.gov.uk/',
     send_extended_statuses => 1,
-    can_be_devolved => 1 }, { cobrand => 'bromley' });
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire', { %$params, id => "5" . $bromley->id }, { cobrand => 'oxfordshire' });
-my $bucks = $mech->create_body_ok(163793, 'Buckinghamshire', $params, { cobrand => 'buckinghamshire' });
+    can_be_devolved => 1, cobrand => 'bromley' });
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire', { %$params, id => "5" . $bromley->id, cobrand => 'oxfordshire' });
+my $bucks = $mech->create_body_ok(163793, 'Buckinghamshire', { %$params, cobrand => 'buckinghamshire' });
 my $bromley_other = $mech->create_contact_ok(body_id => $bromley->id, category => 'Other', email => "OTHER", send_method => 'Open311', endpoint => '/devolved-endpoint/');
 my $oxon_other = $mech->create_contact_ok(body_id => $oxon->id, category => 'Other', email => "OTHER");
 
@@ -138,7 +138,7 @@ for my $test (
     FixMyStreet::override_config {
       ALLOWED_COBRANDS => ['fixmystreet', $cobrand],
     }, sub {
-      my $body = $mech->create_body_ok($body_id, $name, $params, { cobrand => $cobrand });
+      my $body = $mech->create_body_ok($body_id, $name, { %$params, cobrand => $cobrand });
       $mech->create_contact_ok(body_id => $body->id, category => 'Other', email => "OTHER");
 
       my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>';

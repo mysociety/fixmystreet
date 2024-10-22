@@ -29,7 +29,6 @@ use constant SOUTHWARK_AREA_ID => 2491;
 my $southwark = $mech->create_body_ok(
     SOUTHWARK_AREA_ID,
     'Southwark Council',
-    {},
     { cobrand => 'southwark' },
 );
 

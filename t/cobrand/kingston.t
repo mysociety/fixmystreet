@@ -22,8 +22,7 @@ END { FixMyStreet::App->log->enable('info'); }
 my $user = $mech->create_user_ok( 'kingston@example.com', name => 'Kingston' );
 my $body = $mech->create_body_ok( 2480, 'Kingston upon Thames Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
-    send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
-}, {
+    send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1,
     cobrand => 'kingston',
 });
 

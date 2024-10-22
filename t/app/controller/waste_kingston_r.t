@@ -25,8 +25,9 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
     can_be_devolved => 1,
+    cobrand => 'kingston',
 };
-my $kingston = $mech->create_body_ok(2480, 'Kingston Council', $params, { cobrand => 'kingston' });
+my $kingston = $mech->create_body_ok(2480, 'Kingston Council', $params);
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 
 sub create_contact {

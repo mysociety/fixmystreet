@@ -38,7 +38,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2651, 'Edinburgh', {}, { cobrand => 'anonallowedbycategory' });
+my $body = $mech->create_body_ok(2651, 'Edinburgh', { cobrand => 'anonallowedbycategory' });
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 $staffuser->user_body_permissions->create({
     body => $body,

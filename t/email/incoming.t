@@ -6,7 +6,7 @@ use FixMyStreet::Email;
 my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('systemuser@example.org');
-my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council', { comment_user => $user, send_extended_statuses => 1 }, { cobrand => 'buckinghamshire' });
+my $body = $mech->create_body_ok(2217, 'Buckinghamshire Council', { comment_user => $user, send_extended_statuses => 1, cobrand => 'buckinghamshire' });
 my $parish = $mech->create_body_ok(58815, 'Aylesbury Town Council');
 my $body_hedge = $mech->create_contact_ok( body_id => $body->id, category => 'Hedge problem', email => 'hedges@example.com' );
 $mech->create_contact_ok( body_id => $parish->id, category => 'Hedge problem', email => 'hedges@parish.example.com' );

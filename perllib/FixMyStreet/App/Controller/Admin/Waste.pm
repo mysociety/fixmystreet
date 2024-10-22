@@ -196,9 +196,9 @@ sub fetch_wasteworks_bodies : Private {
     my ( $self, $c ) = @_;
 
     my @bodies = $c->model('DB::Body')->search({
-        extra => { '\?' => 'cobrand' },
+        cobrand => { '!=' => undef },
     }, {
-        columns => [ "id", "name", "extra" ],
+        columns => [ "id", "name", "cobrand" ],
     })->active;
 
     @bodies = grep {

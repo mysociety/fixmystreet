@@ -69,7 +69,7 @@ my $body = FixMyStreet::DB::Factory::Body->find_or_create({
     $opt->name ? (name => $opt->name) : (),
 });
 if ($opt->cobrand) {
-    $body->set_extra_metadata(cobrand => $opt->cobrand);
+    $body->cobrand($opt->cobrand);
     $body->update;
 }
 
@@ -126,7 +126,7 @@ if ($opt->test_fixtures) {
         categories => ['Fallen sign (NH)', 'Driver on phone (NH)', 'Flytipping (NH)']
     };
     $bodies->{HE} = FixMyStreet::DB::Factory::Body->find_or_create($params);
-    $bodies->{HE}->set_extra_metadata(cobrand => 'highwaysengland');
+    $bodies->{HE}->cobrand('highwaysengland');
     $bodies->{HE}->update;
     my $cats = join(', ', @{$params->{categories}});
     say "Created body $params->{name} for MapIt area ID $params->{area_id}, categories $cats";
@@ -189,7 +189,7 @@ if ($opt->test_fixtures) {
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         if ($_->{cobrand}) {
-            $bodies->{$_->{area_id}}->set_extra_metadata(cobrand => $_->{cobrand});
+            $bodies->{$_->{area_id}}->cobrand($_->{cobrand});
             $bodies->{$_->{area_id}}->update;
         }
         my $cats = join(', ', @{$_->{categories}});
