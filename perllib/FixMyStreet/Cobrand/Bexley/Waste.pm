@@ -1255,8 +1255,6 @@ sub construct_bin_request_form {
                     # disabled => $_->{requests_open}{$id} ? 1 : 0,
                 };
 
-                # TODO Green wheelie bins need a household size check
-
                 push @$field_list, "bin-size-$id" => {
                     type    => 'Select',
                     label   => 'Bin Size',
@@ -1331,6 +1329,16 @@ sub waste_request_form_first_next {
     return 'about_you';
 }
 
+sub waste_munge_request_form_pages {
+    my ( $self, $page_list, $field_list ) = @_;
+
+    my $c = $self->{c};
+
+    if ( $c->stash->{property}{household_size_check} ) {
+        $c->stash->{first_page} = 'household_size';
+    }
+}
+
 sub waste_munge_request_form_data {
     my ( $self, $data ) = @_;
 
@@ -1388,11 +1396,11 @@ sub waste_munge_request_data {
 
     $data->{title}  = "Request new $service->{name}";
 
-    # TODO Reason, household size
+    # TODO Reason
     my $address = $c->stash->{property}{address};
     my $reason = 'TODO';
     my $quantity = $data->{"quantity-$id"} || 1;
-    my $household_size = '';
+    my $household_size = $data->{household_size};
     $data->{detail} = "$data->{title}\n\n$address";
     $data->{detail} .= "\n\nReason: $reason";
     $data->{detail} .= "\n\nQuantity: $quantity";
@@ -1520,6 +1528,9 @@ sub _set_request_containers {
             $boxes_done = 1;
 
         }
+
+        $property->{household_size_check} = 1
+            if $container_info->{household_size_check};
     }
 
     $property->{containers_for_delivery} = \@containers_for_delivery;
@@ -1529,8 +1540,9 @@ sub _set_request_containers {
 sub _containers_for_requests {
     return {
         'Green Wheelie Bin' => {
-            name        => 'Green Wheelie Bin',
-            description => 'Non-recyclable waste',
+            name                 => 'Green Wheelie Bin',
+            description          => 'Non-recyclable waste',
+            household_size_check => 1,
             subtypes    => [
                 {   size                => 'Small 140 litre',
                     service_item_name   => 'RES-140',
