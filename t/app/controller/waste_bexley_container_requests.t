@@ -26,6 +26,49 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $cobrand = FixMyStreet::Cobrand::Bexley->new;
 
+my $comment_user = $mech->create_user_ok('comment');
+my $user = $mech->create_user_ok('test@example.com', name => 'Test User', email_verified => 1);
+my $body = $mech->create_body_ok(
+    2494,
+    'London Borough of Bexley',
+    {
+        comment_user           => $comment_user,
+        send_extended_statuses => 1,
+        can_be_devolved        => 1,
+        cobrand => 'bexley'
+    },
+);
+my $contact = $mech->create_contact_ok(
+    body => $body,
+    category => 'Request new container',
+    email => 'new@example.org',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+);
+$contact->set_extra_fields(
+    {
+        code => "uprn",
+        required => "false",
+        automated => "hidden_field",
+    },
+    {
+        code => "service_item_name",
+        required => "false",
+        automated => "hidden_field",
+    },
+    {
+        code => "fixmystreet_id",
+        required => "true",
+        automated => "server_set",
+    },
+    {
+        code => "quantity",
+        required => "false",
+        automated => "hidden_field",
+    },
+);
+$contact->update;
+
 subtest '_set_request_containers' => sub {
     my @services = (
         # Wheelie bins
@@ -110,11 +153,13 @@ subtest '_set_request_containers' => sub {
 
     note 'Checking containers set on property';
     cmp_deeply $property, {
+        household_size_check => 1,
         can_order_lids => 1,
 
         containers_for_delivery => [
             {   name        => 'Green Wheelie Bin',
                 description => 'Non-recyclable waste',
+                household_size_check => 1,
                 subtypes    => [
                     {   size                => 'Small 140 litre',
                         service_item_name   => 'RES-140',
@@ -213,6 +258,7 @@ subtest '_set_request_containers' => sub {
         containers_for_removal => [
             {   name        => 'Green Wheelie Bin',
                 description => 'Non-recyclable waste',
+                household_size_check => 1,
                 subtypes    => [
                     {   size                => 'Small 140 litre',
                         service_item_name   => 'RES-140',
@@ -492,7 +538,6 @@ FixMyStreet::override_config {
         whitespace => { bexley => { url => 'http://example.org/' } },
     },
 }, sub {
-    my $mech = FixMyStreet::TestMech->new;
     my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
     $whitespace_mock->mock(
         'GetSiteInfo',
@@ -536,9 +581,129 @@ FixMyStreet::override_config {
         $mech->content_contains('Order replacement bins');
         $mech->content_contains('Order removal of old bins');
         $mech->content_contains('Order lids');
+
+        subtest 'Green wheelie bin' => sub {
+            $mech->submit_form_ok( { form_id => 'form-RES-180-delivery' } );
+            $mech->content_contains(
+                'How many people live at the property?',
+                'Household size options shown first'
+            );
+
+            note 'Choose household size of 2';
+            $mech->submit_form_ok( { with_fields => { household_size => 2 } } );
+# TODO Green wheelie bin should be pre-checked
+            $mech->content_like(
+                qr/hidden.*bin-size-Green-Wheelie-Bin.*RES-140/,
+                'Hidden single option for bin size' );
+            $mech->back;
+
+            note 'Choose household size of 3';
+            $mech->submit_form_ok( { with_fields => { household_size => 3 } } );
+            $mech->content_like(
+                qr/option.*RES-140.*Small 140 litre/,
+                'Small bin option',
+            );
+            $mech->content_like(
+                qr/option.*RES-180.*Medium 180 litre/,
+                'Medium bin option',
+            );
+            $mech->content_unlike(
+                qr/option.*RES-240.*Large 240 litre/,
+                'No big bin option',
+            );
+            $mech->back;
+
+            note 'Choose household size of 5 or more';
+            $mech->submit_form_ok( { with_fields => { household_size => '5 or more' } } );
+            $mech->content_like(
+                qr/option.*RES-140.*Small 140 litre/,
+                'Small bin option',
+            );
+            $mech->content_like(
+                qr/option.*RES-180.*Medium 180 litre/,
+                'Medium bin option',
+            );
+            $mech->content_like(
+                qr/option.*RES-240.*Large 240 litre/,
+                'Big bin option',
+            );
+        };
+
+        subtest 'Request multiple containers' => sub {
+            $mech->get_ok('/waste/10001');
+            $mech->follow_link_ok(
+                { text_regex => qr /Order replacement bins/ } );
+
+            $mech->submit_form_ok( { with_fields => { household_size => 3 } },
+                'Choose household size' );
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        'parent-Green-Wheelie-Bin'   => 1,
+                        'bin-size-Green-Wheelie-Bin' => 'RES-140',
+
+                        'parent-Blue-Lidded-Wheelie-Bin'   => 1,
+                        'bin-size-Blue-Lidded-Wheelie-Bin' => 'PC-240',
+
+                        'container-PG-55' => 1,
+
+                        'container-Deliver-Box-lids-55L' => 1,
+                        'quantity-Deliver-Box-lids-55L'  => 4,
+
+                        'container-FO-23' => 1,
+                        'quantity-FO-23'  => 2,
+
+                        'container-Kitchen-5-Ltr-Caddy' => 1,
+                    },
+                },
+            );
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        name  => 'Test User',
+                        phone => '44 07 111 111 111',
+                        email => 'test@example.com'
+                    }
+                },
+                'submit "about you" page',
+            );
+
+            $mech->content_contains( 'Please review the information',
+                'On summary page' );
+
+# TODO Container summary
+
+            $mech->submit_form_ok(
+                { with_fields => { submit => 'Request new containers' } } );
+
+            $mech->content_contains( 'Your container request has been sent',
+                'Request successful' );
+
+            my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
+            is $rows->count, 6, 'correct number of reports raised';
+
+            my %extra;
+            while ( my $report = $rows->next ) {
+                ok $report->confirmed;
+                is $report->state, 'confirmed';
+                is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+                $extra{ $report->get_extra_field_value('service_item_name') }
+                    = $report->get_extra_field_value('quantity');
+            }
+            cmp_deeply \%extra, {
+                'RES-140'              => 1,
+                'PC-240'               => 1,
+                'PG-55'                => 1,
+                'Deliver Box lids 55L' => 4,
+                'FO-23'                => 2,
+                'Kitchen 5 Ltr Caddy'  => 1,
+            }, 'Extra data is correct';
+        };
     };
 
     subtest 'Above-shop property' => sub {
+        $mech->delete_problems_for_body( $body->id );
+
         $mech->get_ok('/waste/10002');
 
         $mech->content_contains("$new_string clear sack(s)");
@@ -550,8 +715,50 @@ FixMyStreet::override_config {
         $mech->content_contains('Order replacement bins');
         $mech->content_lacks('Order removal of old bins');
         $mech->content_lacks('Order lids');
-    };
 
+        subtest 'Request sacks' => sub {
+            $mech->submit_form_ok( { form_id => 'form-MDR-SACK-delivery' } );
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        'container-MDR-SACK'   => 1,
+                    },
+                },
+            );
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        name  => 'Test User',
+                        phone => '44 07 111 111 111',
+                        email => 'test@example.com'
+                    }
+                },
+                'submit "about you" page',
+            );
+
+            $mech->content_contains( 'Please review the information',
+                'On summary page' );
+
+            $mech->submit_form_ok(
+                { with_fields => { submit => 'Request new containers' } } );
+
+            $mech->content_contains( 'Your container request has been sent',
+                'Request successful' );
+
+            my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
+            is $rows->count, 1, 'correct number of reports raised';
+
+            my %extra;
+            while ( my $report = $rows->next ) {
+                ok $report->confirmed;
+                is $report->state, 'confirmed';
+                is $report->get_extra_field_value('uprn'), '10002', 'UPRN is correct';
+                $extra{ $report->get_extra_field_value('service_item_name') }
+                    = $report->get_extra_field_value('quantity');
+            }
+            cmp_deeply \%extra, { 'MDR-SACK' => 1 }, 'Extra data is correct';
+        };
+    };
 };
 
 sub _site_info {

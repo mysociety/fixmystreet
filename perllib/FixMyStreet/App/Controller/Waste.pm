@@ -791,6 +791,12 @@ sub request : Chained('property') : Args(0) {
             intro => 'request/intro.html',
             check_unique_id => 0,
             next => $next,
+            update_field_list => sub {
+                my $form = shift;
+                my $fields = $form->{c}->cobrand->call_hook(
+                    waste_request_form_update_field_list => $form ) // {};
+                return $fields;
+            },
         },
     ];
 
