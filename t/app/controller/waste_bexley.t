@@ -1186,6 +1186,7 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bexley',
     COBRAND_FEATURES => {
         whitespace => {
             bexley => {
@@ -1209,69 +1210,13 @@ FixMyStreet::override_config {
                         text       => 'Collection cancelled.',
                     },
                 },
+                missed_collection_secret => 'mySecret'
             },
         },
+        waste => { bexley => 1 },
     },
 }, sub {
     subtest 'Updates for missed collection reports' => sub {
-        $whitespace_mock->mock( 'GetFullWorksheetDetails', sub {
-            my ( $self, $ws_id ) = @_;
-            return {
-                2002 => {
-                    WSServiceProperties => {
-                        WorksheetServiceProperty => [
-                            {
-                                ServicePropertyID => 1,
-                            },
-                        ],
-                    },
-                },
-                2003 => {
-                    WSServiceProperties => {
-                        WorksheetServiceProperty => [
-                            {
-                                ServicePropertyID => 1,
-                            },
-                            {
-                                ServicePropertyID => 68,
-                                ServicePropertyValue => 'Overdue', # 'action scheduled'
-                            },
-                        ],
-                    },
-                },
-                2004 => {
-                    WSServiceProperties => {
-                        WorksheetServiceProperty => [
-                            {
-                                ServicePropertyID => 68,
-                                ServicePropertyValue => 'Duplicate worksheet', # 'duplicate'
-                            },
-                        ],
-                    },
-                },
-                2005 => {
-                    WSServiceProperties => {
-                        WorksheetServiceProperty => [
-                            {
-                                ServicePropertyID => 68,
-                                ServicePropertyValue => 'Not Out', # 'unable to fix'
-                            },
-                        ],
-                    },
-                },
-                2006 => {
-                    WSServiceProperties => {
-                        WorksheetServiceProperty => [
-                            {
-                                ServicePropertyID => 68,
-                                ServicePropertyValue => 'Cancelled', # 'closed'
-                            },
-                        ],
-                    },
-                },
-            }->{$ws_id};
-        });
-
         my $cobrand = FixMyStreet::Cobrand::Bexley->new;
 
         $mech->delete_problems_for_body( $body->id );
@@ -1323,21 +1268,42 @@ FixMyStreet::override_config {
             push @reports, $r;
         }
 
-        my $lines = join '\n', (
-            'Fetching data for report \d+',
-            '  No new state, skipping',
-            'Fetching data for report \d+',
-            '  No new state, skipping',
-            'Fetching data for report \d+',
-            '  Latest update matches fetched state, skipping',
-            'Fetching data for report \d+',
-            '  Updating report to state \'duplicate\'.*',
-            'Fetching data for report \d+',
-            '  Updating report to state \'unable to fix\'.*',
-        );
-        stdout_like {
-            $cobrand->waste_fetch_events( { verbose => 1 } )
-        } qr/$lines/;
+        for my $details (
+            {
+                id => 2003,
+                ref => 6537144,
+                status => 'Overdue'
+            },
+            {
+                id => 2004,
+                ref => 6537144,
+                status => 'Duplicate worksheet'
+            },
+            {
+                id => 2005,
+                ref => 6537144,
+                status => 'Not Out'
+            },
+            {
+                id => 2006,
+                ref => 6537144,
+                status => 'Cancelled'
+            }
+        ) {
+            is $mech->post('/waste/whitespace', Content_Type => 'text/xml', Content => '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                xmlns:web="https://www.jadu.net/hubis/webservices">
+                <soapenv:Header />
+                <soapenv:Body>
+                    <web:WorksheetPoke>
+                        <secret>mySecret</secret>
+                        <worksheetId>' . $details->{id} . '</worksheetId>
+                        <worksheetReference>' . $details->{ref} . '</worksheetReference>
+                        <status>' . $details->{status} . '</status>
+                        <completedDate>2024-10-02T06:46:12</completedDate>
+                    </web:WorksheetPoke>
+                </soapenv:Body>
+            </soapenv:Envelope>')->code, 200;
+        };
 
         my @got;
         for my $r (@reports) {
@@ -1364,12 +1330,12 @@ FixMyStreet::override_config {
         }
 
         cmp_deeply \@got, [
-            # No worksheet so no update
+            # No whitespace update, so no update
             {   external_id => 'Whitespace-2001',
                 state       => 'confirmed',
                 comments    => [],
             },
-            # No missed collection data for worksheet, so no update
+            # No whitespace update, so no update
             {   external_id => 'Whitespace-2002',
                 state       => 'confirmed',
                 comments    => [],
@@ -1430,6 +1396,7 @@ FixMyStreet::override_config {
             },
         ], 'correct reports updated with comments added';
     };
+
 };
 
 done_testing;
