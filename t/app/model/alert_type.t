@@ -1,4 +1,3 @@
-use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 

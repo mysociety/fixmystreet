@@ -1,4 +1,3 @@
-use utf8;
 use Test::MockModule;
 use Test::MockTime 'set_fixed_time';
 use FixMyStreet::TestMech;

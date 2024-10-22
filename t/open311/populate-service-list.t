@@ -12,7 +12,6 @@ package main;
 use FixMyStreet::TestMech;
 use FixMyStreet::DB;
 use Test::Warn;
-use utf8;
 
 use_ok( 'Open311::PopulateServiceList' );
 use_ok( 'Open311' );

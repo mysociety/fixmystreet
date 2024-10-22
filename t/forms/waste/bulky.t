@@ -1,4 +1,3 @@
-use utf8;
 use FixMyStreet::App::Form::Waste::Bulky;
 use FixMyStreet::Cobrand::Peterborough;
 use FixMyStreet::TestMech;

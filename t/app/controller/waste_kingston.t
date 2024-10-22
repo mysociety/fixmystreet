@@ -1,4 +1,3 @@
-use utf8;
 use File::Temp 'tempdir';
 use JSON::MaybeXS;
 use Test::MockModule;

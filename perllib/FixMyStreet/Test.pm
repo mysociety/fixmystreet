@@ -24,6 +24,7 @@ sub import {
     warnings->import(FATAL => 'all');
     utf8->import;
     Data::Dumper::Concise::Sugar->export_to_level(1);
+    binmode Test::More->builder->output, ':utf8';
     Test::More->export_to_level(1);
     $db->txn_begin;
 }

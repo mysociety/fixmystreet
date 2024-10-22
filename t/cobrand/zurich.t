@@ -1,7 +1,6 @@
 # TODO
 # Overdue alerts
 
-use utf8;
 use DateTime;
 use Email::MIME;
 use File::Temp;

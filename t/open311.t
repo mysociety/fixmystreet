@@ -10,7 +10,6 @@ use CGI::Simple;
 use HTTP::Response;
 use DateTime;
 use DateTime::Format::W3CDTF;
-use utf8;
 use Encode;
 
 use_ok( 'Open311' );

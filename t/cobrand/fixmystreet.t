@@ -7,7 +7,6 @@ sub council_area_id { 2514 }
 sub cut_off_date { DateTime->now->subtract(days => 30)->strftime('%Y-%m-%d') }
 
 package main;
-use utf8;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::UpdateAllReports;
