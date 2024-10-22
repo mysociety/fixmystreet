@@ -445,7 +445,8 @@ Missed collection reports are automatically confirmed
 
 sub waste_auto_confirm_report {
     my ($self, $report) = @_;
-    return $report->category eq 'Report missed collection';
+    return $report->category eq 'Report missed collection'
+        || $report->category eq 'Request new container';
 }
 
 1;

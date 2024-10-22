@@ -1255,8 +1255,6 @@ sub construct_bin_request_form {
                     # disabled => $_->{requests_open}{$id} ? 1 : 0,
                 };
 
-                # TODO Green wheelie bins need a household size check
-
                 push @$field_list, "bin-size-$id" => {
                     type    => 'Select',
                     label   => 'Bin Size',
@@ -1268,7 +1266,7 @@ sub construct_bin_request_form {
                         },
                         @{ $container->{subtypes} }
                     ],
-                    required_when => { "container-$id" => 1 },
+                    required_when => { "parent-$id" => 1 },
                 };
             } else {
                 my $id = $container->{service_item_name} =~ s/ /-/gr;
@@ -1327,8 +1325,47 @@ sub construct_bin_request_form {
     return $field_list;
 }
 
+sub waste_request_form_update_field_list {
+    my ( $self, $form ) = @_;
+    my $data = $form->saved_data;
+    my $fields = {};
+
+    # Change green wheelie bin size options depending on
+    # household size
+    if ( my $household_size = $data->{household_size} ) {
+        my $field_name = 'bin-size-Green-Wheelie-Bin';
+        my @original_options = $form->field($field_name)->options;
+
+        return $fields if $household_size eq '5 or more'; # Allow all bin sizes
+
+        if ( $household_size < 3 ) {
+            # Small bin only
+            $fields->{$field_name}{default}
+                = $original_options[0]{value};
+            $fields->{$field_name}{widget} = 'Hidden';
+        } else {
+            # 3 - 4 people: Allow small and medium bin
+            $fields->{$field_name}{options} = [
+                @original_options[0,1]
+            ];
+        }
+    }
+
+    return $fields;
+}
+
 sub waste_request_form_first_next {
     return 'about_you';
+}
+
+sub waste_munge_request_form_pages {
+    my ( $self, $page_list, $field_list ) = @_;
+
+    my $c = $self->{c};
+
+    if ( $c->stash->{property}{household_size_check} ) {
+        $c->stash->{first_page} = 'household_size';
+    }
 }
 
 sub waste_munge_request_form_data {
@@ -1388,11 +1425,11 @@ sub waste_munge_request_data {
 
     $data->{title}  = "Request new $service->{name}";
 
-    # TODO Reason, household size
+    # TODO Reason
     my $address = $c->stash->{property}{address};
     my $reason = 'TODO';
     my $quantity = $data->{"quantity-$id"} || 1;
-    my $household_size = '';
+    my $household_size = $data->{household_size};
     $data->{detail} = "$data->{title}\n\n$address";
     $data->{detail} .= "\n\nReason: $reason";
     $data->{detail} .= "\n\nQuantity: $quantity";
@@ -1520,6 +1557,9 @@ sub _set_request_containers {
             $boxes_done = 1;
 
         }
+
+        $property->{household_size_check} = 1
+            if $container_info->{household_size_check};
     }
 
     $property->{containers_for_delivery} = \@containers_for_delivery;
@@ -1529,8 +1569,9 @@ sub _set_request_containers {
 sub _containers_for_requests {
     return {
         'Green Wheelie Bin' => {
-            name        => 'Green Wheelie Bin',
-            description => 'Non-recyclable waste',
+            name                 => 'Green Wheelie Bin',
+            description          => 'Non-recyclable waste',
+            household_size_check => 1,
             subtypes    => [
                 {   size                => 'Small 140 litre',
                     service_item_name   => 'RES-140',
