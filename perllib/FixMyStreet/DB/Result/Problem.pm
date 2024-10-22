@@ -419,11 +419,7 @@ sub visible_states_remove {
 sub public_asset_id {
     my $self = shift;
 
-    my $current_cobrand = $self->result_source->schema->cobrand;
-
-    my $cobrand_for_problem = $current_cobrand->call_hook(
-        get_body_handler_for_problem => $self );
-
+    my $cobrand_for_problem = $self->body_handler;
     return unless $cobrand_for_problem;
 
     # Should be of the form:
@@ -1043,8 +1039,7 @@ sub updates_sent_to_body {
     return unless $self->send_method_used && $self->send_method_used =~ /Open311/;
 
     # Some bodies only send updates *to* FMS, they don't receive updates.
-    my $cobrand = $self->get_cobrand_logged;
-    my $handler = $cobrand->call_hook(get_body_handler_for_problem => $self);
+    my $handler = $self->body_handler;
     my $ret = $handler && $handler->call_hook(updates_sent_to_body => $self);
     return $ret if defined $ret;
 
@@ -1219,6 +1214,26 @@ has get_cobrand_logged => (
         my $self = shift;
         my $cobrand_class = FixMyStreet::Cobrand->get_class_for_moniker( $self->cobrand );
         return $cobrand_class->new;
+    },
+);
+
+=head2 body_handler
+
+Calls the get_body_handler_for_problem hook on the cobrand the report was logged against.
+In the UK, this returns the corresponding cobrand for the body a report was sent to, and
+on fixmystreet.com it returns Buckinghamshire for Bucks parish bodies, and FixMyStreet for
+Kingston/Sutton reports (rather than themselves, as they are only waste).
+
+=cut
+
+has body_handler => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $cobrand = $self->get_cobrand_logged;
+        my $handler = $cobrand->call_hook(get_body_handler_for_problem => $self);
+        return $handler;
     },
 );
 
