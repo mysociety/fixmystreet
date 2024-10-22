@@ -10,7 +10,7 @@
         <button type="button" class="btn btn--provide-update js-provide-update hidden-nojs">[% loc('Provide an update') %]</button>
         <div class="hidden-js">
     [% END %]
-        [% INCLUDE 'report/update-form.html' %]
+        [% INCLUDE 'report/update-form.html' updates_disallowed_checked=1 %]
     [% IF two_column_sidebar %]
         </div>
     [% END %]
