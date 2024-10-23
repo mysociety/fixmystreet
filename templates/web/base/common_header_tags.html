@@ -82,6 +82,17 @@ if ('serviceWorker' in navigator) {
     <link rel="prefetch" href="[% version('/vendor/fancybox/jquery.fancybox-1.3.4.pack.js') %]">
 [% END %]
 
+<script type="speculationrules">
+{
+  "prerender": [{
+    "where": {
+      "href_matches": "/*"
+    },
+    "eagerness": "moderate"
+  }]
+}
+</script>
+
 [% IF file_exists("web/cobrands/" _ c.cobrand.moniker _ "/favicon.ico") %]
 <link rel="icon" href="/cobrands/[% c.cobrand.moniker %]/favicon.ico">
 [% END %]
