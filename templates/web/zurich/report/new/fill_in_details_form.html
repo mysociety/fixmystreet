@@ -17,6 +17,7 @@
             [% PROCESS "report/new/category_wrapper.html" %]
             [% ELSE %]
             <input type="hidden" name="category" id="category" value="[% prefill_category | html %]">
+            <input type="hidden" name="prefill_category" id="prefill_category" value="[% prefill_category | html %]">
             [% END %]
 
             [% PROCESS 'report/form/photo_upload.html' %]
