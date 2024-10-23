@@ -297,6 +297,53 @@ subtest "private categories" => sub {
     $mech->content_contains('<option value="Allgemein">StadtPeople (STA)</option>');
 };
 
+subtest "Auto select category and input description from url" => sub {
+    $mech->log_out_ok;
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&filter_category=Cat1');
+    $mech->content_contains('Kategorie', 'filter_category works as standard');
+    $mech->content_contains("value='Cat1' checked>", 'Category selected as standard behaviour');
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_category=Cat1');
+    $mech->content_lacks('Kategorie', 'Category list not present with only prefill_category argument');
+    $mech->content_contains('input type="hidden" name="category" id="category" value="Cat1"', 'Category pre-selected with only prefill_category argument');
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_description=Test 1234');
+    $mech->content_contains('Kategorie', 'Categories present when prefill_description present alone');
+    $mech->content_contains('Test 1234</textarea>', 'Detail prefilled when prefill_description present alone');
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_category=Cat1&prefill_description=Test 1234 Äï');
+    $mech->content_lacks('Kategorie', 'Category list not present');
+    $mech->submit_form_ok({ with_fields => {
+        username_register  => 'auser@example.org',
+        phone => '0123 4567 899',
+    }}, 'Text pre-filled');
+    $mech->content_contains('Klicken Sie auf den Link im');
+    ok (my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test 1234 Äï'}), "Report created with text from url");
+    is $report->category, 'Cat1', "Report in correct category from url";
+};
+
+subtest "Auto select category and input description from url works on validation fail" => sub {
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_category=Cat1&prefill_description=Test 1234 Äï');
+    $mech->content_lacks('Kategorie', 'Category list not present');
+    $mech->submit_form_ok({ with_fields => {
+        username_register  => 'auser@example.org',
+    }}, 'No phone number so fails validation');
+    $mech->content_contains('Diese Information wird benötigt', 'Error for phone number');
+    $mech->content_lacks('Kategorie', 'Category list not present');
+    $mech->content_contains('input type="hidden" name="category" id="category" value="Cat1"', 'Category pre-selected after form validation fail');
+    $mech->content_contains('Test 1234 Äï</textarea>', 'Detail prefilled after form validation fail');
+};
+
+subtest "Auto select private category and input description from url" => sub {
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_category=Allgemein&prefill_description=Test 5678');
+    $mech->submit_form_ok({ with_fields => {
+        username_register  => 'auser@example.org',
+        phone => '0123 4567 899',
+    }}, 'Text pre-filled');
+    $mech->content_contains('Klicken Sie auf den Link im');
+    ok (my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test 5678'}), "Report created with text from url");
+    is $report->category, 'Allgemein', "Report in correct category from url";
+    send_reports_for_zurich();
+    $mech->clear_emails_ok;
+};
+
 sub get_moderated_count {
     # my %date_params = ( );
     # my $moderated = FixMyStreet::DB->resultset('Problem')->search({
@@ -954,7 +1001,7 @@ subtest "test stats" => sub {
 
     my $export_count = get_export_rows_count($mech);
     if (defined $export_count) {
-        is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports';
+        is $export_count - $EXISTING_REPORT_COUNT, 5, 'Correct number of reports';
         $mech->content_contains('fixed - council');
     }
 
@@ -963,7 +1010,7 @@ subtest "test stats" => sub {
     $report->update({ non_public => 0 });
 
     $export_count =  get_export_rows_count($mech, '&ym=' . DateTime->now->strftime("%m.%Y"));
-    is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports when filtering by month';
+    is $export_count - $EXISTING_REPORT_COUNT, 5, 'Correct number of reports when filtering by month';
 };
 
 subtest "test admin_log" => sub {

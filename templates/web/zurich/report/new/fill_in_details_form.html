@@ -13,7 +13,12 @@
                 <p class='form-error'>[% field_errors.bodies %]</p>
             [% END %]
 
+            [% IF !prefill_category %]
             [% PROCESS "report/new/category_wrapper.html" %]
+            [% ELSE %]
+            <input type="hidden" name="category" id="category" value="[% prefill_category | html %]">
+            <input type="hidden" name="prefill_category" id="prefill_category" value="[% prefill_category | html %]">
+            [% END %]
 
             [% PROCESS 'report/form/photo_upload.html' %]
             [% PROCESS 'report/new/after_photo.html' %]
