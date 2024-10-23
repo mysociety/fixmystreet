@@ -128,20 +128,17 @@ sub relative_url_for_report {
 sub munge_around_category_where {
     my ($self, $where) = @_;
 
-    my $iow = grep { $_->name eq 'Isle of Wight Council' } @{ $self->{c}->stash->{around_bodies} };
+    my $iow = grep { $_->get_column('name') eq 'Isle of Wight Council' } @{ $self->{c}->stash->{around_bodies} };
     if ($iow) {
         # display all the categories on Isle of Wight at the moment as there's no way to
         # do the expand bit later as we fetch it using ajax which uses a bounding box so
         # can't determine the body
         $where->{send_method} = [ { '!=' => 'Triage' }, undef ];
     }
-    my $waste = grep { $_->name =~ /Bromley Council|Peterborough City Council/ } @{ $self->{c}->stash->{around_bodies} };
-    if ($waste) {
-        $where->{'-or'} = [
-            extra => undef,
-            -not => { extra => { '@>' => '{"type":"waste"}' } }
-        ];
-    }
+    $where->{'-or'} = [
+        extra => undef,
+        -not => { extra => { '@>' => '{"type":"waste"}' } }
+    ];
 }
 
 sub _iow_category_munge {
@@ -179,7 +176,7 @@ sub munge_reports_area_list {
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
-    my %bodies = map { $_->name => 1 } values %$bodies;
+    my %bodies = map { $_->get_column('name') => 1 } values %$bodies;
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand::TfL->new({ c => $self->{c} });
@@ -192,7 +189,7 @@ sub munge_report_new_bodies {
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
 
         if (!$on_he_road) {
-            %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
+            %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'National Highways' } values %$bodies;
         }
     }
 
@@ -228,7 +225,7 @@ sub munge_report_new_contacts {
     # Ignore contacts with a special type (e.g. waste, noise, claim)
     @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
 
-    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$contacts;
 
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $contacts);
@@ -265,7 +262,7 @@ sub munge_unmixed_category_groups {
     my ($self, $groups, $opts) = @_;
     return unless $opts->{reporting};
     my $bodies = $self->{c}->stash->{bodies};
-    my %bodies = map { $_->name => 1 } values %$bodies;
+    my %bodies = map { $_->get_column('name') => 1 } values %$bodies;
     if ($bodies{"Buckinghamshire Council"}) {
         my @category_groups = grep { $_->{name} ne 'Car park issue' } @$groups;
         my ($car_park_group) = grep { $_->{name} eq 'Car park issue' } @$groups;

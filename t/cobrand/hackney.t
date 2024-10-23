@@ -1,4 +1,3 @@
-use utf8;
 use CGI::Simple;
 use DateTime;
 use DateTime::Format::W3CDTF;

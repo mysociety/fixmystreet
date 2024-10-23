@@ -323,7 +323,7 @@ sub format_problem_for_display : Private {
     }
 
     my $first_body = (values %{$problem->bodies})[0];
-    $c->stash->{extra_name_info} = $first_body && $first_body->name =~ /Bromley/ ? 1 : 0;
+    $c->stash->{extra_name_info} = $first_body && $first_body->get_column('name') =~ /Bromley/ ? 1 : 0;
 
     $c->forward('generate_map_tags');
 

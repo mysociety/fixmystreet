@@ -1,7 +1,6 @@
 # TODO
 # Overdue alerts
 
-use utf8;
 use DateTime;
 use Email::MIME;
 use File::Temp;
@@ -318,6 +317,18 @@ subtest "Auto select category and input description from url" => sub {
     $mech->content_contains('Klicken Sie auf den Link im');
     ok (my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test 1234 Äï'}), "Report created with text from url");
     is $report->category, 'Cat1', "Report in correct category from url";
+};
+
+subtest "Auto select category and input description from url works on validation fail" => sub {
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_category=Cat1&prefill_description=Test 1234 Äï');
+    $mech->content_lacks('Kategorie', 'Category list not present');
+    $mech->submit_form_ok({ with_fields => {
+        username_register  => 'auser@example.org',
+    }}, 'No phone number so fails validation');
+    $mech->content_contains('Diese Information wird benötigt', 'Error for phone number');
+    $mech->content_lacks('Kategorie', 'Category list not present');
+    $mech->content_contains('input type="hidden" name="category" id="category" value="Cat1"', 'Category pre-selected after form validation fail');
+    $mech->content_contains('Test 1234 Äï</textarea>', 'Detail prefilled after form validation fail');
 };
 
 subtest "Auto select private category and input description from url" => sub {

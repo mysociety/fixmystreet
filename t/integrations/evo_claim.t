@@ -1,5 +1,3 @@
-use strict;
-use warnings;
 use Test::More;
 use Test::MockObject;
 use Test::MockModule;

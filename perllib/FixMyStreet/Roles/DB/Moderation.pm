@@ -12,7 +12,7 @@ sub latest_moderation {
 
     return $self->moderation_original_datas->search(
         $self->moderation_filter,
-    )->order_by('-id')->first;
+    )->order_by('-id')->search(undef, { rows => 1 })->first;
 }
 
 sub latest_moderation_log_entry {

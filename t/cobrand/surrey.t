@@ -6,6 +6,10 @@ use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 use_ok 'FixMyStreet::Cobrand::Surrey';
 
 my $surrey = $mech->create_body_ok(2242, 'Surrey County Council', {}, { cobrand => 'surrey' });

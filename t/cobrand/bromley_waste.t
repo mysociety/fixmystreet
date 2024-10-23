@@ -1,4 +1,3 @@
-use utf8;
 use CGI::Simple;
 use JSON::MaybeXS;
 use Test::MockModule;

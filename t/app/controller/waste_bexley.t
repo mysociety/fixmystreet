@@ -1,4 +1,3 @@
-use utf8;
 use Test::Deep;
 use Test::MockModule;
 use Test::MockObject;

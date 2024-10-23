@@ -223,23 +223,31 @@ sub council_rss_alert_options {
 
     my $num_councils = scalar keys %$all_areas;
 
+    my @bodies = FixMyStreet::DB->resultset('Body')->active->search({
+        name => { -not_in => ['TfL', 'National Highways'] }
+    }, {
+        prefetch => 'body_areas',
+    })->for_areas(keys %$all_areas)->all;
+    my %bodies = map { $_->id => $_ } @bodies;
+    $c->cobrand->call_hook(munge_report_new_bodies => \%bodies);
+
+    my %body_for_area;
+    foreach my $body (values %bodies) {
+        foreach my $area ($body->body_areas->all) {
+            $body_for_area{$area->area_id} = $body;
+        }
+    }
+
     my ( @options, @reported_to_options );
     if ( $num_councils == 1 or $num_councils == 2 ) {
         my ($council, $ward);
-        my $body = FixMyStreet::DB->resultset('Body')->active->search(
-            {
-                name => { -not_in => ['TfL', 'National Highways'] }
-            })->for_areas(keys %$all_areas)->first;
         foreach (values %$all_areas) {
+            $_->{short_name} = $self->short_name($_);
+            ($_->{id_name} = $_->{short_name}) =~ tr/+/_/;
             if ($councils{$_->{type}}) {
                 $council = $_;
-                $council->{id} = $body->id; # Want to use body ID, not MapIt area ID
-                $council->{short_name} = $self->short_name( $council );
-                ( $council->{id_name} = $council->{short_name} ) =~ tr/+/_/;
             } else {
                 $ward = $_;
-                $ward->{short_name} = $self->short_name( $ward );
-                ( $ward->{id_name} = $ward->{short_name} ) =~ tr/+/_/;
             }
         }
         $council->{name} = 'London Borough of Bromley'
@@ -247,32 +255,33 @@ sub council_rss_alert_options {
 
         my $council_text;
         if ( $c->cobrand->is_council ) {
-            $council_text = 'All problems within the council';
+            $council_text = 'All reports within the council';
         } else {
-            $council_text = sprintf( _('Problems within %s'), $council->{name});
+            $council_text = sprintf( _('All reports within %s'), $council->{name});
         }
 
         push @options, {
-            type      => 'council',
-            id        => sprintf( 'council:%s:%s', $council->{id}, $council->{id_name} ),
+            type      => 'area',
+            id        => sprintf( 'area:%s', $council->{id} ),
             text      => $council_text,
             rss_text  => sprintf( _('RSS feed of problems within %s'), $council->{name}),
-            uri       => $c->uri_for( '/rss/reports/' . $council->{short_name} ),
+            uri       => $c->uri_for( '/rss/area/' . $council->{id} ),
         };
         push @options, {
-            type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $council->{id}, $ward->{id}, $council->{id_name}, $ward->{id_name} ),
+            type     => 'area',
+            id       => sprintf( 'area:%s', $ward->{id} ),
             rss_text => sprintf( _('RSS feed of problems within %s ward'), $ward->{name}),
-            text     => sprintf( _('Problems within %s ward'), $ward->{name}),
-            uri      => $c->uri_for( '/rss/reports/' . $council->{short_name} . '/' . $ward->{short_name} ),
+            text     => sprintf( _('All reports within %s ward'), $ward->{name}),
+            uri      => $c->uri_for( '/rss/area/' . $ward->{id} ),
         } if $ward;
 
     } elsif ( $num_councils == 4 ) {
         # Two-tier council
         my ($county, $district, $c_ward, $d_ward);
         foreach (values %$all_areas) {
-            $_->{short_name} = $self->short_name( $_ );
-            ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
+            $_->{short_name} = $self->short_name($_);
+            ($_->{id_name} = $_->{short_name}) =~ tr/+/_/;
+            $_->{body} = $body_for_area{$_->{id}};
             if ($_->{type} eq 'CTY') {
                 $county = $_;
             } elsif ($_->{type} eq 'DIS') {
@@ -288,63 +297,66 @@ sub council_rss_alert_options {
         my $county_name = $county->{name};
         my $c_ward_name = $c_ward->{name};
 
-        my $body_dis = FixMyStreet::DB->resultset('Body')->active->for_areas($district->{id})->first;
-        my $body_cty = FixMyStreet::DB->resultset('Body')->active->for_areas($county->{id})->first;
-
         push @options, {
+            title => $district_name,
             type  => 'area',
-            id    => sprintf( 'area:%s:%s', $district->{id}, $district->{id_name} ),
-            text  => sprintf( _('Problems within %s'), $district_name ),
+            id    => sprintf( 'area:%s', $district->{id} ),
+            text  => sprintf( _('All reports within %s'), $district_name ),
             rss_text => sprintf( _('RSS feed for %s'), $district_name ),
-            uri => $c->uri_for( '/rss/area/' . $district->{short_name}  )
+            uri => $c->uri_for( '/rss/area/' . $district->{id}  )
         }, {
+            title => "$d_ward_name, $district_name",
             type      => 'area',
-            id        => sprintf( 'area:%s:%s:%s:%s', $district->{id}, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
-            text      => sprintf( _('Problems within %s ward, %s'), $d_ward_name, $district_name ),
+            id        => sprintf( 'area:%s', $d_ward->{id} ),
+            text      => sprintf( _('All reports within %s ward, %s'), $d_ward_name, $district_name ),
             rss_text  => sprintf( _('RSS feed for %s ward, %s'), $d_ward_name, $district_name ),
-            uri       => $c->uri_for( '/rss/area/' . $district->{short_name} . '/' . $d_ward->{short_name} )
+            uri       => $c->uri_for( '/rss/area/' . $d_ward->{id} )
         }, {
+            title => $county_name,
             type  => 'area',
-            id    => sprintf( 'area:%s:%s', $county->{id}, $county->{id_name} ),
-            text  => sprintf( _('Problems within %s'), $county_name ),
+            id    => sprintf( 'area:%s', $county->{id} ),
+            text  => sprintf( _('All reports within %s'), $county_name ),
             rss_text => sprintf( _('RSS feed for %s'), $county_name ),
-            uri => $c->uri_for( '/rss/area/' . $county->{short_name}  )
+            uri => $c->uri_for( '/rss/area/' . $county->{id}  )
         }, {
+            title => "$c_ward_name, $county_name",
             type      => 'area',
-            id        => sprintf( 'area:%s:%s:%s:%s', $county->{id}, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
-            text      => sprintf( _('Problems within %s ward, %s'), $c_ward_name, $county_name ),
+            id        => sprintf( 'area:%s', $c_ward->{id} ),
+            text      => sprintf( _('All reports within %s ward, %s'), $c_ward_name, $county_name ),
             rss_text  => sprintf( _('RSS feed for %s ward, %s'), $c_ward_name, $county_name ),
-            uri       => $c->uri_for( '/rss/area/' . $county->{short_name} . '/' . $c_ward->{short_name} )
+            uri       => $c->uri_for( '/rss/area/' . $c_ward->{id} )
         };
 
         push @reported_to_options, {
             type      => 'council',
-            id        => sprintf( 'council:%s:%s', $body_dis->id, $district->{id_name} ),
-            text      => sprintf( _('Reports sent to %s'), $district->{name} ),
+            id        => sprintf( 'council:%s:%s', $district->{body}->id, $district->{id_name} ),
+            text      => sprintf( _('Only reports sent to %s'), $district->{name} ),
             rss_text  => sprintf( _('RSS feed of %s'), $district->{name}),
             uri       => $c->uri_for( '/rss/reports/' . $district->{short_name} ),
         }, {
             type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $body_dis->id, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
+            id       => sprintf( 'ward:%s:%s:%s:%s', $district->{body}->id, $d_ward->{id}, $district->{id_name}, $d_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $district->{name}, $d_ward->{name}),
-            text     => sprintf( _('Reports sent to %s, within %s ward'), $district->{name}, $d_ward->{name}),
+            text     => sprintf( _('Only reports sent to %s, within %s ward'), $district->{name}, $d_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $district->{short_name} . '/' . $d_ward->{short_name} ),
         }
-            if $body_dis;
+            if $district->{body};
+        push @reported_to_options, {}, {} unless $district->{body};
+
         push @reported_to_options, {
             type      => 'council',
-            id        => sprintf( 'council:%s:%s', $body_cty->id, $county->{id_name} ),
-            text      => sprintf( _('Reports sent to %s'), $county->{name} ),
+            id        => sprintf( 'council:%s:%s', $county->{body}->id, $county->{id_name} ),
+            text      => sprintf( _('Only reports sent to %s'), $county->{name} ),
             rss_text  => sprintf( _('RSS feed of %s'), $county->{name}),
             uri       => $c->uri_for( '/rss/reports/' . $county->{short_name} ),
         }, {
             type     => 'ward',
-            id       => sprintf( 'ward:%s:%s:%s:%s', $body_cty->id, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
+            id       => sprintf( 'ward:%s:%s:%s:%s', $county->{body}->id, $c_ward->{id}, $county->{id_name}, $c_ward->{id_name} ),
             rss_text => sprintf( _('RSS feed of %s, within %s ward'), $county->{name}, $c_ward->{name}),
-            text     => sprintf( _('Reports sent to %s, within %s ward'), $county->{name}, $c_ward->{name}),
+            text     => sprintf( _('Only reports sent to %s, within %s ward'), $county->{name}, $c_ward->{name}),
             uri      => $c->uri_for( '/rss/reports/' . $county->{short_name} . '/' . $c_ward->{short_name} ),
         }
-            if $body_cty;
+            if $county->{body};
 
     } else {
         throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_areas));
@@ -477,7 +489,7 @@ sub updates_disallowed {
 
     my $cfg = $self->feature('updates_allowed') || '';
 
-    my $body_user = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
+    my $body_user = $c->user_exists && $c->user->from_body && $c->user->from_body->get_column('name') eq $self->council_name;
     return $self->_updates_disallowed_check($cfg, $problem, $body_user);
 }
 

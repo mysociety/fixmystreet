@@ -152,7 +152,7 @@ sub title_list {
 }
 
 sub check_report_is_on_cobrand_asset {
-    my ($self, $council_area) = shift @_;
+    my $self = shift;
 
     if ($self->{c}->get_param('feature_id') && $self->{c}->get_param('feature_id') =~ /A-48-24|A-48-26|A-48-27/) {
         return 1;

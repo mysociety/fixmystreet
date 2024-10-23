@@ -33,12 +33,12 @@ FixMyStreet::override_config {
     $mech->content_contains('html class="no-js" lang="en-gb"');
     $mech->content_contains('Problems within 10.0km');
     $mech->content_contains('rss/pc/EH11BB');
-    $mech->content_contains('Problems within Edinburgh City');
-    $mech->content_contains('Problems within City Centre ward');
-    $mech->content_contains('/rss/reports/Edinburgh');
-    $mech->content_contains('/rss/reports/Edinburgh/City+Centre');
-    $mech->content_contains('council:' . $body->id . ':Edinburgh', 'Council feed contains Edinburgh id and details');
-    $mech->content_contains('ward:' . $body->id . ':20728:Edinburgh:City_Centre', 'Ward feed contains Edinburgh id and details');
+    $mech->content_contains('All reports within Edinburgh City');
+    $mech->content_contains('All reports within City Centre ward');
+    $mech->content_contains('/rss/area/2651');
+    $mech->content_contains('/rss/area/20728');
+    $mech->content_contains('area:2651', 'Council feed contains Edinburgh id and details');
+    $mech->content_contains('area:20728', 'Ward feed contains Edinburgh id and details');
 
     subtest "Test Nominatim lookup" => sub {
         $mech->get_ok('/alert/list?pc=High Street');
@@ -51,7 +51,6 @@ FixMyStreet::override_config {
     # Two-tier council
     $mech->get_ok('/alert/list?pc=GL502PR');
     $mech->content_contains('Problems in an area');
-    $mech->content_contains('Reports by destination');
 
     $mech->get_ok('/alert/subscribe?rss=1&type=local&pc=EH1+1BB&rss=Give+me+an+RSS+feed&rznvy=' );
     $mech->content_contains('Please select the feed you want');
@@ -59,11 +58,11 @@ FixMyStreet::override_config {
     $mech->get_ok('/alert/subscribe?rss=1&feed=invalid:1000:A_Locationtype=local&pc=EH1+1BB&rss=Give+me+an+RSS+feed&rznvy=');
     $mech->content_contains('Illegal feed selection');
 
-    $mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:Birmingham');
-    is $mech->uri->path, '/rss/reports/Birmingham';
+    $mech->get_ok('/alert/subscribe?rss=1&feed=area:1000');
+    is $mech->uri->path, '/rss/area/1000';
 
-    $mech->get_ok('/alert/subscribe?rss=1&feed=area:1000:1001:Cheltenham:Lansdown');
-    is $mech->uri->path, '/rss/area/Cheltenham/Lansdown';
+    $mech->get_ok('/alert/subscribe?rss=1&feed=area:1001');
+    is $mech->uri->path, '/rss/area/1001';
 
     $mech->get_ok('/alert/subscribe?rss=1&feed=council:1000:Gloucestershire');
     is $mech->uri->path, '/rss/reports/Gloucestershire';

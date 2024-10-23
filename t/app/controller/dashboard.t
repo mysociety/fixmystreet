@@ -19,9 +19,6 @@ sub dashboard_permission {
 
 package main;
 
-use strict;
-use warnings;
-
 use FixMyStreet::TestMech;
 use File::Temp 'tempdir';
 use Path::Tiny;

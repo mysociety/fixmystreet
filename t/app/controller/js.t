@@ -1,4 +1,3 @@
-use utf8;
 use JSON::MaybeXS;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;

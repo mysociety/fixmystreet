@@ -104,7 +104,7 @@ This admin page displays the overall configuration for the site.
 sub config_page : Path( 'config' ) : Args(0) {
     my ($self, $c) = @_;
     my $dir = FixMyStreet->path_to();
-    my $git_version = `cd $dir && git describe --tags`;
+    my $git_version = `cd $dir && git describe --tags 2>&1`;
     chomp $git_version;
     $c->stash(
         git_version => $git_version,

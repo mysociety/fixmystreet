@@ -1,4 +1,3 @@
-use utf8;
 use Encode;
 use FixMyStreet::TestMech;
 use Path::Tiny;

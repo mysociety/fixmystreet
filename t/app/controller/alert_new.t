@@ -1,4 +1,3 @@
-use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 
@@ -383,12 +382,10 @@ subtest "Test two-tier council alerts" => sub {
     for my $alert (
         { feed => "local:51.896269:-2.093063",          result => '/rss/l/51.896269,-2.093063' },
         { feed => "local:51.896269:-2.093063", result => '/rss/l/51.896269,-2.093063/4.5', distance => 4.5 },
-        { feed => "area:2326:Cheltenham",               result => '/rss/area/Cheltenham' },
-        { feed => "area:2326:4544:Cheltenham:Lansdown", result => '/rss/area/Cheltenham/Lansdown'  },
-        { feed => "area:2226:Gloucestershire",          result => '/rss/area/Gloucestershire' },
-        { feed => "area:2226:14949:Gloucestershire:Lansdown_and_Park",
-          result => '/rss/area/Gloucestershire/Lansdown+and+Park'
-        },
+        { feed => "area:2326", result => '/rss/area/2326' },
+        { feed => "area:4544", result => '/rss/area/4544'  },
+        { feed => "area:2226", result => '/rss/area/2226' },
+        { feed => "area:14949", result => '/rss/area/14949' },
         { feed => "council:2326:Cheltenham",            result => '/rss/reports/Cheltenham' },
         { feed => "ward:2326:4544:Cheltenham:Lansdown", result => '/rss/reports/Cheltenham/Lansdown' },
         { feed => "council:2226:Gloucestershire",       result => '/rss/reports/Gloucestershire' },

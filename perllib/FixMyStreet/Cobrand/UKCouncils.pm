@@ -219,7 +219,7 @@ sub responsible_for_areas {
         if (grep ($self->council_area_id->[0] == $_, keys %$councils)) {
             return 1;
         } else {
-            return $self->check_report_is_on_cobrand_asset($self->council_area);
+            return $self->check_report_is_on_cobrand_asset;
         }
     } else {
         # The majority of cobrands only cover a single area, but e.g. Northamptonshire

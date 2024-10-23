@@ -1,4 +1,3 @@
-use utf8;
 use JSON::MaybeXS;
 use Path::Tiny;
 use Storable qw(dclone);

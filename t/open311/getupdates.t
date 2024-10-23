@@ -1,4 +1,3 @@
-use utf8;
 use FixMyStreet::Test;
 use URI::Split qw(uri_split);
 

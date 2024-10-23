@@ -6,7 +6,6 @@ use parent 'FixMyStreet::Cobrand::Default';
 sub path_to_web_templates { [ FixMyStreet->path_to( 't', 'app', 'controller', 'templates') ] }
 
 package main;
-use utf8;
 use FixMyStreet::TestMech;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );

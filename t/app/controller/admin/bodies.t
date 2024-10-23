@@ -11,7 +11,6 @@ sub anonymous_account { { email => 'anoncategory@example.org', name => 'Anonymou
 
 package main;
 
-use utf8;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;

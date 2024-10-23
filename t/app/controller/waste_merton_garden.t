@@ -1,4 +1,3 @@
-use utf8;
 use JSON::MaybeXS;
 use Test::MockModule;
 use Test::MockTime qw(:all);

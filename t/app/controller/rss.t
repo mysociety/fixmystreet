@@ -1,4 +1,3 @@
-use utf8;
 use open ':std', ':locale';
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
