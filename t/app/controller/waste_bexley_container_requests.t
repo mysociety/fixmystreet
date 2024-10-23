@@ -12,6 +12,9 @@ END { FixMyStreet::App->log->enable('info'); }
 
 set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
 
+my $addr_mock = Test::MockModule->new('BexleyAddresses');
+# We don't actually read from the file, so just put anything that is a valid path
+$addr_mock->mock( 'database_file', '/' );
 my $dbi_mock = Test::MockModule->new('DBI');
 $dbi_mock->mock( 'connect', sub {
     my $dbh = Test::MockObject->new;
