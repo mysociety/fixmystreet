@@ -16,11 +16,13 @@ use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Waste';
 
 use BexleyAddresses;
-use Integrations::Whitespace;
 use DateTime;
 use DateTime::Format::W3CDTF;
 use FixMyStreet;
+use FixMyStreet::App::Form::Waste::Request::Bexley;
 use FixMyStreet::Template;
+use Integrations::Whitespace;
+use Lingua::EN::Inflect qw( NUMWORDS );
 use Sort::Key::Natural qw(natkeysort_inplace);
 
 has 'whitespace' => (
@@ -446,6 +448,8 @@ sub bin_services_for_address {
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
 
     @site_services_filtered = $self->service_sort(@site_services_filtered);
+
+    $self->_set_request_containers( $property, @site_services_filtered );
 
     return \@site_services_filtered;
 }
@@ -1230,6 +1234,428 @@ sub get_in_cab_logs_reason_prefix {
     }
 
     return '';
+}
+
+# Container maintenance
+
+sub construct_bin_request_form {
+    my ( $self, $c ) = @_;
+
+    my $field_list = [];
+
+    my $request_type = $c->get_param('request_type');
+
+    if ( $request_type eq 'delivery' ) {
+        for my $container (
+            @{ $c->stash->{property}{containers_for_delivery} } )
+        {
+            if ( $container->{subtypes} ) {
+                my $id = $container->{name} =~ s/ /-/gr;
+
+                push @$field_list, "parent-$id" => {
+                    type         => 'Checkbox',
+                    label        => $container->{name},
+                    option_label => $container->{description},
+                    tags         => { toggle => "form-bin-size-$id-row" },
+
+                    # TODO
+                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
+                };
+
+                # TODO Green wheelie bins need a household size check
+
+                push @$field_list, "bin-size-$id" => {
+                    type    => 'Select',
+                    label   => 'Bin Size',
+                    tags    => { initial_hidden => 1 },
+                    options => [
+                        map {
+                            label     => $_->{size},
+                            value     => $_->{service_item_name},
+                        },
+                        @{ $container->{subtypes} }
+                    ],
+                    required_when => { "container-$id" => 1 },
+                };
+            } else {
+                my $id = $container->{service_item_name} =~ s/ /-/gr;
+
+                push @$field_list, "container-$id" => {
+                    type         => 'Checkbox',
+                    label        => $container->{name},
+                    option_label => $container->{description},
+                    tags => { toggle => "form-quantity-$id-row" },
+
+                    # TODO
+                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
+                };
+
+                my $max = $container->{max} || 1;
+                if ( $max > 1 ) {
+                    push @$field_list, "quantity-$id" => {
+                        type => 'Select',
+                        label => 'Quantity',
+                        tags => {
+                            hint => "You can request a maximum of " . NUMWORDS($max) . " containers",
+                            initial_hidden => 1,
+                        },
+                        options => [
+                            map { { value => $_, label => $_ } }
+                                ( 1 .. $max ),
+                        ],
+                        required_when => { "container-$id" => 1 },
+                    };
+                }
+            }
+        }
+    } else {
+        # Removal
+        for my $container (
+            @{ $c->stash->{property}{containers_for_removal} } )
+        {
+            # TODO Use size/code for service that exists on property
+
+            my $id
+                = $container->{subtypes}
+                ? $container->{subtypes}[0]{service_item_name}
+                : $container->{service_item_name};
+
+            push @$field_list, "container-$id" => {
+                type         => 'Checkbox',
+                label        => $container->{name},
+                option_label => $container->{description},
+
+                # TODO
+                # disabled => $_->{requests_open}{$id} ? 1 : 0,
+            };
+        }
+    }
+
+    return $field_list;
+}
+
+sub waste_request_form_first_next {
+    return 'about_you';
+}
+
+sub waste_munge_request_form_data {
+    my ( $self, $data ) = @_;
+
+    # Populate subtype for any parent containers with a bin size
+    for ( keys %$data ) {
+        my ($parent_id) = /^parent-(.*)/;
+
+        next unless $parent_id;
+
+        my $subtype_id = $data->{"bin-size-$parent_id"};
+        $data->{"container-$subtype_id"} = 1 if $subtype_id;
+    }
+}
+
+sub waste_munge_request_data {
+    my ( $self, $id, $data ) = @_;
+
+    my $c  = $self->{c};
+    my $delivery_containers = $c->stash->{property}{containers_for_delivery};
+
+    my $service;
+    for my $dc (@$delivery_containers) {
+        $service = $dc if $id eq ( $dc->{service_item_name} // '' );
+
+        last if $service;
+
+        if ( @{ $dc->{subtypes} // [] } ) {
+            # The service we are looking for may be the subtype of
+            # a parent
+            # (e.g. 'RES-140' under 'Green Wheelie Bin')
+            for my $subtype ( @{ $dc->{subtypes} } ) {
+                if ( $id eq $subtype->{service_item_name} ) {
+                    $service = $subtype;
+                    # Use parent name
+                    $service->{name} = $dc->{name};
+                    last;
+                }
+            }
+        }
+
+        last if $service;
+
+        # Some containers have an original service_item_name (ID) with spaces.
+        # E.g. 'Deliver Box lids 55L'.
+        # We need to unhyphen string that was hyphenated in
+        # construct_bin_request_form().
+        my $id_spaced = $id =~ s/-/ /gr;
+
+        if ( $id_spaced eq ( $dc->{service_item_name} // '' ) ) {
+            $service = $dc;
+        }
+
+        last if $service;
+    }
+
+    $data->{title}  = "Request new $service->{name}";
+
+    # TODO Reason, household size
+    my $address = $c->stash->{property}{address};
+    my $reason = 'TODO';
+    my $quantity = $data->{"quantity-$id"} || 1;
+    my $household_size = '';
+    $data->{detail} = "$data->{title}\n\n$address";
+    $data->{detail} .= "\n\nReason: $reason";
+    $data->{detail} .= "\n\nQuantity: $quantity";
+    $data->{detail} .= "\n\nHousehold size: $household_size"
+        if $household_size;
+
+    $c->set_param( 'uprn',              $c->stash->{property}{uprn} );
+    $c->set_param( 'service_item_name', $service->{service_item_name} );
+    $c->set_param( 'quantity',          $quantity );
+}
+
+sub _set_request_containers {
+    my ( $self, $property, @services ) = @_;
+
+    return if $property->{is_communal};
+
+    my %all_service_ids = map { $_->{service_id} => 1 } @services;
+
+    my @containers_for_delivery;
+    my @containers_for_removal;
+    my $boxes_done;
+
+    for my $service ( @services ) {
+        # NB: 'service_id' here is equivalent to Whitespace ServiceItemName
+        # ('service_item_name' in _containers_for_requests())
+        my $service_id = $service->{service_id};
+        my $round_schedule = $service->{round_schedule};
+        my $container_info;
+        my $name;
+
+        if (   $service_id eq 'RES-140'
+            || $service_id eq 'RES-180'
+            || $service_id eq 'RES-240' )
+        {
+            $name = 'Green Wheelie Bin';
+            $container_info
+                = _containers_for_requests()->{$name};
+            push @containers_for_delivery, $container_info;
+            push @containers_for_removal,  $container_info;
+
+            $service->{delivery_allowed} = 1;
+            $service->{removal_allowed}  = 1;
+
+        } elsif ( $service_id eq 'PC-140'
+            || $service_id eq 'PC-180'
+            || $service_id eq 'PC-240' )
+        {
+            $name = 'Blue Lidded Wheelie Bin';
+            $container_info
+                = _containers_for_requests()->{$name};
+            push @containers_for_delivery, $container_info;
+            push @containers_for_removal,  $container_info;
+
+            $service->{delivery_allowed} = 1;
+            $service->{removal_allowed}  = 1;
+
+        } elsif ( $service_id eq 'PG-140'
+            || $service_id eq 'PG-180'
+            || $service_id eq 'PG-240' )
+        {
+            $name = 'White Lidded Wheelie Bin';
+            $container_info
+                = _containers_for_requests()->{$name};
+            push @containers_for_delivery, $container_info;
+            push @containers_for_removal,  $container_info;
+
+            $service->{delivery_allowed} = 1;
+            $service->{removal_allowed}  = 1;
+
+        } elsif ( $service_id eq 'FO-23' ) {
+            my $food_waste
+                = _containers_for_requests()->{'Food Waste'};
+            for ( @$food_waste ) {
+                # NOTE We always offer Kitchen Caddy as a deliverable
+                # container even though it is never shown on the bin days page
+                push @containers_for_delivery, $_;
+                push @containers_for_removal, $_
+                    if $_->{service_id_removal};
+            }
+
+            $service->{delivery_allowed} = 1;
+            $service->{removal_allowed}  = 1;
+
+        } elsif ( $service_id eq 'MDR-SACK' ) {
+            $container_info
+                = _containers_for_requests()->{'Clear Sack(s)'};
+            push @containers_for_delivery, $container_info;
+
+            $service->{delivery_allowed} = 1;
+
+        } elsif ( $round_schedule =~ /BOX/ ) {
+            $name = 'Recycling Boxes';
+            my $boxes = _containers_for_requests()->{$name};
+
+            for ( @$boxes ) {
+                # Any box with service_id_delivery is eligible for delivery
+                # even if property doesn't have that box currently.
+                if ( $_->{service_id_delivery} ) {
+                    push @containers_for_delivery, $_ unless $boxes_done;
+
+                    $service->{delivery_allowed} = 1
+                        if $service->{service_id} eq $_->{service_item_name};
+                }
+
+                # Conversely, property must have a given box already for
+                # it to be removable.
+                if ( $_->{service_id_removal} ) {
+                    push @containers_for_removal, $_
+                        if $all_service_ids{ $_->{service_item_name} }
+                        && !$boxes_done;
+
+                    $service->{removal_allowed} = 1
+                        if $service->{service_id} eq $_->{service_item_name};
+                }
+            }
+
+            # Any property with boxes can also order lids
+            unless ($boxes_done) {
+                push @containers_for_delivery,
+                    _containers_for_requests()->{'Recycling Box Lids'};
+
+                $property->{can_order_lids} = 1;
+            }
+
+            $boxes_done = 1;
+
+        }
+    }
+
+    $property->{containers_for_delivery} = \@containers_for_delivery;
+    $property->{containers_for_removal}  = \@containers_for_removal;
+}
+
+sub _containers_for_requests {
+    return {
+        'Green Wheelie Bin' => {
+            name        => 'Green Wheelie Bin',
+            description => 'Non-recyclable waste',
+            subtypes    => [
+                {   size                => 'Small 140 litre',
+                    service_item_name   => 'RES-140',
+                    service_id_delivery => '272',
+                    service_id_removal  => '205',
+                },
+                {   size                => 'Medium 180 litre',
+                    service_item_name   => 'RES-180',
+                    service_id_delivery => '273',
+                    service_id_removal  => '206',
+                },
+                {   size                => 'Large 240 litre',
+                    service_item_name   => 'RES-240',
+                    service_id_delivery => '274',
+                    service_id_removal  => '207',
+                },
+            ],
+        },
+        'Blue Lidded Wheelie Bin' => {
+            name        => 'Blue Lidded Wheelie Bin',
+            description => 'Paper and card',
+            subtypes    => [
+                {   size                => 'Small 140 litre',
+                    service_item_name   => 'PC-140',
+                    service_id_delivery => '325',
+                    service_id_removal  => '333',
+                },
+                {   size                => 'Medium 180 litre',
+                    service_item_name   => 'PC-180',
+                    service_id_delivery => '326',
+                    service_id_removal  => '334',
+                },
+                {   size                => 'Large 240 litre',
+                    service_item_name   => 'PC-240',
+                    service_id_delivery => '327',
+                    service_id_removal  => '335',
+                },
+            ],
+        },
+        'White Lidded Wheelie Bin' => {
+            name        => 'White Lidded Wheelie Bin',
+            description => 'Plastics, cans and glass',
+            subtypes    => [
+                {   size                => 'Small 140 litre',
+                    service_item_name   => 'PG-140',
+                    service_id_delivery => '329',
+                    service_id_removal  => '337',
+                },
+                {   size                => 'Medium 180 litre',
+                    service_item_name   => 'PG-180',
+                    service_id_delivery => '330',
+                    service_id_removal  => '338',
+                },
+                {   size                => 'Large 240 litre',
+                    service_item_name   => 'PG-240',
+                    service_id_delivery => '331',
+                    service_id_removal  => '339',
+                },
+            ],
+        },
+
+        'Recycling Boxes' => [
+            {   name               => 'Green Recycling Box',
+                description        => 'Paper and card',
+                service_item_name  => 'PA-55',
+                service_id_removal => '181',
+            },
+            {   name               => 'Maroon Recycling Box',
+                description        => 'Plastics and cans',
+                service_item_name  => 'PL-55',
+                service_id_removal => '192',
+            },
+            {   name               => 'Black Recycling Box',
+                description        => 'Glass bottles and jars',
+                service_item_name  => 'GL-55',
+                service_id_removal => '166',
+            },
+            {   name                => 'White Recycling Box',
+                description         => 'Plastics, cans and glass',
+                service_item_name   => 'PG-55',
+                service_id_delivery => '328',
+                service_id_removal  => '336',
+            },
+            {   name                => 'Blue Recycling Box',
+                description         => 'Paper and card',
+                service_item_name   => 'PC-55',
+                service_id_delivery => '324',
+                service_id_removal  => '332',
+            },
+        ],
+
+        'Clear Sack(s)' => {
+            name                => 'Clear Sack(s)',
+            description         => 'Mixed recycling',
+            service_item_name   => 'MDR-SACK',
+            service_id_delivery => '243',
+        },
+
+        'Food Waste' => [
+            {   name                => 'Brown Caddy',
+                service_item_name   => 'FO-23',
+                service_id_delivery => '224',
+                service_id_removal  => '156',
+                max                 => 3,
+            },
+            {   name                => 'Kitchen Caddy',
+                service_item_name   => 'Kitchen 5 Ltr Caddy',
+                service_id_delivery => '235',
+            },
+        ],
+
+        'Recycling Box Lids' => {
+            name                => 'Recycling Box Lids',
+            service_item_name   => 'Deliver Box lids 55L',
+            service_id_delivery => '216',
+            max                 => 5,
+        },
+    };
 }
 
 1;
