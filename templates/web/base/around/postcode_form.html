@@ -27,7 +27,7 @@
             [% END %]
             <div>
                 <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint [% IF location_error_pc_lookup %]search-help pc-error[% END %]"
-                [%~ IF c.cobrand.moniker == 'oxfordshire' %] placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]"[% END %]>
+                [%~ IF c.cobrand.moniker == 'oxfordshire' %] placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]"[% END %] aria-label="Add a postcode or address. Alternatively, there is a geolocate button at the end of this form">
                 [% INCLUDE 'around/_postcode_submit_button.html' %]
             </div>
 
