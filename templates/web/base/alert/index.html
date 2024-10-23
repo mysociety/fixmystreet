@@ -16,7 +16,7 @@
       [% INCLUDE 'errors.html' %]
     [% END %]
     <div>
-      <input type="text" id="pc" name="pc" value="[% pc | html %]" aria-describedby="pc-hint [% IF location_error %]email-error[% END %]" required>
+      <input type="text" id="pc" name="pc" value="[% pc | html %]" aria-describedby="pc-hint [% IF location_error %]email-error[% END %]" required aria-label="Add a postcode or address. Alternatively, there is a geolocate button at the end of this form">
       [% INCLUDE 'around/_postcode_submit_button.html' %]
     </div>
   </fieldset>
