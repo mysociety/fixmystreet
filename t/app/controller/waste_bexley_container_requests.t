@@ -3,6 +3,14 @@ use utf8;
 use FixMyStreet::Cobrand::Bexley;
 use FixMyStreet::TestMech;
 use Test::Deep;
+use Test::MockModule;
+use Test::MockObject;
+use Test::MockTime 'set_fixed_time';
+
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
+set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -287,6 +295,146 @@ subtest '_set_request_containers' => sub {
             containers_for_delivery => [],
             containers_for_removal  => [],
         }, 'nothing set on property';
+    };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bexley',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        waste      => { bexley => 1 },
+        whitespace => { bexley => { url => 'http://example.org/' } },
+    },
+}, sub {
+    my $mech = FixMyStreet::TestMech->new;
+    my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
+    $whitespace_mock->mock(
+        'GetSiteInfo',
+        sub {
+            my ( $self, $uprn ) = @_;
+            return _site_info()->{$uprn};
+        }
+    );
+    $whitespace_mock->mock(
+        'GetSiteCollections',
+        sub {
+            my ( $self, $uprn ) = @_;
+            return _site_collections()->{$uprn};
+        }
+    );
+    $whitespace_mock->mock( 'GetSiteWorksheets', sub{ [] } );
+    $whitespace_mock->mock( 'GetCollectionByUprnAndDate', sub{ [] } );
+    $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
+    $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
+
+    my $new_string = 'Request a new or replacement';
+    my $removal_string = 'Request removal of a';
+
+    subtest 'Standard non-communal property' => sub {
+        $mech->get_ok('/waste/10001');
+
+        $mech->content_contains("$new_string green wheelie bin");
+        $mech->content_contains("$new_string blue lidded wheelie bin");
+        $mech->content_contains("$new_string white recycling box");
+        $mech->content_contains("$new_string brown caddy");
+        $mech->content_lacks("$new_string maroon recycling box");
+        $mech->content_lacks("$new_string brown wheelie bin");
+
+        $mech->content_contains("$removal_string green wheelie bin");
+        $mech->content_contains("$removal_string blue lidded wheelie bin");
+        $mech->content_contains("$removal_string white recycling box");
+        $mech->content_contains("$removal_string brown caddy");
+        $mech->content_contains("$removal_string maroon recycling box");
+        $mech->content_lacks("$new_string brown wheelie bin");
+
+        $mech->content_contains('Order replacement bins');
+        $mech->content_contains('Order removal of old containers');
+        $mech->content_contains('Order lids');
+    };
+
+    subtest 'Above-shop property' => sub {
+        $mech->get_ok('/waste/10002');
+
+        $mech->content_contains("$new_string clear sack(s)");
+        $mech->content_lacks("$new_string black sack(s)");
+
+        $mech->content_lacks("$removal_string clear sack(s)");
+        $mech->content_lacks("$removal_string black sack(s)");
+
+        $mech->content_contains('Order replacement bins');
+        $mech->content_lacks('Order removal of old containers');
+        $mech->content_lacks('Order lids');
+    };
+
+};
+
+sub _site_info {
+    return {
+        10001 => {
+            AccountSiteUPRN => 10001,
+            Site            => {
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
+        10002 => {
+            AccountSiteUPRN => 10002,
+            Site            => {
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
+    };
+}
+
+sub _site_collections {
+    my %defaults = (
+        NextCollectionDate   => '2024-04-01T00:00:00',
+        SiteServiceValidFrom => '2024-03-01T00:59:59',
+        SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+        RoundSchedule => 'RND-1 Mon',
+    );
+
+    return {
+        10001 => [
+            {
+                ServiceItemName => 'RES-180', # Green Wheelie Bin
+                %defaults,
+            },
+            {
+                ServiceItemName => 'PC-180', # Blue Lidded Wheelie Bin
+                %defaults,
+            },
+            {
+                ServiceItemName => 'PL-55', # Maroon Recycling Box
+                %defaults,
+                RoundSchedule => 'PFR-BOX Mon',
+            },
+            {
+                ServiceItemName => 'PG-55', # White Recycling Box
+                %defaults,
+                RoundSchedule => 'PFR-BOX Mon',
+            },
+            {
+                ServiceItemName => 'FO-23', # Brown Caddy
+                %defaults,
+            },
+            {
+                ServiceItemName => 'GA-240', # Brown Wheelie Bin (for garden waste)
+                %defaults,
+            },
+        ],
+        10002 => [
+            {
+                ServiceItemName => 'MDR-SACK', # Clear Sack(s)
+                %defaults,
+            },
+            {
+                ServiceItemName => 'RES-SACK', # Black Sack(s)
+                %defaults,
+            },
+        ],
     };
 };
 
