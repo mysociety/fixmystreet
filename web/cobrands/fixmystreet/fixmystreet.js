@@ -2076,7 +2076,7 @@ fixmystreet.display = {
   },
 
   report: function(reportPageUrl, reportId, callback) {
-    $.ajax(reportPageUrl, { cache: false }).done(function(html, textStatus, jqXHR) {
+    $.ajax(reportPageUrl).done(function(html, textStatus, jqXHR) {
         var $reportPage = $(html),
             $twoColReport = $reportPage.find('.two_column_sidebar'),
             $sideReport = $reportPage.find('#side-report');
