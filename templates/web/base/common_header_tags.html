@@ -82,7 +82,7 @@ if ('serviceWorker' in navigator) {
     <link rel="prefetch" href="[% version('/vendor/fancybox/jquery.fancybox-1.3.4.pack.js') %]">
 [% END %]
 
-<script type="speculationrules">
+<script type="speculationrules" nonce="[% csp_nonce %]">
 {
   "prerender": [{
     "where": {
