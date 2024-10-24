@@ -1055,6 +1055,22 @@ html.mobile.js-nav-open #js-menu-open-modal {
   }
 }
 
+.has-inline-svg {
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+
+  &.has-inline-svg--left-align {
+    justify-content: left;
+  }
+
+  &.has-inline-svg--column-wrap {
+    flex-direction: column;
+  }
+}
+
 //footer blocks
 footer {
   margin-top: 1em;
