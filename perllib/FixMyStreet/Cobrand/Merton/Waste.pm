@@ -379,7 +379,7 @@ sub waste_post_report_creation {
 =head2 Bulky waste collection
 
 Merton has a 6am collection and cut-off for cancellation time.
-Everything else is configured in SLWPEcho.pm
+Everything else is configured in SLWP/Echo.
 
 =cut
 

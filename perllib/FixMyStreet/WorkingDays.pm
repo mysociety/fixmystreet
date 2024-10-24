@@ -38,12 +38,7 @@ sub add_days {
     $dt = $dt->clone;
     while ( $days > 0 ) {
         $dt->add ( days => $subtract ? -1 : 1 );
-        next if $self->is_public_holiday($dt);
-        if ($self->saturdays) {
-            next if $self->is_sunday($dt);
-        } else {
-            next if $self->is_weekend($dt);
-        }
+        next if $self->is_non_working_day($dt);
         $days--;
     }
     return $dt;
@@ -59,6 +54,17 @@ that many working days (excluding public holidays and weekends) earlier.
 sub sub_days {
     my $self = shift;
     return $self->add_days(@_, 1);
+}
+
+=item is_non_working_day
+
+Given a DateTime object, return true if it's a non-working day.
+
+=cut
+
+sub is_non_working_day {
+    my ( $self, $dt ) = @_;
+    return $self->is_public_holiday($dt) || $self->is_sunday($dt) || (!$self->saturdays && $self->is_weekend($dt));
 }
 
 =item is_public_holiday
