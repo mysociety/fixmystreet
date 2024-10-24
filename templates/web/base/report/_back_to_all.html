@@ -1,2 +1,5 @@
 <a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]"
-    class="problem-back js-back-to-report-list">[% loc('Back to all reports') %]</a>
+    class="has-inline-svg has-inline-svg--left-align problem-back js-back-to-report-list">
+    <svg role="presentation" aria-hidden="true" width="1.5em" height="1.5em" viewBox="0 0 13 16" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 0H13L6.5 8L13 16H6.5L0 8L6.5 0Z" fill="currentColor"/></svg>
+    [% loc('Back to all reports') %]
+</a>

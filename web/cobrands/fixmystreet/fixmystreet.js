@@ -30,7 +30,13 @@ function isR2L() {
                 if (!$this.addClass('hover').data('setup')) {
                     d.hide().removeClass('hidden-js').css({
                     padding: '1em',
-                    background: '#fff'
+                    background: '#fff',
+                    position: 'fixed',
+                    margin: '0 -1em',
+                    bottom: '50px',
+                    'z-index': 9999,
+                    width: '100%',
+                    'max-width': '300px'
                     });
                     $this.data('setup', true);
                 }
@@ -98,7 +104,7 @@ function isR2L() {
 
                 // Insert the .shadow-wrap controls into the top of the drawer.
                 $sw.addClass('static').prependTo($drawer);
-                $('#key-tools').addClass('area-js');
+                $('.js-key-tools').addClass('area-js');
                 $('#key-tool-wards').addClass('hover');
 
                 // Animate the drawer into place, enitrely covering the sidebar.
@@ -1293,11 +1299,11 @@ $.extend(fixmystreet.set_up, {
 
     if ($('.mobile').length) {
         // Make sure we end up with one Get updates link
-        if ($('#key-tools a.js-feed').length) {
+        if ($('#key-tools-mobile a.js-feed').length) {
             $('#sub_map_links a.js-feed').remove();
-            $('#key-tools a.js-feed').appendTo('#sub_map_links');
+            $('#key-tools-mobile a.js-feed').appendTo('#sub_map_links');
         }
-        $('#key-tools li:empty').remove();
+        $('#key-tools-mobile li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
         if (fixmystreet.page !== 'around' && fixmystreet.page !== 'new' && !$('#toggle-fullscreen').length) {
             $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
@@ -1362,8 +1368,12 @@ $.extend(fixmystreet.set_up, {
         $('#key-tool-wards').drawer('council_wards', false);
         $('#key-tool-around-updates').drawer('updates_ajax', true);
     }
-    $('#key-tool-report-updates').small_drawer('report-updates-data');
-    $('#key-tool-report-share').small_drawer('report-share');
+    $('.js-key-tool-report-updates').each(function() {
+        $(this).small_drawer('report-updates-data');
+    });
+    $('.js-key-tool-report-share').each(function() {
+        $(this).small_drawer('report-share');
+    });
   },
 
   ward_select_multiple: function() {
