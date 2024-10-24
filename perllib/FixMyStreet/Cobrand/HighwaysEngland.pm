@@ -53,7 +53,7 @@ sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
-    return $user->from_body->name eq 'National Highways';
+    return $user->from_body->get_column('name') eq 'National Highways';
 }
 
 sub report_form_extras {
@@ -197,7 +197,7 @@ sub _redact {
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
     # On the cobrand there is only the HE body
-    %$bodies = map { $_->id => $_ } grep { $_->name eq 'National Highways' } values %$bodies;
+    %$bodies = map { $_->id => $_ } grep { $_->get_column('name') eq 'National Highways' } values %$bodies;
 }
 
 # Strip all (NH) from end of category names
@@ -235,7 +235,7 @@ sub national_highways_cleaning_groups {
     if (defined $c->stash->{he_referral}) {
         @$contacts = grep {
             my @groups = @{$_->groups};
-            $_->body->name ne 'National Highways'
+            $_->body->get_column('name') ne 'National Highways'
             && ( $cleaning_cats{$_->category_display} || grep { $cleaning_cats{$_} } @groups )
         } @$contacts;
     } else {
@@ -246,7 +246,7 @@ sub national_highways_cleaning_groups {
             if ( $cleaning_cats{$_->category_display} || grep { $cleaning_cats{$_} } @groups ) {
                 $_->set_extra_metadata(nh_council_cleaning => 1);
             }
-            $_->body->name ne 'National Highways'
+            $_->body->get_column('name') ne 'National Highways'
             || ( $_->category_display !~ /Flytipping/ && $_->groups->[0] ne 'Litter' )
         } @$contacts;
     }

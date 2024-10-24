@@ -802,7 +802,7 @@ sub bin_services_for_address {
             # If on the day, but before 5pm, show a special message to call
             # (which is slightly different for staff, who are actually allowed to report)
             if ($last->ymd eq $now->ymd && $now->hour < 17) {
-                my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council";
+                my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->get_column('name') eq "Peterborough City Council";
                 $row->{report_allowed} = $is_staff ? 1 : 0;
                 $row->{report_locked_out} = [ "ON DAY PRE 5PM" ];
                 # Set a global flag to show things in the sidebar
@@ -1160,7 +1160,7 @@ sub waste_munge_problem_data {
 sub waste_munge_problem_form_fields {
     my ($self, $field_list) = @_;
 
-    my $not_staff = !($self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council");
+    my $not_staff = !($self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->get_column('name') eq "Peterborough City Council");
     my $label_497 = $not_staff
     ? 'The bin wasn’t returned to the collection point (Please phone 01733 747474 to report this issue)'
     : 'The bin wasn’t returned to the collection point';

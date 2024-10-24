@@ -195,11 +195,11 @@ sub munge_overlapping_asset_bodies {
     } elsif ($self->check_report_is_on_cobrand_asset) {
         # We are not in a Bristol area but the report is in a park that Bristol is responsible for,
         # so only show Bristol categories.
-        %$bodies = map { $_->id => $_ } grep { $_->name eq $self->council_name } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') eq $self->council_name } values %$bodies;
     } else {
         # We are not in a Bristol area and the report is not in a park that Bristol is responsible for,
         # so only show other categories.
-        %$bodies = map { $_->id => $_ } grep { $_->name ne $self->council_name } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne $self->council_name } values %$bodies;
     }
 }
 

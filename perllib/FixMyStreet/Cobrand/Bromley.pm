@@ -171,8 +171,8 @@ sub munge_overlapping_asset_bodies {
     my $cobrand = $self->check_report_is_on_cobrand_asset;
     if (!$in_bromley && $cobrand) {
         my $bromley = FixMyStreet::DB->resultset('Body')->find({ name => $self->council_name });
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Lewisham Borough Council' } values %$bodies;
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'TfL' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'Lewisham Borough Council' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'TfL' } values %$bodies;
         $$bodies{$bromley->id} = $bromley;
     }
 }

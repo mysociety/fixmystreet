@@ -142,7 +142,7 @@ sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
-    return $user->from_body->name eq 'TfL';
+    return $user->from_body->get_column('name') eq 'TfL';
 }
 
 
@@ -557,7 +557,7 @@ sub must_have_2fa {
     my $ip = $self->{c}->req->address;
     return 'skip' if $is_internal_network->($ip);
     return 1 if $user->is_superuser;
-    return 1 if $user->from_body && $user->from_body->name eq 'TfL';
+    return 1 if $user->from_body && $user->from_body->get_column('name') eq 'TfL';
     return 0;
 }
 
@@ -566,7 +566,7 @@ sub update_email_shortlisted_user {
     my $c = $self->{c};
     my $cobrand = FixMyStreet::Cobrand::TfL->new; # $self may be FMS
     my $shortlisted_by = $update->problem->shortlisted_user;
-    if ($shortlisted_by && $shortlisted_by->from_body && $shortlisted_by->from_body->name eq 'TfL' && $shortlisted_by->id ne $update->user_id) {
+    if ($shortlisted_by && $shortlisted_by->from_body && $shortlisted_by->from_body->get_column('name') eq 'TfL' && $shortlisted_by->id ne $update->user_id) {
         $c->send_email('alert-update.txt', {
             additional_template_paths => [
                 FixMyStreet->path_to( 'templates', 'email', 'tfl' ),
@@ -679,12 +679,12 @@ sub munge_report_new_bodies {
     my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
 
     if (!$on_he_road) {
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'National Highways' } values %$bodies;
     }
     # Environment agency added with odour category for FixmyStreet
     # in all England areas, but should not show for cobrands
     if ( $bodies->{'Environment Agency'} ) {
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Environment Agency' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'Environment Agency' } values %$bodies;
     }
 }
 
@@ -695,7 +695,7 @@ sub munge_surrounding_london {
     my %london_hash = map { $_ => 1 } $self->london_boroughs;
     if (!grep { $london_hash{$_} } keys %$all_areas) {
         # Don't send any TfL categories
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'TfL' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'TfL' } values %$bodies;
     }
 
     # Hackney doesn't have any of the council TfL categories so don't show
@@ -716,8 +716,8 @@ sub munge_red_route_categories {
         my %council_cats = map { $_ => 1 } @{ $self->_tfl_council_categories };
         my %extra_bodies = map { $_ => 1 } @{ $self->feature('categories_restriction_bodies') || [] };
         @$contacts = grep {
-            ( $_->body->name eq 'TfL' && !$council_cats{$_->category} )
-            || $extra_bodies{$_->body->name}
+            ( $_->body->get_column('name') eq 'TfL' && !$council_cats{$_->category} )
+            || $extra_bodies{$_->body->get_column('name')}
             || $cleaning_cats{$_->category}
             || @{ mySociety::ArrayUtils::intersection( $self->_cleaning_groups, $_->groups ) }
         } @$contacts;
