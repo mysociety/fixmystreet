@@ -248,13 +248,13 @@ subtest 'Dashboard CSV extra columns' => sub {
     };
     $mech->content_contains('URL","Device Type","Site Used","Reported As","User Email","User Phone","Area name","Road name","Section label","How you found us","Update 1","Update 1 date","Update 1 name","Update 2","Update 2 date","Update 2 name"');
     my @row1 = (
-        'http://highwaysengland.example.org/report/' . $problem1->id,
+        'http://nationalhighways.example.org/report/' . $problem1->id,
         'desktop', 'highwaysengland', '', $problem1->user->email, '', '"South West"', 'M5', '', '"Social media"',
         '"This is an update"', $comment1->confirmed->datetime, '"Council User"',
         '"Second update"', $comment2->confirmed->datetime, 'public',
     );
     $mech->content_contains(join ',', @row1);
-    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
+    $mech->content_contains('http://nationalhighways.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
 
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
@@ -266,13 +266,13 @@ subtest 'Dashboard CSV extra columns' => sub {
     };
     $mech->content_contains('URL","Device Type","Site Used","Reported As","User Email","User Phone","Area name","Road name","Section label","How you found us","Update 1","Update 1 date","Update 1 name","Update 2","Update 2 date","Update 2 name"');
     @row1 = (
-        'http://highwaysengland.example.org/report/' . $problem1->id,
+        'http://nationalhighways.example.org/report/' . $problem1->id,
         'desktop', 'highwaysengland', '', $problem1->user->email, '', '"South West"', 'M5', '', '"Social media"',
         '"This is an update"', $comment1->confirmed->datetime, '"Council User"',
         '"Second update"', $comment2->confirmed->datetime, 'public',
     );
     $mech->content_contains(join ',', @row1);
-    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
+    $mech->content_contains('http://nationalhighways.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
 
     $comment1->delete;
     $comment2->delete;
