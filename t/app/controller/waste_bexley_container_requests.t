@@ -66,6 +66,11 @@ $contact->set_extra_fields(
         required => "false",
         automated => "hidden_field",
     },
+    {
+        code => "assisted_yn",
+        required => "false",
+        automated => "hidden_field",
+    },
 );
 $contact->update;
 
@@ -468,6 +473,7 @@ Quantity: 3',
                         uprn              => 123456,
                         service_item_name => 'Deliver Box lids 55L',
                         quantity          => 3,
+                        assisted_yn       => 'No',
                     },
                 },
                 {   id            => 'FO-23',
@@ -485,6 +491,7 @@ Quantity: 2',
                         uprn              => 123456,
                         service_item_name => 'FO-23',
                         quantity          => 2,
+                        assisted_yn       => 'No',
                     },
                 },
                 {   id            => 'RES-140',
@@ -502,6 +509,7 @@ Quantity: 1',
                         uprn              => 123456,
                         service_item_name => 'RES-140',
                         quantity          => 1,
+                        assisted_yn       => 'No',
                     },
                 },
             )
@@ -702,6 +710,8 @@ FixMyStreet::override_config {
                 ok $report->confirmed;
                 is $report->state, 'confirmed';
                 is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+                is $report->get_extra_field_value('assisted_yn'), 'No',
+                    'assisted_yn is correct';
                 $extra{ $report->get_extra_field_value('service_item_name') }
                     = $report->get_extra_field_value('quantity');
             }
@@ -770,6 +780,8 @@ FixMyStreet::override_config {
                 like $report->detail, qr/Reason: I need more sacks/,
                     'Default reason provided';
                 is $report->get_extra_field_value('uprn'), '10002', 'UPRN is correct';
+                is $report->get_extra_field_value('assisted_yn'), 'No',
+                    'assisted_yn is correct';
                 $extra{ $report->get_extra_field_value('service_item_name') }
                     = $report->get_extra_field_value('quantity');
             }
