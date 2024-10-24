@@ -22,6 +22,7 @@ use FixMyStreet;
 use FixMyStreet::App::Form::Waste::Request::Bexley;
 use FixMyStreet::Template;
 use Integrations::Whitespace;
+use Lingua::EN::Inflect qw( NUMWORDS );
 use Sort::Key::Natural qw(natkeysort_inplace);
 
 has 'whitespace' => (
@@ -1235,16 +1236,16 @@ sub construct_bin_request_form {
 
     my $field_list = [];
 
-    my $request_type = $c->get_param('request-type');
+    my $request_type = $c->get_param('request_type');
 
     if ( $request_type eq 'delivery' ) {
         for my $container (
             @{ $c->stash->{property}{containers_for_delivery} } )
         {
             if ( $container->{subtypes} ) {
-                my $id = lc $container->{name} =~ s/ /-/gr;
+                my $id = $container->{name} =~ s/ /-/gr;
 
-                push @$field_list, "container-parent-$id" => {
+                push @$field_list, "parent-$id" => {
                     type         => 'Checkbox',
                     label        => $container->{name},
                     option_label => $container->{description},
@@ -1254,8 +1255,6 @@ sub construct_bin_request_form {
                     # disabled => $_->{requests_open}{$id} ? 1 : 0,
                 };
 
-                # TODO Green wheelie bins need a household size check
-
                 push @$field_list, "bin-size-$id" => {
                     type    => 'Select',
                     label   => 'Bin Size',
@@ -1263,23 +1262,41 @@ sub construct_bin_request_form {
                     options => [
                         map {
                             label     => $_->{size},
-                                value => $_->{service_item_name}
+                            value     => $_->{service_item_name},
                         },
                         @{ $container->{subtypes} }
                     ],
                     required_when => { "container-$id" => 1 },
                 };
             } else {
-                my $id = $container->{service_item_name};
+                my $id = $container->{service_item_name} =~ s/ /-/gr;
 
                 push @$field_list, "container-$id" => {
                     type         => 'Checkbox',
                     label        => $container->{name},
                     option_label => $container->{description},
+                    tags => { toggle => "form-quantity-$id-row" },
 
                     # TODO
                     # disabled => $_->{requests_open}{$id} ? 1 : 0,
                 };
+
+                my $max = $container->{max} || 1;
+                if ( $max > 1 ) {
+                    push @$field_list, "quantity-$id" => {
+                        type => 'Select',
+                        label => 'Quantity',
+                        tags => {
+                            hint => "You can request a maximum of " . NUMWORDS($max) . " containers",
+                            initial_hidden => 1,
+                        },
+                        options => [
+                            map { { value => $_, label => $_ } }
+                                ( 1 .. $max ),
+                        ],
+                        required_when => { "container-$id" => 1 },
+                    };
+                }
             }
         }
     } else {
@@ -1308,8 +1325,133 @@ sub construct_bin_request_form {
     return $field_list;
 }
 
+sub waste_request_form_update_field_list {
+    my ( $self, $form ) = @_;
+    my $data = $form->saved_data;
+    my $fields = {};
+
+    # Change green wheelie bin size options depending on
+    # household size
+    if ( my $household_size = $data->{household_size} ) {
+        my $field_name = 'bin-size-Green-Wheelie-Bin';
+        my @original_options = $form->field($field_name)->options;
+
+        return $fields if $household_size eq '5 or more'; # Allow all bin sizes
+
+        if ( $household_size < 3 ) {
+            # Small bin only
+            $fields->{$field_name}{default}
+                = $original_options[0]{value};
+            $fields->{$field_name}{widget} = 'Hidden';
+        } else {
+            # 3 - 4 people: Allow small and medium bin
+            $fields->{$field_name}{options} = [
+                @original_options[0,1]
+            ];
+        }
+    }
+
+    return $fields;
+}
+
 sub waste_request_form_first_next {
-    return 'replacement';
+    my $self = shift;
+
+    # Above-shop properties get a single default reason, so no need to send
+    # them to reason selection
+    return $self->{c}->stash->{property}{above_shop}
+        ? 'about_you'
+        : 'request_reason';
+}
+
+sub waste_munge_request_form_pages {
+    my ( $self, $page_list, $field_list ) = @_;
+
+    my $c = $self->{c};
+
+    if ( $c->stash->{property}{household_size_check} ) {
+        $c->stash->{first_page} = 'household_size';
+    }
+}
+
+sub waste_munge_request_form_data {
+    my ( $self, $data ) = @_;
+
+    # Populate subtype for any parent containers with a bin size
+    for ( keys %$data ) {
+        my ($parent_id) = /^parent-(.*)/;
+
+        next unless $parent_id;
+
+        my $subtype_id = $data->{"bin-size-$parent_id"};
+        $data->{"container-$subtype_id"} = 1 if $subtype_id;
+    }
+}
+
+sub waste_munge_request_data {
+    my ( $self, $id, $data ) = @_;
+
+    my $c  = $self->{c};
+    my $delivery_containers = $c->stash->{property}{containers_for_delivery};
+
+    my $service;
+    for my $dc (@$delivery_containers) {
+        $service = $dc if $id eq ( $dc->{service_item_name} // '' );
+
+        last if $service;
+
+        if ( @{ $dc->{subtypes} // [] } ) {
+            # The service we are looking for may be the subtype of
+            # a parent
+            # (e.g. 'RES-140' under 'Green Wheelie Bin')
+            for my $subtype ( @{ $dc->{subtypes} } ) {
+                if ( $id eq $subtype->{service_item_name} ) {
+                    $service = $subtype;
+                    # Use parent name
+                    $service->{name} = $dc->{name};
+                    last;
+                }
+            }
+        }
+
+        last if $service;
+
+        # Some containers have an original service_item_name (ID) with spaces.
+        # E.g. 'Deliver Box lids 55L'.
+        # We need to unhyphen string that was hyphenated in
+        # construct_bin_request_form().
+        my $id_spaced = $id =~ s/-/ /gr;
+
+        if ( $id_spaced eq ( $dc->{service_item_name} // '' ) ) {
+            $service = $dc;
+        }
+
+        last if $service;
+    }
+
+    $data->{title}  = "Request new $service->{name}";
+
+    my $address = $c->stash->{property}{address};
+    my $reason
+        = $c->stash->{property}{above_shop}
+        ? 'I need more sacks'
+        : $data->{request_reason};
+    my $quantity = $data->{"quantity-$id"} || 1;
+    my $household_size = $data->{household_size};
+    $data->{detail} = "$data->{title}\n\n$address";
+    $data->{detail} .= "\n\nReason: $reason";
+    $data->{detail} .= "\n\nQuantity: $quantity";
+    $data->{detail} .= "\n\nHousehold size: $household_size"
+        if $household_size;
+
+    my $assisted_yn = $c->stash->{services}{ $service->{service_item_name} }
+            {assisted_collection}
+            ? 'Yes' : 'No';
+
+    $c->set_param( 'uprn',              $c->stash->{property}{uprn} );
+    $c->set_param( 'service_item_name', $service->{service_item_name} );
+    $c->set_param( 'quantity',          $quantity );
+    $c->set_param( 'assisted_yn', $assisted_yn );
 }
 
 sub _set_request_containers {
@@ -1428,6 +1570,9 @@ sub _set_request_containers {
             $boxes_done = 1;
 
         }
+
+        $property->{household_size_check} = 1
+            if $container_info->{household_size_check};
     }
 
     $property->{containers_for_delivery} = \@containers_for_delivery;
@@ -1437,8 +1582,9 @@ sub _set_request_containers {
 sub _containers_for_requests {
     return {
         'Green Wheelie Bin' => {
-            name        => 'Green Wheelie Bin',
-            description => 'Non-recyclable waste',
+            name                 => 'Green Wheelie Bin',
+            description          => 'Non-recyclable waste',
+            household_size_check => 1,
             subtypes    => [
                 {   size                => 'Small 140 litre',
                     service_item_name   => 'RES-140',
@@ -1542,6 +1688,7 @@ sub _containers_for_requests {
                 service_item_name   => 'FO-23',
                 service_id_delivery => '224',
                 service_id_removal  => '156',
+                max                 => 3,
             },
             {   name                => 'Kitchen Caddy',
                 service_item_name   => 'Kitchen 5 Ltr Caddy',
@@ -1553,6 +1700,7 @@ sub _containers_for_requests {
             name                => 'Recycling Box Lids',
             service_item_name   => 'Deliver Box lids 55L',
             service_id_delivery => '216',
+            max                 => 5,
         },
     };
 }
