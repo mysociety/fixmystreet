@@ -1325,6 +1325,35 @@ sub construct_bin_request_form {
     return $field_list;
 }
 
+sub waste_request_form_update_field_list {
+    my ( $self, $form ) = @_;
+    my $data = $form->saved_data;
+    my $fields = {};
+
+    # Change green wheelie bin size options depending on
+    # household size
+    if ( my $household_size = $data->{household_size} ) {
+        my $field_name = 'bin-size-Green-Wheelie-Bin';
+        my @original_options = $form->field($field_name)->options;
+
+        return $fields if $household_size eq '5 or more'; # Allow all bin sizes
+
+        if ( $household_size < 3 ) {
+            # Small bin only
+            $fields->{$field_name}{default}
+                = $original_options[0]{value};
+            $fields->{$field_name}{widget} = 'Hidden';
+        } else {
+            # 3 - 4 people: Allow small and medium bin
+            $fields->{$field_name}{options} = [
+                @original_options[0,1]
+            ];
+        }
+    }
+
+    return $fields;
+}
+
 sub waste_request_form_first_next {
     return 'about_you';
 }
