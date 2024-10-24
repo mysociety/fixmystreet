@@ -1444,9 +1444,14 @@ sub waste_munge_request_data {
     $data->{detail} .= "\n\nHousehold size: $household_size"
         if $household_size;
 
+    my $assisted_yn = $c->stash->{services}{ $service->{service_item_name} }
+            {assisted_collection}
+            ? 'Yes' : 'No';
+
     $c->set_param( 'uprn',              $c->stash->{property}{uprn} );
     $c->set_param( 'service_item_name', $service->{service_item_name} );
     $c->set_param( 'quantity',          $quantity );
+    $c->set_param( 'assisted_yn', $assisted_yn );
 }
 
 sub _set_request_containers {
