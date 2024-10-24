@@ -89,6 +89,11 @@ sub dispatch_request {
             $payload->{family_name} = "Dwyer";
             $payload->{email} = 'Pkg-tappcontrollerauth_socialt-oidc@TFL.gov.uk' if $self->returns_email;
             $payload->{roles} = $self->roles;
+        } elsif ($self->cobrand eq 'highwaysengland') {
+            $payload->{given_name} = "Andy";
+            $payload->{family_name} = "Dwyer";
+            $payload->{email} = 'pkg-tcobrandhighwaysenglandt-oidc@nationalhighways.example.org' if $self->returns_email;
+            $payload->{oid} = 'OID-OID-OID';
         }
         my $signature = "dummy";
         my $id_token = join(".", (
@@ -97,6 +102,7 @@ sub dispatch_request {
             encode_base64($signature, '')
         ));
         my $data = {
+            access_token => 'AccessToken',
             id_token => $id_token,
             token_type => "Bearer",
             not_before => $now,
