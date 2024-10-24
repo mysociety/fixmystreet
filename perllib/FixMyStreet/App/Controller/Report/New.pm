@@ -244,6 +244,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         next if $unresponsive->{$_->body_id};
         my $body = $_->body;
         push @{$lookups->{bodies}{$category}}, {
+            id => $body->id,
             name => $body->name,
             cobrand_name => $body->cobrand_name,
         };
@@ -355,7 +356,7 @@ sub by_category_ajax_data : Private {
         $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html');
     }
 
-    my $cobrand_overrides = $c->stash->{cobrand_field_overrides_by_body}->{$bodies->[0]->{name}} if @$bodies == 1;
+    my $cobrand_overrides = $c->stash->{cobrand_field_overrides_by_body}->{$bodies->[0]->{id}} if @$bodies == 1;
     my $category_overrides = $lookups->{overrides}{$category};
 
     my $title_label_override = $cobrand_overrides->{title_label};
@@ -889,7 +890,7 @@ sub setup_categories_and_bodies : Private {
         $overrides{title_hint} = $title_hint if $title_hint;
         $overrides{detail_label} = $detail_label if $detail_label;
         $overrides{detail_hint} = $detail_hint if $detail_hint;
-        $cobrand_field_overrides_by_body{$body->name} = \%overrides;
+        $cobrand_field_overrides_by_body{$body->id} = \%overrides;
     }
 
     $c->cobrand->call_hook(munge_report_new_category_list => \@category_options, \@contacts, \%category_extras);
