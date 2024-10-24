@@ -46,8 +46,6 @@
 
 [% TRY %][% INCLUDE 'report/_message_manager.html' %][% CATCH file %][% END %]
 [% INCLUDE 'report/display_tools_mobile.html' %]
-[% TRY %][% INCLUDE 'report/sharing.html' %][% CATCH file %][% END %]
-[% INCLUDE 'report/updates.html' %]
 
 [% IF problem.duplicate_of %]
 [% INCLUDE 'report/duplicate-no-updates.html' %]
@@ -58,6 +56,8 @@
 [% END %]
 
 [% INCLUDE 'report/display_tools.html' %]
+[% TRY %][% INCLUDE 'report/sharing.html' %][% CATCH file %][% END %]
+[% INCLUDE 'report/updates.html' %]
   </div>
 
   [% second_column | safe %]

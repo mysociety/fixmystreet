@@ -1,5 +1,5 @@
 <div class="shadow-wrap">
-  <ul id="key-tools-mobile">
+  <ul id="key-tools-mobile" class="js-key-tools">
     [% IF c.user_exists OR NOT problem.non_public %]
       [% IF c.cobrand.users_can_hide AND relevant_staff_user %]
       <li><form method="post" action="/report/[% problem.id %]/delete" id="remove-from-site-form">
@@ -16,13 +16,13 @@
       </a></li>
       [% END %]
       [% IF c.cobrand.moniker != 'zurich' %]
-      <li><a rel="nofollow" id="key-tool-report-updates" class="has-inline-svg has-inline-svg--column-wrap" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">
+      <li><a rel="nofollow" class="js-key-tool-report-updates has-inline-svg has-inline-svg--column-wrap" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]" aria-expanded="false">
         <svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24" fill="currentColor" role="presentation" aria-hidden="true"><path d="M19.199 24C19.199 13.467 10.533 4.8 0 4.8V0c13.165 0 24 10.835 24 24h-4.801zM3.291 17.415c1.814 0 3.293 1.479 3.293 3.295 0 1.813-1.485 3.29-3.301 3.29C1.47 24 0 22.526 0 20.71s1.475-3.294 3.291-3.295zM15.909 24h-4.665c0-6.169-5.075-11.245-11.244-11.245V8.09c8.727 0 15.909 7.184 15.909 15.91z"/></svg>
         [% loc('Get updates' ) %]
       </a></li>
       [% END %]
       [% IF c.cobrand.moniker == 'fixmystreet' %]
-      <li><a rel="nofollow" id="key-tool-report-share" class="has-inline-svg has-inline-svg--column-wrap" href="#report-share">
+      <li><a rel="nofollow" class="js-key-tool-report-share has-inline-svg has-inline-svg--column-wrap" href="#report-share" aria-expanded="false">
         <svg role="presentation" aria-hidden="true" width="1.5em" height="1.5em" fill="currentColor" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M378,324a69.78,69.78,0,0,0-48.83,19.91L202,272.41a69.68,69.68,0,0,0,0-32.82l127.13-71.5A69.76,69.76,0,1,0,308.87,129l-130.13,73.2a70,70,0,1,0,0,107.56L308.87,383A70,70,0,1,0,378,324Z"/></svg>
         [% loc('Share') %]
       </a></li>
@@ -40,22 +40,4 @@
       </a></li>
     [% END %]
   </ul>
-
-[% IF c.cobrand.moniker == 'fixmystreet' %]
-  <div id="report-share" class="hidden-js" align="center">
-      <a class="btn btn--social btn--twitter" href="https://twitter.com/intent/tweet?text=I%20just%20viewed%20this%20report:%20&lsquo;[% problem.title_safe | uri %]&rsquo;&amp;url=[% c.cobrand.base_url | uri %][% c.req.uri.path | uri %]&amp;via=fixmystreet&amp;related=mySociety">
-          <img alt="" src="/i/twitter-icon-32.png" width="17" height="32">
-          Tweet
-      </a>
-      <a class="btn btn--social btn--facebook" href="https://www.facebook.com/sharer/sharer.php?u=[% c.cobrand.base_url %][% c.req.uri.path %]">
-          <img alt="" src="/i/facebook-icon-32.png" width="17" height="32">
-          Share
-      </a>
-  </div>
-[% END %]
-
-<div id="report-updates-data" class="hidden-js">
-  [% INCLUDE 'alert/_updates.html' %]
-</div>
-
 </div>
