@@ -1327,7 +1327,7 @@ sub contacts_to_bodies : Private {
     # to a road.
     if ($options->{do_not_send}) {
         my %do_not_send_check = map { $_ => 1 } @{$options->{do_not_send}};
-        my @contacts_filtered = grep { !$do_not_send_check{$_->body->name} } @contacts;
+        my @contacts_filtered = grep { !$do_not_send_check{$_->body->get_column('name')} } @contacts;
         @contacts = @contacts_filtered if scalar @contacts_filtered;
     }
 

@@ -929,7 +929,7 @@ sub owns_problem {
     }
 
     # Want to ignore National Highways here
-    my %areas = map { %{$_->areas} } grep { $_->name !~ /National Highways/ } @bodies;
+    my %areas = map { %{$_->areas} } grep { $_->get_column('name') !~ /National Highways/ } @bodies;
 
     foreach my $area_id ($self->area_ids_for_problems) {
         return 1 if $areas{$area_id};

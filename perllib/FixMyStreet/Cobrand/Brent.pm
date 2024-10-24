@@ -209,15 +209,15 @@ sub munge_overlapping_asset_bodies {
         if (!$cobrand || $cobrand eq 'Brent') {
             # ...Brent's responsibility - remove the other bodies covering the Brent area
             %$bodies = map { $_->id => $_ } grep {
-                $_->name ne 'Camden Borough Council' &&
-                $_->name ne 'Barnet Borough Council' &&
-                $_->name ne 'Harrow Borough Council'
+                $_->get_column('name') ne 'Camden Borough Council' &&
+                $_->get_column('name') ne 'Barnet Borough Council' &&
+                $_->get_column('name') ne 'Harrow Borough Council'
                 } values %$bodies;
         } else {
             # Camden wants sole responsibility of Camden agreed areas
             if ($cobrand eq 'Camden') {
                 %$bodies = map { $_->id => $_ } grep {
-                    $_->name eq 'Camden Borough Council' || $_->name eq 'TfL' || $_->name eq 'National Highways'
+                    $_->get_column('name') eq 'Camden Borough Council' || $_->get_column('name') eq 'TfL' || $_->get_column('name') eq 'National Highways'
                 } values %$bodies;
                 return;
             }
@@ -225,7 +225,7 @@ sub munge_overlapping_asset_bodies {
             my %cobrands = (Harrow => 'Harrow Borough Council', Barnet => 'Barnet Borough Council');
             my $selected = $cobrands{$cobrand};
             %$bodies = map { $_->id => $_ } grep {
-                $_->name eq $selected || $_->name eq 'Brent Council' || $_->name eq 'TfL' || $_->name eq 'National Highways'
+                $_->get_column('name') eq $selected || $_->get_column('name') eq 'Brent Council' || $_->get_column('name') eq 'TfL' || $_->get_column('name') eq 'National Highways'
             } values %$bodies;
         }
     } else {
@@ -233,13 +233,13 @@ sub munge_overlapping_asset_bodies {
         if (!$cobrand || $cobrand ne 'Brent') {
             # ...not Brent's responsibility - remove Brent
             %$bodies = map { $_->id => $_ } grep {
-                $_->name ne 'Brent Council'
+                $_->get_column('name') ne 'Brent Council'
                 } values %$bodies;
         } else {
             # If it's for Brent shared with Camden, make wholly Brent's responsibility
-            if (grep { $_->name eq 'Camden Borough Council' } values %$bodies) {
+            if (grep { $_->get_column('name') eq 'Camden Borough Council' } values %$bodies) {
                 %$bodies = map { $_->id => $_ } grep {
-                    $_->name eq 'Brent Council' || $_->name eq 'TfL' || $_->name eq 'National Highways'
+                    $_->get_column('name') eq 'Brent Council' || $_->get_column('name') eq 'TfL' || $_->get_column('name') eq 'National Highways'
                 } values %$bodies;
             }
         }
@@ -256,7 +256,7 @@ of one body, and the non-street categories of the other.
 sub munge_cobrand_asset_categories {
     my ($self, $contacts) = @_;
 
-    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$contacts;
     my %non_street = (
         'Barnet' => { map { $_ => 1 } @{ $self->_barnet_non_street } },
         'Harrow' => { map { $_ => 1 } @{ $self->_harrow_non_street } },

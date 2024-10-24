@@ -343,7 +343,7 @@ sub admin_allow_user {
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
     # Make sure TfL staff can't access other London cobrand admins
-    return undef if $user->from_body->name eq 'TfL';
+    return undef if $user->from_body->get_column('name') eq 'TfL';
     return $user->from_body->get_extra_metadata('cobrand', '') eq $self->moniker;
 }
 
@@ -402,7 +402,7 @@ sub munge_reports_category_list {
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
-    my %bodies = map { $_->name => 1 } values %$bodies;
+    my %bodies = map { $_->get_column('name') => 1 } values %$bodies;
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand::TfL->new({ c => $self->{c} });
@@ -447,7 +447,7 @@ sub munge_report_new_contacts {
         @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
     }
 
-    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$contacts;
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });

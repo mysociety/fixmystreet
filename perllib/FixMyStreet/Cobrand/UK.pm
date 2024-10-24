@@ -52,7 +52,7 @@ sub process_open311_extras {
     my $extra   = shift;
     my $fields  = shift || [];
 
-    if ( $body && $body->name =~ /Bromley/ ) {
+    if ( $body && $body->get_column('name') =~ /Bromley/ ) {
         my @fields = ( 'fms_extra_title', @$fields );
         for my $field ( @fields ) {
             my $value = $ctx->get_param($field);
@@ -199,17 +199,18 @@ sub munge_body_areas_practical {
     my ($self, $body, $area_ids) = @_;
 
     my %ids = map { $_ => 1 } @$area_ids;
+    my $name = $body->get_column('name');
     if ($ids{2505}) {
-        @$area_ids = (2488) if $body->name =~ /Brent/;
-        @$area_ids = (2489) if $body->name =~ /Barnet/;
-        @$area_ids = (2505) if $body->name =~ /Camden/;
-        @$area_ids = (2512) if $body->name =~ /City of London/;
-        @$area_ids = (2509) if $body->name =~ /Haringey/;
-        @$area_ids = (2507) if $body->name =~ /Islington/;
-        @$area_ids = (2504) if $body->name =~ /Westminster/;
+        @$area_ids = (2488) if $name =~ /Brent/;
+        @$area_ids = (2489) if $name =~ /Barnet/;
+        @$area_ids = (2505) if $name =~ /Camden/;
+        @$area_ids = (2512) if $name =~ /City of London/;
+        @$area_ids = (2509) if $name =~ /Haringey/;
+        @$area_ids = (2507) if $name =~ /Islington/;
+        @$area_ids = (2504) if $name =~ /Westminster/;
     } elsif ($ids{2488}) {
-        @$area_ids = (2487) if $body->name =~ /Harrow/;
-    } elsif ($ids{2561} && $body->name =~ /Bristol/) {
+        @$area_ids = (2487) if $name =~ /Harrow/;
+    } elsif ($ids{2561} && $name =~ /Bristol/) {
         @$area_ids = (2561);
     }
 }
@@ -407,7 +408,7 @@ sub get_body_handler_for_problem {
 
     # Do not do anything for National Highways here, as we don't want it to
     # treat this as a cobrand for e.g. submit report emails made on .com
-    my @bodies = grep { $_->name !~ /National Highways/ } values %{$row->bodies};
+    my @bodies = grep { $_->get_column('name') !~ /National Highways/ } values %{$row->bodies};
 
     for my $body ( @bodies ) {
         my $cobrand = $body->get_cobrand_handler;
