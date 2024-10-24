@@ -70,7 +70,7 @@ create table body (
     deleted boolean not null default 'f',
     extra jsonb
 );
-CREATE UNIQUE INDEX body_cobrand_idx ON body(cobrand);
+CREATE INDEX body_cobrand_idx ON body(cobrand);
 
 create table body_areas (
     body_id integer not null references body(id),
