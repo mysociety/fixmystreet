@@ -7,7 +7,7 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $notts_police = $mech->create_body_ok(2236, 'Immediate Justice', {}, { cobrand => 'nottinghamshirepolice' });
+my $notts_police = $mech->create_body_ok(2236, 'Immediate Justice', { cobrand => 'nottinghamshirepolice' });
 my $contact = $mech->create_contact_ok( body_id => $notts_police->id, category => 'Graffiti', email => 'graffiti@example.org' );
 my $contact_referral = $mech->create_contact_ok( body_id => $notts_police->id, category => 'Council referral', email => 'council-referral' );
 my $staff = $mech->create_user_ok( 'staff@example.org', from_body => $notts_police->id, name => 'Staff' );

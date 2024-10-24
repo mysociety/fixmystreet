@@ -20,8 +20,8 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 my $body2 = $mech->create_body_ok(2508, 'Hackney Council');
-my $body3 = $mech->create_body_ok(2488, 'Brent Council', {}, { cobrand => 'brent' });
-my $body4 = $mech->create_body_ok(2482, 'TfL', {}, { cobrand => 'tfl' }); # Bromley area
+my $body3 = $mech->create_body_ok(2488, 'Brent Council', { cobrand => 'brent' });
+my $body4 = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' }); # Bromley area
 
 FixMyStreet::DB->resultset("Role")->create({
     body => $body4,

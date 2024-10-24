@@ -5,7 +5,7 @@ use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2248, 'Northumberland County Council', {}, { cobrand => 'northumberland' });
+my $body = $mech->create_body_ok(2248, 'Northumberland County Council', { cobrand => 'northumberland' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping', email => 'foo@northumberland', group => 'Staff Only - Out Of Hours');
 $mech->create_contact_ok(body_id => $body->id, category => 'Trees', email => 'foo@northumberland');
 

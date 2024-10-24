@@ -8,7 +8,7 @@ my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', {
     api_key => 'sending-key',
     jurisdiction => 'none',
     endpoint => 'endpoint',
-}, { cobrand => 'oxfordshire' });
+    cobrand => 'oxfordshire' });
 my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Open311 updates', { external_id => 'p123' });
 
 subtest 'bad requests do not get through' => sub {

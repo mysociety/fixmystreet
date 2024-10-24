@@ -3,7 +3,7 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 # Test with an arbitrary cobrand
-my $pbro_body = $mech->create_body_ok( 2566, 'Peterborough City Council', {}, { cobrand => 'peterborough' } );
+my $pbro_body = $mech->create_body_ok( 2566, 'Peterborough City Council', { cobrand => 'peterborough' } );
 
 my %problem_params = (
     latitude  => 52.5608,

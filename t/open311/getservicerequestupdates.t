@@ -22,9 +22,9 @@ my $user = FixMyStreet::DB->resultset('User')->find_or_create(
 );
 
 my %bodies = (
-    2237 => FixMyStreet::DB->resultset("Body")->create({ name => 'Oxfordshire', extra => { cobrand => 'oxfordshire' } }),
-    2494 => FixMyStreet::DB->resultset("Body")->create({ name => 'Bexley', extra => { cobrand => 'bexley' }  }),
-    2636 => FixMyStreet::DB->resultset("Body")->create({ name => 'Isle of Wight', extra => { cobrand => 'isleofwight' }  }),
+    2237 => FixMyStreet::DB->resultset("Body")->create({ name => 'Oxfordshire', cobrand => 'oxfordshire' }),
+    2494 => FixMyStreet::DB->resultset("Body")->create({ name => 'Bexley', cobrand => 'bexley' }),
+    2636 => FixMyStreet::DB->resultset("Body")->create({ name => 'Isle of Wight', cobrand => 'isleofwight' }),
     2482 => FixMyStreet::DB->resultset("Body")->create({
         name => 'Bromley',
         send_method => 'Open311',
@@ -32,7 +32,7 @@ my %bodies = (
         endpoint => 'endpoint',
         comment_user_id => $user->id,
         blank_updates_permitted => 1,
-        extra => { cobrand => 'bromley' }
+        cobrand => 'bromley',
     }),
     2651 => FixMyStreet::DB->resultset("Body")->create({ name => 'Edinburgh' }),
 );

@@ -57,6 +57,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "extra",
   { data_type => "jsonb", is_nullable => 1 },
+  "cobrand",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -137,8 +139,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:03:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pi2NwZG3X/etd5CQHqT61w
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2024-10-21 23:30:33
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Lrn1t6/ardCJxCpxH1U2Eg
 
 use Moo;
 use namespace::clean;
@@ -227,7 +229,7 @@ e.g.
 
 sub get_cobrand_handler {
     my $self = shift;
-    my $moniker = $self->get_extra_metadata('cobrand');
+    my $moniker = $self->cobrand;
 
     # Need the exists() check because get_class_for_moniker falls back to
     # returning ::Default which isn't what we want here.

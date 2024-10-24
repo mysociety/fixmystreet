@@ -90,7 +90,6 @@ my $brent = $mech->create_body_ok(2488, 'Brent Council', {
     send_method => 'Open311',
     comment_user => $comment_user,
     send_extended_statuses => 1,
-}, {
     cobrand => 'brent'
 });
 my $atak_contact = $mech->create_contact_ok(body_id => $brent->id, category => 'ATAK', email => 'ATAK');
@@ -99,7 +98,7 @@ FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2505, body_i
 FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2487, body_id => $brent->id }); # Harrow
 FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2489, body_id => $brent->id }); # Barnet
 
-my $camden = $mech->create_body_ok(2505, 'Camden Borough Council', {},{cobrand => 'camden'});
+my $camden = $mech->create_body_ok(2505, 'Camden Borough Council', {cobrand => 'camden'});
 my $barnet = $mech->create_body_ok(2489, 'Barnet Borough Council');
 my $harrow = $mech->create_body_ok(2487, 'Harrow Borough Council');
 FixMyStreet::DB->resultset('BodyArea')->find_or_create({

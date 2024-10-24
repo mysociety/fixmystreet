@@ -6,11 +6,11 @@ my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 
-my $bromley = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
+my $bromley = $mech->create_body_ok(2482, 'Bromley Council', { cobrand => 'bromley' });
 
 $mech->log_in_ok( $superuser->email );
 

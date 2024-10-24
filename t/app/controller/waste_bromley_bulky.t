@@ -16,7 +16,7 @@ my $user = $mech->create_user_ok('bob@example.org');
 
 my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test',
-    }, { cobrand => 'bromley' } );
+    cobrand => 'bromley' } );
 $body->set_extra_metadata(
     wasteworks_config => {
         per_item_costs => 1,

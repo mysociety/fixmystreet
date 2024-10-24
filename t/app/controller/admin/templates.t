@@ -11,12 +11,12 @@ my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
 my $oxfordshirecontact2 = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Flytipping', email => 'flytipping@example.com' );
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 
-my $bromley = $mech->create_body_ok(2482, 'Bromley Borough Council', {}, { cobrand => 'bromley' });
+my $bromley = $mech->create_body_ok(2482, 'Bromley Borough Council', { cobrand => 'bromley' });
 my $bromleycontact = $mech->create_contact_ok( body_id => $bromley->id, category => 'Potholes', email => 'potholes@example.com' );
 my $bromleyuser = $mech->create_user_ok('bromleyuser@example.com', name => 'Council User', from_body => $bromley);
 $bromleyuser->user_body_permissions->find_or_create({
@@ -28,7 +28,7 @@ my $bromleytemplate = $bromley->response_templates->create({
     text => "This template will only appear on the Bromley cobrand.",
 });
 
-my $tfl = $mech->create_body_ok(2482, 'TfL', {}, { cobrand => 'tfl' });
+my $tfl = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 my $tflcontact = $mech->create_contact_ok( body_id => $tfl->id, category => 'Potholes', email => 'potholes@example.com' );
 my $tfluser = $mech->create_user_ok('tfluser@example.com', name => 'Council User', from_body => $tfl);
 $tfluser->user_body_permissions->find_or_create({

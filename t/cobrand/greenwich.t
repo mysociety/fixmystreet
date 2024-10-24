@@ -10,7 +10,6 @@ my $body = $mech->create_body_ok( 2493, 'Royal Borough of Greenwich', {
     endpoint => 'endpoint',
     api_key => 'key',
     jurisdiction => 'greenwich',
-}, {
     cobrand => 'greenwich',
 });
 

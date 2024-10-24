@@ -58,6 +58,7 @@ create table body (
     jurisdiction text,
     api_key      text,
     send_method  text,
+    cobrand      text,
     send_comments boolean not null default 'f',
     comment_user_id int references users(id),
     suppress_alerts boolean not null default 'f',
@@ -69,6 +70,7 @@ create table body (
     deleted boolean not null default 'f',
     extra jsonb
 );
+CREATE INDEX body_cobrand_idx ON body(cobrand);
 
 create table body_areas (
     body_id integer not null references body(id),

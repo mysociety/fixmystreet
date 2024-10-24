@@ -8,8 +8,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2482, 'Bromley Council', {}, {
-    cobrand => 'bromley',
+my $body = $mech->create_body_ok(2482, 'Bromley Council', { cobrand => 'bromley' }, {
     wasteworks_config => { request_timeframe => "two weeks" }
 });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');

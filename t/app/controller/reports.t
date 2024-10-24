@@ -14,7 +14,7 @@ ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 $mech->create_body_ok(2514, 'Birmingham City Council');
 my $body_edin_id = $mech->create_body_ok(2651, 'City of Edinburgh Council')->id;
-my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council', {}, { cobrand => 'westminster' })->id;
+my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council', { cobrand => 'westminster' })->id;
 my $body_fife_id = $mech->create_body_ok(2649, 'Fife Council')->id;
 my $body_slash_id = $mech->create_body_ok(10000, 'Electricity/Gas Council')->id;
 $mech->create_body_ok(2488, 'Brent Council');
@@ -337,7 +337,7 @@ subtest "test greenwich all reports page" => sub {
         ALLOWED_COBRANDS => [ 'greenwich' ],
         MAPIT_URL => 'http://mapit.uk/'
     }, sub {
-        my $body = $mech->create_body_ok(2493, 'Royal Borough of Greenwich', {}, { cobrand => 'greenwich' });
+        my $body = $mech->create_body_ok(2493, 'Royal Borough of Greenwich', { cobrand => 'greenwich' });
         my $deleted_contact = $mech->create_contact_ok(
             body_id => $body->id,
             category => 'Deleted',

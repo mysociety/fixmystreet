@@ -21,12 +21,10 @@ my $normal_user = $mech->create_user_ok( 'user@example.com', name => 'Norma Norm
 my $body = $mech->create_body_ok( 2498, 'Sutton Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
     send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
-}, {
     cobrand => 'sutton'
 });
 my $kingston = $mech->create_body_ok( 2480, 'Kingston upon Thames Council', {
     comment_user => $user,
-}, {
     cobrand => 'kingston',
 });
 

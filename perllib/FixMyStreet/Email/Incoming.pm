@@ -188,8 +188,7 @@ sub check_for_status_code {
     my $subject = $head->get("Subject");
 
     my $problem = $self->object;
-    my $cobrand = $problem->get_cobrand_logged;
-    $cobrand = $cobrand->call_hook(get_body_handler_for_problem => $problem) || $cobrand;
+    my $cobrand = $problem->body_handler || $problem->get_cobrand_logged;
     return 0 unless $cobrand->call_hook('handle_email_status_codes');
 
     my ($code) = $subject =~ /SC(\d+)/i;

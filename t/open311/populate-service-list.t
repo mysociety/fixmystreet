@@ -21,12 +21,12 @@ my $mech = FixMyStreet::TestMech->new;
 my $processor = Open311::PopulateServiceList->new();
 ok $processor, 'created object';
 
-my $body = $mech->create_body_ok(1, 'Body Numero Uno', {}, { cobrand => 'tester' });
+my $body = $mech->create_body_ok(1, 'Body Numero Uno', { cobrand => 'tester' });
 
 my $BROMLEY = 'Bromley Council';
-my $bromley = $mech->create_body_ok(2482, $BROMLEY, {}, { cobrand => 'bromley' });
+my $bromley = $mech->create_body_ok(2482, $BROMLEY, { cobrand => 'bromley' });
 
-my $bucks = $mech->create_body_ok(163793, 'Buckinghamshire Council', {}, { cobrand => 'buckinghamshire' });
+my $bucks = $mech->create_body_ok(163793, 'Buckinghamshire Council', { cobrand => 'buckinghamshire' });
 
 for my $test (
     { desc => 'groups not set for new contacts', enable_groups => 0, groups => 0, delete => 1 },

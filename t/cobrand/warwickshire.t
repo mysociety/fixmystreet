@@ -11,7 +11,7 @@ ok $processor, 'created object';
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $warks = $mech->create_body_ok(2243, 'Warwickshire County Council', {}, { cobrand => 'warwickshire' });
+my $warks = $mech->create_body_ok(2243, 'Warwickshire County Council', { cobrand => 'warwickshire' });
 
 subtest 'check Warwickshire override' => sub {
     my $processor = Open311::PopulateServiceList->new();
