@@ -1355,7 +1355,13 @@ sub waste_request_form_update_field_list {
 }
 
 sub waste_request_form_first_next {
-    return 'about_you';
+    my $self = shift;
+
+    # Above-shop properties get a single default reason, so no need to send
+    # them to reason selection
+    return $self->{c}->stash->{property}{above_shop}
+        ? 'about_you'
+        : 'request_reason';
 }
 
 sub waste_munge_request_form_pages {
@@ -1425,9 +1431,11 @@ sub waste_munge_request_data {
 
     $data->{title}  = "Request new $service->{name}";
 
-    # TODO Reason
     my $address = $c->stash->{property}{address};
-    my $reason = 'TODO';
+    my $reason
+        = $c->stash->{property}{above_shop}
+        ? 'I need more sacks'
+        : $data->{request_reason};
     my $quantity = $data->{"quantity-$id"} || 1;
     my $household_size = $data->{household_size};
     $data->{detail} = "$data->{title}\n\n$address";
