@@ -369,6 +369,8 @@ subtest 'Munge data' => sub {
 
         'quantity-Deliver-Box-lids-55L' => 3,
         'quantity-FO-23' => 2,
+
+        'request_reason' => 'My existing bin is damaged',
     };
 
     subtest 'waste_munge_request_form_data' => sub {
@@ -385,6 +387,8 @@ subtest 'Munge data' => sub {
 
             'quantity-Deliver-Box-lids-55L' => 3,
             'quantity-FO-23' => 2,
+
+            'request_reason' => 'My existing bin is damaged',
 
             # New
             'container-RES-140' => 1,
@@ -456,7 +460,7 @@ subtest 'Munge data' => sub {
 
 ABC
 
-Reason: TODO
+Reason: My existing bin is damaged
 
 Quantity: 3',
                     },
@@ -473,10 +477,10 @@ Quantity: 3',
 
 ABC
 
-Reason: TODO
+Reason: My existing bin is damaged
 
 Quantity: 2',
-                },
+                    },
                     expected_params => {
                         uprn              => 123456,
                         service_item_name => 'FO-23',
@@ -490,10 +494,10 @@ Quantity: 2',
 
 ABC
 
-Reason: TODO
+Reason: My existing bin is damaged
 
 Quantity: 1',
-                },
+                    },
                     expected_params => {
                         uprn              => 123456,
                         service_item_name => 'RES-140',
@@ -522,6 +526,8 @@ Quantity: 1',
 
                 'quantity-Deliver-Box-lids-55L' => 3,
                 'quantity-FO-23' => 2,
+
+                'request_reason' => 'My existing bin is damaged',
 
                 # New
                 %{ $test->{expected_data} },
@@ -660,6 +666,14 @@ FixMyStreet::override_config {
 
             $mech->submit_form_ok(
                 {   with_fields => {
+                        request_reason  => 'My existing bin is damaged',
+                    }
+                },
+                'submit reason page',
+            );
+
+            $mech->submit_form_ok(
+                {   with_fields => {
                         name  => 'Test User',
                         phone => '44 07 111 111 111',
                         email => 'test@example.com'
@@ -752,6 +766,8 @@ FixMyStreet::override_config {
             while ( my $report = $rows->next ) {
                 ok $report->confirmed;
                 is $report->state, 'confirmed';
+                like $report->detail, qr/Reason: I need more sacks/,
+                    'Default reason provided';
                 is $report->get_extra_field_value('uprn'), '10002', 'UPRN is correct';
                 $extra{ $report->get_extra_field_value('service_item_name') }
                     = $report->get_extra_field_value('quantity');
