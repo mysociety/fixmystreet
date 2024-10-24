@@ -23,9 +23,9 @@ use LWP::UserAgent;
 
 sub council_name { 'National Highways' }
 
-sub council_url { 'highwaysengland' }
+sub council_url { 'nationalhighways' }
 
-sub site_key { 'highwaysengland' }
+sub site_key { 'nationalhighways' }
 
 sub restriction { { cobrand => shift->moniker } }
 
