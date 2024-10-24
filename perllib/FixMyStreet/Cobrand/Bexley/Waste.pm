@@ -1235,16 +1235,14 @@ sub construct_bin_request_form {
 
     my $field_list = [];
 
-    my $request_type = $c->get_param('request-type');
+    my $request_type = $c->get_param('request_type');
 
     if ( $request_type eq 'delivery' ) {
         for my $container (
             @{ $c->stash->{property}{containers_for_delivery} } )
         {
-            my $id;
-
             if ( $container->{subtypes} ) {
-                $id = $container->{name} =~ s/ /-/gr;
+                my $id = $container->{name} =~ s/ /-/gr;
 
                 push @$field_list, "parent-$id" => {
                     type         => 'Checkbox',
@@ -1272,7 +1270,7 @@ sub construct_bin_request_form {
                     required_when => { "container-$id" => 1 },
                 };
             } else {
-                $id = $container->{service_item_name} =~ s/ /-/gr;
+                my $id = $container->{service_item_name} =~ s/ /-/gr;
 
                 push @$field_list, "container-$id" => {
                     type         => 'Checkbox',
@@ -1362,7 +1360,7 @@ sub waste_munge_request_data {
         # construct_bin_request_form().
         my $id_spaced = $id =~ s/-/ /gr;
 
-        if ( $id_spaced eq $dc->{service_item_name} ) {
+        if ( $id_spaced eq ( $dc->{service_item_name} // '' ) ) {
             $service = $dc;
         }
 
