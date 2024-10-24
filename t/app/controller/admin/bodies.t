@@ -18,8 +18,8 @@ my $mech = FixMyStreet::TestMech->new;
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 $mech->log_in_ok( $superuser->email );
 my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
-my $body2 = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
-my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire Council', {}, { cobrand => 'buckinghamshire' });
+my $body2 = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
+my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire Council', { cobrand => 'buckinghamshire' });
 
 my $user = $mech->create_user_ok('user@example.com', name => 'OCC User', from_body => $body2);
 $user->user_body_permissions->create({ body => $body2, permission_type => 'category_edit' });

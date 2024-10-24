@@ -4,7 +4,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 FixMyStreet::override_config { ALLOWED_COBRANDS => ['bromley'], }, sub {
     subtest 'check defecttypes menu not available' => sub {
-        my $body = $mech->create_body_ok( 2482, 'Bromley Council', {}, { cobrand => 'bromley' } );
+        my $body = $mech->create_body_ok( 2482, 'Bromley Council', { cobrand => 'bromley' } );
 
         my $user = $mech->create_user_ok(
             'bromley@example.com',
@@ -26,7 +26,7 @@ FixMyStreet::override_config { ALLOWED_COBRANDS => ['bromley'], }, sub {
 
 FixMyStreet::override_config { ALLOWED_COBRANDS => ['oxfordshire'], }, sub {
 
-    my $body = $mech->create_body_ok( 2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' } );
+    my $body = $mech->create_body_ok( 2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' } );
 
     subtest 'check defect types menu available to superusers' => sub {
         my $user = $mech->create_user_ok(

@@ -34,7 +34,7 @@ subtest "Check signed up for alert when logged in" => sub {
     };
 };
 
-my $body = $mech->create_body_ok(2651, 'Edinburgh', {}, {});
+my $body = $mech->create_body_ok(2651, 'Edinburgh', {});
 my $user = $mech->create_user_ok('publicuser@example.com', name => 'Fred Again');
 
 $mech->create_contact_ok(

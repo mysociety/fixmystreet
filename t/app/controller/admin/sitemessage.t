@@ -4,9 +4,9 @@ use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $bexley = $mech->create_body_ok(2494, 'Bexley Council', {}, { cobrand => 'bexley' });
+my $bexley = $mech->create_body_ok(2494, 'Bexley Council', { cobrand => 'bexley' });
 $mech->create_contact_ok(body_id => $bexley->id, category => 'Damaged road', email => "ROAD");
-my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $user = $mech->create_user_ok('user@example.com', name => 'Test User', from_body => $body);
 
 $mech->log_in_ok( $user->email );

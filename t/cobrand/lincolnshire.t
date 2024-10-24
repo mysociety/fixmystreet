@@ -12,8 +12,9 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
     can_be_devolved => 1,
+    cobrand => 'lincolnshire',
 };
-my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params, { cobrand => 'lincolnshire' });
+my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params);
 my $lincs_user = $mech->create_user_ok('lincs@example.org', name => 'Lincolnshire User', from_body => $body);
 my $superuser = $mech->create_user_ok('super@example.org', name => 'Super User', is_superuser => 1, email_verified => 1);
 my $superuser_email = $superuser->email;

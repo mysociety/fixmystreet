@@ -4,7 +4,7 @@ use FixMyStreet::Cobrand::Merton;
 
 my $mech = FixMyStreet::TestMech->new;
 
-$mech->create_body_ok(2500, 'Merton Council', {}, { cobrand => 'merton' });
+$mech->create_body_ok(2500, 'Merton Council', { cobrand => 'merton' });
 
 subtest 'echo-push-only flag' => sub {
     my $in = <<EOF;

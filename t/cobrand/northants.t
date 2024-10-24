@@ -38,9 +38,9 @@ for my $test ( {
     cobrand_pkg => 'FixMyStreet::Cobrand::WestNorthants',
 } ) {
 
-my $nh = $mech->create_body_ok($test->{northants_area_id}, 'Northamptonshire Highways', {}, { cobrand => 'northamptonshire' });
+my $nh = $mech->create_body_ok($test->{northants_area_id}, 'Northamptonshire Highways', { cobrand => 'northamptonshire' });
 my $northants = $mech->create_body_ok($test->{northants_area_id}, $test->{northants_name},{
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1 }, { cobrand => $test->{moniker} });
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1, cobrand => $test->{moniker} });
 
 my $counciluser = $mech->create_user_ok($test->{moniker} . 'counciluser@example.com', name => 'Council User', from_body => $northants);
 my $user = $mech->create_user_ok($test->{moniker} . 'user@example.com', name => 'User');

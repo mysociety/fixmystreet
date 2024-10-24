@@ -43,7 +43,7 @@ for my $body (
     { area_id => 2483, name => 'Hounslow Borough Council', cobrand => 'hounslow' },
 ) {
     my $extra = { cobrand => $body->{cobrand} } if $body->{cobrand};
-    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, {}, $extra);
+    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, $extra);
     $body_ids{$body->{area_id}} = $body_obj->id;
 }
 
@@ -1374,7 +1374,7 @@ subtest "categories from deleted bodies shouldn't be visible for new reports" =>
 };
 
 subtest "check field overrides for categories" => sub {
-    my $body = $mech->create_body_ok(2238, "A", {}, { cobrand => "overrides" });
+    my $body = $mech->create_body_ok(2238, "A", { cobrand => "overrides" });
     my $contact = $mech->create_contact_ok(
         body_id => $body->id,
         category => 'test',
@@ -1423,7 +1423,7 @@ subtest "check field overrides for categories" => sub {
     $contact->unset_extra_metadata('detail_hint');
     $contact->update;
 
-    my $second_body = $mech->create_body_ok(2238, "B", {}, {});
+    my $second_body = $mech->create_body_ok(2238, "B", {});
     my $second_contact = $mech->create_contact_ok(
         body_id => $second_body->id,
         category => 'test',

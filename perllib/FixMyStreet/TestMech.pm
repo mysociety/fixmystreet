@@ -653,7 +653,6 @@ sub create_body_ok {
     my ( $self, $area_id, $name, $params, $extra ) = @_;
 
     $params->{name} = $name;
-    $params->{cobrand} = delete $extra->{cobrand} if $extra->{cobrand};
 
     my $body = FixMyStreet::DB->resultset('Body');
     $body = $body->find_or_create( $params );

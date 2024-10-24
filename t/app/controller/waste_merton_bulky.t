@@ -17,7 +17,7 @@ my $user
 my $body_user = $mech->create_user_ok('body@example.org');
 
 my $body = $mech->create_body_ok( 2500, 'Merton Council',
-    { comment_user => $body_user }, { cobrand => 'merton' } );
+    { comment_user => $body_user, cobrand => 'merton' } );
 
 my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report missed collection', email => 'missed@example.org' ), group => ['Waste'], extra => { type => 'waste' });
   $contact->set_extra_fields(

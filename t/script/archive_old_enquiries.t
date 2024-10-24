@@ -11,7 +11,7 @@ my $mech = FixMyStreet::TestMech->new();
 $mech->clear_emails_ok;
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $west_oxon = $mech->create_body_ok(2420, 'West Oxfordshire District Council');
 
 my $opts = {

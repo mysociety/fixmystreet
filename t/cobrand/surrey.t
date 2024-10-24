@@ -12,7 +12,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 use_ok 'FixMyStreet::Cobrand::Surrey';
 
-my $surrey = $mech->create_body_ok(2242, 'Surrey County Council', {}, { cobrand => 'surrey' });
+my $surrey = $mech->create_body_ok(2242, 'Surrey County Council', { cobrand => 'surrey' });
 my $surrey_staff_user = $mech->create_user_ok( 'staff@example.com', name => 'Staff User', from_body => $surrey );
 $mech->create_contact_ok(body_id => $surrey->id, category => 'Potholes', email => 'potholes@example.org');
 (my $report) = $mech->create_problems_for_body(1, $surrey->id, 'Pothole', {

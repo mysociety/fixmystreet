@@ -142,8 +142,8 @@ my $body = $mech->create_body_ok(
         comment_user           => $comment_user,
         send_extended_statuses => 1,
         can_be_devolved        => 1,
+        cobrand => 'bexley'
     },
-    { cobrand      => 'bexley' },
 );
 my $contact = $mech->create_contact_ok(
     body => $body,

@@ -1,7 +1,7 @@
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
 
 my ($report) = $mech->create_problems_for_body(1, $oxon->id, 'Test', {
