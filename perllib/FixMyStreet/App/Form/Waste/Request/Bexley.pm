@@ -26,6 +26,33 @@ has_field household_size => (
     messages => { required => 'Please select an amount' },
 );
 
+has_page request_reason => (
+    fields => ['request_reason', 'continue'],
+    title => 'Reason for request',
+    next => 'about_you',
+);
+
+has_field request_reason => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    required => 1,
+    label => 'Why do you need new bins?',
+    messages => { required => 'Please select a reason' },
+);
+
+sub options_request_reason {
+    my $form = shift;
+
+    my @options = (
+        'My existing bin is too small or big',
+        'My existing bin is damaged',
+        'My existing bin has gone missing',
+        'I have moved into a new development',
+        'Bins are no longer required',
+    );
+    return map { { label => $_, value => $_ } } @options;
+}
+
 sub validate {
     my $self = shift;
 
