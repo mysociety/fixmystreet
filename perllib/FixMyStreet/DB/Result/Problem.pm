@@ -1217,6 +1217,15 @@ has get_cobrand_logged => (
     },
 );
 
+=head2 body_handler
+
+Calls the get_body_handler_for_problem hook on the cobrand the report was logged against.
+In the UK, this returns the corresponding cobrand for the body a report was sent to, and
+on fixmystreet.com it returns Buckinghamshire for Bucks parish bodies, and FixMyStreet for
+Kingston/Sutton reports (rather than themselves, as they are only waste).
+
+=cut
+
 has body_handler => (
     is => 'ro',
     lazy => 1,
