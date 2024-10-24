@@ -648,12 +648,50 @@ around add_to_planned_reports => sub {
     return $self->$orig(@_);
 };
 
+after add_to_planned_reports => sub {
+    my ( $self, $report, $no_comment ) = @_;
+
+    unless ($no_comment) {
+        my $cobrand = $report->get_cobrand_logged;
+        $cobrand
+            = $cobrand->call_hook( get_body_handler_for_problem => $report )
+            || $cobrand;
+
+        my $report_extra = $cobrand->call_hook('record_update_extra_fields');
+        $report->add_to_comments(
+            {   text  => '',
+                user  => $self,
+                extra => { shortlisted_user => $self->email },
+            }
+        ) if $report_extra->{shortlisted_user};
+    }
+};
+
 # Override the default auto-created function as we don't want to ever delete anything
 around remove_from_planned_reports => sub {
     my ($orig, $self, $report) = @_;
     $self->user_planned_reports->active->for_report($report->id)->remove();
     $report->unset_extra_metadata('order');
     $report->update;
+};
+
+after remove_from_planned_reports => sub {
+    my ( $self, $report, $no_comment ) = @_;
+
+    unless ($no_comment) {
+        my $cobrand = $report->get_cobrand_logged;
+        $cobrand
+            = $cobrand->call_hook( get_body_handler_for_problem => $report )
+            || $cobrand;
+
+        my $report_extra = $cobrand->call_hook('record_update_extra_fields');
+        $report->add_to_comments(
+            {   text  => '',
+                user  => $self,
+                extra => { shortlisted_user => undef },
+            }
+        ) if $report_extra->{shortlisted_user};
+    }
 };
 
 sub active_planned_reports {

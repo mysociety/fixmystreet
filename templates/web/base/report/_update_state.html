@@ -1,13 +1,6 @@
 [% # Small chance of duplicates in the case of fixed - user followed by fixed - council %]
-[% SET update_state = update.problem_state_processed %]
-[% IF ( update_state AND update_state != global.last_state AND NOT (global.last_state == "" AND update.problem_state_processed == 'confirmed') )
-      OR update.mark_fixed
-      OR update.mark_open
-%]
+[% IF state_change %]
     <p class="meta-2">[% loc('State changed to:') %] [% update.problem_state_display %]</p>
-    [%- global.last_state = update_state %]
-    [%- IF update_state == "" AND update.mark_fixed %][% global.last_state = 'fixed - user' %][% END %]
-    [%- IF update_state == "" AND update.mark_open %][% global.last_state = 'confirmed' %][% END %]
 [% END %]
 
 <p class="meta-2">
