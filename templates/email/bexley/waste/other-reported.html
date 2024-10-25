@@ -1,14 +1,9 @@
-[% is_missed_collection = report.category == 'Report missed collection' %]
-[%
-  is_no_collections_enquiry
-    =  report.category == 'Business or organisation missed collection enquiry'
-    || report.category == 'Missed collection enquiry'
-%]
 [%
 
 email_summary = "Your reference number is " _ report.id;
 email_columns = 2;
 
+PROCESS 'waste/_email_data.html';
 PROCESS '_email_settings.html';
 INCLUDE '_email_top.html';
 
@@ -19,7 +14,7 @@ INCLUDE '_email_top.html';
 
   [% IF is_missed_collection %]
     <h1 style="[% h1_style %]">Thank you for reporting a missed collection</h1>
-  [% ELSIF is_no_collections_enquiry %]
+  [% ELSIF is_no_collections_missed_enquiry OR is_request_enquiry %]
     <h1 style="[% h1_style %]">Thank you for your [% report.category %]</h1>
   [% ELSE %]
     <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
@@ -35,7 +30,7 @@ INCLUDE '_email_top.html';
       <br><br>
       If you need to contact us about this report, please quote your reference number.
     </p>
-  [% ELSIF is_no_collections_enquiry %]
+  [% ELSIF is_no_collections_missed_enquiry OR is_request_enquiry %]
     <p style="[% p_style %]">
       We will look into your enquiry and get back to you as soon as possible.
       <br><br>
