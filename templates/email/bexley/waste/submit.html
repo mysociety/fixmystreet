@@ -1,14 +1,11 @@
-[% # NOTE Currently, Bexley only get sent this email for no-collections enquiries %]
-[% is_no_collections_enquiry = 1 %]
-
 [%
 
 email_summary = "New " _ report.category _ " submitted by a " _ site_name _ " user.";
 email_footer = "";
 email_columns = 2;
 
+PROCESS 'waste/_email_data.html';
 PROCESS '_email_settings.html';
-
 INCLUDE '_email_top.html';
 
 %]
@@ -20,16 +17,40 @@ INCLUDE '_email_top.html';
   <br>
   <p style="[% p_style %]">
     The enquiry reference number is <strong>[% report.id %]</strong>.
-    <br><br>
-    The below details have been submitted via Wasteworks for your attention because no collections were found at the property.
   </p>
+
+  [% IF is_no_collections_missed_enquiry %]
+    <p>The below details have been submitted via WasteWorks for your attention because no collections were found at the property.</p>
+  [% ELSIF is_request_enquiry %]
+    <p>The below details have been submitted via WasteWorks because it is a communal property or no service was found at the property.</p>
+  [% END %]
 
   <h2 style="[% h2_style %] margin: 30px 0 10px 0">Submission details:</h2>
   <table [% table_reset | safe %]>
+  [% IF is_request_enquiry %]
+	<tr> <th>Details</th> <th>Data</th> </tr>
+	<tr> <td>Enquiry reference number</td> <td>[% report.id %]</td> </tr>
+	<tr> <td>Address</td> <td>[% report.get_extra_metadata.property_address %]</td> </tr>
+	<tr> <td>UPRN</td> <td>[% report.get_extra_field_value('uprn') %]</td> </tr>
+	<tr> <td>Time Received</td> <td>[% USE date; date.format(report.confirmed.epoch, '%Y-%m-%dT%H:%M:%SZ', gmt=1) %]</td> </tr>
+	<tr> <td>New/replacement container</td> <td>[% report.get_extra_field_value('Container').join('; ') %]</td> </tr>
+	<tr> <td>Full name</td> <td>[% report.name %]</td> </tr>
+	<tr> <td>Telephone</td> <td>[% report.user.phone %]</td> </tr>
+	<tr> <td>Email address</td> <td>[% report.user.email %]</td> </tr>
+	<tr> <td>Complaint Type</td> <td>[% report.get_extra_field_value('complaint_type') %]</td> </tr>
+	<tr> <td>How Complaint Received</td> <td>WasteWorksOnline</td> </tr>
+	<tr> <td>Reference Type</td> <td>WasteWorks</td> </tr>
+	<tr> <td>Customer Type Code</td> <td>PUBLIC</td> </tr>
+	<tr> <td>Allocated To</td> <td>WTCALL</td> </tr>
+	<tr> <td>Received By</td> <td>WTCALL</td> </tr>
+	<tr> <td>Area Team</td> <td>WRTEAM</td> </tr>
+  [% ELSE %]
+   [% IF is_no_collections_missed_enquiry %]
     <tr>
       <th style="[% contact_th_style %]">Trying to report missed collection<br>for business or organisation?</th>
       <td style="[% contact_td_style %]">[% report.category == 'Business or organisation missed collection enquiry' ? 'Yes' : 'No' %]</td>
     </tr>
+   [% END %]
     <tr>
       <th style="[% contact_th_style %]">Name</th>
       <td style="[% contact_td_style %]">[% report.name | html %]</td>
@@ -50,6 +71,7 @@ INCLUDE '_email_top.html';
         <td style="[% contact_td_style %]"><a href="tel:[% report.user.phone | html %]">[% report.user.phone | html %]</a></td>
       </tr>
     [%~ END %]
+  [% END %]
   </table>
 
   [% end_padded_box | safe %]

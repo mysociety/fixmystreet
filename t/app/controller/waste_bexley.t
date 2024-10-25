@@ -215,6 +215,34 @@ $contact2->set_extra_fields(
 );
 $contact2->update;
 
+my $contact3 = $mech->create_contact_ok(
+    body => $body,
+    category => 'Request container enquiry',
+    email => 'waste-enquiry@example.org',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+    send_method => 'Email::Bexley',
+);
+$contact3->set_extra_fields(
+    { code => 'uprn', automated => "hidden_field" },
+    { code => 'complaint_type', automated => "hidden_field" },
+    {
+        code => "Container",
+        description => "Which container(s) do you require?",
+        datatype => "multivaluelist",
+        required => "true",
+        values => [
+            map { { key => $_, name => $_ } } (
+                'Non-recyclable waste',
+                'Paper/card recycling',
+                'Plastic, can and glass recycling',
+                'Food waste',
+            )
+        ],
+    }
+);
+$contact3->update;
+
 my ($existing_missed_collection_report1) = $mech->create_problems_for_body(1, $body->id, 'Report missed collection', {
     external_id => "Whitespace-4",
 });
@@ -1148,7 +1176,7 @@ FixMyStreet::override_config {
         set_fixed_time('2024-03-31T02:00:00'); # March 31st, 02:00 BST
     };
 
-    subtest 'Enquiry form for properties with no collections' => sub {
+    subtest 'Missed enquiry form for properties with no collections' => sub {
         $mech->delete_problems_for_body( $body->id );
 
         $mech->get_ok('/waste/10006');
@@ -1182,6 +1210,50 @@ FixMyStreet::override_config {
             }
         }
     };
+
+    foreach (
+        { id => 10006, complaint_type => 'WRBDEL', containers => ['Paper/card recycling', 'Plastic, can and glass recycling'] },
+        { id => 10002, complaint_type => 'WFEE', containers => ['Food waste'] },
+    ) {
+        subtest "Request enquiry form for property $_->{id}" => sub {
+            my $joined = join('; ', @{$_->{containers}});
+            $mech->delete_problems_for_body( $body->id );
+            $mech->get_ok("/waste/$_->{id}");
+            $mech->follow_link_ok({ url_regex => qr{/waste/$_->{id}/enquiry\?category=Request\+container\+enquiry} });
+            $mech->content_contains('Which container(s) do you require?');
+            foreach (@{$_->{containers}}) {
+                $mech->content_contains($_);
+                $mech->tick('extra_Container', $_);
+            }
+            $mech->submit_form_ok( { form_number => 1 } );
+            $mech->content_contains('Full name');
+            $mech->submit_form_ok( { with_fields => { name => 'Test User', email => 'test@example.org' } } );
+            $mech->content_contains($joined);
+            $mech->content_contains('Test User');
+            $mech->content_contains('test@example.org');
+            $mech->content_contains('Please review the information you’ve provided before you submit your enquiry.');
+            $mech->submit_form_ok( { with_fields => { submit => 'Submit' } } );
+            $mech->content_contains('Nearly done! Now check your email');
+
+            my $report = FixMyStreet::DB->resultset('Problem')->first;
+            is_deeply $report->get_extra_field_value('Container'), $_->{containers};
+            is $report->get_extra_field_value('complaint_type'), $_->{complaint_type};
+
+            $report->confirm;
+            $report->confirmed(DateTime->now());
+            $report->update;
+            $mech->clear_emails_ok; # Clear initial confirmation email
+            FixMyStreet::Script::Reports::send();
+
+            $mech->email_count_is(2);
+            my ($email_submit, $email_logged) = $mech->get_email;
+            $email_submit = $mech->get_html_body_from_email($email_submit);
+            $email_logged = $mech->get_text_body_from_email($email_logged);
+            like $email_logged, qr{Containers requested: $joined};
+            like $email_submit, qr{Containers requested:</h2>\s*<p[^>]*>\s*$joined};
+            like $email_submit, qr{<td>UPRN</td> <td>$_->{id}</td>}
+        };
+    }
 };
 
 FixMyStreet::override_config {
