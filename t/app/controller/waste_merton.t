@@ -22,8 +22,9 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
     can_be_devolved => 1,
+    cobrand => 'merton',
 };
-my $merton = $mech->create_body_ok(2500, 'Merton Council', $params, { cobrand => 'merton' });
+my $merton = $mech->create_body_ok(2500, 'Merton Council', $params);
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $merton, name => 'Staff User');
 

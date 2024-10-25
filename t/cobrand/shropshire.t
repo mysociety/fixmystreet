@@ -10,7 +10,7 @@ use Open311::PopulateServiceList;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2238, 'Shropshire Council', {}, { cobrand => 'shropshire' });
+my $body = $mech->create_body_ok(2238, 'Shropshire Council', { cobrand => 'shropshire' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Bridges', email => 'bridges@example.org');
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test Report', {

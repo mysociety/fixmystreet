@@ -88,7 +88,7 @@ $mech->create_contact_ok(
 
 my $staff_user = $mech->create_user_ok('staff@example.org', name => 'staff', from_body => $body->id);
 
-my $body3 = $mech->create_body_ok(164186, 'Northamptonshire Highways', {}, { cobrand => 'northamptonshire' });
+my $body3 = $mech->create_body_ok(164186, 'Northamptonshire Highways', { cobrand => 'northamptonshire' });
 my $ncc_staff_user = $mech->create_user_ok('ncc_staff@example.org', name => 'ncc staff', from_body => $body3->id);
 $mech->create_contact_ok(
     body_id => $body3->id,

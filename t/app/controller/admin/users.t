@@ -11,7 +11,7 @@ my $user5 = $mech->create_user_ok('test5@example.com', name => 'Test User 5');
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $haringey = $mech->create_body_ok(2509, 'Haringey Borough Council');
 my $southend = $mech->create_body_ok(2607, 'Southend-on-Sea Borough Council');
 

@@ -124,7 +124,7 @@ subtest 'test setting of notification preferences' => sub {
 subtest 'test display of bulky cancellation reports' => sub {
     my $body = $mech->create_body_ok(
         2566, 'Peterborough City Council',
-        {}, { cobrand => 'peterborough' },
+        { cobrand => 'peterborough' },
     );
 
     FixMyStreet::override_config { ALLOWED_COBRANDS => 'peterborough' }, sub {

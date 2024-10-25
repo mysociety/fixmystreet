@@ -19,7 +19,6 @@ use constant BARNET_MAPIT_ID => 2489;
 my $comment_user = $mech->create_user_ok('camden@example.net');
 my $camden = $mech->create_body_ok(CAMDEN_MAPIT_ID, 'Camden Borough Council', {
     comment_user => $comment_user,
-}, {
     cobrand => 'camden'
 });
 

@@ -85,8 +85,7 @@ sub send {
     }
 
     my ($verbose, $nomail) = CronFns::options();
-    my $cobrand = $row->get_cobrand_logged;
-    $cobrand = $cobrand->call_hook(get_body_handler_for_problem => $row) || $cobrand;
+    my $cobrand = $row->body_handler || $row->get_cobrand_logged;
 
     my $params = {
         To => $self->to,

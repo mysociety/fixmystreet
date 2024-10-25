@@ -304,7 +304,7 @@ sub owns_problem {
     }
 
     foreach (@bodies) {
-        return 1 if $_->get_extra_metadata('cobrand', '') eq $self->moniker;
+        return 1 if ($_->cobrand||'') eq $self->moniker;
     }
 }
 
@@ -353,7 +353,7 @@ sub admin_allow_user {
     return undef unless defined $user->from_body;
     # Make sure TfL staff can't access other London cobrand admins
     return undef if $user->from_body->get_column('name') eq 'TfL';
-    return $user->from_body->get_extra_metadata('cobrand', '') eq $self->moniker;
+    return ($user->from_body->cobrand||'') eq $self->moniker;
 }
 
 sub admin_show_creation_graph { 0 }

@@ -5,7 +5,7 @@ use Path::Class;
 use HTML::Selector::Element qw(find);
 use Test::WWW::Mechanize::Catalyst;
 my $mech = FixMyStreet::TestMech->new;
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_devolved => 1 }, { cobrand => 'oxfordshire' } );
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_devolved => 1, cobrand => 'oxfordshire' } );
 
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
 my $contact2 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Sheep', email => 'SHEEP', send_method => 'Open311' );

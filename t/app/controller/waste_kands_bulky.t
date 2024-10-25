@@ -16,7 +16,7 @@ my $user
 my $body_user = $mech->create_user_ok('body@example.org');
 
 my $body = $mech->create_body_ok( 2480, 'Kingston upon Thames Council',
-    { comment_user => $body_user }, { cobrand => 'kingston' } );
+    { comment_user => $body_user, cobrand => 'kingston' } );
 
 my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report missed collection', email => 'missed@example.org' ), group => ['Waste'], extra => { type => 'waste' });
   $contact->set_extra_fields(
@@ -31,7 +31,7 @@ $contact->update;
 
 my $contact_centre_user = $mech->create_user_ok('contact@example.org', from_body => $body, email_verified => 1, name => 'Contact 1');
 
-my $sutton = $mech->create_body_ok( 2498, 'Sutton Borough Council', {}, { cobrand => 'sutton' } );
+my $sutton = $mech->create_body_ok( 2498, 'Sutton Borough Council', { cobrand => 'sutton' } );
 my $sutton_staff = $mech->create_user_ok('sutton_staff@example.org', from_body => $sutton->id);
 
 for ($body, $sutton) {

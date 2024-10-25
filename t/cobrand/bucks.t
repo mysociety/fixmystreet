@@ -26,8 +26,8 @@ my $body = $mech->create_body_ok(
         jurisdiction    => 'fms',
         can_be_devolved => 1,
         comment_user    => $mech->create_user_ok('comment_user@example.com'),
+        cobrand => 'buckinghamshire',
     },
-    { cobrand => 'buckinghamshire' }
 );
 my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
 my $parish2 = $mech->create_body_ok(58815, 'Aylesbury Town Council');

@@ -12,7 +12,7 @@ for my $body (
     { area_id => 2482, name => 'Bromley Council', cobrand => 'bromley' },
     { area_id => 2237, name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
 ) {
-    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, {}, { cobrand => $body->{cobrand} });
+    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, { cobrand => $body->{cobrand} });
     $body_ids{$body->{area_id}} = $body_obj->id;
 }
 

@@ -4,8 +4,8 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
-my $body2 = $mech->create_body_ok(2482, 'Bromley Council', {}, { cobrand => 'bromley' });
+my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
+my $body2 = $mech->create_body_ok(2482, 'Bromley Council', { cobrand => 'bromley' });
 my $editor = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
 my $user = $mech->create_user_ok('staffuser@example.com', name => 'Other Council User', from_body => $body);
 

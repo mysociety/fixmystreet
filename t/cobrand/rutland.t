@@ -7,7 +7,7 @@ use Open311::PopulateServiceList;
 
 # Create test data
 my $user = $mech->create_user_ok( 'rutland@example.com' );
-my $body = $mech->create_body_ok( 2600, 'Rutland County Council', {}, { cobrand => 'rutland' });
+my $body = $mech->create_body_ok( 2600, 'Rutland County Council', { cobrand => 'rutland' });
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',

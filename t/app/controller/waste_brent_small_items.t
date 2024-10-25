@@ -14,7 +14,7 @@ my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 my $user = $mech->create_user_ok('bob@example.org');
 my $user_phone = $mech->create_user_ok('0123456789');
 
-my $body = $mech->create_body_ok(2488, 'Brent Council', {}, { cobrand => 'brent' });
+my $body = $mech->create_body_ok(2488, 'Brent Council', { cobrand => 'brent' });
 $body->set_extra_metadata(
     wasteworks_config => {
         items_per_collection_max => 11,

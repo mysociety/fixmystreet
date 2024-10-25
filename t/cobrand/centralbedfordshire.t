@@ -39,7 +39,7 @@ $ukc->mock('_fetch_features', sub {
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(21070, 'Central Bedfordshire Council', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' }, { cobrand => 'centralbedfordshire' });
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', cobrand => 'centralbedfordshire' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Bridges', email => "BRIDGES");
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POTHOLES");
 $mech->create_contact_ok(body_id => $body->id, category => 'Jadu', email => "Jadu");

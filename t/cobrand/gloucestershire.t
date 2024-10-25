@@ -13,8 +13,8 @@ my $body    = $mech->create_body_ok(
         api_key      => 'key',
         endpoint     => 'endpoint',
         jurisdiction => 'jurisdiction',
+        cobrand => 'gloucestershire',
     },
-    { cobrand => 'gloucestershire', },
 );
 
 my $graffiti = $mech->create_contact_ok(

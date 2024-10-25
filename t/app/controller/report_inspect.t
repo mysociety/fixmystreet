@@ -5,7 +5,7 @@ use Path::Class;
 my $mech = FixMyStreet::TestMech->new;
 
 my $brum = $mech->create_body_ok(2514, 'Birmingham City Council');
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_devolved => 1 }, { cobrand => 'oxfordshire' } );
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_devolved => 1, cobrand => 'oxfordshire' } );
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
 my $contact2 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Sheep', email => 'SHEEP', send_method => 'Open311' );
 my $contact3 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Badgers & Voles', email => 'badgers@example.net' );

@@ -12,8 +12,8 @@ my $sample_blank = path(__FILE__)->parent(3)->child("fixtures", "blank.jpeg");
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(163793, 'Buckinghamshire Council', {
-    send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 },
-    { cobrand => 'buckinghamshire' });
+    send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1,
+    cobrand => 'buckinghamshire' });
 my $system_user = $mech->create_user_ok('system@bucks', from_body => $body);
 $body->update({ comment_user => $system_user });
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Claim', email => 'CLAIM');

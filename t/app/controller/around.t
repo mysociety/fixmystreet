@@ -137,7 +137,7 @@ subtest 'check lat/lng for Maidenhead code' => sub {
 
 my $body_edin = $mech->create_body_ok(2651, 'City of Edinburgh Council');
 my $body_edin_id = $body_edin->id;
-my $body_west = $mech->create_body_ok(2504, 'Westminster City Council', {}, { cobrand => 'westminster' });
+my $body_west = $mech->create_body_ok(2504, 'Westminster City Council', { cobrand => 'westminster' });
 
 my @edinburgh_problems = $mech->create_problems_for_body( 5, $body_edin_id, 'Around page', {
     postcode  => 'EH1 1BB',
@@ -265,7 +265,7 @@ subtest 'check assigned-only list items do not display shortlist buttons' => sub
 
 }; # End big override_config
 
-my $body = $mech->create_body_ok(2237, "Oxfordshire", {}, { cobrand => 'oxfordshire' });
+my $body = $mech->create_body_ok(2237, "Oxfordshire", { cobrand => 'oxfordshire' });
 
 subtest 'check category, status and extra filtering works on /around' => sub {
     my $categories = [ 'Pothole', 'Vegetation', 'Flytipping' ];

@@ -1013,9 +1013,7 @@ sub body {
     my $self = shift;
 
     my $cobrand = $self->moniker;
-    return FixMyStreet::DB->resultset("Body")->find({
-        extra => { '@>' => encode_json({ "cobrand" => $cobrand }) },
-    })
+    return FixMyStreet::DB->resultset("Body")->find({ cobrand => $cobrand });
 }
 
 sub example_places {
