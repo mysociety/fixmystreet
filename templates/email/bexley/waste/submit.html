@@ -1,14 +1,18 @@
-[% # NOTE Currently, Bexley only get sent this email for no-collections enquiries %]
-[% is_no_collections_enquiry = 1 %]
-
 [%
 
 email_summary = "New " _ report.category _ " submitted by a " _ site_name _ " user.";
 email_footer = "";
 email_columns = 2;
 
-PROCESS '_email_settings.html';
+PROCESS 'waste/_email_data.html';
 
+# Special case for programmatic email
+IF is_request_enquiry;
+    PROCESS 'waste/_submit_request_enquiry.html';
+    RETURN;
+END;
+
+PROCESS '_email_settings.html';
 INCLUDE '_email_top.html';
 
 %]
@@ -20,16 +24,20 @@ INCLUDE '_email_top.html';
   <br>
   <p style="[% p_style %]">
     The enquiry reference number is <strong>[% report.id %]</strong>.
-    <br><br>
-    The below details have been submitted via Wasteworks for your attention because no collections were found at the property.
   </p>
+
+  [% IF is_no_collections_missed_enquiry %]
+    <p>The below details have been submitted via WasteWorks for your attention because no collections were found at the property.</p>
+  [% END %]
 
   <h2 style="[% h2_style %] margin: 30px 0 10px 0">Submission details:</h2>
   <table [% table_reset | safe %]>
+   [% IF is_no_collections_missed_enquiry %]
     <tr>
       <th style="[% contact_th_style %]">Trying to report missed collection<br>for business or organisation?</th>
       <td style="[% contact_td_style %]">[% report.category == 'Business or organisation missed collection enquiry' ? 'Yes' : 'No' %]</td>
     </tr>
+   [% END %]
     <tr>
       <th style="[% contact_th_style %]">Name</th>
       <td style="[% contact_td_style %]">[% report.name | html %]</td>
