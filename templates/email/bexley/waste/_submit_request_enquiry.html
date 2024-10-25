@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>WW - Replacement container enquiry</title>
+<meta name="color-scheme" content="only">
+<meta name="supported-color-schemes" content="only">
+</head>
+<body>
+<h1>London Borough of Bexley (Wasteworks) - New [% report.category %]</h1>
+<h2>(for back office only)</h2>
+<p>The below details have been submitted via WasteWorks because it is a communal property or no service was found at the property.</p>
+
+<table class="ww-flow-table" style="width:100%;" border="1">
+    <tr> <th>Details</th> <th>Data</th> </tr>
+    <tr> <td>Enquiry reference number</td> <td>[% report.id %]</td> </tr>
+    <tr> <td>Address</td> <td>[% report.get_extra_metadata.property_address %]</td> </tr>
+    <tr> <td>UPRN</td> <td>[% report.get_extra_field_value('uprn') %]</td> </tr>
+    <tr> <td>Time Received</td> <td>[% USE date; date.format(report.confirmed.epoch, '%Y-%m-%dT%H:%M:%SZ', gmt=1) %]</td> </tr>
+    <tr> <td>New/replacement container</td> <td>[% report.get_extra_field_value('Container').join('; ') %]</td> </tr>
+    <tr> <td>Full name</td> <td>[% report.name %]</td> </tr>
+    <tr> <td>Telephone</td> <td>[% report.user.phone %]</td> </tr>
+    <tr> <td>Email address</td> <td>[% report.user.email %]</td> </tr>
+    <tr> <td>Complaint Type</td> <td>[% report.get_extra_field_value('complaint_type') %]</td> </tr>
+	<tr> <td>In what way are you related to the property?</td> <td>[% report.get_extra_field_value('Relation').join('; ') %]</td> </tr>
+	<tr> <td>Who is the managing agent, housing association or landlord for your block?</td> <td>[% report.get_extra_field_value('Responsible').join('; ') %]</td> </tr>
+    <!--Ignore static values below-->
+    <tr> <td>How Complaint Received</td> <td>ONLINE</td> </tr>
+    <tr> <td>Reference Type</td> <td>FIRM</td> </tr>
+    <tr> <td>Customer Type Code</td> <td>PUBLIC</td> </tr>
+    <tr> <td>Allocated To</td> <td>WTCALL</td> </tr>
+    <tr> <td>Received By</td> <td>WTCALL</td> </tr>
+    <tr> <td>Area Team</td> <td>WRTEAM</td> </tr>
+</table>
+
+</body>
+</html>

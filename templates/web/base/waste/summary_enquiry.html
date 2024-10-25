@@ -12,7 +12,7 @@ step1 = 'enquiry';
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% extra_name | title %]</dt>
       [% IF data.$extra.size %]
-        <dd class="govuk-summary-list__value">[% data.$extra.join(', ') %]</dd>
+        <dd class="govuk-summary-list__value">[% data.$extra.join('; ') %]</dd>
       [% ELSE %]
         <dd class="govuk-summary-list__value">[% data.$extra %]</dd>
       [% END %]

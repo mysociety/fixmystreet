@@ -1,5 +1,4 @@
-[% # NOTE Currently, Bexley only get sent this email for no-collections enquiries ~%]
-[% is_no_collections_enquiry = 1 ~%]
+[% PROCESS 'waste/_email_data.html' ~%]
 Subject: New [% report.category %] - Reference number: [% report.id %]
 
 Dear [% bodies_name %],
@@ -13,8 +12,11 @@ please visit the following link:
 
 ----------
 
+[% IF is_no_collections_missed_enquiry ~%]
 Trying to report missed collection
 for business or organisation? [% report.category == 'Business or organisation missed collection enquiry' ? 'Yes' : 'No' %]
+
+[% END ~%]
 
 Name: [% report.name %]
 
@@ -29,7 +31,3 @@ Phone: [% report.user.phone OR "None provided" %]
 ----------
 
 [% signature %]
-
-If there is a more appropriate email address for messages about
-[% category_footer %], please let us know. This will help improve the
-service for local people. We also welcome any other feedback you may have.
