@@ -13,6 +13,7 @@
 
 <div class="admin-index-search clearfix">
 
+[% IF c.user.has_body_permission_to('report_edit') %]
 <form method="get" action="[% c.uri_for('reports') %]" accept-charset="utf-8">
     <label for="search_reports">[% loc('Search Reports') %]</label>
     <div class="form-txt-submit-box">
@@ -20,7 +21,9 @@
         <input type="submit" class="btn" value="[% loc('Go') %]">
     </div>
 </form>
+[% END %]
 
+[% IF c.user.has_body_permission_to('user_edit') %]
 <form method="get" action="[% c.uri_for('users') %]" accept-charset="utf-8">
     <label for="search_users">[% loc('Search Users') %]</label>
     <div class="form-txt-submit-box">
@@ -28,6 +31,7 @@
         <input type="submit" class="btn" value="[% loc('Go') %]">
     </div>
 </form>
+[% END %]
 
 [% TRY %][% PROCESS 'admin/_index_extra_search.html' %][% CATCH file %][% END %]
 
