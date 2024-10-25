@@ -1,0 +1,7 @@
+[%
+is_missed_collection = report.category == 'Report missed collection';
+is_request_enquiry = report.category == 'Request container enquiry';
+is_no_collections_missed_enquiry
+    =  report.category == 'Business or organisation missed collection enquiry'
+    || report.category == 'Missed collection enquiry';
+~%]

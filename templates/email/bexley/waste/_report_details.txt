@@ -1,16 +1,15 @@
 [% # Hacky string munging :-( %]
 [%
   address = report.get_extra_metadata.property_address;
-  IF is_no_collections_enquiry;
-    title = report.detail;
-    title = title.remove(address);
-  ELSIF is_missed_collection;
-    title = report.title;
-    title = title.remove('Report missed ');
-  END
+  detail = report.detail.remove(address);
+  IF is_no_collections_missed_enquiry OR is_missed_collection;
+    key = 'Bins reported as missed';
+  ELSIF is_request_enquiry;
+    key = 'Containers requested';
+  END;
 %]
-Bins reported as missed:
-[% title %]
+[% key %]:
+[% detail %]
 
 Address:
 [% address %]
