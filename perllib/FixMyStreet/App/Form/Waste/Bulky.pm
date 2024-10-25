@@ -43,7 +43,6 @@ has_page about_you => (
         if ($c->stash->{waste_features}->{bulky_offer_text_updates} && $c->stash->{is_staff}) {
             $form->field('extra_bulky_text_reminders')->inactive(0);
         };
-        my $c = $form->c;
         my $fields = {};
         $fields->{phone}{tags}{hint} = 'Providing a phone number will allow Aragon Direct Services (who provide the service on behalf of the council) to contact you if there are any issues with the service.'
             if $c->cobrand->moniker eq 'peterborough';

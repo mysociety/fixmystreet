@@ -998,7 +998,7 @@ for my $host ( 'www.fixmystreet.com', 'tfl.fixmystreet.com' ) {
 subtest 'TfL staff can access TfL admin' => sub {
     $mech->log_in_ok( $staffuser->email );
     $mech->get_ok('/admin');
-    $mech->content_contains( 'Search Reports' );
+    $mech->content_contains( '<h1>Summary</h1>' );
 };
 
 subtest 'TLRN categories cannot be renamed' => sub {
@@ -1454,7 +1454,7 @@ FixMyStreet::override_config {
 subtest 'Bromley staff can access Bromley admin' => sub {
     $mech->log_in_ok( $bromleyuser->email );
     $mech->get_ok('/admin');
-    $mech->content_contains( 'Search Reports' );
+    $mech->content_contains( '<h1>Summary</h1>' );
     $mech->log_out_ok;
 };
 
