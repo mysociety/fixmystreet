@@ -1327,12 +1327,13 @@ sub _bulky_send_optional_text {
             Date: %s
             Items: %d
             %s
-            View more details or cancel: %s",
+            Reference: %d
+            Please note the items put out for collection must be the items you specified when you booked.",
             $title,
             $self->bulky_nice_collection_date($report->get_extra_field_value('DATE')),
             scalar grep ({ $_->{name} =~ /^ITEM/ && $_->{value} } @{$report->get_extra_fields}),
             $address,
-            $url);
+            $report->id);
     FixMyStreet::SMS->new(cobrand => $self, notify_choice => 'waste')->send(
         %message_data,
     );
