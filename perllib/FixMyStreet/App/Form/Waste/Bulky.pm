@@ -39,10 +39,10 @@ has_page about_you => (
     next => 'choose_date_earlier',
     update_field_list => sub {
         my $form = shift;
-        if ($form->{c}->stash->{waste_features}->{bulky_offer_text_updates}) {
+        my $c = $form->{c};
+        if ($c->stash->{waste_features}->{bulky_offer_text_updates} && $c->stash->{is_staff}) {
             my $fields = {};
             $fields->{phone}{tags}{hint} = 'Providing a phone number will allow Aragon Direct Services (who provide the service on behalf of the council) to contact you if there are any issues with the service.';
-            $form->field('extra_bulky_text_updates')->inactive(0);
             $form->field('extra_bulky_text_reminders')->inactive(0);
             return $fields;
         };

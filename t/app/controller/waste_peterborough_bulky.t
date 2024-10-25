@@ -10,6 +10,7 @@ FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 my $notify = Test::MockModule->new('FixMyStreet::SMS');
+my $sent_sms = 0;
 
 my $mock = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');
 $mock->mock('_fetch_features', sub { ok 0, 'This should not be called by waste'; });
@@ -370,15 +371,10 @@ FixMyStreet::override_config {
             $mech->content_contains('Aragon Direct Services may contact you to obtain more');
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge' } });
             $mech->content_contains('Please provide an email address');
-            $mech->content_contains('Do you want to receive reminders about this collection by text message?');
+            $mech->content_lacks('Do you want to receive reminders about this collection by text message?'); # Reminder staff only
             $mech->submit_form(with_fields => { name => 'Bob Marge', email => '', phone => '44 07 111 111 111' });
             $mech->content_contains('Please provide an email address', 'Can not proceed without email if text notifications unchecked');
-            $mech->submit_form(with_fields => { name => 'Bob Marge', email => $user->email, phone => '', extra_bulky_text_reminders => '1' });
-            $mech->content_contains('Please enter a mobile phone number to receive text updates', 'Can not proceed without mobile number if text notifications checked');
-            $mech->submit_form(with_fields => { name => 'Bob Marge', email => '', phone => '44 07 111 111 111', extra_bulky_text_reminders => '1' });
-            $mech->content_contains('Choose date for collection', "Can proceed without email if mobile number and text notifications checked");
-            $mech->back;
-            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111', extra_bulky_text_reminders => '1' }});
+            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
         };
 
         subtest 'Choose date page' => sub {
@@ -893,21 +889,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Bulky goods email confirmation and reminders' => sub {
-
         my $report_id = $report->id;
-
-        $notify->mock('send', sub {
-            my $self = shift;
-            my %params = @_;
-
-            is $params{'to'} eq '44 07 111 111 111', 1, "Correct text 'to' value";
-            is $params{'body'} =~ /^Bulky waste booking/, 1, 'Correct text title';
-            is $params{'body'} =~ /Date: Friday 26 August 2022/, 1, 'Correct text date';
-            is $params{'body'} =~ /Items: 2/, 1, 'Correct text item count';
-            is $params{'body'} =~ /Address: 1 Pope Way, Peterborough, PE1 3NA/, 1, 'Correct text address';
-            is $params{'body'} =~ m#View more details or cancel: http://peterborough.example.org/report/$report_id#, 1, 'Correct text link';
-            return 1;
-        });
 
         subtest 'Email confirmation of booking' => sub {
             FixMyStreet::Script::Reports::send();
@@ -919,21 +901,6 @@ FixMyStreet::override_config {
         };
 
         sub reminder_check {
-
-            $notify->mock('send', sub {
-            my $self = shift;
-            my %params = @_;
-
-            is $params{'to'} eq '44 07 111 111 111', 1, "Correct text 'to' value";
-            is $params{'body'} =~ /^Bulky waste reminder/, 1, 'Correct text title';
-            is $params{'body'} =~ /Date: Friday 26 August 2022/, 1, 'Correct text date';
-            is $params{'body'} =~ /Items: 2/, 1, 'Correct text item count';
-            is $params{'body'} =~ /Address: 1 Pope Way, Peterborough, PE1 3NA/, 1, 'Correct text address';
-            is $params{'body'} =~ m#View more details or cancel: http://peterborough.example.org/M.*#, 1, 'Correct text link';
-            is $params{'body'} =~ /^Bulky waste reminder/, 1, 'Correct text title';
-            return 1;
-        });
-
             my ($day, $time, $days, $report_id) = @_;
             set_fixed_time("2022-08-$day" . "T$time:00:00Z");
             $cobrand->bulky_reminders;
@@ -985,7 +952,10 @@ FixMyStreet::override_config {
 
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form(with_fields => { name => 'Bob Marge', email => $user->email, phone => '', extra_bulky_text_reminders => '1' });
+        $mech->content_contains('Please enter a mobile phone number to receive text updates', 'Can not proceed without mobile number if text notifications checked');
+        $mech->submit_form(with_fields => { name => 'Bob Marge', email => '', phone => '44 07 111 111 111', extra_bulky_text_reminders => '1' });
+        $mech->content_contains('Choose date for collection', "Can proceed without email if mobile number and text notifications checked");
         $mech->content_contains('5 August');
         $mech->content_lacks('12 August'); # Still full from above
         $mech->content_contains('19 August'); # Max of 2 dates fetched
@@ -1034,7 +1004,62 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { show_later_dates => 1 } });
         $mech->content_like(qr/name="chosen_date" value="2022-08-26T00:00:00"\s+disabled/, 'Already booked date disabled');
         $mech->content_like(qr/name="chosen_date" value="2022-09-02T00:00:00"\s+checked\s+>/, 'Existing booked date not disabled');
-        $report2->update({ external_id => undef, send_state => 'sent' });
+        $report2->update({ external_id => undef });
+    };
+
+    subtest 'Text message confirmation/reminders' => sub {
+        my $report_id = $report2->id;
+
+        $notify->mock('send', sub {
+            my $self = shift;
+            my %params = @_;
+            $sent_sms++;
+
+            is $params{'to'}, '+44 7111 111111', "Correct text 'to' value";
+            like $params{'body'}, qr/^Bulky waste booking/, 'Correct text title';
+            like $params{'body'}, qr/Date: Friday 02 September 2022/, 'Correct text date';
+            like $params{'body'}, qr/Items: 1/, 'Correct text item count';
+            like $params{'body'}, qr/Address: 1 Pope Way, Peterborough, PE1 3NA/, 'Correct text address';
+            like $params{'body'}, qr#Reference: $report_id#, 'Correct text link';
+            return 1;
+        });
+
+        subtest 'Text confirmation of booking' => sub {
+            FixMyStreet::Script::Reports::send();
+            is $sent_sms, 1;
+        };
+
+        $notify->mock('send', sub {
+            my $self = shift;
+            my %params = @_;
+            $sent_sms++;
+
+            is $params{'to'}, '+44 7111 111111', "Correct text 'to' value";
+            like $params{'body'}, qr/^Bulky waste reminder/, 'Correct text title';
+            like $params{'body'}, qr/Date: Friday 02 September 2022/, 'Correct text date';
+            like $params{'body'}, qr/Items: 1/, 'Correct text item count';
+            like $params{'body'}, qr/Address: 1 Pope Way, Peterborough, PE1 3NA/, 'Correct text address';
+            like $params{'body'}, qr#Reference: $report_id#, 'Correct text link';
+            return 1;
+        });
+
+        sub reminder_check2 {
+            my ($day, $time, $days) = @_;
+            set_fixed_time("2022-$day" . "T$time:00:00Z");
+            $cobrand->bulky_reminders;
+        }
+        subtest 'Text reminders' => sub {
+            reminder_check2('08-29', 10, 0);
+            reminder_check2('08-30', 10, 3);
+            reminder_check2('08-30', 11, 0);
+            reminder_check2('08-31', 10, 0);
+            reminder_check2('09-01', 10, 1);
+            reminder_check2('09-01', 11, 0);
+            reminder_check2('09-02', 10, 0);
+            is $sent_sms, 3;
+        };
+        $report2->discard_changes;
+        $report2->update({ external_id => undef });
     };
 
     subtest 'Cancellation' => sub {
