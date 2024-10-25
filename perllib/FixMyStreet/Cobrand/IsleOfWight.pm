@@ -151,7 +151,7 @@ sub munge_reports_category_list {
     my ($self, $categories) = @_;
 
     my $user = $self->{c}->user;
-    my %bodies = map { $_->body->name => $_->body } @$categories;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$categories;
     my $b = $bodies{'Isle of Wight Council'};
 
     if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {
@@ -167,7 +167,7 @@ sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
 
     my $user = $self->{c}->user;
-    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$contacts;
     my $b = $bodies{'Isle of Wight Council'};
 
     if ( $user && ( $user->is_superuser || $user->belongs_to_body( $b->id ) ) ) {

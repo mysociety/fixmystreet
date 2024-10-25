@@ -244,6 +244,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         next if $unresponsive->{$_->body_id};
         my $body = $_->body;
         push @{$lookups->{bodies}{$category}}, {
+            id => $body->id,
             name => $body->name,
             cobrand_name => $body->cobrand_name,
         };
@@ -329,7 +330,9 @@ sub by_category_ajax_data : Private {
 
     if ($extras or $c->stash->{unresponsive}->{$category} or $c->stash->{report_extra_fields}) {
         $body->{category_extra} = $c->render_fragment('report/new/category_extras.html');
-        $body->{category_extra_json} = $c->forward('generate_category_extra_json');
+        if ($c->stash->{native_app}) {
+            $body->{category_extra_json} = $c->forward('generate_category_extra_json');
+        }
         $body->{extra_hidden} = 1 if $c->stash->{category_extras_hidden}->{$category} && !$c->stash->{report_extra_fields};
     }
     if ( $c->cobrand->moniker eq 'zurich' ) {
@@ -353,7 +356,7 @@ sub by_category_ajax_data : Private {
         $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html');
     }
 
-    my $cobrand_overrides = $c->stash->{cobrand_field_overrides_by_body}->{$bodies->[0]->{name}} if @$bodies == 1;
+    my $cobrand_overrides = $c->stash->{cobrand_field_overrides_by_body}->{$bodies->[0]->{id}} if @$bodies == 1;
     my $category_overrides = $lookups->{overrides}{$category};
 
     my $title_label_override = $cobrand_overrides->{title_label};
@@ -764,7 +767,7 @@ sub setup_categories_and_bodies : Private {
 
     my $all_areas = $c->stash->{all_areas};
 
-    my @bodies = $c->model('DB::Body')->active->for_areas(keys %$all_areas)->all;
+    my @bodies = $c->model('DB::Body')->active->for_areas(keys %$all_areas)->translated->all;
     my %bodies = map { $_->id => $_ } @bodies;
 
     $c->cobrand->call_hook(munge_report_new_bodies => \%bodies);
@@ -887,7 +890,7 @@ sub setup_categories_and_bodies : Private {
         $overrides{title_hint} = $title_hint if $title_hint;
         $overrides{detail_label} = $detail_label if $detail_label;
         $overrides{detail_hint} = $detail_hint if $detail_hint;
-        $cobrand_field_overrides_by_body{$body->name} = \%overrides;
+        $cobrand_field_overrides_by_body{$body->id} = \%overrides;
     }
 
     $c->cobrand->call_hook(munge_report_new_category_list => \@category_options, \@contacts, \%category_extras);
@@ -1331,7 +1334,7 @@ sub contacts_to_bodies : Private {
     # to a road.
     if ($options->{do_not_send}) {
         my %do_not_send_check = map { $_ => 1 } @{$options->{do_not_send}};
-        my @contacts_filtered = grep { !$do_not_send_check{$_->body->name} } @contacts;
+        my @contacts_filtered = grep { !$do_not_send_check{$_->body->get_column('name')} } @contacts;
         @contacts = @contacts_filtered if scalar @contacts_filtered;
     }
 

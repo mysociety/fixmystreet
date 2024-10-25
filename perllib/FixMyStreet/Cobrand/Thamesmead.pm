@@ -15,7 +15,7 @@ sub reopening_disallowed {
     my $problem = shift;
     my $c = $self->{c};
 
-    my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->name eq $self->council_name;
+    my $staff = $c->user_exists && $c->user->from_body && $c->user->from_body->get_column('name') eq $self->council_name;
     my $superuser = $c->user_exists && $c->user->is_superuser;
     my $reporter = $c->user_exists && $c->user->id == $problem->user->id;
     my $reopening_disallowed = $self->SUPER::reopening_disallowed($problem);
@@ -31,7 +31,7 @@ sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
-    return $user->from_body->name eq 'Thamesmead';
+    return $user->from_body->get_column('name') eq 'Thamesmead';
 }
 
 sub cut_off_date { '2022-04-25' }
@@ -144,10 +144,10 @@ sub munge_thamesmead_body {
 
     if ( my $category = $self->area_type_for_point ) {
         $self->{c}->stash->{'thamesmead_category'} = $category;
-        %$bodies = map { $_->id => $_ } grep { $_->name eq 'Thamesmead' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') eq 'Thamesmead' } values %$bodies;
     } else {
         $self->{c}->stash->{'thamesmead_category'} = '';
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Thamesmead' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'Thamesmead' } values %$bodies;
     }
 }
 

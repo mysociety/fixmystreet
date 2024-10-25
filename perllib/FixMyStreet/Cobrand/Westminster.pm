@@ -242,7 +242,7 @@ in-Westminster sense.
 sub munge_overlapping_asset_bodies {
     my ($self, $bodies) = @_;
 
-    my %bodies = map { $_->name => 1 } values %$bodies;
+    my %bodies = map { $_->get_column('name') => 1 } values %$bodies;
     if ( $bodies{'Camden Borough Council'} ) {
         my $camden = FixMyStreet::Cobrand::Camden->new({ c => $self->{c} });
         $camden->munge_overlapping_asset_bodies($bodies);

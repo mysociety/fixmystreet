@@ -156,7 +156,7 @@ sub _iow_category_munge {
 sub munge_reports_category_list {
     my ($self, $categories) = @_;
 
-    my %bodies = map { $_->body->name => $_->body } @$categories;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$categories;
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $categories);
     }
@@ -487,7 +487,7 @@ sub suppress_reporter_alerts {
 sub must_have_2fa {
     my ($self, $user) = @_;
     return 1 if $user->is_superuser && !FixMyStreet->staging_flag('skip_must_have_2fa');
-    return 1 if $user->from_body && $user->from_body->name eq 'TfL';
+    return 1 if $user->from_body && $user->from_body->get_column('name') eq 'TfL';
     return 0;
 }
 
@@ -530,7 +530,7 @@ sub report_new_munge_after_insert {
 sub munge_contacts_to_bodies {
     my ($self, $contacts, $report) = @_;
 
-    my %bodies = map { $_->body->name => 1 } @$contacts;
+    my %bodies = map { $_->body->get_column('name') => 1 } @$contacts;
 
     if ($bodies{'Buckinghamshire Council'}) {
         # Make sure Bucks grass cutting reports are routed correctly
@@ -593,10 +593,10 @@ around 'munge_sendreport_params' => sub {
 sub reopening_disallowed {
     my ($self, $problem) = @_;
     my $c = $self->{c};
-    return 1 if $problem->to_body_named("Southwark") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Southwark Council");
-    return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Merton Council");
-    return 1 if $problem->to_body_named("Northumberland") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Northumberland County Council");
-    return 1 if $problem->to_body_named("Gloucestershire") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Gloucestershire County Council");
+    return 1 if $problem->to_body_named("Southwark") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Southwark Council");
+    return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Merton Council");
+    return 1 if $problem->to_body_named("Northumberland") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Northumberland County Council");
+    return 1 if $problem->to_body_named("Gloucestershire") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Gloucestershire County Council");
     return $self->next::method($problem);
 }
 
@@ -628,7 +628,7 @@ sub fetch_area_children {
     my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
     my $bodies = $features->{categories_restriction_bodies} || {};
     $bodies = $bodies->{tfl} || [];
-    if ($body && any { $_ eq $body->name } @$bodies) {
+    if ($body && any { $_ eq $body->get_column('name') } @$bodies) {
         my $areas = FixMyStreet::MapIt::call('areas', 'LBO');
         foreach (keys %$areas) {
             $areas->{$_}->{name} =~ s/\s*(Borough|City|District|County) Council$//;
