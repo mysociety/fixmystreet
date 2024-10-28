@@ -38,41 +38,50 @@ my $body = $mech->create_body_ok(
         cobrand => 'bexley'
     },
 );
-my $contact = $mech->create_contact_ok(
+my $contact_delivery = $mech->create_contact_ok(
     body => $body,
     category => 'Request new container',
     email => 'new@example.org',
     extra => { type => 'waste' },
     group => ['Waste'],
 );
-$contact->set_extra_fields(
-    {
-        code => "uprn",
-        required => "false",
-        automated => "hidden_field",
-    },
-    {
-        code => "service_item_name",
-        required => "false",
-        automated => "hidden_field",
-    },
-    {
-        code => "fixmystreet_id",
-        required => "true",
-        automated => "server_set",
-    },
-    {
-        code => "quantity",
-        required => "false",
-        automated => "hidden_field",
-    },
-    {
-        code => "assisted_yn",
-        required => "false",
-        automated => "hidden_field",
-    },
+my $contact_removal = $mech->create_contact_ok(
+    body => $body,
+    category => 'Request container removal',
+    email => 'new@example.org',
+    extra => { type => 'waste' },
+    group => ['Waste'],
 );
-$contact->update;
+for ( $contact_delivery, $contact_removal ) {
+    $_->set_extra_fields(
+        {
+            code => "uprn",
+            required => "false",
+            automated => "hidden_field",
+        },
+        {
+            code => "service_item_name",
+            required => "false",
+            automated => "hidden_field",
+        },
+        {
+            code => "fixmystreet_id",
+            required => "true",
+            automated => "server_set",
+        },
+        {
+            code => "quantity",
+            required => "false",
+            automated => "hidden_field",
+        },
+        {
+            code => "assisted_yn",
+            required => "false",
+            automated => "hidden_field",
+        },
+    );
+    $_->update;
+}
 
 subtest '_set_request_containers' => sub {
     my @services = (
@@ -249,12 +258,14 @@ subtest '_set_request_containers' => sub {
             },
 
             {   name                => 'Brown Caddy',
+                description         => 'Food waste',
                 service_item_name   => 'FO-23',
                 service_id_delivery => '224',
                 service_id_removal  => '156',
                 max                 => 3,
             },
             {   name                => 'Kitchen Caddy',
+                description         => 'Food waste',
                 service_item_name   => 'Kitchen 5 Ltr Caddy',
                 service_id_delivery => '235',
             },
@@ -341,6 +352,7 @@ subtest '_set_request_containers' => sub {
             },
 
             {   name                => 'Brown Caddy',
+                description         => 'Food waste',
                 service_item_name   => 'FO-23',
                 service_id_delivery => '224',
                 service_id_removal  => '156',
@@ -365,7 +377,10 @@ subtest '_set_request_containers' => sub {
 subtest 'Munge data' => sub {
     my $data = {
         'category' => 'Request new container',
+        'category_delivery' => 'Request new container',
+        'category_removal' => 'Request container removal',
 
+        # Delivery
         'bin-size-Green-Wheelie-Bin' => 'RES-140',
         'container-Deliver-Box-lids-55L' => 1,
         'container-FO-23' => 1,
@@ -375,6 +390,12 @@ subtest 'Munge data' => sub {
         'quantity-Deliver-Box-lids-55L' => 3,
         'quantity-FO-23' => 2,
 
+        # Removal
+        'container-RES-180-removal' => 1,
+        'container-FO-23-removal' => 1,
+
+        'quantity-FO-23-removal' => 2,
+
         'request_reason' => 'My existing bin is damaged',
     };
 
@@ -383,7 +404,10 @@ subtest 'Munge data' => sub {
 
         cmp_deeply $data, {
             'category' => 'Request new container',
+            'category_delivery' => 'Request new container',
+            'category_removal' => 'Request container removal',
 
+            # Delivery
             'bin-size-Green-Wheelie-Bin' => 'RES-140',
             'container-Deliver-Box-lids-55L' => 1,
             'container-FO-23' => 1,
@@ -392,6 +416,12 @@ subtest 'Munge data' => sub {
 
             'quantity-Deliver-Box-lids-55L' => 3,
             'quantity-FO-23' => 2,
+
+            # Removal
+            'container-RES-180-removal' => 1,
+            'container-FO-23-removal' => 1,
+
+            'quantity-FO-23-removal' => 2,
 
             'request_reason' => 'My existing bin is damaged',
 
@@ -444,6 +474,33 @@ subtest 'Munge data' => sub {
                         ],
                     },
                 ],
+                containers_for_removal => [
+                    {   name                => 'Brown Caddy',
+                        service_item_name   => 'FO-23',
+                        service_id_delivery => '224',
+                        service_id_removal  => '156',
+                    },
+                    {   name        => 'Green Wheelie Bin',
+                        description => 'Non-recyclable waste',
+                        subtypes    => [
+                            {   size                => 'Small 140 litre',
+                                service_item_name   => 'RES-140',
+                                service_id_delivery => '272',
+                                service_id_removal  => '205',
+                            },
+                            {   size                => 'Medium 180 litre',
+                                service_item_name   => 'RES-180',
+                                service_id_delivery => '273',
+                                service_id_removal  => '206',
+                            },
+                            {   size                => 'Large 240 litre',
+                                service_item_name   => 'RES-240',
+                                service_id_delivery => '274',
+                                service_id_removal  => '207',
+                            },
+                        ],
+                    },
+                ],
             }
         } } );
 
@@ -453,13 +510,16 @@ subtest 'Munge data' => sub {
             qw/
                 container-Deliver-Box-lids-55L
                 container-FO-23
+                container-FO-23-removal
                 container-RES-140
+                container-RES-180-removal
             /
         ], 'correct list of services';
 
         for my $test (
             (   {   id            => 'Deliver-Box-lids-55L',
                     expected_data => {
+                        category => 'Request new container',
                         title  => 'Request new Recycling Box Lids',
                         detail => 'Request new Recycling Box Lids
 
@@ -478,6 +538,7 @@ Quantity: 3',
                 },
                 {   id            => 'FO-23',
                     expected_data => {
+                        category => 'Request new container',
                         title  => 'Request new Brown Caddy',
                         detail => 'Request new Brown Caddy
 
@@ -496,6 +557,7 @@ Quantity: 2',
                 },
                 {   id            => 'RES-140',
                     expected_data => {
+                        category => 'Request new container',
                         title  => 'Request new Green Wheelie Bin',
                         detail => 'Request new Green Wheelie Bin
 
@@ -512,6 +574,44 @@ Quantity: 1',
                         assisted_yn       => 'No',
                     },
                 },
+                {   id            => 'RES-180-removal',
+                    expected_data => {
+                        category => 'Request container removal',
+                        title  => 'Request removal of Green Wheelie Bin',
+                        detail => 'Request removal of Green Wheelie Bin
+
+ABC
+
+Reason: My existing bin is damaged
+
+Quantity: 1',
+                    },
+                    expected_params => {
+                        uprn              => 123456,
+                        service_item_name => 'RES-180',
+                        quantity          => 1,
+                        assisted_yn       => 'No',
+                    },
+                },
+                {   id            => 'FO-23-removal',
+                    expected_data => {
+                        category => 'Request container removal',
+                        title  => 'Request removal of Brown Caddy',
+                        detail => 'Request removal of Brown Caddy
+
+ABC
+
+Reason: My existing bin is damaged
+
+Quantity: 2',
+                    },
+                    expected_params => {
+                        uprn              => 123456,
+                        service_item_name => 'FO-23',
+                        quantity          => 2,
+                        assisted_yn       => 'No',
+                    },
+                },
             )
         ) {
             note "For $test->{id}";
@@ -523,8 +623,10 @@ Quantity: 1',
             }
 
             cmp_deeply $data, {
-                'category'                       => 'Request new container',
+                'category_delivery' => 'Request new container',
+                'category_removal' => 'Request container removal',
 
+                # Delivery
                 'bin-size-Green-Wheelie-Bin'     => 'RES-140',
                 'container-Deliver-Box-lids-55L' => 1,
                 'container-FO-23'                => 1,
@@ -534,6 +636,12 @@ Quantity: 1',
 
                 'quantity-Deliver-Box-lids-55L' => 3,
                 'quantity-FO-23' => 2,
+
+                # Removal
+                'container-RES-180-removal' => 1,
+                'container-FO-23-removal' => 1,
+
+                'quantity-FO-23-removal' => 2,
 
                 'request_reason' => 'My existing bin is damaged',
 
@@ -672,6 +780,23 @@ FixMyStreet::override_config {
                 },
             );
 
+            $mech->content_contains(
+                'Which containers do you need to be removed?',
+                'On removal page' );
+            $mech->submit_form_ok( {},
+                'can submit removal page with nothing selected' );
+            $mech->back;
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        'container-RES-180-removal' => 1,
+
+                        'container-FO-23-removal' => 1,
+                        'quantity-FO-23-removal'  => 3,
+                    },
+                },
+                'submit removal page with options selected',
+            );
+
             $mech->submit_form_ok(
                 {   with_fields => {
                         request_reason  => 'My existing bin is damaged',
@@ -702,7 +827,7 @@ FixMyStreet::override_config {
                 'Request successful' );
 
             my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
-            is $rows->count, 6, 'correct number of reports raised';
+            is $rows->count, 8, 'correct number of reports raised';
 
             my %extra;
             while ( my $report = $rows->next ) {
@@ -711,16 +836,24 @@ FixMyStreet::override_config {
                 is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
                 is $report->get_extra_field_value('assisted_yn'), 'No',
                     'assisted_yn is correct';
-                $extra{ $report->get_extra_field_value('service_item_name') }
+
+                my $category = $report->category;
+                $extra{ $category }{ $report->get_extra_field_value('service_item_name') }
                     = $report->get_extra_field_value('quantity');
             }
             cmp_deeply \%extra, {
-                'RES-140'              => 1,
-                'PC-240'               => 1,
-                'PG-55'                => 1,
-                'Deliver Box lids 55L' => 4,
-                'FO-23'                => 2,
-                'Kitchen 5 Ltr Caddy'  => 1,
+                'Request new container' => {
+                    'RES-140'              => 1,
+                    'PC-240'               => 1,
+                    'PG-55'                => 1,
+                    'Deliver Box lids 55L' => 4,
+                    'FO-23'                => 2,
+                    'Kitchen 5 Ltr Caddy'  => 1,
+                },
+                'Request container removal' => {
+                    'RES-180' => 1,
+                    'FO-23'   => 3,
+                },
             }, 'Extra data is correct';
         };
     };
@@ -776,6 +909,7 @@ FixMyStreet::override_config {
             while ( my $report = $rows->next ) {
                 ok $report->confirmed;
                 is $report->state, 'confirmed';
+                is $report->category, 'Request new container';
                 like $report->detail, qr/Reason: I need more sacks/,
                     'Default reason provided';
                 is $report->get_extra_field_value('uprn'), '10002', 'UPRN is correct';
@@ -786,6 +920,68 @@ FixMyStreet::override_config {
             }
             cmp_deeply \%extra, { 'MDR-SACK' => 1 }, 'Extra data is correct';
         };
+    };
+
+    subtest 'Removal-only form' => sub {
+        $mech->delete_problems_for_body( $body->id );
+
+        $mech->get_ok('/waste/10001');
+
+        $mech->follow_link_ok(
+            { text_regex => qr /Order removal/ } );
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    'container-RES-180-removal' => 1,
+
+                    'container-FO-23-removal' => 1,
+                    'quantity-FO-23-removal'  => 2,
+                },
+            },
+        );
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    request_reason  => 'My existing bin is damaged',
+                }
+            },
+            'submit reason page',
+        );
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    name  => 'Test User',
+                    phone => '44 07 111 111 111',
+                    email => 'test@example.com',
+                }
+            },
+            'submit "about you" page',
+        );
+
+        $mech->submit_form_ok(
+            { with_fields => { submit => 'Request new containers' } } );
+
+        $mech->content_contains( 'Your container request has been sent',
+            'Request successful' );
+
+        my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
+        is $rows->count, 2, 'correct number of reports raised';
+
+        my %extra;
+        while ( my $report = $rows->next ) {
+            ok $report->confirmed;
+            is $report->state, 'confirmed';
+            is $report->category, 'Request container removal';
+            is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+            is $report->get_extra_field_value('assisted_yn'), 'No',
+                'assisted_yn is correct';
+            $extra{ $report->get_extra_field_value('service_item_name') }
+                = $report->get_extra_field_value('quantity');
+        }
+        cmp_deeply \%extra, {
+            'RES-180'              => 1,
+            'FO-23'                => 2,
+        }, 'Extra data is correct';
     };
 
     subtest 'Open container requests' => sub {
