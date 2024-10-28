@@ -1797,6 +1797,15 @@ fixmystreet.assets.tfl.bus_attribute_set = function(asset) {
 };
 
 fixmystreet.assets.tfl.asset_found = function(asset) {
+    if (this.name == 'TfL Bus Stations') {
+        var $vcs_question = $('#form_Victoria_Area'),
+            $page = $vcs_question.closest('.js-reporting-page');
+        if ($vcs_question.length && asset.attributes.STOP_NAME != "Victoria Coach Station") {
+            $page.addClass('js-reporting-page--skip');
+        } else {
+            $page.removeClass('js-reporting-page--skip');
+        }
+    }
     fixmystreet.message_controller.asset_found.call(this, asset);
     fixmystreet.assets.named_select_action_found.call(this, asset);
 };
