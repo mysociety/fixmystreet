@@ -279,7 +279,7 @@ FixMyStreet::override_config {
         $mech->create_comment_for_problem($report, $staffuser, 'National Highways', 'Body update', 'f', 'confirmed', 'confirmed', { extra => { contributed_as => 'body' } });
         $mech->get_ok('/report/' . $report->id);
         my $metas = $mech->extract_update_metas;
-        like $metas->[0], qr/Posted by Council User at/;
+        like $metas->[0], qr/Posted by Staff user at/;
         like $metas->[1], qr/Posted by National Highways at/;
     };
 
