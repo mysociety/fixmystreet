@@ -600,17 +600,24 @@ sub reopening_disallowed {
     return $self->next::method($problem);
 }
 
-# Make sure CPC areas are included in point lookups for new reports
-# This is so that parish bodies (e.g. in Buckinghamshire) are available
-# for reporting to on .com
-sub add_extra_area_types {
-    my ($self, $types) = @_;
+=head2 add_extra_areas_for_admin
 
-    my @types = (
-        @$types,
-        'CPC',
-    );
-    return \@types;
+Add the parish IDs from Buckinghamshire's cobrand, plus any other IDs from
+configuration, so that we can manually add specific parish councils.
+
+=cut
+
+sub add_extra_areas_for_admin {
+    my ($self, $areas) = @_;
+
+    my $bucks = FixMyStreet::Cobrand::Buckinghamshire->new;
+    my @extra = @{ $bucks->_parish_ids };
+    my $extra = $self->feature('extra_parishes') || [];
+    push @extra, @$extra;
+    my $ids_string = join ",", @extra;
+    my $extra_areas = mySociety::MaPit::call('areas', [ $ids_string ]);
+    my %all_areas = ( %$areas, %$extra_areas );
+    return \%all_areas;
 }
 
 =head2 fetch_area_children

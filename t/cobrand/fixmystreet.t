@@ -210,6 +210,12 @@ subtest 'check heatmap page for cllr' => sub {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        extra_parishes => {
+            fixmystreet => [ 59087 ],
+        }
+    }
 }, sub {
     subtest 'test enforced 2FA for superusers' => sub {
         my $test_email = 'test@example.com';
@@ -223,6 +229,22 @@ FixMyStreet::override_config {
             { with_fields => { username => $test_email, password_sign_in => 'password' } },
             "sign in using form" );
         $mech->content_contains('requires two-factor');
+
+        # Sign up for 2FA
+        $mech->submit_form_ok({ with_fields => { '2fa_action' => 'activate' } }, "submit 2FA activation");
+        my ($token) = $mech->content =~ /name="secret32" value="([^"]*)">/;
+        use Auth::GoogleAuth;
+        my $auth = Auth::GoogleAuth->new({ secret32 => $token });
+        my $code = $auth->code;
+        $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+        $mech->content_contains('successfully enabled two-factor authentication', "2FA activated");
+    };
+
+    subtest 'test extra parish areas' => sub {
+        $mech->get_ok('/admin/bodies/add');
+        $mech->content_contains('Bradenham');
+        $mech->content_contains('Castle Bromwich');
+        $mech->log_out_ok;
     };
 };
 

@@ -130,6 +130,17 @@ subtest 'cobrand displays correct categories' => sub {
     is @{$json->{bodies}}, 2, 'Still Bucks and parish returned';
 };
 
+subtest 'parish alert signup' => sub {
+    $mech->get_ok('/alert/list?latitude=51.615559&longitude=-0.556903');
+    $mech->content_contains('Buckinghamshire Council');
+    $mech->content_contains('Chiltern District Council');
+    $mech->content_contains('All reports within Adstock parish');
+    $mech->content_contains('Only reports sent to Adstock Parish Council');
+    $mech->submit_form_ok({ with_fields => {
+        feed => 'area:53822',
+    } });
+};
+
 subtest 'privacy page contains link to Bucks privacy policy' => sub {
     $mech->get_ok('/about/privacy');
     $mech->content_contains('privacy-and-buckinghamshire-highways');
@@ -392,40 +403,6 @@ subtest 'extra CSV columns are present' => sub {
 
     is $rows[1]->[8], $counciluser->email, 'Staff User is correct if made on behalf of body';
     is $rows[2]->[8], $counciluser->email, 'Staff User is correct if made on behalf of another user';
-};
-
-subtest 'old district council names are now just "areas"' => sub {
-
-    my %points = (
-       'Aylesbury Vale' => [
-           [ 51.822364, -0.826409 ], # AVDC offices
-           [ 51.995, -0.986 ], # Buckingham
-           [ 51.940, -0.887 ], # Winslow
-       ],
-        'Chiltern' => [
-           [ 51.615559, -0.556903, ],
-        ],
-        'South Bucks' => [
-            [ 51.563, -0.499 ], # Denham
-            [ 51.611, -0.644 ], # Beaconsfield Railway Station
-        ],
-         'Wycombe' => [
-             [ 51.628661, -0.748238 ], # High Wycombe
-             [ 51.566667, -0.766667 ], # Marlow
-         ],
-    );
-
-    for my $area (sort keys %points) {
-        for my $loc (@{$points{$area}}) {
-            $mech->get("/alert/list?latitude=$loc->[0];longitude=$loc->[1]");
-            $mech->content_contains("$area area");
-            $mech->content_lacks("$area District Council");
-            $mech->content_lacks("ward, $area District Council");
-            $mech->content_lacks('County Council');
-            $mech->content_contains('Buckinghamshire Council');
-        }
-    }
-
 };
 
 my $bucks = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');

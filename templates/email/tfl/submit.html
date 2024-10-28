@@ -37,7 +37,7 @@ of a local problem that they believe might require your attention.</p>
       <p style="[% secondary_p_style %]"><strong>Bike number:</strong> [% report.get_extra_field_value('Question') | html %]</p>
     [% END %]
 
-  [%~ FOR field IN report.get_extra_fields %][% IF field.value AND field.name != 'stop_code' AND field.name != 'site' AND field.name != 'Question' %]
+  [%~ FOR field IN report.get_extra_fields %][% IF field.value AND field.name != 'stop_code' AND field.name != 'site' AND field.name != 'Question' AND field.name != 'safety_critical' %]
     <p style="[% secondary_p_style %]">
       <strong>[% field.description OR field.name %]:</strong>
       [% field.value %]

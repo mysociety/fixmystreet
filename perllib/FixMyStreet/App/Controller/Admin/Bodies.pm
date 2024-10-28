@@ -222,13 +222,13 @@ sub body_form_dropdowns : Private {
     if ( $whitelist && ref $whitelist eq 'ARRAY' && @$whitelist ) {
         $areas = FixMyStreet::MapIt::call('areas', $whitelist);
     } else {
-        $areas = FixMyStreet::MapIt::call('areas', $c->cobrand->area_types);
+        $areas = FixMyStreet::MapIt::call('areas', $c->cobrand->area_types_for_admin);
     }
 
     # Some cobrands may want to add extra areas at runtime beyond those
     # available via MAPIT_WHITELIST or MAPIT_TYPES. This can be used for,
     # e.g., parish councils on a particular council cobrand.
-    $areas = $c->cobrand->call_hook("add_extra_areas" => $areas) || $areas;
+    $areas = $c->cobrand->call_hook("add_extra_areas_for_admin" => $areas) || $areas;
 
     $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
 

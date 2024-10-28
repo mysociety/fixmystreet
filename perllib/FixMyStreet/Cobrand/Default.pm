@@ -828,6 +828,7 @@ The MaPit types this site handles
 
 sub area_types          { FixMyStreet->config('MAPIT_TYPES') || [ 'ZZZ' ] }
 sub area_types_children { FixMyStreet->config('MAPIT_TYPES_CHILDREN') || [] }
+sub area_types_for_admin { $_[0]->area_types }
 
 =item fetch_area_children
 
