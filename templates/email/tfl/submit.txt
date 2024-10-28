@@ -23,6 +23,12 @@ Category: [% report.category %]
 [% END %]
 [% IF report.category == "Abandoned Santander Cycle" %]Bike number: [% report.get_extra_field_value('Question') %]
 [% END %]
+
+[% FOR field IN report.get_extra_fields %][% IF field.value AND field.name != 'stop_code' AND field.name != 'site' AND field.name != 'Question' %]
+[% field.description OR field.name %]: [% field.value %]
+
+[% END %][% END %]
+
 Subject: [% report.title %]
 
 Details: [% report.detail %]
