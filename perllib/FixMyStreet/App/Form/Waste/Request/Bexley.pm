@@ -4,6 +4,16 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
+has_field category_delivery => (
+    type => 'Hidden',
+    default => 'Request new container',
+);
+
+has_field category_removal => (
+    type => 'Hidden',
+    default => 'Request container removal',
+);
+
 # Shown as first page if property able to order Green Wheelie Bins
 has_page household_size => (
     title => 'Household size',
@@ -56,7 +66,7 @@ sub options_request_reason {
 sub validate {
     my $self = shift;
 
-    if ( $self->page_name eq 'request' ) {
+    if ( $self->page_name eq 'request' || $self->page_name eq 'request_removal' ) {
         # Get all checkboxes and make sure at least one selected
         my $bin_count = 0;
         for my $field_name ( @{ $self->current_page->fields } ) {
