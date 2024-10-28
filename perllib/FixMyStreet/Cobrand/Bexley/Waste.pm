@@ -1243,93 +1243,208 @@ sub get_in_cab_logs_reason_prefix {
 
 # Container maintenance
 
+# TODO e.g. blue lidded wheelie bin request being created for delivery when
+# I haven't selected
+
 sub construct_bin_request_form {
+    my ( $self, $c ) = @_;
+
+    my $request_type = $c->get_param('request_type');
+
+    my $full_field_list;
+    my $page_list;
+    my $first_page;
+
+    if ( $request_type eq 'delivery' ) {
+        # Household size page needs to appear first, if applicable
+        $first_page
+            = $c->stash->{property}{household_size_check}
+            ? 'household_size'
+            : 'request';
+
+        my $delivery_field_list
+            = $self->_construct_bin_request_form_delivery($c);
+        my $removal_field_list
+            = $self->_construct_bin_request_form_removal($c);
+
+        # Not all properties have containers eligible for removal
+        my $include_removal = @$removal_field_list;
+
+        # Above-shop properties get a single default reason, so no need to send
+        # them to reason selection
+        my $include_reason
+            = $self->{c}->stash->{property}{above_shop} ? 0 : 1;
+
+        my $next
+            = $include_removal
+            ? 'request_removal'
+            : ( $include_reason ? 'request_reason' : 'about_you' );
+
+        $page_list = [
+            request => {
+                fields => [ grep { ! ref $_ } @$delivery_field_list, 'submit' ],
+                title => 'Which containers do you need?',
+                check_unique_id => 0,
+                next => $next,
+                update_field_list => sub {
+                    my $form = shift;
+                    my $fields
+                        = $self->waste_request_form_update_field_list($form);
+                    return $fields;
+                },
+            },
+        ];
+        $full_field_list = [ @$delivery_field_list ];
+
+        if ( $include_removal ) {
+            push @$page_list, (
+                request_removal => {
+                    intro => 'container_removal_intro.html',
+                    fields => [ grep { ! ref $_ } @$removal_field_list, 'submit' ],
+                    title => 'Which containers do you need to be removed?',
+                    check_unique_id => 0,
+                    next => ( $include_reason ? 'request_reason' : 'about_you' ),
+                },
+            );
+            push @$full_field_list, @$removal_field_list;
+        }
+
+    } else {
+        $first_page = 'request_removal';
+        $full_field_list = $self->_construct_bin_request_form_removal($c);
+
+        $page_list = [
+            request_removal => {
+                intro  => 'container_removal_intro.html',
+                fields => [ grep { ! ref $_ } @$full_field_list, 'submit' ],
+                title => 'Which containers do you need to be removed?',
+                check_unique_id => 0,
+                next => 'request_reason',
+            },
+        ];
+
+    }
+
+    return (
+        field_list => $full_field_list,
+        first_page => $first_page,
+        page_list  => $page_list,
+    );
+}
+
+sub _construct_bin_request_form_delivery {
     my ( $self, $c ) = @_;
 
     my $field_list = [];
 
-    my $request_type = $c->get_param('request_type');
+    my $property = $c->stash->{property};
 
-    if ( $request_type eq 'delivery' ) {
-        for my $container (
-            @{ $c->stash->{property}{containers_for_delivery} } )
-        {
-            if ( $container->{subtypes} ) {
-                my $id = $container->{name} =~ s/ /-/gr;
+    for my $container ( @{ $property->{containers_for_delivery} } )
+    {
+        if ( $container->{subtypes} ) {
+            my $id = $container->{name} =~ s/ /-/gr;
 
-                push @$field_list, "parent-$id" => {
-                    type         => 'Checkbox',
-                    label        => $container->{name},
-                    option_label => $container->{description},
-                    tags         => { toggle => "form-bin-size-$id-row" },
+            push @$field_list, "parent-$id" => {
+                type         => 'Checkbox',
+                label        => $container->{name},
+                option_label => $container->{description},
+                tags         => { toggle => "form-bin-size-$id-row" },
+            };
 
-                    # TODO
-                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
-                };
-
-                push @$field_list, "bin-size-$id" => {
-                    type    => 'Select',
-                    label   => 'Bin Size',
-                    tags    => { initial_hidden => 1 },
-                    options => [
-                        map {
-                            label     => $_->{size},
-                            value     => $_->{service_item_name},
-                        },
-                        @{ $container->{subtypes} }
-                    ],
-                    required_when => { "parent-$id" => 1 },
-                };
-            } else {
-                my $id = $container->{service_item_name} =~ s/ /-/gr;
-
-                push @$field_list, "container-$id" => {
-                    type         => 'Checkbox',
-                    label        => $container->{name},
-                    option_label => $container->{description},
-                    tags => { toggle => "form-quantity-$id-row" },
-
-                    # TODO
-                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
-                };
-
-                my $max = $container->{max} || 1;
-                if ( $max > 1 ) {
-                    push @$field_list, "quantity-$id" => {
-                        type => 'Select',
-                        label => 'Quantity',
-                        tags => {
-                            hint => "You can request a maximum of " . NUMWORDS($max) . " containers",
-                            initial_hidden => 1,
-                        },
-                        options => [
-                            map { { value => $_, label => $_ } }
-                                ( 1 .. $max ),
-                        ],
-                        required_when => { "container-$id" => 1 },
-                    };
-                }
-            }
-        }
-    } else {
-        # Removal
-        for my $container (
-            @{ $c->stash->{property}{containers_for_removal} } )
-        {
-            # TODO Use size/code for service that exists on property
-
-            my $id
-                = $container->{subtypes}
-                ? $container->{subtypes}[0]{service_item_name}
-                : $container->{service_item_name};
+            push @$field_list, "bin-size-$id" => {
+                type    => 'Select',
+                label   => 'Bin Size',
+                tags    => { initial_hidden => 1 },
+                options => [
+                    map {
+                        label     => $_->{size},
+                            value => $_->{service_item_name},
+                    },
+                    @{ $container->{subtypes} }
+                ],
+                required_when => { "parent-$id" => 1 },
+            };
+        } else {
+            my $id = $container->{service_item_name} =~ s/ /-/gr;
 
             push @$field_list, "container-$id" => {
                 type         => 'Checkbox',
                 label        => $container->{name},
                 option_label => $container->{description},
+                tags         => { toggle => "form-quantity-$id-row" },
+            };
 
-                # TODO
-                # disabled => $_->{requests_open}{$id} ? 1 : 0,
+            my $max = $container->{max} || 1;
+            if ( $max > 1 ) {
+                push @$field_list,
+                    "quantity-$id" => {
+                    type  => 'Select',
+                    label => 'Quantity',
+                    tags  => {
+                        hint => "You can request a maximum of "
+                            . NUMWORDS($max)
+                            . " containers",
+                        initial_hidden => 1,
+                    },
+                    options => [
+                        map { { value => $_, label => $_ } } ( 1 .. $max ),
+                    ],
+                    required_when => { "container-$id" => 1 },
+                    };
+            }
+        }
+    }
+
+    return $field_list;
+}
+
+sub _construct_bin_request_form_removal {
+    my ( $self, $c ) = @_;
+
+    return [] unless @{ $c->stash->{property}{containers_for_removal} };
+
+    my $field_list = [];
+
+    my %service_names_to_ids
+            = map { $_->{service_name} => $_->{service_id} }
+            @{ $self->{c}->stash->{service_data} };
+
+    for my $container (
+        @{ $c->stash->{property}{containers_for_removal} } )
+    {
+        # For containers with subtypes, choose the ID ('service_item_name')
+        # that the property currently has
+        my $id
+            = $container->{subtypes}
+            ? $service_names_to_ids{ $container->{name} }
+            : $container->{service_item_name};
+
+        $id .= '-removal';
+
+        push @$field_list, "container-$id" => {
+            type         => 'Checkbox',
+            label        => $container->{name},
+            option_label => $container->{description},
+            tags => { toggle => "form-quantity-$id-row" },
+
+            # TODO
+            # disabled => $_->{requests_open}{$id} ? 1 : 0,
+        };
+
+        my $max = $container->{max} || 1;
+        if ( $max > 1 ) {
+            push @$field_list, "quantity-$id" => {
+                type => 'Select',
+                label => 'Quantity',
+                tags => {
+                    hint => "You can request removal of a maximum of " . NUMWORDS($max) . " containers",
+                    initial_hidden => 1,
+                },
+                options => [
+                    map { { value => $_, label => $_ } }
+                        ( 1 .. $max ),
+                ],
+                required_when => { "container-$id" => 1 },
             };
         }
     }
@@ -1366,26 +1481,6 @@ sub waste_request_form_update_field_list {
     return $fields;
 }
 
-sub waste_request_form_first_next {
-    my $self = shift;
-
-    # Above-shop properties get a single default reason, so no need to send
-    # them to reason selection
-    return $self->{c}->stash->{property}{above_shop}
-        ? 'about_you'
-        : 'request_reason';
-}
-
-sub waste_munge_request_form_pages {
-    my ( $self, $page_list, $field_list ) = @_;
-
-    my $c = $self->{c};
-
-    if ( $c->stash->{property}{household_size_check} ) {
-        $c->stash->{first_page} = 'household_size';
-    }
-}
-
 sub waste_munge_request_form_data {
     my ( $self, $data ) = @_;
 
@@ -1404,23 +1499,37 @@ sub waste_munge_request_data {
     my ( $self, $id, $data ) = @_;
 
     my $c  = $self->{c};
-    my $delivery_containers = $c->stash->{property}{containers_for_delivery};
+
+    my $type = 'delivery';
+    if ( $id =~ /-removal$/ ) {
+        $type = 'removal';
+    }
 
     my $service;
-    for my $dc (@$delivery_containers) {
-        $service = $dc if $id eq ( $dc->{service_item_name} // '' );
+
+    my $containers
+        = $type eq 'delivery'
+        ? $c->stash->{property}{containers_for_delivery}
+        : $c->stash->{property}{containers_for_removal};
+
+    for my $ctr (@$containers) {
+        # Removal options from form have a '-removal' suffix
+        my $original_id = $id =~ s/-removal$//r;
+
+        $service = $ctr
+            if $original_id eq ( $ctr->{service_item_name} // '' );
 
         last if $service;
 
-        if ( @{ $dc->{subtypes} // [] } ) {
+        if ( @{ $ctr->{subtypes} // [] } ) {
             # The service we are looking for may be the subtype of
             # a parent
             # (e.g. 'RES-140' under 'Green Wheelie Bin')
-            for my $subtype ( @{ $dc->{subtypes} } ) {
-                if ( $id eq $subtype->{service_item_name} ) {
+            for my $subtype ( @{ $ctr->{subtypes} } ) {
+                if ( $original_id eq $subtype->{service_item_name} ) {
                     $service = $subtype;
                     # Use parent name
-                    $service->{name} = $dc->{name};
+                    $service->{name} = $ctr->{name};
                     last;
                 }
             }
@@ -1432,16 +1541,22 @@ sub waste_munge_request_data {
         # E.g. 'Deliver Box lids 55L'.
         # We need to unhyphen string that was hyphenated in
         # construct_bin_request_form().
-        my $id_spaced = $id =~ s/-/ /gr;
+        my $id_spaced = $original_id =~ s/-/ /gr;
 
-        if ( $id_spaced eq ( $dc->{service_item_name} // '' ) ) {
-            $service = $dc;
+        if ( $id_spaced eq ( $ctr->{service_item_name} // '' ) ) {
+            $service = $ctr;
         }
 
         last if $service;
     }
 
-    $data->{title}  = "Request new $service->{name}";
+    if ( $type eq 'delivery' ) {
+        $data->{title}    = "Request new $service->{name}";
+        $data->{category} = $data->{category_delivery};
+    } else {
+        $data->{title}    = "Request removal of $service->{name}";
+        $data->{category} = $data->{category_removal};
+    }
 
     my $address = $c->stash->{property}{address};
     my $reason
@@ -1697,12 +1812,14 @@ sub _containers_for_requests {
 
         'Food Waste' => [
             {   name                => 'Brown Caddy',
+                description         => 'Food waste',
                 service_item_name   => 'FO-23',
                 service_id_delivery => '224',
                 service_id_removal  => '156',
                 max                 => 3,
             },
             {   name                => 'Kitchen Caddy',
+                description         => 'Food waste',
                 service_item_name   => 'Kitchen 5 Ltr Caddy',
                 service_id_delivery => '235',
             },
