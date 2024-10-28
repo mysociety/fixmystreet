@@ -1601,11 +1601,12 @@ fixmystreet.assets.tfl.bus_attribute_set = function(asset) {
 
 fixmystreet.assets.tfl.asset_found = function(asset) {
     if (this.name == 'TfL Bus Stations') {
-        var $category_meta = $('#category_meta');
-        if (asset.attributes.STOP_NAME == "Victoria Coach Station") {
-            $category_meta.closest('.js-reporting-page').removeClass('js-reporting-page--skip');
+        var $vcs_question = $('#form_Victoria_Area'),
+            $page = $vcs_question.closest('.js-reporting-page');
+        if ($vcs_question.length && asset.attributes.STOP_NAME != "Victoria Coach Station") {
+            $page.addClass('js-reporting-page--skip');
         } else {
-            $category_meta.closest('.js-reporting-page').addClass('js-reporting-page--skip');
+            $page.removeClass('js-reporting-page--skip');
         }
     }
     fixmystreet.message_controller.asset_found.call(this, asset);
