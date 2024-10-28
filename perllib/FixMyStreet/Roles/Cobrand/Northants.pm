@@ -128,20 +128,6 @@ sub report_validation {
     }
 }
 
-=item * We allow staff to bypass stoppers.
-
-=cut
-
-sub staff_ignore_form_disable_form {
-    my $self = shift;
-
-    my $c = $self->{c};
-
-    return $c->user_exists
-        && $c->user->belongs_to_body( $self->body->id );
-}
-
-
 =item * We always apply state changes from Open311 updates.
 
 =cut
