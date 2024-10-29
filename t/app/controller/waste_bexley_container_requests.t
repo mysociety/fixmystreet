@@ -817,11 +817,19 @@ FixMyStreet::override_config {
             $mech->content_contains( 'Please review the information',
                 'On summary page' );
 
-# TODO Container summary
+            note 'Delivery summary:';
+            $mech->content_contains('Green Wheelie Bin (Non-recyclable waste) - Small 140 litre');
+            $mech->content_contains('White Recycling Box (Plastics, cans and glass)');
+            $mech->content_contains('Recycling Box Lids');
+            $mech->content_contains('Brown Caddy (Food waste)');
+            $mech->content_like(qr/govuk-summary-list__value.*2/);
 
-            $mech->submit_form_ok(
-                { with_fields => { submit => 'Request new containers' } } );
+            note 'Removal summary:';
+            $mech->content_contains('Green Wheelie Bin (Non-recyclable waste) - Medium 180 litre');
+            $mech->content_contains('Brown Caddy (Food waste)');
+            $mech->content_like(qr/govuk-summary-list__value.*3/);
 
+            $mech->submit_form_ok({ with_fields => { declaration => 1 } });
             $mech->content_contains( 'Your container request has been sent',
                 'Request successful' );
 
@@ -894,9 +902,10 @@ FixMyStreet::override_config {
             $mech->content_contains( 'Please review the information',
                 'On summary page' );
 
-            $mech->submit_form_ok(
-                { with_fields => { submit => 'Request new containers' } } );
+            note 'Delivery summary:';
+            $mech->content_contains('Clear Sack(s) (Mixed recycling)');
 
+            $mech->submit_form_ok({ with_fields => { declaration => 1 } });
             $mech->content_contains( 'Your container request has been sent',
                 'Request successful' );
 
@@ -959,9 +968,12 @@ FixMyStreet::override_config {
             'submit "about you" page',
         );
 
-        $mech->submit_form_ok(
-            { with_fields => { submit => 'Request new containers' } } );
+        note 'Removal summary:';
+        $mech->content_contains('Green Wheelie Bin (Non-recyclable waste) - Medium 180 litre');
+        $mech->content_contains('Brown Caddy (Food waste)');
+        $mech->content_like(qr/govuk-summary-list__value.*2/);
 
+        $mech->submit_form_ok({ with_fields => { declaration => 1 } });
         $mech->content_contains( 'Your container request has been sent',
             'Request successful' );
 

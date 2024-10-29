@@ -84,11 +84,15 @@
 [% BLOCK checkboxes %]
   <fieldset class="govuk-fieldset" aria-describedby="[% IF field.get_tag('hint') %][% field.id %]-hint [% END %][% IF error %][% field.id %]-error[% END %]">
 [% IF field.label %]
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-      <h2 class="govuk-fieldset__heading">
-        [% field.label %]
-      </h2>
-    </legend>
+    [% IF field.get_tag('safe') == 'label' %]
+      [% field.label | safe %]
+    [% ELSE %]
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h2 class="govuk-fieldset__heading">
+            [% field.label %]
+        </h2>
+      </legend>
+    [% END %]
 [% END %]
 [% IF field.get_tag('hint') %]
     <div id="[% field.id %]-hint" class="govuk-hint">[% field.get_tag('hint') %]</div>
