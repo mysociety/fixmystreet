@@ -1311,6 +1311,23 @@ fixmystreet.assets.peterborough.flytipping_leased_found = function() {
     $('#js-environment-message').removeClass('hidden');
 };
 
+fixmystreet.assets.peterborough.graffiti_pcc_found = function(layer) {
+    $("#js-graffiti-message").addClass("hidden");
+};
+fixmystreet.assets.peterborough.graffiti_pcc_not_found = function() {
+    for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
+        var layer = fixmystreet.assets.layers[i];
+        if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
+            $('#js-graffiti-message').addClass('hidden');
+            return;
+        }
+    }
+    $('#js-graffiti-message').removeClass('hidden');
+};
+fixmystreet.assets.peterborough.graffiti_leased_found = function() {
+    $('#js-graffiti-message').removeClass('hidden');
+};
+
 /* Shropshire */
 
 fixmystreet.assets.shropshire = {};
