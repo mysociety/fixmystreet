@@ -764,9 +764,6 @@ FixMyStreet::override_config {
                         'parent-Green-Wheelie-Bin'   => 1,
                         'bin-size-Green-Wheelie-Bin' => 'RES-140',
 
-                        'parent-Blue-Lidded-Wheelie-Bin'   => 1,
-                        'bin-size-Blue-Lidded-Wheelie-Bin' => 'PC-240',
-
                         'container-PG-55' => 1,
 
                         'container-Deliver-Box-lids-55L' => 1,
@@ -827,7 +824,7 @@ FixMyStreet::override_config {
                 'Request successful' );
 
             my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
-            is $rows->count, 8, 'correct number of reports raised';
+            is $rows->count, 7, 'correct number of reports raised';
 
             my %extra;
             while ( my $report = $rows->next ) {
@@ -844,7 +841,6 @@ FixMyStreet::override_config {
             cmp_deeply \%extra, {
                 'Request new container' => {
                     'RES-140'              => 1,
-                    'PC-240'               => 1,
                     'PG-55'                => 1,
                     'Deliver Box lids 55L' => 4,
                     'FO-23'                => 2,
