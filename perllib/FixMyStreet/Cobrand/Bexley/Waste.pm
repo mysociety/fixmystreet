@@ -1718,6 +1718,76 @@ sub _set_request_containers {
     $property->{containers_for_removal}  = \@containers_for_removal;
 }
 
+sub requests_for_display {
+    my ( $self, $data ) = @_;
+
+    my @requested_deliveries;
+    my @requested_removals;
+
+    my %by_id
+        = %{ $self->_request_containers_by_id( $self->{c}->stash->{property} ) };
+
+    for my $id ( keys %by_id ) {
+        my $hyphen_id = $id =~ s/ /-/gr;
+
+        if ( $data->{"container-$hyphen_id-removal"} ) {
+            # Deref so we don't mutate the original in %by_id
+            my %container = %{ $by_id{$id} };
+            $container{quantity} = $data->{"quantity-$hyphen_id-removal"};
+            push @requested_removals, \%container;
+        }
+        if ( $data->{"container-$hyphen_id"} ) {
+            # Deref so we don't mutate the original in %by_id
+            my %container = %{ $by_id{$id} };
+            $container{quantity} = $data->{"quantity-$hyphen_id"};
+            push @requested_deliveries, \%container;
+        }
+    }
+
+    # TODO This is very similar to waste_munge_request_form_data(); is
+    # there a way to consolidate all of this data munging?
+    for ( keys %$data ) {
+        my ($parent_id) = /^parent-(.*)/;
+        next unless $parent_id && $data->{"parent-$parent_id"};
+
+        my $subtype_id = $data->{"bin-size-$parent_id"};
+        my %container = %{ $by_id{$subtype_id} };
+        push @requested_deliveries, \%container;
+    }
+
+    return \@requested_deliveries, \@requested_removals;
+}
+
+sub _request_containers_by_id {
+    my ( $self, $property ) = @_;
+
+    my %by_id;
+
+    my @all_for_requests = (
+        @{ $property->{containers_for_delivery} },
+        @{ $property->{containers_for_removal} },
+    );
+
+    for my $container (@all_for_requests) {
+        if ( $container->{subtypes} ) {
+            for ( @{ $container->{subtypes} } ) {
+                $by_id{ $_->{service_item_name} } = {
+                    name             => $container->{name},
+                    description      => $container->{description},
+                    size_description => $_->{size},
+                };
+            }
+        } else {
+            $by_id{ $container->{service_item_name} } = {
+                name        => $container->{name},
+                description => $container->{description},
+            };
+        }
+    }
+
+    return \%by_id;
+}
+
 sub _containers_for_requests {
     return {
         'Green Wheelie Bin' => {
