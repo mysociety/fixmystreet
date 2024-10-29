@@ -249,8 +249,8 @@ sub bin_services_for_address {
     }
 
     # TODO Call these in parallel
-    $property->{missed_collection_reports}
-        = $self->_missed_collection_reports($property);
+    $property->{open_reports}
+        = $self->_open_reports($property);
     $property->{recent_collections} = $self->_recent_collections($property);
 
     my ( $property_logs, $street_logs, $completed_or_attempted_collections )
@@ -403,7 +403,7 @@ sub bin_services_for_address {
             $filtered_service->{schedule} = 'Weekly';
         }
 
-        my $report_details = $property->{missed_collection_reports}
+        my $report_details = $property->{open_reports}{missed}
             { $filtered_service->{service_id} };
 
         if ($report_details) {
@@ -478,13 +478,13 @@ sub _remove_service_if_assisted_exists {
 
 # Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.), each mapped
 # to details of an open missed collection report
-sub _missed_collection_reports {
+sub _open_reports {
     my ( $self, $property ) = @_;
 
     my @uprns = ($property->{uprn});
     push @uprns, $property->{parent_property}{uprn} if $property->{parent_property};
 
-    my %missed_collection_reports;
+    my %open_reports;
 
     foreach my $uprn (@uprns) {
         my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
@@ -493,6 +493,8 @@ sub _missed_collection_reports {
             next
                 unless $ws->{WorksheetStatusName} eq 'Open'
                 && $ws->{WorksheetSubject} =~ /^Missed/;
+
+            my $type = 'missed';
 
             # Check if it exists in our DB
             my $external_id = 'Whitespace-' . $ws->{WorksheetID};
@@ -506,7 +508,7 @@ sub _missed_collection_reports {
             # name
             my $service_item_name
                 = $report->get_extra_field_value('service_item_name') // '';
-            next if $missed_collection_reports{$service_item_name};
+            next if $open_reports{$type}{$service_item_name};
 
             my $latest_comment
                 = $report->comments->search(
@@ -530,11 +532,11 @@ sub _missed_collection_reports {
                     ( $latest_comment ? $latest_comment->text : '' ),
             };
 
-            $missed_collection_reports{$service_item_name} = $report_details;
+            $open_reports{$type}{$service_item_name} = $report_details;
         }
     }
 
-    return \%missed_collection_reports;
+    return \%open_reports;
 }
 
 # Returns a hash of recent collections, mapping Round + Schedule to collection
@@ -654,7 +656,7 @@ sub can_report_missed {
     my ( $self, $property, $service ) = @_;
 
     # Cannot make a report if there is already an open one for this service
-    return 0 if $property->{missed_collection_reports}{ $service->{service_id} };
+    return 0 if $property->{open_reports}{missed}{ $service->{service_id} };
 
     # Prevent reporting if there are service updates
     return 0 if @{ $property->{service_updates} // [] };
