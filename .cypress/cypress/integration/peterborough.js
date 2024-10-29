@@ -35,7 +35,7 @@ describe('new report form', function() {
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
   });
 
-  it('flytipping category handles land types correctly', function() {
+  it('flytipping/graffiti categories handle land types correctly', function() {
     cy.pickCategory('General fly tipping');
     cy.nextPageReporting();
     cy.get('#js-environment-message:visible');
@@ -49,13 +49,21 @@ describe('new report form', function() {
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
-    //cy.get('#map_sidebar').scrollTo('top');
     cy.get('#js-environment-message:hidden');
+    cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Non offensive graffiti');
+    cy.get('#js-graffiti-message:hidden');
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
     cy.get('#map_sidebar').scrollTo('top');
     cy.get('#js-environment-message:visible');
+    cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Non offensive graffiti');
+    cy.get('#map_sidebar').scrollTo('top');
+    cy.get('#js-graffiti-message:visible');
   });
 
   it('correctly changes the asset select message', function() {
@@ -81,7 +89,7 @@ describe('new report form', function() {
 });
 
 describe('National site tests', function() {
-  it('flytipping category handles land types correctly on .com', function() {
+  it('flytipping/graffiti categories handle land types correctly on .com', function() {
     cy.server();
     cy.route('/report/new/ajax*').as('report-ajax');
     cy.route("**/peterborough.assets/4/*", 'fixture:peterborough_pcc.json').as('pcc');
@@ -106,11 +114,21 @@ describe('National site tests', function() {
     cy.pickCategory('General fly tipping');
     cy.get('#map_sidebar').scrollTo('top');
     cy.get('#js-environment-message:hidden');
+    cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Non offensive graffiti');
+    cy.get('#map_sidebar').scrollTo('top');
+    cy.get('#js-graffiti-message:hidden');
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
     cy.get('#map_sidebar').scrollTo('top');
     cy.get('#js-environment-message:visible');
+    cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Non offensive graffiti');
+    cy.get('#map_sidebar').scrollTo('top');
+    cy.get('#js-graffiti-message:visible');
   });
 
 });
