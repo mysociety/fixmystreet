@@ -86,6 +86,14 @@
     [% ELSE %]
     <p>No existing missed collection reports</p>
     [% END %]
+    <h2>Open container requests</h2>
+    [% IF property.open_reports.request.size %]
+    [% FOREACH report IN property.open_reports.request %]
+        <p>[% report.key %]: [% report.value %]</p>
+      [% END %]
+    [% ELSE %]
+    <p>No existing container requests</p>
+    [% END %]
     <h2>Red tags</h2>
     [% IF property.red_tags && property.red_tags.size %]
     [% FOREACH tag IN property.red_tags %]

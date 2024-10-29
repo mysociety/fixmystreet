@@ -406,6 +406,16 @@ sub bin_services_for_address {
             $filtered_service->{report_open} = 0;
         }
 
+        my $request_details = $property->{open_reports}{request}
+            { $filtered_service->{service_id} };
+
+        if ($request_details) {
+            $filtered_service->{request_details} = $request_details;
+            $filtered_service->{requests_open} = $request_details->{open};
+        } else {
+            $filtered_service->{requests_open} = 0;
+        }
+
         $filtered_service->{report_locked_out} = 0;
         $filtered_service->{report_locked_out_reason} = '';
         my $log_reason_prefix = $self->get_in_cab_logs_reason_prefix($filtered_service->{service_id});
@@ -470,7 +480,7 @@ sub _remove_service_if_assisted_exists {
 }
 
 # Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.), each mapped
-# to details of an open missed collection report
+# to details of an open missed collection report or container request
 sub _open_reports {
     my ( $self, $property ) = @_;
 
@@ -485,9 +495,9 @@ sub _open_reports {
         for my $ws (@$worksheets) {
             next
                 unless $ws->{WorksheetStatusName} eq 'Open'
-                && $ws->{WorksheetSubject} =~ /^Missed/;
+                && $ws->{WorksheetSubject} =~ /^Missed|Deliver|Collect/;
 
-            my $type = 'missed';
+            my $type = $ws->{WorksheetSubject} =~ /^Missed/ ? 'missed' : 'request';
 
             # Check if it exists in our DB
             my $external_id = 'Whitespace-' . $ws->{WorksheetID};
@@ -1242,22 +1252,23 @@ sub construct_bin_request_form {
     my $field_list = [];
 
     my $request_type = $c->get_param('request_type');
+    my $property = $c->stash->{property};
+    my $open_reports = $property->{open_reports}{request};
 
     if ( $request_type eq 'delivery' ) {
         for my $container (
-            @{ $c->stash->{property}{containers_for_delivery} } )
+            @{ $property->{containers_for_delivery} } )
         {
             if ( $container->{subtypes} ) {
                 my $id = $container->{name} =~ s/ /-/gr;
 
+                my $disabled = grep { $open_reports->{$_->{service_item_name}} } @{ $container->{subtypes} };
                 push @$field_list, "parent-$id" => {
                     type         => 'Checkbox',
                     label        => $container->{name},
                     option_label => $container->{description},
                     tags         => { toggle => "form-bin-size-$id-row" },
-
-                    # TODO
-                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
+                    disabled => $disabled,
                 };
 
                 push @$field_list, "bin-size-$id" => {
@@ -1275,15 +1286,14 @@ sub construct_bin_request_form {
                 };
             } else {
                 my $id = $container->{service_item_name} =~ s/ /-/gr;
+                my $disabled = $open_reports->{$container->{service_item_name}} ? 1 : 0;
 
                 push @$field_list, "container-$id" => {
                     type         => 'Checkbox',
                     label        => $container->{name},
                     option_label => $container->{description},
                     tags => { toggle => "form-quantity-$id-row" },
-
-                    # TODO
-                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
+                    disabled => $disabled,
                 };
 
                 my $max = $container->{max} || 1;
@@ -1320,9 +1330,6 @@ sub construct_bin_request_form {
                 type         => 'Checkbox',
                 label        => $container->{name},
                 option_label => $container->{description},
-
-                # TODO
-                # disabled => $_->{requests_open}{$id} ? 1 : 0,
             };
         }
     }

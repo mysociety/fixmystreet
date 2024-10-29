@@ -590,7 +590,7 @@ FixMyStreet::override_config {
         $mech->content_contains("$removal_string white recycling box");
         $mech->content_contains("$removal_string brown caddy");
         $mech->content_contains("$removal_string maroon recycling box");
-        $mech->content_lacks("$new_string brown wheelie bin");
+        $mech->content_lacks("$removal_string brown wheelie bin");
 
         $mech->content_contains('Order replacement bins');
         $mech->content_contains('Order removal of old containers');
@@ -786,6 +786,30 @@ FixMyStreet::override_config {
             }
             cmp_deeply \%extra, { 'MDR-SACK' => 1 }, 'Extra data is correct';
         };
+    };
+
+    subtest 'Open container requests' => sub {
+        $whitespace_mock->mock( 'GetSiteWorksheets', sub{ [
+            {   WorksheetID         => 'ABC',
+                WorksheetStatusName => 'Open',
+                WorksheetSubject    => 'Deliver a bin',
+                WorksheetStartDate      => '',
+                WorksheetEscallatedDate => '',
+            },
+        ] } );
+
+        my ($open_container_request) = $mech->create_problems_for_body(1, $body->id, 'Request new container', {
+            external_id => "Whitespace-ABC",
+        });
+        $open_container_request->set_extra_fields(
+            { name => 'service_item_name', value => 'PG-55' } );
+        $open_container_request->update;
+
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains("A white recycling box container request has been made");
+        $mech->get_ok('/waste/10001/request?request_type=delivery');
+        $mech->submit_form_ok({ with_fields => { household_size => 2 } });
+        $mech->content_like(qr/name="container-PG-55"[^>]*disabled/, 'PG-55 option is disabled');
     };
 };
 
