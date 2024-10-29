@@ -1,4 +1,28 @@
+[% PROCESS 'waste/_services_header.html' %]
 [% PROCESS 'waste/_service_missed.html' %]
+
+[% IF unit.delivery_open %]
+  <span class="waste-service-descriptor">
+    A [% unit.service_name FILTER lower %] container delivery request has been made. Check status below:
+    <ul>
+      <li>Reported on: [% unit.delivery_details.reported ? date.format(unit.delivery_details.reported) : 'N/A' %]</li>
+      <li>Will be completed by: [% unit.delivery_details.will_be_completed ? date.format(unit.delivery_details.will_be_completed) : 'N/A' %]</li>
+      <li>Action: [% unit.delivery_details.latest_comment %]</li>
+    </ul>
+  </span>
+[% END %]
+
+[% IF unit.removal_open %]
+  <span class="waste-service-descriptor">
+    A [% unit.service_name FILTER lower %] container collection request has been made. Check status below:
+    <ul>
+      <li>Reported on: [% unit.removal_details.reported ? date.format(unit.removal_details.reported) : 'N/A' %]</li>
+      <li>Will be completed by: [% unit.removal_details.will_be_completed ? date.format(unit.removal_details.will_be_completed) : 'N/A' %]</li>
+      <li>Action: [% unit.removal_details.latest_comment %]</li>
+    </ul>
+  </span>
+[% END %]
+
 [% IF unit.delivery_allowed || unit.removal_allowed %]
   [% PROCESS 'waste/_services_request.html' %]
 [% END %]
