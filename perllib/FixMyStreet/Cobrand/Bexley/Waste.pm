@@ -403,14 +403,20 @@ sub bin_services_for_address {
             $filtered_service->{schedule} = 'Weekly';
         }
 
-        my $report_details = $property->{open_reports}{missed}
-            { $filtered_service->{service_id} };
+        foreach (
+            { type => 'missed', open => 'report_open', details => 'report_details' },
+            { type => 'delivery', open => 'delivery_open', details => 'delivery_details' },
+            { type => 'removal', open => 'removal_open', details => 'removal_details' },
+        ) {
+            my $container_id = _parent_for_container($filtered_service->{service_id});
+            my $details = $property->{open_reports}{$_->{type}}{$container_id};
 
-        if ($report_details) {
-            $filtered_service->{report_details} = $report_details;
-            $filtered_service->{report_open} = $report_details->{open};
-        } else {
-            $filtered_service->{report_open} = 0;
+            if ($details) {
+                $filtered_service->{$_->{details}} = $details;
+                $filtered_service->{$_->{open}} = $details->{open};
+            } else {
+                $filtered_service->{$_->{open}} = 0;
+            }
         }
 
         $filtered_service->{report_locked_out} = 0;
@@ -477,7 +483,7 @@ sub _remove_service_if_assisted_exists {
 }
 
 # Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.), each mapped
-# to details of an open missed collection report
+# to details of an open missed collection report or container request
 sub _open_reports {
     my ( $self, $property ) = @_;
 
@@ -492,9 +498,10 @@ sub _open_reports {
         for my $ws (@$worksheets) {
             next
                 unless $ws->{WorksheetStatusName} eq 'Open'
-                && $ws->{WorksheetSubject} =~ /^Missed/;
+                && $ws->{WorksheetSubject} =~ /^Missed|Deliver|Collect/;
 
-            my $type = 'missed';
+            my $type = $ws->{WorksheetSubject} =~ /^Missed/ ? 'missed'
+                : $ws->{WorksheetSubject} =~ /Deliver/ ? 'delivery' : 'removal';
 
             # Check if it exists in our DB
             my $external_id = 'Whitespace-' . $ws->{WorksheetID};
@@ -508,6 +515,7 @@ sub _open_reports {
             # name
             my $service_item_name
                 = $report->get_extra_field_value('service_item_name') // '';
+            $service_item_name = _parent_for_container($service_item_name);
             next if $open_reports{$type}{$service_item_name};
 
             my $latest_comment
@@ -1335,9 +1343,12 @@ sub _construct_bin_request_form_delivery {
     my $field_list = [];
 
     my $property = $c->stash->{property};
+    my $open_reports = $property->{open_reports}{delivery};
 
     for my $container ( @{ $property->{containers_for_delivery} } )
     {
+        my $open_key = $container->{service_item_name} || $container->{name};
+        my $disabled = $open_reports->{$open_key} ? 1 : 0;
         if ( $container->{subtypes} ) {
             my $id = $container->{name} =~ s/ /-/gr;
 
@@ -1346,6 +1357,7 @@ sub _construct_bin_request_form_delivery {
                 label        => $container->{name},
                 option_label => $container->{description},
                 tags         => { toggle => "form-bin-size-$id-row" },
+                disabled     => $disabled,
             };
 
             push @$field_list, "bin-size-$id" => {
@@ -1369,6 +1381,7 @@ sub _construct_bin_request_form_delivery {
                 label        => $container->{name},
                 option_label => $container->{description},
                 tags         => { toggle => "form-quantity-$id-row" },
+                disabled     => $disabled,
             };
 
             my $max = $container->{max} || 1;
@@ -1398,17 +1411,22 @@ sub _construct_bin_request_form_delivery {
 sub _construct_bin_request_form_removal {
     my ( $self, $c ) = @_;
 
-    return [] unless @{ $c->stash->{property}{containers_for_removal} };
+    my $property = $c->stash->{property};
+    return [] unless @{ $property->{containers_for_removal} };
 
     my $field_list = [];
 
+    my $open_reports = $property->{open_reports}{removal};
     my %service_names_to_ids
             = map { $_->{service_name} => $_->{service_id} }
             @{ $self->{c}->stash->{service_data} };
 
     for my $container (
-        @{ $c->stash->{property}{containers_for_removal} } )
+        @{ $property->{containers_for_removal} } )
     {
+        my $open_key = $container->{service_item_name} || $container->{name};
+        my $disabled = $open_reports->{$open_key} ? 1 : 0;
+
         # For containers with subtypes, choose the ID ('service_item_name')
         # that the property currently has
         my $id
@@ -1423,9 +1441,7 @@ sub _construct_bin_request_form_removal {
             label        => $container->{name},
             option_label => $container->{description},
             tags => { toggle => "form-quantity-$id-row" },
-
-            # TODO
-            # disabled => $_->{requests_open}{$id} ? 1 : 0,
+            disabled => $disabled,
         };
 
         my $max = $container->{max} || 1;
@@ -1899,6 +1915,22 @@ sub _containers_for_requests {
             max                 => 5,
         },
     };
+}
+
+sub _parent_for_container {
+    my $id = shift;
+    my $parents = {
+        'RES-140' => 'Green Wheelie Bin',
+        'RES-180' => 'Green Wheelie Bin',
+        'RES-240' => 'Green Wheelie Bin',
+        'PC-140' => 'Blue Lidded Wheelie Bin',
+        'PC-180' => 'Blue Lidded Wheelie Bin',
+        'PC-240' => 'Blue Lidded Wheelie Bin',
+        'PG-140' => 'White Lidded Wheelie Bin',
+        'PG-180' => 'White Lidded Wheelie Bin',
+        'PG-240' => 'White Lidded Wheelie Bin',
+    };
+    return $parents->{$id} || $id;
 }
 
 1;
