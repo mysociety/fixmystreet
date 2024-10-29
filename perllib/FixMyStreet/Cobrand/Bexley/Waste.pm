@@ -1243,9 +1243,6 @@ sub get_in_cab_logs_reason_prefix {
 
 # Container maintenance
 
-# TODO e.g. blue lidded wheelie bin request being created for delivery when
-# I haven't selected
-
 sub construct_bin_request_form {
     my ( $self, $c ) = @_;
 
@@ -1488,7 +1485,7 @@ sub waste_munge_request_form_data {
     for ( keys %$data ) {
         my ($parent_id) = /^parent-(.*)/;
 
-        next unless $parent_id;
+        next unless $parent_id && $data->{"parent-$parent_id"};
 
         my $subtype_id = $data->{"bin-size-$parent_id"};
         $data->{"container-$subtype_id"} = 1 if $subtype_id;
