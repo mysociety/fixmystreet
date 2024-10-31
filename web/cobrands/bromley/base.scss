@@ -135,10 +135,6 @@ a:active {
 #key-tools {
   a, button {
     background-color: darken(#f5f5f5, 10%);
-
-    &:after {
-      background-image: url("/cobrands/bromley/images/report-tools.svg");
-    }
   }
 }
 
