@@ -243,8 +243,8 @@ sub bin_services_for_address {
     }
 
     # TODO Call these in parallel
-    $property->{missed_collection_reports}
-        = $self->_missed_collection_reports($property);
+    $property->{open_reports}
+        = $self->_open_reports($property);
     $property->{recent_collections} = $self->_recent_collections($property);
 
     my ( $property_logs, $street_logs, $completed_or_attempted_collections )
@@ -397,7 +397,7 @@ sub bin_services_for_address {
             $filtered_service->{schedule} = 'Weekly';
         }
 
-        my $report_details = $property->{missed_collection_reports}
+        my $report_details = $property->{open_reports}{missed}
             { $filtered_service->{service_id} };
 
         if ($report_details) {
@@ -405,6 +405,16 @@ sub bin_services_for_address {
             $filtered_service->{report_open} = $report_details->{open};
         } else {
             $filtered_service->{report_open} = 0;
+        }
+
+        my $request_details = $property->{open_reports}{request}
+            { $filtered_service->{service_id} };
+
+        if ($request_details) {
+            $filtered_service->{request_details} = $request_details;
+            $filtered_service->{requests_open} = $request_details->{open};
+        } else {
+            $filtered_service->{requests_open} = 0;
         }
 
         $filtered_service->{report_locked_out} = 0;
@@ -471,14 +481,14 @@ sub _remove_service_if_assisted_exists {
 }
 
 # Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.), each mapped
-# to details of an open missed collection report
-sub _missed_collection_reports {
+# to details of an open missed collection report or container request
+sub _open_reports {
     my ( $self, $property ) = @_;
 
     my @uprns = ($property->{uprn});
     push @uprns, $property->{parent_property}{uprn} if $property->{parent_property};
 
-    my %missed_collection_reports;
+    my %open_reports;
 
     foreach my $uprn (@uprns) {
         my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
@@ -486,7 +496,9 @@ sub _missed_collection_reports {
         for my $ws (@$worksheets) {
             next
                 unless $ws->{WorksheetStatusName} eq 'Open'
-                && $ws->{WorksheetSubject} =~ /^Missed/;
+                && $ws->{WorksheetSubject} =~ /^Missed|Deliver|Collect/;
+
+            my $type = $ws->{WorksheetSubject} =~ /^Missed/ ? 'missed' : 'request';
 
             # Check if it exists in our DB
             my $external_id = 'Whitespace-' . $ws->{WorksheetID};
@@ -500,7 +512,7 @@ sub _missed_collection_reports {
             # name
             my $service_item_name
                 = $report->get_extra_field_value('service_item_name') // '';
-            next if $missed_collection_reports{$service_item_name};
+            next if $open_reports{$type}{$service_item_name};
 
             my $latest_comment
                 = $report->comments->search(
@@ -524,11 +536,11 @@ sub _missed_collection_reports {
                     ( $latest_comment ? $latest_comment->text : '' ),
             };
 
-            $missed_collection_reports{$service_item_name} = $report_details;
+            $open_reports{$type}{$service_item_name} = $report_details;
         }
     }
 
-    return \%missed_collection_reports;
+    return \%open_reports;
 }
 
 # Returns a hash of recent collections, mapping Round + Schedule to collection
@@ -648,7 +660,7 @@ sub can_report_missed {
     my ( $self, $property, $service ) = @_;
 
     # Cannot make a report if there is already an open one for this service
-    return 0 if $property->{missed_collection_reports}{ $service->{service_id} };
+    return 0 if $property->{open_reports}{missed}{ $service->{service_id} };
 
     # Prevent reporting if there are service updates
     return 0 if @{ $property->{service_updates} // [] };
@@ -1241,22 +1253,23 @@ sub construct_bin_request_form {
     my $field_list = [];
 
     my $request_type = $c->get_param('request_type');
+    my $property = $c->stash->{property};
+    my $open_reports = $property->{open_reports}{request};
 
     if ( $request_type eq 'delivery' ) {
         for my $container (
-            @{ $c->stash->{property}{containers_for_delivery} } )
+            @{ $property->{containers_for_delivery} } )
         {
             if ( $container->{subtypes} ) {
                 my $id = $container->{name} =~ s/ /-/gr;
 
+                my $disabled = grep { $open_reports->{$_->{service_item_name}} } @{ $container->{subtypes} };
                 push @$field_list, "parent-$id" => {
                     type         => 'Checkbox',
                     label        => $container->{name},
                     option_label => $container->{description},
                     tags         => { toggle => "form-bin-size-$id-row" },
-
-                    # TODO
-                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
+                    disabled => $disabled,
                 };
 
                 push @$field_list, "bin-size-$id" => {
@@ -1274,15 +1287,14 @@ sub construct_bin_request_form {
                 };
             } else {
                 my $id = $container->{service_item_name} =~ s/ /-/gr;
+                my $disabled = $open_reports->{$container->{service_item_name}} ? 1 : 0;
 
                 push @$field_list, "container-$id" => {
                     type         => 'Checkbox',
                     label        => $container->{name},
                     option_label => $container->{description},
                     tags => { toggle => "form-quantity-$id-row" },
-
-                    # TODO
-                    # disabled => $_->{requests_open}{$id} ? 1 : 0,
+                    disabled => $disabled,
                 };
 
                 my $max = $container->{max} || 1;
@@ -1319,9 +1331,6 @@ sub construct_bin_request_form {
                 type         => 'Checkbox',
                 label        => $container->{name},
                 option_label => $container->{description},
-
-                # TODO
-                # disabled => $_->{requests_open}{$id} ? 1 : 0,
             };
         }
     }
