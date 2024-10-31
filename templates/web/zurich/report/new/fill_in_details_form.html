@@ -16,8 +16,8 @@
             [% IF !prefill_category %]
             [% PROCESS "report/new/category_wrapper.html" %]
             [% ELSE %]
-            <input type="hidden" name="category" id="category" value="[% prefill_category | html %]">
-            <input type="hidden" name="prefill_category" id="prefill_category" value="[% prefill_category | html %]">
+            <input type="hidden" name="category" id="category" value="[% prefill_category %]">
+            <input type="hidden" name="prefill_category" id="prefill_category" value="[% prefill_category %]">
             [% END %]
 
             [% PROCESS 'report/form/photo_upload.html' %]
@@ -27,7 +27,18 @@
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
-            <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" required>[% report.detail | html %]</textarea>
+            <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" required>[%
+                IF report.detail;
+                    report.detail;
+                ELSIF prefill_description;
+                    prefill_description;
+                END;
+            %]</textarea>
+
+                [% IF prefill_description %]
+                    [%# need this hidden field for non-JS users so value gets from /around to /report/new %]
+                    <input type="hidden" name="prefill_description" id="prefill_description" value="[% prefill_description %]">
+                [% END %]
 
                 <label for="form_username_register">[% loc('Your email') %]</label>
                 [% IF field_errors.username_register %]
