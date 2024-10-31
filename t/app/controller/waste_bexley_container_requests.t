@@ -1020,6 +1020,11 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/10001/request?request_type=delivery');
         $mech->submit_form_ok({ with_fields => { household_size => 2 } });
         $mech->content_like(qr/name="container-PG-55"[^>]*disabled/, 'PG-55 option is disabled');
+        $mech->submit_form_ok( { with_fields => { 'container-Kitchen-5-Ltr-Caddy' => 1 } } );
+        $mech->content_like(
+            qr/name="container-PG-55-removal"[^>]*disabled/,
+            'PG-55 option is disabled for removals as well'
+        );
     };
 };
 

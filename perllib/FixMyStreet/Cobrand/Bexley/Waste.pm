@@ -1413,16 +1413,18 @@ sub _construct_bin_request_form_delivery {
 sub _construct_bin_request_form_removal {
     my ( $self, $c ) = @_;
 
-    return [] unless @{ $c->stash->{property}{containers_for_removal} };
+    my $property = $c->stash->{property};
+    return [] unless @{ $property->{containers_for_removal} };
 
     my $field_list = [];
 
+    my $open_reports = $property->{open_reports}{request};
     my %service_names_to_ids
             = map { $_->{service_name} => $_->{service_id} }
             @{ $self->{c}->stash->{service_data} };
 
     for my $container (
-        @{ $c->stash->{property}{containers_for_removal} } )
+        @{ $property->{containers_for_removal} } )
     {
         # For containers with subtypes, choose the ID ('service_item_name')
         # that the property currently has
@@ -1431,6 +1433,8 @@ sub _construct_bin_request_form_removal {
             ? $service_names_to_ids{ $container->{name} }
             : $container->{service_item_name};
 
+        my $disabled = $open_reports->{$id} ? 1 : 0;
+
         $id .= '-removal';
 
         push @$field_list, "container-$id" => {
@@ -1438,9 +1442,7 @@ sub _construct_bin_request_form_removal {
             label        => $container->{name},
             option_label => $container->{description},
             tags => { toggle => "form-quantity-$id-row" },
-
-            # TODO
-            # disabled => $_->{requests_open}{$id} ? 1 : 0,
+            disabled => $disabled,
         };
 
         my $max = $container->{max} || 1;
