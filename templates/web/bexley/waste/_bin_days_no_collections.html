@@ -7,3 +7,8 @@
 <p>Complete the enquiry form below to continue (takes around 2 minutes).</p>
 
 <a class="govuk-button" href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=no-collections">Missed collection enquiry form</a>
+
+<p>If you are a new development, you can also request new containers:</p>
+<p>
+<a class="govuk-button" href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Request+container+enquiry">Order bins or boxes</a>
+</p>

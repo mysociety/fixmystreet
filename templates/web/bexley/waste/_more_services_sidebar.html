@@ -8,7 +8,21 @@
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
   [% END %]
   <li><a [% external_new_tab | safe %] href="https://mybexley.bexley.gov.uk/service/rubbish_and_recycling_enquiries">Report an issue with your collection service</a></li>
-  <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/find-your-collection-day-and-report-missed-bin/replace-damaged-or-missing-bins">Order replacement bins, boxes or sacks</a></li>
+
+  [% IF property.is_communal %]
+    <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Request+container+enquiry">Order replacement bins, boxes or sacks</a></li>
+  [% ELSE %]
+    [% IF property.containers_for_delivery.size %]
+      <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=delivery">Order replacement bins, boxes or sacks</a></li>
+    [% END %]
+    [% IF property.containers_for_removal.size %]
+      <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=removal">Order removal of old containers</a></li>
+    [% END %]
+    [% IF property.can_order_lids %]
+      <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=delivery">Order lids for recycling boxes</a></li>
+    [% END %]
+  [% END %]
+
   <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/recycling/which-bin-should-i-use">Which bin should I use?</a></li>
   <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/bulky-or-large-item-collections/arrange-bulky-or-large-item-collection">Arrange a bulky waste collection</a></li>
   <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/assisted-collections/help-putting-bins-out">Get help with putting your bins out</a></li>
