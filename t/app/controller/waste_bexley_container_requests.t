@@ -780,6 +780,8 @@ FixMyStreet::override_config {
             $mech->content_contains(
                 'Which containers do you need to be removed?',
                 'On removal page' );
+            $mech->content_contains('We are unable to collect kitchen caddies',
+                'Contains intro text');
             $mech->submit_form_ok( {},
                 'can submit removal page with nothing selected' );
             $mech->back;
@@ -938,6 +940,9 @@ FixMyStreet::override_config {
 
         $mech->follow_link_ok(
             { text_regex => qr /Order removal/ } );
+
+        $mech->content_contains('We are unable to collect kitchen caddies',
+            'Contains intro text');
 
         $mech->submit_form_ok(
             {   with_fields => {

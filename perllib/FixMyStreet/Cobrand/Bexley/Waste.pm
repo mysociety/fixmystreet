@@ -1309,6 +1309,7 @@ sub construct_bin_request_form {
         if ( $include_removal ) {
             push @$page_list, (
                 request_removal => {
+                    intro => 'container_removal_intro.html',
                     fields => [ grep { ! ref $_ } @$removal_field_list, 'submit' ],
                     title => 'Which containers do you need to be removed?',
                     check_unique_id => 0,
@@ -1324,6 +1325,7 @@ sub construct_bin_request_form {
 
         $page_list = [
             request_removal => {
+                intro  => 'container_removal_intro.html',
                 fields => [ grep { ! ref $_ } @$full_field_list, 'submit' ],
                 title => 'Which containers do you need to be removed?',
                 check_unique_id => 0,
