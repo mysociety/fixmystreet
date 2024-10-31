@@ -1,10 +1,13 @@
-[% is_missed_collection = report.category == 'Report missed collection' %]
 [%
+
+PROCESS 'waste/_email_data.html';
 
 title = report.title | html;
 email_summary
   = is_missed_collection
   ? "New updates on your missed collection report"
+  : is_container_request
+  ? 'New updates on your replacement bin request'
   : "New updates on “" _ title _ "”";
 email_columns = 2;
 
@@ -16,9 +19,13 @@ INCLUDE '_email_top.html';
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
-  <h1 style="[% h1_style %]">New updates on <a href="[% problem_url %]">[% is_missed_collection ? 'your missed collection report' : title %]</a></h1>
+  [% IF is_container_request %]
+    <h1 style="[% h1_style %]">New updates on your replacement bin request</h1>
+  [% ELSE %]
+    <h1 style="[% h1_style %]">New updates on <a href="[% problem_url %]">[% is_missed_collection ? 'your missed collection report' : title %]</a></h1>
+  [% END %]
   [%~ INCLUDE '_email_comment_list.html' %]
-  [% IF is_missed_collection %]
+  [% IF is_missed_collection || is_container_request %]
       <p style="border-bottom: 1px solid #D2D2D2; padding-bottom: 20px; margin: 20px auto; text-align: center">
         <a style="[% button_style %]" href="https://mybexley.bexley.gov.uk/service/rubbish_and_recycling_enquiries">
           Contact us
@@ -31,7 +38,7 @@ INCLUDE '_email_top.html';
   [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
-    [% IF is_missed_collection %]
+    [% IF is_missed_collection || is_container_request %]
       [% INCLUDE 'waste/_sidebar_content.html' %]
       [% INCLUDE 'waste/_council_reference_alert_update.html' problem=report p_style=secondary_p_style %]
     [% ELSE  %]
