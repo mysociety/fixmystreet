@@ -1,6 +1,8 @@
-[% is_missed_collection = report.category == 'Report missed collection' ~%]
+[% PROCESS 'waste/_email_data.html' ~%]
 [%~ IF is_missed_collection ~%]
 Subject: New updates on your missed collection report
+[%~ ELSIF is_container_request ~%]
+Subject: New updates on your replacement bin request
 [%~ ELSE ~%]
 Subject: New [% site_name %] updates on report: '[% report.title %]'
 [%~ END %]
