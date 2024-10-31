@@ -38,17 +38,9 @@ function isR2L() {
                     opened.trigger('click');
                 }
                 if (!$this.addClass('hover').data('setup')) {
-                    var parentWidth = d.parent().width();
-                    var isMobile = $('html').hasClass('mobile');
-                    var bottomValue = ( $(window).height() - $this.offset().top + 3 ) + 'px';
                     d.hide().removeClass('hidden-js').css({
                         padding: '1em',
                         background: '#fff',
-                        position: 'fixed',
-                        top: isMobile ? '0' : '',
-                        bottom: isMobile ? '' : bottomValue,
-                        'z-index': 9999,
-                        width: parentWidth
                     });
                     $this.data('setup', true);
                 }
