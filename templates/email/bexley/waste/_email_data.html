@@ -1,5 +1,8 @@
 [%
 is_missed_collection = report.category == 'Report missed collection';
+is_delivery_request = report.category == 'Request new container';
+is_removal_request = report.category == 'Request container removal';
+is_container_request = is_delivery_request || is_removal_request;
 is_request_enquiry = report.category == 'Request container enquiry';
 is_no_collections_missed_enquiry
     =  report.category == 'Business or organisation missed collection enquiry'

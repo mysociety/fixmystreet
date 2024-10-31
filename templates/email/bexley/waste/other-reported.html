@@ -14,6 +14,8 @@ INCLUDE '_email_top.html';
 
   [% IF is_missed_collection %]
     <h1 style="[% h1_style %]">Thank you for reporting a missed collection</h1>
+  [% ELSIF is_container_request %]
+    <h1 style="[% h1_style %]">Thank you for requesting replacement bins</h1>
   [% ELSIF is_no_collections_missed_enquiry OR is_request_enquiry %]
     <h1 style="[% h1_style %]">Thank you for your [% report.category %]</h1>
   [% ELSE %]
@@ -27,6 +29,16 @@ INCLUDE '_email_top.html';
       Our waste contractor will return within 2 working days to collect your bin(s).
       <br><br>
       Please leave your bin(s) out until our contractor returns.
+      <br><br>
+      If you need to contact us about this report, please quote your reference number.
+    </p>
+  [% ELSIF is_container_request %]
+    <p style="[% p_style %]">
+      Your request has been sent to our waste contractor and will be completed within [% cobrand.wasteworks_config.request_timeframe || '10 working days' %].
+      [% IF is_removal_request %]
+        <br><br>
+        Please ensure that your old bins which are due to be collected are left somewhere they can be accessed.
+      [% END %]
       <br><br>
       If you need to contact us about this report, please quote your reference number.
     </p>
