@@ -4,6 +4,12 @@
   detail = report.detail.remove(address);
   IF is_no_collections_missed_enquiry OR is_missed_collection;
     key = 'Bins reported as missed';
+  ELSIF is_delivery_request;
+    key = 'New bin(s) requested for delivery';
+    detail = report.title.remove('Request new ');
+  ELSIF is_removal_request;
+    key = 'Old bin(s) requested for collection';
+    detail = report.title.remove('Request removal of ');
   ELSIF is_request_enquiry;
     key = 'Containers requested';
   END;
