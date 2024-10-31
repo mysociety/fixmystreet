@@ -1438,4 +1438,13 @@ sub report_on_private_contacts {
     return [ FixMyStreet::DB->resultset('Contact')->not_deleted->search({category => $category})->all ];
 }
 
+sub munge_around_filter_category_list {
+    my $self = shift;
+
+    my $c = $self->{c};
+
+    $c->stash->{prefill_category} = $c->get_param('prefill_category') if $c->get_param('prefill_category');
+    $c->stash->{prefill_description} = $c->get_param('prefill_description') if $c->get_param('prefill_description');
+}
+
 1;
