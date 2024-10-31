@@ -57,7 +57,7 @@ sub disambiguate_location {
 }
 
 # don't send questionnaires to people who used the OCC cobrand to report their problem
-sub send_questionnaires { return 0; }
+sub send_questionnaires { 0 }
 
 # increase map zoom level so street names are visible
 sub default_map_zoom { 5 }
