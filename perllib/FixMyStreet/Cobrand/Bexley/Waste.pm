@@ -54,6 +54,7 @@ C<0001-01-01T00:00:00> represents an undefined date in Whitespace.
 
 use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
 use constant MISSED_COLLECTION_SERVICE_PROPERTY_ID => 68;
+use constant REQUEST_SERVICE_PROPERTY_ID => 69;
 
 sub waste_fetch_events {
     my ( $self, $params ) = @_;
@@ -63,14 +64,14 @@ sub waste_fetch_events {
         system_user => $self->body->comment_user,
     );
 
-    my $missed_collection_reports = $self->problems->search(
+    my $reports = $self->problems->search(
         {   external_id => { like => 'Whitespace%' },
             state => [ FixMyStreet::DB::Result::Problem->open_states() ],
         },
         { order_by => 'id' },
     );
 
-    while ( my $report = $missed_collection_reports->next ) {
+    while ( my $report = $reports->next ) {
         print 'Fetching data for report ' . $report->id . "\n" if $params->{verbose};
 
         my $worksheet_id = $report->external_id =~ s/Whitespace-//r;
@@ -102,29 +103,34 @@ sub construct_waste_open311_update {
 
     $worksheet = $self->whitespace->GetFullWorksheetDetails($worksheet->{id});
 
+    my ($service_id, $config_key);
+    if ($report->category eq 'Report missed collection') {
+        $service_id = MISSED_COLLECTION_SERVICE_PROPERTY_ID;
+        $config_key = 'missed_collection_state_mapping';
+    } else {
+        $service_id = REQUEST_SERVICE_PROPERTY_ID;
+        if ($report->category eq 'Request new container') {
+            $config_key = 'container_delivery_state_mapping';
+        } elsif ($report->category eq 'Request container removal') {
+            $config_key = 'container_removal_state_mapping';
+        }
+    }
+
     # Get info for missed collection
-    my $missed_collection_properties;
+    my $properties;
     for my $service_properties (
         @{  $worksheet->{WSServiceProperties}{WorksheetServiceProperty}
                 // []
         }
     ) {
-        next
-            unless $service_properties->{ServicePropertyID}
-            == MISSED_COLLECTION_SERVICE_PROPERTY_ID;
-
-        $missed_collection_properties = $service_properties;
+        next unless $service_properties->{ServicePropertyID} == $service_id;
+        $properties = $service_properties;
     }
 
-    my $whitespace_state_string
-        = $missed_collection_properties
-        ? $missed_collection_properties->{ServicePropertyValue}
-        : '';
+    my $whitespace_state_string = $properties->{ServicePropertyValue} || '';
 
     my $config = $self->feature('whitespace');
-    my $new_state
-        = $config->{missed_collection_state_mapping}
-            {$whitespace_state_string};
+    my $new_state = $config->{$config_key}{$whitespace_state_string};
     unless ($new_state) {
         print "  No new state, skipping\n" if $params->{verbose};
         return;
