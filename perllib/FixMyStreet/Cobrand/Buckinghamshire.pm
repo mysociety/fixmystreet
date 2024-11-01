@@ -143,9 +143,7 @@ sub permission_body_override {
 # Assume that any category change means the report should be resent
 sub category_change_force_resend { 1 }
 
-sub send_questionnaires {
-    return 0;
-}
+sub send_questionnaires { 0 }
 
 =head2 post_report_sent
 

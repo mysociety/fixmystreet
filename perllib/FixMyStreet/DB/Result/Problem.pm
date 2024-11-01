@@ -443,6 +443,15 @@ around service => sub {
     return $s;
 };
 
+sub service_display {
+    my $self = shift;
+    my $service = $self->service;
+    return '' if $service eq 'Open311' || $service eq 'unknown' || $service eq 'test';
+    $service =~ s/PWA \((.*)\)/$1/;
+    $service =~ s/PWA/mobile/; # Might as well
+    return $service;
+}
+
 sub title_safe {
     my $self = shift;
     return _('Awaiting moderation') if $self->cobrand eq 'zurich' && $self->state eq 'submitted';
@@ -768,13 +777,13 @@ sub meta_line {
     my $anonymous = $cobrand->call_hook('is_problem_anonymous');
 
     if ( $problem->anonymous || $anonymous ) {
-        if ( $problem->service and $category && $category ne _('Other') ) {
+        if ( $problem->service_display && $category && $category ne _('Other') ) {
             $meta =
             sprintf( _('Reported via %s in the %s category anonymously at %s'),
-                $problem->service, $category, $date_time );
-        } elsif ( $problem->service ) {
+                $problem->service_display, $category, $date_time );
+        } elsif ( $problem->service_display ) {
             $meta = sprintf( _('Reported via %s anonymously at %s'),
-                $problem->service, $date_time );
+                $problem->service_display, $date_time );
         } elsif ( $category and $category ne _('Other') ) {
             $meta = sprintf( _('Reported in the %s category anonymously at %s'),
                 $category, $date_time );
@@ -790,15 +799,15 @@ sub meta_line {
             $problem_name = sprintf('%s (%s)', $problem->name, $problem->user->name );
         }
 
-        if ( $problem->service and $category && $category ne _('Other') ) {
+        if ( $problem->service_display && $category && $category ne _('Other') ) {
             $meta = sprintf(
                 _('Reported via %s in the %s category by %s at %s'),
-                $problem->service, $category,
+                $problem->service_display, $category,
                 $problem_name,    $date_time
             );
-        } elsif ( $problem->service ) {
+        } elsif ( $problem->service_display ) {
             $meta = sprintf( _('Reported via %s by %s at %s'),
-                $problem->service, $problem_name, $date_time );
+                $problem->service_display, $problem_name, $date_time );
         } elsif ( $category and $category ne _('Other') ) {
             $meta = sprintf( _('Reported in the %s category by %s at %s'),
                 $category, $problem_name, $date_time );

@@ -71,9 +71,7 @@ sub new_report_title_field_hint {
 
 =cut
 
-sub send_questionnaires {
-    return 0;
-}
+sub send_questionnaires { 0 }
 
 =item * We link to Camden's site for the privacy policy
 
