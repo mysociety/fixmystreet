@@ -1261,6 +1261,19 @@ FixMyStreet::override_config {
     }
 };
 
+# Create a response template for missed collection contact
+my $cancelled_template = $body->response_templates->create(
+    {   auto_response        => 1,
+        external_status_code => 'Cancelled',
+        state                => '',
+        text                 => 'This collection has been cancelled.',
+        title                => 'Cancelled template',
+    },
+);
+$cancelled_template->contact_response_templates->find_or_create(
+    { contact_id => $contact->id },
+);
+
 FixMyStreet::override_config {
     COBRAND_FEATURES => {
         whitespace => {
@@ -1352,19 +1365,6 @@ FixMyStreet::override_config {
 
         $mech->delete_problems_for_body( $body->id );
 
-        # Create a response template for missed collection contact
-        my $cancelled_template = $body->response_templates->create(
-            {   auto_response        => 1,
-                external_status_code => 'Cancelled',
-                state                => '',
-                text                 => 'This collection has been cancelled.',
-                title                => 'Cancelled template',
-            },
-        );
-        $cancelled_template->contact_response_templates->find_or_create(
-            { contact_id => $contact->id },
-        );
-
         my @reports;
         for my $id ( 2001..2006 ) {
             my ($r) = $mech->create_problems_for_body(
@@ -1381,7 +1381,7 @@ FixMyStreet::override_config {
                 $r->state('action scheduled');
                 $r->add_to_comments(
                     {
-                        external_id   => $r->external_id,
+                        external_id   => 'waste',
                         problem_state => $r->state,
                         text => "Preexisting comment for worksheet $id",
                         user          => $comment_user,
@@ -1455,7 +1455,7 @@ FixMyStreet::override_config {
                 state       => 'action scheduled',
                 comments    => [
                     {
-                        external_id   => 'Whitespace-2003',
+                        external_id   => 'waste',
                         problem_state => 'action scheduled',
                         text => 'Preexisting comment for worksheet 2003',
                         user_id       => $comment_user->id,
@@ -1467,7 +1467,7 @@ FixMyStreet::override_config {
                 state       => 'duplicate',
                 comments    => [
                     {
-                        external_id   => 'Whitespace-2004',
+                        external_id   => 'waste',
                         problem_state => 'duplicate',
                         text          => 'This report has been closed because it was a duplicate.',
                         user_id       => $comment_user->id,
@@ -1479,13 +1479,13 @@ FixMyStreet::override_config {
                 state       => 'unable to fix',
                 comments    => [
                     {
-                        external_id   => 'Whitespace-2005',
+                        external_id   => 'waste',
                         problem_state => 'action scheduled',
                         text => 'Preexisting comment for worksheet 2005',
                         user_id       => $comment_user->id,
                     },
                     {
-                        external_id   => 'Whitespace-2005',
+                        external_id   => 'waste',
                         problem_state => 'unable to fix',
                         text          => 'Our waste collection contractor has advised that this bin collection could not be completed because your bin, box or sack was not out for collection.',
                         user_id       => $comment_user->id,
@@ -1497,7 +1497,7 @@ FixMyStreet::override_config {
                 state       => 'closed',
                 comments    => [
                     {
-                        external_id   => 'Whitespace-2006',
+                        external_id   => 'waste',
                         problem_state => 'closed',
                         text          => $cancelled_template->text,
                         user_id       => $comment_user->id,
@@ -1506,6 +1506,267 @@ FixMyStreet::override_config {
             },
         ], 'correct reports updated with comments added';
     };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bexley',
+    COBRAND_FEATURES => {
+        whitespace => {
+            bexley => {
+                url => 'http://example.org/',
+                missed_collection_state_mapping => {
+                    'Overdue' => {
+                        fms_state => 'action scheduled',
+                        text       => 'Collection overdue.',
+                    },
+                    'Duplicate worksheet' => {
+                        fms_state => 'duplicate',
+                        text => 'This report has been closed because it was a duplicate.',
+                    },
+                    'Not Out' => {
+                        fms_state => 'unable to fix',
+                        text       =>
+                            'Our waste collection contractor has advised that this bin collection could not be completed because your bin, box or sack was not out for collection.',
+                    },
+                    'Cancelled' => {
+                        fms_state => 'closed',
+                        text       => 'Collection cancelled.',
+                    },
+                },
+                push_secret => 'mySecret'
+            },
+        },
+        waste => { bexley => 1 },
+    },
+}, sub {
+    subtest 'Updates for missed collection reports via endpoint' => sub {
+        my $cobrand = FixMyStreet::Cobrand::Bexley->new;
+
+        $mech->delete_problems_for_body( $body->id );
+
+        my @reports;
+        for my $id ( 2001..2006 ) {
+            my ($r) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Missed collection',
+                {
+                    category    => 'Report missed collection',
+                    external_id => "Whitespace-$id",
+                },
+            );
+
+            if ( $id == 2003 || $id == 2005 ) {
+                $r->state('action scheduled');
+                $r->add_to_comments(
+                    {
+                        external_id   => 'waste',
+                        problem_state => $r->state,
+                        text => "Preexisting comment for worksheet $id",
+                        user          => $comment_user,
+                    }
+                );
+            } else {
+                $r->state('confirmed');
+            }
+
+            # Force explicit lastupdate, otherwise it will use real
+            # time and not set_fixed_time
+            $r->lastupdate( DateTime->now );
+            $r->update;
+
+            push @reports, $r;
+        }
+
+        for my $details (
+            {
+                id => 2003,
+                ref => $reports[2]->id,
+                status => 'Overdue'
+            },
+            {
+                id => 2004,
+                ref => $reports[3]->id,
+                status => 'Duplicate worksheet'
+            },
+            {
+                id => 2005,
+                ref => $reports[4]->id,
+                status => 'Not Out'
+            },
+            {
+                id => 2006,
+                ref => $reports[5]->id,
+                status => 'Cancelled'
+            }
+        ) {
+            is $mech->post('/waste/whitespace', Content_Type => 'text/xml', Content => '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                xmlns:web="https://www.jadu.net/hubis/webservices">
+                <soapenv:Header />
+                <soapenv:Body>
+                    <web:WorksheetPoke>
+                        <secret>mySecret</secret>
+                        <worksheetId>' . $details->{id} . '</worksheetId>
+                        <worksheetReference>' . $details->{ref} . '</worksheetReference>
+                        <status>' . $details->{status} . '</status>
+                        <completedDate>2024-10-02T06:46:12</completedDate>
+                    </web:WorksheetPoke>
+                </soapenv:Body>
+            </soapenv:Envelope>')->code, 200;
+        };
+
+        my @got;
+        for my $r (@reports) {
+            $r->discard_changes;
+
+            my @comments;
+            for my $c (
+                sort { $a->problem_state cmp $b->problem_state }
+                $r->comments->all
+            ) {
+                push @comments, {
+                    problem_state => $c->problem_state,
+                    user_id       => $c->user_id,
+                    external_id   => $c->external_id,
+                    text          => $c->text,
+                };
+            }
+
+            push @got, {
+                external_id => $r->external_id,
+                state       => $r->state,
+                comments    => \@comments,
+            };
+        }
+
+        cmp_deeply \@got, [
+            # No whitespace update, so no update
+            {   external_id => 'Whitespace-2001',
+                state       => 'confirmed',
+                comments    => [],
+            },
+            # No whitespace update, so no update
+            {   external_id => 'Whitespace-2002',
+                state       => 'confirmed',
+                comments    => [],
+            },
+            # No state change, so no update
+            {   external_id => 'Whitespace-2003',
+                state       => 'action scheduled',
+                comments    => [
+                    {
+                        external_id   => 'waste',
+                        problem_state => 'action scheduled',
+                        text => 'Preexisting comment for worksheet 2003',
+                        user_id       => $comment_user->id,
+                    },
+                ],
+            },
+            # Update (no preexisting comment)
+            {   external_id => 'Whitespace-2004',
+                state       => 'duplicate',
+                comments    => [
+                    {
+                        external_id   => 'waste',
+                        problem_state => 'duplicate',
+                        text          => 'This report has been closed because it was a duplicate.',
+                        user_id       => $comment_user->id,
+                    },
+                ],
+            },
+            # Update (with preexisting comment)
+            {   external_id => 'Whitespace-2005',
+                state       => 'unable to fix',
+                comments    => [
+                    {
+                        external_id   => 'waste',
+                        problem_state => 'action scheduled',
+                        text => 'Preexisting comment for worksheet 2005',
+                        user_id       => $comment_user->id,
+                    },
+                    {
+                        external_id   => 'waste',
+                        problem_state => 'unable to fix',
+                        text          => 'Our waste collection contractor has advised that this bin collection could not be completed because your bin, box or sack was not out for collection.',
+                        user_id       => $comment_user->id,
+                    },
+                ],
+            },
+            # Update (with template text)
+            {   external_id => 'Whitespace-2006',
+                state       => 'closed',
+                comments    => [
+                    {
+                        external_id   => 'waste',
+                        problem_state => 'closed',
+                        text          => $cancelled_template->text,
+                        user_id       => $comment_user->id,
+                    },
+                ],
+            },
+        ], 'correct reports updated with comments added';
+    };
+
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bexley',
+    COBRAND_FEATURES => {
+        whitespace => {
+            bexley => {
+                url => 'http://example.org/',
+                missed_collection_state_mapping => {
+                    'Overdue' => {
+                        fms_state => 'action scheduled',
+                        text       => 'Collection overdue.',
+                    },
+                },
+                push_secret => 'mySecret'
+            },
+        },
+        waste => { bexley => 1 },
+    },
+}, sub {
+    for my $details (
+        {
+            id => 2003,
+            ref => 6537144,
+            status => 'Overdue',
+            secret => 'SecretSecret',
+            return_code => '401',
+            description => 'Unauthorized with wrong secret'
+        },
+        {
+            id => '',
+            ref => 6537144,
+            status => 'Overdue',
+            secret => 'mySecret',
+            return_code => '400',
+            description => 'Bad request with missing data'
+        },
+    ) {
+        subtest "Check data errors" => sub {
+                is $mech->post('/waste/whitespace', Content_Type => 'text/xml', Content => '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                    xmlns:web="https://www.jadu.net/hubis/webservices">
+                    <soapenv:Header />
+                    <soapenv:Body>
+                        <web:WorksheetPoke>
+                            <secret>' . $details->{secret} . '</secret>
+                            <worksheetId>' . $details->{id} . '</worksheetId>
+                            <worksheetReference>' . $details->{ref} . '</worksheetReference>
+                            <status>' . $details->{status} . '</status>
+                            <completedDate>2024-10-02T06:46:12</completedDate>
+                        </web:WorksheetPoke>
+                    </soapenv:Body>
+                </soapenv:Envelope>')->code, $details->{return_code}, $details->{description};
+        };
+    };
+    subtest "Check post error" => sub {
+        is $mech->get('/waste/whitespace')->code, '405', 'Invalid if not post';
+    };
+    subtest "Check empty body error" => sub {
+        is $mech->post('/waste/whitespace', Content_Type => 'text/xml')->code, '400', 'Bad request if no body';
+    }
 };
 
 done_testing;

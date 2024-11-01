@@ -26,9 +26,7 @@ sub path_to_pin_icons {
     return '/cobrands/oxfordshire/images/';
 }
 
-sub send_questionnaires {
-    return 0;
-}
+sub send_questionnaires { 0 }
 
 sub bypass_password_checks { 1 }
 

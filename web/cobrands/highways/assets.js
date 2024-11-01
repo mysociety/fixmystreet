@@ -150,31 +150,41 @@ function add_highways_warning(road_name) {
   var $warning = $('<div class="box-warning" id="highways"><p>It looks like you clicked on the <strong>' + road_name + '</strong> which is managed by <strong>National Highways</strong>. ' +
                    'Does your report concern something on this road, or somewhere else (e.g a road crossing it)?<p></div>');
   var $page = $('<div data-page-name="highwaysengland" class="js-reporting-page js-reporting-page--active js-reporting-page--highways"></div>');
-  var $radios = $('<p class="segmented-control segmented-control--radio"></p>');
+  var $radios = $('<fiedset class="govuk-fieldset govuk-radios"></fieldset>');
 
-    $('<input>')
-        .attr('type', 'radio')
-        .attr('name', 'highways-choice')
-        .attr('id', 'js-highways')
-        .prop('checked', true)
-        .on('click', he_selected)
+    $('<div>')
+        .addClass('govuk-radios__item')
+        .append(
+            $('<input>')
+                .attr('type', 'radio')
+                .attr('name', 'highways-choice')
+                .attr('id', 'js-highways')
+                .prop('checked', true)
+                .on('click', he_selected)
+                .addClass('govuk-radios__input'),
+            $('<label>')
+                .attr('for', 'js-highways')
+                .text('On the ' + road_name)
+                .addClass('govuk-label govuk-radios__label')
+        )
         .appendTo($radios);
-    $('<label>')
-        .attr('for', 'js-highways')
-        .text('On the ' + road_name)
-        .addClass('btn')
+
+    $('<div>')
+        .addClass('govuk-radios__item')
+        .append(
+            $('<input>')
+                .attr('type', 'radio')
+                .attr('name', 'highways-choice')
+                .attr('id', 'js-not-highways')
+                .on('click', non_he_selected)
+                .addClass('govuk-radios__input'),
+            $('<label>')
+                .attr('for', 'js-not-highways')
+                .text('Somewhere else')
+                .addClass('govuk-label govuk-radios__label')
+        )
         .appendTo($radios);
-    $('<input>')
-        .attr('type', 'radio')
-        .attr('name', 'highways-choice')
-        .attr('id', 'js-not-highways')
-        .on('click', non_he_selected)
-        .appendTo($radios);
-    $('<label>')
-        .attr('for', 'js-not-highways')
-        .text('Somewhere else')
-        .addClass('btn')
-        .appendTo($radios);
+
     $radios.appendTo($warning);
     $warning.wrap($page);
     $page = $warning.parent();

@@ -138,6 +138,21 @@ sub disambiguate_location {
     };
 }
 
+sub geocode_postcode {
+    my ( $self, $s ) = @_;
+
+    # One particular road name has an override to a specific location,
+    # as the geocoder doesn't find any results for it.
+    if ($s =~/^ten\s+acre\s+l[a]?n[e]?$/i) {
+        return {
+            latitude => 51.347351,
+            longitude => -2.409305
+        };
+    }
+
+    return $self->next::method($s);
+}
+
 sub new_report_title_field_label {
     "Summarise the problem and location"
 }

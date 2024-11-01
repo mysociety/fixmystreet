@@ -101,9 +101,7 @@ sub disambiguate_location {
 
 =cut
 
-sub send_questionnaires {
-    return 0;
-}
+sub send_questionnaires { 0 }
 
 sub ask_ever_reported {
     return 0;

@@ -89,6 +89,19 @@ sub pin_colour {
     return $self->SUPER::pin_colour($p, $context);
 }
 
+=item * We allow staff to bypass stoppers.
+
+=cut
+
+sub staff_ignore_form_disable_form {
+    my $self = shift;
+
+    my $c = $self->{c};
+
+    return $c->user_exists
+        && $c->user->belongs_to_body( $self->body->id );
+}
+
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
