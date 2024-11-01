@@ -81,7 +81,7 @@ sub waste_fetch_events {
         next if !$request->{status} || $request->{status} eq 'confirmed'; # Still in initial state
         next unless $self->waste_check_last_update($params, $report, $request->{status});
 
-        $request->{comment_time} = DateTime->now->set_time_zone( FixMyStreet->local_time_zone ),
+        $request->{comment_time} = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
 
         print
             "  Updating report to state '$request->{status}' - '$request->{description}' ($request->{external_status_code})\n"
