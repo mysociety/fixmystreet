@@ -414,8 +414,8 @@ sub bin_services_for_address {
             { type => 'delivery', open => 'delivery_open', details => 'delivery_details' },
             { type => 'removal', open => 'removal_open', details => 'removal_details' },
         ) {
-            my $details = $property->{open_reports}{$_->{type}}
-                { $filtered_service->{service_id} };
+            my $container_id = _parent_for_container($filtered_service->{service_id});
+            my $details = $property->{open_reports}{$_->{type}}{$container_id};
 
             if ($details) {
                 $filtered_service->{$_->{details}} = $details;
@@ -521,6 +521,7 @@ sub _open_reports {
             # name
             my $service_item_name
                 = $report->get_extra_field_value('service_item_name') // '';
+            $service_item_name = _parent_for_container($service_item_name);
             next if $open_reports{$type}{$service_item_name};
 
             my $latest_comment
@@ -1352,10 +1353,11 @@ sub _construct_bin_request_form_delivery {
 
     for my $container ( @{ $property->{containers_for_delivery} } )
     {
+        my $open_key = $container->{service_item_name} || $container->{name};
+        my $disabled = $open_reports->{$open_key} ? 1 : 0;
         if ( $container->{subtypes} ) {
             my $id = $container->{name} =~ s/ /-/gr;
 
-            my $disabled = grep { $open_reports->{$_->{service_item_name}} } @{ $container->{subtypes} };
             push @$field_list, "parent-$id" => {
                 type         => 'Checkbox',
                 label        => $container->{name},
@@ -1379,7 +1381,6 @@ sub _construct_bin_request_form_delivery {
             };
         } else {
             my $id = $container->{service_item_name} =~ s/ /-/gr;
-            my $disabled = $open_reports->{$container->{service_item_name}} ? 1 : 0;
 
             push @$field_list, "container-$id" => {
                 type         => 'Checkbox',
@@ -1429,14 +1430,15 @@ sub _construct_bin_request_form_removal {
     for my $container (
         @{ $property->{containers_for_removal} } )
     {
+        my $open_key = $container->{service_item_name} || $container->{name};
+        my $disabled = $open_reports->{$open_key} ? 1 : 0;
+
         # For containers with subtypes, choose the ID ('service_item_name')
         # that the property currently has
         my $id
             = $container->{subtypes}
             ? $service_names_to_ids{ $container->{name} }
             : $container->{service_item_name};
-
-        my $disabled = $open_reports->{$id} ? 1 : 0;
 
         $id .= '-removal';
 
@@ -1919,6 +1921,22 @@ sub _containers_for_requests {
             max                 => 5,
         },
     };
+}
+
+sub _parent_for_container {
+    my $id = shift;
+    my $parents = {
+        'RES-140' => 'Green Wheelie Bin',
+        'RES-180' => 'Green Wheelie Bin',
+        'RES-240' => 'Green Wheelie Bin',
+        'PC-140' => 'Blue Lidded Wheelie Bin',
+        'PC-180' => 'Blue Lidded Wheelie Bin',
+        'PC-240' => 'Blue Lidded Wheelie Bin',
+        'PG-140' => 'White Lidded Wheelie Bin',
+        'PG-180' => 'White Lidded Wheelie Bin',
+        'PG-240' => 'White Lidded Wheelie Bin',
+    };
+    return $parents->{$id} || $id;
 }
 
 1;

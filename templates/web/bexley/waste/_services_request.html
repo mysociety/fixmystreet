@@ -1,7 +1,6 @@
-[% IF unit.delivery_allowed %]
+[% IF unit.delivery_allowed && !unit.delivery_open %]
   <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=delivery" id="form-[% unit.service_id %]-delivery">
 
-    [% # TODO %]
     <input type="hidden" name="token" value="[% csrf_token %]">
 
     [% form %]
@@ -12,10 +11,9 @@
   </form>
 [% END %]
 
-[% IF unit.removal_allowed %]
+[% IF unit.removal_allowed && !unit.removal_open %]
   <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=removal" id="form-[% unit.service_id %]-removal">
 
-    [% # TODO %]
     <input type="hidden" name="token" value="[% csrf_token %]">
 
     [% form %]
