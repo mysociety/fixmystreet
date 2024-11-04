@@ -342,3 +342,13 @@ textarea.code {
     font-family: monospace;
     max-width: initial;
 }
+
+// WasteWorks
+
+// Some layout improvements for bulky items editing
+body.bulky-items {
+    // Make the page full width
+    .container {
+        max-width: 100%;
+    }
+}
