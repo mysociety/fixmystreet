@@ -723,49 +723,46 @@ sub calendar_ics : Chained('property') : PathPart('calendar.ics') : Args(0) {
 sub construct_bin_request_form {
     my $c = shift;
 
-    my $field_list = $c->cobrand->call_hook( 'construct_bin_request_form', $c )
-        // [];
+    my $field_list = [];
 
-    if ( !@$field_list ) {
-        foreach (@{$c->stash->{service_data}}) {
-            next unless $_->{next} || $_->{request_only};
-            my $service = $_;
-            my $name = $_->{service_name};
-            my $containers = $_->{request_containers};
-            my $maximum = $_->{request_max};
-            foreach my $id (@$containers) {
-                my $max = ref $maximum ? $maximum->{$id} : $maximum;
-                push @$field_list, "container-$id" => {
-                    type => 'Checkbox',
-                    label => $name,
-                    option_label => $c->stash->{containers}->{$id},
-                    tags => { toggle => "form-quantity-$id-row" },
-                    disabled => $_->{requests_open}{$id} ? 1 : 0,
+    foreach (@{$c->stash->{service_data}}) {
+        next unless $_->{next} || $_->{request_only};
+        my $service = $_;
+        my $name = $_->{service_name};
+        my $containers = $_->{request_containers};
+        my $maximum = $_->{request_max};
+        foreach my $id (@$containers) {
+            my $max = ref $maximum ? $maximum->{$id} : $maximum;
+            push @$field_list, "container-$id" => {
+                type => 'Checkbox',
+                label => $name,
+                option_label => $c->stash->{containers}->{$id},
+                tags => { toggle => "form-quantity-$id-row" },
+                disabled => $_->{requests_open}{$id} ? 1 : 0,
+            };
+            $name = ''; # Only on first container
+            if ($max == 1) {
+                push @$field_list, "quantity-$id" => {
+                    type => 'Hidden',
+                    default => '1',
+                    apply => [ { check => qr/^1$/ } ],
                 };
-                $name = ''; # Only on first container
-                if ($max == 1) {
-                    push @$field_list, "quantity-$id" => {
-                        type => 'Hidden',
-                        default => '1',
-                        apply => [ { check => qr/^1$/ } ],
-                    };
-                } else {
-                    push @$field_list, "quantity-$id" => {
-                        type => 'Select',
-                        label => 'Quantity',
-                        tags => {
-                            hint => "You can request a maximum of " . NUMWORDS($max) . " containers",
-                            initial_hidden => 1,
-                        },
-                        options => [
-                            { value => "", label => '-' },
-                            map { { value => $_, label => $_ } } (1..$max),
-                        ],
-                        required_when => { "container-$id" => 1 },
-                    };
-                }
-                $c->cobrand->call_hook("bin_request_form_extra_fields", $service, $id, $field_list);
+            } else {
+                push @$field_list, "quantity-$id" => {
+                    type => 'Select',
+                    label => 'Quantity',
+                    tags => {
+                        hint => "You can request a maximum of " . NUMWORDS($max) . " containers",
+                        initial_hidden => 1,
+                    },
+                    options => [
+                        { value => "", label => '-' },
+                        map { { value => $_, label => $_ } } (1..$max),
+                    ],
+                    required_when => { "container-$id" => 1 },
+                };
             }
+            $c->cobrand->call_hook("bin_request_form_extra_fields", $service, $id, $field_list);
         }
     }
 
@@ -776,30 +773,35 @@ sub construct_bin_request_form {
 
 sub request : Chained('property') : Args(0) {
     my ($self, $c) = @_;
-    my $field_list = construct_bin_request_form($c);
 
-    $c->stash->{first_page} = 'request';
-    my $next = $c->cobrand->call_hook('waste_request_form_first_next');
-    my $title = $c->cobrand->call_hook('waste_request_form_first_title') || 'Which containers do you need?';
+    my %form_settings
+        = $c->cobrand->call_hook( 'construct_bin_request_form', $c );
+
+    my $field_list = $form_settings{field_list}
+        || construct_bin_request_form($c);
+
+    $c->stash->{first_page} = $form_settings{first_page} || 'request';
 
     my $cls = ucfirst $c->cobrand->council_url;
     $c->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::$cls";
 
-    $c->stash->{page_list} = [
-        request => {
-            fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
-            title => $title,
-            intro => 'request/intro.html',
-            check_unique_id => 0,
-            next => $next,
-            update_field_list => sub {
-                my $form = shift;
-                my $fields = $form->{c}->cobrand->call_hook(
-                    waste_request_form_update_field_list => $form ) // {};
-                return $fields;
+    if ( $form_settings{page_list} ) {
+        $c->stash->{page_list} = $form_settings{page_list};
+    } else {
+        my $next  = $c->cobrand->call_hook('waste_request_form_first_next');
+        my $title = $c->cobrand->call_hook('waste_request_form_first_title')
+            || 'Which containers do you need?';
+
+        $c->stash->{page_list} = [
+            request => {
+                fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
+                title => $title,
+                intro => 'request/intro.html',
+                check_unique_id => 0,
+                next => $next,
             },
-        },
-    ];
+        ];
+    }
 
     $c->cobrand->call_hook("waste_munge_request_form_pages", $c->stash->{page_list}, $field_list);
     $c->stash->{field_list} = $field_list;

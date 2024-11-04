@@ -1,5 +1,5 @@
 [%
-IF report.category == 'Request new container';
+IF report.category == 'Request new container' || report.category == 'Request container removal';
     title = 'Your container request has been sent';
 ELSIF report.category == 'Report missed collection';
     title = 'Thank you for reporting a missed collection';
