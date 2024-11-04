@@ -403,24 +403,20 @@ sub bin_services_for_address {
             $filtered_service->{schedule} = 'Weekly';
         }
 
-        my $report_details = $property->{open_reports}{missed}
-            { $filtered_service->{service_id} };
+        foreach (
+            { type => 'missed', open => 'report_open', details => 'report_details' },
+            { type => 'delivery', open => 'delivery_open', details => 'delivery_details' },
+            { type => 'removal', open => 'removal_open', details => 'removal_details' },
+        ) {
+            my $details = $property->{open_reports}{$_->{type}}
+                { $filtered_service->{service_id} };
 
-        if ($report_details) {
-            $filtered_service->{report_details} = $report_details;
-            $filtered_service->{report_open} = $report_details->{open};
-        } else {
-            $filtered_service->{report_open} = 0;
-        }
-
-        my $request_details = $property->{open_reports}{request}
-            { $filtered_service->{service_id} };
-
-        if ($request_details) {
-            $filtered_service->{request_details} = $request_details;
-            $filtered_service->{requests_open} = $request_details->{open};
-        } else {
-            $filtered_service->{requests_open} = 0;
+            if ($details) {
+                $filtered_service->{$_->{details}} = $details;
+                $filtered_service->{$_->{open}} = $details->{open};
+            } else {
+                $filtered_service->{$_->{open}} = 0;
+            }
         }
 
         $filtered_service->{report_locked_out} = 0;
@@ -504,7 +500,8 @@ sub _open_reports {
                 unless $ws->{WorksheetStatusName} eq 'Open'
                 && $ws->{WorksheetSubject} =~ /^Missed|Deliver|Collect/;
 
-            my $type = $ws->{WorksheetSubject} =~ /^Missed/ ? 'missed' : 'request';
+            my $type = $ws->{WorksheetSubject} =~ /^Missed/ ? 'missed'
+                : $ws->{WorksheetSubject} =~ /Deliver/ ? 'delivery' : 'removal';
 
             # Check if it exists in our DB
             my $external_id = 'Whitespace-' . $ws->{WorksheetID};
@@ -1343,7 +1340,7 @@ sub _construct_bin_request_form_delivery {
     my $field_list = [];
 
     my $property = $c->stash->{property};
-    my $open_reports = $property->{open_reports}{request};
+    my $open_reports = $property->{open_reports}{delivery};
 
     for my $container ( @{ $property->{containers_for_delivery} } )
     {
@@ -1418,7 +1415,7 @@ sub _construct_bin_request_form_removal {
 
     my $field_list = [];
 
-    my $open_reports = $property->{open_reports}{request};
+    my $open_reports = $property->{open_reports}{removal};
     my %service_names_to_ids
             = map { $_->{service_name} => $_->{service_id} }
             @{ $self->{c}->stash->{service_data} };
