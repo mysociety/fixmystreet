@@ -364,5 +364,5 @@
 [% END %]
 
 [% BLOCK notice %]
-    <p class="govuk-body-l">[% field.label %]</p>
+    [% mark_safe(field.label) | html_para %]
 [% END %]
