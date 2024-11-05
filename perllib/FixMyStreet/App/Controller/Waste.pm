@@ -868,8 +868,8 @@ sub process_garden_transfer : Private {
     my $new = { %$base };
     $new->{category} = 'Garden Subscription';
     $new->{title} = 'Garden Subscription - New';
-    $new->{current_bins} = $data->{transfer_old_ggw_sub}->{transfer_bin_number};
-    $new->{current_type} = $data->{transfer_old_ggw_sub}->{transfer_bin_type};
+    $new->{bins_wanted} = $data->{transfer_old_ggw_sub}->{transfer_bin_number};
+    $new->{transfer_bin_type} = $data->{transfer_old_ggw_sub}->{transfer_bin_type};
 
     my $expiry = $data->{transfer_old_ggw_sub}->{subscription_enddate};
     $expiry = DateTime::Format::W3CDTF->parse_datetime($expiry);

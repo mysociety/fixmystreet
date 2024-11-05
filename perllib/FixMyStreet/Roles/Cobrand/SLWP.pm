@@ -369,6 +369,7 @@ sub waste_garden_sub_params {
     my $service = $self->garden_current_subscription;
     my $choice = $data->{container_choice} || '';
     my $existing = $service ? $service->{garden_container} : undef;
+    $existing = $data->{transfer_bin_type} if $data->{transfer_bin_type};
     my $container;
     if ($choice eq 'sack') {
         $container = CONTAINER_GARDEN_SACK;
