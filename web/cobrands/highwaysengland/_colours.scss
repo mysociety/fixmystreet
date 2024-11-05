@@ -63,3 +63,12 @@ $mappage-sidebar-width--medium: 24em;
 $mappage-actions-width--medium: 36em;
 
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$button-primary-bg-top: $color-he-blue;
+$button-primary-border: transparent;
+$button-primary-text: #fff;
+
+$button-primary-hover-bg-top: darken($color-he-blue, 10%);
+$button-primary-hover-bg-bottom: darken($color-he-blue, 10%);
+$button-primary-hover-border: transparent;
+$button-primary-hover-text: #fff;

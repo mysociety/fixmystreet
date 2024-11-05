@@ -218,15 +218,6 @@ p.form-error {
     margin: 0 0 0.5em 1em;
 }
 
-.btn--primary {
-    background: $color-he-blue;
-    border: none;
-
-    &:hover, &:focus {
-        background: darken($color-he-blue, 10%);
-    }
-}
-
 .big-green-banner {
     text-transform: none;
 }

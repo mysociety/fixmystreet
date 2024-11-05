@@ -12,6 +12,9 @@ $button-margin-bottom: 0 !default;
 $button-margin-right: 0 !default;
 $button-margin-left: 0 !default;
 
+//Border-radius
+$button-border-radius: 4px !default;
+
 @if (variable-exists(nav_fg)) {
     $nav_colour: $nav_fg !global;
 }
@@ -23,7 +26,8 @@ $button-margin-left: 0 !default;
 }
 
 
-@mixin button-size($button-margin-top:$button-margin-top, $button-margin-right:$button-margin-right, $button-margin-bottom:$button-margin-bottom, $button-margin-left:$button-margin-left, $button-padding-top:$button-padding-top, $button-padding-right:$button-padding-right, $button-padding-bottom:$button-padding-bottom, $button-padding-left:$button-padding-left) {
+@mixin button-size($button-margin-top:$button-margin-top, $button-margin-right:$button-margin-right, $button-margin-bottom:$button-margin-bottom, $button-margin-left:$button-margin-left, $button-padding-top:$button-padding-top, $button-padding-right:$button-padding-right, $button-padding-bottom:$button-padding-bottom, $button-padding-left:$button-padding-left,
+$button-border-radius:$button-border-radius) {
     margin: flip($button-margin-top $button-margin-right $button-margin-bottom $button-margin-left, $button-margin-top $button-margin-left $button-margin-bottom $button-margin-right);
     padding: flip($button-padding-top $button-padding-right $button-padding-bottom $button-padding-left, $button-padding-top $button-padding-left $button-padding-bottom $button-padding-right);
     display: inline-block;
@@ -36,7 +40,7 @@ $button-margin-left: 0 !default;
     font-weight: bold;
     font-family: inherit;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: $button-border-radius;
 
     &,
     &:hover,
@@ -89,10 +93,10 @@ $button-margin-left: 0 !default;
   }
 
     &:disabled {
-        color: desaturate(darken($bg-bottom, 50%), 50%) !important;
-        background: $bg-bottom;
+        color: transparentize(#000, 0.4) !important;
+        background: #eee;
         @if $border {
-            border-color: $border;
+            border-color: #eee;
         } @else {
             border: none;
         }

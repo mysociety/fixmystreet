@@ -55,6 +55,7 @@ C<0001-01-01T00:00:00> represents an undefined date in Whitespace.
 
 use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
 use constant MISSED_COLLECTION_SERVICE_PROPERTY_ID => 68;
+use constant REQUEST_SERVICE_PROPERTY_ID => 69;
 
 sub waste_fetch_events {
     my ( $self, $params ) = @_;
@@ -64,14 +65,14 @@ sub waste_fetch_events {
         system_user => $self->body->comment_user,
     );
 
-    my $missed_collection_reports = $self->problems->search(
+    my $reports = $self->problems->search(
         {   external_id => { like => 'Whitespace%' },
             state => [ FixMyStreet::DB::Result::Problem->open_states() ],
         },
         { order_by => 'id' },
     );
 
-    while ( my $report = $missed_collection_reports->next ) {
+    while ( my $report = $reports->next ) {
         print 'Fetching data for report ' . $report->id . "\n" if $params->{verbose};
 
         my $worksheet_id = $report->external_id =~ s/Whitespace-//r;
@@ -103,29 +104,34 @@ sub construct_waste_open311_update {
 
     $worksheet = $self->whitespace->GetFullWorksheetDetails($worksheet->{id});
 
+    my ($service_id, $config_key);
+    if ($report->category eq 'Report missed collection') {
+        $service_id = MISSED_COLLECTION_SERVICE_PROPERTY_ID;
+        $config_key = 'missed_collection_state_mapping';
+    } else {
+        $service_id = REQUEST_SERVICE_PROPERTY_ID;
+        if ($report->category eq 'Request new container') {
+            $config_key = 'container_delivery_state_mapping';
+        } elsif ($report->category eq 'Request container removal') {
+            $config_key = 'container_removal_state_mapping';
+        }
+    }
+
     # Get info for missed collection
-    my $missed_collection_properties;
+    my $properties;
     for my $service_properties (
         @{  $worksheet->{WSServiceProperties}{WorksheetServiceProperty}
                 // []
         }
     ) {
-        next
-            unless $service_properties->{ServicePropertyID}
-            == MISSED_COLLECTION_SERVICE_PROPERTY_ID;
-
-        $missed_collection_properties = $service_properties;
+        next unless $service_properties->{ServicePropertyID} == $service_id;
+        $properties = $service_properties;
     }
 
-    my $whitespace_state_string
-        = $missed_collection_properties
-        ? $missed_collection_properties->{ServicePropertyValue}
-        : '';
+    my $whitespace_state_string = $properties->{ServicePropertyValue} || '';
 
     my $config = $self->feature('whitespace');
-    my $new_state
-        = $config->{missed_collection_state_mapping}
-            {$whitespace_state_string};
+    my $new_state = $config->{$config_key}{$whitespace_state_string};
     unless ($new_state) {
         print "  No new state, skipping\n" if $params->{verbose};
         return;
@@ -404,24 +410,20 @@ sub bin_services_for_address {
             $filtered_service->{schedule} = 'Weekly';
         }
 
-        my $report_details = $property->{open_reports}{missed}
-            { $filtered_service->{service_id} };
+        foreach (
+            { type => 'missed', open => 'report_open', details => 'report_details' },
+            { type => 'delivery', open => 'delivery_open', details => 'delivery_details' },
+            { type => 'removal', open => 'removal_open', details => 'removal_details' },
+        ) {
+            my $container_id = _parent_for_container($filtered_service->{service_id});
+            my $details = $property->{open_reports}{$_->{type}}{$container_id};
 
-        if ($report_details) {
-            $filtered_service->{report_details} = $report_details;
-            $filtered_service->{report_open} = $report_details->{open};
-        } else {
-            $filtered_service->{report_open} = 0;
-        }
-
-        my $request_details = $property->{open_reports}{request}
-            { $filtered_service->{service_id} };
-
-        if ($request_details) {
-            $filtered_service->{request_details} = $request_details;
-            $filtered_service->{requests_open} = $request_details->{open};
-        } else {
-            $filtered_service->{requests_open} = 0;
+            if ($details) {
+                $filtered_service->{$_->{details}} = $details;
+                $filtered_service->{$_->{open}} = $details->{open};
+            } else {
+                $filtered_service->{$_->{open}} = 0;
+            }
         }
 
         $filtered_service->{report_locked_out} = 0;
@@ -505,7 +507,8 @@ sub _open_reports {
                 unless $ws->{WorksheetStatusName} eq 'Open'
                 && $ws->{WorksheetSubject} =~ /^Missed|Deliver|Collect/;
 
-            my $type = $ws->{WorksheetSubject} =~ /^Missed/ ? 'missed' : 'request';
+            my $type = $ws->{WorksheetSubject} =~ /^Missed/ ? 'missed'
+                : $ws->{WorksheetSubject} =~ /Deliver/ ? 'delivery' : 'removal';
 
             # Check if it exists in our DB
             my $external_id = 'Whitespace-' . $ws->{WorksheetID};
@@ -519,6 +522,7 @@ sub _open_reports {
             # name
             my $service_item_name
                 = $report->get_extra_field_value('service_item_name') // '';
+            $service_item_name = _parent_for_container($service_item_name);
             next if $open_reports{$type}{$service_item_name};
 
             my $latest_comment
@@ -1307,6 +1311,7 @@ sub construct_bin_request_form {
         if ( $include_removal ) {
             push @$page_list, (
                 request_removal => {
+                    intro => 'container_removal_intro.html',
                     fields => [ grep { ! ref $_ } @$removal_field_list, 'submit' ],
                     title => 'Which containers do you need to be removed?',
                     check_unique_id => 0,
@@ -1322,6 +1327,7 @@ sub construct_bin_request_form {
 
         $page_list = [
             request_removal => {
+                intro  => 'container_removal_intro.html',
                 fields => [ grep { ! ref $_ } @$full_field_list, 'submit' ],
                 title => 'Which containers do you need to be removed?',
                 check_unique_id => 0,
@@ -1344,15 +1350,14 @@ sub _construct_bin_request_form_delivery {
     my $field_list = [];
 
     my $property = $c->stash->{property};
-    my $open_reports = $property->{open_reports}{request};
+    my $open_reports = $property->{open_reports}{delivery};
 
     for my $container ( @{ $property->{containers_for_delivery} } )
     {
+        my $open_key = $container->{service_item_name} || $container->{name};
+        my $disabled = $open_reports->{$open_key} ? 1 : 0;
         if ( $container->{subtypes} ) {
             my $id = $container->{name} =~ s/ /-/gr;
-
-            my $disabled = grep { $open_reports->{ $_->{service_item_name} } }
-                @{ $container->{subtypes} };
 
             push @$field_list, "parent-$id" => {
                 type         => 'Checkbox',
@@ -1377,7 +1382,6 @@ sub _construct_bin_request_form_delivery {
             };
         } else {
             my $id = $container->{service_item_name} =~ s/ /-/gr;
-            my $disabled = $open_reports->{$container->{service_item_name}} ? 1 : 0;
 
             push @$field_list, "container-$id" => {
                 type         => 'Checkbox',
@@ -1419,7 +1423,7 @@ sub _construct_bin_request_form_removal {
 
     my $field_list = [];
 
-    my $open_reports = $property->{open_reports}{request};
+    my $open_reports = $property->{open_reports}{removal};
     my %service_names_to_ids
             = map { $_->{service_name} => $_->{service_id} }
             @{ $self->{c}->stash->{service_data} };
@@ -1427,14 +1431,15 @@ sub _construct_bin_request_form_removal {
     for my $container (
         @{ $property->{containers_for_removal} } )
     {
+        my $open_key = $container->{service_item_name} || $container->{name};
+        my $disabled = $open_reports->{$open_key} ? 1 : 0;
+
         # For containers with subtypes, choose the ID ('service_item_name')
         # that the property currently has
         my $id
             = $container->{subtypes}
             ? $service_names_to_ids{ $container->{name} }
             : $container->{service_item_name};
-
-        my $disabled = $open_reports->{$id} ? 1 : 0;
 
         $id .= '-removal';
 
@@ -1917,6 +1922,22 @@ sub _containers_for_requests {
             max                 => 5,
         },
     };
+}
+
+sub _parent_for_container {
+    my $id = shift;
+    my $parents = {
+        'RES-140' => 'Green Wheelie Bin',
+        'RES-180' => 'Green Wheelie Bin',
+        'RES-240' => 'Green Wheelie Bin',
+        'PC-140' => 'Blue Lidded Wheelie Bin',
+        'PC-180' => 'Blue Lidded Wheelie Bin',
+        'PC-240' => 'Blue Lidded Wheelie Bin',
+        'PG-140' => 'White Lidded Wheelie Bin',
+        'PG-180' => 'White Lidded Wheelie Bin',
+        'PG-240' => 'White Lidded Wheelie Bin',
+    };
+    return $parents->{$id} || $id;
 }
 
 1;

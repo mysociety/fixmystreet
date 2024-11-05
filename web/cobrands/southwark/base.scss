@@ -115,12 +115,12 @@ a#geolocate_link {
   font-size: 0.875rem;
 }
 
-.item-list--wards__item, .item-list--reports__item {
+.item-list--reports__item {
   margin: 0;
   border-top: 1px solid $secondary_button_border_color;
 }
 
-.item-list--wards__item a, .item-list--reports__item a {
+.item-list--reports__item a {
   color: $primary-b;
   text-decoration: none;
 

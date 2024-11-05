@@ -509,38 +509,41 @@ $.extend(fixmystreet.set_up, {
     $('#planned_form').on('submit', function(e) {
         if (e.metaKey || e.ctrlKey) {
             return;
-        }
+        } 
+
         e.preventDefault();
-        var $form = $(this),
-            $submit = $form.find("input[type='submit']" ),
-            $labels = $('label[for="' + $submit.attr('id') + '"]'),
-            problemId = $form.find("input[name='id']").val(),
-            data = $form.serialize() + '&ajax=1',
-            changeValue,
-            buttonLabel,
-            buttonValue,
-            classToAdd,
-            classToRemove;
+        var $form = $(this);
+        var $submit = $('button[form="planned_form"]');
+        var problemId = $form.find("input[name='id']").val();
+        var data = $form.serialize() + '&ajax=1';
 
         $.post(this.action, data, function(data) {
-            if (data.outcome == 'add') {
-                $form.find("input[name='shortlist-add']" ).attr('name', 'shortlist-remove');
+            var inputName, newInputName, buttonLabel, buttonValue, classToAdd, classToRemove;
+
+            if (data.outcome === 'add') {
+                inputName = 'shortlist-add';
+                newInputName = 'shortlist-remove';
                 buttonLabel = $submit.data('label-remove');
                 buttonValue = $submit.data('value-remove');
                 classToAdd = $submit.data('class-remove');
                 classToRemove = $submit.data('class-add');
                 $('.shortlisted-status').remove();
                 $(document).trigger('shortlist-add', problemId);
-            } else if (data.outcome == 'remove') {
-                $form.find("input[name='shortlist-remove']" ).attr('name', 'shortlist-add');
+            } else if (data.outcome === 'remove') {
+                inputName = 'shortlist-remove';
+                newInputName = 'shortlist-add';
                 buttonLabel = $submit.data('label-add');
                 buttonValue = $submit.data('value-add');
-                $(document).trigger('shortlist-remove', problemId);
                 classToAdd = $submit.data('class-add');
                 classToRemove = $submit.data('class-remove');
+                $(document).trigger('shortlist-remove', problemId);
             }
-            $submit.val(buttonValue).attr('aria-label', buttonLabel).removeClass(classToRemove).addClass(classToAdd);
-            $labels.text(buttonValue).attr('aria-label', buttonLabel).removeClass(classToRemove).addClass(classToAdd);
+
+            $form.find("input[name='" + inputName + "']").attr('name', newInputName);
+            $submit.text(buttonValue)
+                   .attr('aria-label', buttonLabel)
+                   .removeClass(classToRemove)
+                   .addClass(classToAdd);
         });
     });
   },

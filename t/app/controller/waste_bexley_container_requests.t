@@ -780,6 +780,8 @@ FixMyStreet::override_config {
             $mech->content_contains(
                 'Which containers do you need to be removed?',
                 'On removal page' );
+            $mech->content_contains('We are unable to collect kitchen caddies',
+                'Contains intro text');
             $mech->submit_form_ok( {},
                 'can submit removal page with nothing selected' );
             $mech->back;
@@ -939,6 +941,9 @@ FixMyStreet::override_config {
         $mech->follow_link_ok(
             { text_regex => qr /Order removal/ } );
 
+        $mech->content_contains('We are unable to collect kitchen caddies',
+            'Contains intro text');
+
         $mech->submit_form_ok(
             {   with_fields => {
                     'container-RES-180-removal' => 1,
@@ -1006,25 +1011,56 @@ FixMyStreet::override_config {
                 WorksheetStartDate      => '',
                 WorksheetEscallatedDate => '',
             },
+            {   WorksheetID         => 'DEF',
+                WorksheetStatusName => 'Open',
+                WorksheetSubject    => 'Deliver a bin',
+                WorksheetStartDate      => '',
+                WorksheetEscallatedDate => '',
+            },
         ] } );
 
-        my ($open_container_request) = $mech->create_problems_for_body(1, $body->id, 'Request new container', {
-            external_id => "Whitespace-ABC",
-        });
-        $open_container_request->set_extra_fields(
+        my ($open_container_request1, $open_container_request2) =
+            $mech->create_problems_for_body(2, $body->id, 'Request new container');
+
+        $open_container_request1->set_extra_fields(
             { name => 'service_item_name', value => 'PG-55' } );
-        $open_container_request->update;
+        $open_container_request1->update({ external_id => "Whitespace-ABC" });
+        $open_container_request2->set_extra_fields(
+            { name => 'service_item_name', value => 'RES-140' } );
+        $open_container_request2->update({ external_id => "Whitespace-DEF" });
 
         $mech->get_ok('/waste/10001');
-        $mech->content_contains("A white recycling box container request has been made");
+        $mech->content_contains("A white recycling box container delivery request has been made");
+        $mech->content_contains("A green wheelie bin container delivery request has been made");
         $mech->get_ok('/waste/10001/request?request_type=delivery');
         $mech->submit_form_ok({ with_fields => { household_size => 2 } });
         $mech->content_like(qr/name="container-PG-55"[^>]*disabled/, 'PG-55 option is disabled');
+        $mech->content_like(qr/name="parent-Green-Wheelie-Bin"[^>]*disabled/);
         $mech->submit_form_ok( { with_fields => { 'container-Kitchen-5-Ltr-Caddy' => 1 } } );
-        $mech->content_like(
-            qr/name="container-PG-55-removal"[^>]*disabled/,
-            'PG-55 option is disabled for removals as well'
-        );
+        $mech->content_unlike(qr/name="container-PG-55-removal"[^>]*disabled/, 'PG-55 option is not disabled for removals');
+        $mech->get_ok('/waste/10001/request?request_type=removal');
+        $mech->content_unlike(qr/name="container-PG-55-removal"[^>]*disabled/, 'PG-55 removal is not disabled');
+
+        subtest 'Open collection request' => sub {
+            $whitespace_mock->mock( 'GetSiteWorksheets', sub{ [
+                {   WorksheetID         => 'ABC',
+                    WorksheetStatusName => 'Open',
+                    WorksheetSubject    => 'Collect a bin',
+                    WorksheetStartDate      => '',
+                    WorksheetEscallatedDate => '',
+                },
+            ] } );
+
+            $mech->get_ok('/waste/10001');
+            $mech->content_contains("A white recycling box container collection request has been made");
+            $mech->get_ok('/waste/10001/request?request_type=delivery');
+            $mech->submit_form_ok({ with_fields => { household_size => 2 } });
+            $mech->content_unlike(qr/name="container-PG-55"[^>]*disabled/, 'PG-55 option is not disabled');
+            $mech->submit_form_ok( { with_fields => { 'container-Kitchen-5-Ltr-Caddy' => 1 } } );
+            $mech->content_like(qr/name="container-PG-55-removal"[^>]*disabled/, 'PG-55 option is disabled for removals');
+            $mech->get_ok('/waste/10001/request?request_type=removal');
+            $mech->content_like(qr/name="container-PG-55-removal"[^>]*disabled/, 'PG-55 option is disabled');
+        };
     };
 };
 
