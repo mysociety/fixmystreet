@@ -49,20 +49,6 @@ my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method 
 
 $mech->create_contact_ok(email => 'testareaemail@nh', body_id => $highways->id, category => 'Pothole (NH)');
 
-FixMyStreet::DB->resultset("Role")->create({
-    body => $highways,
-    name => 'Inspector',
-    permissions => ['moderate', 'user_edit'],
-});
-my $role_admin = FixMyStreet::DB->resultset("Role")->create({
-    body => $highways,
-    name => 'Admin',
-    permissions => ['moderate', 'user_edit'],
-});
-
-my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $highways, password => 'password');
-$staffuser->add_to_roles($role_admin);
-
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $highways, password => 'password');
 
 FixMyStreet::DB->resultset("Role")->create({

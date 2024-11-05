@@ -137,7 +137,7 @@ FixMyStreet::override_config {
 
         subtest "User assignment on $host site" => sub {
             $mech->get_ok( '/report/' . $problem_to_update->id );
-            $mech->click_ok('.btn--shortlist');
+            $mech->submit_form_ok({ with_fields => { 'shortlist-add' => 1 } });
             my $comment
                 = $problem_to_update->comments->order_by('-id')->first;
             is_deeply $comment->get_extra_metadata, {
@@ -155,7 +155,7 @@ FixMyStreet::override_config {
                 'correct extra_details attribute';
 
             $mech->get_ok( '/report/' . $problem_to_update->id );
-            $mech->click_ok('.btn--shortlisted');
+            $mech->submit_form_ok({ with_fields => { 'shortlist-remove' => 1 } });
             $comment
                 = $problem_to_update->comments->order_by('-id')->first;
             is_deeply $comment->get_extra_metadata, {
