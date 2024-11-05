@@ -1280,7 +1280,8 @@ FixMyStreet::override_config {
         is $new_report->detail, "Garden Subscription\n\n2 Example Street, Merton,", 'New report detail correct';
         is $new_report->get_extra_field_value('uprn'), '1000000002', 'Correct uprn on new report';
         is $new_report->get_extra_field_value('property_id'), '12345', 'Correct property id on new report';
-        is $new_report->get_extra_field_value('current_containers'), 1, 'Correct bin containers amount set on new report';
+        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'Correct bin containers amount set on new report';
+        is $new_report->get_extra_field_value('Subscription_Details_Containers'), 26, 'Correct bin type set on new report';
         is $new_report->get_extra_field_value('End_Date'), '2021-03-30', 'Subscription time transferred';
         is $cancel_report->title, 'Garden Subscription - Cancel', 'Cancelled report title correct';
         is $cancel_report->detail, "Cancel Garden Subscription\n\n1 Example Street, Merton, SM2 5HF", 'Cancelled report detail correct';
