@@ -55,6 +55,7 @@ FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1 },
     BASE_URL => 'https://www.zurich',
     ALLOWED_COBRANDS => 'zurich',
+    GEOCODER => 'Zurich',
     MAPIT_URL => 'http://mapit.zurich/',
     MAPIT_TYPES => [ 'O08' ],
     MAPIT_ID_WHITELIST => [ 423017 ],
@@ -342,6 +343,35 @@ subtest "Auto select private category and input description from url" => sub {
     is $report->category, 'Allgemein', "Report in correct category from url";
     send_reports_for_zurich();
     $mech->clear_emails_ok;
+};
+
+subtest "Auto select category and input description from front page" => sub {
+    my $module = Test::MockModule->new('FixMyStreet::Geocode::Zurich');
+    $module->mock(string => sub { { latitude => 47.376056, longitude => 8.525481 } });
+
+    $mech->get_ok('/?prefill_category=Allgemein&prefill_description=Test 5678');
+    $mech->submit_form_ok({ with_fields => {
+        pc  => 'Langstrasse',
+    }});
+    is $mech->uri->path, '/around', 'Redirected to around page';
+
+    my $tree = HTML::TreeBuilder->new_from_content($mech->content);
+    my $input = $tree->look_down('id' => 'prefill_category');
+    is $input->attr('value'), 'Allgemein', 'Prefill category input has right value';
+    is $input->attr('type'), 'hidden', 'Prefill category input is hidden';
+    $mech->content_lacks('form_category_fieldset', 'Category fieldset not present');
+    is $tree->look_down('id' => 'form_detail')->as_text, 'Test 5678', 'Prefill description input has right value';
+
+    $mech->follow_link_ok({ text => 'Skip this step' });
+    is $mech->uri->path, '/report/new';
+    is_deeply { $mech->uri->query_form }, {
+        skipped => 1,
+        latitude => 47.376056,
+        longitude => 8.525481,
+        prefill_category => 'Allgemein',
+        prefill_description => 'Test 5678',
+        pc => 'Langstrasse',
+    }, "correct params passed to /report/new";
 };
 
 sub get_moderated_count {
