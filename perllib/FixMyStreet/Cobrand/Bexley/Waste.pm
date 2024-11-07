@@ -1130,7 +1130,7 @@ sub waste_munge_report_data {
     $data->{detail} = "$data->{title}\n\n$address";
     $c->set_param('uprn', $uprn);
     $c->set_param('service_id', $id);
-    $c->set_param('location_of_containers', $data->{extra_detail}) if $data->{extra_detail};
+    $c->set_param('location_of_containers', $data->{bin_location}) if $data->{bin_location};
     $c->set_param('service_item_name', $service_id);
 
     # Check if this property has assisted collections
@@ -1141,35 +1141,7 @@ sub waste_munge_report_data {
 sub waste_munge_report_form_fields {
     my ($self, $field_list) = @_;
 
-    my $c = $self->{c};
-    my $property = $c->stash->{property};
-
-    my $type
-        = $c->stash->{is_staff}
-        || $property->{has_assisted} ? 'staff_or_assisted'
-        : $property->{is_communal}   ? 'communal'
-        : $property->{above_shop}    ? 'above_shop'
-        :                              '';
-
-    my $options = _bin_location_options()->{$type};
-
-    if ($options) {
-        # Double up options for label-value pairing
-        $options = [
-            map { $_, $_ } @$options
-        ];
-
-        push @$field_list, extra_detail => {
-            type => 'Select',
-            label => 'Please select bin location',
-            options => $options,
-        };
-    } else {
-        push @$field_list, extra_detail => {
-            type    => 'Hidden',
-            default => 'Front of property',
-        };
-    }
+    push @$field_list, $self->_bin_location_field;
 }
 
 sub waste_munge_enquiry_data {
@@ -1193,6 +1165,42 @@ sub waste_munge_enquiry_data {
     $data->{detail} = $detail;
 
     $data->{extra_complaint_type} = $property->{is_communal} ? 'WFEE' : 'WRBDEL';
+}
+
+sub _bin_location_field {
+    my $self = shift;
+
+    my $c        = $self->{c};
+    my $property = $c->stash->{property};
+
+    my $type
+        = $c->stash->{is_staff}
+        || $property->{has_assisted} ? 'staff_or_assisted'
+        : $property->{is_communal}   ? 'communal'
+        : $property->{above_shop}    ? 'above_shop'
+        :                              '';
+
+    my $options = _bin_location_options()->{$type};
+
+    if ($options) {
+        $options = [
+            ( '', '---Please select---' ),
+            map { $_, $_ } @$options
+        ];
+
+        return ( bin_location => {
+            type    => 'Select',
+            label   => 'Bin location',
+            options => $options,
+            required => 1,
+            tags => { label_as_heading => 1 },
+        } );
+    } else {
+        return ( bin_location => {
+            type    => 'Hidden',
+            default => 'Front of property',
+        } );
+    }
 }
 
 sub _bin_location_options {
@@ -1266,6 +1274,10 @@ sub construct_bin_request_form {
     my $page_list;
     my $first_page;
 
+    my $above_shop
+        = $self->{c}->stash->{property}{above_shop} ? 1 : 0;
+    my %bin_location_field = $above_shop ? () : $self->_bin_location_field;
+
     if ( $request_type eq 'delivery' ) {
         # Household size page needs to appear first, if applicable
         $first_page
@@ -1278,15 +1290,14 @@ sub construct_bin_request_form {
         my $removal_field_list
             = $self->_construct_bin_request_form_removal($c);
 
+        push @$delivery_field_list, %bin_location_field;
+
         # Not all properties have containers eligible for removal
         my $include_removal = @$removal_field_list;
 
         # Above-shop properties get a single default reason, so no need to send
         # them to reason selection. They need to be sent to letterbox location
         # selection instead.
-        my $above_shop
-            = $self->{c}->stash->{property}{above_shop} ? 1 : 0;
-
         my $next
             = $include_removal
             ? 'request_removal'
@@ -1325,6 +1336,8 @@ sub construct_bin_request_form {
     } else {
         $first_page = 'request_removal';
         $full_field_list = $self->_construct_bin_request_form_removal($c);
+
+        push @$full_field_list, %bin_location_field;
 
         $page_list = [
             request_removal => {
@@ -1608,11 +1621,13 @@ sub waste_munge_request_data {
 
     my $reason;
     my $letterbox_location;
+    my $bin_location;
     if ( $c->stash->{property}{above_shop} ) {
         $reason = 'I need more sacks';
         $letterbox_location = $data->{letterbox_location};
     } else {
         $reason = $data->{request_reason};
+        $bin_location = $data->{bin_location};
     }
 
     my $address = $c->stash->{property}{address};
@@ -1626,15 +1641,14 @@ sub waste_munge_request_data {
     $data->{detail} .= "\n\nLocation of letterbox: $letterbox_location"
         if $letterbox_location;
 
-    my $assisted_yn = $c->stash->{services}{ $service->{service_item_name} }
-            {assisted_collection}
-            ? 'Yes' : 'No';
+    my $assisted_yn = $c->stash->{property}{has_assisted} ? 'Yes' : 'No';
 
     $c->set_param( 'uprn',              $c->stash->{property}{uprn} );
     $c->set_param( 'service_item_name', $service->{service_item_name} );
     $c->set_param( 'quantity',          $quantity );
     $c->set_param( 'assisted_yn', $assisted_yn );
     $c->set_param( 'location_of_letterbox', $letterbox_location || '' );
+    $c->set_param( 'location_of_containers', $bin_location || '' );
 }
 
 sub _set_request_containers {
