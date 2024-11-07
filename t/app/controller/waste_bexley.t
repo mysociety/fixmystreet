@@ -718,7 +718,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok('/waste/10001/report');
             $mech->content_contains(
-                '<input type="hidden" name="extra_detail" id="extra_detail" value="Front of property">',
+                '<input type="hidden" name="bin_location" id="bin_location" value="Front of property">',
                 'Hidden location field has default value'
             );
 
@@ -733,8 +733,8 @@ FixMyStreet::override_config {
         };
 
         $mech->get_ok('/waste/10001/report');
-        $mech->content_contains('Please select bin location');
-        $mech->content_contains('name="extra_detail"');
+        $mech->content_contains('Bin location');
+        $mech->content_contains('name="bin_location"');
         $mech->content_contains($_)
             for
             @{ FixMyStreet::Cobrand::Bexley::Waste::_bin_location_options()
@@ -752,7 +752,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/10001/report');
         $mech->submit_form_ok(
             {   with_fields => {
-                    extra_detail       => 'Front boundary of property',
+                    bin_location       => 'Front boundary of property',
                     'service-RES-CHAM' => 1,
                     'service-PL-940'   => 1,
                 }
@@ -798,7 +798,7 @@ FixMyStreet::override_config {
     subtest 'Missed collection reports are made against the parent property' => sub {
         $mech->get_ok('/waste/10002/report');
         $mech->submit_form_ok(
-            { with_fields => { extra_detail => 'Rear of property', 'service-RES-CHAM' => 1 } },
+            { with_fields => { bin_location => 'Rear of property', 'service-RES-CHAM' => 1 } },
             'Selecting missed collection for communal refuse bin');
         $mech->submit_form_ok(
             { with_fields => { name => 'John Doe', phone => '44 07 111 111 111', email => 'test@example.com' } },

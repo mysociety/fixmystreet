@@ -84,6 +84,11 @@ for ( $contact_delivery, $contact_removal ) {
             required => "false",
             automated => "hidden_field",
         },
+        {
+            code => "location_of_containers",
+            required => "false",
+            automated => "hidden_field",
+        },
     );
     $_->update;
 }
@@ -806,6 +811,8 @@ FixMyStreet::override_config {
                         'quantity-FO-23'  => 2,
 
                         'container-Kitchen-5-Ltr-Caddy' => 1,
+
+                        bin_location => 'Top of the driveway',
                     },
                 },
             );
@@ -883,8 +890,10 @@ FixMyStreet::override_config {
                 ok $report->confirmed;
                 is $report->state, 'confirmed';
                 is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
-                is $report->get_extra_field_value('assisted_yn'), 'No',
+                is $report->get_extra_field_value('assisted_yn'), 'Yes',
                     'assisted_yn is correct';
+                is $report->get_extra_field_value('location_of_containers'),
+                    'Top of the driveway', 'location_of_containers is correct';
 
                 my $category = $report->category;
                 $extra{ $category }{ $report->get_extra_field_value('service_item_name') }
@@ -925,6 +934,7 @@ FixMyStreet::override_config {
         subtest 'Request sacks' => sub {
             $mech->submit_form_ok( { form_id => 'form-MDR-SACK-delivery' } );
 
+            $mech->content_lacks( 'Bin location', 'No bin location selection' );
             $mech->submit_form_ok(
                 {   with_fields => {
                         'container-MDR-SACK'   => 1,
@@ -996,6 +1006,8 @@ FixMyStreet::override_config {
             {   with_fields => {
                     'parent-Green-Wheelie-Bin-removal' => 1,
                     'bin-size-Green-Wheelie-Bin-removal' => 'RES-180',
+
+                    bin_location => 'Rear of property',
                 },
             },
         );
@@ -1011,6 +1023,8 @@ FixMyStreet::override_config {
 
                     'container-FO-23-removal' => 1,
                     'quantity-FO-23-removal'  => 2,
+
+                    bin_location => 'Rear of property',
                 },
             },
         );
@@ -1051,8 +1065,10 @@ FixMyStreet::override_config {
             is $report->state, 'confirmed';
             is $report->category, 'Request container removal';
             is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
-            is $report->get_extra_field_value('assisted_yn'), 'No',
+            is $report->get_extra_field_value('assisted_yn'), 'Yes',
                 'assisted_yn is correct';
+            is $report->get_extra_field_value('location_of_containers'),
+                'Rear of property', 'location_of_containers is correct';
             $extra{ $report->get_extra_field_value('service_item_name') }
                 = $report->get_extra_field_value('quantity');
         }
@@ -1060,6 +1076,18 @@ FixMyStreet::override_config {
             'RES-180'              => 1,
             'FO-23'                => 2,
         }, 'Extra data is correct';
+    };
+
+    subtest 'Default bin location for non-assisted' => sub {
+        $mech->get_ok('/waste/10003');
+        $mech->follow_link_ok(
+            { text_regex => qr /Order replacement/ } );
+        $mech->content_like(qr/type="hidden".*name="bin_location".*value="Front of property"/);
+
+        $mech->get_ok('/waste/10003');
+        $mech->follow_link_ok(
+            { text_regex => qr /Order removal/ } );
+        $mech->content_like(qr/type="hidden".*name="bin_location".*value="Front of property"/);
     };
 
     subtest 'Open container requests' => sub {
@@ -1116,9 +1144,8 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { household_size => 2 } });
             $mech->content_unlike(qr/name="container-PG-55"[^>]*disabled/, 'PG-55 option is not disabled');
             $mech->submit_form_ok( { with_fields => { 'container-Kitchen-5-Ltr-Caddy' => 1 } } );
-            $mech->content_like(qr/name="container-PG-55-removal"[^>]*disabled/, 'PG-55 option is disabled for removals');
             $mech->get_ok('/waste/10001/request?request_type=removal');
-            $mech->content_like(qr/name="container-PG-55-removal"[^>]*disabled/, 'PG-55 option is disabled');
+            $mech->content_like(qr/name="container-PG-55-removal"[^>]*disabled/, 'PG-55 option is disabled for removals');
         };
     };
 };
@@ -1139,6 +1166,13 @@ sub _site_info {
                 SiteLongitude    => 0.181108,
             },
         },
+        10003 => {
+            AccountSiteUPRN => 10003,
+            Site            => {
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
     };
 }
 
@@ -1154,7 +1188,13 @@ sub _site_collections {
     return {
         10001 => [
             {
-                ServiceItemName => 'RES-180', # Green Wheelie Bin
+                ServiceItemName => 'RES-180',
+                ServiceName => 'Green Wheelie Bin',
+                %defaults,
+            },
+            {
+                ServiceItemName => 'RES-180',
+                ServiceName => 'Assisted Collection', # Green Wheelie Bin assisted
                 %defaults,
             },
             {
@@ -1187,6 +1227,12 @@ sub _site_collections {
             },
             {
                 ServiceItemName => 'RES-SACK', # Black Sacks
+                %defaults,
+            },
+        ],
+        10003 => [
+            {
+                ServiceItemName => 'FO-23', # Brown Caddy
                 %defaults,
             },
         ],
