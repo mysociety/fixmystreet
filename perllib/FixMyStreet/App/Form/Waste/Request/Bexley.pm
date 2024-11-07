@@ -47,6 +47,13 @@ has_field request_reason => (
     label => 'Why do you need new containers?',
 );
 
+has_field submit => (
+    type => 'Submit',
+    value => 'Request bin delivery or removal',
+    element_attr => { class => 'govuk-button' },
+    order => 999,
+);
+
 sub options_request_reason {
     my $form = shift;
 

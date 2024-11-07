@@ -1293,7 +1293,7 @@ sub construct_bin_request_form {
 
         $page_list = [
             request => {
-                fields => [ grep { ! ref $_ } @$delivery_field_list, 'submit' ],
+                fields => [ grep { ! ref $_ } @$delivery_field_list, 'continue' ],
                 title => 'Which containers do you need?',
                 check_unique_id => 0,
                 next => $next,
@@ -1311,7 +1311,7 @@ sub construct_bin_request_form {
             push @$page_list, (
                 request_removal => {
                     intro => 'container_removal_intro.html',
-                    fields => [ grep { ! ref $_ } @$removal_field_list, 'submit' ],
+                    fields => [ grep { ! ref $_ } @$removal_field_list, 'continue' ],
                     title => 'Which containers do you need to be removed?',
                     check_unique_id => 0,
                     next => ( $include_reason ? 'request_reason' : 'about_you' ),
@@ -1327,7 +1327,7 @@ sub construct_bin_request_form {
         $page_list = [
             request_removal => {
                 intro  => 'container_removal_intro.html',
-                fields => [ grep { ! ref $_ } @$full_field_list, 'submit' ],
+                fields => [ grep { ! ref $_ } @$full_field_list, 'continue' ],
                 title => 'Which containers do you need to be removed?',
                 check_unique_id => 0,
                 next => 'request_reason',
