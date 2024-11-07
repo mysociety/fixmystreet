@@ -1365,7 +1365,7 @@ sub set_report_extras : Private {
         my ($metas, $param_prefix) = @$item;
         foreach my $field ( @$metas ) {
             if ( lc( $field->{required} || '' ) eq 'true' && !$c->cobrand->category_extra_hidden($field)) {
-                unless ( $c->get_param($param_prefix . $field->{code}) ) {
+                unless ( length $c->get_param($param_prefix . $field->{code}) ) { # Length to allow through "0" as an accepted answer
                     $c->stash->{field_errors}->{ 'x' . $field->{code} } = _('This information is required');
                 }
             }
