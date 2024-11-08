@@ -5,9 +5,4 @@
     <li>Please make sure you have read the <strong><a href="[% c.cobrand.call_hook('bulky_tandc_link') %]" target="_blank">bulky waste collection</a></strong> page on the council’s website</li>
     <li>In order to help us with your collection, you may wish to add pictures of the items to be collected and the location</li>
     <li>Before confirming your booking, you need to check all the information provided is correct</li>
-    [% UNLESS cobrand.call_hook('bulky_enabled_staff_only') %]
-        [% IF cobrand.moniker == 'peterborough' %]
-    <li>You can cancel your collection (and receive a refund) up until [% c.cobrand.bulky_nice_cancellation_cutoff_time %] the working day before your collection.</li>
-        [% END %]
-    [% END %]
 </ol>

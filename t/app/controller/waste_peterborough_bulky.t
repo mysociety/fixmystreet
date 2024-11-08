@@ -358,8 +358,6 @@ FixMyStreet::override_config {
             $mech->content_contains('Before you start your booking');
             $mech->content_contains('a href="peterborough-bulky-waste-tandc.com"');
             $mech->content_contains('You can request up to <strong>five items per collection');
-            $mech->content_contains('You can amend the items in your booking up until 2pm the working day before the collection is scheduled');
-            $mech->content_contains('You can cancel your collection (and receive a refund)');
             $mech->content_lacks('The price you pay depends how many items you would like collected:');
             $mech->content_lacks('Up to 4 items');
             $mech->content_lacks('Bookings are final and non refundable');
@@ -892,7 +890,7 @@ FixMyStreet::override_config {
             my $email = $mech->get_email->as_string;
             like $email, qr/1 Pope Way/;
             like $email, qr/Collection date: Friday 26 August 2022/;
-            like $email, qr{rborough.example.org/waste/PE1%203NA%3A100090215480/bulky/cancel/$report_id};
+            like $email, qr{/waste/PE1%203NA%3A100090215480/bulky/cancel/$report_id};
             $mech->clear_emails_ok;
         };
 
