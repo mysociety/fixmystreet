@@ -56,7 +56,7 @@ If you wish to cancel your booking, please visit:
 
 [% END %]
 
-[% IF cobrand.feature('waste_features').bulky_tandc_link AND NOT cobrand.moniker == 'peterborough' %]
+[% IF cobrand.feature('waste_features').bulky_tandc_link AND cobrand.moniker != 'peterborough' %]
 Please check you have read the terms and conditions [% cobrand.feature('waste_features').bulky_tandc_link %]
 [% END %]
 
