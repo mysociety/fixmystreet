@@ -55,6 +55,7 @@ sub updates_restriction { FixMyStreet::Cobrand::UKCouncils::updates_restriction(
 sub base_url { FixMyStreet::Cobrand::UKCouncils::base_url($_[0]) }
 sub contact_name { FixMyStreet::Cobrand::UKCouncils::contact_name($_[0]) }
 sub contact_email { FixMyStreet::Cobrand::UKCouncils::contact_email($_[0]) }
+sub users_staff_admin { FixMyStreet::Cobrand::UKCouncils::users_staff_admin($_[0]) }
 
 =item * Any report made when the site was only fully anonymous should remain anonymous
 

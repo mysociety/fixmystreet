@@ -238,6 +238,7 @@ sub summary_failures {
     while (my $row = $u->next) {
         next unless $row->problem->whensent;
         next if $row->send_fail_reason eq "Skipping posting due to wait" && $row->send_fail_count < 5;
+        next if $row->problem->to_body_named('Bromley') && $row->send_fail_reason =~ /Invalid ActionType specified/; # Bromley issue with certain updates
         my $url = $base_url . "/report/" . $row->problem_id;
         $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* $url, update " . $row->id . " failed "
             . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
