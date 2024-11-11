@@ -366,6 +366,43 @@ FixMyStreet::override_config {
         $mech->log_out_ok;
     };
 
+    subtest 'Request larger refuse bin' => sub {
+        $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '35';
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({ text => 'Request a larger refuse container' });
+        $mech->submit_form_ok({ with_fields => { medical_condition => 'No' } });
+        $mech->submit_form_ok({ with_fields => { how_many => 'less5' } });
+        $mech->content_contains('Sorry, you are not eligible');
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { how_many => '5more' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->back;
+        $mech->back;
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { medical_condition => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { how_much => 'less1' } });
+        $mech->content_contains('How many people live');
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { how_much => '3more' } });
+        $mech->content_contains('Clinical waste');
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { how_much => '1or2' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('name="goto" value="medical_condition"');
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('request has been sent');
+        $mech->content_contains('consider your request');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA";
+        is $report->title, 'Request exchange for Black rubbish bin (240L)';
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('attribute[Action]'), '2::1';
+        is $cgi->param('attribute[Reason]'), '3::3';
+        $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '1'; # Reset
+    };
 
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/12345/report');
