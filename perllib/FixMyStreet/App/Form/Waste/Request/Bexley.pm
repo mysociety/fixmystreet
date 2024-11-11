@@ -62,6 +62,7 @@ sub options_request_reason {
         'My existing bin is damaged',
         'My existing bin has gone missing',
         'I have moved into a new development',
+        'Bins are no longer required',
     );
     return map { { label => $_, value => $_ } } @options;
 }
