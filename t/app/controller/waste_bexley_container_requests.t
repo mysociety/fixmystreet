@@ -701,7 +701,7 @@ FixMyStreet::override_config {
         $mech->content_lacks("$removal_string brown wheelie bin");
 
         $mech->content_contains('Order replacement bins');
-        $mech->content_contains('Order removal of old containers');
+        $mech->content_contains('Order removal of old bins');
         $mech->content_contains('Order lids');
 
         subtest 'Green wheelie bin' => sub {
@@ -800,7 +800,7 @@ FixMyStreet::override_config {
             );
 
             $mech->content_contains(
-                'Which containers do you need to be removed?',
+                'Which bins do you need to be removed?',
                 'On removal page' );
             $mech->content_contains('We are unable to collect kitchen caddies',
                 'Contains intro text');
@@ -852,9 +852,9 @@ FixMyStreet::override_config {
             $mech->content_like(qr/govuk-summary-list__value.*3/);
 
             $mech->submit_form_ok(
-                { with_fields => { submit => 'Request new containers' } } );
+                { with_fields => { submit => 'Request bin delivery or removal' } } );
 
-            $mech->content_contains( 'Your container request has been sent',
+            $mech->content_contains( 'Your bin request has been sent',
                 'Request successful' );
 
             note 'Confirmation summary';
@@ -909,7 +909,7 @@ FixMyStreet::override_config {
         $mech->content_lacks("$removal_string black sack(s)");
 
         $mech->content_contains('Order replacement bins');
-        $mech->content_lacks('Order removal of old containers');
+        $mech->content_lacks('Order removal of old bins');
         $mech->content_lacks('Order lids');
 
         subtest 'Request sacks' => sub {
@@ -939,9 +939,9 @@ FixMyStreet::override_config {
             $mech->content_contains('Clear Sack(s) (Mixed recycling)');
 
             $mech->submit_form_ok(
-                { with_fields => { submit => 'Request new containers' } } );
+                { with_fields => { submit => 'Request bin delivery or removal' } } );
 
-            $mech->content_contains( 'Your container request has been sent',
+            $mech->content_contains( 'Your bin request has been sent',
                 'Request successful' );
 
             my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
@@ -1009,9 +1009,9 @@ FixMyStreet::override_config {
         $mech->content_like(qr/govuk-summary-list__value.*2/);
 
         $mech->submit_form_ok(
-            { with_fields => { submit => 'Request new containers' } } );
+            { with_fields => { submit => 'Request bin delivery or removal' } } );
 
-        $mech->content_contains( 'Your container request has been sent',
+        $mech->content_contains( 'Your bin request has been sent',
             'Request successful' );
 
         my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
@@ -1061,8 +1061,8 @@ FixMyStreet::override_config {
         $open_container_request2->update({ external_id => "Whitespace-DEF" });
 
         $mech->get_ok('/waste/10001');
-        $mech->content_contains("A white recycling box container delivery request has been made");
-        $mech->content_contains("A green wheelie bin container delivery request has been made");
+        $mech->content_contains("A white recycling box delivery request has been made");
+        $mech->content_contains("A green wheelie bin delivery request has been made");
         $mech->get_ok('/waste/10001/request?request_type=delivery');
         $mech->submit_form_ok({ with_fields => { household_size => 2 } });
         $mech->content_like(qr/name="container-PG-55"[^>]*disabled/, 'PG-55 option is disabled');
@@ -1083,7 +1083,7 @@ FixMyStreet::override_config {
             ] } );
 
             $mech->get_ok('/waste/10001');
-            $mech->content_contains("A white recycling box container collection request has been made");
+            $mech->content_contains("A white recycling box collection request has been made");
             $mech->get_ok('/waste/10001/request?request_type=delivery');
             $mech->submit_form_ok({ with_fields => { household_size => 2 } });
             $mech->content_unlike(qr/name="container-PG-55"[^>]*disabled/, 'PG-55 option is not disabled');

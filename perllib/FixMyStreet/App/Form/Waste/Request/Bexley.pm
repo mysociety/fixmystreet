@@ -44,7 +44,7 @@ has_field request_reason => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
-    label => 'Why do you need new containers?',
+    label => 'Why do you need new bins?',
 );
 
 has_field submit => (
