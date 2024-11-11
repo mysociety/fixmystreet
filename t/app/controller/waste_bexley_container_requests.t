@@ -173,7 +173,7 @@ subtest '_set_request_containers' => sub {
     note 'Checking containers set on property';
     cmp_deeply $property, {
         household_size_check => 1,
-        can_order_lids => 1,
+        has_boxes => 1,
 
         containers_for_delivery => [
             {   name        => 'Green Wheelie Bin',

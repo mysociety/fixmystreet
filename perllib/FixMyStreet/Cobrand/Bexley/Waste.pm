@@ -1294,6 +1294,7 @@ sub construct_bin_request_form {
 
         $page_list = [
             request => {
+                intro => 'container_delivery_intro.html',
                 fields => [ grep { ! ref $_ } @$delivery_field_list, 'continue' ],
                 title => 'Which bins do you need?',
                 check_unique_id => 0,
@@ -1400,7 +1401,7 @@ sub _construct_bin_request_form_delivery {
                     tags  => {
                         hint => "You can request a maximum of "
                             . NUMWORDS($max)
-                            . " bins",
+                            . ( $container->{name} eq 'Recycling Box Lids' ? ' lids' : ' bins' ),
                         initial_hidden => 1,
                     },
                     options => [
@@ -1722,7 +1723,7 @@ sub _set_request_containers {
                 push @containers_for_delivery,
                     _containers_for_requests()->{'Recycling Box Lids'};
 
-                $property->{can_order_lids} = 1;
+                $property->{has_boxes} = 1;
             }
 
             $boxes_done = 1;
