@@ -370,8 +370,15 @@ sub waste_munge_enquiry_data {
     $data->{title} = $data->{category};
 
     my $detail;
-    foreach (sort grep { /^extra_/ } keys %$data) {
-        $detail .= "$data->{$_}\n\n";
+    if ($data->{category} eq 'Bin not returned') {
+        $detail .= ($data->{'extra_Report_Type'} eq '1' ? 'Bin position' : 'Lid not closed') . "\n\n";
+        $detail .= ($data->{'extra_Crew_Required_to_Return?'} eq '1' ? 'Request bin collectors return'
+            : 'No request for bin collectors return') ."\n\n";
+        $detail .= ($data->{'extra_Notes'} ? $data->{'extra_Notes'} : '') . "\n\n";
+    } else {
+        foreach (sort grep { /^extra_/ } keys %$data) {
+            $detail .= "$data->{$_}\n\n";
+        }
     }
     $detail .= $address;
     $data->{detail} = $detail;
