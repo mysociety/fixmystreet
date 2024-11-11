@@ -901,8 +901,9 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste/10002');
 
-        $mech->content_contains("$new_string clear sack(s)");
+        $mech->content_contains("Request a delivery of clear sack(s)");
         $mech->content_lacks("$new_string black sack(s)");
+        $mech->content_lacks("Request a delivery of black sack(s)");
 
         $mech->content_lacks("$removal_string clear sack(s)");
         $mech->content_lacks("$removal_string black sack(s)");
