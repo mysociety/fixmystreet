@@ -852,8 +852,16 @@ FixMyStreet::override_config {
             $mech->content_like(qr/govuk-summary-list__value.*3/);
 
             $mech->submit_form_ok({ with_fields => { declaration => 1 } });
-            $mech->content_contains( 'Your container request has been sent',
+            $mech->content_contains( 'Your bin request has been sent',
                 'Request successful' );
+
+            note 'Confirmation summary';
+            $mech->content_contains( 'class="li-delivery">Green Wheelie Bin' );
+            $mech->content_contains( 'class="li-delivery">White Recycling Box' );
+            $mech->content_contains( 'class="li-delivery">Recycling Box Lids' );
+            $mech->content_contains( 'class="li-delivery">Brown Caddy' );
+            $mech->content_contains( 'class="li-removal">Green Wheelie Bin' );
+            $mech->content_contains( 'class="li-removal">Brown Caddy' );
 
             my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
             is $rows->count, 7, 'correct number of reports raised';
@@ -928,7 +936,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Clear Sack(s) (Mixed recycling)');
 
             $mech->submit_form_ok({ with_fields => { declaration => 1 } });
-            $mech->content_contains( 'Your container request has been sent',
+            $mech->content_contains( 'Your bin request has been sent',
                 'Request successful' );
 
             my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
@@ -996,7 +1004,7 @@ FixMyStreet::override_config {
         $mech->content_like(qr/govuk-summary-list__value.*2/);
 
         $mech->submit_form_ok({ with_fields => { declaration => 1 } });
-        $mech->content_contains( 'Your container request has been sent',
+        $mech->content_contains( 'Your bin request has been sent',
             'Request successful' );
 
         my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
