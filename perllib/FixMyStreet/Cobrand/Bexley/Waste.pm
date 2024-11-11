@@ -1631,6 +1631,7 @@ sub _set_request_containers {
 
             $service->{delivery_allowed} = 1;
             $service->{removal_allowed}  = 1;
+            $service->{parent_name} = $name;
 
         } elsif ( $service_id eq 'PC-140'
             || $service_id eq 'PC-180'
@@ -1644,6 +1645,7 @@ sub _set_request_containers {
 
             $service->{delivery_allowed} = 1;
             $service->{removal_allowed}  = 1;
+            $service->{parent_name} = $name;
 
         } elsif ( $service_id eq 'PG-140'
             || $service_id eq 'PG-180'
@@ -1657,6 +1659,7 @@ sub _set_request_containers {
 
             $service->{delivery_allowed} = 1;
             $service->{removal_allowed}  = 1;
+            $service->{parent_name} = $name;
 
         } elsif ( $service_id eq 'FO-23' ) {
             my $food_waste
