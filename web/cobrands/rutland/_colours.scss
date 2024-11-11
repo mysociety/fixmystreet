@@ -9,13 +9,16 @@ $menu-image: 'menu-black';
 
 $orange: #ff9900;
 $bluey: #6688ff;
-$RCCGreen: #a7b980;
+$blue: #001E61; // Links
+$RCCGreen: #009977;
 $RCCGreen_dark: #265123;
 $RCCbg: #F1F1F1;
 
 $primary: $RCCGreen;
 $primary_b: #000000;
-$primary_text: #222222;
+$primary_text: #000000;
+$link-color: $blue;
+$link-hover-color: lighten($blue, 15%);
 $primary_link_color: $primary_text;
 $primary_link_hover_color: rgba($primary_text, 0.8);
 
@@ -29,11 +32,9 @@ $nav_hover_background_colour: $primary;
 // Colour used for front page 'how to report a problem' steps
 $col_big_numbers: #ccc;
 
-$col_click_map: $RCCGreen_dark;
+$col_click_map:$RCCGreen;
 
-//$image-sprite: '/cobrands/rutland/RCCLogo.gif';
-
-$front-main-background-desktop: $primary;
+$front-main-background-desktop: #03a27e;
 
 $button-primary-bg-top: $primary;
 $button-primary-border: $primary;
