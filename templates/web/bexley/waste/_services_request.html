@@ -1,4 +1,5 @@
-[% IF unit.delivery_allowed && !unit.delivery_open %]
+[% SET is_box = unit.service_name.match('Box$') %]
+[% IF ( unit.delivery_allowed || is_box ) && !unit.delivery_open %]
   <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=delivery" id="form-[% unit.service_id %]-delivery">
 
     <input type="hidden" name="token" value="[% csrf_token %]">
@@ -15,7 +16,7 @@
       [% END %]
     [% END %]
 
-    <input type="submit" value="[% IF unit.service_name == 'Clear Sack(s)' %]Request a delivery of[% ELSE %]Request a new or replacement[% END %] [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+    <input type="submit" value="[% IF unit.service_name == 'Clear Sack(s)' %]Request a delivery of[% ELSE %]Request a new or replacement[% END %] [% IF unit.delivery_allowed %][% unit.service_name FILTER lower %][% ELSE %]recycling box[% END %]" class="waste-service-descriptor waste-service-link">
   </form>
 [% END %]
 
