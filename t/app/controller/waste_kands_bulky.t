@@ -645,7 +645,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Cancel booking');
 
         $report->discard_changes;
-        is $report->state, 'closed', 'Original report closed';
+        is $report->state, 'cancelled', 'Original report cancelled';
         like $report->detail, qr/Cancelled at user request/, 'Original report detail field updated';
 
         subtest 'Viewing original report summary after cancellation' => sub {

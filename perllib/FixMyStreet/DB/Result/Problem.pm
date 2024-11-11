@@ -1606,7 +1606,7 @@ sub bulky_add_payment_confirmation_update {
 sub bulky_cancel_collection {
     my ($self, $type, $non_user_cancel) = @_;
 
-    $self->state('closed');
+    $self->state('cancelled');
     my $description = $non_user_cancel
         ? "Cancelled" : $type eq 'amendment' ? 'Cancelled due to amendment' : "Cancelled at user request";
     $self->detail($self->detail . " | " . $description);

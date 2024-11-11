@@ -1272,7 +1272,7 @@ sub cancel_bulky_collections_without_payment {
                 user_id => $self->body->comment_user_id,
                 extra => { bulky_cancellation => 1 },
             });
-            $report->state('closed');
+            $report->state('cancelled');
             $report->detail(
                 $report->detail . " | Cancelled since payment was not made in time"
             );
