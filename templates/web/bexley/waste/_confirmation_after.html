@@ -1,4 +1,11 @@
-[% IF report.category == 'Report missed collection' %]
+[%
+  is_missed_collection = report.category == 'Report missed collection';
+  is_delivery_request = report.category == 'Request new container';
+  is_removal_request = report.category == 'Request container removal';
+  is_container_request = is_delivery_request || is_removal_request;
+%]
+
+[% IF is_missed_collection %]
 
   <h2>Bins reported as missed:</h2>
   <p>
@@ -19,7 +26,62 @@
     <br>
     Please leave your bin(s) out until our contractor returns.
     <br>
-    If you need to contact us about this report, please quote your reference number.
+    If you need to contact us about a report, please quote its reference number.
+  </p>
+
+  <br>
+
+[% ELSIF is_container_request %]
+
+  [%
+    titles = [ report.title ]; titles.import( report.get_extra_metadata('grouped_titles') );
+
+    delivery_prefix = 'Request new ';
+    removal_prefix = 'Request removal of ';
+    delivery_titles = [];
+    removal_titles = [];
+
+    FOR title IN titles;
+      IF title.match(delivery_prefix);
+        delivery_titles.push( title.remove(delivery_prefix) );
+      ELSIF title.match(removal_prefix);
+        removal_titles.push( title.remove(removal_prefix) );
+      END;
+    END;
+  %]
+
+  [% IF delivery_titles.size %]
+    <h2>New bin(s) requested for delivery:</h2>
+    <p>
+      <ul>
+        [% FOR title IN delivery_titles %]
+          <li class="li-delivery">[% title %]</li>
+        [% END %]
+      </ul>
+    </p>
+  [% END %]
+
+  [% IF removal_titles.size %]
+    <h2>Old bin(s) requested for collection:</h2>
+    <p>
+      <ul>
+        [% FOR title IN removal_titles %]
+          <li class="li-removal">[% title %]</li>
+        [% END %]
+      </ul>
+    </p>
+  [% END %]
+
+  <h2>Address:</h2>
+  <p>[% property.address %]</p>
+
+  <h2>What happens next?</h2>
+  <p>
+    Your request has been sent to our waste contractor and will be completed within [% cobrand.wasteworks_config.request_timeframe || '10 working days' %].
+    <br>
+    Please ensure that old bins which are due to be collected are left somewhere they can be accessed.
+    <br>
+    If you need to contact us about a report, please quote its reference number.
   </p>
 
   <br>
