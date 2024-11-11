@@ -751,6 +751,28 @@ FixMyStreet::override_config {
             );
         };
 
+        subtest 'Check that containers are preselected' => sub {
+            $mech->get_ok('/waste/10001');
+            $mech->submit_form_ok( { form_id => 'form-RES-180-delivery' } );
+            $mech->submit_form_ok(
+                { with_fields => { household_size => 3 } } );
+            $mech->content_contains('name="parent-Green-Wheelie-Bin" value="1"', 'Green Wheelie Bin preselected for delivery');
+
+            $mech->get_ok('/waste/10001');
+            $mech->submit_form_ok( { form_id => 'form-RES-180-removal' } );
+            $mech->content_contains('name="container-RES-180-removal" value="1"', 'Green Wheelie Bin preselected for removal');
+
+            $mech->get_ok('/waste/10001');
+            $mech->submit_form_ok( { form_id => 'form-PG-55-delivery' } );
+            $mech->submit_form_ok(
+                { with_fields => { household_size => 3 } } );
+            $mech->content_contains('name="container-PG-55" value="1"', 'White Recycling Box preselected for delivery');
+
+            $mech->get_ok('/waste/10001');
+            $mech->submit_form_ok( { form_id => 'form-PG-55-removal' } );
+            $mech->content_contains('name="container-PG-55-removal" value="1"', 'White Recycling Box preselected for removal');
+        };
+
         subtest 'Request multiple containers' => sub {
             $mech->get_ok('/waste/10001');
             $mech->follow_link_ok(
