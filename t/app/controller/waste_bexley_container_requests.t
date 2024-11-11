@@ -857,6 +857,14 @@ FixMyStreet::override_config {
             $mech->content_contains( 'Your container request has been sent',
                 'Request successful' );
 
+            note 'Confirmation summary';
+            $mech->content_contains( 'class="li-delivery">Green Wheelie Bin' );
+            $mech->content_contains( 'class="li-delivery">White Recycling Box' );
+            $mech->content_contains( 'class="li-delivery">Recycling Box Lids' );
+            $mech->content_contains( 'class="li-delivery">Brown Caddy' );
+            $mech->content_contains( 'class="li-removal">Green Wheelie Bin' );
+            $mech->content_contains( 'class="li-removal">Brown Caddy' );
+
             my $rows = FixMyStreet::DB->resultset("Problem")->order_by('id');
             is $rows->count, 7, 'correct number of reports raised';
 
