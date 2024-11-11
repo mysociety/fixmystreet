@@ -60,6 +60,11 @@ INCLUDE '_email_top.html';
     <strong>Use track your request link to check for your scheduled delivery date.</strong>
   </p>
 
+[% ELSIF cobrand.moniker == 'merton' AND report.category == 'Waste spillage' OR report.category == 'Bin not returned' %]
+  <p style="[% p_style %]">
+  Your report over the problem with your bin collection has been made to the council.
+  </p>
+
 [% ELSE %]
 
     [% IF report.category == 'Report missed collection' %]

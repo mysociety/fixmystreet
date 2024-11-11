@@ -1,0 +1,16 @@
+[%
+
+f = [];
+service_id = c.req.params.service_id;
+service = services.$service_id;
+
+f.push(
+    { value = 'Bin not returned', label = 'Bin not returned correctly' },
+    { value = 'Waste spillage', label = 'Waste spillage' },
+);
+
+PROCESS waste/enquiry.html
+    title = 'Report a problem'
+    field_options = f;
+
+%]
