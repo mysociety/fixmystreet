@@ -15,7 +15,7 @@
       [% END %]
     [% END %]
 
-    <input type="submit" value="Request a new or replacement [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+    <input type="submit" value="[% IF unit.service_name == 'Clear Sack(s)' %]Request a delivery of[% ELSE %]Request a new or replacement[% END %] [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
   </form>
 [% END %]
 
