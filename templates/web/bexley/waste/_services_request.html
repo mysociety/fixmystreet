@@ -5,7 +5,15 @@
 
     [% form %]
 
-    <input type="hidden" name="container-[% unit.service_id %]" value="1">
+    [% # If deprecated box, preselect that box on removal options page (as it won't be available on delivery options page) %]
+    [% IF is_box && !unit.delivery_allowed %]
+      <input type="hidden" name="container-[% unit.service_id %]-removal" value="1">
+    [% ELSE %]
+      <input type="hidden" name="container-[% unit.service_id %]" value="1">
+      [% IF unit.parent_name %]
+        <input type="hidden" name="parent-[% unit.parent_name.replace(' ','-') %]" value="1">
+      [% END %]
+    [% END %]
 
     <input type="submit" value="Request a new or replacement [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
   </form>
@@ -18,7 +26,7 @@
 
     [% form %]
 
-    <input type="hidden" name="container-[% unit.service_id %]" value="1">
+    <input type="hidden" name="container-[% unit.service_id %]-removal" value="1">
 
     <input type="submit" value="Request removal of a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
   </form>
