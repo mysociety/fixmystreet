@@ -88,6 +88,7 @@ sub send {
     $row->discard_changes;
 
     if ( $skip || $resp ) {
+        $row->unset_extra_metadata('open311_category_override'); # If we were overridden, we don't want to keep that for future
         $row->update({ external_id => $resp });
         $self->success( 1 );
     } else {

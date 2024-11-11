@@ -891,12 +891,8 @@ subtest 'redirecting of reports between backends' => sub {
             });
             $report->cobrand_data('waste');
             $report->update;
-            FixMyStreet::override_config {
-                ALLOWED_COBRANDS => 'bromley',
-            }, sub {
-                my $updates = Open311::PostServiceRequestUpdates->new();
-                $updates->send;
-            };
+            my $updates = Open311::PostServiceRequestUpdates->new();
+            $updates->send;
 
             $comment->discard_changes;
             is $comment->send_state, 'unprocessed', "did not send";
@@ -904,12 +900,7 @@ subtest 'redirecting of reports between backends' => sub {
             $comment->update({ send_fail_count => 0 });
             $report->update({ cobrand_data => '' });
 
-            FixMyStreet::override_config {
-                ALLOWED_COBRANDS => 'bromley',
-            }, sub {
-                my $updates = Open311::PostServiceRequestUpdates->new();
-                $updates->send;
-            };
+            $updates->send;
 
             $report->discard_changes;
             is $report->get_extra_metadata('open311_category_override'), 'Street Services', 'category override applied';
@@ -920,13 +911,7 @@ subtest 'redirecting of reports between backends' => sub {
             $comment->discard_changes;
             is $comment->send_state, 'skipped', "skipped sending comment";
 
-            FixMyStreet::override_config {
-                STAGING_FLAGS => { send_reports => 1 },
-                ALLOWED_COBRANDS => [ 'bromley' ],
-                MAPIT_URL => 'http://mapit.uk/',
-            }, sub {
-                FixMyStreet::Script::Reports::send();
-            };
+            FixMyStreet::Script::Reports::send();
 
             $report->discard_changes;
             is $report->send_state, 'sent', 'report was resent';
@@ -949,6 +934,27 @@ subtest 'redirecting of reports between backends' => sub {
             my $comment = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
             is $comment->text, 'Template text';
         };
+
+        subtest "Echo then redirect it back to Confirm" => sub {
+            my $in = $mech->echo_notify_xml('guid', 2104, 15004, 1252);
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 4, 'A new update';
+            $report->discard_changes;
+            is $report->state, 'in progress', 'A state change';
+            is $report->get_extra_metadata('external_status_code'), 1252;
+            my $comment = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $comment->text, 'Completed';
+
+            FixMyStreet::Script::Reports::send();
+
+            $report->discard_changes;
+            is $report->send_state, 'sent', 'report was resent';
+
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
+        };
+
     };
 };
 
