@@ -1294,8 +1294,8 @@ sub construct_bin_request_form {
 
         $page_list = [
             request => {
-                fields => [ grep { ! ref $_ } @$delivery_field_list, 'submit' ],
-                title => 'Which containers do you need?',
+                fields => [ grep { ! ref $_ } @$delivery_field_list, 'continue' ],
+                title => 'Which bins do you need?',
                 check_unique_id => 0,
                 next => $next,
                 update_field_list => sub {
@@ -1312,8 +1312,8 @@ sub construct_bin_request_form {
             push @$page_list, (
                 request_removal => {
                     intro => 'container_removal_intro.html',
-                    fields => [ grep { ! ref $_ } @$removal_field_list, 'submit' ],
-                    title => 'Which containers do you need to be removed?',
+                    fields => [ grep { ! ref $_ } @$removal_field_list, 'continue' ],
+                    title => 'Which bins do you need to be removed?',
                     check_unique_id => 0,
                     next => ( $include_reason ? 'request_reason' : 'about_you' ),
                 },
@@ -1328,8 +1328,8 @@ sub construct_bin_request_form {
         $page_list = [
             request_removal => {
                 intro  => 'container_removal_intro.html',
-                fields => [ grep { ! ref $_ } @$full_field_list, 'submit' ],
-                title => 'Which containers do you need to be removed?',
+                fields => [ grep { ! ref $_ } @$full_field_list, 'continue' ],
+                title => 'Which bins do you need to be removed?',
                 check_unique_id => 0,
                 next => 'request_reason',
             },
@@ -1400,7 +1400,7 @@ sub _construct_bin_request_form_delivery {
                     tags  => {
                         hint => "You can request a maximum of "
                             . NUMWORDS($max)
-                            . " containers",
+                            . " bins",
                         initial_hidden => 1,
                     },
                     options => [
@@ -1457,7 +1457,7 @@ sub _construct_bin_request_form_removal {
                 type => 'Select',
                 label => 'Quantity',
                 tags => {
-                    hint => "You can request removal of a maximum of " . NUMWORDS($max) . " containers",
+                    hint => "You can request removal of a maximum of " . NUMWORDS($max) . " bins",
                     initial_hidden => 1,
                 },
                 options => [
@@ -1632,6 +1632,7 @@ sub _set_request_containers {
 
             $service->{delivery_allowed} = 1;
             $service->{removal_allowed}  = 1;
+            $service->{parent_name} = $name;
 
         } elsif ( $service_id eq 'PC-140'
             || $service_id eq 'PC-180'
@@ -1645,6 +1646,7 @@ sub _set_request_containers {
 
             $service->{delivery_allowed} = 1;
             $service->{removal_allowed}  = 1;
+            $service->{parent_name} = $name;
 
         } elsif ( $service_id eq 'PG-140'
             || $service_id eq 'PG-180'
@@ -1658,6 +1660,7 @@ sub _set_request_containers {
 
             $service->{delivery_allowed} = 1;
             $service->{removal_allowed}  = 1;
+            $service->{parent_name} = $name;
 
         } elsif ( $service_id eq 'FO-23' ) {
             my $food_waste

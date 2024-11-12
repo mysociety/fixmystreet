@@ -44,7 +44,14 @@ has_field request_reason => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
-    label => 'Why do you need new containers?',
+    label => 'Why do you need new bins?',
+);
+
+has_field submit => (
+    type => 'Submit',
+    value => 'Request bin delivery or removal',
+    element_attr => { class => 'govuk-button' },
+    order => 999,
 );
 
 sub options_request_reason {
@@ -55,6 +62,7 @@ sub options_request_reason {
         'My existing bin is damaged',
         'My existing bin has gone missing',
         'I have moved into a new development',
+        'Bins are no longer required',
     );
     return map { { label => $_, value => $_ } } @options;
 }
