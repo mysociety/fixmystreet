@@ -94,6 +94,25 @@ FixMyStreet::override_config {
         $report->discard_changes;
         is $report->get_extra_metadata('sent_to_council'), 'Gedling Borough Council';
     };
+
+    subtest 'check new permission is available' => sub {
+        $mech->log_in_ok($staff->email);
+        $staff->user_body_permissions->create({ body => $notts_police, permission_type => 'user_edit' });
+        $staff->user_body_permissions->create({ body => $notts_police, permission_type => 'user_manage_permissions' });
+
+        $mech->get("/admin/users/" . $staff->id);
+        $mech->content_contains('Add/remove states');
+    };
+
+    subtest 'check states page behind permission' => sub {
+        $mech->log_in_ok($staff->email);
+
+        $mech->get("/admin/states");
+        is $mech->status, 404, "Staff user can't access states page without permission";
+
+        $staff->user_body_permissions->create({ body => $notts_police, permission_type => 'manage_states' });
+        $mech->get_ok("/admin/states");
+    };
 };
 
 subtest 'Permissions for report updates' => sub {

@@ -190,4 +190,36 @@ sub example_places {
     return [ 'NG2 3DZ', 'Meadows Way, Nottingham' ];
 }
 
+=head2 available_permissions
+
+Add the manage_states permission to the list of available permissions.
+
+=cut
+
+sub available_permissions {
+    my $self = shift;
+    my $perms = $self->next::method();
+    $perms->{Problems}->{manage_states} = "Add/remove states";
+    return $perms;
+}
+
+=head2 admin_pages
+
+Users with the manage_states permission can access the states admin page.
+
+=cut
+
+sub admin_pages {
+    my $self = shift;
+    my $pages = $self->next::method();
+
+    if ( $self->{c}->user->has_body_permission_to('manage_states') ) {
+        $pages->{states} = [ _('States'), 102 ];
+    };
+
+    return $pages;
+}
+
+
+
 1;
