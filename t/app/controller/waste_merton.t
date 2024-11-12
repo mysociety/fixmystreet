@@ -538,7 +538,9 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a problem with a non-recyclable waste collection', 'Can report a problem with non-recyclable waste');
         $mech->content_contains('Report a problem with a food waste collection', 'Can report a problem with food waste');
-        $mech->content_lacks('Report a problem with a paper and card collection', 'Can not report a problem with paper and card');
+        $mech->content_contains('Report a problem with a paper and card collection', 'Can report a problem with paper and card');
+        $mech->content_lacks('Report a problem with a textiles and shoes collection', 'Can not report a problem with a textiles collection');
+        $mech->content_lacks('Report a problem with a batteries collection', 'Can not report a problem with a batteries collection');
         $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
         $mech->submit_form_ok( { with_fields => { extra_Report_Type => '1', 'extra_Crew_Required_to_Return?' => '0' } });
@@ -552,6 +554,7 @@ FixMyStreet::override_config {
         is $report->detail, "Bin position\n\nNo request for bin collectors return\n\n2 Example Street, Merton, KT1 1AA", "Details of report contain information about problem";
         is $report->user->email, 'schmoe@example.org', 'User details added to report';
         is $report->name, 'Joe Schmoe', 'User details added to report';
+        is $report->category, 'Bin not returned', "Correct category";
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_email;
         is $mech->get_text_body_from_email($email) =~ /Your report over the problem with your bin collection has been made to the council/, 1, 'Other problem text included in email';
@@ -560,6 +563,29 @@ FixMyStreet::override_config {
         is $cgi->param('api_key'), 'KEY';
         is $cgi->param('attribute[Report_Type]'), '1', "Report_Type added to open311 data for Echo";
         is $cgi->param('attribute[Crew_Required_to_Return?]'), '0', "Crew_Required_to_Return? added to open311 data for Echo";
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
+        $mech->submit_form_ok( { with_fields => { category => 'Waste spillage' } });
+        $mech->submit_form_ok( { with_fields => { extra_Notes => 'Rubbish left on driveway' } });
+        $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+        $mech->submit_form_ok( { with_fields => { submit => '1' } });
+        $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
+        $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->category, 'Waste spillage', "Correct category";
+        is $report->get_extra_field_value('Notes'), 'Rubbish left on driveway', "Notes filled in";
+        is $report->detail, "Rubbish left on driveway\n\n2 Example Street, Merton, KT1 1AA", "Details of report contain information about problem";
+        is $report->user->email, 'schmoe@example.org', 'User details added to report';
+        is $report->name, 'Joe Schmoe', 'User details added to report';
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        $email = $mech->get_email;
+        is $mech->get_text_body_from_email($email) =~ /Your report over the problem with your bin collection has been made to the council/, 1, 'Other problem text included in email';
+        $req = Open311->test_req_used;
+        $cgi = CGI::Simple->new($req->content);
+        is $cgi->param('api_key'), 'KEY';
+        is $cgi->param('attribute[Notes]'), 'Rubbish left on driveway', "Notes added to open311 data for Echo";
     };
 
     subtest 'test staff-only additional collection' => sub {

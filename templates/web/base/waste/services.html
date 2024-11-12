@@ -28,7 +28,7 @@
     [% IF is_staff AND NOT unit.orange_bag %]
         <a href="[% c.uri_for_action('waste/report', [ property.id ]) %]?additional=1&amp;service-[% unit.service_id %]=1" class="waste-service-link waste-service-descriptor">Request an additional [% unit.service_name FILTER lower %] collection</a>
     [% END %]
-    [% IF c.cobrand.waste_report_problem(unit.service_id) %]
+    [% IF NOT unit.orange_bag %]
         <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
     [% END %]
 [% END %]

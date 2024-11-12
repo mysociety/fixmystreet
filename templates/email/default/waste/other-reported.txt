@@ -43,7 +43,7 @@ On delivery day - You do not need to be home for our crew to deliver the bin.
 Collecting your old bin - If you've requested a collection of your old bin, we'll schedule a specific date for our
 crew to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
 
-[% ELSIF cobrand.moniker == 'merton' AND report.category == 'Waste spillage' OR report.category == 'Bin not returned' %]
+[% ELSIF cobrand.moniker == 'merton' AND (report.category == 'Waste spillage' OR report.category == 'Bin not returned') %]
   Your report over the problem with your bin collection has been made to the council.
 
 [% ELSE %]

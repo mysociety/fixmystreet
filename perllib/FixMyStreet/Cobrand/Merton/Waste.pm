@@ -383,15 +383,6 @@ sub waste_post_report_creation {
     }
 }
 
-sub waste_report_problem {
-    my ($self, $service) = @_;
-
-    my @problem_report_services = ("2238", "2239", "2241", "2242", "2243", "2247", "2250");
-
-    return grep { $service eq $_ } @problem_report_services;
-
-}
-
 =head2 Bulky waste collection
 
 Merton has a 6am collection and cut-off for cancellation time.
