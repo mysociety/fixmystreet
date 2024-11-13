@@ -7,6 +7,7 @@ with 'FixMyStreet::Roles::Cobrand::Adelante';
 
 use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
+use FixMyStreet::App::Form::Waste::Request::Merton::Larger;
 
 =over 4
 
@@ -260,6 +261,22 @@ sub staff_override_request_options {
     push @$rows, \%new_row;
 }
 
+=head2 waste_munge_request_form_pages
+
+Larger bin request has a separate request flow
+
+=cut
+
+sub waste_munge_request_form_pages {
+    my ($self, $page_list, $field_list) = @_;
+    my $c = $self->{c};
+
+    if ($c->get_param('exchange')) {
+        $c->stash->{first_page} = 'medical_condition';
+        $c->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::Merton::Larger";
+    }
+}
+
 sub waste_request_form_first_next {
     my $self = shift;
     return sub {
@@ -277,10 +294,16 @@ sub waste_munge_request_data {
     my $container = $c->stash->{containers}{$id};
     my $quantity = $data->{"quantity-$id"} || 1;
     my $reason = $data->{request_reason} || '';
-    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
+    my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason)
+        if $reason;
 
     my ($action_id, $reason_id);
-    if ($reason eq 'damaged') {
+    if ($data->{medical_condition}) { # Filled in the larger form
+        $reason = 'change_capacity';
+        $action_id = '2::1';
+        $reason_id = '3::3';
+        $id = '35::2';
+    } elsif ($reason eq 'damaged') {
         $action_id = 3; # Replace
         $reason_id = 2; # Damaged
     } elsif ($reason eq 'missing') {
@@ -347,8 +370,15 @@ sub waste_munge_enquiry_data {
     $data->{title} = $data->{category};
 
     my $detail;
-    foreach (sort grep { /^extra_/ } keys %$data) {
-        $detail .= "$data->{$_}\n\n";
+    if ($data->{category} eq 'Bin not returned') {
+        $detail .= ($data->{'extra_Report_Type'} eq '1' ? 'Bin position' : 'Lid not closed') . "\n\n";
+        $detail .= ($data->{'extra_Crew_Required_to_Return?'} eq '1' ? 'Request bin collectors return'
+            : 'No request for bin collectors return') ."\n\n";
+        $detail .= ($data->{'extra_Notes'} ? $data->{'extra_Notes'} : '') . "\n\n";
+    } else {
+        foreach (sort grep { /^extra_/ } keys %$data) {
+            $detail .= "$data->{$_}\n\n";
+        }
     }
     $detail .= $address;
     $data->{detail} = $detail;
