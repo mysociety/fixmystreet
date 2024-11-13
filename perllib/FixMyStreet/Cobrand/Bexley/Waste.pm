@@ -1282,14 +1282,15 @@ sub construct_bin_request_form {
         my $include_removal = @$removal_field_list;
 
         # Above-shop properties get a single default reason, so no need to send
-        # them to reason selection
-        my $include_reason
-            = $self->{c}->stash->{property}{above_shop} ? 0 : 1;
+        # them to reason selection. They need to be sent to letterbox location
+        # selection instead.
+        my $above_shop
+            = $self->{c}->stash->{property}{above_shop} ? 1 : 0;
 
         my $next
             = $include_removal
             ? 'request_removal'
-            : ( $include_reason ? 'request_reason' : 'about_you' );
+            : ( $above_shop ? 'letterbox_location' : 'request_reason' );
 
         $page_list = [
             request => {
@@ -1314,7 +1315,7 @@ sub construct_bin_request_form {
                     fields => [ grep { ! ref $_ } @$removal_field_list, 'continue' ],
                     title => 'Which bins do you need to be removed?',
                     check_unique_id => 0,
-                    next => ( $include_reason ? 'request_reason' : 'about_you' ),
+                    next => ( $above_shop ? 'about_you' : 'request_reason' ),
                 },
             );
             push @$full_field_list, @$removal_field_list;
@@ -1577,11 +1578,16 @@ sub waste_munge_request_data {
         $data->{category} = $data->{category_removal};
     }
 
+    my $reason;
+    my $letterbox_location;
+    if ( $c->stash->{property}{above_shop} ) {
+        $reason = 'I need more sacks';
+        $letterbox_location = $data->{letterbox_location};
+    } else {
+        $reason = $data->{request_reason};
+    }
+
     my $address = $c->stash->{property}{address};
-    my $reason
-        = $c->stash->{property}{above_shop}
-        ? 'I need more sacks'
-        : $data->{request_reason};
     my $quantity = $data->{"quantity-$id"} || 1;
     my $household_size = $data->{household_size};
     $data->{detail} = "$data->{title}\n\n$address";
@@ -1589,6 +1595,8 @@ sub waste_munge_request_data {
     $data->{detail} .= "\n\nQuantity: $quantity";
     $data->{detail} .= "\n\nHousehold size: $household_size"
         if $household_size;
+    $data->{detail} .= "\n\nLocation of letterbox: $letterbox_location"
+        if $letterbox_location;
 
     my $assisted_yn = $c->stash->{services}{ $service->{service_item_name} }
             {assisted_collection}
@@ -1598,6 +1606,7 @@ sub waste_munge_request_data {
     $c->set_param( 'service_item_name', $service->{service_item_name} );
     $c->set_param( 'quantity',          $quantity );
     $c->set_param( 'assisted_yn', $assisted_yn );
+    $c->set_param( 'location_of_letterbox', $letterbox_location || '' );
 }
 
 sub _set_request_containers {

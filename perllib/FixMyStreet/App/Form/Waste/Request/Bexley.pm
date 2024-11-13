@@ -50,6 +50,20 @@ has_field request_reason => (
     messages => { required => 'Please select a reason' },
 );
 
+has_page letterbox_location => (
+    fields => ['letterbox_location', 'continue'],
+    title => 'Letterbox location',
+    next => 'about_you',
+);
+
+has_field letterbox_location => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    required => 1,
+    label => 'Where is your letterbox?',
+    messages => { required => 'Please select a location' },
+);
+
 has_page summary => (
     fields => ['declaration', 'submit'],
     title => 'Submit bin request',
@@ -85,6 +99,19 @@ sub options_request_reason {
         'My existing bin has gone missing',
         'I have moved into a new development',
         'Bins are no longer required',
+    );
+    return map { { label => $_, value => $_ } } @options;
+}
+
+sub options_letterbox_location {
+    my $form = shift;
+
+    my @options = (
+        'At the front',
+        'At the rear',
+        'At the side',
+        'On the first floor balcony',
+        'Communal entrance',
     );
     return map { { label => $_, value => $_ } } @options;
 }
