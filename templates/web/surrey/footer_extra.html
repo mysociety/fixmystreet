@@ -1,5 +1,10 @@
 <section id="happy-or-not-smiley-section">
     <div id="happy-or-not-smiley-digital-embed"></div>
+  [% IF c.action == 'tokens/confirm_problem' OR c.action == 'report/confirmation' %]
+    <div class="container hidden-nojs" id="happy-or-not-feedback-statement">
+        <p>This feedback relates to how easy it was to report and will not be included as part of your report.</p>
+    </div>
+  [% END %]
 </section>
 
 <section class="scc-subscribe">
