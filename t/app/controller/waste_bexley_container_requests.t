@@ -79,6 +79,11 @@ for ( $contact_delivery, $contact_removal ) {
             required => "false",
             automated => "hidden_field",
         },
+        {
+            code => "location_of_letterbox",
+            required => "false",
+            automated => "hidden_field",
+        },
     );
     $_->update;
 }
@@ -924,6 +929,13 @@ FixMyStreet::override_config {
 
             $mech->submit_form_ok(
                 {   with_fields => {
+                        letterbox_location => 'Communal entrance',
+                    },
+                },
+            );
+
+            $mech->submit_form_ok(
+                {   with_fields => {
                         name  => 'Test User',
                         phone => '44 07 111 111 111',
                         email => 'test@example.com'
@@ -957,6 +969,8 @@ FixMyStreet::override_config {
                 is $report->get_extra_field_value('uprn'), '10002', 'UPRN is correct';
                 is $report->get_extra_field_value('assisted_yn'), 'No',
                     'assisted_yn is correct';
+                is $report->get_extra_field_value('location_of_letterbox'), 'Communal entrance',
+                    'location_of_letterbox is correct';
                 $extra{ $report->get_extra_field_value('service_item_name') }
                     = $report->get_extra_field_value('quantity');
             }
