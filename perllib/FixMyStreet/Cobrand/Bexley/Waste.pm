@@ -946,7 +946,7 @@ HTML
             description => 'Glass bottles and jars',
         },
         'MDR-SACK' => {
-            name                      => 'Clear Sack(s)',
+            name                      => 'Clear Sacks',
             description               => $clear_sack_desc,
             description_contains_html => 1,
         },
@@ -1093,7 +1093,7 @@ HTML
             description => 'Non-recyclable waste',
         },
         'RES-SACK' => {
-            name        => 'Black Sack(s)',
+            name        => 'Black Sacks',
             description => 'Non-recyclable waste',
         },
     };
@@ -1687,7 +1687,7 @@ sub _set_request_containers {
 
         } elsif ( $service_id eq 'MDR-SACK' ) {
             $container_info
-                = _containers_for_requests()->{'Clear Sack(s)'};
+                = _containers_for_requests()->{'Clear Sacks'};
             push @containers_for_delivery, $container_info;
 
             $service->{delivery_allowed} = 1;
@@ -1905,8 +1905,8 @@ sub _containers_for_requests {
             },
         ],
 
-        'Clear Sack(s)' => {
-            name                => 'Clear Sack(s)',
+        'Clear Sacks' => {
+            name                => 'Clear Sacks',
             description         => 'Mixed recycling',
             service_item_name   => 'MDR-SACK',
             service_id_delivery => '243',

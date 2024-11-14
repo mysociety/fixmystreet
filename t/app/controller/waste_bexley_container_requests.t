@@ -119,11 +119,11 @@ subtest '_set_request_containers' => sub {
         },
 
         # Sacks
-        {   service_name   => 'Black Sack(s)',
+        {   service_name   => 'Black Sacks',
             service_id     => 'RES-SACK',
             round_schedule => 'RES-R8 Thu',
         },
-        {   service_name   => 'Clear Sack(s)',
+        {   service_name   => 'Clear Sacks',
             service_id     => 'MDR-SACK',
             round_schedule => 'MDR-R1 Thu',
         },
@@ -155,8 +155,8 @@ subtest '_set_request_containers' => sub {
         'Green Recycling Box' => [ 0, 1 ],
         'Blue Recycling Box'  => [ 1, 1 ],
 
-        'Black Sack(s)' => [ 0, 0 ],
-        'Clear Sack(s)' => [ 1, 0 ],
+        'Black Sacks' => [ 0, 0 ],
+        'Clear Sacks' => [ 1, 0 ],
 
         'Brown Caddy' => [ 1, 1 ],
 
@@ -256,7 +256,7 @@ subtest '_set_request_containers' => sub {
                 max                 => 5,
             },
 
-            {   name                => 'Clear Sack(s)',
+            {   name                => 'Clear Sacks',
                 description         => 'Mixed recycling',
                 service_item_name   => 'MDR-SACK',
                 service_id_delivery => '243',
@@ -904,12 +904,12 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste/10002');
 
-        $mech->content_contains("Request a delivery of clear sack(s)");
-        $mech->content_lacks("$new_string black sack(s)");
-        $mech->content_lacks("Request a delivery of black sack(s)");
+        $mech->content_contains("Request a delivery of clear sacks");
+        $mech->content_lacks("$new_string black sacks");
+        $mech->content_lacks("Request a delivery of black sacks");
 
-        $mech->content_lacks("$removal_string clear sack(s)");
-        $mech->content_lacks("$removal_string black sack(s)");
+        $mech->content_lacks("$removal_string clear sacks");
+        $mech->content_lacks("$removal_string black sacks");
 
         $mech->content_contains('Order replacement bins');
         $mech->content_lacks('Order removal of old bins');
@@ -946,7 +946,7 @@ FixMyStreet::override_config {
                 'On summary page' );
 
             note 'Delivery summary:';
-            $mech->content_contains('Clear Sack(s) (Mixed recycling)');
+            $mech->content_contains('Clear Sacks (Mixed recycling)');
 
             $mech->submit_form_ok({ with_fields => { declaration => 1 } });
             $mech->content_contains( 'Your bin request has been sent',
@@ -1162,11 +1162,11 @@ sub _site_collections {
         ],
         10002 => [
             {
-                ServiceItemName => 'MDR-SACK', # Clear Sack(s)
+                ServiceItemName => 'MDR-SACK', # Clear Sacks
                 %defaults,
             },
             {
-                ServiceItemName => 'RES-SACK', # Black Sack(s)
+                ServiceItemName => 'RES-SACK', # Black Sacks
                 %defaults,
             },
         ],
