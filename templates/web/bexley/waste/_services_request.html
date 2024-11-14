@@ -11,7 +11,7 @@
       <input type="hidden" name="parent-[% unit.parent_name.replace(' ','-') %]" value="1">
     [% END %]
 
-    <input type="submit" value="[% IF unit.service_name == 'Clear Sack(s)' %]Request a delivery of[% ELSE %]Request a new or replacement[% END %] [% IF unit.delivery_allowed %][% unit.service_name FILTER lower %][% ELSE %]recycling box[% END %]" class="waste-service-descriptor waste-service-link">
+    <input type="submit" value="[% IF unit.service_name == 'Clear Sacks' %]Request a delivery of[% ELSE %]Request a new or replacement[% END %] [% IF unit.delivery_allowed %][% unit.service_name FILTER lower %][% ELSE %]recycling box[% END %]" class="waste-service-descriptor waste-service-link">
   </form>
 [% END %]
 
