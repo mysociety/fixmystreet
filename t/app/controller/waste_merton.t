@@ -405,6 +405,7 @@ FixMyStreet::override_config {
         $mech->back;
         $mech->submit_form_ok({ with_fields => { how_much => '1or2' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('name="goto" value="medical_condition"');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         $mech->content_contains('consider your request');
