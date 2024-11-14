@@ -1,73 +1,72 @@
 ## Releases
 
-* Unreleased
+* v6.0 (14th November 2024)
     - Front end improvements:
         - Include requirements for redeeming the link in the email change confirmation mail. #4422
         - Use email field type for username if SMS authentication not enabled. #4455
         - Text overrides for new report fields can be configured to apply when it is known the report will go to a particular cobrand. #4466, #4516
-        - Improve handling cache expiry for front page statistics.
+        - Improve handling cache expiry for front page statistics. #4584
         - Add geolocation button to centre map at user's location. #4671
-        - WasteWorks PWA can now have a separate name from the FixMyStreet PWA.
-        - Users can now opt out of questionnaires.
+        - WasteWorks PWA can now have a separate name from the FixMyStreet PWA. #4727
+        - Users can now opt out of questionnaires. #4758
         - Include reference in report list emails. #4760
-        - Add support for different '/around' map display times for open/closed/fixed reports
-        - Add code to enable category filtering box.
+        - Add support for different '/around' map display times for open/closed/fixed reports #4790
+        - Add code to enable category filtering box. #4914
         - Improved the display of the map filters. #4728
-        - Don't display 'Show my name publicly' checkbox when making a private reports to prevent confusion.
-        - Allow decimals in the local alert radius.
+        - Don't display 'Show my name publicly' checkbox when making a private report to prevent confusion. #5029
+        - Allow decimals in the local alert radius. #5205
     - Bugfixes:
         - Stop map panning breaking after long press. #4423
-        - Fix RSS feed subscription from alert page button.
-        - Fix link to edit category with apostrophe in category name.
-        - Fallback extra field in submit email should be `name`, not `code`.
-        - Allow confirmation links to login user 30s within first use to prevent things like Outlook 'safelinks' breaking the UX.
+        - Fix RSS feed subscription from alert page button. #4448
+        - Fix link to edit category with apostrophe in category name. #4497
+        - Fallback extra field in submit email should be `name`, not `code`. #4545
+        - Allow confirmation links to login user 30s within first use to prevent things like Outlook 'safelinks' breaking the UX. #4556
         - Fixes default status report filter text on Your Account page. #4558
-        - Don't zoom to bounds when searching for a postcode.
-        - Fix restoring a draft with no location.
+        - Don't zoom to bounds when searching for a postcode. #4717
+        - Fix restoring a draft with no location. #4762
         - Create reporter alert before creating first unconfirmed auto-update.
         - Fix display of user in assignment dropdown. #4855
         - Fix setting of fixed timestamp in CSV export. #5119
         - Fix CSV export of reports with only hidden/unconfirmed updates. #5119
-        - Fix displaying category page if over 1,000 history entries.
+        - Fix displaying category page if over 1,000 history entries. #5140
         - Stop wrapping category notices in a label.
-        - Allow through a "0" extra question value.
+        - Allow through a "0" extra question value. #5245
     - Admin improvements:
-        - Rename emergency message to site message.
-        - Added a category control for overriding the text of the new report details field.
-        - Added support for 'multivaluelist' extra category questions using checkboxes.
-        - Added support for 'datetime' extra category questions using a datetime picker.
-        - Added option to make a phone number required for a category.
-        - Add way to pick multiple categories in the dashboard.
+        - Rename emergency message to site message. #4450
+        - Added a category control for overriding the text of the new report details field. #4514
+        - Added support for 'multivaluelist' extra category questions using checkboxes. #4514
+        - Added support for 'datetime' extra category questions using a datetime picker. #4514
+        - Added option to make a phone number required for a category. #4520
+        - Add way to pick multiple categories in the dashboard. #4700
         - Staff cannot update name reporting when logged out. #5031
         - Allow h1, h2, h3 tags in contact notices/questions. #4959
         - Tweak config page display. #5139
         - Minor display improvements to report/update pages. #5141
         - Minor display and performance improvements to user pages. #5138
-        - Move add new body/category to their own admin pages.
-        - Move navigation to sidebar.
+        - Move add new body/category to their own admin pages. #5140
+        - Move navigation to sidebar. #5093
     - Development improvements:
         - Extra data columns now stored as JSON, not RABX. #3216
-        - Cobrands can provide custom distances for duplicate lookup. #4456
-        - Auto-spot a default favicon.ico.
+        - Auto-spot a default favicon.ico. #4461
         - Add `send_state` column to reports. #4048
-        - Return random unprocessed row to daemon.
-        - A cobrand level text override for the details field label on new reports can now be configured.
-        - Cobrands can provide per-category custom distances for duplicate lookup. #4746 #5162
-        - Add perl 5.38 support.
+        - Return random unprocessed row to daemon. #4545
+        - A cobrand level text override for the details field label on new reports can now be configured. #4514
+        - Cobrands can provide (per-category) custom distances for duplicate lookup. #4456 #4746 #5162
+        - Add perl 5.38 support. #4831
         - Add plain text template previews to /_dev/email. #5105
-        - Add --exclude option to bin/open311-populate-service-list
-        - Add /status/health page to indicate service health.
+        - Add --exclude option to bin/open311-populate-service-list #5177
+        - Add /status/health page to indicate service health. #5186
     - Performance improvements:
-        - Reduce database queries on shortlist page.
-        - Provide ResultSet fallback translation in lookup.
+        - Reduce database queries on shortlist page. #4548
+        - Provide ResultSet fallback translation in lookup. #4548
         - Mark non-Open311 updates as processed by daemon. #4552
-        - Inspector/planned offline report caching now fetches URLs sequentially, not in parallel.
-        - Desktop browsers won't automatically cache reports offline when visiting /my/planned.
+        - Inspector/planned offline report caching now fetches URLs sequentially, not in parallel. #5204
+        - Desktop browsers won't automatically cache reports offline when visiting /my/planned. #5206
     - Changes:
         - Switch to OpenStreetMap for reverse geocoding. #4444
-        - Convert all uploaded images to JPEGs.
+        - Convert all uploaded images to JPEGs. #4778
         - Redirect after POST when creating reports. #4362
-        - Include status change line in report update emails using auto response templates.
+        - Include status change line in report update emails using auto response templates. #4967
         - Don't display a translation banner in front of important UI elements on Android. #4153
 
 * v5.0 (10th May 2023)
