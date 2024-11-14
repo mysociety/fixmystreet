@@ -1,7 +1,7 @@
 [%
   title = 'Submit bin request';
   thing = 'bin request';
-  summary_title = 'Bin requests';
+  summary_title = 'Request details';
   step1 = 'request';
 
   data = form.saved_data;
@@ -24,7 +24,7 @@
   [% # Deliveries %]
   [% IF requests.0.size %]
     <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key govuk-summary-list__key--sub"><b>Deliver new or replacement:</b></dt>
+      <dt class="govuk-summary-list__key govuk-summary-list__key--sub"><b>Deliver new:</b></dt>
     </div>
     [% FOR container IN requests.0 %]
       [% INCLUDE container_row %]
