@@ -164,6 +164,8 @@ sub _process_update {
     my $open311 = $self->current_open311;
     my $body = $self->current_body;
 
+    $self->_handle_assigned_user($request, $p);
+
     my $state = $open311->map_state( $request->{status} );
     my $old_state = $p->state;
     my $external_status_code = $request->{external_status_code} || '';
@@ -177,6 +179,18 @@ sub _process_update {
         $email_text = $request->{email_text};
     };
 
+    if ($request->{extras} && $request->{extras}{latest_data_only} ) {
+        # Hide if the new comment is the same as the latest comment by the body user
+        my $latest = $p->comments->search({
+            state => 'confirmed',
+            user_id => $self->system_user->id,
+        }, {
+            order_by => [ { -desc => 'confirmed' }, { -desc => 'id' } ],
+            rows => 1,
+        })->first;
+        return if $latest && $text eq $latest->text && $state eq $latest->problem_state;
+    }
+
     # An update shouldn't precede an auto-internal update nor should it be earlier than when the
     # report was sent.
     my $auto_comment = $p->comments->search({ external_id => 'auto-internal' })->first;
@@ -186,46 +200,6 @@ sub _process_update {
         }
     } elsif ($p->whensent && $request->{comment_time} <= $p->whensent) {
         $request->{comment_time} = $p->whensent + DateTime::Duration->new( seconds => 1 );
-    }
-
-    if ( $request->{extras} ) {
-        # Assign admin user to report if 'assigned_user_*' fields supplied
-        if ( $request->{extras}{assigned_user_email} ) {
-            my $assigned_user_email = $request->{extras}{assigned_user_email};
-            my $assigned_user_name  = $request->{extras}{assigned_user_name};
-
-            my $assigned_user
-                = FixMyStreet::DB->resultset('User')
-                ->find( { email => $assigned_user_email } );
-
-            unless ($assigned_user) {
-                $assigned_user = FixMyStreet::DB->resultset('User')->create(
-                    {   email          => $assigned_user_email,
-                        name           => $assigned_user_name,
-                        from_body      => $body->id,
-                        email_verified => 1,
-                    },
-                );
-
-                # Make them an inspector
-                # TODO Other permissions required?
-                $assigned_user->user_body_permissions->create(
-                    {   body_id         => $body->id,
-                        permission_type => 'report_inspect',
-                    }
-                );
-            }
-
-            $assigned_user->add_to_planned_reports($p, 'no_comment');
-
-            # TODO Unassign?
-        }
-        if ( exists $request->{extras}{detailed_information} ) {
-            $request->{extras}{detailed_information}
-                ? $p->set_extra_metadata( detailed_information =>
-                    $request->{extras}{detailed_information} )
-                : $p->unset_extra_metadata('detailed_information');
-        }
     }
 
     my $comment = $self->schema->resultset('Comment')->new(
@@ -341,6 +315,53 @@ sub comment_text_for_request {
 
     print STDERR "Couldn't determine update text for $request->{update_id} (report " . $problem->id . ")\n";
     return ("", undef);
+}
+
+sub _handle_assigned_user {
+    my ($self, $request, $p) = @_;
+    my $body = $self->current_body;
+
+
+    if ( $request->{extras} ) {
+        # Assign admin user to report if 'assigned_user_*' fields supplied
+        if ( $request->{extras}{assigned_user_email} ) {
+            my $assigned_user_email = $request->{extras}{assigned_user_email};
+            my $assigned_user_name  = $request->{extras}{assigned_user_name};
+
+            my $assigned_user
+                = FixMyStreet::DB->resultset('User')
+                ->find( { email => $assigned_user_email } );
+
+            unless ($assigned_user) {
+                $assigned_user = FixMyStreet::DB->resultset('User')->create(
+                    {   email          => $assigned_user_email,
+                        name           => $assigned_user_name,
+                        from_body      => $body->id,
+                        email_verified => 1,
+                    },
+                );
+
+                # Make them an inspector
+                # TODO Other permissions required?
+                $assigned_user->user_body_permissions->create(
+                    {   body_id         => $body->id,
+                        permission_type => 'report_inspect',
+                    }
+                );
+            }
+
+            $assigned_user->add_to_planned_reports($p, 'no_comment');
+
+            # TODO Unassign?
+        }
+        if ( exists $request->{extras}{detailed_information} ) {
+            $request->{extras}{detailed_information}
+                ? $p->set_extra_metadata( detailed_information =>
+                    $request->{extras}{detailed_information} )
+                : $p->unset_extra_metadata('detailed_information');
+        }
+    }
+
 }
 
 1;

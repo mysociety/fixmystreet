@@ -129,6 +129,7 @@ for my $test (
     };
 }
 
+my $normal_user = FixMyStreet::DB->resultset('User')->find_or_create({ email => 'user@example.net' });
 my $user = FixMyStreet::DB->resultset('User')->find_or_create(
     {
         email => 'system_user@example.net'
@@ -304,6 +305,55 @@ for my $test (
         }
     };
 }
+
+subtest 'Test receiving latest data only' => sub {
+    $problem->comments->delete;
+    $problem->add_to_comments({
+        user => $user,
+        external_id => 'timestampA',
+        send_state => 'processed',
+        text => 'An update',
+        confirmed => $comment_time,
+        created => $comment_time,
+    });
+    $problem->add_to_comments({
+        user => $user,
+        external_id => 'timestampB',
+        send_state => 'processed',
+        problem_state => 'in progress',
+        text => 'Latest data update',
+        confirmed => $comment_time,
+        created => $comment_time,
+    });
+    $problem->add_to_comments({
+        user => $normal_user,
+        external_id => 'timestampC',
+        send_state => 'sent',
+        problem_state => 'in progress',
+        text => 'Some text from a user',
+        confirmed => $comment_time,
+        created => $comment_time,
+    });
+
+    my $request = {
+        comment_time => $comment_time,
+        status       => 'IN_PROGRESS',
+        description  => 'Latest data update',
+        extras       => {
+            latest_data_only => 1,
+        },
+    };
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    my $updates = Open311::GetUpdates->new(
+        current_open311 => $o,
+        current_body => $body,
+        system_user => $user,
+    );
+
+    my $update = $updates->process_update($request, $problem);
+    is $update, undef;
+};
 
 for my $test (
     {

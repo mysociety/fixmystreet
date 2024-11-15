@@ -1067,6 +1067,7 @@ FixMyStreet::override_config {
         });
         $report->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => '3::83::3' });
         $report->set_extra_metadata(previous_booking_id => $previous_id);
+        $report->set_extra_metadata( item_1 => 'BBQ', item_2 => 'Bath', item_3 => 'BBQ' );
         $report->update;
 
         $send->send_reports;

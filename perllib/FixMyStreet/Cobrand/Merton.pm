@@ -113,10 +113,8 @@ sub open311_extra_data_include {
     if ($h->{sending_to_crimson}) {
         # Want to send bulky item names rather than IDs
         if ($row->category eq 'Bulky collection') {
-            my @items_list = @{ $self->bulky_items_master_list };
-            my %items = map { $_->{bartec_id} => $_->{name} } @items_list;
-            my @ids = split /::/, $row->get_extra_field_value('Bulky_Collection_Bulky_Items'), -1;
-            @ids = map { $items{$_} } @ids;
+            my @fields = sort grep { /^item_\d/ } keys %{$row->get_extra_metadata};
+            my @ids = map { $row->get_extra_metadata($_) } @fields;
             my $ids = join('::', @ids);
             $row->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => $ids });
             push @$open311_only, { name => 'Current_Item_Count', value => scalar @ids };
