@@ -859,6 +859,7 @@ sub process_garden_transfer : Private {
     $c->set_param($end_date_field, $now->ymd);
     $c->set_param('property_id', $old_property_id);
     $c->set_param('uprn', $data->{transfer_old_ggw_sub}{transfer_uprn});
+    $c->set_param('transferred_to', $c->stash->{property}->{uprn});
     $c->forward('setup_garden_sub_params', [ $cancel, undef ]);
     $c->forward('add_report', [ $cancel ]) or return;
     $c->stash->{report}->confirm;
@@ -876,6 +877,7 @@ sub process_garden_transfer : Private {
     $c->set_param($end_date_field, $expiry->ymd);
     $c->set_param('property_id', '');
     $c->set_param('uprn', '');
+    $c->set_param('transferred_from', $data->{transfer_old_ggw_sub}{transfer_uprn});
     $c->forward('setup_garden_sub_params', [ $new, $c->stash->{garden_subs}->{New} ]);
     $c->forward('add_report', [ $new ]) or return;
     $c->stash->{report}->confirm;
