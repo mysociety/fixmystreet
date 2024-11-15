@@ -1157,7 +1157,7 @@ FixMyStreet::override_config {
         my $cancellation_report;
         subtest 'reports' => sub {
             $report->discard_changes;
-            is $report->state, 'closed', 'Original report closed';
+            is $report->state, 'cancelled', 'Original report cancelled';
             like $report->detail, qr/Cancelled at user request/,
                 'Original report detail field updated';
 
@@ -1515,7 +1515,7 @@ FixMyStreet::override_config {
             $mech->email_count_is(0);
 
             $report->discard_changes;
-            is $report->state, 'closed', 'Original report closed';
+            is $report->state, 'cancelled', 'Original report cancelled';
 
             my $cancellation_report
                 = FixMyStreet::DB->resultset('Problem')->find(

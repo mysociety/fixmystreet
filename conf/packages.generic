@@ -16,3 +16,4 @@ libexpat1-dev
 libssl-dev
 zlib1g-dev
 libxml2-dev
+libreadline-dev

@@ -1,6 +1,8 @@
 # Please note that this package list currently forms part of the
 # mySociety deployment infrastructure -- please discuss on the
 # mailing list if you want to change it.
+# Note additions to this file will probably need adding to the
+# packages.generic and packages.docker files as well.
 
 make
 g++

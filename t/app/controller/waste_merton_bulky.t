@@ -667,7 +667,7 @@ FixMyStreet::override_config {
             $mech->content_contains('This collection has been cancelled');
             $mech->content_contains('Booking cancelled due to amendment');
             $report->discard_changes;
-            is $report->state, 'closed';
+            is $report->state, 'cancelled';
         };
 
         $report = $new_report;
@@ -795,7 +795,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Booking cancelled due to amendment');
             $mech->content_contains('£0.00 (£37.00 already paid)');
             $report->discard_changes;
-            is $report->state, 'closed';
+            is $report->state, 'cancelled';
         };
 
         $report = $new_report;
@@ -911,7 +911,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Cancel booking');
 
         $report->discard_changes;
-        is $report->state, 'closed', 'Original report closed';
+        is $report->state, 'cancelled', 'Original report cancelled';
         like $report->detail, qr/Cancelled at user request/, 'Original report detail field updated';
 
         subtest 'Viewing original report summary after cancellation' => sub {
