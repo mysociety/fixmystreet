@@ -425,6 +425,15 @@ FixMyStreet::override_config {
         $mech->content_contains('is set up for assisted collection');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
+
+    subtest 'Time banded property display' => sub {
+        my $dupe = dclone($bin_data);
+        $dupe->[0]{ServiceTasks}{ServiceTask}[0]{ServiceTaskSchedules}{ServiceTaskSchedule}{Allocation}{RoundGroupName} = 'SF Night Time Economy';
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Put your bags out between 6pm and 8pm');
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
 };
 
 sub get_report_from_redirect {
