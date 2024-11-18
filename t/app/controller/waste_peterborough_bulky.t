@@ -225,20 +225,17 @@ FixMyStreet::override_config {
             free_mode => '0',
             item_list => [
                 {   bartec_id => '1001',
-                    category  => 'Audio / Visual Elec. equipment',
                     message   => '',
                     name      => 'Amplifiers',
                     price     => '1001',
                 },
                 {   bartec_id => '1001',
-                    category  => 'Audio / Visual Elec. equipment',
                     message   => '',
                     name      => 'DVD/BR Video players',
                     price     => '2002',
                     max => 1,
                 },
                 {   bartec_id => '1001',
-                    category  => 'Audio / Visual Elec. equipment',
                     message   => '',
                     name      => 'HiFi Stereos',
                     price     => '3003',
@@ -246,32 +243,27 @@ FixMyStreet::override_config {
                 },
 
                 {   bartec_id => '1002',
-                    category  => 'Baby / Toddler',
                     message   => '',
                     name      => 'Childs bed / cot',
                     price     => '4040',
                 },
                 {   bartec_id => '1002',
-                    category  => 'Baby / Toddler',
                     message   => '',
                     name      => 'High chairs',
                     price     => '5050',
                 },
 
                 {   bartec_id => '1003',
-                    category  => 'Bedroom',
                     message   => '',
                     name      => 'Chest of drawers',
                     price     => '6060',
                 },
                 {   bartec_id => '1003',
-                    category  => 'Bedroom',
                     message   => 'Please dismantle',
                     name      => 'Wardrobes',
                     price     => '7070',
                 },
                 {   bartec_id => '1004',
-                    category  => 'Bedroom',
                     message   => 'Please place in a clear bag',
                     name      => 'Linen & Bedding',
                     price     => '7070',
@@ -1294,32 +1286,27 @@ FixMyStreet::override_config {
         my $orig = $cfg->{item_list};
         $cfg->{item_list} = [
             {   bartec_id => '1001',
-                category  => 'Audio / Visual Elec. equipment',
                 message   => '',
                 name      => 'Amplifiers',
                 price     => '1001',
             },
             {   bartec_id => '1002',
-                category  => 'Baby / Toddler',
                 message   => '',
                 name      => 'Childs bed / cot',
                 price     => '4040',
             },
             {   bartec_id => '1002',
-                category  => 'Baby / Toddler',
                 message   => '',
                 name      => 'High chairs',
                 price     => '5050',
             },
 
             {   bartec_id => '1003',
-                category  => 'Bedroom',
                 message   => '',
                 name      => 'Chest of drawers',
                 price     => '6060',
             },
             {   bartec_id => '1003',
-                category  => 'Bedroom',
                 message   => 'Please dismantle',
                 name      => 'Wardrobes',
                 price     => '7070',
@@ -1684,7 +1671,6 @@ FixMyStreet::override_config {
             $mech->get_ok('/admin/waste/' . $body->id . '/bulky_items');
             $mech->submit_form_ok({ with_fields => {
                 'bartec_id[9999]' => 1234,
-                'category[9999]' => 'Furniture',
                 'name[9999]' => '', # name is required
                 'price[9999]' => '0',
                 'message[9999]' => '',
@@ -1699,7 +1685,6 @@ FixMyStreet::override_config {
             $mech->get_ok('/admin/waste/' . $body->id . '/bulky_items');
             $mech->submit_form_ok({ with_fields => {
                 'bartec_id[9999]' => 1234,
-                'category[9999]' => 'Furniture',
                 'name[9999]' => 'Sofa',
                 'price[9999]' => '0',
                 'message[9999]' => 'test',
@@ -1710,7 +1695,6 @@ FixMyStreet::override_config {
             is_deeply $body->get_extra_metadata('wasteworks_config'), {
                 item_list => [ {
                     bartec_id => "1234",
-                    category => "Furniture",
                     message => "test",
                     name => "Sofa",
                     max => "",
@@ -1721,7 +1705,6 @@ FixMyStreet::override_config {
             # and add a new one
             $mech->submit_form_ok({ with_fields => {
                 'bartec_id[9999]' => 4567,
-                'category[9999]' => 'Furniture',
                 'name[9999]' => 'Armchair',
                 'price[9999]' => '10',
                 'message[9999]' => '',
@@ -1732,7 +1715,6 @@ FixMyStreet::override_config {
                 item_list => [
                     {
                         bartec_id => "4567",
-                        category => "Furniture",
                         message => "",
                         name => "Armchair",
                         max => "",
@@ -1740,7 +1722,6 @@ FixMyStreet::override_config {
                     },
                     {
                         bartec_id => "1234",
-                        category => "Furniture",
                         message => "test",
                         name => "Sofa",
                         max => "",
@@ -1762,7 +1743,6 @@ FixMyStreet::override_config {
                 item_list => [
                     {
                         bartec_id => "1234",
-                        category => "Furniture",
                         message => "test",
                         name => "Sofa",
                         max => "",
@@ -1770,72 +1750,6 @@ FixMyStreet::override_config {
                     },
                 ]
             };
-        };
-
-        subtest 'Bartec feature list is shown correctly' => sub {
-            $body->set_extra_metadata(wasteworks_config => {});
-            $body->update;
-
-            $b->mock('Features_Types_Get', sub { [
-                {
-                    Name => "Bookcase",
-                    ID => 6941,
-                    FeatureClass => {
-                        ID => 282
-                    },
-                },
-                {
-                    Name => "Dining table",
-                    ID => 6917,
-                    FeatureClass => {
-                        ID => 282
-                    },
-                },
-                {
-                    Name => "Dishwasher",
-                    ID => 6990,
-                    FeatureClass => {
-                        ID => 283
-                    },
-                },
-            ] });
-
-
-            $mech->get_ok('/admin/waste/' . $body->id . '/bulky_items');
-            $mech->content_contains('<option value="6941">Bookcase</option>') or diag $mech->content;
-            $mech->content_contains('<option value="6917">Dining table</option>');
-            $mech->content_contains('<option value="6990">Dishwasher</option>');
-            $mech->submit_form_ok({ with_fields => {
-                'bartec_id[9999]' => 6941,
-                'category[9999]' => 'Furniture',
-                'name[9999]' => 'Bookcase',
-                'price[9999]' => '0',
-                'max[9999]' => '',
-                'message[9999]' => '',
-            }});
-            $mech->content_contains("Updated!");
-
-            $body->discard_changes;
-            is_deeply $body->get_extra_metadata('wasteworks_config'), {
-                item_list => [ {
-                    bartec_id => "6941",
-                    category => "Furniture",
-                    message => "",
-                    name => "Bookcase",
-                    max => "",
-                    price => "0"
-                }]
-            };
-        };
-
-        subtest 'Feature classes can set in config to limit feature types' => sub {
-            $body->set_extra_metadata(wasteworks_config => { bulky_feature_classes => [ 282 ] });
-            $body->update;
-
-            $mech->get_ok('/admin/waste/' . $body->id . '/bulky_items');
-            $mech->content_contains('<option value="6941">Bookcase</option>') or diag $mech->content;
-            $mech->content_contains('<option value="6917">Dining table</option>');
-            $mech->content_lacks('<option value="6990">Dishwasher</option>');
         };
     };
 };

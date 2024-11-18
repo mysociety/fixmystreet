@@ -69,7 +69,7 @@ subtest "report_mark_private allows users to mark reports as private" => sub {
             "submit good details"
         );
 
-        $mech->content_contains('Great work. Now spread the word', 'shown confirmation page');
+        $mech->content_contains('Thank you for reporting this issue', 'shown confirmation page');
     }
 };
 

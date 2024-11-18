@@ -66,6 +66,18 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     .no-margin {
       margin: 0;
     }
+
+    // Shrink the sidebar to make more room for the main content
+    .container--sidebar {
+        .sticky-sidebar aside {
+            width: 11em;
+        }
+        @media only screen and (min-width: 48em) {
+            .sticky-sidebar {
+                width: 11em;
+            }
+        }
+    }
 }
 
 // Make sure config tables can't overflow
@@ -341,4 +353,14 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 textarea.code {
     font-family: monospace;
     max-width: initial;
+}
+
+// WasteWorks
+
+// Some layout improvements for bulky items editing
+body.bulky-items {
+    // Make the page full width
+    .container {
+        max-width: 100%;
+    }
 }
