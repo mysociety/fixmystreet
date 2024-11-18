@@ -89,7 +89,7 @@ requires 'File::Find';
 requires 'File::Path';
 requires 'Geo::OLC';
 requires 'Geography::NationalGrid',
-    mirror => 'https://cpan.metacpan.org/';
+    url => 'https://cpan.metacpan.org/authors/id/P/PK/PKENT/Geography-NationalGrid-1.6.tar.gz';
 requires 'Getopt::Long', '2.52';
 requires 'Getopt::Long::Descriptive', '0.105';
 requires 'HTML::Entities';
