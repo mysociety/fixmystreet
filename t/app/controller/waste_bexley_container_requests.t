@@ -863,7 +863,12 @@ FixMyStreet::override_config {
             $mech->content_like(qr/govuk-summary-list__value.*3/);
 
             $mech->submit_form_ok(
-                { with_fields => { submit => 'Request bin delivery or removal' } } );
+                {   with_fields => {
+                        declaration => 1,
+                        submit      => 'Request bin delivery or removal'
+                    }
+                }
+            );
 
             $mech->content_contains( 'Your bin request has been sent',
                 'Request successful' );
@@ -957,7 +962,12 @@ FixMyStreet::override_config {
             $mech->content_contains('Clear Sacks (Mixed recycling)');
 
             $mech->submit_form_ok(
-                { with_fields => { submit => 'Request bin delivery or removal' } } );
+                {   with_fields => {
+                        declaration => 1,
+                        submit      => 'Request bin delivery or removal'
+                    }
+                }
+            );
 
             $mech->content_contains( 'Your bin request has been sent',
                 'Request successful' );
@@ -1029,7 +1039,12 @@ FixMyStreet::override_config {
         $mech->content_like(qr/govuk-summary-list__value.*2/);
 
         $mech->submit_form_ok(
-            { with_fields => { submit => 'Request bin delivery or removal' } } );
+            {   with_fields => {
+                    declaration => 1,
+                    submit      => 'Request bin delivery or removal'
+                }
+            }
+        );
 
         $mech->content_contains( 'Your bin request has been sent',
             'Request successful' );
