@@ -12,6 +12,7 @@ requires 'Test::Differences', '0.67'; # [3]
 # Minimum versions of dependencies to upgrade for bugfixes
 requires 'CGI', '4.43';
 requires 'Net::Server', '2.009';
+requires 'XML::LibXML', '2.0210';
 # For perl 5.20/5.22 support
   requires 'Guard', '1.023';
   requires 'PadWalker', '2.2';
