@@ -1250,7 +1250,7 @@ FixMyStreet::override_config {
             $email_submit = $mech->get_html_body_from_email($email_submit);
             $email_logged = $mech->get_text_body_from_email($email_logged);
             like $email_logged, qr{Containers requested: $joined};
-            like $email_submit, qr{Containers requested:</h2>\s*<p[^>]*>\s*$joined};
+            like $email_submit, qr{<td>New/replacement container</td> <td>$joined};
             like $email_submit, qr{<td>UPRN</td> <td>$_->{id}</td>}
         };
     }
