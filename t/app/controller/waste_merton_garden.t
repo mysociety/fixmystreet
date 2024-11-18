@@ -42,6 +42,7 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'pro_rata', required => 0, automated => 'hidden_field' },
     { code => 'admin_fee', required => 0, automated => 'hidden_field' },
     { code => 'End_Date', required => 0, automated => 'hidden_field' },
+    { code => 'transferred_from', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Cancel Garden Subscription', email => 'garden_cancel@example.com'},
     { code => 'Bin_Detail_Quantity', required => 1, automated => 'hidden_field' },
@@ -49,6 +50,7 @@ create_contact({ category => 'Cancel Garden Subscription', email => 'garden_canc
     { code => 'Bin_Detail_Type', required => 1, automated => 'hidden_field' },
     { code => 'End_Date', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
+    { code => 'transferred_to', required => 0, automated => 'hidden_field' },
 );
 my $change_address_contact = create_contact({ category => 'Garden Subscription Address Change', email => 'garden_address_change@example.com'},
     { code => 'staff_form', automated => 'hidden_field' },
@@ -1283,10 +1285,12 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'Correct bin containers amount set on new report';
         is $new_report->get_extra_field_value('Subscription_Details_Containers'), 26, 'Correct bin type set on new report';
         is $new_report->get_extra_field_value('End_Date'), '2021-03-30', 'Subscription time transferred';
+        is $new_report->get_extra_field_value('transferred_from'), '1000000001';
         is $cancel_report->title, 'Garden Subscription - Cancel', 'Cancelled report title correct';
         is $cancel_report->detail, "Cancel Garden Subscription\n\n1 Example Street, Merton, SM2 5HF", 'Cancelled report detail correct';
         is $cancel_report->get_extra_field_value('uprn'), '1000000001', 'Correct uprn on cancelled report';
         is $cancel_report->get_extra_field_value('property_id'), '11345', 'Correct property id on cancelled report';
+        is $cancel_report->get_extra_field_value('transferred_to'), '1000000002';
         is $cancel_report->get_extra_field_value('End_Date'), '2021-02-09', 'Subscription ends today on cancelled report';
     };
 
