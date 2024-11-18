@@ -2,13 +2,32 @@
 
 $layout_front_stats_color: $primary !default;
 $mappage-header-height: 4em !default; // eg: might want this to equal outer height of #site-header on normal pages
-$mappage-sidebar-width: 29em !default;
-$mappage-sidebar-padding: 1em;
+$screen-size--medium: 63em !default;
+$screen-size--large:  79em !default;
+$screen-size--xlarge:  90em !default;
+
 $mappage-notes-width: 15em;
-$mappage-actions-width: 25em !default;
+$mappage-notes-width--medium: 17em;
+$mappage-notes-width--large: 19em;
+$mappage-notes-width--xlarge: 25em;
+
+$mappage-sidebar-width: 20em !default;
+$mappage-sidebar-width--medium:  27em !default;
+$mappage-sidebar-width--large:  28em !default;
+$mappage-sidebar-width--xlarge: 30em !default;
+
+$mappage-actions-width: 15em !default;
+$mappage-actions-width--medium:  18em !default;
+$mappage-actions-width--large:  22em !default;
+$mappage-actions-width--xlarge: 25em !default;
+
 $mappage-actions-sidebar-width: $mappage-sidebar-width !default;
-$mappage-sidebar-width--medium: 24em !default;
-$mappage-actions-width--medium: 20em !default;
+$mappage-actions-sidebar-width--medium: $mappage-sidebar-width--medium !default;
+$mappage-actions-sidebar-width--large: $mappage-sidebar-width--large !default;
+$mappage-actions-sidebar-width--xlarge: $mappage-sidebar-width--xlarge !default;
+
+$mappage-sidebar-padding: 1em;
+
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
 
@@ -252,15 +271,47 @@ body.mappage.admin {
   height: auto; // stretch from bottom of header to bottom of window
   margin: 0;
 
+  @media (min-width: $screen-size--medium) {
+    #{$left}: $mappage-sidebar-width--medium;
+  }
+
+  @media (min-width: $screen-size--large) {
+    #{$left}: $mappage-sidebar-width--large;
+  }
+
+  @media (min-width: $screen-size--xlarge) {
+    #{$left}: $mappage-sidebar-width--xlarge;
+  }
+
   .with-notes & {
     #{$left}: $mappage-sidebar-width + $mappage-notes-width;
+
+    @media (min-width: $screen-size--medium) {
+      #{$left}: $mappage-sidebar-width--medium + $mappage-notes-width--medium;
+    }
+
+    @media (min-width: $screen-size--large) {
+      #{$left}: $mappage-sidebar-width--large + $mappage-notes-width--large;
+    }
+
+    @media (min-width: $screen-size--xlarge) {
+      #{$left}: $mappage-sidebar-width--xlarge + $mappage-notes-width--xlarge;
+    }
   }
 
   .with-actions & {
     #{$left}: $mappage-actions-sidebar-width + $mappage-actions-width;
 
-    @media (max-width: 79em) {
-      #{$left}: $mappage-sidebar-width--medium  + $mappage-actions-width--medium;
+    @media (min-width: $screen-size--medium) {
+      #{$left}: $mappage-sidebar-width--medium + $mappage-actions-width--medium;
+    }
+
+    @media (min-width: $screen-size--large) {
+      #{$left}: $mappage-sidebar-width--large + $mappage-actions-width--large;
+    }
+
+    @media (min-width: $screen-size--xlarge) {
+      #{$left}: $mappage-sidebar-width--xlarge + $mappage-actions-width--xlarge;
     }
   }
 }
@@ -280,8 +331,33 @@ body.mappage.admin {
   .with-notes & {
     width: (($mappage-sidebar-width + $mappage-notes-width) - ($mappage-sidebar-padding * 2));
     // TODO: Should have a bitmap image fallback for old browsers!!
-    background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
-    background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
+    background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 52%, #E9F2FF 52%);
+    background-image: linear-gradient(flip(90deg, 270deg), transparent 52%, #E9F2FF 52%);
+    background-repeat: no-repeat;
+
+    @media (min-width: $screen-size--medium) {
+      width: (($mappage-sidebar-width--medium + $mappage-notes-width--medium) - ($mappage-sidebar-padding * 2));
+    }
+
+    @media (min-width: $screen-size--large) {
+      width: (($mappage-sidebar-width--large + $mappage-notes-width--large) - ($mappage-sidebar-padding * 2));
+    }
+
+    @media (min-width: $screen-size--xlarge) {
+      width: (($mappage-sidebar-width--xlarge + $mappage-notes-width--xlarge) - ($mappage-sidebar-padding * 2));
+    }
+  }
+
+  @media (min-width: $screen-size--medium) {
+    width: ($mappage-sidebar-width--medium - ($mappage-sidebar-padding * 2));
+  }
+
+  @media (min-width: $screen-size--large) {
+    width: ($mappage-sidebar-width--large - ($mappage-sidebar-padding * 2));
+  }
+
+  @media (min-width: $screen-size--xlarge) {
+    width: ($mappage-sidebar-width--xlarge - ($mappage-sidebar-padding * 2));
   }
 
   .with-actions & {
@@ -293,8 +369,16 @@ body.mappage.admin {
       display: none; // 4em bottom spacing will be handled by children of .two_column_sidebar
     }
 
-    @media (max-width: 79em) {
+    @media (min-width: $screen-size--medium) {
       width: $mappage-sidebar-width--medium + $mappage-actions-width--medium;
+    }
+
+    @media (min-width: $screen-size--large) {
+      width: $mappage-sidebar-width--large + $mappage-actions-width--large;
+    }
+
+    @media (min-width: $screen-size--xlarge) {
+      width: $mappage-sidebar-width--xlarge + $mappage-actions-width--xlarge;
     }
   }
 }
@@ -331,12 +415,32 @@ body.mappage.admin {
     width: $mappage-sidebar-width;
     flex: 0 0 auto;
 
-    @media (max-width: 79em) {
+    @media (min-width: $screen-size--medium) {
       width: $mappage-sidebar-width--medium;
+    }
+
+    @media (min-width: $screen-size--large) {
+      width: $mappage-sidebar-width--large;
+    }
+
+    @media (min-width: $screen-size--xlarge) {
+      width: $mappage-sidebar-width--xlarge;
     }
 
     .with-actions & {
       width: $mappage-actions-sidebar-width;
+
+      @media (min-width: $screen-size--medium) {
+        width: $mappage-sidebar-width--medium;
+      }
+
+      @media (min-width: $screen-size--large) {
+        width: $mappage-sidebar-width--large;
+      }
+
+      @media (min-width: $screen-size--xlarge) {
+        width: $mappage-sidebar-width--xlarge;
+      }
     }
   }
 
@@ -344,12 +448,32 @@ body.mappage.admin {
   .shadow-wrap {
     width: $mappage-sidebar-width;
 
-    @media (max-width: 79em) {
+    @media (min-width: $screen-size--medium) {
       width: $mappage-sidebar-width--medium;
+    }
+
+    @media (min-width: $screen-size--large) {
+      width: $mappage-sidebar-width--large;
+    }
+
+    @media (min-width: $screen-size--xlarge) {
+      width: $mappage-sidebar-width--xlarge;
     }
 
     .with-actions & {
       width: $mappage-actions-sidebar-width;
+
+      @media (min-width: $screen-size--medium) {
+        width: $mappage-actions-sidebar-width--medium;
+      }
+
+      @media (min-width: $screen-size--large) {
+        width: $mappage-actions-sidebar-width--large;
+      }
+
+      @media (min-width: $screen-size--xlarge) {
+        width: $mappage-actions-sidebar-width--xlarge;
+      }
     }
   }
 
@@ -670,6 +794,18 @@ body.authpage {
   overflow: hidden;
   padding-top: 2em;
 
+  @media (min-width: $screen-size--medium) {
+    width: $mappage-sidebar-width--medium;
+  }
+
+  @media (min-width: $screen-size--large) {
+    width: $mappage-sidebar-width--large;
+  }
+
+  @media (min-width: $screen-size--xlarge) {
+    width: $mappage-sidebar-width--xlarge;
+  }
+
   &.static {
     padding: 0 0 1em;
     margin: 0 -1em; // overlap parent side padding
@@ -755,7 +891,7 @@ textarea.form-error {
 // to make space for the #report-a-problem-sidebar.
 #side-form, #side {
   .with-notes & {
-    width: 27em;
+    width: 50%;
   }
 }
 
