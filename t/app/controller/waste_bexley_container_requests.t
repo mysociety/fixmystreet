@@ -770,7 +770,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok('/waste/10001');
             $mech->submit_form_ok( { form_id => 'form-RES-180-removal' } );
-            $mech->content_contains('name="container-RES-180-removal" value="1"', 'Green Wheelie Bin preselected for removal');
+            $mech->content_contains('name="parent-Green-Wheelie-Bin-removal" value="1"', 'Green Wheelie Bin preselected for removal');
 
             $mech->get_ok('/waste/10001');
             $mech->submit_form_ok( { form_id => 'form-PG-55-delivery' } );
@@ -820,7 +820,8 @@ FixMyStreet::override_config {
             $mech->back;
             $mech->submit_form_ok(
                 {   with_fields => {
-                        'container-RES-180-removal' => 1,
+                        'parent-Green-Wheelie-Bin-removal' => 1,
+                        'bin-size-Green-Wheelie-Bin-removal' => 'RES-180',
 
                         'container-FO-23-removal' => 1,
                         'quantity-FO-23-removal'  => 3,
@@ -1007,7 +1008,20 @@ FixMyStreet::override_config {
 
         $mech->submit_form_ok(
             {   with_fields => {
-                    'container-RES-180-removal' => 1,
+                    'parent-Green-Wheelie-Bin-removal' => 1,
+                    'bin-size-Green-Wheelie-Bin-removal' => 'RES-180',
+                },
+            },
+        );
+
+        $mech->content_contains( 'Why do you need new bins?',
+            'Can select solo wheelie bin for removal' );
+        $mech->back;
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    'parent-Green-Wheelie-Bin-removal' => 1,
+                    'bin-size-Green-Wheelie-Bin-removal' => 'RES-180',
 
                     'container-FO-23-removal' => 1,
                     'quantity-FO-23-removal'  => 2,
