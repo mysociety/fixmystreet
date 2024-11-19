@@ -946,7 +946,7 @@ HTML
             description => 'Glass bottles and jars',
         },
         'MDR-SACK' => {
-            name                      => 'Clear Sack(s)',
+            name                      => 'Clear Sacks',
             description               => $clear_sack_desc,
             description_contains_html => 1,
         },
@@ -1093,7 +1093,7 @@ HTML
             description => 'Non-recyclable waste',
         },
         'RES-SACK' => {
-            name        => 'Black Sack(s)',
+            name        => 'Black Sacks',
             description => 'Non-recyclable waste',
         },
     };
@@ -1282,19 +1282,21 @@ sub construct_bin_request_form {
         my $include_removal = @$removal_field_list;
 
         # Above-shop properties get a single default reason, so no need to send
-        # them to reason selection
-        my $include_reason
-            = $self->{c}->stash->{property}{above_shop} ? 0 : 1;
+        # them to reason selection. They need to be sent to letterbox location
+        # selection instead.
+        my $above_shop
+            = $self->{c}->stash->{property}{above_shop} ? 1 : 0;
 
         my $next
             = $include_removal
             ? 'request_removal'
-            : ( $include_reason ? 'request_reason' : 'about_you' );
+            : ( $above_shop ? 'letterbox_location' : 'request_reason' );
 
         $page_list = [
             request => {
-                fields => [ grep { ! ref $_ } @$delivery_field_list, 'submit' ],
-                title => 'Which containers do you need?',
+                intro => 'container_delivery_intro.html',
+                fields => [ grep { ! ref $_ } @$delivery_field_list, 'continue' ],
+                title => 'Which bins do you need?',
                 check_unique_id => 0,
                 next => $next,
                 update_field_list => sub {
@@ -1311,10 +1313,10 @@ sub construct_bin_request_form {
             push @$page_list, (
                 request_removal => {
                     intro => 'container_removal_intro.html',
-                    fields => [ grep { ! ref $_ } @$removal_field_list, 'submit' ],
-                    title => 'Which containers do you need to be removed?',
+                    fields => [ grep { ! ref $_ } @$removal_field_list, 'continue' ],
+                    title => 'Which bins do you need to be removed?',
                     check_unique_id => 0,
-                    next => ( $include_reason ? 'request_reason' : 'about_you' ),
+                    next => ( $above_shop ? 'about_you' : 'request_reason' ),
                 },
             );
             push @$full_field_list, @$removal_field_list;
@@ -1327,8 +1329,8 @@ sub construct_bin_request_form {
         $page_list = [
             request_removal => {
                 intro  => 'container_removal_intro.html',
-                fields => [ grep { ! ref $_ } @$full_field_list, 'submit' ],
-                title => 'Which containers do you need to be removed?',
+                fields => [ grep { ! ref $_ } @$full_field_list, 'continue' ],
+                title => 'Which bins do you need to be removed?',
                 check_unique_id => 0,
                 next => 'request_reason',
             },
@@ -1399,7 +1401,7 @@ sub _construct_bin_request_form_delivery {
                     tags  => {
                         hint => "You can request a maximum of "
                             . NUMWORDS($max)
-                            . " containers",
+                            . ( $container->{name} eq 'Recycling Box Lids' ? ' lids' : ' bins' ),
                         initial_hidden => 1,
                     },
                     options => [
@@ -1433,38 +1435,60 @@ sub _construct_bin_request_form_removal {
         my $open_key = $container->{service_item_name} || $container->{name};
         my $disabled = $open_reports->{$open_key} ? 1 : 0;
 
-        # For containers with subtypes, choose the ID ('service_item_name')
-        # that the property currently has
-        my $id
-            = $container->{subtypes}
-            ? $service_names_to_ids{ $container->{name} }
-            : $container->{service_item_name};
+        if ($container->{subtypes}) {
+            my $id = $container->{name} =~ s/ /-/gr;
+            $id .= '-removal';
 
-        $id .= '-removal';
-
-        push @$field_list, "container-$id" => {
-            type         => 'Checkbox',
-            label        => $container->{name},
-            option_label => $container->{description},
-            tags => { toggle => "form-quantity-$id-row" },
-            disabled => $disabled,
-        };
-
-        my $max = $container->{max} || 1;
-        if ( $max > 1 ) {
-            push @$field_list, "quantity-$id" => {
-                type => 'Select',
-                label => 'Quantity',
-                tags => {
-                    hint => "You can request removal of a maximum of " . NUMWORDS($max) . " containers",
-                    initial_hidden => 1,
-                },
-                options => [
-                    map { { value => $_, label => $_ } }
-                        ( 1 .. $max ),
-                ],
-                required_when => { "container-$id" => 1 },
+            push @$field_list, "parent-$id" => {
+                type         => 'Checkbox',
+                label        => $container->{name},
+                option_label => $container->{description},
+                tags         => { toggle => "form-bin-size-$id-row" },
+                disabled     => $disabled,
             };
+
+            push @$field_list, "bin-size-$id" => {
+                type    => 'Select',
+                label   => 'Bin Size',
+                tags    => { initial_hidden => 1 },
+                options => [
+                    map {
+                        label     => $_->{size},
+                            value => $_->{service_item_name},
+                    },
+                    @{ $container->{subtypes} }
+                ],
+                required_when => { "parent-$id" => 1 },
+            };
+
+        } else {
+            my $id = $container->{service_item_name} . '-removal';
+
+            push @$field_list, "container-$id" => {
+                type         => 'Checkbox',
+                label        => $container->{name},
+                option_label => $container->{description},
+                tags => { toggle => "form-quantity-$id-row" },
+                disabled => $disabled,
+            };
+
+            my $max = $container->{max} || 1;
+            if ( $max > 1 ) {
+                push @$field_list, "quantity-$id" => {
+                    type => 'Select',
+                    label => 'Quantity',
+                    tags => {
+                        hint => "You can request removal of a maximum of " . NUMWORDS($max) . " bins",
+                        initial_hidden => 1,
+                    },
+                    options => [
+                        map { { value => $_, label => $_ } }
+                            ( 1 .. $max ),
+                    ],
+                    required_when => { "container-$id" => 1 },
+                };
+            }
+
         }
     }
 
@@ -1510,7 +1534,12 @@ sub waste_munge_request_form_data {
         next unless $parent_id && $data->{"parent-$parent_id"};
 
         my $subtype_id = $data->{"bin-size-$parent_id"};
-        $data->{"container-$subtype_id"} = 1 if $subtype_id;
+
+        if ($subtype_id) {
+            $parent_id =~ /-removal/
+                ? $data->{"container-$subtype_id-removal"} = 1
+                : $data->{"container-$subtype_id"} = 1;
+        }
     }
 }
 
@@ -1577,11 +1606,16 @@ sub waste_munge_request_data {
         $data->{category} = $data->{category_removal};
     }
 
+    my $reason;
+    my $letterbox_location;
+    if ( $c->stash->{property}{above_shop} ) {
+        $reason = 'I need more sacks';
+        $letterbox_location = $data->{letterbox_location};
+    } else {
+        $reason = $data->{request_reason};
+    }
+
     my $address = $c->stash->{property}{address};
-    my $reason
-        = $c->stash->{property}{above_shop}
-        ? 'I need more sacks'
-        : $data->{request_reason};
     my $quantity = $data->{"quantity-$id"} || 1;
     my $household_size = $data->{household_size};
     $data->{detail} = "$data->{title}\n\n$address";
@@ -1589,6 +1623,8 @@ sub waste_munge_request_data {
     $data->{detail} .= "\n\nQuantity: $quantity";
     $data->{detail} .= "\n\nHousehold size: $household_size"
         if $household_size;
+    $data->{detail} .= "\n\nLocation of letterbox: $letterbox_location"
+        if $letterbox_location;
 
     my $assisted_yn = $c->stash->{services}{ $service->{service_item_name} }
             {assisted_collection}
@@ -1598,6 +1634,7 @@ sub waste_munge_request_data {
     $c->set_param( 'service_item_name', $service->{service_item_name} );
     $c->set_param( 'quantity',          $quantity );
     $c->set_param( 'assisted_yn', $assisted_yn );
+    $c->set_param( 'location_of_letterbox', $letterbox_location || '' );
 }
 
 sub _set_request_containers {
@@ -1631,6 +1668,7 @@ sub _set_request_containers {
 
             $service->{delivery_allowed} = 1;
             $service->{removal_allowed}  = 1;
+            $service->{parent_name} = $name;
 
         } elsif ( $service_id eq 'PC-140'
             || $service_id eq 'PC-180'
@@ -1644,6 +1682,7 @@ sub _set_request_containers {
 
             $service->{delivery_allowed} = 1;
             $service->{removal_allowed}  = 1;
+            $service->{parent_name} = $name;
 
         } elsif ( $service_id eq 'PG-140'
             || $service_id eq 'PG-180'
@@ -1657,6 +1696,7 @@ sub _set_request_containers {
 
             $service->{delivery_allowed} = 1;
             $service->{removal_allowed}  = 1;
+            $service->{parent_name} = $name;
 
         } elsif ( $service_id eq 'FO-23' ) {
             my $food_waste
@@ -1674,7 +1714,7 @@ sub _set_request_containers {
 
         } elsif ( $service_id eq 'MDR-SACK' ) {
             $container_info
-                = _containers_for_requests()->{'Clear Sack(s)'};
+                = _containers_for_requests()->{'Clear Sacks'};
             push @containers_for_delivery, $container_info;
 
             $service->{delivery_allowed} = 1;
@@ -1710,7 +1750,7 @@ sub _set_request_containers {
                 push @containers_for_delivery,
                     _containers_for_requests()->{'Recycling Box Lids'};
 
-                $property->{can_order_lids} = 1;
+                $property->{has_boxes} = 1;
             }
 
             $boxes_done = 1;
@@ -1759,7 +1799,9 @@ sub requests_for_display {
 
         my $subtype_id = $data->{"bin-size-$parent_id"};
         my %container = %{ $by_id{$subtype_id} };
-        push @requested_deliveries, \%container;
+        $parent_id =~ /-removal/
+            ? ( push @requested_removals, \%container )
+            : ( push @requested_deliveries, \%container );
     }
 
     return \@requested_deliveries, \@requested_removals;
@@ -1867,33 +1909,38 @@ sub _containers_for_requests {
                 description        => 'Paper and card',
                 service_item_name  => 'PA-55',
                 service_id_removal => '181',
+                max                => 3,
             },
             {   name               => 'Maroon Recycling Box',
                 description        => 'Plastics and cans',
                 service_item_name  => 'PL-55',
                 service_id_removal => '192',
+                max                => 3,
             },
             {   name               => 'Black Recycling Box',
                 description        => 'Glass bottles and jars',
                 service_item_name  => 'GL-55',
                 service_id_removal => '166',
+                max                => 3,
             },
             {   name                => 'White Recycling Box',
                 description         => 'Plastics, cans and glass',
                 service_item_name   => 'PG-55',
                 service_id_delivery => '328',
                 service_id_removal  => '336',
+                max                 => 3,
             },
             {   name                => 'Blue Recycling Box',
                 description         => 'Paper and card',
                 service_item_name   => 'PC-55',
                 service_id_delivery => '324',
                 service_id_removal  => '332',
+                max                 => 3,
             },
         ],
 
-        'Clear Sack(s)' => {
-            name                => 'Clear Sack(s)',
+        'Clear Sacks' => {
+            name                => 'Clear Sacks',
             description         => 'Mixed recycling',
             service_item_name   => 'MDR-SACK',
             service_id_delivery => '243',
