@@ -79,6 +79,11 @@ for ( $contact_delivery, $contact_removal ) {
             required => "false",
             automated => "hidden_field",
         },
+        {
+            code => "location_of_letterbox",
+            required => "false",
+            automated => "hidden_field",
+        },
     );
     $_->update;
 }
@@ -114,11 +119,11 @@ subtest '_set_request_containers' => sub {
         },
 
         # Sacks
-        {   service_name   => 'Black Sack(s)',
+        {   service_name   => 'Black Sacks',
             service_id     => 'RES-SACK',
             round_schedule => 'RES-R8 Thu',
         },
-        {   service_name   => 'Clear Sack(s)',
+        {   service_name   => 'Clear Sacks',
             service_id     => 'MDR-SACK',
             round_schedule => 'MDR-R1 Thu',
         },
@@ -150,8 +155,8 @@ subtest '_set_request_containers' => sub {
         'Green Recycling Box' => [ 0, 1 ],
         'Blue Recycling Box'  => [ 1, 1 ],
 
-        'Black Sack(s)' => [ 0, 0 ],
-        'Clear Sack(s)' => [ 1, 0 ],
+        'Black Sacks' => [ 0, 0 ],
+        'Clear Sacks' => [ 1, 0 ],
 
         'Brown Caddy' => [ 1, 1 ],
 
@@ -168,7 +173,7 @@ subtest '_set_request_containers' => sub {
     note 'Checking containers set on property';
     cmp_deeply $property, {
         household_size_check => 1,
-        can_order_lids => 1,
+        has_boxes => 1,
 
         containers_for_delivery => [
             {   name        => 'Green Wheelie Bin',
@@ -238,12 +243,14 @@ subtest '_set_request_containers' => sub {
                 service_item_name   => 'PG-55',
                 service_id_delivery => '328',
                 service_id_removal  => '336',
+                max                 => 3,
             },
             {   name                => 'Blue Recycling Box',
                 description         => 'Paper and card',
                 service_item_name   => 'PC-55',
                 service_id_delivery => '324',
                 service_id_removal  => '332',
+                max                 => 3,
             },
             {   name                => 'Recycling Box Lids',
                 service_item_name   => 'Deliver Box lids 55L',
@@ -251,7 +258,7 @@ subtest '_set_request_containers' => sub {
                 max                 => 5,
             },
 
-            {   name                => 'Clear Sack(s)',
+            {   name                => 'Clear Sacks',
                 description         => 'Mixed recycling',
                 service_item_name   => 'MDR-SACK',
                 service_id_delivery => '243',
@@ -338,17 +345,20 @@ subtest '_set_request_containers' => sub {
                 description        => 'Paper and card',
                 service_item_name  => 'PA-55',
                 service_id_removal => '181',
+                max                 => 3,
             },
             {   name               => 'Black Recycling Box',
                 description        => 'Glass bottles and jars',
                 service_item_name  => 'GL-55',
                 service_id_removal => '166',
+                max                 => 3,
             },
             {   name                => 'Blue Recycling Box',
                 description         => 'Paper and card',
                 service_item_name   => 'PC-55',
                 service_id_delivery => '324',
                 service_id_removal  => '332',
+                max                 => 3,
             },
 
             {   name                => 'Brown Caddy',
@@ -760,7 +770,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok('/waste/10001');
             $mech->submit_form_ok( { form_id => 'form-RES-180-removal' } );
-            $mech->content_contains('name="container-RES-180-removal" value="1"', 'Green Wheelie Bin preselected for removal');
+            $mech->content_contains('name="parent-Green-Wheelie-Bin-removal" value="1"', 'Green Wheelie Bin preselected for removal');
 
             $mech->get_ok('/waste/10001');
             $mech->submit_form_ok( { form_id => 'form-PG-55-delivery' } );
@@ -787,6 +797,7 @@ FixMyStreet::override_config {
                         'bin-size-Green-Wheelie-Bin' => 'RES-140',
 
                         'container-PG-55' => 1,
+                        'quantity-PG-55' => 2,
 
                         'container-Deliver-Box-lids-55L' => 1,
                         'quantity-Deliver-Box-lids-55L'  => 4,
@@ -809,7 +820,8 @@ FixMyStreet::override_config {
             $mech->back;
             $mech->submit_form_ok(
                 {   with_fields => {
-                        'container-RES-180-removal' => 1,
+                        'parent-Green-Wheelie-Bin-removal' => 1,
+                        'bin-size-Green-Wheelie-Bin-removal' => 'RES-180',
 
                         'container-FO-23-removal' => 1,
                         'quantity-FO-23-removal'  => 3,
@@ -852,7 +864,12 @@ FixMyStreet::override_config {
             $mech->content_like(qr/govuk-summary-list__value.*3/);
 
             $mech->submit_form_ok(
-                { with_fields => { submit => 'Request bin delivery or removal' } } );
+                {   with_fields => {
+                        declaration => 1,
+                        submit      => 'Request bin delivery or removal'
+                    }
+                }
+            );
 
             $mech->content_contains( 'Your bin request has been sent',
                 'Request successful' );
@@ -883,7 +900,7 @@ FixMyStreet::override_config {
             cmp_deeply \%extra, {
                 'Request new container' => {
                     'RES-140'              => 1,
-                    'PG-55'                => 1,
+                    'PG-55'                => 2,
                     'Deliver Box lids 55L' => 4,
                     'FO-23'                => 2,
                     'Kitchen 5 Ltr Caddy'  => 1,
@@ -901,12 +918,12 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste/10002');
 
-        $mech->content_contains("Request a delivery of clear sack(s)");
-        $mech->content_lacks("$new_string black sack(s)");
-        $mech->content_lacks("Request a delivery of black sack(s)");
+        $mech->content_contains("Request a delivery of clear sacks");
+        $mech->content_lacks("$new_string black sacks");
+        $mech->content_lacks("Request a delivery of black sacks");
 
-        $mech->content_lacks("$removal_string clear sack(s)");
-        $mech->content_lacks("$removal_string black sack(s)");
+        $mech->content_lacks("$removal_string clear sacks");
+        $mech->content_lacks("$removal_string black sacks");
 
         $mech->content_contains('Order replacement bins');
         $mech->content_lacks('Order removal of old bins');
@@ -918,6 +935,13 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         'container-MDR-SACK'   => 1,
+                    },
+                },
+            );
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        letterbox_location => 'Communal entrance',
                     },
                 },
             );
@@ -936,10 +960,15 @@ FixMyStreet::override_config {
                 'On summary page' );
 
             note 'Delivery summary:';
-            $mech->content_contains('Clear Sack(s) (Mixed recycling)');
+            $mech->content_contains('Clear Sacks (Mixed recycling)');
 
             $mech->submit_form_ok(
-                { with_fields => { submit => 'Request bin delivery or removal' } } );
+                {   with_fields => {
+                        declaration => 1,
+                        submit      => 'Request bin delivery or removal'
+                    }
+                }
+            );
 
             $mech->content_contains( 'Your bin request has been sent',
                 'Request successful' );
@@ -957,6 +986,8 @@ FixMyStreet::override_config {
                 is $report->get_extra_field_value('uprn'), '10002', 'UPRN is correct';
                 is $report->get_extra_field_value('assisted_yn'), 'No',
                     'assisted_yn is correct';
+                is $report->get_extra_field_value('location_of_letterbox'), 'Communal entrance',
+                    'location_of_letterbox is correct';
                 $extra{ $report->get_extra_field_value('service_item_name') }
                     = $report->get_extra_field_value('quantity');
             }
@@ -977,7 +1008,20 @@ FixMyStreet::override_config {
 
         $mech->submit_form_ok(
             {   with_fields => {
-                    'container-RES-180-removal' => 1,
+                    'parent-Green-Wheelie-Bin-removal' => 1,
+                    'bin-size-Green-Wheelie-Bin-removal' => 'RES-180',
+                },
+            },
+        );
+
+        $mech->content_contains( 'Why do you need new bins?',
+            'Can select solo wheelie bin for removal' );
+        $mech->back;
+
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    'parent-Green-Wheelie-Bin-removal' => 1,
+                    'bin-size-Green-Wheelie-Bin-removal' => 'RES-180',
 
                     'container-FO-23-removal' => 1,
                     'quantity-FO-23-removal'  => 2,
@@ -1009,7 +1053,12 @@ FixMyStreet::override_config {
         $mech->content_like(qr/govuk-summary-list__value.*2/);
 
         $mech->submit_form_ok(
-            { with_fields => { submit => 'Request bin delivery or removal' } } );
+            {   with_fields => {
+                    declaration => 1,
+                    submit      => 'Request bin delivery or removal'
+                }
+            }
+        );
 
         $mech->content_contains( 'Your bin request has been sent',
             'Request successful' );
@@ -1154,11 +1203,11 @@ sub _site_collections {
         ],
         10002 => [
             {
-                ServiceItemName => 'MDR-SACK', # Clear Sack(s)
+                ServiceItemName => 'MDR-SACK', # Clear Sacks
                 %defaults,
             },
             {
-                ServiceItemName => 'RES-SACK', # Black Sack(s)
+                ServiceItemName => 'RES-SACK', # Black Sacks
                 %defaults,
             },
         ],
