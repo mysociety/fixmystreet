@@ -538,9 +538,12 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a problem with a non-recyclable waste collection', 'Can report a problem with non-recyclable waste');
         $mech->content_contains('Report a problem with a food waste collection', 'Can report a problem with food waste');
-        $mech->content_contains('Report a problem with a paper and card collection', 'Can report a problem with paper and card');
-        $mech->content_lacks('Report a problem with a textiles and shoes collection', 'Can not report a problem with a textiles collection');
-        $mech->content_lacks('Report a problem with a batteries collection', 'Can not report a problem with a batteries collection');
+        my $root = HTML::TreeBuilder->new_from_content($mech->content());
+        my $panel = $root->look_down(id => 'panel-2240');
+        is $panel->as_text =~ /.*Please note that missed collections can only be reported.*/, 1, "Paper and card past reporting deadline";
+        $mech->content_lacks('Report a problem with a paper and card collection', 'Can not report a problem with paper and card as past reporting deadline');
+        $mech->content_lacks('Report a problem with a textiles and shoes collection', 'Can not report a problem with a textiles collection as orange bags');
+        $mech->content_lacks('Report a problem with a batteries collection', 'Can not report a problem with a batteries collection as orange bagss');
         $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
         $mech->submit_form_ok( { with_fields => { extra_Report_Type => '1', 'extra_Crew_Required_to_Return?' => '0' } });
