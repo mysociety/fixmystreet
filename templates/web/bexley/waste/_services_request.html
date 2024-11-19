@@ -28,6 +28,9 @@
     [% form %]
 
     <input type="hidden" name="container-[% unit.service_id %]-removal" value="1">
+    [% IF unit.parent_name %]
+      <input type="hidden" name="parent-[% unit.parent_name.replace(' ','-') %]-removal" value="1">
+    [% END %]
 
     <input type="submit" value="Request removal of a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
   </form>

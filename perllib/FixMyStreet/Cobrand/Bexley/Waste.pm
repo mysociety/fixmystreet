@@ -1435,38 +1435,60 @@ sub _construct_bin_request_form_removal {
         my $open_key = $container->{service_item_name} || $container->{name};
         my $disabled = $open_reports->{$open_key} ? 1 : 0;
 
-        # For containers with subtypes, choose the ID ('service_item_name')
-        # that the property currently has
-        my $id
-            = $container->{subtypes}
-            ? $service_names_to_ids{ $container->{name} }
-            : $container->{service_item_name};
+        if ($container->{subtypes}) {
+            my $id = $container->{name} =~ s/ /-/gr;
+            $id .= '-removal';
 
-        $id .= '-removal';
-
-        push @$field_list, "container-$id" => {
-            type         => 'Checkbox',
-            label        => $container->{name},
-            option_label => $container->{description},
-            tags => { toggle => "form-quantity-$id-row" },
-            disabled => $disabled,
-        };
-
-        my $max = $container->{max} || 1;
-        if ( $max > 1 ) {
-            push @$field_list, "quantity-$id" => {
-                type => 'Select',
-                label => 'Quantity',
-                tags => {
-                    hint => "You can request removal of a maximum of " . NUMWORDS($max) . " bins",
-                    initial_hidden => 1,
-                },
-                options => [
-                    map { { value => $_, label => $_ } }
-                        ( 1 .. $max ),
-                ],
-                required_when => { "container-$id" => 1 },
+            push @$field_list, "parent-$id" => {
+                type         => 'Checkbox',
+                label        => $container->{name},
+                option_label => $container->{description},
+                tags         => { toggle => "form-bin-size-$id-row" },
+                disabled     => $disabled,
             };
+
+            push @$field_list, "bin-size-$id" => {
+                type    => 'Select',
+                label   => 'Bin Size',
+                tags    => { initial_hidden => 1 },
+                options => [
+                    map {
+                        label     => $_->{size},
+                            value => $_->{service_item_name},
+                    },
+                    @{ $container->{subtypes} }
+                ],
+                required_when => { "parent-$id" => 1 },
+            };
+
+        } else {
+            my $id = $container->{service_item_name} . '-removal';
+
+            push @$field_list, "container-$id" => {
+                type         => 'Checkbox',
+                label        => $container->{name},
+                option_label => $container->{description},
+                tags => { toggle => "form-quantity-$id-row" },
+                disabled => $disabled,
+            };
+
+            my $max = $container->{max} || 1;
+            if ( $max > 1 ) {
+                push @$field_list, "quantity-$id" => {
+                    type => 'Select',
+                    label => 'Quantity',
+                    tags => {
+                        hint => "You can request removal of a maximum of " . NUMWORDS($max) . " bins",
+                        initial_hidden => 1,
+                    },
+                    options => [
+                        map { { value => $_, label => $_ } }
+                            ( 1 .. $max ),
+                    ],
+                    required_when => { "container-$id" => 1 },
+                };
+            }
+
         }
     }
 
@@ -1512,7 +1534,12 @@ sub waste_munge_request_form_data {
         next unless $parent_id && $data->{"parent-$parent_id"};
 
         my $subtype_id = $data->{"bin-size-$parent_id"};
-        $data->{"container-$subtype_id"} = 1 if $subtype_id;
+
+        if ($subtype_id) {
+            $parent_id =~ /-removal/
+                ? $data->{"container-$subtype_id-removal"} = 1
+                : $data->{"container-$subtype_id"} = 1;
+        }
     }
 }
 
@@ -1772,7 +1799,9 @@ sub requests_for_display {
 
         my $subtype_id = $data->{"bin-size-$parent_id"};
         my %container = %{ $by_id{$subtype_id} };
-        push @requested_deliveries, \%container;
+        $parent_id =~ /-removal/
+            ? ( push @requested_removals, \%container )
+            : ( push @requested_deliveries, \%container );
     }
 
     return \@requested_deliveries, \@requested_removals;
