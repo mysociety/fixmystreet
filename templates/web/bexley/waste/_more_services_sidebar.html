@@ -15,7 +15,7 @@
       <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=removal">Order removal of old bins</a></li>
     [% END %]
     [% IF property.has_boxes %]
-      <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=delivery&container-Deliver-Box-lids-55L=1">Order lids for recycling boxes</a></li>
+      <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=delivery&amp;container-Deliver-Box-lids-55L=1">Order lids for recycling boxes</a></li>
     [% END %]
   [% END %]
 
