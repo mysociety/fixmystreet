@@ -787,7 +787,8 @@ sub stash_report_filter_status : Private {
 
     my $body_user = $c->user_exists && $c->stash->{body} && $c->user->belongs_to_body($c->stash->{body}->id);
     my $staff_user = $c->user_exists && ($c->user->is_superuser || $body_user);
-    if ($staff_user || $c->cobrand->call_hook('filter_show_all_states')) {
+    my $planned_page = $c->action eq 'my/planned';
+    if ($staff_user || $planned_page || $c->cobrand->call_hook('filter_show_all_states')) {
         $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
         foreach my $state (keys %$visible) {
             if ($status{$state}) {

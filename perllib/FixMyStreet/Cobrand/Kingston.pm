@@ -272,11 +272,11 @@ sub waste_munge_request_form_pages {
                 }
             }
             # Both types of recycling container always
-            if ($data->{'container-' . CONTAINER_RECYCLING_BIN}) {
+            if ($data->{'container-' . CONTAINER_RECYCLING_BIN} && $fields->{"removal-" . CONTAINER_RECYCLING_BOX}) {
                 delete $fields->{"removal-" . CONTAINER_RECYCLING_BOX}{widget};
                 delete $fields->{"removal-" . CONTAINER_RECYCLING_BOX}{required};
             }
-            if ($data->{'container-' . CONTAINER_RECYCLING_BOX}) {
+            if ($data->{'container-' . CONTAINER_RECYCLING_BOX} && $fields->{"removal-" . CONTAINER_RECYCLING_BIN}) {
                 delete $fields->{"removal-" . CONTAINER_RECYCLING_BIN}{widget};
                 delete $fields->{"removal-" . CONTAINER_RECYCLING_BIN}{required};
             }

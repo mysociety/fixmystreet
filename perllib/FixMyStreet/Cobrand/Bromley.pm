@@ -1244,18 +1244,8 @@ sub cancel_bulky_collections_without_payment {
                         continuousAuditNumber => $can,
                         payment_reference => $tx_id,
                     );
-                    $report->set_extra_fields(
-                        {
-                            name => 'LastPayMethod',
-                            description => 'LastPayMethod',
-                            value => $self->bin_payment_types->{'csc'}
-                        },
-                        {
-                            name => 'PaymentCode',
-                            description => 'PaymentCode',
-                            value => $tx_id
-                        },
-                    );
+                    $report->update_extra_field({ name => 'LastPayMethod', value => $self->bin_payment_types->{'csc'} });
+                    $report->update_extra_field({ name => 'PaymentCode', value => $tx_id });
                     $report->update;
                     $report->add_to_comments({
                         text => "Payment confirmed, reference $tx_id",

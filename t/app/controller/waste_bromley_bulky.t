@@ -705,6 +705,7 @@ FixMyStreet::override_config {
             created => "2023-10-01T08:00:00Z",
             cobrand => "bromley",
         });
+        $p->set_extra_fields({ name => 'uprn', value => 'UPRN' });
         $p->set_extra_metadata('payment_reference', 'test');
         $p->set_extra_metadata('scpReference', 'unpaid');
         $p->update;
@@ -743,6 +744,7 @@ FixMyStreet::override_config {
         is $p->get_extra_field_value('LastPayMethod'), $cobrand->bin_payment_types->{'csc'};
         is $p->get_extra_field_value('PaymentCode'), 54321;
         is $p->comments->first->text, "Payment confirmed, reference 54321";
+        is $p->get_extra_field_value('uprn'), 'UPRN';
 
         # No payment non-staff and check confirms unpaid - cancelled.
         $p->set_extra_metadata('scpReference', 'unpaid');

@@ -118,6 +118,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Report a non-recyclable refuse collection as missed');
         $e->mock('GetTasks', sub { [] });
     };
+
     foreach (
         { id => 19, name => 'Blue lid paper and cardboard bin (240L)' },
         { id => 16, name => 'Green recycling box (55L)' },
@@ -167,6 +168,14 @@ FixMyStreet::override_config {
             is $cgi->param('attribute[Reason]'), '1';
         };
     }
+
+    subtest "Request a new green bin when you do not have a box" => sub {
+        # Switch the one 16 entry to a 12
+        $bin_data->[0]{ServiceTasks}{ServiceTask}[3]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '12';
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-12' => 1, 'quantity-12' => 1 }});
+        $bin_data->[0]{ServiceTasks}{ServiceTask}[3]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '16';
+    };
 
     subtest 'Request new containers' => sub {
         $mech->get_ok('/waste/12345/request');
