@@ -199,4 +199,24 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=head2 pin_colour
+
+Green for completed or closed, yellow for open,
+blue for anything else (in progress, action scheduled, etc)
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p ) = @_;
+
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'yellow' if $p->state eq 'confirmed';
+    return 'defects';
+}
+
+sub path_to_pin_icons {
+    return '/cobrands/oxfordshire/images/';
+}
+
+
 1;
