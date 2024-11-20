@@ -59,19 +59,20 @@ has_field submit => (
 
 sub validate {
     my $self = shift;
-    my $any = 0;
 
-    foreach ($self->all_fields) {
-        $any = 1 if $_->name =~ /^container-/ && ($_->value || $self->saved_data->{$_->name});
-        # Kingston special case for change-size-first-page
-        $any = 1 if $_->name eq 'how_many_exchange' && ($_->value || $self->saved_data->{$_->name});
-        # Bexley special case for household_size first page
-        $any = 1 if $_->name eq 'household_size' && ($_->value || $self->saved_data->{$_->name});
-        # Bexley special case for 'parent' containers (wheelie bins with size options)
-        $any = 1 if $_->name =~ /^parent-/ && ($_->value || $self->saved_data->{$_->name});
+    # Bexley has its own validation method for requests
+    unless ( $self->c->cobrand->moniker eq 'bexley' ) {
+        my $any = 0;
+
+        foreach ($self->all_fields) {
+            $any = 1 if $_->name =~ /^container-/ && ($_->value || $self->saved_data->{$_->name});
+            # Kingston special case for change-size-first-page
+            $any = 1 if $_->name eq 'how_many_exchange' && ($_->value || $self->saved_data->{$_->name});
+        }
+
+        $self->add_form_error('Please specify what you need')
+            unless $any;
     }
-    $self->add_form_error('Please specify what you need')
-        unless $any;
 
     $self->next::method();
 }

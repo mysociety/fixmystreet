@@ -32,6 +32,8 @@ has_field household_size => (
         },
         ( 1..4, '5 or more' )
     ],
+    required => 1,
+    messages => { required => 'Please select an amount' },
 );
 
 has_page request_reason => (
@@ -45,6 +47,7 @@ has_field request_reason => (
     widget => 'RadioGroup',
     required => 1,
     label => 'Why do you need new bins?',
+    messages => { required => 'Please select a reason' },
 );
 
 has_page letterbox_location => (
@@ -58,6 +61,7 @@ has_field letterbox_location => (
     widget => 'RadioGroup',
     required => 1,
     label => 'Where is your letterbox?',
+    messages => { required => 'Please select a location' },
 );
 
 has_page summary => (
@@ -127,6 +131,33 @@ By continuing with your request:
 </div>
 HTML
     return $text;
+}
+
+sub validate {
+    my $self = shift;
+
+    if ( $self->page_name eq 'request' || $self->page_name eq 'request_removal' ) {
+        # Get all checkboxes and make sure at least one selected
+        my $bin_count = 0;
+        my $no_removal;
+        for my $field_name ( @{ $self->current_page->fields } ) {
+            my $field = $self->field($field_name);
+
+            if ( $field_name eq 'no_removal' ) {
+                $no_removal = $field->value;
+            } elsif ( $field->type eq 'Checkbox' && $field->value ) {
+                $bin_count++;
+            }
+        }
+
+        if ( $no_removal && $bin_count ) {
+            $self->add_form_error('Please unselect \'None\' if selecting bins');
+        } elsif ( !$no_removal && !$bin_count ) {
+            $self->add_form_error('Please specify what you need');
+        }
+    }
+
+    $self->next::method();
 }
 
 1;
