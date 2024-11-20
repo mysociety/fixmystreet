@@ -139,15 +139,20 @@ sub validate {
     if ( $self->page_name eq 'request' || $self->page_name eq 'request_removal' ) {
         # Get all checkboxes and make sure at least one selected
         my $bin_count = 0;
+        my $no_removal;
         for my $field_name ( @{ $self->current_page->fields } ) {
             my $field = $self->field($field_name);
 
-            if ( $field->type eq 'Checkbox' && $field->value ) {
+            if ( $field_name eq 'no_removal' ) {
+                $no_removal = $field->value;
+            } elsif ( $field->type eq 'Checkbox' && $field->value ) {
                 $bin_count++;
             }
         }
 
-        if ( !$bin_count ) {
+        if ( $no_removal && $bin_count ) {
+            $self->add_form_error('Please unselect \'None\' if selecting bins');
+        } elsif ( !$no_removal && !$bin_count ) {
             $self->add_form_error('Please specify what you need');
         }
     }
