@@ -822,6 +822,7 @@ FixMyStreet::override_config {
                 'On removal page' );
             $mech->content_contains('We are unable to collect kitchen caddies',
                 'Contains intro text');
+            $mech->content_contains('I do not need any bins to be removed', 'Has "none" option');
             $mech->submit_form_ok( {},
                 'can submit removal page with nothing selected' );
             $mech->back;
@@ -1015,6 +1016,7 @@ FixMyStreet::override_config {
 
         $mech->content_contains('We are unable to collect kitchen caddies',
             'Contains intro text');
+        $mech->content_lacks('I do not need any bins to be removed', 'No "none" option');
 
         $mech->submit_form_ok(
             {   with_fields => {
