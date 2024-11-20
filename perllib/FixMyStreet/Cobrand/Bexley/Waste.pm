@@ -1303,6 +1303,14 @@ sub construct_bin_request_form {
             ? 'request_removal'
             : ( $above_shop ? 'letterbox_location' : 'request_reason' );
 
+        unshift @$removal_field_list, (
+            no_removal => {
+                type         => 'Checkbox',
+                label        => 'None',
+                option_label => 'I do not need any bins to be removed',
+            }
+        ) if $include_removal;
+
         $page_list = [
             request => {
                 intro => 'container_delivery_intro.html',
