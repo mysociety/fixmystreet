@@ -543,4 +543,39 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'oxfordshire',
+    STAGING_FLAGS => { send_reports => 1 },
+    COBRAND_FEATURES => {
+        sub_ward_reporting => { oxfordshire => ['DIW', 'CPC'] },
+        open311_email => { oxfordshire => { 'Trees obstructing traffic light' => 'trafficlights@example.org' } }
+        },
+    MAPIT_URL => 'http://mapit.uk/',
+
+
+}, sub {
+    subtest "Trees obstructing traffic light category sends email too" => sub {
+        $mech->create_contact_ok( body_id => $oxon->id, category => 'Trees obstructing traffic light', email => 'OPEN311', send_method => 'Open311');
+        my ($report) = $mech->create_problems_for_body( 1, $oxon->id, 'Traffic light hidden', {
+                cobrand => 'oxfordshire',
+                category => 'Trees obstructing traffic light',
+                latitude => 51.754926,
+                longitude => -1.256179,
+        });
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $confirm_sent;
+        for my $email (@emails) {
+            my %headers = $email->header_str_pairs;
+            $confirm_sent = 1 if $headers{To} eq 'trafficlights@example.org';
+        };
+        is $confirm_sent, 1, "Traffic light email sent to traffic light email address";
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->{description}[0] =~ /Traffic light hidden/, 1, "Traffic light report also sent to open311";
+    };
+
+};
+
+
 done_testing();
