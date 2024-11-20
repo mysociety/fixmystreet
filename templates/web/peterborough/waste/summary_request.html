@@ -1,18 +1,15 @@
-[% IF c.get_param('bags_only') %]
-  [%
+[%
+IF c.get_param('bags_only');
     title = 'Submit food bags request';
     thing = 'food bags request';
     summary_title = 'Food bag requests';
-    step1 = 'request';
-  %]
-[% ELSE %]
-  [%
+ELSE;
     title = 'Submit bin request';
     thing = 'bin request';
     summary_title = 'Bin requests';
-    step1 = 'request';
-  %]
-[% END %]
+END;
+step1 = first_page;
+%]
 
 [% BLOCK answers %]
   [% FOR container IN data.keys.grep('^container-') %]

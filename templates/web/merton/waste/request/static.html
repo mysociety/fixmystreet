@@ -1,0 +1,29 @@
+[% USE date(format='%Y%m%d') ~%]
+[% PROCESS 'waste/header.html' %]
+
+<h1 class="govuk-heading-xl">Larger black bin request</h1>
+
+[% IF property %]
+    [% INCLUDE 'waste/_address_display.html' %]
+[% END %]
+
+[% IF form.saved_data.how_much == '3more' %]
+    <p class="govuk-body">
+        <strong>Clinical waste</strong>
+    </p>
+    <p class="govuk-body">
+        Please visit our
+        <a href="https://www.merton.gov.uk/rubbish-and-recycling/bulky-hazardous-and-clinical-waste/clinical-waste">Clinical Waste</a>
+        page to find out about arranging a separate collection of your sanitary waste.
+    </p>
+[% ELSIF form.saved_data.how_many == 'less5' %]
+    <p class="govuk-body">
+        <strong>Sorry, you are not eligible for a larger bin</strong>
+    </p>
+    <p class="govuk-body">
+        If you recycle everything you can, including food waste, you should find that you have enough space in your rubbish bin.
+        <a href="https://www.merton.gov.uk/acceptable">Find out what you can recycle</a>
+    </p>
+[% END %]
+
+[% INCLUDE footer.html %]
