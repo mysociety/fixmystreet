@@ -157,7 +157,8 @@ sub validate {
         }
     }
 
-    $self->next::method();
+    # Skip validate() in Form/Waste/Request.pm
+    FixMyStreet::App::Form::Waste::validate($self);
 }
 
 1;
