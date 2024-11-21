@@ -267,6 +267,21 @@ sub report_inspect_update_extra {
     }
 }
 
+sub open311_post_send {
+    my ($self, $row, $h, $sender) = @_;
+
+    if ($row->category eq 'Trees obstructing traffic light' && !$row->get_extra_metadata('extra_email_sent')) {
+        my $emails = $self->feature('open311_email');
+        if (my $dest = $emails->{$row->category}) {
+            my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ]);
+            $sender->send($row, $h);
+            if ($sender->success) {
+                $row->update_extra_metadata(extra_email_sent => 1);
+            }
+        }
+    }
+}
+
 sub on_map_default_status { return 'open'; }
 
 sub around_nearby_filter {
