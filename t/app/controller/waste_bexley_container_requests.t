@@ -793,9 +793,15 @@ FixMyStreet::override_config {
             $mech->follow_link_ok(
                 { text_regex => qr /Order replacement bins/ } );
 
+            $mech->submit_form_ok();
+            $mech->content_contains( 'Please select an amount',
+                'Error shown when household size not selected' );
             $mech->submit_form_ok( { with_fields => { household_size => 3 } },
                 'Choose household size' );
 
+            $mech->submit_form_ok();
+            $mech->content_contains( 'Please specify what you need',
+                'Error shown when no bins selected' );
             $mech->submit_form_ok(
                 {   with_fields => {
                         'parent-Green-Wheelie-Bin'   => 1,
@@ -822,8 +828,23 @@ FixMyStreet::override_config {
                 'On removal page' );
             $mech->content_contains('We are unable to collect kitchen caddies',
                 'Contains intro text');
-            $mech->submit_form_ok( {},
-                'can submit removal page with nothing selected' );
+            $mech->content_contains('I do not need any bins to be removed', 'Has "none" option');
+            $mech->submit_form_ok();
+            $mech->content_contains( 'Please specify what you need',
+                'Error shown when nothing selected' );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        'parent-Green-Wheelie-Bin-removal' => 1,
+                        'bin-size-Green-Wheelie-Bin-removal' => 'RES-180',
+
+                        no_removal => 1,
+                    },
+                },
+            );
+            $mech->content_like( qr/Please unselect.*None/,
+                'Error shown when no_removal and a bin selected' );
+            $mech->submit_form_ok( { with_fields => { no_removal => 1 } },
+                'can submit removal page with no_removal selected' );
             $mech->back;
             $mech->submit_form_ok(
                 {   with_fields => {
@@ -832,11 +853,16 @@ FixMyStreet::override_config {
 
                         'container-FO-23-removal' => 1,
                         'quantity-FO-23-removal'  => 3,
+
+                        no_removal => 0,
                     },
                 },
                 'submit removal page with options selected',
             );
 
+            $mech->submit_form_ok();
+            $mech->content_contains( 'Please select a reason',
+                'Error shown when no reason selected' );
             $mech->submit_form_ok(
                 {   with_fields => {
                         request_reason  => 'My existing bin is damaged',
@@ -1015,6 +1041,7 @@ FixMyStreet::override_config {
 
         $mech->content_contains('We are unable to collect kitchen caddies',
             'Contains intro text');
+        $mech->content_lacks('I do not need any bins to be removed', 'No "none" option');
 
         $mech->submit_form_ok(
             {   with_fields => {
