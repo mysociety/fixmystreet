@@ -719,6 +719,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Order replacement bins');
         $mech->content_contains('Order removal of old bins');
         $mech->content_contains('Order lids');
+        $mech->content_contains('Manage garden waste bins');
 
         subtest 'Green wheelie bin' => sub {
             $mech->submit_form_ok( { form_id => 'form-RES-180-delivery' } );
@@ -969,6 +970,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Order replacement bins');
         $mech->content_lacks('Order removal of old bins');
         $mech->content_lacks('Order lids');
+        $mech->content_lacks('Manage garden waste bins');
 
         subtest 'Request sacks' => sub {
             $mech->submit_form_ok( { form_id => 'form-MDR-SACK-delivery' } );
