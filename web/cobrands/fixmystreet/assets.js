@@ -1535,6 +1535,9 @@ fixmystreet.message_controller = (function() {
         if ( $('#js-roads-responsibility').is(':visible') || $('.js-mobile-not-an-asset').length ) {
             return;
         }
+        if (hide_continue_button()) {
+            $('.js-reporting-page--next').show();
+        }
         $('.js-reporting-page--next').prop('disabled', false);
         $("#mob_ok, #toggle-fullscreen").removeClass('hidden-js');
     }
@@ -1546,6 +1549,16 @@ fixmystreet.message_controller = (function() {
             $("#mob_ok, #toggle-fullscreen").addClass('hidden-js');
         } else {
             $('.js-reporting-page--next').prop('disabled', true);
+            if (hide_continue_button()) {
+                $('.js-reporting-page--next').hide();
+            }
+        }
+    }
+
+    function hide_continue_button() {
+        var cobrands_to_hide = ['hart'];
+        if (cobrands_to_hide.indexOf(fixmystreet.cobrand) !== -1) {
+            return 1;
         }
     }
 
