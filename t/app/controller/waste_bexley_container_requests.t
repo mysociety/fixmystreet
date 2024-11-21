@@ -179,6 +179,7 @@ subtest '_set_request_containers' => sub {
     cmp_deeply $property, {
         household_size_check => 1,
         has_boxes => 1,
+        has_wheelie_bins => 1,
 
         containers_for_delivery => [
             {   name        => 'Green Wheelie Bin',
@@ -799,6 +800,10 @@ FixMyStreet::override_config {
             $mech->submit_form_ok( { with_fields => { household_size => 3 } },
                 'Choose household size' );
 
+            $mech->content_contains(
+                'Information on wheelie bin sizes',
+                'Link to size info on delivery options'
+            );
             $mech->submit_form_ok();
             $mech->content_contains( 'Please specify what you need',
                 'Error shown when no bins selected' );
@@ -826,6 +831,10 @@ FixMyStreet::override_config {
             $mech->content_contains(
                 'Which bins do you need to be removed?',
                 'On removal page' );
+            $mech->content_contains(
+                'Information on wheelie bin sizes',
+                'Link to size info on removal options'
+            );
             $mech->content_contains('We are unable to collect kitchen caddies',
                 'Contains intro text');
             $mech->content_contains('I do not need any bins to be removed', 'Has "none" option');
@@ -960,6 +969,10 @@ FixMyStreet::override_config {
         subtest 'Request sacks' => sub {
             $mech->submit_form_ok( { form_id => 'form-MDR-SACK-delivery' } );
 
+            $mech->content_lacks(
+                'Information on wheelie bin sizes',
+                'No link to size info'
+            );
             $mech->content_lacks( 'Bin location', 'No bin location selection' );
             $mech->submit_form_ok(
                 {   with_fields => {
