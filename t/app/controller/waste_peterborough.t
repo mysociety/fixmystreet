@@ -104,6 +104,9 @@ FixMyStreet::override_config {
         $mech->content_contains('Every two weeks');
         $mech->content_contains('Thursday, 5th August 2021');
         $mech->content_contains('Report a recycling bin collection as missed');
+        my $root = HTML::TreeBuilder->new_from_content($mech->content());
+        my $more_services = $root->look_down(id => 'more-services');
+        is !($more_services->as_text =~ /.*Report a missed.*/), 1, "Report missed only under individual services, not more_services";
         set_fixed_time('2021-08-06T14:00:00Z');
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->content_contains('Report a recycling bin collection as missed');
