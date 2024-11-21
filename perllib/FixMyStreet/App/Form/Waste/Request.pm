@@ -59,20 +59,16 @@ has_field submit => (
 
 sub validate {
     my $self = shift;
+    my $any = 0;
 
-    # Bexley has its own validation method for requests
-    unless ( $self->c->cobrand->moniker eq 'bexley' ) {
-        my $any = 0;
-
-        foreach ($self->all_fields) {
-            # Either a container-* has been selected, or
-            # Kingston/Merton special cases for first-page question
-            $any = 1 if $_->name =~ /^container-|how_many_exchange|medical_condition/ && ($_->value || $self->saved_data->{$_->name});
-        }
-
-        $self->add_form_error('Please specify what you need')
-            unless $any;
+    foreach ($self->all_fields) {
+        # Either a container-* has been selected, or
+        # Kingston/Merton special cases for first-page question
+        $any = 1 if $_->name =~ /^container-|how_many_exchange|medical_condition/ && ($_->value || $self->saved_data->{$_->name});
     }
+
+    $self->add_form_error('Please specify what you need')
+        unless $any;
 
     $self->next::method();
 }
