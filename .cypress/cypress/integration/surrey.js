@@ -15,7 +15,7 @@ describe('Reporting not on a road', function() {
         cy.pickCategory('Abandoned vehicles');
         cy.contains('You cannot send Surrey County Council a report');
         cy.get('#map_sidebar').scrollTo('bottom');
-        cy.get('.js-reporting-page--next:visible').should('be.disabled');
+        cy.get('.js-reporting-page--next:hidden').should('be.disabled');
         cy.pickCategory('Flooding inside a building');
         cy.contains('You cannot send Surrey County Council a report').should('not.be.visible');
         cy.get('#map_sidebar').scrollTo('bottom');
