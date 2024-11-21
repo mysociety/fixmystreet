@@ -804,6 +804,10 @@ FixMyStreet::override_config {
                 'Information on wheelie bin sizes',
                 'Link to size info on delivery options'
             );
+            $mech->content_lacks(
+                'your address is not eligible for a green wheelie bin',
+                'No message about green wheelie bin'
+            );
             $mech->submit_form_ok();
             $mech->content_contains( 'Please specify what you need',
                 'Error shown when no bins selected' );
@@ -972,6 +976,10 @@ FixMyStreet::override_config {
             $mech->content_lacks(
                 'Information on wheelie bin sizes',
                 'No link to size info'
+            );
+            $mech->content_contains(
+                'your address is not eligible for a green wheelie bin',
+                'Message about green wheelie bin'
             );
             $mech->content_lacks( 'Bin location', 'No bin location selection' );
             $mech->submit_form_ok(
