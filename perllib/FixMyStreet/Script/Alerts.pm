@@ -126,10 +126,14 @@ sub send_alert_type {
             # this might throw up the odd false positive but only in cases where the
             # state has changed and there was already update text
             if ($row->{item_problem_state} && $last_problem_state ne $row->{item_problem_state}) {
-                my $cobrand_name = $report->cobrand_name_for_state($cobrand);
-                my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand_name);
+                my $update = '';
+                unless ( $cobrand->call_hook( skip_alert_state_changed_to => $report ) ) {
+                    my $cobrand_name = $report->cobrand_name_for_state($cobrand);
+                    my $state = FixMyStreet::DB->resultset("State")->display($row->{item_problem_state}, 1, $cobrand_name);
 
-                my $update = _('State changed to:') . ' ' . $state;
+                    $update = _('State changed to:') . ' ' . $state;
+                }
+
                 $row->{item_text_original} = $row->{item_text};
                 $row->{item_text} = $row->{item_text} ? $row->{item_text} . "\n\n" . $update :
                                                         $update;
