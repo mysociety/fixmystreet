@@ -1,3 +1,25 @@
+[% IF cobrand.contact_extra_fields.0 == 'display_name' %]
+
+    [% IF contact.in_storage %]
+        <h1>[% contact.category | html %]</h1>
+        <input type="hidden" name="category" value="[% contact.category | html %]" >
+
+        <label for="display_name">Display name</label>
+        <p class="form-hint" id="display_name-hint">
+            A display name will be used in preference to the main category name on web pages and dropdown menus, but not in URLs.
+        </p>
+        <input type="text" class="form-control" name="extra[display_name]" id="display_name"
+            aria-describedby="display_name-hint"
+            value="[% contact.get_extra_metadata('display_name') | html %]" size="30">
+
+    [% ELSE %]
+        <p>
+          <strong>[% loc('Category') %] </strong><input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]" required>
+        </p>
+    [% END %]
+
+[% ELSE %]
+
 <div class="admin-hint">
   <p>
       [% loc('Choose a <strong>category</strong> name that makes sense to the public (e.g., "Pothole", "Street lighting") but is helpful
@@ -17,4 +39,6 @@
 
 [% IF contact.in_storage %]
     <input type="hidden" name="current_category" value="[% current_contact.category | html %]" >
+[% END %]
+
 [% END %]
