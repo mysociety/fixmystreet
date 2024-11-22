@@ -36,7 +36,7 @@
   </form>
 [% END %]
 
-[% IF property.has_garden_subscription %]
+[% IF unit.service_description == 'Garden waste' %]
   <form method="post" action="https://www.bexley.gov.uk/services/rubbish-and-recycling/garden-waste-collection-service/sign-garden-waste-collection" target="_blank">
 
     <input type="submit" value="Manage garden waste bins" class="waste-service-descriptor waste-service-link">
