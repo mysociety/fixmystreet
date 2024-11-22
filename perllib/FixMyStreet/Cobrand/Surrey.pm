@@ -200,6 +200,7 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         alerts_count => "Subscribers",
+        external_id  => "External ID",
     );
 
     my $alerts_lookup = $csv->dbi ? undef : $self->csv_update_alerts;
@@ -207,11 +208,10 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        if ($alerts_lookup) {
-            return { alerts_count => ($alerts_lookup->{$report->id} || 0) };
-        } else {
-            return { alerts_count => ($report->{alerts_count} || 0) };
-        }
+        return {
+            alerts_count => ($alerts_lookup ? $alerts_lookup->{$report->id} || 0 : $report->{alerts_count} || 0),
+            external_id  => $csv->dbi ? $report->{external_id} : $report->external_id,
+        };
     });
 }
 
