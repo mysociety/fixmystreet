@@ -109,31 +109,6 @@ sub garden_due_days { 30 }
 
 sub garden_staff_provide_email { 1 }
 
-sub service_name_override {
-    my ($self, $service) = @_;
-
-    my %service_name_override = (
-        2238 => 'Non-recyclable Refuse',
-        2239 => 'Food waste',
-        2240 => 'Paper and card',
-        2241 => 'Mixed recycling',
-        2242 => 'Non-recyclable Refuse',
-        2243 => 'Non-recyclable Refuse',
-        2246 => 'Mixed recycling',
-        2247 => 'Garden Waste',
-        2248 => "Food waste",
-        2249 => "Paper and card",
-        2250 => "Mixed recycling",
-        2632 => 'Paper and card',
-        3571 => 'Mixed recycling',
-        3576 => 'Non-recyclable Refuse',
-        2256 => '', # Deliver refuse bags
-        2257 => '', # Deliver recycling bags
-    );
-
-    return $service_name_override{$service->{ServiceId}} // '';
-}
-
 sub waste_password_hidden { 1 }
 
 # For renewal/modify

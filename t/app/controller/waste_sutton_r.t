@@ -90,7 +90,7 @@ FixMyStreet::override_config {
         $mech->content_contains('2 Example Street, Sutton');
         $mech->content_contains('Every Friday fortnightly');
         $mech->content_contains('Friday, 2nd September');
-        $mech->content_contains('Report a mixed recycling collection as missed');
+        $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
     };
     subtest 'In progress collection' => sub {
         $e->mock('GetTasks', sub { [ {
@@ -106,12 +106,12 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Friday, 9th September\s+\(this collection has been adjusted from its usual time\)\s+\(In progress\)/);
         $mech->content_lacks(', at  4:00pm');
-        $mech->content_lacks('Report a mixed recycling collection as missed');
+        $mech->content_lacks('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
         $mech->content_lacks('Report a non-recyclable refuse collection as missed');
         set_fixed_time('2022-09-09T19:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains(', at  4:00pm');
-        $mech->content_contains('Report a mixed recycling collection as missed');
+        $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
         $mech->content_contains('Report a non-recyclable refuse collection as missed');
         $e->mock('GetTasks', sub { [] });
     };
@@ -219,10 +219,10 @@ FixMyStreet::override_config {
 
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/12345/report');
-		$mech->content_contains('Food waste');
-		$mech->content_contains('Mixed recycling');
-		$mech->content_contains('Non-recyclable Refuse');
-		$mech->content_lacks('Paper and card');
+		$mech->content_contains('Food Waste');
+		$mech->content_contains('Mixed Recycling (Cans, Plastics &amp; Glass)');
+		$mech->content_contains('Non-Recyclable Refuse');
+		$mech->content_lacks('Paper &amp; Card');
 
         $mech->submit_form_ok({ with_fields => { 'service-2239' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
@@ -230,13 +230,13 @@ FixMyStreet::override_config {
         $mech->content_contains('Thank you for reporting a missed collection');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Report missed Food waste\n\n2 Example Street, Sutton, SM1 1AA";
-        is $report->title, 'Report missed Food waste';
+        is $report->detail, "Report missed Food Waste\n\n2 Example Street, Sutton, SM1 1AA";
+        is $report->title, 'Report missed Food Waste';
     };
     subtest 'No reporting/requesting if open request' => sub {
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a mixed recycling collection as missed');
-        $mech->content_lacks('Request a mixed recycling container');
+        $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
+        $mech->content_lacks('Request a mixed recycling (cans, plastics &amp; glass) container');
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
@@ -252,8 +252,8 @@ FixMyStreet::override_config {
             ] },
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling container request has been made');
-        $mech->content_contains('Report a mixed recycling collection as missed');
+        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) container request has been made');
+        $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
         $mech->get_ok('/waste/12345/request');
         $mech->content_like(qr/name="container-choice" value="16"\s+disabled/s); # green
 
@@ -285,8 +285,8 @@ FixMyStreet::override_config {
             ] },
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling collection has been reported as missed');
-        $mech->content_lacks('Request a mixed recycling container');
+        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection has been reported as missed');
+        $mech->content_lacks('Request a mixed recycling (cans, plastics &amp; glass) container');
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 1566,
@@ -297,7 +297,7 @@ FixMyStreet::override_config {
             } },
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A paper and card collection has been reported as missed');
+        $mech->content_contains('A paper &amp; card collection has been reported as missed');
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
@@ -316,7 +316,7 @@ FixMyStreet::override_config {
             } ]
         });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling collection has been reported as missed');
+        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection has been reported as missed');
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
     subtest 'No requesting if open request of different size' => sub {

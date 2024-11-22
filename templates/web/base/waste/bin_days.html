@@ -209,7 +209,7 @@
 %]
   [% IF c.cobrand.moniker != 'peterborough' %]
   <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">[%
-      IF c.cobrand.moniker == 'brent' %]Small items[% ELSE %]Bulky waste[% END
+      IF c.cobrand.moniker == 'brent' %]Small items[% ELSIF c.cobrand.moniker == 'sutton' %]Bulky Waste[% ELSE %]Bulky waste[% END
   %]</h3>
     [% IF c.cobrand.moniker == 'kingston' || c.cobrand.moniker == 'sutton' %]
         <p>Pay to have large household items like furniture or appliances collected from your address.</p>

@@ -99,6 +99,37 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
+=head2 service_name_override
+
+Customer facing names for services
+
+=cut
+
+sub service_name_override {
+    my ($self, $service) = @_;
+
+    my %service_name_override = (
+        2238 => 'Non-Recyclable Refuse',
+        2239 => 'Food Waste',
+        2240 => 'Paper & Card',
+        2241 => 'Mixed Recycling (Cans, Plastics & Glass)',
+        2242 => 'Non-Recyclable Refuse',
+        2243 => 'Non-Recyclable Refuse',
+        2246 => 'Mixed Recycling (Cans, Plastics & Glass)',
+        2247 => 'Garden Waste',
+        2248 => 'Food Waste',
+        2249 => 'Paper & Card',
+        2250 => 'Mixed Recycling (Cans, Plastics & Glass)',
+        2632 => 'Paper & Card',
+        3571 => 'Mixed Recycling (Cans, Plastics & Glass)',
+        3576 => 'Non-Recyclable Refuse',
+        2256 => '', # Deliver refuse bags
+        2257 => '', # Deliver recycling bags
+    );
+
+    return $service_name_override{$service->{ServiceId}} // '';
+}
+
 sub waste_cc_munge_form_details {
     my ($self, $c) = @_;
 
