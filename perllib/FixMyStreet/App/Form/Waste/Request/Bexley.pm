@@ -123,10 +123,10 @@ sub label_declaration {
 By continuing with your request:
 <br>
 <ul>
-<li>I agree that containers will only be used for the storage of waste and recycling for collection and will not be used for any other purposes</li>
-<li>I understand that all waste and recycling containers remain the property of the London Borough of Bexley</li>
-<li>I understand that if I have more than the permitted number of containers or misuse containers they may be removed from my property without prior notice</li>
-<li>I understand that I will not necessarily receive brand-new waste containers. Where second-hand containers are delivered they will be clean and undamaged, but may have markings from their previous use</li>
+<li>I agree that bins will only be used for the storage of rubbish and recycling for collection and will not be used for any other purposes</li>
+<li>I understand that all rubbish and recycling bins remain the property of the London Borough of Bexley</li>
+<li>I understand that if I have more than the permitted number of bins or misuse bins they may be removed from my property without prior notice</li>
+<li>I understand that I will not necessarily receive brand-new rubbish and recycling bins. Where second-hand bins are delivered they will be clean and undamaged, but may have markings from their previous use</li>
 </ul>
 </div>
 HTML
