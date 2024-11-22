@@ -1038,6 +1038,9 @@ sub enquiry : Chained('property') : Args(0) {
         } elsif ($datatype eq 'multivaluelist') {
             my @options = map { { label => $_->{name}, value => $_->{key} } } @{$_->{values}};
             %config = (type => 'Multiple', widget => 'CheckboxGroup', options => \@options);
+        } elsif ($datatype eq 'singlevaluelist') {
+            my @options = map { { label => $_->{name}, value => $_->{key} } } @{$_->{values}};
+            %config = (type => 'Select', widget => 'RadioGroup', options => \@options);
         }
 
         my $required = $_->{required} eq 'true' ? 1 : 0;
