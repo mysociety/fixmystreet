@@ -112,21 +112,22 @@ sub garden_staff_provide_email { 1 }
 sub service_name_override {
     my ($self, $service) = @_;
 
+    my $sutton = $self->moniker eq 'sutton';
     my %service_name_override = (
-        2238 => 'Non-recyclable Refuse',
-        2239 => 'Food waste',
-        2240 => 'Paper and card',
-        2241 => 'Mixed recycling',
-        2242 => 'Non-recyclable Refuse',
-        2243 => 'Non-recyclable Refuse',
-        2246 => 'Mixed recycling',
+        2238 => $sutton ? 'Non-Recyclable Refuse' : 'Non-recyclable Refuse',
+        2239 => $sutton ? 'Food Waste' : 'Food waste',
+        2240 => $sutton ? 'Paper & Card' : 'Paper and card',
+        2241 => $sutton ? 'Mixed Recycling (Cans, Plastics & Glass)' : 'Mixed recycling',
+        2242 => $sutton ? 'Non-Recyclable Refuse' : 'Non-recyclable Refuse',
+        2243 => $sutton ? 'Non-Recyclable Refuse' : 'Non-recyclable Refuse',
+        2246 => $sutton ? 'Mixed Recycling (Cans, Plastics & Glass)' : 'Mixed recycling',
         2247 => 'Garden Waste',
-        2248 => "Food waste",
-        2249 => "Paper and card",
-        2250 => "Mixed recycling",
-        2632 => 'Paper and card',
-        3571 => 'Mixed recycling',
-        3576 => 'Non-recyclable Refuse',
+        2248 => $sutton ? 'Food Waste' : 'Food waste',
+        2249 => $sutton ? 'Paper & Card' : 'Paper and card',
+        2250 => $sutton ? 'Mixed Recycling (Cans, Plastics & Glass)' : 'Mixed recycling',
+        2632 => $sutton ? 'Paper & Card' : 'Paper and card',
+        3571 => $sutton ? 'Mixed Recycling (Cans, Plastics & Glass)' : 'Mixed recycling',
+        3576 => $sutton ? 'Non-Recyclable Refuse' : 'Non-recyclable Refuse',
         2256 => '', # Deliver refuse bags
         2257 => '', # Deliver recycling bags
     );
