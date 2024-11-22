@@ -154,6 +154,12 @@ sub privacy_policy_url {
 
 sub reopening_disallowed { 1 }
 
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
+
 =item * Uses slightly different text on the geocode form.
 
 =cut
