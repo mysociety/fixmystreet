@@ -450,4 +450,18 @@ sub waste_auto_confirm_report {
         || $report->category eq 'Request container removal';
 }
 
+=head2 skip_alert_state_changed_to
+
+Bin request update/completion emails sent to user do not have a
+'State changed to:' line
+
+=cut
+
+sub skip_alert_state_changed_to {
+    my ( $self, $report ) = @_;
+
+    return $report->category eq 'Request new container'
+        || $report->category eq 'Request container removal';
+}
+
 1;
