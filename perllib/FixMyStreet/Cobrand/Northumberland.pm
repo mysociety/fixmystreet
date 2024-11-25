@@ -98,6 +98,12 @@ sub cut_off_date { '2023-05-03' }
 
 =cut
 
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
+
 sub abuse_reports_only { 1 }
 
 =item * Only staff can reopen reports
