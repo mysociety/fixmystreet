@@ -1,3 +1,13 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Bromley - code specific to the Bromley cobrand.
+
+=head1 SYNOPSIS
+
+Bromley is a London borough using FMS and WasteWorks.
+
+=cut
+
 package FixMyStreet::Cobrand::Bromley;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
@@ -17,6 +27,18 @@ with 'FixMyStreet::Roles::Cobrand::Pay360';
 with 'FixMyStreet::Roles::Cobrand::SCP';
 with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
+
+=head1 INTEGRATIONS
+
+Integrates with Confirm for FMS highways categories via their own open311 endpoint.
+
+Integrates with Echo for WasteWorks with CapitaPay360 for payments.
+
+=cut
+
+=head1 DESCRIPTION
+
+=cut
 
 sub council_area_id { return [2482]; }
 sub council_area { return 'Bromley'; }
