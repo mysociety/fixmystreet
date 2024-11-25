@@ -71,6 +71,37 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
+=head2 service_name_override
+
+Customer facing names for services
+
+=cut
+
+sub service_name_override {
+    my ($self, $service) = @_;
+
+    my %service_name_override = (
+        2238 => 'Non-recyclable Refuse',
+        2239 => 'Food waste',
+        2240 => 'Paper and card',
+        2241 => 'Mixed recycling',
+        2242 => 'Non-recyclable Refuse',
+        2243 => 'Non-recyclable Refuse',
+        2246 => 'Mixed recycling',
+        2247 => 'Garden Waste',
+        2248 => 'Food waste',
+        2249 => 'Paper and card',
+        2250 => 'Mixed recycling',
+        2632 => 'Paper and card',
+        3571 => 'Mixed recycling',
+        3576 => 'Non-recyclable Refuse',
+        2256 => '', # Deliver refuse bags
+        2257 => '', # Deliver recycling bags
+    );
+
+    return $service_name_override{$service->{ServiceId}} // '';
+}
+
 =head2 garden_waste_renewal_cost_pa
 
 The price change for a renewal is based upon the end

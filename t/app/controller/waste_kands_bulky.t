@@ -877,6 +877,11 @@ FixMyStreet::override_config {
         };
     });
 
+    subtest 'Sutton specific Bulky Waste text' => sub {
+        $mech->get_ok('/waste/12346/');
+        $mech->content_contains('Bulky Waste');
+    };
+
     subtest 'Sutton dates window after 11pm does not include the next day' => sub {
         set_fixed_time('2023-07-06T23:00:00Z');
         $mech->log_in_ok($sutton_staff->email);
