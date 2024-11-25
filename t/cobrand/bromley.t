@@ -58,6 +58,12 @@ $streetlights->set_extra_fields(
 );
 $streetlights->update;
 
+my $bromley = Test::MockModule->new('FixMyStreet::Cobrand::Bromley');
+$bromley->mock('park_feature_for_point', sub {
+    # Not in a park.
+    return undef;
+});
+
 my $tfl = $mech->create_body_ok( 2482, 'TfL', { cobrand => 'tfl' });
 $mech->create_contact_ok(
     body_id => $tfl->id,
@@ -955,6 +961,31 @@ subtest 'redirecting of reports between backends' => sub {
             is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
         };
 
+    };
+};
+
+subtest 'Street Cleansing categories are disabled when point is in park' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $street_cleansing_contact = $mech->create_contact_ok(
+            body_id => $body->id,
+            group => 'Street Cleansing',
+            category => 'Clean me',
+            email => 'cleanme@example.org',
+        );
+
+        $mech->get_ok('/report/new/?longitude=0.015415&latitude=51.401546');
+        $mech->content_contains('Clean me');
+
+        $bromley->mock('park_feature_for_point', sub {
+            # In a park.
+            return {};
+        });
+
+        $mech->get_ok('/report/new/?longitude=0.015415&latitude=51.401546');
+        $mech->content_lacks('Clean me');
     };
 };
 

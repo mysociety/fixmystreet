@@ -469,6 +469,11 @@ sub munge_report_new_contacts {
         $nh->national_highways_cleaning_groups($contacts);
     }
 
+    if ( $bodies{'Bromley Council'} ) {
+        my $bromley = FixMyStreet::Cobrand::Bromley->new({ c => $self->{c} });
+        $bromley->munge_categories($contacts);
+    }
+
     $self->call_hook(munge_cobrand_asset_categories => $contacts);
 
 }

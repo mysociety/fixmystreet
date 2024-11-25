@@ -181,6 +181,57 @@ sub check_report_is_on_cobrand_asset {
     }
 }
 
+=head2 munge_categories
+
+Categories in the 'Street Cleansing' group are disabled if the point is within one of
+Bromley's parks.
+
+=cut
+
+sub munge_categories {
+    my ( $self, $contacts ) = @_;
+
+    if ( $self->report_new_is_in_park ) {
+        @$contacts = grep {
+            @{$_->groups} != 1 || $_->groups->[0] ne 'Street Cleansing';
+        } @$contacts;
+    }
+}
+
+sub report_new_is_in_park {
+    my ( $self ) = @_;
+
+    return $self->park_feature_for_point(
+        $self->{c}->stash->{latitude},
+        $self->{c}->stash->{longitude}
+    ) ? 1 : 0;
+}
+
+=head2 park_feature_for_point
+
+Takes a coordinate (as latitude & longitude) and queries the 'Parks & open spaces'
+asset layer on our tilma WFS server to determine whether the coordinate lies
+within a park. If it does, the feature is returned.
+
+=cut
+
+sub park_feature_for_point {
+    my ( $self, $lat, $lon ) = @_;
+
+    my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
+
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $cfg = {
+        url => "https://$host/mapserver/bromley_wfs",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "Parks_Open_Spaces",
+        filter => "<Filter><Contains><PropertyName>msGeometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+    };
+
+    my $features = $self->_fetch_features($cfg, $x, $y);
+    return $features->[0];
+}
+
 sub munge_overlapping_asset_bodies {
     my ($self, $bodies) = @_;
 

@@ -256,6 +256,11 @@ sub munge_report_new_contacts {
         my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
         $brent->munge_cobrand_asset_categories($contacts);
     }
+
+    if ( $bodies{'Bromley Council'} ) {
+        my $bromley = FixMyStreet::Cobrand::Bromley->new({ c => $self->{c} });
+        $bromley->munge_categories($contacts);
+    }
 }
 
 sub munge_unmixed_category_groups {
