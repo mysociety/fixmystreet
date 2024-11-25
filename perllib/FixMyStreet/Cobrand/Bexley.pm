@@ -99,6 +99,26 @@ ID.
 
 =cut
 
+=item * Customised pin colours
+
+Bexley has supplied their own colours for pins #4521
+
+=cut
+
+sub path_to_pin_icons { '/i/pins/bexley/' }
+
+sub pin_new_report_colour { 'yellow' }
+
+sub pin_colour {
+    my ( $self, $p ) = @_;
+    return 'bexley/aqua' if $p->state eq 'investigating';
+    return 'bexley/orange' if $p->state eq 'action scheduled';
+    return 'bexley/grape' if $p->state eq 'not responsible';
+    return 'green-tick' if $p->is_fixed;
+    return 'bexley/spring' if $p->is_closed;
+    return 'yellow';
+}
+
 sub disable_resend_button { 1 }
 
 sub category_change_force_resend {
