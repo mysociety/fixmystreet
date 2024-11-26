@@ -17,6 +17,7 @@ use Moo;
 with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
+use utf8;
 use strict;
 use warnings;
 use Moo;
@@ -1191,10 +1192,12 @@ sub waste_munge_request_form_fields {
         my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
+        my ($cost, $hint) = $self->request_cost($id);
         push @radio_options, {
             value => $id,
             label => $self->{c}->stash->{containers}->{$id},
             disabled => $value->{disabled},
+            $hint ? (hint => $hint) : (),
         };
         $seen{$id} = 1;
     }
@@ -1210,6 +1213,24 @@ sub waste_munge_request_form_fields {
     );
 }
 
+=head2 request_cost
+
+Calculate how much, if anything, a request for a container should be.
+
+=cut
+
+sub request_cost {
+    my ($self, $id) = @_;
+    my $cost;
+    $cost = $self->_get_cost('request_cost_blue_bin') if $id == $CONTAINER_IDS{recycling_blue_bin};
+    # $cost = $self->_get_cost('request_cost_food_caddy') if $id == $CONTAINER_IDS{food_caddy};
+    if ($cost) {
+        my $price = sprintf("£%.2f", $cost / 100);
+        $price =~ s/\.00$//;
+        my $hint = "There is a $price administration/delivery charge to replace your container";
+        return ($cost, $hint);
+    }
+}
 
 =head2 alternative_backend_field_names
 

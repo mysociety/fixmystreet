@@ -32,6 +32,23 @@ my %refusal_contamination_months = (
 has_page about_you => (
     fields => ['name', 'email', 'phone', 'continue'],
     title => 'About you',
+    # Look up any cost here, once we have all the data from previous steps
+    update_field_list => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        my $c = $form->{c};
+
+        my $choice = $data->{"container-choice"};
+        my $how_long = $data->{how_long_lived} || '';
+        my $ordered = $data->{ordered_previously};
+
+        # We only ask for immediate payment if it's not a referral
+        if (!FixMyStreet::Cobrand::Brent::request_referral($choice, $data)) {
+            my ($cost) = $c->cobrand->request_cost($choice);
+            $data->{payment} = $cost if $cost;
+        }
+        return {};
+    },
     next => 'summary',
 );
 
