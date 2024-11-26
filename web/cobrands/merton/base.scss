@@ -220,7 +220,7 @@ html .nav-menu a.report-a-problem-btn { // overloaded selector to beat _layout.s
     color: white !important;
     border-bottom: 2px solid $merton-dark-green;
     border-radius: 0;
-    
+
     &:hover,
     &:focus {}
 }
@@ -259,6 +259,13 @@ html.js .form-section-preview {
 
 .big-green-banner {
     text-transform: none;
+}
+
+// Recycling categories have green assets
+#category_meta_message_Recycling_Bank-Full_or_Overflowing, #category_meta_message_Recycling_Bank-Other_Issue {
+    .asset-spot:before {
+        background-color: #55BB00;
+    }
 }
 
 ol.big-numbers {
