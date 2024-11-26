@@ -836,16 +836,19 @@ subtest 'redirecting of reports between backends' => sub {
 
             is_deeply [ map { $_->state } $report->comments->order_by('id')->all ], ['hidden', 'hidden'];
         };
+
+        my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
+
         subtest 'A report sent to Echo, redirected to Confirm' => sub {
             $report->comments->delete;
             $report->unset_extra_metadata('original_bromley_external_id');
-            $report->update({ external_id => 'original-guid' });
+            $report->update({ external_id => $event_guid });
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 1, 'A new update';
             is_deeply [ map { $_->state } $report->comments->all ], ['hidden'];
             $report->discard_changes;
             is $report->whensent, undef;
-            is $report->external_id, 'original-guid', 'ID not changed';
+            is $report->external_id, $event_guid, 'ID not changed';
             is $report->state, 'in progress', 'A state change';
             is $report->category, 'Environmental Services';
             FixMyStreet::Script::Reports::send();
@@ -856,8 +859,19 @@ subtest 'redirecting of reports between backends' => sub {
             is $c->param('description'), "$detail | Handover notes - Outgoing notes from Echo";
         };
 
+        subtest 'A second referral update comes in, should be a normal update' => sub {
+            $report->update({ external_id => 'bromley-id' });
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 2, 'A new update';
+            my @updates = $report->comments->order_by('id')->all;
+            is_deeply [ map { $_->state } @updates ], ['hidden', 'confirmed'];
+            is_deeply [ map { $_->problem_state } @updates ], ['in progress', 'Environmental Services'];
+            $report->discard_changes;
+            isnt $report->whensent, undef; # Got sent in last subtest
+            is $report->external_id, 'bromley-id', 'ID not changed';
+        };
+
         subtest "comment on a closed echo report result in a resend under 'Street Services'" => sub {
-            my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
             my $event_id = 123;
 
             my $echo = Test::MockModule->new('Integrations::Echo');
@@ -924,8 +938,8 @@ subtest 'redirecting of reports between backends' => sub {
         };
 
         subtest "Another update from Echo on this new sent report closes it again" => sub {
-            $report->update({ external_id => 'guid' });
-            my $in = $mech->echo_notify_xml('guid', 2104, 15004, 67);
+            $report->update({ external_id => $event_guid });
+            my $in = $mech->echo_notify_xml('guid', 2104, 15004, 67, 'FMS-' . $report->id);
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 3, 'A new update';
             $report->discard_changes;
@@ -936,7 +950,7 @@ subtest 'redirecting of reports between backends' => sub {
         };
 
         subtest "Echo then redirect it back to Confirm" => sub {
-            my $in = $mech->echo_notify_xml('guid', 2104, 15004, 1252);
+            my $in = $mech->echo_notify_xml('guid', 2104, 15004, 1252, 'FMS-' . $report->id);
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 4, 'A new update';
             $report->discard_changes;

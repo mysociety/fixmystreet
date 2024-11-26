@@ -449,14 +449,20 @@ sub open311_get_update_munging {
             $notes = $_->{Value} if $_->{DatatypeName} eq 'Veolia Notes';
         }
         $problem->set_extra_metadata(handover_notes => $notes);
+
         if (my $original_external_id = $problem->get_extra_metadata('original_bromley_external_id')) {
+            # Originally sent to Bromley, don't need to resend report
             $problem->external_id($original_external_id);
             $comment->problem_state(REFERRED_TO_BROMLEY);
             $comment->send_state('unprocessed');
-        } else {
-            # Resending report, don't need comment to be public
+        } elsif ($self->_has_report_been_sent_to_echo($problem)) {
+            # Resending report from Echo to Bromley, don't need comment to be public
             $comment->state('hidden');
             $problem->resend;
+        } else {
+            # Assume has already been sent to Bromley, no need to resend report
+            $comment->problem_state(REFERRED_TO_BROMLEY);
+            $comment->send_state('unprocessed');
         }
     }
 }
