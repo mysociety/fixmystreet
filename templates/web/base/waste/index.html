@@ -17,7 +17,9 @@
           <ul>
             <li>Find your bin collection days</li>
             <li>Report a missed bin collection</li>
-            [% IF c.cobrand.moniker != 'bexley' %]
+            [% IF c.cobrand.moniker == 'bexley' %]
+            <li>Request a bin delivery or removal</li>
+            [% ELSE %]
             <li>Order new or additional bins</li>
             <li>Subscribe to garden waste collection service</li>
             [% END %]
