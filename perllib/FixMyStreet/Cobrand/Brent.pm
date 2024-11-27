@@ -54,14 +54,21 @@ sub council_area { return 'Brent'; }
 sub council_name { return 'Brent Council'; }
 sub council_url { return 'brent'; }
 
+Readonly::Scalar my $CONTAINER_GREY_BIN => 16;
+Readonly::Scalar my $CONTAINER_BLUE_BIN => 6;
+Readonly::Scalar my $CONTAINER_CLEAR_SACK => 8;
+Readonly::Scalar my $CONTAINER_FOOD_CADDY => 11;
+Readonly::Scalar my $CONTAINER_GREEN_BIN => 13;
+Readonly::Scalar my $CONTAINER_BLUE_SACK => 46;
+
 my $BRENT_CONTAINERS = {
     1 => 'Blue rubbish sack',
-    16 => 'General rubbish bin (grey bin)',
-    8 => 'Clear recycling sack',
-    6 => 'Recycling bin (blue bin)',
-    11 => 'Food waste caddy',
-    13 => 'Garden waste (green bin)',
-    46 => 'Paper and cardboard blue sack',
+    $CONTAINER_GREY_BIN => 'General rubbish bin (grey bin)',
+    $CONTAINER_CLEAR_SACK => 'Clear recycling sack',
+    $CONTAINER_BLUE_BIN => 'Recycling bin (blue bin)',
+    $CONTAINER_FOOD_CADDY => 'Food waste caddy',
+    $CONTAINER_GREEN_BIN => 'Garden waste (green bin)',
+    $CONTAINER_BLUE_SACK => 'Paper and cardboard blue sack',
 };
 
 =head1 DESCRIPTION
@@ -1092,12 +1099,12 @@ sub waste_containers { $BRENT_CONTAINERS }
 
 sub waste_service_to_containers {
     return (
-        262 => [ 16 ],
-        265 => [ 6 ],
-        269 => [ 8 ],
-        316 => [ 11 ],
-        317 => [ 13 ],
-        807 => [ 46 ],
+        262 => [ $CONTAINER_GREY_BIN ],
+        265 => [ $CONTAINER_BLUE_BIN ],
+        269 => [ $CONTAINER_CLEAR_SACK ],
+        316 => [ $CONTAINER_FOOD_CADDY ],
+        317 => [ $CONTAINER_GREEN_BIN ],
+        807 => [ $CONTAINER_BLUE_SACK ],
     );
 }
 
@@ -1394,12 +1401,12 @@ sub waste_munge_request_data {
 
     # XXX Share somewhere with reverse?
     my %service_id = (
-        16 => 262,
-        6 => 265,
-        8 => 269,
-        11 => 316,
-        13 => 317,
-        46 => 807,
+        $CONTAINER_GREY_BIN => 262,
+        $CONTAINER_BLUE_BIN => 265,
+        $CONTAINER_CLEAR_SACK => 269,
+        $CONTAINER_FOOD_CADDY => 316,
+        $CONTAINER_GREEN_BIN => 317,
+        $CONTAINER_BLUE_SACK => 807,
     );
     $c->set_param('service_id', $service_id{$id});
 }
@@ -1419,7 +1426,7 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'request_refuse_call_us' if $choice == 16;
+        return 'request_refuse_call_us' if $choice == $CONTAINER_GREY_BIN;
         return 'replacement';
     };
 }
