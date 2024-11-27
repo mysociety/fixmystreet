@@ -812,8 +812,11 @@ subtest 'redirecting of reports between backends' => sub {
             is $c->param('service_code'), 3045;
             is $c->param('description'), "$detail | Handover notes - This is a handover note";
         };
+
+        my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
+
         subtest '...then redirected back to Confirm' => sub {
-            $report->update({ external_id => 'parent-guid', whensent => DateTime->now, send_method_used => 'Open311' });
+            $report->update({ external_id => $event_guid, whensent => DateTime->now, send_method_used => 'Open311' });
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 2, 'A new update';
             is_deeply [ map { $_->state } $report->comments->order_by('id')->all ], ['hidden', 'confirmed'];
@@ -836,8 +839,6 @@ subtest 'redirecting of reports between backends' => sub {
 
             is_deeply [ map { $_->state } $report->comments->order_by('id')->all ], ['hidden', 'hidden'];
         };
-
-        my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
 
         subtest 'A report sent to Echo, redirected to Confirm' => sub {
             $report->comments->delete;
@@ -946,7 +947,7 @@ subtest 'redirecting of reports between backends' => sub {
             is $report->state, 'fixed - council', 'A state change';
             is $report->get_extra_metadata('external_status_code'), 67;
             my $comment = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
-            is $comment->text, 'Template text';
+            is $comment->text, "Outgoing notes from Echo\n\nTemplate text";
         };
 
         subtest "Echo then redirect it back to Confirm" => sub {

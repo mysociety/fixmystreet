@@ -416,10 +416,10 @@ appropriately.
 
 sub open311_get_update_munging {
     my ($self, $comment, $state, $request) = @_;
+    my $problem = $comment->problem;
 
-    # An update from Bromley with a special referral state
+    # An update from Bromley with a special referral state, means "resend to Echo"
     if ($state eq 'referred to veolia streets') {
-        my $problem = $comment->problem;
         # Do we want to store the old category somewhere for display?
         $problem->category(REFERRED_TO_VEOLIA); # Will be an Echo Event Type ID
         $problem->state('in progress');
@@ -432,24 +432,29 @@ sub open311_get_update_munging {
         return;
     }
 
-    # An update from Echo with resolution code 1252
-    my $code = $comment->get_extra_metadata('external_status_code') || '';
-    if ($code eq '1252') {
-        my $problem = $comment->problem;
-        $problem->category(REFERRED_TO_BROMLEY); # Will be LBB_RRE_FROM_VEOLIA_STREETS
-        $problem->state('in progress');
-        $comment->problem_state('in progress');
-
-        # Fetch outgoing notes
-        my $echo = $self->feature('echo');
-        $echo = Integrations::Echo->new(%$echo);
-        my $event = $echo->GetEvent($request->{service_request_id}); # From the event, not the report
-        $echo->log($event->{Data});
+    # Fetch any outgoing notes on the Echo event
+    # If we pulled the update, we already have it, otherwise look it up
+    my $notes = "";
+    if ($self->_has_report_been_sent_to_echo($problem)) {
+        my $event = $request->{echo_event} || do {
+            my $echo = $self->feature('echo');
+            $echo = Integrations::Echo->new(%$echo);
+            my $event = $echo->GetEvent($request->{service_request_id}); # From the event, not the report
+            $echo->log($event->{Data}) if $event->{Data};
+            $event;
+        };
         my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
-        my $notes = "";
         foreach (@$data) {
             $notes = $_->{Value} if $_->{DatatypeName} eq 'Veolia Notes';
         }
+    }
+
+    # An update from Echo with resolution code 1252 means "refer to Bromley"
+    my $code = $comment->get_extra_metadata('external_status_code') || '';
+    if ($code eq '1252') {
+        $problem->category(REFERRED_TO_BROMLEY); # Will be LBB_RRE_FROM_VEOLIA_STREETS
+        $problem->state('in progress');
+        $comment->problem_state('in progress');
         $problem->set_extra_metadata(handover_notes => $notes);
 
         if (my $original_external_id = $problem->get_extra_metadata('original_bromley_external_id')) {
@@ -458,14 +463,16 @@ sub open311_get_update_munging {
             $comment->problem_state(REFERRED_TO_BROMLEY);
             $comment->send_state('unprocessed');
         } elsif ($self->_has_report_been_sent_to_echo($problem)) {
-            # Resending report from Echo to Bromley, don't need comment to be public
+            # Resending report from Echo to Bromley for first time, don't need comment to be public
             $comment->state('hidden');
             $problem->resend;
         } else {
-            # Assume has already been sent to Bromley, no need to resend report
+            # Assume it has already been sent to Bromley, no need to resend report
             $comment->problem_state(REFERRED_TO_BROMLEY);
             $comment->send_state('unprocessed');
         }
+    } elsif ($notes) {
+        $comment->text($notes . "\n\n" . $comment->text);
     }
 }
 
