@@ -114,9 +114,9 @@ sub pin_colour {
 
     return 'aqua' if $p->state eq 'investigating';
     return 'orange' if $p->state eq 'action_scheduled';
+    return 'grape' if $p->state eq 'not_council_responsibility';
     return 'green' if $p->is_fixed;
     return 'spring' if $p->is_closed;
-    return 'grape' if $p->state eq 'not_council_responsibility';
     return 'yellow';
 }
 
