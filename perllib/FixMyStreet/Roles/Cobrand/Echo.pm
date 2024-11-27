@@ -747,6 +747,7 @@ sub waste_fetch_events {
         (my $external_id = $report->external_id) =~ s/^Echo-//;
         my $event = $cfg->{echo}->GetEvent($external_id);
         my $request = $self->construct_waste_open311_update($cfg, $event) or next;
+        $request->{echo_event} = $event;
 
         next if !$request->{status} || $request->{status} eq 'confirmed'; # Still in initial state
         next unless $self->waste_check_last_update(

@@ -946,7 +946,7 @@ subtest 'redirecting of reports between backends' => sub {
             is $report->state, 'fixed - council', 'A state change';
             is $report->get_extra_metadata('external_status_code'), 67;
             my $comment = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
-            is $comment->text, 'Template text';
+            is $comment->text, "Template text\n\nOutgoing notes from Echo";
         };
 
         subtest "Echo then redirect it back to Confirm" => sub {
