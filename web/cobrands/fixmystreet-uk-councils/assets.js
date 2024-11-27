@@ -1029,6 +1029,20 @@ fixmystreet.assets.merton.streetlight_stylemap = new OpenLayers.StyleMap({
   'select': fixmystreet.assets.construct_named_select_style("${UnitNumber}")
 });
 
+merton_style_default_green = new OpenLayers.Style({
+    fillColor: "#55BB00",
+    strokeColor: "#000000",
+    strokeOpacity: 0.8,
+    strokeWidth: 4,
+    pointRadius: 12
+});
+
+fixmystreet.assets.merton.recyling_stylemap = new OpenLayers.StyleMap({
+    'default': merton_style_default_green,
+    'hover': fixmystreet.assets.style_default_hover,
+    'select': fixmystreet.assets.style_default_select
+});
+
 /* Northamptonshire */
 
 fixmystreet.assets.northamptonshire = {};
