@@ -17,6 +17,7 @@ $mech->create_contact_ok(body_id => $surrey->id, category => 'Potholes', email =
 (my $report) = $mech->create_problems_for_body(1, $surrey->id, 'Pothole', {
             category => 'Potholes', cobrand => 'surrey',
             latitude => 51.293415, longitude => -0.441269, areas => '2242',
+            external_id => 'test-123'
         });
 
 my $guildford = $mech->create_body_ok(2452, 'Guildford Borough Council');
@@ -36,8 +37,8 @@ FixMyStreet::override_config {
         subtest 'CSV has Subscribers column populated by "alerts" registered on problem' => sub {
             $mech->log_in_ok($surrey_staff_user->email);
             $mech->get_ok("/dashboard?export=1");
-            $mech->content_contains('"Site Used","Reported As",Subscribers', 'CSV content contains "Subscribers" column');
-            $mech->content_contains('website,surrey,,0', 'CSV has 0 subscribers to report as reporter is not subscribed');
+            $mech->content_contains('"Site Used","Reported As",Subscribers,"External ID"', 'CSV content contains "Subscribers" and "External ID" columns');
+            $mech->content_contains('website,surrey,,0,'.$report->external_id, 'CSV contains subscriber count and external ID');
             $mech->log_out_ok;
             for my $update (
                 {
