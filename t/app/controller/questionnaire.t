@@ -2,6 +2,9 @@ use DateTime;
 
 use FixMyStreet::TestMech;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');

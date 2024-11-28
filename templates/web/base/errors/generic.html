@@ -9,6 +9,9 @@
 <div class="confirmation-header confirmation-header--[% header_class %]">
     <h1>[% title %]</h1>
     <p>[% message | safe %]</p>
+    [% IF error_id %]
+        <small>[% tprintf(loc('Code: %s'), error_id) %]</small>
+    [% END %]
 </div>
 
 [% INCLUDE 'footer.html' %]

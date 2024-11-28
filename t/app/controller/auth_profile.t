@@ -10,6 +10,10 @@ package main;
 
 use Test::MockModule;
 use FixMyStreet::TestMech;
+
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $resolver = Test::MockModule->new('Email::Valid');

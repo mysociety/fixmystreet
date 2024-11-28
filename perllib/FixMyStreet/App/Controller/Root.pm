@@ -1,4 +1,6 @@
 package FixMyStreet::App::Controller::Root;
+use Digest::MD5 qw(md5_hex);
+use mySociety::Random qw(random_bytes);
 use Moose;
 use namespace::autoclean;
 
@@ -145,8 +147,17 @@ sub page_error_500_internal_error : Private {
 
 sub page_error : Private {
     my ($self, $c, $error_msg, $code) = @_;
-    $c->stash->{template}  = 'errors/generic.html';
-    $c->stash->{message} = $error_msg || _('Unknown error');
+    $c->stash->{template} = 'errors/generic.html';
+    $c->stash->{message}  = $error_msg || _('Unknown error');
+    $c->stash->{error_id} = substr(md5_hex(random_bytes(12, 1)), 0, 6);
+
+    my $addr = $c->req->address;
+    $c->log->info(
+        "page_error (HTTP $code, IP $addr, ID " .
+        $c->stash->{error_id} . "): " .
+        "User message: " . $c->stash->{message} .
+        ($c->stash->{internal_message} ? "; Internal message: " . $c->stash->{internal_message} : "")
+    );
     $c->response->status($code);
 }
 

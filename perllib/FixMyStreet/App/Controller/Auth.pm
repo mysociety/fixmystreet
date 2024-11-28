@@ -465,18 +465,20 @@ sub check_csrf_token : Private {
     $c->stash->{csrf_time} = $time;
     my $gen_token = $c->forward('get_csrf_token');
     delete $c->stash->{csrf_time};
-    $c->detach('no_csrf_token')
-        unless $time
-            && $time > time() - 3600
-            && $token eq $gen_token;
+
+    my $cutoff = time() - 3600;
+    my $valid_time = $time && $time > $cutoff;
+    my $valid_token = $token eq $gen_token;
+    unless ($valid_time && $valid_token) {
+        my $msg = "Invalid CSRF token: ";
+        $msg .= "$token != $gen_token " unless $valid_token;
+        $msg .= "$time < $cutoff" unless $valid_time;
+        $c->stash->{internal_message} = $msg;
+        $c->detach('/page_error_400_bad_request', []);
+    }
 
     # Also check recaptcha if needed
     $c->cobrand->call_hook('check_recaptcha');
-}
-
-sub no_csrf_token : Private {
-    my ($self, $c) = @_;
-    $c->detach('/page_error_400_bad_request', []);
 }
 
 =item common_password

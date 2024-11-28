@@ -3074,6 +3074,10 @@ a#geolocate_link {
     word-break: break-word; // It prevents screen overflow when there is a long url, when a page has not been found.
   }
 
+  &.confirmation-header--failure small {
+    color: #888888;
+  }
+
   & > :last-child {
     margin-bottom: 0;
   }
