@@ -304,7 +304,7 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         if ($c->user->is_superuser) {
             $columns{flagged} = $c->get_param('flagged') ? 1 : 0;
         }
-        foreach (qw/state anonymous title detail name external_id external_body external_team/) {
+        foreach (qw/state anonymous title detail name external_id/) {
             $columns{$_} = $c->get_param($_);
         }
 
