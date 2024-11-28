@@ -2,6 +2,9 @@ use Test::MockTime qw(set_fixed_time);
 use FixMyStreet::TestMech;
 use FixMyStreet::Cobrand::Merton;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 $mech->create_body_ok(2500, 'Merton Council', { cobrand => 'merton' });

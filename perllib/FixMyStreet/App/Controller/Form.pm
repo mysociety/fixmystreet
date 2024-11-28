@@ -46,6 +46,7 @@ sub load_form {
     );
 
     if (!$form->has_current_page) {
+        $c->stash->{internal_error} = "Form doesn't have current page";
         $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
     }
 
@@ -114,6 +115,7 @@ sub get_page : Private {
     my $process = $c->get_param('process') || '';
     $goto = $self->first_page($c) unless $goto || $process;
     if ($goto && $process) {
+        $c->stash->{internal_error} = "Both goto and process parameters set";
         $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
     }
 

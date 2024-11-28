@@ -187,7 +187,10 @@ sub oidc_sign_in : Private {
     $c->detach( '/page_error_403_access_denied', [] ) if FixMyStreet->config('SIGNUPS_DISABLED');
 
     my $cfg = $c->forward('oidc_config');
-    $c->detach( '/page_error_400_bad_request', [] ) unless $cfg;
+    unless ($cfg) {
+        $c->stash->{internal_message} = 'OIDC config not found';
+        $c->detach( '/page_error_400_bad_request', [] );
+    }
 
     my $oidc = $c->forward('oidc');
     my $nonce = $self->generate_nonce();
@@ -269,7 +272,10 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
             $c->detach('oauth_failure');
         }
     }
-    $c->detach('/page_error_400_bad_request', []) unless $c->get_param('code') && $c->get_param('state');
+    unless ( $c->get_param('code') && $c->get_param('state') ) {
+        $c->stash->{internal_message} = "Social::oidc_callback missing code (" . $c->get_param('code') . ") or state (" . $c->get_param('state') . ")";
+        $c->detach('/page_error_400_bad_request', []) ;
+    }
 
     # After a password reset on the OIDC endpoint the user isn't properly logged
     # in, so redirect them to the usual OIDC login process.
@@ -290,7 +296,10 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     }
 
     # The only other valid state param is 'login' at this point.
-    $c->detach('/page_error_400_bad_request', []) unless $c->get_param('state') eq 'login';
+    unless ($c->get_param('state') eq 'login') {
+        $c->stash->{internal_message} = "Social::oidc_callback invalid state: " . $c->get_param('state');
+        $c->detach('/page_error_400_bad_request', []) ;
+    }
 
     my $token = eval {
         $oidc->get_access_token(

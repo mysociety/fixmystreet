@@ -349,15 +349,27 @@ sub anonymize : Path('anonymize') {
         $object = $c->stash->{problem};
     } elsif ($id = $c->get_param('update')) {
         $c->stash->{update} = $object = $c->model('DB::Comment')->find({ id => $id });
-        $c->detach('/page_error_400_bad_request') unless $object;
+        unless ($object) {
+            $c->stash->{internal_error} = "No update found for ID $id";
+            $c->detach('/page_error_400_bad_request');
+        }
     } else {
         $c->detach('/page_error_404_not_found');
     }
-    $c->detach('/page_error_400_bad_request') unless $c->user->id == $object->user_id;
-    $c->detach('/page_error_400_bad_request') if $object->anonymous;
+    unless ($c->user->id == $object->user_id) {
+        $c->stash->{internal_error} = "User " . $c->user->id . " does not own this object with ID " . $object->id;
+        $c->detach('/page_error_400_bad_request');
+    }
+    if ($object->anonymous) {
+        $c->stash->{internal_error} = "Object " . $object->id . " is already anonymous";
+        $c->detach('/page_error_400_bad_request');
+    }
 
     if ($c->get_param('hide') || $c->get_param('hide_everywhere')) {
-        $c->detach('/page_error_400_bad_request') unless $c->req->method eq 'POST';
+        unless ($c->req->method eq 'POST') {
+            $c->stash->{internal_error} = "Not a POST request: " . $c->req->method;
+            $c->detach('/page_error_400_bad_request');
+        }
         $c->forward('/auth/check_csrf_token');
         if ($c->get_param('hide')) {
             $object->update({ anonymous => 1 });

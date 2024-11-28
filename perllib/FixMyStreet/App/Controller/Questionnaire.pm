@@ -38,6 +38,7 @@ sub check_questionnaire : Private {
         my $problem_url = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
         my $contact_url = $c->uri_for( "/contact" );
         my $message = sprintf(_("You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"), $contact_url, $problem_url);
+        $c->stash->{internal_message} = "Questionnaire ID " . $questionnaire->id;
         $c->detach('/page_error_400_bad_request', [ $message ]);
     }
 

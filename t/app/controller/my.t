@@ -1,4 +1,8 @@
 use FixMyStreet::TestMech;
+
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 $mech->get_ok('/my');
