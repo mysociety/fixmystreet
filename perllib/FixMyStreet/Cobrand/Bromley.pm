@@ -154,7 +154,7 @@ sub title_list {
 sub check_report_is_on_cobrand_asset {
     my $self = shift;
 
-    if ($self->{c}->get_param('feature_id') && $self->{c}->get_param('feature_id') =~ /A-48-24|A-48-26|A-48-27/) {
+    if ($self->{c}->get_param('fms_layer_owner') && $self->{c}->get_param('fms_layer_owner') eq 'bromley') {
         return 1;
     } else {
         return 0;
@@ -284,7 +284,7 @@ sub open311_extra_data_include {
 }
 
 sub open311_extra_data_exclude {
-    [ 'feature_id', 'prow_reference' ]
+    [ 'feature_id', 'prow_reference', 'fms_layer_owner' ]
 }
 
 sub open311_config_updates {

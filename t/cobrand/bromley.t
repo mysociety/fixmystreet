@@ -54,7 +54,7 @@ my $streetlights = $mech->create_contact_ok(
     email => 'LIGHT',
 );
 $streetlights->set_extra_fields(
-    { code => 'feature_id', datatype => 'string', automated => 'hidden_field' },
+    { code => 'fms_layer_owner', datatype => 'string', automated => 'hidden_field' },
 );
 $streetlights->update;
 
@@ -635,7 +635,7 @@ subtest 'Can select asset that is in Lewisham area on Bromley Cobrand' => sub {
         $mech->submit_form_ok( { with_fields => {
                 title => 'Lamp issue in Lewisham on Bromley',
                 detail => 'Lamp issue over the border',
-                feature_id => 'A-48-24',
+                fms_layer_owner => 'bromley',
                 longitude => 0.005357,
                 latitude => 51.418776,
                 fms_extra_title => 'Mr'
@@ -658,7 +658,7 @@ subtest 'Can select asset that is in Lewisham area on FMS' => sub {
         $mech->submit_form_ok( { with_fields => {
                 title => 'Lamp issue in Lewisham on FMS',
                 detail => 'Lamp issue over the border',
-                feature_id => 'A-48-26',
+                fms_layer_owner => 'bromley',
                 longitude => 0.005357,
                 latitude => 51.418776,
                 fms_extra_title => 'Mr'

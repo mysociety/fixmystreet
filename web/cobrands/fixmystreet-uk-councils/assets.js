@@ -296,6 +296,15 @@ fixmystreet.assets.bromley.not_found = function(layer) {
     fixmystreet.message_controller.road_found(layer);
 };
 
+fixmystreet.assets.bromley.set_asset_owner = function() {
+    $('#form_fms_layer_owner').val('bromley');
+};
+
+fixmystreet.assets.bromley.unset_asset_owner = function() {
+    $('#form_fms_layer_owner').val('');
+};
+
+
 /* Buckinghamshire */
 
 fixmystreet.assets.buckinghamshire = {};
