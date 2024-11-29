@@ -361,7 +361,16 @@ if ($opt->test_fixtures) {
         variable => 'true',
         required => 'false',
         automated => 'hidden_field',
-    });
+    },
+    {
+        code => 'fms_layer_owner',
+        datatype => 'string',
+        order => 1,
+        variable => 'true',
+        required => 'false',
+        automated => 'hidden_field',
+    }
+    );
     $child_cat->update;
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
