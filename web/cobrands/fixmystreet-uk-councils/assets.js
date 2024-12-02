@@ -304,6 +304,19 @@ fixmystreet.assets.bromley.unset_asset_owner = function() {
     $('#form_fms_layer_owner').val('');
 };
 
+fixmystreet.assets.bromley.remove_park_message = function(layer) {
+    $('.js-bromley-park-message').remove();
+};
+
+fixmystreet.assets.bromley.add_park_message = function(layer) {
+    var $msg = $('<div class="box-warning js-bromley-park-message"></div>');
+    $msg.html(layer.fixmystreet.no_asset_message);
+    if ($('.js-bromley-park-message').length) {
+        $('.js-bromley-park-message').replaceWith($msg);
+    } else {
+        $msg.appendTo('.js-reporting-page--active .js-post-category-messages');
+    }
+};
 
 /* Buckinghamshire */
 

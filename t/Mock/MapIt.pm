@@ -54,6 +54,8 @@ my @PLACES = (
     [ '?', 51.419275, -0.071410, 2482, 'Bromley Council', 'LBO' ],
     # On a light asset
     [ '?', 51.398387, 0.022775, 2482, 'Bromley Council', 'LBO' ],
+    # Point in a park
+    [ '?', 51.403986, 0.007803, 2482, 'Bromley Council', 'LBO' ],
     [ 'KT1 1AA', 51.408688, -0.304465, 2480, 'Kingston upon Thames Council', 'LBO' ],
     [ 'SM2 5HF', 51.354679, -0.183895, 2498, 'Sutton Borough Council', 'LBO' ],
     [ '?', 51.466707, 0.181108, 2494, 'London Borough of Bexley', 'LBO' ],
