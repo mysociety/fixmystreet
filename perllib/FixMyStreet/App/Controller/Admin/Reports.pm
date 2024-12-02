@@ -115,8 +115,14 @@ sub index : Path {
         my $updates = $c->cobrand->updates;
         $order = { -desc => 'me.id' };
         if ($valid_email) {
+            # If you naively put: 'user.email' => { ilike => $like_search },
+            # in the query, PostgreSQL 13 will perform a backwards primary key
+            # index scan and check each user as it goes, rather than looking up
+            # the users and using the comment's user_id index.
+            my $subselect = FixMyStreet::DB->resultset("User")->search(
+                { email => { ilike => $like_search } }, { columns => ['id'] });
             $query = [
-                'user.email' => { ilike => $like_search },
+                'user.id' => { -in => $subselect->as_query },
             ];
         } elsif ($valid_phone) {
             $query = [
