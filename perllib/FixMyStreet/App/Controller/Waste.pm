@@ -1071,7 +1071,8 @@ sub enquiry : Chained('property') : Args(0) {
     $c->stash->{page_list} = [
         enquiry => {
             fields => [ 'category', 'service_id', grep { ! ref $_ } @$field_list, 'continue' ],
-            title => $category,
+            title => $c->cobrand->call_hook('enquiry_form_title')
+                || $category,
             next => 'about_you',
             update_field_list => sub {
                 my $form = shift;

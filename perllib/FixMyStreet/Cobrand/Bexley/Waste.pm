@@ -1146,6 +1146,8 @@ sub waste_munge_report_form_fields {
     push @$field_list, $self->_bin_location_field;
 }
 
+sub enquiry_form_title { 'Replacement bin enquiry' }
+
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
 
