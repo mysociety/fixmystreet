@@ -6,6 +6,7 @@ describe('Bromley cobrand', function() {
     cy.route('**mapserver/bromley*PROW*', 'fixture:bromley-prow.xml').as('prow');
     cy.route('**mapserver/bromley*Crystal_Palace*', 'fixture:crystal_palace_park.xml').as('crystal');
     cy.route('**mapserver/bromley*National_Sports*', 'fixture:national_sports_centre.xml').as('sport_centre');
+    cy.route('**mapserver/bromley*Parks_Open_Spaces*', 'fixture:bromley-parks.xml').as('parks');
     cy.route('/report/new/ajax*').as('report-ajax');
     cy.viewport(480, 800);
     cy.visit('http://bromley.localhost:3001/report/new?latitude=51.4021&longitude=0.01578');
@@ -13,6 +14,7 @@ describe('Bromley cobrand', function() {
     cy.wait('@prow');
     cy.wait('@crystal');
     cy.wait('@sport_centre');
+    cy.wait('@parks');
     cy.wait('@report-ajax');
     cy.get('#mob_ok').click();
   });
@@ -73,6 +75,22 @@ describe('Bromley cobrand', function() {
     cy.visit('http://bromley.localhost:3001/report/new?longitude=-0.071410&latitude=51.419275');
     cy.contains('responsibility of the National Sports Centre');
     cy.get('#mob_ok').should('not.be.visible');
+  });
+
+  it('adds post category message for Street categories within a park', function() {
+    cy.visit('http://bromley.localhost:3001/report/new?longitude=0.007803&latitude=51.403986');
+    cy.wait('@parks');
+    cy.get('#mob_ok').click();
+    cy.pickCategory('Street Cleansing');
+    cy.contains('We’ve noticed that you’ve selected a Streets category but that your map pin is located within a park');
+  });
+
+  it('adds post category message for Park and Greenspace categories not in a park', function() {
+    cy.visit('http://bromley.localhost:3001/report/new?latitude=51.4021&longitude=0.01578');
+    cy.wait('@parks');
+    cy.get('#mob_ok').click();
+    cy.pickCategory('Parks and Greenspace');
+    cy.contains('We’ve noticed that you’ve selected a Parks and Greenspace category but that your map pin isn’t located within a park');
   });
 
 });
