@@ -367,7 +367,7 @@ foreach my $test (
 
         $mech->get_ok("/admin/report_edit/$report_id");
 
-        @{$test->{fields}}{'external_id', 'external_body', 'external_team', 'category'} = (13, "", "", "Other");
+        @{$test->{fields}}{'external_id', 'category'} = (13, "Other");
         is_deeply( $mech->visible_form_values(), $test->{fields}, 'initial form values' );
 
         my $new_fields = {
@@ -491,8 +491,6 @@ subtest 'change email to new user' => sub {
         non_public => 'on',
         closed_updates => undef,
         external_id => '13',
-        external_body => '',
-        external_team => '',
         send_state => '',
     };
 

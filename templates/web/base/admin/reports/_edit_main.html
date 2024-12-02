@@ -87,10 +87,12 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 
 <li><label for="external_id">[% loc('External ID') %]:</label>
     <input type="text" class="form-control" name="external_id" id="external_id" value="[% problem.external_id | html %]">
-<li><label for="external_body">[% loc('External body') %]:</label>
-    <input type="text" class="form-control" name="external_body" id="external_body" value="[% problem.external_body | html %]">
-<li><label for="external_team">[% loc('External team') %]:</label>
-    <input type="text" class="form-control" name="external_team" id="external_team" value="[% problem.external_team | html %]">
+[% IF problem.external_body %]
+<li>[% loc('External body') %]: [% problem.external_body %]
+[% END %]
+[% IF problem.external_team %]
+<li>[% loc('External team') %]: [% problem.external_team %]
+[% END %]
 
 [% IF problem.get_extra_metadata('external_status_code') %]
 <li>
