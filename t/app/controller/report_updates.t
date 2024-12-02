@@ -17,6 +17,9 @@ use Web::Scraper;
 use Path::Class;
 use DateTime;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');

@@ -1,5 +1,9 @@
 ## Releases
 
+* Unreleased
+    - Development improvements
+        - More logging when page_error is called, to aid troubleshooting. #5279
+
 * v6.0 (14th November 2024)
     - Front end improvements:
         - Include requirements for redeeming the link in the email change confirmation mail. #4422
