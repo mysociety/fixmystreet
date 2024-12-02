@@ -6,7 +6,7 @@
   <li><a [% external_new_tab | safe %] href="https://mybexley.bexley.gov.uk/service/rubbish_and_recycling_enquiries">Report an issue with your collection service</a></li>
 
   [% IF property.is_communal OR NOT service_data.size %]
-    <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Request+container+enquiry">Order replacement bins, boxes or sacks</a></li>
+    <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Replacement+bin+enquiry">Order replacement bins, boxes or sacks</a></li>
   [% ELSE %]
     [% IF property.containers_for_delivery.size %]
       <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=delivery">Order replacement bins, boxes or sacks</a></li>

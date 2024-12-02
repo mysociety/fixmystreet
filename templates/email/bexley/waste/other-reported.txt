@@ -1,9 +1,9 @@
 [% PROCESS 'waste/_email_data.html' ~%]
-Subject: [% IF is_missed_collection %]Thank you for reporting a missed collection[% ELSIF is_container_request %]Thank you for requesting a replacement bin[% ELSE %]Thank you for your [% report.category %][% END %]
+Subject: [% IF is_missed_collection %]Thank you for reporting a missed collection[% ELSIF is_container_request %]Thank you for requesting a replacement bin[% ELSE %]Thank you for your [% report.category | lower %][% END %]
 
 Dear [% report.name %],
 
-[% IF is_missed_collection %]Thank you for reporting a missed collection[% ELSIF is_container_request %]Thank you for requesting a replacement bin[% ELSE %]Thank you for your [% report.category %][% END %].
+[% IF is_missed_collection %]Thank you for reporting a missed collection[% ELSIF is_container_request %]Thank you for requesting a replacement bin[% ELSE %]Thank you for your [% report.category | lower %][% END %].
 
 [% INCLUDE 'waste/_council_reference.txt' problem=report %]
 

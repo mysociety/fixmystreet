@@ -11,7 +11,7 @@
     key = 'Old bin(s) requested for collection';
     detail = report.title.remove('Request removal of ');
   ELSIF is_request_enquiry;
-    key = 'Containers requested';
+    key = 'Bins requested';
   END;
 %]
 [% key %]:
