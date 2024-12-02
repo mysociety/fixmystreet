@@ -196,7 +196,7 @@ sub area_check {
 sub fetch_area_children {
     my $self = shift;
 
-    my $areas = FixMyStreet::MapIt::call('areas', $self->area_types);
+    my $areas = FixMyStreet::MapIt::call('areas', $self->area_types_for_admin);
     $areas = {
         map { $_->{id} => $_ }
         grep { ($_->{country} || 'E') eq 'E' }
