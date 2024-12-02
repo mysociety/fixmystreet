@@ -109,12 +109,15 @@ sub path_to_pin_icons {
     return '/cobrands/bexley/images/';
 }
 
+sub pin_new_report_colour {
+    return 'yellow';
+}
+
 sub pin_colour {
     my ( $self, $p ) = @_;
-
     return 'aqua' if $p->state eq 'investigating';
-    return 'orange' if $p->state eq 'action_scheduled';
-    return 'grape' if $p->state eq 'not_council_responsibility';
+    return 'orange' if $p->state eq 'action scheduled';
+    return 'grape' if $p->state eq 'not responsible';
     return 'green' if $p->is_fixed;
     return 'spring' if $p->is_closed;
     return 'yellow';
