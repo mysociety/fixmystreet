@@ -1224,8 +1224,8 @@ FixMyStreet::override_config {
             $email_submit = $mech->get_html_body_from_email($email_submit);
             $email_logged = $mech->get_text_body_from_email($email_logged);
             like $email_logged, qr{Bins requested: $joined};
-            like $email_submit, qr{<td>New/replacement container</td> <td>$joined};
-            like $email_submit, qr{<td>UPRN</td> <td>$_->{id}</td>}
+            like $email_submit, qr{<td><p>New/replacement container</p></td> <td><p>$joined};
+            like $email_submit, qr{<td><p>UPRN</p></td> <td><p>$_->{id}</p></td>}
         };
     }
 };

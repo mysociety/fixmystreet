@@ -12,25 +12,25 @@
 <p>The below details have been submitted via WasteWorks because it is a communal property or no service was found at the property.</p>
 
 <table class="ww-flow-table" style="width:100%;" border="1">
-    <tr> <th>Details</th> <th>Data</th> </tr>
-    <tr> <td>Enquiry reference number</td> <td>[% report.id %]</td> </tr>
-    <tr> <td>Address</td> <td>[% report.get_extra_metadata.property_address %]</td> </tr>
-    <tr> <td>UPRN</td> <td>[% report.get_extra_field_value('uprn') %]</td> </tr>
-    <tr> <td>Time Received</td> <td>[% USE date; date.format(report.confirmed.epoch, '%Y-%m-%dT%H:%M:%SZ', gmt=1) %]</td> </tr>
-    <tr> <td>New/replacement container</td> <td>[% report.get_extra_field_value('Container').join('; ') %]</td> </tr>
-    <tr> <td>Full name</td> <td>[% report.name %]</td> </tr>
-    <tr> <td>Telephone</td> <td>[% report.user.phone %]</td> </tr>
-    <tr> <td>Email address</td> <td>[% report.user.email %]</td> </tr>
-    <tr> <td>Complaint Type</td> <td>[% report.get_extra_field_value('complaint_type') %]</td> </tr>
-	<tr> <td>In what way are you related to the property?</td> <td>[% report.get_extra_field_value('Relation').join('; ') %]</td> </tr>
-	<tr> <td>Who is the managing agent, housing association or landlord for your block?</td> <td>[% report.get_extra_field_value('Responsible').join('; ') %]</td> </tr>
+    <tr> <th><p>Details</p></th> <th><p>Data</p></th> </tr>
+    <tr> <td><p>Enquiry reference number</p></td> <td><p>[% report.id %]</p></td> </tr>
+    <tr> <td><p>Address</p></td> <td><p>[% report.get_extra_metadata.property_address %]</p></td> </tr>
+    <tr> <td><p>UPRN</p></td> <td><p>[% report.get_extra_field_value('uprn') %]</p></td> </tr>
+    <tr> <td><p>Time Received</p></td> <td><p>[% USE date; date.format(report.confirmed.epoch, '%Y-%m-%dT%H:%M:%SZ', gmt=1) %]</p></td> </tr>
+    <tr> <td><p>New/replacement container</p></td> <td><p>[% report.get_extra_field_value('Container').join('; ') %]</p></td> </tr>
+    <tr> <td><p>Full name</p></td> <td><p>[% report.name %]</p></td> </tr>
+    <tr> <td><p>Telephone</p></td> <td><p>[% report.user.phone OR "Not applicable" %]</p></td> </tr>
+    <tr> <td><p>Email address</p></td> <td><p>[% report.user.email OR "Not applicable" %]</p></td> </tr>
+    <tr> <td><p>Complaint Type</p></td> <td><p>[% report.get_extra_field_value('complaint_type') %]</p></td> </tr>
+	<tr> <td><p>In what way are you related to the property?</p></td> <td><p>[% report.get_extra_field_value('Relation').join('; ') OR "Not applicable" %]</p></td> </tr>
+	<tr> <td><p>Who is the managing agent, housing association or landlord for your block?</p></td> <td><p>[% report.get_extra_field_value('Responsible').join('; ') OR "Not applicable" %]</p></td> </tr>
     <!--Ignore static values below-->
-    <tr> <td>How Complaint Received</td> <td>ONLINE</td> </tr>
-    <tr> <td>Reference Type</td> <td>FIRM</td> </tr>
-    <tr> <td>Customer Type Code</td> <td>PUBLIC</td> </tr>
-    <tr> <td>Allocated To</td> <td>WTCALL</td> </tr>
-    <tr> <td>Received By</td> <td>WTCALL</td> </tr>
-    <tr> <td>Area Team</td> <td>WRTEAM</td> </tr>
+    <tr> <td><p>How Complaint Received</p></td> <td><p>ONLINE</p></td> </tr>
+    <tr> <td><p>Reference Type</p></td> <td><p>FIRM</p></td> </tr>
+    <tr> <td><p>Customer Type Code</p></td> <td><p>PUBLIC</p></td> </tr>
+    <tr> <td><p>Allocated To</p></td> <td><p>WTCALL</p></td> </tr>
+    <tr> <td><p>Received By</p></td> <td><p>WTCALL</p></td> </tr>
+    <tr> <td><p>Area Team</p></td> <td><p>WRTEAM</p></td> </tr>
 </table>
 
 </body>
