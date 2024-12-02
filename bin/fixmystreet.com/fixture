@@ -136,6 +136,8 @@ if ($opt->test_fixtures) {
         { area_id => 2482, categories => [
                 { group => 'Street Lighting and Road Signs', category => 'Sign Light Not Working' },
                 { group => 'Street Lighting and Road Signs', category => 'Lamp Column Damaged' },
+                { group => 'Street Cleansing', category => 'Dead Animal' },
+                { group => 'Street Cleansing', category => 'Dog Fouling' },
             ], name => 'Bromley Council', cobrand => 'bromley' },
         { area_id => 164186, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
         { area_id => 163793, categories => [
