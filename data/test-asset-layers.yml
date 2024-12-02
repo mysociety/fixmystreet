@@ -174,6 +174,27 @@ bromley:
     actions:
       found: fixmystreet.assets.bromley.found
       not_found: fixmystreet.assets.bromley.not_found
+  - wfs_feature: 'Parks_Open_Spaces'
+    stylemap: fixmystreet.assets.bromley.parks_stylemap
+    asset_type: 'area'
+    asset_item: 'park'
+    non_interactive: true
+    asset_group: ["Parks and Greenspace"]
+    road: true
+    actions:
+      found: fixmystreet.assets.bromley.remove_park_message
+      not_found: fixmystreet.assets.bromley.add_park_message
+    no_asset_message: "We’ve noticed that you’ve selected a Parks and Greenspace category but that your map pin isn’t located within a park, are the location and category correct? You can change category by going back or relocate your map pin by clicking and dragging."
+  - wfs_feature: 'Parks_Open_Spaces'
+    non_interactive: true
+    nearest_radius: 0
+    road: true
+    asset_group: [ 'Highway Enforcement', 'Highway Major Works', 'Road, Pavement and PROW Issues', 'Street Cleansing', 'Street Lighting and Road Signs' ]
+    stylemap: fixmystreet.assets.stylemap_invisible
+    actions:
+      found: fixmystreet.assets.bromley.add_park_message
+      not_found: fixmystreet.assets.bromley.remove_park_message
+    no_asset_message: "We’ve noticed that you’ve selected a Streets category but that your map pin is located within a park, are the location and category correct? You can change category by going back or relocate your map pin by clicking and dragging."
 buckinghamshire:
   - - name: 'default'
       http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bucks"
