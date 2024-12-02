@@ -170,6 +170,15 @@ bromley:
     actions:
       found: fixmystreet.assets.bromley.found
       not_found: fixmystreet.assets.bromley.not_found
+  - wfs_feature: 'Parks_Open_Spaces'
+    non_interactive: true
+    nearest_radius: 0
+    road: true
+    always_visible: true
+    stylemap: fixmystreet.assets.stylemap_invisible
+    actions:
+      found: fixmystreet.assets.bromley.park_asset_found
+      not_found: fixmystreet.assets.bromley.park_asset_not_found
 buckinghamshire:
   - - name: 'default'
       http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bucks"

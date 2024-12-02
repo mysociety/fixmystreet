@@ -1,5 +1,9 @@
 [% PROCESS 'report/new/form_heading.html' %]
 
+<div id="js-nudge" class="box-warning hidden" aria-live="polite">
+[% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]
+</div>
+
 <div id="js-roads-responsibility" class="box-warning hidden" aria-live="polite">
 [% TRY %][% INCLUDE 'report/new/roads_message.html' %][% CATCH file %][% END %]
 </div>

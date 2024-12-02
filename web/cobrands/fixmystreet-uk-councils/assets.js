@@ -296,6 +296,42 @@ fixmystreet.assets.bromley.not_found = function(layer) {
     fixmystreet.message_controller.road_found(layer);
 };
 
+fixmystreet.assets.bromley.park_asset_found = function(layer) {
+    var streets_category_groups = [
+        'Highway Enforcement',
+        'Highway Major Works',
+        'Road, Pavement and PROW Issues',
+        'Street Cleansing',
+        'Street Lighting and Road Signs'
+    ];
+    var selected = fixmystreet.reporting.selectedCategory();
+    if (streets_category_groups.includes(selected.group)) {
+        var $msg = $('<div class="box-warning"></div>');
+        $msg.append(
+            "We’ve noticed that you’ve selected a Streets category but that your map pin is located within" +
+            " a park, are the location and category correct? You can change category by going back or" +
+            " relocate your map pin by clicking and dragging.");
+        $msg.prependTo('.js-post-category-messages');
+    } else {
+        $('.js-post-category-messages').empty();
+    }
+};
+
+
+fixmystreet.assets.bromley.park_asset_not_found = function(layer) {
+    var selected = fixmystreet.reporting.selectedCategory();
+    if (selected.group === 'Parks and Greenspace') {
+        var $msg = $('<div class="box-warning"></div>');
+        $msg.append(
+            "We’ve noticed that you’ve selected a Parks and Greenspace category but that your map pin isn’t" +
+            " located within a park, are the location and category correct? You can change category by going" +
+            " back or relocate your map pin by clicking and dragging.");
+        $msg.prependTo('.js-post-category-messages');
+    } else {
+        $('.js-post-category-messages').empty();
+    }
+};
+
 /* Buckinghamshire */
 
 fixmystreet.assets.buckinghamshire = {};
