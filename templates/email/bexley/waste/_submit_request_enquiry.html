@@ -19,8 +19,8 @@
     <tr> <td>Time Received</td> <td>[% USE date; date.format(report.confirmed.epoch, '%Y-%m-%dT%H:%M:%SZ', gmt=1) %]</td> </tr>
     <tr> <td>New/replacement container</td> <td>[% report.get_extra_field_value('Container').join('; ') %]</td> </tr>
     <tr> <td>Full name</td> <td>[% report.name %]</td> </tr>
-    <tr> <td>Telephone</td> <td>[% report.user.phone %]</td> </tr>
-    <tr> <td>Email address</td> <td>[% report.user.email %]</td> </tr>
+    <tr> <td>Telephone</td> <td>[% report.user.phone OR "Not applicable" %]</td> </tr>
+    <tr> <td>Email address</td> <td>[% report.user.email OR "Not applicable" %]</td> </tr>
     <tr> <td>Complaint Type</td> <td>[% report.get_extra_field_value('complaint_type') %]</td> </tr>
 	<tr> <td>In what way are you related to the property?</td> <td>[% report.get_extra_field_value('Relation').join('; ') %]</td> </tr>
 	<tr> <td>Who is the managing agent, housing association or landlord for your block?</td> <td>[% report.get_extra_field_value('Responsible').join('; ') %]</td> </tr>
