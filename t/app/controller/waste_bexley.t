@@ -217,7 +217,7 @@ $contact2->update;
 
 my $contact3 = $mech->create_contact_ok(
     body => $body,
-    category => 'Request container enquiry',
+    category => 'Replacement bin enquiry',
     email => 'waste-enquiry@example.org',
     extra => { type => 'waste' },
     group => ['Waste'],
@@ -1229,7 +1229,7 @@ FixMyStreet::override_config {
             my $joined = join('; ', @{$_->{containers}});
             $mech->delete_problems_for_body( $body->id );
             $mech->get_ok("/waste/$_->{id}");
-            $mech->follow_link_ok({ url_regex => qr{/waste/$_->{id}/enquiry\?category=Request\+container\+enquiry} });
+            $mech->follow_link_ok({ url_regex => qr{/waste/$_->{id}/enquiry\?category=Replacement\+bin\+enquiry} });
             $mech->content_contains('Which container(s) do you require?');
             foreach (@{$_->{containers}}) {
                 $mech->content_contains($_);
@@ -1259,7 +1259,7 @@ FixMyStreet::override_config {
             my ($email_submit, $email_logged) = $mech->get_email;
             $email_submit = $mech->get_html_body_from_email($email_submit);
             $email_logged = $mech->get_text_body_from_email($email_logged);
-            like $email_logged, qr{Containers requested: $joined};
+            like $email_logged, qr{Bins requested: $joined};
             like $email_submit, qr{<td><p>New/replacement container</p></td> <td><p>$joined};
             like $email_submit, qr{<td><p>UPRN</p></td> <td><p>$_->{id}</p></td>}
         };

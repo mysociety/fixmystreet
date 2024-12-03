@@ -16,7 +16,9 @@ INCLUDE '_email_top.html';
     <h1 style="[% h1_style %]">Thank you for reporting a missed collection</h1>
   [% ELSIF is_container_request %]
     <h1 style="[% h1_style %]">Thank you for requesting replacement bins</h1>
-  [% ELSIF is_no_collections_missed_enquiry OR is_request_enquiry %]
+  [% ELSIF is_request_enquiry %]
+    <h1 style="[% h1_style %]">Thank you for your replacement bin enquiry</h1>
+  [% ELSIF is_no_collections_missed_enquiry %]
     <h1 style="[% h1_style %]">Thank you for your [% report.category %]</h1>
   [% ELSE %]
     <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
