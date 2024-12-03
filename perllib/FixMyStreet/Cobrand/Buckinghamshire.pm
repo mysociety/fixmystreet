@@ -737,7 +737,7 @@ around 'munge_sendreport_params' => sub {
 sub car_park_wfs_query {
     my ($self, $row) = @_;
 
-    my $uri = URI->new("https://maps.buckscc.gov.uk/arcgis/services/Transport/BC_Car_Parks/MapServer/WFSServer");
+    my $uri = URI->new("https://maps.buckinghamshire.gov.uk/server/services/Transport/Car_Parks/MapServer/WFSServer");
     $uri->query_form(
         REQUEST => "GetFeature",
         SERVICE => "WFS",
@@ -758,12 +758,12 @@ sub car_park_wfs_query {
 sub speed_limit_wfs_query {
     my ($self, $row) = @_;
 
-    my $uri = URI->new("https://maps.buckscc.gov.uk/arcgis/services/Transport/OS_Highways_Speed/MapServer/WFSServer");
+    my $uri = URI->new("https://maps.buckinghamshire.gov.uk/server/services/Transport/OS_Highways_Speed/MapServer/WFSServer");
     $uri->query_form(
         REQUEST => "GetFeature",
         SERVICE => "WFS",
         SRSNAME => "urn:ogc:def:crs:EPSG::27700",
-        TYPENAME => "OS_Highways_Speed:CORPGIS.CORPORATE.OS_Highways_Speed",
+        TYPENAME => "OS_Highways_Speed:OS_Highways_Speed",
         VERSION => "1.1.0",
         propertyName => 'OBJECTID,Shape,speed',
     );
