@@ -56,6 +56,7 @@ describe('Bromley cobrand', function() {
     cy.visit('http://bromley.localhost:3001/report/new?longitude=0.022775&latitude=51.398387');
     cy.wait('@report-ajax');
     cy.contains('Bromley');
+    cy.nextPageReporting();
     cy.pickCategory('Street Lighting and Road Signs');
     cy.pickSubcategory('Street Lighting and Road Signs', 'Lamp Column Damaged');
     cy.wait('@lights');
