@@ -710,6 +710,32 @@ subtest 'recaptcha' => sub {
             $mech->content_contains('Thank you for your enquiry');
         };
     };
+
+    subtest 'Surrey never shows reCAPTCHA' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'surrey',
+            RECAPTCHA => { secret => 'secret', site_key => 'site_key' },
+        } => sub {
+            $mech->create_body_ok(
+                2242, 'Surrey County Council',
+                { cobrand => 'surrey' },
+            );
+            ok $mech->host('tellus.surreycc.gov.uk');
+
+            $mod_app->mock( 'user_country', sub {'GB'} );
+
+            $mech->get_ok('/contact');
+            $mech->content_contains('Surrey County Council');
+            $mech->content_lacks('g-recaptcha');
+
+            $mod_app->mock( 'user_country', sub {'FR'} );
+
+            $mech->get_ok('/contact');
+            $mech->content_lacks('g-recaptcha');
+            $mech->submit_form_ok( { with_fields => \%common } );
+            $mech->content_contains('Thank you for your enquiry');
+        };
+    };
 };
 
 done_testing();

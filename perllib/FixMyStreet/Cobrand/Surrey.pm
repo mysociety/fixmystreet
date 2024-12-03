@@ -66,6 +66,16 @@ sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' 
 sub cut_off_date { '2024-09-16' }
 
 
+=item * requires_recaptcha
+
+Disable reCAPTCHA on this cobrand because we never see end users' IPs, only
+those of the Imperva WAF, some of which are considered non-UK.
+
+=cut
+
+sub requires_recaptcha { 0 }
+
+
 =head2 problems_restriction/problems_sql_restriction/problems_on_map_restriction
 
 Reports made on FMS.com before the cut off date are not shown on the Surrey cobrand;
