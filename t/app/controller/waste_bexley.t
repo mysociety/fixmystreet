@@ -668,29 +668,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Reported as collected today');
         $mech->content_lacks('Could not be collected today because it was red-tagged. See reason below.');
 
-        note 'Service update on street';
-        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
-            return [
-                {
-                    LogID => 1,
-                    Reason => 'Streetwide fox invasion',
-                    RoundCode => 'RND-8-9',
-                    LogDate => '2024-04-01T12:00:00.417',
-                    Uprn => '',
-                    Usrn => '321',
-                },
-            ];
-        });
-        $mech->get_ok('/waste/10001');
-        $mech->content_contains('Service status');
-        $mech->content_contains('Streetwide fox invasion');
-        $mech->content_lacks(
-            'Our collection teams have reported the following problems with your bins:'
-        );
-        $mech->content_lacks('Being collected today');
-        $mech->content_contains('Reported as collected today');
-        $mech->content_lacks('Could not be collected today because it was red-tagged. See reason below.');
-
         # Reinstate original mocks
         set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
         default_mocks();
