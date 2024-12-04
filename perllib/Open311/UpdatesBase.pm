@@ -361,6 +361,18 @@ sub _handle_assigned_user {
                     $request->{extras}{detailed_information} )
                 : $p->unset_extra_metadata('detailed_information');
         }
+
+        # Category & group
+        # TODO Do we want to check that category and group match?
+        if ( my $category = $request->{extras}{category} ) {
+            my $contact
+                = $body->contacts->search( { category => $category } )->first;
+            $p->category($category) if $contact;
+        }
+
+        if ( my $group = $request->{extras}{group} ) {
+            $p->set_extra_metadata( group => $group );
+        }
     }
 }
 
