@@ -1556,7 +1556,7 @@ fixmystreet.message_controller = (function() {
     }
 
     function hide_continue_button() {
-        var cobrands_to_hide = ['surrey', 'hart'];
+        var cobrands_to_hide = ['hart', 'surrey'];
         if (cobrands_to_hide.indexOf(fixmystreet.cobrand) !== -1) {
             return 1;
         }

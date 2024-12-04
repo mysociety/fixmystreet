@@ -30,13 +30,16 @@
     which will be sent to us, and published on the site.
     </p>
     <p>
+    [% IF c.cobrand.moniker == 'surrey' %]
+    <strong>If your problem is not a street issue, relates to a claim, or is not
+    suitable for publication on the site</strong>, then this isn’t the
+    right place for it. You should find other
+    <a href='https://www.surreycc.gov.uk/council-and-democracy/contact-us'>contact details</a>
+    on the Council’s website.
+    [% ELSE %]
     <strong>If your problem is not a street issue</strong>, or is <strong>not
     suitable for publication on the site</strong>, then this isn't the
-    right place for it. You should find other contact details on
-    [% IF c.cobrand.moniker == 'surrey' %]
-    <a href='https://www.surreycc.gov.uk/council-and-democracy/contact-us'>our website</a>.
-    [% ELSE %]
-    our website.
+    right place for it. You should find other contact details on our website.
     [% END %]
     </p>
   </div>
