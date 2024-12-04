@@ -724,8 +724,29 @@ sub waste_quantity_max {
 
 sub garden_subscription_event_id { 2106 }
 
-# Bulky collection event. No blocks on reporting a missed collection based on the state and resolution code.
-sub waste_bulky_missed_blocked_codes { {} }
+sub waste_bulky_missed_blocked_codes {
+    return {
+        # Not Completed
+        15122 => {
+            14 => 'Inclement weather conditions',
+            50 => 'Address Incorrect',
+            55 => 'Insufficient Information',
+            66 => 'Not Presented',
+            67 => 'Nothing Found',
+            120 => 'Health and Safety Issue',
+            129 => 'Private Property/Land',
+            212 => 'Too Heavy',
+            433 => 'Unable to successfully remove/ clear',
+            466 => 'NA - Gate Locked',
+            469 => 'NA - Key/Code Changed',
+            516 => 'Incorrect Waste',
+            613 => 'NA - Roadworks',
+            614 => 'NA - Police Incident',
+            616 => 'NA - Inclement Weather Conditions',
+            617 => 'NA - Parked Vehicle',
+        },
+    };
+}
 
 sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
