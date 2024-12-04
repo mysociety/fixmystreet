@@ -614,12 +614,10 @@ sub bin_future_collections {
     my $self = shift;
 
     my $services = $self->{c}->stash->{service_data};
-    my @tasks;
     my %names;
     foreach (@$services) {
         next unless $_->{service_task_id};
-        push @tasks, $_->{service_task_id};
-        $names{$_->{service_task_id}} = $_->{service_name};
+        push @{$names{$_->{service_task_id}}}, $_->{service_name};
     }
 
     my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
@@ -628,7 +626,7 @@ sub bin_future_collections {
 
     my $echo = $self->feature('echo');
     $echo = Integrations::Echo->new(%$echo);
-    my $result = $echo->GetServiceTaskInstances($start, $end, @tasks);
+    my $result = $echo->GetServiceTaskInstances($start, $end, sort keys %names);
 
     my $events = [];
     foreach (@$result) {
@@ -636,7 +634,7 @@ sub bin_future_collections {
         my $tasks = Integrations::Echo::force_arrayref($_->{Instances}, 'ScheduledTaskInfo');
         foreach (@$tasks) {
             my $dt = construct_bin_date($_->{CurrentScheduledDate});
-            my $summary = $names{$task_id} . ' collection';
+            my $summary = join('/', @{$names{$task_id}}) . ' collection';
             my $desc = '';
             push @$events, { date => $dt, summary => $summary, desc => $desc };
         }

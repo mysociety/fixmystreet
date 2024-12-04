@@ -134,7 +134,7 @@ sub reopening_disallowed { 1 }
 
 sub allow_anonymous_reports { 'button' }
 
-=item * Do not allow email addresses in title or detail
+=item * Do not allow email addresses in title or detail, with detail maximum length
 
 =back
 
@@ -147,6 +147,11 @@ sub report_validation {
 
     if ($report->detail =~ /$regex/ || $report->title =~ /$regex/) {
         $errors->{detail} = 'Please remove any email addresses and other personal information from your report';
+    }
+
+    my $max_report_length = 1000;
+    if ( length( $report->detail ) > $max_report_length ) {
+        $errors->{detail} = sprintf('Reports are limited to %s characters in length. Please shorten your report', $max_report_length );
     }
 
     return $errors;
