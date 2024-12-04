@@ -653,13 +653,6 @@ sub _in_cab_logs {
                     date   => $logdate,
                     ordinal => ordinal( $logdate->day ),
                 };
-            } elsif ( !$_->{Uprn} ) {
-                push @street_logs, {
-                    round  => $_->{RoundCode},
-                    reason => $_->{Reason},
-                    date   => $logdate,
-                    ordinal => ordinal( $logdate->day ),
-                };
             }
         }
     }
