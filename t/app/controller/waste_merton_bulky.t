@@ -632,11 +632,15 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
             is $report->comments->count, 2; # Confirmation and then cancellation
-            FixMyStreet::Script::Alerts::send_updates();
-            $mech->email_count_is(1); # Cancellation update on original
+            $new_report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+
+            my $email = $mech->get_email;
+            is $email->header('Subject'), 'Bulky waste collection service - reference ' . $new_report->id;
             $mech->clear_emails_ok;
 
-            $new_report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(0); # No cancellation update on original
+
             is $new_report->category, 'Bulky collection', 'correct category on report';
             is $new_report->title, 'Bulky goods collection', 'correct title on report';
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -767,6 +771,8 @@ FixMyStreet::override_config {
             $mech->get_ok("/waste/pay_complete/$report_id/$token");
             is $sent_params->{reference}, 12345, 'correct scpReference sent';
             FixMyStreet::Script::Reports::send();
+            my $email = $mech->get_email;
+            is $email->header('Subject'), 'Bulky waste collection service - reference ' . $new_report->id;
             $mech->clear_emails_ok;
             $new_report->discard_changes;
             is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
@@ -776,7 +782,7 @@ FixMyStreet::override_config {
             is $update->state, 'confirmed';
             is $update->text, 'Payment confirmed, reference 54321, amount £23.75';
             FixMyStreet::Script::Alerts::send_updates();
-            $mech->email_count_is(1); # Cancellation update should come through now
+            $mech->email_count_is(0); # No cancellation update
             $mech->clear_emails_ok;
 
             $mech->content_contains('Bulky collection booking confirmed');
