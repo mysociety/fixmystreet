@@ -113,6 +113,7 @@ body_validation_rules = {
           notEmail: true
       },
       detail: {
+          maxlength: 1000,
           required: true,
           notEmail: true
       }
