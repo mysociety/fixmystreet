@@ -44,6 +44,7 @@ for my $body (
     { area_id => 164186, name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
     { area_id => 2566, name => 'Peterborough City Council', cobrand => 'peterborough' },
     { area_id => 2508, name => 'Hackney Council', cobrand => 'hackney' },
+    { area_id => 2242, name => 'Surrey Council', cobrand => 'surrey' },
 ) {
     my $extra = { cobrand => $body->{cobrand} } if $body->{cobrand};
     my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, $extra);
@@ -85,6 +86,11 @@ $mech->create_contact_ok(
     body_id => $body_ids{2237}, # Oxfordshire
     category => 'Trees',
     email => 'trees-2247@example.com',
+);
+$mech->create_contact_ok(
+    body_id => $body_ids{2242}, # Surrey
+    category => 'Trees',
+    email => 'trees-2242@example.com',
 );
 $mech->create_contact_ok(
     body_id => $body_ids{2600}, # Rutland
@@ -394,6 +400,19 @@ foreach my $test (
         errors  => [ 'Please make sure you are not including an email address', ],
     },
     {
+        msg    => 'Surrey long detail',
+        pc     => 'KT11 1LZ',
+        fields => {
+            %shared,
+            detail        => 'X' . 'x' x 1001,
+            name          => 'Bob Example',
+            username_register => 'bob@example.com',
+            category      => 'Trees',
+        },
+        changes => { },
+        errors => [ 'Please enter a subject', 'Reports are limited to 1000 characters in length. Please shorten your report' ],
+    },
+    {
         msg    => 'Bromley long detail',
         pc     => 'BR1 3UH',
         fields => {
@@ -587,7 +606,7 @@ foreach my $test (
 
         # submit initial pc form
         FixMyStreet::override_config {
-            ALLOWED_COBRANDS => [ { fixmystreet => '.' }, 'bromley', 'oxfordshire', 'rutland', 'lincolnshire', 'buckinghamshire', 'northamptonshire', 'peterborough', 'hackney' ],
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' }, 'bromley', 'oxfordshire', 'rutland', 'lincolnshire', 'buckinghamshire', 'northamptonshire', 'peterborough', 'hackney', 'surrey' ],
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
