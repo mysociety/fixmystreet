@@ -526,10 +526,10 @@ subtest 'updating of waste reports' => sub {
         if ($method eq 'GetEvent') {
             my ($key, $type, $value) = ${$args[3]->value}->value;
             my $external_id = ${$value->value}->value->value;
-            my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
+            my ($waste, $event_state_id, $resolution_code, $event_type_id) = split /-/, $external_id;
             return SOAP::Result->new(result => {
                 EventStateId => $event_state_id,
-                EventTypeId => '2104',
+                EventTypeId => $event_type_id || '2104',
                 LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2020-06-24T14:00:00Z' },
                 ResolutionCodeId => $resolution_code,
             });
@@ -555,6 +555,7 @@ subtest 'updating of waste reports' => sub {
                         { ResolutionCodeId => 206, Name => 'Out of Time' },
                         { ResolutionCodeId => 207, Name => 'Duplicate' },
                       ] } },
+                    { CoreState => 'Closed', Name => 'Closed', Id => 15007 },
                 ] } },
             });
         } else {
@@ -591,6 +592,16 @@ subtest 'updating of waste reports' => sub {
         is $report->comments->count, $comment_count, 'No new update';
         is $report->state, 'confirmed', 'No state change';
 
+        # Test general enquiry closed
+        $report->update({ external_id => 'waste-15007--2148' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Fetching data for report/;
+        $report->discard_changes;
+        is $report->comments->count, ++$comment_count, 'No new update';
+        is $report->state, 'fixed - council', 'State change to fixed';
+        $report->update({ state => 'confirmed' }); # Reset back
+
         $report->update({ external_id => 'waste-15003-' });
         stdout_like {
             $cobrand->waste_fetch_events({ verbose => 1 });
@@ -605,7 +616,7 @@ subtest 'updating of waste reports' => sub {
         } qr/Updating report to state action scheduled, Allocated to Crew/;
         $report->discard_changes;
         is $report->comments->count, ++$comment_count, 'A new update';
-        my $update = $report->comments->first;
+        my $update = FixMyStreet::DB->resultset('Comment')->order_by('-id')->first;
         is $update->text, 'This has been allocated';
         is $report->state, 'action scheduled', 'A state change';
 
