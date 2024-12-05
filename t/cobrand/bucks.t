@@ -404,7 +404,7 @@ my $bucks = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');
 
 subtest 'Prevents car park reports being made outside a car park' => sub {
     # Simulate no car parks found
-    $bucks->mock('_get', sub { "<wfs:FeatureCollection></wfs:FeatureCollection>" });
+    $bucks->mock('_post', sub { "<wfs:FeatureCollection></wfs:FeatureCollection>" });
 
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Barrier+problem');
     $mech->submit_form_ok({
@@ -419,7 +419,7 @@ subtest 'Prevents car park reports being made outside a car park' => sub {
 
 subtest 'Allows car park reports to be made in a car park' => sub {
     # Now simulate a car park being found
-    $bucks->mock('_get', sub {
+    $bucks->mock('_post', sub {
         "<wfs:FeatureCollection>
             <gml:featureMember>
                 <Transport_BC_Car_Parks:BC_CAR_PARKS>
@@ -517,7 +517,7 @@ subtest 'sends grass cutting reports on roads 30mph or more to the council' => s
 };
 
 subtest "server side speed limit lookup for council grass cutting report" => sub {
-    $bucks->mock('_get', sub { "<OS_Highways_Speed:speed>60.00000000</OS_Highways_Speed:speed>" });
+    $bucks->mock('_post', sub { "<OS_Highways_Speed:speed>60.00000000</OS_Highways_Speed:speed>" });
 
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
     $mech->submit_form_ok({
@@ -536,7 +536,7 @@ subtest "server side speed limit lookup for council grass cutting report" => sub
 };
 
 subtest "server side speed limit lookup for parish grass cutting report" => sub {
-    $bucks->mock('_get', sub { "<OS_Highways_Speed:speed>30.00000000</OS_Highways_Speed:speed>" });
+    $bucks->mock('_post', sub { "<OS_Highways_Speed:speed>30.00000000</OS_Highways_Speed:speed>" });
 
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
     $mech->submit_form_ok({
@@ -554,7 +554,7 @@ subtest "server side speed limit lookup for parish grass cutting report" => sub 
 };
 
 subtest "server side speed limit lookup with unknown speed limit" => sub {
-    $bucks->mock('_get', sub { '' });
+    $bucks->mock('_post', sub { '' });
 
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
     $mech->submit_form_ok({
