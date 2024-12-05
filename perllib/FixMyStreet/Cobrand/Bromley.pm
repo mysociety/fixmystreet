@@ -391,7 +391,10 @@ sub open311_waste_update_extra {
     my $state_id = $event->{EventStateId};
     my $resolution_id = $event->{ResolutionCodeId} || '';
     my $description = $event_type->{states}{$state_id}{name} || '';
-    if ($description ne 'New' && $description ne 'Completed' && !$resolution_id) {
+
+    my $closed_general_enquiry = $event->{EventTypeId} == 2148 && $description eq 'Closed';
+    my $not_new_completed = $description ne 'New' && $description ne 'Completed';
+    if ($not_new_completed && !$resolution_id && !$closed_general_enquiry) {
         $override_status = "";
     }
 
