@@ -8,7 +8,7 @@ with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 with 'FixMyStreet::Cobrand::Merton::Waste';
 with 'FixMyStreet::Roles::Open311Multi';
 
-sub council_area_id { 2500 }
+sub council_area_id { [2500, 2480] }
 sub council_area { 'Merton' }
 sub council_name { 'Merton Council' }
 sub council_url { 'merton' }
@@ -169,6 +169,52 @@ sub categories_restriction {
     my ($self, $rs) = @_;
 
     return $rs->search( { 'me.category' => { -not_like => 'River Piers%' } } );
+}
+
+=head2 check_report_is_on_cobrand_asset
+
+Merton has a park, The Commons Extension Sports Ground, which is outside
+their boundary. We'll test if it's any Merton owned park
+
+=cut
+
+sub check_report_is_on_cobrand_asset {
+    my $self = shift;
+
+    my $lat = $self->{c}->stash->{latitude};
+    my $lon = $self->{c}->stash->{longitude};
+    my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+
+    my $cfg = {
+        url => "https://$host/mapserver/merton",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "merton_owned_parks",
+        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+        outputformat => 'geojson',
+    };
+
+    my $features = $self->_fetch_features($cfg);
+    return $features->[0];
+}
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    my $all_areas = $self->{c}->stash->{all_areas};
+
+    if (grep ($self->council_area_id->[0] == $_, keys %$all_areas)) {
+        # We are in the Merton area so carry on as normal
+        return;
+    } elsif ($self->check_report_is_on_cobrand_asset) {
+        # We are not in a Merton area but the report is in a park that Merton is responsible for,
+        # so only show Merton categories.
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') eq $self->council_name } values %$bodies;
+    } else {
+        # We are not in a Merton area and the report is not in a park that Merton is responsible for,
+        # so only show other categories.
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne $self->council_name } values %$bodies;
+    }
 }
 
 sub open311_pre_send {
