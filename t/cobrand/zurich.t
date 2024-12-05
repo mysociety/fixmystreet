@@ -318,6 +318,7 @@ subtest "Auto select category and input description from url" => sub {
     $mech->content_contains('Klicken Sie auf den Link im');
     ok (my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test 1234 Äï'}), "Report created with text from url");
     is $report->category, 'Cat1', "Report in correct category from url";
+    $report->update({ confirmed => DateTime->now });
 };
 
 subtest "Auto select category and input description from url works on validation fail" => sub {
@@ -341,6 +342,8 @@ subtest "Auto select private category and input description from url" => sub {
     $mech->content_contains('Klicken Sie auf den Link im');
     ok (my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test 5678'}), "Report created with text from url");
     is $report->category, 'Allgemein', "Report in correct category from url";
+    is $report->bodies_str, $division->id, "Report in correct body";
+    $report->update({ confirmed => DateTime->now });
     send_reports_for_zurich();
     $mech->clear_emails_ok;
 };

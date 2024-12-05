@@ -29,7 +29,7 @@ with 'FixMyStreet::Roles::BoroughEmails';
 use SUPER;
 
 
-use LWP::Simple;
+use LWP::UserAgent;
 use URI;
 use Try::Tiny;
 use Utils;
@@ -775,48 +775,18 @@ around 'munge_sendreport_params' => sub {
 
 sub car_park_wfs_query {
     my ($self, $row) = @_;
-
-    my $uri = URI->new("https://maps.buckinghamshire.gov.uk/server/services/Transport/Car_Parks/MapServer/WFSServer");
-    $uri->query_form(
-        REQUEST => "GetFeature",
-        SERVICE => "WFS",
-        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
-        TYPENAME => "BC_CAR_PARKS",
-        VERSION => "1.1.0",
-        propertyName => 'OBJECTID,Shape',
-    );
-
-    try {
-        return $self->_get($self->_wfs_uri($row, $uri));
-    } catch {
-        # Ignore WFS errors.
-        return {};
-    };
+    my $uri = "https://maps.buckinghamshire.gov.uk/server/services/Transport/Car_Parks/MapServer/WFSServer";
+    return $self->_wfs_post($uri, $row, 'BC_CAR_PARKS', ['OBJECTID', 'Shape']);
 }
 
 sub speed_limit_wfs_query {
     my ($self, $row) = @_;
-
-    my $uri = URI->new("https://maps.buckinghamshire.gov.uk/server/services/Transport/OS_Highways_Speed/MapServer/WFSServer");
-    $uri->query_form(
-        REQUEST => "GetFeature",
-        SERVICE => "WFS",
-        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
-        TYPENAME => "OS_Highways_Speed:OS_Highways_Speed",
-        VERSION => "1.1.0",
-        propertyName => 'OBJECTID,Shape,speed',
-    );
-
-    try {
-        return $self->_get($self->_wfs_uri($row, $uri));
-    } catch {
-        # Ignore WFS errors.
-        return {};
-    };
+    my $uri = "https://maps.buckinghamshire.gov.uk/server/services/Transport/OS_Highways_Speed/MapServer/WFSServer";
+    return $self->_wfs_post($uri, $row, 'OS_Highways_Speed:OS_Highways_Speed', ['OBJECTID', 'Shape', 'speed']);
 }
 
-sub _wfs_uri {
-    my ($self, $row, $base_uri) = @_;
+sub _wfs_post {
+    my ($self, $uri, $row, $typename, $properties) = @_;
 
     # This fn may be called before cobrand has been set in the
     # reporting flow and local_coords needs it to be set
@@ -826,33 +796,39 @@ sub _wfs_uri {
     my $buffer = 50; # metres
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
 
-    my $filter = "
-    <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\">
+    $properties = map { "<wfs:PropertyName>$_</wfs:PropertyName>" } @$properties;
+    my $data = <<EOF;
+<wfs:GetFeature service="WFS" version="1.1.0" xmlns:wfs="http://www.opengis.net/wfs">
+  <wfs:Query typeName="$typename">
+    $properties
+    <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
         <ogc:BBOX>
             <ogc:PropertyName>Shape</ogc:PropertyName>
-            <gml:Envelope xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:27700'>
+            <gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:27700">
                 <gml:lowerCorner>$w $s</gml:lowerCorner>
                 <gml:upperCorner>$e $n</gml:upperCorner>
             </gml:Envelope>
         </ogc:BBOX>
-    </ogc:Filter>";
-    $filter =~ s/\n\s+//g;
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>
+EOF
 
-    # URI encodes ' ' as '+' but arcgis wants it to be '%20'
-    # Putting %20 into the filter string doesn't work because URI then escapes
-    # the '%' as '%25' so you get a double encoding issue.
-    #
-    # Avoid all of that and just put the filter on the end of the $base_uri
-    $filter = URI::Escape::uri_escape_utf8($filter);
-
-    return "$base_uri&filter=$filter";
+    try {
+        return $self->_post($uri, $data);
+    } catch {
+        # Ignore WFS errors.
+        return {};
+    };
 }
 
 # Wrapper around LWP::Simple::get to make mocking in tests easier.
-sub _get {
-    my ($self, $uri) = @_;
+sub _post {
+    my ($self, $uri, $data) = @_;
 
-    get($uri);
+    my $ua = LWP::UserAgent->new;
+    my $res = $ua->post($uri, Content_Type => "text/xml", Content => $data);
+    return $res->decoded_content;
 }
 
 around 'report_validation' => sub {
