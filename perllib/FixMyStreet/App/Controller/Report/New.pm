@@ -1227,10 +1227,7 @@ sub process_report : Private {
     $report->cobrand_data($cobrand_data);
 
     if ( $report->category ) {
-        my @contacts = grep { $_->category eq $report->category } @{$c->stash->{contacts}};
-        if (!@contacts) {
-            @contacts = @{ $c->cobrand->call_hook('report_on_private_contacts' => $report->category) || [] };
-        }
+        my @contacts = _match_contact($c, $report->category);
         unless ( @contacts ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
             $report->bodies_str( -1 );
@@ -1315,8 +1312,7 @@ sub process_report : Private {
 sub contacts_to_bodies : Private {
     my ($self, $c, $report, $options) = @_;
 
-    my $category = $report->category;
-    my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
+    my @contacts = _match_contact($c, $report->category);
 
     # If there are multiple contacts for different bodies then the default
     # behaviour is to send to all bodies. However if a contact has the
@@ -1346,6 +1342,15 @@ sub contacts_to_bodies : Private {
     $c->cobrand->call_hook(munge_contacts_to_bodies => \@contacts, $report);
 
     [ map { $_->body } @contacts ];
+}
+
+sub _match_contact {
+    my ($c, $category) = @_;
+    my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
+    if (!@contacts) {
+        @contacts = @{ $c->cobrand->call_hook('report_on_private_contacts' => $category) || [] };
+    }
+    return @contacts;
 }
 
 sub setup_report_extras : Private {
