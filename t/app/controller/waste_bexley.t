@@ -305,19 +305,6 @@ FixMyStreet::override_config {
         );
     };
 
-    $whitespace_mock->mock( 'GetSiteContracts', sub {
-        my ( $self, $uprn ) = @_;
-        return [
-            {   ContractID => 1,
-                ContractName => 'Contract 1',
-                ContractType => 'Type 1',
-                ContractStartDate => '2024-03-31T00:00:00',
-                ContractEndDate => '2024-03-31T00:00:00',
-                ContractStatus => 'Active',
-            },
-        ];
-    });
-
     subtest 'Correct services are shown for address' => sub {
         $mech->submit_form_ok( { with_fields => { address => 10001 } } );
 
@@ -763,7 +750,7 @@ FixMyStreet::override_config {
             ok $report->confirmed;
             is $report->state, 'confirmed';
             is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
-            is $report->get_extra_field_value('assisted_yn'), 'No', 'Assisted collection is correct';
+            is $report->get_extra_field_value('assisted_yn'), 'Yes', 'Assisted collection is correct';
             is $report->get_extra_field_value('location_of_containers'), 'Front boundary of property', 'Location of containers is correct';
             push @service_item_names, $report->get_extra_field_value('service_item_name');
         }

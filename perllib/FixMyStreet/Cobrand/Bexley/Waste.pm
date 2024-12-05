@@ -1128,10 +1128,7 @@ sub waste_munge_report_data {
     $c->set_param('service_id', $id);
     $c->set_param('location_of_containers', $data->{bin_location}) if $data->{bin_location};
     $c->set_param('service_item_name', $service_id);
-
-    # Check if this property has assisted collections
-    my $contracts = $self->whitespace->GetSiteContracts($property->{uprn});
-    $c->set_param('assisted_yn', (grep { $_->{ContractID} == 7 } @$contracts) ? 'Yes' : 'No');
+    $c->set_param('assisted_yn', $property->{has_assisted} ? 'Yes' : 'No');
 }
 
 sub waste_munge_report_form_fields {
