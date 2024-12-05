@@ -466,13 +466,11 @@ sub check_csrf_token : Private {
     my $gen_token = $c->forward('get_csrf_token');
     delete $c->stash->{csrf_time};
 
-    my $cutoff = time() - 3600;
-    my $valid_time = $time && $time > $cutoff;
     my $valid_token = $token eq $gen_token;
-    unless ($valid_time && $valid_token) {
+    unless ($time && $valid_token) {
         my $msg = "Invalid CSRF token: ";
         $msg .= "$token != $gen_token " unless $valid_token;
-        $msg .= "$time < $cutoff" unless $valid_time;
+        $msg .= "no time" unless $time;
         $c->stash->{internal_message} = $msg;
         $c->detach('/page_error_400_bad_request', []);
     }
