@@ -260,6 +260,29 @@ lincolnshire:
     asset_item_message: ''
     disable_pin_snapping: true
     stylemap: 'fixmystreet.assets.stylemap_invisible'
+merton:
+- - name: 'default'
+    max_resolution: 4.777314267158508
+    srsName: "EPSG:27700"
+    body: "Merton Council"
+- template: 'default'
+  name: 'merton parks'
+  http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/merton"
+  asset_category: ["Parks"]
+  asset_item: "Merton-owned park"
+  max_resolution: 1.194328566789627
+  wfs_feature: 'all_parks'
+  non_interactive: true
+  nearest_radius: 0
+  asset_item_message: 'Please pick a location in a highlighted Merton-owned park.'
+  no_asset_msgs_class: '.js-parks-merton'
+  road: true
+  usrn:
+    - { attribute: 'UPRN', field: 'uprn'}
+    - { attribute: 'Park_Name', field: 'ParkName'}
+  actions:
+    found: fixmystreet.assets.merton.park_found
+    not_found: fixmystreet.assets.merton.park_not_found
 northamptonshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/northamptonshire"
     geometryName: 'msGeometry'
