@@ -163,6 +163,48 @@ subtest 'staff and problems for other bodies are not affected by this change on 
     };
 };
 
+my $kingston = $mech->create_body_ok(2480, 'Kingston upon Thames Council', {
+    cobrand => 'kingston'
+});
+
+my @kingston_cats = ('Graffiti', 'Fly-tipping');
+for my $contact ( @kingston_cats ) {
+    $mech->create_contact_ok(body_id => $kingston->id, category => $contact, email => "\L$contact\@kingston.example.org",);
+}
+
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2480, body_id => $merton->id });
+
+subtest 'Merton responsible for park in Kingston' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'merton', 'kingston', 'fixmystreet' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        foreach my $host (qw/merton www/) {
+            subtest "reports on $host cobrand in Commons Extension only has Merton categories" => sub {
+                $mech->host("$host.fixmystreet.com");
+
+                $cobrand->mock('_fetch_features', sub { [ { "ms:parks" => { "ms:SITE_CODE" => 'COMMONS' } } ] });
+                $mech->get_ok("/report/new/ajax?longitude=-0.254369&latitude=51.427796");
+                $mech->content_contains('Litter');
+                $mech->content_lacks('Graffiti');
+            }
+        };
+        subtest "report on Kingston Cobrand from Merton is not permitted if not Commons Extension" => sub {
+            $mech->host("merton.fixmystreet.com");
+            $cobrand->mock('_fetch_features', sub { [] }); # Mock that this isn't the Commons Extension
+            $mech->get_ok("/report/new/ajax?longitude=-0.254369&latitude=51.427796");
+            $mech->content_contains('That location is not covered by Merton Council');
+        };
+        subtest "report on Kingston from FMS Cobrand if not on Commons Extension only has Kingston categories" => sub {
+            $mech->host("www.fixmystreet.com");
+            $cobrand->mock('_fetch_features', sub { [] }); # Mock that this isn't the Commons Extension
+            $mech->get_ok("/report/new/ajax?longitude=-0.254369&latitude=51.427796");
+            $mech->content_lacks('Litter');
+            $mech->content_contains('Graffiti');
+        }
+    }
+};
+
 sub test_reopen_problem {
     my ($user, $problem) = @_;
     $mech->log_in_ok( $user->email );
