@@ -327,7 +327,8 @@ sub process_bulky_amend : Private {
         my $update = add_cancellation_update($c, $p, 'delayed');
 
         $c->forward('process_bulky_data', [ $form ]) or return;
-        # If there wasn't payment, we can set the things here too
+
+        # If there wasn't payment, we reach here and can set the things
         $c->forward('cancel_collection', [ $p, 'amendment' ]);
         my $new = $c->stash->{report};
         $new->set_extra_metadata(previous_booking_id => $p->id);
@@ -339,6 +340,9 @@ sub process_bulky_amend : Private {
         $update->confirm;
         $update->update;
         $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference'));
+        if ($c->cobrand->suppress_report_sent_email($new)) {
+            $new->send_logged_email({ report => $new, cobrand => $c->cobrand }, 0, $c->cobrand);
+        }
     } else {
         $p->create_related( moderation_original_data => {
             title => $p->title,
@@ -361,7 +365,6 @@ sub process_bulky_amend : Private {
         # Need to reset stashed report to the amended one, not the new cancellation one
         $c->stash->{report} = $p;
     }
-
 
     return 1;
 }
@@ -421,8 +424,11 @@ sub add_cancellation_update {
         text => $description,
         user => $c->cobrand->body->comment_user || $p->user,
         extra => { bulky_cancellation => 1 },
+        problem_state => 'cancelled',
         $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
     });
+    # We don't want to send an update if amending, they'll get a new report logged email
+    $p->cancel_update_alert($update->id) if $type eq 'delayed';
     return $update;
 }
 
