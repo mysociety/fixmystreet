@@ -424,6 +424,7 @@ sub add_cancellation_update {
         text => $description,
         user => $c->cobrand->body->comment_user || $p->user,
         extra => { bulky_cancellation => 1 },
+        problem_state => 'cancelled',
         $type eq 'immediate' ? (state => 'confirmed') : (state => 'unconfirmed'),
     });
     # We don't want to send an update if amending, they'll get a new report logged email
