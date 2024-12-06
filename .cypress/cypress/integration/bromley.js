@@ -45,7 +45,7 @@ describe('Bromley cobrand', function() {
     cy.get('.mobile-map-banner').should('be.visible');
   });
 
-  it.only ('sets extra cobrand owner field when streetlight asset selected', function() {
+  it('sets extra cobrand owner field when streetlight asset selected', function() {
     cy.pickCategory('Street Lighting and Road Signs');
     cy.nextPageReporting();
     cy.pickSubcategory('Street Lighting and Road Signs', 'Lamp Column Damaged');
@@ -55,9 +55,9 @@ describe('Bromley cobrand', function() {
     cy.get('#form_fms_layer_owner').should('have.value', '');
     cy.visit('http://bromley.localhost:3001/report/new?longitude=0.022775&latitude=51.398387');
     cy.wait('@report-ajax');
-    cy.contains('Bromley');
-    cy.nextPageReporting();
+    cy.get('#mob_ok').click();
     cy.pickCategory('Street Lighting and Road Signs');
+    cy.nextPageReporting();
     cy.pickSubcategory('Street Lighting and Road Signs', 'Lamp Column Damaged');
     cy.wait('@lights');
     cy.get('#form_fms_layer_owner').should('have.value', 'bromley');
