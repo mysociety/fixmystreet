@@ -357,75 +357,66 @@ FixMyStreet::override_config {
         is $mech->value('current_bins'), 1, "current bins is set to 1";
     };
 
-    for my $test (
-        {
+    subtest 'check new sub credit card payment' => sub {
+        my $test = {
             month => '01',
             pounds_cost => '50.00',
             pence_cost => '5000'
-        },
-        {
-            month => '10',
-            pounds_cost => '25.00',
-            pence_cost => '2500'
-        }
-    ) {
-
-        subtest 'check new sub credit card payment' => sub {
-            set_fixed_time("2021-$test->{month}-09T17:00:00Z");
-            $mech->get_ok('/waste/12345/garden');
-            $mech->submit_form_ok({ form_number => 1 });
-            $mech->submit_form_ok({ with_fields => { existing => 'no' } });
-            $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
-            $mech->submit_form_ok({ with_fields => {
-                current_bins => 0,
-                bins_wanted => 1,
-                payment_method => 'credit_card',
-                name => 'Test McTest',
-                email => 'test@example.net'
-            } });
-            $mech->content_contains('Test McTest');
-            $mech->content_contains('£' . $test->{pounds_cost});
-            $mech->content_contains('1 bin');
-            $mech->submit_form_ok({ with_fields => { goto => 'details' } });
-            $mech->content_contains('<span id="cost_pa">' . $test->{pounds_cost});
-            $mech->content_contains('<span id="cost_now">' . $test->{pounds_cost});
-            $mech->submit_form_ok({ with_fields => {
-                current_bins => 0,
-                bins_wanted => 1,
-                payment_method => 'credit_card',
-                name => 'Test McTest',
-                email => 'test@example.net'
-            } });
-            $mech->content_contains('Continue to payment', 'Waste features text_for_waste_payment not used for non-staff payment');
-            $mech->content_contains('valid bin sticker', 'extra T&C text');
-            $mech->waste_submit_check({ with_fields => { tandc => 1 } });
-
-            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-
-            is $sent_params->{items}[0]{amount}, $test->{pence_cost}, 'correct amount used';
-            check_extra_data_pre_confirm($new_report, new_bin_type => 1, new_quantity => 1);
-
-            $mech->get('/waste/pay/xx/yyyyyyyyyyy');
-            ok !$mech->res->is_success(), "want a bad response";
-            is $mech->res->code, 404, "got 404";
-            $mech->get("/waste/pay_complete/$report_id/NOTATOKEN");
-            ok !$mech->res->is_success(), "want a bad response";
-            is $mech->res->code, 404, "got 404";
-            $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
-
-            check_extra_data_post_confirm($new_report);
-
-            $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
-
-            FixMyStreet::Script::Reports::send();
-            my @emails = $mech->get_email;
-            my $body = $mech->get_text_body_from_email($emails[1]);
-            like $body, qr/Number of bin subscriptions: 1/;
-            like $body, qr/Bins to be delivered: 1/;
-            like $body, qr/Total:.*?$test->{pounds_cost}/;
-            $mech->clear_emails_ok;
         };
-    }
+        set_fixed_time("2021-$test->{month}-09T17:00:00Z");
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 1,
+            payment_method => 'credit_card',
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£' . $test->{pounds_cost});
+        $mech->content_contains('1 bin');
+        $mech->submit_form_ok({ with_fields => { goto => 'details' } });
+        $mech->content_contains('<span id="cost_pa">' . $test->{pounds_cost});
+        $mech->content_contains('<span id="cost_now">' . $test->{pounds_cost});
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 1,
+            payment_method => 'credit_card',
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
+        $mech->content_contains('Continue to payment', 'Waste features text_for_waste_payment not used for non-staff payment');
+        $mech->content_contains('valid bin sticker', 'extra T&C text');
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $sent_params->{items}[0]{amount}, $test->{pence_cost}, 'correct amount used';
+        check_extra_data_pre_confirm($new_report, new_bin_type => 1, new_quantity => 1);
+
+        $mech->get('/waste/pay/xx/yyyyyyyyyyy');
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get("/waste/pay_complete/$report_id/NOTATOKEN");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+        $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
+
+        check_extra_data_post_confirm($new_report);
+
+        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 1/;
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?$test->{pounds_cost}/;
+        $mech->clear_emails_ok;
+    };
 
     set_fixed_time('2023-01-09T17:00:00Z'); # Set a date when garden service full price for most tests
 
@@ -663,13 +654,13 @@ FixMyStreet::override_config {
             'bins_wanted' => 3,
             'container_type' => 1,
             'container_quantity' => 1,
-            cost => 2500,
+            cost => 5000,
         },
         {
             'bins_wanted' => 4,
             'container_type' => 1,
             'container_quantity' => 2,
-            cost => 5000,
+            cost => 10000,
         },
         {
             'bins_wanted' => 1,
@@ -724,13 +715,6 @@ FixMyStreet::override_config {
     };
 
     for my $test(
-        {
-            box_ticked => 1,
-            cost => '£20.00',
-            cost_pence => '2000',
-            description => '20 per cent off half price with checkbox ticked',
-            date => '2023-10-09T17:00:00Z',
-        },
         {
             box_ticked => 1,
             cost => '£40.00',
