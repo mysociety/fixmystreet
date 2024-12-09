@@ -543,10 +543,7 @@ sub open311_waste_update_extra {
     my $state_id = $event->{EventStateId};
     my $resolution_id = $event->{ResolutionCodeId} || '';
     my $description = $event_type->{states}{$state_id}{name} || '';
-
-    my $cancelled_bulky = $event->{EventTypeId} == 1636 && $description eq 'Cancelled';
-    my $not_completed_no_res = $description eq 'Not Completed' && !$resolution_id;
-    if ($not_completed_no_res || $cancelled_bulky) {
+    if ($description eq 'Not Completed' && !$resolution_id) {
         $override_status = "";
     }
 

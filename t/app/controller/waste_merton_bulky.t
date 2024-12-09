@@ -927,6 +927,10 @@ FixMyStreet::override_config {
             $mech->content_lacks("You can cancel this booking till");
             $mech->content_lacks('Cancel this booking');
         };
+
+        FixMyStreet::Script::Alerts::send_updates();
+        like $mech->get_text_body_from_email, qr/Booking cancelled by customer/;
+        $mech->clear_emails_ok;
     };
 
     subtest 'Missed collections' => sub {
