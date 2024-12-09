@@ -1,0 +1,45 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* NAVBAR */
+#site-logo {
+    background-size: auto 4.375rem;
+    height: $mappage-header-height;
+    width: 10.9375rem;
+}
+
+.nav-menu--main {
+  a, span {
+      font-size: 1rem; // They have 20px, but we have more items in the navbar so I ended up using this size instead.
+
+      &:focus {
+        background-color: $glucester_blue_hover;
+        $color: $primary_text;
+        outline: none;
+      }
+      &:focus-visible {
+        outline: -webkit-focus-ring-color auto 1px;
+      }
+  }
+
+  span {
+    color: $primary_text;
+    text-decoration: underline;
+    &:hover {
+      color: $nav_colour;
+    }
+  }
+}
+
+/* FRONTPAGE */
+#front-main {
+  margin: 0 0 45px 0;
+  padding: 5em 1em 5em 1em;
+  h1 {
+    font-size: 2.5em;
+  }
+}
+
+#front_stats {
+  border-color: $primary_b;
+}

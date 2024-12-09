@@ -1,0 +1,198 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+/*TYPOGRAPHY */
+h1, .h1,
+h2, .h2,
+h3, .h3, 
+.item-list__heading {
+    font-weight: 700;
+}
+
+/* BUTTONS */
+a#geolocate_link {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+}
+
+#report-cta {
+    padding: 0.75em;
+    border-color: $primary_text;
+}
+
+a {
+    &:focus {
+        text-decoration: none;
+        color: $link-hover-color;
+    }
+}
+
+/* NAVBAR */
+#site-logo {
+    background-image: url("/cobrands/gloucester/images/gloucester-logo.png");
+    background-size: auto 3rem;
+}
+
+#main-nav-btn:checked ~ #main-nav {
+    margin: 0 1em;
+}
+
+.nav-menu--main {
+    a {
+        background-color: $gloucester_white;
+        color: $primary;
+        text-decoration: none;
+
+        &:visited {
+            color: $primary;
+        }
+    }
+
+    span {
+        background-color: $gloucester_primary_dark;
+        color: $primary_text;
+    }
+}
+
+/* FRONTPAGE */
+.postcode-form-box {
+    input#sub {
+        font-family: $body-font;
+        font-weight: 600;
+        background-color: $button-primary-bg-top;
+
+        &:hover {
+            background-color: $button-primary-hover-bg-top;
+            color: $button-primary-text;
+        }
+    }
+}
+
+/* OTHERS */
+.item-list__item {
+    a {
+        text-decoration: none;
+    }
+}
+
+/* SITE MESSAGE */
+.site-message {
+    color: $primary;
+    padding: 1.5rem;
+    background-color: $gloucester_white;
+    border: none;
+    border-top: 4px solid $primary;
+    word-wrap: break-word;
+}
+
+/* FOOTER */
+.pcg-footer-black {
+    background-color: $primary;
+    padding: 2rem 0;
+    border-top: 8px solid #0000b4;
+    margin-top: 4em;
+}
+
+.footer-grid {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 1.5em;
+    column-gap: 8rem;
+    color: $primary_text;
+
+    .pcg-footer-black__title {
+        margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $primary_text;
+        margin-top: 0;
+    }
+
+    .pcg-footer-black__subtitle {
+        margin-bottom: 4px;
+        font-size: 1rem;
+        font-weight: normal;
+        margin-top: 0;
+    }
+
+    .pcg-footer-black__social {
+        list-style: none;
+        display: flex;
+        flex-direction: row;
+        margin-left: 0;
+    }
+
+    .pcg-sn-icon {
+        display: block;
+        width: 45px;
+        height: 45px;
+
+        &.icon {
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 26px;
+            border-radius: 3px;
+    
+            &.icon-facebook {
+                background-image: url("/cobrands/gloucester/images/facebook.svg");
+            }
+            &.icon-twitter {
+                background-image: url("/cobrands/gloucester/images/twitter.svg");
+            }
+    
+            &:hover {
+                background-color: $button-primary-hover-bg-bottom;
+            }
+        }
+    }
+
+    a {
+        color: $primary_text;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    li {
+        list-style: none;
+    }
+
+    .pcg-footer-navigation__link {
+        font-size: 1em;
+        color: $primary_text;
+        text-decoration: none;
+    }
+
+    .col-12 {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    @media (min-width: 576px) {
+        .col-sm-6 {
+            flex: 0 0 auto;
+            width: 50%;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .col-lg-3 {
+            flex: 0 0 auto;
+            width: 25%;
+        }
+    }
+
+    @media (min-width: 1400px) {
+        .pcg-footer-black__wrapper--contacts {
+            width: 30%;
+        }
+
+        .pcg-footer-black__wrapper--nav {
+            width: 25%;
+        }
+    }
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
