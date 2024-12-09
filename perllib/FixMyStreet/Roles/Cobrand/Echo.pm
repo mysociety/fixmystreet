@@ -831,6 +831,11 @@ sub waste_check_last_update {
             return;
         }
     }
+    if ($report->cobrand eq 'merton' && $status eq 'cancelled'
+        && $report->category eq 'Bulky collection' && $report->state eq 'cancelled') {
+        print "  Cancelled update received on already cancelled report\n" if $cfg->{verbose};
+        return;
+    }
     return 1;
 }
 
