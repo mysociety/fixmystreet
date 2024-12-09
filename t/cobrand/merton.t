@@ -2,6 +2,7 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 use HTML::Selector::Element qw(find);
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Alerts;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -11,11 +12,13 @@ my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Merton');
 
 $cobrand->mock('area_types', sub { [ 'LBO' ] });
 
+my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $merton = $mech->create_body_ok(2500, 'Merton Council', {
     api_key => 'aaa',
     jurisdiction => 'merton',
     endpoint => 'http://endpoint.example.org',
     send_method => 'Open311',
+    comment_user => $superuser,
     cobrand => 'merton'
 });
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
@@ -29,7 +32,6 @@ for my $contact ( @cats ) {
     $mech->create_contact_ok(body_id => $hackney->id, category => $contact, email => "\L$contact\@hackney.example.org");
 }
 
-my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $merton);
 my $normaluser = $mech->create_user_ok('normaluser@example.com', name => 'Normal User');
 my $hackneyuser = $mech->create_user_ok('hackneyuser@example.com', name => 'Hackney User', from_body => $hackney);
@@ -310,6 +312,92 @@ subtest "hides duplicate updates from endpoint" => sub {
 
     $p->discard_changes;
     is $p->comments->search({ state => 'confirmed' })->count, 1;
+};
+
+package SOAP::Result;
+sub result { return $_[0]->{result}; }
+sub new { my $c = shift; bless { @_ }, $c; }
+
+package main;
+
+subtest 'updating of waste reports' => sub {
+    my $date = DateTime->now->subtract(days => 1)->strftime('%Y-%m-%dT%H:%M:%SZ');
+    my $integ = Test::MockModule->new('SOAP::Lite');
+    $integ->mock(call => sub {
+        my ($cls, @args) = @_;
+        my $method = $args[0]->name;
+        if ($method eq 'GetEvent') {
+            my ($key, $type, $value) = ${$args[3]->value}->value;
+            my $external_id = ${$value->value}->value->value;
+            my ($waste, $event_state_id, $resolution_code) = split /-/, $external_id;
+            my $data = [];
+            return SOAP::Result->new(result => {
+                Guid => $external_id,
+                EventStateId => $event_state_id,
+                EventTypeId => '1636',
+                LastUpdatedDate => { OffsetMinutes => 60, DateTime => $date },
+                ResolutionCodeId => $resolution_code,
+                Data => { ExtensibleDatum => $data },
+            });
+        } elsif ($method eq 'GetEventType') {
+            return SOAP::Result->new(result => {
+                Workflow => { States => { State => [
+                    { CoreState => 'New', Name => 'New', Id => 12396 },
+                    { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 12398 },
+                    { CoreState => 'Closed', Name => 'Partially Completed', Id => 12399 },
+                    { CoreState => 'Closed', Name => 'Completed', Id => 12400 },
+                    { CoreState => 'Closed', Name => 'Not Completed', Id => 12401 },
+                    { CoreState => 'Cancelled', Name => 'Cancelled', Id => 12402 },
+                ] } },
+            });
+        } else {
+            is $method, 'UNKNOWN';
+        }
+    });
+
+    my ($report) = $mech->create_problems_for_body(1, $merton->id, 'Bulky collection', {
+        confirmed => \'current_timestamp',
+        user => $normaluser,
+        category => 'Bulky collection',
+        cobrand_data => 'waste',
+        non_public => 1,
+        extra => { payment_reference => 'reference' },
+    });
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'merton',
+        COBRAND_FEATURES => {
+            echo => { merton => {
+                url => 'https://www.example.org/',
+                receive_action => 'action',
+                receive_username => 'un',
+                receive_password => 'password',
+            } },
+            waste => { merton => 1 }
+        },
+    }, sub {
+        $mech->clear_emails_ok;
+        $normaluser->create_alert($report->id, { cobrand => 'merton', whensubscribed => $date });
+        my $in = $mech->echo_notify_xml('waste-12402-', 1636, 12402, '', 'FMS-' . $report->id);
+        my $mech2 = $mech->clone;
+        $mech2->host('merton.example.org');
+
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 1, 'A new update';
+        $report->discard_changes;
+        is $report->state, 'cancelled', 'A state change';
+        FixMyStreet::Script::Alerts::send_updates();
+        my $email = $mech->get_text_body_from_email;
+        like $email, qr/Cancelled/;
+
+        $report->update({ state => 'cancelled' });
+
+        $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+        is $report->comments->count, 1, 'No new update';
+        $report->discard_changes;
+        is $report->state, 'cancelled', 'No state change';
+        FixMyStreet::Script::Alerts::send_updates();
+        $mech->email_count_is(0);
+    };
 };
 
 done_testing;
