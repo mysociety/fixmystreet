@@ -140,6 +140,10 @@ bromley:
       feature_id: 'FEATURE_ID'
     asset_category: ["Lamp Column Damaged", "Light Not Working", "Light On All Day", "Light blocked by vegetation"]
     asset_item: 'street light'
+    select_action: true
+    actions:
+      asset_found: fixmystreet.assets.bromley.set_asset_owner
+      asset_not_found: fixmystreet.assets.bromley.unset_asset_owner
   - wfs_feature: "PROW"
     stylemap: 'fixmystreet.assets.bromley.prow_stylemap'
     always_visible: true
