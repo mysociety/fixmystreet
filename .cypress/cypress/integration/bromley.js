@@ -45,6 +45,24 @@ describe('Bromley cobrand', function() {
     cy.get('.mobile-map-banner').should('be.visible');
   });
 
+  it('sets extra cobrand owner field when streetlight asset selected', function() {
+    cy.pickCategory('Street Lighting and Road Signs');
+    cy.nextPageReporting();
+    cy.pickSubcategory('Street Lighting and Road Signs', 'Lamp Column Damaged');
+    cy.wait('@lights');
+    cy.nextPageReporting();
+    cy.get('.mobile-map-banner').should('be.visible');
+    cy.get('#form_fms_layer_owner').should('have.value', '');
+    cy.visit('http://bromley.localhost:3001/report/new?longitude=0.022775&latitude=51.398387');
+    cy.wait('@report-ajax');
+    cy.get('#mob_ok').click();
+    cy.pickCategory('Street Lighting and Road Signs');
+    cy.nextPageReporting();
+    cy.pickSubcategory('Street Lighting and Road Signs', 'Lamp Column Damaged');
+    cy.wait('@lights');
+    cy.get('#form_fms_layer_owner').should('have.value', 'bromley');
+  });
+
   it('adds stopper for Crystal Palace Park', function() {
     cy.visit('http://bromley.localhost:3001/report/new?longitude=-0.064555&latitude=51.422382');
     cy.contains('transferred to the Crystal Palace Park Trust');

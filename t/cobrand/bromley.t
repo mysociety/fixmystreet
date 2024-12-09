@@ -54,7 +54,7 @@ my $streetlights = $mech->create_contact_ok(
     email => 'LIGHT',
 );
 $streetlights->set_extra_fields(
-    { code => 'feature_id', datatype => 'string', automated => 'hidden_field' },
+    { code => 'fms_layer_owner', datatype => 'string', automated => 'hidden_field' },
 );
 $streetlights->update;
 
@@ -623,6 +623,52 @@ for my $test (
     };
 }
 
+subtest 'Can select asset that is in Lewisham area on Bromley Cobrand' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_in_ok('test@example.com');
+        $mech->get_ok('/report/new/?longitude=0.005357&latitude=51.418776');
+        $mech->content_contains('That location is not covered by Bromley Council', 'Area in Lewisham not reportable on Bromley cobrand');
+        $mech->get_ok('/report/new/?longitude=-0.071410&latitude=51.419275&category=Streetlights');
+        $mech->submit_form_ok( { with_fields => {
+                title => 'Lamp issue in Lewisham on Bromley',
+                detail => 'Lamp issue over the border',
+                fms_layer_owner => 'bromley',
+                longitude => 0.005357,
+                latitude => 51.418776,
+                fms_extra_title => 'Mr'
+            }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
+        my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        is $problem->title, 'Lamp issue in Lewisham on Bromley', 'Report has been made';
+        is $problem->body, 'Bromley Council', 'Problem on correct body';
+    };
+};
+
+subtest 'Can select asset that is in Lewisham area on FMS' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['fixmystreet', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_in_ok('test@example.com');
+        $mech->get_ok('/report/new/?longitude=0.005357&latitude=51.418776');
+        $mech->content_contains('We do not yet have details for the council that covers this location', 'Lewisham does not have Bromley categories');
+        $mech->get_ok('/report/new/?longitude=-0.071410&latitude=51.419275&category=Streetlights');
+        $mech->submit_form_ok( { with_fields => {
+                title => 'Lamp issue in Lewisham on FMS',
+                detail => 'Lamp issue over the border',
+                fms_layer_owner => 'bromley',
+                longitude => 0.005357,
+                latitude => 51.418776,
+                fms_extra_title => 'Mr'
+            }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
+        my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        is $problem->title, 'Lamp issue in Lewisham on FMS', 'Report has been made';
+        is $problem->body, 'Bromley Council', 'Problem on correct body';
+    };
+};
+
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
 sub new { my $c = shift; bless { @_ }, $c; }
@@ -923,52 +969,6 @@ subtest 'redirecting of reports between backends' => sub {
             is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
         };
 
-    };
-};
-
-subtest 'Can select asset that is in Lewisham area on Bromley Cobrand' => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => ['bromley', 'tfl'],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->log_in_ok('test@example.com');
-        $mech->get_ok('/report/new/?longitude=0.005357&latitude=51.418776');
-        $mech->content_contains('That location is not covered by Bromley Council', 'Area in Lewisham not reportable on Bromley cobrand');
-        $mech->get_ok('/report/new/?longitude=-0.071410&latitude=51.419275&category=Streetlights');
-        $mech->submit_form_ok( { with_fields => {
-                title => 'Lamp issue in Lewisham on Bromley',
-                detail => 'Lamp issue over the border',
-                feature_id => 'A-48-24',
-                longitude => 0.005357,
-                latitude => 51.418776,
-                fms_extra_title => 'Mr'
-            }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
-        my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $problem->title, 'Lamp issue in Lewisham on Bromley', 'Report has been made';
-        is $problem->body, 'Bromley Council', 'Problem on correct body';
-    };
-};
-
-subtest 'Can select asset that is in Lewisham area on FMS' => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => ['fixmystreet', 'tfl'],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->log_in_ok('test@example.com');
-        $mech->get_ok('/report/new/?longitude=0.005357&latitude=51.418776');
-        $mech->content_contains('We do not yet have details for the council that covers this location', 'Lewisham does not have Bromley categories');
-        $mech->get_ok('/report/new/?longitude=-0.071410&latitude=51.419275&category=Streetlights');
-        $mech->submit_form_ok( { with_fields => {
-                title => 'Lamp issue in Lewisham on FMS',
-                detail => 'Lamp issue over the border',
-                feature_id => 'A-48-26',
-                longitude => 0.005357,
-                latitude => 51.418776,
-                fms_extra_title => 'Mr'
-            }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
-        my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $problem->title, 'Lamp issue in Lewisham on FMS', 'Report has been made';
-        is $problem->body, 'Bromley Council', 'Problem on correct body';
     };
 };
 
