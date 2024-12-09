@@ -305,6 +305,20 @@ fixmystreet.assets.bromley.unset_asset_owner = function() {
 };
 
 
+fixmystreet.assets.bromley.park_asset_found = function(layer) {
+    var selected = fixmystreet.reporting.selectedCategory();
+    if (selected.group === 'Street Cleansing') {
+        // Need to pass a criterion function to force the not found message to be shown.
+        fixmystreet.message_controller.road_not_found(layer, function() { return true; });
+    } else {
+        fixmystreet.message_controller.road_found(layer);
+    }
+};
+
+fixmystreet.assets.bromley.park_asset_not_found = function(layer) {
+    fixmystreet.message_controller.road_found(layer);
+};
+
 /* Buckinghamshire */
 
 fixmystreet.assets.buckinghamshire = {};
