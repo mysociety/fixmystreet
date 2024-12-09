@@ -8,7 +8,7 @@ with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 with 'FixMyStreet::Cobrand::Merton::Waste';
 with 'FixMyStreet::Roles::Open311Multi';
 
-sub council_area_id { 2500 }
+sub council_area_id { [2500, 2480] }
 sub council_area { 'Merton' }
 sub council_name { 'Merton Council' }
 sub council_url { 'merton' }
@@ -169,6 +169,33 @@ sub categories_restriction {
     my ($self, $rs) = @_;
 
     return $rs->search( { 'me.category' => { -not_like => 'River Piers%' } } );
+}
+
+=head2 check_report_is_on_cobrand_asset
+
+Merton has a park, The Commons Extension Sports Ground, which is outside
+their boundary. We'll test if it's any Merton owned park
+
+=cut
+
+sub check_report_is_on_cobrand_asset {
+    my $self = shift;
+
+    my $lat = $self->{c}->stash->{latitude};
+    my $lon = $self->{c}->stash->{longitude};
+    my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+
+    my $cfg = {
+        url => "https://$host/mapserver/merton",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "merton_owned_parks",
+        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+        outputformat => 'GML3',
+    };
+
+    my $features = $self->_fetch_features($cfg, -1, -1, 1);
+    return $features;
 }
 
 sub open311_pre_send {
