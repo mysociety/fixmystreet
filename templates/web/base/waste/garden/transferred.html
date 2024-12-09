@@ -1,0 +1,19 @@
+[% title = 'The subscription has been transferred' %]
+[% PROCESS 'waste/header.html' %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+          Subscription has been successfully transferred
+        </p>
+    </div>
+</div>
+
+[% TRY %][% PROCESS 'waste/_confirmation_after.html' %][% CATCH file %][% END %]
+
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
+
+[% INCLUDE footer.html %]
