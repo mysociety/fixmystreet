@@ -1,0 +1,127 @@
+/* This styling is based on https://www.gloucestershire.gov.uk/
+The style guide provided here https://drive.google.com/file/d/1P2ibLLL7WhEGhRKEbZRZJdl2nhqapnEp/view
+is more focused on printed material than web design.
+*/
+
+/* COLOURS */
+// No primary colour at first sight, they mainly used blue, but only for interaction purposes.
+
+$gloucester_blue: #0054a4; // Links and buttons
+$glucester_blue_hover: #0000b4;
+$gloucester_primary_light: #cadcea;
+$gloucester_primary_dark: $glucester_blue_hover;
+$gloucester_red: #c0232e;
+$gloucester_white: #fff;
+$gloucester_grey: #f0f0f0; // Body bg
+$gloucester_black_heading: #333;
+$gloucester_black: #333333;
+$gloucester_yellow: #ffae04;
+
+$primary: $gloucester_blue;
+$yellow: $gloucester_yellow;
+
+$primary_b: $gloucester_black;
+$primary_text: $gloucester_white;
+
+/* FRONTPAGE */
+$base_bg: $gloucester_grey;
+$base_fg: $gloucester_black;
+$front_stats_bg: $gloucester_white;
+$layout_front_stats_color: $primary_b;
+
+/* LINKS */
+$primary_link_color: $gloucester_blue;
+$primary_link_hover_color: #2e8aca;
+$primary_link_decoration: underline;
+$primary_link_hover_decoration: underline;
+
+$link-color: $primary;
+$link-hover-color: #2e8aca;
+$link-visited-color: $link-color;
+$link-text-decoration: underline;
+$link-hover-text-decoration: underline;
+
+/* BUTTONS */
+$button-border-width: 2px;
+$button-padding-top: 10px;
+$button-padding-bottom: 10px;
+$button-padding-left: 25px;
+$button-padding-right: 25px;
+$button-border-radius: 10px;
+
+// Usage 
+/*
+  .btn, .btn--primary, .btn--primary {
+      border-radius: $button-border-radius;
+      @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  }
+*/
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $gloucester_primary_dark;
+$button-primary-hover-bg-top: $gloucester_primary_dark;
+$button-primary-hover-border: $gloucester_primary_dark;
+$button-primary-hover-text: $primary_text;
+
+$geolocation-link: $primary;
+$geolocation-link-border: $primary;
+$form-box-inverse: true; 
+
+/* FONTS */
+
+$heading-font: 'Arial', sans-serif;
+$body-font: 'Arial', sans-serif;
+$meta-font: 'Arial', sans-serif;
+
+/* NAVBAR */
+
+$nav_colour: $gloucester_white;
+$nav_background_colour: $primary;
+$nav_hover_background_colour: $glucester_blue_hover;
+
+$mappage-header-height: 90px;
+$mobile-header-height: 56px;
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+$menu-image: "menu-white";
+// $close-menu-image: "close-#{$menu-image}";
+
+/* OTHER VARIABLES */
+
+$container-max-width: 73em;
+
+$col_click_map: $primary;
+$col_fixed_label: $primary;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
+$dropzone-button-text: $primary_text;
+
+// $pagination_background: #f6f6f6;
+$itemlist_item_background:  $base_bg;
+$itemlist_item_background_hover: $gloucester_primary_light;
+$col_big_numbers: $primary_b;
+
+// $form-control-border-color: #aaaaaa;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+/* Cobrand MIXINS */
+// Some elements of their current website don't have focus state or it's too subtle;
+@mixin focus-state {
+  &:focus {
+    background-color: $gloucester_primary_dark !important; // Overrides any other nested styling, like the navbar
+    color: $primary_text !important; // Overrides button-variant mixin
+  }
+}
+
+$front-main-color: $primary_b;
+$postcodeform-background: $gloucester_white;
+$front-main-color-desktop: $primary_b;
+$front-main-background-desktop: #fff;
+$postcodeform-color: $primary_b;
+$postcodeform-color-desktop: $primary_b;

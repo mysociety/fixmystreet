@@ -1,0 +1,242 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+/*TYPOGRAPHY */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3, 
+.item-list__heading {
+    font-weight: 700;
+    color: $gloucester_black_heading;
+}
+
+h1, .h1 {
+    font-size: 1.875em; 
+    @media only screen and (max-width: 990px) {
+        font-size: 24px; // h2.hub Only one with special media screen rule
+    }
+}
+
+h2, .h2 {
+    font-size: 1.625em;
+}
+
+h3, .h3 {
+    font-size: 1.375em;
+}
+
+/* BUTTONS */
+a {
+    @include focus-state;
+    small, p , span {
+        font-weight: 400;
+    }
+}
+
+a#geolocate_link {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+    border-width: $button-border-width;
+    @include focus-state;
+}
+
+
+#report-cta {
+    padding: 0.75em;
+    border-color: $primary_text;
+}
+
+.btn--primary {
+    border-width: $button-border-width;
+    @include focus-state;
+}
+
+/* NAVBAR */
+.dev-site-notice {
+    z-index: 5;
+}
+
+#site-logo {
+    background-image: url("/cobrands/gloucester/images/gloucester-logo.png");
+    background-size: contain;
+}
+
+#main-nav-btn:checked ~ #main-nav {
+    margin: 0 1em;
+}
+
+.nav-menu--main {
+    a {
+        background-color: $gloucester_white;
+        color: $primary;
+        text-decoration: none;
+
+        &:visited {
+            color: $primary;
+        }
+    }
+
+    span {
+        background-color: $gloucester_primary_dark;
+        color: $primary_text;
+    }
+
+    a, span {
+        font-weight: 400;
+        font-size: 16px;
+        border-bottom: none;
+        padding: 10px 1em;
+        border-bottom: 1px solid rgba(255,255,255,0.3);
+    }
+}
+
+/* FRONTPAGE */
+.postcode-form-box {
+    input#sub {
+        border: $button-border-width solid $button-primary-bg-top;
+        font-family: $body-font;
+        font-weight: 600;
+        background-color: $button-primary-bg-top;
+
+        &:hover {
+            background-color: $button-primary-hover-bg-top;
+            color: $button-primary-text;
+        }
+    }
+}
+
+#front_stats {
+    color: $primary_b;
+    background: $front_stats_bg;
+}
+
+/* OTHERS */
+.item-list__item {
+    a {
+        text-decoration: none;
+
+        &:focus {
+            .item-list__heading, small {
+                color: $primary_text;
+            }
+        }
+    }
+}
+
+/* FOOTER */
+.pcg-footer-black {
+    background-color: $primary;
+    padding: 2rem 0;
+    border-top: 8px solid #0000b4;
+    margin-top: 4em;
+}
+.footer-grid {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 1.5em;
+    color: $primary_text;
+    .fms-col  {
+        max-width: 292px;
+        width: 100%;
+    }
+    .pcg-footer-black__title {
+        margin-bottom: 1.5rem;
+        font-size: 1.375em;
+        color: $primary_text;
+        margin-top: 0;
+    }
+    .pcg-footer-black__social {
+        list-style: none;
+        display: flex;
+        flex-direction: row;
+        margin-left: 0;
+        li {
+            list-style: none;
+        }
+    }
+
+    .pcg-sn-icon {
+        display: block;
+        width: 45px;
+        height: 45px
+    }
+
+    .icon {
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 26px;
+
+        &.icon-facebook {
+            background-image: url("/cobrands/gloucester/images/facebook.svg");
+        }
+        &.icon-twitter {
+            background-image: url("/cobrands/gloucester/images/twitter.svg");
+        }
+        &.icon-instagram {
+            background-image: url("/cobrands/gloucester/images/instagram.svg");
+        }
+        &.icon-youtube-play {
+            background-image: url("/cobrands/gloucester/images/youtube.svg");
+        }
+        &.icon-rss {
+            background-image: url("/cobrands/gloucester/images/rss.svg");
+        }
+    }
+
+    .pcg-footer-new-logo img {
+        max-height: 120px;
+        max-width: 100px;
+    }
+
+    .pcg-footer-black__subtitle {
+        display: inline-block;
+        font-size: 0.875em;
+    }
+
+    a {
+        color: #ffffff;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .pcg-footer-black__email {
+        display: block;
+        margin-bottom: 1.5rem;
+        font-size: 0.875em;
+        text-decoration: none;
+        word-break: break-all;
+    }
+
+    .pcg-footer-black__list {
+        li {
+            list-style: none;
+        }
+    }
+
+    .pcg-footer-black__link {
+        font-size: 1.125em;
+        text-decoration: none;
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        border: 0;
+    }
+}
+
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
