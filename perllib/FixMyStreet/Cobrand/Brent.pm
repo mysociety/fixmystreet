@@ -1577,7 +1577,7 @@ sub garden_waste_sacks_cost_pa {
     return $_[0]->garden_waste_cost_pa();
 }
 
-=item * Garden subscription is half price in October-December.
+=item * Garden subscription is half price in October-December (up to end 2024).
 
 =cut
 
@@ -1588,7 +1588,7 @@ sub garden_waste_cost_pa {
     my $cost = $per_bin_cost * $bin_count;
 
     my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    if ($now->month =~ /^(10|11|12)$/ ) {
+    if ($now->year == 2024 && $now->month =~ /^(10|11|12)$/ ) {
         $cost = $cost/2;
     }
 
