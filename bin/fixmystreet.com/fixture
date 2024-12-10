@@ -182,7 +182,7 @@ if ($opt->test_fixtures) {
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks', 'Lamp Out of Light' ], name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
         { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council', cobrand => 'bathnes' },
         { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council', cobrand => 'shropshire' },
-        { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting' ], name => 'Merton Council', cobrand => 'merton' },
+        { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting', 'Parks' ], name => 'Merton Council', cobrand => 'merton' },
         { area_id => 2488, categories => [ 'Grass verges / shrub beds - littering' , 'Pavement damage', 'Fly-tipping', 'Dog fouling'], name => 'Brent Council', cobrand => 'brent' },
         { area_id => 2535, categories => [ 'Abandoned vehicles', 'Graffiti', 'Street lights'], name => 'Sandwell Borough Council' },
         { area_id => 2242, categories => [ 'Abandoned vehicles', 'Graffiti', 'Street lights', 'Flooding inside a building'], name => 'Surrey County Council' },
@@ -196,6 +196,10 @@ if ($opt->test_fixtures) {
         say "Created body $_->{name} for MapIt area ID $_->{area_id}, categories $cats";
         if ($_->{name} eq 'TfL') {
             $bodies->{$_->{area_id}}->body_areas->find_or_create({ area_id => '2506' });
+        }
+        # Merton is going to cover Kingston for tesing reporting on Commons
+        if ($_->{name} eq 'Merton Council') {
+            $bodies->{$_->{area_id}}->body_areas->find_or_create({ area_id => '2480' });
         }
     }
 
