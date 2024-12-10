@@ -1,0 +1,29 @@
+Subject: Your reports on [% site_name %]
+
+Hello [% user.name %],
+
+I am writing to let you know about some exciting new changes.
+
+FixMyStreet is being updated in Gloucestershire to improve how Highway issues are being reported. All reports are still being processed as usual and you don't need to do anything.
+
+This change makes the reporting system quicker, more efficient and lets you know automatically when work progresses or is completed.
+
+This was launched on Wednesday, 4 October 2023 and as part of this process, reports made on FixMyStreet.com before the update have been closed.
+
+All of your reports will have been received and reviewed by Gloucestershire County Council, it is just the enquiry on FixMyStreet.com that has been closed. If your report is currently ongoing, it will still be being processed by Gloucestershire County Council and you will receive updates.
+
+We noticed that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the FixMyStreet.com system, which are listed below.
+
+[% FOR report IN reports %]
+
+[% report.title %]
+
+Reported [% report.time_ago %] ago.
+
+View report: https://www.fixmystreet.com/report/[% report.id %]
+
+----
+
+[% END %]
+
+The FixMyStreet team and Gloucestershire Highways

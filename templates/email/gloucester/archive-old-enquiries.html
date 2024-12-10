@@ -1,0 +1,59 @@
+[%
+
+email_summary = "Your reports on " _ site_name;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Your reports on [% site_name %]</h1>
+  <p style="[% p_style %]">
+    Hello [% user.name %],
+  </p>
+  <p style="[% p_style %]">
+    I am writing to let you know about some exciting new changes.
+  </p>
+  <p style="[% p_style %]">
+    FixMyStreet is being updated in Gloucestershire to improve how Highway issues are being reported. All reports are still being processed as usual and you don't need to do anything.
+  </p>
+  <p style="[% p_style %]">
+    This change makes the reporting system quicker, more efficient and lets you know automatically when work progresses or is completed.
+  </p>
+  <p style="[% p_style %]">
+    This was launched on Wednesday, 4 October 2023 and as part of this process, reports made on FixMyStreet.com before the update have been closed.
+  </p>
+  <p style="[% p_style %]">
+    All of your reports will have been received and reviewed by Gloucestershire County Council, it is just the enquiry on FixMyStreet.com that has been closed. If your report is currently ongoing, it will still be being processed by Gloucestershire County Council and you will receive updates.
+  </p>
+  <p style="[% p_style %]">
+    We noticed that you have [% report_count %] old [% nget('report', 'reports', report_count) %] on the FixMyStreet.com system,
+    which are listed below.
+  </p>
+
+  [% FOR report IN reports %]
+  <div style="[% list_item_style %]">
+  [% IF report.photo %]
+    <a href="https://www.fixmystreet.com/report/[% report.id %]">
+      <img style="[% list_item_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="">
+    </a>
+  [% END %]
+    <h2 style="[% list_item_h2_style %]"><a href="https://www.fixmystreet.com/report/[% report.id %]">
+      [%~ report.title | html ~%]
+    </a></h2>
+    <p style="[% list_item_p_style %]">[% report.detail | html %]</p>
+    <p style="[% list_item_date_style %]">
+      Reported [% report.time_ago %] ago.
+    </p>
+  </div>
+  [% END %]
+
+  <p style="[% p_style %]">
+    The FixMyStreet team and Gloucestershire Highways
+  </p>
+
+</th>
+
+[% INCLUDE '_email_bottom.html' %]
