@@ -91,4 +91,62 @@ subtest 'Normal update sending works' => sub {
     is $c->external_id, 456, 'Correct external ID';
 };
 
+subtest 'Multiple updates on same problem should send in order of confirmation' => sub {
+    my $mock = Test::MockModule->new('Open311');
+    $mock->mock('post_service_request_update', sub { 456 });
+
+    my ($p3) = $mech->create_problems_for_body(
+        1,
+        $body->id,
+        'Title',
+        {   category         => 'Graffiti',
+            whensent         => '\NOW()',
+            send_state       => 'sent',
+            external_id      => 999,
+            send_method_used => 'Open311',
+        }
+    );
+
+    my $c1_p3
+        = $mech->create_comment_for_problem( $p3, $p3->user, $p3->user->name,
+        'An update 1', 'f', 'confirmed', 'confirmed',
+        { confirmed => '2024-12-11 15:30:00' } );
+    my $c2_p3
+        = $mech->create_comment_for_problem( $p3, $p3->user, $p3->user->name,
+        'An update 2', 'f', 'confirmed', 'confirmed',
+        { confirmed => '2024-12-11 15:31:00' } );
+    my $c3_p3
+        = $mech->create_comment_for_problem( $p3, $p3->user, $p3->user->name,
+        'An update 3', 'f', 'confirmed', 'confirmed',
+        { confirmed => '2024-12-11 15:32:00' } );
+
+    my $countdown = 20; # Ran test 100 times and no failure, so seems a solid number
+    my %pending = map { $_->id => $_ } ( $c1_p3, $c2_p3, $c3_p3 );
+    my @sent;
+    while ( $countdown && _check_updates( \%pending, \@sent ) ) {
+        FixMyStreet::Script::SendDaemon::look_for_update($opts);
+        $countdown--;
+    }
+
+    is_deeply \@sent, [ $c1_p3->id, $c2_p3->id, $c3_p3->id ],
+        'comments sent in order';
+};
+
+sub _check_updates {
+    my ( $pending, $sent ) = @_;
+
+    my $unsent = 0;
+    for ( values %$pending ) {
+        $_->discard_changes;
+        if ( $_->send_state eq 'unprocessed' ) {
+            $unsent++;
+        } elsif ( $_->send_state eq 'sent' ) {
+            delete $pending->{ $_->id };
+            push @$sent, $_->id;
+        }
+    }
+
+    return $unsent;
+}
+
 done_testing;
