@@ -182,6 +182,24 @@ sub process_update {
         return;
     }
 
+    # Comments are ordered randomly.
+    # Some cobrands/APIs do not handle ordering by age their end (e.g.
+    # Northumberland + Alloy) so we skip comment for now if an older unsent
+    # one exists for the problem. Otherwise an older update may overwrite a
+    # newer one in Alloy etc.
+    my @unsent_comments_for_problem
+        = $problem->comments->search(
+            { state => 'confirmed', send_state => 'unprocessed' }
+        )->order_by('confirmed');
+
+    for ( @unsent_comments_for_problem ) {
+        if ( $_->id != $comment->id && $_->confirmed < $comment->confirmed ) {
+            $self->log( $comment,
+                'Skipping for now because of older unprocessed update' );
+            return;
+        }
+    }
+
     # Some cobrands (e.g. Buckinghamshire) don't want to receive updates
     # from anyone except the original problem reporter.
     if (my $skip = $cobrand->call_hook(should_skip_sending_update => $comment)) {
