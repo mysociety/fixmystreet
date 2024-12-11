@@ -460,16 +460,16 @@ sub open311_get_update_munging {
             $comment->problem_state(REFERRED_TO_BROMLEY);
             $comment->send_state('unprocessed');
         } elsif ($self->_has_report_been_sent_to_echo($problem)) {
-            # Resending report from Echo to Bromley, don't need comment to be public
+            # Resending report from Echo to Bromley for first time, don't need comment to be public
             $comment->state('hidden');
             $problem->resend;
         } else {
-            # Assume has already been sent to Bromley, no need to resend report
+            # Assume it has already been sent to Bromley, no need to resend report
             $comment->problem_state(REFERRED_TO_BROMLEY);
             $comment->send_state('unprocessed');
         }
     } elsif ($notes) {
-        $comment->text($comment->text . "\n\n" .$notes);
+        $comment->text($notes . "\n\n" . $comment->text);
     }
 }
 
