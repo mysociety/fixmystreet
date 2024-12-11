@@ -432,7 +432,7 @@ sub bin_services_for_address {
         $filtered_service->{report_locked_out_reason} = '';
         my $log_reason_prefix = $self->get_in_cab_logs_reason_prefix($filtered_service->{service_id});
         if ($log_reason_prefix) {
-            my @relevant_logs = grep { $_->{reason} =~ /^$log_reason_prefix/ && $_->{round} eq $filtered_service->{round} } @$property_logs;
+            my @relevant_logs = grep { $_->{reason} =~ /^$log_reason_prefix/ && $_->{round} =~ /\Q$filtered_service->{round}\E/ } @$property_logs;
             if (@relevant_logs) {
                 $filtered_service->{report_locked_out} = 1;
                 $filtered_service->{report_locked_out_reason} = $relevant_logs[0]->{reason};

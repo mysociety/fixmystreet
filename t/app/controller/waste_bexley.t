@@ -636,6 +636,30 @@ FixMyStreet::override_config {
         $mech->content_lacks('Reported as collected today');
         $mech->content_contains('Could not be collected today because it was red-tagged. See reason below.');
 
+        note 'Property has collection but also manual red tag';
+        $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
+            return [
+                {
+                    LogID => 1,
+                    Reason => 'N/A',
+                    RoundCode => 'RND-8-9',
+                    LogDate => '2024-04-01T12:00:00.417',
+                    Uprn => '',
+                    Usrn => '321',
+                },
+                {
+                    LogID => 2,
+                    Reason => 'Paper & Card - Bin has gone feral',
+                    RoundCode => '(Mon) RND-8-9',
+                    LogDate => '2024-04-01T12:00:00.417',
+                    Uprn => '10001',
+                    Usrn => '321',
+                },
+            ];
+        });
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains('Could not be collected today because it was red-tagged. See reason below.');
+
         note 'Red tag on other property on same street';
         $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub {
             return [
