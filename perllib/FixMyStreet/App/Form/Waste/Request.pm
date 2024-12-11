@@ -63,7 +63,7 @@ sub validate {
 
     foreach ($self->all_fields) {
         # Either a container-* has been selected, or
-        # Kingston/Merton special cases for first-page question
+        # Kingston/Merton special cases for change-size-first-page
         $any = 1 if $_->name =~ /^container-|how_many_exchange|medical_condition/ && ($_->value || $self->saved_data->{$_->name});
     }
 
