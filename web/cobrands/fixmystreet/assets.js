@@ -881,7 +881,7 @@ function construct_hover_feature_control(asset_layers, options) {
 // fixmystreet.pin_prefix isn't always available here, due
 // to file loading order, so get it from the DOM directly.
 var map_data = document.getElementById('js-map-data');
-var pin_prefix = fixmystreet.pin_prefix || (map_data ? map_data.getAttribute('data-pin_prefix') : '/i/');
+var pin_prefix = fixmystreet.pin_prefix || (map_data ? map_data.getAttribute('data-pin_prefix') : '/i/pins/');
 
 fixmystreet.assets = {
     layers: [],
@@ -914,13 +914,13 @@ fixmystreet.assets = {
     }),
 
     style_default_select: new OpenLayers.Style({
-        externalGraphic: pin_prefix + "pin-spot.png",
+        externalGraphic: pin_prefix + "spot.png",
         fillColor: "#55BB00",
         graphicWidth: 48,
         graphicHeight: 64,
         graphicXOffset: -24,
         graphicYOffset: -56,
-        backgroundGraphic: pin_prefix + "pin-shadow.png",
+        backgroundGraphic: pin_prefix + "shadow/pin.png",
         backgroundWidth: 60,
         backgroundHeight: 30,
         backgroundXOffset: -7,

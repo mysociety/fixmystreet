@@ -257,14 +257,12 @@ apart from defects which are blue.
 sub pin_colour {
     my ( $self, $p ) = @_;
 
-    return 'defects' if $self->is_defect($p);
-    return 'green' if $p->is_fixed || $p->is_closed;
-    return 'yellow';
+    return 'blue-work' if $self->is_defect($p);
+    return 'green-tick' if $p->is_fixed || $p->is_closed;
+    return 'yellow-cone';
 }
 
-sub path_to_pin_icons {
-    return '/cobrands/oxfordshire/images/';
-}
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 =head2 open311_config
 

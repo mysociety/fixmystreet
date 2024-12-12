@@ -570,7 +570,7 @@ subtest 'check nearby lookup, cobrand custom distances' => sub {
                     . '&filter_category=Pothole'
                     . ( $test->{mode} ? '&mode=' . $test->{mode} : '' )
             );
-            $mech->contains_or_lacks($test->{contains}, '[51.754926,-1.256179,"yellow",' . $p->id . ',"Open: Around page Test 1 for ' . $body->id . '","small",false]');
+            $mech->contains_or_lacks($test->{contains}, '[51.754926,-1.256179,"yellow-cone",' . $p->id . ',"Open: Around page Test 1 for ' . $body->id . '","small",false]');
         }
     };
 };
@@ -639,7 +639,7 @@ subtest 'check nearby lookup, cobrand custom distances per category' => sub {
                 note '    Check for problem ' . $test_p->{id};
                 $mech->contains_or_lacks(
                     $test->{contains} && $test_p->{captured_by_category_filters},
-                    '[51.754926,-1.256179,"yellow",'
+                    '[51.754926,-1.256179,"yellow-cone",'
                         . $test_p->{id}
                         . ',"Open: Around page Test 1 for '
                         . $body->id
@@ -670,7 +670,7 @@ subtest 'check nearby lookup, cobrand custom distances per category' => sub {
                 note '    Check for problem ' . $test_p->{id};
                 $mech->contains_or_lacks(
                     $test->{contains} && $test_p->{captured_by_category_filters},
-                    '[51.754926,-1.256179,"yellow",'
+                    '[51.754926,-1.256179,"yellow-cone",'
                         . $test_p->{id}
                         . ',"Open: Around page Test 1 for '
                         . $body->id
@@ -701,7 +701,7 @@ subtest 'check nearby lookup, cobrand custom distances per category' => sub {
                 note 'Check for problem ' . $test_p->{id};
                 $mech->contains_or_lacks(
                     $test->{contains} && $test_p->{captured_by_category_filters},
-                    '[51.754926,-1.256179,"yellow",'
+                    '[51.754926,-1.256179,"yellow-cone",'
                         . $test_p->{id}
                         . ',"Open: Around page Test 1 for '
                         . $body->id

@@ -87,15 +87,13 @@ sub around_nearby_filter {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $p->is_closed || ($context ne 'reports' && !$self->owns_problem($p));
-    return 'green' if $p->is_fixed;
-    return 'yellow' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
+    return 'grey-cross' if $p->is_closed || ($context ne 'reports' && !$self->owns_problem($p));
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
-sub path_to_pin_icons {
-    return '/cobrands/oxfordshire/images/';
-}
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 sub admin_user_domain { ( 'buckscc.gov.uk', 'buckinghamshire.gov.uk' ) }
 

@@ -57,7 +57,7 @@ function setup_defect_popup() {
             hover: true,
             clickFeature: function (feature) {
                 close_defect_popup();
-                if (feature.attributes.colour !== 'defects') {
+                if (feature.attributes.colour !== 'blue-work') {
                     // We're only interested in defects
                     return;
                 }

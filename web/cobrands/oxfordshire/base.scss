@@ -387,5 +387,24 @@ textarea {
     }
 }
 
+// Like .item-list__item--indented except with a pin icon baked in!
+.item-list__item--with-pin {
+  a {
+    background-image: url('/i/pins/yellow-cone/small.png');
+  }
+  &.yellow-cone a {
+      background-image: url('/i/pins/yellow-cone/small.png');
+  }
+  &.green-tick a {
+      background-image: url('/i/pins/green-tick/small.png');
+  }
+  &.grey-cross a {
+      background-image: url('/i/pins/grey-cross/small.png');
+  }
+  &.orange-work a {
+      background-image: url('/i/pins/orange-work/small.png');
+  }
+}
+
 @import "oxfordshire-footer";
 @import "oxfordshire-cookiepopup";

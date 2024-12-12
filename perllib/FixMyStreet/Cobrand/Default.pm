@@ -1090,10 +1090,7 @@ for your cobrand.
 
 =cut
 
-sub path_to_pin_icons {
-    return '/i/';
-}
-
+sub path_to_pin_icons { '/i/pins/' }
 
 =item tweak_all_reports_map
 

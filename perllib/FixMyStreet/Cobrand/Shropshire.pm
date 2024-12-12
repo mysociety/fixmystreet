@@ -199,4 +199,21 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=head2 pin_colour
+
+Green for completed or closed, yellow for open,
+blue for anything else (in progress, action scheduled, etc)
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p ) = @_;
+
+    return 'green-tick' if $p->is_fixed || $p->is_closed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'blue-work';
+}
+
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
+
 1;

@@ -1055,7 +1055,7 @@ textarea.form-error {
 
 .keyboard-pin {
   display: none;
-  background-image: url('/i/pin-green-big.png');
+  background-image: url('/i/pins/green/big.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -1070,7 +1070,7 @@ textarea.form-error {
 
   &::after {
     content: "";
-    background-image: url('/i/pin-shadow-big.png');
+    background-image: url('/i/pins/shadow/big.png');
     background-size: contain;
     background-repeat: no-repeat;
     width: 88px;
