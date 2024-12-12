@@ -190,7 +190,7 @@ $report->update({ category => 'Other' });
     }, sub {
         $mech->follow_link_ok({ text_regex => qr/Back to all reports/i });
     };
-    $mech->content_like(qr{<a title="Test Test[^>]*href="/[^>]*><img[^>]*yellow});
+    $mech->content_like(qr{<a title="Test Test[^>]*href="/[^>]*><img[^>]*grey});
     $mech->content_lacks('Report missed collection');
 };
 
