@@ -1336,7 +1336,7 @@ sub static_map {
     my $pin = $map_data->{pins}->[0];
     if ($pin) {
         my $im = Image::Magick->new;
-        $im->read(FixMyStreet->path_to('web', 'i', 'pin-yellow.png'));
+        $im->read(FixMyStreet->path_to('web', 'i', 'pins/yellow/pin.png'));
         $im->Scale( geometry => '48x64' );
         $image->Composite(image => $im, gravity => 'NorthWest',
             x => $pin->{px} - 24, y => $pin->{py} - 64);

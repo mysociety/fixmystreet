@@ -85,20 +85,18 @@ sub reports_ordering {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if ($context||'') ne 'reports' && !$self->owns_problem($p);
-    return 'grey' if $p->is_closed;
-    return 'green' if $p->is_fixed;
-    return 'yellow' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
+    return 'grey-cross' if ($context||'') ne 'reports' && !$self->owns_problem($p);
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
 sub pin_new_report_colour {
-    return 'yellow';
+    return 'yellow-cone';
 }
 
-sub path_to_pin_icons {
-    return '/cobrands/oxfordshire/images/';
-}
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 sub pin_hover_title {
     my ($self, $problem, $title) = @_;
@@ -494,7 +492,7 @@ sub pins_from_wfs {
             id => $fake_id--,
             latitude => @$coords[1],
             longitude => @$coords[0],
-            colour => 'defects',
+            colour => 'blue-work',
             title => $title,
         };
     } @{ $wfs->{features} };

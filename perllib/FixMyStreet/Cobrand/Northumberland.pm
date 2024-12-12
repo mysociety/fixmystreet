@@ -74,10 +74,6 @@ sub pin_colour {
     return 'orange'; # all the other `open_states` like "in progress"
 }
 
-sub path_to_pin_icons {
-    return '/cobrands/northumberland/images/';
-}
-
 =item * Hovering over a pin includes the state as well as the title
 
 =cut
