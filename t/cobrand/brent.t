@@ -500,16 +500,16 @@ FixMyStreet::override_config {
         });
 
         $problem->state('confirmed');
-        is $cobrand->pin_colour($problem, 'around'), 'yellow', 'confirmed problem has correct pin colour';
+        is $cobrand->pin_colour($problem, 'around'), 'yellow-cone', 'confirmed problem has correct pin colour';
 
         $problem->state('closed');
-        is $cobrand->pin_colour($problem, 'around'), 'grey', 'closed problem has correct pin colour';
+        is $cobrand->pin_colour($problem, 'around'), 'grey-cross', 'closed problem has correct pin colour';
 
         $problem->state('fixed');
-        is $cobrand->pin_colour($problem, 'around'), 'green', 'fixed problem has correct pin colour';
+        is $cobrand->pin_colour($problem, 'around'), 'green-tick', 'fixed problem has correct pin colour';
 
         $problem->state('in_progress');
-        is $cobrand->pin_colour($problem, 'around'), 'orange', 'in_progress problem has correct pin colour';
+        is $cobrand->pin_colour($problem, 'around'), 'orange-work', 'in_progress problem has correct pin colour';
     };
 };
 
