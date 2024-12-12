@@ -394,7 +394,7 @@ foreach my $test (
         }
 
         if ($report->state eq 'fixed') {
-            $mech->content_contains('pin-green');
+            $mech->content_contains('pins/green');
         }
 
         $test->{changes}->{flagged} = 1 if $test->{changes}->{flagged};
