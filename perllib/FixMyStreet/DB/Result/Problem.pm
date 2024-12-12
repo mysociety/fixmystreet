@@ -1519,6 +1519,26 @@ sub create_related_things {
 
 =head2 Waste related activity
 
+=head3 waste_property_id
+
+Return the property ID used in the URL of a bin day page. This is usually
+property_id on the report, but could be the UPRN (e.g. Bexley).
+
+=cut
+
+sub waste_property_id {
+    my $self = shift;
+    return $self->get_extra_field_value('uprn') if $self->cobrand eq 'bexley';
+    return $self->get_extra_field_value('property_id');
+}
+
+=head3 waste_confirm_payment
+
+This is called when a payment has been confirmed in order to record the
+payment, perhaps send an email, add a payment confirmation update for
+already-sent bulky collections, cancel a previous collection if an amendment,
+and so on.
+
 =cut
 
 sub waste_confirm_payment {

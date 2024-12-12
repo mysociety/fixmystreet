@@ -7,7 +7,7 @@ email_columns = 2;
 PROCESS '_email_settings.html';
 INCLUDE '_email_top.html';
 
-property_id_uri = report.get_extra_field_value('property_id') | uri;
+property_id_uri = report.waste_property_id | uri;
 cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel_url _ '/' _ report.id;
 %]
 

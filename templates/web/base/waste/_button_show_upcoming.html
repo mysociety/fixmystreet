@@ -6,6 +6,6 @@
 
 <p>
   [% # sometimes we have the property on the stash, sometimes it's just the report (e.g. token confirmation)
-     property_id = property.id OR report.get_extra_field_value('property_id') %]
+     property_id = property.id OR report.waste_property_id %]
   <a href="[% c.uri_for_action('waste/bin_days', [ property_id ]) %]" class="govuk-button">[% button_text %]</a>
 </p>

@@ -28,7 +28,7 @@
         <p class="govuk-!-margin-bottom-2">We have sent you an email confirming this booking.</p>
         <p>Can’t find our email? <strong>Check your spam folder.</strong></p>
       [% END %]
-        <a href="[% c.uri_for_action('waste/bin_days', [ report.get_extra_field_value('property_id') ]) %]" class="btn btn--primary">Go back home</a>
+        <a href="[% c.uri_for_action('waste/bin_days', [ report.waste_property_id ]) %]" class="btn btn--primary">Go back home</a>
     </div>
 </div>
 

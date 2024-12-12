@@ -42,7 +42,7 @@ If you wish to cancel your booking, please call 01733 74 74 74.
 
 If you wish to cancel your booking, please visit:
 
-    [% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/[% bulky_cancel_url %]/[% report.id %]
+    [% cobrand.base_url %]/waste/[% report.waste_property_id | uri %]/[% bulky_cancel_url %]/[% report.id %]
 
 [% IF days == 1 %]
 You may still be able to cancel your booking.
