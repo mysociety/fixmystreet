@@ -710,6 +710,19 @@ body.authpage {
     margin-bottom: 0;
 }
 
+.floating-button-wrapper {
+    width: $mappage-sidebar-width;
+}
+
+.pre-button-messaging {
+    margin-bottom: 0.5em;
+    background-color: mix(#fff, $primary, 70%);
+}
+.js-floating-button-message {
+    padding: 0.5em;
+    & > :last-child { margin-bottom: 0; }
+}
+
 #loading-indicator {
   height: 64px;
   width: 64px;

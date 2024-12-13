@@ -1272,6 +1272,27 @@ input.final-submit {
   font-size: 0.8em;
 }
 
+.floating-button-spacer {
+  &:before {
+    content: "";
+    display: block;
+    height: 2em;
+  }
+}
+.floating-button-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-top: 2em;
+    overflow: hidden;
+}
+.floating-button {
+    box-shadow: 0 0 2em 2em #fff;
+    background-color: #fff;
+    padding: 0 1em 1em;
+}
+
 // Most of our forms get their vertical spacing from the margin-top on labels.
 // This means the final submit button can end up uncomfortably close to the
 // bottom of the final input. Add a class of `btn--final` to fix this.
