@@ -14,14 +14,14 @@ describe('National Highways cobrand tests', function() {
         cy.wait('@highways-tilma');
         cy.wait('@report-ajax');
         cy.contains('Report a maintenance issue').should('be.visible');
-        cy.contains('The selected location is not maintained by us.').should('be.visible');
+        cy.get('.pre-button-messaging').contains('The selected location is not maintained by us.').should('be.visible');
     });
     it('does not allow reporting on DBFO roads', function() {
         cy.get('#map_box').click(200, 249);
         cy.wait('@highways-tilma');
         cy.wait('@report-ajax');
         cy.contains('Report a maintenance issue').should('be.visible');
-        cy.contains('report on roads directly maintained').should('be.visible');
+        cy.get('.pre-button-messaging').contains('report on roads directly maintained').should('be.visible');
     });
     it('allows reporting on other HE roads', function() {
         cy.get('#map_box').click(240, 249);
@@ -76,8 +76,9 @@ describe('National Highways litter picking test', function() {
         cy.wait('@highways-tilma');
         cy.wait('@highways-tilma-litter');
         cy.pickCategory('Flytipping');
+        cy.get('#map_sidebar').scrollTo('top');
         cy.contains('Report a litter issue').should('be.visible');
-        cy.contains('litter issues on this road are handled by the local council').should('be.visible');
+        cy.get('.pre-button-messaging').contains('litter issues on this road are handled by the local council').should('be.visible');
     });
 });
 
