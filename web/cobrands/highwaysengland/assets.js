@@ -64,11 +64,11 @@ fixmystreet.assets.add(defaults, {
             fixmystreet.message_controller.road_found(layer, feature, function(feature) {
                 if (feature.attributes.area_name.indexOf('DBFO') === -1) {
                     $('#js-top-message').show();
-                    $('.js-reporting-page--category').removeClass('hidden-js');
+                    $('.js-reporting-page--category').css('visibility', 'visible');
                     return true;
                 } else {
                     $('#js-top-message').hide();
-                    $('.js-reporting-page--category').addClass('hidden-js');
+                    $('.js-reporting-page--category').css('visibility', 'hidden');
                     return false;
                 }
             }, '#js-dbfo-road');
@@ -77,7 +77,8 @@ fixmystreet.assets.add(defaults, {
         not_found: function(layer) {
             fixmystreet.message_controller.road_not_found(layer);
             $('#js-top-message').hide();
-            $('.js-reporting-page--category').addClass('hidden-js');
+            $('.js-reporting-page--category').css('visibility', 'hidden');
+            $('.pre-button-messaging').css('visibility', 'visible');
             change_header('maintenance');
         }
     }
@@ -96,10 +97,10 @@ fixmystreet.assets.add(defaults, {
     no_asset_msgs_class: '.js-roads-he',
     actions: {
         found: function(layer, feature) {
-            if ( $("#js-dbfo-road").is(":hidden") && ( !$('.js-mobile-not-an-asset').length || $('.js-mobile-not-an-asset').is(':hidden')) ) {
+            if ( $("#js-dbfo-road").is(":hidden") && !$('.js-not-an-asset').length ) {
                 fixmystreet.message_controller.road_found(layer, feature, function(feature) {
                     $('#js-top-message').show();
-                    $('.js-reporting-page--category').removeClass('hidden-js');
+                    $('.js-reporting-page--category').css('visibility', 'visible');
                     return true;
                 });
             }
@@ -108,15 +109,15 @@ fixmystreet.assets.add(defaults, {
         not_found: function(layer) {
             if (fixmystreet.assets.layers[0].selected_feature) {
                 var road_number = fixmystreet.assets.layers[0].selected_feature.attributes.ROA_NUMBER;
-                if ( $('#js-not-he-road').is(':hidden') && ( !$('.js-mobile-not-an-asset').length || $('.js-mobile-not-an-asset').is(':hidden')) ) {
+                if ( $('#js-not-he-road').is(':hidden') && !$('.js-not-an-asset').length ) {
                     var selected = fixmystreet.reporting.selectedCategory();
                     if ((selected.category === 'Flytipping (NH)' || selected.group === 'Litter') && (road_number && !road_number.match(/^(M|A\d+M)/)) ) {
                         fixmystreet.message_controller.road_not_found(layer);
                         $('#js-top-message').hide();
-                        $('.js-reporting-page--category').addClass('hidden-js');
+                        $('.js-reporting-page--category').css('visibility', 'hidden');
                         change_header('litter');
                     } else {
-                        $('.js-reporting-page--category').removeClass('hidden-js');
+                        $('.js-reporting-page--category').css('visibility', 'visible');
                         change_header('maintenance');
                     }
                 }
