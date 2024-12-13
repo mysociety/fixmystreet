@@ -13,6 +13,8 @@ step1 = first_page;
     [% ELSE %]
         [% SET container_id = container.replace('container-', '') %]
         [% SET quantity_key = container.replace('container-', 'quantity-') %]
+        [%# removal-* is used by Kingston %]
+        [% SET removal_key = container.replace('container-', 'removal-') %]
     [% END %]
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
@@ -21,8 +23,21 @@ step1 = first_page;
       [% ELSIF c.cobrand.moniker == 'sutton' %]
         <dd class="govuk-summary-list__value">[% data.request_reason.ucfirst %]</dd>
       [% ELSE %]
-        <dd class="govuk-summary-list__value">[% data.$quantity_key %]</dd>
+        <dd class="govuk-summary-list__value">
+            [% data.$quantity_key %]
+            [% ' to deliver, ' IF data.$quantity_key AND data.$removal_key %]
+            [% IF data.$removal_key %][% data.$removal_key %] to remove[% END %]
+        </dd>
       [% END %]
+    </div>
+  [% END %]
+  [% FOR removal IN data.keys.grep('^removal-') %]
+    [% SET container_key = removal.replace('removal-', 'container-') %]
+    [% SET container_id = removal.replace('removal-', '') %]
+    [% NEXT UNLESS data.$removal AND NOT data.$container_key %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
+        <dd class="govuk-summary-list__value">[% data.$removal %] to remove</dd>
     </div>
   [% END %]
 
