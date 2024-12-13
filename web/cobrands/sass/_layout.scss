@@ -376,7 +376,7 @@ body.mappage.admin {
 }
 
 .category_meta_message {
-  padding-top: 0.5em;
+  margin: 0.5em;
   font-size: 0.9em;
   text-align: center;
 }
@@ -721,6 +721,9 @@ body.authpage {
 .js-floating-button-message {
     padding: 0.5em;
     & > :last-child { margin-bottom: 0; }
+}
+#js-category-stopper ~ .js-floating-button-message {
+    display: none;
 }
 
 #loading-indicator {

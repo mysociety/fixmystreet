@@ -12,9 +12,7 @@ describe('Lincolnshire cobrand', function(){
 
         it('does not display extra message when selecting a "road" category', function(){
             cy.pickCategory('Damaged/missing cats eye');
-            cy.get(
-                '#category_meta_message_Damagedmissingcatseye'
-            ).should('have.text', '');
+            cy.get('.pre-button-messaging').should('not.be.visible');
         });
 
         it('clicks through to photo section', function(){
