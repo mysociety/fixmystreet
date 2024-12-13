@@ -710,6 +710,10 @@ body.authpage {
     margin-bottom: 0;
 }
 
+.floating-button-wrapper {
+    width: $mappage-sidebar-width;
+}
+
 #loading-indicator {
   height: 64px;
   width: 64px;
