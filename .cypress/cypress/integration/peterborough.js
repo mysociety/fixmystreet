@@ -17,10 +17,10 @@ describe('new report form', function() {
     cy.pickCategory('Fallen branch');
     cy.nextPageReporting();
     cy.get('#form_emergency').select('yes');
-    cy.get('.js-post-category-messages:visible').should('contain', 'Please phone customer services to report this problem.');
+    cy.get('.pre-button-messaging:visible').should('contain', 'Please phone customer services to report this problem.');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
     cy.get('#form_emergency').select('no');
-    cy.get('.js-post-category-messages:visible').should('not.contain', 'Please phone customer services to report this problem.');
+    cy.get('.pre-button-messaging:visible').should('not.contain', 'Please phone customer services to report this problem.');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
   });
 
@@ -28,10 +28,10 @@ describe('new report form', function() {
     cy.pickCategory('Fallen branch');
     cy.nextPageReporting();
     cy.get('#form_private_land').select('yes');
-    cy.get('.js-post-category-messages:visible').should('contain', 'The council do not have powers to address issues on private land.');
+    cy.get('.pre-button-messaging:visible').should('contain', 'The council do not have powers to address issues on private land.');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
     cy.get('#form_private_land').select('no');
-    cy.get('.js-post-category-messages:visible').should('not.contain', 'The council do not have powers to address issues on private land.');
+    cy.get('.pre-button-messaging:visible').should('not.contain', 'The council do not have powers to address issues on private land.');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
   });
 
@@ -40,11 +40,11 @@ describe('new report form', function() {
     cy.nextPageReporting();
     cy.get('#js-environment-message:visible');
     cy.get('#form_hazardous').select('yes');
-    cy.get('.js-post-category-messages:visible').should('contain', 'Please phone customer services to report this problem');
+    cy.get('.pre-button-messaging:visible').should('contain', 'Please phone customer services to report this problem');
     cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
     cy.get('#form_hazardous').select('no');
-    cy.get('.js-post-category-messages:visible').should('not.contain', 'Please phone customer services to report this problem');
+    cy.get('.pre-button-messaging:visible').should('not.contain', 'Please phone customer services to report this problem');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');
@@ -68,9 +68,9 @@ describe('new report form', function() {
 
   it('correctly changes the asset select message', function() {
     cy.pickCategory('Street lighting');
-    cy.get('.category_meta_message').should('contain', 'You can pick a light from the map');
+    cy.get('.pre-button-messaging').should('contain', 'Please select a light from the map');
     cy.pickCategory('Trees');
-    cy.get('.category_meta_message').should('contain', 'You can pick a tree from the map');
+    cy.get('.pre-button-messaging').should('contain', 'Please select a tree from the map');
   });
 });
 
@@ -117,11 +117,11 @@ describe('National site tests', function() {
     cy.nextPageReporting();
     cy.get('#js-environment-message:visible');
     cy.get('#form_hazardous').select('yes');
-    cy.get('.js-post-category-messages:visible').should('contain', 'Please phone customer services to report this problem');
+    cy.get('.pre-button-messaging:visible').should('contain', 'Please phone customer services to report this problem');
     cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
     cy.get('#form_hazardous').select('no');
-    cy.get('.js-post-category-messages:hidden').should('not.contain', 'Please phone customer services to report this problem');
+    cy.get('.pre-button-messaging:hidden').should('not.contain', 'Please phone customer services to report this problem');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');

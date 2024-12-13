@@ -1278,6 +1278,9 @@ input.final-submit {
     display: block;
     height: 2em;
   }
+  &:has(.pre-button-messaging:empty):not(:has(button)) {
+    display: none;
+  }
 }
 .floating-button-wrapper {
     position: fixed;
@@ -1302,6 +1305,10 @@ input.final-submit {
 .js-floating-button-message {
     padding: 0.5em;
     & > :last-child { margin-bottom: 0; }
+}
+
+#js-category-stopper ~ .js-floating-button-message {
+    display: none;
 }
 
 // Most of our forms get their vertical spacing from the margin-top on labels.
@@ -2403,7 +2410,7 @@ html.js #map .noscript {
 }
 
 #change_asset_mobile,
-.map-page .js-mobile-not-an-asset,
+.map-page .js-floating-button-message,
 .only-map .category_meta_message {
   position: absolute;
   top: 2.25em;
@@ -3417,7 +3424,7 @@ $site-message-border: 1px solid #525252 !default;
   }
 }
 
-.js-post-category-messages,
+.pre-button-messaging,
 .extra-category-questions {
   h2 {
     font-size: 1.3rem;

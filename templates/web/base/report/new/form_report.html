@@ -37,7 +37,6 @@
       [% END %]
     </div>
 
-    <div class="js-post-category-messages"></div>
     [% INCLUDE continue_button %]
 </div>
 
@@ -48,7 +47,6 @@
   [% IF NOT disable_form_message %]
     [% PROCESS "report/new/category_extras.html" %]
   [% END %]
-    <div class="js-post-category-messages"></div>
     [% INCLUDE continue_button %]
 </div>
 
@@ -100,6 +98,11 @@
     <div class="js-reporting-page--single-hidden">
         [% PROCESS report/form/user.html type='report' %]
     </div>
+
+    <div class="floating-button-spacer"><div class="floating-button-wrapper"><div class="floating-button">
+        <div class="pre-button-messaging"></div>
+    </div></div></div>
+
 </div>
 
 [% IF partial_token %]

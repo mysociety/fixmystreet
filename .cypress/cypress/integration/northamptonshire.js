@@ -17,8 +17,7 @@ it('prevents clicking unless asset selected, desktop flow', function() {
   cy.pickCategory('Shelter Damaged');
 
   cy.wait('@bus_stops-layer');
-  cy.contains(/Please select a.*bus stop.*from the map/).should('be.visible');
-  cy.get('#map_sidebar').scrollTo('bottom');
+  cy.get('.pre-button-messaging').contains(/Please select a.*bus stop.*from the map/).should('be.visible');
   cy.get('.js-reporting-page--next:visible').should('be.disabled');
 });
 

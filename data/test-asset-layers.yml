@@ -319,6 +319,7 @@ oxfordshire:
       feature_code: 'title'
       asset_id_field: 'itemId'
       construct_selected_asset_message: fixmystreet.assets.oxfordshire.light_construct_selected_asset_message
+      asset_message_when_disabled: true
       actions:
         asset_found: fixmystreet.assets.oxfordshire.light_asset_found
         asset_not_found: fixmystreet.assets.oxfordshire.light_asset_not_found
