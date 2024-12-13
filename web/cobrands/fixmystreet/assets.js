@@ -54,15 +54,9 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
             // Show/hide the asset layer when the category is chosen
             if (this.relevant()) {
                 this.setVisibility(true);
-                if (this.fixmystreet.fault_layer) {
-                    this.fixmystreet.fault_layer.setVisibility(true);
-                }
                 this.zoom_to_assets();
             } else {
                 this.setVisibility(false);
-                if (this.fixmystreet.fault_layer) {
-                    this.fixmystreet.fault_layer.setVisibility(false);
-                }
             }
         } else {
             if (this.fixmystreet.body) {
@@ -364,7 +358,6 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
 (function(){
 
 var selected_feature = null;
-var fault_popup = null;
 
 /*
  * Adds the layer to the map and sets up event handlers and whatnot.
@@ -379,12 +372,6 @@ function init_asset_layer(layer, pins_layer) {
     // Don't cover the existing pins layer
     if (pins_layer) {
         layer.setZIndex(pins_layer.getZIndex()-1);
-    }
-
-    // Make sure the fault markers always appear beneath the linked assets
-    if (layer.fixmystreet.fault_layer) {
-        fixmystreet.map.addLayer(layer.fixmystreet.fault_layer);
-        layer.fixmystreet.fault_layer.setZIndex(layer.getZIndex()-1);
     }
 
     if (layer.fixmystreet.usrn || layer.fixmystreet.road) {
@@ -403,35 +390,11 @@ function init_asset_layer(layer, pins_layer) {
 
 }
 
-function close_fault_popup() {
-    if (!!fault_popup) {
-        fixmystreet.map.removePopup(fault_popup);
-        fault_popup.destroy();
-        fault_popup = null;
-    }
-}
-
 function asset_selected(e) {
-    close_fault_popup();
     var lonlat = e.feature.geometry.getBounds().getCenterLonLat();
 
     var layer = e.feature.layer;
     var feature = e.feature;
-
-    // Check if there is a known fault with the asset that's been clicked,
-    // and disallow selection if so.
-    var fault_feature = layer.find_matching_feature(feature, this.fixmystreet.fault_layer);
-    if (!!fault_feature) {
-        fault_popup = new OpenLayers.Popup.FramedCloud("popup",
-            e.feature.geometry.getBounds().getCenterLonLat(),
-            null,
-            "This fault (" + e.feature.attributes[this.fixmystreet.asset_id_field] + ")<br />has been reported.",
-            { size: new OpenLayers.Size(0, 0), offset: new OpenLayers.Pixel(0, 0) },
-            true, close_fault_popup);
-        fixmystreet.map.addPopup(fault_popup);
-        this.get_select_control().unselect(e.feature);
-        return;
-    }
 
     // Keep track of selection in case layer is reloaded or hidden etc.
     selected_feature = feature.clone();
@@ -619,19 +582,6 @@ function get_asset_stylemap() {
     });
 }
 
-function get_fault_stylemap() {
-    return new OpenLayers.StyleMap({
-        'default': new OpenLayers.Style({
-            fillColor: "#FF6600",
-            fillOpacity: 1,
-            strokeColor: "#FF6600",
-            strokeOpacity: 1,
-            strokeWidth: 1.25,
-            pointRadius: 8
-        })
-    });
-}
-
 function construct_protocol_options(options) {
     var protocol_options;
     if (options.http_wfs_url) {
@@ -766,30 +716,6 @@ function construct_layer_class(options) {
     return layer_class;
 }
 
-function construct_fault_layer(options, protocol_options, layer_options) {
-    if (!options.wfs_fault_feature) {
-        return null;
-    }
-
-    // A non-interactive layer to display existing asset faults
-    var po = {
-        featureType: options.wfs_fault_feature
-    };
-    OpenLayers.Util.applyDefaults(po, protocol_options);
-    var fault_protocol = new OpenLayers.Protocol.WFS(po);
-    var lo = {
-        strategies: [new OpenLayers.Strategy.BBOX()],
-        protocol: fault_protocol,
-        styleMap: get_fault_stylemap(),
-        assets: true
-    };
-    OpenLayers.Util.applyDefaults(lo, layer_options);
-    asset_fault_layer = new OpenLayers.Layer.Vector("WFS", lo);
-    asset_fault_layer.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
-    asset_fault_layer.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
-    return asset_fault_layer;
-}
-
 function construct_asset_layer(options) {
     // An interactive layer for selecting an asset (e.g. street light)
     var protocol_options = construct_protocol_options(options);
@@ -799,11 +725,6 @@ function construct_asset_layer(options) {
     var layer_options = construct_layer_options(options, protocol);
     var layer_class = construct_layer_class(options);
     var asset_layer = new layer_class(options.name || "WFS", layer_options);
-
-    var asset_fault_layer = construct_fault_layer(options, protocol_options, layer_options);
-    if (asset_fault_layer) {
-        asset_layer.fixmystreet.fault_layer = asset_fault_layer;
-    }
 
     return asset_layer;
 }
