@@ -105,7 +105,7 @@ sub geocode_postcode {
 # Bromley pins always yellow
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'green-bromley' if $p->is_fixed;
+    return 'bromley/green' if $p->is_fixed;
     return 'grey' if $p->is_closed;
     return 'red' if ($context||'') ne 'reports' && !$self->owns_problem($p);
     return 'yellow';

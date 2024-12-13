@@ -1,5 +1,5 @@
 [% IF disallowed == 'waste';
-    SET property_id = problem.get_extra_field_value('property_id');
+    SET property_id = problem.waste_property_id;
 %]
 <p>
    <a href="/waste[% IF property_id %]/[% property_id %][% END %]">See your bin collections</a>.

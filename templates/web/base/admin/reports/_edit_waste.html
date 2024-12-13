@@ -85,8 +85,8 @@
   [% IF problem.get_extra_field_value('uprn') %]
     <li>UPRN: [% problem.get_extra_field_value('uprn') %]
   [% END %]
-  [% IF problem.get_extra_field_value('property_id') %]
-    <li>Property ID: <a href="/waste/[% problem.get_extra_field_value('property_id') %]">[% problem.get_extra_field_value('property_id') %]</a>
+  [% IF problem.waste_property_id %]
+    <li>Property ID: <a href="/waste/[% problem.waste_property_id %]">[% problem.waste_property_id %]</a>
   [% END %]
   [% IF problem.get_extra_field_value('service_id') %]
     <li>Service ID: [% problem.get_extra_field_value('service_id') %]

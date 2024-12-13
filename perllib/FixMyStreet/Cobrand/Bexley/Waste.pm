@@ -801,10 +801,14 @@ sub bin_future_collections {
         my $dt = $parser->parse_datetime( $rnd->{Date} );
 
         for (@$srv) {
+            my $summary = $_->{service_name};
+            if (!$_->{service_description_contains_html}) {
+                $summary .= " ($_->{service_description})";
+            }
             push @events, {
                 date    => $dt,
                 desc    => '',
-                summary => $_->{service_name},
+                summary => $summary,
             };
         }
 

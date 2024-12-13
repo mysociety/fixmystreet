@@ -147,7 +147,7 @@ sub waste_reconcile_direct_debits {
                 $p = $cur;
             }
             if ( $p ) {
-                my $service = $self->waste_get_current_garden_sub( $p->get_extra_field_value('property_id') );
+                my $service = $self->waste_get_current_garden_sub( $p->waste_property_id );
                 my $quantity;
                 if ($service) {
                     $quantity = $self->waste_get_sub_quantity($service);
@@ -244,7 +244,7 @@ sub waste_reconcile_direct_debits {
 
         if ( $r ) {
             $self->log("processing matched report " . $r->id);
-            my $service = $self->waste_get_current_garden_sub( $r->get_extra_field_value('property_id') );
+            my $service = $self->waste_get_current_garden_sub( $r->waste_property_id );
             # if there's not a service then it's fine as it's already been cancelled
             if ( $service ) {
                 $r->set_extra_metadata('dd_date', $payment->date);
@@ -301,7 +301,7 @@ sub _duplicate_waste_report {
         payment_method => 'direct_debit',
         $self->garden_subscription_container_field => $report->get_extra_field_value($self->garden_subscription_container_field),
         service_id => $report->get_extra_field_value('service_id'),
-        property_id => $report->get_extra_field_value('property_id'),
+        property_id => $report->waste_property_id,
     };
 
 

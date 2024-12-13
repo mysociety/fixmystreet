@@ -1062,7 +1062,7 @@ sub clear_cached_lookups_bulky_slots {
 sub bulky_refetch_slots {
     my ($self, $row, $verbose) = @_;
 
-    my $property_id = $row->get_extra_field_value('property_id');
+    my $property_id = $row->waste_property_id;
     my $date = $self->collection_date($row);
     my $guid = $row->get_extra_field_value('GUID');
     my $window = $self->_bulky_collection_window();

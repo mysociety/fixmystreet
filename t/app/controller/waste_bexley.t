@@ -509,11 +509,11 @@ FixMyStreet::override_config {
 
         my $i = 0;
         for (@events) {
-            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Blue Recycling Box/;
-            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Green Recycling Box/;
-            $i++ if /DTSTART;VALUE=DATE:20240402/ && /SUMMARY:Communal Food Bin/;
-            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Communal Refuse Bin\(s\)/;
-            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:White \/ Silver Recycling Bin/;
+            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Blue Recycling Box \(Paper and card\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240401/ && /SUMMARY:Green Recycling Box \(Paper and card\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240402/ && /SUMMARY:Communal Food Bin \(Food waste\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Communal Refuse Bin\(s\) \(Non-recyclable waste\)/;
+            $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:White \/ Silver Recycling Bin \(Plastics and cans\)/;
             $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Blue Recycling Box/;
             $i++ if /DTSTART;VALUE=DATE:20240403/ && /SUMMARY:Green Recycling Box/;
 

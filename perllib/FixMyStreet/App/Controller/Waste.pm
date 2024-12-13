@@ -89,7 +89,7 @@ sub index : Path : Args(0) {
         $c->stash->{continue_id} = $id;
         if (my $p = $c->cobrand->problems->search({ state => 'unconfirmed' })->find($id)) {
             if ($c->stash->{is_staff} && $c->stash->{waste_features}{bulky_retry_bookings}) {
-                my $property_id = $p->get_extra_field_value('property_id');
+                my $property_id = $p->waste_property_id;
                 my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
                 $saved_data->{continue_id} = $id;
                 my $saved_data_field = FixMyStreet::App::Form::Field::JSON->new(name => 'saved_data');
@@ -205,7 +205,7 @@ sub pay_retry : Path('pay_retry') : Args(0) {
     $c->forward('check_payment_redirect_id', [ $id, $token ]);
 
     my $p = $c->stash->{report};
-    $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->get_extra_field_value('property_id'));
+    $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->waste_property_id);
     $c->forward('pay', [ 'bin_days' ]);
 }
 
@@ -285,7 +285,7 @@ sub confirm_subscription : Private {
     my ($self, $c, $reference) = @_;
     my $p = $c->stash->{report};
 
-    $c->stash->{property_id} = $p->get_extra_field_value('property_id');
+    $c->stash->{property_id} = $p->waste_property_id;
 
     if ($p->category eq 'Bulky collection' || $p->category eq 'Small items collection') {
         $c->stash->{template} = 'waste/bulky/confirmation.html';
@@ -439,7 +439,7 @@ sub direct_debit_error : Path('dd_error') : Args(0) {
     if ( $id && $token ) {
         $c->forward('check_payment_redirect_id', [ $id, $token ]);
         my $p = $c->stash->{report};
-        $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->get_extra_field_value('property_id'));
+        $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->waste_property_id);
         $c->forward('populate_dd_details');
     }
 
@@ -545,7 +545,7 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
 
     my $report = $c->model('DB::Problem')->find({ id => $id});
     $c->stash->{report} = $report;
-    $c->stash->{property_id} = $report->get_extra_field_value('property_id');
+    $c->stash->{property_id} = $report->waste_property_id;
 
     my $contributed_as = $report->get_extra_metadata('contributed_as') || '';
     if ( $contributed_as ne 'anonymous_user' ) {
@@ -1403,6 +1403,7 @@ sub get_original_sub : Private {
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
+        # XXX Bexley does not store a property_id
         extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
         state => { '!=' => 'hidden' },
     })->order_by('-id')->to_body($c->cobrand->body);

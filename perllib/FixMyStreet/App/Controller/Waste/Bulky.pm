@@ -186,7 +186,7 @@ sub view : Private {
     my $p = $c->stash->{problem};
 
     $c->stash->{property} = {
-        id => $p->get_extra_field_value('property_id'),
+        id => $p->waste_property_id,
         address => $p->get_extra_metadata('property_address'),
     };
 
