@@ -127,6 +127,12 @@ sub short_name {
     return $name;
 }
 
+sub is_london_or_royal {
+    my ( $self, $short_name ) = @_;
+
+    return $short_name =~ /bexley|greenwich|kingston/i;
+}
+
 sub find_closest {
     my ($self, $data) = @_;
 
@@ -149,9 +155,8 @@ sub find_closest {
 
 sub reports_body_check {
     my ( $self, $c, $code ) = @_;
-
-    # Deal with Bexley and Greenwich name not starting with short name
-    if ($code =~ /bexley|greenwich/i) {
+    # Some full names do not start with short name
+    if ( $self->is_london_or_royal($code) ) {
         my $body = $c->model('DB::Body')->search( { name => { -like => "%$code%" } } )->single;
         $c->stash->{body} = $body;
         return $body;
