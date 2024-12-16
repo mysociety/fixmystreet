@@ -284,7 +284,7 @@ sub open311_extra_data_include {
 }
 
 sub open311_extra_data_exclude {
-    [ 'feature_id', 'prow_reference' ]
+    [ 'feature_id', 'prow_reference', 'fms_layer_owner' ]
 }
 
 sub open311_config_updates {

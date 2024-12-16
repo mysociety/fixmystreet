@@ -180,7 +180,6 @@ bromley:
     road: true
     always_visible: true
     stylemap: fixmystreet.assets.stylemap_invisible
-    no_asset_message: "<p>The selected location is in a park. Please select a ‘Parks and Greenspace’ category instead.</p>"
     actions:
       found: fixmystreet.assets.bromley.park_asset_found
       not_found: fixmystreet.assets.bromley.park_asset_not_found

@@ -77,13 +77,20 @@ describe('Bromley cobrand', function() {
     cy.get('#mob_ok').should('not.be.visible');
   });
 
-  it('adds stopper for Street Cleansing categories within a park', function() {
+  it('adds post category message for Street categories within a park', function() {
     cy.visit('http://bromley.localhost:3001/report/new?longitude=0.007803&latitude=51.403986');
     cy.wait('@parks');
     cy.get('#mob_ok').click();
     cy.pickCategory('Street Cleansing');
-    cy.contains('The selected location is in a park');
-    cy.get('#mob_ok').should('not.be.visible');
+    cy.contains('We’ve noticed that you’ve selected a Streets category but that your map pin is located within a park');
+  });
+
+  it('adds post category message for Park and Greenspace categories not in a park', function() {
+    cy.visit('http://bromley.localhost:3001/report/new?latitude=51.4021&longitude=0.01578');
+    cy.wait('@parks');
+    cy.get('#mob_ok').click();
+    cy.pickCategory('Parks and Greenspace');
+    cy.contains('We’ve noticed that you’ve selected a Parks and Greenspace category but that your map pin isn’t located within a park');
   });
 
 });
