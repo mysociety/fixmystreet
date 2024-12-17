@@ -187,17 +187,21 @@ sub process_update {
     # Northumberland + Alloy) so we skip comment for now if an older unsent
     # one exists for the problem. Otherwise an older update may overwrite a
     # newer one in Alloy etc.
+    my $formatter = FixMyStreet::DB->schema->storage->datetime_parser;
     my @unsent_comments_for_problem
         = $problem->comments->search(
-            { state => 'confirmed', send_state => 'unprocessed' }
+            {
+                state => 'confirmed',
+                send_state => 'unprocessed',
+                confirmed => { '<' =>
+                        $formatter->format_datetime( $comment->confirmed ) },
+            }
         )->order_by('confirmed');
 
-    for ( @unsent_comments_for_problem ) {
-        if ( $_->id != $comment->id && $_->confirmed < $comment->confirmed ) {
-            $self->log( $comment,
-                'Skipping for now because of older unprocessed update' );
-            return;
-        }
+    if (@unsent_comments_for_problem) {
+        $self->log( $comment,
+            'Skipping for now because of older unprocessed update' );
+        return;
     }
 
     # Some cobrands (e.g. Buckinghamshire) don't want to receive updates
