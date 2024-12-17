@@ -250,6 +250,8 @@ extra_metadata) to Alloy, as an 'extra_details' attribute.
 We pass the name and email address of the user assigned to the report (the
 user who has shortlisted the report).
 
+We pass any category change.
+
 =cut
 
 sub open311_munge_update_params {
@@ -266,6 +268,15 @@ sub open311_munge_update_params {
         = $assigned_to
         ? $assigned_to->email
         : '';
+
+    if ( $comment->text =~ /Category changed/ ) {
+        my $service_code = $p->contact->email;
+        my $category_group = $p->get_extra_metadata('group');
+
+        $params->{service_code} = $service_code;
+        $params->{'attribute[group]'} = $category_group
+            if $category_group;
+    }
 }
 
 1;

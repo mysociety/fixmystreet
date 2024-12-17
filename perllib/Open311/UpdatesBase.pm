@@ -164,7 +164,7 @@ sub _process_update {
     my $open311 = $self->current_open311;
     my $body = $self->current_body;
 
-    $self->_handle_assigned_user($request, $p);
+    $self->_handle_extras($request, $p);
 
     my $state = $open311->map_state( $request->{status} );
     my $old_state = $p->state;
@@ -317,7 +317,7 @@ sub comment_text_for_request {
     return ("", undef);
 }
 
-sub _handle_assigned_user {
+sub _handle_extras {
     my ($self, $request, $p) = @_;
     my $body = $self->current_body;
 
@@ -359,6 +359,18 @@ sub _handle_assigned_user {
                 ? $p->set_extra_metadata( detailed_information =>
                     $request->{extras}{detailed_information} )
                 : $p->unset_extra_metadata('detailed_information');
+        }
+
+        # Category & group
+        # TODO Do we want to check that category and group match?
+        if ( my $category = $request->{extras}{category} ) {
+            my $contact
+                = $body->contacts->search( { category => $category } )->first;
+            $p->category($category) if $contact;
+        }
+
+        if ( my $group = $request->{extras}{group} ) {
+            $p->set_extra_metadata( group => $group );
         }
     }
 
