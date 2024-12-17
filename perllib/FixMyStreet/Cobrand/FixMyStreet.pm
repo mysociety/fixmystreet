@@ -217,6 +217,11 @@ sub munge_report_new_bodies {
         my $bromley = FixMyStreet::Cobrand::Bromley->new({ c => $self->{c} });
         $bromley->munge_overlapping_asset_bodies($bodies);
     }
+
+    if ( $bodies{'Merton Council'} ) {
+        my $merton = FixMyStreet::Cobrand::Merton->new({ c => $self->{c} });
+        $merton->munge_overlapping_asset_bodies($bodies);
+    }
 }
 
 sub munge_report_new_contacts {

@@ -56,3 +56,87 @@ describe('anonymous reporting per category', function() {
     cy.get('.js-show-if-anonymous').should('not.be.visible');
   });
 });
+
+describe('stoppers for park category', function() {
+  beforeEach(function() {
+    cy.server();
+    cy.route('/report/new/ajax*').as('report-ajax');
+  });
+  it('does not allow reporting park category not on a park layer', function() {
+    cy.visit('http://merton.localhost:3001/report/new?latitude=51.400975&longitude=-0.19655');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Parks');
+    cy.contains('Please select a Merton-owned park from the map').should('be.visible');
+    cy.contains('To report an issue at Morden Hall Park').should('not.be.visible');
+    cy.contains('To report an issue at Mitcham Common').should('not.be.visible');
+    cy.contains('To report an issue at Wimbledon Common').should('not.be.visible');
+    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.js-reporting-page--next:visible').should('be.disabled');
+  });
+
+  it('allows reporting a park category on a merton owned park layer', function() {
+    cy.route('**mapserver/merton*all_parks*', 'fixture:merton-lavendar.xml').as('merton-parks');
+    cy.visit('http://merton.localhost:3001/report/new?longitude=-0.170620&latitude=51.411907');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Parks');
+    cy.wait('@merton-parks');
+    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
+  });
+
+  it('does not allow reporting on Morden Hall Park with appropriate message', function() {
+    cy.route('**mapserver/merton*all_parks*', 'fixture:merton-morden-hall.xml').as('merton-parks');
+    cy.visit('http://merton.localhost:3001/report/new?longitude=-0.186162&latitude=51.403673');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Parks');
+    cy.wait('@merton-parks');
+    cy.contains('Please select a Merton-owned park from the map').should('not.be.visible');
+    cy.contains('To report an issue at Morden Hall Park').should('be.visible');
+    cy.contains('To report an issue at Mitcham Common').should('not.be.visible');
+    cy.contains('To report an issue at Wimbledon Common').should('not.be.visible');
+    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.js-reporting-page--next:visible').should('be.disabled');
+  });
+
+  it('does not allow reporting on Mitcham Common with appropriate message', function() {
+    cy.route('**mapserver/merton*all_parks*', 'fixture:merton-mitcham.xml').as('merton-parks');
+    cy.visit('http://merton.localhost:3001/report/new?longitude=-0.137502&latitude=51.393623');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Parks');
+    cy.wait('@merton-parks');
+    cy.contains('Please select a Merton-owned park from the map').should('not.be.visible');
+    cy.contains('To report an issue at Morden Hall Park').should('not.be.visible');
+    cy.contains('To report an issue at Mitcham Common').should('be.visible');
+    cy.contains('To report an issue at Wimbledon Common').should('not.be.visible');
+    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.js-reporting-page--next:visible').should('be.disabled');
+  });
+
+  it('does not allow reporting on Wimbledon Common with appropriate message', function() {
+    cy.route('**mapserver/merton*all_parks*', 'fixture:merton-wimbledon.xml').as('merton-parks');
+    cy.visit('http://merton.localhost:3001/report/new?longitude=-0.253360&latitude=51.429054');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Parks');
+    cy.wait('@merton-parks');
+    cy.contains('Please select a Merton-owned park from the map').should('not.be.visible');
+    cy.contains('To report an issue at Morden Hall Park').should('not.be.visible');
+    cy.contains('To report an issue at Mitcham Common').should('not.be.visible');
+    cy.contains('To report an issue at Wimbledon Common').should('be.visible');
+
+    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.js-reporting-page--next:visible').should('be.disabled');
+  });
+
+  it('allows reporting on Commons Extension Sports Ground outside Merton and only reports to Merton', function() {
+    cy.route('**mapserver/merton*all_parks*', 'fixture:merton-wimbledon.xml').as('merton-parks');
+    cy.visit('http://merton.localhost:3001/report/new?longitude=-0.254369&latitude=51.427796');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Parks');
+    cy.wait('@merton-parks');
+    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
+    cy.nextPageReporting();
+    cy.nextPageReporting();
+    cy.contains('These will be sent to Merton Council and also published').should('be.visible');
+  });
+});

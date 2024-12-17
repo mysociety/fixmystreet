@@ -58,6 +58,7 @@ my @PLACES = (
     # Point in a park
     [ '?', 51.403986, 0.007803, 2482, 'Bromley Council', 'LBO' ],
     [ 'KT1 1AA', 51.408688, -0.304465, 2480, 'Kingston upon Thames Council', 'LBO' ],
+    [ '?', 51.427796, -0.254369, 2480, 'Kingston upon Thames Council', 'LBO' ], # Commons Extension park
     [ 'SM2 5HF', 51.354679, -0.183895, 2498, 'Sutton Borough Council', 'LBO' ],
     [ '?', 51.466707, 0.181108, 2494, 'London Borough of Bexley', 'LBO' ],
     [ '?', 51.512868, 0.125436, 2494, 'London Borough of Bexley', 'LBO' ],
@@ -92,6 +93,10 @@ my @PLACES = (
     [ 'The Circus', 51.386269, -2.364050, 2551, 'Bath and North East Somerset Council', 'UTA' ],
     [ 'SM1 1AA', 51.359723, -0.193146, 2498, 'Sutton Council', 'LBO' ],
     [ 'SM4 5DX', 51.400975, -0.19655, 2500, 'Merton Council', 'LBO' ],
+    [ '?', 51.411907, -0.170620, 2500, 'Merton Council', 'LBO' ], # Lavendar Park
+    [ '?', 51.429054, -0.253360, 2500, 'Merton Council', 'LBO' ], # Wimbledon Common
+    [ '?', 51.393623, -0.137502, 2500, 'Merton Council', 'LBO' ], # Mitcham Common
+    [ '?', 51.403673, -0.186162, 2500, 'Merton Council', 'LBO' ], # Morden Hall Park
     [ 'SY4 5DL', 52.855684, -2.723877, 2238, 'Shropshire Council', 'UTA' ],
     # Norway
     [ '3290', 59, 10, 709, 'Larvik', 'NKO', 7, 'Vestfold', 'NFY' ],

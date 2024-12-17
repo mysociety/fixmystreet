@@ -1086,6 +1086,29 @@ fixmystreet.assets.merton.recyling_stylemap = new OpenLayers.StyleMap({
     'hover': fixmystreet.assets.style_default_hover,
     'select': fixmystreet.assets.style_default_select
 });
+fixmystreet.assets.merton.park_found = function(layer) {
+    fixmystreet.body_overrides.only_send(layer.fixmystreet.body);
+
+    var asset = layer.selected_feature;
+    if (asset.attributes.Park_Name == 'Morden Hall Park') {
+        layer.fixmystreet.no_asset_msg_id = '#js-not-a-park-morden-hall';
+        fixmystreet.message_controller.road_not_found(layer);
+    } else if (asset.attributes.Park_Name == 'Mitcham Common') {
+        layer.fixmystreet.no_asset_msg_id = '#js-not-a-park-mitcham-common';
+        fixmystreet.message_controller.road_not_found(layer);
+    } else if (asset.attributes.Park_Name == 'Wimbledon Common') {
+        layer.fixmystreet.no_asset_msg_id = '#js-not-a-park-wimbledon-common';
+        fixmystreet.message_controller.road_not_found(layer);
+    } else {
+        fixmystreet.message_controller.road_found(layer);
+    }
+};
+
+fixmystreet.assets.merton.park_not_found = function(layer) {
+    fixmystreet.body_overrides.remove_only_send();
+    layer.fixmystreet.no_asset_msg_id = '#js-not-a-merton-park';
+    fixmystreet.message_controller.road_not_found(layer);
+};
 
 /* Northamptonshire */
 
