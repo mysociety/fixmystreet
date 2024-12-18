@@ -45,8 +45,6 @@ has_page how_much => (
         return 'how_many' if $how_much eq 'less1';
         return 'request_static' if $how_much eq '3more';
         $data->{'container-' . CONTAINER_REFUSE_240} = 1;
-        $data->{'quantity-' . CONTAINER_REFUSE_240} = 1;
-        $data->{'removal-' . CONTAINER_REFUSE_240} = 1;
         return 'about_you';
     },
 );
@@ -70,8 +68,6 @@ has_page how_many => (
         my $data = shift;
         return 'request_static' if $data->{how_many} eq 'less5';
         $data->{'container-' . CONTAINER_REFUSE_240} = 1;
-        $data->{'quantity-' . CONTAINER_REFUSE_240} = 1;
-        $data->{'removal-' . CONTAINER_REFUSE_240} = 1;
         return 'about_you';
     },
 );
