@@ -188,17 +188,19 @@ sub process_update {
     # one exists for the problem. Otherwise an older update may overwrite a
     # newer one in Alloy etc.
     my $formatter = FixMyStreet::DB->schema->storage->datetime_parser;
-    my @unsent_comments_for_problem
+    my $unsent_comment_for_problem
         = $problem->comments->search(
             {
                 state => 'confirmed',
                 send_state => 'unprocessed',
                 confirmed => { '<' =>
                         $formatter->format_datetime( $comment->confirmed ) },
-            }
-        )->order_by('confirmed');
+                id => { '!=' => $comment->id },
+            },
+            { rows => 1 },
+        )->single;
 
-    if (@unsent_comments_for_problem) {
+    if ($unsent_comment_for_problem) {
         $self->log( $comment,
             'Skipping for now because of older unprocessed update' );
         return;
