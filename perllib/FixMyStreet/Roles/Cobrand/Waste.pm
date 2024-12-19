@@ -55,4 +55,12 @@ sub svg_container_box {
     };
 }
 
+# Garden related
+
+sub garden_subscription_email_renew_reminder_opt_in { 0 }
+
+sub garden_waste_new_bin_admin_fee { 0 }
+
+sub waste_cheque_payments { 0 }
+
 1;
