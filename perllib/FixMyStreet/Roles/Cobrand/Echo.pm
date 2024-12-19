@@ -897,33 +897,6 @@ sub waste_sub_overdue {
     return 0;
 }
 
-# Provided with a list of costs, and optionally a date string or DateTime object
-sub _get_cost_from_array {
-    my ($self, $costs, $date) = @_;
-
-    # Default date if not provided to the current date
-    $date ||= DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    $date = $date->strftime('%Y-%m-%d %H:%M') if ref $date; # A DateTime
-    $date .= ' 00:00' if $date =~ /^\d\d\d\d-\d\d-\d\d$/; # If only a date provided
-
-    my @sorted = sort { $b->{start_date} cmp $a->{start_date} } @$costs;
-    foreach my $cost (@sorted) {
-        return $cost->{cost} if $cost->{start_date} le $date;
-    }
-
-    die("Couldn't find a valid cost item");
-}
-
-sub _get_cost {
-    my ($self, $cost_ref, $date) = @_;
-    my $payments = $self->feature('payment_gateway');
-    my $cost = $payments->{$cost_ref};
-    if (ref $cost eq 'ARRAY') {
-        $cost = $self->_get_cost_from_array($cost, $date);
-    }
-    return $cost;
-}
-
 # Garden waste
 
 sub waste_garden_maximum {
@@ -931,15 +904,6 @@ sub waste_garden_maximum {
     my $c = $self->{c};
     my $service = $self->garden_service_id;
     return $c->stash->{quantity_max}->{$service};
-}
-
-sub bin_payment_types {
-    return {
-        'csc' => 1,
-        'credit_card' => 2,
-        'direct_debit' => 3,
-        'cheque' => 4,
-    };
 }
 
 sub waste_display_payment_method {
@@ -968,68 +932,6 @@ sub garden_current_service_from_service_units {
     }
 
     return $garden;
-}
-
-sub garden_waste_sacks_cost_pa {
-    my ($self) = @_;
-    return $self->_get_cost('ggw_sacks_cost');
-}
-
-sub garden_waste_cost_pa {
-    my ($self, $bin_count) = @_;
-    $bin_count ||= 1;
-    my $per_bin_cost = $self->_get_cost('ggw_cost');
-    my $cost = $per_bin_cost * $bin_count;
-    return $cost;
-}
-
-# Same as full cost
-sub waste_get_pro_rata_cost {
-    my ($self, $bins, $end) = @_;
-    return $self->garden_waste_cost_pa($bins);
-}
-
-=head2 garden_waste_cost_pa_in_one_month
-
-Returns the cost of garden waste in one month, if it differs from the usual
-cost passed in. This is to show an upcoming price change on the garden
-subscription intro page.
-
-=cut
-
-sub garden_waste_cost_pa_in_one_month {
-    my ($self, $cost_pa) = @_;
-
-    my $costs = $self->feature('payment_gateway')->{ggw_cost};
-    return unless ref $costs eq 'ARRAY';
-
-    my $pattern = '%Y-%m-%d %H:%M';
-    my $date = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->add(months => 1);
-    $date = $date->strftime($pattern);
-
-    my @sorted = sort { $b->{start_date} cmp $a->{start_date} } @$costs;
-    foreach my $cost (@sorted) {
-        if ($cost->{start_date} le $date) {
-            my $parser = DateTime::Format::Strptime->new(pattern => $pattern);
-            return {
-                cost => $cost->{cost},
-                start_date => $parser->parse_datetime($cost->{start_date}),
-            } if $cost->{cost} != $cost_pa;
-            return;
-        }
-    }
-
-    die("Couldn't find a valid cost item");
-}
-
-sub garden_waste_renewal_cost_pa {
-    my ($self, $end_date, $bin_count) = @_;
-    return $self->garden_waste_cost_pa($bin_count);
-}
-
-sub garden_waste_renewal_sacks_cost_pa {
-    my ($self, $end_date) = @_;
-    return $self->garden_waste_sacks_cost_pa();
 }
 
 sub clear_cached_lookups_property {
