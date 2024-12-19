@@ -196,6 +196,10 @@ sub check_bulky_slot_available {
     my $workpack_dt = $self->_bulky_date_to_dt($date);
     next unless $workpack_dt;
 
+    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+    my $cutoff = $self->_bulky_cancellation_cutoff_date($workpack_dt);
+    return 0 if $now > $cutoff;
+
     my $date_from = $workpack_dt->clone->strftime('%FT%T');
     my $date_to = $workpack_dt->clone->set(
         hour   => 23,

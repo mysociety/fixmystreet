@@ -316,7 +316,9 @@ FixMyStreet::override_config {
     });
 
     my $report;
+    my $booking_date = '2022-08-01T12:00:00Z';
     subtest 'Bulky goods collection booking' => sub {
+        set_fixed_time($booking_date);
         subtest '?type=bulky redirect before any bulky booking made' => sub {
             $mech->get_ok('/waste?type=bulky');
             is $mech->uri, 'http://localhost/waste?type=bulky',
@@ -626,7 +628,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('/waste/PE1%203NA:100090215480/bulky/cancel/' . $report->id);
             $mech->content_lacks('Cancel this booking');
 
-            set_fixed_time($good_date);
+            set_fixed_time($booking_date);
         };
 
         subtest "Can't view booking logged-out" => sub {
@@ -680,6 +682,20 @@ FixMyStreet::override_config {
             $mech->follow_link_ok( { text_regex => qr/Check collection details/i, }, "follow 'Check collection...' link" );
             is $mech->uri->path, '/report/' . $report->id , 'Redirected to waste base page';
         };
+    };
+
+    # Note 12th August is still stubbed out as unavailable from above
+    subtest 'Booking too late' => sub {
+        set_fixed_time("2022-08-07T13:00:00Z");
+        $mech->get_ok('/waste/PE1%203NA:100090215480/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->content_lacks('5 August');
+        $mech->content_lacks('12 August');
+        $mech->content_contains('19 August');
+        $mech->content_contains('26 August');
+        set_fixed_time($booking_date);
     };
 
     # Note 12th August is still stubbed out as unavailable from above
@@ -931,6 +947,7 @@ FixMyStreet::override_config {
 
     # Still logged in as staff
     my $report2;
+    set_fixed_time($booking_date);
     subtest 'Make a second booking' => sub {
         $mech->get_ok('/waste/PE1%203NA:100090215480');
         $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
