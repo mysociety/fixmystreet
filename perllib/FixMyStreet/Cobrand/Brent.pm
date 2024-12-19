@@ -1445,7 +1445,6 @@ sub waste_munge_request_form_data {
 
 sub waste_auto_confirm_report { 1 }
 sub waste_staff_choose_payment_method { 0 }
-sub waste_cheque_payments { 0 }
 
 sub garden_service_id { 317 }
 use constant GARDEN_WASTE_PAID_COLLECTION_BIN => 1;
@@ -1591,8 +1590,6 @@ sub apply_garden_waste_discount {
     my @discounted = map { $_ ? $_ * $proportion_to_pay : $_ } @charges;
     return @discounted;
 }
-
-sub garden_waste_new_bin_admin_fee { 0 }
 
 sub bulky_collection_time { { hours => 7, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59 } }

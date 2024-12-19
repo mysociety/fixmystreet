@@ -653,7 +653,6 @@ sub waste_on_the_day_criteria {
 }
 
 sub waste_staff_choose_payment_method { 0 }
-sub waste_cheque_payments { 0 }
 
 sub waste_event_state_map {
     return {
@@ -677,7 +676,6 @@ sub garden_service_id { 545 }
 sub garden_service_name { 'Green Garden Waste collection service' }
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
-sub garden_subscription_email_renew_reminder_opt_in { 0 }
 sub garden_echo_container_name { 'LBB - GW Container' }
 sub garden_due_days { 48 }
 
@@ -967,8 +965,6 @@ sub garden_waste_renewal_cost_pa {
     my $cost = $per_bin_cost * $bin_count;
     return $cost;
 }
-
-sub garden_waste_new_bin_admin_fee { 0 }
 
 sub waste_payment_ref_council_code { "LBB" }
 

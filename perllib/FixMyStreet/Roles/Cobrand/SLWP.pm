@@ -34,7 +34,10 @@ around look_up_property => sub {
 };
 
 sub waste_staff_choose_payment_method { 1 }
-sub waste_cheque_payments { shift->{c}->stash->{staff_payments_allowed} }
+around waste_cheque_payments => sub {
+    my ($orig, $self) = @_;
+    return $self->{c}->stash->{staff_payments_allowed};
+};
 
 sub waste_event_state_map {
     return {
@@ -334,8 +337,6 @@ sub waste_munge_report_data {
 
 sub garden_service_name { 'garden waste collection service' }
 sub garden_echo_container_name { 'SLWP - Containers' }
-
-sub garden_subscription_email_renew_reminder_opt_in { 0 }
 
 sub garden_current_service_from_service_units {
     my ($self, $services) = @_;
