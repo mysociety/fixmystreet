@@ -330,14 +330,6 @@ FixMyStreet::override_config {
             $mech->content_contains('Bob Marge', 'name shown');
             $mech->content_contains('44 07 111 111 111', 'phone shown');
         }
-        sub test_summary_submission {
-            # external redirects make Test::WWW::Mechanize unhappy so clone
-            # the mech for the redirect
-            my $mech2 = $mech->clone;
-            $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-            is $mech2->res->previous->code, 302, 'payments issues a redirect';
-            is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
-        }
 
         subtest 'Summary page' => \&test_summary;
 
@@ -390,7 +382,7 @@ FixMyStreet::override_config {
                 },
             ] } );
 
-            subtest 'Summary submission' => \&test_summary_submission;
+            $mech->waste_submit_check({ with_fields => { tandc => 1 } });
         };
 
         my $catch_email;
