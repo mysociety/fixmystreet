@@ -150,7 +150,8 @@ reference for the credit card payment. It differs for bulky waste.
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
     if ($p->category eq 'Bulky collection') {
-        return $self->_waste_cc_line_item_ref($p, "BULKY", "");
+        my $type = $self->moniker eq 'sutton' ? 'BWB' : 'BULKY';
+        return $self->_waste_cc_line_item_ref($p, $type, "");
     } elsif ($p->category eq 'Request new container') {
         return $self->_waste_cc_line_item_ref($p, "CCH", "");
     } else {
