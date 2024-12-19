@@ -1205,9 +1205,8 @@ sub garden : Chained('garden_setup') : Args(0) {
     $c->stash->{next_month_cost} = $c->cobrand->garden_waste_cost_pa_in_one_month($c->stash->{per_bin_cost});
 
     $c->stash->{first_page} = 'intro';
-    my $service = $c->cobrand->garden_service_id;
     $c->stash->{garden_form_data} = {
-        max_bins => $c->stash->{quantity_max}->{$service}
+        max_bins => $c->cobrand->waste_garden_maximum
     };
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
     $c->cobrand->call_hook('waste_garden_subscribe_form_setup');
@@ -1242,9 +1241,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
         $c->forward('get_original_sub', ['user']);
 
-        my $service_id = $c->cobrand->garden_service_id;
-        my $max_bins = $c->stash->{quantity_max}->{$service_id};
-
+        my $max_bins = $c->cobrand->waste_garden_maximum;
         my $payment_method = 'credit_card';
         if ( $c->stash->{orig_sub} ) {
             my $orig_sub = $c->stash->{orig_sub};
@@ -1316,8 +1313,7 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
     } else {
         $c->stash->{first_page} = 'intro';
     }
-    my $service_id = $c->cobrand->garden_service_id;
-    my $max_bins = $c->stash->{quantity_max}->{$service_id};
+    my $max_bins = $c->cobrand->waste_garden_maximum;
     $c->stash->{garden_form_data} = {
         max_bins => $max_bins,
         bins => $service->{garden_bins},

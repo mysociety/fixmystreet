@@ -926,6 +926,13 @@ sub _get_cost {
 
 # Garden waste
 
+sub waste_garden_maximum {
+    my $self = shift;
+    my $c = $self->{c};
+    my $service = $self->garden_service_id;
+    return $c->stash->{quantity_max}->{$service};
+}
+
 sub bin_payment_types {
     return {
         'csc' => 1,
