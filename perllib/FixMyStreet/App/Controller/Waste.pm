@@ -1200,7 +1200,8 @@ sub garden : Chained('garden_setup') : Args(0) {
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_new_disabled};
     $c->detach('property_redirect') if $c->cobrand->garden_current_subscription;
 
-    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
+    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_subsequent_cost_pa;
+    $c->stash->{per_bin_first_cost} = $c->cobrand->garden_waste_first_cost_pa;
     $c->stash->{per_sack_cost} = $c->cobrand->garden_waste_sacks_cost_pa;
     $c->stash->{next_month_cost} = $c->cobrand->garden_waste_cost_pa_in_one_month($c->stash->{per_bin_cost});
 
@@ -1222,7 +1223,8 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
-    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
+    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_subsequent_cost_pa;
+    $c->stash->{per_bin_first_cost} = $c->cobrand->garden_waste_first_cost_pa;
 
     if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == 28) { # SLWP Sack
         if ($c->cobrand->moniker eq 'kingston') {
@@ -1320,6 +1322,7 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
         end_date => $service->{end_date},
     };
 
+    # TODO first_cost Bexley GGW
     $c->stash->{per_bin_renewal_cost} = $c->cobrand->garden_waste_renewal_cost_pa($service->{end_date});
     $c->stash->{per_sack_renewal_cost} = $c->cobrand->garden_waste_renewal_sacks_cost_pa($service->{end_date});
 

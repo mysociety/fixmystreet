@@ -29,6 +29,7 @@ sub details_update_fields {
             $c->stash->{cost_pa},
             $c->stash->{cost_now_admin},
             $c->stash->{per_bin_cost},
+            $c->stash->{per_bin_first_cost},
             $c->stash->{per_new_bin_cost},
             $c->stash->{per_new_bin_first_cost},
             ) =
@@ -36,6 +37,7 @@ sub details_update_fields {
             $c->stash->{cost_pa},
             $c->stash->{cost_now_admin},
             $c->stash->{per_bin_cost},
+            $c->stash->{per_bin_first_cost},
             $c->stash->{per_new_bin_cost},
             $c->stash->{per_new_bin_first_cost},
             );

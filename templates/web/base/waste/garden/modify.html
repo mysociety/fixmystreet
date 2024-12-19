@@ -14,11 +14,13 @@
   <div class="cost-pa__total js-bin-costs"
   [% IF form.saved_data.apply_discount %]
     data-per_bin_cost="[% c.cobrand.apply_garden_waste_discount(per_bin_cost) %]"
+    data-per_bin_first_cost="[% c.cobrand.apply_garden_waste_discount(per_bin_first_cost) %]"
     data-per_new_bin_first_cost="[% c.cobrand.apply_garden_waste_discount(per_new_bin_first_cost) %]"
     data-per_new_bin_cost="[% c.cobrand.apply_garden_waste_discount(per_new_bin_cost) %]"
     data-pro_rata_bin_cost="[% c.cobrand.apply_garden_waste_discount(garden_form_data.pro_rata_bin_cost) %]"
   [% ELSE %]
     data-per_bin_cost="[% per_bin_cost %]"
+    data-per_bin_first_cost="[% per_bin_first_cost %]"
     data-per_new_bin_first_cost="[% per_new_bin_first_cost %]"
     data-per_new_bin_cost="[% per_new_bin_cost %]"
     data-pro_rata_bin_cost="[% garden_form_data.pro_rata_bin_cost %]"

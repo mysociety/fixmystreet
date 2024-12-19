@@ -81,6 +81,10 @@ sub garden_waste_cost_pa {
     return $cost;
 }
 
+# Same cost no matter the quantity
+sub garden_waste_first_cost_pa { $_[0]->garden_waste_cost_pa }
+sub garden_waste_subsequent_cost_pa { $_[0]->garden_waste_cost_pa }
+
 # Same as full cost
 sub waste_get_pro_rata_cost {
     my ($self, $bins, $end) = @_;
