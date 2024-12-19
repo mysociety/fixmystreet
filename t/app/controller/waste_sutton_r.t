@@ -126,10 +126,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
 
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
         is $sent_params->{items}[0]{amount}, 500;
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
@@ -159,10 +156,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
 
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
         is $sent_params->{items}[0]{amount}, 1500;
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
@@ -184,10 +178,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
 
-        my $mech2 = $mech->clone;
-        $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
-        is $mech2->res->previous->code, 302, 'payments issues a redirect';
-        is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
         is $sent_params->{items}[0]{amount}, 1500;
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
