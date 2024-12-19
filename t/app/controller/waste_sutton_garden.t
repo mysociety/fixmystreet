@@ -209,25 +209,6 @@ sub _garden_waste_service_units {
         } } } ];
 }
 
-# don't do this per request as it includes the generated on the fly token
-# so changes for each run
-subtest "check signature generation" => sub {
-    my $cobrand = FixMyStreet::Cobrand::Sutton->new;
-
-    my $params = {
-        AMOUNT => 2000,
-        ORDERID => 123456,
-        CN => "Matthew O’Neill",
-        EMAIL => 'user@example.org',
-    };
-
-    my $passphrase = "12345abcde";
-
-    my $sha = $cobrand->garden_waste_generate_sig($params, $passphrase);
-
-    is $sha, "06BB8BCD34670AE7BDBC054D23B84B30DFDEBABA", "correct signature generated";
-};
-
 subtest "check garden waste container images" => sub {
     my $cobrand = FixMyStreet::Cobrand::Sutton->new;
 
@@ -306,6 +287,7 @@ FixMyStreet::override_config {
     };
 };
 
+my $sent_params = {};
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'sutton',
     MAPIT_URL => 'http://mapit.uk/',
@@ -340,7 +322,7 @@ FixMyStreet::override_config {
             scpID => '1234',
             company_name => 'rbk',
             form_name => 'rbk_user_form',
-            epdq_url => 'http://example.org/cc_submit',
+            cc_url => 'http://example.org',
             sha_passphrase => 'XYZ123',
         } },
     },
@@ -355,9 +337,7 @@ FixMyStreet::override_config {
     $p->update_extra_field({ name => 'property_id', value => '12345' });
     $p->update;
 
-    my $sent_params = {};
-    my $call_params = {};
-
+    my ($scp) = shared_scp_mocks();
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetEventsForObject', sub { [] });
     $echo->mock('GetTasks', sub { [] });
@@ -518,13 +498,12 @@ FixMyStreet::override_config {
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $form->value('ORDERID'), 'LBS-' . $new_report->id . '-' . '1000000002';
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{lineId}, 'LBS-GGW-' . $new_report->id . '-Test McTest-GW Sub';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
         check_extra_data_pre_confirm($new_report);
 
         $mech->get('/waste/pay/xx/yyyyyyyyyyy');
@@ -568,11 +547,9 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
-
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
         check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
@@ -601,11 +578,9 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
-
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
         check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
@@ -645,10 +620,9 @@ FixMyStreet::override_config {
         $mech->content_contains('<span id="pro_rata_cost">20.00');
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
 
@@ -727,11 +701,10 @@ FixMyStreet::override_config {
             payment_method => 'credit_card',
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
 
@@ -768,12 +741,9 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('40.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
+        is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
 
-        is $form->value("AMOUNT"), 4000, 'correct amount used';
-        is $form->value("CN"), 'New McTest', 'Correct name';
-
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2);
 
@@ -806,11 +776,10 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report, type => 'Renew', action => 2);
 
@@ -912,11 +881,10 @@ FixMyStreet::override_config {
             email => 'test@example.net'
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report);
 
@@ -959,11 +927,10 @@ FixMyStreet::override_config {
             email => 'test@example.net'
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 4100, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 4100, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report, bin_type => 28);
 
@@ -1004,9 +971,8 @@ FixMyStreet::override_config {
         $mech->content_contains('1 bin');
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
     };
 
@@ -1022,9 +988,8 @@ FixMyStreet::override_config {
         $mech->content_contains('bins_wanted');
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2, name => 'Test McTest' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
     };
 
@@ -1068,9 +1033,8 @@ FixMyStreet::override_config {
             payment_method => 'credit_card',
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
-        is $form->value("AMOUNT"), 4100, 'correct amount used';
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        is $sent_params->{items}[0]{amount}, 4100, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 28);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
@@ -1318,11 +1282,10 @@ FixMyStreet::override_config {
         $mech->content_contains('40.00');
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
 
@@ -1465,6 +1428,39 @@ sub mock_CancelReservedSlotsForEvent {
         my (undef, $guid) = @_;
         ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
     } );
+}
+
+sub shared_scp_mocks {
+    my $pay = Test::MockModule->new('Integrations::SCP');
+
+    $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'IN_PROGRESS',
+            scpReference => '12345',
+            invokeResult => {
+                status => 'SUCCESS',
+                redirectUrl => 'http://example.org/faq'
+            }
+        };
+    });
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'COMPLETE',
+            paymentResult => {
+                status => 'SUCCESS',
+                paymentDetails => {
+                    paymentHeader => {
+                        uniqueTranId => 54321
+                    }
+                }
+            }
+        };
+    });
+    return $pay;
 }
 
 done_testing;
