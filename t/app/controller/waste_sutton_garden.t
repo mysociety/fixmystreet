@@ -228,6 +228,34 @@ subtest "check signature generation" => sub {
     is $sha, "06BB8BCD34670AE7BDBC054D23B84B30DFDEBABA", "correct signature generated";
 };
 
+subtest "check garden waste container images" => sub {
+    my $cobrand = FixMyStreet::Cobrand::Sutton->new;
+
+    # Test garden waste bin image
+    my $bin_unit = {
+        garden_container => 26,  # Garden waste bin
+    };
+    my $bin_image = $cobrand->image_for_unit($bin_unit);
+    is_deeply $bin_image, {
+        type => 'svg',
+        data => $bin_image->{data},  # SVG data will vary
+        colour => '#41B28A',
+        lid_colour => '#8B5E3D',
+        recycling_logo => undef,
+    }, "garden waste bin shows as green bin with brown lid";
+
+    # Test garden waste sack image
+    my $sack_unit = {
+        garden_container => 28,  # Garden waste sack
+    };
+    my $sack_image = $cobrand->image_for_unit($sack_unit);
+    is_deeply $sack_image, {
+        type => 'svg',
+        data => $sack_image->{data},  # SVG data will vary
+        colour => '#F5F5DC',
+    }, "garden waste sack shows as cream colored sack";
+};
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'sutton',
     MAPIT_URL => 'http://mapit.uk/',
