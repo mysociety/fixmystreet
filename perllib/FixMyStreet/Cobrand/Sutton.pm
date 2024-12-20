@@ -70,6 +70,7 @@ sub image_for_unit {
     my $base = '/i/waste-containers';
     if (my $container = $unit->{garden_container}) {
         return svg_container_bin("wheelie", '#41B28A', '#8B5E3D') if $container == 26 || $container == 27;
+        return svg_container_sack('normal', '#F5F5DC') if $container == 28; # Garden waste sack
         return "";
     }
     if (my $container = $unit->{request_containers}[0]) {
