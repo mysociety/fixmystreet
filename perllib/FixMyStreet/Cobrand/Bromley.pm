@@ -215,9 +215,6 @@ sub open311_config {
 
     if ($contact->email =~ /^\d+$/) {
         $params->{multi_photos} = 1;
-    }
-    my $group = $contact->get_extra_metadata('group') || '';
-    if ($group eq 'Waste') {
         $params->{upload_files} = 1;
     }
 
