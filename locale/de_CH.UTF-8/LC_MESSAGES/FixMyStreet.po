@@ -887,7 +887,7 @@ msgstr ""
 #: templates/web/base/around/display_location.html:62
 #: templates/web/base/js/translation_strings.html:42
 msgid "Choose location, pan and zoom to adjust"
-msgstr ""
+msgstr "Wähle den Ort, verschiebe und zoome um anzupassen"
 
 #: templates/web/base/auth/create.html:71
 #, fuzzy
@@ -1086,7 +1086,7 @@ msgstr ""
 #: templates/web/base/report/new/form_report.html:46
 #: templates/web/base/report/new/form_report.html:64
 msgid "Continue"
-msgstr ""
+msgstr "Weiter"
 
 #: templates/web/base/main_nav_items.html:34
 #, fuzzy
@@ -1095,7 +1095,7 @@ msgstr "Erfasse eine Meldung"
 
 #: templates/web/base/report/new/duplicate_suggestions.html:20
 msgid "Continue – report a new problem"
-msgstr ""
+msgstr "Weiter - neues Problem melden"
 
 #: templates/web/base/admin/bodies/open311-form-fields.html:151
 msgid "Convert location from Easting/Northing"
@@ -1461,7 +1461,7 @@ msgstr "Meldungen editieren"
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:75
 msgid "Drag photos here or <u>browse photos</u>"
-msgstr ""
+msgstr "Fotos hierhin legen oder <u>Fotos suchen</u>"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:82
@@ -4389,13 +4389,13 @@ msgstr "Ausstehender Meldungsversand"
 
 #: templates/web/base/report/new/after_photo.html:3
 msgid "Reports with photos in them tend to get fixed more quickly"
-msgstr ""
+msgstr "Meldungen mit Fotos können schneller behoben werden"
 
 #. ("JS")
 #: templates/web/base/js/translation_strings.html:41
 #: templates/web/base/report/new/fill_in_details.html:34
 msgid "Reposition if needed, then hit Continue"
-msgstr ""
+msgstr "Neue Position setzen, falls nötig, dann Weiter"
 
 #: templates/web/base/maps/_map_instructions.html:30
 #, fuzzy
@@ -4991,7 +4991,7 @@ msgstr "Ältere Meldungen anzeigen"
 
 #: templates/web/base/maps/_map_instructions.html:29
 msgid "Start new report here"
-msgstr ""
+msgstr "Starte neue Meldung hier"
 
 #: templates/web/base/admin/sitemessage/_ooh.html:45
 msgid "Start time"
@@ -6517,7 +6517,7 @@ msgstr ""
 
 #: templates/web/base/maps/_map_instructions.html:3
 msgid "You can move around with your keyboard"
-msgstr ""
+msgstr "Sie können sich mit der Tastatur bewegen."
 
 #: templates/web/fixmystreet.com/contact/who.html:60
 msgid "You can only contact the team behind FixMyStreet using our contact form"
