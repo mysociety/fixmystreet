@@ -934,7 +934,7 @@ subtest 'redirecting of reports between backends' => sub {
             my $req = Open311->test_req_used;
             my $c = CGI::Simple->new($req->content);
             my $detail = $report->detail;
-            is $c->param('attribute[Event_ID]'), $event_id, 'old event ID included in attributes';
+            is $c->param('attribute[Original_Event_ID_(if_applicable)]'), $event_id, 'old event ID included in attributes';
             like $c->param('description'), qr/Closed report has a new comment: comment on closed event\r\nBromley pkg-tcobrandbromleyt-bromley\@example.com\r\n$detail/, 'Comment on closed report included in new report description';
         };
 

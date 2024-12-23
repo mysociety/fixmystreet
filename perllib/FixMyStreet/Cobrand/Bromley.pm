@@ -582,7 +582,7 @@ sub should_skip_sending_update {
         my $echo = Integrations::Echo->new(%$cfg);
         my $event = $echo->GetEvent($report->external_id);
         if ($event->{ResolvedDate}) {
-            $report->update_extra_field({ name => 'Event_ID', value => $event->{Id} });
+            $report->update_extra_field({ name => 'Original_Event_ID_(if_applicable)', value => $event->{Id} });
             $report->set_extra_metadata('open311_category_override' => REFERRED_TO_VEOLIA);
             $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
             $report->unset_extra_metadata('external_status_code');
