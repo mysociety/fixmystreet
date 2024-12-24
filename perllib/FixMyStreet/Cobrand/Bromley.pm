@@ -215,9 +215,6 @@ sub open311_config {
 
     if ($contact->email =~ /^\d+$/) {
         $params->{multi_photos} = 1;
-    }
-    my $group = $contact->get_extra_metadata('group') || '';
-    if ($group eq 'Waste') {
         $params->{upload_files} = 1;
     }
 
@@ -416,10 +413,10 @@ appropriately.
 
 sub open311_get_update_munging {
     my ($self, $comment, $state, $request) = @_;
+    my $problem = $comment->problem;
 
     # An update from Bromley with a special referral state, means "resend to Echo"
     if ($state eq 'referred to veolia streets') {
-        my $problem = $comment->problem;
         # Do we want to store the old category somewhere for display?
         $problem->category(REFERRED_TO_VEOLIA); # Will be an Echo Event Type ID
         $problem->state('in progress');
@@ -434,23 +431,24 @@ sub open311_get_update_munging {
 
     # Fetch any outgoing notes on the Echo event
     # If we pulled the update, we already have it, otherwise look it up
-    my $event = $request->{echo_event} || do {
-        my $echo = $self->feature('echo');
-        $echo = Integrations::Echo->new(%$echo);
-        my $event = $echo->GetEvent($request->{service_request_id}); # From the event, not the report
-        $echo->log($event->{Data});
-        $event;
-    };
-    my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
     my $notes = "";
-    foreach (@$data) {
-        $notes = $_->{Value} if $_->{DatatypeName} eq 'Veolia Notes';
+    if ($self->_has_report_been_sent_to_echo($problem)) {
+        my $event = $request->{echo_event} || do {
+            my $echo = $self->feature('echo');
+            $echo = Integrations::Echo->new(%$echo);
+            my $event = $echo->GetEvent($request->{service_request_id}); # From the event, not the report
+            $echo->log($event->{Data}) if $event->{Data};
+            $event;
+        };
+        my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
+        foreach (@$data) {
+            $notes = $_->{Value} if $_->{DatatypeName} eq 'Veolia Notes';
+        }
     }
 
     # An update from Echo with resolution code 1252 means "refer to Bromley"
     my $code = $comment->get_extra_metadata('external_status_code') || '';
     if ($code eq '1252') {
-        my $problem = $comment->problem;
         $problem->category(REFERRED_TO_BROMLEY); # Will be LBB_RRE_FROM_VEOLIA_STREETS
         $problem->state('in progress');
         $comment->problem_state('in progress');
@@ -581,7 +579,7 @@ sub should_skip_sending_update {
         my $echo = Integrations::Echo->new(%$cfg);
         my $event = $echo->GetEvent($report->external_id);
         if ($event->{ResolvedDate}) {
-            $report->update_extra_field({ name => 'Event_ID', value => $event->{Id} });
+            $report->update_extra_field({ name => 'Original_Event_ID_(if_applicable)', value => $event->{Id} });
             $report->set_extra_metadata('open311_category_override' => REFERRED_TO_VEOLIA);
             $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
             $report->unset_extra_metadata('external_status_code');
@@ -666,7 +664,7 @@ sub waste_event_state_map {
             Accepted => 'action scheduled',
         },
         Closed => {
-            Closed => 'fixed - council',
+            Closed => 'closed',
             Completed => 'fixed - council',
             'Not Completed' => 'unable to fix',
             'Partially Completed' => 'closed',

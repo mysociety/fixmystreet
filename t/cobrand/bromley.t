@@ -812,8 +812,11 @@ subtest 'redirecting of reports between backends' => sub {
             is $c->param('service_code'), 3045;
             is $c->param('description'), "$detail | Handover notes - This is a handover note";
         };
+
+        my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
+
         subtest '...then redirected back to Confirm' => sub {
-            $report->update({ external_id => 'parent-guid', whensent => DateTime->now, send_method_used => 'Open311' });
+            $report->update({ external_id => $event_guid, whensent => DateTime->now, send_method_used => 'Open311' });
             $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
             is $report->comments->count, 2, 'A new update';
             is_deeply [ map { $_->state } $report->comments->order_by('id')->all ], ['hidden', 'confirmed'];
@@ -836,8 +839,6 @@ subtest 'redirecting of reports between backends' => sub {
 
             is_deeply [ map { $_->state } $report->comments->order_by('id')->all ], ['hidden', 'hidden'];
         };
-
-        my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
 
         subtest 'A report sent to Echo, redirected to Confirm' => sub {
             $report->comments->delete;
@@ -933,7 +934,7 @@ subtest 'redirecting of reports between backends' => sub {
             my $req = Open311->test_req_used;
             my $c = CGI::Simple->new($req->content);
             my $detail = $report->detail;
-            is $c->param('attribute[Event_ID]'), $event_id, 'old event ID included in attributes';
+            is $c->param('attribute[Original_Event_ID_(if_applicable)]'), $event_id, 'old event ID included in attributes';
             like $c->param('description'), qr/Closed report has a new comment: comment on closed event\r\nBromley pkg-tcobrandbromleyt-bromley\@example.com\r\n$detail/, 'Comment on closed report included in new report description';
         };
 

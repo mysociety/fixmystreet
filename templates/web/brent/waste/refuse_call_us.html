@@ -6,14 +6,29 @@
 
 <h1 class="govuk-heading-xl">Please call us</h1>
 
+[% IF date.format < 20250101 %]
 <p class="govuk-body">New and replacement rubbish bins cost
 [% IF date.format >= 20240329 %]£55[% ELSE %]£50[% END %].
-To request one please call our contact centre on 0208 937 5050, Monday to
+To request one please call our contact centre on 020 8937 5050, Monday to
 Friday, 9am to 5pm (except Bank holidays).</p>
 
 <p class="govuk-body">Please note that all requests for new or replacement
 bins will be assessed by our Education and Outreach team. If your request is
 approved by the team, payment must then be received before bins can be
 delivered.</p>
+[% ELSE %]
+<p class="govuk-body">New and replacement rubbish bins cost:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>£65 for a 140 litre bin</li>
+    <li>£80 for 240 litre and above (subject to criteria).</li>
+</ul>
+<p class="govuk-body">To request one please call our contact centre on 020 8937 5050,
+Monday to Friday, 9am to 5pm (except Bank holidays) or email
+<a href="mailto:Recyclemore@brent.gov.uk">Recyclemore@brent.gov.uk</a>.</p>
+
+<p class="govuk-body">Please note that all requests for new or replacement bins will
+be assessed by our Waste and Recycling team. If your request is approved by the team,
+payment must then be received before bins can be delivered.</p>
+[% END %]
 
 [% INCLUDE footer.html %]

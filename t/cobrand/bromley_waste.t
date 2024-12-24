@@ -599,7 +599,7 @@ subtest 'updating of waste reports' => sub {
         } qr/Fetching data for report/;
         $report->discard_changes;
         is $report->comments->count, ++$comment_count, 'No new update';
-        is $report->state, 'fixed - council', 'State change to fixed';
+        is $report->state, 'closed', 'State change to fixed';
         $report->update({ state => 'confirmed' }); # Reset back
 
         $report->update({ external_id => 'waste-15003-' });
