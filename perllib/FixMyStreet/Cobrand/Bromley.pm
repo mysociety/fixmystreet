@@ -667,7 +667,7 @@ sub waste_event_state_map {
             Accepted => 'action scheduled',
         },
         Closed => {
-            Closed => 'fixed - council',
+            Closed => 'closed',
             Completed => 'fixed - council',
             'Not Completed' => 'unable to fix',
             'Partially Completed' => 'closed',
