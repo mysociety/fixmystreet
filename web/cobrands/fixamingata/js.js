@@ -25,3 +25,13 @@ if (window.$) {
         fixmystreet.fixChromeAutocomplete
     );
 }
+
+// Show the app badges if the app is not a PWABuilder progressive web app from
+// the iOS App Store.
+if (document.cookie.indexOf("app-platform=iOS App Store") === -1) {
+    var fmsAppBadges = document.getElementsByClassName("fms-app-badges")[0];
+
+    if (fmsAppBadges) {
+        fmsAppBadges.style.display = "block";
+    }
+}
