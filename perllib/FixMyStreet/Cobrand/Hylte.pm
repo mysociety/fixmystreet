@@ -76,10 +76,6 @@ sub disambiguate_location {
 
 sub abuse_reports_only { 1 }
 
-sub always_view_body_contribute_details { return; }
-
-sub default_show_name { 0 }
-
 sub recent {
     my $self = shift;
 
