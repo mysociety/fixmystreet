@@ -35,3 +35,14 @@ if (document.cookie.indexOf("app-platform=iOS App Store") === -1) {
         fmsAppBadges.style.display = "block";
     }
 }
+
+// Hide the default PWA installation banner since it covers important UI
+// elements (https://github.com/mysociety/fixmystreet/issues/4153).
+// deferredPrompt could be used to provide an in-app installation flow.
+var deferredPrompt;
+
+addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+
+    deferredPrompt = event;
+});
