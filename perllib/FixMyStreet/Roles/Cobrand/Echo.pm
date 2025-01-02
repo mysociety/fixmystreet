@@ -93,7 +93,7 @@ sub bin_addresses_for_postcode {
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
-    my $points = $echo->FindPoints($pc, $cfg);
+    my $points = $echo->FindPoints($pc);
     my $data = [ map { {
         value => $_->{Id},
         label => FixMyStreet::Template::title($_->{Description}),
