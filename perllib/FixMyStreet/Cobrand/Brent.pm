@@ -1480,7 +1480,7 @@ use constant GARDEN_WASTE_PAID_COLLECTION_BIN => 1;
 use constant GARDEN_WASTE_PAID_COLLECTION_SACK => 2;
 sub garden_service_name { 'Garden waste collection service' }
 sub garden_subscription_event_id { 1159 }
-sub garden_due_days { 90 }
+sub garden_due_days { 87 }
 
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
