@@ -1174,6 +1174,74 @@ FixMyStreet::override_config {
         set_fixed_time('2024-03-31T02:00:00'); # March 31st, 02:00 BST
     };
 
+    subtest 'Deduplication of in-cab logs' => sub {
+        $whitespace_mock->mock('GetInCabLogsByUsrn', sub {
+            return [
+                # Two logs with same reason, round code and date but different times
+                {
+                    LogID => 1,
+                    Reason => 'Refuse - Not Out',
+                    RoundCode => 'RES-R3',
+                    LogDate => '2024-04-01T10:02:15.7',
+                    Uprn => '10001',
+                    Usrn => '321',
+                },
+                {
+                    LogID => 2,
+                    Reason => 'Refuse - Not Out',
+                    RoundCode => 'RES-R3',
+                    LogDate => '2024-04-01T10:05:20.1',
+                    Uprn => '10001',
+                    Usrn => '321',
+                },
+                # Different date, should be included
+                {
+                    LogID => 3,
+                    Reason => 'Refuse - Not Out',
+                    RoundCode => 'RES-R3',
+                    LogDate => '2024-04-02T10:02:15.7',
+                    Uprn => '10001',
+                    Usrn => '321',
+                },
+                # Different reason, should be included
+                {
+                    LogID => 4,
+                    Reason => 'Food - Not Out',
+                    RoundCode => 'RES-R3',
+                    LogDate => '2024-04-01T10:02:15.7',
+                    Uprn => '10001',
+                    Usrn => '321',
+                },
+                # Different round code, should be included
+                {
+                    LogID => 5,
+                    Reason => 'Refuse - Not Out',
+                    RoundCode => 'RES-R4',
+                    LogDate => '2024-04-01T10:02:15.7',
+                    Uprn => '10001',
+                    Usrn => '321',
+                },
+            ];
+        });
+
+        set_fixed_time('2024-04-03T12:00:00');
+        $mech->get_ok('/waste/10001');
+        $mech->content_contains('Service status');
+        $mech->content_contains('Our collection teams have reported the following problems with your bins:');
+
+        # Count occurrences of each type of message
+        my $content = $mech->content;
+        my $refuse_not_out_count = () = $content =~ /Refuse - Not Out/g;
+        my $food_not_out_count = () = $content =~ /Food - Not Out/g;
+
+        is($refuse_not_out_count, 3, "Shows three 'Refuse - Not Out' messages (two different dates, one different round)");
+        is($food_not_out_count, 1, "Shows one 'Food - Not Out' message");
+
+        # Reset mock and time
+        default_mocks();
+        set_fixed_time('2024-03-31T01:00:00');
+    };
+
     subtest 'Missed enquiry form for properties with no collections' => sub {
         $mech->delete_problems_for_body( $body->id );
 
