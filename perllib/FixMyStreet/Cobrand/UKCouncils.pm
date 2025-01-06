@@ -401,6 +401,12 @@ sub munge_reports_category_list {
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
+    if ($self->{c}->action =~ /^waste/) {
+        my $body_id = $self->body->id;
+        %$bodies = map { $_->id => $_ } grep { $_->id eq $body_id } values %$bodies;
+        return;
+    }
+
     my %bodies = map { $_->get_column('name') => 1 } values %$bodies;
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
