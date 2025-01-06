@@ -1009,6 +1009,12 @@ FixMyStreet::override_config {
         payment_gateway => { brent => {
             cc_url => 'http://example.com',
             ggw_cost => 6000,
+            request_cost_blue_bin => 3000,
+            request_cost_food_caddy => 500,
+            cc_url => 'http://example.org/cc_submit',
+            hmac => '1234',
+            hmac_id => '1234',
+            scpID => '1234',
         } },
         open311_email => { brent => {
             'Request new container' => 'referral@example.org',
@@ -1153,6 +1159,44 @@ FixMyStreet::override_config {
         }, ]
     });
 
+    my $sent_params = {};
+    my $call_params = {};
+
+    my $pay = Test::MockModule->new('Integrations::SCP');
+    $pay->mock(call => sub {
+        my $self = shift;
+        my $method = shift;
+        $call_params = { @_ };
+    });
+    $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        $pay->original('pay')->($self, $sent_params);
+        return {
+            transactionState => 'IN_PROGRESS',
+            scpReference => '12345',
+            invokeResult => {
+                status => 'SUCCESS',
+                redirectUrl => 'http://example.org/faq'
+            }
+        };
+    });
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'COMPLETE',
+            paymentResult => {
+                status => 'SUCCESS',
+                paymentDetails => {
+                    paymentHeader => {
+                        uniqueTranId => 54321
+                    }
+                }
+            }
+        };
+    });
+
     subtest 'test report missed container' => sub {
         set_fixed_time('2020-05-19T12:00:00Z'); # After sample food waste collection
         $mech->get_ok('/waste/12345');
@@ -1209,25 +1253,79 @@ FixMyStreet::override_config {
                 $mech->content_contains("How long have you", "Extra question for " . $radio->{type});
                 $mech->back;
             }
+            $mech->back;
         }
 
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 13 } }, "Choose garden bin");
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
         $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
         $mech->content_contains('Your container request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->get_extra_field_value('Container_Request_Container_Type'), '6::6';
+        is $report->get_extra_field_value('Container_Request_Container_Type'), '13::13';
         is $report->get_extra_field_value('Container_Request_Action'), '2::1';
         is $report->get_extra_field_value('Container_Request_Reason'), '4::4';
         is $report->get_extra_field_value('Container_Request_Notes'), '';
         is $report->get_extra_field_value('Container_Request_Quantity'), '1::1';
-        is $report->get_extra_field_value('service_id'), '265';
+        is $report->get_extra_field_value('service_id'), '317';
 
         FixMyStreet::Script::Reports::send();
         # No sent email, only logged email
         my $body = $mech->get_text_body_from_email;
         like $body, qr/We aim to deliver this container/;
+    };
+
+    subtest 'test requesting a container with payment' => sub {
+        for my $test (
+            { id => 11, name => 'food waste caddy', service_id => 316, pence_cost => 500 },
+            { id => 6, name => 'Recycling bin (blue bin)', service_id => 265, pence_cost => 3000 },
+        ) {
+            subtest "...a $test->{name}" => sub {
+                $mech->get_ok('/waste/12345');
+                $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+                $mech->submit_form_ok({ with_fields => { 'container-choice' => $test->{id} } }, "Choose " . $test->{name});
+                $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' } });
+                $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+                $mech->content_contains('Continue to payment');
+                $mech->waste_submit_check({ with_fields => { 'process' => 'summary' } });
+
+                my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+                is $sent_params->{items}[0]{amount}, $test->{pence_cost}, 'correct amount used';
+                # The below does a similar checks to the garden test check_extra_data_pre_confirm
+                is $report->category, 'Request new container', 'correct category on report';
+                is $report->title, "Request new \u$test->{name}", 'correct title on report';
+                is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+                is $report->get_extra_field_value('uprn'), 1000000002;
+                is $report->get_extra_field_value('Container_Request_Container_Type'), join('::', $test->{id}, $test->{id});
+                is $report->get_extra_field_value('Container_Request_Action'), '2::1';
+                is $report->get_extra_field_value('Container_Request_Reason'), '4::4';
+                is $report->get_extra_field_value('Container_Request_Notes'), '';
+                is $report->get_extra_field_value('Container_Request_Quantity'), '1::1';
+                is $report->get_extra_field_value('service_id'), $test->{service_id};
+
+                is $report->state, 'unconfirmed', 'report state correct';
+                is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+
+                $mech->get_ok("/waste/pay_complete/$report_id/$token");
+
+                # The below does a similar checks to the garden test check_extra_data_post_confirm
+                $report->discard_changes;
+                is $report->state, 'confirmed', 'report confirmed';
+                is $report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
+                is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
+                is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+
+                $mech->content_contains('Your container request has been sent');
+                $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
+
+                FixMyStreet::Script::Reports::send();
+                my $body = $mech->get_text_body_from_email;
+                like $body, qr/We aim to deliver this container/;
+                $mech->clear_emails_ok;
+            };
+        }
     };
 
     sub make_request {
@@ -1243,9 +1341,16 @@ FixMyStreet::override_config {
                 return;
             }
             $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
-            $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
-            $mech->content_contains('Your container request has been sent');
+            if ($referral) {
+                $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
+                $mech->content_contains('Your container request has been sent');
+            } else {
+                $mech->waste_submit_check({ with_fields => { 'process' => 'summary' } });
+            }
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            if (!$referral) {
+                $report->update({ state => 'confirmed' }); # Fake payment
+            }
             is $report->get_extra_field_value('request_referral'), $referral;
             is $report->get_extra_field_value('request_how_long_lived'), $duration;
             is $report->get_extra_field_value('request_ordered_previously'), $test_name eq 'Ordered' ? 1 : '';
