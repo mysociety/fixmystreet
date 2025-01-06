@@ -8,7 +8,7 @@ with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 with 'FixMyStreet::Cobrand::Merton::Waste';
 with 'FixMyStreet::Roles::Open311Multi';
 
-sub council_area_id { [2500, 2480] }
+sub council_area_id { [2500, 2480, 2501] }
 sub council_area { 'Merton' }
 sub council_name { 'Merton Council' }
 sub council_url { 'merton' }
@@ -181,7 +181,8 @@ sub categories_restriction {
 =head2 check_report_is_on_cobrand_asset
 
 Merton has a park, The Commons Extension Sports Ground, which is outside
-their boundary. We'll test if it's any Merton owned park
+their boundary, and Wimbledon Park is half outside the boundary.
+We'll test if it's any Merton owned park.
 
 =cut
 
