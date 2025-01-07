@@ -1,0 +1,113 @@
+/* This styling is based on https://www.aberdeenshire.gov.uk/
+*/
+
+/* COLOURS */
+$cobrand_blue: #004289; // Links and buttons
+$cobrand_blue_hover: #0000b4;
+$cobrand_primary_light: #0081c9;
+$cobrand_red: #c0232e;
+$cobrand_white: #fff;
+$cobrand_grey: #f1f1f1;
+$cobrand_black: #212529;
+$cobrand_yellow: #ffd744;
+$cobrand_purple: #8c4e8d; // buttons colour
+$cobrand_purple_darker: #60377d;
+
+$primary: $cobrand_blue;
+$yellow: $cobrand_yellow;
+
+$primary_b: $cobrand_black;
+$primary_text: $cobrand_white;
+
+/* FRONTPAGE */
+$base_bg: $cobrand_grey;
+$base_fg: $cobrand_black;
+$front_stats_bg: $cobrand_white;
+$layout_front_stats_color: $primary_b;
+
+/* LINKS */
+$primary_link_color: $cobrand_blue;
+$primary_link_hover_color: #2e8aca;
+$primary_link_decoration: underline;
+$primary_link_hover_decoration: underline;
+
+$link-color: $primary;
+$link-hover-color: #2a6496;
+$link-visited-color: $cobrand_blue_hover;
+$link-text-decoration: underline;
+$link-hover-text-decoration: none;
+
+/* BUTTONS */
+$button-padding-top: 0.625rem;
+$button-padding-bottom: 0.625rem;
+$button-padding-left: 1.5625rem;
+$button-padding-right: 1.5625rem;
+$button-border-radius: 0;
+
+// Usage 
+/*
+a#geolocate_link {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+    @include focus-state;
+}
+*/
+$button-primary-bg-top: $cobrand_purple;
+$button-primary-bg-bottom: $cobrand_purple;
+$button-primary-border: $cobrand_purple;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $cobrand_purple_darker;
+$button-primary-hover-bg-top: $cobrand_purple_darker;
+$button-primary-hover-border: $cobrand_purple_darker;
+$button-primary-hover-text: $primary_text;
+
+$geolocation-link: $primary;
+$geolocation-link-border: $primary;
+
+/* FONTS */
+
+$heading-font: "Arial Black",Arial,Helvetica,sans-serif;
+$body-font: Verdana,Geneva,Tahoma,sans-serif;
+$meta-font: Verdana,Geneva,Tahoma,sans-serif;
+
+/* NAVBAR */
+
+$nav_colour: $primary;
+$nav_background_colour: $cobrand_white;
+$nav_hover_background_colour: transparent;
+
+$mappage-header-height: 5.625rem;
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+$menu-image: "menu-black";
+// $close-menu-image: "close-#{$menu-image}";
+
+/* OTHER VARIABLES */
+
+$container-max-width: 82.5rem;
+
+$col_click_map: $primary;
+$col_fixed_label: $primary;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
+$dropzone-button-text: $primary_text;
+
+// $pagination_background: #f6f6f6;
+$itemlist_item_background:  $base_bg;
+$itemlist_item_background_hover: $cobrand_primary_light;
+$col_big_numbers: $primary_b;
+
+// $form-control-border-color: #aaaaaa;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$front-main-color: $primary_b;
+$postcodeform-background: $base_bg;
+$postcodeform-color: $primary_b;
+
+$postcodeform-color-desktop: $primary_b;
+$front-main-color-desktop: $primary_b;
+$front-main-background-desktop: white url("/cobrands/aberdeenshire/images/aberdeenshire-background-image.webp") no-repeat center / cover;
+$front-main-container-background-desktop: $cobrand_white
