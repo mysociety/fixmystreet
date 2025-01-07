@@ -1,0 +1,99 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* NAVBAR */
+#site-logo {
+    background-size: contain;
+    height: $mappage-header-height;
+    width: 15.625rem;
+}
+
+.nav-menu--main {
+  a, span {
+    font-weight: 800;
+    font-size: 1rem; // They have 1.1rem, but we have more items in the navbar so I ended up using this size instead.
+
+    &:hover {
+      color: $primary_link_hover_color;
+    }
+
+    &:focus {
+      background-color: $cobrand_yellow;
+      $color: $primary_b;
+      outline: none;
+    }
+  }
+
+  span {
+    color: $primary;
+    text-decoration: underline;
+    &:hover {
+      color: $nav_colour;
+    }
+  }
+
+  a.report-a-problem-btn {
+    border-radius: 0;
+    background-color: $button-primary-bg-top;
+    color: $primary_text;
+    &:hover {
+      background-color: $cobrand_purple_darker;
+    }
+  }
+}
+
+/* FRONTPAGE */
+#front-main {
+  margin: 0 0 45px 0;
+  padding: 5em 1em 5em 1em;
+}
+
+#front_stats {
+  border-color: $primary_b;
+}
+
+/* MAP PAGE */
+.big-green-banner {
+  font-size: 1.2rem;
+}
+
+/* FOOTER */
+.aberdeenshire-footer {
+  .strapline {
+    margin-top: 6.5rem;
+  }
+
+  a {
+    &.external-link {
+      background-position: center right 1.5rem;
+    }
+  }
+
+  .footer-list {
+    flex-direction: row;
+
+    li {
+      a {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        border-right: 1px solid $primary_text;
+      }
+    }
+
+    :first-child {
+      a {
+        padding-left: 0;
+      }
+    }
+
+    :last-child {
+      a {
+        padding-right: 0;
+        border-right: 0;
+        &.external-link {
+          background-position: center right 0;
+        }
+      }
+    }
+  }
+}
