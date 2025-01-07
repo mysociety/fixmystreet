@@ -1,0 +1,168 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+/*TYPOGRAPHY */
+h1, .h1,
+h2, .h2,
+h3, .h3, 
+.item-list__heading {
+    font-weight: 700;
+}
+
+/* BUTTONS */
+a#geolocate_link,
+#report-cta {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  text-decoration: none;
+}
+
+a {
+  &:focus {
+    outline: none;
+    // Important to override styles in .sticky-sidebar a:focus and navigation bar
+    color: #000 !important;
+    background-color: $cobrand_yellow !important;
+    box-shadow: 0 -2px $cobrand_yellow, 0 4px #0b0c0c;
+    text-decoration: none;
+  }
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/aberdeenshire/images/aberdeenshire-logo.svg");
+  background-size: auto 3rem;
+}
+
+#main-nav-btn:checked ~ #main-nav {
+  margin: 0 1em;
+}
+
+.nav-menu--main {
+  a {
+    background-color: $cobrand_white;
+    color: $primary;
+    text-decoration: none;
+
+    &:visited {
+      color: $primary;
+    }
+  }
+
+  span {
+    background-color: $primary;
+    color: $primary_text;
+  }
+}
+
+/* FRONTPAGE */
+.postcode-form-box {
+  input#sub {
+    font-family: $body-font;
+    font-weight: 600;
+    background-color: $button-primary-bg-top;
+
+    &:hover {
+      background-color: $button-primary-hover-bg-top;
+      color: $button-primary-text;
+    }
+  }
+}
+
+/* OTHERS */
+.item-list__item {
+  a {
+    text-decoration: none;
+
+    &:hover {
+      background-color: lighten($button-primary-bg-top, 40%);
+    }
+
+    &:focus {
+      background-color: $cobrand_yellow;
+      h3 {
+        color: $primary_b;
+      }
+    }
+  }
+}
+
+/* SITE MESSAGE */
+// Found here: https://www.aberdeenshire.gov.uk/schools/music-lessons/music-tuition
+.site-message {
+  color: $primary_b;
+  padding: 1.5rem;
+  background-color: $cobrand_white;
+  border: none;
+  border-left: 2px solid $cobrand_purple;
+  word-wrap: break-word;
+}
+
+/* FOOTER */
+.aberdeenshire-footer {
+  color: $primary_text;
+  font-weight: bold;
+  border-top: 2rem solid #00b2e2;
+  background-color: $primary;
+  padding: 1rem 0 3rem 0;
+  text-align: center;
+
+  .primary-links-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  a {
+    color: $primary_text;
+    &.external-link {
+      background-position: center right 0;
+      background-repeat: no-repeat;
+      background-size: 1.1rem;
+      background-image: url("/cobrands/aberdeenshire/images/external-icon.svg");
+      &:after {
+        content: "   ";
+        white-space: pre;
+        position: relative;
+        margin: auto 0 auto 0;
+      }
+    }
+  }
+
+  .strapline {
+    font-weight: bold;
+    font-size: .95rem;
+    font-style: italic;
+    margin-top: 5rem;
+  }
+
+  .footer-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: fit-content;
+    flex-wrap: wrap;
+    padding-bottom: 1.5rem;
+    margin-left: 0;
+
+    &:first-child {
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid transparentize(white, 0.5);
+    }
+
+    &:last-of-type {
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    li {
+      list-style: none;
+      margin-bottom: 0rem;
+      margin-top: 1rem;
+    }
+  }
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
