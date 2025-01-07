@@ -1,15 +1,16 @@
 <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post">
-
     <p><a href="[% c.uri_for( '/rss', problem.id ) %]">
         <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="float:right">
     </a>
 
     [% IF NOT c.user_exists OR c.user.alert_updates_by(c.cobrand) != 'phone' %]
-        [% loc('Receive email when updates are left on this problem.') %]
+        <span id="report-updates-data-title">[% loc('Receive email when updates are left on this problem.') %]</span>
     [% ELSE %]
-        [% loc('Receive a text when updates are left on this problem.') %]
-    [% END %]
+        <span id="report-updates-data-title">[% loc('Receive a text when updates are left on this problem.') %]
+          [% END %]</span>
     </p>
+
+    <button type="button" class="close-drawer screen-reader-only" aria-label="Close this dialog"></button>
 
     [% PROCESS 'auth/form_extra.html' %]
 

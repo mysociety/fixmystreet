@@ -683,7 +683,12 @@ body.authpage {
   margin: 0;
   box-shadow: 0 0 1em 1em #fff;
 
+  html.js & {
+    display: table;
+  }
+
   li {
+    display: table-cell;
     border-#{$right}: none; // undo border-right/left from _base.scss
 
     // Cancel centre alignment, if the *only child* in list.
@@ -699,6 +704,10 @@ body.authpage {
     padding: 0.5em;
     text-transform: none; // undo uppercase from _base.scss
   }
+}
+
+#key-tools-mobile {
+  display: none;
 }
 
 // If JS is disabled, these are still CSS positioned, so don't want behind shining through.
