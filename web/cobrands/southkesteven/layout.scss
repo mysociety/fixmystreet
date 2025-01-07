@@ -1,0 +1,149 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* NAVBAR */
+#site-logo {
+    background-size: contain;
+    height: $mappage-header-height;
+    width: 8.625rem;
+}
+
+.nav-menu--main {
+  a, span {
+    font-weight: 800;
+    font-size: 1rem; // They have 18px, but we have more items in the navbar so I ended up using this size instead.
+    margin-left: 0.1rem;
+    border-radius: 16px;
+    padding: $button-padding-top $button-padding-left;
+
+    &:hover {
+      color: $cobrand_black_900;
+    }
+
+    &:focus {
+      background-color: $primary;
+      $color: $primary_b;
+      outline: none;
+    }
+  }
+
+  span {
+    color: $primary_b;
+    background-color: $cobrand_grey_300;
+    &:hover {
+      color: $nav_colour;
+    }
+  }
+
+  a.report-a-problem-btn {
+    border-radius: $button-border-radius;
+    padding: $button-padding-top $button-padding-left;
+    background-color: $button-primary-bg-top;
+    color: $primary_text;
+    margin: 0;
+    &:hover {
+      background-color: $button-primary-hover-bg-bottom;
+    }
+  }
+}
+
+/* FRONTPAGE */
+
+#front_stats {
+  border-color: $primary_b;
+}
+
+/* MAP PAGE */
+.big-green-banner {
+  font-size: 1.2rem;
+}
+
+/* FOOTER */
+.southkesteven-footer {
+  padding: 5rem 0;
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    column-gap: 15.625rem;
+    row-gap: 0;
+
+    // Layout for the grid child container
+    .newsletter-container {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .contact-container {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    
+    .footer-nav {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+  }
+
+  .social-container {
+    margin-top: 5rem;
+
+    ul {
+      li {
+        margin: 0 32px 0 0;
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+
+  h2, h3 {
+    font-size: 1.625rem;
+  }
+
+  p {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-white {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .footer-nav {
+    ul {
+      flex-direction: row;
+      gap: 2.5rem;
+    }
+
+    a {
+      font-size: 1rem;
+    }
+  }
+
+  .sk-logo-container {
+    bottom: 0px;
+    right: 0px;
+
+    a {
+      bottom: 70px;
+      right: 50px;
+      width: 188px;
+      height: 80px;
+    }
+
+    &::after {
+      width: 540px;
+      height: 390px;
+      background-position: right bottom;
+    }
+  }
+}
