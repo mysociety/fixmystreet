@@ -57,6 +57,13 @@ create_contact({ category => 'Request new container', email => '1635' }, 'Waste'
     { code => 'payment', required => 0, automated => 'hidden_field' },
 );
 
+# Merton also covers Kingston because of an out-of-area park which is their responsibility
+my $merton = $mech->create_body_ok(2500, 'Merton Council');
+FixMyStreet::DB->resultset('BodyArea')->create({ area_id => 2480, body_id => $merton->id });
+my $contact = $mech->create_contact_ok(body => $merton, category => 'Report missed collection', email => 'missed');
+$contact->set_extra_metadata( type => 'waste' );
+$contact->update;
+
 my ($sent_params, $sent_data);
 
 FixMyStreet::override_config {
@@ -356,6 +363,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Report missed Food waste\n\n2 Example Street, Kingston, KT1 1AA";
         is $report->title, 'Report missed Food waste';
+        is $report->bodies_str, $kingston->id, 'correct bodies_str';
     };
     subtest 'No reporting/requesting if open request' => sub {
         $mech->get_ok('/waste/12345');

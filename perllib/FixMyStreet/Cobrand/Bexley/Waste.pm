@@ -629,6 +629,7 @@ sub _in_cab_logs {
     my @property_logs;
     my @street_logs;
     my %completed_or_attempted_collections;
+    my %seen_logs;
 
     return ( \@property_logs, \@street_logs, \%completed_or_attempted_collections )
         unless $cab_logs;
@@ -647,6 +648,13 @@ sub _in_cab_logs {
         # Gather property-level and street-level exceptions
         if ( $_->{Reason} && $_->{Reason} ne 'N/A' ) {
             if ( $_->{Uprn} && $_->{Uprn} eq $property->{uprn} ) {
+                # Create a unique key for this log entry based on the actual event details
+                # using just the date portion of LogDate since multiple logs for the same
+                # event might have different timestamps on the same day
+                my $date_only = $logdate->ymd;
+                my $log_key = join(':', $_->{Reason}, $_->{RoundCode}, $date_only);
+                next if $seen_logs{$log_key}++;
+
                 push @property_logs, {
                     uprn   => $_->{Uprn},
                     round  => $_->{RoundCode},
