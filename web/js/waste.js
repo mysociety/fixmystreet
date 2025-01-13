@@ -13,6 +13,7 @@ $(function() {
 
     var costs = $('.js-bin-costs'),
         cost = costs.data('per_bin_cost') / 100,
+        first_cost = costs.data('per_bin_first_cost') / 100,
         per_new_bin_first_cost = costs.data('per_new_bin_first_cost') / 100,
         per_new_bin_cost = costs.data('per_new_bin_cost') / 100,
         pro_rata_bin_cost = costs.data('pro_rata_bin_cost') / 100;
@@ -20,7 +21,7 @@ $(function() {
       var total_bins = parseInt($('#bins_wanted').val() || 0);
       var existing_bins = parseInt($('#current_bins').val() || 0);
       var new_bins = total_bins - existing_bins;
-      var total_per_year = total_bins * cost;
+      var total_per_year = (total_bins-1) * cost + first_cost;
       var admin_fee = 0;
       if (new_bins > 0 && per_new_bin_first_cost) {
           admin_fee += per_new_bin_first_cost;
@@ -42,7 +43,7 @@ $(function() {
       var existing_bins = parseInt($('#current_bins').val() || 0);
       var new_bins = total_bins - existing_bins;
       var pro_rata_cost = 0;
-      var total_per_year = total_bins * cost;
+      var total_per_year = (total_bins-1) * cost + first_cost;
       var admin_fee = 0;
       var new_bin_text = new_bins == 1 ? 'bin' : 'bins';
       $('#new_bin_text').text(new_bin_text);
