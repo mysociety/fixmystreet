@@ -255,6 +255,8 @@ sub waste_munge_request_form_fields {
 
     my @radio_options;
     my @replace_options;
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
+    my $change_cost = $costs->get_cost('request_change_cost');
     for (my $i=0; $i<@$field_list; $i+=2) {
         my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
         next unless $key =~ /^container-(\d+)/;
@@ -268,7 +270,6 @@ sub waste_munge_request_form_fields {
             disabled => $value->{disabled},
             $hint ? (hint => $hint) : (),
         };
-        my $change_cost = $self->_get_cost('request_change_cost');
         if ($cost && $change_cost && $cost == $change_cost) {
             push @replace_options, $data;
         } else {
@@ -393,7 +394,8 @@ Quantity doesn't matter here.
 
 sub request_cost {
     my ($self, $id, $quantity, $containers) = @_;
-    if (my $cost = $self->_get_cost('request_change_cost')) {
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
+    if (my $cost = $costs->get_cost('request_change_cost')) {
         foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
             if ($id == $_ && !$containers->{$_}) {
                 my $price = sprintf("£%.2f", $cost / 100);
@@ -403,7 +405,7 @@ sub request_cost {
             }
         }
     }
-    if (my $cost = $self->_get_cost('request_replace_cost')) {
+    if (my $cost = $costs->get_cost('request_replace_cost')) {
         foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_REFUSE_360, CONTAINER_PAPER_BIN) {
             if ($id == $_ && $containers->{$_}) {
                 my $price = sprintf("£%.2f", $cost / 100);

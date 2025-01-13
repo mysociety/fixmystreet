@@ -3,6 +3,7 @@ package FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
+use WasteWorks::Costs;
 
 has_page intro => (
     title => 'Order more garden waste sacks',
@@ -16,8 +17,8 @@ has_page intro => (
     update_field_list => sub {
         my $form = shift;
         my $c = $form->c;
-        my $cost = $c->cobrand->garden_waste_sacks_cost_pa();
-        $c->stash->{cost_pa} = $cost / 100;
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand });
+        $c->stash->{cost_pa} = $costs->sacks(1) / 100;
         return {
             name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
         };
@@ -35,9 +36,9 @@ has_page summary => (
         my $form = shift;
         my $c = $form->{c};
         my $data = $form->saved_data;
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa();
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand });
 
-        $data->{display_total} = $cost_pa / 100;
+        $data->{display_total} = $costs->sacks(1) / 100;
 
         unless ( $c->stash->{is_staff} ) {
             $data->{name} ||= $c->user->name;

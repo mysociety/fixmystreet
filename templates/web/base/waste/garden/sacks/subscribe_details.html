@@ -6,13 +6,13 @@
 <form method="post" id="subscribe_details">
   <div style="margin-top: 1.5em;">
     [% IF form.current_page.fields.grep('bins_wanted').size %]
-        [% PROCESS 'waste/garden/_sack_quantity.html' form_page='subscribe' cost=per_sack_cost %]
+        [% PROCESS 'waste/garden/_sack_quantity.html' form_page='subscribe' cost=garden_costs.per_sack %]
     [% END %]
 
     <hr class="fieldset-hr">
 
     <div class="cost-pa__total js-bin-costs"
-        data-per_bin_cost="[% per_sack_cost %]"
+        data-per_bin_cost="[% garden_costs.per_sack %]"
     >
       <span class="cost-pa__total-costs">
           Total per year: £<span id="cost_pa">[% tprintf( '%.2f', cost_pa ) %]</span>

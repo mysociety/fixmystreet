@@ -16,6 +16,7 @@ use Integrations::Echo;
 use JSON::MaybeXS;
 use LWP::Simple;
 use MIME::Base64;
+use WasteWorks::Costs;
 
 around look_up_property => sub {
     my ($orig, $self, $id) = @_;
@@ -358,12 +359,14 @@ sub garden_container_data_extract {
     my ($self, $data, $containers, $quantities, $schedules) = @_;
     # Assume garden will only have one container data
     my $garden_container = $containers->[0];
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
+    # Have to pass end date in because we're currently creating the services stash
     if ($garden_container == CONTAINER_GARDEN_SACK) {
-        my $garden_cost = $self->garden_waste_renewal_sacks_cost_pa($schedules->{end_date}) / 100;
+        my $garden_cost = $costs->sacks_renewal(1, $schedules->{end_date}) / 100;
         return (undef, 1, $garden_cost, $garden_container);
     } else {
         my $garden_bins = $quantities->{$containers->[0]};
-        my $garden_cost = $self->garden_waste_renewal_cost_pa($schedules->{end_date}, $garden_bins) / 100;
+        my $garden_cost = $costs->bins_renewal($garden_bins, $schedules->{end_date}) / 100;
         return ($garden_bins, 0, $garden_cost, $garden_container);
     }
 }
