@@ -9,6 +9,7 @@ package FixMyStreet::App::Form::Waste::Garden::Sacks;
 use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Garden';
+use WasteWorks::Costs;
 
 sub with_sacks_choice { 1 }
 sub with_bins_wanted {
@@ -50,11 +51,8 @@ has_page sacks_details => (
         my $data = $form->saved_data;
         my $c = $form->{c};
         my $count = $c->get_param('bins_wanted') || $data->{bins_wanted} || 1;
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $count;
-        if ($data->{apply_discount}) {
-            ($cost_pa, $c->stash->{per_sack_cost}) =
-                $c->cobrand->apply_garden_waste_discount($cost_pa, $c->stash->{per_sack_cost});
-        }
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form->saved_data->{apply_discount} });
+        my $cost_pa = $costs->sacks($count);
         $c->stash->{cost_pa} = $cost_pa / 100;
 
         my $bins_wanted_opts = { default => $count };

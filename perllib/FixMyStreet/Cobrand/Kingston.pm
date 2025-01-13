@@ -209,43 +209,6 @@ sub service_name_override {
     return $service_name_override{$service->{ServiceId}} // '';
 }
 
-=head2 garden_waste_renewal_cost_pa
-
-The price change for a renewal is based upon the end
-date of the subscription, not the current date.
-
-=cut
-
-sub garden_waste_renewal_cost_pa {
-     my ($self, $end_date, $bin_count) = @_;
-     $bin_count ||= 1;
-     my $per_bin_cost = $self->_get_cost('ggw_cost_renewal', $end_date);
-     my $cost = $per_bin_cost * $bin_count;
-     return $cost;
-}
-
-sub garden_waste_renewal_sacks_cost_pa {
-     my ($self, $end_date) = @_;
-     return $self->_get_cost('ggw_sacks_cost_renewal', $end_date);
-}
-
-sub garden_waste_new_bin_admin_fee {
-    my ($self, $new_bins) = @_;
-    $new_bins ||= 0;
-
-    my $per_new_bin_first_cost = $self->_get_cost('ggw_new_bin_first_cost');
-    my $per_new_bin_cost = $self->_get_cost('ggw_new_bin_cost');
-
-    my $cost = 0;
-    if ($new_bins > 0) {
-        $cost += $per_new_bin_first_cost;
-        if ($new_bins > 1) {
-            $cost += $per_new_bin_cost * ($new_bins - 1);
-        }
-    }
-    return $cost;
-}
-
 sub waste_request_single_radio_list { 0 }
 
 =head2 bin_request_form_extra_fields
@@ -523,13 +486,14 @@ sub waste_munge_request_data {
         $c->set_param('Container_Type', $container_id);
     }
 
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
     if ($data->{payment}) {
         my $cost;
         if ($action ne 'collect') {
             ($cost) = $self->request_cost($container_id); # Will be full price, or nothing if free
             if ($cost) {
                 if ($data->{first_bin_done}) {
-                    $cost = $self->_get_cost('request_replace_cost_more') || $cost/2;
+                    $cost = $costs->get_cost('request_replace_cost_more') || $cost/2;
                 } else {
                     $data->{first_bin_done} = 1;
                 }
@@ -548,8 +512,9 @@ Calculate how much, if anything, a request for a container should be.
 sub request_cost {
     my ($self, $id, $quantity, $containers) = @_;
     $quantity //= 1;
-    if (my $cost = $self->_get_cost('request_replace_cost')) {
-        my $cost_more = $self->_get_cost('request_replace_cost_more') || $cost/2;
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
+    if (my $cost = $costs->get_cost('request_replace_cost')) {
+        my $cost_more = $costs->get_cost('request_replace_cost_more') || $cost/2;
         if ($quantity > 1) {
             $cost += $cost_more * ($quantity-1);
         }

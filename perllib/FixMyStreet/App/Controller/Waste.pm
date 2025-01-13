@@ -19,6 +19,7 @@ use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use FixMyStreet::App::Form::Waste::Garden::Transfer;
+use WasteWorks::Costs;
 use Memcached;
 use Hash::Util qw(lock_hash);
 use JSON::MaybeXS;
@@ -1183,8 +1184,7 @@ sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
 
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_disabled};
 
-    $c->stash->{per_new_bin_cost} = $c->cobrand->_get_cost('ggw_new_bin_cost');
-    $c->stash->{per_new_bin_first_cost} = $c->cobrand->_get_cost('ggw_new_bin_first_cost') || $c->stash->{per_new_bin_cost};
+    $c->stash->{garden_costs} = WasteWorks::Costs->new({ cobrand => $c->cobrand });
 }
 
 sub garden_check : Chained('garden_setup') : Args(0) {
@@ -1208,17 +1208,13 @@ sub garden : Chained('garden_setup') : Args(0) {
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_new_disabled};
     $c->detach('property_redirect') if $c->cobrand->garden_current_subscription;
 
-    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
-    $c->stash->{per_sack_cost} = $c->cobrand->garden_waste_sacks_cost_pa;
-    $c->stash->{next_month_cost} = $c->cobrand->garden_waste_cost_pa_in_one_month($c->stash->{per_bin_cost});
-
     $c->stash->{first_page} = 'intro';
     $c->stash->{garden_form_data} = {
         max_bins => $c->cobrand->waste_garden_maximum
     };
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
     $c->cobrand->call_hook('waste_garden_subscribe_form_setup');
-    $c->forward('form');
+    $c->forward('garden_form');
 }
 
 sub garden_modify : Chained('garden_setup') : Args(0) {
@@ -1229,8 +1225,6 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_modify_disabled};
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
-
-    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
 
     if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{sack}) { # SLWP Sack
         if ($c->cobrand->moniker eq 'kingston') {
@@ -1261,10 +1255,8 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
         $c->stash->{display_end_date} = DateTime::Format::W3CDTF->parse_datetime($service->{end_date});
         $c->stash->{garden_form_data} = {
-            pro_rata_bin_cost =>  $c->cobrand->waste_get_pro_rata_cost(1, $service->{end_date}),
             max_bins => $max_bins,
             bins => $service->{garden_bins},
-            end_date => $service->{end_date},
             payment_method => $payment_method,
         };
 
@@ -1277,7 +1269,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         $c->stash->{first_page} = 'alter';
     }
 
-    $c->forward('form');
+    $c->forward('garden_form');
 }
 
 sub garden_cancel : Chained('garden_setup') : Args(0) {
@@ -1325,15 +1317,11 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
     $c->stash->{garden_form_data} = {
         max_bins => $max_bins,
         bins => $service->{garden_bins},
-        end_date => $service->{end_date},
     };
-
-    $c->stash->{per_bin_renewal_cost} = $c->cobrand->garden_waste_renewal_cost_pa($service->{end_date});
-    $c->stash->{per_sack_renewal_cost} = $c->cobrand->garden_waste_renewal_sacks_cost_pa($service->{end_date});
 
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
     $c->cobrand->call_hook('waste_garden_renew_form_setup');
-    $c->forward('form');
+    $c->forward('garden_form');
 }
 
 sub garden_transfer : Chained('garden_setup') : Args(0) {
@@ -1343,6 +1331,17 @@ sub garden_transfer : Chained('garden_setup') : Args(0) {
 
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Transfer';
     $c->forward('form');
+}
+
+sub garden_form : Private {
+    my ($self, $c) = @_;
+    $c->forward('form');
+
+    # We need to inspect the form to see if a discount has been applied, and if so,
+    # adjust the already fetched cost data for display on the site
+    my $data = $c->stash->{form}->saved_data;
+    my $costs = $c->stash->{garden_costs};
+    $costs->discount($data->{apply_discount});
 }
 
 sub process_garden_cancellation : Private {
@@ -1458,31 +1457,27 @@ sub process_garden_modification : Private {
     my $payment_method;
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
+    my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
     if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{sack}) { # SLWP Sack
         $data->{bins_wanted} = 1;
         $data->{new_bins} = 1;
-        $payment = $c->cobrand->garden_waste_sacks_cost_pa();
+        $payment = $costs->sacks($data->{bins_wanted});
         $payment_method = 'credit_card';
-        ($payment) = $c->cobrand->apply_garden_waste_discount($payment) if $data->{apply_discount};
         $pro_rata = $payment; # Set so goes through flow below
     } else {
         my $bin_count = $data->{bins_wanted};
         my $new_bins = $bin_count - $data->{current_bins};
         $data->{new_bins} = $new_bins;
 
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
-        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
         # One-off ad-hoc payment to be made now
         if ( $new_bins > 0 ) {
-            my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
-            $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
-            ($cost_now_admin, $pro_rata) = $c->cobrand->apply_garden_waste_discount(
-                $cost_now_admin, $pro_rata) if $data->{apply_discount};
+            my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
+            $pro_rata = $costs->pro_rata_cost($new_bins);
             $c->set_param('pro_rata', $pro_rata);
             $c->set_param('admin_fee', $cost_now_admin);
         }
         $payment_method = $c->stash->{garden_form_data}->{payment_method};
-        $payment = $cost_pa;
+        $payment = $costs->bins($bin_count);
         $payment = 0 if $payment_method ne 'direct_debit' && $new_bins < 0;
 
     }
@@ -1603,6 +1598,7 @@ sub garden_calculate_subscription_payment : Private {
 
     # Sack form handling
     my $container = $data->{container_choice} || '';
+    my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
     if ($container eq 'sack') {
         if ($c->cobrand->moniker eq 'merton') {
             # If renewing from bin to sacks, need to know bins to remove - better place for this?
@@ -1611,23 +1607,18 @@ sub garden_calculate_subscription_payment : Private {
         }
         $data->{new_bins} = $data->{bins_wanted}; # Always want all of them delivered
 
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $data->{bins_wanted};
-        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
-        $c->set_param('payment', $cost_pa);
+        $c->set_param('payment', $costs->sacks($data->{bins_wanted}));
     } else {
         my $bin_count = $data->{bins_wanted};
         $data->{new_bins} = $bin_count - ($data->{current_bins} || 0);
 
         my $cost_pa;
         if ($type eq 'renew') {
-            my $service = $c->cobrand->garden_current_subscription;
-            $cost_pa = $c->cobrand->garden_waste_renewal_cost_pa($service->{end_date}, $bin_count);
+            $cost_pa = $costs->bins_renewal($bin_count);
         } else {
-            $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+            $cost_pa = $costs->bins($bin_count);
         }
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
-        ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
-            $cost_pa, $cost_now_admin) if $data->{apply_discount};
+        my $cost_now_admin = $costs->new_bin_admin_fee($data->{new_bins});
 
         $c->set_param('payment', $cost_pa);
         $c->set_param('admin_fee', $cost_now_admin);

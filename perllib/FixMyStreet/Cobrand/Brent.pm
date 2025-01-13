@@ -41,6 +41,7 @@ Uses OpenUSRN for locating nearest addresses on the Highway
 
 =cut
 
+use WasteWorks::Costs;
 use FixMyStreet::App::Form::Waste::Request::Brent;
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
@@ -1025,11 +1026,12 @@ sub garden_container_data_extract {
     my $garden_bins = $data->{Value};
     # $data->{Value} is a code for the number of bins and corresponds 1:1 (bin), 2:2 (bins) etc,
     # until it gets to 9 when it corresponds to sacks
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
     if ($garden_bins == '9') {
-        my $garden_cost = $self->garden_waste_sacks_cost_pa($garden_bins) / 100;
+        my $garden_cost = $costs->sacks(1) / 100;
         return ($garden_bins, 1, $garden_cost);
     } else {
-        my $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+        my $garden_cost = $costs->bins($garden_bins) / 100;
         return ($garden_bins, 0, $garden_cost);
     }
 }
@@ -1221,9 +1223,10 @@ Calculate how much, if anything, a request for a container should be.
 
 sub request_cost {
     my ($self, $id) = @_;
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
     my $cost;
-    $cost = $self->_get_cost('request_cost_blue_bin') if $id == $CONTAINER_IDS{recycling_blue_bin};
-    # $cost = $self->_get_cost('request_cost_food_caddy') if $id == $CONTAINER_IDS{food_caddy};
+    $cost = $costs->get_cost('request_cost_blue_bin') if $id == $CONTAINER_IDS{recycling_blue_bin};
+    $cost = $costs->get_cost('request_cost_food_caddy') if $id == $CONTAINER_IDS{food_caddy};
     if ($cost) {
         my $price = sprintf("£%.2f", $cost / 100);
         $price =~ s/\.00$//;
@@ -1445,32 +1448,6 @@ sub waste_garden_mod_params {
     }
 }
 
-=item * Sacks cost the same as bins
-
-=cut
-
-sub garden_waste_sacks_cost_pa {
-    return $_[0]->garden_waste_cost_pa();
-}
-
-=item * Garden subscription is half price in October-December (up to end 2024).
-
-=cut
-
-sub garden_waste_cost_pa {
-    my ($self, $bin_count) = @_;
-    $bin_count ||= 1;
-    my $per_bin_cost = $self->_get_cost('ggw_cost');
-    my $cost = $per_bin_cost * $bin_count;
-
-    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-    if ($now->year == 2024 && $now->month =~ /^(10|11|12)$/ ) {
-        $cost = $cost/2;
-    }
-
-    return $cost;
-}
-
 =item * Uses custom text for the title field for new reports.
 
 =cut
@@ -1488,15 +1465,6 @@ sub new_report_title_field_hint {
 =back
 
 =cut
-
-sub apply_garden_waste_discount {
-    my ($self, @charges ) = @_;
-
-    my $discount = $self->{c}->stash->{waste_features}->{ggw_discount_as_percent};
-    my $proportion_to_pay = 1 - $discount / 100;
-    my @discounted = map { $_ ? $_ * $proportion_to_pay : $_ } @charges;
-    return @discounted;
-}
 
 sub bulky_collection_time { { hours => 7, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59 } }

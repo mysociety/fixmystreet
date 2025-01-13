@@ -9,20 +9,14 @@
     [% INCLUDE waste/garden/_bin_quantities.html form_page='renew' %]
   <hr class="fieldset-hr">
   <div class="cost-pa__total js-bin-costs"
-    [% IF form.saved_data.apply_discount %]
-        data-per_bin_cost="[% c.cobrand.apply_garden_waste_discount(per_bin_renewal_cost) %]"
-        data-per_new_bin_first_cost="[% c.cobrand.apply_garden_waste_discount(per_new_bin_first_cost) %]"
-        data-per_new_bin_cost="[% c.cobrand.apply_garden_waste_discount(per_new_bin_cost) %]"
-    [% ELSE %]
-        data-per_bin_cost="[% per_bin_renewal_cost %]"
-        data-per_new_bin_first_cost="[% per_new_bin_first_cost %]"
-        data-per_new_bin_cost="[% per_new_bin_cost %]"
-    [% END %]
+        data-per_bin_cost="[% garden_costs.per_bin_renewal %]"
+        data-per_new_bin_first_cost="[% garden_costs.per_new_bin_first %]"
+        data-per_new_bin_cost="[% garden_costs.per_new_bin %]"
     >
       <span class="cost-pa__total-costs">
           Total per year: £<span id="cost_pa">[% tprintf( '%.2f', cost_pa ) %]</span>
       </span>
-    [% IF per_new_bin_cost %]
+    [% IF garden_costs.per_new_bin %]
       <span class="cost-pa__total-costs">
           Admin fee: £<span id="cost_now_admin">[% tprintf( '%.2f', cost_now_admin ) %]</span>
       </span>
