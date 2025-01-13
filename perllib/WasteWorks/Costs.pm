@@ -36,9 +36,10 @@ sub _build_has_pro_rata_modify { $_[0]->cobrand->moniker eq 'bromley' }
 sub bins {
     my ($self, $count) = @_;
     $count ||= 1;
-    my $cost = $self->get_cost('ggw_cost');
-    $cost *= $count;
-    return $self->apply_garden_discount($cost);
+    my $per_bin = $self->get_cost('ggw_cost') ;
+    my $first_cost = $self->get_cost('ggw_cost_first') || $per_bin;
+    my $cost = $self->_first_diff_calc($first_cost, $per_bin, $count);
+    return $cost;
 }
 
 sub sacks {
@@ -56,8 +57,11 @@ sub _renewal {
         $end_date //= $self->service->{end_date};
         my $cost = $self->get_cost($prefix . '_renewal', $end_date)
             || $self->get_cost($prefix, $end_date);
-        $cost *= $count;
-        return $self->apply_garden_discount($cost);
+        my $first_cost = $self->get_cost($prefix . '_renewal_first', $end_date)
+            || $self->get_cost($prefix . '_first', $end_date)
+            || $cost;
+        $cost = $self->_first_diff_calc($first_cost, $cost, $count);
+        return $cost;
     } elsif ($type eq 'sacks') {
         return $self->sacks($count);
     } else {
@@ -83,11 +87,17 @@ sub new_bin_admin_fee {
 
     $count ||= 0;
     my $per_new_bin_cost = $self->get_cost('ggw_new_bin_cost');
+    my $cost = $self->_first_diff_calc($per_new_bin_first_cost, $per_new_bin_cost, $count);
+    return $cost;
+}
+
+sub _first_diff_calc {
+    my ($self, $first_cost, $rest_cost, $count) = @_;
     my $cost = 0;
     if ($count > 0) {
-        $cost += $per_new_bin_first_cost;
+        $cost += $first_cost;
         if ($count > 1) {
-            $cost += $per_new_bin_cost * ($count - 1);
+            $cost += $rest_cost * ($count - 1);
         }
     }
     return $self->apply_garden_discount($cost);
@@ -128,6 +138,9 @@ sub apply_garden_discount {
     my $discounted = $charge ? $charge * $proportion_to_pay : $charge;
     return $discounted;
 }
+
+# Next month does not currently handle a first bin being a different price, if
+# those two ever get used together.
 
 sub next_month {
     my $self = shift;
@@ -172,7 +185,16 @@ sub garden_cost_pa_in_one_month {
 # Functions used for display of bin pricing/calculation during flow (all begin per_)
 # $_[0] is the self instance, just without setting a variable
 
-sub per_bin { $_[0]->bins(1) }
+sub per_bin {
+    $_[0]->apply_garden_discount($_[0]->get_cost('ggw_cost'));
+}
+sub per_bin_first {
+    $_[0]->apply_garden_discount(
+        $_[0]->get_cost('ggw_cost_first')
+        || $_[0]->get_cost('ggw_cost')
+    );
+}
+
 sub per_sack { $_[0]->sacks(1) }
 
 sub per_new_bin_first {
@@ -182,7 +204,24 @@ sub per_new_bin {
     $_[0]->apply_garden_discount($_[0]->get_cost('ggw_new_bin_cost'));
 }
 
-sub per_bin_renewal { $_[0]->bins_renewal(1) }
+sub per_bin_renewal {
+    my $self = shift;
+    my $end_date;
+    $end_date = $self->service->{end_date} if $self->renewal_type eq 'subscription_end';
+    my $cost = $self->get_cost('ggw_cost_renewal', $end_date)
+        || $self->get_cost('ggw_cost', $end_date);
+    return $self->apply_garden_discount($cost);
+}
+sub per_bin_renewal_first {
+    my $self = shift;
+    my $end_date;
+    $end_date = $self->service->{end_date} if $self->renewal_type eq 'subscription_end';
+    my $first_cost = $self->get_cost('ggw_cost_renewal_first', $end_date)
+        || $self->get_cost('ggw_cost_first', $end_date);
+    return $self->per_bin_renewal unless $first_cost;
+    return $self->apply_garden_discount($first_cost);
+}
+
 sub per_sack_renewal { $_[0]->sacks_renewal(1) }
 sub per_pro_rata_bin { $_[0]->pro_rata_cost(1) }
 
