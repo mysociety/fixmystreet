@@ -613,6 +613,7 @@ sub reopening_disallowed {
     return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Merton Council");
     return 1 if $problem->to_body_named("Northumberland") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Northumberland County Council");
     return 1 if $problem->to_body_named("Gloucestershire") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Gloucestershire County Council");
+    return 1 if $problem->to_body_named("Gloucester") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Gloucester City Council");
     return $self->next::method($problem);
 }
 
