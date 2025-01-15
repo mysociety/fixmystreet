@@ -432,22 +432,6 @@ sub dashboard_export_problems_add_columns {
 
 # Code that used to be in SLWP now here
 
-around look_up_property => sub {
-    my ($orig, $self, $id) = @_;
-    my $data = $orig->($self, $id);
-
-    my $cfg = $self->feature('echo');
-    if ($cfg->{nlpg} && $data->{uprn}) {
-        my $uprn_data = get(sprintf($cfg->{nlpg}, $data->{uprn}));
-        $uprn_data = JSON::MaybeXS->new->decode($uprn_data) if $uprn_data;
-        if (!$uprn_data || $uprn_data->{results}[0]{LPI}{LOCAL_CUSTODIAN_CODE_DESCRIPTION} ne $self->lpi_value) {
-            $self->{c}->stash->{template} = 'waste/missing.html';
-            $self->{c}->detach;
-        }
-    }
-    return $data;
-};
-
 sub waste_staff_choose_payment_method { 1 }
 around waste_cheque_payments => sub {
     my ($orig, $self) = @_;
