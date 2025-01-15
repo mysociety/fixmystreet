@@ -122,6 +122,31 @@ sub categories_restriction {
     ] } );
 }
 
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        (
+            staff_role => 'Staff Role',
+        )
+    );
+
+    $csv->csv_extra_data(sub {
+    my $report = shift;
+
+        my ($by, $userroles, $staff_role);
+        if (!$csv->dbi) {
+            $by = $report->get_extra_metadata('contributed_by');
+            my $user_lookup = $self->csv_staff_users;
+            $userroles = $self->csv_staff_roles($user_lookup);
+            $staff_role = join(',', @{$userroles->{$by} || []}) if $by;
+        }
+
+    return { staff_role => $staff_role || '' };
+    });
+}
+
 =head2 open311_config
 
 Bristol's endpoint requires an email address, so flag to always send one (with
