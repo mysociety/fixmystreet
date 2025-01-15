@@ -5,6 +5,9 @@ use FixMyStreet::Script::Reports;
 use Open311::PopulateServiceList;
 use Test::MockModule;
 use t::Mock::Tilma;
+use File::Temp 'tempdir';
+use FixMyStreet::Script::CSVExport;
+use DateTime;
 
 my $tilma = t::Mock::Tilma->new;
 LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
@@ -267,6 +270,42 @@ FixMyStreet::override_config {
         $mech->content_contains('Inactive roadworks');
     };
 
+};
+
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $bristol,
+    name => 'Role',
+    permissions => ['moderate', 'user_edit'],
+});
+
+my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $bristol, name => 'Staff User');
+$staff_user->add_to_roles($role);
+my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'New title', {
+    user => $staff_user,
+    state => 'confirmed',
+    extra => {contributed_by => $staff_user->id},
+});
+
+subtest 'Dashboard CSV extra columns' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bristol',
+    MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+  }, sub {
+
+    $mech->log_in_ok( $comment_user->email );
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains(',"Reported As","Staff Role"', "'Staff Role' column added");
+    $mech->content_contains('default,,Role', "Staff role added");
+    $p->created(DateTime->now->subtract( days => 1));
+    $p->confirmed(DateTime->now->subtract( days => 1));
+    $p->update;
+    FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+    $mech->get_ok('/dashboard?export=1');
+    $mech->content_contains(',"Reported As","Staff Role"', "'Staff Role' column added in csv export");
+    $mech->content_contains('default,,Role', "Staff role added added in csv export");
+  };
 };
 
 done_testing();
