@@ -1,12 +1,12 @@
 =head1 NAME
 
-FixMyStreet::Roles::Cobrand::SLWP - shared code for anything with the SLWP Echo
+FixMyStreet::Roles::Cobrand::SLWP2 - shared code for Kingston and Sutton WasteWorks, new Echo
 
 =head1 DESCRIPTION
 
 =cut
 
-package FixMyStreet::Roles::Cobrand::SLWP;
+package FixMyStreet::Roles::Cobrand::SLWP2;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Echo';
