@@ -1,12 +1,12 @@
 =head1 NAME
 
-FixMyStreet::Roles::Cobrand::SLWP - shared code for anything with the SLWP Echo
+FixMyStreet::Roles::Cobrand::SLWP2 - shared code for Kingston and Sutton WasteWorks, new Echo
 
 =head1 DESCRIPTION
 
 =cut
 
-package FixMyStreet::Roles::Cobrand::SLWP;
+package FixMyStreet::Roles::Cobrand::SLWP2;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Echo';
@@ -17,7 +17,6 @@ use Hash::Util qw(lock_hash);
 use JSON::MaybeXS;
 use LWP::Simple;
 use MIME::Base64;
-use WasteWorks::Costs;
 
 around look_up_property => sub {
     my ($orig, $self, $id) = @_;
@@ -639,6 +638,18 @@ sub bulky_send_before_payment { 1 }
 sub bulky_show_location_field_mandatory { 1 }
 
 sub bulky_can_refund { 0 }
+
+sub bulky_allowed_property {
+    my ( $self, $property ) = @_;
+
+    return if $property->{has_no_services};
+    my $cfg = $self->feature('echo');
+
+    my $type = $property->{type_id} || 0;
+    my $valid_type = grep { $_ == $type } @{ $cfg->{bulky_address_types} || [] };
+    my $domestic_farm = $type != 7 || $property->{domestic_refuse_bin};
+    return $self->bulky_enabled && $valid_type && $domestic_farm;
+}
 
 sub collection_date {
     my ($self, $p) = @_;
