@@ -1166,13 +1166,14 @@ FixMyStreet::override_config {
     $mech->content_contains('every Thursday', 'food showing right schedule');
 
     subtest 'test requesting a container' => sub {
+        set_fixed_time('2025-01-27T12:00:00Z'); # After new general bin notice text
         $mech->log_in_ok($user1->email);
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Request a recycling container');
         $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
 
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
-        $mech->content_contains('please call');
+        $mech->content_contains('Request a new or replacement rubbish bin');
         $mech->back;
 
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 13 } }, "Choose garden bin");
@@ -1228,6 +1229,7 @@ FixMyStreet::override_config {
         # No sent email, only logged email
         my $body = $mech->get_text_body_from_email;
         like $body, qr/We aim to deliver this container/;
+        restore_time();
     };
 
     sub make_request {
