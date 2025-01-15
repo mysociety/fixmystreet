@@ -15,9 +15,11 @@ var roadworks_defaults = {
     format_class: OpenLayers.Format.GeoJSON,
     stylemap: fixmystreet.assets.stylemap_invisible,
     non_interactive: true,
-    always_visible: true,
+    asset_category: [],
+    always_visible: false,
     nearest_radius: 100,
     road: true,
+    name: "Street Manager",
     actions: {
         found: function(layer, feature) {
             if (fixmystreet.roadworks.filter(feature)) {
@@ -92,6 +94,18 @@ fixmystreet.roadworks.filter = function(feature) {
     return !categories.length || OpenLayers.Util.indexOf(categories, category) != -1;
 };
 
-fixmystreet.assets.add(roadworks_defaults);
+var roadworks_layer = fixmystreet.assets.add(roadworks_defaults);
+
+// Don't want to activate it until they start to make a report
+fixmystreet.roadworks.activate = function(){
+    roadworks_layer.fixmystreet.always_visible = true;
+    roadworks_layer.setVisibility(true);
+};
+
+$(function(){
+    if (fixmystreet.page === 'new') {
+        fixmystreet.roadworks.activate();
+    }
+});
 
 })();
