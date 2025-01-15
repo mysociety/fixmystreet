@@ -91,7 +91,6 @@ my %CONTAINERS = (
     refuse_360 => 3,
     recycling_box => 16,
     recycling_240 => 12,
-    recycling_purple_bag => 17,
     recycling_blue_bag => 18,
     paper_240 => 19,
     paper_140 => 36,
@@ -155,11 +154,6 @@ sub waste_extra_service_info_all_results {
         $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
     }
 
-    if ($self->moniker eq 'merton' && @$result == 1 && $result->[0]{ServiceId} == $SERVICE_IDS{garden}) {
-        # No garden collection possible, if only service is garden
-        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
-    }
-
     if (@$result && $cfg->{bulky_service_id} && grep { $_->{ServiceId} == $cfg->{bulky_service_id} } @$result) {
         $property->{has_bulky_service} = 1;
     }
@@ -176,11 +170,6 @@ sub waste_extra_service_info_all_results {
 
 sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
-
-    if ($self->moniker eq 'merton') {
-        # Merton lets everyone pick between bins and sacks
-        $self->{c}->stash->{slwp_garden_sacks} = 1;
-    }
 
     foreach (@rows) {
         my $service_id = $_->{ServiceId};
@@ -227,8 +216,6 @@ sub waste_service_containers {
         next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
 
         if ($container && $quantity) {
-            $self->{c}->stash->{property_time_banded} = 1 if $container == $CONTAINERS{recycling_purple_bag};
-
             push @$containers, $container;
             next if $container == $CONTAINERS{garden_sack};
 
@@ -432,26 +419,11 @@ sub waste_garden_sub_params {
     $c->set_param('Subscription_Details_Containers', $container);
     $c->set_param('Subscription_Details_Quantity', $data->{bins_wanted});
 
-    if ($c->cobrand->moniker eq 'merton'        # Might work okay for K/S too, but only Merton have asked
-        && $existing                            # This is a renewal, not a new subscription
-        && $existing != $container              # We're changing container type
-        && $existing != $CONTAINERS{garden_sack}   # If currently sack, there's nothing to remove, same as new
-    ) {
-        # We need to ask for both a delivery and a removal of the old bins
-        $c->set_param('Bin_Delivery_Detail_Containers', join('::', 1, 2)); # deliver and remove
-        $c->set_param('Bin_Delivery_Detail_Container', join('::', $container, $existing));
-        $c->set_param('Bin_Delivery_Detail_Quantity', join('::', $data->{bins_wanted}, $data->{current_bins}));
-    } elsif ( $data->{new_bins} ) {
+    if ( $data->{new_bins} ) {
         my $action = ($data->{new_bins} > 0) ? 'deliver' : 'remove';
         $c->set_param('Bin_Delivery_Detail_Containers', $container_actions->{$action});
         $c->set_param('Bin_Delivery_Detail_Container', $container);
         $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
-    }
-
-    if ($c->cobrand->moniker eq 'merton' && $data->{new_bins} && !$type) { # Cancellation
-        $c->set_param('Bin_Detail_Type', $container_actions->{remove});
-        $c->set_param('Bin_Detail_Container', $existing);
-        $c->set_param('Bin_Detail_Quantity', abs($data->{new_bins}));
     }
 }
 
@@ -468,15 +440,7 @@ sub waste_garden_renew_form_setup {
     my $c = $self->{c};
     if ($c->stash->{slwp_garden_sacks}) {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
-        my $service = $c->cobrand->garden_current_subscription;
-        if ($self->moniker eq 'merton') {
-            if ($service->{garden_container} == $CONTAINERS{garden_sack}) {
-                $c->stash->{first_page} = 'sacks_details';
-            }
-            # Else default to 'intro' from the main code
-        } else {
-            $c->stash->{first_page} = 'sacks_choice';
-        }
+        $c->stash->{first_page} = 'sacks_choice';
     }
 }
 
