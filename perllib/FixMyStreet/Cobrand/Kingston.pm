@@ -8,6 +8,7 @@ with 'FixMyStreet::Roles::Cobrand::Waste',
      'FixMyStreet::Roles::Cobrand::SCP';
 
 use Lingua::EN::Inflect qw( NUMWORDS );
+use Hash::Util qw(lock_hash);
 
 sub council_area_id { return 2480; }
 sub council_area { return 'Kingston'; }
@@ -15,12 +16,35 @@ sub council_name { return 'Kingston upon Thames Council'; }
 sub council_url { return 'kingston'; }
 sub admin_user_domain { 'kingston.gov.uk' }
 
-use constant CONTAINER_REFUSE_180 => 35;
-use constant CONTAINER_REFUSE_240 => 2;
-use constant CONTAINER_REFUSE_360 => 3;
-use constant CONTAINER_RECYCLING_BIN => 12;
-use constant CONTAINER_RECYCLING_BOX => 16;
-use constant CONTAINER_FOOD_OUTDOOR => 24;
+my %TASK_IDS = (
+    domestic_refuse => 2238,
+    domestic_food => 2239,
+    domestic_paper => 2240,
+    domestic_mixed => 2241,
+    domestic_refuse_bag => 2242,
+    communal_refuse => 2243,
+    domestic_mixed_bag => 2246,
+    garden => 2247,
+    communal_food => 2248,
+    communal_paper => 2249,
+    communal_mixed => 2250,
+    domestic_paper_bag => 2632,
+    schedule2_mixed => 3571,
+    schedule2_refuse => 3576,
+    deliver_refuse_bags => 2256,
+    deliver_recycling_bags => 2257,
+);
+lock_hash(%TASK_IDS);
+
+my %CONTAINERS = (
+    refuse_180 => 35,
+    refuse_240 => 2,
+    refuse_360 => 3,
+    recycling_box => 16,
+    recycling_240 => 12,
+    food_outdoor => 24,
+);
+lock_hash(%CONTAINERS);
 
 sub waste_check_staff_payment_permissions {
     my $self = shift;
@@ -51,22 +75,22 @@ sub image_for_unit {
 
     # Base mixed recycling (2241) on the container itself
     my %containers = map { $_ => 1 } @{$unit->{request_containers}};
-    return svg_container_bin("wheelie", '#41B28A') if $containers{+CONTAINER_RECYCLING_BIN};
-    return "$base/box-green-mix" if $containers{+CONTAINER_RECYCLING_BOX};
+    return svg_container_bin("wheelie", '#41B28A') if $containers{$CONTAINERS{recycling_240}};
+    return "$base/box-green-mix" if $containers{$CONTAINERS{recycling_box}};
 
     my $service_id = $unit->{service_id};
     my $images = {
-        2238 => svg_container_bin('wheelie', '#333333'), # refuse
-        2239 => "$base/caddy-brown-large", # food
-        2240 => svg_container_bin("wheelie", '#767472', '#00A6D2', 1), # paper and card
-        2241 => svg_container_bin("wheelie", '#41B28A'), # dry mixed
-        2242 => svg_container_sack('stripe', '#E83651'), # domestic refuse bag
-        2243 => svg_container_bin('communal', '#767472', '#333333'), # Communal refuse
-        2246 => svg_container_sack('stripe', '#4f4cf0'), # domestic recycling bag
-        2248 => svg_container_bin('wheelie', '#8B5E3D'), # Communal food
-        2249 => svg_container_bin("communal", '#767472', '#00A6D2'), # Communal paper
-        2250 => svg_container_bin('communal', '#41B28A'), # Communal recycling
-        2632 => svg_container_sack('normal', '#d8d8d8'), # domestic paper bag
+        $TASK_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'), # refuse
+        $TASK_IDS{domestic_food} => "$base/caddy-brown-large", # food
+        $TASK_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1), # paper and card
+        $TASK_IDS{domestic_mixed} => svg_container_bin("wheelie", '#41B28A'), # dry mixed
+        $TASK_IDS{domestic_refuse_bag} => svg_container_sack('stripe', '#E83651'), # domestic refuse bag
+        $TASK_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'), # Communal refuse
+        $TASK_IDS{domestic_mixed_bag} => svg_container_sack('stripe', '#4f4cf0'), # domestic recycling bag
+        $TASK_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'), # Communal food
+        $TASK_IDS{communal_paper} => svg_container_bin("communal", '#767472', '#00A6D2'), # Communal paper
+        $TASK_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'), # Communal recycling
+        $TASK_IDS{domestic_paper_bag} => svg_container_sack('normal', '#d8d8d8'), # domestic paper bag
     };
     return $images->{$service_id};
 }
@@ -81,22 +105,22 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        2238 => 'Non-recyclable Refuse',
-        2239 => 'Food waste',
-        2240 => 'Paper and card',
-        2241 => 'Mixed recycling',
-        2242 => 'Non-recyclable Refuse',
-        2243 => 'Non-recyclable Refuse',
-        2246 => 'Mixed recycling',
-        2247 => 'Garden Waste',
-        2248 => 'Food waste',
-        2249 => 'Paper and card',
-        2250 => 'Mixed recycling',
-        2632 => 'Paper and card',
-        3571 => 'Mixed recycling',
-        3576 => 'Non-recyclable Refuse',
-        2256 => '', # Deliver refuse bags
-        2257 => '', # Deliver recycling bags
+        $TASK_IDS{domestic_refuse} => 'Non-recyclable Refuse',
+        $TASK_IDS{domestic_food} => 'Food waste',
+        $TASK_IDS{domestic_paper} => 'Paper and card',
+        $TASK_IDS{domestic_mixed} => 'Mixed recycling',
+        $TASK_IDS{domestic_refuse_bag} => 'Non-recyclable Refuse',
+        $TASK_IDS{communal_refuse} => 'Non-recyclable Refuse',
+        $TASK_IDS{domestic_mixed_bag} => 'Mixed recycling',
+        $TASK_IDS{garden} => 'Garden Waste',
+        $TASK_IDS{communal_food} => 'Food waste',
+        $TASK_IDS{communal_paper} => 'Paper and card',
+        $TASK_IDS{communal_mixed} => 'Mixed recycling',
+        $TASK_IDS{domestic_paper_bag} => 'Paper and card',
+        $TASK_IDS{schedule2_mixed} => 'Mixed recycling',
+        $TASK_IDS{schedule2_refuse} => 'Non-recyclable Refuse',
+        $TASK_IDS{deliver_refuse_bags} => '',
+        $TASK_IDS{deliver_recycling_bags} => '',
     );
 
     return $service_name_override{$service->{ServiceId}} // '';
@@ -150,7 +174,7 @@ We want an extra message on the outdoor food container option.
 sub bin_request_form_extra_fields {
     my ($self, $service, $id, $field_list) = @_;
 
-    return unless $id == CONTAINER_FOOD_OUTDOOR;
+    return unless $id == $CONTAINERS{food_outdoor};
     my %fields = @$field_list;
     $fields{"container-$id"}{option_hint} = 'Only three are allowed per property. Any more than this will not be collected.';
 }
@@ -179,30 +203,30 @@ sub waste_munge_request_form_fields {
             $id = 3 if $os == '360';
         }
 
-        if ($id == CONTAINER_REFUSE_180) {
+        if ($id == $CONTAINERS{refuse_180}) {
             $c->stash->{current_refuse_bin} = 180;
-        } elsif ($id == CONTAINER_REFUSE_240) {
+        } elsif ($id == $CONTAINERS{refuse_240}) {
             $c->stash->{current_refuse_bin} = 240;
             @radio_options = ( {
-                value => CONTAINER_REFUSE_180,
+                value => $CONTAINERS{refuse_180},
                 label => 'Smaller black rubbish bin',
                 disabled => $value->{disabled},
                 hint => 'You can decrease the size of your bin to 180L.',
             }, {
-                value => CONTAINER_REFUSE_360,
+                value => $CONTAINERS{refuse_360},
                 label => 'Larger black rubbish bin',
                 disabled => $value->{disabled},
                 hint => 'You already have the biggest sized bin allowed. If you have an exceptionally large household or your household has medical needs that create more waste than normal, you can apply for more capacity, but this will be assessed by our officers.',
             },
             );
-        } elsif ($id == CONTAINER_REFUSE_360) {
+        } elsif ($id == $CONTAINERS{refuse_360}) {
             $c->stash->{current_refuse_bin} = 360;
             @radio_options = ( {
-                value => CONTAINER_REFUSE_180,
+                value => $CONTAINERS{refuse_180},
                 label => '180L black rubbish bin ‘standard’',
                 disabled => $value->{disabled},
             }, {
-                value => CONTAINER_REFUSE_240,
+                value => $CONTAINERS{refuse_240},
                 label => '240L black rubbish bin ‘larger’',
                 disabled => $value->{disabled},
             },
@@ -241,7 +265,7 @@ sub waste_request_form_first_next {
         return sub {
             my $data = shift;
             my $choice = $data->{"container-capacity-change"};
-            if ($choice == CONTAINER_REFUSE_360) {
+            if ($choice == $CONTAINERS{refuse_360}) {
                 $c->res->redirect($c->stash->{waste_features}{large_refuse_application_form} . '?uprn=' . $uprn);
                 $c->detach;
             } else {
@@ -320,13 +344,13 @@ sub waste_munge_request_form_pages {
                 }
             }
             # Both types of recycling container always
-            if ($data->{'container-' . CONTAINER_RECYCLING_BIN} && $fields->{"removal-" . CONTAINER_RECYCLING_BOX}) {
-                delete $fields->{"removal-" . CONTAINER_RECYCLING_BOX}{widget};
-                delete $fields->{"removal-" . CONTAINER_RECYCLING_BOX}{required};
+            if ($data->{'container-' . $CONTAINERS{recycling_240}} && $fields->{"removal-" . $CONTAINERS{recycling_box}}) {
+                delete $fields->{"removal-" . $CONTAINERS{recycling_box}}{widget};
+                delete $fields->{"removal-" . $CONTAINERS{recycling_box}}{required};
             }
-            if ($data->{'container-' . CONTAINER_RECYCLING_BOX} && $fields->{"removal-" . CONTAINER_RECYCLING_BIN}) {
-                delete $fields->{"removal-" . CONTAINER_RECYCLING_BIN}{widget};
-                delete $fields->{"removal-" . CONTAINER_RECYCLING_BIN}{required};
+            if ($data->{'container-' . $CONTAINERS{recycling_box}} && $fields->{"removal-" . $CONTAINERS{recycling_240}}) {
+                delete $fields->{"removal-" . $CONTAINERS{recycling_240}}{widget};
+                delete $fields->{"removal-" . $CONTAINERS{recycling_240}}{required};
             }
             return $fields;
         },
@@ -334,7 +358,7 @@ sub waste_munge_request_form_pages {
         next => sub {
             # If it is a refuse bin, and they haven't asked for one to be
             # removed, we need to ask how many people live at the property
-            for (CONTAINER_REFUSE_180, CONTAINER_REFUSE_240, CONTAINER_REFUSE_360) {
+            for ($CONTAINERS{refuse_180}, $CONTAINERS{refuse_240}, $CONTAINERS{refuse_360}) {
                 return 'how_many' if $_[0]->{"container-$_"} && !$_[0]->{"removal-$_"};
             }
             return 'about_you';
@@ -352,7 +376,7 @@ sub waste_munge_request_form_data {
         my ($id) = /container-(.*)/;
         my $quantity = $data->{"quantity-$id"} || 0;
         my $to_remove = $data->{"removal-$id"} || 0;
-        next unless $data->{$_} || ($id == CONTAINER_RECYCLING_BIN || $id == CONTAINER_RECYCLING_BOX);
+        next unless $data->{$_} || ($id == $CONTAINERS{recycling_240} || $id == $CONTAINERS{recycling_box});
 
         if ($quantity - $to_remove > 0) {
             $new_data->{"container-$id-deliver-$_"} = 1
@@ -408,9 +432,9 @@ sub waste_munge_request_data {
 
     if ($data->{how_many} && $container =~ /rubbish bin/) { # Must be a refuse bin
         if ($data->{how_many} eq '5more') {
-            $c->set_param('Container_Type', CONTAINER_REFUSE_240);
+            $c->set_param('Container_Type', $CONTAINERS{refuse_240});
         } else {
-            $c->set_param('Container_Type', CONTAINER_REFUSE_180);
+            $c->set_param('Container_Type', $CONTAINERS{refuse_180});
         }
     } else {
         $c->set_param('Container_Type', $container_id);

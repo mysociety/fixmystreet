@@ -9,6 +9,7 @@ FixMyStreet::Roles::Cobrand::KingstonSutton - shared code for Kingston and Sutto
 package FixMyStreet::Roles::Cobrand::KingstonSutton;
 
 use Moo::Role;
+use Hash::Util qw(lock_hash);
 with 'FixMyStreet::Roles::Cobrand::SLWP';
 
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
@@ -96,14 +97,27 @@ sub available_permissions {
 
 sub waste_auto_confirm_report { 1 }
 
-use constant CONTAINER_REFUSE_140 => 1;
-use constant CONTAINER_REFUSE_180 => 35;
-use constant CONTAINER_REFUSE_240 => 2;
-use constant CONTAINER_REFUSE_360 => 3;
-use constant CONTAINER_PAPER_BIN => 19;
-use constant CONTAINER_PAPER_BIN_140 => 36;
-use constant CONTAINER_GARDEN_BIN => 26;
-use constant CONTAINER_GARDEN_SACK => 28;
+my %TASK_IDS = (
+    garden => 2247,
+);
+lock_hash(%TASK_IDS);
+
+my %CONTAINERS = (
+    refuse_140 => 1,
+    refuse_180 => 35,
+    refuse_240 => 2,
+    refuse_360 => 3,
+    recycling_box => 16,
+    recycling_240 => 12,
+    paper_240 => 19,
+    paper_140 => 36,
+    food_indoor => 23,
+    food_outdoor => 24,
+    garden_240 => 26,
+    garden_140 => 27,
+    garden_sack => 28,
+);
+lock_hash(%CONTAINERS);
 
 sub garden_due_days { 30 }
 
@@ -135,7 +149,7 @@ sub waste_containers {
             14 => 'Communal Recycling bin (660L)',
             15 => 'Communal Recycling bin (1100L)',
             25 => 'Communal Food bin (240L)',
-            12 => 'Recycling bin (240L)',
+            $CONTAINERS{recycling_240} => 'Recycling bin (240L)',
             13 => 'Recycling bin (360L)',
             20 => 'Paper recycling bin (360L)',
             31 => 'Paper 55L Box',
@@ -143,45 +157,45 @@ sub waste_containers {
     if ($self->moniker eq 'sutton') {
         return {
             %shared,
-            1 => 'Standard Brown General Waste Wheelie Bin (140L)',
-            2 => 'Larger Brown General Waste Wheelie Bin (240L)',
-            3 => 'Extra Large Brown General Waste Wheelie Bin (360L)',
-            35 => 'Rubbish bin (180L)',
-            16 => 'Mixed Recycling Green Box (55L)',
-            19 => 'Paper and Cardboard Green Wheelie Bin (240L)',
-            36 => 'Paper and Cardboard Green Wheelie Bin (140L)',
-            23 => 'Small Kitchen Food Waste Caddy (7L)',
-            24 => 'Large Outdoor Food Waste Caddy (23L)',
-            26 => 'Garden Waste Wheelie Bin (240L)',
-            27 => 'Garden Waste Wheelie Bin (140L)',
-            28 => 'Garden waste sacks',
+            $CONTAINERS{refuse_140} => 'Standard Brown General Waste Wheelie Bin (140L)',
+            $CONTAINERS{refuse_240} => 'Larger Brown General Waste Wheelie Bin (240L)',
+            $CONTAINERS{refuse_360} => 'Extra Large Brown General Waste Wheelie Bin (360L)',
+            $CONTAINERS{refuse_180} => 'Rubbish bin (180L)',
+            $CONTAINERS{recycling_box} => 'Mixed Recycling Green Box (55L)',
+            $CONTAINERS{paper_240} => 'Paper and Cardboard Green Wheelie Bin (240L)',
+            $CONTAINERS{paper_140} => 'Paper and Cardboard Green Wheelie Bin (140L)',
+            $CONTAINERS{food_indoor} => 'Small Kitchen Food Waste Caddy (7L)',
+            $CONTAINERS{food_outdoor} => 'Large Outdoor Food Waste Caddy (23L)',
+            $CONTAINERS{garden_240} => 'Garden Waste Wheelie Bin (240L)',
+            $CONTAINERS{garden_140} => 'Garden Waste Wheelie Bin (140L)',
+            $CONTAINERS{garden_sack} => 'Garden waste sacks',
         };
     } elsif ($self->moniker eq 'kingston') {
         my $black_bins = $self->{c}->get_param('exchange') ? {
-            1 => 'Black rubbish bin (140L)',
-            2 => 'Black rubbish bin (240L)',
-            3 => 'Black rubbish bin (360L)',
-            35 => 'Black rubbish bin (180L)',
+            $CONTAINERS{refuse_140} => 'Black rubbish bin (140L)',
+            $CONTAINERS{refuse_240} => 'Black rubbish bin (240L)',
+            $CONTAINERS{refuse_360} => 'Black rubbish bin (360L)',
+            $CONTAINERS{refuse_180} => 'Black rubbish bin (180L)',
         } : {
-            1 => 'Black rubbish bin',
-            2 => 'Black rubbish bin',
-            3 => 'Black rubbish bin',
-            35 => 'Black rubbish bin',
+            $CONTAINERS{refuse_140} => 'Black rubbish bin',
+            $CONTAINERS{refuse_240} => 'Black rubbish bin',
+            $CONTAINERS{refuse_360} => 'Black rubbish bin',
+            $CONTAINERS{refuse_180} => 'Black rubbish bin',
         };
         return {
             %shared,
             %$black_bins,
-            12 => 'Green recycling bin (240L)',
+            $CONTAINERS{recycling_240} => 'Green recycling bin (240L)',
             13 => 'Green recycling bin (360L)',
-            16 => 'Green recycling box (55L)',
-            19 => 'Blue lid paper and cardboard bin (240L)',
+            $CONTAINERS{recycling_box} => 'Green recycling box (55L)',
+            $CONTAINERS{paper_240} => 'Blue lid paper and cardboard bin (240L)',
             20 => 'Blue lid paper and cardboard bin (360L)',
-            23 => 'Food waste bin (kitchen)',
-            24 => 'Food waste bin (outdoor)',
-            36 => 'Blue lid paper and cardboard bin (180L)',
-            26 => 'Garden waste bin (240L)',
-            27 => 'Garden waste bin (140L)',
-            28 => 'Garden waste sacks',
+            $CONTAINERS{food_indoor} => 'Food waste bin (kitchen)',
+            $CONTAINERS{food_outdoor} => 'Food waste bin (outdoor)',
+            $CONTAINERS{paper_140} => 'Blue lid paper and cardboard bin (180L)',
+            $CONTAINERS{garden_240} => 'Garden waste bin (240L)',
+            $CONTAINERS{garden_140} => 'Garden waste bin (140L)',
+            $CONTAINERS{garden_sack} => 'Garden waste sacks',
         };
     }
 }
@@ -195,26 +209,26 @@ sub _waste_containers_no_request { {
 
 sub waste_quantity_max {
     return (
-        2247 => 5, # Garden waste maximum
+        $TASK_IDS{garden} => 5, # Garden waste maximum
     );
 }
 
 sub waste_munge_bin_services_open_requests {
     my ($self, $open_requests) = @_;
-    if ($open_requests->{+CONTAINER_REFUSE_140}) { # Sutton
-        $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_140};
-    } elsif ($open_requests->{+CONTAINER_REFUSE_180}) { # Kingston
-        $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_180};
-    } elsif ($open_requests->{+CONTAINER_REFUSE_240}) { # Both
-        $open_requests->{+CONTAINER_REFUSE_140} = $open_requests->{+CONTAINER_REFUSE_240};
-        $open_requests->{+CONTAINER_REFUSE_180} = $open_requests->{+CONTAINER_REFUSE_240};
-        $open_requests->{+CONTAINER_REFUSE_360} = $open_requests->{+CONTAINER_REFUSE_240};
-    } elsif ($open_requests->{+CONTAINER_REFUSE_360}) { # Kingston
-        $open_requests->{+CONTAINER_REFUSE_180} = $open_requests->{+CONTAINER_REFUSE_360};
-        $open_requests->{+CONTAINER_REFUSE_240} = $open_requests->{+CONTAINER_REFUSE_360};
+    if ($open_requests->{$CONTAINERS{refuse_140}}) { # Sutton
+        $open_requests->{$CONTAINERS{refuse_240}} = $open_requests->{$CONTAINERS{refuse_140}};
+    } elsif ($open_requests->{$CONTAINERS{refuse_180}}) { # Kingston
+        $open_requests->{$CONTAINERS{refuse_240}} = $open_requests->{$CONTAINERS{refuse_180}};
+    } elsif ($open_requests->{$CONTAINERS{refuse_240}}) { # Both
+        $open_requests->{$CONTAINERS{refuse_140}} = $open_requests->{$CONTAINERS{refuse_240}};
+        $open_requests->{$CONTAINERS{refuse_180}} = $open_requests->{$CONTAINERS{refuse_240}};
+        $open_requests->{$CONTAINERS{refuse_360}} = $open_requests->{$CONTAINERS{refuse_240}};
+    } elsif ($open_requests->{$CONTAINERS{refuse_360}}) { # Kingston
+        $open_requests->{$CONTAINERS{refuse_180}} = $open_requests->{$CONTAINERS{refuse_360}};
+        $open_requests->{$CONTAINERS{refuse_240}} = $open_requests->{$CONTAINERS{refuse_360}};
     }
-    if ($open_requests->{+CONTAINER_PAPER_BIN_140}) {
-        $open_requests->{+CONTAINER_PAPER_BIN} = $open_requests->{+CONTAINER_PAPER_BIN_140};
+    if ($open_requests->{$CONTAINERS{paper_140}}) {
+        $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
     }
 }
 
