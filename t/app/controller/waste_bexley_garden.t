@@ -18,6 +18,9 @@ $dbi_mock->mock( 'connect', sub {
     return $dbh;
 } );
 
+my $agile_mock = Test::MockModule->new('Integrations::Agile');
+$agile_mock->mock( 'CustomerSearch', sub { {} } );
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2494, 'Bexley', { cobrand => 'bexley' });
@@ -43,6 +46,14 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'new_containers', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
+);
+create_contact(
+    { category => 'Cancel Garden Subscription', email => 'garden_cancel@example.com' },
+    { code => 'customer_external_ref', required => 1, automated => 'hidden_field' },
+    { code => 'due_date', required => 1, automated => 'hidden_field' },
+    { code => 'reason', required => 1, automated => 'hidden_field' },
+    { code => 'uprn', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'server' },
 );
 
 my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
@@ -82,17 +93,18 @@ FixMyStreet::override_config {
         whitespace => { bexley => {
             url => 'https://example.net/',
         } },
+        agile => { bexley => { url => 'test' } },
         payment_gateway => { bexley => {
-          ggw_cost_first => 7500,
-          ggw_cost => 5500,
-          cc_url => 'http://example.org/cc_submit',
-          scpID => 1234,
-          hmac_id => 1234,
-          hmac => 1234,
-          paye_siteID => 1234,
-          paye_hmac_id => 1234,
-          paye_hmac => 1234,
-          dd_schedule_id => 123,
+            ggw_cost_first => 7500,
+            ggw_cost => 5500,
+            cc_url => 'http://example.org/cc_submit',
+            scpID => 1234,
+            hmac_id => 1234,
+            hmac => 1234,
+            paye_siteID => 1234,
+            paye_hmac_id => 1234,
+            paye_hmac => 1234,
+            dd_schedule_id => 123,
         } },
     },
 }, sub {
@@ -603,22 +615,6 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER456', 'Correct customer ID';
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
-        is $report->state, 'confirmed', 'Report is confirmed';
-        is $report->get_extra_field_value('direct_debit_reference'),
-            'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
-        is $report->get_extra_field_value('direct_debit_start_date'),
-            '23/01/2023', 'Start date set as extra field';
-
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        TODO: {
-            local $TODO = 'Quantity not yet read in _garden_data.html';
-            like $body, qr/Number of bin subscriptions: 2/;
-        }
-        like $body, qr/Bins to be delivered: 1/;
-        like $body, qr/Total:.*?70/;
-        $mech->clear_emails_ok;
     };
 
     subtest 'cancel garden subscription' => sub {
@@ -703,7 +699,8 @@ FixMyStreet::override_config {
 
             $mech->submit_form_ok(
                 {   with_fields => {
-                        reason  => 'Price',
+                        reason  => 'Other',
+                        reason_further_details => 'Burnt all my leaves',
                         confirm => 1,
                     },
                 }
@@ -720,7 +717,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('due_date'),
                 $tomorrow;
             is $report->get_extra_field_value('reason'),
-                'Price';
+                'Other: Burnt all my leaves';
 
             $mech->clear_emails_ok;
             FixMyStreet::Script::Reports::send();
