@@ -1216,7 +1216,7 @@ FixMyStreet::override_config {
         $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
 
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
-        $mech->content_contains('please call');
+        $mech->content_contains('Request a new or replacement rubbish bin');
         $mech->back;
 
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 13 } }, "Choose garden bin");
