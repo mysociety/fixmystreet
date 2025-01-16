@@ -100,11 +100,13 @@ sub credentials {
 
     my $ref = $args->{ref} . ':' . time;
     my $hmac = Digest::HMAC->new(MIME::Base64::decode($self->config->{paye_hmac}), "Crypt::Digest::SHA256");
-    $hmac->add(join('!', 'CapitaPortal', $self->config->{paye_siteID}, $ref, $ts, 'Original', $self->config->{paye_hmac_id}));
+
+    my $subject_type = $self->config->{paye_subjectType} || 'CapitaPortal';
+    $hmac->add(join('!', $subject_type, $self->config->{paye_siteID}, $ref, $ts, 'Original', $self->config->{paye_hmac_id}));
 
     return ixhash(
         'common:subject' => ixhash(
-            'common:subjectType' => 'CapitaPortal',
+            'common:subjectType' => $subject_type,
             'common:identifier' => $self->config->{paye_siteID},
             'common:systemCode' => 'APN',
         ),

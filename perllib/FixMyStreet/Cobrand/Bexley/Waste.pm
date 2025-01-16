@@ -563,9 +563,9 @@ sub _open_reports {
 sub _recent_collections {
     my ( $self, $property ) = @_;
 
-    # Get collections for the last 21 days
+    # Get collections for the last 30 days
     my $dt_today = DateTime->today( time_zone => FixMyStreet->local_time_zone );
-    my $dt_from = $dt_today->clone->subtract( days => 21 );
+    my $dt_from = $dt_today->clone->subtract( days => 30 );
 
     # TODO GetCollectionByUprnAndDatePlus would be preferable as it supports
     # an end date, but Bexley's live API does not seem to support it. So we

@@ -59,6 +59,12 @@ sub default_map_zoom { 6 }
 
 sub send_questionnaires { 0 }
 
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
+
 =item * We restrict use of the contact form to abuse reports only.
 
 =back

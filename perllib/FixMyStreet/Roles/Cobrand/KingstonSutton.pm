@@ -247,23 +247,6 @@ sub waste_report_form_first_next {
     };
 }
 
-sub garden_waste_new_bin_admin_fee {
-    my ($self, $new_bins) = @_;
-    $new_bins ||= 0;
-
-    my $per_new_bin_first_cost = $self->_get_cost('ggw_new_bin_first_cost');
-    my $per_new_bin_cost = $self->_get_cost('ggw_new_bin_cost');
-
-    my $cost = 0;
-    if ($new_bins > 0) {
-        $cost += $per_new_bin_first_cost;
-        if ($new_bins > 1) {
-            $cost += $per_new_bin_cost * ($new_bins - 1);
-        }
-    }
-    return $cost;
-}
-
 =head2 waste_cc_payment_line_item_ref
 
 This is used by the SCP role (all Kingston, Sutton requests) to provide the

@@ -3,9 +3,9 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use utf8;
 use Moo;
-with 'FixMyStreet::Roles::Cobrand::Waste';
-with 'FixMyStreet::Roles::Cobrand::KingstonSutton';
-with 'FixMyStreet::Roles::Cobrand::SCP';
+with 'FixMyStreet::Roles::Cobrand::Waste',
+     'FixMyStreet::Roles::Cobrand::KingstonSutton',
+     'FixMyStreet::Roles::Cobrand::SCP';
 
 use Lingua::EN::Inflect qw( NUMWORDS );
 
@@ -120,6 +120,23 @@ sub garden_waste_renewal_cost_pa {
 sub garden_waste_renewal_sacks_cost_pa {
      my ($self, $end_date) = @_;
      return $self->_get_cost('ggw_sacks_cost_renewal', $end_date);
+}
+
+sub garden_waste_new_bin_admin_fee {
+    my ($self, $new_bins) = @_;
+    $new_bins ||= 0;
+
+    my $per_new_bin_first_cost = $self->_get_cost('ggw_new_bin_first_cost');
+    my $per_new_bin_cost = $self->_get_cost('ggw_new_bin_cost');
+
+    my $cost = 0;
+    if ($new_bins > 0) {
+        $cost += $per_new_bin_first_cost;
+        if ($new_bins > 1) {
+            $cost += $per_new_bin_cost * ($new_bins - 1);
+        }
+    }
+    return $cost;
 }
 
 sub waste_request_single_radio_list { 0 }

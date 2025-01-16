@@ -17,6 +17,7 @@ has action => ( is => 'lazy', default => sub { $_[0]->attr . "/Service/" } );
 has username => ( is => 'ro' );
 has password => ( is => 'ro' );
 has url => ( is => 'ro' );
+has address_types => ( is => 'ro' );
 
 has sample_data => ( is => 'ro', default => 0 );
 
@@ -183,15 +184,14 @@ sub GetPointAddress {
 sub FindPoints {
     my $self = shift;
     my $pc = shift;
-    my $cfg = shift;
 
     my $obj = ixhash(
         PointType => 'PointAddress',
         Postcode => $pc,
     );
-    if ($cfg->{address_types}) {
+    if ($self->address_types) {
         my @types;
-        foreach (@{$cfg->{address_types}}) {
+        foreach (@{$self->address_types}) {
             my $obj = _id_ref($_, 'PointAddressType');
             push @types, { ObjectRef => $obj };
         }
@@ -200,7 +200,7 @@ sub FindPoints {
     return [
         { Description => '1 Example Street, Bromley, BR1 1AA', Id => '11345', SharedRef => { Value => { anyType => '1000000001' } } },
         { Description => '2 Example Street, Bromley, BR1 1AA', Id => '12345', SharedRef => { Value => { anyType => '1000000002' } } },
-        $cfg->{address_types} ? () : ({ Description => '3 Example Street, Bromley, BR1 1AA', Id => '13345', SharedRef => { Value => { anyType => '1000000003' } } }),
+        $self->address_types ? () : ({ Description => '3 Example Street, Bromley, BR1 1AA', Id => '13345', SharedRef => { Value => { anyType => '1000000003' } } }),
         { Description => '4 Example Street, Bromley, BR1 1AA', Id => '14345', SharedRef => { Value => { anyType => '1000000004' } } },
         { Description => '5 Example Street, Bromley, BR1 1AA', Id => '15345', SharedRef => { Value => { anyType => '1000000005' } } },
     ] if $self->sample_data;

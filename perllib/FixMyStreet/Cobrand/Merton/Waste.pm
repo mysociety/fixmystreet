@@ -1,9 +1,9 @@
 package FixMyStreet::Cobrand::Merton::Waste;
 
 use Moo::Role;
-with 'FixMyStreet::Roles::Cobrand::Waste';
-with 'FixMyStreet::Roles::Cobrand::SLWP';
-with 'FixMyStreet::Roles::Cobrand::Adelante';
+with 'FixMyStreet::Roles::Cobrand::Waste',
+     'FixMyStreet::Roles::Cobrand::SLWP',
+     'FixMyStreet::Roles::Cobrand::Adelante';
 
 use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
@@ -168,7 +168,6 @@ sub _closed_event {
 }
 
 sub garden_collection_time { '6:00am' }
-sub garden_waste_new_bin_admin_fee { 0 }
 
 sub waste_renewal_bins_wanted_disabled { 1 }
 

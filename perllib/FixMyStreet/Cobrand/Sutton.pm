@@ -3,9 +3,9 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use utf8;
 use Moo;
-with 'FixMyStreet::Roles::Cobrand::Waste';
-with 'FixMyStreet::Roles::Cobrand::KingstonSutton';
-with 'FixMyStreet::Roles::Cobrand::SCP';
+with 'FixMyStreet::Roles::Cobrand::Waste',
+     'FixMyStreet::Roles::Cobrand::KingstonSutton',
+     'FixMyStreet::Roles::Cobrand::SCP';
 
 use Digest::SHA qw(sha1_hex);
 use Encode qw(encode_utf8);
