@@ -55,8 +55,8 @@ FixMyStreet::override_config {
         echo => {
             kingston => {
                 bulky_address_types => [ 1, 7 ],
-                bulky_service_id => 413,
-                bulky_event_type_id => 1636,
+                bulky_service_id => 986,
+                bulky_event_type_id => 3130,
                 url => 'http://example.org',
                 nlpg => 'https://example.com/%s',
             },
@@ -67,8 +67,6 @@ FixMyStreet::override_config {
             hmac_id => '1234',
             scpID => '1234',
             company_name => 'rbk',
-            form_name => 'rbk_user_form',
-            staff_form_name => 'rbk_staff_form',
             customer_ref => 'customer-ref',
             bulky_customer_ref => 'customer-ref-bulky',
         } },
@@ -94,8 +92,8 @@ FixMyStreet::override_config {
     );
     $echo->mock('ReserveAvailableSlotsForEvent', sub {
         my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
-        is $service, 413;
-        is $event_type, 1636;
+        is $service, 986;
+        is $event_type, 3130;
         is $property, 12345;
         return [
         {
@@ -650,7 +648,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
             ResolutionCodeId => 232,
             EventStateId => 12400,
@@ -661,7 +659,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 232,
             EventStateId => 12400,
@@ -685,7 +683,7 @@ FixMyStreet::override_config {
 
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 379,
             EventStateId => 12401,
@@ -697,13 +695,13 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 100,
             EventStateId => 12401,
         }, {
-            EventTypeId => 1571,
-            ServiceId => 413,
+            EventTypeId => 3145,
+            ServiceId => 986,
             Guid => 'guid',
             EventDate => { DateTime => '2023-07-05T00:00:00Z' },
         } ] } );
@@ -763,8 +761,8 @@ FixMyStreet::override_config {
         echo => {
             sutton => {
                 bulky_address_types => [ 1, 7 ],
-                bulky_service_id => 413,
-                bulky_event_type_id => 1636,
+                bulky_service_id => 960,
+                bulky_event_type_id => 3130,
                 url => 'http://example.org',
                 nlpg => 'https://example.com/%s',
             },
@@ -775,8 +773,6 @@ FixMyStreet::override_config {
                 hmac => '1234',
                 hmac_id => '1234',
                 company_name => 'lbs',
-                form_name => 'lbs_user_form',
-                staff_form_name => 'lbs_staff_form',
                 customer_ref => 'customer-ref',
                 bulky_customer_ref => 'customer-ref-bulky',
             },
@@ -804,8 +800,8 @@ FixMyStreet::override_config {
     } );
     $echo->mock('ReserveAvailableSlotsForEvent', sub {
         my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
-        is $service, 413;
-        is $event_type, 1636;
+        is $service, 960;
+        is $event_type, 3130;
         like $property, qr/1234[56]/;
         if ($property == 12345) {
             is $start, '2023-07-07';

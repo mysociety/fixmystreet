@@ -103,59 +103,85 @@ sub available_permissions {
 sub waste_auto_confirm_report { 1 }
 
 my %SERVICE_IDS = (
-    domestic_refuse => 405,
-    communal_refuse => 406,
-    domestic_recycling => 408,
-    communal_recycling => 410,
-    food => 420,
-    garden => 409,
-    bulky => 413,
+    kingston => {
+        domestic_refuse => 966, # 4394
+        communal_refuse => 969, # 4407
+        fas_refuse => 967, # 4395
+        domestic_mixed => 970, # 4390
+        communal_mixed => 973, # 4397
+        fas_mixed => 971, # 4391
+        domestic_paper => 974, # 4388
+        communal_paper => 977, # 4396
+        fas_paper => 975, # 4402
+        domestic_food => 980, # 4389
+        communal_food => 983, # 4403
+        garden => 979, # 4410
+        bulky => 986, # 4536
+        schedule2_refuse => 968, # 4409
+        schedule2_mixed => 972, # 4398
+    },
+    sutton => {
+        domestic_refuse => 940, # 4394
+        communal_refuse => 943, # 4407
+        fas_refuse => 941, # 4395
+        domestic_mixed => 944, # 4390
+        communal_mixed => 947, # 4397
+        fas_mixed => 945, # 4391
+        domestic_paper => 948, # 4388
+        communal_paper => 951, # 4396
+        fas_paper => 949, # 4402
+        domestic_food => 954, # 4389
+        communal_food => 957, # 4403
+        garden => 953, # 4410
+        bulky => 960, # 4536
+        schedule2_refuse => 942, # 4409
+        schedule2_mixed => 946, # 4398
+    }
 );
 lock_hash(%SERVICE_IDS);
 
 my %TASK_IDS = (
-    domestic_refuse => 2238,
-    domestic_food => 2239,
-    domestic_paper => 2240,
-    domestic_mixed => 2241,
-    domestic_refuse_bag => 2242,
-    communal_refuse => 2243,
-    domestic_mixed_bag => 2246,
-    garden => 2247,
-    communal_food => 2248,
-    communal_paper => 2249,
-    communal_mixed => 2250,
-    domestic_paper_bag => 2632,
-    schedule2_mixed => 3571,
-    schedule2_refuse => 3576,
+    domestic_refuse => 4394,
+    domestic_food => 4389,
+    domestic_paper => 4388,
+    domestic_mixed => 4390,
+    domestic_refuse_bag => 4395,
+    communal_refuse => 4407,
+    domestic_mixed_bag => 4391,
+    garden => 4410,
+    communal_food => 4403,
+    communal_paper => 4396,
+    communal_mixed => 4397,
+    domestic_paper_bag => 4402,
+    schedule2_mixed => 4398,
+    schedule2_refuse => 4409,
 );
 lock_hash(%TASK_IDS);
 
 my %EVENT_TYPE_IDS = (
-    missed_refuse => 1566,
-    missed_recycling => 1568,
-    missed_bulky => 1571,
-    request => 1635,
-    garden => 1638,
-    bulky => 1636,
+    missed => 3145,
+    request => 3129,
+    garden_add => 3159,
+    garden_amend => 3163,
+    bulky => 3130,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
 my %CONTAINERS = (
     refuse_140 => 1,
-    refuse_180 => 35,
-    refuse_240 => 2,
-    refuse_360 => 3,
-    recycling_box => 16,
-    recycling_240 => 12,
-    recycling_blue_bag => 18,
-    paper_240 => 19,
-    paper_140 => 36,
-    food_indoor => 23,
-    food_outdoor => 24,
-    garden_240 => 26,
-    garden_140 => 27,
-    garden_sack => 28,
+    refuse_180 => 2,
+    refuse_240 => 3,
+    refuse_360 => 4,
+    recycling_box => 12,
+    recycling_240 => 15,
+    recycling_blue_bag => 22,
+    paper_240 => 27,
+    paper_140 => 26,
+    food_indoor => 43,
+    food_outdoor => 46,
+    garden_240 => 39,
+    garden_140 => 37,
+    garden_sack => 36,
 );
 lock_hash(%CONTAINERS);
 
@@ -171,28 +197,16 @@ sub waste_allow_current_bins_edit { 1 }
 sub waste_containers {
     my $self = shift;
     my %shared = (
-            4 => 'Refuse Blue Sack',
-            5 => 'Refuse Black Sack',
-            6 => 'Refuse Red Stripe Bag',
-            18 => 'Mixed Recycling Blue Striped Bag',
-            29 => 'Recycling Single Use Bag',
-            21 => 'Paper & Card Reusable Bag',
-            22 => 'Paper Sacks',
-            30 => 'Paper & Card Recycling Clear Bag',
-            7 => 'Communal Refuse bin (240L)',
-            8 => 'Communal Refuse bin (360L)',
-            9 => 'Communal Refuse bin (660L)',
-            10 => 'Communal Refuse bin (1100L)',
-            11 => 'Communal Refuse Chamberlain',
-            33 => 'Communal Refuse bin (140L)',
-            34 => 'Communal Refuse bin (1280L)',
-            14 => 'Communal Recycling bin (660L)',
-            15 => 'Communal Recycling bin (1100L)',
-            25 => 'Communal Food bin (240L)',
-            $CONTAINERS{recycling_240} => 'Recycling bin (240L)',
-            13 => 'Recycling bin (360L)',
-            20 => 'Paper recycling bin (360L)',
-            31 => 'Paper 55L Box',
+        10 => 'Refuse Red Stripe Bag',
+        22 => 'Mixed Recycling Blue Striped Bag',
+        34 => 'Paper & Card Recycling Clear Bag',
+        8 => 'Communal Refuse bin (1100L)',
+        20 => 'Communal Recycling bin (1100L)',
+        51 => 'Communal Food bin (240L)',
+        $CONTAINERS{recycling_240} => 'Recycling bin (240L)',
+        16 => 'Recycling bin (360L)',
+        28 => 'Paper recycling bin (360L)',
+        32 => 'Communal Paper bin (1100L)',
     );
     if ($self->moniker eq 'sutton') {
         return {
@@ -226,10 +240,10 @@ sub waste_containers {
             %shared,
             %$black_bins,
             $CONTAINERS{recycling_240} => 'Green recycling bin (240L)',
-            13 => 'Green recycling bin (360L)',
+            16 => 'Green recycling bin (360L)',
             $CONTAINERS{recycling_box} => 'Green recycling box (55L)',
             $CONTAINERS{paper_240} => 'Blue lid paper and cardboard bin (240L)',
-            20 => 'Blue lid paper and cardboard bin (360L)',
+            28 => 'Blue lid paper and cardboard bin (360L)',
             $CONTAINERS{food_indoor} => 'Food waste bin (kitchen)',
             $CONTAINERS{food_outdoor} => 'Food waste bin (outdoor)',
             $CONTAINERS{paper_140} => 'Blue lid paper and cardboard bin (180L)',
@@ -462,7 +476,7 @@ sub garden_service_id { $TASK_IDS{garden} }
 
 sub waste_service_to_containers { () }
 
-sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
+sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden_add} }
 
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
@@ -484,16 +498,12 @@ sub waste_relevant_serviceunits {
             my $service_name = $self->service_name_override({ ServiceId => $service_id });
             next unless $service_name;
 
-            my $schedules = _parse_schedules($task, 'task');
-
-            # Ignore retired diesel rounds
-            next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != $self->garden_service_id;
-
             push @rows, {
                 Id => $_->{Id},
                 ServiceId => $task->{TaskTypeId},
                 ServiceTask => $task,
-                Schedules => $schedules,
+                Service => $_,
+                Schedules => _parse_schedules($task),
             };
         }
     }
@@ -504,8 +514,9 @@ sub waste_extra_service_info_all_results {
     my ($self, $property, $result) = @_;
 
     my $cfg = $self->feature('echo');
+    my $service_ids = $SERVICE_IDS{$self->moniker};
 
-    if (!(@$result && grep { $_->{ServiceId} == $SERVICE_IDS{garden} } @$result)) {
+    if (!(@$result && grep { $_->{ServiceId} == $service_ids->{garden} } @$result)) {
         # No garden collection possible
         $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
     }
@@ -551,25 +562,25 @@ sub waste_service_containers {
 
     my $waste_containers_no_request = $self->_waste_containers_no_request;
 
-    my $task = $service->{ServiceTask};
+    my $unit = $service->{Service};
     my $service_id = $service->{ServiceId};
     my $service_name = $self->service_name_override($service);
     my $schedules = $service->{Schedules};
 
-    my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
+    my $data = Integrations::Echo::force_arrayref($unit->{Data}, 'ExtensibleDatum');
     my ($containers, $request_max);
     foreach (@$data) {
         next if $service_id == $TASK_IDS{communal_refuse} || $service_id == $TASK_IDS{communal_food} || $service_id == $TASK_IDS{communal_paper} || $service_id == $TASK_IDS{communal_mixed};
         my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
         my ($container, $quantity) = (0, 0);
         foreach (@$moredata) {
-            $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
-            $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
+            $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type';
+            $quantity = $_->{Value} if $_->{DatatypeName} eq 'Container Quantity';
         }
 
         next if $waste_containers_no_request->{$container};
 
-        next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
+        next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/; # Blue stripe bag on a weekly collection
 
         if ($container && $quantity) {
             push @$containers, $container;
@@ -622,9 +633,7 @@ sub waste_service_containers {
 
 sub missed_event_types { return {
     $EVENT_TYPE_IDS{request} => 'request',
-    $EVENT_TYPE_IDS{missed_refuse} => 'missed',
-    $EVENT_TYPE_IDS{missed_recycling} => 'missed',
-    $EVENT_TYPE_IDS{missed_bulky} => 'missed',
+    $EVENT_TYPE_IDS{missed} => 'missed',
     $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
 
@@ -638,36 +647,39 @@ sub parse_event_missed {
     $event->{report} = $report if $report;
 
     my $service_id = $echo_event->{ServiceId};
-    if ($service_id == $SERVICE_IDS{domestic_refuse}) {
+    my $service_ids = $SERVICE_IDS{$self->moniker};
+    if ($service_id == $service_ids->{domestic_refuse}) {
         push @{$events->{missed}->{$TASK_IDS{domestic_refuse}}}, $event;
-        push @{$events->{missed}->{$TASK_IDS{domestic_refuse_bag}}}, $event;
-        push @{$events->{missed}->{$TASK_IDS{schedule2_refuse}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{communal_refuse}) {
+    } elsif ($service_id == $service_ids->{communal_refuse}) {
         push @{$events->{missed}->{$TASK_IDS{communal_refuse}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{garden}) {
+    } elsif ($service_id == $service_ids->{fas_refuse}) {
+        push @{$events->{missed}->{$TASK_IDS{domestic_refuse_bag}}}, $event;
+
+    } elsif ($service_id == $service_ids->{domestic_paper}) {
+        push @{$events->{missed}->{$TASK_IDS{domestic_paper}}}, $event;
+    } elsif ($service_id == $service_ids->{communal_paper}) {
+        push @{$events->{missed}->{$TASK_IDS{communal_paper}}}, $event;
+    } elsif ($service_id == $service_ids->{fas_paper}) {
+        push @{$events->{missed}->{$TASK_IDS{domestic_paper_bag}}}, $event;
+
+    } elsif ($service_id == $service_ids->{domestic_mixed}) {
+        push @{$events->{missed}->{$TASK_IDS{domestic_mixed}}}, $event;
+    } elsif ($service_id == $service_ids->{communal_mixed}) {
+        push @{$events->{missed}->{$TASK_IDS{communal_mixed}}}, $event;
+    } elsif ($service_id == $service_ids->{fas_mixed}) {
+        push @{$events->{missed}->{$TASK_IDS{domestic_mixed_bag}}}, $event;
+
+    } elsif ($service_id == $service_ids->{garden}) {
         push @{$events->{missed}->{$TASK_IDS{garden}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{food}) { # TODO Will food events come in as this?
+
+    } elsif ($service_id == $service_ids->{domestic_food}) {
         push @{$events->{missed}->{$TASK_IDS{domestic_food}}}, $event;
+    } elsif ($service_id == $service_ids->{communal_food}) {
         push @{$events->{missed}->{$TASK_IDS{communal_food}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{bulky}) {
-        push @{$events->{missed}->{$SERVICE_IDS{bulky}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{domestic_recycling} || $service_id == $SERVICE_IDS{communal_recycling}) {
-        my $data = Integrations::Echo::force_arrayref($echo_event->{Data}, 'ExtensibleDatum');
-        foreach (@$data) {
-            if ($_->{DatatypeName} eq 'Paper' && $_->{Value} == 1) {
-                push @{$events->{missed}->{$TASK_IDS{domestic_paper}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{communal_paper}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{domestic_paper_bag}}}, $event;
-            } elsif ($_->{DatatypeName} eq 'Container Mix' && $_->{Value} == 1) {
-                push @{$events->{missed}->{$TASK_IDS{domestic_mixed}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{domestic_mixed_bag}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{communal_mixed}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{schedule2_mixed}}}, $event;
-            } elsif ($_->{DatatypeName} eq 'Food' && $_->{Value} == 1) {
-                push @{$events->{missed}->{$TASK_IDS{domestic_food}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{communal_food}}}, $event;
-            }
-        }
+
+    } elsif ($service_id == $service_ids->{bulky}) {
+        push @{$events->{missed}->{$service_ids->{bulky}}}, $event;
+
     } else {
         push @{$events->{missed}->{$service_id}}, $event;
     }

@@ -18,33 +18,33 @@ sub council_url { return 'sutton'; }
 sub admin_user_domain { 'sutton.gov.uk' }
 
 my %TASK_IDS = (
-    domestic_refuse => 2238,
-    domestic_food => 2239,
-    domestic_paper => 2240,
-    domestic_mixed => 2241,
-    domestic_refuse_bag => 2242,
-    communal_refuse => 2243,
-    domestic_mixed_bag => 2246,
-    garden => 2247,
-    communal_food => 2248,
-    communal_paper => 2249,
-    communal_mixed => 2250,
-    domestic_paper_bag => 2632,
-    schedule2_mixed => 3571,
-    schedule2_refuse => 3576,
-    deliver_refuse_bags => 2256,
-    deliver_recycling_bags => 2257,
+    domestic_refuse => 4394,
+    domestic_food => 4389,
+    domestic_paper => 4388,
+    domestic_mixed => 4390,
+    domestic_refuse_bag => 4395,
+    communal_refuse => 4407,
+    domestic_mixed_bag => 4391,
+    garden => 4410,
+    communal_food => 4403,
+    communal_paper => 4396,
+    communal_mixed => 4397,
+    domestic_paper_bag => 4402,
+    schedule2_mixed => 4398,
+    schedule2_refuse => 4409,
+    deliver_refuse_bags => 4427,
+    deliver_recycling_bags => 4432,
 );
 lock_hash(%TASK_IDS);
 
 my %CONTAINERS = (
     refuse_140 => 1,
-    refuse_240 => 2,
-    refuse_360 => 3,
-    paper_240 => 19,
-    paper_140 => 36,
-    recycling_blue_bag => 18,
-    paper_bag => 30,
+    refuse_240 => 3,
+    refuse_360 => 4,
+    paper_240 => 27,
+    paper_140 => 26,
+    recycling_blue_bag => 22,
+    paper_bag => 34,
 );
 lock_hash(%CONTAINERS);
 

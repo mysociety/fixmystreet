@@ -17,32 +17,32 @@ sub council_url { return 'kingston'; }
 sub admin_user_domain { 'kingston.gov.uk' }
 
 my %TASK_IDS = (
-    domestic_refuse => 2238,
-    domestic_food => 2239,
-    domestic_paper => 2240,
-    domestic_mixed => 2241,
-    domestic_refuse_bag => 2242,
-    communal_refuse => 2243,
-    domestic_mixed_bag => 2246,
-    garden => 2247,
-    communal_food => 2248,
-    communal_paper => 2249,
-    communal_mixed => 2250,
-    domestic_paper_bag => 2632,
-    schedule2_mixed => 3571,
-    schedule2_refuse => 3576,
-    deliver_refuse_bags => 2256,
-    deliver_recycling_bags => 2257,
+    domestic_refuse => 4394,
+    domestic_food => 4389,
+    domestic_paper => 4388,
+    domestic_mixed => 4390,
+    domestic_refuse_bag => 4395,
+    communal_refuse => 4407,
+    domestic_mixed_bag => 4391,
+    garden => 4410,
+    communal_food => 4403,
+    communal_paper => 4396,
+    communal_mixed => 4397,
+    domestic_paper_bag => 4402,
+    schedule2_mixed => 4398,
+    schedule2_refuse => 4409,
+    deliver_refuse_bags => 4427,
+    deliver_recycling_bags => 4432,
 );
 lock_hash(%TASK_IDS);
 
 my %CONTAINERS = (
-    refuse_180 => 35,
-    refuse_240 => 2,
-    refuse_360 => 3,
-    recycling_box => 16,
-    recycling_240 => 12,
-    food_outdoor => 24,
+    refuse_180 => 2,
+    refuse_240 => 3,
+    refuse_360 => 4,
+    recycling_box => 12,
+    recycling_240 => 15,
+    food_outdoor => 46,
 );
 lock_hash(%CONTAINERS);
 
@@ -196,9 +196,9 @@ sub waste_munge_request_form_fields {
         my $id = $1;
 
         if (my $os = $c->get_param('override_size')) {
-            $id = 35 if $os == '180';
-            $id = 2 if $os == '240';
-            $id = 3 if $os == '360';
+            $id = $CONTAINERS{refuse_180} if $os == '180';
+            $id = $CONTAINERS{refuse_240} if $os == '240';
+            $id = $CONTAINERS{refuse_360} if $os == '360';
         }
 
         if ($id == $CONTAINERS{refuse_180}) {
