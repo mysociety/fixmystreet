@@ -6,15 +6,46 @@ FixMyStreet::Cobrand::Bexley::Garden - code specific to Bexley WasteWorks GGW
 
 package FixMyStreet::Cobrand::Bexley::Garden;
 
+use Integrations::Agile;
+
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SCP',
      'FixMyStreet::Roles::Cobrand::Paye';
 
+has agile => (
+    is => 'lazy',
+# TODO url to config
+    default => sub { Integrations::Agile->new( url => 'https://integration.stg.agileapplications.co.uk/api/bexley/gardenwaste/external/request' ) },
+);
+
 sub garden_service_name { 'garden waste collection service' }
 
-# TODO No current subscription look up here
-#
-sub garden_current_subscription { undef }
+sub garden_service_ids {
+    return [ 'GA-140', 'GA-240' ];
+}
+
+sub garden_current_subscription {
+    my $self = shift;
+
+    my $uprn = $self->{c}->stash->{property}{uprn};
+    return undef unless $uprn;
+
+    my $is_free = $self->agile->IsAddressFree($uprn);
+    return undef if $is_free->{IsFree} eq 'True';
+
+    # Agile says there is a subscription; now get service data from
+    # Whitespace
+    my $services = $self->{c}->stash->{services};
+    map { my $srv = $services->{$_}; return $srv if $srv }
+        @{ $self->garden_service_ids };
+
+    return { agile_only => 1 };
+}
+
+# TODO This is a placeholder
+sub get_current_garden_bins { 1 }
+
+sub waste_cancel_asks_staff_for_user_details { 1 }
 
 =item * You can order a maximum of five bins
 
