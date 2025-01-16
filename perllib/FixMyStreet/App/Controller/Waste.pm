@@ -1674,6 +1674,16 @@ sub add_report : Private {
     }
     $c->stash->{bulky_photo_data} = \@bulky_photo_data;
 
+# TODO Move elsewhere, this is mock data
+if ( $c->cobrand->moniker eq 'bexley' && $data->{category} eq 'Cancel Garden Subscription' ) {
+# TODO Reason selection needs to be implemented in form
+    $c->set_param('reason', 'Price');
+# TODO customer_reference should be saved on original subscription report (value returned from subscription request)
+    $c->set_param('customer_reference', 'GWIT-CUST-FC3A-16012025140306' );
+# TODO Need clarification for this - where is this meant to come from?
+    $c->set_param('due_date', '12/12/2025');
+}
+
     $c->forward('setup_categories_and_bodies') unless $c->stash->{contacts};
     $c->forward('/report/new/non_map_creation', [['/waste/remove_name_errors']]) or return;
 
