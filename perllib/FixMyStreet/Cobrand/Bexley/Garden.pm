@@ -6,15 +6,102 @@ FixMyStreet::Cobrand::Bexley::Garden - code specific to Bexley WasteWorks GGW
 
 package FixMyStreet::Cobrand::Bexley::Garden;
 
+use DateTime::Format::Strptime;
+use Integrations::Agile;
+use FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley;
+
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SCP',
      'FixMyStreet::Roles::Cobrand::Paye';
 
+has agile => (
+    is => 'lazy',
+    default => sub {
+        my $self = shift;
+        my $cfg = $self->feature('agile');
+        return Integrations::Agile->new(%$cfg);
+    },
+);
+
 sub garden_service_name { 'garden waste collection service' }
 
-# TODO No current subscription look up here
-#
-sub garden_current_subscription { undef }
+sub garden_service_ids {
+    return [ 'GA-140', 'GA-240' ];
+}
+
+sub garden_current_subscription {
+    my $self = shift;
+
+    my $current = $self->{c}->stash->{property}{garden_current_subscription};
+    return $current if $current;
+
+    my $uprn = $self->{c}->stash->{property}{uprn};
+    return undef unless $uprn;
+
+# TODO Fetch active subscription from DB for UPRN
+#      (get_original_sub() in Controller/Waste.pm needs to handle Bexley UPRN).
+#      Could be more than one customer, so match against email.
+#      Could be more than one contract, so match against reference.
+
+    my $results = $self->agile->CustomerSearch($uprn);
+    return undef unless $results && $results->{Customers};
+    my $customer = $results->{Customers}[0];
+    return undef unless $customer && $customer->{ServiceContracts};
+    my $contract = $customer->{ServiceContracts}[0];
+    return unless $contract;
+
+    my $parser
+        = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
+    my $end_date = $parser->parse_datetime( $contract->{EndDate} );
+
+    # Agile says there is a subscription; now get service data from
+    # Whitespace
+    my $services = $self->{c}->stash->{services};
+    for ( @{ $self->garden_service_ids } ) {
+        if ( my $srv = $services->{$_} ) {
+            $srv->{customer_external_ref}
+                = $customer->{CustomerExternalReference};
+            $srv->{end_date} = $end_date;
+            return $srv;
+        }
+    }
+
+    return {
+        agile_only => 1,
+        customer_external_ref => $customer->{CustomerExternalReference},
+        end_date => $end_date,
+    };
+}
+
+# TODO This is a placeholder
+sub get_current_garden_bins { 1 }
+
+sub waste_cancel_asks_staff_for_user_details { 1 }
+
+sub waste_cancel_form_class {
+    'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
+}
+
+sub waste_garden_sub_params {
+    my ( $self, $data, $type ) = @_;
+
+    my $c = $self->{c};
+
+    if ( $data->{category} eq 'Cancel Garden Subscription' ) {
+        my $srv = $self->garden_current_subscription;
+
+        my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
+        my $due_date_str = $parser->format_datetime( $srv->{end_date} );
+
+        my $reason = $data->{reason};
+        $reason .= ': ' . $data->{reason_further_details}
+            if $data->{reason_further_details};
+
+        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
+        $c->set_param( 'due_date', $due_date_str );
+        $c->set_param( 'reason', $reason );
+    }
+}
 
 =item * You can order a maximum of five bins
 

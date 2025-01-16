@@ -1280,7 +1280,9 @@ sub garden_cancel : Chained('garden_setup') : Args(0) {
     $c->forward('check_if_staff_can_pay', [ $payment_method ]);
 
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Cancel';
+    $c->stash->{form_class}
+        = $c->cobrand->call_hook('waste_cancel_form_class')
+        || 'FixMyStreet::App::Form::Waste::Garden::Cancel';
     $c->forward('form');
 }
 

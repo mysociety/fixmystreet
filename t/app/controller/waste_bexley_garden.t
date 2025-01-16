@@ -18,6 +18,9 @@ $dbi_mock->mock( 'connect', sub {
     return $dbh;
 } );
 
+my $agile_mock = Test::MockModule->new('Integrations::Agile');
+$agile_mock->mock( 'CustomerSearch', sub { {} } );
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2494, 'Bexley', { cobrand => 'bexley' });
@@ -43,6 +46,14 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'new_containers', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
+);
+create_contact(
+    { category => 'Cancel Garden Subscription', email => 'garden_cancel@example.com' },
+    { code => 'customer_external_ref', required => 1, automated => 'hidden_field' },
+    { code => 'due_date', required => 1, automated => 'hidden_field' },
+    { code => 'reason', required => 1, automated => 'hidden_field' },
+    { code => 'uprn', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'server' },
 );
 
 my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
@@ -82,16 +93,17 @@ FixMyStreet::override_config {
         whitespace => { bexley => {
             url => 'https://example.net/',
         } },
+        agile => { bexley => { url => 'test' } },
         payment_gateway => { bexley => {
-          ggw_cost_first => 7500,
-          ggw_cost => 5500,
-          cc_url => 'http://example.org/cc_submit',
-          scpID => 1234,
-          hmac_id => 1234,
-          hmac => 1234,
-          paye_siteID => 1234,
-          paye_hmac_id => 1234,
-          paye_hmac => 1234,
+            ggw_cost_first => 7500,
+            ggw_cost => 5500,
+            cc_url => 'http://example.org/cc_submit',
+            scpID => 1234,
+            hmac_id => 1234,
+            hmac => 1234,
+            paye_siteID => 1234,
+            paye_hmac_id => 1234,
+            paye_hmac => 1234,
         } },
     },
 }, sub {
@@ -326,6 +338,117 @@ FixMyStreet::override_config {
         }
         like $body, qr/Bins to be removed: 1/;
         like $body, qr/Total:.*?75.00/;
+    };
+
+    subtest 'cancel garden subscription' => sub {
+        set_fixed_time('2024-02-01T00:00:00');
+
+        $agile_mock->mock( 'CustomerSearch', sub { {
+            Customers => [
+                {
+                    CustomerExternalReference => 'CUSTOMER_123',
+                    ServiceContracts => [
+                        {
+                            EndDate => '12/12/2025 12:21',
+                        },
+                    ],
+                },
+            ],
+        } } );
+
+        $mech->log_in_ok( $user->email );
+
+        subtest 'with Agile data only' => sub {
+            $mech->get_ok('/waste/10001');
+            like $mech->text, qr/Sorry, we are unable to find any rubbish and recycling collections/;
+
+            $mech->get_ok('/waste/10001/garden_cancel');
+            like $mech->text, qr/Cancel your garden waste subscription/;
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        reason  => 'Other',
+                        reason_further_details => 'Burnt all my leaves',
+                        confirm => 1,
+                    },
+                }
+            );
+            like $mech->text, qr/Your subscription has been cancelled/,
+                'form submitted OK';
+
+            my $report
+                = FixMyStreet::DB->resultset('Problem')->order_by('-id')
+                ->first;
+
+            is $report->get_extra_field_value('customer_external_ref'),
+                'CUSTOMER_123';
+            is $report->get_extra_field_value('due_date'),
+                '12/12/2025';
+            is $report->get_extra_field_value('reason'),
+                'Other: Burnt all my leaves';
+
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Reports::send();
+
+            my @emails = $mech->get_email;
+            my $body = $mech->get_text_body_from_email($emails[1]);
+            like $body, qr/You have cancelled your garden waste collection service/;
+        };
+
+        subtest 'with Whitespace data' => sub {
+            $whitespace_mock->mock(
+                'GetSiteCollections',
+                sub {
+                    [   {   SiteServiceID          => 1,
+                            ServiceItemDescription => 'Garden waste',
+                            ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                            ServiceName          => 'Brown Wheelie Bin',
+                            NextCollectionDate   => '2024-02-07T00:00:00',
+                            SiteServiceValidFrom => '2024-01-01T00:00:00',
+                            SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                            RoundSchedule => 'RND-1 Mon',
+                        }
+                    ];
+                }
+            );
+
+            $mech->get_ok('/waste/10001');
+            like $mech->content, qr/waste-service-subtitle.*Garden waste/s;
+
+            $mech->get_ok('/waste/10001/garden_cancel');
+            like $mech->text, qr/Cancel your garden waste subscription/;
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        reason  => 'Other',
+                        reason_further_details => 'Burnt all my leaves',
+                        confirm => 1,
+                    },
+                }
+            );
+            like $mech->text, qr/Your subscription has been cancelled/,
+                'form submitted OK';
+
+            my $report
+                = FixMyStreet::DB->resultset('Problem')->order_by('-id')
+                ->first;
+
+            is $report->get_extra_field_value('customer_external_ref'),
+                'CUSTOMER_123';
+            is $report->get_extra_field_value('due_date'),
+                '12/12/2025';
+            is $report->get_extra_field_value('reason'),
+                'Other: Burnt all my leaves';
+
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Reports::send();
+
+            my @emails = $mech->get_email;
+            my $body = $mech->get_text_body_from_email($emails[1]);
+            like $body, qr/You have cancelled your garden waste collection service/;
+        };
+
     };
 };
 
