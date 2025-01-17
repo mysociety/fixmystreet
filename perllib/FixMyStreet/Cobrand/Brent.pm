@@ -456,6 +456,7 @@ sub dashboard_export_problems_add_columns {
             uprn => 'UPRN',
             external_id => 'External ID',
             image_included => 'Does the report have an image?',
+            extra_details => 'Extra details',
 
             InspectionDate => "Inspection date",
             GradeLitter => "Grade for Litter",
@@ -527,6 +528,7 @@ sub dashboard_export_problems_add_columns {
 
         my $data = {
             location_name => $csv->_extra_field($report, 'location_name'),
+            extra_details => $csv->_extra_metadata($report, 'detailed_information') || '',
             $csv->dbi ? (
                 street_name => FixMyStreet::Geocode::Address->new($report->{geocode})->parts->{street},
                 image_included => $report->{photo} ? 'Y' : 'N',
