@@ -203,7 +203,7 @@ $.extend(fixmystreet.utils, {
         // Only now do we want to activate the Street Manager layer, if it's
         // present, as we haven't needed it until now.
         if (fixmystreet.roadworks) {
-            fixmystreet.roadworks.activate();
+            fixmystreet.roadworks.update();
         }
 
         fixmystreet.maps.hide_keyboard_instructions();

@@ -72,10 +72,24 @@ describe('new report form', function() {
     cy.pickCategory('Trees');
     cy.get('.category_meta_message').should('contain', 'You can pick a tree from the map');
   });
+});
+
+describe('Roadworks', function() {
+  beforeEach(function() {
+    cy.server();
+    cy.route('/report/new/ajax*').as('report-ajax');
+    cy.route("**/peterborough.assets/4/*", 'fixture:peterborough_pcc.json').as('pcc');
+    cy.route("**/peterborough.assets/3/*", 'fixture:peterborough_non_pcc.json').as('non_pcc');
+    cy.route('/streetmanager.php**', 'fixture:peterborough_roadworks.json').as('roadworks');
+    cy.visit('http://peterborough.localhost:3001/');
+    cy.contains('Peterborough');
+    cy.get('[name=pc]').type('PE1 1HF');
+    cy.get('[name=pc]').parents('form').submit();
+    cy.get('#map_box').click();
+    cy.wait('@report-ajax');
+  });
 
   it('displays nearby roadworks', function() {
-    cy.fixture('peterborough_roadworks.json');
-    cy.route('/streetmanager.php**', 'fixture:peterborough_roadworks.json').as('roadworks');
     cy.wait('@roadworks');
     cy.pickCategory('Pothole');
     cy.nextPageReporting();
