@@ -9,6 +9,7 @@ package FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Garden::Renew';
+use WasteWorks::Costs;
 
 sub with_bins_wanted {
     my $cobrand = $_[0]->c->cobrand->moniker;
@@ -52,11 +53,8 @@ has_page sacks_details => (
         my $bins_wanted_disabled = $c->cobrand->call_hook('waste_renewal_bins_wanted_disabled');
         my $data = $form->saved_data;
         my $bin_count = $c->get_param('bins_wanted') || $data->{bins_wanted} || 1;
-        my $end_date = $c->stash->{garden_form_data}->{end_date};
-        my $cost_pa = $c->cobrand->garden_waste_renewal_sacks_cost_pa($end_date) * $bin_count;
-        if ($data->{apply_discount}) {
-            ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa);
-        }
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+        my $cost_pa = $costs->sacks_renewal($bin_count);
         $form->{c}->stash->{cost_pa} = $cost_pa / 100;
         $form->{c}->stash->{cost_now} = $cost_pa / 100;
 

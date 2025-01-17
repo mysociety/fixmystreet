@@ -3,6 +3,7 @@ package FixMyStreet::App::Form::Waste::Garden::Modify;
 use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
+use WasteWorks::Costs;
 
 has_page intro => (
     title => 'Change your garden waste subscription',
@@ -36,8 +37,9 @@ has_page alter => (
         my $new_bins = $bins_wanted - $current_bins;
 
         my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bins_wanted);
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form->saved_data->{apply_discount} });
+        my $cost_pa = $costs->bins($bins_wanted);
+        my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
         $c->stash->{cost_pa} = $cost_pa / 100;
         $c->stash->{cost_now_admin} = $cost_now_admin / 100;
 
@@ -45,16 +47,8 @@ has_page alter => (
         $c->stash->{pro_rata} = 0;
         if ($new_bins > 0) {
             $c->stash->{new_bin_count} = $new_bins;
-            my $cost_pro_rata = $c->cobrand->waste_get_pro_rata_cost($new_bins, $data->{end_date});
+            my $cost_pro_rata = $costs->pro_rata_cost($new_bins);
             $c->stash->{pro_rata} = ($cost_now_admin + $cost_pro_rata) / 100;
-        }
-        if ($form->saved_data->{apply_discount}) {
-            ($c->stash->{cost_pa}, $c->stash->{cost_now_admin}, $c->stash->{pro_rata}) =
-            $c->cobrand->apply_garden_waste_discount(
-                $c->stash->{cost_pa},
-                $c->stash->{cost_now_admin},
-                $c->stash->{pro_rata},
-                );
         }
 
         my $max_bins = $data->{max_bins};
@@ -81,9 +75,10 @@ has_page summary => (
         my $current_bins = $data->{current_bins};
         my $bin_count = $data->{bins_wanted};
         my $new_bins = $bin_count - $current_bins;
-        my $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+        my $pro_rata = $costs->pro_rata_cost($new_bins);
+        my $cost_pa = $costs->bins($bin_count);
+        my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
         my $total = $cost_pa;
         $pro_rata += $cost_now_admin;
 

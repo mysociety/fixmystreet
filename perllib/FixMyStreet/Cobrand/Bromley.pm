@@ -12,6 +12,7 @@ use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
 use FixMyStreet::DB;
 use Moo;
+use WasteWorks::Costs;
 with 'FixMyStreet::Roles::Cobrand::Echo';
 with 'FixMyStreet::Roles::Cobrand::Pay360';
 with 'FixMyStreet::Roles::Cobrand::SCP';
@@ -768,11 +769,12 @@ sub waste_extra_service_info {
 sub garden_container_data_extract {
     my ($self, $data) = @_;
     my $moredata = Integrations::Echo::force_arrayref($data->{ChildData}, 'ExtensibleDatum');
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
     foreach (@$moredata) {
         # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
         if ( $_->{DatatypeName} eq 'Quantity' ) {
             my $garden_bins = $_->{Value};
-            my $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
+            my $garden_cost = $costs->bins($garden_bins) / 100;
             return ($garden_bins, 0, $garden_cost);
         }
     }
@@ -926,44 +928,6 @@ sub waste_munge_enquiry_data {
     $detail .= $address;
     $data->{detail} = $detail;
     $self->_set_user_source;
-}
-
-sub waste_get_pro_rata_cost {
-    my ($self, $bins, $end) = @_;
-
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($end);
-    my $cost = $bins * $self->waste_get_pro_rata_bin_cost( $sub_end, $now );
-
-    return $cost;
-}
-
-sub waste_get_pro_rata_bin_cost {
-    my ($self, $end, $start) = @_;
-
-    my $weeks = $end->delta_days($start)->in_units('weeks');
-    $weeks -= 1 if $weeks > 0;
-
-    my $base = $self->_get_cost('pro_rata_minimum', $start);
-    my $weekly_cost = $self->_get_cost('pro_rata_weekly', $start);
-    my $cost = sprintf "%.0f", ($base + ( $weeks * $weekly_cost ));
-
-    return $cost;
-}
-
-=head2 garden_waste_renewal_cost_pa
-
-The price change for a renewal is based upon the end
-date of the subscription, not the current date.
-
-=cut
-
-sub garden_waste_renewal_cost_pa {
-    my ($self, $end_date, $bin_count) = @_;
-    $bin_count ||= 1;
-    my $per_bin_cost = $self->_get_cost('ggw_cost', $end_date);
-    my $cost = $per_bin_cost * $bin_count;
-    return $cost;
 }
 
 sub waste_payment_ref_council_code { "LBB" }

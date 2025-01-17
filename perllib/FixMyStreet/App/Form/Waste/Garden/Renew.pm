@@ -3,6 +3,7 @@ package FixMyStreet::App::Form::Waste::Garden::Renew;
 use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
+use WasteWorks::Costs;
 
 has_page discount => (
     next => 'intro',
@@ -33,12 +34,9 @@ has_page intro => (
 
         my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
         my $bins_wanted_disabled = $c->cobrand->call_hook('waste_renewal_bins_wanted_disabled');
-        my $cost_pa = $c->cobrand->garden_waste_renewal_cost_pa($data->{end_date}, $bin_count);
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
-        if ($form->saved_data->{apply_discount}) {
-            ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
-                $cost_pa, $cost_now_admin);
-        }
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form->saved_data->{apply_discount} });
+        my $cost_pa = $costs->bins_renewal($bin_count);
+        my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
         $form->{c}->stash->{cost_pa} = $cost_pa / 100;
         $form->{c}->stash->{cost_now_admin} = $cost_now_admin / 100;
         $form->{c}->stash->{cost_now} = ($cost_now_admin + $cost_pa) / 100;
@@ -65,21 +63,17 @@ has_page summary => (
         my $c = $form->{c};
         my $data = $form->saved_data;
 
-        my $end_date = $c->stash->{garden_form_data}->{end_date};
         my $current_bins = $data->{current_bins} || 0;
         my $bin_count = $data->{bins_wanted} || 1;
         my $new_bins = $bin_count - $current_bins;
         my $cost_pa;
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form->saved_data->{apply_discount} });
         if (($data->{container_choice}||'') eq 'sack') {
-            $cost_pa = $c->cobrand->garden_waste_renewal_sacks_cost_pa($end_date) * $bin_count;
+            $cost_pa = $costs->sacks_renewal($bin_count);
         } else {
-            $cost_pa = $form->{c}->cobrand->garden_waste_renewal_cost_pa($end_date, $bin_count);
+            $cost_pa = $costs->bins_renewal($bin_count);
         }
-        my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
-        if ($data->{apply_discount}) {
-            ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
-                $cost_pa, $cost_now_admin);
-        }
+        my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
         my $total = $cost_now_admin + $cost_pa;
 
         $data->{cost_now_admin} = $cost_now_admin / 100;
