@@ -1,0 +1,15 @@
+[%
+
+f = [];
+
+IF property.domestic_refuse_bin OR communal_property;
+    f.push( { value = 'Bin not returned', label = 'Bin not returned correctly' } );
+END;
+IF property.domestic_refuse_bin;
+    f.push( { value = 'Waste spillage', label = 'Waste spillage' } );
+END;
+
+PROCESS waste/enquiry.html
+    title = 'Report a problem'
+    field_options = f;
+%]

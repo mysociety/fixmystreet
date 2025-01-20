@@ -411,6 +411,86 @@ sub request_cost {
     }
 }
 
+sub waste_munge_enquiry_form_pages {
+    my ($self, $pages, $fields) = @_;
+    my $c = $self->{c};
+
+    my $category = $c->get_param('category');
+    return unless $category eq 'Bin not returned';;
+
+    my $assisted = $c->stash->{assisted_collection};
+    if ($assisted) {
+        # Add extra first page with extra question
+        $c->stash->{first_page} = 'now_returned';
+        unshift @$pages, now_returned => {
+            fields => [ 'now_returned', 'continue' ],
+            title => $category,
+            next => 'enquiry',
+        };
+        push @$fields, now_returned => {
+            type => 'Select',
+            widget => 'RadioGroup',
+            required => 1,
+            label => 'Has the container now been returned to the property?',
+            options => [
+                { label => 'Yes', value => 'Yes' },
+                { label => 'No', value => 'No' },
+            ],
+        };
+
+        # Remove any non-assisted extra notices
+        my @new;
+        for (my $i=0; $i<@$fields; $i+=2) {
+            if ($fields->[$i] !~ /^extra_NotAssisted/) {
+                push @new, $fields->[$i], $fields->[$i+1];
+            }
+        }
+        @$fields = @new;
+        $pages->[3]{fields} = [ grep { !/^extra_NotAssisted/ } @{$pages->[3]{fields}} ];
+        $pages->[3]{update_field_list} = sub {
+            my $form = shift;
+            my $c = $form->c;
+            my $data = $form->saved_data;
+            my $returned = $data->{now_returned} || '';
+            my $key = $returned eq 'No' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
+            return {
+                category => { default => $c->get_param('category') },
+                service_id => { default => $c->get_param('service_id') },
+                $key => { widget => 'Hidden' },
+            }
+        };
+    } else {
+        # Remove any assisted extra notices
+        my @new;
+        for (my $i=0; $i<@$fields; $i+=2) {
+            if ($fields->[$i] !~ /^extra_Assisted/) {
+                push @new, $fields->[$i], $fields->[$i+1];
+            }
+        }
+        @$fields = @new;
+        $pages->[1]{fields} = [ grep { !/^extra_Assisted/ } @{$pages->[1]{fields}} ];
+    }
+}
+
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+    my $address = $self->{c}->stash->{property}->{address};
+    $data->{title} = $data->{category};
+
+    my $detail;
+    if ($data->{category} eq 'Bin not returned') {
+        my $assisted = $self->{c}->stash->{assisted_collection};
+        my $returned = $data->{now_returned} || '';
+        if ($assisted && $returned eq 'No') {
+           $data->{extra_Notes} = '*** Property is on assisted list ***';
+        }
+    } elsif ($data->{category} eq 'Waste spillage') {
+        $detail = "$data->{extra_Notes}\n\n";
+    }
+    $detail .= $address;
+    $data->{detail} = $detail;
+}
+
 =head2 Bulky waste collection
 
 Sutton starts collections at 6am, and lets you cancel up until 6am.
