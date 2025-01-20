@@ -530,4 +530,8 @@ sub bulky_collection_window_start_date {
     return $start_date;
 }
 
+sub bulky_location_text_prompt {
+    "Please tell us where you will place the items for collection (the bulky waste collection crews are different to the normal round collection crews and will not know any access codes to your property, so please include access codes here if appropriate)";
+}
+
 1;
