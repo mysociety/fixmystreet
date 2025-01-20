@@ -1,0 +1,23 @@
+[%
+
+f = [];
+
+IF property.domestic_refuse_bin OR communal_property;
+    SET field = { value = 'Bin not returned', label = 'Bin not returned correctly' };
+    IF open_service_requests.3135;
+        field.disabled = 1;
+    END;
+    f.push(field);
+END;
+IF property.domestic_refuse_bin;
+    SET field = { value = 'Waste spillage', label = 'Waste spillage' };
+    IF open_service_requests.3227;
+        field.disabled = 1;
+    END;
+    f.push(field);
+END;
+
+PROCESS waste/enquiry.html
+    title = 'Report a problem'
+    field_options = f;
+%]
