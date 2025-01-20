@@ -49,6 +49,20 @@ INCLUDE '_email_top.html';
             <li>It must be visible from the public highway, so delivery drivers can see it.</li>
             <li>We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.</li>
         </ul>
+    [% ELSIF report.category == 'Waste spillage' %]
+      <p style="[% p_style %]">
+        We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
+      </p>
+      <p style="[% p_style %]">
+        The issue has been logged and a clean up has been organised for within the next 24 hours.
+      </p>
+    [% ELSIF report.category == 'Bin not returned' %]
+      <p style="[% p_style %]">
+        We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
+      </p>
+      <p style="[% p_style %]">
+        Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
+      </p>
     [% END %]
 
 [% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]

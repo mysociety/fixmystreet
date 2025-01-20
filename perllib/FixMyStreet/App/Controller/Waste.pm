@@ -1120,6 +1120,8 @@ sub enquiry : Chained('property') : Args(0) {
 
         # Handle notices.
         if ($_->{variable} && $_->{variable} eq 'false') {
+            my $id = $c->stash->{property}->{id};
+            $_->{description} =~ s/PROPERTY_ID/$id/;
             push @$field_list, "extra_$_->{code}" => {
                 type => 'Notice', label => $_->{description}, required => 0, widget => 'NoRender',
             };
@@ -1184,7 +1186,7 @@ sub enquiry : Chained('property') : Args(0) {
             }
         },
     ];
-    $c->cobrand->call_hook("waste_munge_enquiry_form_fields", $field_list);
+    $c->cobrand->call_hook("waste_munge_enquiry_form_pages", $c->stash->{page_list}, $field_list);
     $c->stash->{field_list} = $field_list;
     $c->forward('form');
 }

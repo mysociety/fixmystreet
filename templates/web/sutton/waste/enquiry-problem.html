@@ -1,0 +1,25 @@
+[%
+
+f = [];
+service_id = c.req.params.service_id;
+service = services.$service_id;
+
+IF property.domestic_refuse_bin OR communal_property;
+    SET field = { value = 'Bin not returned', label = 'My wheelie bin, box or caddy was not returned correctly after collection' };
+    IF open_service_requests.3135.$service_id;
+        field.disabled = 1;
+    END;
+    f.push(field);
+END;
+IF property.domestic_refuse_bin;
+    SET field = { value = 'Waste spillage', label = 'Spillage during collection' };
+    IF open_service_requests.3227.$service_id;
+        field.disabled = 1;
+    END;
+    f.push(field);
+END;
+
+PROCESS waste/enquiry.html
+    title = 'Report a problem'
+    field_options = f;
+%]

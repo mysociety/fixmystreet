@@ -400,6 +400,7 @@ sub _parse_events {
     my $missed_event_types = $self->missed_event_types;
     foreach (@$events_data) {
         my $event_type = $_->{EventTypeId};
+        my $service_id = $_->{ServiceId};
         my $type = $missed_event_types->{$event_type} || 'enquiry';
 
         # Only care about open requests/enquiries
@@ -438,7 +439,7 @@ sub _parse_events {
                 $events->{enquiry}{$event_type}{$_->{Guid}} = $row;
             }
         } else { # General enquiry of some sort
-            $events->{enquiry}->{$event_type} = 1;
+            $events->{enquiry}{$event_type}{$service_id} = 1;
         }
     }
     return $events;
