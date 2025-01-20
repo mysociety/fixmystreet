@@ -500,6 +500,25 @@ sub request_cost {
     }
 }
 
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+    my $address = $self->{c}->stash->{property}->{address};
+    $data->{title} = $data->{category};
+
+    my $detail;
+    if ($data->{category} eq 'Bin not returned') {
+        #if ($assisted) {
+        #   if ($not_returned) {
+        #       $data->{extra_Notes} = 'Property is on assisted list';
+        #   }
+        #}
+    } elsif ($data->{category} eq 'Waste spillage') {
+        $detail = "$data->{extra_Notes}\n\n";
+    }
+    $detail .= $address;
+    $data->{detail} = $detail;
+}
+
 =head2 Bulky waste collection
 
 Sutton starts collections at 6am, and lets you cancel up until 6am.
