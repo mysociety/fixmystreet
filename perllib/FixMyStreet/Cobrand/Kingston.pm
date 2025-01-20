@@ -564,4 +564,8 @@ sub bulky_collection_window_start_date {
     return $start_date;
 }
 
+sub bulky_location_text_prompt {
+    "Please tell us where you will place the items for collection (include any access codes the crew will need)";
+}
+
 1;
