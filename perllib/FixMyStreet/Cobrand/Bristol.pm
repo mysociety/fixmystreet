@@ -13,6 +13,9 @@ Bristol is a unitary authority, with its own Open311 server.
 package FixMyStreet::Cobrand::Bristol;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
+use Moo;
+with 'FixMyStreet::Roles::Open311Alloy';
+
 use strict;
 use warnings;
 
