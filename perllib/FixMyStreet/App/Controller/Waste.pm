@@ -20,6 +20,7 @@ use FixMyStreet::App::Form::Waste::Garden::Renew;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use FixMyStreet::App::Form::Waste::Garden::Transfer;
 use Memcached;
+use Hash::Util qw(lock_hash);
 use JSON::MaybeXS;
 
 has feature => (
@@ -31,6 +32,13 @@ has index_template => (
     is => 'ro',
     default => 'waste/form.html'
 );
+
+my %GARDEN_IDS = (
+    merton => { bin240 => 26, bin140 => 27, sack => 28 },
+    kingston => { bin240 => 26, bin140 => 27, sack => 28 },
+    sutton => { bin240 => 26, bin140 => 27, sack => 28 },
+);
+lock_hash(%GARDEN_IDS);
 
 sub auto : Private {
     my ( $self, $c ) = @_;
@@ -1224,7 +1232,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
     $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
 
-    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == 28) { # SLWP Sack
+    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{sack}) { # SLWP Sack
         if ($c->cobrand->moniker eq 'kingston') {
             my $payment_method = 'credit_card';
             $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
@@ -1357,7 +1365,7 @@ sub process_garden_cancellation : Private {
     $c->set_param($end_date_field, $now->ymd);
 
     my $service = $c->cobrand->garden_current_subscription;
-    if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == 26 || $service->{garden_container} == 27) {
+    if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin240} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin140}) {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
     }
@@ -1450,7 +1458,7 @@ sub process_garden_modification : Private {
     my $payment_method;
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
-    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == 28) { # SLWP Sack
+    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{sack}) { # SLWP Sack
         $data->{bins_wanted} = 1;
         $data->{new_bins} = 1;
         $payment = $c->cobrand->garden_waste_sacks_cost_pa();
