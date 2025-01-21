@@ -43,6 +43,9 @@ my %CONTAINERS = (
     recycling_box => 16,
     recycling_240 => 12,
     food_outdoor => 24,
+    garden_240 => 26,
+    garden_140 => 27,
+    garden_sack => 28,
 );
 lock_hash(%CONTAINERS);
 
@@ -65,7 +68,7 @@ sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
     if (my $container = $unit->{garden_container}) {
-        return svg_container_bin('wheelie', '#767472', '#41B28A', 1) if $container == 26 || $container == 27;
+        return svg_container_bin('wheelie', '#767472', '#41B28A', 1) if $container == $CONTAINERS{garden_240} || $container == $CONTAINERS{garden_140};
         return "";
     }
 
