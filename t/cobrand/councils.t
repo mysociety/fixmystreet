@@ -63,6 +63,8 @@ subtest "Test update shown/not shown appropriately" => sub {
             { type => 'reporter/staff-open', state => 'in progress', update => [0,1,1] },
             { type => 'open', state => 'closed', update => [0,0,0] },
             { type => 'open', state => 'in progress', update => [1,1,1] },
+            { type => 'open-not-in-progress', state => 'in progress', update => [0,0,0] },
+            { type => 'open-not-in-progress', update => [1,1,1] },
         ) {
             FixMyStreet::override_config {
                 ALLOWED_COBRANDS => $cobrand,
