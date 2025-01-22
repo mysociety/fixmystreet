@@ -484,12 +484,6 @@ has_page cause => (
             $_[0]->{what} eq 'vehicle' ? 'about_vehicle' :
             $_[0]->{what} eq 'personal' ? 'about_you_personal' :
             'about_property',
-        },
-    update_field_list => sub {
-        my ($form) = @_;
-        my $fields = {};
-        $form->update_photo('photos', $fields);
-        return $fields;
     },
 );
 
@@ -686,7 +680,6 @@ has_page damage_vehicle => (
         my $fields = {};
         my $c = $form->{c};
 
-        $form->update_photo('vehicle_photos', $fields);
         $form->handle_upload( 'vehicle_receipts', $fields );
 
         return $fields;
@@ -787,7 +780,6 @@ has_page damage_property => (
     update_field_list => sub {
         my ($form) = @_;
         my $fields = {};
-        $form->update_photo('property_photos', $fields);
         $form->handle_upload( 'property_invoices', $fields );
         return $fields;
     },
