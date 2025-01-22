@@ -1125,6 +1125,20 @@ sub enquiry : Chained('property') : Args(0) {
             next;
         }
 
+        if ($_->{code} eq 'Image') {
+            push @$field_list, "location_photo_fileid" => {
+                type => 'FileIdPhoto', num_photos_required => 0, linked_field => 'location_photo',
+            };
+            push @$field_list, "location_photo" => {
+                label => $_->{description},
+                type => 'Photo',
+                tags => {
+                    max_photos => 1,
+                },
+            };
+            next;
+        }
+
         my %config = (type => 'Text');
         my $datatype = $_->{datatype} || '';
         if ($datatype eq 'text') {
