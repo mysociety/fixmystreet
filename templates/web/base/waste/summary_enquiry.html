@@ -11,11 +11,23 @@ step1 = 'enquiry';
     [% SET extra_name = extra.replace('extra_', '').replace('_', ' ') %]
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% extra_name | title %]</dt>
+        <dd class="govuk-summary-list__value">
       [% IF data.$extra.size %]
-        <dd class="govuk-summary-list__value">[% data.$extra.join('; ') %]</dd>
+        [% data.$extra.join('; ') %]
       [% ELSE %]
-        <dd class="govuk-summary-list__value">[% data.$extra %]</dd>
+        [% data.$extra %]
       [% END %]
+        </dd>
+    </div>
+  [% END %]
+  [% FOR extra IN ['location_photo'] %]
+    [% NEXT UNLESS data.$extra.size %]
+    [% SET extra_name = extra.replace('extra_', '').replace('_', ' ') %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% extra_name | title %]</dt>
+        <dd class="govuk-summary-list__value">
+            <img src="/photo/temp.[% data.$extra.first %]" alt="">
+        </dd>
     </div>
   [% END %]
 [% END %]
