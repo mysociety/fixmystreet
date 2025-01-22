@@ -9,7 +9,6 @@ FixMyStreet::Roles::Cobrand::KingstonSutton - shared code for Kingston and Sutto
 package FixMyStreet::Roles::Cobrand::KingstonSutton;
 
 use Moo::Role;
-use Hash::Util qw(lock_hash);
 with 'FixMyStreet::Roles::Cobrand::SLWP';
 
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
@@ -97,28 +96,6 @@ sub available_permissions {
 
 sub waste_auto_confirm_report { 1 }
 
-my %TASK_IDS = (
-    garden => 2247,
-);
-lock_hash(%TASK_IDS);
-
-my %CONTAINERS = (
-    refuse_140 => 1,
-    refuse_180 => 35,
-    refuse_240 => 2,
-    refuse_360 => 3,
-    recycling_box => 16,
-    recycling_240 => 12,
-    paper_240 => 19,
-    paper_140 => 36,
-    food_indoor => 23,
-    food_outdoor => 24,
-    garden_240 => 26,
-    garden_140 => 27,
-    garden_sack => 28,
-);
-lock_hash(%CONTAINERS);
-
 sub garden_due_days { 30 }
 
 sub garden_staff_provide_email { 1 }
@@ -128,109 +105,12 @@ sub waste_password_hidden { 1 }
 # For renewal/modify
 sub waste_allow_current_bins_edit { 1 }
 
-sub waste_containers {
-    my $self = shift;
-    my %shared = (
-            4 => 'Refuse Blue Sack',
-            5 => 'Refuse Black Sack',
-            6 => 'Refuse Red Stripe Bag',
-            18 => 'Mixed Recycling Blue Striped Bag',
-            29 => 'Recycling Single Use Bag',
-            21 => 'Paper & Card Reusable Bag',
-            22 => 'Paper Sacks',
-            30 => 'Paper & Card Recycling Clear Bag',
-            7 => 'Communal Refuse bin (240L)',
-            8 => 'Communal Refuse bin (360L)',
-            9 => 'Communal Refuse bin (660L)',
-            10 => 'Communal Refuse bin (1100L)',
-            11 => 'Communal Refuse Chamberlain',
-            33 => 'Communal Refuse bin (140L)',
-            34 => 'Communal Refuse bin (1280L)',
-            14 => 'Communal Recycling bin (660L)',
-            15 => 'Communal Recycling bin (1100L)',
-            25 => 'Communal Food bin (240L)',
-            $CONTAINERS{recycling_240} => 'Recycling bin (240L)',
-            13 => 'Recycling bin (360L)',
-            20 => 'Paper recycling bin (360L)',
-            31 => 'Paper 55L Box',
-    );
-    if ($self->moniker eq 'sutton') {
-        return {
-            %shared,
-            $CONTAINERS{refuse_140} => 'Standard Brown General Waste Wheelie Bin (140L)',
-            $CONTAINERS{refuse_240} => 'Larger Brown General Waste Wheelie Bin (240L)',
-            $CONTAINERS{refuse_360} => 'Extra Large Brown General Waste Wheelie Bin (360L)',
-            $CONTAINERS{refuse_180} => 'Rubbish bin (180L)',
-            $CONTAINERS{recycling_box} => 'Mixed Recycling Green Box (55L)',
-            $CONTAINERS{paper_240} => 'Paper and Cardboard Green Wheelie Bin (240L)',
-            $CONTAINERS{paper_140} => 'Paper and Cardboard Green Wheelie Bin (140L)',
-            $CONTAINERS{food_indoor} => 'Small Kitchen Food Waste Caddy (7L)',
-            $CONTAINERS{food_outdoor} => 'Large Outdoor Food Waste Caddy (23L)',
-            $CONTAINERS{garden_240} => 'Garden Waste Wheelie Bin (240L)',
-            $CONTAINERS{garden_140} => 'Garden Waste Wheelie Bin (140L)',
-            $CONTAINERS{garden_sack} => 'Garden waste sacks',
-        };
-    } elsif ($self->moniker eq 'kingston') {
-        my $black_bins = $self->{c}->get_param('exchange') ? {
-            $CONTAINERS{refuse_140} => 'Black rubbish bin (140L)',
-            $CONTAINERS{refuse_240} => 'Black rubbish bin (240L)',
-            $CONTAINERS{refuse_360} => 'Black rubbish bin (360L)',
-            $CONTAINERS{refuse_180} => 'Black rubbish bin (180L)',
-        } : {
-            $CONTAINERS{refuse_140} => 'Black rubbish bin',
-            $CONTAINERS{refuse_240} => 'Black rubbish bin',
-            $CONTAINERS{refuse_360} => 'Black rubbish bin',
-            $CONTAINERS{refuse_180} => 'Black rubbish bin',
-        };
-        return {
-            %shared,
-            %$black_bins,
-            $CONTAINERS{recycling_240} => 'Green recycling bin (240L)',
-            13 => 'Green recycling bin (360L)',
-            $CONTAINERS{recycling_box} => 'Green recycling box (55L)',
-            $CONTAINERS{paper_240} => 'Blue lid paper and cardboard bin (240L)',
-            20 => 'Blue lid paper and cardboard bin (360L)',
-            $CONTAINERS{food_indoor} => 'Food waste bin (kitchen)',
-            $CONTAINERS{food_outdoor} => 'Food waste bin (outdoor)',
-            $CONTAINERS{paper_140} => 'Blue lid paper and cardboard bin (180L)',
-            $CONTAINERS{garden_240} => 'Garden waste bin (240L)',
-            $CONTAINERS{garden_140} => 'Garden waste bin (140L)',
-            $CONTAINERS{garden_sack} => 'Garden waste sacks',
-        };
-    }
-}
-
 sub _waste_containers_no_request { {
     6 => 1, # Red stripe bag
     17 => 1, # Recycling purple sack
     29 => 1, # Recycling Single Use Bag
     21 => 1, # Paper & Card Reusable bag
 } }
-
-sub waste_quantity_max {
-    return (
-        $TASK_IDS{garden} => 5, # Garden waste maximum
-    );
-}
-
-sub waste_munge_bin_services_open_requests {
-    my ($self, $open_requests) = @_;
-    if ($open_requests->{$CONTAINERS{refuse_140}}) { # Sutton
-        $open_requests->{$CONTAINERS{refuse_240}} = $open_requests->{$CONTAINERS{refuse_140}};
-    } elsif ($open_requests->{$CONTAINERS{refuse_180}}) { # Kingston
-        $open_requests->{$CONTAINERS{refuse_240}} = $open_requests->{$CONTAINERS{refuse_180}};
-    } elsif ($open_requests->{$CONTAINERS{refuse_240}}) { # Both
-        $open_requests->{$CONTAINERS{refuse_140}} = $open_requests->{$CONTAINERS{refuse_240}};
-        $open_requests->{$CONTAINERS{refuse_180}} = $open_requests->{$CONTAINERS{refuse_240}};
-        $open_requests->{$CONTAINERS{refuse_360}} = $open_requests->{$CONTAINERS{refuse_240}};
-    } elsif ($open_requests->{$CONTAINERS{refuse_360}}) { # Kingston
-        $open_requests->{$CONTAINERS{refuse_180}} = $open_requests->{$CONTAINERS{refuse_360}};
-        $open_requests->{$CONTAINERS{refuse_240}} = $open_requests->{$CONTAINERS{refuse_360}};
-    }
-    if ($open_requests->{$CONTAINERS{paper_140}}) {
-        $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
-    }
-}
 
 =head2 waste_munge_report_form_fields
 
