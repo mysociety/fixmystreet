@@ -1177,12 +1177,11 @@ sub _bin_location_field {
     my $c        = $self->{c};
     my $property = $c->stash->{property};
 
-    my $type
-        = $c->stash->{is_staff}
-        || $property->{has_assisted} ? 'staff_or_assisted'
-        : $property->{is_communal}   ? 'communal'
-        : $property->{above_shop}    ? 'above_shop'
-        :                              '';
+    my $type =
+          $property->{is_communal} ? 'communal'
+        : $property->{above_shop} ? 'above_shop'
+        : $c->stash->{is_staff} || $property->{has_assisted} ? 'staff_or_assisted'
+        : '';
 
     my $options = _bin_location_options()->{$type};
 

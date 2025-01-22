@@ -727,6 +727,14 @@ FixMyStreet::override_config {
             for
             @{ FixMyStreet::Cobrand::Bexley::Waste::_bin_location_options()
                 ->{staff_or_assisted} };
+
+        $mech->get_ok('/waste/10002/report');
+        $mech->content_contains('Bin location');
+        $mech->content_contains('name="bin_location"');
+        $mech->content_contains($_)
+            for
+            @{ FixMyStreet::Cobrand::Bexley::Waste::_bin_location_options()
+                ->{communal} };
     };
 
     subtest 'Correct labels used when reporting missed collection' => sub {
