@@ -800,23 +800,6 @@ FixMyStreet::override_config {
         },
     }
 }, sub {
-    my $lwp = Test::MockModule->new('LWP::UserAgent');
-    $lwp->mock(
-        'get',
-        sub {
-            my ( $ua, $url ) = @_;
-            return $lwp->original('get')->(@_) unless $url =~ /example.com/;
-            my ( $uprn, $area ) = ( 1000000002, "SUTTON" );
-            my $j
-                = '{ "results": [ { "LPI": { "UPRN": '
-                . $uprn
-                . ', "LOCAL_CUSTODIAN_CODE_DESCRIPTION": "'
-                . $area
-                . '" } } ] }';
-            return HTTP::Response->new( 200, 'OK', [], $j );
-        }
-    );
-
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
     $echo->mock( 'GetTasks',                 sub { [] } );
