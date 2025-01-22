@@ -39,12 +39,17 @@ lock_hash(%TASK_IDS);
 
 my %CONTAINERS = (
     refuse_140 => 1,
+    refuse_180 => 35,
     refuse_240 => 2,
     refuse_360 => 3,
+    recycling_box => 16,
+    recycling_240 => 12,
+    recycling_blue_bag => 18,
     paper_240 => 19,
     paper_140 => 36,
-    recycling_blue_bag => 18,
     paper_bag => 30,
+    food_indoor => 23,
+    food_outdoor => 24,
     garden_240 => 26,
     garden_140 => 27,
     garden_sack => 28,
@@ -92,6 +97,31 @@ sub garden_collection_time { '6am' }
 
 sub waste_garden_allow_cancellation { 'staff' }
 
+sub waste_quantity_max {
+    return (
+        $TASK_IDS{garden} => 5, # Garden waste maximum
+    );
+}
+
+sub waste_munge_bin_services_open_requests {
+    my ($self, $open_requests) = @_;
+    if ($open_requests->{$CONTAINERS{refuse_140}}) { # Sutton
+        $open_requests->{$CONTAINERS{refuse_240}} = $open_requests->{$CONTAINERS{refuse_140}};
+    } elsif ($open_requests->{$CONTAINERS{refuse_180}}) { # Kingston
+        $open_requests->{$CONTAINERS{refuse_240}} = $open_requests->{$CONTAINERS{refuse_180}};
+    } elsif ($open_requests->{$CONTAINERS{refuse_240}}) { # Both
+        $open_requests->{$CONTAINERS{refuse_140}} = $open_requests->{$CONTAINERS{refuse_240}};
+        $open_requests->{$CONTAINERS{refuse_180}} = $open_requests->{$CONTAINERS{refuse_240}};
+        $open_requests->{$CONTAINERS{refuse_360}} = $open_requests->{$CONTAINERS{refuse_240}};
+    } elsif ($open_requests->{$CONTAINERS{refuse_360}}) { # Kingston
+        $open_requests->{$CONTAINERS{refuse_180}} = $open_requests->{$CONTAINERS{refuse_360}};
+        $open_requests->{$CONTAINERS{refuse_240}} = $open_requests->{$CONTAINERS{refuse_360}};
+    }
+    if ($open_requests->{$CONTAINERS{paper_140}}) {
+        $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
+    }
+}
+
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
@@ -125,6 +155,46 @@ sub image_for_unit {
         $TASK_IDS{domestic_paper_bag} => svg_container_sack('normal', '#d8d8d8'),
     };
     return $images->{$service_id};
+}
+
+sub waste_containers {
+    my $self = shift;
+    return {
+        4 => 'Refuse Blue Sack',
+        5 => 'Refuse Black Sack',
+        6 => 'Refuse Red Stripe Bag',
+        18 => 'Mixed Recycling Blue Striped Bag',
+        29 => 'Recycling Single Use Bag',
+        21 => 'Paper & Card Reusable Bag',
+        22 => 'Paper Sacks',
+        30 => 'Paper & Card Recycling Clear Bag',
+        7 => 'Communal Refuse bin (240L)',
+        8 => 'Communal Refuse bin (360L)',
+        9 => 'Communal Refuse bin (660L)',
+        10 => 'Communal Refuse bin (1100L)',
+        11 => 'Communal Refuse Chamberlain',
+        33 => 'Communal Refuse bin (140L)',
+        34 => 'Communal Refuse bin (1280L)',
+        14 => 'Communal Recycling bin (660L)',
+        15 => 'Communal Recycling bin (1100L)',
+        25 => 'Communal Food bin (240L)',
+        $CONTAINERS{recycling_240} => 'Recycling bin (240L)',
+        13 => 'Recycling bin (360L)',
+        20 => 'Paper recycling bin (360L)',
+        31 => 'Paper 55L Box',
+        $CONTAINERS{refuse_140} => 'Standard Brown General Waste Wheelie Bin (140L)',
+        $CONTAINERS{refuse_240} => 'Larger Brown General Waste Wheelie Bin (240L)',
+        $CONTAINERS{refuse_360} => 'Extra Large Brown General Waste Wheelie Bin (360L)',
+        $CONTAINERS{refuse_180} => 'Rubbish bin (180L)',
+        $CONTAINERS{recycling_box} => 'Mixed Recycling Green Box (55L)',
+        $CONTAINERS{paper_240} => 'Paper and Cardboard Green Wheelie Bin (240L)',
+        $CONTAINERS{paper_140} => 'Paper and Cardboard Green Wheelie Bin (140L)',
+        $CONTAINERS{food_indoor} => 'Small Kitchen Food Waste Caddy (7L)',
+        $CONTAINERS{food_outdoor} => 'Large Outdoor Food Waste Caddy (23L)',
+        $CONTAINERS{garden_240} => 'Garden Waste Wheelie Bin (240L)',
+        $CONTAINERS{garden_140} => 'Garden Waste Wheelie Bin (140L)',
+        $CONTAINERS{garden_sack} => 'Garden waste sacks',
+    };
 }
 
 =head2 service_name_override
