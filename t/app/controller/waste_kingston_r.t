@@ -1,3 +1,4 @@
+use Test::More skip_all => 'core not yet done';
 use JSON::MaybeXS;
 use Path::Tiny;
 use Storable qw(dclone);

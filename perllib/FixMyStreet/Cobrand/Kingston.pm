@@ -5,7 +5,7 @@ use utf8;
 use Moo;
 with 'FixMyStreet::Roles::Cobrand::Waste',
      'FixMyStreet::Roles::Cobrand::KingstonSutton',
-     'FixMyStreet::Roles::Cobrand::SLWP',
+     'FixMyStreet::Roles::Cobrand::SLWP2',
      'FixMyStreet::Roles::Cobrand::SCP';
 
 use Lingua::EN::Inflect qw( NUMWORDS );
