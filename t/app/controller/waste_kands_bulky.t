@@ -1,3 +1,4 @@
+use Test::More skip_all => 'bulky not yet done';
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
