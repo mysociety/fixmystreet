@@ -90,8 +90,6 @@ sub waste_check_staff_payment_permissions {
     $c->stash->{staff_payments_allowed} = 'paye';
 }
 
-has lpi_value => ( is => 'ro', default => 'SUTTON' );
-
 sub waste_payment_ref_council_code { "LBS" }
 
 sub garden_collection_time { '6am' }
