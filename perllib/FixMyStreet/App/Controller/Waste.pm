@@ -1100,6 +1100,20 @@ sub enquiry : Chained('property') : Args(0) {
             next;
         }
 
+        if ($_->{code} eq 'Image') {
+            push @$field_list, "extra_Image_fileid" => {
+                type => 'FileIdPhoto', num_photos_required => 0, linked_field => 'extra_Image',
+            };
+            push @$field_list, "extra_Image" => {
+                label => $_->{description},
+                type => 'Photo',
+                tags => {
+                    max_photos => 1,
+                },
+            };
+            next;
+        }
+
         my %config = (type => 'Text');
         my $datatype = $_->{datatype} || '';
         if ($datatype eq 'text') {
