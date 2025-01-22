@@ -57,7 +57,6 @@ has_page location => (
     update_field_list => sub {
         my ($form) = @_;
         my $fields = {};
-        $form->update_photo('location_photo', $fields);
         return $fields;
     },
 );

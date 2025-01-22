@@ -92,11 +92,17 @@ sub after_build {
     $self->update_field(unique_id => { default => $self->unique_id_session });
 
     # Update field list with any dynamic things (eg user-based, address lookup, geocoding)
+    my $updates = {};
     if ($page->has_update_field_list) {
-        my $updates = $page->update_field_list->($self) || {};
-        foreach my $field_name (keys %$updates) {
-            $self->update_field($field_name, $updates->{$field_name});
+        $updates = $page->update_field_list->($self) || {};
+    }
+    foreach my $fname ($self->current_page->all_fields) {
+        if ($self->field($fname)->type eq 'Photo') {
+            $self->update_photo($fname, $updates);
         }
+    }
+    foreach my $field_name (keys %$updates) {
+        $self->update_field($field_name, $updates->{$field_name});
     }
 }
 
