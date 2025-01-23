@@ -238,7 +238,7 @@ sub bin_services_for_address {
             $garden = 1;
             $garden_due = $self->waste_sub_due($schedules->{end_date});
             $garden_overdue = $schedules if $_->{expired};
-            if ($self->moniker eq 'sutton') {
+            if ($self->moniker eq 'sutton' || $self->moniker eq 'kingston') {
                 my $data = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskLines}, 'ServiceTaskLine');
                 ($garden_bins, $garden_sacks, $garden_cost, $garden_container) = $self->garden_container_data_extract($data, $containers, $quantities, $schedules);
             } else {
