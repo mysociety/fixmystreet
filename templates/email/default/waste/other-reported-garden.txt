@@ -44,6 +44,10 @@ Number of bin subscriptions: [% quantity %]
 [% END ~%]
 [% END %]
 
+[% IF additional_quantity ~%]
+Number of additional bin subscriptions: [% additional_quantity %]
+[% END %]
+
 [% IF new_bins > 0 AND NOT sacks ~%]
 Bins to be delivered: [% new_bins %]
 [% ELSIF new_bins < 0 AND NOT sacks ~%]
