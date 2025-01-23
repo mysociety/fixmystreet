@@ -9,9 +9,20 @@ ELSE;
     IF container;
         SET sacks = (container == 28);
         SET quantity = report.get_extra_field_value('Subscription_Details_Quantity');
+    ELSE;
+        SET container = report.get_extra_field_value('Paid_Container_Type');
+        IF container;
+            SET sacks = (container == 4);
+            SET quantity = report.get_extra_field_value('Paid_Container_Quantity');
+        END;
     END;
 END;
 SET new_bins = report.get_extra_field_value('new_containers') || 0;
+
+SET container = report.get_extra_field_value('Additional_Collection_Container_Type');
+IF container;
+    SET additional_quantity = report.get_extra_field_value('Additional_Container_Quantity');
+END;
 
 SET pro_rata = report.get_extra_field_value('pro_rata');
 SET payment = report.get_extra_field_value('payment');
