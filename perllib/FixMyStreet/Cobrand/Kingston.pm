@@ -272,9 +272,9 @@ sub waste_munge_request_form_fields {
         }
 
         if ($id == $CONTAINERS{refuse_180}) {
-            $c->stash->{current_refuse_bin} = 180;
+            $c->stash->{current_refuse_bin} = $id;
         } elsif ($id == $CONTAINERS{refuse_240}) {
-            $c->stash->{current_refuse_bin} = 240;
+            $c->stash->{current_refuse_bin} = $id;
             @radio_options = ( {
                 value => $CONTAINERS{refuse_180},
                 label => 'Smaller black rubbish bin',
@@ -288,7 +288,7 @@ sub waste_munge_request_form_fields {
             },
             );
         } elsif ($id == $CONTAINERS{refuse_360}) {
-            $c->stash->{current_refuse_bin} = 360;
+            $c->stash->{current_refuse_bin} = $id;
             @radio_options = ( {
                 value => $CONTAINERS{refuse_180},
                 label => '180L black rubbish bin ‘standard’',
@@ -339,7 +339,10 @@ sub waste_request_form_first_next {
             } else {
                 $data->{"container-$choice"} = 1;
                 $data->{"quantity-$choice"} = 1;
-                $data->{"removal-$choice"} = 1;
+                my $bin = $c->stash->{current_refuse_bin};
+                $data->{"container-$bin"} = 1;
+                $data->{"quantity-$bin"} = 0;
+                $data->{"removal-$bin"} = 1;
             }
             return 'about_you';
         };
@@ -357,7 +360,7 @@ sub waste_munge_request_form_pages {
     my ($self, $page_list, $field_list) = @_;
     my $c = $self->{c};
 
-    if (($c->stash->{current_refuse_bin} || 0) == 180) {
+    if (($c->stash->{current_refuse_bin} || 0) == $CONTAINERS{refuse_180}) {
         $c->stash->{first_page} = 'how_many_exchange';
     }
 
@@ -446,20 +449,10 @@ sub waste_munge_request_form_data {
         my $to_remove = $data->{"removal-$id"} || 0;
         next unless $data->{$_} || ($id == $CONTAINERS{recycling_240} || $id == $CONTAINERS{recycling_box});
 
-        if ($quantity - $to_remove > 0) {
-            $new_data->{"container-$id-deliver-$_"} = 1
-                for 1..($quantity-$to_remove);
-            $new_data->{"container-$id-replace-$_"} = 1
-                for 1..$to_remove;
-        } elsif ($to_remove - $quantity > 0) {
-            $new_data->{"container-$id-collect-$_"} = 1
-                for 1..($to_remove-$quantity);
-            $new_data->{"container-$id-replace-$_"} = 1
-                for 1..$quantity;
-        } else { # Equal
-            $new_data->{"container-$id-replace-$_"} = 1
-                for 1..$quantity;
-        }
+        $new_data->{"container-$id-deliver-$_"} = 1
+            for 1..$quantity;
+        $new_data->{"container-$id-collect-$_"} = 1
+            for 1..$to_remove;
     }
     %$data = map { $_ => $data->{$_} } grep { !/^(container|quantity|removal)-/ } keys %$data;
     %$data = (%$data, %$new_data);
@@ -479,17 +472,12 @@ sub waste_munge_request_data {
         $action_id = 1; # Deliver
         $reason_id = 1; # Missing (or 4 New)
     } elsif ($action eq 'collect') {
-        $action_id = 2; # Collect
-        $reason_id = 3; # Change capacity
-    } elsif ($action eq 'replace') {
-        $action_id = 3; # Replace
-        $reason_id = $c->get_param('exchange') ? 3 : 2; # Change capacity : Damaged
+        $action_id = 2; # Remove
+        $reason_id = 8; # Remove containers
     }
 
     if ($action eq 'deliver') {
         $data->{title} = "Request $container delivery";
-    } elsif ($action eq 'replace') {
-        $data->{title} = "Request $container replacement";
     } else {
         $data->{title} = "Request $container collection";
     }
