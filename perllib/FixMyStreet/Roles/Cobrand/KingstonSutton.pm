@@ -246,9 +246,9 @@ sub dashboard_export_problems_add_columns {
             payment => $fields{payment},
             pro_rata => $fields{pro_rata},
             admin_fee => $fields{admin_fee},
-            container => $fields{Subscription_Details_Containers},
+            container => $fields{Paid_Container_Type} || $fields{Subscription_Details_Containers},
             current_bins => $fields{current_containers},
-            quantity => $fields{Subscription_Details_Quantity},
+            quantity => $fields{Paid_Container_Quantity} || $fields{Subscription_Details_Quantity},
         };
     });
 }

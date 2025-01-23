@@ -27,6 +27,9 @@ IF container;
     SET additional_quantity = report.get_extra_field_value('Additional_Container_Quantity');
 END;
 
+IF cobrand.moniker == 'sutton'; SET sack_quant = 1;
+ELSE; SET sack_quant = quantity; END;
+
 SET pro_rata = report.get_extra_field_value('pro_rata');
 SET payment = report.get_extra_field_value('payment');
 SET admin_fee = report.get_extra_field_value('admin_fee');
