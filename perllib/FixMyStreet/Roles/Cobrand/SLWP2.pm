@@ -92,24 +92,6 @@ my %EVENT_TYPE_IDS = (
 );
 lock_hash(%EVENT_TYPE_IDS);
 
-my %TASK_IDS = (
-    domestic_refuse => 4394,
-    domestic_food => 4389,
-    domestic_paper => 4388,
-    domestic_mixed => 4390,
-    domestic_refuse_bag => 4395,
-    communal_refuse => 4407,
-    domestic_mixed_bag => 4391,
-    garden => 4410,
-    communal_food => 4403,
-    communal_paper => 4396,
-    communal_mixed => 4397,
-    domestic_paper_bag => 4402,
-    schedule2_mixed => 4398,
-    schedule2_refuse => 4409,
-);
-lock_hash(%TASK_IDS);
-
 my %CONTAINERS = (
     refuse_140 => 1,
     refuse_180 => 2,
@@ -128,7 +110,7 @@ my %CONTAINERS = (
 );
 lock_hash(%CONTAINERS);
 
-sub garden_service_id { $TASK_IDS{garden} }
+sub garden_service_id { $SERVICE_IDS{$_[0]->moniker}{garden} }
 
 sub waste_service_to_containers { () }
 
@@ -143,25 +125,22 @@ sub waste_show_garden_modify {
 sub waste_relevant_serviceunits {
     my ($self, $result) = @_;
     my @rows;
+    my $service_ids = $SERVICE_IDS{$self->moniker};
     foreach (@$result) {
-        my $servicetasks = $self->_get_service_tasks($_);
-        foreach my $task (@$servicetasks) {
-            my $service_id = $task->{TaskTypeId};
+        my $servicetask = $self->_get_current_service_task($_) or next;
 
-            # Sneak this in here before it's ignored for not having a service name
-            $self->{c}->stash->{schedule2_property} = 1 if $service_id == $TASK_IDS{schedule2_refuse} || $service_id == $TASK_IDS{schedule2_mixed} || $service_id == 4004;
+        $self->{c}->stash->{schedule2_property} = 1 if $_->{ServiceId} == $service_ids->{schedule2_refuse} || $_->{ServiceId} == $service_ids->{schedule2_mixed};
 
-            my $service_name = $self->service_name_override({ ServiceId => $service_id });
-            next unless $service_name;
+        my $service_name = $self->service_name_override({ ServiceId => $_->{ServiceId} });
+        next unless $service_name;
 
-            push @rows, {
-                Id => $_->{Id},
-                ServiceId => $task->{TaskTypeId},
-                ServiceTask => $task,
-                Service => $_,
-                Schedules => _parse_schedules($task),
-            };
-        }
+        push @rows, {
+            Id => $_->{Id},
+            ServiceId => $_->{ServiceId},
+            ServiceTask => $servicetask,
+            Service => $_,
+            Schedules => _parse_schedules($servicetask),
+        };
     }
     return @rows;
 }
@@ -193,15 +172,16 @@ sub waste_extra_service_info_all_results {
 
 sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
+    my $service_ids = $SERVICE_IDS{$self->moniker};
 
     foreach (@rows) {
         my $service_id = $_->{ServiceId};
-        if ($service_id == $TASK_IDS{domestic_refuse_bag}) {
+        if ($service_id == $service_ids->{fas_refuse}) {
             $self->{c}->stash->{slwp_garden_sacks} = 1;
-        } elsif ($service_id == $TASK_IDS{domestic_refuse}) {
+        } elsif ($service_id == $service_ids->{domestic_refuse}) {
             $property->{domestic_refuse_bin} = 1;
         }
-        $self->{c}->stash->{communal_property} = 1 if $service_id == $TASK_IDS{communal_refuse} || $service_id == $TASK_IDS{communal_food} || $service_id == $TASK_IDS{communal_paper} || $service_id == $TASK_IDS{communal_mixed};
+        $self->{c}->stash->{communal_property} = 1 if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
 
         # Check for time-banded property
         my $schedules = $_->{Schedules};
@@ -215,6 +195,7 @@ sub waste_extra_service_info {
 
 sub waste_service_containers {
     my ($self, $service) = @_;
+    my $service_ids = $SERVICE_IDS{$self->moniker};
 
     my $waste_containers_no_request = $self->_waste_containers_no_request;
 
@@ -226,7 +207,7 @@ sub waste_service_containers {
     my $data = Integrations::Echo::force_arrayref($unit->{Data}, 'ExtensibleDatum');
     my ($containers, $request_max);
     foreach (@$data) {
-        next if $service_id == $TASK_IDS{communal_refuse} || $service_id == $TASK_IDS{communal_food} || $service_id == $TASK_IDS{communal_paper} || $service_id == $TASK_IDS{communal_mixed};
+        next if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
         my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
         my ($container, $quantity) = (0, 0);
         foreach (@$moredata) {
@@ -293,54 +274,6 @@ sub missed_event_types { return {
     $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
 
-sub parse_event_missed {
-    my ($self, $echo_event, $closed, $events) = @_;
-    my $report = $self->problems->search({ external_id => $echo_event->{Guid} })->first;
-    my $event = {
-        closed => $closed,
-        date => construct_bin_date($echo_event->{EventDate}),
-    };
-    $event->{report} = $report if $report;
-
-    my $service_id = $echo_event->{ServiceId};
-    my $service_ids = $SERVICE_IDS{$self->moniker};
-    if ($service_id == $service_ids->{domestic_refuse}) {
-        push @{$events->{missed}->{$TASK_IDS{domestic_refuse}}}, $event;
-    } elsif ($service_id == $service_ids->{communal_refuse}) {
-        push @{$events->{missed}->{$TASK_IDS{communal_refuse}}}, $event;
-    } elsif ($service_id == $service_ids->{fas_refuse}) {
-        push @{$events->{missed}->{$TASK_IDS{domestic_refuse_bag}}}, $event;
-
-    } elsif ($service_id == $service_ids->{domestic_paper}) {
-        push @{$events->{missed}->{$TASK_IDS{domestic_paper}}}, $event;
-    } elsif ($service_id == $service_ids->{communal_paper}) {
-        push @{$events->{missed}->{$TASK_IDS{communal_paper}}}, $event;
-    } elsif ($service_id == $service_ids->{fas_paper}) {
-        push @{$events->{missed}->{$TASK_IDS{domestic_paper_bag}}}, $event;
-
-    } elsif ($service_id == $service_ids->{domestic_mixed}) {
-        push @{$events->{missed}->{$TASK_IDS{domestic_mixed}}}, $event;
-    } elsif ($service_id == $service_ids->{communal_mixed}) {
-        push @{$events->{missed}->{$TASK_IDS{communal_mixed}}}, $event;
-    } elsif ($service_id == $service_ids->{fas_mixed}) {
-        push @{$events->{missed}->{$TASK_IDS{domestic_mixed_bag}}}, $event;
-
-    } elsif ($service_id == $service_ids->{garden}) {
-        push @{$events->{missed}->{$TASK_IDS{garden}}}, $event;
-
-    } elsif ($service_id == $service_ids->{domestic_food}) {
-        push @{$events->{missed}->{$TASK_IDS{domestic_food}}}, $event;
-    } elsif ($service_id == $service_ids->{communal_food}) {
-        push @{$events->{missed}->{$TASK_IDS{communal_food}}}, $event;
-
-    } elsif ($service_id == $service_ids->{bulky}) {
-        push @{$events->{missed}->{$service_ids->{bulky}}}, $event;
-
-    } else {
-        push @{$events->{missed}->{$service_id}}, $event;
-    }
-}
-
 sub waste_munge_report_data {
     my ($self, $id, $data) = @_;
 
@@ -375,22 +308,6 @@ sub waste_munge_report_data {
 
 sub garden_service_name { 'garden waste collection service' }
 sub garden_echo_container_name { 'SLWP - Containers' }
-
-sub garden_current_service_from_service_units {
-    my ($self, $services) = @_;
-
-    my $garden;
-    for my $service ( @$services ) {
-        my $servicetasks = $self->_get_service_tasks($service);
-        foreach my $task (@$servicetasks) {
-            if ( $task->{TaskTypeId} == $self->garden_service_id ) {
-                $garden = $self->_get_current_service_task($service);
-                last;
-            }
-        }
-    }
-    return $garden;
-}
 
 sub garden_container_data_extract {
     my ($self, $data, $containers, $quantities, $schedules) = @_;
