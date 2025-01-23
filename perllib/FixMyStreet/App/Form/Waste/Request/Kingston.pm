@@ -74,15 +74,27 @@ has_page how_many_exchange => (
     fields => ['how_many_exchange', 'continue'],
     title => 'Black bin size change request',
     intro => 'request/intro.html',
+    post_process => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        if ($data) {
+            my $how_many = $data->{"how_many_exchange"} || '';
+            return if $how_many eq 'less5' || $how_many eq '7more';
+            my $c = $form->c;
+            my $bin = $c->stash->{current_refuse_bin};
+            $data->{'container-' . CONTAINER_REFUSE_240} = 1;
+            $data->{'quantity-' . CONTAINER_REFUSE_240} = 1;
+            $data->{"container-$bin"} = 1;
+            $data->{"quantity-$bin"} = 0;
+            $data->{"removal-$bin"} = 1;
+        }
+    },
     next => sub {
         my $data = shift;
         my $how_many = $data->{"how_many_exchange"};
         if ($how_many eq 'less5' || $how_many eq '7more') {
             return 'biggest_bin_allowed';
         }
-        $data->{'container-' . CONTAINER_REFUSE_240} = 1;
-        $data->{'quantity-' . CONTAINER_REFUSE_240} = 1;
-        $data->{'removal-' . CONTAINER_REFUSE_240} = 1;
         return 'about_you';
     },
 );
