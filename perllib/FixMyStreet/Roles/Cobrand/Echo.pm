@@ -238,7 +238,7 @@ sub bin_services_for_address {
             $garden = 1;
             $garden_due = $self->waste_sub_due($schedules->{end_date});
             $garden_overdue = $schedules if $_->{expired};
-            my $data_obj = $self->moniker eq 'sutton' ? $_->{Service} : $servicetask;
+            my $data_obj = $self->moniker eq 'sutton' || $self->moniker eq 'kingston' ? $_->{Service} : $servicetask;
             my $data = Integrations::Echo::force_arrayref($data_obj->{Data}, 'ExtensibleDatum');
             foreach (@$data) {
                 next unless $_->{DatatypeName} eq $self->garden_echo_container_name;
