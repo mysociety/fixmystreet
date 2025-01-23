@@ -7,6 +7,7 @@ use utf8;
 use DateTime;
 use DateTime::Format::Strptime;
 use DateTime::Format::W3CDTF;
+use Hash::Util qw(lock_hash);
 use Integrations::Echo;
 use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
@@ -25,6 +26,37 @@ sub council_url { return 'bromley'; }
 
 use constant REFERRED_TO_BROMLEY => 'Environmental Services';
 use constant REFERRED_TO_VEOLIA => 'Street Services';
+
+my %SERVICE_IDS = (
+    domestic_refuse => 531,
+    fas_refuse => 532,
+    communal_refuse => 533,
+    domestic_mixed => 535,
+    communal_mixed => 536,
+    domestic_paper => 537,
+    communal_paper => 541,
+    domestic_food => 542,
+    communal_food => 544,
+    garden => 545,
+);
+lock_hash(%SERVICE_IDS);
+
+my %EVENT_TYPE_IDS = (
+    general_enquiry => 2148,
+    missed_refuse => 2095,
+    missed_mixed => 2096,
+    missed_paper => 2097,
+    missed_food => 2098,
+    missed_garden => 2099,
+    missed_clinical => 2100,
+    missed_commercial_refuse => 2101,
+    missed_commercial_recycling => 2102,
+    missed_bulky => 2103,
+    request => 2104,
+    bulky => 2175,
+    garden => 2106,
+);
+lock_hash(%EVENT_TYPE_IDS);
 
 sub report_validation {
     my ($self, $report, $errors) = @_;
@@ -391,7 +423,7 @@ sub open311_waste_update_extra {
     my $resolution_id = $event->{ResolutionCodeId} || '';
     my $description = $event_type->{states}{$state_id}{name} || '';
 
-    my $closed_general_enquiry = $event->{EventTypeId} == 2148 && $description eq 'Closed';
+    my $closed_general_enquiry = $event->{EventTypeId} == $EVENT_TYPE_IDS{general_enquiry} && $description eq 'Closed';
     my $not_new_completed = $description ne 'New' && $description ne 'Completed';
     if ($not_new_completed && !$resolution_id && !$closed_general_enquiry) {
         $override_status = "";
@@ -615,16 +647,16 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $base = '/i/waste-containers';
     my $images = {
-        531 => svg_container_sack("normal", '#333333'),
-        532 => svg_container_sack("normal", '#333333'),
-        533 => "$base/large-communal-grey-black-lid",
-        535 => "$base/box-green-mix",
-        536 => "$base/bin-grey-green-lid-recycling",
-        537 => "$base/box-black-paper",
-        541 => "$base/bin-grey-blue-lid-recycling",
-        542 => "$base/caddy-green-recycling",
-        544 => "$base/bin-brown-recycling",
-        545 => "$base/bin-black-brown-lid-recycling",
+        $SERVICE_IDS{domestic_refuse} => svg_container_sack("normal", '#333333'),
+        $SERVICE_IDS{fas_refuse} => svg_container_sack("normal", '#333333'),
+        $SERVICE_IDS{communal_refuse} => "$base/large-communal-grey-black-lid",
+        $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
+        $SERVICE_IDS{communal_mixed} => "$base/bin-grey-green-lid-recycling",
+        $SERVICE_IDS{domestic_paper} => "$base/box-black-paper",
+        $SERVICE_IDS{communal_paper} => "$base/bin-grey-blue-lid-recycling",
+        $SERVICE_IDS{domestic_food} => "$base/caddy-green-recycling",
+        $SERVICE_IDS{communal_food} => "$base/bin-brown-recycling",
+        $SERVICE_IDS{garden} => "$base/bin-black-brown-lid-recycling",
         bulky => "$base/bulky-white",
     };
     return $images->{$service_id};
@@ -672,7 +704,7 @@ sub waste_event_state_map {
     };
 }
 
-sub garden_service_id { 545 }
+sub garden_service_id { $SERVICE_IDS{garden} }
 sub garden_service_name { 'Green Garden Waste collection service' }
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
@@ -683,16 +715,16 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        531 => 'Non-Recyclable Refuse',
-        532 => 'Non-Recyclable Refuse',
-        533 => 'Non-Recyclable Refuse',
-        535 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        536 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        537 => 'Paper & Cardboard',
-        541 => 'Paper & Cardboard',
-        542 => 'Food Waste',
-        544 => 'Food Waste',
-        545 => 'Garden Waste',
+        $SERVICE_IDS{domestic_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{fas_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{communal_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{domestic_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $SERVICE_IDS{communal_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $SERVICE_IDS{domestic_paper} => 'Paper & Cardboard',
+        $SERVICE_IDS{communal_paper} => 'Paper & Cardboard',
+        $SERVICE_IDS{domestic_food} => 'Food Waste',
+        $SERVICE_IDS{communal_food} => 'Food Waste',
+        $SERVICE_IDS{garden} => 'Garden Waste',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
@@ -713,29 +745,29 @@ sub waste_containers {
 
 sub waste_service_to_containers {
     return (
-        535 => [ 1 ],
-        536 => [ 3 ],
-        537 => [ 12 ],
-        541 => [ 14 ],
-        542 => [ 9, 10 ],
-        544 => [ 46 ],
-        545 => [ 44 ],
+        $SERVICE_IDS{domestic_mixed} => [ 1 ],
+        $SERVICE_IDS{communal_mixed} => [ 3 ],
+        $SERVICE_IDS{domestic_paper} => [ 12 ],
+        $SERVICE_IDS{communal_paper} => [ 14 ],
+        $SERVICE_IDS{domestic_food} => [ 9, 10 ],
+        $SERVICE_IDS{communal_food} => [ 46 ],
+        $SERVICE_IDS{garden} => [ 44 ],
     );
 }
 
 sub waste_quantity_max {
     return (
-        535 => 3,
-        536 => 3,
-        537 => 3,
-        541 => 3,
-        542 => 2,
-        544 => 2,
-        545 => 6,
+        $SERVICE_IDS{domestic_mixed} => 3,
+        $SERVICE_IDS{communal_mixed} => 3,
+        $SERVICE_IDS{domestic_paper} => 3,
+        $SERVICE_IDS{communal_paper} => 3,
+        $SERVICE_IDS{domestic_food} => 2,
+        $SERVICE_IDS{communal_food} => 2,
+        $SERVICE_IDS{garden} => 6,
     );
 }
 
-sub garden_subscription_event_id { 2106 }
+sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
 
 sub waste_bulky_missed_blocked_codes {
     return {
@@ -818,18 +850,18 @@ sub _closed_event {
     return 0;
 }
 
-sub missed_event_types { {
-    2095 => 'missed',
-    2096 => 'missed',
-    2097 => 'missed',
-    2098 => 'missed',
-    2099 => 'missed',
-    2100 => 'missed',
-    2101 => 'missed',
-    2102 => 'missed',
-    2103 => 'missed',
-    2104 => 'request',
-    2175 => 'bulky',
+sub missed_event_types { return {
+    $EVENT_TYPE_IDS{missed_refuse} => 'missed',
+    $EVENT_TYPE_IDS{missed_mixed} => 'missed',
+    $EVENT_TYPE_IDS{missed_paper} => 'missed',
+    $EVENT_TYPE_IDS{missed_food} => 'missed',
+    $EVENT_TYPE_IDS{missed_garden} => 'missed',
+    $EVENT_TYPE_IDS{missed_clinical} => 'missed',
+    $EVENT_TYPE_IDS{missed_commercial_refuse} => 'missed',
+    $EVENT_TYPE_IDS{missed_commercial_recycling} => 'missed',
+    $EVENT_TYPE_IDS{missed_bulky} => 'missed',
+    $EVENT_TYPE_IDS{request} => 'request',
+    $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
 
 sub waste_garden_sub_params {

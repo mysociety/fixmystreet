@@ -9,6 +9,7 @@ with 'FixMyStreet::Roles::Cobrand::Waste',
 
 use Digest::SHA qw(sha1_hex);
 use Encode qw(encode_utf8);
+use Hash::Util qw(lock_hash);
 
 sub council_area_id { return 2498; }
 sub council_area { return 'Sutton'; }
@@ -16,13 +17,36 @@ sub council_name { return 'Sutton Council'; }
 sub council_url { return 'sutton'; }
 sub admin_user_domain { 'sutton.gov.uk' }
 
-use constant CONTAINER_REFUSE_140 => 1;
-use constant CONTAINER_REFUSE_240 => 2;
-use constant CONTAINER_REFUSE_360 => 3;
-use constant CONTAINER_PAPER_BIN => 19;
-use constant CONTAINER_PAPER_BIN_140 => 36;
-use constant CONTAINER_RECYCLING_BLUE_BAG => 18;
-use constant CONTAINER_PAPER_SINGLE_BAG => 30;
+my %TASK_IDS = (
+    domestic_refuse => 2238,
+    domestic_food => 2239,
+    domestic_paper => 2240,
+    domestic_mixed => 2241,
+    domestic_refuse_bag => 2242,
+    communal_refuse => 2243,
+    domestic_mixed_bag => 2246,
+    garden => 2247,
+    communal_food => 2248,
+    communal_paper => 2249,
+    communal_mixed => 2250,
+    domestic_paper_bag => 2632,
+    schedule2_mixed => 3571,
+    schedule2_refuse => 3576,
+    deliver_refuse_bags => 2256,
+    deliver_recycling_bags => 2257,
+);
+lock_hash(%TASK_IDS);
+
+my %CONTAINERS = (
+    refuse_140 => 1,
+    refuse_240 => 2,
+    refuse_360 => 3,
+    paper_240 => 19,
+    paper_140 => 36,
+    recycling_blue_bag => 18,
+    paper_bag => 30,
+);
+lock_hash(%CONTAINERS);
 
 =head2 waste_on_the_day_criteria
 
@@ -85,17 +109,17 @@ sub image_for_unit {
         return svg_container_bin('wheelie', '#8B5E3D');
     }
     my $images = {
-        2238 => svg_container_bin('wheelie', '#8B5E3D'), # refuse
-        2239 => "$base/caddy-brown-large", # food
-        2240 => svg_container_bin('wheelie', '#41B28A'), # paper and card
-        2241 => "$base/box-green-mix", # dry mixed
-        2242 => svg_container_sack('stripe', '#E83651'), # domestic refuse bag
-        2243 => svg_container_bin('communal', '#767472', '#333333'), # Communal refuse
-        2246 => svg_container_sack('stripe', '#4f4cf0'), # domestic recycling bag
-        2248 => svg_container_bin('wheelie', '#8B5E3D'), # Communal food
-        2249 => svg_container_bin("wheelie", '#767472', '#00A6D2', 1), # Communal paper
-        2250 => svg_container_bin('communal', '#41B28A'), # Communal recycling
-        2632 => svg_container_sack('normal', '#d8d8d8'), # domestic paper bag
+        $TASK_IDS{domestic_refuse} => svg_container_bin('wheelie', '#8B5E3D'),
+        $TASK_IDS{domestic_food} => "$base/caddy-brown-large",
+        $TASK_IDS{domestic_paper} => svg_container_bin('wheelie', '#41B28A'),
+        $TASK_IDS{domestic_mixed} => "$base/box-green-mix",
+        $TASK_IDS{domestic_refuse_bag} => svg_container_sack('stripe', '#E83651'),
+        $TASK_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
+        $TASK_IDS{domestic_mixed_bag} => svg_container_sack('stripe', '#4f4cf0'),
+        $TASK_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
+        $TASK_IDS{communal_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
+        $TASK_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'),
+        $TASK_IDS{domestic_paper_bag} => svg_container_sack('normal', '#d8d8d8'),
     };
     return $images->{$service_id};
 }
@@ -110,22 +134,22 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        2238 => 'Non-Recyclable Refuse',
-        2239 => 'Food Waste',
-        2240 => 'Paper & Card',
-        2241 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        2242 => 'Non-Recyclable Refuse',
-        2243 => 'Non-Recyclable Refuse',
-        2246 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        2247 => 'Garden Waste',
-        2248 => 'Food Waste',
-        2249 => 'Paper & Card',
-        2250 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        2632 => 'Paper & Card',
-        3571 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        3576 => 'Non-Recyclable Refuse',
-        2256 => '', # Deliver refuse bags
-        2257 => '', # Deliver recycling bags
+        $TASK_IDS{domestic_refuse} => 'Non-Recyclable Refuse',
+        $TASK_IDS{domestic_food} => 'Food Waste',
+        $TASK_IDS{domestic_paper} => 'Paper & Card',
+        $TASK_IDS{domestic_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $TASK_IDS{domestic_refuse_bag} => 'Non-Recyclable Refuse',
+        $TASK_IDS{communal_refuse} => 'Non-Recyclable Refuse',
+        $TASK_IDS{domestic_mixed_bag} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $TASK_IDS{garden} => 'Garden Waste',
+        $TASK_IDS{communal_food} => 'Food Waste',
+        $TASK_IDS{communal_paper} => 'Paper & Card',
+        $TASK_IDS{communal_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $TASK_IDS{domestic_paper_bag} => 'Paper & Card',
+        $TASK_IDS{schedule2_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $TASK_IDS{schedule2_refuse} => 'Non-Recyclable Refuse',
+        $TASK_IDS{deliver_refuse_bags} => '',
+        $TASK_IDS{deliver_recycling_bags} => '',
     );
 
     return $service_name_override{$service->{ServiceId}} // '';
@@ -307,8 +331,8 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'about_you' if $choice == CONTAINER_RECYCLING_BLUE_BAG || $choice == CONTAINER_PAPER_SINGLE_BAG;
-        foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
+        return 'about_you' if $choice == $CONTAINERS{recycling_blue_bag} || $choice == $CONTAINERS{paper_bag};
+        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}) {
             if ($choice == $_ && !$containers->{$_}) {
                 $data->{request_reason} = 'change_capacity';
                 return 'about_you';
@@ -351,16 +375,16 @@ sub waste_munge_request_data {
     } elsif ($reason eq 'change_capacity') {
         $action_id = '2::1';
         $reason_id = '3::3';
-        if ($id == CONTAINER_REFUSE_140) {
-            $id = CONTAINER_REFUSE_240 . '::' . CONTAINER_REFUSE_140;
-        } elsif ($id == CONTAINER_REFUSE_240) {
-            if ($c->stash->{quantities}{+CONTAINER_REFUSE_360}) {
-                $id = CONTAINER_REFUSE_360 . '::' . CONTAINER_REFUSE_240;
+        if ($id == $CONTAINERS{refuse_140}) {
+            $id = $CONTAINERS{refuse_240} . '::' . $CONTAINERS{refuse_140};
+        } elsif ($id == $CONTAINERS{refuse_240}) {
+            if ($c->stash->{quantities}{+$CONTAINERS{refuse_360}}) {
+                $id = $CONTAINERS{refuse_360} . '::' . $CONTAINERS{refuse_240};
             } else {
-                $id = CONTAINER_REFUSE_140 . '::' . CONTAINER_REFUSE_240;
+                $id = $CONTAINERS{refuse_140} . '::' . $CONTAINERS{refuse_240};
             }
-        } elsif ($id == CONTAINER_PAPER_BIN) {
-            $id = CONTAINER_PAPER_BIN_140 . '::' . CONTAINER_PAPER_BIN;
+        } elsif ($id == $CONTAINERS{paper_240}) {
+            $id = $CONTAINERS{paper_140} . '::' . $CONTAINERS{paper_240};
         }
     } else {
         # No reason, must be a bag
@@ -394,7 +418,7 @@ Quantity doesn't matter here.
 sub request_cost {
     my ($self, $id, $quantity, $containers) = @_;
     if (my $cost = $self->_get_cost('request_change_cost')) {
-        foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_PAPER_BIN) {
+        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}) {
             if ($id == $_ && !$containers->{$_}) {
                 my $price = sprintf("£%.2f", $cost / 100);
                 $price =~ s/\.00$//;
@@ -404,7 +428,7 @@ sub request_cost {
         }
     }
     if (my $cost = $self->_get_cost('request_replace_cost')) {
-        foreach (CONTAINER_REFUSE_140, CONTAINER_REFUSE_240, CONTAINER_REFUSE_360, CONTAINER_PAPER_BIN) {
+        foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{refuse_360}, $CONTAINERS{paper_240}) {
             if ($id == $_ && $containers->{$_}) {
                 my $price = sprintf("£%.2f", $cost / 100);
                 $price =~ s/\.00$//;

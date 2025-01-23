@@ -5,9 +5,32 @@ with 'FixMyStreet::Roles::Cobrand::Waste',
      'FixMyStreet::Roles::Cobrand::SLWP',
      'FixMyStreet::Roles::Cobrand::Adelante';
 
+use Hash::Util qw(lock_hash);
 use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton::Larger;
+
+my %TASK_IDS = (
+    domestic_refuse => 2238,
+    domestic_food => 2239,
+    domestic_paper => 2240,
+    domestic_mixed => 2241,
+    domestic_refuse_bag => 2242,
+    communal_refuse => 2243,
+    domestic_mixed_bag => 2246,
+    garden => 2247,
+    communal_food => 2248,
+    communal_paper => 2249,
+    communal_mixed => 2250,
+    domestic_paper_bag => 2632,
+    schedule2_mixed => 3571,
+    schedule2_refuse => 3576,
+    deliver_refuse_bags => 2256,
+    deliver_recycling_bags => 2257,
+);
+lock_hash(%TASK_IDS);
+
+use constant CONTAINER_RECYCLING_PURPLE_BAG => 17;
 
 =over 4
 
@@ -46,20 +69,20 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        2238 => 'Non-recyclable waste',
-        2239 => 'Food waste',
-        2240 => 'Paper and card',
-        2241 => 'Mixed recycling',
-        2242 => 'Non-recyclable waste',
-        2243 => 'Non-recyclable waste',
-        2246 => 'Mixed recycling',
-        2247 => 'Garden waste',
-        2248 => "Food waste",
-        2249 => "Paper and card",
-        2250 => "Mixed recycling",
-        2632 => 'Paper and card',
-        2256 => '', # Deliver refuse bags
-        2257 => '', # Deliver recycling bags
+        $TASK_IDS{domestic_refuse} => 'Non-recyclable waste',
+        $TASK_IDS{domestic_food} => 'Food waste',
+        $TASK_IDS{domestic_paper} => 'Paper and card',
+        $TASK_IDS{domestic_mixed} => 'Mixed recycling',
+        $TASK_IDS{domestic_refuse_bag} => 'Non-recyclable waste',
+        $TASK_IDS{communal_refuse} => 'Non-recyclable waste',
+        $TASK_IDS{domestic_mixed_bag} => 'Mixed recycling',
+        $TASK_IDS{garden} => 'Garden Waste',
+        $TASK_IDS{communal_food} => 'Food waste',
+        $TASK_IDS{communal_paper} => 'Paper and card',
+        $TASK_IDS{communal_mixed} => 'Mixed recycling',
+        $TASK_IDS{domestic_paper_bag} => 'Paper and card',
+        $TASK_IDS{deliver_refuse_bags} => '',
+        $TASK_IDS{deliver_recycling_bags} => '',
     );
 
     return $service_name_override{$service->{ServiceId}} // '';
@@ -82,7 +105,7 @@ sub waste_containers {
         13 => 'Green recycling bin (360L)',
         16 => 'Green recycling box (55L)',
 
-        17 => 'Recycling Purple Bag',
+        CONTAINER_RECYCLING_PURPLE_BAG() => 'Recycling Purple Bag',
         18 => 'Recycling Blue Stripe Bag',
         29 => 'Recycling Single Use Bag',
 
@@ -127,14 +150,14 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $time_banded = $self->{c}->stash->{property_time_banded};
 
-    return svg_container_sack('normal', '#3B3B3A') if $service_id eq 2242 && $time_banded;
+    return svg_container_sack('normal', '#3B3B3A') if $service_id eq $TASK_IDS{domestic_refuse_bag} && $time_banded;
     if (my $container = $unit->{request_containers}[0]) {
-        return svg_container_sack('normal', '#BD63D1') if $container == 17;
+        return svg_container_sack('normal', '#BD63D1') if $container == CONTAINER_RECYCLING_PURPLE_BAG;
     }
 
     my $images = {
-        2238 => svg_container_bin('wheelie', '#333333'), # refuse
-        2239 => "$base/caddy-brown-large", # food
+        $TASK_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),
+        $TASK_IDS{domestic_food} => "$base/caddy-brown-large",
         '2239-textiles' => {
             alt => 'These should be presented in a tied carrier bag.',
             type => 'png1',
@@ -145,16 +168,15 @@ sub image_for_unit {
             type => 'png1',
             src => "$base/merton/bag-untied-orange",
         },
-        2240 => svg_container_bin("wheelie", '#767472', '#00A6D2', 1), # paper and card
-        2241 => "$base/box-green-mix", # dry mixed
-        2242 => svg_container_sack('stripe', '#F1506D'), # domestic refuse bag
-        2243 => svg_container_bin('communal', '#767472', '#333333'), # Communal refuse
-        2246 => svg_container_sack('stripe', '#3E50FA'), # domestic recycling bag
-        2247 => svg_container_bin('wheelie', '#8B5E3D'), # garden
-        2248 => svg_container_bin('wheelie', '#8B5E3D'), # Communal food
-        #2249 => "$base/bin-grey-blue-lid-recycling", # Communal paper
-        2250 => svg_container_bin('communal', '#41B28A'), # Communal recycling
-        2632 => svg_container_sack('normal', '#D8D8D8'), # domestic paper bag
+        $TASK_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
+        $TASK_IDS{domestic_mixed} => "$base/box-green-mix",
+        $TASK_IDS{domestic_refuse_bag} => svg_container_sack('stripe', '#F1506D'),
+        $TASK_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
+        $TASK_IDS{domestic_mixed_bag} => svg_container_sack('stripe', '#3E50FA'),
+        $TASK_IDS{garden} => svg_container_bin('wheelie', '#8B5E3D'),
+        $TASK_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
+        $TASK_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'),
+        $TASK_IDS{domestic_paper_bag} => svg_container_sack('normal', '#D8D8D8'),
         bulky => "$base/bulky-black",
     };
     return $images->{$service_id};
@@ -187,7 +209,7 @@ sub alternative_backend_field_names {
 
 sub waste_quantity_max {
     return (
-        2247 => 3, # Garden waste maximum
+        $TASK_IDS{garden} => 3, # Garden waste maximum
     );
 }
 
@@ -206,7 +228,7 @@ sub staff_override_request_options {
     return if $self->{c}->stash->{schedule2_property};
 
     foreach (@$rows) {
-        if ($_->{service_id} eq 2239) { # Domestic food
+        if ($_->{service_id} eq $TASK_IDS{domestic_food}) {
             # Add textiles and battery options at the bottom
             my $new_row = {
                 %$_,

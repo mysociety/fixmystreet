@@ -23,6 +23,7 @@ use warnings;
 use Moo;
 use DateTime;
 use DateTime::Format::Strptime;
+use Hash::Util qw(lock_hash);
 use Try::Tiny;
 use LWP::Simple;
 use URI;
@@ -55,21 +56,47 @@ sub council_area { return 'Brent'; }
 sub council_name { return 'Brent Council'; }
 sub council_url { return 'brent'; }
 
-Readonly::Scalar my $CONTAINER_GREY_BIN => 16;
-Readonly::Scalar my $CONTAINER_BLUE_BIN => 6;
-Readonly::Scalar my $CONTAINER_CLEAR_SACK => 8;
-Readonly::Scalar my $CONTAINER_FOOD_CADDY => 11;
-Readonly::Scalar my $CONTAINER_GREEN_BIN => 13;
-Readonly::Scalar my $CONTAINER_BLUE_SACK => 46;
+my %SERVICE_IDS = (
+    domestic_refuse => 262,
+    communal_refuse => 263,
+    fas_refuse => 267,
+    domestic_mixed => 265,
+    communal_mixed => 266,
+    fas_mixed => 269,
+    domestic_paper => 807,
+    domestic_food => 316,
+    communal_food => 271,
+    garden => 317,
+);
+lock_hash(%SERVICE_IDS);
+
+my %EVENT_TYPE_IDS = (
+    garden => 1159,
+    request => 2936,
+    missed => 2891,
+    bulky => 2964,
+);
+lock_hash(%EVENT_TYPE_IDS);
+
+my %CONTAINER_IDS = (
+    rubbish_blue_sack => 1,
+    rubbish_grey_bin => 16,
+    recycling_clear_sack => 8,
+    recycling_blue_bin => 6,
+    food_caddy => 11,
+    garden_green_bin => 13,
+    paper_blue_sack => 46,
+);
+lock_hash(%CONTAINER_IDS);
 
 my $BRENT_CONTAINERS = {
-    1 => 'Blue rubbish sack',
-    $CONTAINER_GREY_BIN => 'General rubbish bin (grey bin)',
-    $CONTAINER_CLEAR_SACK => 'Clear recycling sack',
-    $CONTAINER_BLUE_BIN => 'Recycling bin (blue bin)',
-    $CONTAINER_FOOD_CADDY => 'Food waste caddy',
-    $CONTAINER_GREEN_BIN => 'Garden waste (green bin)',
-    $CONTAINER_BLUE_SACK => 'Paper and cardboard blue sack',
+    $CONTAINER_IDS{rubbish_blue_sack} => 'Blue rubbish sack',
+    $CONTAINER_IDS{rubbish_grey_bin} => 'General rubbish bin (grey bin)',
+    $CONTAINER_IDS{recycling_clear_sack} => 'Clear recycling sack',
+    $CONTAINER_IDS{recycling_blue_bin} => 'Recycling bin (blue bin)',
+    $CONTAINER_IDS{food_caddy} => 'Food waste caddy',
+    $CONTAINER_IDS{garden_green_bin} => 'Garden waste (green bin)',
+    $CONTAINER_IDS{paper_blue_sack} => 'Paper and cardboard blue sack',
 };
 
 =head1 DESCRIPTION
@@ -430,6 +457,7 @@ sub dashboard_export_problems_add_columns {
             uprn => 'UPRN',
             external_id => 'External ID',
             image_included => 'Does the report have an image?',
+            extra_details => 'Extra details',
 
             InspectionDate => "Inspection date",
             GradeLitter => "Grade for Litter",
@@ -501,6 +529,7 @@ sub dashboard_export_problems_add_columns {
 
         my $data = {
             location_name => $csv->_extra_field($report, 'location_name'),
+            extra_details => $csv->_extra_metadata($report, 'detailed_information') || '',
             $csv->dbi ? (
                 street_name => FixMyStreet::Geocode::Address->new($report->{geocode})->parts->{street},
                 image_included => $report->{photo} ? 'Y' : 'N',
@@ -949,23 +978,23 @@ sub waste_containers { $BRENT_CONTAINERS }
 
 sub waste_service_to_containers {
     return (
-        262 => [ $CONTAINER_GREY_BIN ],
-        265 => [ $CONTAINER_BLUE_BIN ],
-        269 => [ $CONTAINER_CLEAR_SACK ],
-        316 => [ $CONTAINER_FOOD_CADDY ],
-        317 => [ $CONTAINER_GREEN_BIN ],
-        807 => [ $CONTAINER_BLUE_SACK ],
+        $SERVICE_IDS{domestic_refuse} => [ $CONTAINER_IDS{rubbish_grey_bin} ],
+        $SERVICE_IDS{domestic_mixed} => [ $CONTAINER_IDS{recycling_blue_bin} ],
+        $SERVICE_IDS{fas_mixed} => [ $CONTAINER_IDS{recycling_clear_sack} ],
+        $SERVICE_IDS{domestic_food} => [ $CONTAINER_IDS{food_caddy} ],
+        $SERVICE_IDS{garden} => [ $CONTAINER_IDS{garden_green_bin} ],
+        $SERVICE_IDS{domestic_paper} => [ $CONTAINER_IDS{paper_blue_sack} ],
     );
 }
 
 sub waste_quantity_max {
     return (
-        262 => 1,
-        265 => 1,
-        269 => 1,
-        316 => 1,
-        317 => 5,
-        807 => 1,
+        $SERVICE_IDS{domestic_refuse} => 1,
+        $SERVICE_IDS{domestic_mixed} => 1,
+        $SERVICE_IDS{fas_mixed} => 1,
+        $SERVICE_IDS{domestic_food} => 1,
+        $SERVICE_IDS{garden} => 5,
+        $SERVICE_IDS{domestic_paper} => 1,
     );
 }
 
@@ -1025,16 +1054,16 @@ sub waste_extra_service_info {
         $_->{timeband} = _timeband_for_schedule($schedules->{next});
 
         # Brent has two overlapping schedules for food
-        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == 316 || $_->{ServiceId} == 263;
+        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == $SERVICE_IDS{domestic_food} || $_->{ServiceId} == $SERVICE_IDS{communal_refuse};
 
         # Check calendar allocation
-        if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317 || $_->{ServiceId} == 807) && ($schedules->{description} =~ /every other/ || $schedules->{description} =~ /every \d+(th|st|nd|rd) week/) && $schedules->{next}{schedule}) {
+        if (($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{garden} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper}) && ($schedules->{description} =~ /every other/ || $schedules->{description} =~ /every \d+(th|st|nd|rd) week/) && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
             my $day = lc $allocation->{RoundName};
             $day =~ s/\s+//g;
             my ($week) = $allocation->{RoundGroupName} =~ /Week (\d+)/;
             my $links;
-            if ($_->{ServiceId} == 262 || $_->{ServiceId} == 807) {
+            if ($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper}) {
                 if ($week) {
                     $calendar_save->{number} = $week;
                 } elsif (($week) = $allocation->{RoundGroupName} =~ /WK(\w)/) {
@@ -1045,7 +1074,7 @@ sub waste_extra_service_info {
                     $links = $self->{c}->cobrand->feature('waste_calendar_links');
                     $self->{c}->stash->{calendar_link} = $links->{$id};
                 }
-            } elsif ($_->{ServiceId} == 317) {
+            } elsif ($_->{ServiceId} == $SERVICE_IDS{garden}) {
                 my $id = sprintf("%s-%s", $day, $week);
                 my $links = $self->{c}->cobrand->feature('ggw_calendar_links');
                 $self->{c}->stash->{ggw_calendar_link} = $links->{$id};
@@ -1068,10 +1097,10 @@ sub _timeband_for_schedule {
     }
 }
 
-sub missed_event_types { {
-    2936 => 'request',
-    2891 => 'missed',
-    2964 => 'bulky',
+sub missed_event_types { return {
+    $EVENT_TYPE_IDS{request} => 'request',
+    $EVENT_TYPE_IDS{missed} => 'missed',
+    $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
 
 around bulky_check_missed_collection => sub {
@@ -1090,16 +1119,16 @@ sub image_for_unit {
 
     my $base = '/i/waste-containers';
     my $images = {
-        262 => svg_container_bin("wheelie", '#767472'),
-        265 => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
-        316 => "$base/caddy-green-recycling",
-        317 => svg_container_bin("wheelie", '#41B28A'),
-        263 => svg_container_bin("communal", '#333333'),
-        266 => svg_container_bin("communal", '#00A6D2', undef, 1),
-        271 => svg_container_bin("wheelie", '#8B5E3D'),
-        267 => svg_container_sack("normal", '#333333'),
-        269 => svg_container_sack("normal", '#d8d8d8'),
-        807 => "$base/bag-blue",
+        $SERVICE_IDS{domestic_refuse} => svg_container_bin("wheelie", '#767472'),
+        $SERVICE_IDS{domestic_mixed} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
+        $SERVICE_IDS{domestic_food} => "$base/caddy-green-recycling",
+        $SERVICE_IDS{garden} => svg_container_bin("wheelie", '#41B28A'),
+        $SERVICE_IDS{communal_refuse} => svg_container_bin("communal", '#333333'),
+        $SERVICE_IDS{communal_mixed} => svg_container_bin("communal", '#00A6D2', undef, 1),
+        $SERVICE_IDS{communal_food} => svg_container_bin("wheelie", '#8B5E3D'),
+        $SERVICE_IDS{fas_refuse} => svg_container_sack("normal", '#333333'),
+        $SERVICE_IDS{fas_mixed} => svg_container_sack("normal", '#d8d8d8'),
+        $SERVICE_IDS{domestic_paper} => "$base/bag-blue",
         bulky => "$base/electricals-batteries-textiles",
     };
     return $images->{$service_id};
@@ -1109,16 +1138,16 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        262 => 'Rubbish',
-        265 => 'Recycling',
-        316 => 'Food waste',
-        317 => 'Garden waste',
-        263 => 'Communal rubbish',
-        266 => 'Communal recycling',
-        271 => 'Communal food waste',
-        267 => 'Rubbish (black sacks)',
-        269 => 'Recycling (clear sacks)',
-        807 => 'Paper and cardboard (blue sacks)',
+        $SERVICE_IDS{domestic_refuse} => 'Rubbish',
+        $SERVICE_IDS{domestic_mixed} => 'Recycling',
+        $SERVICE_IDS{domestic_food} => 'Food waste',
+        $SERVICE_IDS{garden} => 'Garden waste',
+        $SERVICE_IDS{communal_refuse} => 'Communal rubbish',
+        $SERVICE_IDS{communal_mixed} => 'Communal recycling',
+        $SERVICE_IDS{communal_food} => 'Communal food waste',
+        $SERVICE_IDS{fas_refuse} => 'Rubbish (black sacks)',
+        $SERVICE_IDS{fas_mixed} => 'Recycling (clear sacks)',
+        $SERVICE_IDS{domestic_paper} => 'Paper and cardboard (blue sacks)',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
@@ -1193,8 +1222,8 @@ Calculate how much, if anything, a request for a container should be.
 sub request_cost {
     my ($self, $id) = @_;
     my $cost;
-    $cost = $self->_get_cost('request_cost_blue_bin') if $id == $CONTAINER_BLUE_BIN;
-    $cost = $self->_get_cost('request_cost_food_caddy') if $id == $CONTAINER_FOOD_CADDY;
+    $cost = $self->_get_cost('request_cost_blue_bin') if $id == $CONTAINER_IDS{recycling_blue_bin};
+    $cost = $self->_get_cost('request_cost_food_caddy') if $id == $CONTAINER_IDS{food_caddy};
     if ($cost) {
         my $price = sprintf("£%.2f", $cost / 100);
         $price =~ s/\.00$//;
@@ -1271,12 +1300,12 @@ sub waste_munge_request_data {
 
     # XXX Share somewhere with reverse?
     my %service_id = (
-        $CONTAINER_GREY_BIN => 262,
-        $CONTAINER_BLUE_BIN => 265,
-        $CONTAINER_CLEAR_SACK => 269,
-        $CONTAINER_FOOD_CADDY => 316,
-        $CONTAINER_GREEN_BIN => 317,
-        $CONTAINER_BLUE_SACK => 807,
+        $CONTAINER_IDS{rubbish_grey_bin} => $SERVICE_IDS{domestic_refuse},
+        $CONTAINER_IDS{recycling_blue_bin} => $SERVICE_IDS{domestic_mixed},
+        $CONTAINER_IDS{recycling_clear_sack} => $SERVICE_IDS{fas_mixed},
+        $CONTAINER_IDS{food_caddy} => $SERVICE_IDS{domestic_food},
+        $CONTAINER_IDS{garden_green_bin} => $SERVICE_IDS{garden},
+        $CONTAINER_IDS{paper_blue_sack} => $SERVICE_IDS{domestic_paper},
     );
     $c->set_param('service_id', $service_id{$id});
 }
@@ -1296,7 +1325,7 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'request_refuse_call_us' if $choice == $CONTAINER_GREY_BIN;
+        return 'request_refuse_call_us' if $choice == $CONTAINER_IDS{rubbish_grey_bin};
         return 'replacement';
     };
 }
@@ -1324,11 +1353,11 @@ sub waste_munge_request_form_data {
 
 sub waste_auto_confirm_report { 1 }
 
-sub garden_service_id { 317 }
+sub garden_service_id { $SERVICE_IDS{garden} }
 use constant GARDEN_WASTE_PAID_COLLECTION_BIN => 1;
 use constant GARDEN_WASTE_PAID_COLLECTION_SACK => 2;
 sub garden_service_name { 'Garden waste collection service' }
-sub garden_subscription_event_id { 1159 }
+sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
 sub garden_due_days { 87 }
 
 sub waste_show_garden_modify {

@@ -200,6 +200,12 @@ $.extend(fixmystreet.utils, {
             drag.activate();
         }
 
+        // Only now do we want to activate the Street Manager layer, if it's
+        // present, as we haven't needed it until now.
+        if (fixmystreet.roadworks) {
+            fixmystreet.roadworks.update();
+        }
+
         fixmystreet.maps.hide_keyboard_instructions();
 
         // check to see if markers are visible. We click the

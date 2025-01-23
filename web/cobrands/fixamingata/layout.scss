@@ -162,10 +162,6 @@ body.mappage {
     color: rgb(34, 34, 34);
 }
 
-.content, .sticky-sidebar {
-    margin-bottom: 2em;
-}
-
 #front_stats {
     border-color: #087FA0;
 }
@@ -180,4 +176,8 @@ body.mappage {
 
 #offline_list:empty {
     display: none;
+}
+
+.mysoc-footer {
+    margin-top: 2em;
 }
