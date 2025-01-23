@@ -1,4 +1,3 @@
-use Test::More skip_all => 'bulky not yet done';
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
@@ -865,7 +864,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky Waste');
     };
 
-    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}, {'ServiceId' => 413}] } );
+    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}, {'ServiceId' => 960}] } );
 
     subtest 'Sutton specific Bulky Waste text' => sub {
         $mech->get_ok('/waste/12346/');
@@ -974,13 +973,18 @@ sub _contact_extra_data {
         { category => 'Bulky collection', email => '1636@test.com' },
         { code => 'payment' },
         { code => 'payment_method' },
+        { code => 'Collection_Date_-_Bulky_Items' },
+        { code => 'TEM_-_Bulky_Collection_Item' },
+        { code => 'TEM_-_Bulky_Collection_Description' },
+        { code => 'Exact_Location' },
+        { code => 'GUID' },
+        { code => 'reservation' },
+        { code => 'First_Date_Offered_-_Bulky' },
+        # Old columns, for changeover period
         { code => 'Payment_Type' },
         { code => 'Collection_Date' },
         { code => 'Bulky_Collection_Bulky_Items' },
         { code => 'Bulky_Collection_Notes' },
-        { code => 'Exact_Location' },
-        { code => 'GUID' },
-        { code => 'reservation' },
         { code => 'Customer_Selected_Date_Beyond_SLA?' },
         { code => 'First_Date_Returned_to_Customer' },
     );
