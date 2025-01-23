@@ -54,6 +54,12 @@ INCLUDE '_email_top.html';
   </p>
 [% END %]
 
+[% IF additional_quantity ~%]
+  <p style="[% p_style %]">
+    Number of additional bin subscriptions: [% additional_quantity %]
+  </p>
+[% END %]
+
 [% IF new_bins > 0 AND NOT sacks ~%]
   <p style="[% p_style %]">
     Bins to be delivered: [% new_bins %]
