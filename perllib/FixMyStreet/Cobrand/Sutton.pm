@@ -18,25 +18,24 @@ sub council_name { return 'Sutton Council'; }
 sub council_url { return 'sutton'; }
 sub admin_user_domain { 'sutton.gov.uk' }
 
-my %TASK_IDS = (
-    domestic_refuse => 4394,
-    domestic_food => 4389,
-    domestic_paper => 4388,
-    domestic_mixed => 4390,
-    domestic_refuse_bag => 4395,
-    communal_refuse => 4407,
-    domestic_mixed_bag => 4391,
-    garden => 4410,
-    communal_food => 4403,
-    communal_paper => 4396,
-    communal_mixed => 4397,
-    domestic_paper_bag => 4402,
-    schedule2_mixed => 4398,
-    schedule2_refuse => 4409,
-    deliver_refuse_bags => 4427,
-    deliver_recycling_bags => 4432,
+my %SERVICE_IDS = (
+    domestic_refuse => 940, # 4394
+    communal_refuse => 943, # 4407
+    fas_refuse => 941, # 4395
+    domestic_mixed => 944, # 4390
+    communal_mixed => 947, # 4397
+    fas_mixed => 945, # 4391
+    domestic_paper => 948, # 4388
+    communal_paper => 951, # 4396
+    fas_paper => 949, # 4402
+    domestic_food => 954, # 4389
+    communal_food => 957, # 4403
+    garden => 953, # 4410
+    schedule2_refuse => 942, # 4409
+    schedule2_mixed => 946, # 4398
+    deliver_bags => 961, # 4427 4432
 );
-lock_hash(%TASK_IDS);
+lock_hash(%SERVICE_IDS);
 
 my %CONTAINERS = (
     refuse_140 => 1,
@@ -98,7 +97,7 @@ sub waste_garden_allow_cancellation { 'staff' }
 
 sub waste_quantity_max {
     return (
-        $TASK_IDS{garden} => 5, # Garden waste maximum
+        $SERVICE_IDS{garden} => 5, # Garden waste maximum
     );
 }
 
@@ -141,17 +140,17 @@ sub image_for_unit {
         return svg_container_bin('wheelie', '#8B5E3D');
     }
     my $images = {
-        $TASK_IDS{domestic_refuse} => svg_container_bin('wheelie', '#8B5E3D'),
-        $TASK_IDS{domestic_food} => "$base/caddy-brown-large",
-        $TASK_IDS{domestic_paper} => svg_container_bin('wheelie', '#41B28A'),
-        $TASK_IDS{domestic_mixed} => "$base/box-green-mix",
-        $TASK_IDS{domestic_refuse_bag} => svg_container_sack('stripe', '#E83651'),
-        $TASK_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
-        $TASK_IDS{domestic_mixed_bag} => svg_container_sack('stripe', '#4f4cf0'),
-        $TASK_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
-        $TASK_IDS{communal_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
-        $TASK_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'),
-        $TASK_IDS{domestic_paper_bag} => svg_container_sack('normal', '#d8d8d8'),
+        $SERVICE_IDS{domestic_refuse} => svg_container_bin('wheelie', '#8B5E3D'),
+        $SERVICE_IDS{domestic_food} => "$base/caddy-brown-large",
+        $SERVICE_IDS{domestic_paper} => svg_container_bin('wheelie', '#41B28A'),
+        $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
+        $SERVICE_IDS{fas_refuse} => svg_container_sack('stripe', '#E83651'),
+        $SERVICE_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
+        $SERVICE_IDS{fas_mixed} => svg_container_sack('stripe', '#4f4cf0'),
+        $SERVICE_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
+        $SERVICE_IDS{communal_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
+        $SERVICE_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'),
+        $SERVICE_IDS{fas_paper} => svg_container_sack('normal', '#d8d8d8'),
     };
     return $images->{$service_id};
 }
@@ -194,22 +193,21 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        $TASK_IDS{domestic_refuse} => 'Non-Recyclable Refuse',
-        $TASK_IDS{domestic_food} => 'Food Waste',
-        $TASK_IDS{domestic_paper} => 'Paper & Card',
-        $TASK_IDS{domestic_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
-        $TASK_IDS{domestic_refuse_bag} => 'Non-Recyclable Refuse',
-        $TASK_IDS{communal_refuse} => 'Non-Recyclable Refuse',
-        $TASK_IDS{domestic_mixed_bag} => 'Mixed Recycling (Cans, Plastics & Glass)',
-        $TASK_IDS{garden} => 'Garden Waste',
-        $TASK_IDS{communal_food} => 'Food Waste',
-        $TASK_IDS{communal_paper} => 'Paper & Card',
-        $TASK_IDS{communal_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
-        $TASK_IDS{domestic_paper_bag} => 'Paper & Card',
-        $TASK_IDS{schedule2_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
-        $TASK_IDS{schedule2_refuse} => 'Non-Recyclable Refuse',
-        $TASK_IDS{deliver_refuse_bags} => '',
-        $TASK_IDS{deliver_recycling_bags} => '',
+        $SERVICE_IDS{domestic_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{domestic_food} => 'Food Waste',
+        $SERVICE_IDS{domestic_paper} => 'Paper & Card',
+        $SERVICE_IDS{domestic_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $SERVICE_IDS{fas_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{communal_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{fas_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $SERVICE_IDS{garden} => 'Garden Waste',
+        $SERVICE_IDS{communal_food} => 'Food Waste',
+        $SERVICE_IDS{communal_paper} => 'Paper & Card',
+        $SERVICE_IDS{communal_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $SERVICE_IDS{fas_paper} => 'Paper & Card',
+        $SERVICE_IDS{schedule2_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $SERVICE_IDS{schedule2_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{deliver_bags} => '',
     );
 
     return $service_name_override{$service->{ServiceId}} // '';
