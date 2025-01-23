@@ -1,4 +1,3 @@
-use Test::More skip_all => 'core not yet done';
 use JSON::MaybeXS;
 use Path::Tiny;
 use Storable qw(dclone);
@@ -359,7 +358,7 @@ FixMyStreet::override_config {
 		$mech->content_contains('Non-recyclable Refuse');
 		$mech->content_lacks('Paper and card');
 
-        $mech->submit_form_ok({ with_fields => { 'service-4389' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'service-980' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Thank you for reporting a missed collection');
