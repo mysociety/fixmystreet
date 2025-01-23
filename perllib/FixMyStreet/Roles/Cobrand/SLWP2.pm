@@ -540,7 +540,7 @@ sub bulky_allowed_property {
 
 sub collection_date {
     my ($self, $p) = @_;
-    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
+    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date_-_Bulky_Items') || $p->get_extra_field_value('Collection_Date'));
 }
 
 sub bulky_free_collection_available { 0 }
@@ -568,14 +568,13 @@ sub waste_munge_bulky_data {
     $data->{title} = "Bulky goods collection";
     $data->{detail} = "Address: " . $c->stash->{property}->{address};
     $data->{category} = "Bulky collection";
-    $data->{extra_Collection_Date} = $date;
+    $data->{'extra_Collection_Date_-_Bulky_Items'} = $date;
     $data->{extra_Exact_Location} = $data->{location};
 
     my $first_date = $self->{c}->session->{first_date_returned};
     $first_date = DateTime::Format::W3CDTF->parse_datetime($first_date);
     my $dt = DateTime::Format::W3CDTF->parse_datetime($date);
-    $data->{'extra_First_Date_Returned_to_Customer'} = $first_date->strftime("%d/%m/%Y");
-    $data->{'extra_Customer_Selected_Date_Beyond_SLA?'} = $dt > $first_date ? 1 : 0;
+    $data->{'extra_First_Date_Offered_-_Bulky'} = $first_date->strftime("%d/%m/%Y");
 
     my @items_list = @{ $self->bulky_items_master_list };
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
@@ -592,8 +591,8 @@ sub waste_munge_bulky_data {
             push @photos, $data->{"item_photos_$_"} || '';
         };
     }
-    $data->{extra_Bulky_Collection_Notes} = join("::", @notes);
-    $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
+    $data->{'extra_TEM_-_Bulky_Collection_Description'} = join("::", @notes);
+    $data->{'extra_TEM_-_Bulky_Collection_Item'} = join("::", @ids);
     $data->{extra_Image} = join("::", @photos);
     $self->bulky_total_cost($data);
 }
@@ -602,13 +601,13 @@ sub waste_reconstruct_bulky_data {
     my ($self, $p) = @_;
 
     my $saved_data = {
-        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
+        "chosen_date" => $p->get_extra_field_value('Collection_Date_-_Bulky_Items') || $p->get_extra_field_value('Collection_Date'),
         "location" => $p->get_extra_field_value('Exact_Location'),
         "location_photo" => $p->get_extra_metadata("location_photo"),
     };
 
-    my @fields = split /::/, $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
-    my @notes = split /::/, $p->get_extra_field_value('Bulky_Collection_Notes');
+    my @fields = split /::/, $p->get_extra_field_value('TEM_-_Bulky_Collection_Item') || $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
+    my @notes = split /::/, $p->get_extra_field_value('TEM_-_Bulky_Collection_Description') || $p->get_extra_field_value('Bulky_Collection_Notes');
     for my $id (1..@fields) {
         $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
         $saved_data->{"item_notes_$id"} = $notes[$id-1];
