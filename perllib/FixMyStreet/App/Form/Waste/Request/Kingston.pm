@@ -18,7 +18,7 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
-use constant CONTAINER_REFUSE_240 => 2;
+use constant CONTAINER_REFUSE_240 => 3;
 
 =head2 About you
 
