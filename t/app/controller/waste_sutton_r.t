@@ -13,9 +13,9 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $bin_data = decode_json(path(__FILE__)->sibling('waste_4443082.json')->slurp_utf8);
-my $bin_140_data = decode_json(path(__FILE__)->sibling('waste_4443082_140.json')->slurp_utf8);
-my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_4471550.json')->slurp_utf8);
+my $bin_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082.json')->slurp_utf8);
+my $bin_140_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_140.json')->slurp_utf8);
+my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_sutton_4471550.json')->slurp_utf8);
 my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_4499005.json')->slurp_utf8);
 
 my $params = {
@@ -71,7 +71,7 @@ FixMyStreet::override_config {
             url => 'http://example.org/',
         } },
         waste => { sutton => 1 },
-        echo => { sutton => { bulky_service_id => 413 }},
+        echo => { sutton => { bulky_service_id => 960 }},
         payment_gateway => { sutton => {
             cc_url => 'http://example.com',
             request_replace_cost => 500,
@@ -89,7 +89,7 @@ FixMyStreet::override_config {
         set_fixed_time('2022-09-10T12:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('2 Example Street, Sutton');
-        $mech->content_contains('Every Friday fortnightly');
+        $mech->content_contains('Friday every other week');
         $mech->content_contains('Friday, 2nd September');
         $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
     };
@@ -118,11 +118,11 @@ FixMyStreet::override_config {
     };
     subtest 'Request a new bin' => sub {
         $mech->follow_link_ok( { text => 'Request a bin, box, caddy or bags' } );
-		# 19 (1), 24 (1), 16 (1), 1 (1)
+		# 27 (1), 46 (1), 12 (1), 1 (1)
         # missing, new_build, more
         $mech->content_contains('The Council has continued to provide waste and recycling containers free for as long as possible', 'Intro text included');
         $mech->content_contains('You can request a larger container if you meet the following criteria', 'Divider intro text included for container sizes');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 27 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
@@ -145,8 +145,8 @@ FixMyStreet::override_config {
         is $report->title, 'Request replacement Paper and Cardboard Green Wheelie Bin (240L)';
         is $report->get_extra_field_value('payment'), 500, 'correct payment';
         is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
-        is $report->get_extra_field_value('Container_Type'), 19, 'correct bin type';
-        is $report->get_extra_field_value('Action'), 3, 'correct container request action';
+        is $report->get_extra_field_value('Container_Type'), 27, 'correct bin type';
+        is $report->get_extra_field_value('Action'), '3', 'correct container request action';
         is $report->state, 'unconfirmed', 'report not confirmed';
         is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
@@ -156,7 +156,7 @@ FixMyStreet::override_config {
     };
     subtest 'Request a larger bin than current' => sub {
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 2 }});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 3 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
 
@@ -174,14 +174,14 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->title, 'Request exchange for Larger Brown General Waste Wheelie Bin (240L)';
         is $report->get_extra_field_value('payment'), 1500, 'correct payment';
-        is $report->get_extra_field_value('Container_Type'), '1::2', 'correct bin type';
+        is $report->get_extra_field_value('Container_Type'), '1::3', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
         is $report->get_extra_field_value('Reason'), '3::3', 'correct container request reason';
     };
     subtest 'Request a paper bin when having a 140L' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $bin_140_data });
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 19 }});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 27 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
 
@@ -199,7 +199,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->title, 'Request exchange for Paper and Cardboard Green Wheelie Bin (240L)';
         is $report->get_extra_field_value('payment'), 1500, 'correct payment';
-        is $report->get_extra_field_value('Container_Type'), '36::19', 'correct bin type';
+        is $report->get_extra_field_value('Container_Type'), '26::27', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
         is $report->get_extra_field_value('Reason'), '3::3', 'correct container request reason';
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
@@ -207,7 +207,7 @@ FixMyStreet::override_config {
     subtest 'Report a new recycling raises a bin delivery request' => sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } });
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 12 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
@@ -225,7 +225,7 @@ FixMyStreet::override_config {
 		$mech->content_contains('Non-Recyclable Refuse');
 		$mech->content_lacks('Paper &amp; Card');
 
-        $mech->submit_form_ok({ with_fields => { 'service-2239' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'service-4389' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Thank you for reporting a missed collection');
@@ -241,13 +241,13 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
-            EventTypeId => 1635,
+            EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
                 {
                     ChildData => { ExtensibleDatum => [
                         { Value => 1, DatatypeName => 'Action' },
-                        { Value => 16, DatatypeName => 'Container Type' },
+                        { Value => 12, DatatypeName => 'Container Type' },
                     ] },
                 },
             ] },
@@ -256,17 +256,17 @@ FixMyStreet::override_config {
         $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) container request has been made');
         $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-choice" value="16"\s+disabled/s); # green
+        $mech->content_like(qr/name="container-choice" value="12"\s+disabled/s); # green
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
-            EventTypeId => 1635,
+            EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
                 {
                     ChildData => { ExtensibleDatum => [
                         { Value => 1, DatatypeName => 'Action' },
-                        { Value => 23, DatatypeName => 'Container Type' },
+                        { Value => 43, DatatypeName => 'Container Type' },
                     ] },
                 },
             ] },
@@ -274,28 +274,22 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A food waste container request has been made');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-choice" value="23"\s+disabled/s); # indoor
-        $mech->content_like(qr/name="container-choice" value="24"\s*>/s); # outdoor
+        $mech->content_like(qr/name="container-choice" value="43"\s+disabled/s); # indoor
+        $mech->content_like(qr/name="container-choice" value="46"\s*>/s); # outdoor
 
         $e->mock('GetEventsForObject', sub { [ {
-            EventTypeId => 1566,
+            EventTypeId => 3145,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
-            ServiceId => 408,
-            Data => { ExtensibleDatum => [
-                { Value => 1, DatatypeName => 'Container Mix' },
-            ] },
+            ServiceId => 944,
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection has been reported as missed');
         $mech->content_lacks('Request a mixed recycling (cans, plastics &amp; glass) container');
 
         $e->mock('GetEventsForObject', sub { [ {
-            EventTypeId => 1566,
+            EventTypeId => 3145,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
-            ServiceId => 408,
-            Data => { ExtensibleDatum => {
-                Value => 1, DatatypeName => 'Paper'
-            } },
+            ServiceId => 948,
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A paper &amp; card collection has been reported as missed');
@@ -305,15 +299,12 @@ FixMyStreet::override_config {
     subtest 'No reporting if open request on service unit' => sub {
         $e->mock('GetEventsForObject', sub {
             my ($self, $type, $id) = @_;
-            return [] if $type eq 'PointAddress' || $id == 1002;
-            is $id, 1001; # recycling service unit
+            return [] if $type eq 'PointAddress' || $id == 1004;
+            like $id, qr/^100[1-3]$/; # recycling service unit
             return [ {
-                EventTypeId => 1566,
+                EventTypeId => 3145,
                 EventDate => { DateTime => "2022-09-10T17:00:00Z" },
-                ServiceId => 408,
-                Data => { ExtensibleDatum => [
-                    { Value => 1, DatatypeName => 'Container Mix' },
-                ] },
+                ServiceId => 944,
             } ]
         });
         $mech->get_ok('/waste/12345');
@@ -326,7 +317,7 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
-            EventTypeId => 1635,
+            EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
                 {
@@ -342,13 +333,13 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
-            EventTypeId => 1635,
+            EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
                 {
                     ChildData => { ExtensibleDatum => [
                         { Value => 1, DatatypeName => 'Action' },
-                        { Value => 2, DatatypeName => 'Container Type' },
+                        { Value => 3, DatatypeName => 'Container Type' },
                     ] },
                 },
             ] },
@@ -367,7 +358,7 @@ FixMyStreet::override_config {
     };
     subtest 'Fortnightly collection can request a blue stripe bag' => sub {
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 18 }});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 22 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
