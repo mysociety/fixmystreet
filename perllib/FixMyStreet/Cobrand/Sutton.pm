@@ -309,37 +309,50 @@ sub waste_munge_request_data {
     my $reason = $data->{request_reason} || '';
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 
+    my $service_id;
+    my $services = $c->stash->{services};
+    foreach my $s (keys %$services) {
+        my $containers = $services->{$s}{request_containers};
+        foreach (@$containers) {
+            $service_id = $s if $_ eq $id;
+        }
+    }
+    $c->set_param('service_id', $service_id);
+
     my ($action_id, $reason_id);
     if ($reason eq 'damaged') {
-        $action_id = 3; # Replace
-        $reason_id = 2; # Damaged
+        $action_id = '2::1'; # Remove/Deliver
+        $reason_id = '4::4'; # Damaged
     } elsif ($reason eq 'missing') {
         $action_id = 1; # Deliver
         $reason_id = 1; # Missing
     } elsif ($reason eq 'new_build') {
         $action_id = 1; # Deliver
-        $reason_id = 4; # New
+        $reason_id = 6; # New Property
     } elsif ($reason eq 'more') {
         $action_id = 1; # Deliver
-        $reason_id = 3; # Change capacity
+        $reason_id = 9; # Increase capacity
     } elsif ($reason eq 'change_capacity') {
-        $action_id = '2::1';
-        $reason_id = '3::3';
+        $action_id = '2::1'; # Remove/Deliver
         if ($id == $CONTAINERS{refuse_140}) {
+            $reason_id = '10::10'; # Reduce Capacity
             $id = $CONTAINERS{refuse_240} . '::' . $CONTAINERS{refuse_140};
         } elsif ($id == $CONTAINERS{refuse_240}) {
-            if ($c->stash->{quantities}{+$CONTAINERS{refuse_360}}) {
+            if ($c->stash->{quantities}{$CONTAINERS{refuse_360}}) {
+                $reason_id = '10::10'; # Reduce Capacity
                 $id = $CONTAINERS{refuse_360} . '::' . $CONTAINERS{refuse_240};
             } else {
+                $reason_id = '9::9'; # Increase Capacity
                 $id = $CONTAINERS{refuse_140} . '::' . $CONTAINERS{refuse_240};
             }
         } elsif ($id == $CONTAINERS{paper_240}) {
+            $reason_id = '9::9'; # Increase Capacity
             $id = $CONTAINERS{paper_140} . '::' . $CONTAINERS{paper_240};
         }
     } else {
         # No reason, must be a bag
         $action_id = 1; # Deliver
-        $reason_id = 3; # Change capacity
+        $reason_id = 9; # Increase capacity
         $nice_reason = "Additional bag required";
     }
 
