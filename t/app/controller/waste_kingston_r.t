@@ -1,4 +1,3 @@
-use Test::More skip_all => 'core not yet done';
 use JSON::MaybeXS;
 use Path::Tiny;
 use Storable qw(dclone);
@@ -93,7 +92,7 @@ FixMyStreet::override_config {
         set_fixed_time('2022-09-10T12:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('2 Example Street, Kingston');
-        $mech->content_contains('Friday every other week');
+        $mech->content_contains('Every Friday fortnightly');
         $mech->content_contains('Friday, 2nd September');
         $mech->content_contains('Report a mixed recycling collection as missed');
     };
@@ -359,7 +358,7 @@ FixMyStreet::override_config {
 		$mech->content_contains('Non-recyclable Refuse');
 		$mech->content_lacks('Paper and card');
 
-        $mech->submit_form_ok({ with_fields => { 'service-4389' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'service-980' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Thank you for reporting a missed collection');
