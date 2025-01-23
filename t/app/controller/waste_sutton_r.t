@@ -145,7 +145,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('payment'), 500, 'correct payment';
         is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $report->get_extra_field_value('Container_Type'), 27, 'correct bin type';
-        is $report->get_extra_field_value('Action'), '3', 'correct container request action';
+        is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
         is $report->state, 'unconfirmed', 'report not confirmed';
         is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
@@ -175,7 +175,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('payment'), 1500, 'correct payment';
         is $report->get_extra_field_value('Container_Type'), '1::3', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
-        is $report->get_extra_field_value('Reason'), '3::3', 'correct container request reason';
+        is $report->get_extra_field_value('Reason'), '9::9', 'correct container request reason';
     };
     subtest 'Request a paper bin when having a 140L' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $bin_140_data });
@@ -200,7 +200,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('payment'), 1500, 'correct payment';
         is $report->get_extra_field_value('Container_Type'), '26::27', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
-        is $report->get_extra_field_value('Reason'), '3::3', 'correct container request reason';
+        is $report->get_extra_field_value('Reason'), '9::9', 'correct container request reason';
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
     subtest 'Report a new recycling raises a bin delivery request' => sub {
