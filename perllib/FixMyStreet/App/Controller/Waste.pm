@@ -36,7 +36,7 @@ has index_template => (
 my %GARDEN_IDS = (
     merton => { bin240 => 26, bin140 => 27, sack => 28 },
     kingston => { bin240 => 26, bin140 => 27, sack => 28 },
-    sutton => { bin240 => 26, bin140 => 27, sack => 28 },
+    sutton => { bin240 => 39, bin140 => 37, sack => 36 },
 );
 lock_hash(%GARDEN_IDS);
 
