@@ -1391,7 +1391,7 @@ sub process_garden_cancellation : Private {
 
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
-    $c->set_param($end_date_field, $now->ymd);
+    $c->set_param($end_date_field, $now->dmy('/'));
 
     my $service = $c->cobrand->garden_current_subscription;
     if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin240} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin140}) {
