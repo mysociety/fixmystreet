@@ -8,6 +8,7 @@ step1 = first_page;
 [% BLOCK answers %]
   [% FOR container IN data.keys.grep('^container-') %]
     [% NEXT UNLESS data.$container %]
+    [% NEXT IF container == 'container-capacity-change' # Kingston %]
     [% IF container == 'container-choice' %]
         [% SET container_id = data.item('container-choice') %]
     [% ELSE %]
@@ -22,7 +23,7 @@ step1 = first_page;
         <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_reason', data.request_reason) %]</dd>
       [% ELSE %]
         <dd class="govuk-summary-list__value">
-            [% data.$quantity_key %] to deliver
+            [% IF data.$quantity_key %][% data.$quantity_key %] to deliver[% END %]
             [%~ ', ' IF data.$quantity_key AND data.$removal_key %]
             [% IF data.$removal_key %][% data.$removal_key %] to remove[% END %]
         </dd>
