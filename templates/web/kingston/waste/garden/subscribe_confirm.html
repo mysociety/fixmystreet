@@ -34,9 +34,9 @@ You have signed up for the garden waste collection at [% ADDRESS %].
 </p>
 -->
 
-[% SET container = report.get_extra_field_value('Subscription_Details_Containers') %]
+[% SET container = report.get_extra_field_value('Paid_Container_Type') %]
 [% SET new_bins = report.get_extra_field_value('new_containers') %]
-[% IF container == 28 %]
+[% IF container == 4 %]
     [% SET container_str = 'sacks' %]
 [% ELSE %]
     [% SET container_str = nget('bin', 'bins', new_bins) %]

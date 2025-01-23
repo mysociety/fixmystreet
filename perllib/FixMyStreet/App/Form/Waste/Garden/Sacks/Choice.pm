@@ -3,6 +3,7 @@ package FixMyStreet::App::Form::Waste::Garden::Sacks::Choice;
 use utf8;
 use HTML::FormHandler::Moose::Role;
 
+# Used by Merton only, below, to default the container choice
 use constant CONTAINER_GARDEN_BIN => 26;
 use constant CONTAINER_GARDEN_BIN_140 => 27;
 use constant CONTAINER_GARDEN_SACK => 28;
