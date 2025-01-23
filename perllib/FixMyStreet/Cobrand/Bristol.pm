@@ -155,7 +155,7 @@ sub dashboard_export_problems_add_columns {
 
 =head2 open311_config
 
-Bristol's endpoint requires an email address, so flag to always send one (with
+Bristol's original endpoint requires an email address, so flag to always send one (with
 a fallback if one not provided).
 
 =cut
@@ -165,6 +165,8 @@ sub open311_config {
 
     $params->{always_send_email} = 1;
     $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
+    $params->{upload_files_for_updates} = 1;
 }
 
 sub open311_config_updates {
