@@ -171,6 +171,20 @@ END
 </ul>
 [% END %]
 
+[% IF (c.cobrand.moniker == 'sutton') AND problem.get_extra_field_value('Paid_Container_Type') %]
+<h2>Subscription information</h2>
+<ul>
+[% INCLUDE show_fields fields=[
+    [ 'Subscription container', 'Paid_Container_Type' ],
+    [ 'Subscription quantity', 'Paid_Container_Quantity' ],
+    [ 'Delivery container', 'Container_Type' ],
+    [ 'Delivery quantity', 'Quantity' ],
+    [ 'Current containers', 'current_containers' ],
+    [' New containers', 'new_containers' ],
+] %]
+</ul>
+[% END %]
+
 [% IF c.cobrand.moniker == 'brent' %]
     [% IF problem.get_extra_field_value('Container_Request_Container_Type') %]
         <h2>Request information</h2>
