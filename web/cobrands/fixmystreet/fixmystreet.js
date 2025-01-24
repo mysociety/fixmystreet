@@ -1869,7 +1869,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
 
     fixmystreet.fetch_reporting_data();
 
-    if (!$('#side-form-error').is(':visible')) {
+    if (!$('#side-form-error').is(':visible') && !$('#side-form').is(':visible')) {
         $('#side-form').show();
         $('#map_sidebar').scrollTop(0);
     }
