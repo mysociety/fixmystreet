@@ -1,18 +1,25 @@
+[% IF message == 'invalid id_token' ~%]
+[% title = BLOCK %][% TRY %][% PROCESS 'errors/_sso_title.html' %][% CATCH file %]Login[% END %][% END ~%]
+[% END %]
 [% DEFAULT title = loc('Error') %]
 [% DEFAULT header_class = 'failure' %]
-[% INCLUDE 'header.html', title = title %]
+[% INCLUDE 'header.html' %]
 
 [% IF csrf_token ~%]
 <input type="hidden" name="token" value="[% csrf_token %]">
 [% END ~%]
 
-<div class="confirmation-header confirmation-header--[% header_class %]">
-    <h1>[% title %]</h1>
-    <p>[% message | safe %]</p>
-    [% IF error_id %]
-        <small>[% tprintf(loc('Code: %s'), error_id) %]</small>
-    [% END %]
-</div>
+[% IF message == 'invalid id_token' %]
+    [% PROCESS 'errors/sso.html' %]
+[% ELSE %]
+    <div class="confirmation-header confirmation-header--[% header_class %]">
+        <h1>[% title %]</h1>
+        <p>[% message | safe %]</p>
+        [% IF error_id %]
+            <small>[% tprintf(loc('Code: %s'), error_id) %]</small>
+        [% END %]
+    </div>
+[% END %]
 
 [% INCLUDE 'footer.html' %]
 

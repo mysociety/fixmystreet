@@ -1,0 +1,21 @@
+[%
+# Very occasionally the user will run into this error when logging in, either because
+# the redirects from B2C aren't working correctly, or the user's browser doesn't have
+# a cookie set, or their session doesn't have the relevant oauth values stored.
+# The exact cause is currently unknown and hard to pin down due to the transient
+# nature of the bug.
+# Because the login invariably works the next time the user tries, this workaround
+# just presents the OIDC login button again (labelled as a 'continue' button...) and
+# will thus allow them to login successfully. In theory.
+%]
+<div>
+    <h1>[% title %]</h1>
+    <form action="/auth" method="post" name="general_auth" class="validate">
+        <input type="hidden" name="r" value="[% c.req.params.r | html %]">
+        <div class="form-box">
+            <button name="social_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
+                Click here to continue...
+            </button>
+            </div>
+    </form>
+</div>
