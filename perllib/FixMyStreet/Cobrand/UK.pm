@@ -466,6 +466,7 @@ sub _updates_disallowed_check {
     my $staff = $body_user || $superuser;
     my $reporter = $c->user_exists && $c->user->id == $problem->user->id;
     my $open = !($problem->is_fixed || $problem->is_closed);
+    my $in_progress = $problem->is_in_progress;
     my $body_comment_user = $self->body && $self->body->comment_user_id && $problem->user_id == $self->body->comment_user_id;
 
     if ($cfg eq 'none') {
@@ -475,6 +476,8 @@ sub _updates_disallowed_check {
         return $cfg unless $staff;
     } elsif ($cfg eq 'open') {
         return $cfg unless $open;
+    } elsif ($cfg eq 'open-not-in-progress') {
+        return $cfg unless $open && !$in_progress;
     } elsif ($cfg eq 'reporter') {
         return $cfg unless $reporter;
     } elsif ($cfg eq 'reporter-open') {
