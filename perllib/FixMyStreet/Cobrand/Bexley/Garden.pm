@@ -14,8 +14,11 @@ with 'FixMyStreet::Roles::Cobrand::SCP',
 
 has agile => (
     is => 'lazy',
-# TODO url to config
-    default => sub { Integrations::Agile->new( url => 'https://integration.stg.agileapplications.co.uk/api/bexley/gardenwaste/external/request' ) },
+    default => sub {
+        my $self = shift;
+        my $cfg = $self->feature('agile');
+        return Integrations::Agile->new(%$cfg);
+    },
 );
 
 sub garden_service_name { 'garden waste collection service' }
