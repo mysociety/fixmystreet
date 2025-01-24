@@ -4,42 +4,30 @@ use Moo;
 use FixMyStreet::DB;
 use FixMyStreet::Queue::Item::Report;
 use FixMyStreet::SendReport::Open311;
+use FixMyStreet::Script::Waste::CheckPayments;
 use Open311;
 use Integrations::Echo;
 
-has body => (
+has cobrand => (
     is => 'ro',
-    default => sub { FixMyStreet::DB->resultset('Body')->find( { name => 'Merton Council' } ) or die $! }
+    default => sub { FixMyStreet::Cobrand::Merton->new }
+);
+
+has body => (
+    is => 'lazy',
+    default => sub { $_[0]->cobrand->body or die $! }
 );
 
 sub echo_available {
     my $self = shift;
-    my $cobrand = FixMyStreet::Cobrand::Merton->new;
-    my $result = $cobrand->waste_check_downtime_file;
-    return 0 if $result->{state} eq 'down';
-    return 1;
+    my $result = $self->cobrand->waste_check_downtime_file;
+    return $result->{state} ne 'down';
 }
 
 sub check_payments {
-    my ($self) = @_;
-    my $problems = FixMyStreet::DB->resultset('Problem')->to_body($self->body->id)->search({
-        -or => [
-            { state => 'unconfirmed', category => 'Garden Subscription' },
-            { state => 'confirmed', category => 'Bulky collection' },
-        ],
-        -not => { extra => { '\?' => 'payment_reference' } },
-        created => [ -and => { '<', \"current_timestamp - '15 minutes'::interval" }, { '>=', \"current_timestamp - '1 hour'::interval" } ],
-    });
-    while (my $row = $problems->next) {
-        my $cobrand = $row->get_cobrand_logged;
-        $cobrand->set_lang_and_domain($row->lang, 1);
-        FixMyStreet::Map::set_map_class($cobrand);
-        my $query_id = $row->get_extra_metadata('scpReference') or next; # Problem fetching unique ID from payment provider
-        my ($error, $reference) = $cobrand->cc_check_payment_and_update($query_id, $row);
-        if ($reference) {
-            $row->waste_confirm_payment($reference);
-        }
-    }
+    my $self = shift;
+    my $check = FixMyStreet::Script::Waste::CheckPayments->new(cobrand => $self->cobrand);
+    $check->check_payments;
 }
 
 sub send_reports {

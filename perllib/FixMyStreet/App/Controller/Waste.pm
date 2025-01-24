@@ -284,7 +284,7 @@ sub pay_complete : Path('pay_complete') : Args(2) {
     $c->forward('check_payment_redirect_id', [ $id, $token ]);
     my $p = $c->stash->{report};
 
-    my $ref = $c->cobrand->garden_cc_check_payment_status($c, $p);
+    my $ref = $c->cobrand->waste_cc_check_payment_status($c, $p);
 
     if ( $ref ) {
         $c->stash->{title} = 'Payment successful';

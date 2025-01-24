@@ -117,7 +117,7 @@ around waste_cc_get_redirect_url => sub {
     return $self->$orig($c, $back);
 };
 
-around garden_cc_check_payment_status => sub {
+around waste_cc_check_payment_status => sub {
     my ($orig, $self, $c, $p) = @_;
 
     if (my $apn = $p->get_extra_metadata('apnReference')) {
