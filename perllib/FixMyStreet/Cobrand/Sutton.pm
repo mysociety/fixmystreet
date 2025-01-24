@@ -445,6 +445,14 @@ Sutton starts collections at 6am, and lets you cancel up until 6am.
 
 =cut
 
+sub bulky_allowed_property {
+    my ( $self, $property ) = @_;
+    my $cfg = $self->feature('echo');
+    my $type = $property->{type_id} || 0;
+    my $valid_type = grep { $_ == $type } @{ $cfg->{bulky_address_types} || [] };
+    return $self->bulky_enabled && $property->{has_bulky_service} && $valid_type;
+}
+
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0, days_before => 0 } }
 

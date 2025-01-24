@@ -484,6 +484,18 @@ Kingston starts collections at 6:30am, and lets you cancel up until then.
 
 =cut
 
+sub bulky_allowed_property {
+    my ( $self, $property ) = @_;
+
+    return if $property->{has_no_services};
+    my $cfg = $self->feature('echo');
+
+    my $type = $property->{type_id} || 0;
+    my $valid_type = grep { $_ == $type } @{ $cfg->{bulky_address_types} || [] };
+    my $domestic_farm = $type != 7 || $property->{domestic_refuse_bin};
+    return $self->bulky_enabled && $valid_type && $domestic_farm;
+}
+
 sub bulky_collection_time { { hours => 6, minutes => 30 } }
 sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 30, days_before => 0 } }
 

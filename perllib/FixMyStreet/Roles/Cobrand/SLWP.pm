@@ -637,18 +637,6 @@ sub bulky_show_location_field_mandatory { 1 }
 
 sub bulky_can_refund { 0 }
 
-sub bulky_allowed_property {
-    my ( $self, $property ) = @_;
-
-    return if $property->{has_no_services};
-    my $cfg = $self->feature('echo');
-
-    my $type = $property->{type_id} || 0;
-    my $valid_type = grep { $_ == $type } @{ $cfg->{bulky_address_types} || [] };
-    my $domestic_farm = $type != 7 || $property->{domestic_refuse_bin};
-    return $self->bulky_enabled && $valid_type && $domestic_farm;
-}
-
 sub collection_date {
     my ($self, $p) = @_;
     return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
