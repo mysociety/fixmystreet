@@ -1,7 +1,7 @@
 FROM debian:bullseye
 ARG DEBIAN_FRONTEND=noninteractive
 # git used by script/bootstrap to update submodules, perl just needed, postgresql for test running
-RUN apt-get -qq update && apt-get -qq -y install git perl postgresql
+RUN apt-get -qq update && apt-get -qq -y install git perl postgresql curl procps
 COPY conf/packages.docker /opt/
 RUN xargs -a "/opt/packages.docker" apt-get -qq -y install >/dev/null
 WORKDIR /var/www/fixmystreet

@@ -1,23 +1,12 @@
 services:
-  setup:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile-development
-    command: docker/setup
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ../:/var/www/fixmystreet
-      - fixmystreet-local:/var/www/fixmystreet/local
   css_watcher:
     build:
       context: ..
       dockerfile: docker/Dockerfile-development
     command: bin/make_css --watch
     depends_on:
-      setup:
-        condition: service_completed_successfully
+      fixmystreet:
+        condition: service_healthy
     volumes:
       - ../:/var/www/fixmystreet
       - fixmystreet-local:/var/www/fixmystreet/local
@@ -25,13 +14,13 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile-development
-    command: script/server ${SERVER_ARGUMENTS}
+    command: docker/entrypoint.sh
     tty: true
     ports:
       - 3000:3000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
-      setup:
-        condition: service_completed_successfully
       db:
         condition: service_healthy
       memcached:
@@ -46,6 +35,12 @@ services:
       default:
         aliases:
           - fixmystreet.svc
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+      start_period: 300s # Allow time for packages to install
   db:
     build:
       context: ..

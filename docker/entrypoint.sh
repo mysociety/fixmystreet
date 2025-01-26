@@ -20,3 +20,5 @@ fi
 
 script/update --development
 bin/update-all-reports
+
+script/server ${SERVER_ARGUMENTS}
