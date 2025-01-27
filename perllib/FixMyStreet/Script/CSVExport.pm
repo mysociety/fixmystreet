@@ -56,7 +56,7 @@ my $EXTRAS = {
     assigned_to => { northumberland => 1, tfl => 1 },
     staff_user => { bathnes => 1, bromley => 1, buckinghamshire => 1, northumberland => 1, peterborough => 1 },
     staff_roles => { brent => 1, bromley => 1, northumberland => 1, oxfordshire => 1 },
-    user_details => { bathnes => 1, bexley => 1, brent => 1, camden => 1, cyclinguk => 1, highwaysengland => 1, kingston => 1, sutton => 1 },
+    user_details => { bathnes => 1, bexley => 1, brent => 1, camden => 1, cyclinguk => 1, highwaysengland => 1, kingston => 1, southwark => 1, sutton => 1 },
     comment_content => { highwaysengland => 1 },
     db_state => { peterborough => 1 },
     alerts_count => { surrey => 1 },
