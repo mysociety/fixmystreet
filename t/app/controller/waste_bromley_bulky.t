@@ -1,3 +1,4 @@
+use utf8;
 use Test::MockModule;
 use Test::MockTime 'set_fixed_time';
 use FixMyStreet::TestMech;
@@ -705,7 +706,11 @@ FixMyStreet::override_config {
             created => "2023-10-01T08:00:00Z",
             cobrand => "bromley",
         });
-        $p->set_extra_fields({ name => 'uprn', value => 'UPRN' });
+        $p->set_extra_fields(
+            { name => 'uprn', value => 'UPRN' },
+            { name => 'payment_method', value => 'credit_card' },
+            { name => 'payment', value => '3000' },
+        );
         $p->set_extra_metadata('payment_reference', 'test');
         $p->set_extra_metadata('scpReference', 'unpaid');
         $p->update;
@@ -741,9 +746,9 @@ FixMyStreet::override_config {
         is $p->get_extra_metadata('continuousAuditNumber'), 123;
         is $p->get_extra_metadata('authCode'), 112233;
         is $p->get_extra_metadata('payment_reference'), 54321;
-        is $p->get_extra_field_value('LastPayMethod'), $cobrand->bin_payment_types->{'csc'};
+        is $p->get_extra_field_value('LastPayMethod'), $cobrand->bin_payment_types->{'credit_card'};
         is $p->get_extra_field_value('PaymentCode'), 54321;
-        is $p->comments->first->text, "Payment confirmed, reference 54321";
+        is $p->comments->first->text, "Payment confirmed, reference 54321, amount £30.00";
         is $p->get_extra_field_value('uprn'), 'UPRN';
 
         # No payment non-staff and check confirms unpaid - cancelled.

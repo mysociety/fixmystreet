@@ -1252,7 +1252,7 @@ sub cancel_bulky_collections_without_payment {
         if ($scp_reference) {
 
             # Double check whether the payment was made.
-            my ($error, $auth_code, $can, $tx_id) = $self->cc_check_payment_status($scp_reference);
+            my ($error, $reference) = $self->cc_check_payment_and_update($scp_reference, $report);
             if (!$error) {
                 if ($params->{verbose}) {
                     printf(
@@ -1260,22 +1260,11 @@ sub cancel_bulky_collections_without_payment {
                         ' Updating with payment information and not cancelling.',
                         $report->external_id,
                         $report->id,
-                        $tx_id,
+                        $reference,
                     );
                 }
                 if ($params->{commit}) {
-                    $report->update_extra_metadata(
-                        authCode => $auth_code,
-                        continuousAuditNumber => $can,
-                        payment_reference => $tx_id,
-                    );
-                    $report->update_extra_field({ name => 'LastPayMethod', value => $self->bin_payment_types->{'csc'} });
-                    $report->update_extra_field({ name => 'PaymentCode', value => $tx_id });
-                    $report->update;
-                    $report->add_to_comments({
-                        text => "Payment confirmed, reference $tx_id",
-                        user => $report->user,
-                    });
+                    $report->waste_confirm_payment($reference);
                 }
                 next;
             }
