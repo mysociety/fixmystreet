@@ -690,7 +690,7 @@ function update_floating_button_messaging(layer, messaging) {
         if (obj.length) {
             obj.replaceWith($div);
         } else {
-            if ($('html').hasClass('mobile')) {
+            if ($('html').hasClass('mobile') && !layer.fixmystreet.asset_message_immediate) {
                 $div.appendTo('#map_box');
             } else {
                 $div.appendTo('.js-reporting-page--active .pre-button-messaging');
