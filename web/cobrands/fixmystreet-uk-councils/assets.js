@@ -153,7 +153,6 @@ fixmystreet.assets.banes.curo_found = function(layer) {
     }
 
     fixmystreet.message_controller.road_not_found(layer);
-    $('#js-roads-responsibility > strong').hide();
 
     var domain = 'curo-group.co.uk';
     var email = 'estates@' + domain;
@@ -163,7 +162,6 @@ fixmystreet.assets.banes.curo_found = function(layer) {
     }
 };
 fixmystreet.assets.banes.curo_not_found = function(layer) {
-    $('#js-roads-responsibility > strong').show();
     fixmystreet.message_controller.road_found(layer);
 };
 
@@ -305,16 +303,23 @@ fixmystreet.assets.bromley.unset_asset_owner = function() {
 };
 
 fixmystreet.assets.bromley.remove_park_message = function(layer) {
-    $('.js-bromley-park-message').remove();
+    var id = 'js-responsibility-message-' + layer.id;
+    $('#' + id).remove();
 };
 
 fixmystreet.assets.bromley.add_park_message = function(layer) {
-    var $msg = $('<div class="box-warning js-bromley-park-message"></div>');
-    $msg.html(layer.fixmystreet.no_asset_message);
-    if ($('.js-bromley-park-message').length) {
-        $('.js-bromley-park-message').replaceWith($msg);
+    var id = 'js-responsibility-message-' + layer.id;
+    var message = layer.fixmystreet.no_asset_message;
+    var obj = $('#' + id);
+    if (!layer.getVisibility()) {
+        obj.remove();
+        return;
+    }
+    var $div = $('<div id="' + id + '" class="js-floating-button-message"></div>').html(message);
+    if (obj.length) {
+        obj.replaceWith($div);
     } else {
-        $msg.appendTo('.js-reporting-page--active .js-post-category-messages');
+        $div.appendTo('.js-reporting-page--active .pre-button-messaging');
     }
 };
 
@@ -650,42 +655,36 @@ function cb_should_not_require_road() {
             (!selected.group && !selected.category);
 }
 
-function cb_show_non_stopper_message() {
+function cb_show_non_stopper_message(layer) {
     // For reports about trees on private roads, Central Beds want the
     // "not our road" message to be shown and also for the report to be
     // able to be made.
     // The existing stopper message code doesn't allow for this situation, so
     // this function is used to show a custom DOM element that contains the
     // message.
-    if ($('html').hasClass('mobile')) {
-        var msg = $("#js-custom-not-council-road").html();
-        $div = $('<div class="js-mobile-not-an-asset"></div>').html(msg);
-        $div.appendTo('#map_box');
-    } else {
-        $("#js-custom-roads-responsibility").removeClass("hidden");
-    }
+    var msg = $("#js-not-council-road").html();
+    layer.map_messaging.asset = msg;
 }
 
-function cb_hide_non_stopper_message() {
-    $('.js-mobile-not-an-asset').remove();
-    $("#js-custom-roads-responsibility").addClass("hidden");
+function cb_hide_non_stopper_message(layer) {
+    delete layer.map_messaging.asset;
 }
 
 fixmystreet.assets.centralbedfordshire.found = function(layer, feature) {
     fixmystreet.message_controller.road_found(layer, feature, function(feature) {
-        cb_hide_non_stopper_message();
+        cb_hide_non_stopper_message(layer);
         if (OpenLayers.Util.indexOf(centralbeds_types, feature.attributes.adoption) != -1) {
             return true;
         }
         if (cb_should_not_require_road()) {
-            cb_show_non_stopper_message();
+            cb_show_non_stopper_message(layer);
             return true;
         }
         return false;
     }, "#js-not-council-road");
 };
 fixmystreet.assets.centralbedfordshire.not_found = function(layer) {
-    cb_hide_non_stopper_message();
+    cb_hide_non_stopper_message(layer);
     if (cb_should_not_require_road()) {
         fixmystreet.message_controller.road_found(layer);
     } else {
