@@ -6,6 +6,8 @@ FixMyStreet::Cobrand::Bexley::Garden - code specific to Bexley WasteWorks GGW
 
 package FixMyStreet::Cobrand::Bexley::Garden;
 
+use DateTime::Format::Strptime;
+
 use Integrations::Agile;
 
 use Moo::Role;
@@ -14,8 +16,11 @@ with 'FixMyStreet::Roles::Cobrand::SCP',
 
 has agile => (
     is => 'lazy',
-# TODO url to config
-    default => sub { Integrations::Agile->new( url => 'https://integration.stg.agileapplications.co.uk/api/bexley/gardenwaste/external/request' ) },
+    default => sub {
+        my $self = shift;
+        my $cfg = $self->feature('agile');
+        return Integrations::Agile->new(%$cfg);
+    },
 );
 
 sub garden_service_name { 'garden waste collection service' }
@@ -30,14 +35,27 @@ sub garden_current_subscription {
     my $uprn = $self->{c}->stash->{property}{uprn};
     return undef unless $uprn;
 
-    my $is_free = $self->agile->IsAddressFree($uprn);
-    return undef if $is_free->{IsFree} eq 'True';
+    my $results = $self->agile->CustomerSearch($uprn);
+    ::Dwarn($results);
+    return undef unless $results && $results->{Customers};
+    my $customer = $results->{Customers}[0];
+    return undef unless $customer && $customer->{ServiceContracts};
+    my $contract = $results->{ServiceContracts}[0];
+    return unless $contract;
 
     # Agile says there is a subscription; now get service data from
     # Whitespace
     my $services = $self->{c}->stash->{services};
-    map { my $srv = $services->{$_}; return $srv if $srv }
-        @{ $self->garden_service_ids };
+    for my $id (@{ $self->garden_service_ids }) {
+        ::Dwarn($id);
+        if (my $srv = $services->{$id}) {
+            ::Dwarn($srv);
+            $srv->{garden_bins} = $contract->{WasteContainerQuantity};
+            $srv->{end_date} = DateTime::Format::Strptime->new(pattern => '%d/%m/%Y %H:%M')->parse_datetime($contract->{EndDate});
+            ::Dwarn($srv);
+            return $srv;
+        }
+    }
 
     return { agile_only => 1 };
 }

@@ -381,6 +381,7 @@ sub bin_services_for_address {
             },
             assisted_collection => $assisted_collection,
             uprn => $uprn,
+            garden_waste => $container->{description} eq 'Garden waste' ? 1 : 0,
         };
 
         if ($last_dt) {
@@ -398,7 +399,7 @@ sub bin_services_for_address {
         $property->{above_shop} = 1
             if $filtered_service->{service_id} eq 'MDR-SACK';
         $property->{has_garden_subscription} = 1
-            if $filtered_service->{service_description} eq 'Garden waste';
+            if $filtered_service->{garden_waste};
 
         # Frequency of collection
         if ( @round_schedules > 1 ) {
