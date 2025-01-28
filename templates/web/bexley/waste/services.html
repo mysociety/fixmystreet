@@ -24,3 +24,7 @@
 [% END %]
 
 [% PROCESS 'waste/_services_request.html' %]
+
+[% IF unit.garden_waste %]
+  [% PROCESS 'waste/_services_garden_current.html' %]
+[% END %]
