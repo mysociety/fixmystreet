@@ -153,7 +153,6 @@ fixmystreet.assets.banes.curo_found = function(layer) {
     }
 
     fixmystreet.message_controller.road_not_found(layer);
-    $('#js-roads-responsibility > strong').hide();
 
     var domain = 'curo-group.co.uk';
     var email = 'estates@' + domain;
@@ -163,7 +162,6 @@ fixmystreet.assets.banes.curo_found = function(layer) {
     }
 };
 fixmystreet.assets.banes.curo_not_found = function(layer) {
-    $('#js-roads-responsibility > strong').show();
     fixmystreet.message_controller.road_found(layer);
 };
 
