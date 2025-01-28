@@ -359,6 +359,7 @@ FixMyStreet::override_config {
                     date => ignore(),
                 },
                 uprn => ignore(),
+                garden_waste => 0,
             );
             cmp_deeply \@sorted, [
                 {   id             => 8,
