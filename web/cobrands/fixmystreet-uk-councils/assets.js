@@ -305,16 +305,23 @@ fixmystreet.assets.bromley.unset_asset_owner = function() {
 };
 
 fixmystreet.assets.bromley.remove_park_message = function(layer) {
-    $('.js-bromley-park-message').remove();
+    var id = 'js-responsibility-message-' + layer.id;
+    $('#' + id).remove();
 };
 
 fixmystreet.assets.bromley.add_park_message = function(layer) {
-    var $msg = $('<div class="box-warning js-bromley-park-message"></div>');
-    $msg.html(layer.fixmystreet.no_asset_message);
-    if ($('.js-bromley-park-message').length) {
-        $('.js-bromley-park-message').replaceWith($msg);
+    var id = 'js-responsibility-message-' + layer.id;
+    var message = layer.fixmystreet.no_asset_message;
+    var obj = $('#' + id);
+    if (!layer.getVisibility()) {
+        obj.remove();
+        return;
+    }
+    var $div = $('<div id="' + id + '" class="js-floating-button-message"></div>').html(message);
+    if (obj.length) {
+        obj.replaceWith($div);
     } else {
-        $msg.appendTo('.js-reporting-page--active .js-post-category-messages');
+        $div.appendTo('.js-reporting-page--active .pre-button-messaging');
     }
 };
 
