@@ -65,4 +65,14 @@ sub IsAddressFree {
     );
 }
 
+sub CustomerSearch {
+    my ( $self, $uprn ) = @_;
+
+    return $self->call(
+        action     => 'search',
+        controller => 'customer',
+        data       => { ServiceContractUPRN => $uprn },
+    );
+}
+
 1;
