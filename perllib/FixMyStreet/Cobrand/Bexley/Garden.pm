@@ -33,7 +33,7 @@ sub garden_service_ids {
 }
 
 sub garden_current_subscription {
-    my $self = shift;
+    my ($self, $services) = @_;
 
     my $current = $self->{c}->stash->{property}{garden_current_subscription};
     return $current if $current;
@@ -59,12 +59,14 @@ sub garden_current_subscription {
 
     # Agile says there is a subscription; now get service data from
     # Whitespace
-    my $services = $self->{c}->stash->{services};
+    # XXX For performance, should we only query Agile if there's a matching Whitespace service?
+    my $service_ids = { map { $_->{service_id} => $_ } @$services };
     for ( @{ $self->garden_service_ids } ) {
-        if ( my $srv = $services->{$_} ) {
+        if ( my $srv = $service_ids->{$_} ) {
             $srv->{customer_external_ref}
                 = $customer->{CustomerExternalReference};
             $srv->{end_date} = $end_date;
+            $srv->{garden_bins} = $contract->{WasteContainerQuantity};
             return $srv;
         }
     }
