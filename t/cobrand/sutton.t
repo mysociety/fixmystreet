@@ -16,6 +16,7 @@ FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 # Create test data
+my $date = DateTime->now->subtract(days => 1)->strftime('%Y-%m-%dT%H:%M:%SZ');
 my $user = $mech->create_user_ok( 'sutton@example.com', name => 'Sutton Council' );
 my $normal_user = $mech->create_user_ok( 'user@example.com', name => 'Norma Normal' );
 my $body = $mech->create_body_ok( 2498, 'Sutton Council', {
@@ -167,7 +168,6 @@ sub new { my $c = shift; bless { @_ }, $c; }
 package main;
 
 subtest 'updating of waste reports' => sub {
-    my $date = DateTime->now->subtract(days => 1)->strftime('%Y-%m-%dT%H:%M:%SZ');
     my $integ = Test::MockModule->new('SOAP::Lite');
     $integ->mock(call => sub {
         my ($cls, @args) = @_;
@@ -216,6 +216,8 @@ subtest 'updating of waste reports' => sub {
     });
     $reports[1]->update({ external_id => 'something-else' }); # To test loop
     $report = $reports[0];
+    # Set last update to before the time of the first update we've mocked.
+    $report->update({ lastupdate => $date });
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'sutton',
