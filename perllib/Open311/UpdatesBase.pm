@@ -281,7 +281,9 @@ sub _process_update {
     # insertion. We also then need a clone, otherwise the setting of lastupdate
     # will *also* reshift comment->created's time zone to TIME_ZONE.
     my $created = $comment->created->set_time_zone(FixMyStreet->local_time_zone);
-    $p->lastupdate($created->clone);
+    if ($created > $p->lastupdate) {
+        $p->lastupdate($created->clone);
+    }
 
     return $comment unless $self->commit;
 
