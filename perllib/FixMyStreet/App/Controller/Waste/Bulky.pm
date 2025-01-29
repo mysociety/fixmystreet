@@ -115,9 +115,6 @@ sub item_list : Private {
                 my $c = $form->{c};
                 $c->cobrand->bulky_total_cost($data);
                 $c->stash->{total} = ($c->stash->{payment} || 0) / 100;
-                for my $num ( 1 .. $max_items ) {
-                    $form->update_photo("item_photo_$num", $fields);
-                }
                 return $fields;
             },
         },
