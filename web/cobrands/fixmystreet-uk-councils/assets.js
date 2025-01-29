@@ -267,6 +267,23 @@ fixmystreet.assets.bristol.park_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+
+var bristol_owned_asset = false;
+
+fixmystreet.assets.bristol.road_found = function(layer) {
+    bristol_owned_asset = true;
+    fixmystreet.message_controller.road_found(layer);
+};
+
+fixmystreet.assets.bristol.road_not_found = function(layer) {
+    if (bristol_owned_asset) {
+        bristol_owned_asset = false;
+        return;
+    } else {
+        fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+    }
+};
+
 /* Bromley */
 
 fixmystreet.assets.bromley = {};
