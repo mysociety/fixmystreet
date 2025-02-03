@@ -762,6 +762,8 @@ subtest 'push updating of reports' => sub {
         ($report, $report2) = $mech->create_problems_for_body(2, $brent->id, 'Graffiti', {
             category => 'Graffiti',
         });
+        # Set last update to before the time of the first update we've mocked.
+        $report->update({ lastupdate => DateTime->new(year => 2020, month => 06, day => 23, hour => 15) });
         my $report_id = $report->id;
         my $cobrand = FixMyStreet::Cobrand::Brent->new;
 

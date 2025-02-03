@@ -582,6 +582,8 @@ subtest 'updating of waste reports' => sub {
         });
         $reports[1]->update({ external_id => 'something-else' }); # To test loop
         $report = $reports[0];
+        # Set last update to before the time of the first update we've mocked.
+        $report->update({ lastupdate => DateTime->new(year => 2020, month => 06, day => 23, hour => 15) });
         my $cobrand = FixMyStreet::Cobrand::Bromley->new;
 
         $report->update({ external_id => 'waste-15001-' });

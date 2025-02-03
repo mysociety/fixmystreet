@@ -13,6 +13,9 @@ Bristol is a unitary authority, with its own Open311 server.
 package FixMyStreet::Cobrand::Bristol;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
+use Moo;
+with 'FixMyStreet::Roles::Open311Alloy';
+
 use strict;
 use warnings;
 
@@ -122,9 +125,39 @@ sub categories_restriction {
     ] } );
 }
 
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        (
+            staff_role => 'Staff Role',
+        )
+    );
+
+    return if $csv->dbi; # All covered already
+
+    my $user_lookup = $self->csv_staff_users;
+    my $userroles = $self->csv_staff_roles($user_lookup);
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $by = $csv->_extra_metadata($report, 'contributed_by');
+        my $staff_role = '';
+        if ($by) {
+            $staff_role = join(',', @{$userroles->{$by} || []});
+        }
+        return {
+            staff_role => $staff_role,
+        };
+    });
+}
+
+
 =head2 open311_config
 
-Bristol's endpoint requires an email address, so flag to always send one (with
+Bristol's original endpoint requires an email address, so flag to always send one (with
 a fallback if one not provided).
 
 =cut
@@ -134,6 +167,8 @@ sub open311_config {
 
     $params->{always_send_email} = 1;
     $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
+    $params->{upload_files_for_updates} = 1;
 }
 
 sub open311_config_updates {
