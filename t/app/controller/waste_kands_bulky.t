@@ -818,7 +818,6 @@ FixMyStreet::override_config {
     );
 
     my $echo = Test::MockModule->new('Integrations::Echo');
-    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
     $echo->mock( 'GetTasks',                 sub { [] } );
     $echo->mock( 'GetEventsForObject',       sub { [] } );
 
@@ -876,6 +875,15 @@ FixMyStreet::override_config {
             Description => '2/3 Example Street, Sutton, SM2 5HF',
         };
     });
+
+    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
+
+    subtest 'No bulky service, no option' => sub {
+        $mech->get_ok('/waste/12346/');
+        $mech->content_lacks('Bulky Waste');
+    };
+
+    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}, {'ServiceId' => 413}] } );
 
     subtest 'Sutton specific Bulky Waste text' => sub {
         $mech->get_ok('/waste/12346/');

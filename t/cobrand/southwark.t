@@ -32,6 +32,8 @@ my $southwark = $mech->create_body_ok(
     { cobrand => 'southwark' },
 );
 
+my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffer', from_body => $southwark );
+
 $mech->create_contact_ok(
     body_id  => $southwark->id,
     category => 'Abandoned Bike (Street)',
@@ -96,6 +98,17 @@ FixMyStreet::override_config {
             },
         }, "Southwark 'estate' area doesn't have TfL categories or street category";
 
+    };
+
+    subtest 'Dashboard CSV extra columns' => sub {
+        $mech->log_in_ok($staffuser->email);
+        $mech->create_problems_for_body(1, $southwark->id, 'Title', {
+            user => $staffuser,
+            cobrand => 'southwark',
+        });
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"User Email"');
+        $mech->content_contains($staffuser->email);
     };
 };
 

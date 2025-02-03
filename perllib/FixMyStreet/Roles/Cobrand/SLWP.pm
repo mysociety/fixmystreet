@@ -487,7 +487,7 @@ sub waste_garden_renew_form_setup {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
         my $service = $c->cobrand->garden_current_subscription;
         if ($self->moniker eq 'merton') {
-            if ($service->{garden_container} == 28) {
+            if ($service->{garden_container} == $CONTAINERS{garden_sack}) {
                 $c->stash->{first_page} = 'sacks_details';
             }
             # Else default to 'intro' from the main code
@@ -639,18 +639,6 @@ sub bulky_send_before_payment { 1 }
 sub bulky_show_location_field_mandatory { 1 }
 
 sub bulky_can_refund { 0 }
-
-sub bulky_allowed_property {
-    my ( $self, $property ) = @_;
-
-    return if $property->{has_no_services};
-    my $cfg = $self->feature('echo');
-
-    my $type = $property->{type_id} || 0;
-    my $valid_type = grep { $_ == $type } @{ $cfg->{bulky_address_types} || [] };
-    my $domestic_farm = $type != 7 || $property->{domestic_refuse_bin};
-    return $self->bulky_enabled && $valid_type && $domestic_farm;
-}
 
 sub collection_date {
     my ($self, $p) = @_;

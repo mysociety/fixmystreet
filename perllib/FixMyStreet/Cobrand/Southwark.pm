@@ -273,4 +273,33 @@ sub _filter_categories_by_group {
     return values %contacts_hash;
 }
 
+=head2 dashboard_export_problems_add_columns
+
+Has user email added to their csv reports export.
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        user_email => 'User Email',
+    );
+
+    $csv->objects_attrs({
+        '+columns' => ['user.email'],
+        join => 'user',
+    });
+
+    return if $csv->dbi; # user_email already included.
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        return {
+            user_email => $report->user ? $report->user->email : '',
+        };
+    });
+}
+
+
 1;
