@@ -7,10 +7,14 @@ $menu-image: "menu-white" !default;
 $close-menu-image: "close-#{$menu-image}" !default;
 
 $link-color: #045B9D !default; // Pass AAA contrast
-$link-hover-color: #0549DB !default; // Pass AAA contrast, slight HUE variation with $link-color 
+$link-hover-color: #0549DB !default; // Pass AAA contrast, slight HUE variation with $link-color
 $link-visited-color: $link-color !default;
 $link-text-decoration: underline !default;
 $link-hover-text-decoration: none !default;
+$link-focus-text-decoration: none !default;
+$link-focus-box-shadow: 0px 0px 0px 5px #000 !default;
+$link-focus-outline: 2px solid $button-primary-focus-bg-top !default;
+
 
 $error_color: #D50404 !default;
 
@@ -263,6 +267,13 @@ a,
   &:active {
     text-decoration: $link-hover-text-decoration;
     color: $link-hover-color;
+  }
+
+  &:focus {
+    // Background-color and color not included because it was causing contrast conflicts with links across the website, like footer links.
+    box-shadow: $link-focus-box-shadow;
+    outline: $link-focus-outline;
+    text-decoration: $link-focus-text-decoration;
   }
 }
 
