@@ -268,19 +268,36 @@ fixmystreet.assets.bristol.park_stylemap = new OpenLayers.StyleMap({
 });
 
 
-var bristol_owned_asset = false;
+var bristol_owned_assets = {
+    road: false,
+    property: false
+};
 
 fixmystreet.assets.bristol.road_found = function(layer) {
-    bristol_owned_asset = true;
+    bristol_owned_assets.road = true;
+    fixmystreet.message_controller.road_found(layer);
+};
+
+fixmystreet.assets.bristol.property_found = function(layer) {
+    bristol_owned_assets.property = true;
     fixmystreet.message_controller.road_found(layer);
 };
 
 fixmystreet.assets.bristol.road_not_found = function(layer) {
-    if (bristol_owned_asset) {
-        bristol_owned_asset = false;
-        return;
-    } else {
+    bristol_owned_assets.road = false;
+    if (!bristol_owned_assets.road && !bristol_owned_assets.property && !fixmystreet.staff_set_up) {
         fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+    } else {
+        fixmystreet.message_controller.road_found(layer);
+    }
+};
+
+fixmystreet.assets.bristol.property_not_found = function(layer) {
+    bristol_owned_assets.property = false;
+    if (!bristol_owned_assets.road && !bristol_owned_assets.property && !fixmystreet.staff_set_up) {
+        fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+    } else {
+        fixmystreet.message_controller.road_found(layer);
     }
 };
 
