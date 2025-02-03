@@ -35,6 +35,7 @@ $button-primary-focus-text: #222 !default;
 $pagination_background: #f6f6f6 !default;
 $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
+$item-list_text-decoration: none !default;
 $col_big_numbers: #666 !default;
 $col_fixed_label: #00bd08 !default;
 $col_fixed_label_light: mix($col_fixed_label, #fff, 10%) !default;
@@ -1323,6 +1324,7 @@ input.final-submit {
     color: #222222;
     display: block;
     padding: 0.5em 1em;
+    text-decoration: $item-list_text-decoration;
   }
   a:hover,
   a:focus,
