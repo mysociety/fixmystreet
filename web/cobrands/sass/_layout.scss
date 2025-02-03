@@ -17,6 +17,9 @@ $container-max-width: 60em !default;
 $primary_link_color: null !default;
 $primary_link_hover_color: null !default;
 
+$nav-link-decoration-desktop: none !default;
+$nav-link-decoration-hover-desktop: none !default;
+
 // None of the form variables control the mobile styling. For that refer to _base.scss
 // $front-main-color-desktop controls the colours of all elements inside #front-main and .postcode-form-box element.
 $front-main-color-desktop: $primary_text !default;
@@ -133,6 +136,9 @@ h1 {
   li {
     float: $left;
   }
+  a {
+    text-decoration: $nav-link-decoration-desktop;
+  }
   a, span {
     display: block;
     color: $nav_colour;
@@ -150,6 +156,7 @@ h1 {
   }
   a:hover {
     background-color: $nav_hover_background_colour;
+    text-decoration: $nav-link-decoration-hover-desktop;
   }
   a.report-a-problem-btn {
     color: $primary_text;
