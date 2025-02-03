@@ -13,22 +13,22 @@ You can subscribe to our garden waste collection service if you are a frequent g
 
 <p>
 It costs
-£[% tprintf('%.2f', per_bin_cost / 100 ) %]
+£[% tprintf('%.2f', garden_costs.per_bin / 100 ) %]
 for a 12-month subscription.
-[% IF next_month_cost %]
-From [% date.format(next_month_cost.start_date, '%e %B') %], subscribers will pay
-£[% tprintf('%.2f', next_month_cost.cost / 100 ) %]
+[% IF garden_costs.next_month %]
+From [% date.format(garden_costs.next_month.start_date, '%e %B') %], subscribers will pay
+£[% tprintf('%.2f', garden_costs.next_month.cost / 100 ) %]
 for a 12-month subscription.
 [% END %]
 </p>
 
 <p>
-If you need us to deliver bins to you, there is a fee of £[% tprintf('%.2f', per_new_bin_first_cost / 100 ) %] per bin for admin and delivery. If you order more than one bin at once, the admin and delivery fee will be £[% tprintf('%.2f', per_new_bin_cost / 100 ) %] for each additional bin.
+If you need us to deliver bins to you, there is a fee of £[% tprintf('%.2f', garden_costs.per_new_bin_first / 100 ) %] per bin for admin and delivery. If you order more than one bin at once, the admin and delivery fee will be £[% tprintf('%.2f', garden_costs.per_new_bin / 100 ) %] for each additional bin.
 </p>
 
 [% IF slwp_garden_sacks %]
 <p>
-A roll of 10 garden waste sacks costs £[% tprintf('%.2f', per_sack_cost / 100 ) %].
+A roll of 10 garden waste sacks costs £[% tprintf('%.2f', garden_costs.per_sack / 100 ) %].
 </p>
 [% END %]
 

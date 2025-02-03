@@ -809,7 +809,8 @@ for my $test (
                     day => $test->{day},
                 );
 
-                is $c->waste_get_pro_rata_bin_cost($end, $start), $test->{expected}, $test->{desc};
+                my $costs = WasteWorks::Costs->new({ cobrand => $c });
+                is $costs->get_pro_rata_bin_cost($end, $start), $test->{expected}, $test->{desc};
             }
         };
     };

@@ -11,14 +11,15 @@
     <hr class="fieldset-hr">
 
     <div class="cost-pa__total js-bin-costs"
-        data-per_bin_cost="[% per_bin_cost %]"
-        data-per_new_bin_first_cost="[% per_new_bin_first_cost %]"
-        data-per_new_bin_cost="[% per_new_bin_cost %]"
+        data-per_bin_cost="[% garden_costs.per_bin %]"
+        data-per_bin_first_cost="[% garden_costs.per_bin_first %]"
+        data-per_new_bin_first_cost="[% garden_costs.per_new_bin_first %]"
+        data-per_new_bin_cost="[% garden_costs.per_new_bin %]"
     >
       <span class="cost-pa__total-costs">
           Subscription cost: £<span id="cost_pa">[% tprintf( '%.2f', cost_pa ) %]</span>
       </span>
-    [% IF per_new_bin_cost %]
+    [% IF garden_costs.per_new_bin %]
       <span class="cost-pa__total-costs">
           Admin fee: £<span id="cost_now_admin">[% tprintf( '%.2f', cost_now_admin ) %]</span>
       </span>

@@ -1,0 +1,14 @@
+[% USE date %]
+[% INCLUDE waste/header.html %]
+
+[% PROCESS 'govuk/fields.html' %]
+[% PROCESS title title=form.title %]
+[% PROCESS errors %]
+
+<p>Introductory text/links here.
+
+<form method="post" action="garden">
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]

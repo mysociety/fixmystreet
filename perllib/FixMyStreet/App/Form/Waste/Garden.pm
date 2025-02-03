@@ -3,6 +3,7 @@ package FixMyStreet::App::Form::Waste::Garden;
 use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
+use WasteWorks::Costs;
 
 has_field service_id => ( type => 'Hidden' );
 
@@ -20,26 +21,11 @@ sub details_update_fields {
     my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $existing;
     my $new_bins = $bin_count - $current_bins;
 
-    my $cost_pa = $bin_count == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
-    my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+    my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+    my $cost_pa = $bin_count == 0 ? 0 : $costs->bins($bin_count);
+    my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
     $c->stash->{cost_pa} = $cost_pa / 100;
     $c->stash->{cost_now_admin} = $cost_now_admin / 100;
-    if ($data->{apply_discount}) {
-        (
-            $c->stash->{cost_pa},
-            $c->stash->{cost_now_admin},
-            $c->stash->{per_bin_cost},
-            $c->stash->{per_new_bin_cost},
-            $c->stash->{per_new_bin_first_cost},
-            ) =
-        $c->cobrand->apply_garden_waste_discount(
-            $c->stash->{cost_pa},
-            $c->stash->{cost_now_admin},
-            $c->stash->{per_bin_cost},
-            $c->stash->{per_new_bin_cost},
-            $c->stash->{per_new_bin_first_cost},
-            );
-    }
     $c->stash->{cost_now} = $c->stash->{cost_now_admin} + $c->stash->{cost_pa};
     my $max_bins = $c->stash->{garden_form_data}->{max_bins};
 
@@ -112,16 +98,13 @@ has_page summary => (
         my $bin_count = $data->{bins_wanted} || 1;
         my $new_bins = $bin_count - $current_bins;
         my $cost_pa;
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
         if (($data->{container_choice}||'') eq 'sack') {
-            $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
+            $cost_pa = $costs->sacks($bin_count);
         } else {
-            $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+            $cost_pa = $costs->bins($bin_count);
         }
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
-        if ($data->{apply_discount}) {
-            ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
-                $cost_pa, $cost_now_admin);
-        }
+        my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
 
         my $total = $cost_now_admin + $cost_pa;
 
