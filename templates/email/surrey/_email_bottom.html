@@ -1,0 +1,30 @@
+          </tr>
+        </table>
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+  </table>
+  <table [% wrapper_table | safe %] style="[% wrapper_style %]">
+    <tr>
+      <th class="spacer-cell"></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">
+        [%~ IF email_footer.defined %]
+          [% email_footer | safe %]
+        [%~ ELSE %]
+          [% loc('This email was sent automatically, from an unmonitored email account. Please do not reply to it.') %]
+        [%~ END %]
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+    <tr>
+      <th class="spacer-cell"></th>
+      <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %][% banner_style %]">
+        <img src="/cobrands/surrey/images/email.png" alt="" role="presentation" aria-hidden="true" width="24px" height="24px" style="[% banner_image_style %]">
+        <a href="https://pages.comms.surreycc.info/pages/surrey-county-council-subscribe">Subscribe to our newsletters</a> for the latest news and events.
+      </th>
+      <th class="spacer-cell"></th>
+    </tr>
+
+  </table>
+</body>
+</html>
