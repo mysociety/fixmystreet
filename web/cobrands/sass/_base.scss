@@ -6,11 +6,11 @@ $heading-font: "Museo300-display", MuseoSans, Helmet, Freesans, sans-serif !defa
 $menu-image: "menu-white" !default;
 $close-menu-image: "close-#{$menu-image}" !default;
 
-$link-color: #005ea5 !default;
-$link-hover-color: #2b8cc4 !default;
+$link-color: #045B9D !default; // Pass AAA contrast
+$link-hover-color: #0549DB !default; // Pass AAA contrast, slight HUE variation with $link-color 
 $link-visited-color: $link-color !default;
-$link-text-decoration: none !default;
-$link-hover-text-decoration: underline !default;
+$link-text-decoration: underline !default;
+$link-hover-text-decoration: none !default;
 
 $error_color: #D50404 !default;
 
