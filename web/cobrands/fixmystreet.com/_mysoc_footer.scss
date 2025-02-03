@@ -54,6 +54,7 @@ $mysoc-footer-breakpoint-sm: 768px !default;
 
   a {
     color: $mysoc-footer-link-text-color;
+    text-decoration: none;
 
     &:hover,
     &:focus {
