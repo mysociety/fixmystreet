@@ -13,6 +13,10 @@ Bristol is a unitary authority, with its own Open311 server.
 package FixMyStreet::Cobrand::Bristol;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
+use Moo;
+with 'FixMyStreet::Roles::Open311Alloy';
+with 'FixMyStreet::Roles::Open311Multi';
+
 use strict;
 use warnings;
 
@@ -201,6 +205,9 @@ sub munge_overlapping_asset_bodies {
         # so only show other categories.
         %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne $self->council_name } values %$bodies;
     }
+}
+
+sub open311_munge_update_params {
 }
 
 sub check_report_is_on_cobrand_asset {
