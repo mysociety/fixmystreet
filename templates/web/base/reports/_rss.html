@@ -1,6 +1,8 @@
 <div id="key-tools-wrapper" class="shadow-wrap">
     <ul id="key-tools">
-        <li class="feed-list-wrapper"><a rel="nofollow" id="key-tool-updates-area" class="feed" href="[% rss_url %]">[%
+        <li class="feed-list-wrapper">
+            <a rel="nofollow" id="key-tool-updates-area" class="has-inline-svg" href="[% rss_url %]">
+            [%
             SET monikers = ['bromley','hounslow'];
             IF monikers.grep(c.cobrand.moniker).size AND thing == 'council';
                 'Get updates of reports in ' _ c.cobrand.moniker.ucfirst;
@@ -13,12 +15,15 @@
             ELSE;
                 tprintf(loc('Get updates of problems in this %s'), thing);
             END
-        %]</a></li>
+            %]
+            [% INCLUDE 'icons/rss.html' width='1.3em' height='1.3em' %]
+            </a>
+        </li>
         [% IF children.size %]
             [% TRY %]
                 [% INCLUDE 'reports/_rss_other_districts.html' %]
             [% CATCH %]
-                <li><a href="#council_wards" id="key-tool-wards" class="chevron">[% ward_text %]</a></li>
+                <li><a href="#council_wards" id="key-tool-wards" class="has-inline-svg">[% ward_text %][% INCLUDE 'icons/chevron-right.html' width='1.5em' height='1.5em' %]</a></li>
             [% END %]
         [% END %]
     </ul>

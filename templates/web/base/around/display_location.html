@@ -94,7 +94,10 @@
 
       [% IF allow_creation %]
         <div style="display:none" id="side-form">
-            <a href="#" class="js-back problem-back problem-back--top">[% loc('Back') %]</a>
+            <a href="#" class="js-back problem-back problem-back--top has-inline-svg">
+                [% INCLUDE 'icons/chevron-left.html' width='1.5em' height='1.5em' %]
+                [% loc('Back') %]
+            </a>
         [% INCLUDE "report/new/fill_in_details_form.html"
             js = 1,
             report.used_map = 1

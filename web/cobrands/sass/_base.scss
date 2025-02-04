@@ -962,7 +962,6 @@ html.mobile.js-nav-open #js-menu-open-modal {
 
   a,
   button {
-    display: block;
     background-color: #f5f5f5;
     background-repeat: no-repeat;
     color: #333 !important;
@@ -980,34 +979,6 @@ html.mobile.js-nav-open #js-menu-open-modal {
       text-decoration: none;
       background-color: #333;
       color: #fff !important;
-    }
-
-    &:after {
-      content: "";
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      margin-#{$left}: 0.5em;
-      vertical-align: -0.25em;
-      background-size: 112px 16px;
-      background-repeat: no-repeat;
-      background-image: url("/cobrands/fixmystreet/images/report-tools.svg");
-    }
-
-    &.abuse:after {
-      background-position: -96px 0;
-    }
-
-    &.feed:after {
-      background-position: -64px 0;
-    }
-
-    &.share:after {
-      background-position: -80px 0;
-    }
-
-    &.chevron:after {
-      background-position: flip(-16px 0, 0 0);
     }
 
     &.offline:after {
@@ -1029,6 +1000,22 @@ html.mobile.js-nav-open #js-menu-open-modal {
     .sub-area-item {
       display: table-cell;
     }
+  }
+}
+
+.has-inline-svg {
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+
+  &.has-inline-svg--left-align {
+    justify-content: left;
+  }
+
+  &.has-inline-svg--column-wrap {
+    flex-direction: column;
   }
 }
 
@@ -1833,7 +1820,6 @@ input.final-submit {
 }
 
 .problem-back {
-  display: block;
   font-size: 1em;
   line-height: 1.2em;
   margin: -1em -1em 1em -1em;
@@ -1845,20 +1831,8 @@ input.final-submit {
   &:hover {
     color: #666;
   }
-
-  &:before {
-    content: "";
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    margin-#{$right}: 0.5em;
-    vertical-align: -0.15em;
-    background-size: 112px 16px;
-    background-repeat: no-repeat;
-    background-image: url("/cobrands/fixmystreet/images/report-tools.svg");
-    background-position: flip(0 0, -16px 0);
-  }
 }
+
 .problem-back--top {
     margin-top: 0;
 }
@@ -2271,11 +2245,6 @@ html.js #map .noscript {
   #problems_nearby,
   #mob_ok {
     width: 50%;
-  }
-
-  .feed:after {
-    @extend %sub-map-link-icon;
-    background-position: -12px 0;
   }
 
   #fms_shortlist_all:after {
