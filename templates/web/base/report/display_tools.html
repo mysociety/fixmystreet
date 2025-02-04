@@ -4,24 +4,24 @@
         [% IF c.cobrand.users_can_hide AND relevant_staff_user %]
         <li><form method="post" action="/report/[% problem.id %]/delete" id="remove-from-site-form">
             <input type="hidden" name="token" value="[% csrf_token %]">
-            <button type="submit" id="key-tool-report-abuse" class="abuse" data-confirm="[% loc('Are you sure?') %]" name="remove_from_site">[% loc('Remove from site') %]</button>
+            <button type="submit" id="key-tool-report-abuse" class="has-inline-svg" data-confirm="[% loc('Are you sure?') %]" name="remove_from_site">[% loc('Remove from site') %][% INCLUDE 'icons/warning.html' width='1.5em' height='1.5em' %]</button>
         </form></li>
         [% ELSIF c.cobrand.moniker != 'zurich' %]
-        <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[%
+        <li><a rel="nofollow" id="key-tool-report-abuse" class="has-inline-svg" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[%
             c.cobrand.moniker == 'fixmystreet' OR c.cobrand.moniker == 'highwaysengland' ? 'Unsuitable?' : loc('Report abuse')
-        %]</a></li>
+        %][% INCLUDE 'icons/warning.html' width='1.5em' height='1.5em' %]</a></li>
         [% END %]
         [% IF c.cobrand.moniker != 'zurich' %]
-        <li><a rel="nofollow" id="key-tool-report-updates" class="feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
+        <li><a rel="nofollow" id="key-tool-report-updates" class="has-inline-svg" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %][% INCLUDE 'icons/rss.html' width='1.3em' height='1.3em' %]</a></li>
         [% END %]
         [% IF c.cobrand.moniker == 'fixmystreet' %]
-        <li><a rel="nofollow" id="key-tool-report-share" class="share" href="#report-share">[% loc('Share') %]</a></li>
+        <li><a rel="nofollow" id="key-tool-report-share" class="has-inline-svg" href="#report-share">[% loc('Share') %][% INCLUDE 'icons/share.html' width='1.5em' height='1.5em' %]</a></li>
         [% END %]
       [% END %]
       [% IF c.cobrand.moniker == 'zurich' %]
-        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems on the map' ) %]</a></li>
+        <li><a class="has-inline-svg" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems on the map' ) %][% INCLUDE 'icons/chevron-right.html' width='1.5em' height='1.5em' %]</a></li>
       [% ELSE %]
-        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
+        <li><a class="has-inline-svg" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems nearby' ) %][% INCLUDE 'icons/chevron-right.html' width='1.5em' height='1.5em' %]</a></li>
       [% END %]
     </ul>
 
