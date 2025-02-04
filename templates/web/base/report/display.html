@@ -45,9 +45,6 @@
 [% END %]
 
 [% TRY %][% INCLUDE 'report/_message_manager.html' %][% CATCH file %][% END %]
-[% INCLUDE 'report/display_tools.html' %]
-[% TRY %][% INCLUDE 'report/sharing.html' %][% CATCH file %][% END %]
-[% INCLUDE 'report/updates.html' %]
 
 [% IF problem.duplicate_of %]
     [% INCLUDE 'report/duplicate-no-updates.html' %]
@@ -56,6 +53,10 @@
 [% ELSIF NOT shown_form  %]
     [% PROCESS 'report/update-form-wrapper.html' %]
 [% END %]
+
+[% INCLUDE 'report/display_tools.html' %]
+[% TRY %][% INCLUDE 'report/sharing.html' %][% CATCH file %][% END %]
+[% INCLUDE 'report/updates.html' %]
 
   </div>
 
