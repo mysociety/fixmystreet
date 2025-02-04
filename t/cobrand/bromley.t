@@ -288,6 +288,27 @@ subtest 'Private comments on updates are added to open311 description' => sub {
     };
 };
 
+subtest 'ensure flytip information is added to open311 description' => sub {
+    $report->set_extra_fields({ name => 'FLY_Q', value => 'Large sofa and household waste' });
+    $report->send_state('unprocessed');
+    $report->update;
+
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        ALLOWED_COBRANDS => [ 'fixmystreet', 'bromley' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+
+    $report->discard_changes;
+    is $report->send_state, 'sent', 'Report marked as sent';
+
+    my $req = Open311->test_req_used;
+    my $c = CGI::Simple->new($req->content);
+    like $c->param('description'), qr/Flytip information: Large sofa and household waste/, 'flytip information included in description';
+};
+
 for my $test (
     {
         cobrand => 'bromley',
