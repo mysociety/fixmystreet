@@ -347,6 +347,16 @@ sub open311_pre_send {
             $row->detail($text);
         }
     }
+
+    # Any special extra questions to include
+    my $extra = $row->get_extra_fields;
+    foreach (@$extra) {
+        if ($_->{name} =~ /_Q$/ && $_->{value}) {
+            (my $name = ucfirst lc $_->{name}) =~ s/_q//;
+            my $text = "$name information: " . $_->{value} . "\n\n" . $row->detail;
+            $row->detail($text);
+        }
+    }
 }
 
 sub _include_user_title_in_extra {
