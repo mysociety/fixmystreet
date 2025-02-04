@@ -2208,11 +2208,6 @@ html.js #map .noscript {
     width: 50%;
   }
 
-  .feed:after {
-    @extend %sub-map-link-icon;
-    background-position: -12px 0;
-  }
-
   #fms_shortlist_all:after {
     @extend %sub-map-link-icon;
     background-position: -60px 0;
