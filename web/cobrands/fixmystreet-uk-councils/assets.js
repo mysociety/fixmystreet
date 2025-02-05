@@ -1288,11 +1288,10 @@ fixmystreet.assets.oxfordshire.owned_asset_found = function(asset) {
 };
 
 fixmystreet.assets.oxfordshire.drain_construct_selected_asset_message = function(asset) {
-    var type = this.fixmystreet.http_options.params.TYPENAME.slice(0, -1);
     var junctionInspectionLayer = window.fixmystreet.assets.layers.filter(function(elem) {
         return elem.fixmystreet.body == "Oxfordshire County Council" &&
         elem.fixmystreet.http_options &&
-        elem.fixmystreet.http_options.format.featureType == type + '_inspections';
+        elem.fixmystreet.http_options.format.featureType == 'junction_inspections';
     });
     var inspection;
     if (junctionInspectionLayer[0]) {
@@ -1302,7 +1301,7 @@ fixmystreet.assets.oxfordshire.drain_construct_selected_asset_message = function
         });
     }
     var last_clean = '';
-    var message = ' ';
+    var message = '';
     if (inspection && inspection[0]) {
         if (asset.attributes.last_inspected && (inspection[0].attributes.junction_cleaned === 'true' || inspection[0].attributes.channel_cleaned === 'true')) {
             last_clean = occ_format_date(asset.attributes.last_inspected);
@@ -1328,7 +1327,7 @@ function occ_format_date(date_field) {
 // may not have loaded. So make sure we poke for a check when the data comes
 // in.
 function occ_inspection_layer_loadend() {
-    var type = this.fixmystreet.http_options.params.TYPENAME.replace('_inspections', 's');
+    var type = this.fixmystreet.http_options.params.TYPENAME.replace(/_inspections/g, 's');
     var layer = fixmystreet.assets.layers.filter(function(elem) {
         return test_layer_typename(elem.fixmystreet, "Oxfordshire County Council", type);
     });
@@ -1338,11 +1337,7 @@ function occ_inspection_layer_loadend() {
 if (fixmystreet.cobrand == 'oxfordshire' || fixmystreet.cobrand == 'fixmystreet') {
     $(function(){
         var layer;
-        layer = fixmystreet.map.getLayersByName('Oxon Junction Inspections')[0];
-        if (layer) {
-            layer.events.register( 'loadend', layer, occ_inspection_layer_loadend);
-        }
-        layer = fixmystreet.map.getLayersByName('Oxon Channel Inspections')[0];
+        layer = fixmystreet.map.getLayersByName('Oxon Drain Inspections')[0];
         if (layer) {
             layer.events.register( 'loadend', layer, occ_inspection_layer_loadend);
         }
