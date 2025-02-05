@@ -4,6 +4,7 @@
     - Front end improvements:
         - Make the continue button / asset stopper messages float at the bottom
           of initial steps of reporting flow.
+        - Improve display of key tools on mobile. #5354
     - Accessibility improvements:
         - Improved accessibility of small drawer. #5354
     - Admin improvements:
