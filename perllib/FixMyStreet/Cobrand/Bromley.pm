@@ -349,7 +349,7 @@ sub open311_pre_send {
         }
     }
 
-    if (my $flytip_info = $row->get_extra_field_value('FLYT_NOT')) {
+    if (my $flytip_info = $row->get_extra_field_value('FLY_Q')) {
         my $text = $row->detail . "\n\nFlytip information: " . $flytip_info;
         $row->detail($text);
     }
