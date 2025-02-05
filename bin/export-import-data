@@ -33,7 +33,15 @@ $usage->die unless $opt->name;
 die "Please specify a file to import\n" if $opt->import && (! -e $opt->import || -d $opt->import);
 
 my $J = JSON::MaybeXS->new(utf8 => 1, pretty => 1, canonical => 1);
-my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opt->name }) or die "Cannot find body " . $opt->name . "\n";
+my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opt->name });
+if (!$body && $opt->import) {
+    $body = FixMyStreet::DB->resultset("Body")->new({
+        name => $opt->name,
+    });
+    if ($opt->commit) {
+        $body->insert;
+    }
+}
 my @categories = split(/\|/, ($opt->{categories} || ''));
 
 if ($opt->import) {
