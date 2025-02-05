@@ -1541,38 +1541,30 @@ fixmystreet.assets.peterborough.bin_asset_details = function() {
     return a.Reference + ", " + a.Location;
 };
 
-fixmystreet.assets.peterborough.flytipping_pcc_found = function(layer) {
-    $("#js-environment-message").addClass("hidden");
-};
-fixmystreet.assets.peterborough.flytipping_pcc_not_found = function() {
-    for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
-        var layer = fixmystreet.assets.layers[i];
-        if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
-            $('#js-environment-message').addClass('hidden');
-            return;
-        }
-    }
-    $('#js-environment-message').removeClass('hidden');
-};
-fixmystreet.assets.peterborough.flytipping_leased_found = function() {
-    $('#js-environment-message').removeClass('hidden');
-};
+// Show a special flytipping/graffiti message on private or leased land, not a
+// road. If we're in a leased area, show the message; if we're not on PCC land
+// at all, show the message if we're not on a road.
 
-fixmystreet.assets.peterborough.graffiti_pcc_found = function(layer) {
-    $("#js-graffiti-message").addClass("hidden");
+fixmystreet.assets.peterborough.pcc_found = function(layer) {
+    delete layer.map_messaging.asset;
 };
-fixmystreet.assets.peterborough.graffiti_pcc_not_found = function() {
+fixmystreet.assets.peterborough.pcc_not_found = function(layer) {
     for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
-        var layer = fixmystreet.assets.layers[i];
-        if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
-            $('#js-graffiti-message').addClass('hidden');
+        var l = fixmystreet.assets.layers[i];
+        if ( l.fixmystreet.name == 'Adopted Highways' && l.selected_feature ) {
+            delete layer.map_messaging.asset;
             return;
         }
     }
-    $('#js-graffiti-message').removeClass('hidden');
+    var msg = $(layer.fixmystreet.message_template).html();
+    layer.map_messaging.asset = msg;
 };
-fixmystreet.assets.peterborough.graffiti_leased_found = function() {
-    $('#js-graffiti-message').removeClass('hidden');
+fixmystreet.assets.peterborough.leased_found = function(layer) {
+    var msg = $(layer.fixmystreet.message_template).html();
+    layer.map_messaging.asset = msg;
+};
+fixmystreet.assets.peterborough.leased_not_found = function(layer) {
+    delete layer.map_messaging.asset;
 };
 
 /* Shropshire */

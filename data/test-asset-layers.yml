@@ -418,28 +418,34 @@ peterborough:
       asset_not_found: fixmystreet.assets.peterborough.lighting_asset_not_found
   # PCC Property Combined
   - template: 'flytipping'
+    message_template: '#js-environment-message'
     http_options:
       url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/4/query?'
     actions:
-      found: fixmystreet.assets.peterborough.flytipping_pcc_found
-      not_found: fixmystreet.assets.peterborough.flytipping_pcc_not_found
+      found: fixmystreet.assets.peterborough.pcc_found
+      not_found: fixmystreet.assets.peterborough.pcc_not_found
   - template: 'graffiti'
+    message_template: '#js-graffiti-message'
     http_options:
       url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/4/query?'
     actions:
-      found: fixmystreet.assets.peterborough.graffiti_pcc_found
-      not_found: fixmystreet.assets.peterborough.graffiti_pcc_not_found
+      found: fixmystreet.assets.peterborough.pcc_found
+      not_found: fixmystreet.assets.peterborough.pcc_not_found
   # PCC Property Leased Out NOT Responsible
   - template: 'flytipping'
+    message_template: '#js-environment-message'
     http_options:
       url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/3/query?'
     actions:
-      found: fixmystreet.assets.peterborough.flytipping_leased_found
+      found: fixmystreet.assets.peterborough.leased_found
+      not_found: fixmystreet.assets.peterborough.leased_not_found
   - template: 'graffiti'
+    message_template: '#js-graffiti-message'
     http_options:
       url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/3/query?'
     actions:
-      found: fixmystreet.assets.peterborough.graffiti_leased_found
+      found: fixmystreet.assets.peterborough.leased_found
+      not_found: fixmystreet.assets.peterborough.leased_not_found
 shropshire:
   - http_wfs_url: "https://tilma.mysociety.org/mapserver/shropshire"
     asset_type: 'spot'
