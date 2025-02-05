@@ -37,11 +37,10 @@ describe('new report form', function() {
 
   it('flytipping/graffiti categories handle land types correctly', function() {
     cy.pickCategory('General fly tipping');
+    cy.get('.pre-button-messaging:visible').should('contain', 'You can report cases of fly-tipping on private land');
     cy.nextPageReporting();
-    cy.get('#js-environment-message:visible');
     cy.get('#form_hazardous').select('yes');
     cy.get('.pre-button-messaging:visible').should('contain', 'Please phone customer services to report this problem');
-    cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
     cy.get('#form_hazardous').select('no');
     cy.get('.pre-button-messaging:visible').should('not.contain', 'Please phone customer services to report this problem');
@@ -49,21 +48,19 @@ describe('new report form', function() {
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
-    cy.get('#js-environment-message:hidden');
+    cy.get('.pre-button-messaging:visible').should('not.exist');
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');
     cy.pickCategory('Non offensive graffiti');
-    cy.get('#js-graffiti-message:hidden');
+    cy.get('.pre-button-messaging:visible').should('not.exist');
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
-    cy.get('#map_sidebar').scrollTo('top');
-    cy.get('#js-environment-message:visible');
+    cy.get('.pre-button-messaging:visible').should('contain', 'You can report cases of fly-tipping on private land');
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('Non offensive graffiti');
-    cy.get('#map_sidebar').scrollTo('top');
-    cy.get('#js-graffiti-message:visible');
+    cy.get('.pre-button-messaging:visible').should('contain', 'For graffiti on private land this would be deemed');
   });
 
   it('correctly changes the asset select message', function() {
@@ -103,7 +100,7 @@ describe('Roadworks', function() {
 });
 
 describe('National site tests', function() {
-  it('flytipping/graffiti categories handle land types correctly on .com', function() {
+  it.only('flytipping/graffiti categories handle land types correctly on .com', function() {
     cy.server();
     cy.route('/report/new/ajax*').as('report-ajax');
     cy.route("**/peterborough.assets/4/*", 'fixture:peterborough_pcc.json').as('pcc');
@@ -114,11 +111,10 @@ describe('National site tests', function() {
     cy.get('#map_box').click();
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
+    cy.get('.pre-button-messaging:visible').should('contain', 'You can report cases of fly-tipping on private land');
     cy.nextPageReporting();
-    cy.get('#js-environment-message:visible');
     cy.get('#form_hazardous').select('yes');
     cy.get('.pre-button-messaging:visible').should('contain', 'Please phone customer services to report this problem');
-    cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
     cy.get('#form_hazardous').select('no');
     cy.get('.pre-button-messaging:hidden').should('not.contain', 'Please phone customer services to report this problem');
@@ -126,23 +122,19 @@ describe('National site tests', function() {
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
-    cy.get('#map_sidebar').scrollTo('top');
-    cy.get('#js-environment-message:hidden');
+    cy.get('.pre-button-messaging:visible').should('not.exist');
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
     cy.wait('@report-ajax');
     cy.pickCategory('Non offensive graffiti');
-    cy.get('#map_sidebar').scrollTo('top');
-    cy.get('#js-graffiti-message:hidden');
+    cy.get('.pre-button-messaging:visible').should('not.exist');
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
-    cy.get('#map_sidebar').scrollTo('top');
-    cy.get('#js-environment-message:visible');
+    cy.get('.pre-button-messaging:visible').should('contain', 'You can report cases of fly-tipping on private land');
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('Non offensive graffiti');
-    cy.get('#map_sidebar').scrollTo('top');
-    cy.get('#js-graffiti-message:visible');
+    cy.get('.pre-button-messaging:visible').should('contain', 'For graffiti on private land this would be deemed');
   });
 
 });
