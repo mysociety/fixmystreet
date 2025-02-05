@@ -1,10 +1,13 @@
 =head1 NAME
 
-FixMyStreet::Cobrand::SouthKesteven - code specific to the SouthKesteven cobrand
+FixMyStreet::Cobrand::SouthKesteven - code specific to the South Kesteven cobrand
 
 =head1 SYNOPSIS
 
 Does not integrate with any backend.
+
+South Kesteven is a district council, within the county of Lincolnshire.
+
 
 =head1 DESCRIPTION
 
@@ -28,20 +31,21 @@ sub council_area_id { '2380' }
 sub council_area { 'South Kesteven' }
 sub council_name { 'South Kesteven District Council' }
 sub council_url { 'southkesteven' }
+sub is_two_tier { 1 }
 
-=item * Users with a southkesteven.gov.uk email can always be found in the admin
+=item * Users with a southkesteven.gov.uk email can always be found in the admin.
 
 =cut
 
 sub admin_user_domain { 'southkesteven.gov.uk' }
 
-=item * Allows anonymous reporting
+=item * Allows anonymous reporting.
 
 =cut
 
 sub allow_anonymous_reports { 'button' }
 
-=item * Has their own privacy policy
+=item * Has their own privacy policy.
 
 =cut
 
@@ -49,7 +53,7 @@ sub privacy_policy_url {
     'https://www.southkesteven.gov.uk/your-council-and-democracy/data-protection-and-freedom-information/privacy-notice'
 }
 
-=item * Doesn't use their name in the enter postcode text
+=item * Doesn't use their name in the enter postcode text.
 
 =cut
 
