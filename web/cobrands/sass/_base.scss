@@ -1300,6 +1300,12 @@ input.final-submit {
 .pre-button-messaging {
     margin-bottom: 0.5em;
     background-color: mix(#fff, $primary, 70%);
+    overflow: auto;
+    max-height: 50vh;
+}
+// Override box-warning's margin because the floating has its own
+.pre-button-messaging .box-warning {
+    margin-bottom: 0;
 }
 
 .js-floating-button-message {
