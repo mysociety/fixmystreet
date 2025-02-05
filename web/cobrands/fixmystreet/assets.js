@@ -1376,7 +1376,7 @@ fixmystreet.message_controller = (function() {
 
         var cls = 'js-roads-layer-' + layer.id;
         var div;
-        if (layer_data.no_asset_message) {
+        if (layer_data.no_asset_message !== undefined) {
             id = id || '#' + cls;
             var message = layer_data.no_asset_message[id] || layer_data.no_asset_message["default"] || layer_data.no_asset_message;
             div = $('<div/>').html(message);
