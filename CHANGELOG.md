@@ -7,6 +7,7 @@
         - Improve display of key tools on mobile. #5354
     - Accessibility improvements:
         - Improved accessibility of small drawer. #5354
+        - Added skip report tools to Around page. #5354
     - Admin improvements:
         - Improve performance of admin reports search for email. #5284
         - import-export-data script exports and imports `send_method` for category #4818
