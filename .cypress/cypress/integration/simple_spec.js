@@ -118,9 +118,9 @@ describe('Clicking the "big green banner" on a map page', function() {
 describe('Clicking on drawers', function() {
     it('works on a direct report page', function() {
         cy.visit('/report/15');
-        cy.contains('Get updates').click();
+        cy.get('#key-tools').contains('Get updates').click();
         cy.contains('Receive email when updates are left').should('be.visible');
-        cy.contains('Get updates').click();
+        cy.get('#key-tools').contains('Get updates').click();
         cy.contains('Receive email when updates are left').should('not.be.visible');
     });
 
@@ -131,9 +131,9 @@ describe('Clicking on drawers', function() {
         // force to hopefully work around apparent Cypress SVG issue
         cy.get('image[title="Lights out in tunnel"]').last().click({force: true});
         cy.wait('@show-report');
-        cy.get('#side-report').contains('Get updates').click();
+        cy.get('#key-tools .js-key-tool-report-updates').click();
         cy.contains('Receive email when updates are left').should('be.visible');
-        cy.get('#side-report').contains('Get updates').click();
+        cy.get('#key-tools .js-key-tool-report-updates').click();
         cy.contains('Receive email when updates are left').should('not.be.visible');
     });
 

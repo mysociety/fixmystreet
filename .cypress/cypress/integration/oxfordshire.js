@@ -34,7 +34,7 @@ describe("Oxfordshire cobrand", function() {
 
     cy.visit('http://oxfordshire.localhost:3001/report/1');
     cy.contains('Oxfordshire');
-    cy.contains('Problems nearby').click();
+    cy.get('#key-tools').contains('Problems nearby').click();
     cy.get('[href$="/report/1"]').last().click();
     cy.wait('@show-report');
 

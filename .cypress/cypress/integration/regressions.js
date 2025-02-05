@@ -35,7 +35,7 @@ describe('Regression tests', function() {
         cy.get('[name=sign_in_by_password]').last().click();
         cy.get('[name=problem_title]').clear().type('M&S "brill" says <glob>').parents('form').submit();
         cy.title().should('contain', 'M&S "brill" says <glob>');
-        cy.contains('Problems nearby').click();
+        cy.get('#key-tools').contains('Problems nearby').click();
         cy.wait('@update-results');
         cy.get('#map_sidebar').contains('M&S').click();
         cy.title().should('contain', 'M&S "brill" says <glob>');
