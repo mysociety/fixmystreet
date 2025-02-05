@@ -103,6 +103,32 @@ FixMyStreet::override_config {
 
         $p->delete;
     };
+
+    subtest "Dashboard CSV export includes extra staff columns" => sub {
+        my $csv_staff = $mech->create_user_ok(
+            'csvstaff@lincolnshire.gov.uk',
+            name => 'CSV Staff',
+            from_body => $body,
+        );
+        my $csv_role = FixMyStreet::DB->resultset("Role")->create({
+            body => $body,
+            name => 'CSV Role',
+            permissions => ['moderate', 'user_edit'],
+        });
+        $csv_staff->add_to_roles($csv_role);
+
+        my @csv_problems = $mech->create_problems_for_body( 1, $body->id, 'CSV Export Test Issue', {
+            cobrand => 'lincolnshire',
+            user => $csv_staff,
+            extra => { contributed_by => $csv_staff->id },
+        });
+
+        $mech->log_in_ok($csv_staff->email);
+        $mech->get_ok('/dashboard?export=1');
+
+        $mech->content_contains('"Staff Role"');
+        $mech->content_like(qr/CSV Role/, "CSV export includes staff role");
+    };
 };
 
 FixMyStreet::override_config {
