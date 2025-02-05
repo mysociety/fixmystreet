@@ -28,6 +28,9 @@ sub pick_asset_layers {
     } elsif ($cobrand eq 'brent' || $cobrand eq 'bromley' || $cobrand eq 'camden' || $cobrand eq 'hackney' || $cobrand eq 'hounslow' || $cobrand eq 'merton' || $cobrand eq 'southwark' || $cobrand eq 'westminster') {
         # All London cobrands also need the TfL assets
         %cobrands = map { $_ => $cobrands->{$_} } ($cobrand, 'tfl');
+    } elsif ($cobrand eq 'lincolnshire' || $cobrand eq 'southkesteven') {
+        # Lincolnshire might need South Kesteven assets and vice-versa.
+        %cobrands = map { $_ => $cobrands->{$_} } ('lincolnshire', 'southkesteven');
     } else {
         # Only the cobrand's assets itself
         %cobrands = map { $_ => $cobrands->{$_} } ($cobrand);
