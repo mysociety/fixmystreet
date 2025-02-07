@@ -589,7 +589,7 @@ sub _fetch_features_url {
         SERVICE => "WFS",
         SRSNAME => $cfg->{srsname},
         TYPENAME => $cfg->{typename},
-        VERSION => "1.1.0",
+        VERSION => $cfg->{version} || "1.1.0",
         outputformat => $cfg->{outputformat} || "geojson",
         $cfg->{filter} ? ( Filter => $cfg->{filter} ) : ( BBOX => $cfg->{bbox} ),
     );

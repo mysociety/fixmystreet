@@ -16,6 +16,9 @@ LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org'
 my $comment_user = $mech->create_user_ok('bristol@example.net');
 my $bristol = $mech->create_body_ok( 2561, 'Bristol City Council', {
     send_method => 'Open311',
+    api_key => 'key',
+    endpoint => 'endpoint',
+    jurisdiction => 'bristol',
     can_be_devolved => 1,
     comment_user => $comment_user,
     cobrand => 'bristol',
@@ -57,6 +60,11 @@ my $roadworks = $mech->create_contact_ok(
     email => 'roadworks@example.org',
     send_method => 'Email'
 );
+my $flytipping = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Flytipping',
+    email => 'FLY',
+);
 my $north_somerset_contact = $mech->create_contact_ok(
     body_id => $north_somerset->id,
     category => 'North Somerset Potholes',
@@ -68,6 +76,11 @@ my $south_gloucestershire_contact = $mech->create_contact_ok(
     category => 'South Gloucestershire Potholes',
     email => 'glos-potholes@example.org',
     send_method => 'Email'
+);
+my $graffiti = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Graffiti',
+    email => 'Alloy-graffiti',
 );
 
 subtest 'Reports page works with no reports', sub {
@@ -192,6 +205,58 @@ subtest "idle roadworks automatically closed" => sub {
         like $p->comments->first->text, qr/This issue has been forwarded on/, 'correct comment text';
 
         $mech->email_count_is(1);
+    };
+};
+
+FixMyStreet::override_config {
+    STAGING_FLAGS => { send_reports => 1 },
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'bristol',
+    COBRAND_FEATURES => {
+        open311_email => {
+            bristol => {
+                Flytipping => 'flytipping@example.org',
+            }
+        }
+    }
+}, sub {
+    subtest "flytipping extra email sent" => sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $flytipping->category,
+            extra => { _fields => [ { name => 'Witness', value => 1 } ] },
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->external_id, 'Report has external ID';
+        ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('extra_email_sent'), 1;
+        $mech->email_count_is(1);
+    };
+
+    subtest "usrn populated on Alloy category" => sub {
+        my $mock = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+        $mock->mock('_fetch_features', sub {
+            [ {
+                "type" => "Feature",
+                "geometry" => {"type" => "MultiLineString", "coordinates" => [[[1,1],[2,2]]]},
+                "properties" => {USRN => "1234567"}
+            } ]
+        });
+
+        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $graffiti->category,
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        is $p->get_extra_field_value('usrn'), '1234567', 'USRN added to extra field after sending to Open311';
     };
 };
 

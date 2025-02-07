@@ -177,6 +177,40 @@ sub open311_config_updates {
     $params->{multi_photos} = 1;
 }
 
+=head2 open311_update_missing_data
+
+All reports sent to Alloy should have a USRN set so the street parent
+can be found and the locality can be looked up as well.
+
+The USRN may be set by the roads asset layer, but staff can report anywhere
+so are not restricted to the road layer and anyone can be make reports on
+specific Bristol owned properties that don't have a USRN
+
+=cut
+
+sub lookup_site_code_config {
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    return {
+        buffer => 200, # metres
+        url => "https://$host/proxy/bristol/wfs/",
+        typename => "COD_LSG",
+        property => "USRN",
+        version => '2.0.0',
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        accept_feature => sub { 1 },
+    };
+}
+
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    if ($contact->email =~ /^Alloy-/ && !$row->get_extra_field_value('usrn')) {
+        if (my $usrn = $self->lookup_site_code($row)) {
+            $row->update_extra_field({ name => 'usrn', value => $usrn });
+        }
+    };
+}
+
 =head2 open311_contact_meta_override
 
 We need to mark some of the attributes returned by Bristol's Open311 server
@@ -193,6 +227,33 @@ sub open311_contact_meta_override {
         $_->{automated} = 'server_set' if $server_set{$_->{code}};
         $_->{automated} = 'hidden_field' if $hidden_field{$_->{code}};
     }
+}
+
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    # Check Open311 was successful
+    return unless $row->external_id;
+    return if $row->get_extra_metadata('extra_email_sent');
+
+    # For Flytipping with witness, send an email also
+    my $witness = $row->get_extra_field_value('Witness') || 0;
+    return unless $witness;
+
+    my $emails = $self->feature('open311_email') or return;
+    my $dest = $emails->{$row->category} or return;
+    $dest = [ $dest, 'FixMyStreet' ];
+
+    $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
+
+    my $sender = FixMyStreet::SendReport::Email->new(
+        use_verp => 0, use_replyto => 1, to => [ $dest ] );
+    $sender->send($row, $h);
+    if ($sender->success) {
+        $row->set_extra_metadata(extra_email_sent => 1);
+    }
+
+    $row->remove_extra_field('fixmystreet_id');
 }
 
 =head2 post_report_sent
