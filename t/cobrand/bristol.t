@@ -77,6 +77,11 @@ my $south_gloucestershire_contact = $mech->create_contact_ok(
     email => 'glos-potholes@example.org',
     send_method => 'Email'
 );
+my $graffiti = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Graffiti',
+    email => 'Alloy-graffiti',
+);
 
 subtest 'Reports page works with no reports', sub {
     FixMyStreet::override_config {
@@ -203,19 +208,19 @@ subtest "idle roadworks automatically closed" => sub {
     };
 };
 
-subtest "flytipping extra email sent" => sub {
-    FixMyStreet::override_config {
-        STAGING_FLAGS => { send_reports => 1 },
-        MAPIT_URL => 'http://mapit.uk/',
-        ALLOWED_COBRANDS => 'bristol',
-        COBRAND_FEATURES => {
-            open311_email => {
-                bristol => {
-                    Flytipping => 'flytipping@example.org',
-                }
+FixMyStreet::override_config {
+    STAGING_FLAGS => { send_reports => 1 },
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'bristol',
+    COBRAND_FEATURES => {
+        open311_email => {
+            bristol => {
+                Flytipping => 'flytipping@example.org',
             }
         }
-    }, sub {
+    }
+}, sub {
+    subtest "flytipping extra email sent" => sub {
         $mech->clear_emails_ok;
 
         my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
@@ -231,6 +236,27 @@ subtest "flytipping extra email sent" => sub {
         ok $p->whensent, 'Report marked as sent';
         is $p->get_extra_metadata('extra_email_sent'), 1;
         $mech->email_count_is(1);
+    };
+
+    subtest "usrn populated on Alloy category" => sub {
+        my $mock = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+        $mock->mock('_fetch_features', sub {
+            [ {
+                "type" => "Feature",
+                "geometry" => {"type" => "MultiLineString", "coordinates" => [[[1,1],[2,2]]]},
+                "properties" => {USRN => "1234567"}
+            } ]
+        });
+
+        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $graffiti->category,
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        is $p->get_extra_field_value('usrn'), '1234567', 'USRN added to extra field after sending to Open311';
     };
 };
 

@@ -177,6 +177,40 @@ sub open311_config_updates {
     $params->{multi_photos} = 1;
 }
 
+=head2 open311_update_missing_data
+
+All reports sent to Alloy should have a USRN set so the street parent
+can be found and the locality can be looked up as well.
+
+The USRN may be set by the roads asset layer, but staff can report anywhere
+so are not restricted to the road layer and anyone can be make reports on
+specific Bristol owned properties that don't have a USRN
+
+=cut
+
+sub lookup_site_code_config {
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    return {
+        buffer => 200, # metres
+        url => "https://$host/proxy/bristol/wfs/",
+        typename => "COD_LSG",
+        property => "USRN",
+        version => '2.0.0',
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        accept_feature => sub { 1 },
+    };
+}
+
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    if ($contact->email =~ /^Alloy-/ && !$row->get_extra_field_value('usrn')) {
+        if (my $usrn = $self->lookup_site_code($row)) {
+            $row->update_extra_field({ name => 'usrn', value => $usrn });
+        }
+    };
+}
+
 =head2 open311_contact_meta_override
 
 We need to mark some of the attributes returned by Bristol's Open311 server
