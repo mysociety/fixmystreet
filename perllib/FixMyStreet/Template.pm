@@ -156,6 +156,21 @@ sub html_paragraph_email_factory : FilterFactory('html_para_email') {
     }
 }
 
+=head2 html_paragraph_conditional
+
+Calls html_paragraph, but only if the text doesn't include
+a <p>, <ol>, or <ul>.
+
+=cut
+
+sub html_paragraph_conditional : Filter('html_para_conditional') {
+    my $text = shift;
+    if ($text !~ /<(p|ol|ul)[^>]*>/) {
+        $text = html_paragraph($text);
+    }
+    return $text;
+}
+
 sub sanitize {
     my ($text, $admin) = @_;
 
