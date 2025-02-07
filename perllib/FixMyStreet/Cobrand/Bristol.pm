@@ -195,6 +195,33 @@ sub open311_contact_meta_override {
     }
 }
 
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    # Check Open311 was successful
+    return unless $row->external_id;
+    return if $row->get_extra_metadata('extra_email_sent');
+
+    # For Flytipping with witness, send an email also
+    my $witness = $row->get_extra_field_value('Witness') || 0;
+    return unless $witness;
+
+    my $emails = $self->feature('open311_email') or return;
+    my $dest = $emails->{$row->category} or return;
+    $dest = [ $dest, 'FixMyStreet' ];
+
+    $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
+
+    my $sender = FixMyStreet::SendReport::Email->new(
+        use_verp => 0, use_replyto => 1, to => [ $dest ] );
+    $sender->send($row, $h);
+    if ($sender->success) {
+        $row->set_extra_metadata(extra_email_sent => 1);
+    }
+
+    $row->remove_extra_field('fixmystreet_id');
+}
+
 =head2 post_report_sent
 
 Bristol have a special Inactive roadworks category; any reports made in that

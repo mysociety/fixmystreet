@@ -16,6 +16,9 @@ LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org'
 my $comment_user = $mech->create_user_ok('bristol@example.net');
 my $bristol = $mech->create_body_ok( 2561, 'Bristol City Council', {
     send_method => 'Open311',
+    api_key => 'key',
+    endpoint => 'endpoint',
+    jurisdiction => 'bristol',
     can_be_devolved => 1,
     comment_user => $comment_user,
     cobrand => 'bristol',
@@ -56,6 +59,11 @@ my $roadworks = $mech->create_contact_ok(
     category => 'Inactive roadworks',
     email => 'roadworks@example.org',
     send_method => 'Email'
+);
+my $flytipping = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Flytipping',
+    email => 'FLY',
 );
 my $north_somerset_contact = $mech->create_contact_ok(
     body_id => $north_somerset->id,
@@ -191,6 +199,37 @@ subtest "idle roadworks automatically closed" => sub {
         is $p->comments->count, 1, 'comment added';
         like $p->comments->first->text, qr/This issue has been forwarded on/, 'correct comment text';
 
+        $mech->email_count_is(1);
+    };
+};
+
+subtest "flytipping extra email sent" => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bristol',
+        COBRAND_FEATURES => {
+            open311_email => {
+                bristol => {
+                    Flytipping => 'flytipping@example.org',
+                }
+            }
+        }
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $flytipping->category,
+            extra => { _fields => [ { name => 'Witness', value => 1 } ] },
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->external_id, 'Report has external ID';
+        ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('extra_email_sent'), 1;
         $mech->email_count_is(1);
     };
 };
