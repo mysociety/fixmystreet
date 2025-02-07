@@ -1278,6 +1278,9 @@ input.final-submit {
     display: block;
     height: 2em;
   }
+  &:has(.pre-button-messaging:empty):not(:has(button)) {
+    display: none;
+  }
 }
 .floating-button-wrapper {
     position: fixed;
