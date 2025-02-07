@@ -475,6 +475,7 @@ sub _send_aggregated_alert_phone {
 sub alert_check_cobrand {
     my ($alert_cobrand, $item_cobrand) = @_;
     return 1 if $alert_cobrand ne 'tfl' && $item_cobrand eq 'tfl';
+    return 1 if $alert_cobrand eq 'highwaysengland' && $item_cobrand ne 'highwaysengland';
     return 1 if $alert_cobrand eq 'cyclinguk' && $item_cobrand ne 'cyclinguk';
     return 0;
 }

@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
+use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Cobrand::HighwaysEngland;
@@ -51,6 +52,14 @@ $mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->
 
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $highways, password => 'password');
 
+$staffuser->alerts->create({
+    alert_type => 'council_problems',
+    parameter => $highways->id,
+    whensubscribed => DateTime->now->subtract( hours => 1 ),
+    cobrand => 'highwaysengland',
+    confirmed => 1,
+});
+
 FixMyStreet::DB->resultset("Role")->create({
     body => $highways,
     name => 'Inspector',
@@ -69,6 +78,7 @@ FixMyStreet::override_config {
     CONTACT_EMAIL => 'fixmystreet@example.org',
     COBRAND_FEATURES => {
         contact_email => { highwaysengland => 'highwaysengland@example.org' },
+        contact_name => { highwaysengland => 'National Highways' },
         updates_allowed => {
             highwaysengland => 'open',
         },
@@ -108,6 +118,7 @@ FixMyStreet::override_config {
         like $body, qr/Road: M1/, 'road data included in email';
         like $body, qr/Area: Area 1/, 'area data included in email';
         unlike $body, qr/FixMyStreet is an independent service/, 'FMS not mentioned in email';
+        $mech->clear_emails_ok;
     };
 
     subtest "check things redacted appropriately" => sub {
@@ -145,12 +156,12 @@ FixMyStreet::override_config {
         $report->cobrand("fixmystreet");
         $report->update;
 
-        $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
         $mech->email_count_is(1);
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/FixMyStreet is an independent service/, 'FMS template used for email';
+        $mech->clear_emails_ok;
     };
 
     my ($problem) = $mech->create_problems_for_body(1, $highways->id, 'Title', { created => '2021-11-30T12:34:56' });
@@ -192,6 +203,14 @@ FixMyStreet::override_config {
         $mech->host('highwaysengland.example.org');
         $mech->get_ok('/reports/National+Highways');
         $mech->content_contains('Hackney');
+    };
+
+    subtest 'Test alerts working okay' => sub {
+        my ($problem2) = $mech->create_problems_for_body(1, $highways->id, 'Title', { cobrand => 'highwaysengland' });
+        FixMyStreet::Script::Alerts::send_other();
+        my $text = $mech->get_text_body_from_email;
+        unlike $text, qr{report/@{[$problem->id]}};
+        like $text, qr{report/@{[$problem2->id]}};
     };
 };
 
