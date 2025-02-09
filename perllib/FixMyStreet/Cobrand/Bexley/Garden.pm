@@ -9,6 +9,7 @@ package FixMyStreet::Cobrand::Bexley::Garden;
 use DateTime::Format::Strptime;
 use Integrations::Agile;
 use FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley;
+use Try::Tiny;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SCP',
@@ -52,6 +53,11 @@ sub garden_current_subscription {
     return undef unless $customer && $customer->{ServiceContracts};
     my $contract = $customer->{ServiceContracts}[0];
     return unless $contract;
+    # XXX should maybe sort by CreatedDate rather than assuming first is OK
+    my $cost = try {
+        my ($payment) = grep { $_->{PaymentStatus} eq 'Paid' } @{ $contract->{Payments} };
+        return $payment->{Amount};
+    };
 
     my $parser
         = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
@@ -67,6 +73,7 @@ sub garden_current_subscription {
                 = $customer->{CustomerExternalReference};
             $srv->{end_date} = $end_date;
             $srv->{garden_bins} = $contract->{WasteContainerQuantity};
+            $srv->{garden_cost} = $cost;
             return $srv;
         }
     }
