@@ -34,7 +34,7 @@ body_validation_rules = {
           maxlength: 256
         }
     },
-    'Hounslow Borough Council': confirm_validation_rules,
+    'Hounslow Highways': confirm_validation_rules,
     'Isle of Wight Council': confirm_validation_rules,
     'Island Roads': confirm_validation_rules,
     'Lincolnshire County Council': confirm_validation_rules,

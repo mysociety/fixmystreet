@@ -2,7 +2,7 @@ use FixMyStreet::TestMech;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
-my $hounslow_id = $mech->create_body_ok(2483, 'Hounslow Borough Council', { cobrand => 'hounslow' })->id;
+my $hounslow_id = $mech->create_body_ok(2483, 'Hounslow Highways', { cobrand => 'hounslow' })->id;
 $mech->create_contact_ok(
     body_id => $hounslow_id,
     category => 'Potholes',

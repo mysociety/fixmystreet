@@ -304,8 +304,6 @@ sub meta_line {
                 $body = "$body <img src='/cobrands/bromley/favicon.png' alt=''>";
             } elsif ($body eq 'Royal Borough of Greenwich') {
                 $body = "$body <img src='/cobrands/greenwich/favicon.png' alt=''>";
-            } elsif ($body eq 'Hounslow Borough Council') {
-                $body = 'Hounslow Highways';
             } elsif ($body eq 'Isle of Wight Council') {
                 $body = 'Island Roads';
             } elsif ($body eq 'Thamesmead') {
