@@ -198,6 +198,7 @@ sub lookup_site_code_config {
         version => '2.0.0',
         srsname => "urn:ogc:def:crs:EPSG::27700",
         accept_feature => sub { 1 },
+        reversed_coordinates => 1,
     };
 }
 
