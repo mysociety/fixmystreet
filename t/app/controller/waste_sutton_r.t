@@ -126,6 +126,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
+        $mech->content_contains('Damaged (1 to deliver, 1 to remove)');
 
         my $mech2 = $mech->clone;
         $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
@@ -160,6 +161,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 3 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
+        $mech->content_like(qr/Standard Brown General Waste Wheelie Bin \(140L\)<\/dt>\s*<dd class="govuk-summary-list__value">1 to remove<\/dd>/);
+        $mech->content_like(qr/Larger Brown General Waste Wheelie Bin \(240L\)<\/dt>\s*<dd class="govuk-summary-list__value">1 to deliver<\/dd>/);
 
         my $mech2 = $mech->clone;
         $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
@@ -186,6 +189,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 27 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
+        $mech->content_like(qr/Paper and Cardboard Green Wheelie Bin \(140L\)<\/dt>\s*<dd class="govuk-summary-list__value">1 to remove<\/dd>/);
+        $mech->content_like(qr/Paper and Cardboard Green Wheelie Bin \(240L\)<\/dt>\s*<dd class="govuk-summary-list__value">1 to deliver<\/dd>/);
 
         my $mech2 = $mech->clone;
         $mech2->submit_form_ok({ with_fields => { process => 'summary' } });
