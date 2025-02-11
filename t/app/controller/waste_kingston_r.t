@@ -44,6 +44,7 @@ create_contact({ category => 'Report missed collection', email => '3145' }, 'Was
 );
 create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
     { code => 'uprn', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Action', required => 1, automated => 'hidden_field' },
@@ -124,10 +125,10 @@ FixMyStreet::override_config {
     };
 
     foreach (
-        { id => 27, name => 'Blue lid paper and cardboard bin (240L)' },
-        { id => 12, name => 'Green recycling box (55L)' },
-        { id => 3, name => 'Black rubbish bin', ordered => 2 },
-        { id => 15, name => 'Green recycling bin (240L)' },
+        { id => 27, name => 'Blue lid paper and cardboard bin (240L)', service => 974 },
+        { id => 12, name => 'Green recycling box (55L)', service => 970 },
+        { id => 3, name => 'Black rubbish bin', ordered => 2, service => 966 },
+        { id => 15, name => 'Green recycling bin (240L)', service => 970 },
     ) {
         subtest "Request a new $_->{name}" => sub {
             my $ordered = $_->{ordered} || $_->{id};
@@ -161,6 +162,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $report->get_extra_field_value('Container_Type'), $ordered, 'correct bin type';
             is $report->get_extra_field_value('Action'), 1, 'correct container request action';
+            is $report->get_extra_field_value('service_id'), $_->{service};
             is $report->state, 'unconfirmed', 'report not confirmed';
             is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
@@ -215,6 +217,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $report->get_extra_field_value('Container_Type'), 12, 'correct bin type';
         is $report->get_extra_field_value('Action'), 2, 'correct container request action';
+        is $report->get_extra_field_value('service_id'), 970;
         is $report->state, 'unconfirmed', 'report not confirmed';
         is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
@@ -225,21 +228,27 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('uprn'), 1000000002;
             if ($report->title eq 'Request Green recycling bin (240L) collection') {
                 is $report->get_extra_field_value('Container_Type'), 15, 'correct bin type';
+                is $report->get_extra_field_value('service_id'), 970;
                 is $report->get_extra_field_value('payment'), '', 'correct payment';
             } elsif ($report->title =~ /^Request Green recycling box/) {
                 is $report->get_extra_field_value('Container_Type'), 12, 'correct bin type';
+                is $report->get_extra_field_value('service_id'), 970;
                 is $report->get_extra_field_value('payment'), $first_pay++ ? 900 : 1800, 'correct payment';
             } elsif ($report->title eq 'Request Black rubbish bin delivery') {
                 is $report->get_extra_field_value('Container_Type'), 3, 'correct bin type';
+                is $report->get_extra_field_value('service_id'), 966;
                 is $report->get_extra_field_value('payment'), 900, 'correct payment';
             } elsif ($report->title eq 'Request Food waste bin (outdoor) delivery') {
                 is $report->get_extra_field_value('Container_Type'), 46, 'correct bin type';
+                is $report->get_extra_field_value('service_id'), 980;
                 is $report->get_extra_field_value('payment'), "", 'correct payment';
             } elsif ($report->title eq 'Request Blue lid paper and cardboard bin (240L) collection') {
                 is $report->get_extra_field_value('Container_Type'), 27, 'correct bin type';
+                is $report->get_extra_field_value('service_id'), 974;
                 is $report->get_extra_field_value('payment'), '', 'correct payment';
             } elsif ($report->title eq 'Request Blue lid paper and cardboard bin (240L) delivery') {
                 is $report->get_extra_field_value('Container_Type'), 27, 'correct bin type';
+                is $report->get_extra_field_value('service_id'), 974;
                 is $report->get_extra_field_value('payment'), 900, 'correct payment';
             } else {
                 is $report->title, 'BAD';
@@ -334,6 +343,7 @@ FixMyStreet::override_config {
                 is $report->get_extra_field_value('Action'), 2, 'correct container request action';
                 is $report->get_extra_field_value('payment'), "", 'no payment';
                 is $other->get_extra_field_value('uprn'), 1000000002;
+                is $report->get_extra_field_value('service_id'), 966;
                 is $other->detail, "2 Example Street, Kingston, KT1 1AA";
                 is $other->category, 'Request new container';
                 is $other->title, "Request $names{$_->{id}} delivery";

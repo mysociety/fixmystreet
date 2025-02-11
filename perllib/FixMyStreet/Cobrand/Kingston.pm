@@ -496,6 +496,16 @@ sub waste_munge_request_data {
         $c->set_param('Container_Type', $container_id);
     }
 
+    my $service_id;
+    my $services = $c->stash->{services};
+    foreach my $s (keys %$services) {
+        my $containers = $services->{$s}{request_containers};
+        foreach (@$containers) {
+            $service_id = $s if $_ eq $container_id;
+        }
+    }
+    $c->set_param('service_id', $service_id);
+
     if ($data->{payment}) {
         my $cost;
         if ($action ne 'collect') {
