@@ -126,6 +126,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
+        $mech->content_contains('Damaged (1x to deliver, 1x to collect)');
 
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
         is $sent_params->{items}[0]{amount}, 500;
@@ -137,7 +138,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Containers typically arrive within 20 working days');
 
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Damaged";
+        is $report->detail, "2 Example Street, Sutton, SM1 1AA\n\nReason: Damaged\n\n1x Paper and Cardboard Green Wheelie Bin (240L) to deliver\n\n1x Paper and Cardboard Green Wheelie Bin (240L) to collect";
         is $report->category, 'Request new container';
         is $report->title, 'Request replacement Paper and Cardboard Green Wheelie Bin (240L)';
         is $report->get_extra_field_value('payment'), 500, 'correct payment';
@@ -157,6 +158,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 3 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
+        $mech->content_like(qr/Standard Brown General Waste Wheelie Bin \(140L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to collect<\/dd>/);
+        $mech->content_like(qr/Larger Brown General Waste Wheelie Bin \(240L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to deliver<\/dd>/);
 
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
         is $sent_params->{items}[0]{amount}, 1500;
@@ -180,6 +183,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 27 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
+        $mech->content_like(qr/Paper and Cardboard Green Wheelie Bin \(140L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to collect<\/dd>/);
+        $mech->content_like(qr/Paper and Cardboard Green Wheelie Bin \(240L\)<\/dt>\s*<dd class="govuk-summary-list__value">1x to deliver<\/dd>/);
 
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
         is $sent_params->{items}[0]{amount}, 1500;
@@ -204,11 +209,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 12 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Missing (1x to deliver)');
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Missing";
+        is $report->detail, "2 Example Street, Sutton, SM1 1AA\n\nReason: Missing\n\n1x Mixed Recycling Green Box (55L) to deliver";
         is $report->title, 'Request replacement Mixed Recycling Green Box (55L)';
     };
 
@@ -358,7 +364,7 @@ FixMyStreet::override_config {
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Sutton, SM1 1AA\n\nReason: Additional bag required";
+        is $report->detail, "2 Example Street, Sutton, SM1 1AA\n\nReason: Additional bag required\n\n1x Mixed Recycling Blue Striped Bag to deliver";
         is $report->category, 'Request new container';
         is $report->title, 'Request new Mixed Recycling Blue Striped Bag';
     };
