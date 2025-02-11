@@ -44,6 +44,9 @@ sub create_contact {
 create_contact({ category => 'Garden Subscription', email => 'garden@example.com'},
     { code => 'current_containers', required => 1, automated => 'hidden_field' },
     { code => 'new_containers', required => 1, automated => 'hidden_field' },
+    { code => 'total_containers', required => 1, automated => 'hidden_field' },
+    { code => 'customer_external_ref', required => 1, automated => 'hidden_field' },
+    { code => 'type', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
 );
@@ -260,13 +263,13 @@ FixMyStreet::override_config {
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
+        my $email_body = $mech->get_text_body_from_email($emails[1]);
         TODO: {
             local $TODO = 'Quantity not yet read in _garden_data.html';
-            like $body, qr/Number of bin subscriptions: 2/;
+            like $email_body, qr/Number of bin subscriptions: 2/;
         }
-        like $body, qr/Bins to be delivered: 2/;
-        like $body, qr/Total:.*?$test->{pounds_cost}/;
+        like $email_body, qr/Bins to be delivered: 2/;
+        like $email_body, qr/Total:.*?$test->{pounds_cost}/;
         $mech->clear_emails_ok;
     };
 
@@ -338,13 +341,13 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
+        my $email_body = $mech->get_text_body_from_email($emails[1]);
         TODO: {
             local $TODO = 'Quantity not yet read in _garden_data.html';
-            like $body, qr/Number of bin subscriptions: 1/;
+            like $email_body, qr/Number of bin subscriptions: 1/;
         }
-        unlike $body, qr/Bins to be delivered/;
-        like $body, qr/Total:.*?75.00/;
+        unlike $email_body, qr/Bins to be delivered/;
+        like $email_body, qr/Total:.*?75.00/;
     };
 
     subtest 'check new sub credit card payment with one less bin required' => sub {
@@ -373,13 +376,198 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
+        my $email_body = $mech->get_text_body_from_email($emails[1]);
         TODO: {
             local $TODO = 'Quantity not yet read in _garden_data.html';
-            like $body, qr/Number of bin subscriptions: 1/;
+            like $email_body, qr/Number of bin subscriptions: 1/;
         }
-        like $body, qr/Bins to be removed: 1/;
-        like $body, qr/Total:.*?75.00/;
+        like $email_body, qr/Bins to be removed: 1/;
+        like $email_body, qr/Total:.*?75.00/;
+    };
+
+    subtest 'renew garden subscription' => sub {
+        set_fixed_time('2024-02-01T00:00:00');
+
+        my $uprn = 10001;
+        my $contract_id = 'CONTRACT_123';
+
+        my ($new_sub_report) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'Garden Subscription - New',
+            {   category    => 'Garden Subscription',
+                external_id => "Agile-$contract_id",
+            },
+        );
+        $new_sub_report->set_extra_fields(
+            { name => 'uprn', value => $uprn } );
+        $new_sub_report->update;
+
+        subtest 'with no garden container in Whitespace' => sub {
+            $agile_mock->mock( 'CustomerSearch', sub { {
+                Customers => [
+                    {
+                        CustomerExternalReference => 'CUSTOMER_123',
+                        ServiceContracts => [
+                            {
+                                # 42 days away
+                                EndDate => '14/03/2024 12:00',
+                                Reference => $contract_id,
+                                WasteContainerQuantity => 2,
+                            },
+                        ],
+                    },
+                ],
+            } } );
+
+            $mech->get_ok("/waste/$uprn");
+            like $mech->content, qr/14 March 2024, soon due for renewal/,
+                '"Due soon" message shown';
+            like $mech->content,
+                qr/Renew your brown wheelie bin subscription/,
+                'Renewal link available';
+            like $mech->text, qr/Frequency.*Pending/,
+                'Details pending because no Whitespace data';
+        };
+
+        subtest 'with garden container in Whitespace' => sub {
+            $whitespace_mock->mock(
+                'GetSiteCollections',
+                sub {
+                    [   {   SiteServiceID          => 1,
+                            ServiceItemDescription => 'Garden waste',
+                            ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                            ServiceName          => 'Brown Wheelie Bin',
+                            NextCollectionDate   => '2024-02-07T00:00:00',
+                            SiteServiceValidFrom => '2024-01-01T00:00:00',
+                            SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                            RoundSchedule => 'RND-1 Mon',
+                        }
+                    ];
+                }
+            );
+
+            subtest 'within renewal window' => sub {
+                $agile_mock->mock( 'CustomerSearch', sub { {
+                    Customers => [
+                        {
+                            CustomerExternalReference => 'CUSTOMER_123',
+                            ServiceContracts => [
+                                {
+                                    # 42 days away
+                                    EndDate => '14/03/2024 12:00',
+                                    Reference => $contract_id,
+                                    WasteContainerQuantity => 2,
+                                },
+                            ],
+                        },
+                    ],
+                } } );
+
+                $mech->get_ok("/waste/$uprn");
+                like $mech->content, qr/14 March 2024, soon due for renewal/,
+                    '"Due soon" message shown';
+                like $mech->content,
+                    qr/Renew your brown wheelie bin subscription/,
+                    'Renewal link available';
+                like $mech->text, qr/Frequency.*Wednesday 7 February 2024/,
+                    'Details are not pending because we have Whitespace data';
+
+                $mech->get_ok("/waste/$uprn/garden_renew");
+                like $mech->content, qr/name="current_bins.*value="2"/s,
+                    'Current bins pre-populated';
+                like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                    'Current bins pre-populated';
+
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            bins_wanted => 3,
+                            payment_method => 'credit_card',
+                            name => 'Trevor Trouble',
+                            email => 'trevor@trouble.com',
+                            phone => '+4407111111111',
+                        },
+                    }
+                );
+
+                like $mech->text,
+                    qr/Please review the information you’ve provided/,
+                    'On review page';
+                like $mech->text,
+                    qr/Total£185.00/, 'correct cost';
+                $mech->waste_submit_check(
+                    { with_fields => { tandc => 1 } } );
+
+                my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+                is $renew_report->category, 'Garden Subscription';
+                is $renew_report->title, 'Garden Subscription - Renew';
+                is $renew_report->get_extra_field_value('uprn'), $uprn;
+                is $renew_report->get_extra_field_value('payment'), 18500;
+                is $renew_report->get_extra_field_value('type'), 'renew';
+                is $renew_report->get_extra_field_value(
+                    'customer_external_ref'), 'CUSTOMER_123';
+                is $renew_report->get_extra_field_value('current_containers'),
+                    2;
+                is $renew_report->get_extra_field_value('total_containers'),
+                    3;
+
+                # TODO Email
+
+            };
+
+            subtest 'too early' => sub {
+                $agile_mock->mock( 'CustomerSearch', sub { {
+                    Customers => [
+                        {
+                            CustomerExternalReference => 'CUSTOMER_123',
+                            ServiceContracts => [
+                                {
+                                    # 43 days away
+                                    EndDate => '15/03/2024 12:00',
+                                    Reference => $contract_id,
+                                    WasteContainerQuantity => 2,
+                                },
+                            ],
+                        },
+                    ],
+                } } );
+
+                $mech->get_ok("/waste/$uprn");
+                like $mech->content, qr/Renewal.*15 March 2024/s,
+                    'Renewal date shown';
+                unlike $mech->content,
+                    qr/Renew your brown wheelie bin subscription/,
+                    'Renewal link unavailable';
+            };
+
+            # TODO Think we should show new subscription link and not
+            # renewal link
+            subtest 'subscription expired' => sub {
+                $agile_mock->mock( 'CustomerSearch', sub { {
+                    Customers => [
+                        {
+                            CustomerExternalReference => 'CUSTOMER_123',
+                            ServiceContracts => [
+                                {
+                                    # Yesterday
+                                    EndDate => '31/01/2024 12:00',
+                                    Reference => $contract_id,
+                                    WasteContainerQuantity => 2,
+                                },
+                            ],
+                        },
+                    ],
+                } } );
+
+                $mech->get_ok("/waste/$uprn");
+                like $mech->content, qr/31 January 2024, soon due for renewal/,
+                    '"Due soon" message shown';
+                like $mech->content,
+                    qr/Renew your brown wheelie bin subscription/,
+                    'Renewal link available';
+            };
+        };
     };
 
     subtest 'Test bank details form validation' => sub {
@@ -644,6 +832,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'cancel garden subscription' => sub {
+        default_mocks();
         set_fixed_time('2024-02-01T00:00:00');
         my $tomorrow = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' )->format_datetime( DateTime->now->add(days => 1) );
 
@@ -698,8 +887,12 @@ FixMyStreet::override_config {
             FixMyStreet::Script::Reports::send();
 
             my @emails = $mech->get_email;
-            my $body = $mech->get_text_body_from_email($emails[1]);
-            like $body, qr/You have cancelled your garden waste collection service/;
+            my ($to_user) = grep {
+                $mech->get_text_body_from_email($_)
+                    =~ /You have cancelled your garden waste collection service/
+            } @emails;
+            ok $to_user, 'Email sent to user';
+
         };
 
         subtest 'with Whitespace data' => sub {
@@ -752,8 +945,12 @@ FixMyStreet::override_config {
             FixMyStreet::Script::Reports::send();
 
             my @emails = $mech->get_email;
-            my $body = $mech->get_text_body_from_email($emails[1]);
-            like $body, qr/You have cancelled your garden waste collection service/;
+            my ($to_user) = grep {
+                $mech->get_text_body_from_email($_)
+                    =~ /You have cancelled your garden waste collection service/
+            } @emails;
+            ok $to_user, 'Email sent to user';
+
         };
 
     };

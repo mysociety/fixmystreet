@@ -467,7 +467,6 @@ sub bin_services_for_address {
     $property->{garden_current_subscription}
         = $self->garden_current_subscription(\@site_services_filtered);
 
-
     $self->_set_request_containers( $property, @site_services_filtered );
 
     return \@site_services_filtered;
