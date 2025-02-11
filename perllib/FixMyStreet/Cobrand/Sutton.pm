@@ -417,6 +417,16 @@ sub waste_munge_request_data {
     my $reason = $data->{request_reason} || '';
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason);
 
+    my $service_id;
+    my $services = $c->stash->{services};
+    foreach my $s (keys %$services) {
+        my $containers = $services->{$s}{request_containers};
+        foreach (@$containers) {
+            $service_id = $s if $_ eq $id;
+        }
+    }
+    $c->set_param('service_id', $service_id);
+
     my ($action_id, $reason_id);
     if ($reason eq 'damaged') {
         $action_id = '2::1'; # Remove/Deliver

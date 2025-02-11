@@ -50,6 +50,7 @@ create_contact({ category => 'Report missed collection', email => 'missed' }, 'W
 );
 create_contact({ category => 'Request new container', email => '1635' }, 'Waste',
     { code => 'uprn', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Action', required => 1, automated => 'hidden_field' },
@@ -146,6 +147,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $report->get_extra_field_value('Container_Type'), 27, 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
+        is $report->get_extra_field_value('service_id'), 948;
         is $report->state, 'unconfirmed', 'report not confirmed';
         is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
 
@@ -176,6 +178,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Type'), '1::3', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
         is $report->get_extra_field_value('Reason'), '9::9', 'correct container request reason';
+        is $report->get_extra_field_value('service_id'), 940;
     };
     subtest 'Request a paper bin when having a 140L' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $bin_140_data });
@@ -201,6 +204,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Type'), '26::27', 'correct bin type';
         is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
         is $report->get_extra_field_value('Reason'), '9::9', 'correct container request reason';
+        is $report->get_extra_field_value('service_id'), 948;
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
     subtest 'Report a new recycling raises a bin delivery request' => sub {
