@@ -513,6 +513,8 @@ _nearest_uses_latlon config key is set by lookup_site_code_config, in which
 case lat/lons (EPSG 4326) are used. Useful if the assets are served by e.g.
 Alloy, not Confirm.
 
+Supply reversed_coordinates flag if the data from the WFS service returns
+co-ordinates the wrong way round (N/E or lat/lon).
 
 =cut
 
@@ -527,6 +529,9 @@ sub lookup_site_code {
     my $features = $self->_fetch_features($cfg, $x, $y);
     if ($cfg->{_nearest_uses_latlon}) {
         ($x, $y) = ($row->longitude, $row->latitude);
+    }
+    if ($cfg->{reversed_coordinates}) {
+        ($x, $y) = ($y, $x);
     }
     return $self->_nearest_feature($cfg, $x, $y, $features);
 }
