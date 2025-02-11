@@ -320,9 +320,11 @@ sub waste_munge_request_data {
     $c->set_param('service_id', $service_id);
 
     my ($action_id, $reason_id);
+    my $id_to_remove;
     if ($reason eq 'damaged') {
         $action_id = '2::1'; # Remove/Deliver
         $reason_id = '4::4'; # Damaged
+        $id_to_remove = $id;
     } elsif ($reason eq 'missing') {
         $action_id = 1; # Deliver
         $reason_id = 1; # Missing
@@ -336,18 +338,18 @@ sub waste_munge_request_data {
         $action_id = '2::1'; # Remove/Deliver
         if ($id == $CONTAINERS{refuse_140}) {
             $reason_id = '10::10'; # Reduce Capacity
-            $id = $CONTAINERS{refuse_240} . '::' . $CONTAINERS{refuse_140};
+            $id_to_remove = $CONTAINERS{refuse_240};
         } elsif ($id == $CONTAINERS{refuse_240}) {
             if ($c->stash->{quantities}{$CONTAINERS{refuse_360}}) {
                 $reason_id = '10::10'; # Reduce Capacity
-                $id = $CONTAINERS{refuse_360} . '::' . $CONTAINERS{refuse_240};
+                $id_to_remove = $CONTAINERS{refuse_360};
             } else {
                 $reason_id = '9::9'; # Increase Capacity
-                $id = $CONTAINERS{refuse_140} . '::' . $CONTAINERS{refuse_240};
+                $id_to_remove = $CONTAINERS{refuse_140};
             }
         } elsif ($id == $CONTAINERS{paper_240}) {
             $reason_id = '9::9'; # Increase Capacity
-            $id = $CONTAINERS{paper_140} . '::' . $CONTAINERS{paper_240};
+            $id_to_remove = $CONTAINERS{paper_140};
         }
     } else {
         # No reason, must be a bag
@@ -363,8 +365,14 @@ sub waste_munge_request_data {
     } else {
         $data->{title} = "Request new $container";
     }
-    $data->{detail} = "Quantity: $quantity\n\n$address";
+    $data->{detail} = $address;
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
+    $data->{detail} .= "\n\n1x $container to deliver";
+    if ($id_to_remove) {
+        my $container_removed = $c->stash->{containers}{$id_to_remove};
+        $data->{detail} .= "\n\n1x $container_removed to collect";
+        $id = $id_to_remove . '::' . $id if $id_to_remove != $id;
+    }
 
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
