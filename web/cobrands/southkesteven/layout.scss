@@ -62,26 +62,28 @@
 .southkesteven-footer {
   padding: 5rem 0;
 
-  .footer-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    column-gap: 15.625rem;
-    row-gap: 0;
-
-    // Layout for the grid child container
-    .newsletter-container {
-        grid-column: 1;
-        grid-row: 1;
-    }
-
-    .contact-container {
-        grid-column: 2;
-        grid-row: 1;
-    }
-    
-    .footer-nav {
-        grid-column: 1 / -1;
-        grid-row: 2;
+  @media screen and (min-width: 90rem) {
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 4fr 3fr;
+      column-gap: 15.625rem;
+      row-gap: 0;
+  
+      // Layout for the grid child container
+      .newsletter-container {
+          grid-column: 1;
+          grid-row: 1;
+      }
+  
+      .contact-container {
+          grid-column: 2;
+          grid-row: 1;
+      }
+      
+      .footer-nav {
+          grid-column: 1 / -1;
+          grid-row: 2;
+      }
     }
   }
 
@@ -134,16 +136,21 @@
     right: 0px;
 
     a {
-      bottom: 70px;
-      right: 50px;
+      bottom: 30px;
+      right: 35px;
       width: 188px;
       height: 80px;
     }
 
     &::after {
-      width: 540px;
+      width: 485px;
       height: 390px;
       background-position: right bottom;
     }
   }
+
+  .armed-forces-logo {
+    min-width: 210px;
+  }
+
 }
