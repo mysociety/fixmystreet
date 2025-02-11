@@ -1,3 +1,12 @@
+[% IF cobrand.moniker == 'kingston' ~%]
+Changes to collections of upholstered seating items
+
+Due to new regulations, collections of upholstered seating items like armchairs, sofas, footstools, bean bags and cushions will take place separately from other items. There is no change to the way you request a bulky waste collection. However, some items may be collected separately at a different time, which could be up to two working days after your scheduled collection day. For further information, please visit https://www.kingston.gov.uk/bins-recycling-rubbish/bulky-waste-collections/2
+
+[% END ~%]
+
+On collection day
+
 Make sure your items are out by [% cobrand.bulky_nice_collection_time %] on collection day.
 The crew will not enter your home[% IF cobrand.moniker == 'kingston' %] or garden to collect items[% END %].
 

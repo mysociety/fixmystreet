@@ -73,9 +73,9 @@ my @PLACES = (
     [ 'E8 1DY', 51.552267, -0.063316, 2508, 'Hackney Borough Council', 'LBO' ],
     [ 'E8 2DY', 51.552287, -0.063326, 2508, 'Hackney Council', 'LBO' ],
     [' E6 1AX', 51.524448, -0.077625, 2508, 'Hackney Council', 'LBO', 144379, 'Hoxton East & Shoreditch', 'LBW' ],
-    [ 'TW7 5JN', 51.482286, -0.328163, 2483, 'Hounslow Borough Council', 'LBO' ],
-    [ '?', 51.48111, -0.327219, 2483, 'Hounslow Borough Council', 'LBO' ],
-    [ '?', 51.482045, -0.327219, 2483, 'Hounslow Borough Council', 'LBO' ],
+    [ 'TW7 5JN', 51.482286, -0.328163, 2483, 'Hounslow Highways', 'LBO' ],
+    [ '?', 51.48111, -0.327219, 2483, 'Hounslow Highways', 'LBO' ],
+    [ '?', 51.482045, -0.327219, 2483, 'Hounslow Highways', 'LBO' ],
     [ '?', 51.345714, -0.227959, 2457, 'Epsom and Ewell Borough Council', 'DIS' ],
     [ 'CW11 1HZ', 53.145324, -2.370437, 21069, 'Cheshire East Council', 'UTA', 135301, 'Sandbach Town', 'UTW' ],
     [ '?', 50.78301, -0.646929 ],
@@ -192,7 +192,7 @@ sub dispatch_request {
         } elsif ($areas eq 'LBO' || $areas eq 'LBO,UTA,DIS') {
             $self->output({
                 2482 => {parent_area => undef, id => 2482, name => "Bromley Borough Council", type => "LBO"},
-                2483 => {parent_area => undef, id => 2483, name => "Hounslow Borough Council", type => "LBO"},
+                2483 => {parent_area => undef, id => 2483, name => "Hounslow Highways", type => "LBO"},
             });
         } elsif ($areas eq 60705) {
             $self->output({60705 => {parent_area => 2245, id => 60705, name => "Trowbridge", type => "CPC"}});

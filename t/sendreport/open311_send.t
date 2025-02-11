@@ -181,7 +181,7 @@ subtest 'test handles bad category', sub {
     like $bad_category_report->send_fail_reason, qr/Category Flytipping does not exist for body/, 'failure message set';
 };
 
-my $hounslow = $mech->create_body_ok( 2483, 'Hounslow Borough Council', { cobrand => 'hounslow' });
+my $hounslow = $mech->create_body_ok( 2483, 'Hounslow Highways', { cobrand => 'hounslow' });
 my $contact2 = $mech->create_contact_ok( body_id => $hounslow->id, category => 'Graffiti', email => 'GRAF' );
 $contact2->set_extra_fields(
     { code => 'easting', datatype => 'number' },

@@ -156,7 +156,7 @@ if ($opt->test_fixtures) {
         { area_id => 164186, categories => [ 'Graffiti' ], name => 'West Northamptonshire Council' },
         { area_id => 2483, categories => [
                 'Potholes', { category => 'Other', non_public => 1 },
-            ], name => 'Hounslow Borough Council', cobrand => 'hounslow' },
+            ], name => 'Hounslow Highways', cobrand => 'hounslow' },
         { area_id => 2508, categories => [ 'Potholes', 'Other' ], name => 'Hackney Council', cobrand => 'hackney' },
         { area_id => 2636, categories => [
                 { category => 'Potholes', send_method => 'Triage' },

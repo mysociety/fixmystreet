@@ -81,11 +81,6 @@ sub report_sent_confirmation_email { 'external_id' }
 # Used to change the "Sent to" line on report pages
 sub link_to_council_cobrand { "Hounslow Highways" }
 
-# The "all reports" link will default to using council_name, which
-# in our case doesn't correspond to a body and so causes an infinite redirect.
-# Instead, force the borough council name to be used.
-sub all_reports_single_body { { name => "Hounslow Borough Council" } }
-
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 

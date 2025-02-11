@@ -27,9 +27,9 @@ describe('private categories', function() {
     cy.get('#map_box').click(290, 307);
     cy.wait('@report-ajax');
     cy.pickCategory('Potholes');
-    cy.contains('sent to Hounslow Borough Council and also published online');
+    cy.contains('sent to Hounslow Highways and also published online');
     cy.pickCategory('Other');
-    cy.contains('sent to Hounslow Borough Council but not published online');
+    cy.contains('sent to Hounslow Highways but not published online');
   });
 
 });

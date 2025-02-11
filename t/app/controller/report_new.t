@@ -40,6 +40,7 @@ for my $body (
     { area_id => 2333, name => 'Hart Council', cobrand => 'hart' },
     { area_id => 2535, name => 'Sandwell Borough Council' },
     { area_id => 1000, name => 'National Highways', cobrand => 'highwaysengland' },
+    # Different name to test the display name mapping below
     { area_id => 2483, name => 'Hounslow Borough Council', cobrand => 'hounslow' },
 ) {
     my $extra = { cobrand => $body->{cobrand} } if $body->{cobrand};
@@ -868,6 +869,7 @@ subtest "check map click ajax response" => sub {
     }, sub {
         $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.482286&longitude=-0.328163' );
     };
+
     is_deeply $extra_details->{display_names}, { 'Hounslow Borough Council' => 'Hounslow Highways' }, 'council display name mapping correct';
 
     FixMyStreet::override_config {
