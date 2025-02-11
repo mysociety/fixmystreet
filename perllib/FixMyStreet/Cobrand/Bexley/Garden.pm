@@ -10,6 +10,7 @@ use DateTime::Format::Strptime;
 use Integrations::Agile;
 use FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley;
 use Try::Tiny;
+use JSON::MaybeXS;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SCP',
@@ -30,6 +31,53 @@ sub garden_service_ids {
     return [ 'GA-140', 'GA-240' ];
 }
 
+sub lookup_subscription_for_uprn {
+    my ($self, $uprn) = @_;
+
+    my $sub = {
+        row => undef,
+
+        email => undef,
+        cost => undef,
+        end_date => undef,
+        customer_external_ref => undef,
+        bins_count => undef,
+    };
+
+
+    my $results = $self->agile->CustomerSearch($uprn);
+    return undef unless $results && $results->{Customers};
+    my $customer = $results->{Customers}[0];
+    return undef unless $customer && $customer->{ServiceContracts};
+    my $contract = $customer->{ServiceContracts}[0];
+    return unless $contract;
+
+    # XXX should maybe sort by CreatedDate rather than assuming first is OK
+    $sub->{cost} = try {
+        my ($payment) = grep { $_->{PaymentStatus} eq 'Paid' } @{ $contract->{Payments} };
+        return $payment->{Amount};
+    };
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
+    $sub->{end_date} = $parser->parse_datetime( $contract->{EndDate} );
+
+    $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
+
+    $sub->{bins_count} = $contract->{WasteContainerQuantity};
+
+    my $c = $self->{c};
+    my $p = $c->model('DB::Problem')->search({
+        category => 'Garden Subscription',
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
+        state => { '!=' => 'hidden' },
+        external_id => "Agile-" . $contract->{Reference},
+    })->order_by('-id')->to_body($c->cobrand->body)->first;
+
+    $sub->{row} = $p if $p;
+
+    return $sub;
+}
+
 sub garden_current_subscription {
     my ($self, $services) = @_;
 
@@ -39,46 +87,26 @@ sub garden_current_subscription {
     my $uprn = $self->{c}->stash->{property}{uprn};
     return undef unless $uprn;
 
-# TODO Fetch active subscription from DB for UPRN
-#      (get_original_sub() in Controller/Waste.pm needs to handle Bexley UPRN).
-#      Could be more than one customer, so match against email.
-#      Could be more than one contract, so match against reference.
-
-    my $results = $self->agile->CustomerSearch($uprn);
-    return undef unless $results && $results->{Customers};
-    my $customer = $results->{Customers}[0];
-    return undef unless $customer && $customer->{ServiceContracts};
-    my $contract = $customer->{ServiceContracts}[0];
-    return unless $contract;
-    # XXX should maybe sort by CreatedDate rather than assuming first is OK
-    my $cost = try {
-        my ($payment) = grep { $_->{PaymentStatus} eq 'Paid' } @{ $contract->{Payments} };
-        return $payment->{Amount};
-    };
-
-    my $parser
-        = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
-    my $end_date = $parser->parse_datetime( $contract->{EndDate} );
-
     # Agile says there is a subscription; now get service data from
     # Whitespace
-    # XXX For performance, should we only query Agile if there's a matching Whitespace service?
     my $service_ids = { map { $_->{service_id} => $_ } @$services };
     for ( @{ $self->garden_service_ids } ) {
         if ( my $srv = $service_ids->{$_} ) {
-            $srv->{customer_external_ref}
-                = $customer->{CustomerExternalReference};
-            $srv->{end_date} = $end_date;
-            $srv->{garden_bins} = $contract->{WasteContainerQuantity};
-            $srv->{garden_cost} = $cost;
+            my $sub = $self->lookup_subscription_for_uprn($uprn);
+            $srv->{customer_external_ref} = $sub->{customer_external_ref};
+            $srv->{end_date} = $sub->{end_date};
+            $srv->{garden_bins} = $sub->{bins_count};
+            $srv->{garden_cost} = $sub->{cost};
+            $self->{c}->stash->{orig_sub} = $sub->{row};
             return $srv;
         }
     }
 
+    my $sub = $self->lookup_subscription_for_uprn($uprn);
     return {
         agile_only => 1,
-        customer_external_ref => $customer->{CustomerExternalReference},
-        end_date => $end_date,
+        customer_external_ref => $sub->{customer_external_ref},
+        end_date => $sub->{end_date},
     };
 }
 
