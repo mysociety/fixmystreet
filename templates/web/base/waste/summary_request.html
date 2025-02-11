@@ -20,12 +20,10 @@ step1 = first_page;
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
       [% IF c.cobrand.moniker == 'brent' %]
         <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_reason', data.request_reason) %]</dd>
-      [% ELSIF c.cobrand.moniker == 'sutton' %]
-        <dd class="govuk-summary-list__value">[% data.request_reason.ucfirst %]</dd>
       [% ELSE %]
         <dd class="govuk-summary-list__value">
-            [% data.$quantity_key %]
-            [% ' to deliver, ' IF data.$quantity_key AND data.$removal_key %]
+            [% data.$quantity_key %] to deliver
+            [%~ ', ' IF data.$quantity_key AND data.$removal_key %]
             [% IF data.$removal_key %][% data.$removal_key %] to remove[% END %]
         </dd>
       [% END %]
