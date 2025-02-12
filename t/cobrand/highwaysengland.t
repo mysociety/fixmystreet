@@ -78,6 +78,7 @@ FixMyStreet::override_config {
     CONTACT_EMAIL => 'fixmystreet@example.org',
     COBRAND_FEATURES => {
         contact_email => { highwaysengland => 'highwaysengland@example.org' },
+        contact_name => { highwaysengland => 'National Highways' },
         borough_email_addresses => {
             highwaysengland => {
                 'testareaemail@nh' => [ {
