@@ -615,7 +615,8 @@ FixMyStreet::override_config {
 
         subtest 'with Agile data only' => sub {
             $mech->get_ok('/waste/10001');
-            like $mech->text, qr/Sorry, we are unable to find any rubbish and recycling collections/;
+            like $mech->text, qr/Brown wheelie bin/;
+            like $mech->text, qr/Next collectionPending/;
 
             $mech->get_ok('/waste/10001/garden_cancel');
             like $mech->text, qr/Cancel your garden waste subscription/;
