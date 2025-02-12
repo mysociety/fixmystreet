@@ -48,7 +48,11 @@ sub lookup_subscription_for_uprn {
     return undef unless $results && $results->{Customers};
     my $customer = $results->{Customers}[0];
     return undef unless $customer && $customer->{ServiceContracts};
-    my $contract = $customer->{ServiceContracts}[0];
+    # Assume there is only one active subscription
+    my ($contract) = grep {
+               $_->{ServiceContractStatus} eq 'ACTIVE'
+            || $_->{ServiceContractStatus} eq 'PRECONTRACT'
+    } @{ $customer->{ServiceContracts} // [] };
     return unless $contract;
 
     # XXX should maybe sort by CreatedDate rather than assuming first is OK
@@ -165,6 +169,7 @@ sub waste_garden_sub_params {
     } elsif ( $data->{title} =~ /Renew/ ) {
         $c->set_param( 'type', 'renew' );
         $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
+        $c->set_param( 'total_containers', $data->{bins_wanted} );
 
     }
 }
@@ -187,8 +192,22 @@ sub waste_sub_due {
     return $diff <= $self->garden_due_days;
 }
 
-# TODO
-sub waste_sub_overdue { undef }
+=head2 waste_sub_overdue
+
+Returns true/false if now is past DATE.
+
+=cut
+
+sub waste_sub_overdue {
+    my ( $self, $date ) = @_;
+
+    my $now = DateTime->now->set_time_zone( FixMyStreet->local_time_zone )
+        ->truncate( to => 'day' );
+    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date)
+        ->truncate( to => 'day' );
+
+    return $now > $sub_end;
+}
 
 =item * You can order a maximum of five bins
 
