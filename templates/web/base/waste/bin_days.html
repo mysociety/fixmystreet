@@ -165,6 +165,8 @@
                 [% END %]
               [% ELSIF unit.next.is_today %]
                 <strong>Being collected today</strong>
+              [% ELSIF unit.next.pending %]
+                <strong>Pending</strong>
               [% ELSE %]
                 [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
               [% END %]
