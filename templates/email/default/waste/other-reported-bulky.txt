@@ -28,6 +28,11 @@ Date booking made: [% report_date %]
 [% END ~%]
 Collection date: [% collection_date %]
 
+[% IF cobrand.moniker == 'merton' ~%]
+If your collection includes both upholstered and non-upholstered items (such as a sofa and a fridge), we may collect them in two stages.
+The second collection may be up to two working days after your chosen date.
+
+[% END ~%]
 Items to be collected:
 [% INCLUDE 'waste/_bulky_list.txt' %]
 

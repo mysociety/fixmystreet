@@ -13,6 +13,9 @@
     <p>The list displays the available collection dates for your address for the next eight weeks.
       Collections take place any time from [% collection_time %] to 4:30pm. You do not need to be in on the collection day, just
       make sure the items are placed outside before [% collection_time %] on the collection day.</p>
+  [% ELSIF cobrand.moniker == 'merton' %]
+    <p>If your collection includes both upholstered and non-upholstered items (such as a sofa and a fridge), we may collect them in two stages.
+    The second collection may be up to two working days after your chosen date.</p>
   [% END %]
 
 [% IF flash_message && flash_message == 'choose_another_date' %]
