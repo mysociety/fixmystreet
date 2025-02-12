@@ -6,15 +6,17 @@
         [%~ PROCESS 'waste/_services_garden_subscription.html' ~%]
       </dd>
     </div>
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Renewal</dt>
-      <dd class="govuk-summary-list__value
-      [%~ ' renewal-status' IF unit.garden_due AND NOT waste_features.garden_renew_disabled ~%]
-      ">[% date.format(unit.end_date _ ' 00:00:00', '%d %B %Y') %]
-          [%~ ' Cancellation in progress' IF pending_cancellation %]
-          [%~ ', soon due for renewal.' IF unit.garden_due AND NOT waste_features.garden_renew_disabled ~%]
-      </dd>
-    </div>
+    [% IF unit.end_date %]
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Renewal</dt>
+        <dd class="govuk-summary-list__value
+        [%~ ' renewal-status' IF unit.garden_due AND NOT waste_features.garden_renew_disabled ~%]
+        ">[% date.format(unit.end_date _ ' 00:00:00', '%d %B %Y') %]
+            [%~ ' Cancellation in progress' IF pending_cancellation %]
+            [%~ ', soon due for renewal.' IF unit.garden_due AND NOT waste_features.garden_renew_disabled ~%]
+        </dd>
+      </div>
+    [% END %]
   </dl>
 
 [% IF ( unit.garden_due ) AND NOT waste_features.garden_renew_disabled %]
