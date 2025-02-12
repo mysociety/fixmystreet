@@ -76,7 +76,9 @@ sub lookup_subscription_for_uprn {
         external_id => "Agile-" . $contract->{Reference},
     })->order_by('-id')->to_body($c->cobrand->body)->first;
 
-    $sub->{row} = $p if $p;
+    if ($p) {
+        $self->{c}->stash->{orig_sub} = $sub->{row} = $p;
+    }
 
     return $sub;
 }
@@ -100,17 +102,35 @@ sub garden_current_subscription {
             $srv->{end_date} = $sub->{end_date};
             $srv->{garden_bins} = $sub->{bins_count};
             $srv->{garden_cost} = $sub->{cost};
-            $self->{c}->stash->{orig_sub} = $sub->{row};
             return $srv;
         }
     }
 
+    # If we reach here then Whitespace doesn't think there's a garden service for this
+    # property. If Agile does have a subscription then we need to add a service
+    # to the list for this property so the frontend displays it.
     my $sub = $self->lookup_subscription_for_uprn($uprn);
-    return {
+    return undef unless $sub;
+
+    my $service = {
         agile_only => 1,
         customer_external_ref => $sub->{customer_external_ref},
         end_date => $sub->{end_date},
+        garden_bins => $sub->{bins_count},
+        garden_cost => $sub->{cost},
+
+        uprn => $uprn,
+        garden_waste => 1,
+        service_description => "Garden waste",
+        service_name => "Brown wheelie bin",
+        service_id => "GA-240",
+        schedule => "Pending",
+        next => { pending => 1 },
     };
+    push @$services, $service;
+    $self->{c}->stash->{property}{garden_current_subscription} = $service;
+    $self->{c}->stash->{property}{has_garden_subscription} = 1;
+    return $service;
 }
 
 # TODO This is a placeholder
