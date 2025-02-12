@@ -73,9 +73,7 @@
     </div>
 </div>
 <div id="js-environment-message" class="hidden">
-    <p>
-    [% INCLUDE 'report/new/flytipping_text.html' %]
-    </p>
+    [% fly_text = INCLUDE 'report/new/flytipping_text.html' %][% fly_text | html_para %]
 </div>
 <div id="js-graffiti-message" class="hidden">
     <p>
