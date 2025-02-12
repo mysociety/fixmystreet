@@ -382,6 +382,7 @@ sub bin_services_for_address {
             },
             assisted_collection => $assisted_collection,
             uprn => $uprn,
+            garden_waste => $container->{description} eq 'Garden waste' ? 1 : 0,
         };
 
         if ($last_dt) {
@@ -399,7 +400,7 @@ sub bin_services_for_address {
         $property->{above_shop} = 1
             if $filtered_service->{service_id} eq 'MDR-SACK';
         $property->{has_garden_subscription} = 1
-            if $filtered_service->{service_description} eq 'Garden waste';
+            if $filtered_service->{garden_waste};
 
         # Frequency of collection
         if ( @round_schedules > 1 ) {
@@ -463,6 +464,10 @@ sub bin_services_for_address {
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
 
     @site_services_filtered = $self->service_sort(@site_services_filtered);
+
+    $property->{garden_current_subscription}
+        = $self->garden_current_subscription(\@site_services_filtered);
+
 
     $self->_set_request_containers( $property, @site_services_filtered );
 
@@ -1246,7 +1251,7 @@ sub in_cab_logs_reason_prefixes {
         'Clear Sacks' => ['MDR-SACK', 'CW-SACK'],
         'Paper & Card' => ['PA-1100', 'PA-1280', 'PA-140', 'PA-240', 'PA-55', 'PA-660', 'PA-940', 'PC-180', 'PC-55'],
         'Food' => ['FO-140', 'FO-23'],
-        'Garden' => ['GA-140', 'GA-240'],
+        'Garden' => ['GA-140', 'GA-240'], # TODO Call Garden.pm->garden_service_ids to make sure these IDs are consistent
         'Plastics & Glass' => ['PG-1100', 'PG-1280', 'PG-240', 'PG-360', 'PG-55', 'PG-660', 'PG-940', 'PL-1100', 'PL-1280', 'PL-140', 'PL-55', 'PL-660', 'PL-940'],
         'Glass' => ['GL-1100', 'GL-1280', 'GL-55', 'GL-660'],
         'Refuse' => ['RES-1100', 'RES-1280', 'RES-140', 'RES-180', 'RES-240', 'RES-660', 'RES-720', 'RES-940', 'RES-CHAM', 'RES-DBIN', 'RES-SACK'],

@@ -21,6 +21,9 @@ my $mock_waste = Test::MockModule->new('BexleyAddresses');
 # We don't actually read from the file, so just put anything that is a valid path
 $mock_waste->mock( 'database_file', '/' );
 
+my $agile_mock = Test::MockModule->new('Integrations::Agile');
+$agile_mock->mock( 'CustomerSearch', sub { {} } );
+
 my $dbi_mock = Test::MockModule->new('DBI');
 $dbi_mock->mock( 'connect', sub {
     my $dbh = Test::MockObject->new;
@@ -268,9 +271,9 @@ $existing_missed_collection_report2->add_to_comments(
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bexley',
     MAPIT_URL => 'http://mapit.uk/',
-    COBRAND_FEATURES => { whitespace => { bexley => {
-        url => 'http://example.org/',
-        } },
+    COBRAND_FEATURES => {
+        whitespace => { bexley => { url => 'http://example.org/' } },
+        agile => { bexley => { url => 'test' } },
         waste => { bexley => 1 },
         waste_calendar_links => { bexley =>  { 'Wk-1' => 'PDF 1', 'Wk-2' => 'PDF 2'} },
     },
@@ -356,6 +359,7 @@ FixMyStreet::override_config {
                     date => ignore(),
                 },
                 uprn => ignore(),
+                garden_waste => 0,
             );
             cmp_deeply \@sorted, [
                 {   id             => 8,
