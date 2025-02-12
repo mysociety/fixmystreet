@@ -153,6 +153,28 @@ FixMyStreet::override_config {
         $mech->get_ok('/');
         $mech->content_contains('This is an OOH message');
     };
+
+    subtest 'HTML vs non-HTML site messages' => sub {
+        # Test plain text message gets wrapped in paragraphs
+        $mech->get_ok('/admin/sitemessage');
+        my ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
+        $mech->post_ok('/admin/sitemessage', {
+            site_message => "First line\n\nSecond line",
+            token => $csrf,
+        });
+        $mech->get_ok('/');
+        $mech->content_contains("<p>\nFirst line\n</p>\n\n<p>\nSecond line</p>");
+
+        # Test HTML message is left as-is
+        $mech->get_ok('/admin/sitemessage');
+        ($csrf) = $mech->content =~ /name="token" value="([^"]*)"/;
+        $mech->post_ok('/admin/sitemessage', {
+            site_message => "<p>Test <strong>HTML</strong> message</p>\n\n<ul>\n<li>Item 1</li>\n<li>Item 2</li>\n</ul>",
+            token => $csrf,
+        });
+        $mech->get_ok('/');
+        $mech->content_contains("<p>Test <strong>HTML</strong> message</p>\r\n\r\n<ul>\r\n<li>Item 1</li>\r\n<li>Item 2</li>\r\n</ul>");
+    };
 };
 
 done_testing;
