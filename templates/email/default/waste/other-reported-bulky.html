@@ -31,6 +31,13 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
     Collection date: [% collection_date %]
   </p>
 
+  [% IF cobrand.moniker == 'merton' %]
+    <p style="[% p_style %]">
+        If your collection includes both upholstered and non-upholstered items (such as a sofa and a fridge), we may collect them in two stages.
+        The second collection may be up to two working days after your chosen date.
+    </p>
+  [% END %]
+
   <p style="[% p_style %]">
     Items to be collected:
     [% INCLUDE 'waste/_bulky_list.html' %]

@@ -31,6 +31,12 @@ END ~%]
       <p>If you need to contact us about your booking please use the reference number:&nbsp;[% report_id %]</p>
     [% ELSE %]
       <p>Our contractor will collect the items you have requested on [% cobrand.bulky_nice_collection_date(report) %].</p>
+
+      [% IF cobrand.moniker == 'merton' %]
+        <p>If your collection includes both upholstered and non-upholstered items (such as a sofa and a fridge), we may collect them in two stages.
+        The second collection may be up to two working days after your chosen date.</p>
+      [% END %]
+
       <p>Item collection starts from [% cobrand.bulky_nice_collection_time %].&nbsp;
         [%~ IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' ~%]
         Please have your items ready for collection.

@@ -349,9 +349,14 @@ sub open311_pre_send {
         }
     }
 
-    if (my $flytip_info = $row->get_extra_field_value('FLY_Q')) {
-        my $text = "Flytip information: " . $flytip_info . "\n\n" . $row->detail;
-        $row->detail($text);
+    # Any special extra questions to include
+    my $extra = $row->get_extra_fields;
+    foreach (@$extra) {
+        if ($_->{name} =~ /_Q$/ && $_->{value}) {
+            (my $name = ucfirst lc $_->{name}) =~ s/_q//;
+            my $text = "$name information: " . $_->{value} . "\n\n" . $row->detail;
+            $row->detail($text);
+        }
     }
 }
 

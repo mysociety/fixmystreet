@@ -289,7 +289,7 @@ subtest 'Private comments on updates are added to open311 description' => sub {
 };
 
 subtest 'ensure flytip information is added to open311 description' => sub {
-    $report->set_extra_fields({ name => 'FLY_Q', value => 'Large sofa and household waste' });
+    $report->set_extra_fields({ name => 'FLYTIP_Q', value => 'Large sofa and household waste' });
     $report->send_state('unprocessed');
     $report->update;
 
