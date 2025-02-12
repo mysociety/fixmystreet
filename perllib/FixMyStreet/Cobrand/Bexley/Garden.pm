@@ -48,12 +48,26 @@ sub lookup_subscription_for_uprn {
     };
 
 
+    my ( $customer, $contract );
+
     my $results = $self->agile->CustomerSearch($uprn);
-    return undef unless $results && $results->{Customers};
-    my $customer = $results->{Customers}[0];
-    return undef unless $customer && $customer->{ServiceContracts};
-    my $contract = $customer->{ServiceContracts}[0];
-    return unless $contract;
+
+    # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
+    my $customers = $results->{Customers} || [];
+    OUTER: for ( @$customers ) {
+        next unless $_->{CustomertStatus} eq 'ACTIVATED'; # CustomertStatus (sic) options seem to be ACTIVATED/INACTIVE
+        my $contracts = $_->{ServiceContracts} || [];
+        next unless $contracts;
+        $customer = $_;
+        for ( @$contracts ) {
+            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT
+            $contract = $_;
+            # use the first matching customer/contract
+            last OUTER if $customer && $contract;
+        }
+    }
+
+    return unless $customer && $contract;
 
     # XXX should maybe sort by CreatedDate rather than assuming first is OK
     $sub->{cost} = try {
@@ -90,17 +104,35 @@ sub garden_current_subscription {
             $srv->{end_date} = $sub->{end_date};
             $srv->{garden_bins} = $sub->{bins_count};
             $srv->{garden_cost} = $sub->{cost};
-            $self->{c}->stash->{orig_sub} = $sub->{row};
             return $srv;
         }
     }
 
+    # If we reach here then Whitespace doesn't think there's a garden service for this
+    # property. If Agile does have a subscription then we need to add a service
+    # to the list for this property so the frontend displays it.
     my $sub = $self->lookup_subscription_for_uprn($uprn);
-    return {
+    return undef unless $sub;
+
+    my $service = {
         agile_only => 1,
         customer_external_ref => $sub->{customer_external_ref},
         end_date => $sub->{end_date},
+        garden_bins => $sub->{bins_count},
+        garden_cost => $sub->{cost},
+
+        uprn => $uprn,
+        garden_waste => 1,
+        service_description => "Garden waste",
+        service_name => "Brown wheelie bin",
+        service_id => "GA-240",
+        schedule => "Pending",
+        next => { pending => 1 },
     };
+    push @$services, $service;
+    $self->{c}->stash->{property}{garden_current_subscription} = $service;
+    $self->{c}->stash->{property}{has_garden_subscription} = 1;
+    return $service;
 }
 
 # TODO This is a placeholder
