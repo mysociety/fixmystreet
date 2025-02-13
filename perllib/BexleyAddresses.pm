@@ -12,12 +12,15 @@ That script shows the setup of the database in more detail, but to explain brief
 
 =over 4
 
-=item * postcodes
+=item * lpi
 
 Stores postcode, UPRN, USRN, and address portions (e.g. house number and name) for each property (properties are uniquely identified by their UPRN).
 
-The 'has_parent' flag is used to determine whether 'Secondary Addressable
-Object' or sao_* fields are included in the address.
+=item * blpu
+
+Stores property class and whether the UPRN has a parent, used to determine
+whether 'Secondary Addressable Object' or sao_* fields are included in the
+address.
 
 =item * street_descriptors
 
@@ -73,14 +76,15 @@ sub addresses_for_postcode {
 
     my $addresses = $db->selectall_arrayref(
         <<"SQL",
-   SELECT p.uprn       uprn,
-          p.usrn       usrn,
-          p.has_parent has_parent,
+   SELECT lpi.uprn,
+          lpi.usrn,
+          blpu.has_parent,
           $address_fields
-     FROM postcodes p
-     JOIN street_descriptors sd
-       ON sd.usrn = p.usrn
-    WHERE p.postcode = ?
+     FROM lpi
+     JOIN blpu ON lpi.uprn = blpu.uprn
+     JOIN street_descriptors sd ON sd.usrn = lpi.usrn
+    WHERE postcode = ?
+      AND class != 'P' AND class != 'PP'
 SQL
         { Slice => {} },
         $postcode,
@@ -97,7 +101,7 @@ sub usrn_for_uprn {
     return ( $db->selectrow_hashref(
         <<"SQL",
   SELECT usrn
-    FROM postcodes
+    FROM lpi
    WHERE uprn = ?
 SQL
         { Slice => {} },
@@ -119,10 +123,10 @@ sub address_for_uprn {
    SELECT postcode,
           has_parent,
           $address_fields
-     FROM postcodes p
-     JOIN street_descriptors sd
-       ON sd.usrn = p.usrn
-    WHERE p.uprn = ?
+     FROM lpi
+     JOIN blpu ON lpi.uprn = blpu.uprn
+     JOIN street_descriptors sd ON sd.usrn = lpi.usrn
+    WHERE lpi.uprn = ?
 SQL
         undef,
         $uprn,
