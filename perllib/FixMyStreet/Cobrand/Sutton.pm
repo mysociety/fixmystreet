@@ -203,7 +203,7 @@ sub service_name_override {
         $SERVICE_IDS{garden} => 'Garden Waste',
         $SERVICE_IDS{communal_food} => 'Food Waste',
         $SERVICE_IDS{communal_paper} => 'Paper & Card',
-        $SERVICE_IDS{communal_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $SERVICE_IDS{communal_mixed} => 'Mixed Recycling',
         $SERVICE_IDS{fas_paper} => 'Paper & Card',
         $SERVICE_IDS{schedule2_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
         $SERVICE_IDS{schedule2_refuse} => 'Non-Recyclable Refuse',
