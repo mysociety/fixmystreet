@@ -243,4 +243,30 @@ sub open311_get_user {
     return $user;
 }
 
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        staff_role => 'Staff Role',
+    );
+
+    return if $csv->dbi; # All covered already
+
+    my $user_lookup = $self->csv_staff_users;
+    my $userroles = $self->csv_staff_roles($user_lookup);
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $by = $report->get_extra_metadata('contributed_by');
+        my $staff_role = '';
+        if ($by) {
+            $staff_role = join(',', @{$userroles->{$by} || []});
+        }
+        return {
+            staff_role => $staff_role,
+        };
+    });
+}
+
 1;

@@ -4,6 +4,10 @@ use FixMyStreet::Script::CSVExport;
 use Test::MockModule;
 use File::Temp 'tempdir';
 
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2248, 'Northumberland County Council', { cobrand => 'northumberland' });
@@ -132,12 +136,12 @@ FixMyStreet::override_config {
             1,
             $body->id,
             'Test',
-            { cobrand => $host },
+            { cobrand => $host, external_id => 123 },
         );
 
         subtest "User assignment on $host site" => sub {
             $mech->get_ok( '/report/' . $problem_to_update->id );
-            $mech->submit_form_ok({ with_fields => { 'shortlist-add' => 1 } });
+            $mech->submit_form_ok({ form_id => 'planned_form' });
             my $comment
                 = $problem_to_update->comments->order_by('-id')->first;
             is_deeply $comment->get_extra_metadata, {
@@ -155,7 +159,7 @@ FixMyStreet::override_config {
                 'correct extra_details attribute';
 
             $mech->get_ok( '/report/' . $problem_to_update->id );
-            $mech->submit_form_ok({ with_fields => { 'shortlist-remove' => 1 } });
+            $mech->submit_form_ok({ form_id => 'planned_form' });
             $comment
                 = $problem_to_update->comments->order_by('-id')->first;
             is_deeply $comment->get_extra_metadata, {
@@ -177,8 +181,7 @@ FixMyStreet::override_config {
             $mech->get_ok( '/report/' . $problem_to_update->id );
             $mech->submit_form(
                 button  => 'save',
-                form_id => 'report_inspect_form',
-                fields  => {
+                with_fields => {
                     detailed_information => 'ABC',
                     include_update       => 0,
                 },
@@ -202,8 +205,7 @@ FixMyStreet::override_config {
             $mech->get_ok( '/report/' . $problem_to_update->id );
             $mech->submit_form(
                 button  => 'save',
-                form_id => 'report_inspect_form',
-                fields  => {
+                with_fields => {
                     detailed_information => '',
                     include_update       => 0,
                 },

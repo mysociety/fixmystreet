@@ -474,7 +474,7 @@ sub inspect : Private {
                             $c->cobrand->max_detailed_info_length
                         );
                 }
-            } elsif ( $c->get_param('detailed_information') eq '' ) {
+            } else {
                 $problem->unset_extra_metadata('detailed_information');
             }
 

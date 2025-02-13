@@ -323,7 +323,6 @@ sub _handle_extras {
     my ($self, $request, $p) = @_;
     my $body = $self->current_body;
 
-
     if ( $request->{extras} ) {
         # Assign admin user to report if 'assigned_user_*' fields supplied
         if ( $request->{extras}{assigned_user_email} ) {
