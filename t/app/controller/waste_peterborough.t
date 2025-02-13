@@ -286,14 +286,14 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-425' => 1 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'lost_stolen' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->submit_form_ok({ with_fields => { extra_detail => 'Extra', process => 'summary' } });
         $mech->content_contains('Request sent');
         $mech->content_like(qr/If your bin is not received two working days before scheduled collection\s+please call 01733 747474 to discuss alternative arrangements./);
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 100090215480;
-        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin";
+        is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin\n\nExtra detail: Extra";
         is $report->category, 'All bins';
         is $report->title, 'Request new All bins';
     };
