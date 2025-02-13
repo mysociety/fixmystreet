@@ -1,0 +1,55 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+BEGIN {    # set all the paths to the perl code
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Integrations::AccessPaySuite;
+
+my $client = Integrations::AccessPaySuite->new(
+    config => {
+        endpoint => 'https://playpen.accesspaysuite.com',
+        client_code => 'APIRTM',
+        api_key => $ENV{ACCESS_PAYSUITE_API_KEY}
+    }
+);
+
+# Create a customer
+my $customer = $client->create_customer({
+    customerRef => 'john@example.com',
+    email => 'john@example.com',
+    title => 'Mr',
+    firstName => 'John',
+    surname => 'Doe',
+    postCode => 'SE1 1AA',
+    accountNumber => '12345678',
+    bankSortCode => '123456',
+    accountHolderName => 'John Doe',
+    line1 => '123 Main St',
+    line2 => 'Apt 1',
+});
+use Devel::Dwarn;
+::Dwarn($customer);
+
+# Set up a direct debit
+my $contract = $client->create_contract($customer->{Id}, {
+    scheduleId => '38491b98-e3dd-45c1-80e7-e44941e481c6',
+    start => '2025-03-01T00:00:00.000',
+    isGiftAid => 0,
+    terminationType => "Until further notice",
+    atTheEnd => "Switch to further notice",
+    paymentMonthInYear => 3,
+    additionalReference => 'BEXLEY GGW',
+    paymentDayInMonth => 28,
+    amount => 50.00,
+});
+::Dwarn($contract);
+
+print "Customer ID: $customer->{Id}\n";
+print "Contract ID: $contract->{Id}\n";

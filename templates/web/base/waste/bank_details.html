@@ -1,0 +1,7 @@
+<h1>Enter Your Bank Details</h1>
+<p>Please provide your bank account information so we can set up your Direct Debit mandate.</p>
+
+[% PROCESS 'govuk/fields.html' %]
+<form id="bank-details-form" class="waste waste--[% form.current_page.name OR form.name %]" method="post">
+  [% PROCESS form %]
+</form>

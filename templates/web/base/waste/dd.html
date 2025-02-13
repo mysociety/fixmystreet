@@ -39,7 +39,11 @@
     </dl>
 </div>
 
-[% BLOCK form_extra %][% END %]
-[% INCLUDE 'waste/dd_form.html' button_text="Continue to Bank Details" %]
+[% IF c.cobrand.direct_debit_collection_method == 'internal' %]
+    [% INCLUDE 'waste/bank_details.html' %]
+[% ELSE %]
+    [% BLOCK form_extra %][% END %]
+    [% INCLUDE 'waste/dd_form.html' button_text="Continue to Bank Details" %]
+[% END %]
 
 [% INCLUDE footer.html %]
