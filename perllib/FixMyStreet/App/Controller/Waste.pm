@@ -19,6 +19,7 @@ use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use FixMyStreet::App::Form::Waste::Garden::Transfer;
+use FixMyStreet::App::Form::Waste::BankDetails;
 use WasteWorks::Costs;
 use Memcached;
 use JSON::MaybeXS;
@@ -390,6 +391,34 @@ sub populate_dd_details : Private {
     $c->cobrand->call_hook( 'garden_waste_dd_munge_form_details' => $c );
 
     $c->stash->{redirect} = $c->cobrand->call_hook( 'garden_waste_dd_redirect_url' => $p ) || '';
+
+    if ($c->cobrand->direct_debit_collection_method eq 'internal') {
+        my $form = FixMyStreet::App::Form::Waste::BankDetails->new(
+            c => $c,
+            page_name => 'bank_details',
+        );
+
+        if ($c->req->method eq 'POST') {
+            $form->process(params => $c->req->params);
+            if ($form->validated) {
+                my $success = $c->cobrand->call_hook('setup_direct_debit', [$form->value]);
+                if ($success) {
+                    $c->res->redirect($c->uri_for('/waste/dd_complete', {
+                        token => $c->stash->{reference},
+                        id => $c->stash->{report}->id
+                    }));
+                    $c->detach;
+                } else {
+                    $form->add_form_error('Failed to setup direct debit');
+                }
+            }
+        }
+
+        $c->stash->{form} = $form;
+    }
+
+    $c->stash->{template} = 'waste/dd.html';
+    $c->detach;
 }
 
 sub direct_debit : Path('dd') : Args(0) {
@@ -398,7 +427,50 @@ sub direct_debit : Path('dd') : Args(0) {
     $c->cobrand->call_hook('waste_report_extra_dd_data');
     $c->forward('populate_dd_details');
     $c->stash->{template} = 'waste/dd.html';
-    $c->detach;
+}
+
+sub direct_debit_bank_details : Path('dd_bank_details') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $form = FixMyStreet::App::Form::Waste::BankDetails->new(
+        c => $c,
+        page_name => 'bank_details',
+    );
+
+    if ($c->req->method eq 'POST') {
+        $form->process(params => $c->req->params);
+        if ($form->validated) {
+            my $success = $c->cobrand->call_hook('setup_direct_debit', [$form->value]);
+            if ($success) {
+                $c->res->redirect($c->uri_for('/waste/dd_complete', {
+                    token => $c->stash->{reference},
+                    id => $c->stash->{report}->id
+                }));
+                $c->detach;
+            } else {
+                $form->add_form_error('Failed to setup direct debit');
+            }
+        }
+    }
+
+    $c->stash->{form} = $form;
+    $c->stash->{template} = 'waste/dd.html';
+}
+
+sub process_bank_details : Private {
+    my ($self, $c, $form) = @_;
+
+    my $success = $c->cobrand->setup_direct_debit($form->saved_data);
+    if ($success) {
+        $c->res->redirect($c->uri_for('/waste/dd_complete', {
+            token => $c->stash->{reference},
+            id => $c->stash->{report}->id
+        }));
+        return 1;
+    }
+
+    $form->add_form_error('Failed to setup direct debit');
+    return;
 }
 
 # we process direct debit payments when they happen so this page
