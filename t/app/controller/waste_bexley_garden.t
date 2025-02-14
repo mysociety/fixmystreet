@@ -342,6 +342,7 @@ FixMyStreet::override_config {
 
     subtest 'cancel garden subscription' => sub {
         set_fixed_time('2024-02-01T00:00:00');
+        my $tomorrow = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' )->format_datetime( DateTime->now->add(days => 1) );
 
         $agile_mock->mock( 'CustomerSearch', sub { {
             Customers => [
@@ -383,7 +384,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('customer_external_ref'),
                 'CUSTOMER_123';
             is $report->get_extra_field_value('due_date'),
-                '12/12/2025';
+                $tomorrow;
             is $report->get_extra_field_value('reason'),
                 'Other: Burnt all my leaves';
 
@@ -437,7 +438,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('customer_external_ref'),
                 'CUSTOMER_123';
             is $report->get_extra_field_value('due_date'),
-                '12/12/2025';
+                $tomorrow;
             is $report->get_extra_field_value('reason'),
                 'Other: Burnt all my leaves';
 
