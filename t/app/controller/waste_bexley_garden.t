@@ -95,6 +95,7 @@ FixMyStreet::override_config {
         } },
         agile => { bexley => { url => 'test' } },
         payment_gateway => { bexley => {
+            ggw_first_bin_discount => 500,
             ggw_cost_first => 7500,
             ggw_cost => 5500,
             cc_url => 'http://example.org/cc_submit',
@@ -267,6 +268,28 @@ FixMyStreet::override_config {
         like $body, qr/Bins to be delivered: 2/;
         like $body, qr/Total:.*?$test->{pounds_cost}/;
         $mech->clear_emails_ok;
+    };
+
+    subtest 'check new sub direct debit applies first bin discount payment' => sub {
+        my $test = {
+            month => '01',
+            pounds_cost => '125.00',
+            pence_cost => '12500'
+        };
+        set_fixed_time("2021-$test->{month}-09T17:00:00Z");
+        $mech->get_ok('/waste/10001/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 2,
+            payment_method => 'direct_debit',
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£' . $test->{pounds_cost});
     };
 
     set_fixed_time('2023-01-09T17:00:00Z'); # Set a date when garden service full price for most tests

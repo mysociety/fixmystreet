@@ -1614,9 +1614,13 @@ sub process_garden_data : Private {
 sub garden_calculate_subscription_payment : Private {
     my ($self, $c, $type, $data) = @_;
 
-    # Sack form handling
     my $container = $data->{container_choice} || '';
-    my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+    my $costs = WasteWorks::Costs->new({
+        cobrand => $c->cobrand,
+        discount => $data->{apply_discount},
+        first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+    });
+    # Sack form handling
     if ($container eq 'sack') {
         if ($c->cobrand->moniker eq 'merton') {
             # If renewing from bin to sacks, need to know bins to remove - better place for this?

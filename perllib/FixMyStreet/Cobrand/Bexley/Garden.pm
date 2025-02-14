@@ -223,4 +223,16 @@ sub waste_garden_subscribe_form_setup {
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Bexley';
 }
 
+=head2 * garden_waste_first_bin_discount_applies
+
+The cost of the first garden waste bin is discounted if the payment method
+is direct debit.
+
+=cut
+
+sub garden_waste_first_bin_discount_applies {
+    my ($self, $data) = @_;
+    return $data->{payment_method} && $data->{payment_method} eq 'direct_debit';
+}
+
 1;
