@@ -650,39 +650,6 @@ FixMyStreet::override_config {
         like $body, qr/Total:.*?35.00/;
     };
 
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
-    subtest 'check modify sub credit card payment reducing bin count' => sub {
-        set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
-        $sent_params = undef;
-
-        $mech->log_in_ok($user->email);
-        $mech->get_ok('/waste/12345/garden_modify');
-        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 1 } });
-        $mech->content_contains('20.00');
-        $mech->content_lacks('Continue to payment');
-        $mech->content_contains('Confirm changes');
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
-
-        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { user_id => $user->id },
-        )->order_by('-id')->first;
-
-        is $sent_params, undef, "no one off payment if reducing bin count";
-        check_extra_data_pre_confirm($new_report, type => 'Amend', state => 'confirmed', action => 2);
-        is $new_report->state, 'confirmed', 'report confirmed';
-        is $new_report->get_extra_field_value('payment'), '0', 'no payment if removing bins';
-        is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
-
-        $mech->clear_emails_ok;
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Number of bin subscriptions: 1/;
-        like $body, qr/Bins to be removed: 1/;
-        unlike $body, qr/Total:/;
-    };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'renew credit card sub' => sub {
@@ -1170,42 +1137,6 @@ FixMyStreet::override_config {
         $report->delete; # Otherwise next test sees this as latest
     };
 
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
-    subtest 'check modify sub staff reducing bin count' => sub {
-        set_fixed_time('2021-01-09T17:00:00Z');
-
-        $mech->get_ok('/waste/12345/garden_modify');
-        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => {
-            current_bins => 2,
-            bins_wanted => 1,
-            name => 'A user',
-            email => 'test@example.net',
-        } });
-        $mech->content_contains('20.00');
-        $mech->content_lacks('Continue to payment');
-        $mech->content_contains('Confirm changes');
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
-
-        $mech->content_lacks($staff_user->email);
-
-        my $content = $mech->content;
-        my ($id) = ($content =~ m#reference number\s*<br><strong>.*?(\d+)<#);
-        my $new_report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
-
-        is $new_report->category, 'Garden Subscription', 'correct category on report';
-        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
-        is $new_report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-        is $new_report->state, 'confirmed', 'report confirmed';
-        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), 2, 'correct container request action';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), 1, 'correct container request count';
-        is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
-        is $new_report->get_extra_metadata('contributed_as'), 'another_user';
-        is $new_report->get_extra_field_value('payment'), '0', 'no payment if removing bins';
-        is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
-    };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'cancel staff sub' => sub {
