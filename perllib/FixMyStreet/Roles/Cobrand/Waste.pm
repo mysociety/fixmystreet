@@ -66,6 +66,8 @@ sub svg_container_box {
 
 # Garden related
 
+sub garden_waste_first_bin_discount_applies { 0 }
+
 sub garden_subscription_email_renew_reminder_opt_in { 0 }
 
 sub waste_cheque_payments { 0 }
