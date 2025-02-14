@@ -91,7 +91,7 @@ sub waste_garden_sub_params {
         my $srv = $self->garden_current_subscription;
 
         my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
-        my $due_date_str = $parser->format_datetime( $srv->{end_date} );
+        my $due_date_str = $parser->format_datetime( DateTime->now->add(days => 1) );
 
         my $reason = $data->{reason};
         $reason .= ': ' . $data->{reason_further_details}
