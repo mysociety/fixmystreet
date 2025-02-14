@@ -5,7 +5,7 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
 has_page replacement => (
-    fields => ['request_reason', 'extra_detail', 'continue'],
+    fields => ['request_reason', 'continue'],
     title => 'Reason for request',
     next => 'about_you',
 );
@@ -51,7 +51,7 @@ has_field extra_detail => (
 # that's all.
 
 has_page summary => (
-    fields => ['submit'],
+    fields => ['extra_detail', 'submit'],
     title => 'Submit bin request',
     template => 'waste/summary_request.html',
     finished => sub {
