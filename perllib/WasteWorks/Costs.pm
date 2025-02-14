@@ -5,10 +5,12 @@ use Types::Standard qw(Bool Enum);
 
 has cobrand => ( is => 'ro' ); # Cobrand we're working with, to get actual data
 has discount => ( is => 'rw', isa => Bool ); # If a discount is applied (Brent only)
+has first_bin_discount => ( is => 'rw', isa => Bool ); # If a discount should be applied to the first bin
 
 has service => ( is => 'lazy' ); # Existing garden service (for the end date)
 has payments => ( is => 'lazy' );
 has discount_amount => ( is => 'lazy' );
+has first_bin_discount_absolute_amount => ( is => 'lazy' );
 has renewal_type => ( is => 'lazy', isa => Enum['current', 'subscription_end'] );
 has has_pro_rata_modify => ( is => 'lazy', isa => Bool );
 
@@ -22,6 +24,11 @@ sub _build_payments { $_[0]->cobrand->feature('payment_gateway') }
 sub _build_discount_amount {
     my $features = $_[0]->cobrand->feature('waste_features') || {};
     return $features->{ggw_discount_as_percent};
+}
+
+sub _build_first_bin_discount_absolute_amount {
+    my $features = $_[0]->cobrand->feature('payment_gateway') || {};
+    return $features->{ggw_first_bin_discount} // 0;
 }
 
 sub _build_renewal_type {
@@ -38,6 +45,9 @@ sub bins {
     $count ||= 1;
     my $per_bin = $self->get_cost('ggw_cost') ;
     my $first_cost = $self->get_cost('ggw_cost_first') || $per_bin;
+    if ($self->first_bin_discount) {
+        $first_cost -= $self->first_bin_discount_absolute_amount;
+    }
     my $cost = $self->_first_diff_calc($first_cost, $per_bin, $count);
     return $cost;
 }
@@ -60,6 +70,9 @@ sub _renewal {
         my $first_cost = $self->get_cost($prefix . '_renewal_first', $end_date)
             || $self->get_cost($prefix . '_first', $end_date)
             || $cost;
+        if ($self->first_bin_discount) {
+            $first_cost -= $self->first_bin_discount_absolute_amount;
+        }
         $cost = $self->_first_diff_calc($first_cost, $cost, $count);
         return $cost;
     } elsif ($type eq 'sacks') {
