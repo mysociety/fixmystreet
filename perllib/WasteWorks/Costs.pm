@@ -28,7 +28,7 @@ sub _build_discount_amount {
 
 sub _build_first_bin_discount_absolute_amount {
     my $features = $_[0]->cobrand->feature('waste_features') || {};
-    return $features->{ggw_first_bin_discount};
+    return $features->{ggw_first_bin_discount} // 0;
 }
 
 sub _build_renewal_type {
