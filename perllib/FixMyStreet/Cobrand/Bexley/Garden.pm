@@ -171,6 +171,9 @@ sub waste_garden_sub_params {
         $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
         $c->set_param( 'total_containers', $data->{bins_wanted} );
 
+    } elsif ( $data->{category} eq 'Garden Subscription' ) {
+        $c->set_param( 'total_containers', $data->{bins_wanted} );
+
     }
 }
 
