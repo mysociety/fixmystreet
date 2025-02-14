@@ -662,11 +662,6 @@ FixMyStreet::override_config {
             'container_quantity' => 2,
             cost => 10000,
         },
-        {
-            'bins_wanted' => 1,
-            'container_type' => '',
-            'container_quantity' => '',
-        },
     ) {
         subtest 'check modifying Green Garden Waste as staff' => sub {
             $mech->log_in_ok($staff_user->email);
@@ -693,17 +688,20 @@ FixMyStreet::override_config {
                 bin_type => undef,
                 ref_type => 'apn',
             );
-            if ($test->{bins_wanted} > 2) {
-                is $mech->res->previous->code, 302, 'payments issues a redirect';
-                is $mech->res->previous->header('Location'), 'http://paye.example.org/faq?apnReference=4ab5f886-de7d-4f5b-bbd8-42151a5deb82', "redirects to payment gateway";
-                is $sent_params->{items}[0]{amount}, $test->{cost}, 'correct amount used';
-                check_extra_data_pre_confirm($report, %check);
-            } else {
-                check_extra_data_pre_confirm($report, %check, state => 'confirmed', payment_method => 'csc');
-            }
+            is $mech->res->previous->code, 302, 'payments issues a redirect';
+            is $mech->res->previous->header('Location'), 'http://paye.example.org/faq?apnReference=4ab5f886-de7d-4f5b-bbd8-42151a5deb82', "redirects to payment gateway";
+            is $sent_params->{items}[0]{amount}, $test->{cost}, 'correct amount used';
+            check_extra_data_pre_confirm($report, %check);
 
             $report->delete;
         };
+    };
+
+    subtest 'check cannot modify to lower' => sub {
+        $mech->get_ok('/waste/12345/garden_modify');
+        $mech->submit_form_ok({ with_fields => { task => 'modify' }}, 'Choose modify');
+        $mech->submit_form_ok({ with_fields => { bins_wanted => 1 } });
+        $mech->content_contains('only increase');
     };
 
     subtest 'check modifying Green Garden Waste not available for user' => sub {

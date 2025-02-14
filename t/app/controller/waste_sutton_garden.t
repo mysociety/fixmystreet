@@ -562,6 +562,11 @@ FixMyStreet::override_config {
         $mech->content_contains('3 bins');
         $mech->content_contains('60.00');
         $mech->content_contains('20.00');
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 1 } });
+        $mech->content_contains('only increase');
+        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 2 } });
+        $mech->content_contains('only increase');
     };
     subtest 'check modify sub credit card payment' => sub {
         $mech->get_ok('/waste/12345/garden_modify');
