@@ -862,35 +862,35 @@ fixmystreet.assets.isleofwight.streets_stylemap = new OpenLayers.StyleMap({
 });
 
 fixmystreet.assets.isleofwight.not_found_msg_update = function() {
-    $('.category_meta_message').html('Please select an item or a road/pavement/path on the map &raquo;');
-    $('.category_meta_message').removeClass('meta-highlight');
     $("input[name=asset_details]").val('');
+    fixmystreet.assets.named_select_action_not_found.call(this);
 };
 
 fixmystreet.assets.isleofwight.found_item = function(asset) {
-  var id = asset.attributes.central_asset_id || '';
-  if (id !== '') {
-      var attrib = asset.attributes;
-      var asset_name = attrib.feature_type_name + '; ' + attrib.site_name + '; ' + attrib.feature_location;
-      $('.category_meta_message').html('You have selected ' + asset_name);
-      $('.category_meta_message').addClass('meta-highlight');
-      $("input[name=asset_details]").val(asset_name);
-  } else {
-      fixmystreet.assets.isleofwight.not_found_msg_update();
-  }
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+
+fixmystreet.assets.isleofwight.construct_message = function(asset) {
+    var id = asset.attributes.central_asset_id || '';
+    if (id !== '') {
+        var attrib = asset.attributes;
+        var asset_name = attrib.feature_type_name + '; ' + attrib.site_name + '; ' + attrib.feature_location;
+        $("input[name=asset_details]").val(asset_name);
+        return 'You have selected ' + asset_name;
+    }
 };
 
 fixmystreet.assets.isleofwight.line_found_item = function(layer, feature) {
     if ( fixmystreet.assets.selectedFeature() ) {
         return;
     }
-    fixmystreet.assets.isleofwight.found_item(feature);
+    fixmystreet.assets.isleofwight.found_item.call(layer, feature);
 };
 fixmystreet.assets.isleofwight.line_not_found_msg_update = function(layer) {
     if ( fixmystreet.assets.selectedFeature() ) {
         return;
     }
-    fixmystreet.assets.isleofwight.not_found_msg_update();
+    fixmystreet.assets.isleofwight.not_found_msg_update.call(layer);
 };
 
 /* Lincolnshire */
