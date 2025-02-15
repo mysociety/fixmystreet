@@ -92,6 +92,7 @@ FixMyStreet::override_config {
           paye_siteID => 1234,
           paye_hmac_id => 1234,
           paye_hmac => 1234,
+          dd_schedule_id => 123,
         } },
     },
 }, sub {
@@ -326,6 +327,409 @@ FixMyStreet::override_config {
         }
         like $body, qr/Bins to be removed: 1/;
         like $body, qr/Total:.*?75.00/;
+    };
+
+    subtest 'Test bank details form validation' => sub {
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 1,
+            payment_method => 'direct_debit',
+            name => 'Test McTest',
+            email => 'test@example.net'
+        }});
+
+        my %valid_fields = (
+            name_title => 'Mr',
+            first_name => 'Test',
+            surname => 'McTest',
+            address1 => '1 Test Street',
+            address2 => 'Test Area',
+            post_code => 'DA1 1AA',
+            account_holder => 'Test McTest',
+            account_number => '12345678',
+            sort_code => '12-34-56'
+        );
+
+        # Test missing required fields
+        my %empty_fields = map { $_ => '' } keys %valid_fields;
+        $mech->submit_form_ok({ with_fields => \%empty_fields });
+        $mech->content_contains('Name of account holder field is required', 'Shows error for missing account holder name');
+        $mech->content_contains('Account number field is required', 'Shows error for missing account number');
+        $mech->content_contains('Address line 1 field is required', 'Shows error for missing address line 1');
+        $mech->content_contains('Address line 2 field is required', 'Shows error for missing address line 2');
+        $mech->content_contains('Title (e.g. Mr, Mrs, Ms, Dr, etc.) field is required', 'Shows error for missing title');
+        $mech->content_contains('Postcode field is required', 'Shows error for missing postcode');
+        $mech->content_contains('Sort code field is required', 'Shows error for missing sort code');
+        $mech->content_contains('Surname field is required', 'Shows error for missing surname');
+
+        # Test invalid account holder name (too long)
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            account_holder => 'Test McTest 12345678901234567890'
+        }});
+        $mech->content_contains('Account holder name must be 18 characters or less', 'Shows error for account holder name too long');
+
+        # Test invalid account number (not 8 digits)
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            account_number => '1234567'
+        }});
+        $mech->content_contains('Please enter a valid 8 digit account number', 'Shows error for invalid account number');
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            account_number => '123456789'
+        }});
+        $mech->content_contains('Please enter a valid 8 digit account number', 'Shows error for invalid account number');
+
+        # Test invalid sort code (not 6 digits)
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            sort_code => '12345'
+        }});
+        $mech->content_contains('Please enter a valid 6 digit sort code', 'Shows error for invalid sort code');
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            sort_code => '1234567'
+        }});
+        $mech->content_contains('Please enter a valid 6 digit sort code', 'Shows error for invalid sort code');
+
+        # Test invalid postcode
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            post_code => 'NOT A POSTCODE'
+        }});
+        $mech->content_contains('Please enter a valid postcode', 'Shows error for invalid postcode');
+
+        # Test address line length restrictions
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            address1 => 'This address line is way too long and should trigger an error because it exceeds fifty characters',
+            address2 => 'This address line is too long and exceeds thirty characters'
+        }});
+        $mech->content_contains('Address line 1 must be 50 characters or less', 'Shows error for address line 1 too long');
+        $mech->content_contains('Address line 2 must be 30 characters or less', 'Shows error for address line 2 too long');
+
+        # Test valid submission
+        $mech->submit_form_ok({ with_fields => \%valid_fields });
+        $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription', 'Shows success message for valid submission');
+    };
+
+    subtest 'Test direct debit submission flow new customer' => sub {
+        $mech->clear_emails_ok;
+        FixMyStreet::DB->resultset("Problem")->delete_all;
+
+        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
+        my ($customer_params, $contract_params);
+        $access_mock->mock('create_customer', sub {
+            my ($self, $params) = @_;
+            $customer_params = $params;
+            return { Id => 'CUSTOMER123' };
+        });
+        $access_mock->mock('create_contract', sub {
+            my ($self, $customer_id, $params) = @_;
+            $contract_params = $params;
+            return { Id => 'CONTRACT123', DirectDebitRef => 'APIRTM-DEFGHIJ1KL' };
+        });
+        $access_mock->mock('get_customer_by_customer_ref', sub {
+            return undef;
+        });
+
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 1,
+            payment_method => 'direct_debit',
+            name => 'Test McTest',
+            email => 'test@example.net'
+        }});
+
+        # Submit bank details form
+        $mech->submit_form_ok({ with_fields => {
+            name_title => 'Mr',
+            first_name => 'Test',
+            surname => 'McTest',
+            address1 => '1 Test Street',
+            address2 => 'Test Area',
+            post_code => 'DA1 1AA',
+            account_holder => 'Test McTest',
+            account_number => '12345678',
+            sort_code => '123456'
+        }});
+
+        $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
+
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£75.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        ok $report, "Found the report";
+        my $id = $report->id;
+
+        # Check customer creation parameters
+        is_deeply $customer_params, {
+            customerRef => 'test@example.net',
+            email => 'test@example.net',
+            title => 'Mr',
+            firstName => 'Test',
+            surname => 'McTest',
+            postCode => 'DA1 1AA',
+            accountNumber => '12345678',
+            bankSortCode => '123456',
+            accountHolderName => 'Test McTest',
+            line1 => '1 Test Street',
+            line2 => 'Test Area',
+            line3 => undef,
+            line4 => undef,
+        }, 'Customer parameters are correct';
+
+        # Check contract creation parameters
+        is_deeply $contract_params, {
+            scheduleId => 123,
+            isGiftAid => 0,
+            terminationType => 'Until further notice',
+            atTheEnd => 'Switch to further notice',
+            paymentDayInMonth => 28,
+            paymentMonthInYear => 1,
+            amount => '75.00',
+            start => '2023-01-23T17:00:00.000',
+            additionalReference => "BEX-$id-10001",
+        }, 'Contract parameters are correct';
+
+        $mech->content_contains('Your Direct Debit has been set up successfully');
+        $mech->content_contains('Direct Debit mandate');
+
+        is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER123', 'Correct customer ID';
+        is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
+        is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
+        is $report->state, 'confirmed', 'Report is confirmed';
+
+        is $report->get_extra_field_value('direct_debit_reference'),
+            'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
+        is $report->get_extra_field_value('direct_debit_start_date'),
+            '23/01/2023', 'Start date set as extra field';
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        TODO: {
+            local $TODO = 'Quantity not yet read in _garden_data.html';
+            like $body, qr/Number of bin subscriptions: 2/;
+        }
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?70/;
+        $mech->clear_emails_ok;
+    };
+
+    subtest 'Test direct debit submission flow existing customer' => sub {
+        $mech->clear_emails_ok;
+        FixMyStreet::DB->resultset("Problem")->delete_all;
+
+        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
+        my ($customer_params, $contract_params);
+        $access_mock->mock('create_customer', sub {
+            my ($self, $params) = @_;
+            $customer_params = $params;
+            return { Id => 'CUSTOMER123' };
+        });
+        $access_mock->mock('create_contract', sub {
+            my ($self, $customer_id, $params) = @_;
+            is $customer_id, 'CUSTOMER456', 'Correct customer ID';
+            $contract_params = $params;
+            return { Id => 'CONTRACT123', DirectDebitRef => 'APIRTM-DEFGHIJ1KL' };
+        });
+        $access_mock->mock('get_customer_by_customer_ref', sub {
+            return { Id => 'CUSTOMER456' };
+        });
+
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 1,
+            payment_method => 'direct_debit',
+            name => 'Test McTest',
+            email => 'test@example.net'
+        }});
+
+        # Submit bank details form
+        $mech->submit_form_ok({ with_fields => {
+            name_title => 'Mr',
+            first_name => 'Test',
+            surname => 'McTest',
+            address1 => '1 Test Street',
+            address2 => 'Test Area',
+            post_code => 'DA1 1AA',
+            account_holder => 'Test McTest',
+            account_number => '12345678',
+            sort_code => '12-34-56'
+        }});
+
+        $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
+
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£75.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        ok $report, "Found the report";
+        my $id = $report->id;
+
+        # Check customer creation parameters
+        ok !$customer_params, 'No customer creation parameters';
+
+        # Check contract creation parameters
+        is_deeply $contract_params, {
+            scheduleId => 123,
+            isGiftAid => 0,
+            terminationType => 'Until further notice',
+            atTheEnd => 'Switch to further notice',
+            paymentDayInMonth => 28,
+            paymentMonthInYear => 1,
+            amount => '75.00',
+            start => '2023-01-23T17:00:00.000',
+            additionalReference => "BEX-$id-10001"
+        }, 'Contract parameters are correct';
+
+        $mech->content_contains('Your Direct Debit has been set up successfully');
+        $mech->content_contains('Direct Debit mandate');
+
+        is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER456', 'Correct customer ID';
+        is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
+        is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
+        is $report->state, 'confirmed', 'Report is confirmed';
+        is $report->get_extra_field_value('direct_debit_reference'),
+            'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
+        is $report->get_extra_field_value('direct_debit_start_date'),
+            '23/01/2023', 'Start date set as extra field';
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        TODO: {
+            local $TODO = 'Quantity not yet read in _garden_data.html';
+            like $body, qr/Number of bin subscriptions: 2/;
+        }
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?70/;
+        $mech->clear_emails_ok;
+    };
+
+    subtest 'cancel garden subscription' => sub {
+        set_fixed_time('2024-02-01T00:00:00');
+        my $tomorrow = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' )->format_datetime( DateTime->now->add(days => 1) );
+
+        $agile_mock->mock( 'CustomerSearch', sub { {
+            Customers => [
+                {
+                    CustomerExternalReference => 'CUSTOMER_123',
+                    ServiceContracts => [
+                        {
+                            EndDate => '12/12/2025 12:21',
+                        },
+                    ],
+                },
+            ],
+        } } );
+
+        $mech->log_in_ok( $user->email );
+
+        subtest 'with Agile data only' => sub {
+            $mech->get_ok('/waste/10001');
+            like $mech->text, qr/Sorry, we are unable to find any rubbish and recycling collections/;
+
+            $mech->get_ok('/waste/10001/garden_cancel');
+            like $mech->text, qr/Cancel your garden waste subscription/;
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        reason  => 'Other',
+                        reason_further_details => 'Burnt all my leaves',
+                        confirm => 1,
+                    },
+                }
+            );
+            like $mech->text, qr/Your subscription has been cancelled/,
+                'form submitted OK';
+
+            my $report
+                = FixMyStreet::DB->resultset('Problem')->order_by('-id')
+                ->first;
+
+            is $report->get_extra_field_value('customer_external_ref'),
+                'CUSTOMER_123';
+            is $report->get_extra_field_value('due_date'),
+                $tomorrow;
+            is $report->get_extra_field_value('reason'),
+                'Other: Burnt all my leaves';
+
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Reports::send();
+
+            my @emails = $mech->get_email;
+            my $body = $mech->get_text_body_from_email($emails[1]);
+            like $body, qr/You have cancelled your garden waste collection service/;
+        };
+
+        subtest 'with Whitespace data' => sub {
+            $whitespace_mock->mock(
+                'GetSiteCollections',
+                sub {
+                    [   {   SiteServiceID          => 1,
+                            ServiceItemDescription => 'Garden waste',
+                            ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                            ServiceName          => 'Brown Wheelie Bin',
+                            NextCollectionDate   => '2024-02-07T00:00:00',
+                            SiteServiceValidFrom => '2024-01-01T00:00:00',
+                            SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                            RoundSchedule => 'RND-1 Mon',
+                        }
+                    ];
+                }
+            );
+
+            $mech->get_ok('/waste/10001');
+            like $mech->content, qr/waste-service-subtitle.*Garden waste/s;
+
+            $mech->get_ok('/waste/10001/garden_cancel');
+            like $mech->text, qr/Cancel your garden waste subscription/;
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        reason  => 'Price',
+                        confirm => 1,
+                    },
+                }
+            );
+            like $mech->text, qr/Your subscription has been cancelled/,
+                'form submitted OK';
+
+            my $report
+                = FixMyStreet::DB->resultset('Problem')->order_by('-id')
+                ->first;
+
+            is $report->get_extra_field_value('customer_external_ref'),
+                'CUSTOMER_123';
+            is $report->get_extra_field_value('due_date'),
+                $tomorrow;
+            is $report->get_extra_field_value('reason'),
+                'Price';
+
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Reports::send();
+
+            my @emails = $mech->get_email;
+            my $body = $mech->get_text_body_from_email($emails[1]);
+            like $body, qr/You have cancelled your garden waste collection service/;
+        };
+
     };
 };
 
