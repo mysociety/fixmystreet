@@ -409,6 +409,17 @@ sub direct_debit : Path('dd') : Args(0) {
     $c->detach;
 }
 
+sub direct_debit_internal : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('populate_dd_details');
+    $c->cobrand->call_hook('waste_setup_direct_debit');
+    $c->stash->{title} = "Direct Debit mandate";
+    $c->stash->{message} = "Your Direct Debit has been set up successfully.";
+    $c->stash->{template} = 'waste/dd_complete.html';
+    $c->detach;
+}
+
 # we process direct debit payments when they happen so this page
 # is only for setting expectations.
 sub direct_debit_complete : Path('dd_complete') : Args(0) {
@@ -1583,7 +1594,12 @@ sub process_garden_data : Private {
         $c->forward('confirm_subscription', [ undef ]);
     } else {
         if ( $data->{payment_method} && $data->{payment_method} eq 'direct_debit' ) {
-            $c->forward('direct_debit');
+            if ($c->cobrand->direct_debit_collection_method eq 'internal') {
+                $c->stash->{form_data} = $data;
+                $c->forward('direct_debit_internal');
+            } else {
+                $c->forward('direct_debit');
+            }
         } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
         } else {

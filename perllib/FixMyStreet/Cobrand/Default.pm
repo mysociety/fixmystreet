@@ -1551,4 +1551,12 @@ Returns true when staff can assign a report to a disabled category.
 
 sub staff_can_assign_reports_to_disabled_categories { 1; }
 
+=item direct_debit_collection_method
+
+Returns the method of collection for Direct Debit payments.
+
+=cut
+
+sub direct_debit_collection_method { 'redirect' }
+
 1;
