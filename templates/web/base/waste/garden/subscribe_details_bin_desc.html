@@ -17,7 +17,13 @@
   </div>
   <div class="waste-service-hint__content">
     <p>
-      [% IF cobrand.moniker == 'brent' %]
+      [% IF cobrand.moniker == 'bexley' %]
+        [%
+          SET first_bin_discount = garden_costs.first_bin_discount_absolute_amount / 100;
+        -%]
+        Each garden waste bin holds 240 litres of waste. We collect them every 2 weeks.<br>
+        Note the first bin costs £[% tprintf('%.2f', first_bin_discount) %] less if you choose to pay by Direct Debit.
+      [% ELSIF cobrand.moniker == 'brent' %]
         Our 240 litre wheelie bins are green, and hold the equivalent of 5 or 6 bags of green garden waste.
       [% ELSIF cobrand.moniker == 'bromley' %]
         Each wheelie bin holds the equivalent of 5 or 6 bags of green garden waste,
