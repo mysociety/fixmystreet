@@ -8,10 +8,11 @@ IF NOT ajax_loading;
         version('/vendor/accessible-autocomplete.min.js'),
         version('/js/waste.js')
     ];
-    # Bexley want external links to open in new tab
     SET external_new_tab = '';
     IF c.cobrand.moniker == 'bexley';
+      # Bexley want external links to open in new tab
       SET external_new_tab = 'target="_blank"';
+      extra_js.push(version('/cobrands/bexley/waste.js'));
     END;
     INCLUDE header.html;
 END;
