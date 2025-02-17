@@ -16,6 +16,8 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
 
   <p style="[% p_style %]">Dear [% report.name %],</p>
 
+  <p style="[% p_style %]">[% email_summary %]</p>
+
   <p style="[% p_style %]">
     [% IF days == 3 %]
     Your bulky waste is due to be collected
