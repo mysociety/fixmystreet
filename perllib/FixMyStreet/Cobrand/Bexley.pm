@@ -248,6 +248,11 @@ sub open311_extra_data_include {
             { name => 'description', description => 'Detail',
               value => $row->detail };
     }
+    if ($contact->email =~ /^Agile/) {
+        push @$open311_only,
+            { name => 'title', description => 'Title',
+              value => $row->title },
+    }
 
     # Add private comments field
     push @$open311_only,
