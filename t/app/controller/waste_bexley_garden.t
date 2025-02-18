@@ -651,9 +651,11 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
+                    CustomertStatus => 'ACTIVATED',
                     ServiceContracts => [
                         {
                             EndDate => '12/12/2025 12:21',
+                            ServiceContractStatus => 'ACTIVE',
                         },
                     ],
                 },
