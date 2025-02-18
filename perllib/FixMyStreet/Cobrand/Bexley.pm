@@ -268,6 +268,15 @@ sub open311_extra_data_include {
             { name => 'description', description => 'Detail',
               value => $row->detail };
     }
+    if ($contact->email =~ /^Agile/) {
+        # XXX This is under the assumption that open311-adapter needs to look
+        # at the report title to determine if it's an amendment or not.
+        # But this predates the 'type' field added for renewals, so perhaps
+        # that approach is better...
+        push @$open311_only,
+            { name => 'title', description => 'Title',
+              value => $row->title },
+    }
 
     # Add private comments field
     push @$open311_only,
