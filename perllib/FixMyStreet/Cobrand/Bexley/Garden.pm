@@ -161,9 +161,11 @@ sub waste_garden_sub_params {
 
     my $c = $self->{c};
 
-    if ( $data->{category} eq 'Cancel Garden Subscription' ) {
-        my $srv = $self->garden_current_subscription;
+    if (my $srv = $self->garden_current_subscription) {
+        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
+    }
 
+    if ( $data->{category} eq 'Cancel Garden Subscription' ) {
         my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
         my $due_date_str = $parser->format_datetime( DateTime->now->add(days => 1) );
 
@@ -171,7 +173,6 @@ sub waste_garden_sub_params {
         $reason .= ': ' . $data->{reason_further_details}
             if $data->{reason_further_details};
 
-        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
         $c->set_param( 'due_date', $due_date_str );
         $c->set_param( 'reason', $reason );
     }
@@ -197,5 +198,14 @@ sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
     return $p->id;
 }
+
+=item * Anyone can modify garden subs XXX Is that right?
+
+XXX TODO can't modify in renewal period
+
+=cut
+
+sub waste_show_garden_modify { 1 }
+
 
 1;
