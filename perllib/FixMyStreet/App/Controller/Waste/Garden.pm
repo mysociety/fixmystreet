@@ -251,7 +251,7 @@ sub setup_garden_sub_params : Private {
     my $service_id;
     if (my $service = $c->cobrand->garden_current_subscription) {
         $service_id = $service->{service_id};
-    } elsif ($c->cobrand->can('garden_service_id')) { # XXX TODO Does Bexley need its own? Or is this actually Echo only?
+    } elsif ($c->cobrand->can('garden_service_id')) {
         $service_id = $c->cobrand->garden_service_id;
     }
     $c->set_param('email_renewal_reminders_opt_in', $data->{email_renewal_reminders} eq 'Yes' ? 'Y' : 'N') if $data->{email_renewal_reminders};

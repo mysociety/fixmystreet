@@ -236,6 +236,11 @@ sub waste_garden_sub_params {
         $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
         $c->set_param( 'total_containers', $data->{bins_wanted} );
 
+    } elsif ( $data->{title} =~ /Amend/ ) {
+        $c->set_param( 'type', 'amend' );
+        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
+        $c->set_param( 'total_containers', $data->{bins_wanted} );
+
     } elsif ( $data->{category} eq 'Garden Subscription' ) {
         $c->set_param( 'total_containers', $data->{bins_wanted} );
 
@@ -412,5 +417,11 @@ sub garden_waste_first_bin_discount_applies {
 }
 
 sub waste_staff_choose_payment_method { 1 }
+
+=item * Anyone can modify garden subs
+
+=cut
+
+sub waste_show_garden_modify { 1 }
 
 1;
