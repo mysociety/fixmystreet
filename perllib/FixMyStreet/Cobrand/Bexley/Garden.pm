@@ -214,6 +214,11 @@ sub waste_garden_sub_params {
         $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
         $c->set_param( 'total_containers', $data->{bins_wanted} );
 
+    } elsif ( $data->{title} =~ /Amend/ ) {
+        $c->set_param( 'type', 'amend' );
+        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
+        $c->set_param( 'total_containers', $data->{bins_wanted} );
+
     } elsif ( $data->{category} eq 'Garden Subscription' ) {
         $c->set_param( 'total_containers', $data->{bins_wanted} );
 
@@ -403,5 +408,13 @@ sub waste_get_paye_narrative {
     my $id = $p->id;
     return "Garden Waste Service Payment - Reference: $id Contract: $uprn";
 }
+
+=item * Anyone can modify garden subs XXX Is that right?
+
+XXX TODO can't modify in renewal period
+
+=cut
+
+sub waste_show_garden_modify { 1 }
 
 1;
