@@ -48,12 +48,26 @@ sub lookup_subscription_for_uprn {
     };
 
 
+    my ( $customer, $contract );
+
     my $results = $self->agile->CustomerSearch($uprn);
-    return undef unless $results && $results->{Customers};
-    my $customer = $results->{Customers}[0];
-    return undef unless $customer && $customer->{ServiceContracts};
-    my $contract = $customer->{ServiceContracts}[0];
-    return unless $contract;
+
+    # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
+    my $customers = $results->{Customers} || [];
+    OUTER: for ( @$customers ) {
+        next unless $_->{CustomertStatus} eq 'ACTIVATED'; # CustomertStatus (sic) options seem to be ACTIVATED/INACTIVE
+        my $contracts = $_->{ServiceContracts} || [];
+        next unless $contracts;
+        $customer = $_;
+        for ( @$contracts ) {
+            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT
+            $contract = $_;
+            # use the first matching customer/contract
+            last OUTER if $customer && $contract;
+        }
+    }
+
+    return unless $customer && $contract;
 
     # XXX should maybe sort by CreatedDate rather than assuming first is OK
     $sub->{cost} = try {
