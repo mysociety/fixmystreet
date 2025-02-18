@@ -49,7 +49,7 @@ sub lookup_subscription_for_uprn {
 
     my $results = $self->agile->CustomerSearch($uprn);
 
-    # find the first 'ACTIVATED' Customer with an 'ACTIVE' contract
+    # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
     my $customers = $results->{Customers} || [];
     OUTER: for ( @$customers ) {
         next unless $_->{CustomertStatus} eq 'ACTIVATED'; # CustomertStatus (sic) options seem to be ACTIVATED/INACTIVE
@@ -57,7 +57,7 @@ sub lookup_subscription_for_uprn {
         next unless $contracts;
         $customer = $_;
         for ( @$contracts ) {
-            next unless $_->{ServiceContractStatus} eq 'ACTIVE'; # Options seem to be ACTIVE/NOACTIVE
+            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT
             $contract = $_;
             # use the first matching customer/contract
             last OUTER if $customer && $contract;
