@@ -471,6 +471,9 @@ FixMyStreet::override_config {
     };
 
     subtest 'Test direct debit submission flow new customer' => sub {
+        $mech->clear_emails_ok;
+        FixMyStreet::DB->resultset("Problem")->delete_all;
+
         my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
         $access_mock->mock('create_customer', sub {
@@ -557,13 +560,29 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER123', 'Correct customer ID';
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
+        is $report->state, 'confirmed', 'Report is confirmed';
+
         is $report->get_extra_field_value('direct_debit_reference'),
             'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
         is $report->get_extra_field_value('direct_debit_start_date'),
             '23/01/2023', 'Start date set as extra field';
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        TODO: {
+            local $TODO = 'Quantity not yet read in _garden_data.html';
+            like $body, qr/Number of bin subscriptions: 2/;
+        }
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?70/;
+        $mech->clear_emails_ok;
     };
 
     subtest 'Test direct debit submission flow existing customer' => sub {
+        $mech->clear_emails_ok;
+        FixMyStreet::DB->resultset("Problem")->delete_all;
+
         my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
         $access_mock->mock('create_customer', sub {
@@ -637,10 +656,22 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER456', 'Correct customer ID';
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
+        is $report->state, 'confirmed', 'Report is confirmed';
         is $report->get_extra_field_value('direct_debit_reference'),
             'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
         is $report->get_extra_field_value('direct_debit_start_date'),
             '23/01/2023', 'Start date set as extra field';
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        TODO: {
+            local $TODO = 'Quantity not yet read in _garden_data.html';
+            like $body, qr/Number of bin subscriptions: 2/;
+        }
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?70/;
+        $mech->clear_emails_ok;
     };
 
     subtest 'cancel garden subscription' => sub {
