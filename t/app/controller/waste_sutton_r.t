@@ -48,6 +48,10 @@ create_contact({ category => 'Report missed collection', email => 'missed' }, 'W
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
+create_contact({ category => 'Report missed assisted collection', email => '3146' }, 'Waste',
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+);
 create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
     { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
@@ -415,6 +419,15 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $dupe });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('is set up for assisted collection');
+        subtest 'Different category for assisted' => sub {
+            $mech->submit_form_ok({ with_fields => { 'service-954' => 1 } });
+            $mech->submit_form_ok({ with_fields => { 'service-954' => 1 } });
+            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+            $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+            $mech->content_contains('Thank you for reporting a missed collection');
+            my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+            is $report->category, 'Report missed assisted collection';
+        };
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
