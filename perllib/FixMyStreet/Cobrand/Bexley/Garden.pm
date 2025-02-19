@@ -194,6 +194,22 @@ sub waste_setup_direct_debit {
     $report->set_extra_metadata('direct_debit_customer_id', $customer->{Id});
     $report->set_extra_metadata('direct_debit_contract_id', $contract->{Id});
     $report->set_extra_metadata('direct_debit_reference', $contract->{DirectDebitRef});
+
+    # To send to Agile
+    my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
+    my $start_date_str
+        = $parser->format_datetime( $c->stash->{payment_date} );
+    $report->update_extra_field(
+        {   name  => 'direct_debit_reference',
+            value => $contract->{DirectDebitRef},
+        }
+    );
+    $report->update_extra_field(
+        {   name  => 'direct_debit_start_date',
+            value => $start_date_str,
+        }
+    );
+
     $report->update;
 
     return 1;
