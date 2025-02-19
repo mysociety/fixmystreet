@@ -9,12 +9,13 @@ package FixMyStreet::Cobrand::Bexley::Garden;
 use DateTime::Format::Strptime;
 use Integrations::Agile;
 use FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley;
-use Try::Tiny;
-use JSON::MaybeXS;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SCP',
-     'FixMyStreet::Roles::Cobrand::Paye';
+     'FixMyStreet::Roles::Cobrand::Paye',
+     'FixMyStreet::Roles::Cobrand::AccessPaySuite';
+
+use FixMyStreet::App::Form::Waste::Garden::Bexley;
 
 has agile => (
     is => 'lazy',
@@ -31,19 +32,19 @@ sub garden_service_ids {
     return [ 'GA-140', 'GA-240' ];
 }
 
-sub lookup_subscription_for_uprn {
-    my ($self, $uprn) = @_;
+sub garden_current_subscription {
+    my $self = shift;
 
-    my $sub = {
-        row => undef,
+    my $current = $self->{c}->stash->{property}{garden_current_subscription};
+    return $current if $current;
 
-        email => undef,
-        cost => undef,
-        end_date => undef,
-        customer_external_ref => undef,
-        bins_count => undef,
-    };
+    my $uprn = $self->{c}->stash->{property}{uprn};
+    return undef unless $uprn;
 
+# TODO Fetch active subscription from DB for UPRN
+#      (get_original_sub() in Controller/Waste.pm needs to handle Bexley UPRN).
+#      Could be more than one customer, so match against email.
+#      Could be more than one contract, so match against reference.
 
     my $results = $self->agile->CustomerSearch($uprn);
     return undef unless $results && $results->{Customers};
@@ -52,91 +53,33 @@ sub lookup_subscription_for_uprn {
     my $contract = $customer->{ServiceContracts}[0];
     return unless $contract;
 
-    # XXX should maybe sort by CreatedDate rather than assuming first is OK
-    $sub->{cost} = try {
-        my ($payment) = grep { $_->{PaymentStatus} eq 'Paid' } @{ $contract->{Payments} };
-        return $payment->{Amount};
-    };
-
-    my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
-    $sub->{end_date} = $parser->parse_datetime( $contract->{EndDate} );
-
-    $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
-
-    $sub->{bins_count} = $contract->{WasteContainerQuantity};
-
-    my $c = $self->{c};
-    my $p = $c->model('DB::Problem')->search({
-        category => 'Garden Subscription',
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
-        state => { '!=' => 'hidden' },
-        external_id => "Agile-" . $contract->{Reference},
-    })->order_by('-id')->to_body($c->cobrand->body)->first;
-
-    if ($p) {
-        $self->{c}->stash->{orig_sub} = $sub->{row} = $p;
-    }
-
-    return $sub;
-}
-
-sub garden_current_subscription {
-    my ($self, $services) = @_;
-
-    my $current = $self->{c}->stash->{property}{garden_current_subscription};
-    return $current if $current;
-
-    my $uprn = $self->{c}->stash->{property}{uprn};
-    return undef unless $uprn;
+    my $parser
+        = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
+    my $end_date = $parser->parse_datetime( $contract->{EndDate} );
 
     # Agile says there is a subscription; now get service data from
     # Whitespace
-    my $service_ids = { map { $_->{service_id} => $_ } @$services };
+    my $services = $self->{c}->stash->{services};
     for ( @{ $self->garden_service_ids } ) {
-        if ( my $srv = $service_ids->{$_} ) {
-            my $sub = $self->lookup_subscription_for_uprn($uprn);
-            $srv->{customer_external_ref} = $sub->{customer_external_ref};
-            $srv->{end_date} = $sub->{end_date};
-            $srv->{garden_bins} = $sub->{bins_count};
-            $srv->{garden_cost} = $sub->{cost};
+        if ( my $srv = $services->{$_} ) {
+            $srv->{customer_external_ref}
+                = $customer->{CustomerExternalReference};
+            $srv->{end_date} = $end_date;
             return $srv;
         }
     }
 
-    # If we reach here then Whitespace doesn't think there's a garden service for this
-    # property. If Agile does have a subscription then we need to add a service
-    # to the list for this property so the frontend displays it.
-    my $sub = $self->lookup_subscription_for_uprn($uprn);
-    return undef unless $sub;
-
-    my $service = {
+    return {
         agile_only => 1,
-        customer_external_ref => $sub->{customer_external_ref},
-        end_date => $sub->{end_date},
-        garden_bins => $sub->{bins_count},
-        garden_cost => $sub->{cost},
-
-        uprn => $uprn,
-        garden_waste => 1,
-        service_description => "Garden waste",
-        service_name => "Brown wheelie bin",
-        service_id => "GA-240",
-        schedule => "Pending",
-        next => { pending => 1 },
+        customer_external_ref => $customer->{CustomerExternalReference},
+        end_date => $end_date,
     };
-    push @$services, $service;
-    $self->{c}->stash->{property}{garden_current_subscription} = $service;
-    $self->{c}->stash->{property}{has_garden_subscription} = 1;
-    return $service;
 }
 
 # TODO This is a placeholder
 sub get_current_garden_bins { 1 }
 
 sub waste_cancel_asks_staff_for_user_details { 1 }
-
-# TODO Needs to check 14-day window after subscription started
-sub waste_garden_allow_cancellation { 'all' }
 
 sub waste_cancel_form_class {
     'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
@@ -151,7 +94,7 @@ sub waste_garden_sub_params {
         my $srv = $self->garden_current_subscription;
 
         my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
-        my $due_date_str = $parser->format_datetime( $srv->{end_date} );
+        my $due_date_str = $parser->format_datetime( DateTime->now->add(days => 1) );
 
         my $reason = $data->{reason};
         $reason .= ': ' . $data->{reason_further_details}
@@ -182,6 +125,85 @@ sub waste_cc_payment_sale_ref {
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
     return $p->id;
+}
+
+sub waste_payment_ref_council_code { "BEX" }
+
+sub direct_debit_collection_method { 'internal' }
+
+sub waste_setup_direct_debit {
+    my ($self) = @_;
+    my $c = $self->{c};
+
+    my $report = $c->stash->{report};
+    my $email = $report->user->email;
+
+    my $data = $c->stash->{form_data};
+
+    # Lookup existing customer and contract
+    my $i = $self->get_dd_integration;
+    my $customer = $i->get_customer_by_customer_ref($email);
+
+    if (!$customer) {
+        my $customer_data = {
+            customerRef => $email, # Use email as customer reference
+            email => $email,
+            title => $data->{name_title},
+            firstName => $data->{first_name},
+            surname => $data->{surname},
+            postCode => $data->{post_code},
+            accountNumber => $data->{account_number},
+            bankSortCode => $data->{sort_code},
+            accountHolderName => $data->{account_holder},
+            line1 => $data->{address1},
+            line2 => $data->{address2},
+            line3 => $data->{address3},
+            line4 => $data->{address4},
+        };
+        $customer = $i->create_customer($customer_data);
+    } else {
+        # XXX do we need to check that the existing customer's details (name/address/bank/etc)
+        # match what they've provided to us? If they don't match, what should we do?
+    }
+
+    my $contract_data = {
+        scheduleId => $c->stash->{payment_details}->{dd_schedule_id},
+        start => $c->stash->{payment_date}->strftime('%Y-%m-%dT%H:%M:%S.000'),
+        isGiftAid => 0,
+        terminationType => "Until further notice",
+        atTheEnd => "Switch to further notice",
+        paymentMonthInYear => $c->stash->{payment_date}->month,
+        paymentDayInMonth => 28, # Always the 28th for Bexley
+        amount => $c->stash->{amount},
+        additionalReference => $c->stash->{reference},
+    };
+
+    if ($customer->{error}) {
+        $c->stash->{error} = $customer->{error};
+        return 0;
+    }
+
+    my $contract = $i->create_contract($customer->{Id}, $contract_data);
+
+    if ($contract->{error}) {
+        $c->stash->{error} = $contract->{error};
+        return 0;
+    }
+
+    # Store the customer and contract IDs for future reference
+    $report->set_extra_metadata('direct_debit_customer_id', $customer->{Id});
+    $report->set_extra_metadata('direct_debit_contract_id', $contract->{Id});
+    $report->set_extra_metadata('direct_debit_reference', $contract->{DirectDebitRef});
+    $report->update;
+
+    return 1;
+}
+
+sub waste_garden_subscribe_form_setup {
+    my ($self) = @_;
+
+    # Use a custom form class that includes fields for bank details
+    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Bexley';
 }
 
 1;

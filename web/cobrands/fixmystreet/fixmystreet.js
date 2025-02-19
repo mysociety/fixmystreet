@@ -169,8 +169,39 @@ function isR2L() {
 
         $select.multiSelect(settings);
       });
-    }
+    },
+    bankDetailsFormatter: function(options) {
+        var settings = $.extend({}, options);
 
+        var sortCodeSelector = settings.sortCodeSelector || '#sort_code';
+        var accountNumberSelector = settings.accountNumberSelector || '#account_number';
+
+        function formatSortCode(input) {
+            // Remove all non-digits/non-dashes
+            var value = $(input).val().replace(/[^\d-]/g, '');
+
+            // Limit to 8 characters (6 digits + 2 hyphens)
+            $(input).val(value.substring(0, 8));
+        }
+
+        function formatAccountNumber(input) {
+            // Remove all non-digits and limit to 8 digits
+            var value = $(input).val().replace(/\D/g, '');
+            $(input).val(value.substring(0, 8));
+        }
+
+        return this.each(function() {
+            var $container = $(this);
+
+            $container.find(sortCodeSelector).on('input', function() {
+                formatSortCode(this);
+            });
+
+            $container.find(accountNumberSelector).on('input', function() {
+                formatAccountNumber(this);
+            });
+        });
+    }
   });
 })(jQuery);
 
@@ -505,7 +536,7 @@ $.extend(fixmystreet.set_up, {
     $('#planned_form').on('submit', function(e) {
         if (e.metaKey || e.ctrlKey) {
             return;
-        } 
+        }
 
         e.preventDefault();
         var $form = $(this);
@@ -542,6 +573,9 @@ $.extend(fixmystreet.set_up, {
                    .addClass(classToAdd);
         });
     });
+
+    // Format account number and sort code
+    $('#bank-details-form').bankDetailsFormatter();
   },
 
   autocomplete: function() {
@@ -1176,17 +1210,17 @@ $.extend(fixmystreet.set_up, {
         $('.govuk-multi-select__label').each(function() {
             var label = $(this);
             var input = label.find('input[type="checkbox"], input[type="radio"]');
-      
+
             if (input.attr('type') === 'checkbox') {
               label.addClass('govuk-multi-select__label--checkbox');
             } else if (input.attr('type') === 'radio') {
               label.addClass('govuk-multi-select__label--radio');
             }
-      
+
             if (input.prop('checked')) {
               label.addClass('govuk-multi-select__label--checked');
             }
-      
+
             input.on('change', function() {
               if (this.checked) {
                 label.addClass('govuk-multi-select__label--checked');

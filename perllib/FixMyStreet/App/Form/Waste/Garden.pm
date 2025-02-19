@@ -29,6 +29,8 @@ sub details_update_fields {
     $c->stash->{cost_now} = $c->stash->{cost_now_admin} + $c->stash->{cost_pa};
     my $max_bins = $c->stash->{garden_form_data}->{max_bins};
 
+    $data->{_direct_debit_internal} = 1 if $c->cobrand->direct_debit_collection_method eq 'internal';
+
     return {
         current_bins => { default => $existing, range_end => $max_bins },
         bins_wanted => { default => $bin_count, range_end => $max_bins },
@@ -81,7 +83,11 @@ has_page details => (
         return \@fields;
     },
     update_field_list => \&details_update_fields,
-    next => 'summary',
+    next => sub {
+        my ($data) = @_;
+        return 'bank_details' if $data->{_direct_debit_internal} && $data->{payment_method} eq 'direct_debit';
+        return 'summary';
+    },
 );
 
 has_page summary => (
