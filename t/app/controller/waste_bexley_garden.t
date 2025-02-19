@@ -656,6 +656,10 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER456', 'Correct customer ID';
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
+        is $report->get_extra_field_value('direct_debit_reference'),
+            'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
+        is $report->get_extra_field_value('direct_debit_start_date'),
+            '23/01/2023', 'Start date set as extra field';
     };
 
     subtest 'cancel garden subscription' => sub {
