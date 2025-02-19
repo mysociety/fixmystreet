@@ -895,6 +895,19 @@ fixmystreet.assets.lincolnshire.llpg_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+fixmystreet.assets.lincolnshire.light_found = function(asset) {
+    fixmystreet.body_overrides.only_send(asset.layer.fixmystreet.body);
+};
+fixmystreet.assets.lincolnshire.light_not_found = function() {
+    // Default to Lincolnshire if layer is visible
+    // (this action fires on the Lincolnshire part of the asset layer)
+    if (this.getVisibility()) {
+        fixmystreet.body_overrides.only_send(this.fixmystreet.body);
+    } else {
+        fixmystreet.body_overrides.remove_only_send();
+    }
+};
+
 /* Merton */
 
 fixmystreet.assets.merton = {};
