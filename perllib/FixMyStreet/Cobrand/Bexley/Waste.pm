@@ -461,9 +461,6 @@ sub bin_services_for_address {
         ];
     }
 
-    $property->{garden_current_subscription}
-        = $self->garden_current_subscription;
-
     @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
 
     @site_services_filtered = $self->service_sort(@site_services_filtered);
