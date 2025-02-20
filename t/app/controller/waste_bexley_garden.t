@@ -95,6 +95,7 @@ FixMyStreet::override_config {
         } },
         agile => { bexley => { url => 'test' } },
         payment_gateway => { bexley => {
+            ggw_first_bin_discount => 500,
             ggw_cost_first => 7500,
             ggw_cost => 5500,
             cc_url => 'http://example.org/cc_submit',
@@ -269,6 +270,46 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
     };
 
+    subtest 'check new sub direct debit applies first bin discount payment' => sub {
+        my $test = {
+            month => '01',
+            pounds_cost => '125.00',
+            pence_cost => '12500'
+        };
+        set_fixed_time("2021-$test->{month}-09T17:00:00Z");
+        $mech->get_ok('/waste/10001/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 2,
+            payment_method => 'direct_debit',
+            name => 'Test McTest',
+            email => 'test@example.net'
+        } });
+        $mech->text_contains(
+            'Please provide your bank account information so we can set up your Direct Debit mandate',
+            'On DD details form',
+        );
+
+        my %dd_fields = (
+            name_title => 'Mr',
+            first_name => 'Test',
+            surname => 'McTest',
+            address1 => '1 Test Street',
+            address2 => 'Test Area',
+            post_code => 'DA1 1AA',
+            account_holder => 'Test McTest',
+            account_number => '12345678',
+            sort_code => '12-34-56'
+        );
+        $mech->submit_form_ok( { with_fields => \%dd_fields } );
+
+        $mech->content_contains('Test McTest');
+        $mech->content_contains('£' . $test->{pounds_cost});
+    };
+
     set_fixed_time('2023-01-09T17:00:00Z'); # Set a date when garden service full price for most tests
 
     subtest 'check new sub credit card payment with no bins required' => sub {
@@ -430,6 +471,9 @@ FixMyStreet::override_config {
     };
 
     subtest 'Test direct debit submission flow new customer' => sub {
+        $mech->clear_emails_ok;
+        FixMyStreet::DB->resultset("Problem")->delete_all;
+
         my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
         $access_mock->mock('create_customer', sub {
@@ -473,7 +517,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
 
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£75.00');
+        $mech->content_contains('£70.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
@@ -505,7 +549,7 @@ FixMyStreet::override_config {
             atTheEnd => 'Switch to further notice',
             paymentDayInMonth => 28,
             paymentMonthInYear => 1,
-            amount => '75.00',
+            amount => '70.00',
             start => '2023-01-23T17:00:00.000',
             additionalReference => "BEX-$id-10001",
         }, 'Contract parameters are correct';
@@ -516,9 +560,25 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER123', 'Correct customer ID';
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
+        is $report->state, 'confirmed', 'Report is confirmed';
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        TODO: {
+            local $TODO = 'Quantity not yet read in _garden_data.html';
+            like $body, qr/Number of bin subscriptions: 2/;
+        }
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?70/;
+        $mech->clear_emails_ok;
+
     };
 
     subtest 'Test direct debit submission flow existing customer' => sub {
+        $mech->clear_emails_ok;
+        FixMyStreet::DB->resultset("Problem")->delete_all;
+
         my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
         $access_mock->mock('create_customer', sub {
@@ -563,7 +623,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
 
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£75.00');
+        $mech->content_contains('£70.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
@@ -581,7 +641,7 @@ FixMyStreet::override_config {
             atTheEnd => 'Switch to further notice',
             paymentDayInMonth => 28,
             paymentMonthInYear => 1,
-            amount => '75.00',
+            amount => '70.00',
             start => '2023-01-23T17:00:00.000',
             additionalReference => "BEX-$id-10001"
         }, 'Contract parameters are correct';
@@ -592,6 +652,18 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER456', 'Correct customer ID';
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
+        is $report->state, 'confirmed', 'Report is confirmed';
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        TODO: {
+            local $TODO = 'Quantity not yet read in _garden_data.html';
+            like $body, qr/Number of bin subscriptions: 2/;
+        }
+        like $body, qr/Bins to be delivered: 1/;
+        like $body, qr/Total:.*?70/;
+        $mech->clear_emails_ok;
     };
 
     subtest 'cancel garden subscription' => sub {

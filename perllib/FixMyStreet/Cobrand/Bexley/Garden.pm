@@ -268,6 +268,7 @@ sub waste_setup_direct_debit {
     $report->set_extra_metadata('direct_debit_customer_id', $customer->{Id});
     $report->set_extra_metadata('direct_debit_contract_id', $contract->{Id});
     $report->set_extra_metadata('direct_debit_reference', $contract->{DirectDebitRef});
+    $report->confirm;
     $report->update;
 
     return 1;
@@ -278,6 +279,18 @@ sub waste_garden_subscribe_form_setup {
 
     # Use a custom form class that includes fields for bank details
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Bexley';
+}
+
+=head2 * garden_waste_first_bin_discount_applies
+
+The cost of the first garden waste bin is discounted if the payment method
+is direct debit.
+
+=cut
+
+sub garden_waste_first_bin_discount_applies {
+    my ($self, $data) = @_;
+    return $data->{payment_method} && $data->{payment_method} eq 'direct_debit';
 }
 
 1;
