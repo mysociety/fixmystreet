@@ -55,12 +55,12 @@ sub lookup_subscription_for_uprn {
     # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
     my $customers = $results->{Customers} || [];
     OUTER: for ( @$customers ) {
-        next unless $_->{CustomertStatus} eq 'ACTIVATED'; # CustomertStatus (sic) options seem to be ACTIVATED/INACTIVE
+        next unless ( $_->{CustomertStatus} // '' ) eq 'ACTIVATED'; # CustomertStatus (sic) options seem to be ACTIVATED/INACTIVE
         my $contracts = $_->{ServiceContracts} || [];
         next unless $contracts;
         $customer = $_;
         for ( @$contracts ) {
-            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT
+            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT|RENEWALDUE)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE
             $contract = $_;
             # use the first matching customer/contract
             last OUTER if $customer && $contract;

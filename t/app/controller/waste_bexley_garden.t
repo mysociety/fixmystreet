@@ -18,9 +18,6 @@ $dbi_mock->mock( 'connect', sub {
     return $dbh;
 } );
 
-my $agile_mock = Test::MockModule->new('Integrations::Agile');
-$agile_mock->mock( 'CustomerSearch', sub { {} } );
-
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2494, 'Bexley', { cobrand => 'bexley' });
@@ -60,6 +57,7 @@ create_contact(
 );
 
 my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
+my $agile_mock = Test::MockModule->new('Integrations::Agile');
 sub default_mocks {
     # These are overridden for some tests
     $whitespace_mock->mock('GetSiteCollections', sub { });
@@ -84,6 +82,8 @@ sub default_mocks {
     $whitespace_mock->mock( 'GetAccountSiteID', sub {});
     $whitespace_mock->mock( 'GetSiteWorksheets', sub {});
     $whitespace_mock->mock( 'GetWorksheetDetailServiceItems', sub { });
+
+    $agile_mock->mock( 'CustomerSearch', sub { {} } );
 };
 
 default_mocks();
@@ -415,12 +415,14 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
                                 # 42 days away
                                 EndDate => '14/03/2024 12:00',
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
+                                ServiceContractStatus => 'RENEWALDUE',
                             },
                         ],
                     },
@@ -460,12 +462,14 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
                                     # 42 days away
                                     EndDate => '14/03/2024 12:00',
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
+                                    ServiceContractStatus => 'RENEWALDUE',
                                 },
                             ],
                         },
@@ -528,12 +532,14 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
                                     # 43 days away
                                     EndDate => '15/03/2024 12:00',
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
+                                    ServiceContractStatus => 'ACTIVE',
                                 },
                             ],
                         },
@@ -555,12 +561,14 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
                                     # Yesterday
                                     EndDate => '31/01/2024 12:00',
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
+                                    ServiceContractStatus => 'RENEWALDUE',
                                 },
                             ],
                         },
@@ -578,6 +586,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Test bank details form validation' => sub {
+        default_mocks();
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
@@ -712,6 +721,8 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
         FixMyStreet::DB->resultset("Problem")->delete_all;
 
+        set_fixed_time('2023-01-09T17:00:00Z');
+
         my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
         $access_mock->mock('create_customer', sub {
@@ -820,6 +831,8 @@ FixMyStreet::override_config {
     subtest 'Test direct debit submission flow existing customer' => sub {
         $mech->clear_emails_ok;
         FixMyStreet::DB->resultset("Problem")->delete_all;
+
+        set_fixed_time('2023-01-09T17:00:00Z');
 
         my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
