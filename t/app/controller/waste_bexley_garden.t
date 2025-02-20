@@ -288,6 +288,24 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
+        $mech->text_contains(
+            'Please provide your bank account information so we can set up your Direct Debit mandate',
+            'On DD details form',
+        );
+
+        my %dd_fields = (
+            name_title => 'Mr',
+            first_name => 'Test',
+            surname => 'McTest',
+            address1 => '1 Test Street',
+            address2 => 'Test Area',
+            post_code => 'DA1 1AA',
+            account_holder => 'Test McTest',
+            account_number => '12345678',
+            sort_code => '12-34-56'
+        );
+        $mech->submit_form_ok( { with_fields => \%dd_fields } );
+
         $mech->content_contains('Test McTest');
         $mech->content_contains('£' . $test->{pounds_cost});
     };
@@ -496,7 +514,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
 
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£75.00');
+        $mech->content_contains('£70.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
@@ -528,7 +546,7 @@ FixMyStreet::override_config {
             atTheEnd => 'Switch to further notice',
             paymentDayInMonth => 28,
             paymentMonthInYear => 1,
-            amount => '75.00',
+            amount => '70.00',
             start => '2023-01-23T17:00:00.000',
             additionalReference => "BEX-$id-10001",
         }, 'Contract parameters are correct';
@@ -586,7 +604,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
 
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£75.00');
+        $mech->content_contains('£70.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
@@ -604,7 +622,7 @@ FixMyStreet::override_config {
             atTheEnd => 'Switch to further notice',
             paymentDayInMonth => 28,
             paymentMonthInYear => 1,
-            amount => '75.00',
+            amount => '70.00',
             start => '2023-01-23T17:00:00.000',
             additionalReference => "BEX-$id-10001"
         }, 'Contract parameters are correct';
