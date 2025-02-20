@@ -194,6 +194,7 @@ sub waste_setup_direct_debit {
     $report->set_extra_metadata('direct_debit_customer_id', $customer->{Id});
     $report->set_extra_metadata('direct_debit_contract_id', $contract->{Id});
     $report->set_extra_metadata('direct_debit_reference', $contract->{DirectDebitRef});
+    $report->confirm;
     $report->update;
 
     return 1;
