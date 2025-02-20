@@ -562,6 +562,11 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
         is $report->state, 'confirmed', 'Report is confirmed';
 
+        is $report->get_extra_field_value('direct_debit_reference'),
+            'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
+        is $report->get_extra_field_value('direct_debit_start_date'),
+            '23/01/2023', 'Start date set as extra field';
+
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         my $body = $mech->get_text_body_from_email($emails[1]);
@@ -572,7 +577,6 @@ FixMyStreet::override_config {
         like $body, qr/Bins to be delivered: 1/;
         like $body, qr/Total:.*?70/;
         $mech->clear_emails_ok;
-
     };
 
     subtest 'Test direct debit submission flow existing customer' => sub {
@@ -653,6 +657,10 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
         is $report->state, 'confirmed', 'Report is confirmed';
+        is $report->get_extra_field_value('direct_debit_reference'),
+            'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
+        is $report->get_extra_field_value('direct_debit_start_date'),
+            '23/01/2023', 'Start date set as extra field';
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
