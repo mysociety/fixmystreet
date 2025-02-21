@@ -55,12 +55,12 @@ sub lookup_subscription_for_uprn {
     # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
     my $customers = $results->{Customers} || [];
     OUTER: for ( @$customers ) {
-        next unless $_->{CustomertStatus} eq 'ACTIVATED'; # CustomertStatus (sic) options seem to be ACTIVATED/INACTIVE
+        next unless ( $_->{CustomertStatus} // '' ) eq 'ACTIVATED'; # CustomertStatus (sic) options seem to be ACTIVATED/INACTIVE
         my $contracts = $_->{ServiceContracts} || [];
         next unless $contracts;
         $customer = $_;
         for ( @$contracts ) {
-            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT
+            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT|RENEWALDUE)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE
             $contract = $_;
             # use the first matching customer/contract
             last OUTER if $customer && $contract;
@@ -87,7 +87,7 @@ sub lookup_subscription_for_uprn {
         category => 'Garden Subscription',
         extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
         state => { '!=' => 'hidden' },
-        external_id => "Agile-" . $contract->{Reference},
+        external_id => "Agile-" . ( $contract->{Reference} // '' ),
     })->order_by('-id')->to_body($c->cobrand->body)->first;
 
     if ($p) {
@@ -106,16 +106,22 @@ sub garden_current_subscription {
     my $uprn = $self->{c}->stash->{property}{uprn};
     return undef unless $uprn;
 
+    my $sub = $self->lookup_subscription_for_uprn($uprn);
+    return undef unless $sub;
+
+    my $garden_due = $self->waste_sub_due( $sub->{end_date} );
+
     # Agile says there is a subscription; now get service data from
     # Whitespace
     my $service_ids = { map { $_->{service_id} => $_ } @$services };
     for ( @{ $self->garden_service_ids } ) {
         if ( my $srv = $service_ids->{$_} ) {
-            my $sub = $self->lookup_subscription_for_uprn($uprn);
             $srv->{customer_external_ref} = $sub->{customer_external_ref};
             $srv->{end_date} = $sub->{end_date};
             $srv->{garden_bins} = $sub->{bins_count};
             $srv->{garden_cost} = $sub->{cost};
+            $srv->{garden_due} = $garden_due;
+
             return $srv;
         }
     }
@@ -123,15 +129,13 @@ sub garden_current_subscription {
     # If we reach here then Whitespace doesn't think there's a garden service for this
     # property. If Agile does have a subscription then we need to add a service
     # to the list for this property so the frontend displays it.
-    my $sub = $self->lookup_subscription_for_uprn($uprn);
-    return undef unless $sub;
-
     my $service = {
         agile_only => 1,
         customer_external_ref => $sub->{customer_external_ref},
         end_date => $sub->{end_date},
         garden_bins => $sub->{bins_count},
         garden_cost => $sub->{cost},
+        garden_due  => $garden_due,
 
         uprn => $uprn,
         garden_waste => 1,
@@ -139,6 +143,7 @@ sub garden_current_subscription {
         service_name => "Brown wheelie bin",
         service_id => "GA-240",
         schedule => "Pending",
+        round_schedule => '',
         next => { pending => 1 },
     };
     push @$services, $service;
@@ -147,8 +152,7 @@ sub garden_current_subscription {
     return $service;
 }
 
-# TODO This is a placeholder
-sub get_current_garden_bins { 1 }
+sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 
 sub waste_cancel_asks_staff_for_user_details { 1 }
 
@@ -163,10 +167,9 @@ sub waste_garden_sub_params {
     my ( $self, $data, $type ) = @_;
 
     my $c = $self->{c};
+    my $srv = $self->garden_current_subscription;
 
     if ( $data->{category} eq 'Cancel Garden Subscription' ) {
-        my $srv = $self->garden_current_subscription;
-
         my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
         my $due_date_str = $parser->format_datetime( DateTime->now->add(days => 1) );
 
@@ -177,7 +180,51 @@ sub waste_garden_sub_params {
         $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
         $c->set_param( 'due_date', $due_date_str );
         $c->set_param( 'reason', $reason );
+
+    } elsif ( $data->{title} =~ /Renew/ ) {
+        $c->set_param( 'type', 'renew' );
+        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
+        $c->set_param( 'total_containers', $data->{bins_wanted} );
+
+    } elsif ( $data->{category} eq 'Garden Subscription' ) {
+        $c->set_param( 'total_containers', $data->{bins_wanted} );
+
     }
+}
+
+sub garden_due_days { 42 }
+
+=head2 waste_sub_due
+
+Returns true/false if now is less than garden_due_days before DATE.
+
+=cut
+
+sub waste_sub_due {
+    my ( $self, $date ) = @_;
+
+    my $now = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
+    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
+
+    my $diff = $now->delta_days($sub_end)->in_units('days');
+    return $diff <= $self->garden_due_days;
+}
+
+=head2 waste_sub_overdue
+
+Returns true/false if now is past DATE.
+
+=cut
+
+sub waste_sub_overdue {
+    my ( $self, $date ) = @_;
+
+    my $now = DateTime->now->set_time_zone( FixMyStreet->local_time_zone )
+        ->truncate( to => 'day' );
+    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date)
+        ->truncate( to => 'day' );
+
+    return $now > $sub_end;
 }
 
 =item * You can order a maximum of five bins
