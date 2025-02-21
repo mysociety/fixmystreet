@@ -9,6 +9,8 @@ package FixMyStreet::Cobrand::Bexley::Garden;
 use DateTime::Format::Strptime;
 use Integrations::Agile;
 use FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley;
+use Try::Tiny;
+use JSON::MaybeXS;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SCP',
@@ -32,8 +34,71 @@ sub garden_service_ids {
     return [ 'GA-140', 'GA-240' ];
 }
 
+sub lookup_subscription_for_uprn {
+    my ($self, $uprn) = @_;
+
+    my $sub = {
+        row => undef,
+
+        email => undef,
+        cost => undef,
+        end_date => undef,
+        customer_external_ref => undef,
+        bins_count => undef,
+    };
+
+
+    my ( $customer, $contract );
+
+    my $results = $self->agile->CustomerSearch($uprn);
+
+    # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
+    my $customers = $results->{Customers} || [];
+    OUTER: for ( @$customers ) {
+        next unless $_->{CustomertStatus} eq 'ACTIVATED'; # CustomertStatus (sic) options seem to be ACTIVATED/INACTIVE
+        my $contracts = $_->{ServiceContracts} || [];
+        next unless $contracts;
+        $customer = $_;
+        for ( @$contracts ) {
+            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT
+            $contract = $_;
+            # use the first matching customer/contract
+            last OUTER if $customer && $contract;
+        }
+    }
+
+    return unless $customer && $contract;
+
+    # XXX should maybe sort by CreatedDate rather than assuming first is OK
+    $sub->{cost} = try {
+        my ($payment) = grep { $_->{PaymentStatus} eq 'Paid' } @{ $contract->{Payments} };
+        return $payment->{Amount};
+    };
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
+    $sub->{end_date} = $parser->parse_datetime( $contract->{EndDate} );
+
+    $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
+
+    $sub->{bins_count} = $contract->{WasteContainerQuantity};
+
+    my $c = $self->{c};
+    my $p = $c->model('DB::Problem')->search({
+        category => 'Garden Subscription',
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
+        state => { '!=' => 'hidden' },
+        external_id => "Agile-" . $contract->{Reference},
+    })->order_by('-id')->to_body($c->cobrand->body)->first;
+
+    if ($p) {
+        $self->{c}->stash->{orig_sub} = $sub->{row} = $p;
+    }
+
+    return $sub;
+}
+
 sub garden_current_subscription {
-    my $self = shift;
+    my ($self, $services) = @_;
 
     my $current = $self->{c}->stash->{property}{garden_current_subscription};
     return $current if $current;
@@ -41,45 +106,54 @@ sub garden_current_subscription {
     my $uprn = $self->{c}->stash->{property}{uprn};
     return undef unless $uprn;
 
-# TODO Fetch active subscription from DB for UPRN
-#      (get_original_sub() in Controller/Waste.pm needs to handle Bexley UPRN).
-#      Could be more than one customer, so match against email.
-#      Could be more than one contract, so match against reference.
-
-    my $results = $self->agile->CustomerSearch($uprn);
-    return undef unless $results && $results->{Customers};
-    my $customer = $results->{Customers}[0];
-    return undef unless $customer && $customer->{ServiceContracts};
-    my $contract = $customer->{ServiceContracts}[0];
-    return unless $contract;
-
-    my $parser
-        = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
-    my $end_date = $parser->parse_datetime( $contract->{EndDate} );
-
     # Agile says there is a subscription; now get service data from
     # Whitespace
-    my $services = $self->{c}->stash->{services};
+    my $service_ids = { map { $_->{service_id} => $_ } @$services };
     for ( @{ $self->garden_service_ids } ) {
-        if ( my $srv = $services->{$_} ) {
-            $srv->{customer_external_ref}
-                = $customer->{CustomerExternalReference};
-            $srv->{end_date} = $end_date;
+        if ( my $srv = $service_ids->{$_} ) {
+            my $sub = $self->lookup_subscription_for_uprn($uprn);
+            $srv->{customer_external_ref} = $sub->{customer_external_ref};
+            $srv->{end_date} = $sub->{end_date};
+            $srv->{garden_bins} = $sub->{bins_count};
+            $srv->{garden_cost} = $sub->{cost};
             return $srv;
         }
     }
 
-    return {
+    # If we reach here then Whitespace doesn't think there's a garden service for this
+    # property. If Agile does have a subscription then we need to add a service
+    # to the list for this property so the frontend displays it.
+    my $sub = $self->lookup_subscription_for_uprn($uprn);
+    return undef unless $sub;
+
+    my $service = {
         agile_only => 1,
-        customer_external_ref => $customer->{CustomerExternalReference},
-        end_date => $end_date,
+        customer_external_ref => $sub->{customer_external_ref},
+        end_date => $sub->{end_date},
+        garden_bins => $sub->{bins_count},
+        garden_cost => $sub->{cost},
+
+        uprn => $uprn,
+        garden_waste => 1,
+        service_description => "Garden waste",
+        service_name => "Brown wheelie bin",
+        service_id => "GA-240",
+        schedule => "Pending",
+        next => { pending => 1 },
     };
+    push @$services, $service;
+    $self->{c}->stash->{property}{garden_current_subscription} = $service;
+    $self->{c}->stash->{property}{has_garden_subscription} = 1;
+    return $service;
 }
 
 # TODO This is a placeholder
 sub get_current_garden_bins { 1 }
 
 sub waste_cancel_asks_staff_for_user_details { 1 }
+
+# TODO Needs to check 14-day window after subscription started
+sub waste_garden_allow_cancellation { 'all' }
 
 sub waste_cancel_form_class {
     'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
