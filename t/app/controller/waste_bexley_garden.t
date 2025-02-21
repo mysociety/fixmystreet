@@ -85,6 +85,10 @@ sub default_mocks {
 
 default_mocks();
 
+use t::Mock::AccessPaySuiteBankChecker;
+my $bankchecker = t::Mock::AccessPaySuiteBankChecker->new;
+LWP::Protocol::PSGI->register($bankchecker->to_psgi_app, host => 'bank.check.example.org');
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'bexley',
     MAPIT_URL => 'http://mapit.uk/',
@@ -106,6 +110,9 @@ FixMyStreet::override_config {
             paye_hmac_id => 1234,
             paye_hmac => 1234,
             dd_schedule_id => 123,
+            validator_url => "http://bank.check.example.org/",
+            validator_client => "bexley",
+            validator_apikey => "mycoolapikey",
         } },
     },
 }, sub {
@@ -448,6 +455,49 @@ FixMyStreet::override_config {
             sort_code => '1234567'
         }});
         $mech->content_contains('Please enter a valid 6 digit sort code', 'Shows error for invalid sort code');
+
+
+        # Test bank details that fail Access PaySuite bankcheck API validation
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            sort_code => '110012' # triggers invalid account number error in mock
+        }});
+        $mech->content_contains('Account number is invalid.', 'Shows error for invalid account number');
+
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            sort_code => '110013' # triggers invalid sort code error in mock
+        }});
+        $mech->content_contains('Sort code is invalid.', 'Shows error for invalid sort code');
+
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            sort_code => '110014' # triggers invalid API key error in mock
+        }});
+        $mech->content_contains('There was a problem verifying your bank details; please try again', 'Shows generic error');
+        $mech->content_lacks('Either the client code or the API key is incorrect.', "Doesn't show API-specific error");
+
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            sort_code => '110015' # triggers invalid client error in mock
+        }});
+        $mech->content_contains('There was a problem verifying your bank details; please try again', 'Shows generic error');
+        $mech->content_lacks('Either the client code or the API key is incorrect.', "Doesn't show API-specific error");
+
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            sort_code => '110016' # triggers badly formatted account number error in mock
+        }});
+        $mech->content_contains('There was a problem verifying your bank details; please try again', 'Shows generic error');
+        $mech->content_lacks('Either the client code or the API key is incorrect.', "Doesn't show API-specific error");
+
+        $mech->submit_form_ok({ with_fields => {
+            %valid_fields,
+            sort_code => '000000' # triggers non-JSON response in mock
+        }});
+        $mech->content_contains('There was a problem verifying your bank details; please try again', 'Shows generic error');
+        $mech->content_lacks('this is just a plain text string', "Doesn't show API response");
+
 
         # Test invalid postcode
         $mech->submit_form_ok({ with_fields => {
