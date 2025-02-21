@@ -18,11 +18,18 @@
   <div class="waste-service-hint__content">
     <p>
       [% IF cobrand.moniker == 'bexley' %]
+        Our garden waste bins are brown, have a 240L capacity and are
+        collected fortnightly, apart from the Christmas and new year period
+        when there will be 4 weeks between collections.</p><p>
+        Neighbours can share a garden waste service, but the bin must be put
+        out at the property that has the contract allocated to them.
         [%
-          SET first_bin_discount = garden_costs.first_bin_discount_absolute_amount / 100;
+        SET first_bin_discount = garden_costs.first_bin_discount_absolute_amount / 100;
         -%]
-        Each garden waste bin holds 240 litres of waste. We collect them every 2 weeks.<br>
-        Note the first bin costs £[% tprintf('%.2f', first_bin_discount) %] less if you choose to pay by Direct Debit.
+        [% IF first_bin_discount %]
+          </p><p>
+          Note the first bin costs £[% tprintf('%.2f', first_bin_discount) %] less if you choose to pay by Direct Debit.
+        [% END %]
       [% ELSIF cobrand.moniker == 'brent' %]
         Our 240 litre wheelie bins are green, and hold the equivalent of 5 or 6 bags of green garden waste.
       [% ELSIF cobrand.moniker == 'bromley' %]
