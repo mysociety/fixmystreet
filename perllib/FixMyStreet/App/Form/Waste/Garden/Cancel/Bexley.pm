@@ -17,8 +17,8 @@ sub options_reason {
 
     my @options = (
         'Price',
-        'Service Issues',
-        'Moving Out of Borough',
+        'Service issues',
+        'Moving out of borough',
         'Other',
     );
     return map { { label => $_, value => $_ } } @options;
