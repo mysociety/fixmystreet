@@ -17,7 +17,13 @@
     </div>
     <div class="waste-service-hint__content">
         <p>
-          [% IF cobrand.moniker == 'brent' %]
+          [% IF cobrand.moniker == 'bexley' %]
+            Our garden waste bins are brown, have a 240L capacity and are
+            collected fortnightly, apart from the Christmas and new year period
+            when there will be 4 weeks between collections.</p><p>
+            Neighbours can share a garden waste service, but the bin must be put
+            out at the property that has the contract allocated to them.
+          [% ELSIF cobrand.moniker == 'brent' %]
             Our 240 litre wheelie bins are green, and hold the equivalent of 5 or 6 bags of green garden waste.
           [% ELSIF cobrand.moniker == 'bromley' %]
             Our 240 litre wheelie bins have grey sides and a brown top, and hold the
