@@ -639,6 +639,10 @@ sub initialize_report : Private {
         $report = $c->model('DB::Problem')->new( {} );
     }
 
+    if (!$c->stash->{upload_fileid} && $c->get_param('photo_id')) {
+        $c->stash->{upload_fileid} = $c->get_param('photo_id');
+    }
+
     # If we have a user logged in let's prefill some values for them.
     if (!$report->user && $c->user) {
         my $user = $c->user->obj;
