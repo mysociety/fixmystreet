@@ -117,7 +117,7 @@ sub cc_check_payment_and_update {
     return ($error, undef);
 }
 
-sub garden_cc_check_payment_status {
+sub waste_cc_check_payment_status {
     my ($self, $c, $p) = @_;
 
     # need to get some ID Things which I guess we stored in pay
