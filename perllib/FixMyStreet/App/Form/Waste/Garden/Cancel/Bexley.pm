@@ -25,7 +25,6 @@ sub options_reason {
 }
 
 has_field reason_further_details => (
-    required => 1,
     type => 'Text',
     widget => 'Textarea',
     label =>
