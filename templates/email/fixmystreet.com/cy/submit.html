@@ -68,24 +68,6 @@ am broblem leol credant y gallai fod angen eich sylw.
       </a>)
       [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
     </p>
-  [% IF report.get_extra_field_value('road_name') %]
-    <p style="[% secondary_p_style %]">
-      <strong>Ffordd:</strong>
-        [% report.get_extra_field_value('road_name') %]
-    </p>
-  [% END %]
-  [% IF report.get_extra_field_value('sect_label') %]
-    <p style="[% secondary_p_style %]">
-      <strong>Adran:</strong>
-        [% report.get_extra_field_value('sect_label') %]
-    </p>
-  [% END %]
-  [% IF report.get_extra_field_value('area_name') %]
-    <p style="[% secondary_p_style %]">
-      <strong>Ardal:</strong>
-        [% report.get_extra_field_value('area_name') %]
-    </p>
-  [% END %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]

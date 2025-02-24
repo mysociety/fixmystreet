@@ -115,8 +115,8 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Heard from: Facebook/, 'where hear included in email';
-        like $body, qr/Road: M1/, 'road data included in email';
-        like $body, qr/Area: Area 1/, 'area data included in email';
+        like $body, qr/Road name: M1/, 'road data included in email';
+        like $body, qr/Area name: Area 1/, 'area data included in email';
         unlike $body, qr/FixMyStreet is an independent service/, 'FMS not mentioned in email';
         $mech->clear_emails_ok;
     };
