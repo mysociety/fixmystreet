@@ -932,8 +932,7 @@ FixMyStreet::override_config {
 
             $mech->submit_form_ok(
                 {   with_fields => {
-                        reason  => 'Other',
-                        reason_further_details => 'Burnt all my leaves',
+                        reason  => 'Price',
                         confirm => 1,
                     },
                 }
@@ -950,7 +949,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('due_date'),
                 $tomorrow;
             is $report->get_extra_field_value('reason'),
-                'Other: Burnt all my leaves';
+                'Price';
 
             $mech->clear_emails_ok;
             FixMyStreet::Script::Reports::send();
