@@ -64,6 +64,14 @@ my $flytipping = $mech->create_contact_ok(
     body_id => $bristol->id,
     category => 'Flytipping',
     email => 'FLY',
+    extra => {
+        _fields => [
+            { code => 'Witness', values => [
+                { key => 0, name => 'No' },
+                { key => 1, name => 'Yes' },
+            ] },
+        ]
+    }
 );
 my $north_somerset_contact = $mech->create_contact_ok(
     body_id => $north_somerset->id,
@@ -235,7 +243,8 @@ FixMyStreet::override_config {
         ok $p->external_id, 'Report has external ID';
         ok $p->whensent, 'Report marked as sent';
         is $p->get_extra_metadata('extra_email_sent'), 1;
-        $mech->email_count_is(1);
+        my $email = $mech->get_text_body_from_email;
+        like $email, qr/Witness: Yes/;
     };
 
     subtest "usrn populated on Alloy category" => sub {

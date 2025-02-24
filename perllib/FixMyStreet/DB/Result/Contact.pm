@@ -175,6 +175,18 @@ sub get_metadata_for_storage {
     return \@metadata;
 }
 
+sub get_metadata_label_lookup {
+    my $self = shift;
+    my $metadata = $self->get_metadata_for_storage;
+    my %lookup;
+    foreach (@$metadata) {
+        if (my $values = $_->{values}) {
+            $lookup{$_->{code}} = { map { $_->{key} => $_->{name} } @$values };
+        }
+    }
+    return \%lookup;
+}
+
 sub id_field {
     my $self = shift;
     return $self->get_extra_metadata('id_field') || 'fixmystreet_id';
