@@ -1,6 +1,9 @@
 ## Releases
 
 * Unreleased
+    - Front end improvements:
+        - Make the continue button / asset stopper messages float at the bottom
+          of initial steps of reporting flow.
     - Admin improvements:
         - Improve performance of admin reports search for email. #5284
     - Development improvements
