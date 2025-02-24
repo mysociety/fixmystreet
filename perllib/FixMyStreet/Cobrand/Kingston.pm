@@ -220,7 +220,19 @@ sub waste_munge_request_form_fields {
     my ($self, $field_list) = @_;
     my $c = $self->{c};
 
-    return unless $c->get_param('exchange');
+    unless ($c->get_param('exchange')) {
+        for (my $i=0; $i<@$field_list; $i+=2) {
+            my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
+            next unless $key =~ /^container-(\d+)/;
+            my $id = $1;
+            if (my $cost = $self->container_cost($id)) {
+                my $price = sprintf("£%.2f", $cost / 100);
+                $price =~ s/\.00$//;
+                $value->{option_hint} = "There is a $price cost for this container";
+            }
+        }
+        return;
+    }
 
     my @radio_options;
     for (my $i=0; $i<@$field_list; $i+=2) {
@@ -506,44 +518,44 @@ sub waste_munge_request_data {
     $service_id = $SERVICE_IDS{domestic_refuse} if !$service_id && $action eq 'exchange';
     $c->set_param('service_id', $service_id);
 
-    my $costs = WasteWorks::Costs->new({ cobrand => $self });
     if ($data->{payment}) {
         my $cost;
         if ($action ne 'collect') {
-            ($cost) = $self->request_cost($container_id); # Will be full price, or nothing if free
-            if ($cost) {
-                if ($data->{first_bin_done}) {
-                    $cost = $costs->get_cost('request_replace_cost_more') || $cost/2;
-                } else {
-                    $data->{first_bin_done} = 1;
-                }
+            if ($cost = $self->container_cost($container_id)) {
+                $cost += $self->admin_fee_cost({quantity => 1, no_first_fee => $data->{first_bin_done}});
+                $data->{first_bin_done} = 1;
             }
         }
-        $c->set_param('payment', $cost);
+        $c->set_param('payment', $cost || undef); # Want to undefine it if free
     }
 }
 
-=head2 request_cost
+=head2 container_cost / admin_fee_cost
 
 Calculate how much, if anything, a request for a container should be.
 
 =cut
 
-sub request_cost {
-    my ($self, $id, $quantity, $containers) = @_;
-    $quantity //= 1;
+sub container_cost {
+    my ($self, $id) = @_;
     my $costs = WasteWorks::Costs->new({ cobrand => $self });
-    if (my $cost = $costs->get_cost('request_replace_cost')) {
-        my $cost_more = $costs->get_cost('request_replace_cost_more') || $cost/2;
-        if ($quantity > 1) {
-            $cost += $cost_more * ($quantity-1);
-        }
-        my $names = $self->{c}->stash->{containers};
-        if ($names->{$id} !~ /bag|sack|food/i) {
-            my $hint = "";
-            return ($cost, $hint);
-        }
+    my %id_to_name = reverse %CONTAINERS;
+    return unless $id_to_name{$id};
+    my $cost = $costs->get_cost('request_cost_' . $id_to_name{$id});
+    return $cost;
+}
+
+sub admin_fee_cost {
+    my ($self, $params) = @_;
+    $params->{quantity} //= 1;
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
+    my $admin_fee = $costs->get_cost('request_cost_admin_fee') || 0;
+    my $admin_fee_more = $costs->get_cost('request_cost_admin_fee_more') || 0;
+    my $cost = $params->{no_first_fee} ? $admin_fee_more : $admin_fee;
+    if ($params->{quantity} > 1) {
+        $cost += $admin_fee_more * ($params->{quantity}-1);
     }
+    return $cost;
 }
 
 =head2 Bulky waste collection
