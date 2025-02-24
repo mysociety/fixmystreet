@@ -409,6 +409,17 @@ sub direct_debit : Path('dd') : Args(0) {
     $c->detach;
 }
 
+sub direct_debit_internal : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('populate_dd_details');
+    $c->cobrand->call_hook('waste_setup_direct_debit');
+    $c->stash->{title} = "Direct Debit mandate";
+    $c->stash->{message} = "Your Direct Debit has been set up successfully.";
+    $c->stash->{template} = 'waste/dd_complete.html';
+    $c->detach;
+}
+
 # we process direct debit payments when they happen so this page
 # is only for setting expectations.
 sub direct_debit_complete : Path('dd_complete') : Args(0) {
@@ -1288,7 +1299,9 @@ sub garden_cancel : Chained('garden_setup') : Args(0) {
     $c->forward('check_if_staff_can_pay', [ $payment_method ]);
 
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Cancel';
+    $c->stash->{form_class}
+        = $c->cobrand->call_hook('waste_cancel_form_class')
+        || 'FixMyStreet::App::Form::Waste::Garden::Cancel';
     $c->forward('form');
 }
 
@@ -1433,7 +1446,7 @@ sub setup_garden_sub_params : Private {
     my $service_id;
     if (my $service = $c->cobrand->garden_current_subscription) {
         $service_id = $service->{service_id};
-    } else {
+    } elsif ($c->cobrand->can('garden_service_id')) { # XXX TODO Does Bexley need its own? Or is this actually Echo only?
         $service_id = $c->cobrand->garden_service_id;
     }
     $c->set_param('email_renewal_reminders_opt_in', $data->{email_renewal_reminders} eq 'Yes' ? 'Y' : 'N') if $data->{email_renewal_reminders};
@@ -1583,7 +1596,12 @@ sub process_garden_data : Private {
         $c->forward('confirm_subscription', [ undef ]);
     } else {
         if ( $data->{payment_method} && $data->{payment_method} eq 'direct_debit' ) {
-            $c->forward('direct_debit');
+            if ($c->cobrand->direct_debit_collection_method eq 'internal') {
+                $c->stash->{form_data} = $data;
+                $c->forward('direct_debit_internal');
+            } else {
+                $c->forward('direct_debit');
+            }
         } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
         } else {
@@ -1596,9 +1614,13 @@ sub process_garden_data : Private {
 sub garden_calculate_subscription_payment : Private {
     my ($self, $c, $type, $data) = @_;
 
-    # Sack form handling
     my $container = $data->{container_choice} || '';
-    my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+    my $costs = WasteWorks::Costs->new({
+        cobrand => $c->cobrand,
+        discount => $data->{apply_discount},
+        first_bin_discount => $c->cobrand->call_hook('garden_waste_first_bin_discount_applies' => $data)
+    });
+    # Sack form handling
     if ($container eq 'sack') {
         if ($c->cobrand->moniker eq 'merton') {
             # If renewing from bin to sacks, need to know bins to remove - better place for this?

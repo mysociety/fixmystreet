@@ -34,6 +34,7 @@ has_field confirm => (
     option_label => 'I confirm I wish to cancel my subscription',
     required => 1,
     label => "Confirm",
+    order => 998,
 );
 
 has_field submit => (
