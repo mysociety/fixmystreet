@@ -36,16 +36,6 @@ Lledred: [% report.latitude %]
 
 Hydred: [% report.longitude %]
 
-[% IF report.get_extra_field_value('road_name') ~%]
-Ffordd: [% report.get_extra_field_value('road_name') %]
-[% END %]
-[% IF report.get_extra_field_value('sect_label') ~%]
-Adran: [% report.get_extra_field_value('sect_label') %]
-[% END %]
-[% IF report.get_extra_field_value('area_name') ~%]
-Ardal: [% report.get_extra_field_value('area_name') %]
-[% END %]
-
 Gweld y lleoliad ar OpenStreetMap of this location: [% osm_url %]
 
 [% closest_address %]----------
