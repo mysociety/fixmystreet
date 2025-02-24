@@ -36,8 +36,8 @@ has index_template => (
 
 my %GARDEN_IDS = (
     merton => { bin240 => 26, bin140 => 27, sack => 28 },
-    kingston => { bin240 => 26, bin140 => 27, sack => 28 },
-    sutton => { bin240 => 26, bin140 => 27, sack => 28 },
+    kingston => { bin240 => 39, bin140 => 37, sack => 36 },
+    sutton => { bin240 => 39, bin140 => 37, sack => 36 },
 );
 lock_hash(%GARDEN_IDS);
 
@@ -1361,9 +1361,10 @@ sub process_garden_cancellation : Private {
 
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
-    $c->set_param($end_date_field, $now->ymd);
+    $c->set_param($end_date_field, $now->dmy('/'));
 
     my $service = $c->cobrand->garden_current_subscription;
+    # Not actually used by Kingston/Sutton
     if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin240} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin140}) {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
@@ -1459,6 +1460,7 @@ sub process_garden_modification : Private {
     my $service = $c->cobrand->garden_current_subscription;
     my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
     if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{sack}) { # SLWP Sack
+        # This must be Kingston
         $data->{bins_wanted} = 1;
         $data->{new_bins} = 1;
         $payment = $costs->sacks($data->{bins_wanted});

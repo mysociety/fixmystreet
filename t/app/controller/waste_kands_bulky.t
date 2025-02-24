@@ -55,8 +55,8 @@ FixMyStreet::override_config {
         echo => {
             kingston => {
                 bulky_address_types => [ 1, 7 ],
-                bulky_service_id => 413,
-                bulky_event_type_id => 1636,
+                bulky_service_id => 986,
+                bulky_event_type_id => 3130,
                 url => 'http://example.org',
                 nlpg => 'https://example.com/%s',
             },
@@ -67,30 +67,11 @@ FixMyStreet::override_config {
             hmac_id => '1234',
             scpID => '1234',
             company_name => 'rbk',
-            form_name => 'rbk_user_form',
-            staff_form_name => 'rbk_staff_form',
             customer_ref => 'customer-ref',
             bulky_customer_ref => 'customer-ref-bulky',
         } },
     },
 }, sub {
-    my $lwp = Test::MockModule->new('LWP::UserAgent');
-    $lwp->mock(
-        'get',
-        sub {
-            my ( $ua, $url ) = @_;
-            return $lwp->original('get')->(@_) unless $url =~ /example.com/;
-            my ( $uprn, $area ) = ( 1000000002, "KINGSTON UPON THAMES" );
-            my $j
-                = '{ "results": [ { "LPI": { "UPRN": '
-                . $uprn
-                . ', "LOCAL_CUSTODIAN_CODE_DESCRIPTION": "'
-                . $area
-                . '" } } ] }';
-            return HTTP::Response->new( 200, 'OK', [], $j );
-        }
-    );
-
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
     $echo->mock( 'GetTasks',                 sub { [] } );
@@ -111,8 +92,8 @@ FixMyStreet::override_config {
     );
     $echo->mock('ReserveAvailableSlotsForEvent', sub {
         my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
-        is $service, 413;
-        is $event_type, 1636;
+        is $service, 986;
+        is $event_type, 3130;
         is $property, 12345;
         return [
         {
@@ -349,14 +330,6 @@ FixMyStreet::override_config {
             $mech->content_contains('Bob Marge', 'name shown');
             $mech->content_contains('44 07 111 111 111', 'phone shown');
         }
-        sub test_summary_submission {
-            # external redirects make Test::WWW::Mechanize unhappy so clone
-            # the mech for the redirect
-            my $mech2 = $mech->clone;
-            $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
-            is $mech2->res->previous->code, 302, 'payments issues a redirect';
-            is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
-        }
 
         subtest 'Summary page' => \&test_summary;
 
@@ -409,7 +382,7 @@ FixMyStreet::override_config {
                 },
             ] } );
 
-            subtest 'Summary submission' => \&test_summary_submission;
+            $mech->waste_submit_check({ with_fields => { tandc => 1 } });
         };
 
         my $catch_email;
@@ -495,11 +468,10 @@ FixMyStreet::override_config {
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
-            is $report->get_extra_field_value('Collection_Date'), '2023-07-08T00:00:00';
-            is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '3::85::83';
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
-            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
-            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '08/07/2023';
+            is $report->get_extra_field_value('First_Date_Offered_-_Bulky'), '08/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve5==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
@@ -667,7 +639,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
             ResolutionCodeId => 232,
             EventStateId => 12400,
@@ -678,7 +650,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 232,
             EventStateId => 12400,
@@ -702,7 +674,7 @@ FixMyStreet::override_config {
 
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 379,
             EventStateId => 12401,
@@ -714,13 +686,13 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 100,
             EventStateId => 12401,
         }, {
-            EventTypeId => 1571,
-            ServiceId => 413,
+            EventTypeId => 3145,
+            ServiceId => 986,
             Guid => 'guid',
             EventDate => { DateTime => '2023-07-05T00:00:00Z' },
         } ] } );
@@ -780,8 +752,8 @@ FixMyStreet::override_config {
         echo => {
             sutton => {
                 bulky_address_types => [ 1, 7 ],
-                bulky_service_id => 413,
-                bulky_event_type_id => 1636,
+                bulky_service_id => 960,
+                bulky_event_type_id => 3130,
                 url => 'http://example.org',
                 nlpg => 'https://example.com/%s',
             },
@@ -792,31 +764,12 @@ FixMyStreet::override_config {
                 hmac => '1234',
                 hmac_id => '1234',
                 company_name => 'lbs',
-                form_name => 'lbs_user_form',
-                staff_form_name => 'lbs_staff_form',
                 customer_ref => 'customer-ref',
                 bulky_customer_ref => 'customer-ref-bulky',
             },
         },
     }
 }, sub {
-    my $lwp = Test::MockModule->new('LWP::UserAgent');
-    $lwp->mock(
-        'get',
-        sub {
-            my ( $ua, $url ) = @_;
-            return $lwp->original('get')->(@_) unless $url =~ /example.com/;
-            my ( $uprn, $area ) = ( 1000000002, "SUTTON" );
-            my $j
-                = '{ "results": [ { "LPI": { "UPRN": '
-                . $uprn
-                . ', "LOCAL_CUSTODIAN_CODE_DESCRIPTION": "'
-                . $area
-                . '" } } ] }';
-            return HTTP::Response->new( 200, 'OK', [], $j );
-        }
-    );
-
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock( 'GetTasks',                 sub { [] } );
     $echo->mock( 'GetEventsForObject',       sub { [] } );
@@ -837,8 +790,8 @@ FixMyStreet::override_config {
     } );
     $echo->mock('ReserveAvailableSlotsForEvent', sub {
         my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
-        is $service, 413;
-        is $event_type, 1636;
+        is $service, 960;
+        is $event_type, 3130;
         like $property, qr/1234[56]/;
         if ($property == 12345) {
             is $start, '2023-07-07';
@@ -883,7 +836,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky Waste');
     };
 
-    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}, {'ServiceId' => 413}] } );
+    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}, {'ServiceId' => 960}] } );
 
     subtest 'Sutton specific Bulky Waste text' => sub {
         $mech->get_ok('/waste/12346/');
@@ -992,14 +945,12 @@ sub _contact_extra_data {
         { category => 'Bulky collection', email => '1636@test.com' },
         { code => 'payment' },
         { code => 'payment_method' },
-        { code => 'Payment_Type' },
-        { code => 'Collection_Date' },
-        { code => 'Bulky_Collection_Bulky_Items' },
-        { code => 'Bulky_Collection_Notes' },
+        { code => 'Collection_Date_-_Bulky_Items' },
+        { code => 'TEM_-_Bulky_Collection_Item' },
+        { code => 'TEM_-_Bulky_Collection_Description' },
         { code => 'Exact_Location' },
         { code => 'GUID' },
         { code => 'reservation' },
-        { code => 'Customer_Selected_Date_Beyond_SLA?' },
-        { code => 'First_Date_Returned_to_Customer' },
+        { code => 'First_Date_Offered_-_Bulky' },
     );
 }

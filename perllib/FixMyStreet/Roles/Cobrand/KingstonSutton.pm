@@ -9,7 +9,6 @@ FixMyStreet::Roles::Cobrand::KingstonSutton - shared code for Kingston and Sutto
 package FixMyStreet::Roles::Cobrand::KingstonSutton;
 
 use Moo::Role;
-with 'FixMyStreet::Roles::Cobrand::SLWP';
 
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
@@ -181,22 +180,6 @@ sub waste_cc_payment_sale_ref {
     return "GGW" . $p->get_extra_field_value('uprn');
 }
 
-=head2 bulky_collection_window_start_date
-
-K&S have an 11pm cut-off for looking to book next day collections.
-
-=cut
-
-sub bulky_collection_window_start_date {
-    my ($self, $now) = @_;
-    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
-    # If past 11pm, push start date one day later
-    if ($now->hour >= 23) {
-        $start_date->add( days => 1 );
-    }
-    return $start_date;
-}
-
 =head2 Dashboard export
 
 The CSV export includes all reports, including unconfirmed and hidden, and is
@@ -262,9 +245,9 @@ sub dashboard_export_problems_add_columns {
             payment => $fields{payment},
             pro_rata => $fields{pro_rata},
             admin_fee => $fields{admin_fee},
-            container => $fields{Subscription_Details_Containers},
+            container => $fields{Paid_Container_Type} || $fields{Subscription_Details_Containers},
             current_bins => $fields{current_containers},
-            quantity => $fields{Subscription_Details_Quantity},
+            quantity => $fields{Paid_Container_Quantity} || $fields{Subscription_Details_Quantity},
         };
     });
 }
