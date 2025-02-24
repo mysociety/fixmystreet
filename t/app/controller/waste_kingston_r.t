@@ -75,8 +75,17 @@ FixMyStreet::override_config {
         echo => { kingston => { bulky_service_id => 986 }},
         payment_gateway => { kingston => {
             cc_url => 'http://example.com',
-            request_replace_cost => 1800,
-            request_replace_cost_more => 900,
+            request_cost_admin_fee => 1900,
+            request_cost_admin_fee_more => 950,
+            request_cost_garden_240 => 2300,
+            request_cost_paper_240 => 2300,
+            request_cost_paper_360 => 3700,
+            request_cost_recycling_240 => 2300,
+            request_cost_recycling_360 => 3700,
+            request_cost_recycling_box => 500,
+            request_cost_refuse_180 => 2300,
+            request_cost_refuse_240 => 2300,
+            request_cost_refuse_360 => 3700,
         } },
         waste_features => { kingston => {
             large_refuse_application_form => '/faq?refuse-application',
@@ -125,10 +134,10 @@ FixMyStreet::override_config {
     };
 
     foreach (
-        { id => 27, name => 'Blue lid paper and cardboard bin (240L)', service => 974 },
-        { id => 12, name => 'Green recycling box (55L)', service => 970 },
-        { id => 3, name => 'Black rubbish bin', ordered => 2, service => 966 },
-        { id => 15, name => 'Green recycling bin (240L)', service => 970 },
+        { id => 27, name => 'Blue lid paper and cardboard bin (240L)', service => 974, price => 4200 },
+        { id => 12, name => 'Green recycling box (55L)', service => 970, price => 2400 },
+        { id => 3, name => 'Black rubbish bin', ordered => 2, service => 966, price => 4200 },
+        { id => 15, name => 'Green recycling bin (240L)', service => 970, price => 4200 },
     ) {
         subtest "Request a new $_->{name}" => sub {
             my $ordered = $_->{ordered} || $_->{id};
@@ -148,7 +157,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Continue to payment');
 
             $mech->waste_submit_check({ with_fields => { process => 'summary' } });
-            is $sent_params->{items}[0]{amount}, 1800;
+            is $sent_params->{items}[0]{amount}, $_->{price};
 
             my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
             $mech->get_ok("/waste/pay_complete/$report_id/$token");
@@ -158,7 +167,7 @@ FixMyStreet::override_config {
             is $report->detail, "2 Example Street, Kingston, KT1 1AA";
             is $report->category, 'Request new container';
             is $report->title, "Request $_->{name} delivery";
-            is $report->get_extra_field_value('payment'), 1800, 'correct payment';
+            is $report->get_extra_field_value('payment'), $_->{price}, 'correct payment';
             is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $report->get_extra_field_value('Container_Type'), $ordered, 'correct bin type';
             is $report->get_extra_field_value('Action'), 1, 'correct container request action';
@@ -203,7 +212,7 @@ FixMyStreet::override_config {
         my $pay_params = $sent_params;
         is scalar @{$pay_params->{items}}, 4, 'right number of line items';
 
-        is $sent_data->{sale}{'scpbase:saleSummary'}{'scpbase:amountInMinorUnits'}, 4500, 'correct total';
+        is $sent_data->{sale}{'scpbase:saleSummary'}{'scpbase:amountInMinorUnits'}, 1900+950*3 + 2300*2+500*2, 'correct total';
 
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
@@ -213,7 +222,7 @@ FixMyStreet::override_config {
         is $report->detail, "2 Example Street, Kingston, KT1 1AA";
         is $report->category, 'Request new container';
         is $report->title, 'Request Green recycling box (55L) delivery';
-        is $report->get_extra_field_value('payment'), '1800', 'correct payment';
+        is $report->get_extra_field_value('payment'), 1900+500, 'correct payment';
         is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
         is $report->get_extra_field_value('Container_Type'), 12, 'correct bin type';
         is $report->get_extra_field_value('Action'), 1, 'correct container request action';
@@ -232,11 +241,11 @@ FixMyStreet::override_config {
             } elsif ($report->title =~ /^Request Green recycling box/) {
                 is $report->get_extra_field_value('Container_Type'), 12, 'correct bin type';
                 is $report->get_extra_field_value('service_id'), 970;
-                is $report->get_extra_field_value('payment'), 900, 'correct payment';
+                is $report->get_extra_field_value('payment'), 500+950, 'correct payment';
             } elsif ($report->title eq 'Request Black rubbish bin delivery') {
                 is $report->get_extra_field_value('Container_Type'), 3, 'correct bin type';
                 is $report->get_extra_field_value('service_id'), 966;
-                is $report->get_extra_field_value('payment'), 900, 'correct payment';
+                is $report->get_extra_field_value('payment'), 2300+950, 'correct payment';
             } elsif ($report->title eq 'Request Food waste bin (outdoor) delivery') {
                 is $report->get_extra_field_value('Container_Type'), 46, 'correct bin type';
                 is $report->get_extra_field_value('service_id'), 980;
@@ -244,7 +253,7 @@ FixMyStreet::override_config {
             } elsif ($report->title eq 'Request Blue lid paper and cardboard bin (240L) replacement') {
                 is $report->get_extra_field_value('Container_Type'), 27, 'correct bin type';
                 is $report->get_extra_field_value('service_id'), 974;
-                is $report->get_extra_field_value('payment'), 900, 'correct payment';
+                is $report->get_extra_field_value('payment'), 2300+950, 'correct payment';
             } else {
                 is $report->title, 'BAD';
             }
@@ -263,7 +272,7 @@ FixMyStreet::override_config {
             next if $report->title =~ /Food|collection/;
             is $pay_params->{items}[$sent_count]{description}, $report->title;
             is $pay_params->{items}[$sent_count]{lineId}, 'RBK-CCH-' . $report->id . '-Bob Marge';
-            is $pay_params->{items}[$sent_count]{amount}, $sent_count == 0 ? 1800 : 900;
+            is $pay_params->{items}[$sent_count]{amount}, $sent_count == 0 ? 1900 : $report->title =~ /box/ ? 500+950 : 2300+950;
             $sent_count++;
         }
 
@@ -324,7 +333,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('Continue to payment');
 
                 $mech->waste_submit_check({ with_fields => { process => 'summary' } });
-                is $sent_params->{items}[0]{amount}, 1800;
+                is $sent_params->{items}[0]{amount}, 2300+1900;
 
                 my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
                 $mech->get_ok("/waste/pay_complete/$report_id/$token");
@@ -333,7 +342,7 @@ FixMyStreet::override_config {
                 is $report->detail, "2 Example Street, Kingston, KT1 1AA";
                 is $report->category, 'Request new container';
                 is $report->title, "Request $names{$_->{id}} replacement";
-                is $report->get_extra_field_value('payment'), 1800, 'correct payment';
+                is $report->get_extra_field_value('payment'), 2300+1900, 'correct payment';
                 is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
                 is $report->get_extra_field_value('Container_Type'), "$_->{has}::$_->{id}", 'correct bin type';
                 is $report->get_extra_field_value('Action'), '2::1', 'correct container request action';
