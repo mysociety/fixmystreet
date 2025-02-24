@@ -37,18 +37,18 @@ has_page about_you => (
         my $c = $form->c;
         if ($data) {
             my @services = grep { /^container-\d/ && $data->{$_} } sort keys %$data;
-            my $total_paid_quantity = 0;
+            my $total = 0;
+            my $first_admin_fee;
             foreach (@services) {
                 my ($id) = /container-(.*)/;
                 my $quantity = $data->{"quantity-$id"} or next;
-                my $names = $c->stash->{containers};
-                if ($names->{$id} !~ /bag|sack|food/i) {
-                    $total_paid_quantity += $quantity;
+                if (my $cost = $c->cobrand->container_cost($id)) {
+                    $total += $cost * $quantity;
+                    $total += $c->cobrand->admin_fee_cost({quantity => $quantity, no_first_fee => $first_admin_fee});
+                    $first_admin_fee = 1;
                 }
             }
-            return unless $total_paid_quantity;
-            my ($cost) = $c->cobrand->request_cost(1, $total_paid_quantity);
-            $data->{payment} = $cost if $cost;
+            $data->{payment} = $total if $total;
         }
     },
 );
