@@ -29,7 +29,7 @@ Subject: [% report.title %]
 Details: [% report.detail %]
 
 [% FOR field IN report.get_extra_fields %][% IF field.value ~%]
-[% field.description OR field.name %]: [% field.value %]
+[% field.description OR field.name %]: [% field.value_label OR field.value %]
 
 [% END %][% END ~%]
 
@@ -40,16 +40,6 @@ Easting/Northing
 Latitude: [% report.latitude %]
 
 Longitude: [% report.longitude %]
-
-[% IF report.get_extra_field_value('road_name') ~%]
-Road: [% report.get_extra_field_value('road_name') %]
-[% END %]
-[% IF report.get_extra_field_value('sect_label') ~%]
-Section: [% report.get_extra_field_value('sect_label') %]
-[% END %]
-[% IF report.get_extra_field_value('area_name') ~%]
-Area: [% report.get_extra_field_value('area_name') %]
-[% END %]
 
 View OpenStreetMap of this location: [% osm_url %]
 

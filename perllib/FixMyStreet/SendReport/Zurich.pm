@@ -24,6 +24,8 @@ sub build_recipient_list {
     $h->{east} = $east;
     $h->{nord} = $nord;
 
+    $h->{label_lookup} = {};
+
     my $body_email = $body->endpoint;
 
     my $parent = $body->parent;

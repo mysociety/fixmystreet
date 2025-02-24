@@ -17,11 +17,15 @@ sub build_recipient_list {
     my ( $self, $row, $h ) = @_;
 
     my $all_confirmed = 1;
+    my $label_lookup = {};
     foreach my $body ( @{ $self->bodies } ) {
 
         my $contact = $self->fetch_category($body, $row) or next;
 
         my ($body_email, $state, $note) = ( $contact->email, $contact->state, $contact->note );
+
+        my $lookup = $contact->get_metadata_label_lookup;
+        $label_lookup = { %$label_lookup, %$lookup };
 
         if ($state eq 'unconfirmed') {
             $all_confirmed = 0;
@@ -43,6 +47,7 @@ sub build_recipient_list {
             push @{ $self->to }, [ $email, $body->name ];
         }
     }
+    $h->{label_lookup} = $label_lookup;
 
     return $all_confirmed && @{$self->to};
 }
@@ -111,6 +116,19 @@ sub send {
         $params->{From} = [ $sender, $params->{From}[1] ];
     }
 
+    # Add category value labels to drop-down extra questions
+    my $label_lookup = delete $h->{label_lookup};
+    unless ($label_lookup) {
+        # Assume we've come from a special extra email after Open311, so use the row's contact
+        $label_lookup = $row->contact->get_metadata_label_lookup;
+    }
+
+    foreach (@{$row->get_extra_fields}) {
+        if (my $label = $label_lookup->{$_->{name}}{$_->{value}}) {
+            $_->{value_label} = $label;
+        }
+    }
+
     $cobrand->call_hook(munge_sendreport_params => $row, $h, $params);
 
     my $result = FixMyStreet::Email::send_cron($row->result_source->schema,
@@ -119,6 +137,9 @@ sub send {
             cobrand => $cobrand, # For correct logo that uses cobrand object
         },
         $params, $sender, $nomail, $cobrand, $row->lang);
+
+    # make sure we don't save any changes from above
+    $row->discard_changes;
 
     unless ($result) {
         $row->update_extra_metadata(sent_to => email_list($params->{To}));

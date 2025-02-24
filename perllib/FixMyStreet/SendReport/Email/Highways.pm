@@ -45,9 +45,16 @@ sub _lookup_site_code {
     return unless $nearest;
 
     my $attr = $nearest->{properties};
-    $row->update_extra_field({ name => 'road_name', value => $attr->{ROA_NUMBER}, description => 'Road name' });
-    $row->update_extra_field({ name => 'area_name', value => $attr->{area_name}, description => 'Area name' });
-    $row->update_extra_field({ name => 'sect_label', value => $attr->{sect_label}, description => 'Road sector' });
+    my $db = FixMyStreet::DB->schema->storage;
+    $db->txn_do(sub {
+        my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE' })->single;
+        $row2->update_extra_field({ name => 'road_name', value => $attr->{ROA_NUMBER}, description => 'Road name' });
+        $row2->update_extra_field({ name => 'area_name', value => $attr->{area_name}, description => 'Area name' });
+        $row2->update_extra_field({ name => 'sect_label', value => $attr->{sect_label}, description => 'Road sector' });
+        $row2->update;
+        $row->discard_changes;
+    });
+
     return $attr->{area_name};
 }
 
