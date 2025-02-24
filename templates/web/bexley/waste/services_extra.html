@@ -29,7 +29,7 @@
           If you're a keen gardener, we can take away your garden waste. We'll
           deliver a bin you can use, and empty it every two weeks.
         </p>
-        <a class="btn btn--primary" [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/garden-waste-collection-service/sign-garden-waste-collection">Sign up for a garden waste collection</a>
+        <a class="btn btn--primary" href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Sign up for a garden waste collection</a>
       </div>
     </div>
   </div>

@@ -22,6 +22,9 @@ $dbi_mock->mock( 'connect', sub {
     return $dbh;
 } );
 
+my $agile_mock = Test::MockModule->new('Integrations::Agile');
+$agile_mock->mock( 'CustomerSearch', sub { {} } );
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $cobrand = FixMyStreet::Cobrand::Bexley->new;
@@ -674,6 +677,7 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         waste      => { bexley => 1 },
         whitespace => { bexley => { url => 'http://example.org/' } },
+        agile => { bexley => { url => 'test' } },
     },
 }, sub {
     my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
