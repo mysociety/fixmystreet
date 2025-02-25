@@ -116,6 +116,8 @@ has_field account_number => (
     validate_method => sub {
         my $self = shift;
         return unless $self->value;
+        # NB the given value is also validated, along with the sort code,
+        # against the Access PaySuite bankchecker API.
         # Remove any non-numerical characters
         my $value = $self->value;
         $value =~ s/[^0-9]//g;
@@ -134,6 +136,8 @@ has_field sort_code => (
     validate_method => sub {
         my $self = shift;
         return unless $self->value;
+        # NB the given value is also validated, along with the account number,
+        # against the Access PaySuite bankchecker API.
         my $sort_code = $self->value;
         $sort_code =~ s/[^0-9]//g;
         $self->value($sort_code);
