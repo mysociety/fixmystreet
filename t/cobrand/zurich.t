@@ -1,6 +1,7 @@
 # TODO
 # Overdue alerts
 
+use Test::Output;
 use DateTime;
 use Email::MIME;
 use File::Temp;
@@ -11,6 +12,7 @@ use Path::Tiny;
 use t::Mock::MapItZurich;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Inactive;
 my $mech = FixMyStreet::TestMech->new;
 
 FixMyStreet::App->log->disable('info');
@@ -1177,6 +1179,67 @@ subtest 'CSV export includes lastupdate for problem' => sub {
     my @rows = $mech->content_as_csv;
     is $rows[0]->[3], 'Last Updated', "Last Updated field has correct column heading";
     isnt $rows[1]->[3], '', "Last Updated field isn't blank";
+};
+
+subtest 'Anonymise reports that are over two years old' => sub {
+    use_ok 'FixMyStreet::Script::Inactive';
+
+    my $now = DateTime->now;
+    my @old_reports = $mech->create_problems_for_body( 2, $division->id, 'Anonymise Test', {
+        state => 'submitted',
+        confirmed => undef,
+        created => $now->subtract( years => 4 ),
+        cobrand => 'zurich',
+        areas => ',423017,',
+    });
+
+    my @two_year_old_reports = $mech->create_problems_for_body( 2, $division->id, 'Anonymise Test', {
+        state => 'submitted',
+        confirmed => undef,
+        created => $now->add( months => 25 ),
+        cobrand => 'zurich',
+        areas => ',423017,',
+    });
+
+    my @less_than_two_year_old_reports = $mech->create_problems_for_body( 2, $division->id, 'Anonymise Test', {
+        state => 'submitted',
+        confirmed => undef,
+        created => $now->add( years => 1 ),
+        cobrand => 'zurich',
+        areas => ',423017,',
+    });
+
+    my %opts = (
+        anonymize => '24m',
+        created => 1,
+        state => 'all',
+        verbose => 1,
+        'dry-run' => 1,
+    );
+
+    my $user_id = $old_reports[0]->user_id;
+    my ($report1, $report2) = ($old_reports[0]->id, $old_reports[1]->id);
+
+    stdout_is { FixMyStreet::Script::Inactive->new(%opts)->reports; }
+    "DRY RUN\nAnonymizing problem #$report1\nAnonymizing problem #$report2\n", "Dry run output of reports to be anonymised";
+
+    for my $report (@old_reports) {
+        $report->discard_changes;
+        is $report->user->id, $user_id, "Report over two years old not anonymised without commit";
+    };
+
+    $opts{'dry-run'} = 0;
+    stdout_is { FixMyStreet::Script::Inactive->new(%opts)->reports; }
+    "Anonymizing problem #$report1\nAnonymizing problem #$report2\n", "List of reports being anonymised";
+
+    for my $report (@old_reports) {
+        $report->discard_changes;
+        isnt $report->user->id, $user_id, "Report over two years old assigned to anonymous user";
+    };
+    for my $report (@two_year_old_reports, @less_than_two_year_old_reports) {
+        $report->discard_changes;
+        is $report->user->id, $user_id, "Report two years old or less not assigned to anonymous user";
+    };
 };
 
 };
