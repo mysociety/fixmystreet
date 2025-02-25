@@ -235,4 +235,6 @@ sub garden_waste_first_bin_discount_applies {
     return $data->{payment_method} && $data->{payment_method} eq 'direct_debit';
 }
 
+sub waste_staff_choose_payment_method { 1 }
+
 1;
