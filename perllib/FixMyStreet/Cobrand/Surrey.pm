@@ -1,8 +1,22 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Surrey - code specific to the Surrey cobrand
+
+=head1 SYNOPSIS
+
+=cut
+
 package FixMyStreet::Cobrand::Surrey;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use strict;
 use warnings;
+
+=head2 Defaults
+
+=over 4
+
+=cut
 
 use FixMyStreet::Geocode::Address;
 use JSON::MaybeXS;
@@ -26,7 +40,7 @@ sub disambiguate_location {
     };
 }
 
-=item * The default map view shows closed/fixed reports for 31 days
+=item * The default map view shows closed/fixed reports for 31 days, open for 90 days.
 
 =cut
 
@@ -36,6 +50,18 @@ sub report_age {
         closed => '31 days',
         fixed  => '31 days',
     };
+}
+
+=item * Pins are green tick for fixed, grey (sometimes a cross) for closed, yellow otherwise
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey-cross' if $p->is_closed || $p->state eq 'unable to fix';
+    return 'grey' if $p->state eq 'not responsible';
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow';
 }
 
 =item * Add display_name as an extra contact field
@@ -65,16 +91,63 @@ sub enter_postcode_text { 'Enter a nearby UK postcode, or street name and area' 
 
 sub cut_off_date { '2024-09-16' }
 
+=item * The privacy policy is held on Surrey's own site
+
+=cut
+
+sub privacy_policy_url {
+    return 'https://www.surreycc.gov.uk/council-and-democracy/your-privacy/our-privacy-notices/fixmystreet'
+}
+
+=item * Doesn't allow the reopening of reports
+
+=cut
+
+sub reopening_disallowed { 1 }
+
+=item * Allows anonymous reporting
+
+=cut
+
+sub allow_anonymous_reports { 'button' }
+
+=item * Do not allow email addresses in title or detail, with detail maximum length
+
+=cut
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    my $regex = Utils::email_regex;
+
+    if ($report->detail =~ /$regex/ || $report->title =~ /$regex/) {
+        $errors->{detail} = 'Please remove any email addresses and other personal information from your report';
+    }
+
+    my $max_report_length = 1000;
+    if ( length( $report->detail ) > $max_report_length ) {
+        $errors->{detail} = sprintf('Reports are limited to %s characters in length. Please shorten your report', $max_report_length );
+    }
+
+    return $errors;
+}
+
+=item * Anyone with a surreycc.gov.uk email shows up in the admin
+
+=cut
+
+sub admin_user_domain { 'surreycc.gov.uk' }
 
 =item * requires_recaptcha
 
 Disable reCAPTCHA on this cobrand because we never see end users' IPs, only
 those of the Imperva WAF, some of which are considered non-UK.
 
+=back
+
 =cut
 
 sub requires_recaptcha { 0 }
-
 
 =head2 problems_restriction/problems_sql_restriction/problems_on_map_restriction
 
@@ -112,57 +185,6 @@ sub problems_on_map_restriction {
         { "$table.service" => 'Open311' },
     ]);
 }
-
-
-=item * The privacy policy is held on Surrey's own site
-
-=cut
-
-sub privacy_policy_url {
-    return 'https://www.surreycc.gov.uk/council-and-democracy/your-privacy/our-privacy-notices/fixmystreet'
-}
-
-=item * Doesn't allow the reopening of reports
-
-=cut
-
-sub reopening_disallowed { 1 }
-
-=item * Allows anonymous reporting
-
-=cut
-
-sub allow_anonymous_reports { 'button' }
-
-=item * Do not allow email addresses in title or detail, with detail maximum length
-
-=back
-
-=cut
-
-sub report_validation {
-    my ($self, $report, $errors) = @_;
-
-    my $regex = Utils::email_regex;
-
-    if ($report->detail =~ /$regex/ || $report->title =~ /$regex/) {
-        $errors->{detail} = 'Please remove any email addresses and other personal information from your report';
-    }
-
-    my $max_report_length = 1000;
-    if ( length( $report->detail ) > $max_report_length ) {
-        $errors->{detail} = sprintf('Reports are limited to %s characters in length. Please shorten your report', $max_report_length );
-    }
-
-    return $errors;
-}
-
-=item * Anyone with a surreycc.gov.uk email shows up in the admin
-
-=cut
-
-sub admin_user_domain { 'surreycc.gov.uk' }
-
 
 =head2 get_town
 
@@ -234,11 +256,9 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
-=back
-
 =head2 Open311
 
-=over 1
+=over 4
 
 =item * Fetched reports via Open311 use the service name as their title
 

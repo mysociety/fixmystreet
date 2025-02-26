@@ -1,0 +1,14 @@
+[%
+SET first = body_id.keys.first; # Might be more than one, but showing one will do
+SET url = bodies.$first.external_url;
+%]
+<div class="box-warning">
+    <h1>[% bodies.$first.name %]</h1>
+    <p>
+        To make a report to <span class="unresponsive-council">[% bodies.$first.name %]</span>,
+        please visit their website
+        [%~ IF url %]
+        at <a href="[% url %]">[% url %]</a>
+        [%~ END %].
+    </p>
+</div>
