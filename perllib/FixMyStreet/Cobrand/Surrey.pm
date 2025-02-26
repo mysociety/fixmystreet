@@ -52,6 +52,18 @@ sub report_age {
     };
 }
 
+=item * Pins are green tick for fixed, grey (sometimes a cross) for closed, yellow otherwise
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey-cross' if $p->is_closed || $p->state eq 'unable to fix';
+    return 'grey' if $p->state eq 'not responsible' || ($context ne 'reports' && !$self->owns_problem($p));
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow';
+}
+
 =item * Add display_name as an extra contact field
 
 =cut
