@@ -241,3 +241,10 @@ a#geolocate_link,
 .societyworks-footer p {
   text-align: center;
 }
+
+/* Reporting flow overrides */
+
+/* Hide the continue button if a message is being shown */
+div.js-reporting-page:has(.unresponsive-council) .js-reporting-page--next {
+  display: none !important;
+}
