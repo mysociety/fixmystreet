@@ -4,21 +4,16 @@
 
 make-bexley-ww-postcode-db
 
-=head1 USAGE
-
-make-bexley-ww-postcode-db
-
 =head1 DESCRIPTION
 
-Creates a SQLite database for postcode lookups for Bexley WasteWorks, pulled
-from their LLPG data.
+Creates/updates a SQLite database for postcode lookups for Bexley WasteWorks,
+pulled from their LLPG data.
 See https://static.geoplace.co.uk/downloads/DTF-7.3-v3.1-Fourth-Edition-Specification-Consultation.pdf for breakdown of data types
 
 =cut
 
-use strict;
+use v5.14;
 use warnings;
-use feature 'say';
 
 BEGIN {
     use File::Basename qw(dirname);
@@ -30,199 +25,108 @@ BEGIN {
 use BexleyAddresses;
 use DBI;
 use FixMyStreet;
+use File::Copy;
+use File::Temp;
 use Text::CSV;
-use Cwd 'abs_path';
+use LWP::Simple;
+use IO::String;
+use Encode;
+use Getopt::Long::Descriptive;
 
-my $csv_file = $ARGV[0] or die "Please provide a CSV file\n";
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['csv=s',   "a path to a LLPG CSV to use"],
+    ['fetch=s', "a url to fetch the LLPG CSV from"],
+    ['verbose|v', "verbose output"],
+    ['help|h',  "print usage message and exit" ],
+);
+print($usage->text), exit if $opts->help;
 
-# Delete any existing database file first
-my $db_file = BexleyAddresses::database_file;
-unlink $db_file or warn "Could not remove $db_file: $!" if -e $db_file;
+my $fh = fetch_data();
+my $csv = Text::CSV->new( { binary => 1, auto_diag => 1 } );
 
+my $row = $csv->getline($fh);
+my $updates = check_header($row);
+
+my $db_file = $updates ? BexleyAddresses::database_file : File::Temp->new();
 my $db = DBI->connect( 'dbi:SQLite:dbname=' . $db_file );
 
-say 'Creating postcodes tables...';
+if (!$updates) {
+    verbose('Creating postcodes tables...');
+    create_tables();
+    verbose('Tables created');
+}
 
-$db->do(<<SQL) or die;
-CREATE VIRTUAL TABLE street_descriptors USING fts4 (
-    usrn              INTEGER NOT NULL,
-    street_descriptor TEXT,
-    locality_name     TEXT,
-    town_name         TEXT
-)
-SQL
+my $queries = setup_queries();
+my $lookups = setup_lookups();
 
-# PAO = 'Primary Addressable Object'
-# SAO = 'Secondary Addressable Object' - used for child addresses
-$db->do(<<SQL) or die;
-CREATE VIRTUAL TABLE postcodes USING fts4 (
-    postcode          TEXT    NOT NULL,
-    uprn              INTEGER NOT NULL,
-    usrn              INTEGER NOT NULL,
+verbose('Populating tables...');
+while( my $row = $csv->getline($fh) ) {
+    process_row($row);
+}
+verbose('Tables populated');
 
-    pao_start_number TEXT,
-    pao_start_suffix TEXT,
-    pao_end_number   TEXT,
-    pao_end_suffix   TEXT,
-    pao_text         TEXT,
+$db->disconnect;
 
-    sao_start_number TEXT,
-    sao_start_suffix TEXT,
-    sao_end_number   TEXT,
-    sao_end_suffix   TEXT,
-    sao_text         TEXT,
+if (!$updates) {
+    verbose('Moving new file into place');
+    move($db_file, BexleyAddresses::database_file);
+}
 
-    has_parent       INTEGER
-)
-SQL
+# ---
 
-say 'Tables created in '
-    . abs_path(BexleyAddresses::database_file);
+sub fetch_data {
+    my $fh;
+    if (!$opts->csv && $opts->fetch) {
+        verbose("Fetching the LLPG CSV via url.");
+        my $csv_content = LWP::Simple::get($opts->fetch);
+        $csv_content = decode('UTF-8', $csv_content);
+        $fh = IO::String->new($csv_content);
+    } elsif ($opts->csv && !$opts->fetch) {
+        verbose("Using the CSV file provided.");
+        open $fh, '<:encoding(utf8)', $opts->csv;
+    } else {
+        die "A url or path to fetch the CSV from must be provided.\n";
+    }
+    return $fh;
+}
 
-my $query_sd = $db->prepare(
-<<SQL
-    INSERT OR IGNORE INTO street_descriptors (
-        usrn,
-        street_descriptor,
-        locality_name,
-        town_name
-    )
-    VALUES (?,?,?,?)
-SQL
-);
+sub check_header {
+    my $row = shift;
+    die "File is not an LLPG CSV file\n" unless $row->[0] == 10;
+    die "File is not for Bexley\n" unless $row->[1] =~ /Bexley/ && $row->[2] eq '5120';
 
-my $query_postcodes = $db->prepare(
-<<SQL
-    INSERT OR IGNORE INTO postcodes (
-        postcode,
-        uprn,
-        usrn,
-
-        pao_start_number,
-        pao_start_suffix,
-        pao_end_number,
-        pao_end_suffix,
-        pao_text,
-
-        sao_start_number,
-        sao_start_suffix,
-        sao_end_number,
-        sao_end_suffix,
-        sao_text,
-
-        has_parent
-    )
-    VALUES (?,?,?,
-            ?,?,?,?,?,
-            ?,?,?,?,?,
-            ?)
-SQL
-);
-
-my $csv = Text::CSV->new( { binary => 1, auto_diag => 1 } );
-open my $fh, '<:encoding(utf8)', $csv_file;
-
-my $id_street_descriptor = 15;
-my @columns_street_descriptor = (
-    qw/
-        RECORD_IDENTIFIER
-        CHANGE_TYPE
-        PRO_ORDER
-        USRN
-        STREET_DESCRIPTOR
-        LOCALITY_NAME
-        TOWN_NAME
-        ADMINSTRATIVE_AREA
-        LANGUAGE
-    /
-);
-
-# 'Basic Land and Property Unit', needed to determine parent-child relationships
-my $id_blpu = 21;
-my @columns_blpu = (
-    qw/
-        RECORD_IDENTIFIER
-        CHANGE_TYPE
-        PRO_ORDER
-        UPRN
-        LOGICAL_STATUS
-        BLPU_STATE
-        BLPU_STATE_DATE
-        BLPU_CLASS
-        PARENT_UPRN
-        X_COORDINATE
-        Y_COORDINATE
-        RPC
-        LOCAL_CUSTODIAN_CODE
-        START_DATE
-        END_DATE
-        LAST_UPDATE_DATE
-        ENTRY_DATE
-        ORGANISATION
-        WARD_CODE
-        PARISH_CODE
-        CUSTODIAN_ONE
-        CUSTODIAN_TWO
-        CAN_KEY
-    /
-);
-
-# 'Land and Property Identifier'
-my $id_lpi = 24;
-my @columns_lpi = (
-    qw/
-        RECORD_IDENTIFIER    CHANGE_TYPE      PRO_ORDER         UPRN
-        LPI_KEY              LANGUAGE         LOGICAL_STATUS    START_DATE
-        END_DATE             ENTRY_DATE       LAST_UPDATE_DATE  SAO_START_NUMBER
-        SAO_START_SUFFIX     SAO_END_NUMBER   SAO_END_SUFFIX    SAO_TEXT
-        PAO_START_NUMBER     PAO_START_SUFFIX PAO_END_NUMBER    PAO_END_SUFFIX
-        PAO_TEXT             USRN             LEVEL             POSTAL_ADDRESS
-        POSTCODE             POST_TOWN        OFFICIAL_FLAG
-    /
-);
-
-say 'Populating tables...';
-
-my %uprn_extra_data;
+    my $type = $row->[8];
+    die "File is not of right type\n" unless $type eq 'F' || $type eq 'C';
+    my $updates = $type eq 'C';
+    verbose($updates ? "A Change Only Update file" : "A full extract file");
+    return $updates;
+}
 
 # Cannot set column names / headers in usual way as CSV contains multiple
 # record types
-while( my $row = $csv->getline($fh) ) {
+sub process_row {
+    my $row = shift;
     # First column is always record identifier
     my $record_id = $row->[0];
 
     my %row_h;
-    if ( $record_id == $id_street_descriptor ) {
-        @row_h{@columns_street_descriptor} = @$row;
+    my $cols = $lookups->{columns}{$record_id} or return;
+    @row_h{@$cols} = @$row;
+    my $status = $row_h{LOGICAL_STATUS} || 0;
 
-        $query_sd->execute(
-            $row_h{USRN},
-            $row_h{STREET_DESCRIPTOR},
-            $row_h{LOCALITY_NAME},
-            $row_h{TOWN_NAME},
-        );
-    } elsif ( $record_id == $id_blpu ) {
-        @row_h{@columns_blpu} = @$row;
-
-        $uprn_extra_data{ $row_h{UPRN} }{has_parent} = !!$row_h{PARENT_UPRN};
-        $uprn_extra_data{ $row_h{UPRN} }{blpu_class} = $row_h{BLPU_CLASS};
-    } elsif ( $record_id == $id_lpi ) {
-        @row_h{@columns_lpi} = @$row;
-
-        next if ( $row_h{LOGICAL_STATUS} || 0 ) != 1;
-        next unless $row_h{POSTCODE};
-
-        # 'P' or 'PP' mean the property is a 'parent shell' and so should not be
-        # offered as a selectable address.
-        my $blpu_class = $uprn_extra_data{ $row_h{UPRN} }{blpu_class} // '';
-        next if $blpu_class eq 'P' || $blpu_class eq 'PP';
+    if ( $record_id == $lookups->{types}{street} ) {
+        $queries->{insert_sd}->execute($row_h{USRN}, $row_h{STREET_DESCRIPTOR}, $row_h{LOCALITY_NAME}, $row_h{TOWN_NAME});
+    } elsif ( $record_id == $lookups->{types}{blpu} ) {
+        return if $status != 1;
+        $queries->{insert_blpu}->execute($row_h{UPRN}, $row_h{BLPU_CLASS}, !!$row_h{PARENT_UPRN});
+    } elsif ( $record_id == $lookups->{types}{lpi} ) {
+        return if $status != 1 || !$row_h{POSTCODE};
 
         # Remove whitespace from postcode
         my $postcode = $row_h{POSTCODE} =~ s/ //gr;
 
-        my $has_parent = $uprn_extra_data{ $row_h{UPRN} }{has_parent} // 0;
-
-        $query_postcodes->execute(
+        $queries->{insert_lpi}->execute(
             $postcode,
             $row_h{UPRN},
             $row_h{USRN},
@@ -238,10 +142,141 @@ while( my $row = $csv->getline($fh) ) {
             $row_h{SAO_END_NUMBER},
             $row_h{SAO_END_SUFFIX},
             $row_h{SAO_TEXT},
-
-            $has_parent,
         );
     }
 }
 
-say 'Tables populated';
+# ---
+
+sub create_tables {
+    $db->do(<<SQL) or die;
+    CREATE TABLE street_descriptors (
+        usrn              INTEGER NOT NULL PRIMARY KEY,
+        street_descriptor TEXT,
+        locality_name     TEXT,
+        town_name         TEXT
+    )
+SQL
+
+    $db->do(<<SQL) or die;
+    CREATE TABLE blpu (
+        uprn INTEGER NOT NULL PRIMARY KEY,
+        class TEXT,
+        has_parent INTEGER
+    )
+SQL
+
+    # PAO = 'Primary Addressable Object'
+    # SAO = 'Secondary Addressable Object' - used for child addresses
+    $db->do(<<SQL) or die;
+    CREATE TABLE lpi (
+        postcode          TEXT    NOT NULL,
+        uprn              INTEGER NOT NULL PRIMARY KEY,
+        usrn              INTEGER NOT NULL,
+
+        pao_start_number TEXT,
+        pao_start_suffix TEXT,
+        pao_end_number   TEXT,
+        pao_end_suffix   TEXT,
+        pao_text         TEXT,
+
+        sao_start_number TEXT,
+        sao_start_suffix TEXT,
+        sao_end_number   TEXT,
+        sao_end_suffix   TEXT,
+        sao_text         TEXT
+    )
+SQL
+}
+
+sub setup_queries {
+    my $insert_sd = $db->prepare(
+    <<SQL
+        INSERT OR REPLACE INTO street_descriptors (
+            usrn, street_descriptor, locality_name, town_name
+        ) VALUES (?,?,?,?)
+SQL
+    );
+    my $insert_blpu = $db->prepare('INSERT OR REPLACE INTO blpu
+        (uprn, class, has_parent) VALUES (?,?,?)');
+    my $insert_lpi = $db->prepare(
+    <<SQL
+        INSERT OR REPLACE INTO lpi (
+            postcode, uprn, usrn,
+            pao_start_number, pao_start_suffix, pao_end_number, pao_end_suffix, pao_text,
+            sao_start_number, sao_start_suffix, sao_end_number, sao_end_suffix, sao_text
+        ) VALUES (?,?,?,
+            ?,?,?,?,?,
+            ?,?,?,?,?)
+SQL
+    );
+    return {
+        insert_sd => $insert_sd,
+        insert_blpu => $insert_blpu,
+        insert_lpi => $insert_lpi,
+    }
+}
+
+sub setup_lookups {
+    return {
+      types => {
+        street => 15,
+        blpu => 21,
+        lpi => 24,
+      },
+      columns => {
+        # street descriptor
+        15 => [ qw/
+            RECORD_IDENTIFIER
+            CHANGE_TYPE
+            PRO_ORDER
+            USRN
+            STREET_DESCRIPTOR
+            LOCALITY_NAME
+            TOWN_NAME
+            ADMINSTRATIVE_AREA
+            LANGUAGE
+        / ],
+        # 'Basic Land and Property Unit', needed to determine parent-child relationships
+        21 => [ qw/
+            RECORD_IDENTIFIER
+            CHANGE_TYPE
+            PRO_ORDER
+            UPRN
+            LOGICAL_STATUS
+            BLPU_STATE
+            BLPU_STATE_DATE
+            BLPU_CLASS
+            PARENT_UPRN
+            X_COORDINATE
+            Y_COORDINATE
+            RPC
+            LOCAL_CUSTODIAN_CODE
+            START_DATE
+            END_DATE
+            LAST_UPDATE_DATE
+            ENTRY_DATE
+            ORGANISATION
+            WARD_CODE
+            PARISH_CODE
+            CUSTODIAN_ONE
+            CUSTODIAN_TWO
+            CAN_KEY
+        / ],
+        # 'Land and Property Identifier'
+        24 => [ qw/
+            RECORD_IDENTIFIER    CHANGE_TYPE      PRO_ORDER         UPRN
+            LPI_KEY              LANGUAGE         LOGICAL_STATUS    START_DATE
+            END_DATE             ENTRY_DATE       LAST_UPDATE_DATE  SAO_START_NUMBER
+            SAO_START_SUFFIX     SAO_END_NUMBER   SAO_END_SUFFIX    SAO_TEXT
+            PAO_START_NUMBER     PAO_START_SUFFIX PAO_END_NUMBER    PAO_END_SUFFIX
+            PAO_TEXT             USRN             LEVEL             POSTAL_ADDRESS
+            POSTCODE             POST_TOWN        OFFICIAL_FLAG
+        / ],
+      },
+    };
+}
+
+sub verbose {
+    say shift if $opts->verbose;
+}

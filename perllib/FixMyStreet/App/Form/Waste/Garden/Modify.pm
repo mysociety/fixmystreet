@@ -124,10 +124,19 @@ has_field task => (
     label => 'What do you want to do?',
     required => 1,
     widget => 'RadioGroup',
-    options => [
-        { value => 'modify', label => 'Increase or reduce the number of bins in your subscription' },
-        { value => 'cancel', label => 'Cancel your garden waste subscription' },
-    ],
+    options_method => sub {
+        my $self = shift;
+        my $form = $self->form;
+        my $c = $form->c;
+        my @options;
+        if ($c->cobrand->moniker eq 'brent') {
+            push @options, { value => 'modify', label => 'Increase the number of bins in your subscription' };
+        } else {
+            push @options, { value => 'modify', label => 'Increase or reduce the number of bins in your subscription' };
+        }
+        push @options, { value => 'cancel', label => 'Cancel your garden waste subscription' };
+        return \@options;
+    },
 );
 
 has_field current_bins => (
@@ -180,5 +189,21 @@ has_field submit => (
     element_attr => { class => 'govuk-button' },
     order => 999,
 );
+
+sub validate {
+    my $self = shift;
+    my $cobrand = $self->{c}->cobrand->moniker;
+
+    if ($cobrand eq 'brent') {
+        unless ( $self->field('current_bins')->is_inactive ) {
+            my $total = $self->field('bins_wanted')->value;
+            my $current = $self->field('current_bins')->value;
+            $self->add_form_error('You can only increase the number of bins')
+                if $total <= $current;
+        }
+    }
+
+    $self->next::method();
+}
 
 1;
