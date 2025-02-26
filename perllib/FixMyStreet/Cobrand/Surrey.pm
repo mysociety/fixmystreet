@@ -59,7 +59,7 @@ sub report_age {
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'grey-cross' if $p->is_closed || $p->state eq 'unable to fix';
-    return 'grey' if $p->state eq 'not responsible';
+    return 'grey' if $p->state eq 'not responsible' || ($context ne 'reports' && !$self->owns_problem($p));
     return 'green-tick' if $p->is_fixed;
     return 'yellow';
 }
