@@ -1,5 +1,7 @@
 [%
-
+IF cobrand.moniker == 'bexley';
+SET quantity = report.get_extra_field_value('total_containers');
+ELSE;
 SET container = report.get_extra_field_value('Paid_Collection_Container_Type');
 IF container;
     SET sacks = (container == 2);
@@ -10,6 +12,7 @@ ELSE;
         SET sacks = (container == 28);
         SET quantity = report.get_extra_field_value('Subscription_Details_Quantity');
     END;
+END;
 END;
 SET new_bins = report.get_extra_field_value('new_containers') || 0;
 
