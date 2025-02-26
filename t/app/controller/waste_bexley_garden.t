@@ -287,10 +287,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         my $email_body = $mech->get_text_body_from_email($emails[1]);
-        TODO: {
-            local $TODO = 'Quantity not yet read in _garden_data.html';
-            like $email_body, qr/Number of bin subscriptions: 2/;
-        }
+        like $email_body, qr/Number of bin subscriptions: 2/;
         like $email_body, qr/Bins to be delivered: 2/;
         like $email_body, qr/Total:.*?$test->{pounds_cost}/;
         $mech->clear_emails_ok;
@@ -370,10 +367,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         my $email_body = $mech->get_text_body_from_email($emails[1]);
-        TODO: {
-            local $TODO = 'Quantity not yet read in _garden_data.html';
-            like $email_body, qr/Number of bin subscriptions: 1/;
-        }
+        like $email_body, qr/Number of bin subscriptions: 1/;
         unlike $email_body, qr/Bins to be delivered/;
         like $email_body, qr/Total:.*?75.00/;
     };
@@ -410,10 +404,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         my $email_body = $mech->get_text_body_from_email($emails[1]);
-        TODO: {
-            local $TODO = 'Quantity not yet read in _garden_data.html';
-            like $email_body, qr/Number of bin subscriptions: 1/;
-        }
+        like $email_body, qr/Number of bin subscriptions: 1/;
         like $email_body, qr/Bins to be removed: 1/;
         like $email_body, qr/Total:.*?75.00/;
     };
@@ -569,10 +560,7 @@ FixMyStreet::override_config {
                     } @emails;
                     ok $to_user, 'Email sent to user';
                     my $email_body = $mech->get_text_body_from_email($to_user);
-                    TODO: {
-                        local $TODO = 'Quantity not yet read in _garden_data.html';
-                        like $email_body, qr/Number of bin subscriptions: 3/;
-                    }
+                    like $email_body, qr/Number of bin subscriptions: 3/;
                     like $email_body, qr/Bins to be delivered: 1/;
                     unlike $email_body, qr/Bins to be removed/;
                     like $email_body, qr/Total:.*?185.00/;
@@ -629,10 +617,7 @@ FixMyStreet::override_config {
                     } @emails;
                     ok $to_user, 'Email sent to user';
                     my $email_body = $mech->get_text_body_from_email($to_user);
-                    TODO: {
-                        local $TODO = 'Quantity not yet read in _garden_data.html';
-                        like $email_body, qr/Number of bin subscriptions: 1/;
-                    }
+                    like $email_body, qr/Number of bin subscriptions: 1/;
                     unlike $email_body, qr/Bins to be delivered/;
                     like $email_body, qr/Bins to be removed: 1/;
                     like $email_body, qr/Total:.*?75.00/;
@@ -744,10 +729,7 @@ FixMyStreet::override_config {
                 } @emails;
                 ok $to_user, 'Email sent to user';
                 my $email_body = $mech->get_text_body_from_email($to_user);
-                TODO: {
-                    local $TODO = 'Quantity not yet read in _garden_data.html';
-                    like $email_body, qr/Number of bin subscriptions: 1/;
-                }
+                like $email_body, qr/Number of bin subscriptions: 1/;
                 unlike $email_body, qr/Bins to be delivered/;
                 like $email_body, qr/Bins to be removed: 1/;
                 like $email_body, qr/Total:.*?75.00/;
@@ -988,13 +970,10 @@ FixMyStreet::override_config {
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        TODO: {
-            local $TODO = 'Quantity not yet read in _garden_data.html';
-            like $body, qr/Number of bin subscriptions: 2/;
-        }
-        like $body, qr/Bins to be delivered: 1/;
-        like $body, qr/Total:.*?70/;
+        my $email_body = $mech->get_text_body_from_email($emails[1]);
+        like $email_body, qr/Number of bin subscriptions: 1/;
+        like $email_body, qr/Bins to be delivered: 1/;
+        like $email_body, qr/Total:.*?70/;
         $mech->clear_emails_ok;
     };
 
@@ -1085,13 +1064,10 @@ FixMyStreet::override_config {
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        TODO: {
-            local $TODO = 'Quantity not yet read in _garden_data.html';
-            like $body, qr/Number of bin subscriptions: 2/;
-        }
-        like $body, qr/Bins to be delivered: 1/;
-        like $body, qr/Total:.*?70/;
+        my $email_body = $mech->get_text_body_from_email($emails[1]);
+        like $email_body, qr/Number of bin subscriptions: 1/;
+        like $email_body, qr/Bins to be delivered: 1/;
+        like $email_body, qr/Total:.*?70/;
         $mech->clear_emails_ok;
     };
 
