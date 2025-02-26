@@ -267,6 +267,14 @@ sub bin_services_for_address {
     $property->{red_tags} = $property_logs;
     $property->{service_updates} = $street_logs;
 
+    # To begin with we assume the property is eligible to sign up to GGW...
+    $property->{garden_signup_eligible} = 1;
+    # ...unless it's got a parent property...
+    $property->{garden_signup_eligible} = 0 if $property->{parent_property};
+    # ...or no services of its own...
+    $property->{garden_signup_eligible} = 0 if !@{ $site_services // [] };
+    # ...further checks are done when iterating through services below.
+
     # Set certain things outside of services loop
     my $containers = $self->_containers($property);
     my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
@@ -401,6 +409,15 @@ sub bin_services_for_address {
             if $filtered_service->{service_id} eq 'MDR-SACK';
         $property->{has_garden_subscription} = 1
             if $filtered_service->{garden_waste};
+
+        # Some aspects of this service may make this property ineligible for
+        # GGW signup:
+        # already got a subscription
+        $property->{garden_signup_eligible} = 0
+            if $filtered_service->{garden_waste};
+        # has sacks
+        $property->{garden_signup_eligible} = 0
+            if $filtered_service->{service_id} =~ /^(RES-SACK|MDR-SACK)$/;
 
         # Frequency of collection
         if ( @round_schedules > 1 ) {
