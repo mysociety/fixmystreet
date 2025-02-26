@@ -645,9 +645,7 @@ FixMyStreet::override_config {
                     'Renewal link unavailable';
             };
 
-            # TODO Think we should show new subscription link and not
-            # renewal link
-            subtest 'subscription expired' => sub {
+            subtest 'subscription expired -  renewal treated as new sub' => sub {
                 $agile_mock->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
@@ -672,6 +670,63 @@ FixMyStreet::override_config {
                 like $mech->content,
                     qr/Renew your brown wheelie bin subscription/,
                     'Renewal link available';
+
+                $mech->get_ok("/waste/$uprn/garden_renew");
+                like $mech->content, qr/name="current_bins.*value="2"/s,
+                    'Current bins pre-populated';
+                like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                    'Wanted bins pre-populated';
+
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            bins_wanted => 1,
+                            payment_method => 'credit_card',
+                            name => 'Trevor Trouble',
+                            email => 'trevor@trouble.com',
+                            phone => '+4407111111111',
+                        },
+                    }
+                );
+
+                like $mech->text,
+                    qr/Total£75.00/, 'correct cost';
+                $mech->waste_submit_check(
+                    { with_fields => { tandc => 1 } } );
+
+                my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+                check_extra_data_pre_confirm(
+                    $renew_report,
+                    type         => 'New',
+                    current_bins => 2,
+                    new_bins     => -1,
+                    bins_wanted  => 1,
+                );
+                is $renew_report->get_extra_field_value('uprn'), $uprn;
+                is $renew_report->get_extra_field_value('payment'), 7500;
+                is $renew_report->get_extra_field_value('type'), '';
+                is $renew_report->get_extra_field_value(
+                    'customer_external_ref'), '';
+
+                $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
+                check_extra_data_post_confirm($renew_report);
+
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Reports::send();
+
+                my @emails = $mech->get_email;
+                my ($to_user) = grep {
+                    $mech->get_text_body_from_email($_)
+                        =~ /Welcome to Bexley’s garden waste collection service/
+                } @emails;
+                ok $to_user, 'Email sent to user';
+                my $email_body = $mech->get_text_body_from_email($to_user);
+                TODO: {
+                    local $TODO = 'Quantity not yet read in _garden_data.html';
+                    like $email_body, qr/Number of bin subscriptions: 1/;
+                }
+                unlike $email_body, qr/Bins to be delivered/;
+                like $email_body, qr/Bins to be removed: 1/;
+                like $email_body, qr/Total:.*?75.00/;
             };
         };
     };
