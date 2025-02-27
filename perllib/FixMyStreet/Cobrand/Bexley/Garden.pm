@@ -94,6 +94,9 @@ sub lookup_subscription_for_uprn {
         $self->{c}->stash->{orig_sub} = $sub->{row} = $p;
     }
 
+    # Property is now ineligible for GGW signup as we know they have a sub
+    $self->{c}->stash->{property}->{garden_signup_eligible} = 0;
+
     return $sub;
 }
 
