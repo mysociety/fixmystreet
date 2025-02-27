@@ -112,29 +112,15 @@ my %CONTAINERS = (
 lock_hash(%CONTAINERS);
 
 my %GARDEN_CONTAINER_IDS = (
-    subscription => {
-        bin240 => 1,
-        bin140 => 2,
-        sack => 4,
-    },
-    delivery => {
-        bin240 => 2,
-        bin140 => 3,
-        sack => 5,
-    },
+    bin240 => 1915,
+    bin140 => 1914,
+    sack => 1928,
 );
 lock_hash(%GARDEN_CONTAINER_IDS);
 
 my %GARDEN_QUANTITIES = (
-    subscription => {
-        1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6, 7 => 7, 8 => 8, 9 => 9, 10 => 10,
-        sack => 11,
-    },
-    # IDs in Echo for this are one more than the quantity being requested
-    delivery => {
-        1 => 2, 2 => 3, 3 => 4, 4 => 5, 5 => 6, 6 => 7, 7 => 8, 8 => 9, 9 => 10, 10 => 11,
-        sack => 12,
-    },
+    1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6, 7 => 7, 8 => 8, 9 => 9, 10 => 10,
+    sack => 11,
 );
 
 sub garden_service_id { $SERVICE_IDS{$_[0]->moniker}{garden} }
@@ -376,36 +362,34 @@ sub waste_garden_sub_params {
     my $choice = $data->{container_choice} || '';
     my $existing = $service ? $service->{garden_container} : undef;
     $existing = $data->{transfer_bin_type} if $data->{transfer_bin_type};
-    my ($container_sub, $container_deliver);
+    my ($container);
     if ($choice) {
-        $container_sub = $GARDEN_CONTAINER_IDS{subscription}{$choice};
-        $container_deliver = $GARDEN_CONTAINER_IDS{delivery}{$choice};
+        $choice = 'bin240' if $choice eq 'bin';
+        $container = $GARDEN_CONTAINER_IDS{$choice};
     } elsif ($existing) {
         my $key = {
             $CONTAINERS{garden_sack} => 'sack',
             $CONTAINERS{garden_140} => 'bin140',
             $CONTAINERS{garden_240} => 'bin240',
         }->{$existing};
-        $container_sub = $GARDEN_CONTAINER_IDS{subscription}{$key};
-        $container_deliver = $GARDEN_CONTAINER_IDS{delivery}{$key};
+        $container = $GARDEN_CONTAINER_IDS{$key};
     }
-    $container_sub ||= $GARDEN_CONTAINER_IDS{subscription}{bin240};
-    $container_deliver ||= $GARDEN_CONTAINER_IDS{delivery}{bin240};
+    $container ||= $GARDEN_CONTAINER_IDS{bin240};
 
-    $c->set_param('Paid_Container_Type', $container_sub);
-    if ($container_sub == $GARDEN_CONTAINER_IDS{subscription}{sack}) {
-        $c->set_param('Paid_Container_Quantity', $GARDEN_QUANTITIES{subscription}{sack});
+    $c->set_param('Paid_Container_Type', $container);
+    if ($container == $GARDEN_CONTAINER_IDS{sack}) {
+        $c->set_param('Paid_Container_Quantity', $GARDEN_QUANTITIES{sack});
     } elsif ($data->{bins_wanted}) {
-        $c->set_param('Paid_Container_Quantity', $GARDEN_QUANTITIES{subscription}{$data->{bins_wanted}});
+        $c->set_param('Paid_Container_Quantity', $GARDEN_QUANTITIES{$data->{bins_wanted}});
     }
 
     if ( $data->{new_bins} && $data->{new_bins} > 0) {
-        $c->set_param('Container_Type', $container_deliver);
-        if ($container_deliver == $GARDEN_CONTAINER_IDS{delivery}{sack}) {
-            $c->set_param('Quantity', $GARDEN_QUANTITIES{delivery}{sack});
+        $c->set_param('Container_Type', $container);
+        if ($container == $GARDEN_CONTAINER_IDS{sack}) {
+            $c->set_param('Quantity', $GARDEN_QUANTITIES{sack});
         } else {
             my $num = abs($data->{new_bins});
-            $c->set_param('Quantity', $GARDEN_QUANTITIES{delivery}{$num});
+            $c->set_param('Quantity', $GARDEN_QUANTITIES{$num});
         }
     }
 
@@ -432,13 +416,12 @@ sub waste_garden_mod_params {
             $CONTAINERS{garden_140} => 'bin140',
             $CONTAINERS{garden_240} => 'bin240',
         }->{$existing};
-        my $container_sub = $GARDEN_CONTAINER_IDS{subscription}{$key};
-        my $container_deliver = $GARDEN_CONTAINER_IDS{delivery}{$key};
+        my $container = $GARDEN_CONTAINER_IDS{$key};
 
-        $c->set_param('Additional_Collection_Container_Type', $container_sub);
-        $c->set_param('Additional_Container_Quantity', $GARDEN_QUANTITIES{subscription}{$data->{new_bins}});
-        $c->set_param('Container_Ordered_Type', $container_deliver);
-        $c->set_param('Container_Ordered_Quantity', $GARDEN_QUANTITIES{delivery}{$data->{new_bins}});
+        $c->set_param('Additional_Collection_Container_Type', $container);
+        $c->set_param('Additional_Container_Quantity', $GARDEN_QUANTITIES{$data->{new_bins}});
+        $c->set_param('Container_Ordered_Type', $container);
+        $c->set_param('Container_Ordered_Quantity', $GARDEN_QUANTITIES{$data->{new_bins}});
     }
 }
 
@@ -455,7 +438,6 @@ sub waste_garden_renew_form_setup {
     my $c = $self->{c};
     if ($c->stash->{slwp_garden_sacks}) {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
-        my $service = $c->cobrand->garden_current_subscription;
         $c->stash->{first_page} = 'sacks_choice';
     }
 }

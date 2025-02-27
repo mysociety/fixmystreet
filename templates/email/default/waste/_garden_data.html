@@ -12,7 +12,7 @@ ELSE;
     ELSE;
         SET container = report.get_extra_field_value('Paid_Container_Type');
         IF container;
-            SET sacks = (container == 4);
+            SET sacks = (container == 1928);
             SET quantity = report.get_extra_field_value('Paid_Container_Quantity');
         END;
     END;
