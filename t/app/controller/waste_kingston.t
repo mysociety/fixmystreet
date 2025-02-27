@@ -869,7 +869,7 @@ FixMyStreet::override_config {
 
         is $sent_params->{items}[0]{amount}, 4100, 'correct amount used';
         is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
-        check_extra_data_pre_confirm($new_report, bin_type_sub => 4, bin_type_new => 5, quantity => 11, new_bins => 11);
+        check_extra_data_pre_confirm($new_report, bin_type => 1928, quantity => 11, new_bins => 11);
 
         $mech->get('/waste/pay/xx/yyyyyyyyyyy');
         ok !$mech->res->is_success(), "want a bad response";
@@ -976,7 +976,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type_sub => 4, bin_type_new => 5, quantity => 11, new_bins => 11);
+        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 1928, quantity => 11, new_bins => 11);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -1002,7 +1002,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 1, bin_type_sub => 4, bin_type_new => 5, quantity => 11, new_bins => 11);
+        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 1, bin_type => 1928, quantity => 11, new_bins => 11);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
@@ -1268,11 +1268,11 @@ FixMyStreet::override_config {
         $mech->content_contains('"a user"');
         $mech->content_contains(1000000002);
         $mech->content_contains('a_user@example.net');
-        $mech->content_contains('csc,54321,2000,,0,1,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('csc,54321,2000,,0,1915,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
         $mech->content_contains('"a user 2"');
         $mech->content_contains('a_user_2@example.net');
         $mech->content_contains('unconfirmed');
-        $mech->content_contains('4000,,1500,1,1,2'); # Fee/fee/fee/bin/current/sub
+        $mech->content_contains('4000,,1500,1915,1,2'); # Fee/fee/fee/bin/current/sub
     };
 
     subtest 'check CSV pregeneration' => sub {
@@ -1282,11 +1282,11 @@ FixMyStreet::override_config {
         $mech->content_contains('"a user"');
         $mech->content_contains(1000000002);
         $mech->content_contains('a_user@example.net');
-        $mech->content_contains('csc,54321,2000,,0,1,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
+        $mech->content_contains('csc,54321,2000,,0,1915,1,1'); # Method/ref/fee/fee/fee/bin/current/sub
         $mech->content_contains('"a user 2"');
         $mech->content_contains('a_user_2@example.net');
         $mech->content_contains('unconfirmed');
-        $mech->content_contains('4000,,1500,1,1,2'); # Fee/fee/fee/bin/current/sub
+        $mech->content_contains('4000,,1500,1915,1,2'); # Fee/fee/fee/bin/current/sub
     };
 
     subtest 'check new sub price changes at fixed time' => sub {
@@ -1532,8 +1532,7 @@ sub check_extra_data_pre_confirm {
         state => 'unconfirmed',
         quantity => 1,
         new_bins => 1,
-        bin_type_sub => 1,
-        bin_type_new => 2,
+        bin_type => 1915,
         payment_method => 'credit_card',
         @_
     );
@@ -1542,10 +1541,10 @@ sub check_extra_data_pre_confirm {
     is $report->title, "Garden Subscription - $params{type}", 'correct title on report';
     is $report->get_extra_field_value('payment_method'), $params{payment_method}, 'correct payment method on report';
     is $report->get_extra_field_value('Paid_Container_Quantity'), $params{quantity}, 'correct bin count';
-    is $report->get_extra_field_value('Paid_Container_Type'), $params{bin_type_sub}, 'correct bin type';
+    is $report->get_extra_field_value('Paid_Container_Type'), $params{bin_type}, 'correct bin type';
     if ($params{new_bins}) {
-        is $report->get_extra_field_value('Container_Type'), $params{bin_type_new}, 'correct container request bin type';
-        is $report->get_extra_field_value('Quantity'), $params{new_bins}+1, 'correct container request count';
+        is $report->get_extra_field_value('Container_Type'), $params{bin_type}, 'correct container request bin type';
+        is $report->get_extra_field_value('Quantity'), $params{new_bins}, 'correct container request count';
     }
     is $report->state, $params{state}, 'report state correct';
     if ($params{state} eq 'unconfirmed') {
@@ -1562,8 +1561,7 @@ sub check_amend_extra_data_pre_confirm {
         state => 'unconfirmed',
         quantity => 1,
         new_bins => 1,
-        bin_type_sub => 1,
-        bin_type_new => 2,
+        bin_type => 1915,
         payment_method => 'credit_card',
         @_
     );
@@ -1572,10 +1570,10 @@ sub check_amend_extra_data_pre_confirm {
     is $report->title, "Garden Subscription - Amend", 'correct title on report';
     is $report->get_extra_field_value('payment_method'), $params{payment_method}, 'correct payment method on report';
     is $report->get_extra_field_value('Additional_Container_Quantity'), $params{quantity}, 'correct bin count';
-    is $report->get_extra_field_value('Additional_Collection_Container_Type'), $params{bin_type_sub}, 'correct bin type';
+    is $report->get_extra_field_value('Additional_Collection_Container_Type'), $params{bin_type}, 'correct bin type';
     if ($params{new_bins}) {
-        is $report->get_extra_field_value('Container_Ordered_Type'), $params{bin_type_new}, 'correct container request bin type';
-        is $report->get_extra_field_value('Container_Ordered_Quantity'), $params{new_bins}+1, 'correct container request count - one more';
+        is $report->get_extra_field_value('Container_Ordered_Type'), $params{bin_type}, 'correct container request bin type';
+        is $report->get_extra_field_value('Container_Ordered_Quantity'), $params{new_bins}, 'correct container request count - one more';
     }
     is $report->state, $params{state}, 'report state correct';
 }
