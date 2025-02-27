@@ -439,6 +439,8 @@ FixMyStreet::override_config {
             } } );
 
             $mech->get_ok("/waste/$uprn");
+            like $mech->content, qr/Renew subscription today/,
+                '"Renew today" notification box shown';
             like $mech->content, qr/14 March 2024, soon due for renewal/,
                 '"Due soon" message shown';
             like $mech->content,
@@ -486,6 +488,8 @@ FixMyStreet::override_config {
                 } } );
 
                 $mech->get_ok("/waste/$uprn");
+                like $mech->content, qr/Renew subscription today/,
+                    '"Renew today" notification box shown';
                 like $mech->content, qr/14 March 2024, soon due for renewal/,
                     '"Due soon" message shown';
                 like $mech->content,
@@ -665,6 +669,8 @@ FixMyStreet::override_config {
                 } } );
 
                 $mech->get_ok("/waste/$uprn");
+                unlike $mech->content, qr/Renew subscription today/,
+                    '"Renew today" notification box not shown';
                 like $mech->content, qr/31 January 2024, soon due for renewal/,
                     '"Due soon" message shown';
                 like $mech->content,
