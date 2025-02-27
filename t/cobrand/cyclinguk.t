@@ -1,6 +1,7 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
+use FixMyStreet::Script::Questionnaires;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -37,6 +38,7 @@ $staff->alerts->create({
 
 my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
     areas => ",2651,", category => 'Potholes', cobrand => 'fixmystreet',
+    whensent => DateTime->now->subtract( weeks => 5 ),
     user => $user,
 });
 
@@ -45,6 +47,11 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         base_url => {
             cyclinguk => "http://cyclinguk.fixmystreet.com/",
+        },
+        send_questionnaire => {
+            fixmystreet => {
+                Bath => 0,
+            }
         },
     },
     MAPIT_URL => 'http://mapit.uk/',
@@ -90,6 +97,11 @@ subtest 'cyclinguk cobrand reports do appear on site' => sub {
     $mech->content_contains($problem->title);
     $mech->get_ok('/reports/Bath+and+North+East+Somerset');
     $mech->content_contains($problem->title);
+
+    subtest 'But no questionnaire sent' => sub {
+        FixMyStreet::Script::Questionnaires::send();
+        $mech->email_count_is(0);
+    };
 };
 
 $mech->log_in_ok($super->email);

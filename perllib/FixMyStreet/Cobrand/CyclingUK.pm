@@ -104,6 +104,16 @@ sub do_not_reply_email {
     return $self->feature('do_not_reply_email') || $self->next::method();
 }
 
+=item * Follow .com questionnaire policy
+
+=cut
+
+sub send_questionnaire {
+    my ($self, $problem) = @_;
+    my $fms = FixMyStreet::Cobrand::FixMyStreet->new;
+    my ($send, $body) = $fms->per_body_config('send_questionnaire', $problem);
+    return $send // 1;
+}
 
 sub admin_allow_user {
     my ( $self, $user ) = @_;
