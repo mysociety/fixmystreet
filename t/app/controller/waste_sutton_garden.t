@@ -33,6 +33,8 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'Paid_Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Quantity', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
+    { code => 'Start_Date', required => 1, automated => 'hidden_field' },
+    { code => 'End_Date', required => 1, automated => 'hidden_field' },
     { code => 'current_containers', required => 1, automated => 'hidden_field' },
     { code => 'new_containers', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
@@ -1280,6 +1282,13 @@ sub check_extra_data_pre_confirm {
     is $report->get_extra_field_value('payment_method'), $params{payment_method}, 'correct payment method on report';
     is $report->get_extra_field_value('Paid_Container_Quantity'), $params{quantity}, 'correct bin count';
     is $report->get_extra_field_value('Paid_Container_Type'), $params{bin_type_sub}, 'correct bin type';
+    if ($params{type} eq 'New') {
+        is $report->get_extra_field_value('Start_Date'), '19/03/2021';
+        is $report->get_extra_field_value('End_Date'), '18/03/2022';
+    } elsif ($params{type} eq 'Renew') {
+        is $report->get_extra_field_value('Start_Date'), '31/03/2021';
+        is $report->get_extra_field_value('End_Date'), '30/03/2022';
+    }
     if ($params{new_bins}) {
         is $report->get_extra_field_value('Container_Type'), $params{bin_type_new}, 'correct container request bin type';
         is $report->get_extra_field_value('Quantity'), $params{new_bins}+1, 'correct container request count - one more';
