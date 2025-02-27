@@ -1,19 +1,5 @@
 <div class="govuk-grid-row" id="in-cab-logs">
-  [% # Don't display garden waste promo if address has any of the below services %]
-  [%
-    SET has_blocked_service = 0;
-    FOR srv IN [
-      'GA-140',
-      'GA-240',
-      'MDR-SACK',
-      'RES-SACK',
-    ];
-      IF services.$srv;
-        has_blocked_service = 1;
-      END;
-    END;
-  %]
-  [% UNLESS property.parent_property OR has_blocked_service OR services.size == 0 %]
+  [% IF property.garden_signup_eligible %]
   <h3 class="govuk-heading-m waste-service-name">
     Brown Wheelie Bin
   </h3>

@@ -94,6 +94,9 @@ sub lookup_subscription_for_uprn {
         $self->{c}->stash->{orig_sub} = $sub->{row} = $p;
     }
 
+    # Property is now ineligible for GGW signup as we know they have a sub
+    $self->{c}->stash->{property}->{garden_signup_eligible} = 0;
+
     return $sub;
 }
 
@@ -338,6 +341,10 @@ sub waste_setup_direct_debit {
 
 sub waste_garden_subscribe_form_setup {
     my ($self) = @_;
+
+    # If this property isn't allow to sign up bounce the user back
+    # (templates shouldn't contain links in this case, but just to be sure...)
+    $self->{c}->detach('/waste/property_redirect') unless $self->{c}->stash->{property}->{garden_signup_eligible};
 
     # Use a custom form class that includes fields for bank details
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Bexley';
