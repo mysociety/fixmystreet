@@ -369,6 +369,7 @@ sub alternative_backend_field_names {
 
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
+    $type ||= '';
     my $c = $self->{c};
 
     my $service = $self->garden_current_subscription;
@@ -406,6 +407,16 @@ sub waste_garden_sub_params {
             my $num = abs($data->{new_bins});
             $c->set_param('Quantity', $GARDEN_QUANTITIES{delivery}{$num});
         }
+    }
+
+    if ($type eq $c->stash->{garden_subs}->{New}) {
+        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+        $c->set_param('Start_Date', $now->add(days => 10)->dmy('/'));
+        $c->set_param('End_Date', $now->add(years => 1)->subtract(days => 1)->dmy('/'));
+    } elsif ($type eq $c->stash->{garden_subs}->{Renew}) {
+        my $sub_end = DateTime::Format::W3CDTF->parse_datetime($service->{end_date})->truncate( to => 'day' );
+        $c->set_param('Start_Date', $sub_end->add(days => 1)->dmy('/'));
+        $c->set_param('End_Date', $sub_end->add(years => 1)->subtract(days => 1)->dmy('/'));
     }
 }
 
