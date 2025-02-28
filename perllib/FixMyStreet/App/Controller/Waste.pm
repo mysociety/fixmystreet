@@ -1568,7 +1568,12 @@ sub process_garden_renew : Private {
         $c->forward('confirm_subscription', [ undef ] );
     } else {
         if ( $payment_method eq 'direct_debit' ) {
-            $c->forward('direct_debit');
+            if ($c->cobrand->direct_debit_collection_method eq 'internal') {
+                $c->stash->{form_data} = $data;
+                $c->forward('direct_debit_internal');
+            } else {
+                $c->forward('direct_debit');
+            }
         } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
         } else {
