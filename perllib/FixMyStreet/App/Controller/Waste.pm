@@ -1416,11 +1416,17 @@ sub get_current_payment_method : Private {
 sub get_original_sub : Private {
     my ($self, $c, $type) = @_;
 
+    my $extra = { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) };
+    if ($c->cobrand->moniker eq 'bexley') {
+        # Bexley doesn't store property_id
+        $extra = { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) };
+    }
+
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
         # XXX Bexley does not store a property_id
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
+        extra => $extra,
         state => { '!=' => 'hidden' },
     })->order_by('-id')->to_body($c->cobrand->body);
 

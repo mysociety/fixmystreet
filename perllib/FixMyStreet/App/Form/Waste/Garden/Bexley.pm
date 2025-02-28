@@ -52,7 +52,10 @@ sub _validate_bank_details {
     my $cfg = $self->{c}->cobrand->feature('payment_gateway');
 
     # fail validation if not configured - we don't want to set up invalid DDs.
-    return 1 unless $cfg && $cfg->{validator_url};
+    unless ( $cfg && $cfg->{validator_url} ) {
+        $self->add_form_error("There was a problem verifying your bank details; please try again");
+        return 1;
+    }
 
     my $url = $cfg->{validator_url};
 

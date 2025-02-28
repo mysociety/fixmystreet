@@ -82,18 +82,6 @@ sub lookup_subscription_for_uprn {
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
 
-    my $c = $self->{c};
-    my $p = $c->model('DB::Problem')->search({
-        category => 'Garden Subscription',
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
-        state => { '!=' => 'hidden' },
-        external_id => "Agile-" . ( $contract->{Reference} // '' ),
-    })->order_by('-id')->to_body($c->cobrand->body)->first;
-
-    if ($p) {
-        $self->{c}->stash->{orig_sub} = $sub->{row} = $p;
-    }
-
     # Property is now ineligible for GGW signup as we know they have a sub
     $self->{c}->stash->{property}->{garden_signup_eligible} = 0;
 
