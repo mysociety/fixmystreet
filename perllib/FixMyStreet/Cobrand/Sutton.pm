@@ -293,7 +293,7 @@ sub waste_cc_has_redirect {
     return 0;
 }
 
-around garden_cc_check_payment_status => sub {
+around waste_cc_check_payment_status => sub {
     my ($orig, $self, $c, $p) = @_;
 
     if ($p->category eq 'Request new container') {
