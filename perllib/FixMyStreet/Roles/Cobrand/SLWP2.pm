@@ -119,7 +119,6 @@ my %GARDEN_CONTAINER_IDS = (
 lock_hash(%GARDEN_CONTAINER_IDS);
 
 my %GARDEN_QUANTITIES = (
-    1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6, 7 => 7, 8 => 8, 9 => 9, 10 => 10,
     sack => 11,
 );
 
@@ -380,7 +379,7 @@ sub waste_garden_sub_params {
     if ($container == $GARDEN_CONTAINER_IDS{sack}) {
         $c->set_param('Paid_Container_Quantity', $GARDEN_QUANTITIES{sack});
     } elsif ($data->{bins_wanted}) {
-        $c->set_param('Paid_Container_Quantity', $GARDEN_QUANTITIES{$data->{bins_wanted}});
+        $c->set_param('Paid_Container_Quantity', $data->{bins_wanted});
     }
 
     if ( $data->{new_bins} && $data->{new_bins} > 0) {
@@ -389,7 +388,7 @@ sub waste_garden_sub_params {
             $c->set_param('Quantity', $GARDEN_QUANTITIES{sack});
         } else {
             my $num = abs($data->{new_bins});
-            $c->set_param('Quantity', $GARDEN_QUANTITIES{$num});
+            $c->set_param('Quantity', $num);
         }
     }
 
@@ -419,9 +418,9 @@ sub waste_garden_mod_params {
         my $container = $GARDEN_CONTAINER_IDS{$key};
 
         $c->set_param('Additional_Collection_Container_Type', $container);
-        $c->set_param('Additional_Container_Quantity', $GARDEN_QUANTITIES{$data->{new_bins}});
+        $c->set_param('Additional_Container_Quantity', $data->{new_bins});
         $c->set_param('Container_Ordered_Type', $container);
-        $c->set_param('Container_Ordered_Quantity', $GARDEN_QUANTITIES{$data->{new_bins}});
+        $c->set_param('Container_Ordered_Quantity', $data->{new_bins});
     }
 }
 
