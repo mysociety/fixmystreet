@@ -99,8 +99,9 @@ sub geocoder_munge_results {
 
 }
 
-my @categories = qw( hardsurfaces grass water treegroups planting );
+my @categories = qw( blockbuildings hardsurfaces grass water treegroups planting );
 my %category_titles = (
+    blockbuildings => 'Caretaker defects (staff only)',
     hardsurfaces => 'Hard surfaces/paths/road (Peabody)',
     grass => 'Grass and grass areas (Peabody)',
     water => 'Water areas (Peabody)',
@@ -119,11 +120,12 @@ sub area_type_for_point {
     );
 
     my $filter = "(<Filter><Contains><PropertyName>Extent</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>)";
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
     my $cfg = {
-        url => "https://tilma.mysociety.org/mapserver/thamesmead",
+        url => "https://$host/mapserver/thamesmead",
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => join(',', @categories),
-        filter => $filter x 5,
+        filter => $filter x 6,
         outputformat => "GML3",
     };
 
