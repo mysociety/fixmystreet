@@ -70,6 +70,11 @@ my $flytipping = $mech->create_contact_ok(
                 { key => 0, name => 'No' },
                 { key => 1, name => 'Yes' },
             ] },
+            { code => 'Size', values => [
+                { key => 0, name => 'Small' },
+                { key => 1, name => 'Medium' },
+                { key => 2, name => 'Large' },
+            ] },
         ]
     }
 );
@@ -234,7 +239,10 @@ FixMyStreet::override_config {
         my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
             cobrand => 'bristol',
             category => $flytipping->category,
-            extra => { _fields => [ { name => 'Witness', value => 1 } ] },
+            extra => { _fields => [
+                { name => 'Witness', value => 1 },
+                { name => 'Size', value => "0" },
+            ] },
         } );
 
         FixMyStreet::Script::Reports::send();
@@ -245,6 +253,7 @@ FixMyStreet::override_config {
         is $p->get_extra_metadata('extra_email_sent'), 1;
         my $email = $mech->get_text_body_from_email;
         like $email, qr/Witness: Yes/;
+        like $email, qr/Size: Small/;
     };
 
     subtest "usrn populated on Alloy category" => sub {
