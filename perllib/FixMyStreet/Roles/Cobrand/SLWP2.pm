@@ -207,12 +207,16 @@ sub waste_extra_service_info {
 
 sub waste_service_containers {
     my ($self, $service) = @_;
+    my $service_id = $service->{ServiceId};
     my $service_ids = $SERVICE_IDS{$self->moniker};
+
+    # Will get garden info later, in garden_container_data_extract
+    # (as garden containers held in a totally different place)
+    return if $service_id == $service_ids->{garden};
 
     my $waste_containers_no_request = $self->_waste_containers_no_request;
 
     my $unit = $service->{Service};
-    my $service_id = $service->{ServiceId};
     my $service_name = $self->service_name_override($service);
     my $schedules = $service->{Schedules};
 
@@ -323,22 +327,32 @@ sub waste_munge_report_data {
 # Garden waste
 
 sub garden_service_name { 'garden waste collection service' }
-sub garden_echo_container_name { 'Container Details' }
+sub garden_echo_container_name { 'Container Details' } # Not actually used, TODO refactor
 
+# Loop through task lines, may be more than one.
+# Have to pass end date in because we're currently creating the services stash
 sub garden_container_data_extract {
     my ($self, $data, $containers, $quantities, $schedules) = @_;
-    # Assume garden will only have one container data
-    my $garden_container = $containers->[0];
     my $costs = WasteWorks::Costs->new({ cobrand => $self });
-    # Have to pass end date in because we're currently creating the services stash
-    if ($garden_container == $CONTAINERS{garden_sack}) {
-        my $garden_cost = $costs->sacks_renewal(1, $schedules->{end_date}) / 100;
-        return (undef, 1, $garden_cost, $garden_container);
-    } else {
-        my $garden_bins = $quantities->{$containers->[0]};
-        my $garden_cost = $costs->bins_renewal($garden_bins, $schedules->{end_date}) / 100;
-        return ($garden_bins, 0, $garden_cost, $garden_container);
+
+    my ($garden_bins, $garden_sacks, $garden_cost, $garden_container);
+    foreach (@$data) {
+        my $asset_id = $_->{AssetTypeId};
+        if ($asset_id == $GARDEN_CONTAINER_IDS{sack}) {
+            $garden_sacks = 1;
+            $garden_bins = undef;
+            $garden_cost += $costs->sacks_renewal(1, $schedules->{end_date}) / 100;
+            $garden_container = $CONTAINERS{garden_sack};
+        } else {
+            $garden_sacks = 0;
+            $garden_bins += $_->{ScheduledAssetQuantity};
+            $garden_cost += $costs->bins_renewal($garden_bins, $schedules->{end_date}) / 100;
+            $garden_container = $asset_id == $GARDEN_CONTAINER_IDS{bin140} ? $CONTAINERS{garden_140} : $CONTAINERS{garden_240};
+        }
     }
+    push @$containers, $garden_container;
+    $quantities->{$garden_container} = $garden_bins;
+    return ($garden_bins, $garden_sacks, $garden_cost, $garden_container);
 }
 
 # We don't have overdue renewals here

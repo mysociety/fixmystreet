@@ -179,25 +179,19 @@ sub garden_waste_bin_with_refuse_sacks {
 sub _garden_waste_service_units {
     my ($bin_count, $type) = @_;
 
-    my $bin_type_id = $type eq 'sack' ? 36 : 39;
+    my $bin_type_id = $type eq 'sack' ? 1928 : 1915;
 
     return [ {
         Id => 1002,
         ServiceId => 953,
         ServiceName => 'Garden waste collection',
-        Data => { ExtensibleDatum => [ {
-            DatatypeName => 'Container Details',
-            ChildData => { ExtensibleDatum => [ {
-                DatatypeName => 'Container Quantity',
-                Value => $bin_count,
-            }, {
-                DatatypeName => 'Container Type',
-                Value => $bin_type_id,
-            } ] },
-        } ] },
         ServiceTasks => { ServiceTask => {
             Id => 405,
             TaskTypeId => 4410,
+            ServiceTaskLines => { ServiceTaskLine => [ {
+                ScheduledAssetQuantity => $bin_count,
+                AssetTypeId => $bin_type_id,
+            } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-03-30T00:00:00Z' },
