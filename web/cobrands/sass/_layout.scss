@@ -461,7 +461,7 @@ a.platform-logo {
 // but keep them narrow to match the report sidebar
 body.authpage {
   .content {
-    width: 27em;
+    max-width: 27em;
     margin-#{$left}: auto;
     margin-#{$right}: auto;
   }

@@ -2716,6 +2716,13 @@ label .muted {
   vertical-align: -2px;
 }
 
+// Limit the max-width so in tablet it doesn't use the whole screen width.
+body.authpage {
+  .content {
+    max-width: 22em;
+  }
+}
+
 // The coloured sidebar column on .with-actions pages.
 // On narrow screens, it becomes a full-width section.
 #side-inspect {
