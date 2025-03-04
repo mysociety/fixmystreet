@@ -1104,6 +1104,45 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
     };
 
+    subtest 'correct amount shown on existing DD subscriptions' => sub {
+        foreach my $status ("Pending", "Paid") {
+            subtest "Payment status: $status" => sub {
+                default_mocks();
+                set_fixed_time('2024-02-01T00:00:00');
+                my $tomorrow = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' )->format_datetime( DateTime->now->add(days => 1) );
+
+                $agile_mock->mock( 'CustomerSearch', sub { {
+                    Customers => [
+                        {
+                            CustomerExternalReference => 'CUSTOMER_123',
+                            CustomertStatus => 'ACTIVATED',
+                            ServiceContracts => [
+                                {
+                                    EndDate => '12/12/2025 12:21',
+                                    ServiceContractStatus => 'ACTIVE',
+                                    Payments => [
+                                        {
+                                            PaymentStatus => $status,
+                                            PaymentMethod => "Direct debit",
+                                            Amount => 70
+                                        }
+                                    ]
+                                },
+                            ],
+                        },
+                    ],
+                } } );
+
+                $mech->log_in_ok( $user->email );
+
+                $mech->get_ok('/waste/10001');
+                like $mech->text, qr/Brown wheelie bin/;
+                like $mech->text, qr/Next collectionPending/;
+                like $mech->text, qr/Subscription.*70.00 per year/;
+            }
+        }
+    };
+
     subtest 'cancel garden subscription' => sub {
         default_mocks();
         set_fixed_time('2024-02-01T00:00:00');

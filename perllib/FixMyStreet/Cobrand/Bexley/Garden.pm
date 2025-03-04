@@ -72,7 +72,7 @@ sub lookup_subscription_for_uprn {
 
     # XXX should maybe sort by CreatedDate rather than assuming first is OK
     $sub->{cost} = try {
-        my ($payment) = grep { $_->{PaymentStatus} eq 'Paid' } @{ $contract->{Payments} };
+        my ($payment) = grep { $_->{PaymentStatus} =~ /(Paid|Pending)/ } @{ $contract->{Payments} };
         return $payment->{Amount};
     };
 
