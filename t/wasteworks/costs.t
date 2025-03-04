@@ -7,7 +7,7 @@ my $brent = FixMyStreet::Cobrand::Brent->new; # Discount
 my $kingston = FixMyStreet::Cobrand::Kingston->new; # Renews with end date, admin fee
 my $sutton = FixMyStreet::Cobrand::Sutton->new; # Next month
 my $merton = FixMyStreet::Cobrand::Merton->new;
-my $bexley = FixMyStreet::Cobrand::Bexley->new;
+my $bexley = FixMyStreet::Cobrand::Bexley->new; # First bin discount
 
 set_fixed_time("2025-01-14T12:00:00Z");
 
@@ -30,7 +30,7 @@ FixMyStreet::override_config {
                 { start_date => '2025-01-01 00:00', cost => 1500 },
                 { start_date => '2025-02-01 00:00', cost => 1700 },
             ] },
-            bexley => { ggw_cost_first => 7500, ggw_cost => 5500 },
+            bexley => {  ggw_first_bin_discount => 500, ggw_cost_first => 7500, ggw_cost => 5500 },
         },
         waste_features => {
             brent => { ggw_discount_as_percent => 20 },
@@ -57,6 +57,12 @@ FixMyStreet::override_config {
         my $costs = WasteWorks::Costs->new({ cobrand => $bexley });
         is $costs->bins, 7500;
         is $costs->bins(2), 7500+5500;
+    };
+
+    subtest 'first bin discounted' => sub {
+        my $costs = WasteWorks::Costs->new({ cobrand => $bexley, discount => 0, first_bin_discount => 1, service => $mocked_service });
+        is $costs->bins, 7000;
+        is $costs->bins(2), 7000+5500;
     };
 
     subtest 'sacks' => sub {

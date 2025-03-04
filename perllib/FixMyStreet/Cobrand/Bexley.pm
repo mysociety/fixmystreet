@@ -18,8 +18,9 @@ use warnings;
 use Time::Piece;
 use DateTime;
 use Moo;
-with 'FixMyStreet::Roles::Open311Multi';
-with 'FixMyStreet::Cobrand::Bexley::Waste';
+with 'FixMyStreet::Roles::Open311Multi',
+     'FixMyStreet::Cobrand::Bexley::Garden',
+     'FixMyStreet::Cobrand::Bexley::Waste';
 
 sub council_area_id { 2494 }
 sub council_area { 'Bexley' }
@@ -280,7 +281,7 @@ sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
 
     # Check Open311 was successful, or if this was the first time a Symology report failed
-    if ($sender->contact->email !~ /^(Confirm|Uniform)/) { # it's a Symology report
+    if ($sender->contact->email !~ /^(Confirm|Uniform|Agile)/) { # it's a Symology report
         # failed at least once, assume email was sent on first failure
         return if $row->send_fail_count;
     } else {

@@ -21,13 +21,19 @@ sub details_update_fields {
     my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $existing;
     my $new_bins = $bin_count - $current_bins;
 
-    my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+    my $costs = WasteWorks::Costs->new({
+        cobrand => $c->cobrand,
+        discount => $data->{apply_discount},
+        first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+    });
     my $cost_pa = $bin_count == 0 ? 0 : $costs->bins($bin_count);
     my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
     $c->stash->{cost_pa} = $cost_pa / 100;
     $c->stash->{cost_now_admin} = $cost_now_admin / 100;
     $c->stash->{cost_now} = $c->stash->{cost_now_admin} + $c->stash->{cost_pa};
     my $max_bins = $c->stash->{garden_form_data}->{max_bins};
+
+    $data->{_direct_debit_internal} = 1 if $c->cobrand->direct_debit_collection_method eq 'internal';
 
     return {
         current_bins => { default => $existing, range_end => $max_bins },
@@ -81,7 +87,11 @@ has_page details => (
         return \@fields;
     },
     update_field_list => \&details_update_fields,
-    next => 'summary',
+    next => sub {
+        my ($data) = @_;
+        return 'bank_details' if $data->{_direct_debit_internal} && $data->{payment_method} eq 'direct_debit';
+        return 'summary';
+    },
 );
 
 has_page summary => (
@@ -98,7 +108,11 @@ has_page summary => (
         my $bin_count = $data->{bins_wanted} || 1;
         my $new_bins = $bin_count - $current_bins;
         my $cost_pa;
-        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+        my $costs = WasteWorks::Costs->new({
+            cobrand => $c->cobrand,
+            discount => $data->{apply_discount},
+            first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+        });
         if (($data->{container_choice}||'') eq 'sack') {
             $cost_pa = $costs->sacks($bin_count);
         } else {

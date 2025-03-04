@@ -1,6 +1,6 @@
 <h3>More services</h3>
 <ul>
-  [% IF show_garden_subscribe %]
+  [% IF show_garden_subscribe AND property.garden_signup_eligible %]
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
   [% END %]
   <li><a [% external_new_tab | safe %] href="[% waste_features.contact_us_link %]">Report an issue with your collection service</a></li>
