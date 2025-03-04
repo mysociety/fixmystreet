@@ -1629,7 +1629,7 @@ sub garden_calculate_subscription_payment : Private {
     my $costs = WasteWorks::Costs->new({
         cobrand => $c->cobrand,
         discount => $data->{apply_discount},
-        first_bin_discount => $c->cobrand->call_hook('garden_waste_first_bin_discount_applies' => $data)
+        first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
     });
     # Sack form handling
     if ($container eq 'sack') {
