@@ -2181,7 +2181,7 @@ sub _collection_by_uprn_date {
         ],
 
         # For _recent_collections
-        '2024-03-01T00:00:00' => [
+        '2024-03-02T00:00:00' => [
             {   Date     => '24/03/2024 00:00:00',
                 Round    => 'RND-1',
                 Schedule => 'Tue Wk 1',

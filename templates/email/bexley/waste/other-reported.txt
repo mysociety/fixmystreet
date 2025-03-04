@@ -20,7 +20,7 @@ We will look into your enquiry and get back to you as soon as possible.
 If you need to contact us about this enquiry, please quote your reference number.
 [% END %]
 
-Contact us: https://mybexley.bexley.gov.uk/service/rubbish_and_recycling_enquiries
+Contact us: [% cobrand.feature('waste_features').contact_us_link %]
 
 [% INCLUDE 'waste/_report_details.txt' %]
 

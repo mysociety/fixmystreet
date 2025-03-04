@@ -71,7 +71,7 @@ sub lookup_subscription_for_uprn {
 
     # XXX should maybe sort by CreatedDate rather than assuming first is OK
     $sub->{cost} = try {
-        my ($payment) = grep { $_->{PaymentStatus} eq 'Paid' } @{ $contract->{Payments} };
+        my ($payment) = grep { $_->{PaymentStatus} =~ /(Paid|Pending)/ } @{ $contract->{Payments} };
         return $payment->{Amount};
     };
 
@@ -101,6 +101,7 @@ sub garden_current_subscription {
     return undef unless $sub;
 
     my $garden_due = $self->waste_sub_due( $sub->{end_date} );
+    my $garden_overdue = $self->waste_sub_overdue( $sub->{end_date} );
 
     # Agile says there is a subscription; now get service data from
     # Whitespace
@@ -112,6 +113,7 @@ sub garden_current_subscription {
             $srv->{garden_bins} = $sub->{bins_count};
             $srv->{garden_cost} = $sub->{cost};
             $srv->{garden_due} = $garden_due;
+            $srv->{garden_overdue} = $garden_overdue;
 
             return $srv;
         }
@@ -127,6 +129,7 @@ sub garden_current_subscription {
         garden_bins => $sub->{bins_count},
         garden_cost => $sub->{cost},
         garden_due  => $garden_due,
+        garden_overdue => $garden_overdue,
 
         uprn => $uprn,
         garden_waste => 1,
