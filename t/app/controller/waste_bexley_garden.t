@@ -441,6 +441,7 @@ FixMyStreet::override_config {
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
                                 ServiceContractStatus => 'RENEWALDUE',
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                             },
                         ],
                     },
@@ -490,6 +491,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'RENEWALDUE',
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                                 },
                             ],
                         },
@@ -638,6 +640,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                                 },
                             ],
                         },
@@ -665,6 +668,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'RENEWALDUE',
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                                 },
                             ],
                         },
@@ -1084,6 +1088,7 @@ FixMyStreet::override_config {
                         {
                             EndDate => '12/12/2025 12:21',
                             ServiceContractStatus => 'ACTIVE',
+                            Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                         },
                     ],
                 },
