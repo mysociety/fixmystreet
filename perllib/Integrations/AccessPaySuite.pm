@@ -202,4 +202,42 @@ sub create_contract {
     return $self->call('POST', "customer/$customer_ref/contract", $data);
 }
 
+=item archive_contract
+
+Cancels the direct debit, writes off any outstanding arrears balance, cancels future
+payments and sets the contract status to "archived".
+
+=cut
+sub archive_contract {
+    my ($self, $contract_id) = @_;
+    return $self->call('POST', "contract/$contract_id/archive");
+}
+
+=item cancel_plan
+
+Cancels a direct debit plan by archiving the contract.
+Takes an args hashref that must contain either contract_id directly or
+a report object that has the contract_id stored in its metadata.
+
+Returns 1 on success or a hashref with an error key on failure.
+
+=cut
+sub cancel_plan {
+    my ($self, $args) = @_;
+    my $report = $args->{report};
+    my $contract_id = $report->get_extra_metadata('direct_debit_contract_id');
+
+    unless ($contract_id) {
+        die "No direct debit contract ID found in report metadata";
+    }
+
+    my $resp = $self->archive_contract($contract_id);
+
+    if (ref $resp eq 'HASH' && $resp->{error}) {
+        return $resp;
+    } else {
+        return 1;
+    }
+}
+
 1;
