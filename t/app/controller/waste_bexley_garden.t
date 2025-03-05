@@ -705,16 +705,16 @@ FixMyStreet::override_config {
                 my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
                 check_extra_data_pre_confirm(
                     $renew_report,
-                    type         => 'New',
+                    type         => 'Renew',
                     current_bins => 2,
                     new_bins     => -1,
                     bins_wanted  => 1,
                 );
                 is $renew_report->get_extra_field_value('uprn'), $uprn;
                 is $renew_report->get_extra_field_value('payment'), 7500;
-                is $renew_report->get_extra_field_value('type'), '';
+                is $renew_report->get_extra_field_value('type'), 'renew';
                 is $renew_report->get_extra_field_value(
-                    'customer_external_ref'), '';
+                    'customer_external_ref'), 'CUSTOMER_123';
 
                 $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
                 check_extra_data_post_confirm($renew_report);
@@ -725,7 +725,7 @@ FixMyStreet::override_config {
                 my @emails = $mech->get_email;
                 my ($to_user) = grep {
                     $mech->get_text_body_from_email($_)
-                        =~ /Welcome to Bexley’s garden waste collection service/
+                        =~ /Thank you for renewing your subscription/
                 } @emails;
                 ok $to_user, 'Email sent to user';
                 my $email_body = $mech->get_text_body_from_email($to_user);
