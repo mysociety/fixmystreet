@@ -510,6 +510,8 @@ sub direct_debit_cancel_sub : Private {
     my $p = $c->stash->{report};
     my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
     $p->set_extra_metadata(payerReference => $ref);
+    # Bexley can have immediate cancellation
+    $p->confirm if $c->cobrand->moniker eq 'bexley';
     $p->update;
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
@@ -1425,7 +1427,6 @@ sub get_original_sub : Private {
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
-        # XXX Bexley does not store a property_id
         extra => $extra,
         state => { '!=' => 'hidden' },
     })->order_by('-id')->to_body($c->cobrand->body);
