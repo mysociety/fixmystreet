@@ -1274,6 +1274,124 @@ FixMyStreet::override_config {
         };
 
     };
+
+    subtest 'Test direct debit cancellation' => sub {
+        $mech->clear_emails_ok;
+
+        # Log in as the user
+        $mech->log_in_ok($user->email);
+
+        my $contract_id = 'CONTRACT123';
+
+        my ($new_sub_report) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'Garden Subscription - New',
+            {   category    => 'Garden Subscription',
+                title => 'Garden Subscription - New',
+                external_id => "Agile-$contract_id",
+                user => $user,
+            },
+        );
+
+        $new_sub_report->set_extra_metadata(direct_debit_contract_id => $contract_id);
+        $new_sub_report->set_extra_fields(
+            { name => 'uprn', value => 10001 },
+            { name => 'payment_method', value => 'direct_debit' },
+        );
+        $new_sub_report->update;
+
+        FixMyStreet::Script::Reports::send();
+
+        # Set up the mock for Whitespace to return garden waste service
+        $whitespace_mock->mock(
+            'GetSiteCollections',
+            sub {
+                [   {   SiteServiceID          => 1,
+                        ServiceItemDescription => 'Garden waste',
+                        ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                        ServiceName          => 'Brown Wheelie Bin',
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        SiteServiceValidFrom => '2024-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule => 'RND-1 Mon',
+                    }
+                ];
+            }
+        );
+
+        # Set up the mock for Agile to return customer data
+        $agile_mock->mock( 'CustomerSearch', sub {
+            my ($self, $uprn) = @_;
+            # Make sure the UPRN is what's expected, otherwise return empty
+            return {} unless $uprn eq '10001';
+
+            return {
+                Customers => [
+                    {
+                        CustomerExternalReference => 'CUSTOMER_123',
+                        CustomertStatus => 'ACTIVATED',
+                        ServiceContracts => [
+                            {
+                                EndDate => '12/12/2025 12:21',
+                                ServiceContractStatus => 'ACTIVE',
+                                Reference => $contract_id,
+                                WasteContainerQuantity => 2,
+                            },
+                        ],
+                    },
+                ],
+            };
+        });
+
+        # Set up the mock for AccessPaySuite
+        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
+        my $archive_contract_called = 0;
+        my $archived_contract_id;
+
+        $access_mock->mock('archive_contract', sub {
+            my ($self, $contract_id) = @_;
+            $archive_contract_called = 1;
+            $archived_contract_id = $contract_id;
+            return {}; # Success response
+        });
+
+        # Navigate to the property page and verify garden waste service is shown
+        $mech->get_ok('/waste/10001');
+        like $mech->content, qr/waste-service-subtitle.*Garden waste/s, 'Garden waste service is shown';
+
+        # Navigate to the cancellation page
+        $mech->get_ok('/waste/10001/garden_cancel');
+
+        like $mech->text, qr/Cancel your garden waste subscription/, 'On cancellation page';
+
+        # Submit the cancellation form
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    reason  => 'Other',
+                    reason_further_details => 'No longer needed',
+                    confirm => 1,
+                },
+            }
+        );
+
+        # Verify success message
+        like $mech->text, qr/Your subscription has been cancelled/, 'Cancellation success message shown';
+
+        # Get the cancellation report
+        my $cancel_report = FixMyStreet::DB->resultset('Problem')->search(
+            { category => 'Cancel Garden Subscription' },
+        )->order_by('-id')->first;
+
+        # Verify the report details
+        ok $cancel_report, 'Cancellation report created';
+        is $cancel_report->get_extra_field_value('customer_external_ref'), 'CUSTOMER_123', 'Customer reference set correctly';
+        is $cancel_report->get_extra_field_value('reason'), 'Other: No longer needed', 'Reason set correctly';
+
+        # Verify the archive_contract was called with the right parameters
+        is $archive_contract_called, 1, 'archive_contract was called';
+        is $archived_contract_id, $contract_id, 'correct contract_id was passed';
+    };
 };
 
 sub get_report_from_redirect {
