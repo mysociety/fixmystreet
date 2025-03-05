@@ -24,7 +24,7 @@ sub details_update_fields {
     my $costs = WasteWorks::Costs->new({
         cobrand => $c->cobrand,
         discount => $data->{apply_discount},
-        first_bin_discount => $c->cobrand->call_hook('garden_waste_first_bin_discount_applies' => $data)
+        first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
     });
     my $cost_pa = $bin_count == 0 ? 0 : $costs->bins($bin_count);
     my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
@@ -111,7 +111,7 @@ has_page summary => (
         my $costs = WasteWorks::Costs->new({
             cobrand => $c->cobrand,
             discount => $data->{apply_discount},
-            first_bin_discount => $c->cobrand->call_hook('garden_waste_first_bin_discount_applies' => $data)
+            first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
         });
         if (($data->{container_choice}||'') eq 'sack') {
             $cost_pa = $costs->sacks($bin_count);
