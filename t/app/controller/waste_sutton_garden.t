@@ -273,7 +273,6 @@ FixMyStreet::override_config {
             company_name => 'rbk',
             form_name => 'rbk_user_form',
             cc_url => 'http://example.org',
-            sha_passphrase => 'XYZ123',
         } },
     },
 }, sub {
