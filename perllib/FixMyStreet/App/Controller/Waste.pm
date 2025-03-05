@@ -1537,7 +1537,10 @@ sub process_garden_renew : Private {
 
     my $service = $c->cobrand->garden_current_subscription;
     my $type;
-    if ( !$service || $c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
+    # If there is a service at all in Bexley, we want to renew, regardless of end date
+    my $bexley = $c->cobrand->moniker eq 'bexley';
+    my $new = !$service || (!$bexley && $c->cobrand->waste_sub_overdue($service->{end_date}));
+    if ($new) {
         $data->{category} = 'Garden Subscription';
         $data->{title} = 'Garden Subscription - New';
         $type = $c->stash->{garden_subs}->{New};
