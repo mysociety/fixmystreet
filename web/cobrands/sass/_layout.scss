@@ -462,6 +462,7 @@ a.platform-logo {
 body.authpage {
   .content {
     width: 27em;
+    max-width: 27em;
     margin-#{$left}: auto;
     margin-#{$right}: auto;
   }
