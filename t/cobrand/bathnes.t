@@ -2,6 +2,7 @@ use Test::MockModule;
 use FixMyStreet::TestMech;
 use File::Temp 'tempdir';
 use FixMyStreet::Script::CSVExport;
+use FixMyStreet::Script::Reports;
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -10,8 +11,15 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::BathNES');
 $cobrand->mock('area_types', sub { [ 'UTA' ] });
+$cobrand->mock('lookup_site_code', sub { return '12345' });
 
-my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', { cobrand => 'bathnes' });
+my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', {
+    send_method => 'Open311',
+    api_key => 'key',
+    endpoint => 'endpoint',
+    jurisdiction => 'bathnes',
+    cobrand => 'bathnes'
+});
 my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights', 'Disabled');
 for my $contact ( @cats ) {
    my $c =  $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");
@@ -315,6 +323,48 @@ subtest "staff can't allocate a report to a disabled category" => sub {
         $mech->log_in_ok( $superuser->email );
         $mech->get_ok('/admin/report_edit/' . $p->id);
         $mech->content_contains('<option value="Disabled" disabled>Disabled (disabled)</option>');
+    }
+};
+
+my ($confirm_contact) = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Faded road markings',
+    email => 'NM_FM',
+);
+
+my ($email_contact) = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Replace litter bin',
+    email => 'Passthrough-test@example.org',
+);
+
+FixMyStreet::override_config {
+    STAGING_FLAGS => { send_reports => 1 },
+    MAPIT_URL => 'http://mapit.uk/',
+    ALLOWED_COBRANDS => 'bathnes',
+}, sub {
+    subtest "email category emails sent" => sub {
+        $mech->clear_emails_ok;
+        my @problems = FixMyStreet::DB->resultset('Problem')->search({ })->all;
+        for my $problem (@problems) {
+            $problem->whensent(DateTime->now);
+            $problem->send_state('sent');
+            $problem->update;
+        };
+
+        my ($confirm_problem) = $mech->create_problems_for_body(1, $body->id, 'Faded road markings', {
+            cobrand => 'bathnes',
+            category => $confirm_contact->category,
+        } );
+        my ($email_problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+            category => $email_contact->category, cobrand => 'bathnes', user => $normaluser
+        });
+
+        FixMyStreet::Script::Reports::send();
+        is $mech->email_count_is(3), 1, 'Email sent to both contact email and to user for email report, just to user for Confirm report';
+        my @emails = $mech->get_email;
+        my $email = grep { $_->header('To') eq 'test@example.org' } @emails;
+        is $email, 1, "Email address modified to remove Passthrough prefix";
     }
 };
 
