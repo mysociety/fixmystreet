@@ -157,6 +157,20 @@ sub waste_cancel_form_class {
     'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
 }
 
+sub waste_report_extra_dd_data {
+    my ($self) = @_;
+    my $c = $self->{c};
+
+    my $orig_sub = $c->stash->{orig_sub};
+    my $report = $c->stash->{report};
+
+    if ($orig_sub && $orig_sub->get_extra_metadata('direct_debit_contract_id')) {
+        my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
+        $report->set_extra_metadata(direct_debit_contract_id => $contract_id);
+        $report->update;
+    }
+}
+
 sub waste_garden_sub_params {
     my ( $self, $data, $type ) = @_;
 
