@@ -13,7 +13,8 @@
         [%~ ' renewal-status' IF unit.garden_due AND NOT waste_features.garden_renew_disabled ~%]
         ">[% date.format(unit.end_date _ ' 00:00:00', '%d %B %Y') %]
             [%~ ' Cancellation in progress' IF pending_cancellation %]
-            [%~ ', soon due for renewal.' IF unit.garden_due AND NOT waste_features.garden_renew_disabled ~%]
+            [%~ ', soon due for renewal.' IF unit.garden_due AND !unit.garden_overdue AND NOT waste_features.garden_renew_disabled %]
+            [%~ ', subscription overdue.' IF unit.garden_overdue AND NOT waste_features.garden_renew_disabled ~%]
         </dd>
       </div>
     [% END %]
@@ -32,7 +33,7 @@
   [% END %]
 [% END %]
 
-[% IF NOT pending_cancellation %]
+[% IF NOT pending_cancellation AND NOT unit.garden_overdue %]
     [% IF NOT unit.garden_due AND NOT waste_features.garden_modify_disabled AND c.cobrand.waste_show_garden_modify(unit) %]
         <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
           <input type="hidden" name="token" value="[% csrf_token %]">
