@@ -1115,6 +1115,8 @@ FixMyStreet::override_config {
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
                 ->first;
 
+            is $report->state, 'confirmed',
+                'cancellation report auto-confirmed';
             is $report->get_extra_field_value('customer_external_ref'),
                 'CUSTOMER_123';
             is $report->get_extra_field_value('due_date'),
@@ -1172,12 +1174,86 @@ FixMyStreet::override_config {
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
                 ->first;
 
+            is $report->state, 'confirmed',
+                'cancellation report auto-confirmed';
             is $report->get_extra_field_value('customer_external_ref'),
                 'CUSTOMER_123';
             is $report->get_extra_field_value('due_date'),
                 $tomorrow;
             is $report->get_extra_field_value('reason'),
                 'Price';
+
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Reports::send();
+
+            my @emails = $mech->get_email;
+            my ($to_user) = grep {
+                $mech->get_text_body_from_email($_)
+                    =~ /You have cancelled your garden waste collection service/
+            } @emails;
+            ok $to_user, 'Email sent to user';
+
+        };
+
+        subtest 'Original sub paid via direct debit' => sub {
+            $mech->delete_problems_for_body($body->id);
+
+            my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
+            $access_mock->mock( cancel_plan => 'CANCEL_REF_123' );
+
+            my $uprn = 10001;
+            my $contract_id = 'CONTRACT_123';
+
+            $agile_mock->mock( 'CustomerSearch', sub { {
+                Customers => [
+                    {
+                        CustomerExternalReference => 'CUSTOMER_123',
+                        CustomertStatus => 'ACTIVATED',
+                        ServiceContracts => [
+                            {
+                                EndDate => '12/12/2025 12:21',
+                                Reference => $contract_id,
+                                WasteContainerQuantity => 2,
+                                ServiceContractStatus => 'ACTIVE',
+                            },
+                        ],
+                    },
+                ],
+            } } );
+
+            my ($new_sub_report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                '',
+                {   category    => 'Garden Subscription',
+                    title       => 'Garden Subscription - New',
+                    external_id => "Agile-$contract_id",
+                    user_id     => $user->id,
+                },
+            );
+            $new_sub_report->set_extra_fields(
+                { name => 'uprn', value => $uprn },
+                { name => 'payment_method', value => 'direct_debit' },
+            );
+            $new_sub_report->update;
+            FixMyStreet::Script::Reports::send();
+
+            $mech->get_ok('/waste/10001/garden_cancel');
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        reason  => 'Price',
+                        confirm => 1,
+                    },
+                }
+            );
+            like $mech->text, qr/Your subscription has been cancelled/,
+                'form submitted OK';
+
+            my $report
+                = FixMyStreet::DB->resultset('Problem')->order_by('-id')
+                ->first;
+            is $report->state, 'confirmed',
+                'cancellation report auto-confirmed';
 
             $mech->clear_emails_ok;
             FixMyStreet::Script::Reports::send();
