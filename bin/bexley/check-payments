@@ -1,0 +1,45 @@
+#!/usr/bin/env perl
+#
+# This script checks recently made garden waste subscriptions
+# to see if they've been paid and we didn't get told.
+
+use v5.14;
+use warnings;
+
+BEGIN {    # set all the paths to the perl code
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+my $body = FixMyStreet::DB->resultset('Body')->find( { name => 'London Borough of Bexley' } ) or die $!;
+
+check_payments();
+
+sub check_payments {
+    my $problems = FixMyStreet::DB->resultset('Problem')->to_body($body->id)->search({
+        -or => [
+            { state => 'unconfirmed', category => 'Garden Subscription' },
+            # { state => 'confirmed', category => 'Bulky collection' },
+        ],
+        -not => { extra => { '\?' => 'payment_reference' } },
+        created => [ -and => { '<', \"current_timestamp - '15 minutes'::interval" }, { '>=', \"current_timestamp - '1 hour'::interval" } ],
+    });
+    while (my $row = $problems->next) {
+        my $cobrand = $row->get_cobrand_logged;
+        $cobrand->set_lang_and_domain($row->lang, 1);
+        FixMyStreet::Map::set_map_class($cobrand);
+        if (my $scp = $row->get_extra_metadata('scpReference')) {
+            my ($error, $reference) = $cobrand->cc_check_payment_and_update($scp, $row);
+            if ($reference) {
+                $row->waste_confirm_payment($reference);
+            }
+        } elsif (my $apn = $row->get_extra_metadata('apnReference')) {
+            my ($error, $reference) = $cobrand->paye_check_payment_and_update($apn, $row);
+            if ($reference) {
+                $row->waste_confirm_payment($reference);
+            }
+        }
+    }
+}
