@@ -1554,9 +1554,7 @@ sub process_garden_renew : Private {
     $c->forward('setup_garden_sub_params', [ $data, $type ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
-    # it should not be possible to get to here if it's direct debit but
-    # grab this so we can check and redirect to an information page if
-    # they manage to get here
+    # Get the payment method from the form data or the existing subscription
     my $payment_method = $data->{payment_method}
         || $c->forward('get_current_payment_method');
 

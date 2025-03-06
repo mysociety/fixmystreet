@@ -9,6 +9,7 @@ package FixMyStreet::Cobrand::Bexley::Garden;
 use DateTime::Format::Strptime;
 use Integrations::Agile;
 use FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley;
+use FixMyStreet::App::Form::Waste::Garden::Renew::Bexley;
 use Try::Tiny;
 use JSON::MaybeXS;
 
@@ -340,6 +341,13 @@ sub waste_garden_subscribe_form_setup {
 
     # Use a custom form class that includes fields for bank details
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Bexley';
+}
+
+sub waste_garden_renew_form_setup {
+    my ($self) = @_;
+
+    # Use a custom form class that includes fields for bank details
+    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew::Bexley';
 }
 
 =head2 * garden_waste_first_bin_discount_applies
