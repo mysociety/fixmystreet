@@ -20,6 +20,7 @@ sub get_dd_integration {
             endpoint => $config->{dd_endpoint},
             api_key => $config->{dd_api_key},
             client_code => $config->{dd_client_code},
+            log_ident => $config->{log_ident},
         },
     });
 }
