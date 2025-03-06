@@ -1096,7 +1096,16 @@ FixMyStreet::override_config {
             ],
         } } );
 
+        # Staff can see all reports at a property and that can confuse the cancellation
+        # as it sees the direct debit set up above and tries to cancel the DD
+        $mech->delete_problems_for_body($body->id);
+
         $mech->log_in_ok( $user->email );
+        subtest 'staff only' => sub {
+            $mech->get_ok('/waste/10001/garden_cancel');
+            is $mech->uri->path, "/waste/10001";
+        };
+        $mech->log_in_ok( $staff_user->email );
 
         subtest 'with Agile data only' => sub {
             $mech->get_ok('/waste/10001');
@@ -1108,6 +1117,8 @@ FixMyStreet::override_config {
 
             $mech->submit_form_ok(
                 {   with_fields => {
+                        name => 'Name McName',
+                        email => 'test@example.org',
                         reason  => 'Other',
                         reason_further_details => 'Burnt all my leaves',
                         confirm => 1,
@@ -1168,6 +1179,8 @@ FixMyStreet::override_config {
 
             $mech->submit_form_ok(
                 {   with_fields => {
+                        name => 'Name McName',
+                        email => 'test@example.org',
                         reason  => 'Price',
                         confirm => 1,
                     },
@@ -1247,6 +1260,8 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/10001/garden_cancel');
             $mech->submit_form_ok(
                 {   with_fields => {
+                        name => 'Name McName',
+                        email => 'test@example.org',
                         reason  => 'Price',
                         confirm => 1,
                     },
@@ -1278,8 +1293,8 @@ FixMyStreet::override_config {
     subtest 'Test direct debit cancellation' => sub {
         $mech->clear_emails_ok;
 
-        # Log in as the user
-        $mech->log_in_ok($user->email);
+        # Log in as a staff user
+        $mech->log_in_ok($staff_user->email);
 
         my $contract_id = 'CONTRACT123';
 
@@ -1368,6 +1383,8 @@ FixMyStreet::override_config {
         # Submit the cancellation form
         $mech->submit_form_ok(
             {   with_fields => {
+                    name => 'Name McName',
+                    email => 'test@example.org',
                     reason  => 'Other',
                     reason_further_details => 'No longer needed',
                     confirm => 1,
