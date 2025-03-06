@@ -1536,13 +1536,13 @@ FixMyStreet::override_config {
         is $customer_params->{surname}, 'McTest', 'Correct surname';
         is $customer_params->{title}, 'Mr', 'Correct title';
 
-        # Check a couple of contract params
-        is $contract_params->{additionalReference}, 'BEX-15-10001', 'Correct additional reference';
-        is $contract_params->{amount}, '125.00', 'Correct amount';
-
         # Check the report was created correctly
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         ok $report, "Found the report";
+
+        # Check a couple of contract params
+        is $contract_params->{additionalReference}, 'BEX-' . $report->id . '-10001', 'Correct additional reference';
+        is $contract_params->{amount}, '125.00', 'Correct amount';
 
         is $report->title, "Garden Subscription - Renew", "Correct title";
         is $report->category, "Garden Subscription", "Correct category";
