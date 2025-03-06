@@ -26,15 +26,16 @@ has_page intro => (
     },
     update_field_list => sub {
         my $form = shift;
+        my $form_data = $form->saved_data;
         my $c = $form->{c};
         my $data = $c->stash->{garden_form_data};
-        my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $data->{bins} || 0;
-        my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins} || 1;
+        my $current_bins = $c->get_param('current_bins') || $form_data->{current_bins} || $data->{bins} || 0;
+        my $bin_count = $c->get_param('bins_wanted') || $form_data->{bins_wanted} || $data->{bins} || 1;
         my $new_bins = $bin_count - $current_bins;
 
         my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
         my $bins_wanted_disabled = $c->cobrand->call_hook('waste_renewal_bins_wanted_disabled');
-        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form->saved_data->{apply_discount} });
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form_data->{apply_discount} });
         my $cost_pa = $costs->bins_renewal($bin_count);
         my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
         $form->{c}->stash->{cost_pa} = $cost_pa / 100;
@@ -44,12 +45,23 @@ has_page intro => (
         my $max_bins = $data->{max_bins};
         my %bin_params = ( default => $data->{bins}, range_end => $max_bins );
 
+        $form_data->{_direct_debit_internal} = 1 if $c->cobrand->direct_debit_collection_method eq 'internal';
+
         return {
             current_bins => { %bin_params, $edit_current_allowed ? (disabled=>0) : () },
             bins_wanted => { %bin_params, $bins_wanted_disabled ? (disabled=>1) : () },
         };
     },
-    next => 'summary',
+    next => sub {
+        my $data = shift;
+        # If the user has selected direct debit, go to the bank details page
+        # This allows the form to support switching from credit card to direct debit
+        return 'bank_details'
+            if $data->{_direct_debit_internal}
+            && $data->{payment_method}
+            && $data->{payment_method} eq 'direct_debit';
+        return 'summary';
+    },
 );
 
 with 'FixMyStreet::App::Form::Waste::Garden::EmailRenewalReminders';
