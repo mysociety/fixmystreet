@@ -177,12 +177,19 @@ sub check_payment_redirect_id : Private {
     $c->stash->{report} = $p;
 }
 
+# This looks for pending unconfirmed DD reports in the database, as
+# we might not hear about them for days (though preferably, we can query
+# the DD system involved).
+# For Bexley, DD reports are confirmed immediately, and cancellations
+# might not be instant, so look for any open reports, not just DD
 sub get_pending_subscription : Private {
     my ($self, $c) = @_;
 
     my $uprn = $c->stash->{property}{uprn};
+    my $state = 'unconfirmed';
+    $state = ['unconfirmed', 'confirmed'] if $c->cobrand->moniker eq 'bexley';
     my $subs = $c->model('DB::Problem')->search({
-        state => 'unconfirmed',
+        state => $state,
         created => { '>=' => \"current_timestamp-'20 days'::interval" },
         category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
         title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New', 'Garden Subscription - Cancel'] },
@@ -191,7 +198,8 @@ sub get_pending_subscription : Private {
 
     my ($new, $cancel);
     while (my $sub = $subs->next) {
-        if ( $sub->get_extra_field_value('payment_method') eq 'direct_debit' ) {
+        my $payment_method = $sub->get_extra_field_value('payment_method') || '';
+        if ( $c->cobrand->moniker eq 'bexley' || $payment_method eq 'direct_debit' ) {
             if ( $sub->title eq 'Garden Subscription - New' ||
                  $sub->title eq 'Garden Subscription - Renew' ) {
                 $new = $sub;
