@@ -19,8 +19,12 @@ sub check_payments {
     });
     while (my $row = $problems->next) {
         $cobrand->set_lang_and_domain($row->lang, 1);
-        my $query_id = $row->get_extra_metadata('scpReference') or next; # Problem fetching unique ID from payment provider
-        my ($error, $reference) = $cobrand->cc_check_payment_and_update($query_id, $row);
+        my ($error, $reference);
+        if (my $scp = $row->get_extra_metadata('scpReference')) {
+            ($error, $reference) = $cobrand->cc_check_payment_and_update($scp, $row);
+        } elsif (my $apn = $row->get_extra_metadata('apnReference')) {
+            ($error, $reference) = $cobrand->paye_check_payment_and_update($apn, $row);
+        }
         if ($reference) {
             $row->waste_confirm_payment($reference);
         }
