@@ -1460,7 +1460,7 @@ FixMyStreet::override_config {
                             EndDate => '14/03/2024 12:00',
                             Reference => $contract_id,
                             WasteContainerQuantity => 2,
-                            ServiceContractStatus => 'RENEWALDUE',
+                            ServiceContractStatus => 'ACTIVE',
                         },
                     ],
                 },
