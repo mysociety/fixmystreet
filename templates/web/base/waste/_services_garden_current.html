@@ -24,6 +24,12 @@
         </dd>
       </div>
     [% END %]
+    [% IF cobrand.moniker == 'bexley' %]
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Payment method</dt>
+        <dd class="govuk-summary-list__value">[% current_payment_method == 'direct_debit' ? 'Direct Debit' : 'Debit or Credit Card' %]</dd>
+      </div>
+    [% END %]
   </dl>
 
 [% WRAPPER 'waste/_garden_status_messages.html' %]
