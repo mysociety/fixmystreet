@@ -42,9 +42,13 @@ sub waste_get_next_dd_day {
     # Find the next '28th'.
     # If date is greater than 28, we need to move into next month.
     if ( $payment_date->day > $payment_day ) {
+        # Set day first, because if e.g. we are on the 31st of Jan,
+        # adding one month will push us into March, when we want to be in Feb.
+        $payment_date->set_day($payment_day);
         $payment_date->add( months => 1 );
+    } else {
+        $payment_date->set_day($payment_day);
     }
-    $payment_date->set_day($payment_day);
 
     return $payment_date;
 }
