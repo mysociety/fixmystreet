@@ -117,40 +117,62 @@ around waste_cc_get_redirect_url => sub {
     return $self->$orig($c, $back);
 };
 
+sub paye_check_payment_status {
+    my ($self, $apn, $p) = @_;
+
+    my $payment = Integrations::Paye->new({
+        config => $self->feature('payment_gateway')
+    });
+
+    my $resp = $payment->query({
+        request_id => $p->id,
+        apnReference => $apn,
+    });
+
+    my ($error, $auth_code, $can, $tx_id);
+    if ($resp->{transactionState} eq 'Complete') {
+        if ($resp->{paymentResult}->{status} eq 'Success') {
+            my $auth_details
+                = $resp->{paymentResult}{paymentDetails}{authDetails};
+            $auth_code = $auth_details->{authCode};
+            $can = $resp->{paymentResult}{paymentDetails}{payments}{paymentSummary}{continuousAuditNumber};
+            $tx_id = $auth_details->{uniqueAuthId};
+        } else {
+            $error = $resp->{paymentResult}->{status};
+        }
+    } else {
+        $error = $resp->{transactionState};
+    }
+
+    return ($error, $auth_code, $can, $tx_id);
+}
+
+sub paye_check_payment_and_update {
+    my ($self, $apn, $p) = @_;
+    my ($error, $auth_code, $can, $tx_id) = $self->paye_check_payment_status($apn, $p);
+    if ($error) {
+        return ($error, undef);
+    }
+
+    $p->update_extra_metadata(
+        authCode => $auth_code,
+        continuousAuditNumber => $can,
+    );
+    $p->update_extra_field({ name => 'payment_method', value => 'csc' });
+    $p->update;
+    return (undef, $tx_id);
+}
+
 around waste_cc_check_payment_status => sub {
     my ($orig, $self, $c, $p) = @_;
 
     if (my $apn = $p->get_extra_metadata('apnReference')) {
-        my $payment = Integrations::Paye->new({
-            config => $self->feature('payment_gateway')
-        });
-
-        my $resp = $payment->query({
-            request_id => $p->id,
-            apnReference => $apn,
-        });
-
-        if ($resp->{transactionState} eq 'Complete') {
-            if ($resp->{paymentResult}->{status} eq 'Success') {
-                my $auth_details
-                    = $resp->{paymentResult}{paymentDetails}{authDetails};
-                $p->update_extra_metadata(
-                    authCode => $auth_details->{authCode},
-                    continuousAuditNumber => $resp->{paymentResult}{paymentDetails}{payments}{paymentSummary}{continuousAuditNumber},
-                );
-                $p->update_extra_field({ name => 'payment_method', value => 'csc' });
-                $p->update;
-
-                my $ref = $auth_details->{uniqueAuthId};
-                return $ref;
-            } else {
-                $c->stash->{error} = $resp->{paymentResult}->{status};
-                return undef;
-            }
-        } else {
-            $c->stash->{error} = $resp->{transactionState};
+        my ($error, $id) = $self->paye_check_payment_and_update($apn, $p);
+        if ($error) {
+            $c->stash->{error} = $error;
             return undef;
         }
+        return $id;
     }
 
     return $self->$orig($c, $p);
