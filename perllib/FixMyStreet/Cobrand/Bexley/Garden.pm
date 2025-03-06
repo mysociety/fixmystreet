@@ -77,6 +77,9 @@ sub lookup_subscription_for_uprn {
 
     my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
     $sub->{end_date} = $parser->parse_datetime( $contract->{EndDate} );
+    if ($contract->{ServiceContractStatus} eq 'RENEWALDUE') {
+        $sub->{renewal_due} = 1;
+    }
 
     $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
 
@@ -100,8 +103,8 @@ sub garden_current_subscription {
     my $sub = $self->lookup_subscription_for_uprn($uprn);
     return undef unless $sub;
 
-    my $garden_due = $self->waste_sub_due( $sub->{end_date} );
-    my $garden_overdue = $self->waste_sub_overdue( $sub->{end_date} );
+    my $garden_due = $sub->{renewal_due} ? 0 : $self->waste_sub_due( $sub->{end_date} );
+    my $garden_overdue = $sub->{renewal_due} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
 
     # Agile says there is a subscription; now get service data from
     # Whitespace
