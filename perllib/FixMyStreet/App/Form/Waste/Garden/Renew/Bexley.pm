@@ -1,12 +1,14 @@
-package FixMyStreet::App::Form::Waste::Garden::Bexley;
+package FixMyStreet::App::Form::Waste::Garden::Renew::Bexley;
 
 use utf8;
 use LWP::UserAgent;
 use JSON::MaybeXS;
 use URI;
+use Try::Tiny;
+use Data::Dumper;
 
 use HTML::FormHandler::Moose;
-extends 'FixMyStreet::App::Form::Waste::Garden';
+extends 'FixMyStreet::App::Form::Waste::Garden::Renew';
 
 with 'FixMyStreet::App::Form::Waste::AccessPaySuiteBankDetails';
 
