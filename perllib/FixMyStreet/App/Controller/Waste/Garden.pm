@@ -467,7 +467,6 @@ sub process_garden_transfer : Private {
 
     # Get the current subscription for the old address
     my $old_property_id = $data->{previous_ggw_address}->{value};
-    #$c->forward('get_original_sub', ['', $old_property_id]);
 
     my $base = {};
     $base->{name} = $c->get_param('name');
