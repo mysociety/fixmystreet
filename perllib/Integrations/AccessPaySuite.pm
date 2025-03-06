@@ -37,12 +37,18 @@ package Integrations::AccessPaySuite;
 use Moo;
 use strict;
 use warnings;
+with 'FixMyStreet::Roles::Syslog';
 
 use LWP::UserAgent;
 use HTTP::Request::Common;
 use JSON::MaybeXS;
 use URI::Escape;
 use URI;
+
+has log_ident => (
+    is => 'lazy',
+    default => sub { $_[0]->config->{log_ident}; },
+);
 
 # Configuration attributes
 has config => (
@@ -135,6 +141,8 @@ sub parse_response {
     my ($self, $resp) = @_;
     return {} if $resp->code == 204;
 
+    $self->log($resp->content);
+
     my $response_content;
     eval {
         $response_content = decode_json($resp->content);
@@ -165,6 +173,8 @@ sub parse_response {
 
 sub call {
     my ($self, $method, $path, $data) = @_;
+    $self->log($path);
+    $self->log($data);
     my $url = $self->build_request_url($method, $path, $data);
     my $req = $self->create_request($method, $url, $data);
     my $resp = $self->ua->request($req);
