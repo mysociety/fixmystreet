@@ -95,55 +95,90 @@ sub lookup_subscription_for_uprn {
 sub garden_current_subscription {
     my ($self, $services) = @_;
 
+    warn "XXX garden_current_subscription";
+
     my $current = $self->{c}->stash->{property}{garden_current_subscription};
+    ::Dwarn($current) if $current;
     return $current if $current;
 
     my $uprn = $self->{c}->stash->{property}{uprn};
+    ::Dwarn("no uprn") unless $uprn;
     return undef unless $uprn;
 
     my $sub = $self->lookup_subscription_for_uprn($uprn);
-    return undef unless $sub;
+    ::Dwarn("No sub...") unless $sub;
 
-    my $garden_due = $sub->{renewal_due} ? 0 : $self->waste_sub_due( $sub->{end_date} );
-    my $garden_overdue = $sub->{renewal_due} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
+    my $service;
+    if ( $sub ) {
+        ::Dwarn("Found sub in Agile");
+        my $garden_due = $sub->{renewal_due} ? 0 : $self->waste_sub_due( $sub->{end_date} );
+        my $garden_overdue = $sub->{renewal_due} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
 
-    # Agile says there is a subscription; now get service data from
-    # Whitespace
-    my $service_ids = { map { $_->{service_id} => $_ } @$services };
-    for ( @{ $self->garden_service_ids } ) {
-        if ( my $srv = $service_ids->{$_} ) {
-            $srv->{customer_external_ref} = $sub->{customer_external_ref};
-            $srv->{end_date} = $sub->{end_date};
-            $srv->{garden_bins} = $sub->{bins_count};
-            $srv->{garden_cost} = $sub->{cost};
-            $srv->{garden_due} = $garden_due;
-            $srv->{garden_overdue} = $garden_overdue;
+        # Agile says there is a subscription; now get service data from
+        # Whitespace
+        my $service_ids = { map { $_->{service_id} => $_ } @$services };
+        for ( @{ $self->garden_service_ids } ) {
+            if ( my $srv = $service_ids->{$_} ) {
+                ::Dwarn("GGW service in Whitespace, attaching sub info");
+                $srv->{customer_external_ref} = $sub->{customer_external_ref};
+                $srv->{end_date} = $sub->{end_date};
+                $srv->{garden_bins} = $sub->{bins_count};
+                $srv->{garden_cost} = $sub->{cost};
+                $srv->{garden_due} = $garden_due;
+                $srv->{garden_overdue} = $garden_overdue;
 
-            return $srv;
+                return $srv;
+            }
         }
+
+        # If we reach here then Whitespace doesn't think there's a garden service for this
+        # property. If Agile does have a subscription then we need to add a service
+        # to the list for this property so the frontend displays it.
+        ::Dwarn("Found a sub in Agile");
+        $service = {
+            agile_only => 1,
+            customer_external_ref => $sub->{customer_external_ref},
+            end_date => $sub->{end_date},
+            garden_bins => $sub->{bins_count},
+            garden_cost => $sub->{cost},
+            garden_due  => $garden_due,
+            garden_overdue => $garden_overdue,
+
+            uprn => $uprn,
+            garden_waste => 1,
+            service_description => "Garden waste",
+            service_name => "Brown wheelie bin",
+            service_id => "GA-240",
+            schedule => "Pending",
+            round_schedule => '',
+            next => { pending => 1 },
+        };
+    } elsif ( my $r = $self->{c}->stash->{orig_sub} ) {
+        ::Dwarn("Found an original sub in WW: " . $r->id);
+        # Nothing in Whitespace or Agile; so now we check just in case there
+        # is a freshly-created subscription which hasn't been sent to Agile yet
+        # (e.g. they've gone quickly from the confirmation page back to property
+        # view, or Agile is down, or rejecting the report, etc.)
+        my $current = $r->get_extra_field_value('current_containers') || 0;
+        my $new = $r->get_extra_field_value('new_containers') || 0;
+        $service = {
+            garden_bins => $current + $new,
+            garden_cost => $r->get_extra_field_value('payment'),
+
+            uprn => $uprn,
+            garden_waste => 1,
+            service_description => "Garden waste",
+            service_name => "Brown wheelie bin",
+            service_id => "GA-240",
+            schedule => "Pending",
+            round_schedule => '',
+            next => { pending => 1 },
+        };
     }
 
-    # If we reach here then Whitespace doesn't think there's a garden service for this
-    # property. If Agile does have a subscription then we need to add a service
-    # to the list for this property so the frontend displays it.
-    my $service = {
-        agile_only => 1,
-        customer_external_ref => $sub->{customer_external_ref},
-        end_date => $sub->{end_date},
-        garden_bins => $sub->{bins_count},
-        garden_cost => $sub->{cost},
-        garden_due  => $garden_due,
-        garden_overdue => $garden_overdue,
+    ::Dwarn("Found no sub in Agile or WW") unless $service;
+    return undef unless $service;
 
-        uprn => $uprn,
-        garden_waste => 1,
-        service_description => "Garden waste",
-        service_name => "Brown wheelie bin",
-        service_id => "GA-240",
-        schedule => "Pending",
-        round_schedule => '',
-        next => { pending => 1 },
-    };
     push @$services, $service;
     $self->{c}->stash->{property}{garden_current_subscription} = $service;
     $self->{c}->stash->{property}{has_garden_subscription} = 1;
