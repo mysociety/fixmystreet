@@ -155,7 +155,7 @@ sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} 
 sub waste_cancel_asks_staff_for_user_details { 1 }
 
 # TODO Needs to check 14-day window after subscription started
-sub waste_garden_allow_cancellation { 'all' }
+sub waste_garden_allow_cancellation { 'staff' }
 
 sub waste_cancel_form_class {
     'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
