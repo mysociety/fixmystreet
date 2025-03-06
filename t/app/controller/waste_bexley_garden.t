@@ -1392,6 +1392,169 @@ FixMyStreet::override_config {
         is $archive_contract_called, 1, 'archive_contract was called';
         is $archived_contract_id, $contract_id, 'correct contract_id was passed';
     };
+
+    subtest 'renew garden subscription with direct debit that was previously paid by credit card' => sub {
+        default_mocks();
+        set_fixed_time('2024-02-01T00:00:00Z');
+
+        my $uprn = 10001;
+        my $contract_id = 'CARD_CONTRACT_123';
+
+        # Create a report representing a subscription that was previously paid by credit card
+        my ($existing_sub_report) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'Garden Subscription - New',
+            {
+                category    => 'Garden Subscription',
+                external_id => "Agile-$contract_id",
+                title => 'Garden Subscription - New',
+            },
+        );
+        $existing_sub_report->set_extra_fields(
+            { name => 'uprn', value => $uprn },
+            { name => 'payment_method', value => 'credit_card' }, # This indicates it was paid by credit card
+        );
+        $existing_sub_report->update;
+        FixMyStreet::Script::Reports::send();
+
+        # Mock Agile data to show it's due for renewal
+        $agile_mock->mock( 'CustomerSearch', sub { {
+            Customers => [
+                {
+                    CustomerExternalReference => 'CUSTOMER_123',
+                    CustomertStatus => 'ACTIVATED',
+                    ServiceContracts => [
+                        {
+                            # Within the 42-day renewal window
+                            EndDate => '14/03/2024 12:00',
+                            Reference => $contract_id,
+                            WasteContainerQuantity => 2,
+                            ServiceContractStatus => 'RENEWALDUE',
+                        },
+                    ],
+                },
+            ],
+        } } );
+
+        # Set up Whitespace data for the garden waste service
+        $whitespace_mock->mock(
+            'GetSiteCollections',
+            sub {
+                [
+                    {
+                        SiteServiceID          => 1,
+                        ServiceItemDescription => 'Garden waste',
+                        ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                        ServiceName          => 'Brown Wheelie Bin',
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        SiteServiceValidFrom => '2024-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule => 'RND-1 Mon',
+                    }
+                ];
+            }
+        );
+
+        # Mock AccessPaySuite for direct debit setup
+        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
+        my ($customer_params, $contract_params);
+        $access_mock->mock('create_customer', sub {
+            my ($self, $params) = @_;
+            $customer_params = $params;
+            return { Id => 'CUSTOMER123' };
+        });
+        $access_mock->mock('create_contract', sub {
+            my ($self, $customer_id, $params) = @_;
+            $contract_params = $params;
+            return { Id => 'CONTRACT123', DirectDebitRef => 'APIRTM-DEFGHIJ1KL' };
+        });
+        $access_mock->mock('get_customer_by_customer_ref', sub {
+            return undef; # First-time direct debit customer
+        });
+
+        # Start the renewal process
+        $mech->get_ok("/waste/$uprn");
+        like $mech->content, qr/Renew subscription today/,
+            '"Renew today" notification box shown';
+        like $mech->content, qr/14 March 2024, soon due for renewal/,
+            '"Due soon" message shown';
+
+        $mech->get_ok("/waste/$uprn/garden_renew");
+        like $mech->content, qr/name="current_bins.*value="2"/s,
+            'Current bins pre-populated';
+
+        # Now choose direct debit as payment method
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    bins_wanted => 2, # Keep same number of bins
+                    payment_method => 'direct_debit', # Switch to direct debit
+                    name => 'Test McTest',
+                    email => 'test@example.net',
+                    phone => '+4407111111111',
+                },
+            }
+        );
+
+        # We should be on the direct debit details form now
+        $mech->text_contains(
+            'Please provide your bank account information so we can set up your Direct Debit mandate',
+            'On DD details form',
+        );
+
+        # Submit bank details
+        $mech->submit_form_ok({ with_fields => {
+            name_title => 'Mr',
+            first_name => 'Test',
+            surname => 'McTest',
+            address1 => '1 Test Street',
+            address2 => 'Test Area',
+            post_code => 'DA1 1AA',
+            account_holder => 'Test McTest',
+            account_number => '12345678',
+            sort_code => '123456'
+        }});
+
+        # Check summary page
+        $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
+        $mech->content_contains('Test McTest');
+        # Submit the form
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        # Check that we got a successful setup page
+        $mech->content_contains('Your Direct Debit has been set up successfully');
+        $mech->content_contains('Direct Debit mandate');
+
+        # Check customer params
+        is $customer_params->{accountHolderName}, 'Test McTest', 'Correct account holder name';
+        is $customer_params->{accountNumber}, 12345678, 'Correct account number';
+        is $customer_params->{bankSortCode}, 123456, 'Correct sort code';
+        is $customer_params->{firstName}, 'Test', 'Correct first name';
+        is $customer_params->{line1}, '1 Test Street', 'Correct address line 1';
+        is $customer_params->{line2}, 'Test Area', 'Correct address line 2';
+        is $customer_params->{postCode}, 'DA1 1AA', 'Correct post code';
+        is $customer_params->{surname}, 'McTest', 'Correct surname';
+        is $customer_params->{title}, 'Mr', 'Correct title';
+
+        # Check a couple of contract params
+        is $contract_params->{additionalReference}, 'BEX-15-10001', 'Correct additional reference';
+        is $contract_params->{amount}, '125.00', 'Correct amount';
+
+        # Check the report was created correctly
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        ok $report, "Found the report";
+
+        is $report->title, "Garden Subscription - Renew", "Correct title";
+        is $report->category, "Garden Subscription", "Correct category";
+        is $report->get_extra_field_value('payment_method'), 'direct_debit', "Correct payment method";
+        is $report->get_extra_field_value('customer_external_ref'), 'CUSTOMER_123', "Customer reference preserved";
+        is $report->get_extra_field_value('type'), 'renew', "Marked as renewal";
+
+        is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER123', 'Correct customer ID';
+        is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
+        is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
+        is $report->state, 'confirmed', 'Report is confirmed';
+    };
 };
 
 sub get_report_from_redirect {
