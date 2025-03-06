@@ -907,7 +907,7 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
         FixMyStreet::DB->resultset("Problem")->delete_all;
 
-        set_fixed_time('2023-01-09T17:00:00Z');
+        set_fixed_time('2023-12-29T17:00:00Z');
 
         my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
@@ -985,7 +985,7 @@ FixMyStreet::override_config {
             paymentDayInMonth => 28,
             paymentMonthInYear => 1,
             amount => '70.00',
-            start => '2023-01-23T17:00:00.000',
+            start => '2024-01-28T17:00:00.000',
             additionalReference => "BEX-$id-10001",
         }, 'Contract parameters are correct';
 
@@ -1000,7 +1000,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('direct_debit_reference'),
             'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
         is $report->get_extra_field_value('direct_debit_start_date'),
-            '23/01/2023', 'Start date set as extra field';
+            '28/01/2024', 'Start date set as extra field';
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -1080,7 +1080,7 @@ FixMyStreet::override_config {
             paymentDayInMonth => 28,
             paymentMonthInYear => 1,
             amount => '70.00',
-            start => '2023-01-23T17:00:00.000',
+            start => '2023-01-28T17:00:00.000',
             additionalReference => "BEX-$id-10001"
         }, 'Contract parameters are correct';
 
@@ -1094,7 +1094,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('direct_debit_reference'),
             'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
         is $report->get_extra_field_value('direct_debit_start_date'),
-            '23/01/2023', 'Start date set as extra field';
+            '28/01/2023', 'Start date set as extra field';
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
