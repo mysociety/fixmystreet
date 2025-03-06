@@ -1179,8 +1179,11 @@ sub process_enquiry_data : Private {
 }
 
 # staff should not be able to make payments for direct debit payments
+# Except in Bexley
 sub check_if_staff_can_pay : Private {
     my ($self, $c, $payment_type) = @_;
+
+    return 1 if $c->cobrand->moniker eq 'bexley';
 
     if ( $c->stash->{staff_payments_allowed} ) {
         if ( $payment_type && $payment_type eq 'direct_debit' ) {
