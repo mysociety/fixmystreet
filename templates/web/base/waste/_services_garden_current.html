@@ -10,7 +10,7 @@
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Renewal</dt>
         <dd class="govuk-summary-list__value
-        [%~ ' renewal-status' IF unit.garden_due AND NOT waste_features.garden_renew_disabled ~%]
+        [%~ ' renewal-status' IF current_payment_method != 'direct_debit' AND ( unit.garden_due OR unit.garden_overdue ) AND NOT waste_features.garden_renew_disabled ~%]
         ">[% date.format(unit.end_date _ ' 00:00:00', '%d %B %Y') %]
             [%~ ' Cancellation in progress' IF pending_cancellation %]
             [%~ ', soon due for renewal.' IF unit.garden_due AND !unit.garden_overdue AND NOT waste_features.garden_renew_disabled %]
@@ -20,7 +20,8 @@
     [% END %]
   </dl>
 
-[% IF ( unit.garden_due ) AND NOT waste_features.garden_renew_disabled %]
+[% WRAPPER 'waste/_garden_status_messages.html' %]
+[% IF ( unit.garden_due OR unit.garden_overdue ) AND NOT waste_features.garden_renew_disabled %]
   <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="[% IF c.cobrand.moniker == 'merton' %]Renew without making changes[% ELSE %]Renew your [% unit.service_name FILTER lower %] subscription[% END %]" class="waste-service-descriptor waste-service-link">
@@ -31,6 +32,7 @@
       [% date.format(unit.end_date _ ' 00:00:00', '%A %-d %B') %].
       </p>
   [% END %]
+[% END %]
 [% END %]
 
 [% IF NOT pending_cancellation AND NOT unit.garden_overdue %]
