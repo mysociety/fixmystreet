@@ -440,7 +440,7 @@ FixMyStreet::override_config {
                                 EndDate => '14/03/2024 12:00',
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
-                                ServiceContractStatus => 'RENEWALDUE',
+                                ServiceContractStatus => 'ACTIVE',
                                 Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                             },
                         ],
@@ -478,7 +478,7 @@ FixMyStreet::override_config {
                 }
             );
 
-            subtest 'within renewal window' => sub {
+            subtest 'already renewed' => sub {
                 $agile_mock->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
@@ -491,6 +491,36 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'RENEWALDUE',
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                },
+                            ],
+                        },
+                    ],
+                } } );
+
+                $mech->get_ok("/waste/$uprn");
+                unlike $mech->content, qr/Renew subscription today/,
+                    '"Renew today" notification box not shown';
+                unlike $mech->content, qr/14 March 2024, soon due for renewal/,
+                    '"Due soon" message not shown';
+                unlike $mech->content,
+                    qr/Renew your brown wheelie bin subscription/,
+                    'Renewal link not available';
+            };
+
+            subtest 'within renewal window' => sub {
+                $agile_mock->mock( 'CustomerSearch', sub { {
+                    Customers => [
+                        {
+                            CustomerExternalReference => 'CUSTOMER_123',
+                            CustomertStatus => 'ACTIVATED',
+                            ServiceContracts => [
+                                {
+                                    # 42 days away
+                                    EndDate => '14/03/2024 12:00',
+                                    Reference => $contract_id,
+                                    WasteContainerQuantity => 2,
+                                    ServiceContractStatus => 'ACTIVE',
                                     Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                                 },
                             ],
@@ -667,7 +697,7 @@ FixMyStreet::override_config {
                                     EndDate => '31/01/2024 12:00',
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
-                                    ServiceContractStatus => 'RENEWALDUE',
+                                    ServiceContractStatus => 'NOACTIVE',
                                     Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                                 },
                             ],
