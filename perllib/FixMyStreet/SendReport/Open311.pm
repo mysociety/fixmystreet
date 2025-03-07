@@ -77,11 +77,12 @@ sub send {
     my $open311 = Open311->new( %open311_params );
 
     my $skip = $cobrand->call_hook(open311_pre_send => $row, $open311);
+
     $skip = $skip && $skip eq 'SKIP';
 
     my $resp;
     if (!$skip) {
-        $resp = $open311->send_service_request( $row, $h, $contact->email );
+        $resp = $open311->send_service_request( $row, $h, $row->get_extra_metadata('alternative_service_code') || $contact->email );
     }
 
     # make sure we don't save any changes from above
