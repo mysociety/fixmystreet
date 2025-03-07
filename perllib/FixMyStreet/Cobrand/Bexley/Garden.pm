@@ -279,7 +279,7 @@ sub waste_setup_direct_debit {
 
     if (!$customer) {
         my $customer_data = {
-            customerRef => $email, # Use email as customer reference
+            customerRef => $report->id,
             email => $email,
             title => $data->{name_title},
             firstName => $data->{first_name},

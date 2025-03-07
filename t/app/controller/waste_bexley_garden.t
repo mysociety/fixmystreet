@@ -961,7 +961,7 @@ FixMyStreet::override_config {
 
         # Check customer creation parameters
         is_deeply $customer_params, {
-            customerRef => 'test@example.net',
+            customerRef => $id,
             email => 'test@example.net',
             title => 'Mr',
             firstName => 'Test',
