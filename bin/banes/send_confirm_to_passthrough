@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+#
+# This script sends waste reports additionally to BANES's
+# Open311 endpoint. They have already been sent to Confirm.
+
+use v5.14;
+use warnings;
+
+BEGIN {    # set all the paths to the perl code
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::Script::BANES::PassthroughConfirm;
+
+my $send = FixMyStreet::Script::BANES::PassthroughConfirm->new;
+
+
+$send->send_reports;
+$send->send_comments;
