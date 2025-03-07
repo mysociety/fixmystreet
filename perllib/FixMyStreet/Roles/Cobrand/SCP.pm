@@ -33,7 +33,7 @@ sub waste_cc_get_redirect_url {
     my $customer_ref = $payment->config->{customer_ref};
 
     my $backUrl;
-    if ($back eq 'bulky') {
+    if ($p->category eq 'Bulky collection') {
         # Need to pass through property ID as not sure how to work it out once we're back
         my $id = URI::Escape::uri_escape_utf8($c->stash->{property}{id});
         $backUrl = $c->uri_for_action('/waste/pay_cancel', [ $p->id, $redirect_id ] ) . '?property_id=' . $id;
@@ -43,7 +43,7 @@ sub waste_cc_get_redirect_url {
         if (my $bulky_customer_ref = $payment->config->{bulky_customer_ref}) {
             $customer_ref = $bulky_customer_ref;
         }
-    } elsif ($back eq 'request') {
+    } elsif ($p->category eq 'Request new container') {
         if (my $request_customer_ref = $payment->config->{request_customer_ref}) {
             $customer_ref = $request_customer_ref;
         }
