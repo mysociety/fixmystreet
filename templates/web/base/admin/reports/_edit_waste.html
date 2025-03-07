@@ -212,6 +212,10 @@ END
     [ 'SCP reference', 'scpReference', 1 ],
     [ 'Payment code', 'PaymentCode' ],
     [ 'DD collection date', 'dd_date', 1 ],
+    # AccessPay
+    [ 'DD customer ID', 'direct_debit_customer_id', 1 ],
+    [ 'DD contract ID', 'direct_debit_contract_id', 1 ],
+    [ 'DD reference', 'direct_debit_reference', 1 ],
 ] %]
 [%
 SET payment_method = problem.get_extra_field_value('LastPayMethod');

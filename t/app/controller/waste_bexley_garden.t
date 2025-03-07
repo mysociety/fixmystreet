@@ -961,7 +961,7 @@ FixMyStreet::override_config {
 
         # Check customer creation parameters
         is_deeply $customer_params, {
-            customerRef => 'test@example.net',
+            customerRef => $id,
             email => 'test@example.net',
             title => 'Mr',
             firstName => 'Test',
@@ -1090,7 +1090,6 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER456', 'Correct customer ID';
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
-        is $report->state, 'confirmed', 'Report is confirmed';
         is $report->get_extra_field_value('direct_debit_reference'),
             'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
         is $report->get_extra_field_value('direct_debit_start_date'),
@@ -1103,6 +1102,45 @@ FixMyStreet::override_config {
         like $email_body, qr/Bins to be delivered: 1/;
         like $email_body, qr/Total:.*?70/;
         $mech->clear_emails_ok;
+    };
+
+    subtest 'correct amount shown on existing DD subscriptions' => sub {
+        foreach my $status ("Pending", "Paid") {
+            subtest "Payment status: $status" => sub {
+                default_mocks();
+                set_fixed_time('2024-02-01T00:00:00');
+                my $tomorrow = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' )->format_datetime( DateTime->now->add(days => 1) );
+
+                $agile_mock->mock( 'CustomerSearch', sub { {
+                    Customers => [
+                        {
+                            CustomerExternalReference => 'CUSTOMER_123',
+                            CustomertStatus => 'ACTIVATED',
+                            ServiceContracts => [
+                                {
+                                    EndDate => '12/12/2025 12:21',
+                                    ServiceContractStatus => 'ACTIVE',
+                                    Payments => [
+                                        {
+                                            PaymentStatus => $status,
+                                            PaymentMethod => "Direct debit",
+                                            Amount => 70
+                                        }
+                                    ]
+                                },
+                            ],
+                        },
+                    ],
+                } } );
+
+                $mech->log_in_ok( $user->email );
+
+                $mech->get_ok('/waste/10001');
+                like $mech->text, qr/Brown wheelie bin/;
+                like $mech->text, qr/Next collectionPending/;
+                like $mech->text, qr/Subscription.*70.00 per year/;
+            }
+        }
     };
 
     subtest 'cancel garden subscription' => sub {

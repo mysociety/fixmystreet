@@ -18,6 +18,7 @@ has verbose => ( is => 'ro' );
 has dry_run => ( is => 'ro' );
 has category => ( is => 'ro' );
 has state => ( is => 'ro' );
+has created => ( is => 'ro' );
 
 has cobrand => (
     is => 'ro',
@@ -88,16 +89,24 @@ sub close_updates {
 
 sub _relevant_reports {
     my ($self, $time, $include_hidden) = @_;
+    my $field = $self->created ? 'created' : 'lastupdate';
+    my @states;
+    if ($self->state) {
+        if ($self->state ne 'all') {
+            push @states, $self->state;
+        }
+    } else {
+        push @states, FixMyStreet::DB::Result::Problem->closed_states(),
+            FixMyStreet::DB::Result::Problem->fixed_states();
+        push @states, FixMyStreet::DB::Result::Problem->hidden_states()
+            if $include_hidden;
+    }
     my $problems = FixMyStreet::DB->resultset("Problem")->search({
-        lastupdate => { '<', interval($time) },
-        state => $self->state ? $self->state : [
-            FixMyStreet::DB::Result::Problem->closed_states(),
-            FixMyStreet::DB::Result::Problem->fixed_states(),
-            $include_hidden ? FixMyStreet::DB::Result::Problem->hidden_states() : (),
-        ],
+        $field => { '<', interval($time) },
+        @states ? (state => \@states) : (),
         $self->category ? (category => $self->category) : (),
         $self->cobrand ? (cobrand => $self->cobrand->moniker) : (),
-    });
+    })->order_by('id');
     return $problems;
 }
 

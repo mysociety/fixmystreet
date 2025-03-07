@@ -83,6 +83,7 @@ sub display {
     return $unchanging->{$label} if $unchanging->{$label};
     if ($cobrand && $label eq 'not responsible') {
         return 'third party responsibility' if $cobrand eq 'bromley';
+        return "not Hounslow Highways’ responsibility" if $cobrand eq 'hounslow';
         return "not Island Roads’ responsibility" if $cobrand eq 'isleofwight';
         return "not TfL’s responsibility" if $cobrand eq 'tfl';
         return _("not the council's responsibility");
