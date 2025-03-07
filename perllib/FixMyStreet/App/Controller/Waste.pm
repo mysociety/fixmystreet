@@ -187,7 +187,7 @@ sub get_pending_subscription : Private {
 
     my $uprn = $c->stash->{property}{uprn};
     my $state = 'unconfirmed';
-    $state = ['unconfirmed', 'confirmed'] if $c->cobrand->moniker eq 'bexley';
+    $state = 'confirmed' if $c->cobrand->moniker eq 'bexley';
     my $subs = $c->model('DB::Problem')->search({
         state => $state,
         created => { '>=' => \"current_timestamp-'20 days'::interval" },
