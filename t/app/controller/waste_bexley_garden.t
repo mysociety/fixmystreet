@@ -1199,6 +1199,8 @@ FixMyStreet::override_config {
             my $report
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
                 ->first;
+            my $str = 'Your reference number is ' .  $report->id;
+            like $mech->text, qr/$str/, 'report ID displayed';
 
             is $report->state, 'confirmed',
                 'cancellation report auto-confirmed';
