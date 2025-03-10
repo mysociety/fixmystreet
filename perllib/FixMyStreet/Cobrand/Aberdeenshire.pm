@@ -16,6 +16,8 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 use strict;
 use warnings;
 
+use Moo;
+
 =pod
 
 Confirm backends expect some extra values and have some maximum lengths for
