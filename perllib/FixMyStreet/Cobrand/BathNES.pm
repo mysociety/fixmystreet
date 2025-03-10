@@ -27,6 +27,7 @@ use LWP::Simple;
 use URI;
 use Try::Tiny;
 use JSON::MaybeXS;
+use mySociety::EmailUtil qw(is_valid_email);
 
 sub council_area_id { return 2551; }
 sub council_area { return 'Bath and North East Somerset'; }
@@ -292,6 +293,38 @@ sub categories_restriction {
         'me.send_method' => 'Email::BathNES', # Street Light Fault
         'me.send_method' => 'Blackhole', # Parks categories
     ] } );
+}
+
+=head2 open311_post_send
+
+BANES have a passthrough open311 endpoint that receives all categories with email
+addresses.
+
+These then need to be sent to the specified email address after a successful
+open311 send.
+
+=cut
+
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    # Check Open311 was successful and the email not previously sent
+    return unless $row->external_id;
+    return if $row->get_extra_metadata('extra_email_sent');
+
+    my $contact = $row->contact->email;
+
+    return unless is_valid_email($contact);
+    $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
+
+    my $sender = FixMyStreet::SendReport::Email->new(
+        use_verp => 0, use_replyto => 1, to => [ $contact ] );
+    $sender->send($row, $h);
+    if ($sender->success) {
+        $row->set_extra_metadata(extra_email_sent => 1);
+    }
+
+    $row->remove_extra_field('fixmystreet_id');
 }
 
 =head2 dashboard_export_updates_add_columns
