@@ -890,12 +890,6 @@ sub garden_waste_dd_get_redirect_params {
     return ($token, $id);
 }
 
-sub garden_waste_check_pending {
-    my ($self, $report) = @_;
-    return $report;
-}
-
-
 sub _set_user_source {
     my $self = shift;
     my $c = $self->{c};
