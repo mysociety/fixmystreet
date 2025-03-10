@@ -30,11 +30,11 @@ sub send_reports {
         my $reporter = FixMyStreet::SendReport::Open311->new;
         $reporter->add_body( $self->body, $sender_info->{config} );
         $item->_set_reporters([$reporter]);
-        $row->set_extra_metadata('alternative_service_code' => 'passthrough@example.org');
-        $row->update;
+        my $service_code = 'passthrough-' . $row->contact->email . '@example.org';
+        $item->h->{alternative_service_code} = $service_code;
         $item->_send;
         if ($reporter->success) {
-            $row->unset_extra_metadata('alternative_service_code' => 'passthrough@example.org');
+            $row->discard_changes;
             $row->set_extra_metadata('sent_to_banes_passthrough' => 1);
             $row->set_extra_metadata('passthrough_id' => $row->external_id);
             $row->external_id($confirm_id);
