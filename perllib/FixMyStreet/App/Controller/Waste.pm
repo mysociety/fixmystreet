@@ -209,7 +209,6 @@ sub get_pending_subscription : Private {
         }
 
     }
-    $new = $c->cobrand->call_hook( 'garden_waste_check_pending' => $new );
     $c->stash->{pending_subscription} ||= $new;
     $c->stash->{pending_cancellation} = $cancel;
 }

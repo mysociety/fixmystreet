@@ -254,7 +254,10 @@ sub _process_update {
         # comment. This is to catch automated updates which happen faster than we get the external_id
         # back from the endpoint and hence have an created time before the lastupdate.
         if ( $p->is_visible && $p->state ne $state &&
-            ( $comment->created >= $p->lastupdate || $p->comments->count == 0 || ($p->comments->count == 1 && $p->comments->first->external_id eq "auto-internal") )) {
+            ( $comment->created >= $p->lastupdate
+                || $p->comments->count == 0
+                || ($p->comments->count == 1 && ($p->comments->first->external_id||'') eq "auto-internal")
+            )) {
             $p->state($state);
         }
     }

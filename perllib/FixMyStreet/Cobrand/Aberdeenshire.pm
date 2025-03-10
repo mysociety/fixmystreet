@@ -1,0 +1,114 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Aberdeenshire - code specific to the Aberdeenshire cobrand
+
+=head1 SYNOPSIS
+
+We integrate with Aberdeenshire's Confirm back end.
+
+=head1 DESCRIPTION
+
+=cut
+
+package FixMyStreet::Cobrand::Aberdeenshire;
+use parent 'FixMyStreet::Cobrand::Whitelabel';
+
+use strict;
+use warnings;
+
+=pod
+
+Confirm backends expect some extra values and have some maximum lengths for
+certain fields. These roles implement that behaviour.
+
+=cut
+
+with 'FixMyStreet::Roles::ConfirmOpen311';
+with 'FixMyStreet::Roles::ConfirmValidation';
+
+=head2 Defaults
+
+=over 4
+
+=cut
+
+sub council_area_id { '2648' }
+sub council_area { 'Aberdeenshire' }
+sub council_name { 'Aberdeenshire County Council' }
+sub council_url { 'aberdeenshire' }
+
+=item * Users with a Aberdeenshire.gov.uk email can always be found in the admin.
+
+=cut
+
+sub admin_user_domain { 'aberdeenshire.gov.uk' }
+
+=item * Aberdeenshire use their own privacy policy, and their own contact form
+
+=cut
+
+sub privacy_policy_url { 'https://aberdeenshirestorage.blob.core.windows.net/acblobstorage/168aac73-5139-4622-a980-7a9436c3e0a3/cusersspellascdocumentsroads-pn.pdf' }
+
+sub abuse_reports_only { 1 }
+
+=item * Users can not reopen reports
+
+=cut
+
+sub reopening_disallowed {
+    my ($self, $problem) = @_;
+
+    # Only staff can reopen reports.
+    my $c = $self->{c};
+    my $user = $c->user;
+    return 0 if ($c->user_exists && $user->from_body && $user->from_body->cobrand_name eq $self->council_name);
+    return 1;
+}
+
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
+=pod
+
+=back
+
+=cut
+
+=head2 open311_update_missing_data
+
+Unlike the ConfirmOpen311 role, we want to fetch a central asset ID here, not a
+site code.
+
+=cut
+
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    # In case the client hasn't given us a central asset ID, look up the
+    # closest asset from the WFS service at the point we're sending the report
+    if (!$row->get_extra_field_value('central_asset_id')) {
+        if (my $id = $self->lookup_site_code($row)) {
+            $row->update_extra_field({ name => 'central_asset_id', value => $id });
+        }
+    }
+}
+
+sub disambiguate_location {
+    my $self = shift;
+    my $string = shift;
+
+    return {
+        %{ $self->SUPER::disambiguate_location() },
+        centre => '57.24185467,-2.62923456',
+        span   => '0.95461349,2.03725374',
+        bounds => [
+            56.74712850, -3.80164643,
+            57.70174199, -1.76439269,
+        ],
+    };
+}
+
+1;

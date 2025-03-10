@@ -10,7 +10,7 @@ requires 'waste_cc_payment_reference';
 sub waste_cc_has_redirect { 1 }
 
 sub waste_cc_get_redirect_url {
-    my ($self, $c, $type) = @_;
+    my ($self, $c, $back) = @_;
 
     my $payment = Integrations::Adelante->new({
         config => $self->feature('payment_gateway')->{adelante}
@@ -31,10 +31,10 @@ sub waste_cc_get_redirect_url {
     my $fund_code = $payment->config->{fund_code};
     my $cost_code = $payment->config->{cost_code};
 
-    if ($type eq 'bulky') {
+    if ($p->category eq 'Bulky collection') {
         $fund_code = $payment->config->{bulky_fund_code} || $fund_code;
         $cost_code = $payment->config->{bulky_cost_code} || $cost_code;
-    } elsif ($type eq 'request') {
+    } elsif ($p->category eq 'Request new container') {
         $cost_code = $payment->config->{request_cost_code} || $cost_code;
     }
 
