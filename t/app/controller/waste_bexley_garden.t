@@ -1653,6 +1653,33 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
         is $report->state, 'confirmed', 'Report is confirmed';
     };
+
+    subtest 'Staff garden waste subscription uses paye.net with custom narrative' => sub {
+        $sent_params = {};
+        $call_params = {};
+        default_mocks();
+        $mech->log_in_ok($staff_user->email);
+
+        $mech->get_ok('/waste/10001/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 1,
+            payment_method => 'credit_card',
+            name => 'Staff Test',
+            email => 'staff@example.org'
+        } });
+        $mech->content_contains('Staff Test');
+        $mech->content_contains('£75.00');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my ($token, $report, $report_id) = get_report_from_redirect($sent_params->{returnUrl});
+
+        is $sent_params->{narrative}, "Garden Waste Service Payment - Reference: " . $report_id . " Contract: 10001",
+            'Custom narrative was used for paye.net payment';
+    };
+
 };
 
 sub get_report_from_redirect {
