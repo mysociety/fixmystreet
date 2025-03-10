@@ -77,6 +77,7 @@ sub send {
     my $open311 = Open311->new( %open311_params );
 
     my $skip = $cobrand->call_hook(open311_pre_send => $row, $open311);
+
     $skip = $skip && $skip eq 'SKIP';
 
     my $resp;

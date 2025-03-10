@@ -87,7 +87,7 @@ sub send_service_request {
     my $self = shift;
     my $problem = shift;
     my $extra = shift;
-    my $service_code = shift;
+    my $service_code = $extra->{alternative_service_code} || shift;
 
     my $params = $self->_populate_service_request_params(
         $problem, $extra, $service_code
