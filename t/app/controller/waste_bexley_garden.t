@@ -697,7 +697,7 @@ FixMyStreet::override_config {
                                     EndDate => '31/01/2024 12:00',
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
-                                    ServiceContractStatus => 'NOACTIVE',
+                                    ServiceContractStatus => 'ACTIVE',
                                     Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                                 },
                             ],
@@ -1117,6 +1117,17 @@ FixMyStreet::override_config {
                             CustomerExternalReference => 'CUSTOMER_123',
                             CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
+                                {
+                                    EndDate => '12/12/2024 12:21',
+                                    ServiceContractStatus => 'NOACTIVE',
+                                    Payments => [
+                                        {
+                                            PaymentStatus => "Paid",
+                                            PaymentMethod => "Direct debit",
+                                            Amount => 55
+                                        }
+                                    ]
+                                },
                                 {
                                     EndDate => '12/12/2025 12:21',
                                     ServiceContractStatus => 'ACTIVE',

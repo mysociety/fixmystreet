@@ -61,7 +61,7 @@ sub lookup_subscription_for_uprn {
         next unless $contracts;
         $customer = $_;
         for ( @$contracts ) {
-            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT|RENEWALDUE)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE
+            next unless $_->{ServiceContractStatus} =~ /^(ACTIVE|PRECONTRACT|RENEWALDUE)$/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE
             $contract = $_;
             # use the first matching customer/contract
             last OUTER if $customer && $contract;
