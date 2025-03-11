@@ -845,7 +845,7 @@ subtest "check map click ajax response" => sub {
     };
     ok $extra_details->{titles_list}, 'Bromley sends back list of titles';
     like $extra_details->{councils_text}, qr/Bromley Council/, 'correct council text';
-    like $extra_details->{councils_text_private}, qr/^These details will be sent to the council, but will never be shown online/, 'correct private council text';
+    like $extra_details->{councils_text_private}, qr/^These details will be sent to the responsible organisation, but will never be shown online/, 'correct private council text';
     like $extra_details->{category}, qr/Trees/, 'category looks correct';
     is_deeply $extra_details->{bodies}, [ "Bromley Council" ], 'correct bodies';
     ok !$extra_details->{contribute_as}, 'no contribute as section';
