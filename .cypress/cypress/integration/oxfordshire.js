@@ -102,15 +102,6 @@ describe("Oxfordshire cobrand", function() {
         });
     }
 
-    var sweepfill = {
-        typename: 'Sweep & Fill',
-        right_details: [ '0-1m²', '1-2m²' ],
-        wrong_details: [
-             '1 kerb unit or I liner length',
-             'Greater than 1 kerb unit or I liner length',
-             'Blockage raised as a defect'
-        ]
-    };
     var pothole = {
         typename: 'Pothole (Permanent)',
         right_details: [ '0-1m²', '1-2m²' ],
@@ -182,7 +173,7 @@ describe("Oxfordshire cobrand", function() {
     };
 
     (function() {
-        var right_types = [ sweepfill, pothole ];
+        var right_types = [ pothole ];
         var wrong_types = [ damaged, loose, misaligned, missing, blockage ];
 
         testDefectDropdowns('Minor Carriageway', right_types, wrong_types);
@@ -192,7 +183,7 @@ describe("Oxfordshire cobrand", function() {
 
     (function() {
         var right_types = [ damaged, loose, misaligned, missing ];
-        var wrong_types = [ sweepfill, pothole, blockage ];
+        var wrong_types = [ pothole, blockage ];
 
         testDefectDropdowns('Kerbing', right_types, wrong_types);
         cy.log('Kerbing category types & details are correct');
@@ -200,7 +191,7 @@ describe("Oxfordshire cobrand", function() {
 
     (function() {
         var right_types = [ blockage ];
-        var wrong_types = [ sweepfill, pothole, damaged, loose, misaligned, missing ];
+        var wrong_types = [ pothole, damaged, loose, misaligned, missing ];
 
         testDefectDropdowns('Drainage', right_types, wrong_types);
         cy.log('Drainage category types & details are correct');
