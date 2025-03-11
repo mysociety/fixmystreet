@@ -23,7 +23,29 @@ $dbi_mock->mock( 'connect', sub {
 } );
 
 my $agile_mock = Test::MockModule->new('Integrations::Agile');
-$agile_mock->mock( 'CustomerSearch', sub { {} } );
+sub agile_mock_populated {
+    $agile_mock->mock( 'CustomerSearch', sub { {
+        Customers => [
+            {
+                CustomerExternalReference => 'CUSTOMER_123',
+                CustomertStatus => 'ACTIVATED',
+                ServiceContracts => [
+                    {
+                        EndDate => '01/02/2025 00:00',
+                        Reference => 'CONTRACT_123',
+                        WasteContainerQuantity => 1,
+                        ServiceContractStatus => 'ACTIVE',
+                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                    },
+                ],
+            },
+        ],
+    } } );
+}
+sub agile_mock_empty {
+    $agile_mock->mock( 'CustomerSearch', sub { {} } );
+}
+agile_mock_empty();
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -704,6 +726,7 @@ FixMyStreet::override_config {
     my $removal_string = 'Request removal of a';
 
     subtest 'Standard non-communal property' => sub {
+        agile_mock_populated(); # Needed for garden waste to display
         $mech->get_ok('/waste/10001');
 
         $mech->content_contains("$new_string green wheelie bin");
@@ -960,6 +983,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Above-shop property' => sub {
+        agile_mock_empty();
         $mech->delete_problems_for_body( $body->id );
 
         $mech->get_ok('/waste/10002');
