@@ -419,6 +419,8 @@ FixMyStreet::override_config {
         $comment->problem->set_extra_metadata(defect_item_category => 'Kerbing');
         $comment->problem->set_extra_metadata(defect_item_type => 'Damaged');
         $comment->problem->set_extra_metadata(defect_item_detail => '1 kerb unit or 1 linear m');
+        $comment->problem->set_extra_metadata(defect_length => '30mm');
+        $comment->problem->set_extra_metadata(defect_speed_of_road => '40mph');
         $comment->problem->set_extra_metadata(traffic_information => 'Signs and Cones');
         $comment->problem->set_extra_metadata(detailed_information => '100x100');
         $comment->problem->update;
@@ -446,6 +448,8 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[usrn]'), 13579, 'USRN sent with update';
         is $cgi->param('attribute[raise_defect]'), 1, 'Defect flag sent with update';
         is $cgi->param('attribute[defect_item_category]'), 'Kerbing';
+        is $cgi->param('attribute[defect_speed_of_road]'), '40mph';
+        is $cgi->param('attribute[defect_length]'), '30mm';
         is $cgi->param('attribute[extra_details]'), $user2->email . ' TM1 Damaged 100x100';
         is $cgi->param('service_code'), $comment->problem->category;
 
