@@ -39,15 +39,11 @@ sub lookup_subscription_for_uprn {
     my ($self, $uprn) = @_;
 
     my $sub = {
-        row => undef,
-
-        email => undef,
         cost => undef,
         end_date => undef,
         customer_external_ref => undef,
         bins_count => undef,
     };
-
 
     my ( $customer, $contract );
 
@@ -275,7 +271,9 @@ sub waste_setup_direct_debit {
 
     # Lookup existing customer and contract
     my $i = $self->get_dd_integration;
-    my $customer = $i->get_customer_by_customer_ref($email);
+
+    # TODO Are we ever going to have an existing customer for a new report ID?
+    my $customer = $i->get_customer_by_customer_ref( $report->id );
 
     if (!$customer) {
         my $customer_data = {

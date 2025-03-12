@@ -53,4 +53,37 @@ sub waste_get_next_dd_day {
     return $payment_date;
 }
 
+sub waste_check_existing_dd {
+    my ( $self, $p ) = @_;
+
+    my $c = $self->{c};
+    my $i = $self->get_dd_integration;
+
+    my $customer_ref = $p->id;
+    my $customer = $i->get_customer_by_customer_ref($customer_ref)
+        || $i->get_customer_by_customer_ref( $p->user->email );
+
+    my $customer_id = $customer->{Id};
+
+    if ($customer_id) {
+        my $contracts = $i->get_contracts($customer_id);
+
+        # TODO Order by start date descending, rather than just getting
+        # the first contract? Will customer ever have more than one?
+
+        if ($contracts && @$contracts) {
+            my $contract = $contracts->[0];
+
+            # According to
+            # https://api-docs-ddcms-v3.accesspaysuite.com/#tag/Contract-Querying-and-Creation/paths/~1client~1{clientCode}~1customer~1{customerId}~1contract/post
+            # contracts either have a status of 'Inactive' or 'Active'
+            if ( $contract->{Status} eq 'Inactive' ) {
+                $c->stash->{direct_debit_status} = 'pending';
+            } else {
+                $c->stash->{direct_debit_status} = 'active';
+            }
+        }
+    }
+}
+
 1;

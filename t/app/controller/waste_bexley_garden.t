@@ -1642,6 +1642,287 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
         is $report->state, 'confirmed', 'Report is confirmed';
     };
+
+    subtest 'Bin days page' => sub {
+        subtest 'Garden sub with credit card payment' => sub {
+            $mech->delete_problems_for_body($body->id);
+            set_fixed_time('2024-02-01T00:00:00Z');
+            default_mocks();
+
+            my ($cc_report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Garden Subscription - New',
+                {   category => 'Garden Subscription',
+                    title    => 'Garden Subscription - New',
+                    external_id => 'Agile-CONTRACT_123',
+                },
+            );
+            $cc_report->set_extra_fields(
+                { name => 'uprn', value => 10001 },
+                { name => 'payment_method', value => 'credit_card' },
+            );
+            $cc_report->update;
+
+            subtest 'No Agile or Whitespace data' => sub {
+                $mech->get_ok('/waste/10001');
+                like $mech->text,
+                    qr/You do not have a Garden waste collection/,
+                    '"no garden waste" message shown';
+            };
+
+            subtest 'Agile data, but no Whitespace data' => sub {
+                $agile_mock->mock( 'CustomerSearch', sub { {
+                    Customers => [
+                        {
+                            CustomerExternalReference => 'CUSTOMER_123',
+                            CustomertStatus => 'ACTIVATED',
+                            ServiceContracts => [
+                                {
+                                    EndDate => '01/02/2025 00:00',
+                                    Reference => 'CONTRACT_123',
+                                    WasteContainerQuantity => 1,
+                                    ServiceContractStatus => 'ACTIVE',
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                },
+                            ],
+                        },
+                    ],
+                } } );
+
+                $mech->get_ok('/waste/10001');
+# FIXME We shouldn't show 'pending' for CC subscription with Agile data?
+                like $mech->text,
+                    qr/You have a pending garden subscription/,
+                    'pending subscription message shown';
+                like $mech->text,
+                    qr/Frequency.*Pending/,
+                    'garden waste shown with pending Whitespace values';
+                like $mech->text,
+                    qr/100\.00 per year \(1 bin\)/,
+                    'garden waste shown with Agile values';
+            };
+
+            subtest 'Whitespace data, but no Agile data' => sub {
+                default_mocks();
+
+                $whitespace_mock->mock(
+                    'GetSiteCollections',
+                    sub {
+                        [   {   SiteServiceID          => 1,
+                                ServiceItemDescription => 'Garden waste',
+                                ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                                ServiceName          => 'Brown Wheelie Bin',
+                                NextCollectionDate   => '2024-02-07T00:00:00',
+                                SiteServiceValidFrom => '2024-01-01T00:00:00',
+                                SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                                RoundSchedule => 'RND-1 Mon',
+                            }
+                        ];
+                    }
+                );
+
+# TODO Garden waste should not show at all
+                $mech->get_ok('/waste/10001');
+                like $mech->text,
+                    qr/Frequency.*Weekly/,
+                    'garden waste shown with Whitespace values';
+                like $mech->text,
+                    qr/0\.00 per year \( bins\)/,
+                    'garden waste shown with empty Agile values';
+            };
+
+            subtest 'Agile and Whitespace data' => sub {
+                $agile_mock->mock( 'CustomerSearch', sub { {
+                    Customers => [
+                        {
+                            CustomerExternalReference => 'CUSTOMER_123',
+                            CustomertStatus => 'ACTIVATED',
+                            ServiceContracts => [
+                                {
+                                    EndDate => '01/02/2025 00:00',
+                                    Reference => 'CONTRACT_123',
+                                    WasteContainerQuantity => 1,
+                                    ServiceContractStatus => 'ACTIVE',
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                },
+                            ],
+                        },
+                    ],
+                } } );
+
+                $mech->get_ok('/waste/10001');
+                like $mech->text,
+                    qr/Frequency.*Weekly/,
+                    'garden waste shown with Whitespace values';
+                like $mech->text,
+                    qr/100\.00 per year \(1 bin\)/,
+                    'garden waste shown with Agile values';
+                unlike $mech->text,
+                    qr/Your subscription is soon due for renewal/,
+                    'renewal warning not shown';
+            };
+
+            subtest 'Due for renewal' => sub {
+                set_fixed_time('2025-01-01T00:00:00Z');
+
+                $mech->get_ok('/waste/10001');
+                like $mech->text,
+                    qr/Your subscription is soon due for renewal/,
+                    'renewal warning shown';
+                like $mech->text,
+                    qr/Avoid disruption to your service/,
+                    'default message shown';
+                like $mech->content,
+                    qr/value="Renew subscription today"/,
+                    'renewal button shown';
+                like $mech->content,
+                    qr/Renew your brown wheelie bin subscription/,
+                    'renewal link shown';
+            };
+
+            subtest 'Renewal overdue' => sub {
+                set_fixed_time('2025-03-01T00:00:00Z');
+
+                $mech->get_ok('/waste/10001');
+                unlike $mech->text,
+                    qr/Your subscription is soon due for renewal/,
+                    'renewal warning not shown';
+                like $mech->content,
+                    qr/subscription overdue/,
+                    'overdue message shown';
+                like $mech->content,
+                    qr/Renew your brown wheelie bin subscription/,
+                    'renewal link still shown';
+            };
+        };
+
+        subtest 'Garden sub with direct debit payment' => sub {
+            $mech->delete_problems_for_body($body->id);
+            set_fixed_time('2024-02-01T00:00:00Z');
+            default_mocks();
+
+            my ($cc_report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Garden Subscription - New',
+                {   category => 'Garden Subscription',
+                    title    => 'Garden Subscription - New',
+                    external_id => 'Agile-CONTRACT_123',
+                },
+            );
+            $cc_report->set_extra_fields(
+                { name => 'uprn', value => 10001 },
+                { name => 'payment_method', value => 'direct_debit' },
+            );
+            $cc_report->update;
+
+            $agile_mock->mock( 'CustomerSearch', sub { {
+                Customers => [
+                    {
+                        CustomerExternalReference => 'CUSTOMER_123',
+                        CustomertStatus => 'ACTIVATED',
+                        ServiceContracts => [
+                            {
+                                EndDate => '01/02/2025 00:00',
+                                Reference => 'CONTRACT_123',
+                                WasteContainerQuantity => 1,
+                                ServiceContractStatus => 'ACTIVE',
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                            },
+                        ],
+                    },
+                ],
+            } } );
+
+            $whitespace_mock->mock(
+                'GetSiteCollections',
+                sub {
+                    [   {   SiteServiceID          => 1,
+                            ServiceItemDescription => 'Garden waste',
+                            ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                            ServiceName          => 'Brown Wheelie Bin',
+                            NextCollectionDate   => '2024-02-07T00:00:00',
+                            SiteServiceValidFrom => '2024-01-01T00:00:00',
+                            SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                            RoundSchedule => 'RND-1 Mon',
+                        }
+                    ];
+                }
+            );
+
+            my $access_mock
+                = Test::MockModule->new('Integrations::AccessPaySuite');
+            $access_mock->mock(
+                get_customer_by_customer_ref => sub { { Id => 123 } },
+            );
+
+            subtest 'DD pending' => sub {
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Inactive' } ] },
+                );
+
+                $mech->get_ok('/waste/10001');
+                like $mech->text,
+                    qr/This property has a pending direct debit subscription/,
+                    'pending DD message shown';
+            };
+
+            subtest 'DD active' => sub {
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Active' } ] },
+                );
+
+                $mech->get_ok('/waste/10001');
+                like $mech->text,
+                    qr/This property has an existing direct debit subscription which will renew automatically/,
+                    'active DD message shown';
+            };
+
+# TODO
+            # subtest 'DD payment failed' => sub {
+
+            # };
+
+            subtest 'Due for renewal' => sub {
+                set_fixed_time('2025-01-01T00:00:00Z');
+
+                $mech->get_ok('/waste/10001');
+                like $mech->text,
+                    qr/Your subscription is soon due for renewal/,
+                    'renewal warning shown';
+                like $mech->text,
+                    qr/This property has an existing direct debit subscription which will renew automatically/,
+                    'active DD message shown';
+                unlike $mech->content,
+                    qr/value="Renew subscription today"/,
+                    'renewal button not shown';
+                unlike $mech->content,
+                    qr/Renew your brown wheelie bin subscription/,
+                    'renewal link not shown';
+            };
+
+            subtest 'Renewal overdue' => sub {
+                set_fixed_time('2025-03-01T00:00:00Z');
+
+                $mech->get_ok('/waste/10001');
+                unlike $mech->text,
+                    qr/Your subscription is soon due for renewal/,
+                    'renewal warning not shown';
+                like $mech->content,
+                    qr/subscription overdue/,
+                    'overdue message shown';
+                unlike $mech->content,
+                    qr/Renew your brown wheelie bin subscription/,
+                    'renewal link not shown';
+                like $mech->text,
+                    qr/This property has an existing direct debit subscription which will renew automatically/,
+                    'active DD message still shown';
+            };
+        };
+    };
 };
 
 sub get_report_from_redirect {
