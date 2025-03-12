@@ -86,6 +86,7 @@ lock_hash(%SERVICE_IDS);
 
 my %EVENT_TYPE_IDS = (
     missed => 3145,
+    missed_assisted => 3146,
     request => 3129,
     garden_add => 3159,
     garden_amend => 3163,
@@ -287,6 +288,7 @@ sub waste_service_containers {
 sub missed_event_types { return {
     $EVENT_TYPE_IDS{request} => 'request',
     $EVENT_TYPE_IDS{missed} => 'missed',
+    $EVENT_TYPE_IDS{missed_assisted} => 'missed',
     $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
 
@@ -309,6 +311,9 @@ sub waste_munge_report_data {
         $data->{category} = 'Request additional collection';
         $data->{title} = "Request additional $service collection";
     } else {
+        if ($c->stash->{assisted_collection}) {
+            $data->{category} = 'Report missed assisted collection';
+        }
         $data->{title} = "Report missed $service";
     }
     $data->{detail} = "$data->{title}\n\n$address";
