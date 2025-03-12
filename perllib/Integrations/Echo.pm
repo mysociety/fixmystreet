@@ -469,9 +469,32 @@ sub ReserveAvailableSlotsForEvent {
     $from = $parser->parse_datetime($from);
     $to = $parser->parse_datetime($to);
 
+    my @data;
+    if ($event_type == 3130) {
+        push @data, Data => [
+            # Non-pop bookcase
+            { ExtensibleDatum => ixhash(
+                ChildData => { ExtensibleDatum => [ ixhash(
+                    DatatypeId => 57230,
+                    Value => 1842,
+                ) ] },
+                DatatypeId => 57229,
+            ) },
+            # Armchair - POP
+            { ExtensibleDatum => ixhash(
+                ChildData => { ExtensibleDatum => [ ixhash(
+                    DatatypeId => 57230,
+                    Value => 1839,
+                ) ] },
+                DatatypeId => 57229,
+            ) }
+        ];
+    }
+
     my @req = ('ReserveAvailableSlotsForEvent',
         event => ixhash(
             Guid => $guid,
+            @data,
             EventObjects => { EventObject => ixhash(
                 EventObjectType => 'Source',
                 ObjectRef => _id_ref($property, 'PointAddress'),
@@ -489,7 +512,25 @@ sub ReserveAvailableSlotsForEvent {
     return [] unless ref $res eq 'HASH';
 
     $self->log($res);
-    return force_arrayref($res->{ReservedTaskInfo}{ReservedSlots}, 'ReservedSlot');
+    my $tasks = force_arrayref($res, 'ReservedTaskInfo');
+    my %data;
+    foreach (@$tasks) {
+        my $slots = Integrations::Echo::force_arrayref($_->{ReservedSlots}, 'ReservedSlot');
+        foreach (@$slots) {
+            my $datetime = $_->{StartDate}{DateTime};
+            push @{$data{$datetime}}, $_;
+        }
+    }
+
+    my @combined;
+    foreach (sort keys %data) {
+        my $slots = $data{$_};
+        if (@$slots == @$tasks) { # All matching dates
+            $slots->[0]{Reference} = join('::', map { $_->{Reference} } @$slots);
+            push @combined, $slots->[0];
+        }
+    }
+    return \@combined;
 }
 
 sub CancelReservedSlotsForEvent {
