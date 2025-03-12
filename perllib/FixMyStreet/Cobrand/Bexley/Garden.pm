@@ -75,33 +75,50 @@ sub lookup_subscription_for_uprn {
     my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
     $sub->{end_date} = $parser->parse_datetime( $contract->{EndDate} );
     if ($contract->{ServiceContractStatus} eq 'RENEWALDUE') {
-        $sub->{renewal_due} = 1;
+        $sub->{has_been_renewed} = 1;
     }
 
     $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
 
-    # Property is now ineligible for GGW signup as we know they have a sub
-    $self->{c}->stash->{property}->{garden_signup_eligible} = 0;
-
     return $sub;
 }
+
+=head2 garden_current_subscription
+
+Look up the garden subscription in Agile. Note if there is one but no
+Whitespace service, this fakes a new Whitespace service in the services list.
+If there isn't one and there is a Whitespace service, this removes it. This
+caches the results on first call to be used by future calls (which don't pass
+in services).
+
+=cut
 
 sub garden_current_subscription {
     my ($self, $services) = @_;
 
-    my $current = $self->{c}->stash->{property}{garden_current_subscription};
+    my $property = $self->{c}->stash->{property};
+
+    my $current = $property->{garden_current_subscription};
     return $current if $current;
 
-    my $uprn = $self->{c}->stash->{property}{uprn};
+    my $uprn = $property->{uprn};
     return undef unless $uprn;
 
     my $sub = $self->lookup_subscription_for_uprn($uprn);
-    return undef unless $sub;
+    unless ($sub) {
+        my $service_ids = { map { $_->{service_id} => $_ } @$services };
+        for my $garden_id ( @{ $self->garden_service_ids } ) {
+            if ($service_ids->{$_}) {
+                @$services = grep { $_->{service_id} != $garden_id } @$services;
+            }
+        }
+        return undef;
+    }
 
-    my $garden_due = $sub->{renewal_due} ? 0 : $self->waste_sub_due( $sub->{end_date} );
-    my $garden_overdue = $sub->{renewal_due} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
+    my $garden_due = $sub->{has_been_renewed} ? 0 : $self->waste_sub_due( $sub->{end_date} );
+    my $garden_overdue = $sub->{has_been_renewed} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
 
     # Agile says there is a subscription; now get service data from
     # Whitespace
@@ -141,8 +158,7 @@ sub garden_current_subscription {
         next => { pending => 1 },
     };
     push @$services, $service;
-    $self->{c}->stash->{property}{garden_current_subscription} = $service;
-    $self->{c}->stash->{property}{has_garden_subscription} = 1;
+    $property->{garden_current_subscription} = $service;
     return $service;
 }
 
