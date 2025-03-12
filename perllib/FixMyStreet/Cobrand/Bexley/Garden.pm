@@ -61,7 +61,7 @@ sub lookup_subscription_for_uprn {
         next unless $contracts;
         $customer = $_;
         for ( @$contracts ) {
-            next unless $_->{ServiceContractStatus} =~ /(ACTIVE|PRECONTRACT|RENEWALDUE)/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE
+            next unless $_->{ServiceContractStatus} =~ /^(ACTIVE|PRECONTRACT|RENEWALDUE)$/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE
             $contract = $_;
             # use the first matching customer/contract
             last OUTER if $customer && $contract;
@@ -380,5 +380,18 @@ sub garden_waste_first_bin_discount_applies {
 }
 
 sub waste_staff_choose_payment_method { 1 }
+
+=head2 waste_get_paye_narrative
+
+Return a custom narrative for Bexley to use in paye.net integration
+
+=cut
+
+sub waste_get_paye_narrative {
+    my ($self, $p) = @_;
+    my $uprn = $p->get_extra_field_value('uprn');
+    my $id = $p->id;
+    return "Garden Waste Service Payment - Reference: $id Contract: $uprn";
+}
 
 1;

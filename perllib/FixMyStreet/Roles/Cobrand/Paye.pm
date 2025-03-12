@@ -59,7 +59,7 @@ around waste_cc_get_redirect_url => sub {
                 lineId => $self->waste_cc_payment_admin_fee_line_item_ref($p),
             };
         }
-        my $result = $payment->pay({
+        my %args = (
             returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
             backUrl => $backUrl,
             ref => $self->waste_cc_payment_sale_ref($p),
@@ -74,7 +74,14 @@ around waste_cc_get_redirect_url => sub {
             postcode => pop @parts,
             items => \@items,
             staff => $c->stash->{staff_payments_allowed} eq 'cnp',
-        });
+        );
+
+        # If the cobrand provides a custom narrative method, use it
+        if ($self->can('waste_get_paye_narrative')) {
+            $args{narrative} = $self->waste_get_paye_narrative($p);
+        }
+
+        my $result = $payment->pay(\%args);
 
         if ( $result ) {
             $c->stash->{xml} = $result;

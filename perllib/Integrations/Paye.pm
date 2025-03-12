@@ -144,7 +144,7 @@ sub pay {
                 'reference' => $_->{reference},
                 'amountInMinorUnits' => $_->{amount},
                 'additionalInfo' => ixhash(
-                    'narrative' => $args->{uprn},
+                    'narrative' => $args->{narrative} || $args->{uprn},
                     'additionalReference' => $_->{lineId},
                 ),
                 'accountDetails' => {
