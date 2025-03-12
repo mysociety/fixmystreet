@@ -808,34 +808,71 @@ FixMyStreet::override_config {
         my (undef, $guid) = @_;
         ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
     } );
-    $echo->mock('ReserveAvailableSlotsForEvent', sub {
-        my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
-        is $service, 960;
-        is $event_type, 3130;
+    $echo->redefine( call => sub {
+        is $_[1], 'ReserveAvailableSlotsForEvent';
+        is $_[2], 'event';
+        is $_[3]->{EventTypeId}, 3130;
+        is $_[3]->{ServiceId}, 960;
+        is $_[3]->{Data}[0]{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value}, 1842;
+        # Dig down to the property ID
+        my $property = $_[3]->{EventObjects}{EventObject}{ObjectRef}{Value}[0]{'msArray:anyType'}->value;
         like $property, qr/1234[56]/;
         if ($property == 12345) {
-            is $start, '2023-07-07';
+            is $_[5]{From}{'dataContract:DateTime'}, '2023-07-07T00:00:00Z';
         } elsif ($property == 12346) {
-            is $start, '2023-07-08';
+            is $_[5]{From}{'dataContract:DateTime'}, '2023-07-08T00:00:00Z';
         }
-        return [
-        {
-            StartDate => { DateTime => '2023-07-01T00:00:00Z' },
-            EndDate => { DateTime => '2023-07-02T00:00:00Z' },
-            Expiry => { DateTime => '2023-06-25T10:10:00Z' },
-            Reference => 'reserve1==',
-        }, {
-            StartDate => { DateTime => '2023-07-08T00:00:00Z' },
-            EndDate => { DateTime => '2023-07-09T00:00:00Z' },
-            Expiry => { DateTime => '2023-06-25T10:10:00Z' },
-            Reference => 'reserve2==',
-        }, {
-            StartDate => { DateTime => '2023-07-15T00:00:00Z' },
-            EndDate => { DateTime => '2023-07-16T00:00:00Z' },
-            Expiry => { DateTime => '2023-06-25T10:10:00Z' },
-            Reference => 'reserve3==',
-        },
-    ] });
+        return {
+            ReservedTaskInfo => [
+                {
+                    Description => 'TaskType_1234',
+                    ReservedSlots => {
+                        ReservedSlot => [
+                            {
+                                StartDate => { DateTime => '2023-07-01T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-02T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve1==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve2==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-15T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-16T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve3==',
+                            },
+                        ]
+                    }
+                },
+                {
+                    Description => 'TaskType_5678',
+                    ReservedSlots => {
+                        ReservedSlot => [
+                            {
+                                StartDate => { DateTime => '2023-07-01T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-02T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve4==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve5==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-22T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-16T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve6==',
+                            },
+                        ]
+                    }
+                }
+            ]
+        };
+    });
 
     $echo->mock('GetPointAddress', sub {
         my ($self, $id) = @_;
@@ -886,8 +923,9 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/bulky');
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('2023-07-08T00:00:00;reserve2==::reserve5==;2023-06-25T10:10:00');
         $mech->submit_form_ok(
-            { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve4==;2023-06-25T10:20:00' } }
+            { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve2==::reserve5==;2023-06-25T10:10:00' } }
         );
         $mech->submit_form_ok(
             {   with_fields => {
@@ -902,6 +940,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('payment_method'), 'csc';
+        is $report->get_extra_field_value('reservation'), 'reserve2==::reserve5==';
         $mech->submit_form_ok({ with_fields => { payenet_code => '54321' } });
         my $email = $mech->get_email;
         like $email->header('Subject'), qr/Your bulky waste collection - reference LBS/, "Confirmation booking email sent after staff payment process";
