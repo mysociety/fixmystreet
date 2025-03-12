@@ -903,7 +903,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription', 'Shows success message for valid submission');
     };
 
-    subtest 'Test direct debit submission flow new customer' => sub {
+    subtest 'Test direct debit submission flow' => sub {
         $mech->clear_emails_ok;
         FixMyStreet::DB->resultset("Problem")->delete_all;
 
@@ -1001,99 +1001,6 @@ FixMyStreet::override_config {
             'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
         is $report->get_extra_field_value('direct_debit_start_date'),
             '28/01/2024', 'Start date set as extra field';
-
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $email_body = $mech->get_text_body_from_email($emails[1]);
-        like $email_body, qr/Number of bin subscriptions: 1/;
-        like $email_body, qr/Bins to be delivered: 1/;
-        like $email_body, qr/Total:.*?70/;
-        $mech->clear_emails_ok;
-    };
-
-    subtest 'Test direct debit submission flow existing customer' => sub {
-        $mech->clear_emails_ok;
-        FixMyStreet::DB->resultset("Problem")->delete_all;
-
-        set_fixed_time('2024-01-17T17:00:00Z');
-
-        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
-        my ($customer_params, $contract_params);
-        $access_mock->mock('create_customer', sub {
-            my ($self, $params) = @_;
-            $customer_params = $params;
-            return { Id => 'CUSTOMER123' };
-        });
-        $access_mock->mock('create_contract', sub {
-            my ($self, $customer_id, $params) = @_;
-            is $customer_id, 'CUSTOMER456', 'Correct customer ID';
-            $contract_params = $params;
-            return { Id => 'CONTRACT123', DirectDebitRef => 'APIRTM-DEFGHIJ1KL' };
-        });
-        $access_mock->mock('get_customer_by_customer_ref', sub {
-            return { Id => 'CUSTOMER456' };
-        });
-
-        $mech->get_ok('/waste/12345/garden');
-        $mech->submit_form_ok({ form_number => 1 });
-        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
-        $mech->submit_form_ok({ with_fields => {
-            current_bins => 0,
-            bins_wanted => 1,
-            payment_method => 'direct_debit',
-            name => 'Test McTest',
-            email => 'test@example.net'
-        }});
-
-        # Submit bank details form
-        $mech->submit_form_ok({ with_fields => {
-            name_title => 'Mr',
-            first_name => 'Test',
-            surname => 'McTest',
-            address1 => '1 Test Street',
-            address2 => 'Test Area',
-            post_code => 'DA1 1AA',
-            account_holder => 'Test McTest',
-            account_number => '12345678',
-            sort_code => '12-34-56'
-        }});
-
-        $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
-
-        $mech->content_contains('Test McTest');
-        $mech->content_contains('£70.00');
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-
-        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        ok $report, "Found the report";
-        my $id = $report->id;
-
-        # Check customer creation parameters
-        ok !$customer_params, 'No customer creation parameters';
-
-        # Check contract creation parameters
-        is_deeply $contract_params, {
-            scheduleId => 123,
-            isGiftAid => 0,
-            terminationType => 'Until further notice',
-            atTheEnd => 'Switch to further notice',
-            paymentDayInMonth => 28,
-            paymentMonthInYear => 2,
-            amount => '70.00',
-            start => '2024-02-28T17:00:00.000',
-            additionalReference => "BEX-$id-10001"
-        }, 'Contract parameters are correct';
-
-        $mech->content_contains('Your Direct Debit has been set up successfully');
-        $mech->content_contains('Direct Debit mandate');
-
-        is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER456', 'Correct customer ID';
-        is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
-        is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
-        is $report->get_extra_field_value('direct_debit_reference'),
-            'APIRTM-DEFGHIJ1KL', 'Reference set as extra field';
-        is $report->get_extra_field_value('direct_debit_start_date'),
-            '28/02/2024', 'Start date set as extra field';
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -1853,6 +1760,7 @@ FixMyStreet::override_config {
                 { name => 'uprn', value => 10001 },
                 { name => 'payment_method', value => 'direct_debit' },
             );
+            $cc_report->set_extra_metadata(direct_debit_customer_id => 'DD_CUSTOMER_123');
             $cc_report->update;
 
             $agile_mock->mock( 'CustomerSearch', sub { {
@@ -1892,13 +1800,13 @@ FixMyStreet::override_config {
 
             my $access_mock
                 = Test::MockModule->new('Integrations::AccessPaySuite');
-            $access_mock->mock(
-                get_customer_by_customer_ref => sub { { Id => 123 } },
-            );
 
             subtest 'DD pending' => sub {
                 $access_mock->mock(
-                    get_contracts => sub { [ { Status => 'Inactive' } ] },
+                    get_contracts => sub {
+                        is $_[1], 'DD_CUSTOMER_123', 'correct customer ID';
+                        return [ { Status => 'Inactive' } ];
+                    },
                 );
 
                 $mech->get_ok('/waste/10001');

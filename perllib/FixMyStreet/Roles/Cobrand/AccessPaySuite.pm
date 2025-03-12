@@ -59,11 +59,7 @@ sub waste_check_existing_dd {
     my $c = $self->{c};
     my $i = $self->get_dd_integration;
 
-    my $customer_ref = $p->id;
-    my $customer = $i->get_customer_by_customer_ref($customer_ref)
-        || $i->get_customer_by_customer_ref( $p->user->email );
-
-    my $customer_id = $customer->{Id};
+    my $customer_id = $p->get_extra_metadata('direct_debit_customer_id');
 
     if ($customer_id) {
         my $contracts = $i->get_contracts($customer_id);

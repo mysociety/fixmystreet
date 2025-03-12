@@ -269,33 +269,24 @@ sub waste_setup_direct_debit {
 
     my $data = $c->stash->{form_data};
 
-    # Lookup existing customer and contract
     my $i = $self->get_dd_integration;
 
-    # TODO Are we ever going to have an existing customer for a new report ID?
-    my $customer = $i->get_customer_by_customer_ref( $report->id );
-
-    if (!$customer) {
-        my $customer_data = {
-            customerRef => $report->id,
-            email => $email,
-            title => $data->{name_title},
-            firstName => $data->{first_name},
-            surname => $data->{surname},
-            postCode => $data->{post_code},
-            accountNumber => $data->{account_number},
-            bankSortCode => $data->{sort_code},
-            accountHolderName => $data->{account_holder},
-            line1 => $data->{address1},
-            line2 => $data->{address2},
-            line3 => $data->{address3},
-            line4 => $data->{address4},
-        };
-        $customer = $i->create_customer($customer_data);
-    } else {
-        # XXX do we need to check that the existing customer's details (name/address/bank/etc)
-        # match what they've provided to us? If they don't match, what should we do?
-    }
+    my $customer_data = {
+        customerRef => $report->id,
+        email => $email,
+        title => $data->{name_title},
+        firstName => $data->{first_name},
+        surname => $data->{surname},
+        postCode => $data->{post_code},
+        accountNumber => $data->{account_number},
+        bankSortCode => $data->{sort_code},
+        accountHolderName => $data->{account_holder},
+        line1 => $data->{address1},
+        line2 => $data->{address2},
+        line3 => $data->{address3},
+        line4 => $data->{address4},
+    };
+    my $customer = $i->create_customer($customer_data);
 
     my $contract_data = {
         scheduleId => $c->stash->{payment_details}->{dd_schedule_id},
