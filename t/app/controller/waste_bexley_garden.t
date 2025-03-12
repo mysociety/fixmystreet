@@ -67,7 +67,7 @@ sub default_mocks {
             ServiceItemName => 'RES-180',
             ServiceName          => 'Green Wheelie Bin',
             NextCollectionDate   => '2024-02-07T00:00:00',
-            SiteServiceValidFrom => '2024-01-01T00:00:00',
+            SiteServiceValidFrom => '2000-01-01T00:00:00',
             SiteServiceValidTo   => '0001-01-01T00:00:00',
             RoundSchedule => 'RND-1 Mon',
         } ];
@@ -1602,6 +1602,9 @@ FixMyStreet::override_config {
                 {   category => 'Garden Subscription',
                     title    => 'Garden Subscription - New',
                     external_id => 'Agile-CONTRACT_123',
+                    # 20+ days ago, to stop this report from being picked up as
+                    # a 'pending_subscription'
+                    created => '2024-01-01T00:00:00Z',
                 },
             );
             $cc_report->set_extra_fields(
@@ -1637,10 +1640,6 @@ FixMyStreet::override_config {
                 } } );
 
                 $mech->get_ok('/waste/10001');
-# FIXME We shouldn't show 'pending' for CC subscription with Agile data?
-                like $mech->text,
-                    qr/You have a pending garden subscription/,
-                    'pending subscription message shown';
                 like $mech->text,
                     qr/Frequency.*Pending/,
                     'garden waste shown with pending Whitespace values';
@@ -1650,6 +1649,9 @@ FixMyStreet::override_config {
                 like $mech->text,
                     qr/Payment methodDebit or Credit Card/,
                     'payment method displayed';
+                like $mech->text,
+                    qr/Manage garden waste bins/,
+                    'management link shown';
             };
 
             subtest 'Whitespace data, but no Agile data' => sub {
@@ -1659,8 +1661,20 @@ FixMyStreet::override_config {
                     'GetSiteCollections',
                     sub {
                         [   {   SiteServiceID          => 1,
+                                ServiceItemDescription =>
+                                    'Non-recyclable waste',
+                                ServiceItemName      => 'RES-180',
+                                ServiceName          => 'Green Wheelie Bin',
+                                NextCollectionDate   => '2024-02-07T00:00:00',
+                                SiteServiceValidFrom => '2024-01-01T00:00:00',
+                                SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                                RoundSchedule        => 'RND-1 Mon',
+                            },
+                            {   SiteServiceID          => 2,
                                 ServiceItemDescription => 'Garden waste',
-                                ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                                ServiceItemName        =>
+                                    'GA-140',    # Garden 140 ltr Bin
                                 ServiceName          => 'Brown Wheelie Bin',
                                 NextCollectionDate   => '2024-02-07T00:00:00',
                                 SiteServiceValidFrom => '2024-01-01T00:00:00',
@@ -1672,14 +1686,13 @@ FixMyStreet::override_config {
                     }
                 );
 
-# TODO Garden waste should not show at all
                 $mech->get_ok('/waste/10001');
                 like $mech->text,
-                    qr/Frequency.*Weekly/,
-                    'garden waste shown with Whitespace values';
+                    qr/Status: You do not have a Garden waste collection/,
+                    '"no garden waste" message shown';
                 like $mech->text,
-                    qr/0\.00 per year \( bins\)/,
-                    'garden waste shown with empty Agile values';
+                    qr/Subscribe to garden waste collection service/,
+                    'garden subscription link shown';
             };
 
             subtest 'Agile and Whitespace data' => sub {
@@ -1790,8 +1803,20 @@ FixMyStreet::override_config {
                 'GetSiteCollections',
                 sub {
                     [   {   SiteServiceID          => 1,
+                            ServiceItemDescription =>
+                                'Non-recyclable waste',
+                            ServiceItemName      => 'RES-180',
+                            ServiceName          => 'Green Wheelie Bin',
+                            NextCollectionDate   => '2024-02-07T00:00:00',
+                            SiteServiceValidFrom => '2024-01-01T00:00:00',
+                            SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                            RoundSchedule        => 'RND-1 Mon',
+                        },
+                        {   SiteServiceID          => 2,
                             ServiceItemDescription => 'Garden waste',
-                            ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                            ServiceItemName        =>
+                                'GA-140',    # Garden 140 ltr Bin
                             ServiceName          => 'Brown Wheelie Bin',
                             NextCollectionDate   => '2024-02-07T00:00:00',
                             SiteServiceValidFrom => '2024-01-01T00:00:00',

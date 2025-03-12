@@ -88,6 +88,18 @@ sub lookup_subscription_for_uprn {
     return $sub;
 }
 
+=head2 garden_current_subscription
+
+Look up the garden subscription in Agile.
+Note if there is an Agile subscription but no Whitespace service, this fakes a
+new Whitespace service in the services list.
+If there isn't an Agile subscription and there is a Whitespace service,
+this removes the Whitespace service.
+This caches the results on first call to be used by future calls (which don't
+pass in services).
+
+=cut
+
 sub garden_current_subscription {
     my ($self, $services) = @_;
 
@@ -98,7 +110,14 @@ sub garden_current_subscription {
     return undef unless $uprn;
 
     my $sub = $self->lookup_subscription_for_uprn($uprn);
-    return undef unless $sub;
+    unless ($sub) {
+        # No Agile data, so remove Whitespace service
+        for my $garden_id ( @{ $self->garden_service_ids } ) {
+            @$services = grep { $_->{service_id} ne $garden_id } @$services;
+        }
+
+        return undef;
+    }
 
     my $garden_due = $sub->{renewal_due} ? 0 : $self->waste_sub_due( $sub->{end_date} );
     my $garden_overdue = $sub->{renewal_due} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
@@ -141,8 +160,7 @@ sub garden_current_subscription {
         next => { pending => 1 },
     };
     push @$services, $service;
-    $self->{c}->stash->{property}{garden_current_subscription} = $service;
-    $self->{c}->stash->{property}{has_garden_subscription} = 1;
+
     return $service;
 }
 
