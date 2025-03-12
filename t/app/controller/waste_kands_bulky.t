@@ -90,29 +90,68 @@ FixMyStreet::override_config {
             ]
         }
     );
-    $echo->mock('ReserveAvailableSlotsForEvent', sub {
-        my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
-        is $service, 986;
-        is $event_type, 3130;
-        is $property, 12345;
-        return [
-        {
-            StartDate => { DateTime => '2023-07-01T00:00:00Z' },
-            EndDate => { DateTime => '2023-07-02T00:00:00Z' },
-            Expiry => { DateTime => '2023-06-25T10:10:00Z' },
-            Reference => 'reserve1==',
-        }, {
-            StartDate => { DateTime => '2023-07-08T00:00:00Z' },
-            EndDate => { DateTime => '2023-07-09T00:00:00Z' },
-            Expiry => { DateTime => '2023-06-25T10:10:00Z' },
-            Reference => 'reserve2==',
-        }, {
-            StartDate => { DateTime => '2023-07-15T00:00:00Z' },
-            EndDate => { DateTime => '2023-07-16T00:00:00Z' },
-            Expiry => { DateTime => '2023-06-25T10:10:00Z' },
-            Reference => 'reserve3==',
-        },
-    ] });
+
+    # Redefine call for this one as we want to test the rest of the
+    # ReserveAvailableSlotsForEvent function
+    $echo->redefine( call => sub {
+        is $_[1], 'ReserveAvailableSlotsForEvent';
+        is $_[2], 'event';
+        is $_[3]->{EventTypeId}, 3130;
+        is $_[3]->{ServiceId}, 986;
+        is $_[3]->{Data}[0]{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value}, 1842;
+        # Dig down to the property ID
+        is $_[3]->{EventObjects}{EventObject}{ObjectRef}{Value}[0]{'msArray:anyType'}->value, 12345;
+        return {
+            ReservedTaskInfo => [
+                {
+                    Description => 'TaskType_1234',
+                    ReservedSlots => {
+                        ReservedSlot => [
+                            {
+                                StartDate => { DateTime => '2023-07-01T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-02T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve1==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve2==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-15T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-16T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve3==',
+                            },
+                        ]
+                    }
+                },
+                {
+                    Description => 'TaskType_5678',
+                    ReservedSlots => {
+                        ReservedSlot => [
+                            {
+                                StartDate => { DateTime => '2023-07-01T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-02T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve4==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve5==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-22T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-16T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve6==',
+                            },
+                        ]
+                    }
+                }
+            ]
+        };
+    });
 
     subtest 'Ineligible property' => sub {
         $echo->mock(
@@ -275,8 +314,9 @@ FixMyStreet::override_config {
         $mech->content_contains('placed outside before 6:30am on the collection day.');
         $mech->content_contains('1 July');
         $mech->content_contains('8 July');
+        $mech->content_contains('2023-07-01T00:00:00;reserve1==::reserve4==;2023-06-25T10:10:00');
         $mech->submit_form_ok(
-            { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
+            { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==::reserve4==;2023-06-25T10:10:00' } }
         );
         $mech->content_contains('Select the items that you need us to collect using the');
         $mech->content_contains('You can book the collection of up to eight items');
@@ -335,14 +375,45 @@ FixMyStreet::override_config {
 
         subtest 'Chosen date expired, no matching slot available' => sub {
             set_fixed_time('2023-06-25T10:10:01');
-            $echo->mock( 'ReserveAvailableSlotsForEvent', sub { [
-                {
-                    StartDate => { DateTime => '2023-07-08T00:00:00Z' },
-                    EndDate => { DateTime => '2023-07-09T00:00:00Z' },
-                    Expiry => { DateTime => '2023-06-25T10:20:00Z' },
-                    Reference => 'reserve4==',
-                },
-            ] } );
+            $echo->redefine( call => sub {
+                is $_[1], 'ReserveAvailableSlotsForEvent';
+                is $_[2], 'event';
+                is $_[3]->{EventTypeId}, 3130;
+                is $_[3]->{ServiceId}, 986;
+                is $_[3]->{Data}[0]{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value}, 1842;
+                # Dig down to the property ID
+                is $_[3]->{EventObjects}{EventObject}{ObjectRef}{Value}[0]{'msArray:anyType'}->value, 12345;
+                return {
+                    ReservedTaskInfo => [
+                        {
+                            Description => 'TaskType_1234',
+                            ReservedSlots => {
+                                ReservedSlot => [
+                                    {
+                                        StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                        EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                        Expiry => { DateTime => '2023-06-25T10:20:00Z' },
+                                        Reference => 'reserve7a==',
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            Description => 'TaskType_5678',
+                            ReservedSlots => {
+                                ReservedSlot => [
+                                    {
+                                        StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                        EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                        Expiry => { DateTime => '2023-06-25T10:20:00Z' },
+                                        Reference => 'reserve7b==',
+                                    },
+                                ]
+                            }
+                        }
+                    ]
+                };
+            });
 
             # Submit summary form
             $mech->submit_form_ok( { with_fields => { tandc => 1 } } );
@@ -354,7 +425,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         chosen_date =>
-                            '2023-07-08T00:00:00;reserve4==;2023-06-25T10:20:00'
+                            '2023-07-08T00:00:00;reserve7a==::reserve7b==;2023-06-25T10:20:00'
                     }
                 },
                 'submit new slot selection',
@@ -373,14 +444,45 @@ FixMyStreet::override_config {
 
         subtest 'Chosen date expired, but matching slot is available' => sub {
             set_fixed_time('2023-06-25T10:20:01');
-            $echo->mock( 'ReserveAvailableSlotsForEvent', sub { [
-                {
-                    StartDate => { DateTime => '2023-07-08T00:00:00Z' },
-                    EndDate => { DateTime => '2023-07-09T00:00:00Z' },
-                    Expiry => { DateTime => '2023-06-25T10:30:00Z' },
-                    Reference => 'reserve5==',
-                },
-            ] } );
+            $echo->redefine( call => sub {
+                is $_[1], 'ReserveAvailableSlotsForEvent';
+                is $_[2], 'event';
+                is $_[3]->{EventTypeId}, 3130;
+                is $_[3]->{ServiceId}, 986;
+                is $_[3]->{Data}[0]{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value}, 1842;
+                # Dig down to the property ID
+                is $_[3]->{EventObjects}{EventObject}{ObjectRef}{Value}[0]{'msArray:anyType'}->value, 12345;
+                return {
+                    ReservedTaskInfo => [
+                        {
+                            Description => 'TaskType_1234',
+                            ReservedSlots => {
+                                ReservedSlot => [
+                                    {
+                                        StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                        EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                        Expiry => { DateTime => '2023-06-25T10:30:00Z' },
+                                        Reference => 'reserve8a==',
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            Description => 'TaskType_5678',
+                            ReservedSlots => {
+                                ReservedSlot => [
+                                    {
+                                        StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                        EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                        Expiry => { DateTime => '2023-06-25T10:30:00Z' },
+                                        Reference => 'reserve8b==',
+                                    },
+                                ]
+                            }
+                        }
+                    ]
+                };
+            });
 
             $mech->waste_submit_check({ with_fields => { tandc => 1 } });
         };
@@ -473,7 +575,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('First_Date_Offered_-_Bulky'), '08/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
-            is $report->get_extra_field_value('reservation'), 'reserve5==';
+            is $report->get_extra_field_value('reservation'), 'reserve8a==::reserve8b==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
 
             is $report->name, 'Bob Marge', 'correct name on report';
