@@ -313,8 +313,9 @@ sub open311_post_send {
     return if $row->get_extra_metadata('extra_email_sent');
 
     my $contact = $row->contact->email;
-
+    $contact =~ s/Passthrough-//;
     return unless is_valid_email($contact);
+
     $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
 
     my $sender = FixMyStreet::SendReport::Email->new(

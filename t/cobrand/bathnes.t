@@ -332,6 +332,12 @@ my ($confirm_contact) = $mech->create_contact_ok(
     email => 'NM_FM',
 );
 
+my ($email_contact) = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Replace litter bin',
+    email => 'Passthrough-test@example.org',
+);
+
 FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1 },
     MAPIT_URL => 'http://mapit.uk/',
@@ -351,11 +357,14 @@ FixMyStreet::override_config {
             category => $confirm_contact->category,
         } );
         my ($email_problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
-            category => 'Other', cobrand => 'bathnes', user => $normaluser
+            category => $email_contact->category, cobrand => 'bathnes', user => $normaluser
         });
 
         FixMyStreet::Script::Reports::send();
         is $mech->email_count_is(3), 1, 'Email sent to both contact email and to user for email report, just to user for Confirm report';
+        my @emails = $mech->get_email;
+        my $email = grep { $_->header('To') eq 'test@example.org' } @emails;
+        is $email, 1, "Email address modified to remove Passthrough prefix";
     }
 };
 
