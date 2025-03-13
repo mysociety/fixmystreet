@@ -317,7 +317,7 @@ sub waste_munge_request_data {
             $service_id = $s if $_ eq $id;
         }
     }
-    $c->set_param('service_id', $service_id);
+    $c->set_param('service_id', $service_id) if $service_id;
 
     my ($action_id, $reason_id);
     my $id_to_remove;
@@ -334,6 +334,13 @@ sub waste_munge_request_data {
     } elsif ($reason eq 'more') {
         $action_id = 1; # Deliver
         $reason_id = 9; # Increase capacity
+    } elsif ($reason eq 'collect') {
+        # Triggered from Garden new/renewal with reduction
+        $action_id = 2; # Remove
+        $reason_id = 8; # Remove Containers
+        $quantity = $data->{"removal-$id"};
+        $id_to_remove = $id;
+        $id = undef;
     } elsif ($reason eq 'change_capacity') {
         $action_id = '2::1'; # Remove/Deliver
         if ($id == $CONTAINERS{refuse_140}) {
@@ -362,21 +369,23 @@ sub waste_munge_request_data {
         $data->{title} = "Request replacement $container";
     } elsif ($reason eq 'change_capacity') {
         $data->{title} = "Request exchange for $container";
+    } elsif ($reason eq 'collect') {
+        $data->{title} = "Request $container collection";
     } else {
         $data->{title} = "Request new $container";
     }
     $data->{detail} = $address;
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
-    $data->{detail} .= "\n\n1x $container to deliver";
+    $data->{detail} .= "\n\n1x $container to deliver" if $id;
     if ($id_to_remove) {
         my $container_removed = $c->stash->{containers}{$id_to_remove};
         $data->{detail} .= "\n\n1x $container_removed to collect";
-        $id = $id_to_remove . '::' . $id if $id_to_remove != $id;
+        $id = $id_to_remove . '::' . $id if $id && $id_to_remove != $id;
     }
 
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
-    $c->set_param('Container_Type', $id);
+    $c->set_param('Container_Type', $id || $id_to_remove);
 }
 
 =head2 request_cost

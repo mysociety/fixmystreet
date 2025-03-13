@@ -838,11 +838,12 @@ sub request : Chained('property') : Args(0) {
 }
 
 sub process_request_data : Private {
-    my ($self, $c, $form) = @_;
+    my ($self, $c, $form, $reports, $unconfirmed) = @_;
     my $data = $form->saved_data;
     $c->cobrand->call_hook("waste_munge_request_form_data", $data);
     my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
     my @reports;
+    push @reports, @$reports if $reports;
 
     my $payment = $data->{payment};
     foreach (@services) {
@@ -854,7 +855,7 @@ sub process_request_data : Private {
             }
             $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
         }
-        $c->forward('add_report', [ $data, $payment ? 1 : 0 ]) or return;
+        $c->forward('add_report', [ $data, $unconfirmed || $payment ? 1 : 0 ]) or return;
         push @reports, $c->stash->{report};
     }
     group_reports($c, @reports);
@@ -1596,6 +1597,33 @@ sub process_garden_new_or_renew : Private {
     $c->forward('garden_calculate_subscription_payment', [ $calc_type, $data ]);
     $c->forward('setup_garden_sub_params', [ $data, $cat_type ]);
     $c->forward('add_report', [ $data, 1 ]) or return;
+
+    if ($data->{new_bins} < 0 && $c->cobrand->call_hook('garden_renewal_reduction_sparks_container_removal')) {
+        my $service = $c->cobrand->garden_current_subscription;
+        my $id = $service ? $service->{garden_container} : $GARDEN_IDS{$c->cobrand->moniker}{bin240};
+        my $data = {
+            # Sutton request form needs container-choice and request_reason
+            'container-choice' => $id,
+            request_reason => 'collect',
+            # Kingston needs container- (and removal- to convert into N requests)
+            "container-$id" => 1,
+            # Both use removal-, Kingston in core and Sutton specficially for this
+            "removal-$id" => abs($data->{new_bins}),
+
+            # From the garden data
+            email => $data->{email},
+            name => $data->{name},
+            phone => $data->{phone},
+            category => 'Request new container',
+        };
+
+        # Set up a fake form to pass to process_request_data
+        my $cls = ucfirst $c->cobrand->council_url;
+        my $form_class = "FixMyStreet::App::Form::Waste::Request::$cls";
+        my $form = $form_class->new( page_list => [], page_name => 'summary', c => $c, saved_data => $data);
+        # Pass in report so it can be grouped, and mustn't confirm report before payment
+        $c->forward('process_request_data', [ $form, [ $c->stash->{report} ], 1 ]);
+    }
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->stash->{message} = 'Payment skipped on staging';

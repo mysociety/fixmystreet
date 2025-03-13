@@ -516,7 +516,7 @@ sub waste_munge_request_data {
         }
     }
     $service_id = $SERVICE_IDS{domestic_refuse} if !$service_id && $action eq 'exchange';
-    $c->set_param('service_id', $service_id);
+    $c->set_param('service_id', $service_id) if $service_id;
 
     if ($data->{payment}) {
         my $cost;
