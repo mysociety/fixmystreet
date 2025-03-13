@@ -19,7 +19,7 @@ my $body = $mech->create_body_ok($area_id, 'Bath and North East Somerset Council
     cobrand => 'bathnes',
 });
 
-my $email_category = $mech->create_contact_ok(category => 'Potholes', body_id => $body->id, email => 'potholes@example.com');
+my $email_category = $mech->create_contact_ok(category => 'Potholes', body_id => $body->id, email => 'Passthrough-potholes@example.com');
 my $confirm_category = $mech->create_contact_ok(category => 'Graffiti', body_id => $body->id, email => 'confirm_graffiti');
 
 FixMyStreet::override_config {
@@ -35,7 +35,7 @@ FixMyStreet::override_config {
 
     my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
-    is $c->{service_code}[0], 'passthrough-confirm_graffiti@example.org', "service_code given email address to send to passthrough";
+    is $c->{service_code}[0], 'Passthrough-confirm_graffiti@example.org', "service_code given email address to send to passthrough";
     is $c->{"attribute[title]"}[0] =~ /Graffiti on the wall/, 1, "Confirm report selected";
     is $graffiti_report->external_id, 'ext1', "external_id restored to Confirm id";
     is $graffiti_report->get_extra_metadata('passthrough_id'), '248', "Passthrough id stored on report";
@@ -50,9 +50,10 @@ FixMyStreet::override_config {
     $req = Open311->test_req_used;
     $c = CGI::Simple->new($req->content);
 
-    is $c->{service_request_id}[0], 'passthrough-248', "Passthrough service_request_id is set as the report's passthrough id";
-    is $c->{service_code}[0], 'passthrough-confirm_graffiti@example.org', "service_code given email address to send to passthrough";
+    is $c->{service_request_id}[0], 'Passthrough-248', "Passthrough service_request_id is set as the report's passthrough id";
+    is $c->{service_code}[0], 'Passthrough-confirm_graffiti@example.org', "service_code given email address to send to passthrough";
     $comment->discard_changes;
+    $comment->problem->discard_changes;
     is $comment->external_id, 'update1', "Confirm external_id restored";
     is $comment->get_extra_metadata('sent_to_banes_passthrough'), '1', "Comment registered as sent to passthrough";
     is $comment->get_extra_metadata('passthrough_id'), 'pass_update1', "Passthrough id stored on comment";

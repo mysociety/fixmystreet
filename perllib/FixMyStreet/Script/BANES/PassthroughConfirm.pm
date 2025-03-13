@@ -30,7 +30,7 @@ sub send_reports {
         my $reporter = FixMyStreet::SendReport::Open311->new;
         $reporter->add_body( $self->body, $sender_info->{config} );
         $item->_set_reporters([$reporter]);
-        my $service_code = 'passthrough-' . $row->contact->email . '@example.org';
+        my $service_code = 'Passthrough-' . $row->contact->email . '@example.org';
         $item->h->{alternative_service_code} = $service_code;
         $item->_send;
         if ($reporter->success) {
@@ -54,7 +54,7 @@ sub send_comments {
         my $cobrand = $problem->get_cobrand_logged;
         FixMyStreet::DB->schema->cobrand($cobrand);
         $cobrand->set_lang_and_domain($problem->lang, 1);
-        my $service_code = 'passthrough-' . $row->problem->contact->email . '@example.org';
+        my $service_code = 'Passthrough-' . $row->problem->contact->email . '@example.org';
         my %o311_cfg = (
             jurisdiction => 'banes',
             endpoint => $self->body->endpoint,
@@ -65,7 +65,7 @@ sub send_comments {
             service_code => $service_code,
         );
         my $o = Open311->new(%o311_cfg);
-        my $customer_reference = 'passthrough-' . $problem->get_extra_metadata('passthrough_id');
+        my $customer_reference = 'Passthrough-' . $problem->get_extra_metadata('passthrough_id');
         $problem->set_extra_metadata( customer_reference => $customer_reference );
         my $id = $o->post_service_request_update( $row );
         if ( $id ) {
