@@ -126,6 +126,8 @@
     position: relative;
     white-space: nowrap;
     line-height: 1.5rem;
+    // .govuk-select has a max-width of 100%, this makes the multi-select-button to get wider and wider the more options the users clicks.
+    max-width: 12.5em !important;
 }
 
 .multi-select-container--open {
