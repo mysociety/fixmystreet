@@ -1684,7 +1684,10 @@ sub add_report : Private {
     };
 
     # Don’t let staff inadvertently change their name when making reports
-    my $original_name = $c->user->name if $c->user_exists && $c->user->from_body && $c->user->email eq ($data->{email} || '');
+    my $original_name;
+    if ($c->user_exists && $c->user->from_body && $c->user->email eq ($data->{email} || '')) {
+        $original_name = $c->user->name;
+    }
 
     # We want to take what has been entered in the form, even if someone is logged in
     $c->stash->{ignore_logged_in_user} = 1;

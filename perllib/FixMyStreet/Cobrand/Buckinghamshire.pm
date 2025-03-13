@@ -260,7 +260,7 @@ sub _add_claim_auto_response {
 
     # Attach auto-response template if present
     my $template = $row->response_templates->search({ 'me.state' => $row->state })->first;
-    my $description = $template->text if $template;
+    my $description = $template ? $template->text : undef;
     if ( $description ) {
         my $updates = Open311::GetServiceRequestUpdates->new(
             system_user => $user,
@@ -833,7 +833,8 @@ sub munge_contacts_to_bodies {
     if (!$greater_than_30) {
         # Look up the report's location on the speed limit WFS server
         my $speed_limit_xml = $self->speed_limit_wfs_query($report);
-        my $speed_limit = $1 if $speed_limit_xml =~ /<OS_Highways_Speed:speed>([\.\d]+)<\/OS_Highways_Speed:speed>/;
+        my $speed_limit;
+        $speed_limit = $1 if $speed_limit_xml =~ /<OS_Highways_Speed:speed>([\.\d]+)<\/OS_Highways_Speed:speed>/;
 
         if ($speed_limit) {
             $greater_than_30 = $speed_limit > 30 ? 'yes' : 'no';
