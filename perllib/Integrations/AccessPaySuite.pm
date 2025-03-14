@@ -89,11 +89,12 @@ has ua => (
 
 # Private request handling methods
 sub headers {
-    my $self = shift;
+    my ($self, $content) = @_;
 
     return {
         'Accept' => 'application/json',
         'Content-Type' => 'application/x-www-form-urlencoded',
+        'Content-Length' => length($content),
         'User-Agent' => 'WasteWorks by SocietyWorks (swtech@societyworks.org)',
         'ApiKey' => $self->config->{api_key},
     };
@@ -132,7 +133,7 @@ sub create_request {
 
     return HTTP::Request->new(
         $method => $url,
-        HTTP::Headers->new(%{ $self->headers }),
+        HTTP::Headers->new(%{ $self->headers($content) }),
         $content
     );
 }
