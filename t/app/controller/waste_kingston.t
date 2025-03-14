@@ -246,6 +246,7 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         echo => { kingston => { url => 'http://example.org' } },
         waste => { kingston => 1 },
+        waste_features => { kingston => { dd_disabled => 1 } },
         payment_gateway => { kingston => {
             cc_url => 'http://example.com',
             ggw_cost => [
@@ -431,13 +432,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 7 } });
         $mech->content_contains('Existing bin count must be between 1 and 5');
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
-        my $form = $mech->form_with_fields( qw(current_bins bins_wanted payment_method) );
+        my $form = $mech->form_with_fields( qw(current_bins bins_wanted) );
         ok $form, "form found";
         is $mech->value('current_bins'), 0, "current bins is set to 0";
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 0,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -445,7 +445,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 2,
                 bins_wanted => 7,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -453,7 +452,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 7,
                 bins_wanted => 0,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -461,7 +459,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 7,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -470,7 +467,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 2 } });
-        $form = $mech->form_with_fields( qw(current_bins bins_wanted payment_method) );
+        $form = $mech->form_with_fields( qw(current_bins bins_wanted) );
         ok $form, "form found";
         $mech->content_like(qr#Total to pay now: £<span[^>]*>40.00#, "initial cost set correctly");
         is $mech->value('current_bins'), 2, "current bins is set to 2";
@@ -484,7 +481,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 1,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -499,7 +495,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 1,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -540,7 +535,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 1,
                 bins_wanted => 1,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -574,7 +568,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 2,
                 bins_wanted => 1,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -692,13 +685,11 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             current_bins => 0,
             bins_wanted => 0,
-            payment_method => 'credit_card',
         } });
         $mech->content_contains('Value must be between 1 and 5');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 1,
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net',
         } });
@@ -710,7 +701,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 1,
-            payment_method => 'credit_card',
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
@@ -742,13 +732,11 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 7,
-            payment_method => 'credit_card',
         } });
         $mech->content_contains('The total number of bins cannot exceed 5');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 2,
-            payment_method => 'credit_card',
             name => 'New McTest',
             email => 'test@example.net',
         } });
@@ -781,13 +769,12 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
-        my $form = $mech->form_with_fields( qw( current_bins payment_method ) );
+        my $form = $mech->form_with_fields( qw( current_bins ) );
         ok $form, 'found form';
         is $mech->value('current_bins'), 2, "correct current bin count";
         $mech->submit_form_ok({ with_fields => {
             current_bins => 2,
             bins_wanted => 1,
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net',
         } });
@@ -875,7 +862,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
             current_bins => 0,
             bins_wanted => 1,
             name => 'Test McTest',
@@ -890,7 +876,6 @@ FixMyStreet::override_config {
         $mech->content_contains('<span id="cost_now">35.00');
         $mech->content_contains('<span id="cost_now_admin">15.00');
         $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
             current_bins => 0,
             bins_wanted => 1,
             name => 'Test McTest',
@@ -929,7 +914,6 @@ FixMyStreet::override_config {
         $mech->content_like(qr#Total per year: £<span[^>]*>41.00#, "initial cost correct");
         $mech->content_lacks('"cheque"');
         $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net'
         } });
@@ -939,7 +923,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { goto => 'sacks_details' } });
         $mech->content_contains('<span id="cost_pa">41.00');
         $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net'
         } });
@@ -982,7 +965,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 1,
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net',
         } });
@@ -1042,7 +1024,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             name => 'Test McTest',
             email => 'test@example.net',
-            payment_method => 'credit_card',
         } });
         $mech->content_contains('1 sack subscription');
         $mech->content_contains('41.00');
@@ -1050,9 +1031,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
         $mech->content_contains('<span id="cost_pa">41.00');
         $mech->content_contains('<span id="cost_now">41.00');
-        $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
-        } });
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         is $sent_params->{items}[0]{amount}, 4100, 'correct amount used';
         is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
@@ -1374,7 +1353,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             name => 'a user 2',
             email => 'a_user_2@example.net',
-            payment_method => 'credit_card',
             current_bins => 1,
             bins_wanted => 2,
         }});
@@ -1464,6 +1442,7 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         echo => { kingston => { url => 'http://example.org' } },
         waste => { kingston => 1 },
+        waste_features => { kingston => { dd_disabled => 1 } },
         payment_gateway => { kingston => {
             ggw_cost => [ { start_date => '2020-01-01 00:00', cost => 2000 } ],
             ggw_cost_renewal => [
@@ -1514,7 +1493,6 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => {
                 current_bins => 1,
                 bins_wanted => 1,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net',
             } });
@@ -1535,7 +1513,6 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => {
                 name => 'Test McTest',
                 email => 'test@example.net',
-                payment_method => 'credit_card',
             } });
             $mech->content_contains('1 sack subscription');
             $mech->content_contains($test->{sack_price} . '.00');

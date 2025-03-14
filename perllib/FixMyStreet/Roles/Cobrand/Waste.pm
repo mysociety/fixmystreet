@@ -70,4 +70,13 @@ sub garden_subscription_email_renew_reminder_opt_in { 0 }
 
 sub waste_cheque_payments { 0 }
 
+sub garden_hide_payment_method_field {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $non_staff_no_dd = $c->stash->{waste_features}->{dd_disabled} && !$c->stash->{staff_payments_allowed};
+    my $staff_no_choose = $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
+    return $non_staff_no_dd || $staff_no_choose;
+}
+
 1;

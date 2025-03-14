@@ -269,6 +269,16 @@ FixMyStreet::override_config {
     };
 };
 
+my $cost = 9500;
+my $delivery = 1800;
+my $two_cost = $cost * 2;
+my $total = $cost + $delivery;
+
+my $cost_human = sprintf("%.2f", $cost/100);
+my $two_cost_human = sprintf("%.2f", $two_cost/100);
+my $delivery_human = sprintf("%.2f", $delivery/100);
+my $total_human = sprintf("%.2f", $total/100);
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'merton',
     MAPIT_URL => 'http://mapit.uk/',
@@ -280,10 +290,10 @@ FixMyStreet::override_config {
         } },
         payment_gateway => { merton => {
             cc_url => 'http://example.com',
-            ggw_cost => 8978,
-            ggw_sacks_cost => 8978,
-            ggw_new_bin_first_cost => 0,
-            ggw_new_bin_cost => 0,
+            ggw_cost => $cost,
+            ggw_sacks_cost => $cost,
+            ggw_new_bin_first_cost => $delivery,
+            ggw_new_bin_cost => $delivery,
         } },
     },
 }, sub {
@@ -413,13 +423,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 7 } });
         $mech->content_contains('Existing bin count must be between 1 and 3');
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
-        my $form = $mech->form_with_fields( qw(current_bins bins_wanted payment_method) );
+        my $form = $mech->form_with_fields( qw(current_bins bins_wanted) );
         ok $form, "form found";
         is $mech->value('current_bins'), 0, "current bins is set to 0";
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 0,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -427,7 +436,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 2,
                 bins_wanted => 7,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -435,7 +443,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 7,
                 bins_wanted => 0,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -443,7 +450,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 7,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -453,9 +459,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { container_choice => 'bin240' } });
         $mech->submit_form_ok({ with_fields => { existing => 'yes', existing_number => 2 } });
-        $form = $mech->form_with_fields( qw(current_bins bins_wanted payment_method) );
+        $form = $mech->form_with_fields( qw(current_bins bins_wanted) );
         ok $form, "form found";
-        $mech->content_like(qr#Total to pay now: £<span[^>]*>179.56#, "initial cost set correctly");
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>$two_cost_human#, "initial cost set correctly");
         is $mech->value('current_bins'), 2, "current bins is set to 2";
     };
 
@@ -468,20 +474,19 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 1,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£89.78');
+        $mech->content_contains('£' . $cost_human);
+        $mech->content_contains('£' . $delivery_human);
         $mech->content_contains('1 140L bin');
         $mech->submit_form_ok({ with_fields => { goto => 'details' } });
-        $mech->content_contains('<span id="cost_pa">89.78');
-        $mech->content_contains('<span id="cost_now">89.78');
+        $mech->content_contains('<span id="cost_pa">' . $cost_human);
+        $mech->content_contains('<span id="cost_now">' . $total_human);
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 0,
                 bins_wanted => 1,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
@@ -490,7 +495,8 @@ FixMyStreet::override_config {
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         is $sent_params->{items}[0]{reference}, 'LBM-GWS-' . $new_report->id;
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, $delivery, 'correct amount used';
         check_extra_data_pre_confirm($new_report, bin_type => 27);
 
         subtest 'Error checking payment confirmation' => sub {
@@ -527,7 +533,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Number of bin subscriptions: 1/;
         like $body, qr/Bins to be delivered: 1/;
-        like $body, qr/Total:.*?89.78/;
+        like $body, qr/Total:.*?$total_human/;
     };
 
     subtest 'check new sub credit card payment with no bins required' => sub {
@@ -538,16 +544,16 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 1,
                 bins_wanted => 1,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£89.78');
+        $mech->content_contains('£' . $cost_human);
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, undef, 'correct amount used';
         check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $new_report->update({ created => \"current_timestamp - '30 minutes'::interval" });
@@ -565,7 +571,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Number of bin subscriptions: 1/;
         unlike $body, qr/Bins to be delivered/;
-        like $body, qr/Total:.*?89.78/;
+        like $body, qr/Total:.*?$cost_human/;
     };
 
     subtest 'check new sub credit card payment with one less bin required' => sub {
@@ -576,17 +582,16 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
                 current_bins => 2,
                 bins_wanted => 1,
-                payment_method => 'credit_card',
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£89.78');
+        $mech->content_contains('£' . $cost_human);
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
         check_extra_data_pre_confirm($new_report, bin_type => 27, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
@@ -598,7 +603,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Number of bin subscriptions: 1/;
         like $body, qr/Bins to be removed: 1/;
-        like $body, qr/Total:.*?89.78/;
+        like $body, qr/Total:.*?$cost_human/;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
@@ -613,16 +618,17 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains('2 bins');
-        $mech->content_contains('179.56');
-        $mech->content_contains('89.78');
+        $mech->content_contains($two_cost_human);
+        $mech->content_contains($delivery_human);
         $mech->submit_form_ok({ with_fields => { goto => 'alter' } });
-        $mech->content_contains('<span id="cost_per_year">179.56');
-        $mech->content_contains('<span id="pro_rata_cost">89.78');
+        $mech->content_contains('<span id="cost_per_year">' . $two_cost_human);
+        $mech->content_contains('<span id="pro_rata_cost">' . $total_human);
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, $delivery, 'correct amount used';
 
         check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
 
@@ -636,7 +642,9 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Number of bin subscriptions: 2/;
         like $body, qr/Bins to be delivered: 1/;
-        like $body, qr/Total:.*?89.78/;
+        like $body, qr/Subscription cost:.*?$two_cost_human/;
+        like $body, qr/new bin.*?$delivery_human/;
+        like $body, qr/Total:.*?$total_human/;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
@@ -648,7 +656,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 1 } });
-        $mech->content_contains('89.78');
+        $mech->content_contains($cost_human);
         $mech->content_lacks('Continue to payment');
         $mech->content_contains('Confirm changes');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -681,29 +689,26 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->submit_form_ok({ with_fields => {
             current_bins => 0,
-            payment_method => 'credit_card',
         } });
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net',
         } });
         $mech->content_contains('1 bin');
-        $mech->content_contains('89.78');
+        $mech->content_contains($cost_human);
         $mech->submit_form_ok({ with_fields => { goto => 'intro' } });
-        $mech->content_contains('<span id="cost_pa">89.78');
-        $mech->content_contains('<span id="cost_now">89.78');
+        $mech->content_contains('<span id="cost_pa">' . $cost_human);
+        $mech->content_contains('<span id="cost_now">' . $cost_human);
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 1,
-            payment_method => 'credit_card',
         } });
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         is $sent_params->{items}[0]{reference}, 'LBM-GWS-' . $new_report->id;
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
         is $sent_params->{name}, 'Test McTest';
 
         check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
@@ -719,7 +724,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Thank you for renewing/;
         like $body, qr/Number of bin subscriptions: 1/;
-        like $body, qr/Total:.*?89.78/;
+        like $body, qr/Total:.*?$cost_human/;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
@@ -727,19 +732,18 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_renew');
-        my $form = $mech->form_with_fields( qw( current_bins payment_method ) );
+        my $form = $mech->form_with_fields( qw( current_bins ) );
         ok $form, 'found form';
         is $mech->value('current_bins'), 2, "correct current bin count";
         $mech->submit_form_ok({ with_fields => {
             current_bins => 2,
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net',
         } });
-        $mech->content_contains('179.56');
+        $mech->content_contains($two_cost_human);
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
-        is $sent_params->{items}[0]{amount}, 17956, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $two_cost, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -754,7 +758,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Number of bin subscriptions: 2/;
         unlike $body, qr/Bins to be removed: 1/;
-        like $body, qr/Total:.*?179.56/;
+        like $body, qr/Total:.*?$two_cost_human/;
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
@@ -827,20 +831,18 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
         $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
             current_bins => 0,
             bins_wanted => 1,
             name => 'Test McTest',
             email => 'test@example.net'
         } });
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£89.78');
+        $mech->content_contains('£' . $cost_human);
         $mech->content_contains('1 240L bin');
         $mech->submit_form_ok({ with_fields => { goto => 'details' } });
-        $mech->content_contains('<span id="cost_pa">89.78');
-        $mech->content_contains('<span id="cost_now">89.78');
+        $mech->content_contains('<span id="cost_pa">' . $cost_human);
+        $mech->content_contains('<span id="cost_now">' . $total_human);
         $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
             current_bins => 0,
             bins_wanted => 1,
             name => 'Test McTest',
@@ -848,7 +850,8 @@ FixMyStreet::override_config {
         } });
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, $delivery, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -867,7 +870,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Number of bin subscriptions: 1/;
         like $body, qr/Bins to be delivered: 1/;
-        like $body, qr/Total:.*?89.78/;
+        like $body, qr/Total:.*?$total_human/;
     };
 
     subtest 'sacks, subscribing' => sub {
@@ -875,26 +878,24 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { container_choice => 'sack' } });
-        $mech->content_like(qr#Total per year: £<span[^>]*>89.78#, "initial cost correct");
+        $mech->content_like(qr#Total per year: £<span[^>]*>$cost_human#, "initial cost correct");
         $mech->content_lacks('"cheque"');
         $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net'
         } });
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£89.78');
+        $mech->content_contains('£' . $cost_human);
         $mech->content_contains('1 sack subscription');
         $mech->submit_form_ok({ with_fields => { goto => 'sacks_details' } });
-        $mech->content_contains('<span id="cost_pa">89.78');
+        $mech->content_contains('<span id="cost_pa">' . $cost_human);
         $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net'
         } });
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -919,7 +920,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Garden waste sack collection: 1 roll/;
         unlike $body, qr/Number of bin subscriptions/;
-        like $body, qr/Total:.*?89.78/;
+        like $body, qr/Total:.*?$cost_human/;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_bin_with_refuse_sacks);
@@ -929,14 +930,13 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 1,
-            payment_method => 'credit_card',
             name => 'Test McTest',
             email => 'test@example.net',
         } });
         $mech->content_contains('1 bin');
-        $mech->content_contains('89.78');
+        $mech->content_contains($cost_human);
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 26, new_bins => 0);
     };
@@ -947,12 +947,11 @@ FixMyStreet::override_config {
             bins_wanted => 1,
             name => 'Test McTest',
             email => 'test@example.net',
-            payment_method => 'credit_card',
         } });
         $mech->content_contains('1 bin');
-        $mech->content_contains('89.78');
+        $mech->content_contains($cost_human);
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
 
@@ -965,7 +964,7 @@ FixMyStreet::override_config {
         my @emails = $mech->get_email;
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Garden waste sack collection: 1 roll/;
-        like $body, qr/Total:.*?89\.78/;
+        like $body, qr/Total:.*?$cost_human/;
     };
 
     subtest 'refuse sacks, garden bin, can modify' => sub {
@@ -975,13 +974,14 @@ FixMyStreet::override_config {
         $mech->content_contains('Change your garden waste subscription');
         $mech->content_lacks('Order more garden sacks');
         $mech->get_ok('/waste/12345/garden_modify');
-        $mech->content_lacks('<span id="pro_rata_cost">89.78');
+        $mech->content_lacks('<span id="pro_rata_cost">' . $cost_human);
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->content_contains('current_bins');
         $mech->content_contains('bins_wanted');
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2, name => 'Test McTest' } });
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, $delivery, 'correct amount used';
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
     };
@@ -1017,18 +1017,15 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             name => 'Test McTest',
             email => 'test@example.net',
-            payment_method => 'credit_card',
         } });
         $mech->content_contains('1 sack subscription');
-        $mech->content_contains('89.78');
+        $mech->content_contains($cost_human);
         $mech->submit_form_ok({ with_fields => { goto => 'sacks_details' } });
-        $mech->content_contains('<span id="cost_pa">89.78');
-        $mech->content_contains('<span id="cost_now">89.78');
-        $mech->submit_form_ok({ with_fields => {
-            payment_method => 'credit_card',
-        } });
+        $mech->content_contains('<span id="cost_pa">' . $cost_human);
+        $mech->content_contains('<span id="cost_now">' . $cost_human);
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest' } });
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 28, quantity => 1, new_bins => 1);
 
@@ -1042,7 +1039,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($emails[1]);
         like $body, qr/Garden waste sack collection: 1 roll/;
         unlike $body, qr/Number of bin subscriptions/;
-        like $body, qr/Total:.*?89\.78/
+        like $body, qr/Total:.*?$cost_human/;
     };
 
     subtest 'sacks, cannot modify, cannot buy more' => sub {
@@ -1089,7 +1086,7 @@ FixMyStreet::override_config {
                 bins_wanted => 1,
                 payment_method => 'credit_card',
             }});
-            $mech->content_contains('89.78');
+            $mech->content_contains($cost_human);
 
             $mech->waste_submit_check({ with_fields => { tandc => 1 } });
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
@@ -1115,8 +1112,8 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
-        $mech->content_contains('179.56');
-        $mech->content_contains('89.78');
+        $mech->content_contains($two_cost_human);
+        $mech->content_contains($total_human);
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($report, type => 'Amend', quantity => 2, payment_method => 'csc');
@@ -1142,7 +1139,7 @@ FixMyStreet::override_config {
             name => 'A user',
             email => 'test@example.net',
         } });
-        $mech->content_contains('89.78');
+        $mech->content_contains($cost_human);
         $mech->content_lacks('Continue to payment');
         $mech->content_contains('Confirm changes');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1332,7 +1329,7 @@ FixMyStreet::override_config {
                 email => 'test@example.net'
         } });
         $mech->content_contains('Test McTest');
-        $mech->content_contains('£89.78');
+        $mech->content_contains('£' . $cost_human);
         $mech->content_contains('1 140L bin');
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
@@ -1365,7 +1362,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             cheque_reference => 'Cheque123',
         } });
-        $mech->content_contains('£89.78');
+        $mech->content_contains('£' . $cost_human);
         $mech->content_contains('1 240L bin');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
@@ -1392,11 +1389,12 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
-        $mech->content_contains('179.56');
-        $mech->content_contains('89.78');
+        $mech->content_contains($two_cost_human);
+        $mech->content_contains($total_human);
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
-        is $sent_params->{items}[0]{amount}, 8978, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
+        is $sent_params->{items}[1]{amount}, $delivery, 'correct amount used';
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
