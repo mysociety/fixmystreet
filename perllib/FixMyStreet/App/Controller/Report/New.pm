@@ -356,7 +356,7 @@ sub by_category_ajax_data : Private {
         $body->{councils_text} = $c->render_fragment( 'report/new/councils_text.html');
     }
 
-    my $cobrand_overrides = $c->stash->{cobrand_field_overrides_by_body}->{$bodies->[0]->{id}} if @$bodies == 1;
+    my $cobrand_overrides = @$bodies == 1 ? $c->stash->{cobrand_field_overrides_by_body}->{$bodies->[0]->{id}} : undef;
     my $category_overrides = $lookups->{overrides}{$category};
 
     my $title_label_override = $cobrand_overrides->{title_label};
@@ -1138,7 +1138,7 @@ sub process_report : Private {
     # create a session here if it doesn't already exist (which accessing
     # $c->session does) as that can cause CSRF failures for e.g. visitors coming
     # directly to /report/new (as tested in camden.t)
-    my $service = $c->session->{app_platform} if $c->sessionid;
+    my $service = $c->sessionid ? $c->session->{app_platform} : undef;
     # The old app sends the platform as a query parameter when POSTing reports.
     $service ||= $c->get_param('service');
 

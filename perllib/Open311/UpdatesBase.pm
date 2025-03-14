@@ -303,7 +303,7 @@ sub _process_update {
 sub comment_text_for_request {
     my ($self, $template, $request, $problem) = @_;
 
-    my $template_email_text = $template->email_text if $template;
+    my $template_email_text = $template ? $template->email_text : undef;
     $template = $template->text if $template;
 
     my $desc = $request->{description} || '';

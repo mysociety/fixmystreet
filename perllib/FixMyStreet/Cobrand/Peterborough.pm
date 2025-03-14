@@ -774,8 +774,8 @@ sub bin_services_for_address {
             $property->{has_black_bin} = 1;
         }
 
-        my $last_obj = { date => $last, ordinal => ordinal($last->day) } if $last;
-        my $next_obj = { date => $next, ordinal => ordinal($next->day) } if $next;
+        my $last_obj = $last ? { date => $last, ordinal => ordinal($last->day) } : undef;
+        my $next_obj = $next ? { date => $next, ordinal => ordinal($next->day) } : undef;
         my $row = {
             id => $_->{JobID},
             last => $last_obj,
