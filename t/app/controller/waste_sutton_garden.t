@@ -58,6 +58,16 @@ create_contact({ category => 'Cancel Garden Subscription', email => 'garden_canc
     { code => 'End_Date', required => 1, automated => 'hidden_field' },
 );
 
+# For reductions
+create_contact({ category => 'Request new container', email => '3129@example.com' },
+    { code => 'uprn', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'Container_Type', required => 1, automated => 'hidden_field' },
+    { code => 'Action', required => 1, automated => 'hidden_field' },
+    { code => 'Reason', required => 1, automated => 'hidden_field' },
+);
+
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
 sub new { my $c = shift; bless { @_ }, $c; }
@@ -534,14 +544,7 @@ FixMyStreet::override_config {
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
-
-        $mech->clear_emails_ok;
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Number of bin subscriptions: 1/;
-        like $body, qr/Bins to be removed: 1/;
-        like $body, qr/Total:.*?20.00/;
+        check_removal_data_and_emails($mech, $new_report);
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
@@ -705,14 +708,7 @@ FixMyStreet::override_config {
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
-
-        $mech->clear_emails_ok;
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Number of bin subscriptions: 1/;
-        like $body, qr/Bins to be removed: 1/;
-        like $body, qr/Total:.*?20.00/;
+        check_removal_data_and_emails($mech, $new_report);
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
@@ -1325,6 +1321,32 @@ sub check_extra_data_post_confirm {
     is $report->get_extra_field_value('LastPayMethod'), $pay_method, 'correct echo payment method field';
     is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+}
+
+sub check_removal_data_and_emails {
+    my ($mech, $report) = @_;
+
+    my ($removal) = @{$report->get_extra_metadata('grouped_ids')};
+    $removal = FixMyStreet::DB->resultset("Problem")->find($removal);
+    is $removal->category, 'Request new container';
+    is $removal->state, 'confirmed';
+    is $removal->get_extra_field_value('Container_Type'), 39, 'correct bin type';
+    is $removal->get_extra_field_value('Action'), '2', 'correct container request action';
+    is $removal->get_extra_field_value('Reason'), '8', 'correct container request reason';
+    is $removal->get_extra_field_value('service_id'), 953;
+
+    $mech->clear_emails_ok;
+    FixMyStreet::Script::Reports::send();
+    my @emails = $mech->get_email;
+    my $body1 = $mech->get_text_body_from_email($emails[1]);
+    my $body2 = $mech->get_text_body_from_email($emails[3]);
+    if ($body1 =~ /Your request to/) {
+        ($body1, $body2) = ($body2, $body1);
+    }
+    like $body2, qr/1x Garden Waste Wheelie Bin \(240L\) to collect/;
+    like $body1, qr/Number of bin subscriptions: 1/;
+    like $body1, qr/Bins to be removed: 1/;
+    like $body1, qr/Total:.*?20.00/;
 }
 
 sub mock_CancelReservedSlotsForEvent {

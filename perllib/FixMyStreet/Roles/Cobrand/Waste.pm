@@ -18,6 +18,14 @@ sub bin_payment_types {
     };
 }
 
+sub waste_subscription_types {
+    return {
+        New => 1,
+        Renew => 2,
+        Amend => 3,
+    };
+}
+
 =head2 svg_container_sack
 
 TYPE is either 'normal' or 'stripe'.

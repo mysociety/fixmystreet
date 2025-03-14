@@ -838,11 +838,12 @@ sub request : Chained('property') : Args(0) {
 }
 
 sub process_request_data : Private {
-    my ($self, $c, $form) = @_;
+    my ($self, $c, $form, $reports, $unconfirmed) = @_;
     my $data = $form->saved_data;
     $c->cobrand->call_hook("waste_munge_request_form_data", $data);
     my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
     my @reports;
+    push @reports, @$reports if $reports;
 
     my $payment = $data->{payment};
     foreach (@services) {
@@ -854,7 +855,7 @@ sub process_request_data : Private {
             }
             $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
         }
-        $c->forward('add_report', [ $data, $payment ? 1 : 0 ]) or return;
+        $c->forward('add_report', [ $data, $unconfirmed || $payment ? 1 : 0 ]) or return;
         push @reports, $c->stash->{report};
     }
     group_reports($c, @reports);
@@ -918,7 +919,7 @@ sub process_garden_transfer : Private {
     $c->set_param('property_id', '');
     $c->set_param('uprn', '');
     $c->set_param('transferred_from', $data->{transfer_old_ggw_sub}{transfer_uprn});
-    $c->forward('setup_garden_sub_params', [ $new, $c->stash->{garden_subs}->{New} ]);
+    $c->forward('setup_garden_sub_params', [ $new, $c->cobrand->waste_subscription_types->{New} ]);
     $c->forward('add_report', [ $new ]) or return;
     $c->stash->{report}->confirm;
     $c->stash->{report}->update;
@@ -1529,7 +1530,7 @@ sub process_garden_modification : Private {
     }
     $c->set_param('payment', $payment);
 
-    $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{Amend} ]);
+    $c->forward('setup_garden_sub_params', [ $data, $c->cobrand->waste_subscription_types->{Amend} ]);
     $c->cobrand->call_hook(waste_garden_mod_params => $data);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
@@ -1556,33 +1557,73 @@ sub process_garden_modification : Private {
     return 1;
 }
 
+sub process_garden_data : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+    my $dd_flow = $data->{payment_method} && $data->{payment_method} eq 'direct_debit';
+    my $type = $c->cobrand->waste_subscription_types->{New};
+    $c->forward('process_garden_new_or_renew', [ $data, 'new', $type, $dd_flow ]);
+}
+
 sub process_garden_renew : Private {
     my ($self, $c, $form) = @_;
 
     my $data = $form->saved_data;
-
     my $service = $c->cobrand->garden_current_subscription;
-    my $type;
     # If there is a service at all in Bexley, we want to renew, regardless of end date
     my $bexley = $c->cobrand->moniker eq 'bexley';
     my $new = !$service || (!$bexley && $c->cobrand->waste_sub_overdue($service->{end_date}));
-    if ($new) {
-        $data->{category} = 'Garden Subscription';
-        $data->{title} = 'Garden Subscription - New';
-        $type = $c->stash->{garden_subs}->{New};
-    } else {
-        $data->{category} = 'Garden Subscription';
-        $data->{title} = 'Garden Subscription - Renew';
-        $type = $c->stash->{garden_subs}->{Renew};
-    }
-
-    $c->forward('garden_calculate_subscription_payment', [ 'renew', $data ]);
-    $c->forward('setup_garden_sub_params', [ $data, $type ]);
-    $c->forward('add_report', [ $data, 1 ]) or return;
+    my $type = $new ? $c->cobrand->waste_subscription_types->{New} : $c->cobrand->waste_subscription_types->{Renew};
 
     # Get the payment method from the form data or the existing subscription
     my $payment_method = $data->{payment_method}
         || $c->forward('get_current_payment_method');
+
+    my $dd_flow = $payment_method eq 'direct_debit';
+    $c->forward('process_garden_new_or_renew', [ $data, 'renew', $type, $dd_flow ]);
+}
+
+sub process_garden_new_or_renew : Private {
+    my ($self, $c, $data, $calc_type, $cat_type, $dd_flow) = @_;
+
+    if ($cat_type eq $c->cobrand->waste_subscription_types->{New}) {
+        $data->{category} = 'Garden Subscription';
+        $data->{title} = 'Garden Subscription - New';
+    } elsif ($cat_type eq $c->cobrand->waste_subscription_types->{Renew}) {
+        $data->{category} = 'Garden Subscription';
+        $data->{title} = 'Garden Subscription - Renew';
+    }
+
+    $c->forward('garden_calculate_subscription_payment', [ $calc_type, $data ]);
+    $c->forward('setup_garden_sub_params', [ $data, $cat_type ]);
+    $c->forward('add_report', [ $data, 1 ]) or return;
+
+    if ($data->{new_bins} < 0 && $c->cobrand->call_hook('garden_renewal_reduction_sparks_container_removal')) {
+        my $service = $c->cobrand->garden_current_subscription;
+        my $id = $service ? $service->{garden_container} : $GARDEN_IDS{$c->cobrand->moniker}{bin240};
+        my $data = {
+            # Sutton request form needs container-choice and request_reason
+            'container-choice' => $id,
+            request_reason => 'collect',
+            # Kingston needs container- (and removal- to convert into N requests)
+            "container-$id" => 1,
+            # Both use removal-, Kingston in core and Sutton specficially for this
+            "removal-$id" => abs($data->{new_bins}),
+
+            # From the garden data
+            email => $data->{email},
+            name => $data->{name},
+            phone => $data->{phone},
+            category => 'Request new container',
+        };
+
+        # Set up a fake form to pass to process_request_data
+        my $cls = ucfirst $c->cobrand->council_url;
+        my $form_class = "FixMyStreet::App::Form::Waste::Request::$cls";
+        my $form = $form_class->new( page_list => [], page_name => 'summary', c => $c, saved_data => $data);
+        # Pass in report so it can be grouped, and mustn't confirm report before payment
+        $c->forward('process_request_data', [ $form, [ $c->stash->{report} ], 1 ]);
+    }
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->stash->{message} = 'Payment skipped on staging';
@@ -1595,7 +1636,7 @@ sub process_garden_renew : Private {
         $p->update;
         $c->forward('confirm_subscription', [ undef ] );
     } else {
-        if ( $payment_method eq 'direct_debit' ) {
+        if ($dd_flow) {
             if ($c->cobrand->direct_debit_collection_method eq 'internal') {
                 $c->stash->{form_data} = $data;
                 $c->forward('direct_debit_internal');
@@ -1605,48 +1646,10 @@ sub process_garden_renew : Private {
         } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
         } else {
-            $c->forward('pay', [ 'garden_renew' ]);
+            $c->forward('pay', [ $calc_type eq 'renew' ? 'garden_renew' : 'garden' ]);
         }
     }
 
-    return 1;
-}
-
-sub process_garden_data : Private {
-    my ($self, $c, $form) = @_;
-    my $data = $form->saved_data;
-
-    $data->{category} = 'Garden Subscription';
-    $data->{title} = 'Garden Subscription - New';
-
-    $c->forward('garden_calculate_subscription_payment', [ 'new', $data ]);
-    $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{New} ]);
-    $c->forward('add_report', [ $data, 1 ]) or return;
-
-    if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
-        $c->stash->{message} = 'Payment skipped on staging';
-        $c->stash->{reference} = $c->stash->{report}->id;
-        $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
-    } elsif ($c->cobrand->waste_cheque_payments && $data->{payment_method} eq 'cheque') {
-        $c->stash->{action} = 'new_subscription';
-        my $p = $c->stash->{report};
-        $p->set_extra_metadata('chequeReference', $data->{cheque_reference});
-        $p->update;
-        $c->forward('confirm_subscription', [ undef ]);
-    } else {
-        if ( $data->{payment_method} && $data->{payment_method} eq 'direct_debit' ) {
-            if ($c->cobrand->direct_debit_collection_method eq 'internal') {
-                $c->stash->{form_data} = $data;
-                $c->forward('direct_debit_internal');
-            } else {
-                $c->forward('direct_debit');
-            }
-        } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
-            $c->forward('csc_code');
-        } else {
-            $c->forward('pay', [ 'garden' ]);
-        }
-    }
     return 1;
 }
 

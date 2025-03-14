@@ -129,6 +129,8 @@ sub waste_service_to_containers { () }
 
 sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden_add} }
 
+sub garden_renewal_reduction_sparks_container_removal { 1 }
+
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
     return 1 if $self->moniker eq 'kingston';
@@ -407,11 +409,11 @@ sub waste_garden_sub_params {
         }
     }
 
-    if ($type eq $c->stash->{garden_subs}->{New}) {
+    if ($type eq $c->cobrand->waste_subscription_types->{New}) {
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
         $c->set_param('Start_Date', $now->add(days => 10)->dmy('/'));
         $c->set_param('End_Date', $now->add(years => 1)->subtract(days => 1)->dmy('/'));
-    } elsif ($type eq $c->stash->{garden_subs}->{Renew}) {
+    } elsif ($type eq $c->cobrand->waste_subscription_types->{Renew}) {
         my $sub_end = DateTime::Format::W3CDTF->parse_datetime($service->{end_date})->truncate( to => 'day' );
         $c->set_param('Start_Date', $sub_end->add(days => 1)->dmy('/'));
         $c->set_param('End_Date', $sub_end->add(years => 1)->subtract(days => 1)->dmy('/'));
