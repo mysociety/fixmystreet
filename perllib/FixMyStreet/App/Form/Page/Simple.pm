@@ -54,4 +54,12 @@ sub BUILD {
     }
 }
 
+sub has_file_upload {
+    my $self = shift;
+    foreach (@{$self->fields}) {
+        return 1 if $self->field($_)->type =~ /FileId/;
+    }
+    return 0;
+}
+
 1;

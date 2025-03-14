@@ -47,10 +47,16 @@ INCLUDE '_email_top.html';
 [% IF quantity ~%]
   <p style="[% p_style %]">
     [% IF sacks ~%]
-        Garden waste sack collection: [% quantity %] [% nget('roll', 'rolls', quantity) %]
+        Garden waste sack collection: [% sack_quant %] [% nget('roll', 'rolls', sack_quant) %]
     [% ELSE ~%]
         Number of bin subscriptions: [% quantity %]
     [% END ~%]
+  </p>
+[% END %]
+
+[% IF additional_quantity ~%]
+  <p style="[% p_style %]">
+    Number of additional bin subscriptions: [% additional_quantity %]
   </p>
 [% END %]
 

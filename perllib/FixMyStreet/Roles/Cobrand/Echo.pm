@@ -136,14 +136,6 @@ sub look_up_property {
     };
 }
 
-sub waste_subscription_types {
-    return {
-        New => 1,
-        Renew => 2,
-        Amend => 3,
-    };
-}
-
 sub bin_services_for_address {
     my ($self, $property) = @_;
 
@@ -155,8 +147,6 @@ sub bin_services_for_address {
     my %quantity_max = $self->waste_quantity_max;
     $self->{c}->stash->{quantity_max} = \%quantity_max;
     my $quantities = $self->{c}->stash->{quantities} = {};
-
-    $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
 
     my $result = $self->{api_serviceunits};
     $self->waste_extra_service_info_all_results($property, $result);
@@ -238,10 +228,15 @@ sub bin_services_for_address {
             $garden = 1;
             $garden_due = $self->waste_sub_due($schedules->{end_date});
             $garden_overdue = $schedules if $_->{expired};
-            my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
-            foreach (@$data) {
-                next unless $_->{DatatypeName} eq $self->garden_echo_container_name;
-                ($garden_bins, $garden_sacks, $garden_cost, $garden_container) = $self->garden_container_data_extract($_, $containers, $quantities, $schedules);
+            if ($self->moniker eq 'sutton' || $self->moniker eq 'kingston') {
+                my $data = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskLines}, 'ServiceTaskLine');
+                ($garden_bins, $garden_sacks, $garden_cost, $garden_container) = $self->garden_container_data_extract($data, $containers, $quantities, $schedules);
+            } else {
+                my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
+                foreach (@$data) {
+                    next unless $_->{DatatypeName} eq $self->garden_echo_container_name;
+                    ($garden_bins, $garden_sacks, $garden_cost, $garden_container) = $self->garden_container_data_extract($_, $containers, $quantities, $schedules);
+                }
             }
             $request_max = $garden_bins;
 
