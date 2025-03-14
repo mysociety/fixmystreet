@@ -83,7 +83,7 @@ has_page details => (
         my @fields;
         push @fields, 'email_renewal_reminders' if !$c->cobrand->garden_subscription_email_renew_reminder_opt_in;
         push @fields, 'password' if $c->stash->{staff_payments_allowed} or $c->cobrand->call_hook('waste_password_hidden');
-        push @fields, ('payment_method', 'cheque_reference') if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
+        push @fields, ('payment_method', 'cheque_reference') if $c->cobrand->garden_hide_payment_method_field;
         return \@fields;
     },
     update_field_list => \&details_update_fields,
