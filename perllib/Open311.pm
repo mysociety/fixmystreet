@@ -37,6 +37,7 @@ has always_upload_photos => ( is => 'ro', isa => Bool, default => 0 );
 has use_customer_reference => ( is => 'ro', isa => Bool, default => 0 );
 has mark_reopen => ( is => 'ro', isa => Bool, default => 0 );
 has fixmystreet_body => ( is => 'ro', isa => InstanceOf['FixMyStreet::DB::Result::Body'] );
+has service_code => ( is => 'ro', 'isa' => Str, default => '' );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -500,6 +501,7 @@ sub _populate_service_request_update_params {
 
     my $cobrand = $self->fixmystreet_body->get_cobrand_handler || $comment->get_cobrand_logged;
     $cobrand->call_hook(open311_munge_update_params => $params, $comment, $self->fixmystreet_body);
+    $params->{service_code} = $self->service_code if $self->service_code;
 
     if ( $comment->photo ) {
         my $cobrand = $comment->get_cobrand_logged;
