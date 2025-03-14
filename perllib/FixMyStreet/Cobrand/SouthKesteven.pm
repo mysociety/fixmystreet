@@ -84,18 +84,19 @@ sub body_disallows_state_change {
 }
 
 
-=pod
+=item * Uses the OSM geocoder.
 
 =back
 
 =cut
+
+sub get_geocoder { 'OSM' }
 
 sub disambiguate_location {
     my $self = shift;
     my $string = shift;
     return {
         %{ $self->SUPER::disambiguate_location() },
-        town => 'South Kesteven',
         centre => '52.8544740244351,-0.518259216392906',
         span   => '0.41973543009572,0.591815705612347',
         bounds => [
@@ -103,6 +104,13 @@ sub disambiguate_location {
             53.0599717881525, -0.212500442433404
         ],
     };
+}
+
+
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+    $result->{display_name} = '' unless $result->{display_name} =~ /South Kesteven/;
+    $result->{display_name} =~ s/, South Kesteven, Lincolnshire, England//;
 }
 
 1;
