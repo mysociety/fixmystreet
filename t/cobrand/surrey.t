@@ -120,7 +120,7 @@ FixMyStreet::override_config {
     subtest 'Get error when email included in report' => sub {
         $mech->get_ok('/report/new?longitude=-0.441269&latitude=51.293415');
         $mech->submit_form_ok({ with_fields => { category => 'Potholes', title => 'Potholes', detail => 'On main road', name => 'Bob Betts', username_register => 'user@example.org' } });
-        $mech->content_contains('Click the link in our confirmation email to publish your problem', 'Detail field without email proceeds normally');
+        $mech->content_contains('Click the link in our confirmation email to finish and publish your report', 'Detail field without email proceeds normally');
         $mech->get_ok('/report/new?longitude=-0.441269&latitude=51.293415');
         $mech->submit_form_ok({ with_fields => { category => 'Potholes', title => 'Potholes', detail => 'On main road. Contact me at user@example.org', name => 'Bob Betts', username_register => 'user@example.org' } });
         $mech->content_contains("<p class='form-error'>Please remove any email addresses and other personal information from your report", "Report detail with email gives error");
