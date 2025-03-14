@@ -1,4 +1,4 @@
-[% IF NOT staff_payments_allowed OR c.cobrand.waste_staff_choose_payment_method %]
+[% IF NOT c.cobrand.garden_hide_payment_method_field %]
 
   [% PROCESS form override_fields=['payment_method', 'cheque_reference'] %]
 
