@@ -93,7 +93,6 @@ sub headers {
 
     return {
         'Accept' => 'application/json',
-        'Content-Type' => 'application/x-www-form-urlencoded',
         'User-Agent' => 'WasteWorks by SocietyWorks (swtech@societyworks.org)',
         'ApiKey' => $self->config->{api_key},
     };
@@ -128,12 +127,12 @@ sub build_request_url {
 
 sub create_request {
     my ($self, $method, $url, $data) = @_;
-    my $content = ($method eq 'POST' || $method eq 'PUT') ? $self->build_form_data($data) : '';
 
-    return HTTP::Request->new(
-        $method => $url,
-        HTTP::Headers->new(%{ $self->headers }),
-        $content
+    my $headers = $self->headers();
+
+    return HTTP::Request::Common->can($method)->($url,
+        $method eq 'POST' || $method eq 'PUT' ? $data : (),
+        %$headers
     );
 }
 
