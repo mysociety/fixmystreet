@@ -35,7 +35,7 @@ FixMyStreet::override_config {
 
     my $req = Open311->test_req_used;
     my $c = CGI::Simple->new($req->content);
-    is $c->{service_code}[0], 'Passthrough-confirm_graffiti@example.org', "service_code given email address to send to passthrough";
+    is $c->{service_code}[0], 'Passthrough-confirm_graffiti', "service_code has Passthrough- prefix";
     is $c->{"attribute[title]"}[0] =~ /Graffiti on the wall/, 1, "Confirm report selected";
     is $graffiti_report->external_id, 'ext1', "external_id restored to Confirm id";
     is $graffiti_report->get_extra_metadata('passthrough_id'), '248', "Passthrough id stored on report";
@@ -51,7 +51,7 @@ FixMyStreet::override_config {
     $c = CGI::Simple->new($req->content);
 
     is $c->{service_request_id}[0], 'Passthrough-248', "Passthrough service_request_id is set as the report's passthrough id";
-    is $c->{service_code}[0], 'Passthrough-confirm_graffiti@example.org', "service_code given email address to send to passthrough";
+    is $c->{service_code}[0], 'Passthrough-confirm_graffiti', "service_code has Passthrough- prefix";
     $comment->discard_changes;
     $comment->problem->discard_changes;
     is $comment->external_id, 'update1', "Confirm external_id restored";
