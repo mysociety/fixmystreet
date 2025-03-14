@@ -1583,7 +1583,7 @@ sub waste_confirm_payment {
                 name => 'PaymentCode',
                 description => 'PaymentCode',
                 value => $reference
-            });
+            }) if $reference;
             $p->set_extra_metadata('payment_reference', $reference) if $reference;
             $p->confirm;
             $p->create_related_things($no_reporter_alert);
