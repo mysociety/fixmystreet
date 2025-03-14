@@ -89,12 +89,10 @@ has ua => (
 
 # Private request handling methods
 sub headers {
-    my ($self, $content) = @_;
+    my $self = shift;
 
     return {
         'Accept' => 'application/json',
-        'Content-Type' => 'application/x-www-form-urlencoded',
-        'Content-Length' => length($content),
         'User-Agent' => 'WasteWorks by SocietyWorks (swtech@societyworks.org)',
         'ApiKey' => $self->config->{api_key},
     };
@@ -129,13 +127,28 @@ sub build_request_url {
 
 sub create_request {
     my ($self, $method, $url, $data) = @_;
-    my $content = ($method eq 'POST' || $method eq 'PUT') ? $self->build_form_data($data) : '';
 
-    return HTTP::Request->new(
-        $method => $url,
-        HTTP::Headers->new(%{ $self->headers($content) }),
-        $content
-    );
+    my $headers = $self->headers();
+
+    if ($method eq 'POST') {
+        my $content = $self->build_form_data($data);
+        return HTTP::Request::Common::POST($url,
+            Content => $content,
+            %$headers
+        );
+    } elsif ($method eq 'PUT') {
+        my $content = $self->build_form_data($data);
+        return HTTP::Request::Common::PUT($url,
+            Content => $content,
+            %$headers
+        );
+    } elsif ($method eq 'GET') {
+        return HTTP::Request::Common::GET($url, %$headers);
+    } elsif ($method eq 'DELETE') {
+        return HTTP::Request::Common::DELETE($url, %$headers);
+    } else {
+        die "Unsupported method: $method";
+    }
 }
 
 sub parse_response {

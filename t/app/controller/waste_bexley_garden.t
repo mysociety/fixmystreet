@@ -1869,25 +1869,18 @@ FixMyStreet::override_config {
         };
     };
 
-    subtest 'Test AccessPaySuite content length header' => sub {
-        use Integrations::AccessPaySuite;
-        use Test::MockModule;
-        use HTTP::Request;
-
-        my $content = "param1=value1&param2=value2";
-
-        my $mock = Test::MockModule->new('Integrations::AccessPaySuite');
-        $mock->mock('ua', sub { return HTTP::Tiny->new });
-        $mock->mock('config', sub { return { api_key => 'test-api-key', endpoint => 'http://example.com' } });
-        $mock->mock('build_uri', sub { return 'http://example.com/test'; });
-
+    subtest 'Test AccessPaySuite create_request' => sub {
         my $aps = Integrations::AccessPaySuite->new(config => { api_key => 'test-api-key', endpoint => 'http://example.com' });
-        my $headers = $aps->headers($content);
-        is $headers->{'Content-Length'}, length($content), 'Content-Length header is set correctly';
 
-        my $req = $aps->create_request('POST', 'test', { param1 => 'value1', param2 => 'value2' });
-        ok $req->header('Content-Length') > 0, 'Content-Length header is set';
+        my $req = $aps->create_request('POST', 'http://example.com/test', { param1 => 'value1', param2 => 'value2' });
         is $req->header('Content-Length'), length($req->content), 'Content-Length matches content length';
+        is $req->header('Content-Type'), 'application/x-www-form-urlencoded', 'Content-Type is set correctly';
+        is $req->content, 'param1=value1&param2=value2', 'Content is correct';
+        is $req->method, 'POST', 'Method is correct';
+        is $req->uri, 'http://example.com/test', 'URI is correct';
+        like $req->header('User-Agent'), qr/WasteWorks by SocietyWorks/, 'User-Agent is correct';
+        is $req->header('ApiKey'), 'test-api-key', 'ApiKey is correct';
+        is $req->header('Accept'), 'application/json', 'Accept is correct';
     };
 };
 
