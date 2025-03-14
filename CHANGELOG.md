@@ -3,6 +3,7 @@
 * Unreleased
     - Admin improvements:
         - Improve performance of admin reports search for email. #5284
+        - import-export-data script exports and imports send_method for category #4818
     - Development improvements
         - More logging when page_error is called, to aid troubleshooting. #5279
 
