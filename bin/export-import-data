@@ -57,6 +57,7 @@ sub export {
                 category => $_->category,
                 email => $_->email,
                 state => $_->state,
+                send_method => $_->send_method || '',
                 non_public => $_->non_public ? JSON->true : JSON->false,
                 extra => $_->extra,
             };
@@ -127,6 +128,7 @@ sub import {
                     whenedited => \'current_timestamp',
                     email => $_->{email},
                     state => $_->{state},
+                    send_method => $_->{send_method},
                     non_public => $_->{non_public},
                     extra => $_->{extra},
                 });
