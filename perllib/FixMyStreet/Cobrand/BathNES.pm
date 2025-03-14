@@ -13,6 +13,9 @@ use strict;
 use warnings;
 use utf8;
 
+use Moo;
+with 'FixMyStreet::Roles::Open311Multi';
+
 =head2 Defaults
 
 =over 4
@@ -292,6 +295,15 @@ sub categories_restriction {
         'me.send_method' => 'Email::BathNES', # Street Light Fault
         'me.send_method' => 'Blackhole', # Parks categories
     ] } );
+}
+
+=head2 open311_munge_update_params
+
+Stub needs to exist for FixMyStreet::Roles::Open311Multi
+
+=cut
+
+sub open311_munge_update_params {
 }
 
 =head2 dashboard_export_updates_add_columns
