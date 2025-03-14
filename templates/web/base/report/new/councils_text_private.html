@@ -3,7 +3,7 @@
 [% IF unresponsive.$category OR unresponsive.ALL OR bodies_to_list.size == 0 %]
     [% loc('These details will never be shown online without your permission.') %]
 [% ELSE %]
-    [% loc('These details will be sent to the council, but will never be shown online without your permission.') %]
+    [% loc('These details will be sent to the responsible organisation, but will never be shown online without your permission.') %]
 [% END %]
 (<a href="[% c.cobrand.privacy_policy_url %]">[% loc('See our privacy policy') %]</a>.)
 [% END -%]
