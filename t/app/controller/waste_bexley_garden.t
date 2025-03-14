@@ -986,7 +986,7 @@ FixMyStreet::override_config {
             paymentMonthInYear => 1,
             amount => '70.00',
             start => '2024-01-28T17:00:00.000',
-            additionalReference => "BEX-$id-10001",
+            additionalReference => "10001",
         }, 'Contract parameters are correct';
 
         $mech->content_contains('Your Direct Debit has been set up successfully');
@@ -1546,7 +1546,7 @@ FixMyStreet::override_config {
         ok $report, "Found the report";
 
         # Check a couple of contract params
-        is $contract_params->{additionalReference}, 'BEX-' . $report->id . '-10001', 'Correct additional reference';
+        is $contract_params->{additionalReference}, '10001', 'Correct additional reference';
         is $contract_params->{amount}, '125.00', 'Correct amount';
 
         is $report->title, "Garden Subscription - Renew", "Correct title";
