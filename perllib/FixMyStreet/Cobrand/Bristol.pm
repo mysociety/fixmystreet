@@ -84,13 +84,13 @@ Bristol uses the following pin colours:
 
 =over 4
 
-=item * grey: closed as 'not responsible'
+=item * grey: closed
 
-=item * green: fixed or otherwise closed
+=item * green: fixed
 
-=item * red: newly open
+=item * yellow: newly open
 
-=item * yellow: any other open state
+=item * orange: any other open state
 
 =back
 
@@ -98,11 +98,13 @@ Bristol uses the following pin colours:
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $p->state eq 'not responsible';
-    return 'green' if $p->is_fixed || $p->is_closed;
-    return 'red' if $p->state eq 'confirmed';
-    return 'yellow';
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
+
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
 
