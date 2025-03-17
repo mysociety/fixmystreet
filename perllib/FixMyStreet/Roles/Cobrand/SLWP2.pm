@@ -128,6 +128,8 @@ sub waste_service_to_containers { () }
 
 sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden_add} }
 
+sub garden_renewal_reduction_sparks_container_removal { 1 }
+
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
     return 1 if $self->moniker eq 'kingston';
