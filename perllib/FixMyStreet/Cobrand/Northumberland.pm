@@ -280,4 +280,26 @@ sub open311_munge_update_params {
     }
 }
 
+sub state_groups_inspect {
+    my $rs = FixMyStreet::DB->resultset("State");
+    my @fixed = FixMyStreet::DB::Result::Problem->fixed_states;
+    [
+        [ $rs->display('confirmed'), [ grep { $_ ne 'planned' } FixMyStreet::DB::Result::Problem->open_states ] ],
+        @fixed ? [ $rs->display('fixed'), [ 'fixed - council' ] ] : (),
+        [ $rs->display('closed'), [ FixMyStreet::DB::Result::Problem->closed_states ] ],
+    ]
+}
+
+sub state_groups_admin {
+    my $rs = FixMyStreet::DB->resultset("State");
+    my @fixed = FixMyStreet::DB::Result::Problem->fixed_states;
+    [
+        [ $rs->display('confirmed'), [ FixMyStreet::DB::Result::Problem->open_states ] ],
+        @fixed ? [ $rs->display('fixed'), [ FixMyStreet::DB::Result::Problem->fixed_states ] ] : (),
+        [ $rs->display('closed'), [ FixMyStreet::DB::Result::Problem->closed_states ] ],
+        [ $rs->display('hidden'), [ FixMyStreet::DB::Result::Problem->hidden_states ] ]
+    ]
+}
+
+
 1;

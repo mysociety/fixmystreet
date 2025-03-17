@@ -759,6 +759,7 @@ subtest 'Inspect form state choices' => sub {
     $mech->content_lacks('for triage');
     $mech->content_lacks('planned');
     $mech->content_lacks('investigating');
+    $mech->content_lacks('twin');
 };
 
 subtest "change category, report resent to new location" => sub {
