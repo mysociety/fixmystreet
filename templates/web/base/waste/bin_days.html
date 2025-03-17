@@ -214,7 +214,12 @@
       IF c.cobrand.moniker == 'brent' %]Small items[% ELSIF c.cobrand.moniker == 'sutton' %]Bulky Waste[% ELSE %]Bulky waste[% END
   %]</h3>
     [% IF c.cobrand.moniker == 'kingston' || c.cobrand.moniker == 'sutton' %]
-        <p>Pay to have large household items like furniture or appliances collected from your address.</p>
+        <p>
+            Pay to have large household items like furniture or appliances collected from your address.
+          [% IF c.cobrand.moniker == 'sutton' %]
+            Please make sure you’ve read the <a href="https://www.sutton.gov.uk/w/bulky-waste-collections-terms-and-conditions">bulky goods collection page</a> before making a booking.
+          [% END %]
+        </p>
     [% END %]
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-quarter text-centered">
