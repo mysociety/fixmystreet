@@ -87,10 +87,6 @@ INCLUDE '_email_top.html';
 [% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     [% report.detail | html_para_email(secondary_p_style) %]
-
-    [% IF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
-      <a style="[% button_style %]" href="[% cobrand.feature('waste_features').track_request_url %]?client_ref=RBK-[% report.id %]">Track your request</a>
-    [% END %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]

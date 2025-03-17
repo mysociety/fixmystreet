@@ -2,6 +2,7 @@ INSERT INTO state (label, type, name) VALUES ('investigating', 'open', 'Investig
 INSERT INTO state (label, type, name) VALUES ('in progress', 'open', 'In progress');
 INSERT INTO state (label, type, name) VALUES ('planned', 'open', 'Planned');
 INSERT INTO state (label, type, name) VALUES ('action scheduled', 'open', 'Action scheduled');
+INSERT INTO state (label, type, name) VALUES ('twin', 'open', 'Twin');
 INSERT INTO state (label, type, name) VALUES ('unable to fix', 'closed', 'No further action');
 INSERT INTO state (label, type, name) VALUES ('not responsible', 'closed', 'Not responsible');
 INSERT INTO state (label, type, name) VALUES ('duplicate', 'closed', 'Duplicate');
