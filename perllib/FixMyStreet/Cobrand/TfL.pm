@@ -377,7 +377,7 @@ sub user_from_oidc {
 
 sub state_groups_inspect {
     my $rs = FixMyStreet::DB->resultset("State");
-    my @open = grep { $_ !~ /^(planned|investigating|for triage)$/ } FixMyStreet::DB::Result::Problem->open_states;
+    my @open = grep { $_ !~ /^(planned|investigating|for triage|twin)$/ } FixMyStreet::DB::Result::Problem->open_states;
     my @closed = grep { $_ ne 'closed' } FixMyStreet::DB::Result::Problem->closed_states;
     [
         [ $rs->display('confirmed'), \@open ],
