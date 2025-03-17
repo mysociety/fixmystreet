@@ -1,9 +1,5 @@
 Subject: Update on report, reference RBK-[% report.id %]
 
-[% IF report.category == 'Request new container' %]
-Track your request - [% cobrand.feature('waste_features').track_request_url %]?client_ref=RBK-[% report.id %]
-[% END %]
-
 The following updates have been left on this report:
 
 [% INCLUDE '_email_comment_list.txt' %]
