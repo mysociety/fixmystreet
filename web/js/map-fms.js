@@ -1,6 +1,11 @@
-fixmystreet.maps.tile_base = '//{S}tilma.mysociety.org/oml';
+/*
+ * This map layer uses OSM in Northern Ireland, our own tile server for
+ * Great Britain zoom levels 16/17+, and the OS Maps API otherwise
+ */
 
-OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
+fixmystreet.maps.tile_base = 'https://{S}tilma.mysociety.org/oml';
+
+OpenLayers.Layer.FixMyStreet = OpenLayers.Class(OpenLayers.Layer.OSM.Mapnik, {
     gb_bounds: [
         new OpenLayers.Bounds(-6.6, 49.8, 1.102680, 51),
         new OpenLayers.Bounds(-5.4, 51, 2.28, 54.94),
@@ -21,7 +26,7 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
     },
 
     setMap: function() {
-        OpenLayers.Layer.Bing.prototype.setMap.apply(this, arguments);
+        OpenLayers.Layer.OSM.Mapnik.prototype.setMap.apply(this, arguments);
         this.map.events.register("moveend", this, this.updateAttribution);
     },
 
@@ -32,50 +37,55 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
         var c = this.map.getCenter();
         var in_gb = c ? this.in_gb(c) : true;
         var year = (new Date()).getFullYear();
-        if (z >= 16 && in_gb) {
-            copyrights = 'Contains National Highways and OS data &copy; Crown copyright and database rights ' + year;
+        if (in_gb) {
+            copyrights = '<div class="os-api-branding copyright">Contains National Highways and OS data<br>&copy; Crown copyright and database rights ' + year;
             if (fixmystreet.os_licence) {
                 copyrights += " " + fixmystreet.os_licence;
             }
+            copyrights += '</div>';
+            logo = '<div class="os-api-branding logo"></div>';
         } else {
-            logo = '<a href="https://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
-            if (in_gb) {
-                copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>, HERE, National Highways, Ordnance Survey';
-            } else {
-                copyrights = '&copy; ' + year + ' <a href="https://www.bing.com/maps/">Microsoft</a>, HERE, Ordnance Survey';
-            }
+            copyrights = '<div class="os-api-branding copyright">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</div>';
         }
-        this._updateAttribution(copyrights, logo);
+        this.attribution = logo + copyrights;
+        if (this.map) {
+            this.map.events.triggerEvent("changelayer", {
+                layer: this,
+                property: "attribution"
+            });
+        }
     },
 
     tile_prefix: [ '', 'a-', 'b-', 'c-' ],
 
-    get_urls: function(bounds, z) {
-        var urls = [], i;
+    getURL: function (bounds) {
+        var xyz = this.getXYZ(bounds);
         var in_gb = this.in_gb(bounds.getCenterLonLat());
-        if (z >= 16 && in_gb) {
-            urls = [];
+
+        var url = this.url;
+        if (!fixmystreet.os_premium && xyz.z >= fixmystreet.os_oml_zoom_switch && in_gb) {
+            url = [];
             for (i=0; i< this.tile_prefix.length; i++) {
-                urls.push( fixmystreet.maps.tile_base.replace('{S}', this.tile_prefix[i]) + "/${z}/${x}/${y}.png" );
+                url.push( fixmystreet.maps.tile_base.replace('{S}', this.tile_prefix[i]) + "/${z}/${x}/${y}.png" );
             }
-        } else if (z > 11 && in_gb) {
-            var type = 'g=8702&lbl=l1&productSet=mmOS&key=' + fixmystreet.bing_key;
-            var tile_base = "//ecn.t{S}.tiles.virtualearth.net/tiles/r${id}?" + type;
-            for (i=0; i<4; i++) {
-                urls.push(tile_base.replace('{S}', i));
-            }
-        } else {
-            for (i=0; i<4; i++) {
-                urls.push(this.tile_base.replace('{S}', i));
+        } else if (in_gb) {
+            url = fixmystreet.os_url.replace('%s', fixmystreet.os_layer) + "/${z}/${x}/${y}.png";
+            if (fixmystreet.os_key) {
+                url += "?key=" + fixmystreet.os_key;
             }
         }
-        return urls;
+
+        if (OpenLayers.Util.isArray(url)) {
+            var s = '' + xyz.x + xyz.y + xyz.z;
+            url = this.selectUrl(s, url);
+        }
+        return OpenLayers.String.format(url, xyz);
     },
 
-    CLASS_NAME: "OpenLayers.Layer.BingUK"
+    CLASS_NAME: "OpenLayers.Layer.FixMyStreet"
 });
 
 fixmystreet.layer_options = [
-  { map_type: OpenLayers.Layer.BingUK },
+  { map_type: OpenLayers.Layer.FixMyStreet },
   { map_type: OpenLayers.Layer.BingAerial }
 ];

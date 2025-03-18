@@ -46,12 +46,6 @@ sub disambiguate_location {
 
 sub disable_nearby_topup { 1 }
 
-sub map_type {
-    my $self = shift;
-    return 'OS::FMS' if $self->feature('os_maps_url') || $self->feature('os_maps_api_key');
-    return $self->next::method();
-}
-
 sub process_open311_extras {
     my $self    = shift;
     my $ctx     = shift;

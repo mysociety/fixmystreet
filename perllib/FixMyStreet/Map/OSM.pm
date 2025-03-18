@@ -29,10 +29,10 @@ sub map_tiles {
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     my $tile_url = $self->base_tile_url();
     return [
-        "https://a.$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",
-        "https://b.$tile_url/$z/$x/" . ($y - 1) . ".png",
-        "https://c.$tile_url/$z/" . ($x - 1) . "/$y.png",
-        "https://a.$tile_url/$z/$x/$y.png",
+        "https://$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",
+        "https://$tile_url/$z/$x/" . ($y - 1) . ".png",
+        "https://$tile_url/$z/" . ($x - 1) . "/$y.png",
+        "https://$tile_url/$z/$x/$y.png",
     ];
 }
 
@@ -139,7 +139,10 @@ sub click_to_tile {
 # XXX Note use of min_zoom_level here.
 sub click_to_wgs84 {
     my ($cls, $c, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
-    my $self = $cls->new;
+    my $self = $cls->new(
+        latitude => $c->get_param('latitude'),
+        longitude => $c->get_param('longitude'),
+    );
     my $tile_x = click_to_tile($pin_tile_x, $pin_x);
     my $tile_y = click_to_tile($pin_tile_y, $pin_y);
     my $zoom = $self->min_zoom_level + (defined $c->get_param('zoom') ? $c->get_param('zoom') : 3);
