@@ -9,7 +9,6 @@ my $requires = {
     'GoogleOL' => 'map-google-ol.js',
     'HighwaysEngland' => 'map-fms.js',
     'Hounslow' => 'map-wmts-hounslow.js',
-    'MasterMap' => 'map-mastermap.js',
     'OS::FMS' => 'map-fms-os.js',
     'OS::API' => 'map-os.js',
     'OSM' => 'OpenStreetMap.js',
