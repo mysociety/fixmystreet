@@ -1,6 +1,6 @@
 use Test::More;
 use FixMyStreet::Cobrand;
-use FixMyStreet::Map::OS::FMS;
+use FixMyStreet::Map::FMS;
 use FixMyStreet::Map::OS::API;
 
 my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('fixmystreet');
@@ -31,10 +31,10 @@ subtest 'correct map tiles used' => sub {
     }
 };
 
-subtest "Correct OS::FMS tiles" => sub {
+subtest "Correct FMS tiles" => sub {
     foreach (
-        { zoom => 10, expected => 'ch/1010100100.*?=G,L' },
-        { zoom => 13, expected => 'r3131010100100.*?mmOS' },
+        { zoom => 10, expected => 'zxy/Road_3857/10/32420/21504.png\?key=456' },
+        { zoom => 14, expected => 'zxy/Road_3857/14/32420/21504.png\?key=456' },
         { zoom => 16, layer => 'Light_3857', expected => 'zxy/Light_3857/16/32420/21504.png\?key=456' },
         { zoom => 18, layer => 'Road_3857', expected => 'zxy/Road_3857/18/32420/21504.png\?key=456' },
     ) {
@@ -44,9 +44,29 @@ subtest "Correct OS::FMS tiles" => sub {
             COBRAND_FEATURES => {
                 os_maps_api_key => { default => "456" },
                 os_maps_layer => { default => $layer },
+                os_maps_premium => { default => 1 },
             }
         }, sub {
-            my $map = FixMyStreet::Map::OS::FMS->new({ cobrand => $cobrand });
+            my $map = FixMyStreet::Map::FMS->new({ cobrand => $cobrand });
+            my $tiles = $map->map_tiles(x_tile => 32421, y_tile => 21505, zoom_act => $zoom);
+            like $tiles->[0], qr/$_->{expected}/, "with zoom $zoom";
+        };
+    }
+    foreach (
+        { zoom => 10, expected => 'zxy/Road_3857/10/32420/21504.png\?key=456' },
+        { zoom => 14, expected => 'zxy/Road_3857/14/32420/21504.png\?key=456' },
+        { zoom => 16, layer => 'Light_3857', expected => 'zxy/Light_3857/16/32420/21504.png\?key=456' },
+        { zoom => 18, expected => 'oml/18/32420/21504.png' },
+    ) {
+        my $layer = $_->{layer};
+        my $zoom = $_->{zoom};
+        FixMyStreet::override_config {
+            COBRAND_FEATURES => {
+                os_maps_api_key => { default => "456" },
+                os_maps_layer => { default => $layer },
+            }
+        }, sub {
+            my $map = FixMyStreet::Map::FMS->new({ cobrand => $cobrand });
             my $tiles = $map->map_tiles(x_tile => 32421, y_tile => 21505, zoom_act => $zoom);
             like $tiles->[0], qr/$_->{expected}/, "with zoom $zoom";
         };
