@@ -1868,6 +1868,21 @@ FixMyStreet::override_config {
             };
         };
     };
+
+    subtest 'Test AccessPaySuite create_request' => sub {
+        my $aps = Integrations::AccessPaySuite->new(config => { api_key => 'test-api-key', endpoint => 'http://example.com' });
+
+        my $req = $aps->create_request('POST', 'http://example.com/test', { param1 => 'value1', param2 => 'value2' });
+        is $req->header('Content-Length'), length($req->content), 'Content-Length matches content length';
+        is $req->header('Content-Type'), 'application/x-www-form-urlencoded', 'Content-Type is set correctly';
+        like $req->content, qr/param1=value1/, 'param1 is correct';
+        like $req->content, qr/param2=value2/, 'param2 is correct';
+        is $req->method, 'POST', 'Method is correct';
+        is $req->uri, 'http://example.com/test', 'URI is correct';
+        like $req->header('User-Agent'), qr/WasteWorks by SocietyWorks/, 'User-Agent is correct';
+        is $req->header('ApiKey'), 'test-api-key', 'ApiKey is correct';
+        is $req->header('Accept'), 'application/json', 'Accept is correct';
+    };
 };
 
 sub get_report_from_redirect {
