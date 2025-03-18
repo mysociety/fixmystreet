@@ -1017,7 +1017,10 @@ sub local_coords {
         return ( int($x+0.5), int($y+0.5) );
     } elsif ($cobrand->country eq 'GB') {
         my $coordsyst = 'G';
-        $coordsyst = 'I' if FixMyStreet::Map::FMS::in_northern_ireland_box($self->latitude, $self->longitude);
+        $coordsyst = 'I' if FixMyStreet::Map::FMS->new(
+            latitude => $self->latitude,
+            longitude => $self->longitude,
+        )->in_northern_ireland_box;
         my ($x, $y) = Utils::convert_latlon_to_en( $self->latitude, $self->longitude, $coordsyst );
         return ($x, $y, $coordsyst);
     }
@@ -1285,6 +1288,8 @@ sub static_map {
 
     my $cobrand = $FixMyStreet::Map::map_cobrand || $self->get_cobrand_logged;
     my $map = $FixMyStreet::Map::map_class->new({
+        latitude  => $self->latitude,
+        longitude => $self->longitude,
         cobrand => $cobrand,
         distance => 1, # prevents the call to Gaze which isn't necessary
         $params{zoom} ? ( zoom => $params{zoom} ) : (),

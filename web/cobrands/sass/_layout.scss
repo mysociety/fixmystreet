@@ -570,8 +570,7 @@ body.authpage {
 }
 
 .olControlAttribution {
-  bottom:0.5em !important;
-  #{$left}: auto !important;
+  bottom: 0 !important;
 }
 
 .map-links {

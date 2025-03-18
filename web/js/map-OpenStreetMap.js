@@ -25,11 +25,10 @@ OpenLayers.Layer.OSM.Mapnik = OpenLayers.Class(OpenLayers.Layer.OSM, {
      * options - {Object} Hashtable of extra options to tag onto the layer
      */
     initialize: function(name, options) {
-        var url = [
-            "https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
-        ];
+        var url = "https://tile.openstreetmap.org/${z}/${x}/${y}.png";
+        var attribution = '<div class="os-api-branding copyright">' + this.attribution + '</div>';
+        this.attribution = attribution;
+
         options = OpenLayers.Util.extend({
             /* Below line added to OSM's file in order to allow minimum zoom level */
             maxResolution: 156543.03390625/Math.pow(2, options.zoomOffset || 0),
