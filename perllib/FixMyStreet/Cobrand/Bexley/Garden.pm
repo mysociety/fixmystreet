@@ -268,6 +268,7 @@ sub waste_setup_direct_debit {
     my $email = $report->user->email;
 
     my $data = $c->stash->{form_data};
+    my $uprn = $report->get_extra_field_value('uprn');
 
     my $i = $self->get_dd_integration;
 
@@ -297,7 +298,7 @@ sub waste_setup_direct_debit {
         paymentMonthInYear => $c->stash->{payment_date}->month,
         paymentDayInMonth => 28, # Always the 28th for Bexley
         amount => $c->stash->{amount},
-        additionalReference => $c->stash->{reference},
+        additionalReference => $uprn,
     };
 
     if ($customer->{error}) {
