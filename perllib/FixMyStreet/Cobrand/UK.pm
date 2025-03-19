@@ -40,6 +40,12 @@ sub disambiguate_location {
     };
 }
 
+sub map_type {
+    my $self = shift;
+    return 'OS::Leisure' if $self->feature('os_maps_leisure');
+    return $self->next::method();
+}
+
 sub process_open311_extras {
     my $self    = shift;
     my $ctx     = shift;

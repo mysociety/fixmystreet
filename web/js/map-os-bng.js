@@ -2,6 +2,8 @@ fixmystreet.maps.config = function() {
     fixmystreet.maps.controls.unshift( new OpenLayers.Control.AttributionFMS() );
 };
 
+fixmystreet.maps.tile_base = 'https://{S}tilma.mysociety.org/mapcache/gmaps/oml@osmaps';
+
 OpenLayers.Layer.OSMapsBNG = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     initialize: function(name, options) {
         var url = fixmystreet.os_url.replace('%s', fixmystreet.os_layer) + "/${z}/${x}/${y}.png";
@@ -28,7 +30,37 @@ OpenLayers.Layer.OSMapsBNG = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         OpenLayers.Layer.XYZ.prototype.initialize.call(this, name, url, options);
     },
 
+    tile_prefix: [ '', 'a-', 'b-', 'c-' ],
+
+    getURL: function (bounds) {
+        var xyz = this.getXYZ(bounds);
+        var url = this.url;
+        if (!fixmystreet.os_premium && fixmystreet.os_oml_zoom_switch && xyz.z >= fixmystreet.os_oml_zoom_switch) {
+            url = [];
+            for (i=0; i < this.tile_prefix.length; i++) {
+                url.push( fixmystreet.maps.tile_base.replace('{S}', this.tile_prefix[i]) + "/${z}/${x}/${y}.png" );
+            }
+        }
+
+        if (OpenLayers.Util.isArray(url)) {
+            var s = '' + xyz.x + xyz.y + xyz.z;
+            url = this.selectUrl(s, url);
+        }
+        return OpenLayers.String.format(url, xyz);
+    },
+
     CLASS_NAME: "OpenLayers.Layer.OSMapsBNG"
+});
+
+OpenLayers.Layer.OSLeisure = OpenLayers.Class(OpenLayers.Layer.OSMapsBNG, {
+    getURL: function (bounds) {
+        var url = OpenLayers.Layer.OSMapsBNG.prototype.getURL.apply(this, [bounds]);
+        var regex = new RegExp(fixmystreet.os_layer + '/([78])');
+        url = url.replace(regex, 'Leisure_27700/$1');
+        return url;
+    },
+
+    CLASS_NAME: "OpenLayers.Layer.OSLeisure"
 });
 
 fixmystreet.maps.zoom_for_normal_size = 8;
