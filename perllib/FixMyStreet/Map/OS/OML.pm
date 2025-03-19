@@ -34,7 +34,11 @@ sub map_tiles {
         return \@urls;
     }
 
-    my $tile_url = sprintf($self->os_tile_url, $self->layer);
+    my $layer = $self->layer;
+    if ($self->cobrand->feature('os_maps_leisure') && ($z == 7 || $z == 8)) {
+        $layer = 'Leisure_27700';
+    }
+    my $tile_url = sprintf($self->os_tile_url, $layer);
     my $key = $self->key;
     return [
         "$tile_url/$z/" . ($x-1) . "/" . ($y-1) . ".png?key=$key",
