@@ -46,6 +46,12 @@ sub disambiguate_location {
 
 sub disable_nearby_topup { 1 }
 
+sub map_type {
+    my $self = shift;
+    return 'OS::Leisure' if $self->feature('os_maps_leisure');
+    return $self->next::method();
+}
+
 sub process_open311_extras {
     my $self    = shift;
     my $ctx     = shift;

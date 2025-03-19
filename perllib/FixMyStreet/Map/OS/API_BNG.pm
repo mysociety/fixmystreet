@@ -9,7 +9,10 @@ has '+min_zoom_level' => ( is => 'lazy', default => sub {
 
 has '+min_zoom_level_any' => ( is => 'ro', default => 0 );
 
-has os_map_type => ( is => 'ro', default => 'OpenLayers.Layer.OSMapsBNG' );
+has os_map_type => ( is => 'lazy', default => sub {
+    return 'OpenLayers.Layer.OSLeisure' if $_[0]->cobrand->feature('os_maps_leisure');
+    return 'OpenLayers.Layer.OSMapsBNG';
+});
 
 has '+map_type' => ( is => 'lazy', default => sub {
     return $_[0]->in_northern_ireland_box ? 'OpenLayers.Layer.OSM.Mapnik' : $_[0]->os_map_type;
