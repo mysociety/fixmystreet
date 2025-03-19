@@ -224,6 +224,7 @@ sub bin_services_for_address {
         my $garden_cost = 0;
         my $garden_due;
         my $garden_overdue = 0;
+        my $garden_container_end_date; # Containers may be changing whilst subscription already renewed
         if (lc($service_name) eq 'garden waste') {
             $garden = 1;
             $garden_due = $self->waste_sub_due($schedules->{end_date});
@@ -251,6 +252,7 @@ sub bin_services_for_address {
             garden_container => $garden_container,
             garden_cost => $garden_cost,
             garden_due => $garden_due,
+            garden_container_end_date => $garden_container_end_date,
             garden_overdue => $garden_overdue,
             request_allowed => $request_allowed,
             requests_open => $open_requests,

@@ -334,12 +334,13 @@ sub garden_container_data_extract {
     my $costs = WasteWorks::Costs->new({ cobrand => $self });
 
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
-    my ($garden_bins, $garden_sacks, $garden_cost, $garden_container);
+    my ($garden_bins, $garden_sacks, $garden_cost, $garden_container, $container_end_date);
     foreach (@$data) {
         my $start_date = construct_bin_date($_->{StartDate})->strftime("%F");
         my $end_date = construct_bin_date($_->{EndDate})->strftime("%F");
         # No start date check as we do want to take the first one we find, even if it is starting in the future
         next if $end_date lt $today;
+        $container_end_date = $end_date if $end_date lt $schedules->{end_date};
         my $asset_id = $_->{AssetTypeId};
         if ($asset_id == $GARDEN_CONTAINER_IDS{sack}) {
             $garden_sacks = 1;
@@ -356,7 +357,7 @@ sub garden_container_data_extract {
     }
     push @$containers, $garden_container;
     $quantities->{$garden_container} = $garden_bins;
-    return ($garden_bins, $garden_sacks, $garden_cost, $garden_container);
+    return ($garden_bins, $garden_sacks, $garden_cost, $garden_container, $container_end_date);
 }
 
 # We don't have overdue renewals here
