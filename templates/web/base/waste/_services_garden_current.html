@@ -1,7 +1,13 @@
 
 <dl class="govuk-summary-list">
     <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Subscription</dt>
+      <dt class="govuk-summary-list__key">[%
+        IF c.cobrand.moniker == 'sutton' OR c.cobrand.moniker == 'kingston';
+            'Current subscription';
+        ELSE;
+            'Subscription';
+        END
+      %]</dt>
       <dd class="govuk-summary-list__value">
         [%~ PROCESS 'waste/_services_garden_subscription.html' ~%]
       </dd>
