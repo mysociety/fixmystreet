@@ -65,7 +65,7 @@ sub calculate_zoom {
         $zoomOffset = $anyZoomOffset;
     }
 
-    my $zoom = $self->zoom || $default_zoom;
+    my $zoom = $self->zoom // $default_zoom;
     $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;
     $zoom = 0 if $zoom < 0;
 
