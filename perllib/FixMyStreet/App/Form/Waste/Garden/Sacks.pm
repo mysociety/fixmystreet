@@ -36,7 +36,7 @@ has_page sacks_details => (
         my $page = shift;
         my $c = $page->form->c;
         my @fields;
-        if ($c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method) {
+        if ($c->cobrand->garden_hide_payment_method_field) {
             push @fields, 'payment_method', 'cheque_reference', 'password';
         } elsif ($c->stash->{staff_payments_allowed}) {
             push @fields, 'password';
