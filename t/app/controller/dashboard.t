@@ -34,7 +34,7 @@ my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights & bells', 'White line
 for my $contact ( @cats ) {
     my $c = $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");
     if ($contact eq 'Potholes' || $contact eq 'White lines') {
-        $c->set_extra_metadata(group => ['Road & more']);
+        $c->set_extra_metadata(group => ['Road & more', 'Pavements']);
         $c->update;
     }
 }
@@ -158,7 +158,7 @@ FixMyStreet::override_config {
 
     subtest 'The correct categories and totals shown by default' => sub {
         $mech->get_ok("/dashboard");
-        my $expected_cats = [ 'Litter', 'Other', 'Traffic lights & bells', 'All Road & more', 'Potholes', 'White lines' ];
+        my $expected_cats = [ 'Litter', 'Other', 'Traffic lights & bells', 'All Pavements', 'Potholes', 'White lines', 'All Road & more', 'Potholes', 'White lines' ];
         my $res = $categories->scrape( $mech->content );
         $mech->content_contains('<optgroup label="Road &amp; more">');
         $mech->content_contains('<option value="group-Road &amp; more"');
@@ -179,21 +179,41 @@ FixMyStreet::override_config {
         my $end = DateTime->now->subtract(months => 1)->strftime('%Y-%m-%d');
         $mech->submit_form_ok({ with_fields => { state => '', start_date => $start, end_date => $end } });
         test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 3);
-        $mech->get_ok("/dashboard?category=Litter&category=Potholes");
+        $mech->get_ok("/dashboard?category=Litter-group-&category=Potholes-group-");
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 0, 0, 0, 0, 3, 0, 4, 7);
-        $mech->get_ok("/dashboard?category=Traffic+lights+%26+bells");
-        $mech->content_contains("<option value='Traffic lights &amp; bells' selected>");
+        $mech->get_ok("/dashboard?category=Traffic+lights+%26+bells-group-");
+        $mech->content_contains("<option value='Traffic lights &amp; bells-group-' selected>");
         test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 0, 10);
         $mech->get_ok("/dashboard?category=group-Road+%26+more");
         $mech->content_contains('<option value="group-Road &amp; more" selected>');
         test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 1, 0, 0, 1, 3, 0, 4, 7);
-        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Potholes");
+        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Potholes-group-");
         test_table($mech->content, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 1, 0, 0, 1, 3, 0, 4, 7);
-        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Litter");
+        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Litter-group-");
         test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 1, 0, 0, 1, 4, 0, 4, 8);
+        my ($sub_pothole_pavement) = $mech->create_problems_for_body(1, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'no2fat' });
+        $sub_pothole_pavement->set_extra_metadata( group => 'Pavements');
+        $sub_pothole_pavement->update;
+        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Litter-group-");
+        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 4, 6, 1, 0, 0, 1, 4, 0, 4, 8);
+        my ($sub_pothole_road) = $mech->create_problems_for_body(1, $body->id, 'Title', { areas => ",$area_id,2651,", category => 'Potholes', cobrand => 'no2fat' });
+        $sub_pothole_road->set_extra_metadata( group => 'Road & more');
+        $sub_pothole_road->state('closed');
+        $sub_pothole_road->update;
+        $mech->get_ok("/dashboard?category=group-Road+%26+more&category=Litter-group-");
+        test_table($mech->content, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 2, 0, 4, 6, 1, 0, 0, 1, 4, 1, 4, 9);
+        $sub_pothole_pavement->delete;
+        $sub_pothole_road->delete;
     };
 
     subtest 'test grouping' => sub {
+        my $contacts = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } );
+        while (my $contact = $contacts->next) {
+            if ($contact->category eq 'Potholes' || $contact->category eq 'White lines') {
+                $contact->set_extra_metadata(group => ['Road & more']);
+                $contact->update;
+            }
+        }
         $mech->get_ok("/dashboard?group_by=category");
         my $top_level = test_table($mech->content, 1, 0, 10, 6, 1, 18);
         is_deeply $top_level, ['Road & more'], 'Road group created';
