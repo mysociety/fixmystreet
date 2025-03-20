@@ -131,13 +131,13 @@ END;
         <input type="text" id="defect_initials" name="defect_initials" class="form-control" maxlength="5">
 
         <label for="defect_length">Length (mm)</label>
-        <input type="text" id="defect_length" name="defect_length" class="form-control">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" id="defect_length" name="defect_length" class="form-control">
 
         <label for="defect_depth">Depth (mm)</label>
-        <input type="text" id="defect_depth" name="defect_depth" class="form-control">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" id="defect_depth" name="defect_depth" class="form-control">
 
         <label for="defect_width">Width (mm)</label>
-        <input type="text" id="defect_width" name="defect_width" class="form-control">
+        <input type="text" inputmode="numeric" pattern="[0-9]*" id="defect_width" name="defect_width" class="form-control">
 
         <label for="defect_type_of_repair">Type of repair</label>
         [% type_of_repair = problem.get_extra_metadata('defect_type_of_repair') %]
