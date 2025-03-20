@@ -173,7 +173,7 @@ sub open311_pre_send {
 sub _inspect_form_extra_fields {
     return qw(
         defect_item_category defect_item_type defect_item_detail defect_location_description
-        defect_initials defect_length defect_depth defect_width defect_number defect_diameter
+        defect_initials defect_length defect_depth defect_width
         defect_type_of_repair defect_marked_in defect_speed_of_road defect_type_of_road
         defect_hazards_overhead_cables defect_hazards_blind_bends defect_hazards_junctions
         defect_hazards_schools defect_hazards_bus_routes defect_hazards_traffic_signals
@@ -223,7 +223,7 @@ sub open311_munge_update_params {
         $params->{'attribute[extra_details]'} = $details;
 
         foreach (_inspect_form_extra_fields()) {
-            $params->{"attribute[$_]"} = $p->get_extra_metadata($_);
+            $params->{"attribute[$_]"} = $p->get_extra_metadata($_) || '';
         }
     }
 }
@@ -271,7 +271,7 @@ sub report_inspect_update_extra {
     my ( $self, $problem ) = @_;
 
     foreach (_inspect_form_extra_fields()) {
-        my $value = $self->{c}->get_param($_);
+        my $value = $self->{c}->get_param($_) || '';
         $problem->set_extra_metadata($_ => $value) if $value;
     }
 }

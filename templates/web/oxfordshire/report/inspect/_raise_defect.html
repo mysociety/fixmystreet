@@ -15,8 +15,6 @@ SET fields = [
     [ 'defect_length', 'Length (mm)' ],
     [ 'defect_depth', 'Depth (mm)' ],
     [ 'defect_width', 'Width (mm)' ],
-    [ 'defect_number', 'No. off' ],
-    [ 'defect_diameter', 'Traffic Sign/Post Diameter' ],
     [ 'defect_type_of_repair', 'Type of repair' ],
     [ 'defect_marked_in', 'Marked in' ],
     [ 'defect_speed_of_road', 'Speed of road' ],
@@ -88,9 +86,6 @@ END;
             <option value="">-- Pick a type --</option>
             <optgroup class="defect-pothole-options defect-non-fill-options defect-non-cluster-options defect-minor-carriageway-options defect-non-kerb-options defect-non-drainage-options" label="Minor Carriageway/ Footway/ Cycleway">
                 <option>Pothole (Permanent)</option>
-            <optgroup class="defect-fill-options defect-minor-carriageway-options defect-non-kerb-options defect-non-drainage-options" label="Minor Carriageway/ Footway/ Cycleway">
-                <option>Sweep &amp; Fill</option>
-            </optgroup>
             <optgroup class="defect-kerb-options defect-non-fill-options defect-non-minor-carriageway-options defect-non-drainage-options" label="Kerbing">
                 <option>Damaged</option>
                 <option>Loose</option>
@@ -105,12 +100,6 @@ END;
         <label for="defect_item_detail">Defect detail</label>
         <select id="defect_item_detail" name="defect_item_detail" class="form-control" required>
             <option value="">-- Pick a detail --</option>
-            <optgroup class="defect-fill-options defect-minor-carriageway-options defect-non-cluster-options defect-non-pothole-options defect-non-kerb-options defect-non-drainage-options"
-                data-show="defect-fill-options" data-hide="defect-non-fill-options"
-                label="Sweep &amp; Fill">
-                <option>0-1m&sup2;</option>
-                <option>1-2m&sup2;</option>
-            </optgroup>
             <optgroup class="defect-pothole-options defect-minor-carriageway-options defect-non-cluster-options defect-non-fill-options defect-non-kerb-options defect-non-drainage-options"
                 data-show="defect-pothole-options" data-hide="defect-non-pothole-options"
                 label="Pothole (Permanent)">
@@ -150,15 +139,9 @@ END;
         <label for="defect_width">Width (mm)</label>
         <input type="text" id="defect_width" name="defect_width" class="form-control">
 
-        <label for="defect_number">No. off</label>
-        <input type="text" id="defect_number" name="defect_number" class="form-control">
-
-        <label for="defect_diameter">Traffic Sign/Post Diameter</label>
-        <input type="text" id="defect_diameter" name="defect_diameter" class="form-control">
-
         <label for="defect_type_of_repair">Type of repair</label>
         [% type_of_repair = problem.get_extra_metadata('defect_type_of_repair') %]
-        <select id="defect_type_of_repair" name="defect_type_of_repair" class="form-control">
+        <select id="defect_type_of_repair" name="defect_type_of_repair" class="form-control" required>
             <option value=""[% ' selected' IF NOT type_of_repair %]>&nbsp;</option>
             [% FOREACH option IN ['Temporary', 'Permanent', 'To be evaluateds'] %]
                 <option value='[% option %]'[% ' selected' IF type_of_repair == option %]>[% option %]</option>
@@ -167,7 +150,7 @@ END;
 
         <label for="defect_marked_in">Marked in</label>
         [% marked_in = problem.get_extra_metadata('defect_marked_in') %]
-        <select id="defect_marked_in" name="defect_marked_in" class="form-control">
+        <select id="defect_marked_in" name="defect_marked_in" class="form-control" required>
             <option value=""[% ' selected' IF NOT marked_in %]>&nbsp;</option>
             [% FOREACH option IN ['White', 'Red', 'Yellow', 'None'] %]
                 <option value='[% option %]'[% ' selected' IF marked_in == option %]>[% option %]</option>
@@ -206,7 +189,7 @@ END;
 
         <label for="defect_speed_of_road">Speed of road</label>
         [% speed_of_road = problem.get_extra_metadata('defect_speed_of_road') %]
-        <select id="defect_speed_of_road" name="defect_speed_of_road" class="form-control">
+        <select id="defect_speed_of_road" name="defect_speed_of_road" class="form-control" required>
             <option value=""[% ' selected' IF NOT speed_of_road %]>&nbsp;</option>
             [% FOREACH option IN ['30mph', '40mph', '50mph', 'National', 'N/A'] %]
                 <option value='[% option %]'[% ' selected' IF speed_of_road == option %]>[% option %]</option>
@@ -215,7 +198,7 @@ END;
 
         <label for="defect_type_of_road">Type of road</label>
         [% type_of_road = problem.get_extra_metadata('defect_type_of_road') %]
-        <select id="defect_type_of_road" name="defect_type_of_road" class="form-control">
+        <select id="defect_type_of_road" name="defect_type_of_road" class="form-control" required>
             <option value=""[% ' selected' IF NOT type_of_road %]>&nbsp;</option>
             [% FOREACH option IN ['Dual carriageway', 'Single track', 'Single carriageway', 'Residential', 'N/A'] %]
                 <option value='[% option %]'[% ' selected' IF type_of_road == option %]>[% option %]</option>
