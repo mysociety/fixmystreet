@@ -1492,6 +1492,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
         $mech->content_contains('Test McTest');
         my $discount_human = sprintf('%.2f', ($ggw_cost_first + $ggw_cost - $ggw_first_bin_discount) / 100);
+        $mech->content_contains('£' . $discount_human);
         # Submit the form
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
