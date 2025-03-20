@@ -369,6 +369,27 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=head2
+
+We protect all BANES categories that are open311 protected from being removed.
+
+Default open311 protection is to allow category name to be changed without
+being overwritten by the category name of its existing service code.
+
+This is so the Passthrough categories (all the email categories),
+which are manually added, aren't removed by the population of the service list.
+
+=cut
+
+sub open311_filter_contacts_for_deletion {
+    my ($self, $contacts) = @_;
+
+    # Don't delete open311 protected contacts when importing
+    return $contacts->search({
+        -not => { extra => { '@>' => '{"open311_protect":1}' } }
+    });
+}
+
 =head2 post_report_report_problem_link
 
 Overrides the 'post-report' report another problem here button with one linking back to the front page, rather than the report view at the same location.
