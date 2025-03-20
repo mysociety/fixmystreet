@@ -74,6 +74,21 @@ FixMyStreet::override_config {
         $mech->content_contains('CONFIRM Subject');
     };
 
+    subtest "private reports appear correctly on the triage page" => sub {
+        $mech->get_ok('/admin/triage');
+        $mech->content_contains($report->title);
+
+        $report->update({ non_public => 1 });
+        $mech->get_ok('/admin/triage');
+        $mech->content_lacks($report->title);
+
+        $user->user_body_permissions->create( { body => $iow, permission_type => 'report_mark_private' } );
+        $mech->get_ok('/admin/triage');
+        $mech->content_contains($report->title);
+
+        $report->update({ non_public => 0 });
+    };
+
     subtest "user has to select a category" => sub {
         my $report_url = '/report/' . $report->id;
         $mech->get_ok($report_url);

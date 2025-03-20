@@ -582,7 +582,7 @@ sub load_and_group_problems : Private {
 
     my $parameters = $c->forward('load_problems_parameters');
 
-    my $body = $c->stash->{body}; # Might be undef
+    my $body = $c->stash->{ignore_body_for_triage} ? undef : $c->stash->{body}; # Might be undef
     my $page = $c->get_param('p') || 1;
 
     my $problems = $c->cobrand->problems;
