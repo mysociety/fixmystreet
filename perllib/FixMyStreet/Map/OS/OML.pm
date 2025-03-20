@@ -22,7 +22,7 @@ sub map_tiles {
         return $self->SUPER::map_tiles(%params);
     }
 
-    if (!$self->premium && $z >= $self->oml_zoom_switch) {
+    if (!$self->premium && $self->oml_zoom_switch && $z >= $self->oml_zoom_switch) {
         my $tile_base = $self->oml_tile_url . '/%d/%d/%d.png';
         my $prefixes = $self->map_tile_prefix;
         my @urls;
