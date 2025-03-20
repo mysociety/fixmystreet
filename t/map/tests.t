@@ -10,6 +10,7 @@ my $requires = {
     'HighwaysEngland' => 'map-fms.js',
     'Hounslow' => 'map-wmts-hounslow.js',
     'OS::API' => 'map-os.js',
+    'OS::API_BNG' => 'map-os-bng.js',
     'OSM' => 'OpenStreetMap.js',
     'OSM::Cymru' => 'OSMCymru.js',
     'OSM::CycleMap' => 'OpenStreetMap.js',
