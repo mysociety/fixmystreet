@@ -143,7 +143,7 @@ END;
         [% type_of_repair = problem.get_extra_metadata('defect_type_of_repair') %]
         <select id="defect_type_of_repair" name="defect_type_of_repair" class="form-control" required>
             <option value=""[% ' selected' IF NOT type_of_repair %]>&nbsp;</option>
-            [% FOREACH option IN ['Temporary', 'Permanent', 'To be evaluateds'] %]
+            [% FOREACH option IN ['Temporary', 'Permanent', 'To be evaluated'] %]
                 <option value='[% option %]'[% ' selected' IF type_of_repair == option %]>[% option %]</option>
             [% END %]
         </select>
