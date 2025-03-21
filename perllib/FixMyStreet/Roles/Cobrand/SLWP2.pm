@@ -1,12 +1,12 @@
 =head1 NAME
 
-FixMyStreet::Roles::Cobrand::SLWP - shared code for anything with the SLWP Echo
+FixMyStreet::Roles::Cobrand::SLWP2 - shared code for Kingston and Sutton WasteWorks, new Echo
 
 =head1 DESCRIPTION
 
 =cut
 
-package FixMyStreet::Roles::Cobrand::SLWP;
+package FixMyStreet::Roles::Cobrand::SLWP2;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Echo';
@@ -18,22 +18,6 @@ use JSON::MaybeXS;
 use LWP::Simple;
 use MIME::Base64;
 use WasteWorks::Costs;
-
-around look_up_property => sub {
-    my ($orig, $self, $id) = @_;
-    my $data = $orig->($self, $id);
-
-    my $cfg = $self->feature('echo');
-    if ($cfg->{nlpg} && $data->{uprn}) {
-        my $uprn_data = get(sprintf($cfg->{nlpg}, $data->{uprn}));
-        $uprn_data = JSON::MaybeXS->new->decode($uprn_data) if $uprn_data;
-        if (!$uprn_data || $uprn_data->{results}[0]{LPI}{LOCAL_CUSTODIAN_CODE_DESCRIPTION} ne $self->lpi_value) {
-            $self->{c}->stash->{template} = 'waste/missing.html';
-            $self->{c}->detach;
-        }
-    }
-    return $data;
-};
 
 sub waste_staff_choose_payment_method { 1 }
 around waste_cheque_payments => sub {
@@ -63,68 +47,89 @@ sub waste_event_state_map {
 }
 
 my %SERVICE_IDS = (
-    domestic_refuse => 405,
-    communal_refuse => 406,
-    domestic_recycling => 408,
-    communal_recycling => 410,
-    food => 420,
-    garden => 409,
-    bulky => 413,
+    kingston => {
+        domestic_refuse => 966, # 4394
+        communal_refuse => 969, # 4407
+        fas_refuse => 967, # 4395
+        domestic_mixed => 970, # 4390
+        communal_mixed => 973, # 4397
+        fas_mixed => 971, # 4391
+        domestic_paper => 974, # 4388
+        communal_paper => 977, # 4396
+        fas_paper => 975, # 4402
+        domestic_food => 980, # 4389
+        communal_food => 983, # 4403
+        garden => 979, # 4410
+        bulky => 986, # 4536
+        schedule2_refuse => 968, # 4409
+        schedule2_mixed => 972, # 4398
+    },
+    sutton => {
+        domestic_refuse => 940, # 4394
+        communal_refuse => 943, # 4407
+        fas_refuse => 941, # 4395
+        domestic_mixed => 944, # 4390
+        communal_mixed => 947, # 4397
+        fas_mixed => 945, # 4391
+        domestic_paper => 948, # 4388
+        communal_paper => 951, # 4396
+        fas_paper => 949, # 4402
+        domestic_food => 954, # 4389
+        communal_food => 957, # 4403
+        garden => 953, # 4410
+        bulky => 960, # 4536
+        schedule2_refuse => 942, # 4409
+        schedule2_mixed => 946, # 4398
+    }
 );
 lock_hash(%SERVICE_IDS);
 
 my %EVENT_TYPE_IDS = (
-    missed_refuse => 1566,
-    missed_recycling => 1568,
-    missed_bulky => 1571,
-    request => 1635,
-    garden => 1638,
-    bulky => 1636,
+    missed => 3145,
+    missed_assisted => 3146,
+    request => 3129,
+    garden_add => 3159,
+    garden_amend => 3163,
+    bulky => 3130,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
-my %TASK_IDS = (
-    domestic_refuse => 2238,
-    domestic_food => 2239,
-    domestic_paper => 2240,
-    domestic_mixed => 2241,
-    domestic_refuse_bag => 2242,
-    communal_refuse => 2243,
-    domestic_mixed_bag => 2246,
-    garden => 2247,
-    communal_food => 2248,
-    communal_paper => 2249,
-    communal_mixed => 2250,
-    domestic_paper_bag => 2632,
-    schedule2_mixed => 3571,
-    schedule2_refuse => 3576,
-);
-lock_hash(%TASK_IDS);
-
 my %CONTAINERS = (
     refuse_140 => 1,
-    refuse_180 => 35,
-    refuse_240 => 2,
-    refuse_360 => 3,
-    recycling_box => 16,
-    recycling_240 => 12,
-    recycling_purple_bag => 17,
-    recycling_blue_bag => 18,
-    paper_240 => 19,
-    paper_140 => 36,
-    food_indoor => 23,
-    food_outdoor => 24,
-    garden_240 => 26,
-    garden_140 => 27,
-    garden_sack => 28,
+    refuse_180 => 2,
+    refuse_240 => 3,
+    refuse_360 => 4,
+    recycling_box => 12,
+    recycling_240 => 15,
+    recycling_blue_bag => 22,
+    paper_240 => 27,
+    paper_140 => 26,
+    food_indoor => 43,
+    food_outdoor => 46,
+    garden_240 => 39,
+    garden_140 => 37,
+    garden_sack => 36,
 );
 lock_hash(%CONTAINERS);
 
-sub garden_service_id { $TASK_IDS{garden} }
+my %GARDEN_CONTAINER_IDS = (
+    bin240 => 1915,
+    bin140 => 1914,
+    sack => 1928,
+);
+lock_hash(%GARDEN_CONTAINER_IDS);
+
+my %GARDEN_QUANTITIES = (
+    sack => 11,
+);
+
+sub garden_service_id { $SERVICE_IDS{$_[0]->moniker}{garden} }
 
 sub waste_service_to_containers { () }
 
-sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
+sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden_add} }
+
+sub garden_renewal_reduction_sparks_container_removal { 1 }
 
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
@@ -135,29 +140,22 @@ sub waste_show_garden_modify {
 sub waste_relevant_serviceunits {
     my ($self, $result) = @_;
     my @rows;
+    my $service_ids = $SERVICE_IDS{$self->moniker};
     foreach (@$result) {
-        my $servicetasks = $self->_get_service_tasks($_);
-        foreach my $task (@$servicetasks) {
-            my $service_id = $task->{TaskTypeId};
+        my $servicetask = $self->_get_current_service_task($_) or next;
 
-            # Sneak this in here before it's ignored for not having a service name
-            $self->{c}->stash->{schedule2_property} = 1 if $service_id == $TASK_IDS{schedule2_refuse} || $service_id == $TASK_IDS{schedule2_mixed} || $service_id == 4004;
+        $self->{c}->stash->{schedule2_property} = 1 if $_->{ServiceId} == $service_ids->{schedule2_refuse} || $_->{ServiceId} == $service_ids->{schedule2_mixed};
 
-            my $service_name = $self->service_name_override({ ServiceId => $service_id });
-            next unless $service_name;
+        my $service_name = $self->service_name_override({ ServiceId => $_->{ServiceId} });
+        next unless $service_name;
 
-            my $schedules = _parse_schedules($task, 'task');
-
-            # Ignore retired diesel rounds
-            next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != $self->garden_service_id;
-
-            push @rows, {
-                Id => $_->{Id},
-                ServiceId => $task->{TaskTypeId},
-                ServiceTask => $task,
-                Schedules => $schedules,
-            };
-        }
+        push @rows, {
+            Id => $_->{Id},
+            ServiceId => $_->{ServiceId},
+            ServiceTask => $servicetask,
+            Service => $_,
+            Schedules => _parse_schedules($servicetask),
+        };
     }
     return @rows;
 }
@@ -166,14 +164,10 @@ sub waste_extra_service_info_all_results {
     my ($self, $property, $result) = @_;
 
     my $cfg = $self->feature('echo');
+    my $service_ids = $SERVICE_IDS{$self->moniker};
 
-    if (!(@$result && grep { $_->{ServiceId} == $SERVICE_IDS{garden} } @$result)) {
+    if (!(@$result && grep { $_->{ServiceId} == $service_ids->{garden} } @$result)) {
         # No garden collection possible
-        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
-    }
-
-    if ($self->moniker eq 'merton' && @$result == 1 && $result->[0]{ServiceId} == $SERVICE_IDS{garden}) {
-        # No garden collection possible, if only service is garden
         $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
     }
 
@@ -193,20 +187,16 @@ sub waste_extra_service_info_all_results {
 
 sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
-
-    if ($self->moniker eq 'merton') {
-        # Merton lets everyone pick between bins and sacks
-        $self->{c}->stash->{slwp_garden_sacks} = 1;
-    }
+    my $service_ids = $SERVICE_IDS{$self->moniker};
 
     foreach (@rows) {
         my $service_id = $_->{ServiceId};
-        if ($service_id == $TASK_IDS{domestic_refuse_bag}) {
+        if ($service_id == $service_ids->{fas_refuse}) {
             $self->{c}->stash->{slwp_garden_sacks} = 1;
-        } elsif ($service_id == $TASK_IDS{domestic_refuse}) {
+        } elsif ($service_id == $service_ids->{domestic_refuse}) {
             $property->{domestic_refuse_bin} = 1;
         }
-        $self->{c}->stash->{communal_property} = 1 if $service_id == $TASK_IDS{communal_refuse} || $service_id == $TASK_IDS{communal_food} || $service_id == $TASK_IDS{communal_paper} || $service_id == $TASK_IDS{communal_mixed};
+        $self->{c}->stash->{communal_property} = 1 if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
 
         # Check for time-banded property
         my $schedules = $_->{Schedules};
@@ -220,32 +210,35 @@ sub waste_extra_service_info {
 
 sub waste_service_containers {
     my ($self, $service) = @_;
+    my $service_id = $service->{ServiceId};
+    my $service_ids = $SERVICE_IDS{$self->moniker};
+
+    # Will get garden info later, in garden_container_data_extract
+    # (as garden containers held in a totally different place)
+    return if $service_id == $service_ids->{garden};
 
     my $waste_containers_no_request = $self->_waste_containers_no_request;
 
-    my $task = $service->{ServiceTask};
-    my $service_id = $service->{ServiceId};
+    my $unit = $service->{Service};
     my $service_name = $self->service_name_override($service);
     my $schedules = $service->{Schedules};
 
-    my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
+    my $data = Integrations::Echo::force_arrayref($unit->{Data}, 'ExtensibleDatum');
     my ($containers, $request_max);
     foreach (@$data) {
-        next if $service_id == $TASK_IDS{communal_refuse} || $service_id == $TASK_IDS{communal_food} || $service_id == $TASK_IDS{communal_paper} || $service_id == $TASK_IDS{communal_mixed};
+        next if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
         my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
         my ($container, $quantity) = (0, 0);
         foreach (@$moredata) {
-            $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type' || $_->{DatatypeName} eq 'Container';
-            $quantity = $_->{Value} if $_->{DatatypeName} eq 'Quantity';
+            $container = $_->{Value} if $_->{DatatypeName} eq 'Container Type';
+            $quantity = $_->{Value} if $_->{DatatypeName} eq 'Container Quantity';
         }
 
         next if $waste_containers_no_request->{$container};
 
-        next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight/; # Blue stripe bag on a weekly collection
+        next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/; # Blue stripe bag on a weekly collection
 
         if ($container && $quantity) {
-            $self->{c}->stash->{property_time_banded} = 1 if $container == $CONTAINERS{recycling_purple_bag};
-
             push @$containers, $container;
             next if $container == $CONTAINERS{garden_sack};
 
@@ -296,56 +289,10 @@ sub waste_service_containers {
 
 sub missed_event_types { return {
     $EVENT_TYPE_IDS{request} => 'request',
-    $EVENT_TYPE_IDS{missed_refuse} => 'missed',
-    $EVENT_TYPE_IDS{missed_recycling} => 'missed',
-    $EVENT_TYPE_IDS{missed_bulky} => 'missed',
+    $EVENT_TYPE_IDS{missed} => 'missed',
+    $EVENT_TYPE_IDS{missed_assisted} => 'missed',
     $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
-
-sub parse_event_missed {
-    my ($self, $echo_event, $closed, $events) = @_;
-    my $report = $self->problems->search({ external_id => $echo_event->{Guid} })->first;
-    my $event = {
-        closed => $closed,
-        date => construct_bin_date($echo_event->{EventDate}),
-    };
-    $event->{report} = $report if $report;
-
-    my $service_id = $echo_event->{ServiceId};
-    if ($service_id == $SERVICE_IDS{domestic_refuse}) {
-        push @{$events->{missed}->{$TASK_IDS{domestic_refuse}}}, $event;
-        push @{$events->{missed}->{$TASK_IDS{domestic_refuse_bag}}}, $event;
-        push @{$events->{missed}->{$TASK_IDS{schedule2_refuse}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{communal_refuse}) {
-        push @{$events->{missed}->{$TASK_IDS{communal_refuse}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{garden}) {
-        push @{$events->{missed}->{$TASK_IDS{garden}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{food}) { # TODO Will food events come in as this?
-        push @{$events->{missed}->{$TASK_IDS{domestic_food}}}, $event;
-        push @{$events->{missed}->{$TASK_IDS{communal_food}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{bulky}) {
-        push @{$events->{missed}->{$SERVICE_IDS{bulky}}}, $event;
-    } elsif ($service_id == $SERVICE_IDS{domestic_recycling} || $service_id == $SERVICE_IDS{communal_recycling}) {
-        my $data = Integrations::Echo::force_arrayref($echo_event->{Data}, 'ExtensibleDatum');
-        foreach (@$data) {
-            if ($_->{DatatypeName} eq 'Paper' && $_->{Value} == 1) {
-                push @{$events->{missed}->{$TASK_IDS{domestic_paper}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{communal_paper}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{domestic_paper_bag}}}, $event;
-            } elsif ($_->{DatatypeName} eq 'Container Mix' && $_->{Value} == 1) {
-                push @{$events->{missed}->{$TASK_IDS{domestic_mixed}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{domestic_mixed_bag}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{communal_mixed}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{schedule2_mixed}}}, $event;
-            } elsif ($_->{DatatypeName} eq 'Food' && $_->{Value} == 1) {
-                push @{$events->{missed}->{$TASK_IDS{domestic_food}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{communal_food}}}, $event;
-            }
-        }
-    } else {
-        push @{$events->{missed}->{$service_id}}, $event;
-    }
-}
 
 sub waste_munge_report_data {
     my ($self, $id, $data) = @_;
@@ -366,6 +313,9 @@ sub waste_munge_report_data {
         $data->{category} = 'Request additional collection';
         $data->{title} = "Request additional $service collection";
     } else {
+        if ($c->stash->{assisted_collection}) {
+            $data->{category} = 'Report missed assisted collection';
+        }
         $data->{title} = "Report missed $service";
     }
     $data->{detail} = "$data->{title}\n\n$address";
@@ -380,95 +330,119 @@ sub waste_munge_report_data {
 # Garden waste
 
 sub garden_service_name { 'garden waste collection service' }
-sub garden_echo_container_name { 'SLWP - Containers' }
+sub garden_echo_container_name { 'Container Details' } # Not actually used, TODO refactor
 
-sub garden_current_service_from_service_units {
-    my ($self, $services) = @_;
-
-    my $garden;
-    for my $service ( @$services ) {
-        my $servicetasks = $self->_get_service_tasks($service);
-        foreach my $task (@$servicetasks) {
-            if ( $task->{TaskTypeId} == $self->garden_service_id ) {
-                $garden = $self->_get_current_service_task($service);
-                last;
-            }
-        }
-    }
-    return $garden;
-}
-
+# Loop through task lines, may be more than one.
+# Have to pass end date in because we're currently creating the services stash
 sub garden_container_data_extract {
     my ($self, $data, $containers, $quantities, $schedules) = @_;
-    # Assume garden will only have one container data
-    my $garden_container = $containers->[0];
     my $costs = WasteWorks::Costs->new({ cobrand => $self });
-    # Have to pass end date in because we're currently creating the services stash
-    if ($garden_container == $CONTAINERS{garden_sack}) {
-        my $garden_cost = $costs->sacks_renewal(1, $schedules->{end_date}) / 100;
-        return (undef, 1, $garden_cost, $garden_container);
-    } else {
-        my $garden_bins = $quantities->{$containers->[0]};
-        my $garden_cost = $costs->bins_renewal($garden_bins, $schedules->{end_date}) / 100;
-        return ($garden_bins, 0, $garden_cost, $garden_container);
+
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
+    my ($garden_bins, $garden_sacks, $garden_cost, $garden_container, $container_end_date);
+    foreach (@$data) {
+        my $start_date = construct_bin_date($_->{StartDate})->strftime("%F");
+        my $end_date = construct_bin_date($_->{EndDate})->strftime("%F");
+        next if $start_date gt $today || $end_date lt $today;
+        $container_end_date = $end_date;
+        my $asset_id = $_->{AssetTypeId};
+        if ($asset_id == $GARDEN_CONTAINER_IDS{sack}) {
+            $garden_sacks = 1;
+            $garden_bins = undef;
+            $garden_cost += $costs->sacks_renewal(1, $schedules->{end_date}) / 100;
+            $garden_container = $CONTAINERS{garden_sack};
+        } else {
+            $garden_sacks = 0;
+            $garden_bins += $_->{ScheduledAssetQuantity};
+            $garden_cost += $costs->bins_renewal($garden_bins, $schedules->{end_date}) / 100;
+            $garden_container = $asset_id == $GARDEN_CONTAINER_IDS{bin140} ? $CONTAINERS{garden_140} : $CONTAINERS{garden_240};
+        }
     }
+    push @$containers, $garden_container;
+    $quantities->{$garden_container} = $garden_bins;
+    return ($garden_bins, $garden_sacks, $garden_cost, $garden_container, $container_end_date);
 }
 
 # We don't have overdue renewals here
 sub waste_sub_overdue { 0 }
 
+sub alternative_backend_field_names {
+    my ($self, $field) = @_;
+    my %alternative_name = (
+        'Subscription_End_Date' => 'End_Date',
+    );
+    return $alternative_name{$field};
+}
+
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
+    $type ||= '';
     my $c = $self->{c};
 
     my $service = $self->garden_current_subscription;
     my $choice = $data->{container_choice} || '';
     my $existing = $service ? $service->{garden_container} : undef;
     $existing = $data->{transfer_bin_type} if $data->{transfer_bin_type};
-    my $container;
-    if ($choice eq 'sack') {
-        $container = $CONTAINERS{garden_sack};
-    } elsif ($choice eq 'bin140') {
-        $container = $CONTAINERS{garden_140};
-    } elsif ($choice eq 'bin240') {
-        $container = $CONTAINERS{garden_240};
-    } elsif ($choice) {
-        $container = $CONTAINERS{garden_240};
+    my ($container);
+    if ($choice) {
+        $choice = 'bin240' if $choice eq 'bin';
+        $container = $GARDEN_CONTAINER_IDS{$choice};
     } elsif ($existing) {
-        $container = $existing;
-    } else {
-        $container = $CONTAINERS{garden_240};
+        my $key = {
+            $CONTAINERS{garden_sack} => 'sack',
+            $CONTAINERS{garden_140} => 'bin140',
+            $CONTAINERS{garden_240} => 'bin240',
+        }->{$existing};
+        $container = $GARDEN_CONTAINER_IDS{$key};
+    }
+    $container ||= $GARDEN_CONTAINER_IDS{bin240};
+
+    $c->set_param('Paid_Container_Type', $container);
+    if ($container == $GARDEN_CONTAINER_IDS{sack}) {
+        $c->set_param('Paid_Container_Quantity', $GARDEN_QUANTITIES{sack});
+    } elsif ($data->{bins_wanted}) {
+        $c->set_param('Paid_Container_Quantity', $data->{bins_wanted});
     }
 
-    my $container_actions = {
-        deliver => 1,
-        remove => 2
-    };
-
-    $c->set_param('Request_Type', $type);
-    $c->set_param('Subscription_Details_Containers', $container);
-    $c->set_param('Subscription_Details_Quantity', $data->{bins_wanted});
-
-    if ($c->cobrand->moniker eq 'merton'        # Might work okay for K/S too, but only Merton have asked
-        && $existing                            # This is a renewal, not a new subscription
-        && $existing != $container              # We're changing container type
-        && $existing != $CONTAINERS{garden_sack}   # If currently sack, there's nothing to remove, same as new
-    ) {
-        # We need to ask for both a delivery and a removal of the old bins
-        $c->set_param('Bin_Delivery_Detail_Containers', join('::', 1, 2)); # deliver and remove
-        $c->set_param('Bin_Delivery_Detail_Container', join('::', $container, $existing));
-        $c->set_param('Bin_Delivery_Detail_Quantity', join('::', $data->{bins_wanted}, $data->{current_bins}));
-    } elsif ( $data->{new_bins} ) {
-        my $action = ($data->{new_bins} > 0) ? 'deliver' : 'remove';
-        $c->set_param('Bin_Delivery_Detail_Containers', $container_actions->{$action});
-        $c->set_param('Bin_Delivery_Detail_Container', $container);
-        $c->set_param('Bin_Delivery_Detail_Quantity', abs($data->{new_bins}));
+    if ( $data->{new_bins} && $data->{new_bins} > 0) {
+        $c->set_param('Container_Type', $container);
+        if ($container == $GARDEN_CONTAINER_IDS{sack}) {
+            $c->set_param('Quantity', $GARDEN_QUANTITIES{sack});
+        } else {
+            my $num = abs($data->{new_bins});
+            $c->set_param('Quantity', $num);
+        }
     }
 
-    if ($c->cobrand->moniker eq 'merton' && $data->{new_bins} && !$type) { # Cancellation
-        $c->set_param('Bin_Detail_Type', $container_actions->{remove});
-        $c->set_param('Bin_Detail_Container', $existing);
-        $c->set_param('Bin_Detail_Quantity', abs($data->{new_bins}));
+    if ($type eq $c->cobrand->waste_subscription_types->{New}) {
+        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+        $c->set_param('Start_Date', $now->add(days => 10)->dmy('/'));
+        $c->set_param('End_Date', $now->add(years => 1)->subtract(days => 1)->dmy('/'));
+    } elsif ($type eq $c->cobrand->waste_subscription_types->{Renew}) {
+        my $sub_end = DateTime::Format::W3CDTF->parse_datetime($service->{end_date})->truncate( to => 'day' );
+        $c->set_param('Start_Date', $sub_end->add(days => 1)->dmy('/'));
+        $c->set_param('End_Date', $sub_end->add(years => 1)->subtract(days => 1)->dmy('/'));
+    }
+}
+
+sub waste_garden_mod_params {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    my $service = $self->garden_current_subscription;
+    my $existing = $service->{garden_container};
+    if ($existing != $CONTAINERS{garden_sack}) {
+        $data->{category} = 'Amend Garden Subscription';
+        my $key = {
+            $CONTAINERS{garden_140} => 'bin140',
+            $CONTAINERS{garden_240} => 'bin240',
+        }->{$existing};
+        my $container = $GARDEN_CONTAINER_IDS{$key};
+
+        $c->set_param('Additional_Collection_Container_Type', $container);
+        $c->set_param('Additional_Container_Quantity', $data->{new_bins});
+        $c->set_param('Container_Ordered_Type', $container);
+        $c->set_param('Container_Ordered_Quantity', $data->{new_bins});
     }
 }
 
@@ -485,15 +459,7 @@ sub waste_garden_renew_form_setup {
     my $c = $self->{c};
     if ($c->stash->{slwp_garden_sacks}) {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
-        my $service = $c->cobrand->garden_current_subscription;
-        if ($self->moniker eq 'merton') {
-            if ($service->{garden_container} == $CONTAINERS{garden_sack}) {
-                $c->stash->{first_page} = 'sacks_details';
-            }
-            # Else default to 'intro' from the main code
-        } else {
-            $c->stash->{first_page} = 'sacks_choice';
-        }
+        $c->stash->{first_page} = 'sacks_choice';
     }
 }
 
@@ -642,7 +608,7 @@ sub bulky_can_refund { 0 }
 
 sub collection_date {
     my ($self, $p) = @_;
-    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
+    return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date_-_Bulky_Items') || $p->get_extra_field_value('Collection_Date'));
 }
 
 sub bulky_free_collection_available { 0 }
@@ -670,14 +636,13 @@ sub waste_munge_bulky_data {
     $data->{title} = "Bulky goods collection";
     $data->{detail} = "Address: " . $c->stash->{property}->{address};
     $data->{category} = "Bulky collection";
-    $data->{extra_Collection_Date} = $date;
+    $data->{'extra_Collection_Date_-_Bulky_Items'} = $date;
     $data->{extra_Exact_Location} = $data->{location};
 
     my $first_date = $self->{c}->session->{first_date_returned};
     $first_date = DateTime::Format::W3CDTF->parse_datetime($first_date);
     my $dt = DateTime::Format::W3CDTF->parse_datetime($date);
-    $data->{'extra_First_Date_Returned_to_Customer'} = $first_date->strftime("%d/%m/%Y");
-    $data->{'extra_Customer_Selected_Date_Beyond_SLA?'} = $dt > $first_date ? 1 : 0;
+    $data->{'extra_First_Date_Offered_-_Bulky'} = $first_date->strftime("%d/%m/%Y");
 
     my @items_list = @{ $self->bulky_items_master_list };
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
@@ -694,8 +659,8 @@ sub waste_munge_bulky_data {
             push @photos, $data->{"item_photos_$_"} || '';
         };
     }
-    $data->{extra_Bulky_Collection_Notes} = join("::", @notes);
-    $data->{extra_Bulky_Collection_Bulky_Items} = join("::", @ids);
+    $data->{'extra_TEM_-_Bulky_Collection_Description'} = join("::", @notes);
+    $data->{'extra_TEM_-_Bulky_Collection_Item'} = join("::", @ids);
     $data->{extra_Image} = join("::", @photos);
     $self->bulky_total_cost($data);
 }
@@ -704,13 +669,13 @@ sub waste_reconstruct_bulky_data {
     my ($self, $p) = @_;
 
     my $saved_data = {
-        "chosen_date" => $p->get_extra_field_value('Collection_Date'),
+        "chosen_date" => $p->get_extra_field_value('Collection_Date_-_Bulky_Items') || $p->get_extra_field_value('Collection_Date'),
         "location" => $p->get_extra_field_value('Exact_Location'),
         "location_photo" => $p->get_extra_metadata("location_photo"),
     };
 
-    my @fields = split /::/, $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
-    my @notes = split /::/, $p->get_extra_field_value('Bulky_Collection_Notes');
+    my @fields = split /::/, $p->get_extra_field_value('TEM_-_Bulky_Collection_Item') || $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
+    my @notes = split /::/, $p->get_extra_field_value('TEM_-_Bulky_Collection_Description') || $p->get_extra_field_value('Bulky_Collection_Notes');
     for my $id (1..@fields) {
         $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
         $saved_data->{"item_notes_$id"} = $notes[$id-1];

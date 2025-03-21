@@ -374,5 +374,5 @@
 [% END %]
 
 [% BLOCK notice %]
-    [% mark_safe(field.label) | html_para %]
+    [% mark_safe(field.label) | html_para_conditional | replace('<p>', '<p class="govuk-body">') %]
 [% END %]

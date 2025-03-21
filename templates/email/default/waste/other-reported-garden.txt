@@ -38,10 +38,14 @@ You have signed up for:
 
 [% IF quantity ~%]
 [% IF sacks ~%]
-Garden waste sack collection: [% quantity %] [% nget('roll', 'rolls', quantity) %]
+Garden waste sack collection: [% sack_quant %] [% nget('roll', 'rolls', sack_quant) %]
 [% ELSE ~%]
 Number of bin subscriptions: [% quantity %]
 [% END ~%]
+[% END %]
+
+[% IF additional_quantity ~%]
+Number of additional bin subscriptions: [% additional_quantity %]
 [% END %]
 
 [% IF new_bins > 0 AND NOT sacks ~%]

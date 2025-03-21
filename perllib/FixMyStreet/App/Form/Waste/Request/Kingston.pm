@@ -18,7 +18,7 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
-use constant CONTAINER_REFUSE_240 => 2;
+use constant CONTAINER_REFUSE_240 => 3;
 
 =head2 About you
 
@@ -37,18 +37,18 @@ has_page about_you => (
         my $c = $form->c;
         if ($data) {
             my @services = grep { /^container-\d/ && $data->{$_} } sort keys %$data;
-            my $total_paid_quantity = 0;
+            my $total = 0;
+            my $first_admin_fee;
             foreach (@services) {
                 my ($id) = /container-(.*)/;
-                my $quantity = $data->{"quantity-$id"};
-                my $names = $c->stash->{containers};
-                if ($names->{$id} !~ /bag|sack|food/i) {
-                    $total_paid_quantity += $quantity;
+                my $quantity = $data->{"quantity-$id"} or next;
+                if (my $cost = $c->cobrand->container_cost($id)) {
+                    $total += $cost * $quantity;
+                    $total += $c->cobrand->admin_fee_cost({quantity => $quantity, no_first_fee => $first_admin_fee});
+                    $first_admin_fee = 1;
                 }
             }
-            return unless $total_paid_quantity;
-            my ($cost) = $c->cobrand->request_cost(1, $total_paid_quantity);
-            $data->{payment} = $cost if $cost;
+            $data->{payment} = $total if $total;
         }
     },
 );
@@ -74,15 +74,21 @@ has_page how_many_exchange => (
     fields => ['how_many_exchange', 'continue'],
     title => 'Black bin size change request',
     intro => 'request/intro.html',
+    post_process => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        if ($data) {
+            my $how_many = $data->{"how_many_exchange"} || '';
+            return if $how_many eq 'less5' || $how_many eq '7more';
+            $form->c->cobrand->waste_exchange_bin_setup_data($data, CONTAINER_REFUSE_240);
+        }
+    },
     next => sub {
         my $data = shift;
         my $how_many = $data->{"how_many_exchange"};
         if ($how_many eq 'less5' || $how_many eq '7more') {
             return 'biggest_bin_allowed';
         }
-        $data->{'container-' . CONTAINER_REFUSE_240} = 1;
-        $data->{'quantity-' . CONTAINER_REFUSE_240} = 1;
-        $data->{'removal-' . CONTAINER_REFUSE_240} = 1;
         return 'about_you';
     },
 );
