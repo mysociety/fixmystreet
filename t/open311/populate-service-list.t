@@ -988,6 +988,58 @@ for my $test (
     </service_definition>
         ',
     },
+    {
+        desc => 'check disable on select value set from meta',
+        has_meta => 1,
+        end_meta => [
+            {
+                variable => 'true',
+                code => 'bin_owner',
+                datatype => 'singlevaluelist',
+                datatype_description => 'Whose bin',
+                order => 1,
+                description => 'Is this your bin or another bin',
+                values => [
+                    {
+                        'name' => 'My bin',
+                        'key' => 'mine'
+                    },
+                    {
+                        'name' => 'Someone else\'s bin',
+                        'key' => 'else',
+                        'disable_message' => 'You can only report on your own bin',
+                    }
+                    ],
+            },
+        ],
+        orig_meta => [],
+        meta_xml => '<?xml version="1.0" encoding="utf-8"?>
+    <service_definition>
+        <service_code>100</service_code>
+        <attributes>
+            <attribute>
+            <code>bin_owner</code>
+            <datatype>singlevaluelist</datatype>
+            <datatype_description>Whose bin</datatype_description>
+            <description>Is this your bin or another bin</description>
+            <order>1</order>
+            <values>
+                <value>
+                <name>My bin</name>
+                <key>mine</key>
+                </value>
+                <value>
+                <name>Someone else\'s bin</name>
+                <key>else</key>
+                <disable_message>You can only report on your own bin</disable_message>
+                </value>
+            </values>
+            <variable>true</variable>
+            </attribute>
+        </attributes>
+    </service_definition>
+        ',
+    },
 ) {
     subtest $test->{desc} => sub {
         my $processor = Open311::PopulateServiceList->new();

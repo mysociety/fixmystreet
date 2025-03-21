@@ -405,7 +405,7 @@ sub disable_form_message : Private {
         } elsif (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
             my %category;
             foreach my $opt (@{$_->{values}}) {
-                if ($opt->{disable}) {
+                if ($opt->{disable} || $opt->{disable_message}) {
                     my $message = $opt->{disable_message} || $_->{datatype_description};
                     $category{$message} ||= {};
                     $category{$message}->{message} = $message;
@@ -2067,7 +2067,7 @@ sub generate_category_extra_json : Private {
         # Mobile app still looks in datatype_description
         if (($_->{variable} || '') eq 'true' && @{$_->{values} || []}) {
             foreach my $opt (@{$_->{values}}) {
-                if ($opt->{disable}) {
+                if ($opt->{disable} || $opt->{disable_message}) {
                     $opt->{disable} = "1";
                     my $message = $opt->{disable_message} || $_->{datatype_description};
                     $data{datatype_description} = $message;

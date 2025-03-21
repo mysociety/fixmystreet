@@ -398,9 +398,9 @@ subtest "Category extras includes form disabling string" => sub {
         });
         $contact4->push_extra_fields({ datatype_description => 'Please ring different numbers', description => 'What sort of dangerous?', code => 'danger_type',
             variable => 'true', order => '0', values => [
-                { name => 'slightly', key => 'slightly', disable => 1, disable_message => 'Ring the slightly number'  },
-                { name => 'very', key => 'very', disable => 1, disable_message => 'Ring the very number'  },
-                { name => 'extremely', key => 'extremely', disable => 1, disable_message => 'Ring the very number'  },
+                { name => 'slightly', key => 'slightly', disable_message => 'Ring the slightly number'  },
+                { name => 'very', key => 'very', disable_message => 'Ring the very number'  },
+                { name => 'extremely', key => 'extremely', disable_message => 'Ring the very number'  },
                 { name => 'No', key => 'no' }
             ]
         });
