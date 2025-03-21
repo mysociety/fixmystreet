@@ -35,7 +35,11 @@ has_page intro => (
 
         my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
         my $bins_wanted_disabled = $c->cobrand->call_hook('waste_renewal_bins_wanted_disabled');
-        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form_data->{apply_discount} });
+        my $costs = WasteWorks::Costs->new({
+            cobrand => $c->cobrand,
+            discount => $form_data->{apply_discount},
+            first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+        });
         my $cost_pa = $costs->bins_renewal($bin_count);
         my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
         $form->{c}->stash->{cost_pa} = $cost_pa / 100;
@@ -79,7 +83,11 @@ has_page summary => (
         my $bin_count = $data->{bins_wanted} || 1;
         my $new_bins = $bin_count - $current_bins;
         my $cost_pa;
-        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form->saved_data->{apply_discount} });
+        my $costs = WasteWorks::Costs->new({
+            cobrand => $c->cobrand,
+            discount => $form->saved_data->{apply_discount},
+            first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+        });
         if (($data->{container_choice}||'') eq 'sack') {
             $cost_pa = $costs->sacks_renewal($bin_count);
         } else {
