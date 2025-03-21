@@ -369,6 +369,21 @@ html.lazyload .js-lazyload {
     background: none;
     margin: 0;
   }
+
+  // Applies text-decoration underline only to links that are in areas where there is a lot of text, so they could be easily missed by someone with visual impairments.
+  a {
+    text-decoration: underline;
+
+    &:hover, &:focus {
+      text-decoration: none;
+    }
+
+    &:focus {
+      box-shadow: 0px 0px 0px 5px #000;
+      outline: 3px solid $primary;
+      outline-offset: 2px;
+    }
+  }
 }
 
 .footer-marketing {
