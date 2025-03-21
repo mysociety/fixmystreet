@@ -69,13 +69,18 @@ sub lookup_subscription_for_uprn {
     # XXX should maybe sort by CreatedDate rather than assuming first is OK
     $sub->{cost} = try {
         my ($payment) = grep { $_->{PaymentStatus} =~ /(Paid|Pending)/ } @{ $contract->{Payments} };
+        if ($payment && $payment->{PaymentMethod} eq 'Direct debit') {
+            # Got an active contract with a DD payment method, nothing due to renew
+            $self->{c}->stash->{direct_debit_status} = 'active';
+            $sub->{renewed} = 1;
+        }
         return $payment->{Amount};
     };
 
     my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
     $sub->{end_date} = $parser->parse_datetime( $contract->{EndDate} );
     if ($contract->{ServiceContractStatus} eq 'RENEWALDUE') {
-        $sub->{renewal_due} = 1;
+        $sub->{renewed} = 1;
     }
 
     $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
@@ -100,8 +105,8 @@ sub garden_current_subscription {
     my $sub = $self->lookup_subscription_for_uprn($uprn);
     return undef unless $sub;
 
-    my $garden_due = $sub->{renewal_due} ? 0 : $self->waste_sub_due( $sub->{end_date} );
-    my $garden_overdue = $sub->{renewal_due} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
+    my $garden_due = $sub->{renewed} ? 0 : $self->waste_sub_due( $sub->{end_date} );
+    my $garden_overdue = $sub->{renewed} ? 0 : $self->waste_sub_overdue( $sub->{end_date} );
 
     # Agile says there is a subscription; now get service data from
     # Whitespace

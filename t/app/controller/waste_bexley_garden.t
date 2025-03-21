@@ -407,7 +407,7 @@ FixMyStreet::override_config {
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
                                 ServiceContractStatus => 'ACTIVE',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
                             },
                         ],
                     },
@@ -457,7 +457,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'RENEWALDUE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -487,7 +487,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -638,7 +638,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -666,7 +666,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -986,13 +986,14 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
     };
 
+    $mech->delete_problems_for_body($body->id);
+
     subtest 'correct amount shown on existing DD subscriptions' => sub {
         my $discount_human = sprintf('%.2f', ($ggw_cost_first - $ggw_first_bin_discount) / 100);
         foreach my $status ("Pending", "Paid") {
             subtest "Payment status: $status" => sub {
                 default_mocks();
                 set_fixed_time('2024-02-01T00:00:00');
-                my $tomorrow = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' )->format_datetime( DateTime->now->add(days => 1) );
 
                 $agile_mock->mock( 'CustomerSearch', sub { {
                     Customers => [
@@ -1033,6 +1034,11 @@ FixMyStreet::override_config {
                 like $mech->text, qr/Brown wheelie bin/;
                 like $mech->text, qr/Next collectionPending/;
                 like $mech->text, qr/Subscription.*$discount_human per year/;
+
+                set_fixed_time('2025-12-01T00:00:00');
+                $mech->get_ok('/waste/10001');
+                $mech->content_lacks('Renew your');
+                $mech->content_contains('existing direct debit subscription');
             }
         }
     };
@@ -1051,7 +1057,7 @@ FixMyStreet::override_config {
                         {
                             EndDate => '12/12/2025 12:21',
                             ServiceContractStatus => 'ACTIVE',
-                            Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                         },
                     ],
                 },
@@ -1606,7 +1612,7 @@ FixMyStreet::override_config {
                                     Reference => 'CONTRACT_123',
                                     WasteContainerQuantity => 1,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -1668,7 +1674,7 @@ FixMyStreet::override_config {
                                     Reference => 'CONTRACT_123',
                                     WasteContainerQuantity => 1,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -1755,7 +1761,7 @@ FixMyStreet::override_config {
                                 Reference => 'CONTRACT_123',
                                 WasteContainerQuantity => 1,
                                 ServiceContractStatus => 'ACTIVE',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                             },
                         ],
                     },
