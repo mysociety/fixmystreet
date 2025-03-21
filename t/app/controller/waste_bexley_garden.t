@@ -376,6 +376,7 @@ FixMyStreet::override_config {
 
     subtest 'renew garden subscription' => sub {
         set_fixed_time('2024-02-01T00:00:00');
+        $mech->delete_problems_for_body($body->id);
 
         my $uprn = 10001;
         my $contract_id = 'CONTRACT_123';
@@ -621,6 +622,8 @@ FixMyStreet::override_config {
                 };
 
             };
+
+            $mech->delete_problems_for_body($body->id);
 
             subtest 'too early' => sub {
                 $agile_mock->mock( 'CustomerSearch', sub { {
@@ -1379,6 +1382,7 @@ FixMyStreet::override_config {
             $body->id,
             'Garden Subscription - New',
             {
+                created => DateTime->now->subtract( years => 1 ),
                 category    => 'Garden Subscription',
                 external_id => "Agile-$contract_id",
                 title => 'Garden Subscription - New',
@@ -1678,6 +1682,8 @@ FixMyStreet::override_config {
                     'renewal warning not shown';
             };
 
+            $mech->delete_problems_for_body($body->id);
+
             subtest 'Due for renewal' => sub {
                 set_fixed_time('2025-01-01T00:00:00Z');
 
@@ -1805,18 +1811,10 @@ FixMyStreet::override_config {
                 set_fixed_time('2025-01-01T00:00:00Z');
 
                 $mech->get_ok('/waste/10001');
-                like $mech->text,
-                    qr/Your subscription is soon due for renewal/,
-                    'renewal warning shown';
-                like $mech->text,
-                    qr/This property has an existing direct debit subscription which will renew automatically/,
-                    'active DD message shown';
-                unlike $mech->content,
-                    qr/value="Renew subscription today"/,
-                    'renewal button not shown';
-                unlike $mech->content,
-                    qr/Renew your brown wheelie bin subscription/,
-                    'renewal link not shown';
+                $mech->content_lacks('Your subscription is soon due for renewal');
+                $mech->content_contains('This property has an existing direct debit subscription which will renew automatically');
+                $mech->content_lacks('value="Renew subscription today"');
+                $mech->content_lacks('Renew your brown wheelie bin subscription');
             };
 
             subtest 'Renewal overdue' => sub {
