@@ -424,7 +424,12 @@ sub direct_debit_internal : Private {
     $c->stash->{title} = "Direct Debit mandate";
     $c->stash->{message} = "Your Direct Debit has been set up successfully.";
     $c->stash->{template} = 'waste/dd_complete.html';
-    $c->detach;
+
+    # Set an override template, so that the form processing can finish (to e.g.
+    # clear the session unique ID to prevent double submission) and have the
+    # form code load this template rather than the default 'done' form one
+    $c->stash->{override_template} = $c->stash->{template};
+    return 1;
 }
 
 # we process direct debit payments when they happen so this page

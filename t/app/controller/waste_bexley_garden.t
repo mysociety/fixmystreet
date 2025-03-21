@@ -962,6 +962,11 @@ FixMyStreet::override_config {
         $mech->content_contains('Your Direct Debit has been set up successfully');
         $mech->content_contains('Direct Debit mandate');
 
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_lacks('Your Direct Debit has been set up successfully');
+        $mech->content_contains('You have already submitted this form');
+
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER123', 'Correct customer ID';
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
