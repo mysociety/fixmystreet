@@ -42,7 +42,7 @@ has_page sacks_details => (
         my $page = shift;
         my $c = $page->form->c;
         my @fields;
-        push @fields, 'payment_method', 'cheque_reference' if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
+        push @fields, 'payment_method', 'cheque_reference' if $c->cobrand->garden_hide_payment_method_field;
         push @fields, 'bins_wanted' unless $page->form->with_bins_wanted;
         push @fields, 'apply_discount' if (!($c->stash->{waste_features}->{ggw_discount_as_percent}) || !($c->stash->{is_staff}));
         return \@fields;

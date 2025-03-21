@@ -21,7 +21,7 @@ has_page intro => (
         my $c = $page->form->c;
         my @exclude;
         push @exclude, 'email_renewal_reminders' if !$c->cobrand->garden_subscription_email_renew_reminder_opt_in;
-        push @exclude, ('payment_method', 'cheque_reference') if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
+        push @exclude, ('payment_method', 'cheque_reference') if $c->cobrand->garden_hide_payment_method_field;
         return \@exclude;
     },
     update_field_list => sub {
