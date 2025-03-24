@@ -104,15 +104,18 @@ sub set_echo_id {
         my $cfg = $cobrand->feature('echo');
         my $echo = Integrations::Echo->new(%$cfg);
         my $event = $echo->GetEvent($problem->external_id);
-        return unless $event && $event->{Id};
-
         my $db = FixMyStreet::DB->schema->storage;
         $db->txn_do(sub {
             my $row2 = FixMyStreet::DB->resultset('Problem')->search({ id => $problem->id }, { for => \'UPDATE' })->single;
-            $row2->update_extra_field({
-                name => 'echo_id',
-                value => $event->{Id},
-            });
+            if ($event && $event->{Id}) {
+                $row2->update_extra_field({
+                    name => 'echo_id',
+                    value => $event->{Id},
+                });
+            } else {
+                # We got an error/no result from Echo, so mark this not to try again
+                $row2->set_extra_metadata( no_echo => 1 );
+            }
             $row2->update;
         });
     }
