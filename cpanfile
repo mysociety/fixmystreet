@@ -156,12 +156,6 @@ feature 'zurich', 'Zueri wie neu specific requirements' => sub {
     requires 'SOAP::Lite', '1.20';
 };
 
-feature 'kiitc', 'KiitC specific requirements' => sub {
-    requires 'Spreadsheet::Read';
-    requires 'Spreadsheet::ParseExcel';
-    requires 'Spreadsheet::ParseXLSX';
-};
-
 # Moderation by from_body user
 requires 'Algorithm::Diff';
 

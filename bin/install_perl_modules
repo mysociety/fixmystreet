@@ -11,9 +11,9 @@ if [ "$NETDNS_VERSION" == "0.72" ]; then
 fi
 
 if [ "$1" == "--development" ]; then
-    $DIR/vendor/bin/carton install --deployment --without kiitc
+    $DIR/vendor/bin/carton install --deployment
 else
-    $DIR/vendor/bin/carton install --deployment --without uk --without zurich --without kiitc
+    $DIR/vendor/bin/carton install --deployment --without uk --without zurich
 fi
 
 if ! bin/cron-wrapper perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
