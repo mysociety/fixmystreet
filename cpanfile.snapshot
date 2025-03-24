@@ -3773,10 +3773,10 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 6.42
       Socket 0
       Test::More 0
-  HTTP-Tiny-0.076
-    pathname: D/DA/DAGOLDEN/HTTP-Tiny-0.076.tar.gz
+  HTTP-Tiny-0.090
+    pathname: H/HA/HAARG/HTTP-Tiny-0.090.tar.gz
     provides:
-      HTTP::Tiny 0.076
+      HTTP::Tiny 0.090
     requirements:
       Carp 0
       ExtUtils::MakeMaker 6.17
