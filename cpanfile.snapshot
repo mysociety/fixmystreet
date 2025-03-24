@@ -164,35 +164,6 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
-  Archive-Zip-1.60
-    pathname: P/PH/PHRED/Archive-Zip-1.60.tar.gz
-    provides:
-      Archive::Zip 1.60
-      Archive::Zip::Archive 1.60
-      Archive::Zip::BufferedFileHandle 1.60
-      Archive::Zip::DirectoryMember 1.60
-      Archive::Zip::FileMember 1.60
-      Archive::Zip::Member 1.60
-      Archive::Zip::MemberRead 1.60
-      Archive::Zip::MockFileHandle 1.60
-      Archive::Zip::NewFileMember 1.60
-      Archive::Zip::StringMember 1.60
-      Archive::Zip::Tree 1.60
-      Archive::Zip::ZipFileMember 1.60
-    requirements:
-      Compress::Raw::Zlib 2.017
-      ExtUtils::MakeMaker 0
-      File::Basename 0
-      File::Copy 0
-      File::Find 0
-      File::Path 0
-      File::Spec 0.80
-      File::Temp 0
-      IO::File 0
-      IO::Handle 0
-      IO::Seekable 0
-      Time::Local 0
-      perl 5.006
   Auth-GoogleAuth-1.02
     pathname: G/GR/GRYPHON/Auth-GoogleAuth-1.02.tar.gz
     provides:
@@ -1188,12 +1159,6 @@ DISTRIBUTIONS
       Crypt::OpenSSL::Random 0.15
     requirements:
       Crypt::OpenSSL::Guess 0.11
-      ExtUtils::MakeMaker 0
-  Crypt-RC4-2.02
-    pathname: S/SI/SIFUKURT/Crypt-RC4-2.02.tar.gz
-    provides:
-      Crypt::RC4 2.02
-    requirements:
       ExtUtils::MakeMaker 0
   Crypt-Random-Source-0.14
     pathname: E/ET/ETHER/Crypt-Random-Source-0.14.tar.gz
@@ -2672,13 +2637,6 @@ DISTRIBUTIONS
       Digest::MD5 0
       ExtUtils::MakeMaker 0
       LWP::UserAgent 0
-  Digest-Perl-MD5-1.9
-    pathname: D/DE/DELTA/Digest-Perl-MD5-1.9.tar.gz
-    provides:
-      Digest::Perl::MD5 1.9
-    requirements:
-      Exporter 0
-      ExtUtils::MakeMaker 0
   Digest-SHA1-2.13
     pathname: G/GA/GAAS/Digest-SHA1-2.13.tar.gz
     provides:
@@ -3332,13 +3290,6 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  Graphics-ColorUtils-0.17
-    pathname: J/JA/JANERT/Graphics-ColorUtils-0.17.tar.gz
-    provides:
-      Graphics::ColorUtils 0.17
-    requirements:
-      Carp 0
-      ExtUtils::MakeMaker 0
   Guard-1.023
     pathname: M/ML/MLEHMANN/Guard-1.023.tar.gz
     provides:
@@ -6156,16 +6107,6 @@ DISTRIBUTIONS
       Test::MockObject 0
       Test::More 0
       perl 5.008001
-  OLE-Storage_Lite-0.19
-    pathname: J/JM/JMCNAMARA/OLE-Storage_Lite-0.19.tar.gz
-    provides:
-      OLE::Storage_Lite 0.19
-      OLE::Storage_Lite::PPS 0.19
-      OLE::Storage_Lite::PPS::Dir 0.19
-      OLE::Storage_Lite::PPS::File 0.19
-      OLE::Storage_Lite::PPS::Root 0.19
-    requirements:
-      ExtUtils::MakeMaker 0
   Object-Signature-1.07
     pathname: A/AD/ADAMK/Object-Signature-1.07.tar.gz
     provides:
@@ -7149,71 +7090,6 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.59
       perl 5.006001
-  Spreadsheet-ParseExcel-0.65
-    pathname: D/DO/DOUGW/Spreadsheet-ParseExcel-0.65.tar.gz
-    provides:
-      Spreadsheet::ParseExcel 0.65
-      Spreadsheet::ParseExcel::Cell 0.65
-      Spreadsheet::ParseExcel::Dump 0.65
-      Spreadsheet::ParseExcel::FmtDefault 0.65
-      Spreadsheet::ParseExcel::FmtJapan 0.65
-      Spreadsheet::ParseExcel::FmtJapan2 0.65
-      Spreadsheet::ParseExcel::FmtUnicode 0.65
-      Spreadsheet::ParseExcel::Font 0.65
-      Spreadsheet::ParseExcel::Format 0.65
-      Spreadsheet::ParseExcel::SaveParser 0.65
-      Spreadsheet::ParseExcel::SaveParser::Workbook 0.65
-      Spreadsheet::ParseExcel::SaveParser::Worksheet 0.65
-      Spreadsheet::ParseExcel::Utility 0.65
-      Spreadsheet::ParseExcel::Workbook 0.65
-      Spreadsheet::ParseExcel::Worksheet 0.65
-    requirements:
-      Crypt::RC4 0
-      Digest::Perl::MD5 0
-      ExtUtils::MakeMaker 0
-      IO::File 0
-      IO::Scalar 0
-      OLE::Storage_Lite 0.19
-      Scalar::Util 0
-  Spreadsheet-ParseXLSX-0.27
-    pathname: D/DO/DOY/Spreadsheet-ParseXLSX-0.27.tar.gz
-    provides:
-      Spreadsheet::ParseXLSX 0.27
-      Spreadsheet::ParseXLSX::Decryptor 0.27
-      Spreadsheet::ParseXLSX::Decryptor::Agile 0.27
-      Spreadsheet::ParseXLSX::Decryptor::Standard 0.27
-    requirements:
-      Archive::Zip 0
-      Crypt::Mode::CBC 0
-      Crypt::Mode::ECB 0
-      Digest::SHA 0
-      Encode 0
-      ExtUtils::MakeMaker 0
-      File::Temp 0
-      Graphics::ColorUtils 0
-      MIME::Base64 0
-      OLE::Storage_Lite 0
-      Scalar::Util 0
-      Spreadsheet::ParseExcel 0.61
-      XML::Twig 0
-      base 0
-      perl 5.010
-      strict 0
-      warnings 0
-  Spreadsheet-Read-0.78
-    pathname: H/HM/HMBRAND/Spreadsheet-Read-0.78.tgz
-    provides:
-      Spreadsheet::Read 0.78
-    requirements:
-      Carp 0
-      Data::Dumper 0
-      Encode 0
-      Exporter 0
-      ExtUtils::MakeMaker 0
-      File::Temp 0.22
-      IO::Scalar 0
-      Test::More 0.88
-      Test::NoWarnings 0
   Starman-0.4014
     pathname: M/MI/MIYAGAWA/Starman-0.4014.tar.gz
     provides:
@@ -8726,22 +8602,6 @@ DISTRIBUTIONS
       XML::NamespaceSupport 1.04
       XML::SAX 0.15
       XML::SAX::Expat 0
-  XML-Twig-3.52
-    pathname: M/MI/MIROD/XML-Twig-3.52.tar.gz
-    provides:
-      XML::Twig 3.52
-      XML::Twig::Elt 3.52
-      XML::Twig::Entity 3.52
-      XML::Twig::Entity_list 3.52
-      XML::Twig::Notation 3.52
-      XML::Twig::Notation_list 3.52
-      XML::Twig::XPath 0.02
-      XML::Twig::XPath::Attribute 0.02
-      XML::Twig::XPath::Elt 0.02
-      XML::Twig::XPath::Namespace 0.02
-    requirements:
-      ExtUtils::MakeMaker 0
-      XML::Parser 2.23
   XML-Writer-0.625
     pathname: J/JO/JOSEPHW/XML-Writer-0.625.tar.gz
     provides:
