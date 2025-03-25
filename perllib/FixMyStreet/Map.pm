@@ -123,12 +123,12 @@ sub map_features {
     # if there are fewer entries than our paging limit on the map then
     # also return nearby entries for display
     my $nearby;
-    if (@$on_map < $pager->entries_per_page && $pager->current_page == 1) {
-        $p{limit} = 20;
-        $p{ids} = [ map { $_->id } @$on_map ];
-        $p{distance} = FixMyStreet::Gaze::get_radius_containing_population( $p{latitude}, $p{longitude} );
-        $nearby = $c->model('DB::Nearby')->nearby($c, %p);
-    }
+    #if (@$on_map < $pager->entries_per_page && $pager->current_page == 1) {
+    #    $p{limit} = 20;
+    #    $p{ids} = [ map { $_->id } @$on_map ];
+    #    $p{distance} = FixMyStreet::Gaze::get_radius_containing_population( $p{latitude}, $p{longitude} );
+    #    $nearby = $c->model('DB::Nearby')->nearby($c, %p);
+    #}
 
     return ( $on_map, $nearby, $p{distance} );
 }
