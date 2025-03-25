@@ -260,6 +260,14 @@ lincolnshire:
     asset_item_message: ''
     disable_pin_snapping: true
     stylemap: 'fixmystreet.assets.stylemap_invisible'
+  - wfs_feature: "LCC_Verges"
+    asset_category: "Grass cutting"
+    asset_type: area
+    road: true
+    non_interactive: true
+    actions:
+      found: fixmystreet.assets.lincolnshire.grass_found
+      not_found: fixmystreet.assets.lincolnshire.grass_not_found
 merton:
 - - name: 'default'
     max_resolution: 4.777314267158508
