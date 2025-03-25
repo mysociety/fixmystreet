@@ -153,7 +153,7 @@ describe('Grass cutting layer', function(){
         cy.pickCategory('Grass cutting');
         cy.wait('@grass');
         cy.get('#map_sidebar').scrollTo('bottom');
-        cy.contains('responsibility of North Somercotes Parish Council').should('be.visible');
+        cy.contains('responsibility of North Somercotes Parish/Town Council').should('be.visible');
         cy.get('.js-reporting-page--next:visible').should('be.disabled');
     });
 

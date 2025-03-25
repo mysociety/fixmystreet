@@ -27,7 +27,7 @@
   </dl>
 
 [% WRAPPER 'waste/_garden_status_messages.html' %]
-[% IF ( unit.garden_due OR unit.garden_overdue ) AND NOT waste_features.garden_renew_disabled %]
+[% IF ( unit.garden_due OR unit.garden_overdue ) AND NOT pending_subscription AND NOT waste_features.garden_renew_disabled %]
   <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="[% IF c.cobrand.moniker == 'merton' %]Renew without making changes[% ELSE %]Renew your [% unit.service_name FILTER lower %] subscription[% END %]" class="waste-service-descriptor waste-service-link">

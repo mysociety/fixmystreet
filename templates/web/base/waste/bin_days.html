@@ -105,7 +105,7 @@
 
     [% IF !unit.garden_overdue %]
 
-    [% IF unit.garden_due AND NOT waste_features.garden_disabled AND NOT waste_features.garden_renew_disabled %]
+    [% IF unit.garden_due AND NOT pending_subscription AND NOT waste_features.garden_disabled AND NOT waste_features.garden_renew_disabled %]
     <div class="govuk-warning-text due">
       <div class="govuk-warning-text__img">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>

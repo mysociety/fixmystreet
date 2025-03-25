@@ -376,6 +376,7 @@ FixMyStreet::override_config {
 
     subtest 'renew garden subscription' => sub {
         set_fixed_time('2024-02-01T00:00:00');
+        $mech->delete_problems_for_body($body->id);
 
         my $uprn = 10001;
         my $contract_id = 'CONTRACT_123';
@@ -406,7 +407,7 @@ FixMyStreet::override_config {
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
                                 ServiceContractStatus => 'ACTIVE',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
                             },
                         ],
                     },
@@ -456,7 +457,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'RENEWALDUE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -486,7 +487,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -622,6 +623,8 @@ FixMyStreet::override_config {
 
             };
 
+            $mech->delete_problems_for_body($body->id);
+
             subtest 'too early' => sub {
                 $agile_mock->mock( 'CustomerSearch', sub { {
                     Customers => [
@@ -635,7 +638,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -663,7 +666,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -959,6 +962,11 @@ FixMyStreet::override_config {
         $mech->content_contains('Your Direct Debit has been set up successfully');
         $mech->content_contains('Direct Debit mandate');
 
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+        $mech->content_lacks('Your Direct Debit has been set up successfully');
+        $mech->content_contains('You have already submitted this form');
+
         is $report->get_extra_metadata('direct_debit_customer_id'), 'CUSTOMER123', 'Correct customer ID';
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
@@ -978,13 +986,14 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
     };
 
+    $mech->delete_problems_for_body($body->id);
+
     subtest 'correct amount shown on existing DD subscriptions' => sub {
         my $discount_human = sprintf('%.2f', ($ggw_cost_first - $ggw_first_bin_discount) / 100);
         foreach my $status ("Pending", "Paid") {
             subtest "Payment status: $status" => sub {
                 default_mocks();
                 set_fixed_time('2024-02-01T00:00:00');
-                my $tomorrow = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' )->format_datetime( DateTime->now->add(days => 1) );
 
                 $agile_mock->mock( 'CustomerSearch', sub { {
                     Customers => [
@@ -1025,6 +1034,11 @@ FixMyStreet::override_config {
                 like $mech->text, qr/Brown wheelie bin/;
                 like $mech->text, qr/Next collectionPending/;
                 like $mech->text, qr/Subscription.*$discount_human per year/;
+
+                set_fixed_time('2025-12-01T00:00:00');
+                $mech->get_ok('/waste/10001');
+                $mech->content_lacks('Renew your');
+                $mech->content_contains('existing direct debit subscription');
             }
         }
     };
@@ -1043,7 +1057,7 @@ FixMyStreet::override_config {
                         {
                             EndDate => '12/12/2025 12:21',
                             ServiceContractStatus => 'ACTIVE',
-                            Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                         },
                     ],
                 },
@@ -1381,6 +1395,7 @@ FixMyStreet::override_config {
             $body->id,
             'Garden Subscription - New',
             {
+                created => DateTime->now->subtract( years => 1 ),
                 category    => 'Garden Subscription',
                 external_id => "Agile-$contract_id",
                 title => 'Garden Subscription - New',
@@ -1602,7 +1617,7 @@ FixMyStreet::override_config {
                                     Reference => 'CONTRACT_123',
                                     WasteContainerQuantity => 1,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -1677,7 +1692,7 @@ FixMyStreet::override_config {
                                     Reference => 'CONTRACT_123',
                                     WasteContainerQuantity => 1,
                                     ServiceContractStatus => 'ACTIVE',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
                         },
@@ -1695,6 +1710,8 @@ FixMyStreet::override_config {
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
             };
+
+            $mech->delete_problems_for_body($body->id);
 
             subtest 'Due for renewal' => sub {
                 set_fixed_time('2025-01-01T00:00:00Z');
@@ -1762,7 +1779,7 @@ FixMyStreet::override_config {
                                 Reference => 'CONTRACT_123',
                                 WasteContainerQuantity => 1,
                                 ServiceContractStatus => 'ACTIVE',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                             },
                         ],
                     },
@@ -1838,18 +1855,10 @@ FixMyStreet::override_config {
                 set_fixed_time('2025-01-01T00:00:00Z');
 
                 $mech->get_ok('/waste/10001');
-                like $mech->text,
-                    qr/Your subscription is soon due for renewal/,
-                    'renewal warning shown';
-                like $mech->text,
-                    qr/This property has an existing direct debit subscription which will renew automatically/,
-                    'active DD message shown';
-                unlike $mech->content,
-                    qr/value="Renew subscription today"/,
-                    'renewal button not shown';
-                unlike $mech->content,
-                    qr/Renew your brown wheelie bin subscription/,
-                    'renewal link not shown';
+                $mech->content_lacks('Your subscription is soon due for renewal');
+                $mech->content_contains('This property has an existing direct debit subscription which will renew automatically');
+                $mech->content_lacks('value="Renew subscription today"');
+                $mech->content_lacks('Renew your brown wheelie bin subscription');
             };
 
             subtest 'Renewal overdue' => sub {

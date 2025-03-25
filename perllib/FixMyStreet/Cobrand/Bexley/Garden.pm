@@ -69,6 +69,11 @@ sub lookup_subscription_for_uprn {
     # XXX should maybe sort by CreatedDate rather than assuming first is OK
     $sub->{cost} = try {
         my ($payment) = grep { $_->{PaymentStatus} =~ /(Paid|Pending)/ } @{ $contract->{Payments} };
+        if ($payment && $payment->{PaymentMethod} eq 'Direct debit') {
+            # Got an active contract with a DD payment method, nothing due to renew
+            $self->{c}->stash->{direct_debit_status} = 'active';
+            $sub->{has_been_renewed} = 1;
+        }
         return $payment->{Amount};
     };
 
