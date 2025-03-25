@@ -25,7 +25,7 @@ EOF
                     url => 'https://www.example.org/',
                     receive_action => 'action',
                     receive_username => 'un',
-                    receive_password => 'password',
+                    receive_password => [ 'password2', 'password' ]
                 } },
                 waste => { merton => $_ }
             },
