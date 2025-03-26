@@ -160,7 +160,7 @@ $(function() {
         data = data ? data.message : '';
         var wrapper = select.closest('.bulky-item-wrapper');
         if (data) {
-            wrapper.find('.item-message').text(data);
+            wrapper.find('.item-message').html(data);
             wrapper.find('.bulky-item-message').css('display', 'flex');
         } else {
             wrapper.find('.bulky-item-message').hide();
