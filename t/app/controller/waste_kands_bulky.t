@@ -979,9 +979,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     'item_1' => 'BBQ',
+                    'item_notes_1' => 'BBQ note',
                     'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                     'item_2' => 'Bicycle',
+                    'item_notes_2' => 'Bike note',
                     'item_3' => 'Bath',
+                    'item_notes_3' => 'Bath note',
                 },
             },
         );
@@ -1022,6 +1025,7 @@ sub add_extra_metadata {
         items_per_collection_max => 8,
         per_item_costs => 0,
         show_location_page => 'users',
+        show_individual_notes => 1,
         item_list => [
             { bartec_id => '83', name => 'Bath' },
             { bartec_id => '84', name => 'Bathroom Cabinet /Shower Screen' },
