@@ -1,0 +1,47 @@
+use strict;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Integrations::AccessPaySuite;
+use Getopt::Long::Descriptive;
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
+use Moo;
+
+with 'FixMyStreet::Roles::Cobrand::AccessPaySuite';
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['name=s', 'Required - Name of body to set/clear/check call back for'],
+    ['entity=s', 'Required - type of callback. If this is not set, returns information on setup'],
+    ['url=s', 'Required - url to send signals to. If this is not set, clears the webhook'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+$usage->die unless ($opts->entity && $opts->url && $opts->name);
+
+my $body = FixMyStreet::DB->resultset("Body")->find({ name => $opts->name }) or die "Cannot find body " . $opts->name . "\n";
+my $cobrand = $body->get_cobrand_handler;
+my $config = $cobrand->get_config() || die "No configuration for " . $body->name;
+
+my $asp_i = Integrations::AccessPaySuite->new( {
+    config => {
+        endpoint => $config->{dd_endpoint},
+        api_key => $config->{dd_api_key},
+        client_code => $config->{dd_client_code},
+        log_ident => $config->{ident},
+    }
+} );
+
+my $resp = $asp_i->set_callback_url( $opts->entity, $opts->url);
+if ($resp->{Message}) {
+    print $resp->{Message};
+} else {
+    print "Webhook registration failed\n";
+};
