@@ -249,4 +249,14 @@ sub cancel_plan {
     }
 }
 
+sub set_callback_url {
+    my ( $self, $entity, $callback ) = @_;
+
+    my $res = $self->call(
+        'POST',
+        "BACS/$entity/callback",
+        { url =>  "$callback" }
+    );
+}
+
 1;
