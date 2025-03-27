@@ -87,10 +87,15 @@ sub form : Private {
 
     $form->process unless $form->processed;
 
-    # If we have sent a confirmation email, that function will have
-    # set a template that we need to show
-    $c->stash->{template} = $c->stash->{override_template} || $form->template || $self->index_template
-        unless $c->stash->{sent_confirmation_message};
+    # If the form has the already_submitted_error flag set, show the already_submitted template
+    if ($form->already_submitted_error) {
+        $c->stash->{template} = 'waste/already_submitted.html';
+    } else {
+        # If we have sent a confirmation email, that function will have
+        # set a template that we need to show
+        $c->stash->{template} = $c->stash->{override_template} || $form->template || $self->index_template
+            unless $c->stash->{sent_confirmation_message};
+    }
     $c->stash->{form} = $form;
 }
 
