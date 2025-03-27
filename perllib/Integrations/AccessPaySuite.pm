@@ -250,22 +250,13 @@ sub cancel_plan {
 }
 
 sub set_callback_url {
-    my ( $self, $entity, $path ) = @_;
+    my ( $self, $entity, $callback ) = @_;
 
     my $res = $self->call(
         'POST',
         "BACS/$entity/callback",
-        {   url =>
-                "http://bexley.localhost:3000/waste/access_paysuite/$path",
-        },
+        { url =>  "$callback" }
     );
-
-    warn "====\n\t" . "DUMP:" . "\n====";
-    use Data::Dumper;
-    $Data::Dumper::Indent = 1;
-    $Data::Dumper::Maxdepth = 3;
-    $Data::Dumper::Sortkeys = 1;
-    warn Dumper $res;
 }
 
 1;
