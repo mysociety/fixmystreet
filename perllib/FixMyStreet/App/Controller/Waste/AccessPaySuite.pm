@@ -9,23 +9,9 @@ BEGIN { extends 'Catalyst::Controller' }
 sub contract_updates : Path('/waste/access_paysuite/contract_updates') : Args(0) {
     my ( $self, $c ) = @_;
 
-    warn "====\n\t" . "DUMP:" . "\n====";
-    use Data::Dumper;
-    $Data::Dumper::Indent = 1;
-    $Data::Dumper::Maxdepth = 3;
-    $Data::Dumper::Sortkeys = 1;
-    # warn Dumper $c->req->body->getlines;
-    warn Dumper $c->req->body_data;
-
     my $content = $c->req->body_data;
 
     if ( $content->{NewStatus} eq 'Cancelled' ) {
-        # TODO
-        # Find matching subscription in our DB
-        # and send a cancellation request to Agile
-
-        # TODO Do we need to raise a cancellation report our end?
-
         my $report = $c->model('DB::Problem')->search({
             category => 'Garden Subscription',
             title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
@@ -36,12 +22,19 @@ sub contract_updates : Path('/waste/access_paysuite/contract_updates') : Args(0)
                 },
         })->order_by('-id')->first;
 
-        warn "====\n\t" . "DUMP:" . "\n====";
-        use Data::Dumper;
-        $Data::Dumper::Indent = 1;
-        $Data::Dumper::Maxdepth = 3;
-        $Data::Dumper::Sortkeys = 1;
-        warn Dumper $report;
+        my $data = {};
+        $data->{name} = $report->user->name;
+        for my $field (qw(longitude latitude)) {
+            $c->stash->{$field} = $report->$field;
+        };
+
+        $c->stash->{contacts} = [ $c->model('DB::Contact')->search({
+            category => 'Cancel Garden Subscription'
+        }) ];
+        $c->stash->{orig_sub} = $report;
+        $c->stash->{property}{uprn} = $report->get_extra_field_value('uprn');
+        $c->set_param('token', $c->forward('/auth/get_csrf_token'));
+        $c->forward('/waste/process_garden_cancellation', [$data]);
     }
 
     $c->response->status(200);
