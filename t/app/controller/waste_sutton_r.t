@@ -618,6 +618,7 @@ FixMyStreet::override_config {
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3227, # Waste spillage
             ServiceId => 940, # Refuse
+            EventDate => { DateTime => "2022-09-10T17:00:00Z" },
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
