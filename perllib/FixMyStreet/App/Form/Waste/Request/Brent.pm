@@ -104,7 +104,7 @@ has_field request_reason => (
 
         my $events = $echo->GetEventsForObject(PointAddress => $c->stash->{property}{id}, 2936, $months);
         $events = $c->cobrand->_parse_events($events, { include_closed_requests => 1 });
-        $saved_data->{ordered_previously} = $events->{request}{$choice} ? 1 : 0;
+        $saved_data->{ordered_previously} = $events->filter({ containers => [$choice] }) ? 1 : 0;
 
         if ($value eq 'extra' || $value eq 'missing') {
             my $services = $c->stash->{service_data};
