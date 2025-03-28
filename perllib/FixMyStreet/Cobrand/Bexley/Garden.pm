@@ -285,7 +285,7 @@ sub waste_setup_direct_debit {
     my $c = $self->{c};
 
     my $report = $c->stash->{report};
-    my $email = $report->user->email;
+    my $email = $report->user->email || 'gardenwaste@' . $self->admin_user_domain;
 
     my $data = $c->stash->{form_data};
     my $uprn = $report->get_extra_field_value('uprn');

@@ -989,6 +989,68 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
     };
 
+    subtest 'Test direct debit setup with empty email' => sub {
+        $mech->delete_problems_for_body($body->id);
+        set_fixed_time('2023-12-29T17:00:00Z');
+
+        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
+        my ($customer_params, $contract_params);
+        $access_mock->mock('create_customer', sub {
+            my ($self, $params) = @_;
+            $customer_params = $params;
+            return { Id => 'CUSTOMER123' };
+        });
+        $access_mock->mock('create_contract', sub {
+            my ($self, $customer_id, $params) = @_;
+            $contract_params = $params;
+            return { Id => 'CONTRACT123', DirectDebitRef => 'APIRTM-DEFGHIJ1KL' };
+        });
+        $access_mock->mock('get_customer_by_customer_ref', sub {
+            return undef;
+        });
+
+        # Log in as staff user, as they are allowed to submit the form with an empty email
+        $mech->log_in_ok($staff_user->email);
+
+        $mech->get_ok('/waste/12345/garden');
+        $mech->submit_form_ok({ form_number => 1 });
+        $mech->submit_form_ok({ with_fields => { existing => 'no' } });
+        $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 0,
+            bins_wanted => 1,
+            payment_method => 'direct_debit',
+            name => 'Test McTest',
+            phone => '07700900002',
+            email => '', # Empty email
+        }});
+
+        # Submit bank details form
+        $mech->submit_form_ok({ with_fields => {
+            name_title => 'Mr',
+            first_name => 'Test',
+            surname => 'McTest',
+            address1 => '1 Test Street',
+            address2 => 'Test Area',
+            post_code => 'DA1 1AA',
+            account_holder => 'Test McTest',
+            account_number => '12345678',
+            sort_code => '123456'
+        }});
+
+        $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
+        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        ok $report, "Found the report";
+
+        # Check default email was used
+        is $customer_params->{email}, 'gardenwaste@' . $body->get_cobrand_handler->admin_user_domain, 'Default email was used';
+
+        $mech->content_contains('Your Direct Debit has been set up successfully');
+        $mech->content_contains('Direct Debit mandate');
+    };
+
     $mech->delete_problems_for_body($body->id);
 
     subtest 'correct amount shown on existing DD subscriptions' => sub {
