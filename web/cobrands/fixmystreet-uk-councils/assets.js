@@ -936,6 +936,146 @@ fixmystreet.assets.lincolnshire.llpg_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+fixmystreet.assets.lincolnshire.grass_found = function(layer) {
+    var data = layer.selected_feature.attributes;
+    var parish_regex = new RegExp(/Contact Parish/);
+    /* If it is handled by LCC and has cut dates provided,
+    add an extra notice to the reporting form showing the cut dates */
+    if (data.Cut_By.match(/LCC|F0|F1|Flail|STR/) && lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3]).length) {
+        var $div = $(".js-reporting-page.js-lincs-grass-notice");
+        if ($div.length) {
+            $div.removeClass('js-reporting-page--skip');
+        } else {
+            var msg = "<div class='box-warning js-lincs-grass-notice'>" +
+                        "<h1>Grass cutting schedule</h1>" +
+                        "<p>The grass in this area is scheduled to be cut ";
+                        if (data.Cut_3 === 'N/A') {
+                            msg = msg + "on <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+                        } else {
+                            msg = msg + "between <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+                        }
+
+            if (data.Cut_By != 'LCC') {
+                msg += '<p>In rural areas we cut roads to the first 1.1m width from the edge of the road and leave the rest for wildlife except for areas providing visibility at junctions and bends where a greater width is cut. We also cut a strip either side of footways where possible.</p>';
+            }
+            msg += "<p>Does this answer your question about grass cutting?</p>";
+            $div = $(msg);
+
+            var $button = $("<div><button id='lincs-yes-verge-query' class='btn btn--block'>Yes</button></div>");
+            $button.on( "click", function(e) {
+                e.preventDefault();
+                $('.js-reporting-page--next').prop('disabled', true);
+                if (!$('#lincs-thank-you').length) {
+                    $div.append('<p id="lincs-thank-you">Thank you for making an enquiry. If you have any other highways faults to report please <a href="/">make another report</a>.</p>');
+                }
+            });
+            $div.append($button);
+            // We'll call the 'Continue' button 'No' for this page
+            // as clicking 'No' should continue report
+            $(fixmystreet).on("report_new:page_change", function(e, $curr, $page) {
+                if ($page.hasClass('js-lincs-grass-notice')) {
+                    $('.js-reporting-page--next').text('No');
+                } else {
+                    $('.js-reporting-page--next').prop('disabled', false);
+                    $('.js-reporting-page--next').text('Continue');
+                }
+            });
+            fixmystreet.pageController.addNextPage('lincs_grass', $div);
+        }
+        fixmystreet.body_overrides.only_send('Lincolnshire County Council');
+    }
+    /* If handled by a district council (LCDC or SKDC) that says contact them,
+    send the report to that relevant district council in their Grass Cutting category.
+    If handled by LCC (or a district council) but with “Contact LCC” (or similar) as the cut date,
+    do nothing and allow reporting to proceed to LCC’s Grass Cutting category.*/
+    else if (data.Cut_By === 'DIS') {
+        var district_council = {
+            'LCDC': 'Lincoln City Council',
+            'SKDC': 'South Kesteven District Council'
+        };
+        var lcc_regex = new RegExp(/Contact LCC/);
+        if (district_council[data.Authority] && !lcc_regex.test(data.Cut_1)) {
+            fixmystreet.body_overrides.only_send(district_council[data.Authority]);
+        } else {
+            fixmystreet.body_overrides.only_send('Lincolnshire County Council');
+        }
+    }
+    /* If handled by a parish (with a cut date of “Contact Parish Council” or “Contact Parish to Add”)
+    prevent reporting and display a message informing the user which parish council handles the area */
+    else if (data.Cut_By === 'PAR' && parish_regex.test(data.Cut_1)) {
+        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-parish-grass');
+        layer.fixmystreet.no_asset_msg_id = '#js-lincs-parish-grass';
+        var text = $('#js-lincs-parish-grass').html();
+        new_text = text.replace('{{PARISH_COUNCIL}}', data.Authority);
+        $('#js-lincs-parish-grass').html(new_text);
+    }
+
+    function lincs_has_dates(cut_info) {
+        var dates = [];
+        if (cut_info[0].match(/Contact /) && cut_info[0] === cut_info[1] && cut_info[1] === cut_info[2]) {
+            return dates;
+        } else if (cut_info[0] && cut_info[1] && cut_info[2] === 'N/A') {
+            var now = new Date();
+            for (var i=0; i < cut_info.length; i++) {
+                var date_components = cut_info[i].split(' ');
+                var date = new Date(now.getFullYear(), months(date_components[1]), date_components[0], '23', '59', '59');
+                if (date >= now) {
+                    dates.push(cut_info[i]);
+                    return dates;
+                }
+            }
+            return dates;
+        } else {
+            for (var j=0; j < cut_info.length; j++) {
+                var date_returned = check_date(cut_info[j]);
+                if (date_returned) {
+                    dates.push(date_returned);
+                }
+            }
+            return dates;
+        }
+
+        function check_date(date) {
+            var dates = date.split(" - ");
+            if (dates.length === 2) {
+                var now = new Date();
+                var end_date_components = dates[1].split(' ');
+                var end_date = new Date(now.getFullYear(), months(end_date_components[1]), end_date_components[0], '23', '59', '59');
+                if (end_date < now) {
+                    return 0;
+                } else {
+                    return date;
+                }
+            } else {
+                return 0;
+            }
+        }
+        function months($day) {
+            var months = {
+                January: '0',
+                February: '1',
+                March: '2',
+                April: '3',
+                May: '4',
+                June: '5',
+                July: '6',
+                August: '7',
+                September: '8',
+                October: '9',
+                November: '10',
+                December: '11',
+            };
+            return months[$day];
+        }
+    }
+};
+
+fixmystreet.assets.lincolnshire.grass_not_found = function(layer) {
+    // road_found to remove any stopper messages
+    fixmystreet.message_controller.road_found(layer);
+    fixmystreet.body_overrides.only_send('Lincolnshire County Council');
+};
+
 fixmystreet.assets.lincolnshire.light_found = function(asset) {
     fixmystreet.body_overrides.only_send(asset.layer.fixmystreet.body);
 };
