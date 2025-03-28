@@ -260,48 +260,43 @@ sub missed_event_types { return {
 } }
 
 sub parse_event_missed {
-    my ($self, $echo_event, $closed, $events) = @_;
-    my $report = $self->problems->search({ external_id => $echo_event->{Guid} })->first;
-    my $event = {
-        closed => $closed,
-        date => construct_bin_date($echo_event->{EventDate}),
-    };
-    $event->{report} = $report if $report;
+    my ($self, $echo_event, $event, $events) = @_;
 
     my $service_id = $echo_event->{ServiceId};
     if ($service_id == $SERVICE_IDS{domestic_refuse}) {
-        push @{$events->{missed}->{$TASK_IDS{domestic_refuse}}}, $event;
-        push @{$events->{missed}->{$TASK_IDS{domestic_refuse_bag}}}, $event;
-        push @{$events->{missed}->{$TASK_IDS{schedule2_refuse}}}, $event;
+        push @$events, { %$event, service_id => $TASK_IDS{domestic_refuse} };
+        push @$events, { %$event, service_id => $TASK_IDS{domestic_refuse_bag} };
+        push @$events, { %$event, service_id => $TASK_IDS{schedule2_refuse} };
     } elsif ($service_id == $SERVICE_IDS{communal_refuse}) {
-        push @{$events->{missed}->{$TASK_IDS{communal_refuse}}}, $event;
+        push @$events, { %$event, service_id => $TASK_IDS{communal_refuse} };
     } elsif ($service_id == $SERVICE_IDS{garden}) {
-        push @{$events->{missed}->{$TASK_IDS{garden}}}, $event;
+        push @$events, { %$event, service_id => $TASK_IDS{garden} };
     } elsif ($service_id == $SERVICE_IDS{food}) { # TODO Will food events come in as this?
-        push @{$events->{missed}->{$TASK_IDS{domestic_food}}}, $event;
-        push @{$events->{missed}->{$TASK_IDS{communal_food}}}, $event;
+        push @$events, { %$event, service_id => $TASK_IDS{domestic_food} };
+        push @$events, { %$event, service_id => $TASK_IDS{communal_food} };
     } elsif ($service_id == $SERVICE_IDS{bulky}) {
-        push @{$events->{missed}->{$SERVICE_IDS{bulky}}}, $event;
+        push @$events, { %$event, service_id => $SERVICE_IDS{bulky} }, $event;
     } elsif ($service_id == $SERVICE_IDS{domestic_recycling} || $service_id == $SERVICE_IDS{communal_recycling}) {
         my $data = Integrations::Echo::force_arrayref($echo_event->{Data}, 'ExtensibleDatum');
         foreach (@$data) {
             if ($_->{DatatypeName} eq 'Paper' && $_->{Value} == 1) {
-                push @{$events->{missed}->{$TASK_IDS{domestic_paper}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{communal_paper}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{domestic_paper_bag}}}, $event;
+                push @$events, { %$event, service_id => $TASK_IDS{domestic_paper} };
+                push @$events, { %$event, service_id => $TASK_IDS{communal_paper} };
+                push @$events, { %$event, service_id => $TASK_IDS{domestic_paper_bag} };
             } elsif ($_->{DatatypeName} eq 'Container Mix' && $_->{Value} == 1) {
-                push @{$events->{missed}->{$TASK_IDS{domestic_mixed}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{domestic_mixed_bag}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{communal_mixed}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{schedule2_mixed}}}, $event;
+                push @$events, { %$event, service_id => $TASK_IDS{domestic_mixed} };
+                push @$events, { %$event, service_id => $TASK_IDS{domestic_mixed_bag} };
+                push @$events, { %$event, service_id => $TASK_IDS{communal_mixed} };
+                push @$events, { %$event, service_id => $TASK_IDS{schedule2_mixed} };
             } elsif ($_->{DatatypeName} eq 'Food' && $_->{Value} == 1) {
-                push @{$events->{missed}->{$TASK_IDS{domestic_food}}}, $event;
-                push @{$events->{missed}->{$TASK_IDS{communal_food}}}, $event;
+                push @$events, { %$event, service_id => $TASK_IDS{domestic_food} };
+                push @$events, { %$event, service_id => $TASK_IDS{communal_food} };
             }
         }
     } else {
-        push @{$events->{missed}->{$service_id}}, $event;
+        push @$events, $event;
     }
+    $event->{ignore} = 1;
 }
 
 sub waste_munge_report_data {
