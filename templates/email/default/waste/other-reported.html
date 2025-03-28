@@ -22,7 +22,7 @@ INCLUDE '_email_top.html';
   [% END %]
 
   [% IF cobrand.moniker == 'sutton' %]
-  <p style="[% p_style %]">Thank you for contacting the London Borough of Sutton.</p>
+  <p style="[% p_style %]">Thank you for contacting Sutton Council.</p>
   [% END %]
 
 [% INCLUDE '_council_reference.html' problem=report %]
@@ -100,6 +100,10 @@ INCLUDE '_email_top.html';
     [% END %]
 
 [% END %]
+
+  <p style="[% p_style %]">
+    [% INCLUDE 'waste/signature.html' %]
+  </p>
 
   [% end_padded_box | safe %]
 </th>
