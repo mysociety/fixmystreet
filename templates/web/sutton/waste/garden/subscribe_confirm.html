@@ -45,7 +45,7 @@ You have signed up for the garden waste collection at [% ADDRESS %].
 <p>
 [% IF action == 'new_subscription' %]
   [% IF new_bins > 0 %]
-    We will aim to deliver your garden waste [% container_str %] within 20 working days.
+    We will aim to deliver your garden waste [% container_str %] within 10 working days.
     Your subscription will start on the next garden waste collection date for your
     address after the delivery of your garden waste [% container_str %]. We will email you again
     when our waste team have delivered your [% container_str %].
@@ -54,7 +54,7 @@ You have signed up for the garden waste collection at [% ADDRESS %].
     If you are a returning customer, your service will continue from your last subscription end date.
     [% END %]
 [% ELSIF action == 'add_containers' %]
-    We will aim to deliver your garden waste [% container_str %] within 20 working days.
+    We will aim to deliver your garden waste [% container_str %] within 10 working days.
 [% ELSE %]
     Changes to your subscription will show up on your bin calender shortly.
 [% END %]

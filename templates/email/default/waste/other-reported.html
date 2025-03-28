@@ -33,10 +33,16 @@ INCLUDE '_email_top.html';
 
 [% ELSIF cobrand.moniker == 'sutton' %]
     [% IF report.category == 'Request new container' %]
-        <p style="[% p_style %]">Due to the current high demand, please allow up to
-        [% cobrand.wasteworks_config.request_timeframe %]
-        for this order to be processed. We thank you for your patience and
-        understanding in advance.</p>
+        <p style="[% p_style %]">
+          [% IF report.title.match('Garden') %]
+            Please allow up to 10 working days for this order to be processed.
+          [% ELSE %]
+            Due to the current high demand, please allow up to
+            [% cobrand.wasteworks_config.request_timeframe %]
+            for this order to be processed. We thank you for your patience and
+            understanding in advance.
+          [% END %]
+        </p>
         <p style="[% p_style %]">If you have requested a bin, box or caddy to be collected as part of the request:</p>
         <ul [% ul_attrs | safe %]>
             <li>Please keep any bin, box or caddy accessible in your front garden or driveway, ready to be exchanged.</li>
