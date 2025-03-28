@@ -427,6 +427,7 @@ sub GetEventsForObject {
         }, { # And a gate not closed
             EventTypeId => '2118',
             ServiceId => '542',
+            EventDate => { DateTime => "2020-05-18T17:00:00Z" },
         }, {
             # Request for a new paper container, currently out of stock
             EventTypeId => '2104',
