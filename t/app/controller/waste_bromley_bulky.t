@@ -443,6 +443,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('Report a bulky waste collection as missed',
                 "Can't report missing when closed collection but after two working days");
             $report->update({ state => 'confirmed' });
+            $echo->mock( 'GetEventsForObject', sub { [] } );
         };
     };
 
