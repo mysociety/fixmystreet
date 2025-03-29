@@ -291,8 +291,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-9' => 1, 'quantity-9' => 2, 'container-10' => 1, 'quantity-10' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email } });
-        $mech->content_like(qr{Outside Food Waste Container</dt>\s*<dd[^>]*>\s*1\s*</dd>});
-        $mech->content_like(qr{Kitchen Caddy</dt>\s*<dd[^>]*>\s*2\s*</dd>});
+        $mech->content_like(qr{Outside Food Waste Container</dt>\s*<dd[^>]*>\s*1 to deliver\s*</dd>});
+        $mech->content_like(qr{Kitchen Caddy</dt>\s*<dd[^>]*>\s*2 to deliver\s*</dd>});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Now check your email');
         my $link = $mech->get_link_from_email; # Only one email sent, this also checks

@@ -29,9 +29,7 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   [% INCLUDE 'waste/_bulky_extra_text.html' %]
 
   <p style="[% p_style %]">
-    Kind regards,
-    <br>
-    [% IF cobrand.moniker == 'sutton' %]Neighbourhood Services[% ELSE %]Waste Services Team[% END %]
+    [% INCLUDE 'waste/signature.html' %]
   </p>
 
   <p style="[% p_style %]">

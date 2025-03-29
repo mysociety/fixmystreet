@@ -5,7 +5,7 @@ IF report.category == 'Request new container' || report.category == 'Request con
     ELSE;
         title = 'Your container request has been sent';
     END;
-ELSIF report.category == 'Report missed collection';
+ELSIF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection';
     title = 'Thank you for reporting a missed collection';
 ELSIF report.category == 'Request additional collection';
     title = 'Your additional collection has been requested';

@@ -65,7 +65,7 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
 [% END %]
 
   <p style="[% p_style %]">
-    Kind regards,<br>Waste Services Team
+    [% INCLUDE 'waste/signature.html' %]
   </p>
 
   [% end_padded_box | safe %]
