@@ -8,7 +8,7 @@ $max-mobile: 30em;
 $max-tablet: 64rem;
 
 /* COLOURS */
-$black: #000;
+$black: #101920;
 $gray: #3b3b3a;
 $gray-200: #e9ecef; // Card bg
 $gray-300: #dee2e6; // Card hover bg
@@ -17,11 +17,13 @@ $gray-500: #ADB5BD; // Gray button Focus and hover
 $gray-600: #6C757D; // Gray button Active
 $gray-borders: #CDD3D9; // Input borders
 
+$orange: #FC5C1F; // New primary colour 2025 Rebranding
+
 $cyan: #00aeef;
 $cyan-600: #0089BC;
 $cyan-700: #006489;
 
-$blue: #007fae;
+$blue: #365269;
 $blue-600: #005A7B;
 $blue-700: #003548;
 
@@ -62,7 +64,7 @@ $dropzone-button-text: $white;
 
 // NAVBAR
 $header-top-border-width: 0;
-$mappage-header-height: 70px;
+$mappage-header-height: 80px;
 
 // FRONT PAGE
 $front-main-color: $black;
@@ -85,7 +87,7 @@ $button-padding-top: 0.625rem;
 $button-padding-bottom: 0.625rem;
 $button-padding-left: 1.5rem;
 $button-padding-right: 1.5rem;
-$button-border-radius: 2rem; // This var doesn't exist in other cobrands
+$button-border-radius: 0.625rem; // This var doesn't exist in other cobrands
 
 // Usage 
 /*
@@ -94,18 +96,18 @@ $button-border-radius: 2rem; // This var doesn't exist in other cobrands
       @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
   }
 */
-$button-primary-bg-top: $yellow;
-$button-primary-bg-bottom: $yellow;
-$button-primary-border: $yellow;
-$button-primary-text: $primary_text;
-$button-primary-hover-bg-bottom: $yellow-600;
-$button-primary-hover-bg-top: $yellow-600;
-$button-primary-hover-border: $yellow-600;
-$button-primary-hover-text: $primary_text;
-$button-primary-focus-bg-bottom: $yellow-600;
-$button-primary-focus-bg-top: $yellow-600;
-$button-primary-focus-border: $yellow-600; 
-$button-primary-focus-text: $primary_text;
+$button-primary-bg-top: $orange;
+$button-primary-bg-bottom: $orange;
+$button-primary-border: $orange;
+$button-primary-text: $white;
+$button-primary-hover-bg-bottom: $black;
+$button-primary-hover-bg-top: $black;
+$button-primary-hover-border: $black;
+$button-primary-hover-text: $white;
+$button-primary-focus-bg-bottom: $orange;
+$button-primary-focus-bg-top: $orange;
+$button-primary-focus-border: $orange; 
+$button-primary-focus-text: $white;
 
 /*
   .btn, .btn-secondary {
@@ -121,9 +123,11 @@ $button-secondary-hover-bg-bottom: $gray-500;
 $button-secondary-hover-bg-top: $gray-500;
 $button-secondary-hover-border: $gray-500;
 $button-secondary-hover-text: $primary_text;
-$button-secondary-focus-bg-bottom: $gray-500;
-$button-secondary-focus-bg-top: $gray-500;
-$button-secondary-focus-border: $gray-500; 
+$button-secondary-focus-bg-bottom: $gray-400;
+$button-secondary-focus-bg-top: $gray-400;
+$button-secondary-focus-border: $gray-400; 
 $button-secondary-focus-text: $primary_text;
 
 $col_click_map: $yellow;
+
+$mobile-sticky-sidebar-button-menu-image: "menu-white";

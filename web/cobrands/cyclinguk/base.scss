@@ -25,11 +25,18 @@ body {
 // NAVBAR
 $site-logo-height: 76px;
 #site-logo {
-    width: 200px;
+    width: 12.5rem;
     height: $site-logo-height;
     padding: 1em 0;
     background: url('/cobrands/cyclinguk/images/fill-that-hole-logo.png') 0 50% no-repeat;
-    background-size: auto 36px;
+    background-size: auto 70px;
+}
+
+.logos-container {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    align-items: center;
 }
 
 #nav-link {
@@ -97,17 +104,20 @@ a#geolocate_link,
     // line-height: 100%;
     outline: none;
     text-decoration: none;
-    -webkit-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
-    -moz-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
-    -o-transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
-    transition: background-color 1.5s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out ;
+    -webkit-transition: background-color 0.30s ease-out, color 0.30s ease-out, border-color 0.30s ease-out, box-shadow 0.30s ease-out ;
+    -moz-transition: background-color 0.30s ease-out, color 0.30s ease-out, border-color 0.30s ease-out, box-shadow 0.30s ease-out ;
+    -o-transition: background-color 0.30s ease-out, color 0.30s ease-out, border-color 0.30s ease-out, box-shadow 0.30s ease-out ;
+    transition: background-color 0.30s ease-out, color 0.30s ease-out, border-color 0.30s ease-out, box-shadow 0.30s ease-out ;
     padding-left: $button-padding-left;
     padding-right: $button-padding-right;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 1px rgba(0,0,0,0.075);
-    border: none !important; // Overrides mixin;
     &:hover, &:focus {
         box-shadow: none;
     }
+}
+
+.nav-menu--main a.report-a-problem-btn {
+    display: none;
 }
 
 .btn,
@@ -115,13 +125,20 @@ a#geolocate_link,
 .nav-menu a.btn-secondary,
 a#geolocate_link {
     @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+    &:focus {
+        outline: 0.25rem solid $black;
+        outline-offset: -1px;
+    }
 }
 
 .btn--primary,
 .postcode-form-box input#sub,
-#report-cta,
-.nav-menu--main a.report-a-problem-btn  {
+#report-cta {
     @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+    &:focus {
+        outline: 0.25rem solid $black;
+        outline-offset: -1px;
+    }
 }
 
 // GENERAL COMPONENTS
@@ -423,9 +440,8 @@ body.mappage {
     #site-logo {
         width: 200px;
         height: 60px;
-        background-image: url('/cobrands/cyclinguk/images/fill-that-hole-logo.png');
         box-sizing: border-box;
-        background-size: auto 36px;
+        background-size: auto 50px;
     }
 }
 
@@ -555,7 +571,6 @@ body.mappage {
 }
 
 // REPORTING FORM
-
 p.cyclinguk-marketing-opt-in {
     margin-top: 3em;
 }
