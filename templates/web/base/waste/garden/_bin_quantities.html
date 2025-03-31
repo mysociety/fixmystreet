@@ -73,6 +73,9 @@
       [% IF form_page == 'renew';
             SET cost = garden_costs.per_bin_renewal;
             SET first_cost = garden_costs.per_bin_renewal_first;
+        ELSIF form_page == 'modify';
+            SET cost = garden_costs.per_bin;
+            SET first_cost = cost;
         ELSE;
             SET cost = garden_costs.per_bin;
             SET first_cost = garden_costs.per_bin_first;
