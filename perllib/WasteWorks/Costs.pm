@@ -41,12 +41,18 @@ sub _build_has_pro_rata_modify { $_[0]->cobrand->moniker eq 'bromley' }
 # Now the code that uses the data to work out costs
 
 sub bins {
-    my ($self, $count) = @_;
+    my ( $self, $count, $type ) = @_;
     $count ||= 1;
     my $per_bin = $self->get_cost('ggw_cost') ;
-    my $first_cost = $self->get_cost('ggw_cost_first') || $per_bin;
-    if ($self->first_bin_discount) {
-        $first_cost -= $self->first_bin_discount_absolute_amount;
+    my $first_cost;
+    if ( ( $type // '' ) eq 'modify' ) {
+        # Ignore any 'first bin' costs/discounts for subscription modification
+        $first_cost = $per_bin;
+    } else {
+        $first_cost = $self->get_cost('ggw_cost_first') || $per_bin;
+        if ($self->first_bin_discount) {
+            $first_cost -= $self->first_bin_discount_absolute_amount;
+        }
     }
     my $cost = $self->_first_diff_calc($first_cost, $per_bin, $count);
     return $cost;
@@ -126,7 +132,7 @@ sub pro_rata_cost {
         my $cost = $count * $self->get_pro_rata_bin_cost( $sub_end, $now );
         return $self->apply_garden_discount($cost);
     } else {
-        return $self->bins($count);
+        return $self->bins( $count, 'modify' );
     }
 }
 
