@@ -5,7 +5,7 @@
       [% IF item.message %]
         <ul [% ul_attrs | safe %]>
           <li>
-            [% item.message %]
+            [% item.message | safe %]
           </li>
         </ul>
       [% END %]

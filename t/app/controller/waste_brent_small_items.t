@@ -29,7 +29,7 @@ $body->set_extra_metadata(
             { bartec_id => '5', name => 'Toaster', category => 'Small electrical items' },
             { bartec_id => '6', name => 'Kettle', category => 'Small electrical items' },
             { bartec_id => '7', name => 'Games console', category => 'Small electrical items' },
-            { bartec_id => '8', name => 'Small electricals: Other item under 30x30x30 cm', category => 'Small electrical items', message => 'Check the size' },
+            { bartec_id => '8', name => 'Small electricals: Other item under 30x30x30 cm', category => 'Small electrical items', message => 'Check the size <a href="https://example.org">in the sizing form</a>' },
         ],
     },
 );
@@ -203,6 +203,7 @@ FixMyStreet::override_config {
             $mech->content_contains('4 items requested for collection');
             $mech->content_lacks('you can add up to');
             $mech->content_contains('No image of the location has been attached.');
+            $mech->content_contains('Check the size <a href="https://example.org">in the sizing form</a>');
             $mech->content_lacks('£0.00');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
             $mech->content_contains("23:59 on the night before");
@@ -256,7 +257,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Toaster/, 'Includes item 2';
             like $confirmation_email_txt, qr/- Podback Bag/, 'Includes item 3';
             like $confirmation_email_txt, qr/- Small electricals: Other/, 'Includes item 3';
-            like $confirmation_email_txt, qr/- Check the size/, 'Includes item 3 message';
+            like $confirmation_email_txt, qr/- Check the size in the sizing form \[https:\/\/example\.org\]/, 'Includes item 3 message';
             unlike $confirmation_email_txt, qr/Total cost/, 'There is not total cost';
             like $confirmation_email_txt, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address';
             like $confirmation_email_txt, qr/Collection date: Saturday 01 July/, 'Includes collection date';
@@ -269,6 +270,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Toaster/, 'Includes item 2 (html mail)';
             like $confirmation_email_html, qr/Podback Bag/, 'Includes item 3 (html mail)';
             like $confirmation_email_html, qr/Small electricals: Other/, 'Includes item 3 (html mail)';
+            like $confirmation_email_html, qr/Check the size <a href="https:\/\/example\.org">in the sizing form<\/a>/, 'Includes item 3 message';
             unlike $confirmation_email_html, qr/Total cost/, 'There is no total cost (html mail)';
             like $confirmation_email_html, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address (html mail)';
             like $confirmation_email_html, qr/Collection date: Saturday 01 July/, 'Includes collection date (html mail)';

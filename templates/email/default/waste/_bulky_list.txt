@@ -1,7 +1,7 @@
 [% FOR item IN item_list %]
     - [% item.value %]
 [% IF item.message %]
-        - [% item.message %]
+        - [% email_sanitize_text(item, 'message') %]
 [% END %]
 [% END %]
 

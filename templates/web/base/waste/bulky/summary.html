@@ -225,7 +225,7 @@ SET data = form.saved_data;
                   </div>
                   <div class="govuk-warning-text__content" style="display:flex; align-items:center;">
                       <span class="govuk-warning-text__assistive">Warning for item: [% item.item %]</span>
-                      <p class="govuk-!-margin-bottom-0">[% extra_text %]</p>
+                      <p class="govuk-!-margin-bottom-0">[% extra_text | safe %]</p>
                   </div>
                 </div>
               </td>
