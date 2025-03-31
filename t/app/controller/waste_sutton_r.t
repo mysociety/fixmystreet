@@ -106,7 +106,10 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('2 Example Street, Sutton');
         $mech->content_contains('Friday every other week');
-        $mech->content_contains('Friday, 2nd September');
+        SKIP: {
+            skip 'last collection currently not shown for Sutton';
+            $mech->content_contains('Friday, 2nd September');
+        }
         $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
     };
     subtest 'In progress collection' => sub {
@@ -127,7 +130,10 @@ FixMyStreet::override_config {
         $mech->content_lacks('Report a non-recyclable refuse collection as missed');
         set_fixed_time('2022-09-09T19:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains(', at  4:00pm');
+        SKIP: {
+            skip 'last collection currently not shown for Sutton';
+            $mech->content_contains(', at  4:00pm');
+        }
         $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
         $mech->content_contains('Report a non-recyclable refuse collection as missed');
         $e->mock('GetTasks', sub { [] });

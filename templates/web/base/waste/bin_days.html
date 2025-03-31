@@ -177,7 +177,7 @@
             [% END %]
           </dd>
         </div>
-      [% IF unit.last AND unit.last.date.year > 2000 %][%# Bartec uses 1900-01-01T00:00:00 for jobs that have no previous collection %]
+      [% IF unit.last AND unit.last.date.year > 2000 AND c.cobrand.moniker != 'sutton' %][%# Bartec uses 1900-01-01T00:00:00 for jobs that have no previous collection; Sutton currently don't want last date shown %]
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Last collection</dt>
           <dd class="govuk-summary-list__value">
