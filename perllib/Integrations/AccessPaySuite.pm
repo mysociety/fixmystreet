@@ -249,4 +249,37 @@ sub cancel_plan {
     }
 }
 
+=item * amend_plan
+
+Amends the payment amount for an existing direct debit plan.
+
+Takes a hashref of parameters:
+- orig_sub - The original subscription report object containing the contract_id in metadata
+- amount - The new amount to be taken (decimal number with max 2 decimal places)
+
+Returns 1 on success or a hashref with an error key on failure.
+
+=cut
+
+sub amend_plan {
+    my ($self, $args) = @_;
+
+    my $contract_id = $args->{orig_sub}->get_extra_metadata('direct_debit_contract_id');
+    unless ($contract_id) {
+        die "No direct debit contract ID found in original subscription report metadata";
+    }
+
+    my $path = "contract/" . $contract_id . "/amount";
+    my $data = {
+        amount => $args->{amount},
+        comment => "WasteWorks: Plan amount amended for " . $args->{orig_sub}->id,
+    };
+
+    my $resp = $self->call('PATCH', $path, $data);
+
+    if (ref $resp eq 'HASH' && $resp->{error}) {
+        die "Error amending plan: " . $resp->{error};
+    }
+}
+
 1;
