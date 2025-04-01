@@ -1,61 +1,63 @@
 [% USE date %]
 <div class="bristol_footer">
     <footer role="contentinfo" class="clearfix">
-
-<div class="span8">
-  <div id="footer-logo">
-    <p>
-      <a href="https://www.bristol.gov.uk" title="Bristol City Council">Bristol City Council</a>
-    </p>
-  </div>
-  <div class="legal-nav">
-    <ul class="linklist">
-      <li>
-        <a href="https://www.bristol.gov.uk/contact">Contact</a>
-      </li>
-      <li>
-        <a href="https://www.bristol.gov.uk/complaints">Complaints and feedback</a>
-      </li>
-      <li>
-        <a href="https://www.bristol.gov.uk/about-our-website/cookies">Cookies</a>
-      </li>
-      <li>
-        <a href="https://www.bristol.gov.uk/about-our-website/privacy">Privacy</a>
-      </li>
-      <li>
-        <a href="https://www.bristol.gov.uk/about-our-website/accessibility">Accessibility</a>
-      </li>
-    </ul>
-  </div>
-</div>
-<div class="span4">
-  <div class="footer-title">
-    Follow us:
-  </div>
-  <div class="footer-social-links">
-    <ul class="linklist">
-      <li>
-        <a href="http://www.facebook.com/BristolCouncil" title="Follow us on Facebook"><img alt="Facebook" src="/cobrands/bristol/img/facebook.png"></a>
-      </li>
-      <li>
-        <a href="http://www.twitter.com/bristolcouncil" title="Follow us on Twitter"><img alt="Twitter" src="/cobrands/bristol/img/twitter.png"></a>
-      </li>
-      <li>
-        <a href="http://www.youtube.com/bristolcitycouncil" title="Follow us on Youtube"><img alt="Youtube" src="/cobrands/bristol/img/youtube.png"></a>
-      </li>
-      <li>
-        <a href="http://www.flickr.com/photos/bristolcouncil" title="Follow us on Flickr"><img alt="Flickr" src="/cobrands/bristol/img/flickr.png"></a>
-      </li>
-      <li>
-        <a href="http://news.bristol.gov.uk/feed/en" title="Council news RSS feed"><img alt="Council news RSS feed" src="/cobrands/bristol/img/rss.png"></a>
-      </li>
-    </ul>
-  </div>
-  <div class="footer-copyright">
-    <a href="https://www.bristol.gov.uk/about-our-website/copyright">Copyright&nbsp;&copy; [% date.format(date.now, '%Y') %] Bristol City Council</a>
-  </div>
-</div>
-
+      <div class="container">
+        <div class="span8">
+          <div id="footer-logo">
+            <a href="https://www.bristol.gov.uk" aria-label="Go to the https://bristol.gov.uk homepage"></a>
+          </div>
+          <div class="legal-nav">
+            <ul class="linklist">
+              <li>
+                <a href="https://www.bristol.gov.uk/contact">Contact</a>
+              </li>
+              <li>
+                <a href="https://www.bristol.gov.uk/complaints">Complaints and feedback</a>
+              </li>
+              <li>
+                <a href="https://www.bristol.gov.uk/about-our-website/cookies">Cookies</a>
+              </li>
+              <li>
+                <a href="https://www.bristol.gov.uk/about-our-website/privacy">Privacy</a>
+              </li>
+              <li>
+                <a href="https://www.bristol.gov.uk/about-our-website/accessibility">Accessibility</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="span4">
+          <div class="footer-title">
+            Follow us:
+          </div>
+          <div class="footer-social-links">
+            <ul class="linklist">
+              <li>
+                <a href="http://www.facebook.com/BristolCouncil" title="Follow us on Facebook"><svg role="presentation" aria-hidden="true" width="19" height="19" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24.3204 17.75L25.2538 12.6827H19.4177V9.3943C19.4177 8.00797 20.233 6.65664 22.8468 6.65664H25.5V2.34234C25.5 2.34234 23.0923 2 20.7903 2C15.9841 2 12.8425 4.42703 12.8425 8.82063V12.6827H7.5V17.75H12.8425V30H19.4177V17.75H24.3204Z" fill="currentColor"/></svg></a>
+              </li>
+              <li>
+                <a href="http://www.twitter.com/bristolcouncil" title="Follow us on Twitter"><svg role="presentation" aria-hidden="true" width="19" height="19" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24.05 3H28.344L18.964 13.748L30 28.376H21.36L14.588 19.506L6.848 28.376H2.55L12.582 16.876L2 3.002H10.86L16.972 11.108L24.05 3ZM22.54 25.8H24.92L9.56 5.442H7.008L22.54 25.8Z" fill="currentColor"/></svg>
+                </a>
+              </li>
+              <li>
+                <a href="http://www.youtube.com/bristolcitycouncil" title="Follow us on Youtube"><svg role="presentation" aria-hidden="true" width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.3333 20L20.2533 16L13.3333 12V20ZM28.7467 9.56001C28.92 10.1867 29.04 11.0267 29.12 12.0933C29.2133 13.16 29.2533 14.08 29.2533 14.88L29.3333 16C29.3333 18.92 29.12 21.0667 28.7467 22.44C28.4133 23.64 27.64 24.4133 26.44 24.7467C25.8133 24.92 24.6667 25.04 22.9067 25.12C21.1733 25.2133 19.5867 25.2533 18.12 25.2533L16 25.3333C10.4133 25.3333 6.93333 25.12 5.56 24.7467C4.36 24.4133 3.58667 23.64 3.25333 22.44C3.08 21.8133 2.96 20.9733 2.88 19.9067C2.78667 18.84 2.74667 17.92 2.74667 17.12L2.66667 16C2.66667 13.08 2.88 10.9333 3.25333 9.56001C3.58667 8.36001 4.36 7.58667 5.56 7.25334C6.18667 7.08001 7.33333 6.96 9.09333 6.88C10.8267 6.78667 12.4133 6.74667 13.88 6.74667L16 6.66667C21.5867 6.66667 25.0667 6.88001 26.44 7.25334C27.64 7.58667 28.4133 8.36001 28.7467 9.56001Z" fill="currentColor"/></svg>
+                  </a>
+              </li>
+              <li>
+                <a href="https://nextdoor.co.uk/agency-detail/england/bristol/bristol-city-council/" aria-label="Connect with us on Nextdoor"><svg role="presentation" aria-hidden="true" width="19" height="19" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32ZM17.9664 7C14.6676 7 11.8609 8.48221 10.2882 10.7558C10.2728 10.7784 10.2561 10.8043 10.2379 10.8322C10.1054 11.0365 9.90045 11.3524 9.63612 11.3524C8.19126 11.365 8.10176 9.61899 8.05701 8.06141C8.05054 7.9503 8.00142 7.84573 7.91955 7.7688C7.83768 7.69187 7.72916 7.64831 7.61588 7.6469L3.44113 7.62177C3.32355 7.62342 3.21136 7.67047 3.12881 7.75274C3.04626 7.83501 2.99999 7.94589 3 8.06141C3.0895 11.8674 3.80554 14.455 8.49814 15.4787C8.75386 15.5415 8.93287 15.7613 8.93287 16.0251V24.5666C8.93287 24.799 9.12467 24.9937 9.374 24.9937H13.4273C13.5449 24.9921 13.6571 24.945 13.7396 24.8628C13.8221 24.7805 13.8684 24.6696 13.8684 24.5541V15.7488C13.8684 13.7893 15.2813 11.5597 17.96 11.5597C20.5173 11.5597 22.0645 13.7893 22.0645 15.7488V24.5666C22.0645 24.8053 22.2563 25 22.5056 25H26.5589C26.6765 24.9984 26.7886 24.9513 26.8712 24.869C26.9537 24.7868 27 24.6759 27 24.5604V15.0893C27 10.5673 23.0618 7.00628 17.9664 7.00628V7Z" fill="currentColor"/></svg>
+                  </a>
+              </li>
+              <li>
+                <a href="https://www.instagram.com/bristolcouncil" aria-label="Follow us on Instagram"><svg role="presentation" aria-hidden="true" width="19" height="19" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.64865 5.64865C6.37652 4.92077 7.3638 4.49936 9.01696 4.27714C10.6996 4.05096 12.9122 4.04878 16 4.04878C19.0871 4.04878 21.2997 4.05096 22.9825 4.27714C24.636 4.49937 25.6235 4.92082 26.3514 5.64865C27.0792 6.37652 27.5006 7.3638 27.7229 9.01696C27.949 10.6996 27.9512 12.9122 27.9512 16C27.9512 19.0871 27.949 21.2997 27.7229 22.9825C27.5006 24.636 27.0792 25.6235 26.3514 26.3514C25.6235 27.0792 24.6362 27.5006 22.983 27.7229C21.3004 27.949 19.0878 27.9512 16 27.9512C12.9129 27.9512 10.7003 27.949 9.01746 27.7229C7.36404 27.5006 6.37647 27.0792 5.64865 26.3514C4.92077 25.6235 4.49936 24.6362 4.27714 22.983C4.05096 21.3004 4.04878 19.0878 4.04878 16C4.04878 12.9129 4.05096 10.7003 4.27714 9.01746C4.49937 7.36404 4.92082 6.37647 5.64865 5.64865ZM16 2H15.9219C12.9293 1.99998 10.5789 1.99997 8.74402 2.24662C6.86372 2.49937 5.37197 3.02791 4.19994 4.19994C3.02787 5.37202 2.49936 6.86415 2.24662 8.74454C1.99997 10.5796 1.99998 12.93 2 15.9219V16V16.0781C1.99998 19.0707 1.99997 21.4211 2.24662 23.256C2.49937 25.1363 3.02791 26.628 4.19994 27.8001C5.37202 28.9721 6.86415 29.5006 8.74454 29.7534C10.5796 30 12.93 30 15.922 30H15.922H16H16.0781H16.0782C19.0708 30 21.4211 30 23.256 29.7534C25.1363 29.5006 26.628 28.9721 27.8001 27.8001C28.9721 26.628 29.5006 25.1358 29.7534 23.2555C30 21.4204 30 19.07 30 16.078V16.078V16V15.9219V15.9218C30 12.9292 30 10.5789 29.7534 8.74402C29.5006 6.86372 28.9721 5.37197 27.8001 4.19994C26.628 3.02787 25.1358 2.49936 23.2555 2.24662C21.4204 1.99997 19.07 1.99998 16.0781 2H16ZM23.5095 7.46342C22.9437 7.46342 22.4851 7.92205 22.4851 8.48781C22.4851 9.05356 22.9437 9.5122 23.5095 9.5122H23.5231C24.0889 9.5122 24.5475 9.05356 24.5475 8.48781C24.5475 7.92205 24.0889 7.46342 23.5231 7.46342H23.5095ZM12.3782 12.3782C13.3388 11.4177 14.6416 10.878 16 10.878C17.3584 10.878 18.6612 11.4177 19.6218 12.3782C20.5823 13.3388 21.122 14.6416 21.122 16C21.122 17.3584 20.5823 18.6612 19.6218 19.6218C18.6612 20.5823 17.3584 21.122 16 21.122C14.6416 21.122 13.3388 20.5823 12.3782 19.6218C11.4177 18.6612 10.878 17.3584 10.878 16C10.878 14.6416 11.4177 13.3388 12.3782 12.3782ZM16 8.82927C14.0982 8.82927 12.2743 9.58476 10.9295 10.9295C9.58476 12.2743 8.82927 14.0982 8.82927 16C8.82927 17.9018 9.58476 19.7257 10.9295 21.0705C12.2743 22.4152 14.0982 23.1707 16 23.1707C17.9018 23.1707 19.7257 22.4152 21.0705 21.0705C22.4152 19.7257 23.1707 17.9018 23.1707 16C23.1707 14.0982 22.4152 12.2743 21.0705 10.9295C19.7257 9.58476 17.9018 8.82927 16 8.82927Z" fill="currentColor"/></svg>
+                  </a>
+              </li>
+            </ul>
+          </div>
+          <div class="footer-copyright">
+            <a href="https://www.bristol.gov.uk/about-our-website/copyright">Copyright&nbsp;&copy; [% date.format(date.now, '%Y') %] Bristol City Council</a>
+          </div>
+        </div>
+      </div>
     </footer>
 </div>
 [% PROCESS '_footer_main_nav.html' %]
