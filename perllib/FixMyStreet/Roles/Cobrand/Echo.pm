@@ -65,13 +65,19 @@ sub waste_check_downtime_file {
     my $downtime_csv = $cfg->{downtime_csv};
     my @lines = eval { path(FixMyStreet->path_to($downtime_csv))->lines({ chomp => 1 }) };
     foreach (@lines) {
-        my ($start, $end) = map { eval { $parser->parse_datetime($_) } } split /,/;
+        my ($start, $end, $message) = split /,/;
+        ($start, $end) = map { eval { $parser->parse_datetime($_) } } ($start, $end);
         next unless $start && $end && $start < $end;
         my $start_hour = $start->strftime('%l%P');
         my $end_hour = $end->strftime('%l%P');
-        my $message = "Due to planned maintenance, this waste service will be unavailable from $start_hour until $end_hour.";
 
-        $end->add( minutes => 15 ); # Add a buffer, sometimes they go past their end time
+        if ($message && $message eq '1') {
+            $message = "Our waste service system is temporarily unavailable. This also affects our Contact Centre, as they are unable to access or update information at this time. Please refrain from calling until the system is restored. We apologise for any inconvenience and appreciate your patience.";
+        } elsif (!$message) {
+            $message = "Due to planned maintenance, this waste service will be unavailable from $start_hour until $end_hour.";
+            $end->add( minutes => 15 ); # Add a buffer, sometimes they go past their end time
+        }
+
         if ($now >= $start && $now < $end) {
             $message .= " Please accept our apologies for the disruption and try again later.";
             return { state => 'down', message => $message };
