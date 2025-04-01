@@ -135,7 +135,7 @@ sub image_for_unit {
     if ($service_id eq 'bulky') {
         return "$base/bulky-black";
     }
-    if ($service_id == 2243 && $unit->{schedule} =~ /fortnight/i) {
+    if ($service_id == $SERVICE_IDS{communal_refuse} && $unit->{schedule} =~ /fortnight|every other/i) {
         # Communal fortnightly is a wheelie bin, not a large bin
         return svg_container_bin('wheelie', '#8B5E3D');
     }

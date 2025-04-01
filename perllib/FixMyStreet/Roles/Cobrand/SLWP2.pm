@@ -154,7 +154,7 @@ sub waste_relevant_serviceunits {
             ServiceId => $_->{ServiceId},
             ServiceTask => $servicetask,
             Service => $_,
-            Schedules => _parse_schedules($servicetask),
+            Schedules => _parse_schedules($servicetask, 'task'),
         };
     }
     return @rows;

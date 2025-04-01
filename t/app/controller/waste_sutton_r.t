@@ -105,7 +105,7 @@ FixMyStreet::override_config {
         set_fixed_time('2022-09-10T12:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('2 Example Street, Sutton');
-        $mech->content_contains('Friday every other week');
+        $mech->content_contains('Every Friday fortnightly');
         SKIP: {
             skip 'last collection currently not shown for Sutton';
             $mech->content_contains('Friday, 2nd September');
