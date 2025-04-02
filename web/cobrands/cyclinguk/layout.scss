@@ -10,13 +10,13 @@
 $site-logo-height: 60px;
 $site-logo-padding: 32px;
 $total-navbar-height: $site-logo-height + $site-logo-padding * 2;
-body {
-    #site-logo {
-        padding: 0;
-        height: $total-navbar-height;
-        width: 305px;
-        background-size: auto 53px;
-    }
+
+#site-logo {
+    padding: 0;
+    height: $total-navbar-height;
+    width: 305px;
+    background-size: auto 110px;
+    background-position-y: bottom;
 }
 
 $subnav-height: 52px;
@@ -84,16 +84,10 @@ h1 {
 }
 
 // BUTTONS
-.nav-menu--main a.report-a-problem-btn  {
-    border-radius: $button-border-radius;
-    text-transform: uppercase;
-    font-weight: 400;
+.nav-menu--main a.report-a-problem-btn {
     line-height: 100%;
-    transition: color 0.15s ease-in-out,background-color 0.15s ease-in-out,border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out;
-    outline: none;
-    text-decoration: none;
     padding: 0.625rem $button-padding-left;
-    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+    @include button-variant($bg-top: #fff, $bg-bottom: #fff, $border: $orange, $text: $orange, $hover-bg-bottom: $black, $hover-bg-top: $black, $hover-border: $black, $hover-text: $white,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
     margin: 0;
 }
 
@@ -146,14 +140,14 @@ body.frontpage {
 // MAPPAGE
 body.mappage {
     #site-header {
-        background-color: $primary;
+        background-color: $orange;
     }
 
     #site-logo {
         padding: 0;
         height: $mappage-header-height;
         width: 265px;
-        background-size: auto 44px;
+        background-size: auto 66px;
         background-position: left 0 center;
         background-image: url(/cobrands/cyclinguk/images/fill-that-hole-logo-white.png);
     }
