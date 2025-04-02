@@ -124,7 +124,8 @@ sub send {
     }
 
     foreach (@{$row->get_extra_fields}) {
-        if (my $label = $label_lookup->{$_->{name}}{$_->{value}}) {
+        my $val = $_->{value} // '';
+        if (my $label = $label_lookup->{$_->{name}}{$val}) {
             $_->{value_label} = $label;
         }
     }

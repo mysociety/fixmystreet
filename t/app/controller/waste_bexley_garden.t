@@ -1122,6 +1122,7 @@ FixMyStreet::override_config {
                         {
                             EndDate => '12/12/2025 12:21',
                             ServiceContractStatus => 'ACTIVE',
+                            WasteContainerQuantity => 2,
                             Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                         },
                     ],
