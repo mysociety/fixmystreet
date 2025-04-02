@@ -38,10 +38,14 @@ You have signed up for:
 
 [% IF quantity ~%]
 [% IF sacks ~%]
-Garden waste sack collection: [% quantity %] [% nget('roll', 'rolls', quantity) %]
+Garden waste sack collection: [% sack_quant %] [% nget('roll', 'rolls', sack_quant) %]
 [% ELSE ~%]
 Number of bin subscriptions: [% quantity %]
 [% END ~%]
+[% END %]
+
+[% IF additional_quantity ~%]
+Number of additional bin subscriptions: [% additional_quantity %]
 [% END %]
 
 [% IF new_bins > 0 AND NOT sacks ~%]
@@ -78,7 +82,7 @@ You can check your collection day online:
 [% cobrand.feature('waste_features').garden_check_bin_day_link %]
 
 [% IF new_bins > 0 ~%]
-[% IF cobrand.moniker == 'bexley' OR cobrand.moniker == 'brent' OR cobrand.moniker == 'merton' %]
+[% IF cobrand.moniker == 'bexley' OR cobrand.moniker == 'brent' OR cobrand.moniker == 'merton' OR cobrand.moniker == 'sutton' %]
 We will aim to deliver your [% IF sacks %]sacks[% ELSE %]new bin(s)[% END %] within 10 working days.
 [% ELSE %]
 We will aim to deliver your [% IF sacks %]roll of sacks[% ELSE %]new bin(s)[% END %] within 20 working days.

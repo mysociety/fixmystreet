@@ -35,7 +35,7 @@ sub agile_mock_populated {
                         Reference => 'CONTRACT_123',
                         WasteContainerQuantity => 1,
                         ServiceContractStatus => 'ACTIVE',
-                        Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                     },
                 ],
             },

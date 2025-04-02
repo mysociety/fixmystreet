@@ -1,4 +1,3 @@
-[% is_missed_collection = report.category == 'Report missed collection' %]
 [%
 
 email_summary = "Thanks for logging your report";
@@ -23,7 +22,7 @@ INCLUDE '_email_top.html';
   [% END %]
 
   [% IF cobrand.moniker == 'sutton' %]
-  <p style="[% p_style %]">Thank you for contacting the London Borough of Sutton.</p>
+  <p style="[% p_style %]">Thank you for contacting Sutton Council.</p>
   [% END %]
 
 [% INCLUDE '_council_reference.html' problem=report %]
@@ -34,16 +33,36 @@ INCLUDE '_email_top.html';
 
 [% ELSIF cobrand.moniker == 'sutton' %]
     [% IF report.category == 'Request new container' %]
-        <p style="[% p_style %]">Due to the current high demand, please allow up to
-        [% cobrand.wasteworks_config.request_timeframe %]
-        for this order to be processed. We thank you for your patience and
-        understanding in advance.</p>
+        <p style="[% p_style %]">
+          [% IF report.title.match('Garden') %]
+            Please allow up to 10 working days for this order to be processed.
+          [% ELSE %]
+            Due to the current high demand, please allow up to
+            [% cobrand.wasteworks_config.request_timeframe %]
+            for this order to be processed. We thank you for your patience and
+            understanding in advance.
+          [% END %]
+        </p>
         <p style="[% p_style %]">If you have requested a bin, box or caddy to be collected as part of the request:</p>
         <ul [% ul_attrs | safe %]>
             <li>Please keep any bin, box or caddy accessible in your front garden or driveway, ready to be exchanged.</li>
             <li>It must be visible from the public highway, so delivery drivers can see it.</li>
             <li>We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.</li>
         </ul>
+    [% ELSIF report.category == 'Waste spillage' %]
+      <p style="[% p_style %]">
+        We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
+      </p>
+      <p style="[% p_style %]">
+        The issue has been logged and a clean up has been organised for within the next 24 hours.
+      </p>
+    [% ELSIF report.category == 'Bin not returned' %]
+      <p style="[% p_style %]">
+        We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
+      </p>
+      <p style="[% p_style %]">
+        Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
+      </p>
     [% END %]
 
 [% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
@@ -55,9 +74,6 @@ INCLUDE '_email_top.html';
     <b>Collecting your old bin</b>
     If you&apos;ve requested a collection of your old bin, we'll schedule a specific date for our crew
     to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
-  </p>
-  <p style="[% p_style %]">
-    <strong>Use track your request link to check for your scheduled delivery date.</strong>
   </p>
 
 [% ELSIF cobrand.moniker == 'merton' AND (report.category == 'Waste spillage' OR report.category == 'Bin not returned') %]
@@ -81,6 +97,10 @@ INCLUDE '_email_top.html';
     [% END %]
 
 [% END %]
+
+  <p style="[% p_style %]">
+    [% INCLUDE 'waste/signature.html' %]
+  </p>
 
   [% end_padded_box | safe %]
 </th>

@@ -44,7 +44,7 @@
     <dl>
       [% FOR item IN form.items_extra; IF item.value.message %]
         <dt>[% item.key %]</dt>
-        <dd>[% item.value.message %]</dd>
+        <dd>[% item.value.message | safe %]</dd>
       [% END; END %]
     </dl>
 

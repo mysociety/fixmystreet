@@ -206,15 +206,17 @@ FixMyStreet::override_config {
         Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>360</service_request_id></request></service_requests>');
 
         subtest 'Test sending non-echo reports' => sub {
+            $e->mock('GetEvent', sub { { Id => undef } });
             my ($no_echo_report) = $mech->create_problems_for_body(1, $merton->id, 'No Echo Report', {
                 cobrand => 'merton',
                 cobrand_data => 'waste',
                 state => 'confirmed',
                 category => $no_echo_contact->category,
                 external_id => 'no_echo',
+                extra => {
+                    _fields => [ { name => 'uprn', value => 12345 } ],
+                },
             });
-            $no_echo_report->set_extra_metadata(no_echo => 1);
-            $no_echo_report->update;
 
             my $send = FixMyStreet::Script::Merton::SendWaste->new;
             $send->send_reports;
@@ -222,8 +224,10 @@ FixMyStreet::override_config {
             $no_echo_report->discard_changes;
             is $no_echo_report->get_extra_metadata('sent_to_crimson'), 1;
             is $no_echo_report->get_extra_metadata('crimson_external_id'), 360;
+            is $no_echo_report->get_extra_metadata('no_echo'), 1;
             is $no_echo_report->external_id, "no_echo";
             $no_echo_report->delete;
+            $e->mock('GetEvent', sub { { Id => 1928374 } });
         };
     };
     subtest 'Test sending of updates to other endpoint' => sub {

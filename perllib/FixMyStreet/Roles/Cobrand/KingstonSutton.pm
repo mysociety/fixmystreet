@@ -9,7 +9,6 @@ FixMyStreet::Roles::Cobrand::KingstonSutton - shared code for Kingston and Sutto
 package FixMyStreet::Roles::Cobrand::KingstonSutton;
 
 use Moo::Role;
-with 'FixMyStreet::Roles::Cobrand::SLWP';
 
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
@@ -151,7 +150,8 @@ reference for the credit card payment. It differs for bulky waste.
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
     if ($p->category eq 'Bulky collection') {
-        return $self->_waste_cc_line_item_ref($p, "BULKY", "");
+        my $type = $self->moniker eq 'sutton' ? 'BWB' : 'BULKY';
+        return $self->_waste_cc_line_item_ref($p, $type, "");
     } elsif ($p->category eq 'Request new container') {
         return $self->_waste_cc_line_item_ref($p, "CCH", "");
     } else {
@@ -179,22 +179,6 @@ sub _waste_cc_line_item_ref {
 sub waste_cc_payment_sale_ref {
     my ($self, $p) = @_;
     return "GGW" . $p->get_extra_field_value('uprn');
-}
-
-=head2 bulky_collection_window_start_date
-
-K&S have an 11pm cut-off for looking to book next day collections.
-
-=cut
-
-sub bulky_collection_window_start_date {
-    my ($self, $now) = @_;
-    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
-    # If past 11pm, push start date one day later
-    if ($now->hour >= 23) {
-        $start_date->add( days => 1 );
-    }
-    return $start_date;
 }
 
 =head2 Dashboard export
@@ -262,9 +246,9 @@ sub dashboard_export_problems_add_columns {
             payment => $fields{payment},
             pro_rata => $fields{pro_rata},
             admin_fee => $fields{admin_fee},
-            container => $fields{Subscription_Details_Containers},
+            container => $fields{Paid_Container_Type} || $fields{Subscription_Details_Containers},
             current_bins => $fields{current_containers},
-            quantity => $fields{Subscription_Details_Quantity},
+            quantity => $fields{Paid_Container_Quantity} || $fields{Subscription_Details_Quantity},
         };
     });
 }

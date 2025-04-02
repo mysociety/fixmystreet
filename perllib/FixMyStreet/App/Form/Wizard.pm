@@ -26,6 +26,8 @@ has saved_data => ( is => 'rw', lazy => 1, isa => 'HashRef', default => sub {
 has previous_form => ( is => 'ro', isa => 'Maybe[HTML::FormHandler]', weak_ref => 1 );
 has csrf_token => ( is => 'ro', isa => 'Str' );
 
+has already_submitted_error => ( is => 'rw', isa => 'Bool', default => 0 );
+
 has_field saved_data => ( type => 'JSON' );
 has_field token => ( type => 'Hidden', required => 1 );
 has_field process => ( type => 'Hidden', required => 1 );
@@ -122,6 +124,7 @@ after 'validate_form' => sub {
         # Mismatch of unique ID, resubmission?
         if ($self->unique_id_session && $page->check_unique_id && $self->unique_id_session ne ($self->unique_id_form || '')) {
             $self->add_form_error('You have already submitted this form.');
+            $self->already_submitted_error(1);
             return;
         }
 

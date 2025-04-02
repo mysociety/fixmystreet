@@ -49,9 +49,18 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     $c->detach('soap_error', [ 'Incorrect Action' ]) unless $action && $action eq $echo->{receive_action};
     $header = $header->{Security};
     $c->detach('soap_error', [ 'Missing Security header' ]) unless $header;
+
     my $token = $header->{UsernameToken};
     $c->detach('soap_error', [ 'Authentication failed' ])
-        unless $token && $token->{Username} eq $echo->{receive_username} && $token->{Password} eq $echo->{receive_password};
+        unless $token && $token->{Username} eq $echo->{receive_username};
+
+    my $passwords = $echo->{receive_password};
+    $passwords = [ $passwords ] unless ref $passwords eq 'ARRAY';
+    my $password_match;
+    foreach (@$passwords) {
+        $password_match = 1 if $_ eq $token->{Password};
+    }
+    $c->detach('soap_error', [ 'Authentication failed' ]) unless $password_match;
 
     my $event = $env->result;
 

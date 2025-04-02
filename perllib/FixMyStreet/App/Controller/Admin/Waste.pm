@@ -143,7 +143,7 @@ sub bulky_items : Chained('body') {
             my $item = {
                 bartec_id => $c->get_param("bartec_id[$i]"),
                 name => $c->get_param("name[$i]"),
-                message => $c->get_param("message[$i]"),
+                message => FixMyStreet::Template::sanitize($c->get_param("message[$i]")),
                 price => $c->get_param("price[$i]"),
                 max => $c->get_param("max[$i]"),
             };

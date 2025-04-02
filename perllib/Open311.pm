@@ -266,6 +266,10 @@ sub _add_photos_to_upload {
         delete $params->{media_url};
     }
 
+    if (my $cobrand = $self->fixmystreet_body->get_cobrand_handler || $obj->get_cobrand_logged) {
+        $cobrand->call_hook(open311_munge_uploads => $uploads, $obj);
+    }
+
     return $uploads;
 }
 

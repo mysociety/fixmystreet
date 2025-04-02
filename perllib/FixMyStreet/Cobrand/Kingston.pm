@@ -5,6 +5,7 @@ use utf8;
 use Moo;
 with 'FixMyStreet::Roles::Cobrand::Waste',
      'FixMyStreet::Roles::Cobrand::KingstonSutton',
+     'FixMyStreet::Roles::Cobrand::SLWP',
      'FixMyStreet::Roles::Cobrand::SCP';
 
 use Lingua::EN::Inflect qw( NUMWORDS );
@@ -546,5 +547,25 @@ sub bulky_allowed_property {
 
 sub bulky_collection_time { { hours => 6, minutes => 30 } }
 sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 30, days_before => 0 } }
+
+=head2 bulky_collection_window_start_date
+
+K&S have an 11pm cut-off for looking to book next day collections.
+
+=cut
+
+sub bulky_collection_window_start_date {
+    my ($self, $now) = @_;
+    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
+    # If past 11pm, push start date one day later
+    if ($now->hour >= 23) {
+        $start_date->add( days => 1 );
+    }
+    return $start_date;
+}
+
+sub bulky_location_text_prompt {
+    "Please tell us where you will place the items for collection (include any access codes the crew will need)";
+}
 
 1;

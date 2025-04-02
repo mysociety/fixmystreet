@@ -386,6 +386,19 @@ sub open311_post_send_updates {
     }
 }
 
+sub open311_munge_uploads {
+    my ($self, $uploads, $obj) = @_;
+
+    return unless ref $obj eq 'FixMyStreet::DB::Result::Problem';
+
+    # Only deal with Echo contacts
+    return unless $obj->contact && $obj->contact->email =~ /^\d+$/;
+
+    my $image = $obj->static_map({ full_size => 1, zoom => 4 });
+
+    $uploads->{"map_photo"} = [ undef, "map.jpeg", Content_Type => $image->{content_type}, Content => $image->{data} ];
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 

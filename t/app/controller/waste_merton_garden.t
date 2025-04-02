@@ -798,7 +798,7 @@ FixMyStreet::override_config {
         )->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->get_extra_field_value('Bin_Detail_Container'), 26, 'correct container request bin type';
         is $new_report->get_extra_field_value('Bin_Detail_Type'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Bin_Detail_Quantity'), 1, 'correct container request count';
@@ -998,7 +998,7 @@ FixMyStreet::override_config {
         )->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->get_extra_field_value('Bin_Detail_Container'), 26, 'correct container request bin type';
         is $new_report->get_extra_field_value('Bin_Detail_Type'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Bin_Detail_Quantity'), 1, 'correct container request count';
@@ -1064,7 +1064,7 @@ FixMyStreet::override_config {
         )->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->get_extra_field_value('Bin_Detail_Container'), '', 'correct container request bin type';
         is $new_report->get_extra_field_value('Bin_Detail_Type'), '', 'correct container request action';
         is $new_report->get_extra_field_value('Bin_Detail_Quantity'), '', 'correct container request count';
@@ -1304,7 +1304,7 @@ FixMyStreet::override_config {
         )->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $new_report->get_extra_metadata('contributed_as'), 'another_user';
@@ -1419,7 +1419,7 @@ FixMyStreet::override_config {
         )->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->state, 'confirmed', 'report confirmed';
     };
 

@@ -141,8 +141,8 @@ my $body_west = $mech->create_body_ok(2504, 'Westminster City Council', { cobran
 
 my @edinburgh_problems = $mech->create_problems_for_body( 5, $body_edin_id, 'Around page', {
     postcode  => 'EH1 1BB',
-    latitude  => 55.9519637512,
-    longitude => -3.17492254484,
+    latitude  => 55.952055,
+    longitude => -3.189579,
 });
 
 subtest 'check lookup by reference' => sub {

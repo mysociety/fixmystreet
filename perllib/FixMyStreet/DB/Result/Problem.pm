@@ -1578,7 +1578,7 @@ sub waste_confirm_payment {
                 name => 'LastPayMethod',
                 description => 'LastPayMethod',
                 value => $cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
-            });
+            }) if $p->get_extra_field_value('payment_method');
             $p->update_extra_field( {
                 name => 'PaymentCode',
                 description => 'PaymentCode',

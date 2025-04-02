@@ -272,13 +272,9 @@ sub bin_services_for_address {
     my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
 
     my %frequency_types;
-
     my @site_services_filtered;
-
     my %seen_containers;
-
     my $whitespace_sacks;
-
     for my $service (@$site_services) {
         next if !$service->{NextCollectionDate};
 
@@ -483,7 +479,7 @@ sub bin_services_for_address {
     # or it has sacks
     if (   $property->{parent_property}
         || !@site_services_filtered
-        || $property->{garden_current_subscription}
+        || $property->{has_garden_subscription}
         || $whitespace_sacks
     ) {
         $property->{garden_signup_eligible} = 0;

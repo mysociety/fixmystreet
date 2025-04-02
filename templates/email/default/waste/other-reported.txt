@@ -22,10 +22,14 @@ Your [% subject_type %] to [% report.body %] has been logged.
 [% ELSIF cobrand.moniker == 'sutton' %]
 
 [% IF report.category == 'Request new container' %]
+[% IF report.title.match('Garden') %]
+Please allow up to 10 working days for this order to be processed.
+[% ELSE %]
 Due to the current high demand, please allow up to
 [% cobrand.wasteworks_config.request_timeframe %] for this
 order to be processed. We thank you for your patience and understanding in
 advance.
+[% END %]
 
 If you have requested a bin, box or caddy to be collected as part of the request:
 
@@ -34,6 +38,14 @@ If you have requested a bin, box or caddy to be collected as part of the request
 * It must be visible from the public highway, so delivery drivers can see it.
 
 * We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.
+[% ELSIF report.category == 'Waste spillage' %]
+We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
+
+The issue has been logged and a clean up has been organised for within the next 24 hours.
+[% ELSIF report.category == 'Bin not returned' %]
+We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
+
+Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
 [% END %]
 
 [% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]

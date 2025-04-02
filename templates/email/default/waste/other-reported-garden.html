@@ -47,10 +47,16 @@ INCLUDE '_email_top.html';
 [% IF quantity ~%]
   <p style="[% p_style %]">
     [% IF sacks ~%]
-        Garden waste sack collection: [% quantity %] [% nget('roll', 'rolls', quantity) %]
+        Garden waste sack collection: [% sack_quant %] [% nget('roll', 'rolls', sack_quant) %]
     [% ELSE ~%]
         Number of bin subscriptions: [% quantity %]
     [% END ~%]
+  </p>
+[% END %]
+
+[% IF additional_quantity ~%]
+  <p style="[% p_style %]">
+    Number of additional bin subscriptions: [% additional_quantity %]
   </p>
 [% END %]
 
@@ -96,7 +102,7 @@ INCLUDE '_email_top.html';
 
 [% IF new_bins > 0 ~%]
   <p style="[% p_style %]">
-    [% IF cobrand.moniker == 'bexley' OR cobrand.moniker == 'brent' OR cobrand.moniker == 'merton' %]
+    [% IF cobrand.moniker == 'bexley' OR cobrand.moniker == 'brent' OR cobrand.moniker == 'merton' OR cobrand.moniker == 'sutton' %]
       We will aim to deliver your [% IF sacks %]sacks[% ELSE %]new bin(s)[% END %] within 10 working days.
     [% ELSE %]
       We will aim to deliver your [% IF sacks %]roll of sacks[% ELSE %]new bin(s)[% END %] within 20 working days.
@@ -112,7 +118,7 @@ INCLUDE '_email_top.html';
   </p>
 
   <p style="[% p_style %]">
-    Kind regards,<br>Waste Services Team
+    [% INCLUDE 'waste/signature.html' %]
   </p>
 
   [% end_padded_box | safe %]

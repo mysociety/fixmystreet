@@ -418,15 +418,6 @@ sub waste_cc_payment_reference {
     return $self->waste_payment_ref_council_code . "-$type-" . $p->id;
 }
 
-sub waste_post_report_creation {
-    my ($self, $report) = @_;
-    if ($report->contact->category eq 'Garden Subscription Address Change') {
-        $report->set_extra_metadata(no_echo => 1);
-        $report->mark_as_sent;
-        $report->update({ external_id => 'no_echo' });
-    }
-}
-
 sub check_ggw_transfer_applicable {
     my ($self, $old_address) = @_;
 

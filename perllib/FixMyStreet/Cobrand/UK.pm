@@ -40,6 +40,12 @@ sub disambiguate_location {
     };
 }
 
+=item * Do not do the nearby lookup if the map lacks pins
+
+=cut
+
+sub disable_nearby_topup { 1 }
+
 sub map_type {
     my $self = shift;
     return 'OS::FMS' if $self->feature('os_maps_url') || $self->feature('os_maps_api_key');

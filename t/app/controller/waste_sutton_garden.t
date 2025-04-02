@@ -29,12 +29,24 @@ sub create_contact {
 }
 
 create_contact({ category => 'Garden Subscription', email => 'garden@example.com'},
-    { code => 'Request_Type', required => 1, automated => 'hidden_field' },
-    { code => 'Subscription_Details_Quantity', required => 1, automated => 'hidden_field' },
-    { code => 'Subscription_Details_Containers', required => 1, automated => 'hidden_field' },
-    { code => 'Bin_Delivery_Detail_Quantity', required => 1, automated => 'hidden_field' },
-    { code => 'Bin_Delivery_Detail_Container', required => 1, automated => 'hidden_field' },
-    { code => 'Bin_Delivery_Detail_Containers', required => 1, automated => 'hidden_field' },
+    { code => 'Paid_Container_Quantity', required => 1, automated => 'hidden_field' },
+    { code => 'Paid_Container_Type', required => 1, automated => 'hidden_field' },
+    { code => 'Quantity', required => 1, automated => 'hidden_field' },
+    { code => 'Container_Type', required => 1, automated => 'hidden_field' },
+    { code => 'Start_Date', required => 1, automated => 'hidden_field' },
+    { code => 'End_Date', required => 1, automated => 'hidden_field' },
+    { code => 'current_containers', required => 1, automated => 'hidden_field' },
+    { code => 'new_containers', required => 1, automated => 'hidden_field' },
+    { code => 'payment', required => 1, automated => 'hidden_field' },
+    { code => 'payment_method', required => 1, automated => 'hidden_field' },
+    { code => 'pro_rata', required => 0, automated => 'hidden_field' },
+    { code => 'admin_fee', required => 0, automated => 'hidden_field' },
+);
+create_contact({ category => 'Amend Garden Subscription', email => 'garden@example.com'},
+    { code => 'Additional_Container_Quantity', required => 1, automated => 'hidden_field' },
+    { code => 'Additional_Collection_Container_Type', required => 1, automated => 'hidden_field' },
+    { code => 'Container_Ordered_Quantity', required => 1, automated => 'hidden_field' },
+    { code => 'Container_Ordered_Type', required => 1, automated => 'hidden_field' },
     { code => 'current_containers', required => 1, automated => 'hidden_field' },
     { code => 'new_containers', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
@@ -43,13 +55,17 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'admin_fee', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Cancel Garden Subscription', email => 'garden_cancel@example.com'},
-    { code => 'Bin_Delivery_Detail_Quantity', required => 1, automated => 'hidden_field' },
-    { code => 'Bin_Delivery_Detail_Container', required => 1, automated => 'hidden_field' },
-    { code => 'Bin_Delivery_Detail_Containers', required => 1, automated => 'hidden_field' },
-    { code => 'Subscription_End_Date', required => 1, automated => 'hidden_field' },
-    { code => 'payment_method', required => 1, automated => 'hidden_field' },
-    { code => 'dd_contact_id', required => 0, automated => 'hidden_field' },
-    { code => 'dd_mandate_id', required => 0, automated => 'hidden_field' },
+    { code => 'End_Date', required => 1, automated => 'hidden_field' },
+);
+
+# For reductions
+create_contact({ category => 'Request new container', email => '3129@example.com' },
+    { code => 'uprn', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'Container_Type', required => 1, automated => 'hidden_field' },
+    { code => 'Action', required => 1, automated => 'hidden_field' },
+    { code => 'Reason', required => 1, automated => 'hidden_field' },
 );
 
 package SOAP::Result;
@@ -61,21 +77,21 @@ package main;
 sub garden_waste_no_bins {
     return [ {
         Id => 1001,
-        ServiceId => 405,
+        ServiceId => 954,
         ServiceName => 'Food waste collection',
+        Data => { ExtensibleDatum => [ {
+            DatatypeName => 'Container Details',
+            ChildData => { ExtensibleDatum => [ {
+                DatatypeName => 'Container Quantity',
+                Value => 1,
+            }, {
+                DatatypeName => 'Container Type',
+                Value => 46,
+            } ] },
+        } ] },
         ServiceTasks => { ServiceTask => {
             Id => 400,
-            TaskTypeId => 2239,
-            Data => { ExtensibleDatum => [ {
-                DatatypeName => 'SLWP - Containers',
-                ChildData => { ExtensibleDatum => [ {
-                    DatatypeName => 'Quantity',
-                    Value => 1,
-                }, {
-                    DatatypeName => 'Container Type',
-                    Value => 24,
-                } ] },
-            } ] },
+            TaskTypeId => 4389,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -94,7 +110,7 @@ sub garden_waste_no_bins {
     }, {
         # Eligibility for garden waste, but no task
         Id => 1002,
-        ServiceId => 409,
+        ServiceId => 953,
         ServiceName => 'Garden waste collection',
         ServiceTasks => ''
     } ];
@@ -115,21 +131,21 @@ sub garden_waste_two_bins {
 sub garden_waste_only_refuse_sacks {
     return [ {
         Id => 1001,
-        ServiceId => 405,
+        ServiceId => 941,
         ServiceName => 'Refuse collection',
+        Data => { ExtensibleDatum => [ {
+            DatatypeName => 'Container Details',
+            ChildData => { ExtensibleDatum => [ {
+                DatatypeName => 'Container Quantity',
+                Value => 1,
+            }, {
+                DatatypeName => 'Container Type',
+                Value => 1,
+            } ] },
+        } ] },
         ServiceTasks => { ServiceTask => {
             Id => 400,
-            TaskTypeId => 2242,
-            Data => { ExtensibleDatum => [ {
-                DatatypeName => 'SLWP - Containers',
-                ChildData => { ExtensibleDatum => [ {
-                    DatatypeName => 'Quantity',
-                    Value => 1,
-                }, {
-                    DatatypeName => 'Container Type',
-                    Value => 1,
-                } ] },
-            } ] },
+            TaskTypeId => 4395,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
@@ -148,7 +164,7 @@ sub garden_waste_only_refuse_sacks {
     }, {
         # Eligibility for garden waste, but no task
         Id => 1002,
-        ServiceId => 409,
+        ServiceId => 953,
         ServiceName => 'Garden waste collection',
         ServiceTasks => ''
     } ];
@@ -173,24 +189,20 @@ sub garden_waste_bin_with_refuse_sacks {
 sub _garden_waste_service_units {
     my ($bin_count, $type) = @_;
 
-    my $bin_type_id = $type eq 'sack' ? 28 : 26;
+    my $bin_type_id = $type eq 'sack' ? 1928 : 1915;
 
     return [ {
         Id => 1002,
-        ServiceId => 409,
+        ServiceId => 953,
         ServiceName => 'Garden waste collection',
         ServiceTasks => { ServiceTask => {
             Id => 405,
-            TaskTypeId => 2247,
-            Data => { ExtensibleDatum => [ {
-                DatatypeName => 'SLWP - Containers',
-                ChildData => { ExtensibleDatum => [ {
-                    DatatypeName => 'Quantity',
-                    Value => $bin_count,
-                }, {
-                    DatatypeName => 'Container Type',
-                    Value => $bin_type_id,
-                } ] },
+            TaskTypeId => 4410,
+            ServiceTaskLines => { ServiceTaskLine => [ {
+                ScheduledAssetQuantity => $bin_count,
+                AssetTypeId => $bin_type_id,
+                StartDate => { DateTime => '2020-03-30T00:00:00Z' },
+                EndDate => { DateTime => '2021-03-30T00:00:00Z' },
             } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
                 ScheduleDescription => 'every other Monday',
@@ -209,31 +221,12 @@ sub _garden_waste_service_units {
         } } } ];
 }
 
-# don't do this per request as it includes the generated on the fly token
-# so changes for each run
-subtest "check signature generation" => sub {
-    my $cobrand = FixMyStreet::Cobrand::Sutton->new;
-
-    my $params = {
-        AMOUNT => 2000,
-        ORDERID => 123456,
-        CN => "Matthew O’Neill",
-        EMAIL => 'user@example.org',
-    };
-
-    my $passphrase = "12345abcde";
-
-    my $sha = $cobrand->garden_waste_generate_sig($params, $passphrase);
-
-    is $sha, "06BB8BCD34670AE7BDBC054D23B84B30DFDEBABA", "correct signature generated";
-};
-
 subtest "check garden waste container images" => sub {
     my $cobrand = FixMyStreet::Cobrand::Sutton->new;
 
     # Test garden waste bin image
     my $bin_unit = {
-        garden_container => 26,  # Garden waste bin
+        garden_container => 39,  # Garden waste bin
     };
     my $bin_image = $cobrand->image_for_unit($bin_unit);
     is_deeply $bin_image, {
@@ -246,7 +239,7 @@ subtest "check garden waste container images" => sub {
 
     # Test garden waste sack image
     my $sack_unit = {
-        garden_container => 28,  # Garden waste sack
+        garden_container => 36,  # Garden waste sack
     };
     my $sack_image = $cobrand->image_for_unit($sack_unit);
     is_deeply $sack_image, {
@@ -256,56 +249,7 @@ subtest "check garden waste container images" => sub {
     }, "garden waste sack shows as cream colored sack";
 };
 
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => 'sutton',
-    MAPIT_URL => 'http://mapit.uk/',
-    COBRAND_FEATURES => {
-        echo => { sutton => { url => 'http://example.org', nlpg => 'https://example.com/%s' } },
-        waste => { sutton => 1 },
-    },
-}, sub {
-    my $lwp = Test::MockModule->new('LWP::UserAgent');
-    $lwp->mock('get', sub {
-        my ($ua, $url) = @_;
-        return $lwp->original('get')->(@_) unless $url =~ /example.com/;
-        my ($uprn, $area) = (1000000002, "SUTTON");
-        ($uprn, $area) = (1000000004, "KINGSTON UPON THAMES") if $url =~ /1000000004/;
-        my $j = '{ "results": [ { "LPI": { "UPRN": ' . $uprn . ', "LOCAL_CUSTODIAN_CODE_DESCRIPTION": "' . $area . '" } } ] }';
-        return HTTP::Response->new(200, 'OK', [], $j);
-    });
-    my $echo = Test::MockModule->new('Integrations::Echo');
-    $echo->mock('GetEventsForObject', sub { [] });
-    $echo->mock('GetTasks', sub { [] });
-    $echo->mock('FindPoints', sub { [
-        { Description => '2 Example Street, Sutton, SM2 5HF', Id => '12345', SharedRef => { Value => { anyType => 1000000002 } } },
-        { Description => '3 Example Street, Kingston, SM2 5HF', Id => '14345', SharedRef => { Value => { anyType => 1000000004 } } },
-    ] });
-    $echo->mock('GetPointAddress', sub {
-        my ($self, $id) = @_;
-        return {
-            Id => $id,
-            SharedRef => { Value => { anyType => $id == 14345 ? '1000000004' : '1000000002' } },
-            PointType => 'PointAddress',
-            PointAddressType => { Name => 'House' },
-            Coordinates => { GeoPoint => { Latitude => 51.354679, Longitude => -0.183895 } },
-            Description => '2/3 Example Street, Sutton, SM2 5HF',
-        };
-    });
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
-    mock_CancelReservedSlotsForEvent($echo);
-
-    subtest 'Look up of address not in correct borough' => sub {
-        $mech->get_ok('/waste');
-        $mech->submit_form_ok({ with_fields => { postcode => 'SM2 5HF' } });
-        $mech->submit_form_ok({ with_fields => { address => '14345' } });
-        $mech->content_contains('No address on record');
-        $mech->get_ok('/waste');
-        $mech->submit_form_ok({ with_fields => { postcode => 'SM2 5HF' } });
-        $mech->submit_form_ok({ with_fields => { address => '12345' } });
-        $mech->content_lacks('No address on record');
-    };
-};
-
+my $sent_params = {};
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'sutton',
     MAPIT_URL => 'http://mapit.uk/',
@@ -341,8 +285,7 @@ FixMyStreet::override_config {
             scpID => '1234',
             company_name => 'rbk',
             form_name => 'rbk_user_form',
-            epdq_url => 'http://example.org/cc_submit',
-            sha_passphrase => 'XYZ123',
+            cc_url => 'http://example.org',
         } },
     },
 }, sub {
@@ -356,9 +299,7 @@ FixMyStreet::override_config {
     $p->update_extra_field({ name => 'property_id', value => '12345' });
     $p->update;
 
-    my $sent_params = {};
-    my $call_params = {};
-
+    my ($scp) = shared_scp_mocks();
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetEventsForObject', sub { [] });
     $echo->mock('GetTasks', sub { [] });
@@ -513,13 +454,12 @@ FixMyStreet::override_config {
                 name => 'Test McTest',
                 email => 'test@example.net'
         } });
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        is $form->value('ORDERID'), 'LBS-' . $new_report->id . '-' . '1000000002';
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{lineId}, 'LBS-GGW-' . $new_report->id . '-Test McTest-GW Sub';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
         check_extra_data_pre_confirm($new_report);
 
         $mech->get('/waste/pay/xx/yyyyyyyyyyy');
@@ -562,11 +502,9 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
-
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
         check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
@@ -594,23 +532,14 @@ FixMyStreet::override_config {
         $mech->content_contains('Test McTest');
         $mech->content_contains('£20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
-
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
         check_extra_data_pre_confirm($new_report, new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
-
-        $mech->clear_emails_ok;
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Number of bin subscriptions: 1/;
-        like $body, qr/Bins to be removed: 1/;
-        like $body, qr/Total:.*?20.00/;
+        check_removal_data_and_emails($mech, $new_report);
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
@@ -626,6 +555,11 @@ FixMyStreet::override_config {
         $mech->content_contains('3 bins');
         $mech->content_contains('60.00');
         $mech->content_contains('20.00');
+        $mech->back;
+        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 1 } });
+        $mech->content_contains('only increase');
+        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 2 } });
+        $mech->content_contains('only increase');
     };
     subtest 'check modify sub credit card payment' => sub {
         $mech->get_ok('/waste/12345/garden_modify');
@@ -638,12 +572,11 @@ FixMyStreet::override_config {
         $mech->content_contains('<span id="pro_rata_cost">20.00');
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
+        check_amend_extra_data_pre_confirm($new_report);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
@@ -653,44 +586,10 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
         my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Number of bin subscriptions: 2/;
+        like $body, qr/Number of additional bin subscriptions: 1/;
         like $body, qr/Bins to be delivered: 1/;
         like $body, qr/Total:.*?20.00/;
     };
-
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
-    subtest 'check modify sub credit card payment reducing bin count' => sub {
-        set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
-        $sent_params = undef;
-
-        $mech->log_in_ok($user->email);
-        $mech->get_ok('/waste/12345/garden_modify');
-        $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 1 } });
-        $mech->content_contains('20.00');
-        $mech->content_lacks('Continue to payment');
-        $mech->content_contains('Confirm changes');
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
-
-        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { user_id => $user->id },
-        )->order_by('-id')->first;
-
-        is $sent_params, undef, "no one off payment if reducing bin count";
-        check_extra_data_pre_confirm($new_report, type => 'Amend', state => 'confirmed', action => 2);
-        is $new_report->state, 'confirmed', 'report confirmed';
-        is $new_report->get_extra_field_value('payment'), '0', 'no payment if removing bins';
-        is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
-
-        $mech->clear_emails_ok;
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Number of bin subscriptions: 1/;
-        like $body, qr/Bins to be removed: 1/;
-        unlike $body, qr/Total:/;
-    };
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'renew credit card sub' => sub {
         $mech->log_out_ok();
@@ -717,11 +616,10 @@ FixMyStreet::override_config {
             bins_wanted => 1,
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
 
@@ -756,12 +654,9 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('40.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
+        is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
 
-        is $form->value("AMOUNT"), 4000, 'correct amount used';
-        is $form->value("CN"), 'New McTest', 'Correct name';
-
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report, type => 'Renew', quantity => 2);
 
@@ -793,24 +688,16 @@ FixMyStreet::override_config {
         } });
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Renew', action => 2);
+        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
-
-        $mech->clear_emails_ok;
-        FixMyStreet::Script::Reports::send();
-        my @emails = $mech->get_email;
-        my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Number of bin subscriptions: 1/;
-        like $body, qr/Bins to be removed: 1/;
-        like $body, qr/Total:.*?20.00/;
+        check_removal_data_and_emails($mech, $new_report);
     };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
@@ -849,10 +736,7 @@ FixMyStreet::override_config {
         )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Container'), 26, 'correct container request bin type';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), 2, 'correct container request action';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->state, 'confirmed', 'report confirmed';
 
         $mech->clear_emails_ok;
@@ -897,11 +781,10 @@ FixMyStreet::override_config {
             email => 'test@example.net'
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
         check_extra_data_pre_confirm($new_report);
 
@@ -942,13 +825,12 @@ FixMyStreet::override_config {
             email => 'test@example.net'
         } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 4100, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 4100, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, bin_type => 28);
+        check_extra_data_pre_confirm($new_report, bin_type => 1928, quantity => 11, new_bins => 11);
 
         $mech->get('/waste/pay/xx/yyyyyyyyyyy');
         ok !$mech->res->is_success(), "want a bad response";
@@ -986,9 +868,8 @@ FixMyStreet::override_config {
         $mech->content_contains('1 bin');
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0);
     };
 
@@ -1004,10 +885,9 @@ FixMyStreet::override_config {
         $mech->content_contains('bins_wanted');
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2, name => 'Test McTest' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
-        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        check_amend_extra_data_pre_confirm($new_report);
     };
 
     subtest 'refuse sacks, garden bin, cancelling' => sub {
@@ -1021,10 +901,7 @@ FixMyStreet::override_config {
         )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Container'), 26, 'correct container request bin type';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), 2, 'correct container request action';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), 1, 'correct container request count';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->state, 'confirmed', 'report confirmed';
     };
 
@@ -1047,10 +924,9 @@ FixMyStreet::override_config {
         $mech->content_contains('<span id="cost_now">41.00');
         $mech->submit_form_ok({ with_fields => { name => 'Test McTest' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
-        is $form->value("AMOUNT"), 4100, 'correct amount used';
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
-        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 28);
+        is $sent_params->{items}[0]{amount}, 4100, 'correct amount used';
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        check_extra_data_pre_confirm($new_report, type => 'Renew', bin_type => 1928, quantity => 11, new_bins => 11);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
 
@@ -1079,10 +955,7 @@ FixMyStreet::override_config {
         )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Container'), '', 'correct container request bin type';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), '', 'correct container request action';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), '', 'correct container request count';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->state, 'confirmed', 'report confirmed';
     };
 
@@ -1158,44 +1031,6 @@ FixMyStreet::override_config {
         $report->delete; # Otherwise next test sees this as latest
     };
 
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
-    subtest 'check modify sub staff reducing bin count' => sub {
-        set_fixed_time('2021-01-09T17:00:00Z');
-
-        $mech->get_ok('/waste/12345/garden_modify');
-        $mech->submit_form_ok({ with_fields => { task => 'modify' } });
-        $mech->submit_form_ok({ with_fields => {
-            current_bins => 2,
-            bins_wanted => 1,
-            name => 'A user',
-            email => 'test@example.net',
-        } });
-        $mech->content_contains('20.00');
-        $mech->content_lacks('Continue to payment');
-        $mech->content_contains('Confirm changes');
-        $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
-
-        $mech->content_lacks($staff_user->email);
-
-        my $content = $mech->content;
-        my ($id) = ($content =~ m#reference number\s*<br><strong>.*?(\d+)<#);
-        my $new_report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
-
-        is $new_report->category, 'Garden Subscription', 'correct category on report';
-        is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
-        is $new_report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-        is $new_report->state, 'confirmed', 'report confirmed';
-        is $new_report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Containers'), 2, 'correct container request action';
-        is $new_report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), 1, 'correct container request count';
-        is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
-        is $new_report->get_extra_metadata('contributed_as'), 'another_user';
-        is $new_report->get_extra_field_value('payment'), '0', 'no payment if removing bins';
-        is $new_report->get_extra_field_value('pro_rata'), '', 'no pro rata payment if removing bins';
-    };
-    $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
-
     subtest 'cancel staff sub' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_cancel');
@@ -1204,7 +1039,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $new_report->get_extra_metadata('contributed_as'), 'anonymous_user';
@@ -1297,13 +1132,12 @@ FixMyStreet::override_config {
         $mech->content_contains('40.00');
         $mech->content_contains('20.00');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $form = $mech->form_name("cc_form");
 
-        is $form->value("AMOUNT"), 2000, 'correct amount used';
+        is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
 
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $form->value("ACCEPTURL") );
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-        check_extra_data_pre_confirm($new_report, type => 'Amend', quantity => 2);
+        check_amend_extra_data_pre_confirm($new_report);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
@@ -1323,7 +1157,7 @@ FixMyStreet::override_config {
         )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->state, 'confirmed', 'report confirmed';
     };
 
@@ -1407,8 +1241,7 @@ sub check_extra_data_pre_confirm {
         state => 'unconfirmed',
         quantity => 1,
         new_bins => 1,
-        action => 1,
-        bin_type => 26,
+        bin_type => 1915,
         payment_method => 'credit_card',
         @_
     );
@@ -1416,12 +1249,44 @@ sub check_extra_data_pre_confirm {
     is $report->category, 'Garden Subscription', 'correct category on report';
     is $report->title, "Garden Subscription - $params{type}", 'correct title on report';
     is $report->get_extra_field_value('payment_method'), $params{payment_method}, 'correct payment method on report';
-    is $report->get_extra_field_value('Subscription_Details_Quantity'), $params{quantity}, 'correct bin count';
-    is $report->get_extra_field_value('Subscription_Details_Containers'), $params{bin_type}, 'correct bin type';
+    is $report->get_extra_field_value('Paid_Container_Quantity'), $params{quantity}, 'correct bin count';
+    is $report->get_extra_field_value('Paid_Container_Type'), $params{bin_type}, 'correct bin type';
+    if ($params{type} eq 'New') {
+        is $report->get_extra_field_value('Start_Date'), '19/03/2021';
+        is $report->get_extra_field_value('End_Date'), '18/03/2022';
+    } elsif ($params{type} eq 'Renew') {
+        is $report->get_extra_field_value('Start_Date'), '31/03/2021';
+        is $report->get_extra_field_value('End_Date'), '30/03/2022';
+    }
     if ($params{new_bins}) {
-        is $report->get_extra_field_value('Bin_Delivery_Detail_Container'), $params{bin_type}, 'correct container request bin type';
-        is $report->get_extra_field_value('Bin_Delivery_Detail_Containers'), $params{action}, 'correct container request action';
-        is $report->get_extra_field_value('Bin_Delivery_Detail_Quantity'), $params{new_bins}, 'correct container request count';
+        is $report->get_extra_field_value('Container_Type'), $params{bin_type}, 'correct container request bin type';
+        is $report->get_extra_field_value('Quantity'), $params{new_bins}, 'correct container request count - one more';
+    }
+    is $report->state, $params{state}, 'report state correct';
+}
+
+sub check_amend_extra_data_pre_confirm {
+    my $report = shift;
+    ok $report, "report passed to check_extra_data_pre_confirm";
+    return unless $report;
+
+    my %params = (
+        state => 'unconfirmed',
+        quantity => 1,
+        new_bins => 1,
+        bin_type => 1915,
+        payment_method => 'credit_card',
+        @_
+    );
+    $report->discard_changes;
+    is $report->category, 'Amend Garden Subscription', 'correct category on report';
+    is $report->title, "Garden Subscription - Amend", 'correct title on report';
+    is $report->get_extra_field_value('payment_method'), $params{payment_method}, 'correct payment method on report';
+    is $report->get_extra_field_value('Additional_Container_Quantity'), $params{quantity}, 'correct bin count';
+    is $report->get_extra_field_value('Additional_Collection_Container_Type'), $params{bin_type}, 'correct bin type';
+    if ($params{new_bins}) {
+        is $report->get_extra_field_value('Container_Ordered_Type'), $params{bin_type}, 'correct container request bin type';
+        is $report->get_extra_field_value('Container_Ordered_Quantity'), $params{new_bins}, 'correct container request count - one more';
     }
     is $report->state, $params{state}, 'report state correct';
 }
@@ -1439,11 +1304,70 @@ sub check_extra_data_post_confirm {
     is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 }
 
+sub check_removal_data_and_emails {
+    my ($mech, $report) = @_;
+
+    my ($removal) = @{$report->get_extra_metadata('grouped_ids')};
+    $removal = FixMyStreet::DB->resultset("Problem")->find($removal);
+    is $removal->category, 'Request new container';
+    is $removal->state, 'confirmed';
+    is $removal->get_extra_field_value('Container_Type'), 39, 'correct bin type';
+    is $removal->get_extra_field_value('Action'), '2', 'correct container request action';
+    is $removal->get_extra_field_value('Reason'), '8', 'correct container request reason';
+    is $removal->get_extra_field_value('service_id'), 953;
+
+    $mech->clear_emails_ok;
+    FixMyStreet::Script::Reports::send();
+    my @emails = $mech->get_email;
+    my $body1 = $mech->get_text_body_from_email($emails[1]);
+    my $body2 = $mech->get_text_body_from_email($emails[3]);
+    if ($body1 =~ /Your request to/) {
+        ($body1, $body2) = ($body2, $body1);
+    }
+    like $body2, qr/1x Garden Waste Wheelie Bin \(240L\) to collect/;
+    like $body1, qr/Number of bin subscriptions: 1/;
+    like $body1, qr/Bins to be removed: 1/;
+    like $body1, qr/Total:.*?20.00/;
+}
+
 sub mock_CancelReservedSlotsForEvent {
     shift->mock( 'CancelReservedSlotsForEvent', sub {
         my (undef, $guid) = @_;
         ok $guid, 'non-nil GUID passed to CancelReservedSlotsForEvent';
     } );
+}
+
+sub shared_scp_mocks {
+    my $pay = Test::MockModule->new('Integrations::SCP');
+
+    $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'IN_PROGRESS',
+            scpReference => '12345',
+            invokeResult => {
+                status => 'SUCCESS',
+                redirectUrl => 'http://example.org/faq'
+            }
+        };
+    });
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return {
+            transactionState => 'COMPLETE',
+            paymentResult => {
+                status => 'SUCCESS',
+                paymentDetails => {
+                    paymentHeader => {
+                        uniqueTranId => 54321
+                    }
+                }
+            }
+        };
+    });
+    return $pay;
 }
 
 done_testing;

@@ -48,6 +48,7 @@ sub lookup_subscription_for_uprn {
     my ( $customer, $contract );
 
     my $results = $self->agile->CustomerSearch($uprn);
+    return if ($results->{error}||0) == 404;
 
     # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
     my $customers = $results->{Customers} || [];
@@ -87,31 +88,28 @@ sub lookup_subscription_for_uprn {
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
 
-    # Property is now ineligible for GGW signup as we know they have a sub
-    $self->{c}->stash->{property}->{garden_signup_eligible} = 0;
-
     return $sub;
 }
 
 =head2 garden_current_subscription
 
-Look up the garden subscription in Agile.
-Note if there is an Agile subscription but no Whitespace service, this fakes a
-new Whitespace service in the services list.
-If there isn't an Agile subscription and there is a Whitespace service,
-this removes the Whitespace service.
-This caches the results on first call to be used by future calls (which don't
-pass in services).
+Look up the garden subscription in Agile. Note if there is one but no
+Whitespace service, this fakes a new Whitespace service in the services list.
+If there isn't one and there is a Whitespace service, this removes the
+Whitespace service. This caches the results on first call to be used by future
+calls (which don't pass in services).
 
 =cut
 
 sub garden_current_subscription {
     my ($self, $services) = @_;
 
-    my $current = $self->{c}->stash->{property}{garden_current_subscription};
+    my $property = $self->{c}->stash->{property};
+
+    my $current = $property->{garden_current_subscription};
     return $current if $current;
 
-    my $uprn = $self->{c}->stash->{property}{uprn};
+    my $uprn = $property->{uprn};
     return undef unless $uprn;
 
     my $sub = $self->lookup_subscription_for_uprn($uprn);
@@ -120,7 +118,6 @@ sub garden_current_subscription {
         for my $garden_id ( @{ $self->garden_service_ids } ) {
             @$services = grep { $_->{service_id} ne $garden_id } @$services;
         }
-
         return undef;
     }
 
@@ -288,7 +285,7 @@ sub waste_setup_direct_debit {
     my $c = $self->{c};
 
     my $report = $c->stash->{report};
-    my $email = $report->user->email;
+    my $email = $report->user->email || 'gardenwaste@' . $self->admin_user_domain;
 
     my $data = $c->stash->{form_data};
     my $uprn = $report->get_extra_field_value('uprn');

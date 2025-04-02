@@ -62,10 +62,14 @@ sub item_list : Private {
 
     my $notes_field = {
         type => 'TextArea',
-        label => 'Item note (optional)',
+        label => 'Item note',
         maxlength => 100,
         tags => { hint => 'Describe the item to help our crew pick up the right thing' },
     };
+    if (!$c->cobrand->bulky_item_notes_field_mandatory) {
+        $notes_field->{label} .= ' (optional)';
+    }
+
     if ($c->cobrand->moniker eq 'brent') {
         $notes_field = {
             type => 'Text',
@@ -75,6 +79,12 @@ sub item_list : Private {
     }
 
     for my $num ( 1 .. $max_items ) {
+        if ($c->cobrand->bulky_item_notes_field_mandatory) {
+            $notes_field = {
+                %$notes_field,
+                required_when => { "item_$num" => sub { $_[0] ne "" } },
+            };
+        }
         push @$field_list,
             "item_$num" => {
                 type => 'Select',

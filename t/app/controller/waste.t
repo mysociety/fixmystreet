@@ -291,8 +291,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-9' => 1, 'quantity-9' => 2, 'container-10' => 1, 'quantity-10' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email } });
-        $mech->content_like(qr{Outside Food Waste Container</dt>\s*<dd[^>]*>\s*1\s*</dd>});
-        $mech->content_like(qr{Kitchen Caddy</dt>\s*<dd[^>]*>\s*2\s*</dd>});
+        $mech->content_like(qr{Outside Food Waste Container</dt>\s*<dd[^>]*>\s*1 to deliver\s*</dd>});
+        $mech->content_like(qr{Kitchen Caddy</dt>\s*<dd[^>]*>\s*2 to deliver\s*</dd>});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Now check your email');
         my $link = $mech->get_link_from_email; # Only one email sent, this also checks
@@ -1824,7 +1824,7 @@ FixMyStreet::override_config {
         )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Subscription_End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
@@ -2140,7 +2140,7 @@ FixMyStreet::override_config {
         my $new_report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Subscription_End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
@@ -2655,7 +2655,7 @@ FixMyStreet::override_config {
         )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Subscription_End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';

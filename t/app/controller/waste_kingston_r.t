@@ -194,9 +194,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('Continue to payment');
 
-        $mech->content_like(qr/Food waste bin \(outdoor\)<\/dt>\s*<dd[^>]*>\s*2\s*<\/dd>/);
+        $mech->content_like(qr/Food waste bin \(outdoor\)<\/dt>\s*<dd[^>]*>\s*2 to deliver\s*<\/dd>/);
         $mech->content_like(qr/Green recycling box \(55L\)<\/dt>\s*<dd[^>]*>\s*2\s+to deliver,\s+1 to remove\s*<\/dd>/);
-        $mech->content_like(qr/Black rubbish bin<\/dt>\s*<dd[^>]*>\s*1\s*<\/dd>/);
+        $mech->content_like(qr/Black rubbish bin<\/dt>\s*<dd[^>]*>\s*1 to deliver\s*<\/dd>/);
         $mech->content_like(qr/Blue lid paper and cardboard bin \(240L\)<\/dt>\s*<dd[^>]*>\s*1\s+to deliver,\s+1 to remove\s*<\/dd>/);
         $mech->content_like(qr/Green recycling bin \(240L\)<\/dt>\s*<dd[^>]*>\s*1 to remove\s*<\/dd>/);
 
