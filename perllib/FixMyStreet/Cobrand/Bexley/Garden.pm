@@ -409,9 +409,7 @@ sub waste_get_paye_narrative {
     return "Garden Waste Service Payment - Reference: $id Contract: $uprn";
 }
 
-=item * Anyone can modify garden subs XXX Is that right?
-
-XXX TODO can't modify in renewal period
+=item * Anyone can modify garden subs
 
 =cut
 
