@@ -12,6 +12,10 @@ use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
 use Open311::GetServiceRequestUpdates;
 use Open311::PopulateServiceList;
+use Encode;
+use Path::Tiny 'path';
+use MIME::Base64;
+
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -696,6 +700,19 @@ sub new { my $c = shift; bless { @_ }, $c; }
 
 package main;
 
+my $problempm = Test::MockModule->new('FixMyStreet::DB::Result::Problem');
+$problempm->mock(static_map => sub {
+    my ($self, %params) = @_;
+
+    is $params{zoom}, 4, 'correct zoom level';
+    is $params{full_size}, 1, 'full-size map requested';
+
+    return {
+        content_type => 'image/jpeg',
+        data => path('t/app/controller/sample.jpg')->slurp,
+    };
+});
+
 subtest 'redirecting of reports between backends' => sub {
     my $integ = Test::MockModule->new('SOAP::Lite');
     $integ->mock(call => sub {
@@ -829,9 +846,27 @@ subtest 'redirecting of reports between backends' => sub {
 
             FixMyStreet::Script::Reports::send();
             my $req = Open311->test_req_used;
-            my $c = CGI::Simple->new($req->content);
-            is $c->param('service_code'), 3045;
-            is $c->param('description'), "$detail | Handover notes - This is a handover note";
+            my $found = 0;
+            foreach ($req->parts) {
+                my $cd = $_->header('Content-Disposition');
+                if ($cd =~ /service_code/) {
+                    is decode_utf8($_->content), '3045', 'Correct service_code';
+                    $found++;
+                }
+                if ($cd =~ /description/) {
+                    is decode_utf8($_->content), "$detail | Handover notes - This is a handover note", 'Correct description';
+                    $found++;
+                }
+                if ($cd =~ /map_photo/) {
+                    is $cd, 'form-data; name="map_photo"; filename="map.jpeg"', 'Correct image header';
+                    is $_->header('Content-Type'), 'image/jpeg', 'Correct image content type';
+                    my $b64 = encode_base64($_->content, '');
+                    like $b64, qr{^/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGBggG}, 'Photo content looks correct';
+                    is length($b64), 4084, 'Photo content is correct length';
+                    $found++;
+                }
+            }
+            is $found, 3, 'Found all tested headers';
         };
 
         my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
