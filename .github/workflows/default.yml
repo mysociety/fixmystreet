@@ -6,6 +6,7 @@ jobs:
   test:
     name: Test on perl ${{ matrix.perl_version }}
     runs-on: ubuntu-22.04
+    continue-on-error: ${{ matrix.experimental }}
 
     strategy:
       fail-fast: false
@@ -13,6 +14,10 @@ jobs:
         # noble, bookworm, jammy, bullseye
         # jammy 5.34 is ubuntu-22.04, in coverage run
         perl_version: [ 5.38.2, 5.36.0, 5.34.0, 5.32.1 ]
+        experimental: [ false ]
+        include:
+          - perl_version: 5.40.1
+            experimental: true
 
     steps:
     - uses: actions/checkout@v4
