@@ -229,6 +229,7 @@ FixMyStreet::override_config {
         open311_email => {
             bristol => {
                 Flytipping => 'flytipping@example.org',
+                flytipping_parks => 'parksemail@example.org',
             }
         }
     }
@@ -256,9 +257,35 @@ FixMyStreet::override_config {
         like $email, qr/Size: Small/;
     };
 
+    subtest "flytipping in parks only sends email" => sub {
+        $mech->clear_emails_ok;
+        my $mock = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+        $mock->mock('_fetch_features', sub { [ { "ms:flytippingparks" => {} } ] });
+
+        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $flytipping->category,
+            extra => { _fields => [
+                { name => 'Witness', value => 0 },
+                { name => 'Size', value => "0" },
+            ] },
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        is $p->external_id, undef, 'Report has no external ID as not sent via Open311';
+        ok $p->whensent, 'Report marked as sent';
+        is_deeply $p->get_extra_metadata('sent_to'), ['parksemail@example.org'];
+        my $email = $mech->get_text_body_from_email;
+        like $email, qr/Witness: No/;
+        like $email, qr/Size: Small/;
+    };
+
     subtest "usrn populated on Alloy category" => sub {
         my $mock = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
         $mock->mock('_fetch_features', sub {
+            return [] if $_[1]->{typename} eq 'flytippingparks';
             [ {
                 "type" => "Feature",
                 "geometry" => {"type" => "MultiLineString", "coordinates" => [[[1,1],[2,2]]]},

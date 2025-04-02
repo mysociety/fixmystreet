@@ -317,7 +317,8 @@ sub check_report_is_on_cobrand_asset {
 
     my $park = $self->_park_for_point(
         $self->{c}->stash->{latitude},
-        $self->{c}->stash->{longitude}
+        $self->{c}->stash->{longitude},
+        'parks',
     );
     return 0 unless $park;
 
@@ -325,7 +326,7 @@ sub check_report_is_on_cobrand_asset {
 }
 
 sub _park_for_point {
-    my ( $self, $lat, $lon ) = @_;
+    my ( $self, $lat, $lon, $type ) = @_;
 
     my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
 
@@ -333,7 +334,7 @@ sub _park_for_point {
     my $cfg = {
         url => "https://$host/mapserver/bristol",
         srsname => "urn:ogc:def:crs:EPSG::27700",
-        typename => "parks",
+        typename => $type,
         filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
         outputformat => 'GML3',
     };
@@ -341,7 +342,34 @@ sub _park_for_point {
     my $features = $self->_fetch_features($cfg, $x, $y, 1);
     my $park = $features->[0];
 
+    if ($type eq 'flytippingparks') {
+        return $park;
+    }
     return { site_code => $park->{"ms:parks"}->{"ms:SITE_CODE"} } if $park;
+}
+
+sub get_body_sender {
+    my ( $self, $body, $problem ) = @_;
+
+    my $park = $self->_park_for_point(
+        $problem->latitude,
+        $problem->longitude,
+        'flytippingparks',
+    );
+
+    my $emails = $self->feature('open311_email');
+    return $self->SUPER::get_body_sender($body, $problem) unless $park && $emails->{flytipping_parks};
+
+    $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping_parks});
+    return { method => 'Email' };
+}
+
+sub munge_sendreport_params {
+    my ($self, $row, $h, $params) = @_;
+
+    if ( my $email = $row->get_extra_metadata('flytipping_email') ) {
+        $params->{To} = [ [ $email, $self->council_name ] ];
+    }
 }
 
 1;
