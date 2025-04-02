@@ -10,9 +10,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # bullseye, focal, buster, bionic
+        # noble, bookworm, jammy, bullseye
         # jammy 5.34 is ubuntu-22.04, in coverage run
-        perl_version: [ 5.32.1, 5.30.3, 5.28.3, 5.26.3 ]
+        perl_version: [ 5.38.2, 5.36.0, 5.34.0, 5.32.1 ]
 
     steps:
     - uses: actions/checkout@v4
