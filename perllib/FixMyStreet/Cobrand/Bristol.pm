@@ -368,7 +368,18 @@ sub munge_sendreport_params {
     my ($self, $row, $h, $params) = @_;
 
     if ( my $email = $row->get_extra_metadata('flytipping_email') ) {
-        $params->{To} = [ [ $email, $self->council_name ] ];
+        $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
+
+        my $to = [ [ $email, $self->council_name ] ];
+
+        my $witness = $row->get_extra_field_value('Witness') || 0;
+        if ($witness) {
+            my $emails = $self->feature('open311_email');
+            my $dest = $emails->{$row->category};
+            push @$to, [ $dest, $self->council_name ];
+        }
+
+        $params->{To} = $to;
     }
 }
 

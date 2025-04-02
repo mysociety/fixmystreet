@@ -280,6 +280,25 @@ FixMyStreet::override_config {
         my $email = $mech->get_text_body_from_email;
         like $email, qr/Witness: No/;
         like $email, qr/Size: Small/;
+
+        ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $flytipping->category,
+            extra => { _fields => [
+                { name => 'Witness', value => 1 },
+                { name => 'Size', value => "0" },
+            ] },
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        is $p->external_id, undef, 'Report has no external ID as not sent via Open311';
+        ok $p->whensent, 'Report marked as sent';
+        is_deeply $p->get_extra_metadata('sent_to'), ['parksemail@example.org', 'flytipping@example.org'];
+        $email = $mech->get_text_body_from_email;
+        like $email, qr/Witness: Yes/;
+        like $email, qr/Size: Small/;
     };
 
     subtest "usrn populated on Alloy category" => sub {
