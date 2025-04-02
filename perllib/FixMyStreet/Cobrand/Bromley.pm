@@ -249,6 +249,7 @@ sub open311_config {
     if ($contact->email =~ /^\d+$/) {
         $params->{multi_photos} = 1;
         $params->{upload_files} = 1;
+        $params->{always_upload_photos} = 1; # So open311_munge_uploads always gets called
     }
 
     $params->{always_send_latlong} = 0;
@@ -384,6 +385,19 @@ sub open311_post_send_updates {
             $comment->state('hidden');
         }
     }
+}
+
+sub open311_munge_uploads {
+    my ($self, $uploads, $obj) = @_;
+
+    return unless ref $obj eq 'FixMyStreet::DB::Result::Problem';
+
+    # Only deal with Echo contacts
+    return unless $obj->contact && $obj->contact->email =~ /^\d+$/;
+
+    my $image = $obj->static_map(full_size => 1, zoom => 4, skip_crop => 1);
+
+    $uploads->{"map_photo"} = [ undef, "map.jpeg", Content_Type => $image->{content_type}, Content => $image->{data} ];
 }
 
 sub open311_munge_update_params {
