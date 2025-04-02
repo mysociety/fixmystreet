@@ -4,7 +4,9 @@ const us = document.getElementById('page-refresh');
 const every = us.dataset.every || 2;
 
 function update() {
-    fetch(window.location.href, { headers: { 'x-requested-with': 'fetch' } })
+    const url = new URL(window.location.href);
+    url.searchParams.append('page_loading', 1);
+    fetch(url, { headers: { 'x-requested-with': 'fetch' } })
         .then(resp => resp.text())
         .then(html => {
             const parser = new DOMParser();
