@@ -767,6 +767,7 @@ sub construct_bin_request_form {
         my $maximum = $_->{request_max};
         foreach my $id (@$containers) {
             my $max = ref $maximum ? $maximum->{$id} : $maximum;
+            next unless $c->stash->{containers}->{$id}; # Must have a label
             push @$field_list, "container-$id" => {
                 type => 'Checkbox',
                 label => $name,
