@@ -50,7 +50,7 @@ FixMyStreet::override_config {
     $req = Open311->test_req_used;
     $c = CGI::Simple->new($req->content);
 
-    is $c->{service_request_id}[0], 'Passthrough-248', "Passthrough service_request_id is set as the report's passthrough id";
+    is $c->{service_request_id}[0], '248', "Passthrough service_request_id is set as the report's passthrough id";
     is $c->{service_code}[0], 'Passthrough-confirm_graffiti', "service_code has Passthrough- prefix";
     $comment->discard_changes;
     $comment->problem->discard_changes;

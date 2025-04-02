@@ -65,8 +65,7 @@ sub send_comments {
             service_code => $service_code,
         );
         my $o = Open311->new(%o311_cfg);
-        my $customer_reference = 'Passthrough-' . $problem->get_extra_metadata('passthrough_id');
-        $problem->set_extra_metadata( customer_reference => $customer_reference );
+        $problem->set_extra_metadata( customer_reference => $problem->get_extra_metadata('passthrough_id') );
         my $id = $o->post_service_request_update( $row );
         if ( $id ) {
             $row->external_id($confirm_id);
