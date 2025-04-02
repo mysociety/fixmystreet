@@ -394,7 +394,7 @@ sub open311_munge_uploads {
     # Only deal with Echo contacts
     return unless $obj->contact && $obj->contact->email =~ /^\d+$/;
 
-    my $image = $obj->static_map({ full_size => 1, zoom => 4 });
+    my $image = $obj->static_map(full_size => 1, zoom => 4);
 
     $uploads->{"map_photo"} = [ undef, "map.jpeg", Content_Type => $image->{content_type}, Content => $image->{data} ];
 }
