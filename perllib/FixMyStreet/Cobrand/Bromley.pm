@@ -249,6 +249,7 @@ sub open311_config {
     if ($contact->email =~ /^\d+$/) {
         $params->{multi_photos} = 1;
         $params->{upload_files} = 1;
+        $params->{always_upload_photos} = 1; # So open311_munge_uploads always gets called
     }
 
     $params->{always_send_latlong} = 0;
