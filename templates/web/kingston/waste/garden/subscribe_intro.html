@@ -23,7 +23,10 @@ for a 12-month subscription.
 </p>
 
 <p>
-If you need us to deliver bins to you, there is a fee of £[% tprintf('%.2f', garden_costs.per_new_bin_first / 100 ) %] per bin for admin and delivery. If you order more than one bin at once, the admin and delivery fee will be £[% tprintf('%.2f', garden_costs.per_new_bin / 100 ) %] for each additional bin.
+If you need a new bin, the cost is £[% tprintf('%.2f', garden_costs.per_new_bin_first / 100 ) %] for the first bin.
+Each additional bin ordered at the same time will cost £[% tprintf('%.2f', garden_costs.per_new_bin / 100 ) %], made up of a charge for the container and an administrative fee.
+Further information about our container charging can be found in
+<a href="https://www.kingston.gov.uk/bins-recycling-rubbish/request-new-containers/2">our container charging policies</a>.
 </p>
 
 [% IF slwp_garden_sacks %]
