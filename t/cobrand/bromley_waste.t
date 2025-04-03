@@ -436,7 +436,6 @@ subtest 'Checking correct renewal prices' => sub {
             }
         ];
     });
-    set_fixed_time('2021-06-10T12:00:00Z');
 
     for my $test (
     {
@@ -471,9 +470,15 @@ subtest 'Checking correct renewal prices' => sub {
                 waste => { bromley => 1 }
             },
         }, sub {
+            set_fixed_time('2021-06-10T12:00:00Z');
             subtest $test->{data}{test_text} => sub {
                 $mech->get_ok('/waste/12345/garden_renew');
                 $mech->content_contains($test->{data}->{renewal_text}, $test->{data}->{test_text});
+            };
+            set_fixed_time('2021-07-16T12:00:00Z');
+            subtest 'Higher renewal cost when current date is past renewal date' => sub {
+                $mech->get_ok('/waste/12345/garden_renew');
+                $mech->content_contains('£20.00 per bin per year');
             };
         };
     }
