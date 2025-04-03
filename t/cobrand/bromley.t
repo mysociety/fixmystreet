@@ -988,10 +988,20 @@ subtest 'redirecting of reports between backends' => sub {
             is $report->send_state, 'sent', 'report was resent';
 
             my $req = Open311->test_req_used;
-            my $c = CGI::Simple->new($req->content);
             my $detail = $report->detail;
-            is $c->param('attribute[Original_Event_ID_(if_applicable)]'), $event_id, 'old event ID included in attributes';
-            like $c->param('description'), qr/Closed report has a new comment: comment on closed event\r\nBromley pkg-tcobrandbromleyt-bromley\@example.com\r\n$detail/, 'Comment on closed report included in new report description';
+            my $found = 0;
+            foreach ($req->parts) {
+                my $cd = $_->header('Content-Disposition');
+                if ($cd =~ /Original_Event_ID/) {
+                    is decode_utf8($_->content), $event_id, 'old event ID included in attributes';
+                    $found++;
+                }
+                if ($cd =~ /description/) {
+                    like decode_utf8($_->content), qr/Closed report has a new comment: comment on closed event\r\nBromley pkg-tcobrandbromleyt-bromley\@example.com\r\n$detail/, 'Comment on closed report included in new report description';
+                    $found++;
+                }
+            }
+            is $found, 2, 'Found all tested headers';
         };
 
         subtest "Another update from Echo on this new sent report closes it again" => sub {
