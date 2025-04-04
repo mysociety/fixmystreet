@@ -351,17 +351,20 @@ sub _park_for_point {
 sub get_body_sender {
     my ( $self, $body, $problem ) = @_;
 
-    my $park = $self->_park_for_point(
-        $problem->latitude,
-        $problem->longitude,
-        'flytippingparks',
-    );
-
     my $emails = $self->feature('open311_email');
-    return $self->SUPER::get_body_sender($body, $problem) unless $park && $emails->{flytipping_parks};
+    if ($problem->category eq 'Flytipping' && $emails->{flytipping_parks}) {
+        my $park = $self->_park_for_point(
+            $problem->latitude,
+            $problem->longitude,
+            'flytippingparks',
+        );
+        if ($park) {
+            $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping_parks});
+            return { method => 'Email' };
+        }
 
-    $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping_parks});
-    return { method => 'Email' };
+    }
+    return $self->SUPER::get_body_sender($body, $problem);
 }
 
 sub munge_sendreport_params {

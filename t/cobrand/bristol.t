@@ -301,6 +301,25 @@ FixMyStreet::override_config {
         like $email, qr/Size: Small/;
     };
 
+    subtest "other category does not send email" => sub {
+        $mech->clear_emails_ok;
+        my $mock = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+        $mock->mock('_fetch_features', sub { [ { "ms:flytippingparks" => {} } ] });
+
+        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $open311_contact->category,
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        is $p->external_id, 248;
+        ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to'), undef;
+        $mech->email_count_is(0);
+    };
+
     subtest "usrn populated on Alloy category" => sub {
         my $mock = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
         $mock->mock('_fetch_features', sub {
