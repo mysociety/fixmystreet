@@ -794,6 +794,7 @@ FixMyStreet::override_config {
             EventStateId => 12401,
         }, {
             EventTypeId => 3145,
+            EventStateId => 0,
             ServiceId => 986,
             Guid => 'guid',
             EventDate => { DateTime => '2023-07-05T00:00:00Z' },
