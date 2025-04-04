@@ -1342,9 +1342,11 @@ sub static_map {
             x => $pin->{px} - 24, y => $pin->{py} - 64);
     }
 
-    # Bottom 128/ top 64 pixels will never have a pin
-    $image->Extent( geometry => '512x384', gravity => 'NorthWest');
-    $image->Extent( geometry => '512x320', gravity => 'SouthWest');
+    unless ( $params{skip_crop} ) {
+        # Bottom 128/ top 64 pixels will never have a pin
+        $image->Extent( geometry => '512x384', gravity => 'NorthWest');
+        $image->Extent( geometry => '512x320', gravity => 'SouthWest');
+    }
 
     $image->Scale( geometry => "310x200>" ) unless $params{full_size};
 
