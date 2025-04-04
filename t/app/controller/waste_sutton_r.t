@@ -61,6 +61,11 @@ create_contact({ category => 'Report missed assisted collection', email => '3146
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
+create_contact({ category => 'Complaint against time', email => '3134' }, 'Waste',
+    { code => 'Notes', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+);
 create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
     { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
@@ -304,20 +309,22 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3145,
+            EventStateId => 0,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             ServiceId => 944,
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection has been reported as missed');
+        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection was reported as missed on Saturday, 10 September');
         $mech->content_lacks('Request a mixed recycling (cans, plastics &amp; glass) container');
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3145,
+            EventStateId => 0,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             ServiceId => 948,
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A paper &amp; card collection has been reported as missed');
+        $mech->content_contains('A paper &amp; card collection was reported as missed on Saturday, 10 September');
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
@@ -328,12 +335,13 @@ FixMyStreet::override_config {
             like $id, qr/^100[1-3]$/; # recycling service unit
             return [ {
                 EventTypeId => 3145,
+                EventStateId => 0,
                 EventDate => { DateTime => "2022-09-10T17:00:00Z" },
                 ServiceId => 944,
             } ]
         });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection has been reported as missed');
+        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection was reported as missed on Saturday, 10 September');
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
     subtest 'No requesting if open request of different size' => sub {
@@ -627,6 +635,166 @@ FixMyStreet::override_config {
         $mech->back;
         $mech->follow_link_ok({ text => 'Report a problem with a food waste collection' });
         $mech->content_unlike(qr/name="category" value="Waste spillage"\s+disabled/s);
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
+    subtest 'Escalations of missed collections' => sub {
+        subtest 'No missed collection' => sub {
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+        };
+
+        subtest 'Open missed collection but by a different flat' => sub {
+            # So say this result was what was returned by a ServiceUnit GetEventsForObject call, not the address one
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19240, # Allocated to Crew
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12346 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+        };
+
+        subtest 'Open missed collection' => sub {
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19240, # Allocated to Crew
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('report a failure to resolve a missed collection');
+
+            subtest 'actually make the report' => sub {
+                $mech->follow_link_ok({ text => 'report a failure to resolve a missed collection report' });
+                $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+                $mech->submit_form_ok( { with_fields => { submit => '1' } });
+                $mech->content_contains('Your enquiry has been submitted');
+                $mech->content_contains('Return to property details');
+                $mech->content_contains('/waste/12345"');
+                my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+                is $report->category, 'Complaint against time', "Correct category";
+                is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
+                is $report->user->email, 'schmoe@example.org', 'User details added to report';
+                is $report->name, 'Joe Schmoe', 'User details added to report';
+                is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
+            };
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+        };
+
+        subtest 'Completed missed collection' => sub {
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19241, # Completed
+                ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+        };
+
+        subtest 'Not Completed missed collection' => sub {
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19242, # Not Completed
+                ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+        };
+
+        subtest 'Existing escalation event' => sub {
+            # Now mock there is an existing escalation
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 0,
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            }, {
+                Id => '112112322',
+                EventTypeId => 3134, # Complaint against time
+                EventStateId => 0,
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-13T19:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-14T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_contains('A chase was raised on 13 September and should be completed within 2 working days, 15 September');
+        };
+
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
