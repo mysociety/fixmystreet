@@ -32,9 +32,15 @@
         <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
     [% END %]
 [% END %]
+
 [% IF c.cobrand.moniker == 'sutton' AND (property.domestic_refuse_bin OR communal_property) %]
+    [% IF unit.escalations.missed_open %]
+      <span class="waste-service-descriptor">
+        Thank you for reporting an issue with this collection; we are investigating.
+      </span>
+    [% END %]
     [% IF unit.report_allowed %]
-        <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
+        <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a spillage or bin not returned issue with a [% unit.service_name FILTER lower %] collection</a>
     [% END %]
 [% END %]
 
