@@ -26,15 +26,27 @@ sub parse {
         my $type = $event_types->{$event_type} || 'enquiry';
 
         my $closed = $self->_closed_event($_);
+        my $completed = $self->_completed_event($_);
         # Only care about open requests/enquiries
         next if $type eq 'request' && $closed && !$self->include_closed_requests;
 
+        my $source;
+        my $objects = Integrations::Echo::force_arrayref($_->{EventObjects}, 'EventObject');
+        foreach (@$objects) {
+            if ($_->{EventObjectType} eq 'Source') {
+                $source = $_->{ObjectRef}{Value}{anyType};
+            }
+        }
+
         my $event = {
             id => $_->{Id},
+            ref => $_->{ClientReference},
             type => $type,
             event_type => $event_type || 0,
             service_id => $service_id || 0,
             closed => $closed,
+            completed => $completed,
+            source => $source,
             $_->{EventDate} ? (date => construct_bin_date($_->{EventDate})) : (),
         };
 
@@ -99,6 +111,16 @@ sub _closed_event {
     my ($self, $event) = @_;
     return 1 if $event->{ResolvedDate};
     return 1 if $self->res_code_closes_event && $event->{ResolutionCodeId} && $event->{ResolutionCodeId} != 584; # Out of Stock
+    return 0;
+}
+
+# Returns 1 if Completed, 0 if not Completed, undef if unsure
+sub _completed_event {
+    my ($self, $event) = @_;
+    # Only SLWP Missed Collections at present
+    return undef unless $event->{EventTypeId} == 3145 || $event->{EventTypeId} == 3146;
+    # XXX Need to factor this out somewhere somehow
+    return 1 if $event->{EventStateId} == 19241 || $event->{EventStateId} == 19246;
     return 0;
 }
 

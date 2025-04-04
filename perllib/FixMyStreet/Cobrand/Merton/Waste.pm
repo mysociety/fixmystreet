@@ -199,7 +199,7 @@ sub alternative_backend_field_names {
 
 sub waste_garden_maximum { 3 }
 
-=item staff_override_request_options
+=item munge_bin_services_for_address
 
 Merton want staff to be able to request any domestic container
 for a property and also to not be restricted to only ordering
@@ -208,7 +208,7 @@ options.
 
 =cut
 
-sub staff_override_request_options {
+sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
 
     return if $self->{c}->stash->{schedule2_property};
