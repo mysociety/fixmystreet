@@ -55,8 +55,8 @@ FixMyStreet::override_config {
         echo => {
             kingston => {
                 bulky_address_types => [ 1, 7 ],
-                bulky_service_id => 413,
-                bulky_event_type_id => 1636,
+                bulky_service_id => 986,
+                bulky_event_type_id => 3130,
                 url => 'http://example.org',
                 nlpg => 'https://example.com/%s',
             },
@@ -67,30 +67,11 @@ FixMyStreet::override_config {
             hmac_id => '1234',
             scpID => '1234',
             company_name => 'rbk',
-            form_name => 'rbk_user_form',
-            staff_form_name => 'rbk_staff_form',
             customer_ref => 'customer-ref',
             bulky_customer_ref => 'customer-ref-bulky',
         } },
     },
 }, sub {
-    my $lwp = Test::MockModule->new('LWP::UserAgent');
-    $lwp->mock(
-        'get',
-        sub {
-            my ( $ua, $url ) = @_;
-            return $lwp->original('get')->(@_) unless $url =~ /example.com/;
-            my ( $uprn, $area ) = ( 1000000002, "KINGSTON UPON THAMES" );
-            my $j
-                = '{ "results": [ { "LPI": { "UPRN": '
-                . $uprn
-                . ', "LOCAL_CUSTODIAN_CODE_DESCRIPTION": "'
-                . $area
-                . '" } } ] }';
-            return HTTP::Response->new( 200, 'OK', [], $j );
-        }
-    );
-
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
     $echo->mock( 'GetTasks',                 sub { [] } );
@@ -115,8 +96,9 @@ FixMyStreet::override_config {
     $echo->redefine( call => sub {
         is $_[1], 'ReserveAvailableSlotsForEvent';
         is $_[2], 'event';
-        is $_[3]->{EventTypeId}, 1636;
-        is $_[3]->{ServiceId}, 413;
+        is $_[3]->{EventTypeId}, 3130;
+        is $_[3]->{ServiceId}, 986;
+        is $_[3]->{Data}[0]{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value}, 1842;
         # Dig down to the property ID
         is $_[3]->{EventObjects}{EventObject}{ObjectRef}{Value}[0]{'msArray:anyType'}->value, 12345;
         return {
@@ -140,6 +122,29 @@ FixMyStreet::override_config {
                                 EndDate => { DateTime => '2023-07-16T00:00:00Z' },
                                 Expiry => { DateTime => '2023-06-25T10:10:00Z' },
                                 Reference => 'reserve3==',
+                            },
+                        ]
+                    }
+                },
+                {
+                    Description => 'TaskType_5678',
+                    ReservedSlots => {
+                        ReservedSlot => [
+                            {
+                                StartDate => { DateTime => '2023-07-01T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-02T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve4==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve5==',
+                            }, {
+                                StartDate => { DateTime => '2023-07-22T00:00:00Z' },
+                                EndDate => { DateTime => '2023-07-16T00:00:00Z' },
+                                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                                Reference => 'reserve6==',
                             },
                         ]
                     }
@@ -309,8 +314,9 @@ FixMyStreet::override_config {
         $mech->content_contains('placed outside before 6:30am on the collection day.');
         $mech->content_contains('1 July');
         $mech->content_contains('8 July');
+        $mech->content_contains('2023-07-01T00:00:00;reserve1==::reserve4==;2023-06-25T10:10:00');
         $mech->submit_form_ok(
-            { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
+            { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==::reserve4==;2023-06-25T10:10:00' } }
         );
         $mech->content_contains('Select the items that you need us to collect using the');
         $mech->content_contains('You can book the collection of up to eight items');
@@ -372,8 +378,9 @@ FixMyStreet::override_config {
             $echo->redefine( call => sub {
                 is $_[1], 'ReserveAvailableSlotsForEvent';
                 is $_[2], 'event';
-                is $_[3]->{EventTypeId}, 1636;
-                is $_[3]->{ServiceId}, 413;
+                is $_[3]->{EventTypeId}, 3130;
+                is $_[3]->{ServiceId}, 986;
+                is $_[3]->{Data}[0]{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value}, 1842;
                 # Dig down to the property ID
                 is $_[3]->{EventObjects}{EventObject}{ObjectRef}{Value}[0]{'msArray:anyType'}->value, 12345;
                 return {
@@ -386,11 +393,24 @@ FixMyStreet::override_config {
                                         StartDate => { DateTime => '2023-07-08T00:00:00Z' },
                                         EndDate => { DateTime => '2023-07-09T00:00:00Z' },
                                         Expiry => { DateTime => '2023-06-25T10:20:00Z' },
-                                        Reference => 'reserve4==',
+                                        Reference => 'reserve7a==',
                                     },
                                 ]
                             }
                         },
+                        {
+                            Description => 'TaskType_5678',
+                            ReservedSlots => {
+                                ReservedSlot => [
+                                    {
+                                        StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                        EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                        Expiry => { DateTime => '2023-06-25T10:20:00Z' },
+                                        Reference => 'reserve7b==',
+                                    },
+                                ]
+                            }
+                        }
                     ]
                 };
             });
@@ -405,7 +425,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         chosen_date =>
-                            '2023-07-08T00:00:00;reserve4==;2023-06-25T10:20:00'
+                            '2023-07-08T00:00:00;reserve7a==::reserve7b==;2023-06-25T10:20:00'
                     }
                 },
                 'submit new slot selection',
@@ -427,8 +447,9 @@ FixMyStreet::override_config {
             $echo->redefine( call => sub {
                 is $_[1], 'ReserveAvailableSlotsForEvent';
                 is $_[2], 'event';
-                is $_[3]->{EventTypeId}, 1636;
-                is $_[3]->{ServiceId}, 413;
+                is $_[3]->{EventTypeId}, 3130;
+                is $_[3]->{ServiceId}, 986;
+                is $_[3]->{Data}[0]{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value}, 1842;
                 # Dig down to the property ID
                 is $_[3]->{EventObjects}{EventObject}{ObjectRef}{Value}[0]{'msArray:anyType'}->value, 12345;
                 return {
@@ -441,11 +462,24 @@ FixMyStreet::override_config {
                                         StartDate => { DateTime => '2023-07-08T00:00:00Z' },
                                         EndDate => { DateTime => '2023-07-09T00:00:00Z' },
                                         Expiry => { DateTime => '2023-06-25T10:30:00Z' },
-                                        Reference => 'reserve5==',
+                                        Reference => 'reserve8a==',
                                     },
                                 ]
                             }
                         },
+                        {
+                            Description => 'TaskType_5678',
+                            ReservedSlots => {
+                                ReservedSlot => [
+                                    {
+                                        StartDate => { DateTime => '2023-07-08T00:00:00Z' },
+                                        EndDate => { DateTime => '2023-07-09T00:00:00Z' },
+                                        Expiry => { DateTime => '2023-06-25T10:30:00Z' },
+                                        Reference => 'reserve8b==',
+                                    },
+                                ]
+                            }
+                        }
                     ]
                 };
             });
@@ -536,13 +570,12 @@ FixMyStreet::override_config {
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
-            is $report->get_extra_field_value('Collection_Date'), '2023-07-08T00:00:00';
-            is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '3::85::83';
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
-            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
-            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '08/07/2023';
+            is $report->get_extra_field_value('First_Date_Offered_-_Bulky'), '08/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
-            is $report->get_extra_field_value('reservation'), 'reserve5==';
+            is $report->get_extra_field_value('reservation'), 'reserve8a==::reserve8b==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
 
             is $report->name, 'Bob Marge', 'correct name on report';
@@ -708,7 +741,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
             ResolutionCodeId => 232,
             EventStateId => 12400,
@@ -719,7 +752,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 232,
             EventStateId => 12400,
@@ -743,7 +776,7 @@ FixMyStreet::override_config {
 
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 379,
             EventStateId => 12401,
@@ -755,13 +788,13 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 100,
             EventStateId => 12401,
         }, {
-            EventTypeId => 1571,
-            ServiceId => 413,
+            EventTypeId => 3145,
+            ServiceId => 986,
             Guid => 'guid',
             EventDate => { DateTime => '2023-07-05T00:00:00Z' },
         } ] } );
@@ -1064,12 +1097,5 @@ sub _contact_extra_data {
         { code => 'GUID' },
         { code => 'reservation' },
         { code => 'First_Date_Offered_-_Bulky' },
-        # Old columns, for changeover period
-        { code => 'Payment_Type' },
-        { code => 'Collection_Date' },
-        { code => 'Bulky_Collection_Bulky_Items' },
-        { code => 'Bulky_Collection_Notes' },
-        { code => 'Customer_Selected_Date_Beyond_SLA?' },
-        { code => 'First_Date_Returned_to_Customer' },
     );
 }
