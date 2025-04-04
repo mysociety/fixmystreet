@@ -674,6 +674,43 @@ sub admin_templates_external_status_code_hook {
     return $code;
 }
 
+sub open311_pre_send_check {
+    my ($self, $row, $prefix) = @_;
+
+    my $guid = $self->open311_check_existing_event("$prefix-" . $row->id, "ClientReference");
+    if ($guid) {
+        # Event already exists
+        $row->discard_changes;
+        $row->update({ external_id => $guid });
+        return 1;
+    }
+    return 0;
+}
+
+sub open311_post_send_error_check {
+    my ($self, $prefix, $row, $row2, $sender) = @_;
+    $self->open311_post_send_check("$prefix-" . $row->id, 'ClientReference', $row, $row2, $sender);
+}
+
+sub open311_post_send_check {
+    my ($self, $id, $type, $row, $row2, $sender) = @_;
+    if (my $guid = $self->open311_check_existing_event($id, $type)) {
+        $row2->external_id($guid);
+        $sender->success(1);
+        $row2->update;
+        $row->discard_changes;
+    }
+}
+
+sub open311_check_existing_event {
+    my ($self, $id, $type) = @_;
+
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    my $event = $echo->GetEvent($id, $type) || {};
+    return $event->{Guid};
+}
+
 =item waste_fetch_events
 
 Loop through all open waste events to see if there have been any updates

@@ -77,7 +77,7 @@ sub send {
     my $open311 = Open311->new( %open311_params );
 
     my $skip = $cobrand->call_hook(open311_pre_send => $row, $open311);
-    $skip = $skip && $skip eq 'SKIP';
+    $skip = $skip && ($skip eq 'SKIP' || $skip eq 'SENT');
 
     my $resp;
     if (!$skip) {
@@ -89,7 +89,7 @@ sub send {
 
     if ( $skip || $resp ) {
         $row->unset_extra_metadata('open311_category_override'); # If we were overridden, we don't want to keep that for future
-        $row->update({ external_id => $resp });
+        $row->update({ external_id => $resp }) if $resp;
         $self->success( 1 );
     } else {
         $self->error( "Failed to send over Open311\n" ) unless $self->error;

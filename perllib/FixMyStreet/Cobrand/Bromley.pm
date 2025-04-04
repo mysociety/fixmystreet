@@ -358,6 +358,8 @@ sub open311_pre_send {
             $row->detail($text);
         }
     }
+
+    return 'SENT' if $self->open311_pre_send_check($row, 'FMS');
 }
 
 sub _include_user_title_in_extra {
@@ -535,6 +537,8 @@ sub open311_post_send {
         } elsif ($error =~ /Selected reservations expired|Invalid reservation reference/) {
             $self->bulky_refetch_slots($row2);
             $row->discard_changes;
+        } elsif ($error =~ /Internal error/) {
+            $self->open311_post_send_error_check("FMS", $row, $row2, $sender);
         }
     });
 }
