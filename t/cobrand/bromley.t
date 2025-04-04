@@ -706,6 +706,7 @@ $problempm->mock(static_map => sub {
 
     is $params{zoom}, 4, 'correct zoom level';
     is $params{full_size}, 1, 'full-size map requested';
+    is $params{skip_crop}, 1, 'square map requested';
 
     return {
         content_type => 'image/jpeg',
