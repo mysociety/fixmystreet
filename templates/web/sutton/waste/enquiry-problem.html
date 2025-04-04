@@ -11,11 +11,17 @@ IF property.domestic_refuse_bin OR communal_property;
     END;
     f.push(field);
 END;
+
 IF property.domestic_refuse_bin;
     SET field = { value = 'Waste spillage', label = 'Spillage during collection' };
     IF service.events.filter(event_type = 3227);
         field.disabled = 1;
     END;
+    f.push(field);
+END;
+
+IF service.escalations.missed;
+    SET field = { value = 'Complaint against time', label = 'Escalate missed collection' };
     f.push(field);
 END;
 

@@ -127,6 +127,38 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
+sub munge_bin_services_for_address {
+    my ($self, $rows) = @_;
+
+    # Escalations
+    foreach (@$rows) {
+        my $events = $_->{events} or next;
+        my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
+        my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
+        if (
+            # If there's a missed bin report
+            $missed_event
+            # And report is closed completed, or open
+            && (!$missed_event->{closed} || $missed_event->{completed})
+            # And no existing escalation since last collection
+            && !$escalation_event
+        ) {
+            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+            # And two working days (from 6pm) have passed
+            my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
+            # And window is one day (weekly) two WDs (fortnightly)
+            my $window = $_->{schedule} =~ /fortnight|every other/ ? 2 : 1;
+            my $end = $wd->add_days($start, $window);
+            if ($now >= $start && $now < $end) {
+                $_->{escalations}{missed} = $missed_event->{id};
+            }
+        } elsif ($escalation_event) {
+            $_->{escalations}{missed_open} = $escalation_event->{id};
+        }
+    }
+}
+
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
@@ -514,19 +546,27 @@ sub _enquiry_nice_title {
 
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
-    my $address = $self->{c}->stash->{property}->{address};
+    my $c = $self->{c};
+
+    # Escalations have no notes
+    $data->{category} = $c->get_param('category') unless $data->{category};
+    $data->{service_id} = $c->get_param('service_id') unless $data->{service_id};
+
+    my $address = $c->stash->{property}->{address};
 
     $data->{title} = _enquiry_nice_title($data->{category});
 
     my $detail = "";
     if ($data->{category} eq 'Bin not returned') {
-        my $assisted = $self->{c}->stash->{assisted_collection};
+        my $assisted = $c->stash->{assisted_collection};
         my $returned = $data->{now_returned} || '';
         if ($assisted && $returned eq 'No') {
            $data->{extra_Notes} = '*** Property is on assisted list ***';
         }
     } elsif ($data->{category} eq 'Waste spillage') {
         $detail = "$data->{extra_Notes}\n\n";
+    } elsif ($data->{category} eq 'Complaint against time') {
+        $data->{extra_Notes} = 'Originally Echo Event #' . $c->get_param('event_id');
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;

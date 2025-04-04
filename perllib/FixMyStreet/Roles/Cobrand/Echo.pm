@@ -294,7 +294,7 @@ sub bin_services_for_address {
     }
 
     $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
-    $self->call_hook('staff_override_request_options' => \@out);
+    $self->call_hook(munge_bin_services_for_address => \@out);
 
     return \@out;
 
