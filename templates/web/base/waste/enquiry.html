@@ -2,6 +2,7 @@
 [% PROCESS 'govuk/fields.html' %]
 [% PROCESS title %]
 [% SET service_id = c.req.params.service_id %]
+[% SET event_id = c.req.params.event_id %]
 
 [% INCLUDE 'waste/_address_display.html' %]
 
@@ -25,6 +26,11 @@
     <div class="govuk-form-group"><input type="submit" value="Continue" class="govuk-button"></div>
 
   <input type="hidden" name="service_id" value="[% service_id %]">
+
+[% IF event_id %]
+  <input type="hidden" name="event_id" value="[% event_id %]">
+[% END %]
+
 </form>
 
 [% INCLUDE footer.html %]
