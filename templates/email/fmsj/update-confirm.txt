@@ -1,0 +1,40 @@
+Subject: Man Rūpi: Patvirtinkite atnaujinimą / Confirm your update
+
+Sveiki [% update.name %],
+
+Spustelėkite toliau esančią nuorodą, kad patvirtintumėte atnaujinimą [% site_name %]:
+
+[% token_url | replace('https://', 'https://lt.') | replace('http://', 'http://lt.') %]
+
+Jei jūsų el. pašto programa neleidžia spustelėti šios nuorodos, nukopijuokite ir įklijuokite ją į savo žiniatinklio naršyklę ir paspauskite „Grįžti“.
+
+Atnaujinimą:
+
+[% update.text %]
+
+    Atkreipkite dėmesį, kad [% update.problem.body %] atnaujinimų nesiunčiame – jie skirti kaip vieta [% site_name %] vartotojams diskutuoti, palaikyti, patarti.
+
+[% signature %]
+
+Šis el. laiškas buvo išsiųstas automatiškai iš automatinės el. pašto paskyros, todėl į jį neatsakykite.
+
+
+*** ENGLISH ***
+
+Hello [% update.name %],
+
+Please click on the link below to confirm your update on [% site_name %]:
+
+[% token_url %]
+
+If your email program does not let you click on this link, copy and paste it into your web browser and press return.
+
+Your update reads:
+
+[% update.text %]
+
+  Note that we do not send updates to [% update.problem.body %] - they are intended as a place for [% site_name %] users to discuss, support, and offer advice.
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so please do not reply to it.

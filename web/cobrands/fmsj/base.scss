@@ -1,0 +1,58 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+#site-logo {
+  display: block;
+  width: 175px;
+  height: 60px;
+  background-position: 0 50%;
+  background-repeat: no-repeat;
+  background-size: 175px 35px;
+  @include svg-background-image("/cobrands/fmsj/images/ManRupi_logo");
+  text-indent: -999999px;
+}
+
+
+.row-footer {
+    display: grid;
+    /* Define Auto Row size */
+    grid-auto-rows: 100px; 
+    /*Define our columns */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    grid-gap: 1em;
+    text-align: center; 
+    justify-content: center;
+    align-content: center;
+
+    .col-3 , .col-2 {
+
+      color: $base_fg; 
+      font-size: 0.9rem; 
+      line-height: 2.5em;
+
+      img {
+        max-height: 50px;
+        width: auto;
+      }
+    }
+
+  }
+
+  footer {
+    background-color: $bluey;
+  }
+  
+  @media only screen and (max-width: 576px) {
+    footer {
+      padding: 1em 0 1em 0;
+      margin: 2em -1em 0;
+      color: #FFF;
+      a:link, a:visited {
+        color: #DDD;
+        text-decoration: underline;
+      }
+    }
+  }

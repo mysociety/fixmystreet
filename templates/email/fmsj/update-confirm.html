@@ -1,0 +1,44 @@
+[%
+
+email_summary = "Man Rūpi: Patvirtinkite atnaujinimą / Confirm your update";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Patvirtinkite atnaujinimą</h1>
+  <p style="[% p_style %]">Spustelėkite toliau esančią nuorodą, kad patvirtintumėte atnaujinimą [% site_name %].</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url | replace('https://', 'https://lt.') | replace('http://', 'http://lt.') %]">Taip, patvirtinkite mano atnaujinimą</a>
+  </p>
+  <p style="[% p_style %]">Atkreipkite dėmesį, kad [% update.problem.body %] atnaujinimų nesiunčiame – jie skirti kaip vieta [% site_name %] vartotojams diskutuoti, palaikyti, patarti.</p>
+  <p style="[% p_style %]">Jei nenorite patvirtinti šio atnaujinimo, nesiimkite tolesnių veiksmų.</p>
+  [% end_padded_box | safe %]
+  <br>
+  [% start_padded_box | safe %]
+  <h2 style="[% h2_style %]; text-align:center;">*** English ***</h2>
+  <h1 style="[% h1_style %]">Please confirm your update</h1>
+  <p style="[% p_style %]">Please click on the link below to confirm your update on [% site_name %].</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Yes, confirm my update</a>
+  </p>
+  <p style="[% p_style %]">Note that we do not send updates to [% update.problem.body %] - they are intended as a place for [% site_name %] users to discuss, support, and offer advice.</p>
+  <p style="[% p_style %]">If you no longer wish to confirm this update, please take no further action.</p>
+  [% end_padded_box | safe %]
+</th>
+<th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
+   <img style="[% map_image_style %]" src="[% inline_image(problem.static_map, 'map.jpeg') %]" width="310" height="200" alt="">
+   [% start_padded_box | safe %]
+     [%~ IF update.photo %]
+       <img style="[% preview_photo_style %]" src="[% inline_image(update.get_first_image_fp) %]" alt="" align="right">
+     [%~ END %]
+     <p style="[% secondary_p_style %]">[% update.text | html %]</p>
+   [% end_padded_box | safe %]
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

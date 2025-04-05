@@ -1,0 +1,31 @@
+[%
+    recent_photos = c.cobrand.recent_photos('front', 5);
+%]
+
+[% IF recent_photos.size %]
+<div id="front-recently">
+    <h2>
+        [%- IF c.cobrand.moniker == 'hart' %]
+            Recently reported
+        [% ELSE %]
+            [% loc('Recently reported problems') %]
+        [% END -%]
+    </h2>
+
+    <div class="map-fake">
+        <a href="/reports/Jonava+District+Municipality+Administration?zoom=14&lat=55.06818&lon=24.27485">
+            <img src="/cobrands/fmsj/images/jonava-fake-map.jpeg" alt="Jonava Map" />
+        </a>
+    </div>
+
+    [% TRY %][% INCLUDE "front/pre-recent.html" %][% CATCH file %][% END %]
+
+    <section class="full-width">
+        <ul id="js-reports-list" class="item-list item-list--reports item-list--front-page">
+          [% FOREACH problem IN recent_photos %]
+            [% INCLUDE 'front/_list-entry.html' %]
+          [% END %]
+        </ul>
+    </section>
+</div>
+[% END %]

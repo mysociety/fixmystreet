@@ -1,0 +1,18 @@
+[% INCLUDE 'about/_sticky-button-content-navbar.html' %]
+<div class="sticky-sidebar">
+    <aside>
+        <ul class="plain-list">
+            <li>[% INCLUDE link h='/faq' t=loc('Frequently Asked Questions') %]</li>
+            <li>[% INCLUDE link h='/about/tos' t=loc('Condition of use') %]</li>
+            <li>[% INCLUDE link h=c.cobrand.privacy_policy_url t=loc('Privacy policy') %]</li>
+            <li>[% INCLUDE link h='/about/cookies' t=loc('Cookies policy') %]</li>
+            <li>[% INCLUDE link h='/contact' t=tprintf(loc("Contact %s", "%s is the site name"), site_name) %]</li>
+        </ul>
+    </aside>
+</div>
+
+[% BLOCK link -%]
+<[% IF c.req.uri.path == h %]strong[% ELSE %]a href="[% h %]"[% END %]>
+[%- t -%]
+</[% IF c.req.uri.path == h %]strong[% ELSE %]a[% END %]>
+[%- END %]

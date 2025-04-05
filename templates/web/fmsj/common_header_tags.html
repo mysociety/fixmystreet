@@ -1,0 +1,101 @@
+[% SET start = c.config.ADMIN_BASE_URL IF admin %]
+
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, width=device-width, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+[% IF page_refresh %]
+    <noscript>
+        <meta http-equiv="refresh" content="[% page_refresh %];url=?page_loading=1">
+    </noscript>
+[% END %]
+
+[% INCLUDE 'header/title.html' %]
+[% INCLUDE 'header/css.html' %]
+
+[% IF c.req.uri.path.match('^/waste') %]
+    <link rel="manifest" href="/.well-known/manifest-waste.webmanifest">
+[% ELSE %]
+    <link rel="manifest" href="/.well-known/manifest-fms.webmanifest">
+[% END %]
+[% IF manifest_theme %]
+    <meta name='theme-color' content='[% manifest_theme.theme_colour %]'>
+    [% FOREACH icon IN manifest_theme.icons %]
+        <link rel="apple-touch-icon" sizes="[% icon.sizes %]" href="[% icon.src %]">
+    [% END %]
+[% END %]
+
+[% IF csrf_token %]
+  <meta content="[% csrf_token %]" name="csrf-token" />
+[% END %]
+
+<!--[if (lt IE 9)]>
+    <script src="[% version('/vendor/html5shiv.js') %]"></script>
+<![endif]-->
+<script nonce="[% csp_nonce %]">
+(function(d,e,k){function m(b,n,a,l){var f=e.createElement("div");var c=e.body;c||(c=e.createElement("body"),c.fake=!0);if(parseInt(a,10))for(;a--;){var d=e.createElement("div");d.id=l?l[a]:"modernizr"+(a+1);f.appendChild(d)}a=e.createElement("style");a.type="text/css";a.id="smodernizr";(c.fake?c:f).appendChild(a);c.appendChild(f);a.styleSheet?a.styleSheet.cssText=b:a.appendChild(e.createTextNode(b));f.id="modernizr";if(c.fake){c.style.background="";c.style.overflow="hidden";var g=h.style.overflow;
+h.style.overflow="hidden";h.appendChild(c)}b=n(f,b);c.fake?(c.parentNode.removeChild(c),h.style.overflow=g,h.offsetHeight):f.parentNode.removeChild(f);return!!b}k={_version:"3.11.4"};var g=function(){};g.prototype=k;g=new g;var h=e.documentElement,p=function(){var b=d.matchMedia||d.msMatchMedia;return b?function(d){return(d=b(d))&&d.matches||!1}:function(b){var a=!1;m("@media "+b+" { #modernizr { position: absolute; } }",function(b){a="absolute"===("getComputedStyle"in d?getComputedStyle(b):b.currentStyle).position});
+return a}}();k.mq=p;d.Modernizr=g})(window,document);
+    var fixmystreet=fixmystreet||{};fixmystreet.page="[% page %]";fixmystreet.cobrand="[% c.cobrand.moniker %]";fixmystreet.password_minimum_length=[% cobrand.password_minimum_length %];
+    (function(a){a=a.documentElement;a.className=a.className.replace(/\bno-js\b/,"js");var b=Modernizr.mq("(min-width: 48em)")?"desktop":"mobile";"IntersectionObserver"in window&&(a.className+=" lazyload");"mobile"==b&&(a.className+=' mobile[% " map-fullscreen only-map map-reporting" IF page == "around" || page == "new" %]')})(document);
+</script>
+
+<script nonce="[% csp_nonce %]">
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js');
+    });
+}
+</script>
+
+[% IF robots %]
+    <meta name="robots" content="[% robots %]">
+[% ELSIF c.config.STAGING_SITE %]
+    <meta name="robots" content="noindex,nofollow">
+[% END %]
+
+<meta name="format-detection" content="telephone=no">
+
+[% INCLUDE 'header_rss.html' %]
+
+[% IF bodyclass.match('frontpage') %]
+    <link rel="prefetch" href="[% version('/js/validation_rules.js') %]">
+  [%~ IF NOT c.user_exists OR NOT (c.user.from_body OR c.user.is_superuser) %]
+    <link rel="prefetch" href="[% version('/vendor/jquery-3.6.0.min.js') %]">
+  [%~ END %]
+    <link rel="prefetch" href="[% version('/vendor/jquery.multi-select.min.js') %]">
+    <link rel="prefetch" href="[% version('/vendor/jquery.validate.min.js') %]">
+    <link rel="prefetch" href="[% version('/vendor/jquery.validate.additional-methods.require-from-group.min.js') %]">
+    <link rel="prefetch" href="[% version('/cobrands/fixmystreet/fixmystreet.js') %]">
+[% END %]
+[% IF NOT bodyclass.match('mappage') %]
+    [% FOR script IN map_js.merge(c.cobrand.call_hook('map_js_extra')) %]
+        <link rel="prefetch" href="[% IF script.match('^/'); version(script); ELSE; script; END %]">
+    [% END %]
+    <link rel="prefetch" href="[% version('/cobrands/fixmystreet/map.js') %]">
+    <link rel="prefetch" href="[% version('/vendor/dropzone.min.js') %]">
+    <link rel="prefetch" href="[% version('/vendor/fancybox/jquery.fancybox-1.3.4.pack.js') %]">
+[% END %]
+
+[% IF file_exists("web/cobrands/" _ c.cobrand.moniker _ "/favicon.ico") %]
+<link rel="icon" href="/cobrands/[% c.cobrand.moniker %]/favicon.ico">
+[% END %]
+
+
+[% INCLUDE 'header_opengraph.html' %]
+[% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
+
+<!-- Matomo -->
+<script nonce="[% csp_nonce %]">
+    var _paq = window._paq = window._paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="https://lisboncouncilresearch.com/matomo/";
+      _paq.push(['setTrackerUrl', u+'matomo.php']);
+      _paq.push(['setSiteId', '14']);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    })();
+</script>
+<!-- End Matomo Code -->
