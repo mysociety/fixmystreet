@@ -8,7 +8,7 @@ my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, {cobrand => 'oxfordshire'});
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {cobrand => 'oxfordshire'});
 my $user3 = $mech->create_user_ok('body_user@example.com', name => 'Body User', from_body => $oxfordshire);
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com', extra => { group => 'Road' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
@@ -59,11 +59,8 @@ my $log_entries = FixMyStreet::DB->resultset('AdminLog')->search(
     {
         object_type => 'problem',
         object_id   => $report->id
-    },
-    {
-        order_by => { -desc => 'id' },
     }
-);
+)->order_by('-id');
 
 is $log_entries->count, 0, 'no admin log entries';
 
@@ -370,7 +367,7 @@ foreach my $test (
 
         $mech->get_ok("/admin/report_edit/$report_id");
 
-        @{$test->{fields}}{'external_id', 'external_body', 'external_team', 'category'} = (13, "", "", "Other");
+        @{$test->{fields}}{'external_id', 'category'} = (13, "Other");
         is_deeply( $mech->visible_form_values(), $test->{fields}, 'initial form values' );
 
         my $new_fields = {
@@ -397,7 +394,7 @@ foreach my $test (
         }
 
         if ($report->state eq 'fixed') {
-            $mech->content_contains('pin-green');
+            $mech->content_contains('pins/green');
         }
 
         $test->{changes}->{flagged} = 1 if $test->{changes}->{flagged};
@@ -494,8 +491,6 @@ subtest 'change email to new user' => sub {
         non_public => 'on',
         closed_updates => undef,
         external_id => '13',
-        external_body => '',
-        external_team => '',
         send_state => '',
     };
 

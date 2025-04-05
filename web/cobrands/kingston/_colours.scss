@@ -67,7 +67,7 @@ $postcodeform-background: transparent;
 }
 
 @mixin kingston-form-label() {
-    color: #555;
+    color: $black;
     font-weight: 700;
 }
 
@@ -80,7 +80,8 @@ $postcodeform-background: transparent;
     border-radius: 25px;
     border: 4px solid $primary;
     background: $primary;
-    color: $white;
+    // Ovverides inherit !important on button-variant mixin
+    color: $white !important;
     text-decoration: none;
 
     // This gets rid of the .govuk-button box-shadow

@@ -1,4 +1,3 @@
-use utf8;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use Test::Output;
@@ -15,7 +14,7 @@ my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 my $user = $mech->create_user_ok('bob@example.org');
 my $user_phone = $mech->create_user_ok('0123456789');
 
-my $body = $mech->create_body_ok(2488, 'Brent Council', {}, { cobrand => 'brent' });
+my $body = $mech->create_body_ok(2488, 'Brent Council', { cobrand => 'brent' });
 $body->set_extra_metadata(
     wasteworks_config => {
         items_per_collection_max => 11,
@@ -25,12 +24,12 @@ $body->set_extra_metadata(
         item_list => [
             { bartec_id => '1', name => 'Tied bag of domestic batteries (min 10 - max 100)', max => '1' },
             { bartec_id => '2', name => 'Podback Bag' },
-            { bartec_id => '3', name => 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)' },
+            { bartec_id => '3', name => 'Paint, 1 can, up to 5 litres' },
             { bartec_id => '4', name => 'Textiles, up to 60 litres (one black sack / 3 carrier bags)' },
             { bartec_id => '5', name => 'Toaster', category => 'Small electrical items' },
             { bartec_id => '6', name => 'Kettle', category => 'Small electrical items' },
             { bartec_id => '7', name => 'Games console', category => 'Small electrical items' },
-            { bartec_id => '8', name => 'Small electricals: Other item under 30x30x30 cm', category => 'Small electrical items', message => 'Check the size' },
+            { bartec_id => '8', name => 'Small electricals: Other item under 30x30x30 cm', category => 'Small electrical items', message => 'Check the size <a href="https://example.org">in the sizing form</a>' },
         ],
     },
 );
@@ -63,6 +62,7 @@ create_contact(
 );
 create_contact(
     { category => 'Report missed collection', email => 'missed@test.com' },
+    { code => 'Original_Event_ID', required => 0, automated => 'hidden_field' },
 );
 
 FixMyStreet::override_config {
@@ -203,6 +203,7 @@ FixMyStreet::override_config {
             $mech->content_contains('4 items requested for collection');
             $mech->content_lacks('you can add up to');
             $mech->content_contains('No image of the location has been attached.');
+            $mech->content_contains('Check the size <a href="https://example.org">in the sizing form</a>');
             $mech->content_lacks('£0.00');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
             $mech->content_contains("23:59 on the night before");
@@ -214,7 +215,7 @@ FixMyStreet::override_config {
         subtest 'Confirmation page' => sub {
             $mech->content_contains('Small items collection booking confirmed');
 
-            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
             is $report->category, 'Small items collection', 'correct category on report';
             is $report->title, 'Small items collection', 'correct title on report';
@@ -239,7 +240,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Bulky goods email confirmation and reminders' => sub {
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $report->confirmed('2023-08-30T00:00:00');
         $report->update;
         my $id = $report->id;
@@ -256,7 +257,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Toaster/, 'Includes item 2';
             like $confirmation_email_txt, qr/- Podback Bag/, 'Includes item 3';
             like $confirmation_email_txt, qr/- Small electricals: Other/, 'Includes item 3';
-            like $confirmation_email_txt, qr/- Check the size/, 'Includes item 3 message';
+            like $confirmation_email_txt, qr/- Check the size in the sizing form \[https:\/\/example\.org\]/, 'Includes item 3 message';
             unlike $confirmation_email_txt, qr/Total cost/, 'There is not total cost';
             like $confirmation_email_txt, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address';
             like $confirmation_email_txt, qr/Collection date: Saturday 01 July/, 'Includes collection date';
@@ -269,6 +270,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Toaster/, 'Includes item 2 (html mail)';
             like $confirmation_email_html, qr/Podback Bag/, 'Includes item 3 (html mail)';
             like $confirmation_email_html, qr/Small electricals: Other/, 'Includes item 3 (html mail)';
+            like $confirmation_email_html, qr/Check the size <a href="https:\/\/example\.org">in the sizing form<\/a>/, 'Includes item 3 message';
             unlike $confirmation_email_html, qr/Total cost/, 'There is no total cost (html mail)';
             like $confirmation_email_html, qr/Address: 1 Example Street, Brent, HA0 5HF/, 'Includes collection address (html mail)';
             like $confirmation_email_html, qr/Collection date: Saturday 01 July/, 'Includes collection date (html mail)';
@@ -338,7 +340,7 @@ FixMyStreet::override_config {
     for my $test (
             {
                 items => &item_fields('Tied bag of domestic batteries (min 10 - max 100)', 'Toaster',
-                  'Podback Bag', 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)' ),
+                  'Podback Bag', 'Paint, 1 can, up to 5 litres' ),
                 content_contains => [$error_messages{categories}],
                 content_lacks => [$error_messages{weee}, $error_messages{peritem}]
             },
@@ -444,7 +446,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Cancel booking');
 
         $report->discard_changes;
-        is $report->state, 'closed', 'Original report closed';
+        is $report->state, 'cancelled', 'Original report cancelled';
         like $report->detail, qr/Cancelled at user request/, 'Original report detail field updated';
 
         subtest 'Viewing original report summary after cancellation' => sub {
@@ -458,9 +460,9 @@ FixMyStreet::override_config {
 
     subtest 'Missed collections' => sub {
         my $report_id = $report->id;
-        $report->update({ external_id => 'a-guid' });
+        $report->update({ external_id => 'a-guid', state => 'confirmed' }); # Cancelled can't be reported
 
-        # Fixed date still set to 5th July
+        # Fixed date still set to 25th June
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Report a small items collection as missed');
         $mech->get_ok('/waste/12345/report');
@@ -479,22 +481,35 @@ FixMyStreet::override_config {
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
             EventTypeId => 2964,
+        } ] } );
+        ok set_fixed_time('2023-07-01T22:59:59Z'), 'Set current date to 1st July';
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a small items collection as missed', 'Can not report on due date when no resolution');
+        ok set_fixed_time('2023-07-02T05:44:59Z'), 'Set current date to 2nd July';
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a small items collection as missed', 'Can report when due date passed and no resolution');
+        ok set_fixed_time('2023-06-25T05:44:59Z'), 'Reset current date to 25th June for consistency';
+        $echo->mock( 'GetEventsForObject', sub { [ {
+            Guid => 'a-guid',
+            EventTypeId => 2964,
             ResolvedDate => { DateTime => '2023-06-25T00:00:00Z' },
             ResolutionCodeId => 232,
             EventStateId => 18490,
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a small items collection as missed', 'In time, normal completion');
-        $mech->get_ok('/waste/12345/report');
+        $mech->submit_form_ok({ with_fields => { 'service-787' => 1 } });
         $mech->content_contains('Small items collection');
         $mech->submit_form_ok({ with_fields => { 'service-787' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('Your missed collection has been reported');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        $mech->content_contains('Thank you for reporting a missed collection');
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->category, 'Report missed collection';
         is $report->get_extra_field_value('service_id'), 787;
         is $report->title, 'Report missed small items / clinical';
+
+        $report->update({ external_id => 'guid' });
 
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',

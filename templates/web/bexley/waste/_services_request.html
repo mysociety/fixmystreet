@@ -1,0 +1,37 @@
+[% SET is_box = unit.service_name.match('Box$') %]
+[% IF ( unit.delivery_allowed || is_box ) && !unit.delivery_open %]
+  <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=delivery" id="form-[% unit.service_id %]-delivery">
+
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+    [% form %]
+
+    [% # If deprecated box, preselect that box on removal options page (as it won't be available on delivery options page) %]
+    [% IF is_box && !unit.delivery_allowed %]
+      <input type="hidden" name="container-[% unit.service_id %]-removal" value="1">
+    [% ELSE %]
+      <input type="hidden" name="container-[% unit.service_id %]" value="1">
+      [% IF unit.parent_name %]
+        <input type="hidden" name="parent-[% unit.parent_name.replace(' ','-') %]" value="1">
+      [% END %]
+    [% END %]
+
+    <input type="submit" value="[% IF unit.service_name == 'Clear Sacks' %]Request a delivery of[% ELSE %]Request a new or replacement[% END %] [% IF unit.delivery_allowed %][% unit.service_name FILTER lower %][% ELSE %]recycling box[% END %]" class="waste-service-descriptor waste-service-link">
+  </form>
+[% END %]
+
+[% IF unit.removal_allowed && !unit.removal_open %]
+  <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?request_type=removal" id="form-[% unit.service_id %]-removal">
+
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+    [% form %]
+
+    <input type="hidden" name="container-[% unit.service_id %]-removal" value="1">
+    [% IF unit.parent_name %]
+      <input type="hidden" name="parent-[% unit.parent_name.replace(' ','-') %]-removal" value="1">
+    [% END %]
+
+    <input type="submit" value="Request removal of a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
+  </form>
+[% END %]

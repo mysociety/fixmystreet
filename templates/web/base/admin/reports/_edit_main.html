@@ -87,10 +87,12 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 
 <li><label for="external_id">[% loc('External ID') %]:</label>
     <input type="text" class="form-control" name="external_id" id="external_id" value="[% problem.external_id | html %]">
-<li><label for="external_body">[% loc('External body') %]:</label>
-    <input type="text" class="form-control" name="external_body" id="external_body" value="[% problem.external_body | html %]">
-<li><label for="external_team">[% loc('External team') %]:</label>
-    <input type="text" class="form-control" name="external_team" id="external_team" value="[% problem.external_team | html %]">
+[% IF problem.external_body %]
+<li>[% loc('External body') %]: [% problem.external_body %]
+[% END %]
+[% IF problem.external_team %]
+<li>[% loc('External team') %]: [% problem.external_team %]
+[% END %]
 
 [% IF problem.get_extra_metadata('external_status_code') %]
 <li>
@@ -169,15 +171,22 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </ul>
 
 <div class="clearfix full-width" style="background-color: #eee; padding: 1em 1em 0;">
+[% IF problem.user.email == cobrand.anonymous_account.email %]
+    <p>[% loc('User:') %] [% loc('Anonymous user') %]</p>
+    <input type='hidden' name='name' value='[% problem.name %]'></li>
+    <input type='hidden' name='username' value='[% problem.user.username %]'>
+    <input type='hidden' name='anonymous' value='[% IF problem.anonymous %]1[% ELSE %]0[% END %]'>
+[% ELSE %]
+
   [% IF allowed_pages.user_edit %]
     <p style="float:right"><a href="[% c.uri_for_action('/admin/users/edit', [ problem.user.id ]) %]">[% loc('Edit user') %]</a>
   [% END %]
 
 <ul class="plain-list">
-<li><label class="inline-text" for="anonymous">[% loc('Anonymous:') %]</label>
+<li><label class="inline-text" for="anonymous">[% loc('Show name publicly?') %]</label>
 <select class="form-control" name="anonymous"  id="anonymous">
-<option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>
-<option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('No') %]</option>
+<option [% 'selected ' IF problem.anonymous %]value="1">[% loc('No') %]</option>
+<option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('Yes') %]</option>
 </select></li>
 <li><label class="inline-text" for="name">[% loc('Name:') %]</label>
     [% loc('(for this report)') %]
@@ -197,6 +206,8 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </li>
 [% END %]
 </ul>
+
+[% END %]
 </div>
 
 <p><input type="submit" class="btn btn--block btn--final" name="Submit changes" value="[% loc('Submit changes') %]">

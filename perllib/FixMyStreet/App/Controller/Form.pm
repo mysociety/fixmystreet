@@ -46,6 +46,7 @@ sub load_form {
     );
 
     if (!$form->has_current_page) {
+        $c->stash->{internal_error} = "Form doesn't have current page";
         $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
     }
 
@@ -86,10 +87,15 @@ sub form : Private {
 
     $form->process unless $form->processed;
 
-    # If we have sent a confirmation email, that function will have
-    # set a template that we need to show
-    $c->stash->{template} = $c->stash->{override_template} || $form->template || $self->index_template
-        unless $c->stash->{sent_confirmation_message};
+    # If the form has the already_submitted_error flag set, show the already_submitted template
+    if ($form->already_submitted_error) {
+        $c->stash->{template} = 'waste/already_submitted.html';
+    } else {
+        # If we have sent a confirmation email, that function will have
+        # set a template that we need to show
+        $c->stash->{template} = $c->stash->{override_template} || $form->template || $self->index_template
+            unless $c->stash->{sent_confirmation_message};
+    }
     $c->stash->{form} = $form;
 }
 
@@ -114,6 +120,7 @@ sub get_page : Private {
     my $process = $c->get_param('process') || '';
     $goto = $self->first_page($c) unless $goto || $process;
     if ($goto && $process) {
+        $c->stash->{internal_error} = "Both goto and process parameters set";
         $c->detach('/page_error_400_bad_request', [ 'Bad request' ]);
     }
 

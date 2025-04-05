@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[o:mysociety:p:fixmystreet:r:v5-0]
+[o:mysociety:p:fixmystreet:r:v6-0]
 file_filter = locale/<lang>.UTF-8/LC_MESSAGES/FixMyStreet.po
 source_file = locale/FixMyStreet.po
 source_lang = en_GB

@@ -14,6 +14,7 @@ $g6: #eaeaea;
 $g7: #f1f1f1;
 $b3: #0d45a0;
 $b4: #74a9ff;
+$black: #000; // Updated on 2025 from https://www.bristol.gov.uk/
 
 $primary: $bcc_red;
 $primary_b: $g1;
@@ -25,7 +26,7 @@ $link-hover-color: $b3;
 $base_bg: white;
 $base_fg: $g1;
 
-$nav_background_colour: $g1;
+$nav_background_colour: $black;
 $nav_colour: #fff;
 $nav_hover_background_colour: $primary;
 

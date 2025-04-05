@@ -16,12 +16,12 @@
   }
 }
 
-body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+body:not(.mappage) {
   // Display the BCC logo and header correctly
   #site-logo {
-    background: url(/cobrands/bristol/img/bcclogo.png) 0 14px no-repeat;
+    background: url(/cobrands/bristol/img/bcclogo.svg) 0 14px no-repeat;
     background-size: 81px 81px;
-    text-indent: 122px;
+    text-indent: 97px; // 16px distance between logo and title
     height: 111px;
     width: 11em;
     line-height: 111px;
@@ -88,7 +88,7 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
 body.mappage {
   // Add a red border-bottom *inside* the header
   #site-header {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     border-bottom: solid 5px $bcc_red;
   }
 
@@ -141,27 +141,14 @@ body.mappage {
 .bristol_footer footer {
   .footer-title {
     display: block;
-    color: white;
-    font-family: $heading-font;
-    font-size: 1.2em;
-    margin-top: 0.5em;
+    margin-left: 6.5rem;
   }
 
   .footer-social-links {
-    margin-bottom: 2.7em;
-  }
+    margin-bottom: 1.5rem;
 
-  #footer-logo {
-    display: block;
-
-    a {
-      text-indent: -999em;
-      background-image: url(/cobrands/bristol/img/bcc_footer_logo_2.png);
-      background-repeat: no-repeat;
-      height: 52px;
-      width: 203px;
-      display: inline-block;
-      margin: 2em 0;
+    ul {
+      justify-content: end;
     }
   }
 
@@ -184,14 +171,24 @@ body.mappage {
     float: right;
   }
 
-  .legal-nav li {
-    border-left: solid 1px $g2;
-    padding: 0 0.5em;
+  .legal-nav {
+    ul {
+      flex-direction: row;
+    }
+
+    li {
+      border-left: solid 1px $g2;
+      padding: 0 0.5em;
+    }
   }
 
   .legal-nav li:first-child {
     border-left: none;
     padding-left: 0;
+  }
+
+  .footer-copyright {
+    text-align: right;
   }
 }
 

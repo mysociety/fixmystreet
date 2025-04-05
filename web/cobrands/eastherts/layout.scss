@@ -7,7 +7,7 @@
 // so that it sits in front of the grey border-bottom from .eh-header
 
 .eh-header {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     height: $eh-header-height + $eh-nav-height;
     border-bottom: $eh-nav-height solid $eh_light_grey;
 }
@@ -63,8 +63,7 @@
         font-size: 1em;
     }
 
-    span,
-    span.report-a-problem-btn {
+    span {
         cursor: default;
     }
 
@@ -75,8 +74,7 @@
         text-decoration: underline;
     }
 
-    a.report-a-problem-btn,
-    span.report-a-problem-btn {
+    a.report-a-problem-btn {
         padding: 0.75em;
         margin: 0;
         color: $eh_green;
@@ -106,10 +104,6 @@
     background-color: white;
     padding-top: 40px;
     color: inherit;
-
-    #postcodeForm {
-        margin-top: 0;
-    }
 
     h1 {
         font-size: 2.5em;

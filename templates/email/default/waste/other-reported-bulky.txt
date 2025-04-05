@@ -28,6 +28,11 @@ Date booking made: [% report_date %]
 [% END ~%]
 Collection date: [% collection_date %]
 
+[% IF cobrand.moniker == 'merton' ~%]
+If your collection includes both upholstered and non-upholstered items (such as a sofa and a fridge), we may collect them in two stages.
+The second collection may be up to two working days after your chosen date.
+
+[% END ~%]
 Items to be collected:
 [% INCLUDE 'waste/_bulky_list.txt' %]
 
@@ -36,29 +41,27 @@ Total cost: £[% pounds(payment / 100) %]
 
 [% END ~%]
 
-[%~ IF staff_cancellation && cobrand.moniker == 'peterborough' %]
+[%~ IF staff_cancellation %]
+[%~ IF cobrand.moniker == 'peterborough' %]
 
 If you wish to cancel your booking, please call 01733 74 74 74.
+
+[% END %]
 
 [% ELSE %]
 
 If you wish to cancel your booking, please visit:
 
-    [% cobrand.base_url %]/waste/[% report.get_extra_field_value('property_id') | uri %]/[% bulky_cancel_url %]/[% report.id %]
+    [% cobrand.base_url %]/waste/[% report.waste_property_id | uri %]/[% bulky_cancel_url %]/[% report.id %]
 
 [% END ~%]
 
-[% IF cobrand.moniker == 'peterborough' %]
-Please check the bulky waste collection page on the council’s website for information about this service. This includes when and where to put your items out for collection, cancelling the service and obtaining a refund:
-
-    https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
-
-[% ELSIF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+[% IF cobrand.moniker == 'peterborough' OR cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
 [% INCLUDE 'waste/_bulky_extra_text.txt' %]
 
 [% END %]
 
-[% IF cobrand.feature('waste_features').bulky_tandc_link %]
+[% IF cobrand.feature('waste_features').bulky_tandc_link AND cobrand.moniker != 'peterborough' %]
 Please check you have read the terms and conditions [% cobrand.feature('waste_features').bulky_tandc_link %]
 [% END %]
 

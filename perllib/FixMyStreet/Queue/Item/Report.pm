@@ -34,7 +34,7 @@ has cobrand => ( is => 'lazy', default => sub {
 # A cobrand that handles the body to which this report is being sent, or logged cobrand if none
 has cobrand_handler => ( is => 'lazy', default => sub {
     my $self = shift;
-    $self->cobrand->call_hook(get_body_handler_for_problem => $self->report) || $self->cobrand;
+    $self->report->body_handler || $self->cobrand;
 });
 
 # Data to be used in email templates / Open311 sending

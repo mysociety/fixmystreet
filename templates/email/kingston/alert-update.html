@@ -1,7 +1,6 @@
 [%
 
 title = report.title | html;
-email_summary = "New updates on “" _ title _ "”, reference " _ report.id;
 email_columns = 2;
 
 PROCESS '_email_settings.html';
@@ -12,7 +11,7 @@ INCLUDE '_email_top.html';
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
-  <h1 style="[% h1_style %]">New updates</h1>
+  <h1 style="[% h1_style %]">New updates, reference RBK-[% report.id %]</h1>
   [%~ INCLUDE '_email_comment_list.html' %]
   [% TRY %][% INCLUDE '_alert_update_after_updates.html' %][% CATCH file %][% END %]
  [% IF unsubscribe_url %]

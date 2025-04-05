@@ -34,7 +34,7 @@ body {
 #site-logo {
     width: 3.43rem;
     height: 4rem;
-    @include svg-background-image('https://www.kingston.gov.uk/site/dist/images/site-logo');
+    background-image: url("https://www.kingston.gov.uk/site/dist/images/site-logo.svg");
     background-size: contain;
 
     .mappage & {
@@ -68,8 +68,7 @@ a,
     text-decoration: underline;
 }
 
-.item-list--reports__item a,
-.item-list--wards__item a {
+.item-list--reports__item a {
     @extend .fake-link;
     text-decoration: none;
 
@@ -122,26 +121,26 @@ a,
     border-color: $white;
 }
 
-#front-main {
-    #postcodeForm {
-        div {
-            border: none;
-            background: transparent;
-
-            input#pc {
-                @include kingston-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
-                font-size: 1.25em;
-                background: #fff;
-            }
-
-            input#sub {
-                @include kingston-button-primary();
-                border-radius: 5px;
-                font-size: 1.25em;
-            }
-        }
+.postcode-form-box {
+    div {
+        border: none;
+        background: transparent;
     }
 
+    input#pc {
+        @include kingston-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+        font-size: 1.25em;
+        background: #fff;
+    }
+
+    input#sub {
+        @include kingston-button-primary();
+        border-radius: 5px;
+        font-size: 1.25em;
+    }
+}
+
+#front-main {
     h2 {
         font-style: inherit;
     }
@@ -230,8 +229,7 @@ p.form-error {
     background: transparent;
 }
 
-.btn,
-.green-btn {
+.btn {
     @include kingston-button-primary();
 }
 
@@ -400,7 +398,7 @@ p.form-error {
         display: block;
         width: 6.25em;
         height: 7.25em;
-        @include svg-background-image('https://www.kingston.gov.uk/site/dist/images/site-logo-white');
+        background-image: url("https://www.kingston.gov.uk/site/dist/images/site-logo-white.svg");
         background-size: contain;
         margin-bottom: 0.75em;
     }
@@ -416,11 +414,10 @@ p.form-error {
         border-top: 4px solid $green;
     }
 
-    #front-main + div{
+    #front-main + div:not(:has(.site-message)) {
         display: none;
     }
 }
-
 
 .bulky__summary {
     .item-summary-table {

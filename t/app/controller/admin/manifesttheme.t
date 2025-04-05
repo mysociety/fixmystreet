@@ -72,7 +72,7 @@ subtest "cobrand admin lets you create a new theme" => sub {
     is $theme->wasteworks_short_name, "Lincs WW";
     is $theme->background_colour, undef;
 
-    my $log = $superuser->admin_logs->search({}, { order_by => { -desc => 'id' } })->first;
+    my $log = $superuser->admin_logs->order_by('-id')->first;
     is $log->object_id, $theme->id;
     is $log->action, "add";
     is $log->object_summary, "lincolnshire";
@@ -96,7 +96,7 @@ subtest "cobrand admin lets you update an existing theme" => sub {
     is $theme->wasteworks_name, "Lincolnshire Waste";
     is $theme->wasteworks_short_name, "Lincs Waste";
 
-    my $log = $superuser->admin_logs->search({}, { order_by => { -desc => 'id' } })->first;
+    my $log = $superuser->admin_logs->order_by('-id')->first;
     is $log->object_id, $theme->id;
     is $log->action, "edit";
 };
@@ -222,7 +222,7 @@ subtest "can delete theme" => sub {
     is( FixMyStreet::DB->resultset('ManifestTheme')->count, 0, "theme deleted" );
     ok !$icon_dest->exists, "Icon removed from disk";
 
-    my $log = $superuser->admin_logs->search({}, { order_by => { -desc => 'id' } })->first;
+    my $log = $superuser->admin_logs->order_by('-id')->first;
     is $log->object_id, $theme_id;
     is $log->action, "delete";
 };

@@ -1,0 +1,17 @@
+[% USE date %]
+[% INCLUDE waste/header.html %]
+
+[% PROCESS 'govuk/fields.html' %]
+<h1 class="govuk-heading-xl">Garden waste collection service</h1>
+[% PROCESS errors %]
+
+<p>Use this webform if you want to:</p>
+<ul>
+  <li>sign up or renew your garden waste collection service subscription</li>
+</ul>
+
+<form method="post" action="garden">
+  [% PROCESS form %]
+</form>
+
+[% INCLUDE footer.html %]

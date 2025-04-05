@@ -323,7 +323,7 @@ sub format_problem_for_display : Private {
     }
 
     my $first_body = (values %{$problem->bodies})[0];
-    $c->stash->{extra_name_info} = $first_body && $first_body->name =~ /Bromley/ ? 1 : 0;
+    $c->stash->{extra_name_info} = $first_body && $first_body->get_column('name') =~ /Bromley/ ? 1 : 0;
 
     $c->forward('generate_map_tags');
 
@@ -460,6 +460,8 @@ sub inspect : Private {
         if ($permissions->{report_inspect}) {
             $problem->set_extra_metadata( traffic_information => $c->get_param('traffic_information') );
 
+            my $old_detailed_information
+                = $problem->get_extra_metadata('detailed_information') // '';
             if ( my $info = $c->get_param('detailed_information') ) {
                 $problem->set_extra_metadata( detailed_information => $info );
                 if ($c->cobrand->max_detailed_info_length &&
@@ -472,6 +474,22 @@ sub inspect : Private {
                             $c->cobrand->max_detailed_info_length
                         );
                 }
+            } else {
+                $problem->unset_extra_metadata('detailed_information');
+            }
+
+            my $handler
+                = $c->cobrand->call_hook(
+                    get_body_handler_for_problem => $problem
+                ) || $c->cobrand;
+            my $record_extra
+                = $handler->call_hook('record_update_extra_fields');
+            if (
+                $record_extra->{detailed_information}
+                && ( $problem->get_extra_metadata('detailed_information') // '' )
+                ne $old_detailed_information
+            ) {
+                $update_params{extra}{detailed_information} = 1;
             }
 
             if ( $c->get_param('include_update') or $c->get_param('raise_defect') ) {
@@ -521,7 +539,7 @@ sub inspect : Private {
             # If the state has been changed to action scheduled and they've said
             # they want to raise a defect, consider the report to be inspected.
             if ($problem->state eq 'action scheduled' && $c->get_param('raise_defect') && !$problem->get_extra_metadata('inspected')) {
-                $update_params{extra} = { 'defect_raised' => 1 };
+                $update_params{extra}{defect_raised} = 1;
                 $problem->set_extra_metadata( inspected => 1 );
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'inspected' ] );
             }
@@ -678,7 +696,9 @@ sub confirmation : Path('confirmation') : Args(1) {
     # If the token is valid but expired then may as well be helpful and bounce
     # the user to report page rather than 404.
     # (NB the report may still be unconfirmed, but end result is the same - a 404)
-    my $cutoff = DateTime->now()->subtract( minutes => 3 );
+    # As each test file runs in a single transaction, it's possible for creation timestamps to be quite old
+    my $expiry = FixMyStreet->test_mode ? 30 : 3;
+    my $cutoff = DateTime->now()->subtract( minutes => $expiry );
     my $timestamp = $report->confirmed || $report->created;
     if ( $timestamp < $cutoff ) {
         # there's a chance it's not available on this cobrand (e.g. made on Oxon
@@ -696,6 +716,7 @@ sub confirmation : Path('confirmation') : Args(1) {
         $c->stash->{created_report} = "loggedin";
         $c->stash->{report} = $c->stash->{problem};
     } else {
+        $c->stash->{non_public} = $report->non_public;
         $c->stash->{template} = 'email_sent.html';
         $c->stash->{email_type} = 'problem';
     }
@@ -724,38 +745,42 @@ sub _nearby_json :Private {
         # This is for the list template, this is a list on that page.
         $c->stash->{page} = 'report';
 
-        my $dist = $self->_find_distance($c, $params);
-        $params->{distance} = $dist / 1000 unless $params->{distance}; # DB measures in km
+        if (my $dist = $self->_find_distance($c, $params)) { # distance of 0 means we can skip lookup entirely
+            $params->{distance} = $dist / 1000 unless $params->{distance}; # DB measures in km
 
-        my $pin_size = $c->get_param('pin_size') || '';
-        $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;
+            my $pin_size = $c->get_param('pin_size') || '';
+            $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;
 
-        $params->{extra} = $c->cobrand->call_hook('display_location_extra_params');
-        $params->{limit} = 5;
+            $params->{extra} = $c->cobrand->call_hook('display_location_extra_params');
+            $params->{limit} = 5;
 
-        my $nearby = $c->model('DB::Nearby')->nearby($c, %$params);
+            my $nearby = $c->model('DB::Nearby')->nearby($c, %$params);
 
-        # Want to treat these as if they were on map
-        $nearby = [ map { $_->problem } @$nearby ];
-        my @pins = map {
-            my $p = $_->pin_data('around');
-            [ $p->{latitude}, $p->{longitude}, $p->{colour},
-            $p->{id}, $p->{title}, $pin_size, JSON->false
-            ]
-        } @$nearby;
+            # Want to treat these as if they were on map
+            $nearby = [ map { $_->problem } @$nearby ];
+            my @pins = map {
+                my $p = $_->pin_data('around');
+                [ $p->{latitude}, $p->{longitude}, $p->{colour},
+                $p->{id}, $p->{title}, $pin_size, JSON->false
+                ]
+            } @$nearby;
 
-        my @extra_pins = $c->cobrand->call_hook('extra_nearby_pins', $params->{latitude}, $params->{longitude}, $dist);
-        @pins = (@pins, @extra_pins) if @extra_pins;
+            my @extra_pins = $c->cobrand->call_hook('extra_nearby_pins', $params->{latitude}, $params->{longitude}, $dist);
+            @pins = (@pins, @extra_pins) if @extra_pins;
 
-        my $list_html = $c->render_fragment(
-            'report/nearby.html',
-            { reports => $nearby, inline_maps => $c->get_param("inline_maps") ? 1 : 0, extra_pins => \@extra_pins }
-        );
-        my $json = { pins => \@pins };
-        $json->{reports_list} = $list_html if $list_html;
-        my $body = encode_json($json);
-        $c->res->content_type('application/json; charset=utf-8');
-        $c->res->body($body);
+            my $list_html = $c->render_fragment(
+                'report/nearby.html',
+                { reports => $nearby, inline_maps => $c->get_param("inline_maps") ? 1 : 0, extra_pins => \@extra_pins }
+            );
+            my $json = { pins => \@pins };
+            $json->{reports_list} = $list_html if $list_html;
+            my $body = encode_json($json);
+            $c->res->content_type('application/json; charset=utf-8');
+            $c->res->body($body);
+        } else {
+            $c->res->content_type('application/json; charset=utf-8');
+            $c->res->body(encode_json({ 'pins' => []}));
+        }
     }
 }
 
@@ -766,7 +791,9 @@ sub _nearby_json :Private {
 # b) distances for a group/parent category
 # c) distances by mode
 #
-# NOTE: Distances for category or group only apply for the 'suggestions' mode.
+# NOTES:
+#  - Distances for category or group only apply for the 'suggestions' mode.
+#  - Returning a distance of 0 means we can skip the nearby lookup entirely.
 sub _find_distance {
     my ($self, $c, $params) = @_;
 
@@ -779,9 +806,9 @@ sub _find_distance {
             my $category = $params->{categories}[0];
             my $group    = $params->{group};
 
-            $dist = $category && $cobrand_distances->{$mode}{$category}
+            $dist = $category && defined $cobrand_distances->{$mode}{$category}
             ? $cobrand_distances->{$mode}{$category}
-            : $group && $cobrand_distances->{$mode}{$group}
+            : $group && defined $cobrand_distances->{$mode}{$group}
             ? $cobrand_distances->{$mode}{$group}
             : $cobrand_distances->{$mode}{_fallback};
         } else {
@@ -789,7 +816,7 @@ sub _find_distance {
         }
     }
 
-    $dist ||= $c->get_param('distance') || '';
+    $dist //= $c->get_param('distance') || '';
     $dist = 1000 unless $dist =~ /^\d+$/;
     $dist = 1000 if $dist > 1000;
 
@@ -834,9 +861,18 @@ sub stash_category_groups : Private {
             (my $id = $_) =~ s/[^a-zA-Z]+//g;
             if (@{$category_groups{$_}} == 1) {
                 my $contact = $category_groups{$_}[0];
+                $contact->set_extra_metadata(hoisted => $_);
                 push @list, [ $contact->category_display, $contact ];
             } else {
-                push @list, [ $_, { id => $id, name => $_, categories => $category_groups{$_} } ];
+                my $cats = $category_groups{$_};
+                @$cats = sort {
+                    my $aa = $a->category_display;
+                    return 1 if $aa eq _('Other');
+                    my $bb = $b->category_display;
+                    return -1 if $bb eq _('Other');
+                    $aa cmp $bb;
+                } @$cats;
+                push @list, [ $_, { id => $id, name => $_, categories => $cats } ];
             }
         }
         @list = sort {

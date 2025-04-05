@@ -1,8 +1,4 @@
-[% extra_js = [
-    version('/js/waste.js')
-] ~%]
-[% INCLUDE 'waste/header.html' %]
-
+[% PROCESS 'waste/header.html' %]
 [% PROCESS 'govuk/fields.html' %]
 [% PROCESS title title=form.title %]
 [% PROCESS errors %]
@@ -13,20 +9,15 @@
     [% INCLUDE waste/garden/_bin_quantities.html form_page='renew' %]
   <hr class="fieldset-hr">
   <div class="cost-pa__total js-bin-costs"
-    [% IF form.saved_data.apply_discount %]
-        data-per_bin_cost="[% c.cobrand.apply_garden_waste_discount(per_bin_cost) %]"
-        data-per_new_bin_first_cost="[% c.cobrand.apply_garden_waste_discount(per_new_bin_first_cost) %]"
-        data-per_new_bin_cost="[% c.cobrand.apply_garden_waste_discount(per_new_bin_cost) %]"
-    [% ELSE %]
-        data-per_bin_cost="[% per_bin_cost %]"
-        data-per_new_bin_first_cost="[% per_new_bin_first_cost %]"
-        data-per_new_bin_cost="[% per_new_bin_cost %]"
-    [% END %]
+        data-per_bin_cost="[% garden_costs.per_bin_renewal %]"
+        data-per_bin_first_cost="[% garden_costs.per_bin_renewal_first %]"
+        data-per_new_bin_first_cost="[% garden_costs.per_new_bin_first %]"
+        data-per_new_bin_cost="[% garden_costs.per_new_bin %]"
     >
       <span class="cost-pa__total-costs">
           Total per year: £<span id="cost_pa">[% tprintf( '%.2f', cost_pa ) %]</span>
       </span>
-    [% IF per_new_bin_cost %]
+    [% IF garden_costs.per_new_bin %]
       <span class="cost-pa__total-costs">
           Admin fee: £<span id="cost_now_admin">[% tprintf( '%.2f', cost_now_admin ) %]</span>
       </span>
@@ -47,6 +38,11 @@
   [% END %]
 
   [% PROCESS form override_fields=['name', 'email', 'phone'] %]
+
+  [% IF c.cobrand.garden_subscription_email_renew_reminder_opt_in %]
+  [% PROCESS form override_fields=['email_renewal_reminders'] %]
+  [% END %]
+
   [% PROCESS form override_fields=['continue_review'] %]
   [% PROCESS form override_fields=['saved_data', 'token', 'process', 'unique_id'] %]
 

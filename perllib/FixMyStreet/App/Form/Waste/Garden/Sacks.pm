@@ -9,9 +9,13 @@ package FixMyStreet::App::Form::Waste::Garden::Sacks;
 use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Garden';
+use WasteWorks::Costs;
 
 sub with_sacks_choice { 1 }
-sub with_bins_wanted { 0 }
+sub with_bins_wanted {
+    my $cobrand = $_[0]->c->cobrand->moniker;
+    return $cobrand eq 'merton';
+}
 
 has_page choice => (
     title_ggw => 'Subscribe to the %s',
@@ -22,22 +26,7 @@ has_page choice => (
     }
 );
 
-has_field container_choice => (
-    type => 'Select',
-    label => 'Would you like to subscribe for bins or sacks?',
-    required => 1,
-    widget => 'RadioGroup',
-);
-
-sub options_container_choice {
-    my $cobrand = $_[0]->{c}->cobrand->moniker;
-    my $num = $cobrand eq 'sutton' ? 20 :
-        $cobrand eq 'kingston' ? 10 : '';
-    [
-        { value => 'bin', label => 'Bins', hint => '240L capacity, which is about the same size as a standard wheelie bin' },
-        { value => 'sack', label => 'Sacks', hint => "Buy a roll of $num sacks and use them anytime within your subscription year" },
-    ];
-}
+with 'FixMyStreet::App::Form::Waste::Garden::Sacks::Choice';
 
 has_page sacks_details => (
     title_ggw => 'Subscribe to the %s',
@@ -47,7 +36,7 @@ has_page sacks_details => (
         my $page = shift;
         my $c = $page->form->c;
         my @fields;
-        if ($c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method) {
+        if ($c->cobrand->garden_hide_payment_method_field) {
             push @fields, 'payment_method', 'cheque_reference', 'password';
         } elsif ($c->stash->{staff_payments_allowed}) {
             push @fields, 'password';
@@ -62,32 +51,27 @@ has_page sacks_details => (
         my $data = $form->saved_data;
         my $c = $form->{c};
         my $count = $c->get_param('bins_wanted') || $data->{bins_wanted} || 1;
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $count;
-        if ($data->{apply_discount}) {
-            ($cost_pa, $c->stash->{per_sack_cost}) =
-                $c->cobrand->apply_garden_waste_discount($cost_pa, $c->stash->{per_sack_cost});
-        }
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form->saved_data->{apply_discount} });
+        my $cost_pa = $costs->sacks($count);
         $c->stash->{cost_pa} = $cost_pa / 100;
+
+        my $bins_wanted_opts = { default => $count };
+        if ($form->with_bins_wanted) {
+            my $max_bins = $c->stash->{garden_form_data}->{max_bins};
+            $bins_wanted_opts->{range_end} = $max_bins;
+        }
         return {
-            bins_wanted => { default => $count },
+            bins_wanted => $bins_wanted_opts,
         };
     },
-    next => 'summary',
-);
-
-has_field bins_wanted => (
-    type => 'Integer',
-    build_label_method => sub {
-        my $self = shift;
-        my $choice = $self->form->saved_data->{container_choice} || '';
-        if ($choice eq 'sack') {
-            return "Number of sack subscriptions",
-        } else {
-            return $self->SUPER::bins_wanted_label_method;
+    post_process => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        unless ($form->with_bins_wanted) {
+            $data->{bins_wanted} = 1;
         }
     },
-    required => 1,
-    range_start => 1,
+    next => 'summary',
 );
 
 1;

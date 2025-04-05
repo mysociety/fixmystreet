@@ -14,12 +14,8 @@ use strict;
 use warnings;
 use Moo;
 
-use FixMyStreet;
-
-use SOAP::Lite; # +trace => [qw(debug)];
-
-with 'FixMyStreet::Roles::SOAPIntegration';
-with 'FixMyStreet::Roles::ParallelAPI';
+with 'Integrations::Roles::SOAP';
+with 'Integrations::Roles::ParallelAPI';
 
 has attr => ( is => 'ro', default => 'http://webservices.whitespacews.com/' );
 has username => ( is => 'ro' );
@@ -67,26 +63,31 @@ sub call {
     my ($self, $method, @params) = @_;
 
     require SOAP::Lite;
+
+    # SOAP::Lite uses some global constants to set e.g. the request's
+    # Content-Type header and various envelope XML attributes. On new() it sets
+    # up those XML attributes, and even if you call soapversion on the object's
+    # serializer after, it does nothing if the global version matches the
+    # object's current version (which it will!), and then uses those same
+    # constants anyway. So we have to set the version globally before creating
+    # the object (during the call to self->endpoint), and also during the
+    # call() (because it uses the constants at that point to set the
+    # Content-Type header), and then set it back after so it doesn't break
+    # other users of SOAP::Lite.
+    SOAP::Lite->soapversion(1.1);
+
     @params = make_soap_structure(@params);
     my $som = $self->endpoint->call(
         $method => @params,
         $self->security
     );
 
+    SOAP::Lite->soapversion(1.2);
+
     # TODO: Better error handling
     die $som->faultstring if ($som->fault);
 
     return $som->result;
-}
-
-sub GetAddresses {
-    my ($self, $postcode) = @_;
-
-    my $res = $self->call('GetAddresses', getAddressInput => ixhash( Postcode => $postcode ));
-
-    my $addresses = force_arrayref($res->{Addresses}, 'Address');
-
-    return $addresses;
 }
 
 sub GetSiteCollections {
@@ -100,9 +101,10 @@ sub GetSiteCollections {
 }
 
 sub GetSiteInfo {
-    my ( $self, $account_site_id ) = @_;
+    my ( $self, $uprn ) = @_;
 
-    my $res = $self->call('GetSiteInfo', siteInfoInput => ixhash( AccountSiteId => $account_site_id ));
+    my $res = $self->call( 'GetSiteInfo',
+        siteInfoInput => ixhash( Uprn => $uprn ) );
 
     return $res->{Site};
 }
@@ -125,20 +127,42 @@ sub GetSiteServiceItemRoundSchedules {
 }
 
 sub GetSiteWorksheets {
-    my ($self, $uprn) = @_;
+    my ( $self, $uprn ) = @_;
 
-    my $res = $self->call('GetSiteWorksheets', worksheetInput => ixhash( Uprn => $uprn ));
+    my $res = $self->call( 'GetSiteWorksheets',
+        worksheetInput => ixhash( Uprn => $uprn ) );
 
-    return $res;
+    my $worksheets = force_arrayref( $res->{Worksheets}, 'Worksheet' );
+
+    return $worksheets;
 }
 
-sub GetCollectionByUprnAndDatePlus {
-    my ($self, $uprn, $date_from, $date_to) = @_;
+# Needed to get ServiceItemIDs
+sub GetWorksheetDetailServiceItems {
+    my ( $self, $worksheet_id ) = @_;
 
-    my $res = $self->call('GetCollectionByUprnAndDatePlus', getCollectionByUprnAndDatePlusInput => ixhash( Uprn => $uprn, NextCollectionFromDate => $date_from, NextCollectionToDate => $date_to ));
+    my $res = $self->call( 'GetWorksheetDetailServiceItems',
+        worksheetDetailServiceItemsInput =>
+            ixhash( WorksheetId => $worksheet_id ) );
 
-    # TODO Need to force arrayref?
-    return $res->{Collections}{Collection};
+    my $items = force_arrayref( $res->{Worksheetserviceitems},
+        'WorksheetServiceItem' );
+
+    return $items;
+}
+
+sub GetCollectionByUprnAndDate {
+    my ( $self, $uprn, $date_from ) = @_;
+
+    my $res = $self->call(
+        'GetCollectionByUprnAndDate',
+        getCollectionByUprnAndDateInput => ixhash(
+            Uprn                   => $uprn,
+            NextCollectionFromDate => $date_from,
+        ),
+    );
+
+    return force_arrayref( $res->{Collections}, 'Collection' );
 }
 
 sub GetInCabLogsByUsrn {
@@ -146,7 +170,9 @@ sub GetInCabLogsByUsrn {
 
     my $res = $self->call('GetInCabLogs', inCabLogInput => ixhash( Usrn => $usrn, LogFromDate => $log_from_date, LogTypeID => [] ));
 
-    return $res->{InCabLogs}->{InCabLogs};
+    my $logs = force_arrayref( $res->{InCabLogs}, 'InCabLogs' );
+
+    return $logs;
 }
 
 sub GetInCabLogsByUprn {
@@ -154,7 +180,9 @@ sub GetInCabLogsByUprn {
 
     my $res = $self->call('GetInCabLogs', inCabLogInput => ixhash( Uprn => $uprn, LogFromDate => $log_from_date, LogTypeID => [] ));
 
-    return $res->{InCabLogs}->{InCabLogs};
+    my $logs = force_arrayref( $res->{InCabLogs}, 'InCabLogs' );
+
+    return $logs;
 }
 
 sub GetStreets {
@@ -166,7 +194,6 @@ sub GetStreets {
 
     return $streets;
 }
-
 
 sub GetSiteIncidents {
     my ($self, $uprn) = @_;
@@ -181,7 +208,18 @@ sub GetSiteContracts {
 
     my $res = $self->call('GetSiteContracts', sitecontractInput => ixhash( Uprn => $uprn ));
 
-    return $res->{SiteContracts}->{SiteContract};
+    my $contracts = force_arrayref($res->{SiteContracts}, 'SiteContract');
+
+    return $contracts;
+}
+
+sub GetFullWorksheetDetails {
+    my ( $self, $ws_id ) = @_;
+
+    my $res = $self->call( 'GetFullWorksheetDetails',
+        fullworksheetDetailsInput => ixhash( WorksheetId => $ws_id ) );
+
+    return $res->{FullWSDetails};
 }
 
 1;

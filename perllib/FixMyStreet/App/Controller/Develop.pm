@@ -71,9 +71,17 @@ sub email_list : Path('/_dev/email') : Args(0) {
     $c->stash->{templates} = [];
     foreach (sort keys %templates) {
         my $url = $c->uri_for('/_dev/email', $_);
-        $url .= "?problem=" . $problem->id if $problem && $with_problem{$_};
-        $url .= "?update=" . $update->id if $update && $with_update{$_};
-        push @{$c->stash->{templates}}, { name => $_, url => $url };
+
+        my %query;
+        $query{problem} = $problem->id if $problem && $with_problem{$_};
+        $query{update}  = $update->id  if $update  && $with_update{$_};
+        $url->query_form(%query);
+
+        my $url_plaintext = $url->clone;
+        $url_plaintext->query_form( %query, text => 1 );
+
+        push @{ $c->stash->{templates} },
+            { name => $_, url => $url, url_plaintext => $url_plaintext };
     }
 }
 
@@ -233,6 +241,36 @@ sub alert_confirm_previewer : Path('/_dev/confirm_alert') : Args(1) {
     $c->stash->{template} = 'tokens/confirm_alert.html';
 }
 
+sub waste_confirmation : Path('/_dev/confirm_waste') : Args(1) {
+    my ( $self, $c, $confirm_type ) = @_;
+
+    my $category =
+        $confirm_type eq 'missed' ? 'Report missed collection'
+        : $confirm_type eq 'request' ? 'Request new container'
+        : $confirm_type eq 'bulky' ? 'Bulky collection'
+        : '';
+
+    my $report = $c->stash->{report} = FixMyStreet::DB->resultset("Problem")->new({
+        id => 123456,
+        category => $category,
+        user => { email => 'test@example.org' },
+        extra => {
+            # For bulky confirmation page
+            _fields => [
+                { name => 'Collection_Date', value => DateTime->now },
+                { name => 'DATE', value => DateTime->now },
+            ],
+        },
+    });
+    $c->stash->{reference} = 'payment-ref'; # For payment mention
+    $c->stash->{action} = 'new_subscription'; # Garden
+    $c->stash->{template} =
+        $confirm_type eq 'bulky' ? 'waste/bulky/confirmation.html'
+        : $confirm_type eq 'garden' ? 'waste/garden/subscribe_confirm.html'
+        : $confirm_type eq 'request-paid' ? 'waste/request_confirm.html'
+        : 'waste/confirmation.html';
+}
+
 =item contact_submit_previewer
 
 Displays the contact submission page, with success based on the
@@ -284,6 +322,7 @@ sub auth_preview : Path('/_dev/auth') : Args(0) {
 
 sub report_new_preview : Path('/_dev/report_new') : Args(0) {
     my ( $self, $c ) = @_;
+    $c->stash->{non_public} = $c->get_param('non_public');
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = $c->get_param('email_type');
 }
@@ -335,4 +374,3 @@ sub asset_layers_yml : Path('/_dev/asset_layers.yml') : Args(0) {
 __PACKAGE__->meta->make_immutable;
 
 1;
-

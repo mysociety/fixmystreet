@@ -691,7 +691,7 @@ sub admin_report_edit {
         }
 
         if (
-            ($state eq 'confirmed') 
+            ($state eq 'confirmed')
             && $new_cat
             && $new_cat ne $problem->category
         ) {
@@ -1064,7 +1064,7 @@ sub stash_states {
 
     # stash details about the public response
     $c->stash->{default_public_response} = "\nFreundliche Grüsse\n\nIhre Stadt Zürich\n";
-    $c->stash->{show_publish_response} = 
+    $c->stash->{show_publish_response} =
         ($problem->state eq 'feedback pending');
 }
 
@@ -1185,7 +1185,7 @@ sub admin_stats {
         $c->stash->{start_date} = DateTime->new( year => $y, month => $m, day => 1 );
         $c->stash->{end_date} = $c->stash->{start_date} + DateTime::Duration->new( months => 1 );
         $optional_params{'me.created'} = {
-            '>=', DateTime::Format::Pg->format_datetime($c->stash->{start_date}), 
+            '>=', DateTime::Format::Pg->format_datetime($c->stash->{start_date}),
             '<',  DateTime::Format::Pg->format_datetime($c->stash->{end_date}),
         };
     }
@@ -1430,6 +1430,21 @@ sub report_new_munge_before_insert {
     if ($report->user->flagged) {
         $report->non_public(1);
     }
+}
+
+sub report_on_private_contacts {
+    my ($self, $category) = @_;
+
+    return [ FixMyStreet::DB->resultset('Contact')->not_deleted->search({category => $category})->all ];
+}
+
+sub munge_around_filter_category_list {
+    my $self = shift;
+
+    my $c = $self->{c};
+
+    $c->stash->{prefill_category} = $c->get_param('prefill_category') if $c->get_param('prefill_category');
+    $c->stash->{prefill_description} = $c->get_param('prefill_description') if $c->get_param('prefill_description');
 }
 
 1;

@@ -1,11 +1,11 @@
-<ul>
+<ul [% ul_attrs | safe %]>
   [% FOR item IN item_list %]
     <li>
       [% item.value %]
       [% IF item.message %]
-        <ul>
+        <ul [% ul_attrs | safe %]>
           <li>
-            [% item.message %]
+            [% item.message | safe %]
           </li>
         </ul>
       [% END %]

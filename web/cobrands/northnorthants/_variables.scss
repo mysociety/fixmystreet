@@ -1,0 +1,112 @@
+// Styling based on https://www.northnorthants.gov.uk/
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+
+$menu-image: 'menu-black';
+$green: #016200; //For buttons and links
+$green-600: #065325; // Hover effect buttons
+$black: #000;
+$white: #fff;
+
+$grey-100: #f5f5f57a; //Background for most sections the website
+$grey-200: #f5f5f5; // Background for banners
+
+// Blue color found: https://www.northnorthants.gov.uk/bins/garden-waste
+$blue:#1a9dd9; // Title for info boxes 
+$blue-400: #97ccea;// Info box body
+
+$yellow: #e2ca76; // For info boxes body with no title and tags
+$yellow-400: #eee3ba; // body for info boxes with title tag
+
+$red: #b73131;
+
+$primary: $green;
+$primary_b: $black;
+$primary_text: $white;
+$primary_link_color: $green;
+$primary_link_hover_color: $green;
+$primary_link_hover_decoration: underline dotted;
+$link-color: $primary;
+$link-text-decoration: underline;
+$link-hover-text-decoration: underline dotted;
+$link-hover-color: $green;
+
+$focus-bg-top: $yellow;
+$focus-bg-bottom: $yellow;
+$focus-text: $black;
+
+$button-border-radius: 3px;
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom:$green-600;
+$button-primary-hover-bg-top:$green-600;
+$button-primary-hover-border:$green-600;
+$button-primary-hover-text: $primary_text;
+$button-primary-focus-bg-bottom: $yellow;
+$button-primary-focus-bg-top: $yellow;
+$button-primary-focus-border: $yellow; 
+$button-primary-focus-text: $primary_b;
+
+$button-secondary-bg-top: $white;
+$button-secondary-bg-bottom: $white;
+$button-secondary-border: $primary;
+$button-secondary-text: $primary;
+$button-secondary-hover-bg-bottom: $primary;
+$button-secondary-hover-bg-top: $primary;
+$button-secondary-hover-border: $primary;
+$button-secondary-hover-text: $primary_text;
+$button-secondary-focus-bg-bottom: $yellow;
+$button-secondary-focus-bg-top: $yellow;
+$button-secondary-focus-border: $yellow; 
+$button-secondary-focus-text: $primary_b;
+
+$base_bg: $white;
+$base_fg: $black;
+
+$error_color: $red;
+
+// FONTS
+$arial-font: Arial, Helvetica, sans-serif;
+
+$heading-font: $arial-font;
+$body-font: $arial-font;
+$meta-font: $arial-font;
+
+// HEADER
+$mappage-header-height: 5em;
+$header-top-border-width: 0;
+$nav_background_colour: $white;
+$nav_colour: $primary;
+$nav_hover_background_colour: transparent;
+
+// FRONTPAGE
+// Mobile
+$front-main-color: $primary_b;
+$front-main-background: $grey-100;
+$postcodeform-background: $white;
+$postcodeform-color: $primary_b;
+
+// Desktop
+$front-main-background-desktop: no-repeat center/cover url("/cobrands/northnorthants/images/hero.jpg");
+$front-main-container-background-desktop: rgba(255, 255, 255, 0.95);
+$front-main-color-desktop: $primary_b;
+$postcodeform-color-desktop: $black;
+
+$geolocation-link-border: $primary;
+$geolocation-link: $primary;
+$geolocation-link-background-color: $white;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: $primary_b;
+$layout_front_stats_color: $primary_b;
+$col_click_map: $primary;
+
+$mappage-sidebar-width: 27em;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+$sticky-sidebar-link-color: $primary;

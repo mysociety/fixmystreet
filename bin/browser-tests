@@ -18,6 +18,7 @@ BEGIN {
         bromley
         buckinghamshire
         fixmystreet
+        gloucestershire
         hackney
         highwaysengland
         hounslow
@@ -28,6 +29,7 @@ BEGIN {
         oxfordshire
         peterborough
         shropshire
+        surrey
         tfl
         westminster
     )];

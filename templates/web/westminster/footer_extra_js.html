@@ -1,4 +1,4 @@
-[% PROCESS 'footer_extra_js_base.html' tfl=1 roadworks=1 %]
+[% PROCESS 'footer_extra_js_base.html' roadworks=1 %]
 [%
 IF bodyclass.match('mappage');
     scripts.push(
@@ -6,3 +6,45 @@ IF bodyclass.match('mappage');
     );
 END
 %]
+
+[% IF bodyclass != 'offlinepage' AND (c.config.BASE_URL == "https://www.fixmystreet.com" OR c.config.BASE_URL == 'https://staging.fixmystreet.com');
+    scripts.push( version('/cobrands/westminster/vendor/banner.js') );
+%]
+<div class="westminster-cookie-banner">
+    <div class="alert cookiealert" role="alert">
+      <div class="row p-6">
+        <div class="col text-left">
+          <div>
+            <span class="header-4 text-white"
+              >We use cookies on this site to enhance your user experience</span
+            >
+            <p>By clicking the Accept button, you agree to us doing so.</p>
+            <div>
+              <a
+                href="https://www.westminster.gov.uk/data-protection/privacy"
+                class="text-link-colour underline hover:text-link-hover-colour"
+                target="_blank"
+                rel="noopener noreferrer"
+                >More info on our cookie policy</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col ml-auto text-right">
+          <div class="text-center">
+            <button
+              type="button"
+              id="cookiepolicy"
+              class="primary-button bg-button-default"
+            >
+              Accept cookies policy
+            </button>
+            <div class="mt-3">
+              <a href="/report-it" id="declinepolicy">Decline cookies policy</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+[% END %]

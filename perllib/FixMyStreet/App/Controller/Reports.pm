@@ -254,10 +254,20 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
 
     $c->stash->{rss} = 1;
 
-    # area_check
-
     $area =~ s/\+/ /g;
     $area =~ s/\.html//;
+
+    if ($area =~ /^[0-9]+$/) {
+        my $area = FixMyStreet::MapIt::call( 'area', $area );
+        $c->detach( 'redirect_index' ) unless $area;
+
+        $c->stash->{qs} = "";
+        $c->stash->{type} = 'area_problems';
+        $c->stash->{title_params} = { NAME => $area->{name} };
+        $c->stash->{db_params} = [ $area->{id} ];
+
+        $c->detach( '/rss/output' );
+    }
 
     # XXX Currently body/area overlaps here are a bit muddy.
     # We're checking an area here, but this function is currently doing that.
@@ -285,15 +295,6 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
     my $url = $c->cobrand->short_name( $c->stash->{area} );
     $url .= '/' . $c->cobrand->short_name( $c->stash->{ward} ) if $c->stash->{ward};
     $c->stash->{qs} = "/$url";
-
-    if ($c->cobrand->moniker eq 'fixmystreet' && $c->stash->{area}{type} ne 'DIS' && $c->stash->{area}{type} ne 'CTY') {
-        # UK-specific types - two possibilites are the same for one-tier councils, so redirect one to the other
-        # With bodies, this should presumably redirect if only one body covers
-        # the area, and then it will need that body's name (rather than
-        # assuming as now it is the same as the area)
-        $c->stash->{body} = $c->stash->{area};
-        $c->detach( 'redirect_body' );
-    }
 
     $c->stash->{type} = 'area_problems';
     if ( $c->stash->{ward} ) {
@@ -477,15 +478,6 @@ sub summary : Private {
 
     $c->log->info($c->user->email . ' viewed ' . $c->req->uri->path_query) if $c->user_exists;
 
-    eval {
-        my $data = path(FixMyStreet->path_to('../data/all-reports-dashboard.json'))->slurp_utf8;
-        $data = decode_json($data);
-        $c->stash(
-            top_five_bodies => $data->{top_five_bodies},
-            average => $data->{average},
-        );
-    };
-
     my $dtf = $c->model('DB')->storage->datetime_parser;
     my $period = $c->stash->{period} = $c->get_param('period') || '';
     my $start_date;
@@ -523,7 +515,6 @@ sub summary : Private {
     }
 
     $c->forward('/dashboard/generate_grouped_data');
-    $c->forward('/dashboard/generate_body_response_time');
 
     $c->stash->{template} = 'reports/summary.html';
 }
@@ -591,7 +582,7 @@ sub load_and_group_problems : Private {
 
     my $parameters = $c->forward('load_problems_parameters');
 
-    my $body = $c->stash->{body}; # Might be undef
+    my $body = $c->stash->{ignore_body_for_triage} ? undef : $c->stash->{body}; # Might be undef
     my $page = $c->get_param('p') || 1;
 
     my $problems = $c->cobrand->problems;
@@ -796,7 +787,8 @@ sub stash_report_filter_status : Private {
 
     my $body_user = $c->user_exists && $c->stash->{body} && $c->user->belongs_to_body($c->stash->{body}->id);
     my $staff_user = $c->user_exists && ($c->user->is_superuser || $body_user);
-    if ($staff_user || $c->cobrand->call_hook('filter_show_all_states')) {
+    my $planned_page = $c->action eq 'my/planned';
+    if ($staff_user || $planned_page || $c->cobrand->call_hook('filter_show_all_states')) {
         $c->stash->{filter_states} = $c->cobrand->state_groups_inspect;
         foreach my $state (keys %$visible) {
             if ($status{$state}) {

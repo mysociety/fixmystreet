@@ -3,12 +3,12 @@
     IF c.user.has_body_permission_to('assign_report_to_user')
         && inspectors
 %]
-<form id='bulk-assign-form' name='bulk-assign-form' method='post' action='/my/planned/bulk_assign'>
+<form id='bulk-assign-form' name='bulk-assign-form' method='post' action='/my/planned/bulk_assign' class="govuk-fieldset-wrapper">
     <label for='inspector'>[% loc('Assign to') %]</label>
     <input type="hidden" name="token" value="[% csrf_token %]">
-    <select class="form-control report-list-filters multi-select-button" name="inspector" id="inspector">
+    <select class="govuk-select" name="inspector" id="inspector">
         [% INCLUDE 'report/inspect/_assignment-options.html' %]
     </select>
-    <button id='bulk-assign-btn' class='multi-select-button' type='submit' name='bulk-assign-btn' value='bulk-assign'>[% loc('Assign') %]</button>
+    <button id='bulk-assign-btn' class='btn' type='submit' name='bulk-assign-btn' value='bulk-assign'>[% loc('Assign') %]</button>
 </form>
 [% END %]

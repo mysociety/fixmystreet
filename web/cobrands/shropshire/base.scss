@@ -41,7 +41,7 @@ a:focus,
     width:  $logo-width;
     // height: 61px; // see below
     background-size:  $logo-width  $logo-height;
-    @include svg-background-image("/cobrands/shropshire/images/sc-logo-v3");
+    background-image: url("/cobrands/shropshire/images/sc-logo-v3.svg");
 
     // text-indent doesn’t play nicely with focus outline,
     // so use padding overflow trick instead
@@ -180,16 +180,16 @@ a:focus,
 .postcode-form-box {
     div {
         border: none;
+    }
 
-        input#pc {
-            @include shropshire-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
-            font-size: 1.25em;
-        }
+    input#pc {
+        @include shropshire-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
+        font-size: 1.25em;
+    }
 
-        input#sub {
-            @include shropshire-button-primary();
-            font-size: 1.25em;
-        }
+    input#sub {
+        @include shropshire-button-primary();
+        font-size: 1.25em;
     }
 }
 
@@ -242,8 +242,7 @@ p.form-error {
     padding: 1.5em;
 }
 
-.btn,
-.green-btn {
+.btn {
     @include shropshire-button-primary();
 }
 
@@ -292,11 +291,8 @@ p.form-error {
     color: #fff !important;
 }
 
-.item-list--wards__item a:hover,
 .item-list--reports__item a:hover,
-.item-list--wards__item a:focus,
 .item-list--reports__item a:focus,
-.hovered.item-list--wards__item a,
 .hovered.item-list--reports__item a {
     background-color: mix($shropshire-blue, #fff, 25%);
 }

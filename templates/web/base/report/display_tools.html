@@ -8,7 +8,7 @@
         </form></li>
         [% ELSIF c.cobrand.moniker != 'zurich' %]
         <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[%
-            c.cobrand.moniker == 'fixmystreet' ? 'Unsuitable?' : loc('Report abuse')
+            c.cobrand.moniker == 'fixmystreet' OR c.cobrand.moniker == 'highwaysengland' ? 'Unsuitable?' : loc('Report abuse')
         %]</a></li>
         [% END %]
         [% IF c.cobrand.moniker != 'zurich' %]

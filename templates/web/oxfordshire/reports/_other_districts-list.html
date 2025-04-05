@@ -7,12 +7,12 @@
     <p class="[% show_parish_hidden_class %]"><a href="?show_parishes=1" class="js-ward-select-multiple">[% loc('Select multiple parishes?') %]</a></p>
     <form method="get" action="">
     <section class="full-width">
-    <ul class="item-list item-list--wards">
+    <ul class="item-list item-list--wards govuk-checkboxes govuk-checkboxes--small">
       [% FOR child IN parish_ward.values.sort('name') %]
       [% IF child.type == 'CPC' %]
-      <li class="item-list__item item-list--wards__item">
-        <label class="[% show_parish_shown_class %]">
-            <input type="checkbox" name="ward" value="[% child.name | html %]">
+      <li class="govuk-checkboxes__item">
+        <input class="[% show_wards_shown_class %] govuk-checkboxes__input" id="[% child.name | lower | replace(' ', '-') %]" type="checkbox" name="ward" value="[% child.name | html %]">
+        <label class="[% show_parish_shown_class %] js-ward-multi govuk-label govuk-checkboxes__label" for="[% child.name | lower | replace(' ', '-') %]">
           [% child.name %]
         </label>
         <a class="[% show_parish_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
@@ -37,12 +37,12 @@
       <p class="[% show_district_hidden_class %]"><a href="?show_district_wards=1" class="js-ward-select-multiple">[% loc('Select multiple wards?') %]</a></p>
       <form method="get" action="">
       <section class="full-width">
-      <ul class="item-list item-list--wards">
+      <ul class="item-list item-list--wards govuk-checkboxes govuk-checkboxes--small">
         [% FOR child IN parish_ward.values.sort('name') %]
         [% IF child.type == 'DIW' %]
-        <li class="item-list__item item-list--wards__item">
-          <label class="[% show_district_shown_class %]">
-            <input type="checkbox" name="ward" value="[% child.name | html %]">
+        <li class="govuk-checkboxes__item">
+          <input class="[% show_wards_shown_class %] govuk-checkboxes__input" id="[% child.name | lower | replace(' ', '-') %]" type="checkbox" name="ward" value="[% child.name | html %]">
+          <label class="[% show_wards_shown_class %] govuk-label govuk-checkboxes__label" for="[% child.name | lower | replace(' ', '-') %]">
             [% child.name %]
           </label>
           <a class="[% show_district_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
@@ -67,12 +67,12 @@
   <p class="[% show_district_hidden_class %]"><a href="?show_districts=1" class="js-ward-select-multiple">Select multiple districts?</a></p>
   <form method="get" action="">
     <section class="full-width">
-      <ul class="item-list item-list--wards">
+      <ul class="item-list item-list--wards govuk-checkboxes govuk-checkboxes--small">
         [% FOR child IN parish_ward.values.sort('name') ~%]
         [% IF child.type == 'DIS' %]
-        <li class="item-list__item item-list--wards__item">
-          <label class="[% show_district_shown_class %]">
-            <input type="checkbox" name="ward" value="[% child.name | html %]">
+        <li class="govuk-checkboxes__item">
+          <input class="[% show_wards_shown_class %] govuk-checkboxes__input" id="[% child.name | lower | replace(' ', '-') %]" type="checkbox" name="ward" value="[% child.name | html %]">
+          <label class="[% show_wards_shown_class %] govuk-label govuk-checkboxes__label" for="[% child.name | lower | replace(' ', '-') %]">
             [% child.name %]
           </label>
           <a class="[% show_district_hidden_class %]" href="[% child.url %]">[% child.name %]</a>

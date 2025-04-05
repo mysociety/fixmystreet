@@ -14,13 +14,16 @@ use parent 'FixMyStreet::Cobrand::UKCouncils';
 use Moo;
 
 # We use the functionality of bulky waste, though it's called small items
-with 'FixMyStreet::Roles::CobrandBulkyWaste';
+with 'FixMyStreet::Roles::Cobrand::Waste';
+with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
+use utf8;
 use strict;
 use warnings;
 use Moo;
 use DateTime;
 use DateTime::Format::Strptime;
+use Hash::Util qw(lock_hash);
 use Try::Tiny;
 use LWP::Simple;
 use URI;
@@ -38,14 +41,15 @@ Uses OpenUSRN for locating nearest addresses on the Highway
 
 =cut
 
+use WasteWorks::Costs;
 use FixMyStreet::App::Form::Waste::Request::Brent;
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 with 'FixMyStreet::Roles::Open311Multi';
-with 'FixMyStreet::Roles::CobrandOpenUSRN';
-with 'FixMyStreet::Roles::CobrandEcho';
-with 'FixMyStreet::Roles::SCP';
-use Integrations::Paye;
+with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
+with 'FixMyStreet::Roles::Cobrand::Echo';
+with 'FixMyStreet::Roles::Cobrand::SCP',
+     'FixMyStreet::Roles::Cobrand::Paye';
 
 # Brent covers some of the areas around it so that it can handle near-boundary reports
 sub council_area_id { return [2488, 2505, 2489, 2487]; } # 2505 Camden, 2489 Barnet, 2487 Harrow
@@ -53,14 +57,47 @@ sub council_area { return 'Brent'; }
 sub council_name { return 'Brent Council'; }
 sub council_url { return 'brent'; }
 
+my %SERVICE_IDS = (
+    domestic_refuse => 262,
+    communal_refuse => 263,
+    fas_refuse => 267,
+    domestic_mixed => 265,
+    communal_mixed => 266,
+    fas_mixed => 269,
+    domestic_paper => 807,
+    domestic_food => 316,
+    communal_food => 271,
+    garden => 317,
+);
+lock_hash(%SERVICE_IDS);
+
+my %EVENT_TYPE_IDS = (
+    garden => 1159,
+    request => 2936,
+    missed => 2891,
+    bulky => 2964,
+);
+lock_hash(%EVENT_TYPE_IDS);
+
+my %CONTAINER_IDS = (
+    rubbish_blue_sack => 1,
+    rubbish_grey_bin => 16,
+    recycling_clear_sack => 8,
+    recycling_blue_bin => 6,
+    food_caddy => 11,
+    garden_green_bin => 13,
+    paper_blue_sack => 46,
+);
+lock_hash(%CONTAINER_IDS);
+
 my $BRENT_CONTAINERS = {
-    1 => 'Blue rubbish sack',
-    16 => 'General rubbish bin (grey bin)',
-    8 => 'Clear recycling sack',
-    6 => 'Recycling bin (blue bin)',
-    11 => 'Food waste caddy',
-    13 => 'Garden waste (green bin)',
-    46 => 'Paper and cardboard blue sack',
+    $CONTAINER_IDS{rubbish_blue_sack} => 'Blue rubbish sack',
+    $CONTAINER_IDS{rubbish_grey_bin} => 'General rubbish bin (grey bin)',
+    $CONTAINER_IDS{recycling_clear_sack} => 'Clear recycling sack',
+    $CONTAINER_IDS{recycling_blue_bin} => 'Recycling bin (blue bin)',
+    $CONTAINER_IDS{food_caddy} => 'Food waste caddy',
+    $CONTAINER_IDS{garden_green_bin} => 'Garden waste (green bin)',
+    $CONTAINER_IDS{paper_blue_sack} => 'Paper and cardboard blue sack',
 };
 
 =head1 DESCRIPTION
@@ -77,9 +114,7 @@ my $BRENT_CONTAINERS = {
 
 =cut
 
-sub path_to_pin_icons {
-    return '/cobrands/oxfordshire/images/';
-}
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 =item * Users with a brent.gov.uk email can always be found in the admin.
 
@@ -160,13 +195,12 @@ sub geocoder_munge_results {
 =head2 check_report_is_on_cobrand_asset
 
 If the location is covered by an area of differing responsibility (e.g. Brent
-in Camden, or Camden in Brent), return true (either 1 if an area name is
-provided, or the name of the area if not).
+in Camden, or Camden in Brent), return the name of the area.
 
 =cut
 
 sub check_report_is_on_cobrand_asset {
-    my ($self, $council_area) = shift @_;
+    my $self = shift;
 
     my $lat = $self->{c}->stash->{latitude};
     my $lon = $self->{c}->stash->{longitude};
@@ -183,13 +217,7 @@ sub check_report_is_on_cobrand_asset {
     my $features = $self->_fetch_features($cfg, -1, -1, 1);
 
     if ($$features[0]) {
-        if ($council_area) {
-            if ($$features[0]->{'ms:BrentDiffs'}->{'ms:name'} eq $council_area) {
-                return 1;
-            }
-        } else {
-            return $$features[0]->{'ms:BrentDiffs'}->{'ms:name'};
-        }
+        return $$features[0]->{'ms:BrentDiffs'}->{'ms:name'};
     }
 }
 
@@ -215,16 +243,23 @@ sub munge_overlapping_asset_bodies {
         if (!$cobrand || $cobrand eq 'Brent') {
             # ...Brent's responsibility - remove the other bodies covering the Brent area
             %$bodies = map { $_->id => $_ } grep {
-                $_->name ne 'Camden Borough Council' &&
-                $_->name ne 'Barnet Borough Council' &&
-                $_->name ne 'Harrow Borough Council'
+                $_->get_column('name') ne 'Camden Borough Council' &&
+                $_->get_column('name') ne 'Barnet Borough Council' &&
+                $_->get_column('name') ne 'Harrow Borough Council'
                 } values %$bodies;
         } else {
+            # Camden wants sole responsibility of Camden agreed areas
+            if ($cobrand eq 'Camden') {
+                %$bodies = map { $_->id => $_ } grep {
+                    $_->get_column('name') eq 'Camden Borough Council' || $_->get_column('name') eq 'TfL' || $_->get_column('name') eq 'National Highways'
+                } values %$bodies;
+                return;
+            }
             # ...someone else's responsibility, take out the ones definitely not responsible
-            my %cobrands = (Harrow => 'Harrow Borough Council', Camden => 'Camden Borough Council', Barnet => 'Barnet Borough Council');
+            my %cobrands = (Harrow => 'Harrow Borough Council', Barnet => 'Barnet Borough Council');
             my $selected = $cobrands{$cobrand};
             %$bodies = map { $_->id => $_ } grep {
-                $_->name eq $selected || $_->name eq 'Brent Council' || $_->name eq 'TfL' || $_->name eq 'National Highways'
+                $_->get_column('name') eq $selected || $_->get_column('name') eq 'Brent Council' || $_->get_column('name') eq 'TfL' || $_->get_column('name') eq 'National Highways'
             } values %$bodies;
         }
     } else {
@@ -232,10 +267,15 @@ sub munge_overlapping_asset_bodies {
         if (!$cobrand || $cobrand ne 'Brent') {
             # ...not Brent's responsibility - remove Brent
             %$bodies = map { $_->id => $_ } grep {
-                $_->name ne 'Brent Council'
+                $_->get_column('name') ne 'Brent Council'
                 } values %$bodies;
         } else {
-            # ...Brent's responsibility - leave (both) bodies alone
+            # If it's for Brent shared with Camden, make wholly Brent's responsibility
+            if (grep { $_->get_column('name') eq 'Camden Borough Council' } values %$bodies) {
+                %$bodies = map { $_->id => $_ } grep {
+                    $_->get_column('name') eq 'Brent Council' || $_->get_column('name') eq 'TfL' || $_->get_column('name') eq 'National Highways'
+                } values %$bodies;
+            }
         }
     }
 }
@@ -250,10 +290,9 @@ of one body, and the non-street categories of the other.
 sub munge_cobrand_asset_categories {
     my ($self, $contacts) = @_;
 
-    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$contacts;
     my %non_street = (
         'Barnet' => { map { $_ => 1 } @{ $self->_barnet_non_street } },
-        'Camden' => { map { $_ => 1 } @{ $self->_camden_non_street } },
         'Harrow' => { map { $_ => 1 } @{ $self->_harrow_non_street } },
     );
 
@@ -261,14 +300,16 @@ sub munge_cobrand_asset_categories {
     my $in_area = grep ($self->council_area_id->[0] == $_, keys %{$self->{c}->stash->{all_areas}});
     # cobrand will be true if the point is within an area of different responsibility from the norm
     my $cobrand = $self->check_report_is_on_cobrand_asset || '';
+
     return unless $cobrand;
 
     my $brent_body = $self->body->id;
     if (!$in_area && $cobrand eq 'Brent') {
         # Outside the area of Brent, but Brent's responsibility
         my $area;
+        # Camden do not mix categories with Brent
         if (grep {$_->{name} eq 'Camden Borough Council'} values %{$self->{c}->stash->{all_areas}}){
-            $area = 'Camden';
+            return;
         } elsif (grep {$_->{name} eq 'Harrow Borough Council'} values %{$self->{c}->stash->{all_areas}}) {
             $area = 'Harrow';
         }  elsif (grep {$_->{name} eq 'Barnet Borough Council'} values %{$self->{c}->stash->{all_areas}}) {
@@ -282,6 +323,9 @@ sub munge_cobrand_asset_categories {
         @$contacts = grep { !(!$non_street{$area}{$_->category} && $_->body_id == $other_body->id) } @$contacts
             if $other_body;
     } elsif ($in_area && $cobrand ne 'Brent') {
+        if ($cobrand eq 'Camden') {
+            return;
+        }
         # Inside the area of Brent, but not Brent's responsibility
         my $other_body = $bodies{$cobrand . " Borough Council"};
         # Remove the street contacts of Brent
@@ -310,22 +354,24 @@ sub munge_cobrand_asset_categories {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $p->is_closed;
-    return 'green' if $p->is_fixed;
-    return 'yellow' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
 =head2 categories_restriction
 
-Doesn't show TfL's River Piers category as no piers in Brent
+Doesn't show TfL's River Piers category as no piers in Brent.
+Also don't show bus station category as only one in Brent and
+never been used to report anything.
 
 =cut
 
 sub categories_restriction {
     my ($self, $rs) = @_;
 
-    return $rs->search( { 'me.category' => { '-not_like' => 'River Piers%' } } );
+    return $rs->search( { 'me.category' => [ '-and' => { '-not_like' => 'River Piers%' }, { '-not_like' => 'Bus Station%' }, { '-not_like' => '%(Response Desk Buses to Action)' } ] } );
 }
 
 =head2 social_auth_enabled, user_from_oidc, and oidc_config
@@ -381,13 +427,17 @@ sub oidc_config {
     return $cfg;
 }
 
-=head2 Only show reports on map for last 3 months
-
-Brent only show 3 months of report history on the map rather than default 6 months
+=item * Show open reports for 3 months, closed/fixed for 1 month
 
 =cut
 
-sub report_age { '3 months' }
+sub report_age {
+    return {
+        open => '3 months',
+        closed => '1 month',
+        fixed  => '1 month',
+    };
+}
 
 =head2 dashboard_export_problems_add_columns
 
@@ -408,6 +458,7 @@ sub dashboard_export_problems_add_columns {
             uprn => 'UPRN',
             external_id => 'External ID',
             image_included => 'Does the report have an image?',
+            extra_details => 'Extra details',
 
             InspectionDate => "Inspection date",
             GradeLitter => "Grade for Litter",
@@ -426,8 +477,10 @@ sub dashboard_export_problems_add_columns {
             container_req_type => 'Container Request Container Type',
             container_req_reason => 'Container Request Reason',
 
+            email_renewal_reminders_opt_in => 'Email Renewal Reminders Opt-In',
             missed_collection_id => 'Service ID',
-            map { "item_" . $_ => "Small Item $_" } (1..11)
+            staff_role => 'Staff Role',
+            map { "item_" . $_ => "Small Item $_" } (1..11),
         )
     );
 
@@ -467,8 +520,17 @@ sub dashboard_export_problems_add_columns {
         $id = $csv->_extra_field($report, 'Container_Request_Reason') || '';
         my $container_req_reason = $request_lookups->{reason}{$id} || $id;
 
+        my ($by, $userroles, $staff_role);
+        if (!$csv->dbi) {
+            $by = $report->get_extra_metadata('contributed_by');
+            my $user_lookup = $self->csv_staff_users;
+            $userroles = $self->csv_staff_roles($user_lookup);
+            $staff_role = join(',', @{$userroles->{$by} || []}) if $by;
+        }
+
         my $data = {
             location_name => $csv->_extra_field($report, 'location_name'),
+            extra_details => $csv->_extra_metadata($report, 'detailed_information') || '',
             $csv->dbi ? (
                 street_name => FixMyStreet::Geocode::Address->new($report->{geocode})->parts->{street},
                 image_included => $report->{photo} ? 'Y' : 'N',
@@ -478,6 +540,7 @@ sub dashboard_export_problems_add_columns {
                 user_email => $report->user->email || '',
                 image_included => $report->photo ? 'Y' : 'N',
                 external_id => $report->external_id || '',
+                staff_role => $staff_role || '',
             ),
             usrn => $csv->_extra_field($report, 'usrn'),
             uprn => $csv->_extra_field($report, 'uprn'),
@@ -495,6 +558,7 @@ sub dashboard_export_problems_add_columns {
             container_req_action => $container_req_action,
             container_req_type => $container_req_type,
             container_req_reason => $container_req_reason,
+            email_renewal_reminders_opt_in => $csv->_extra_field($report, 'email_renewal_reminders_opt_in'),
             missed_collection_id => $csv->_extra_field($report, 'service_id'),
         };
 
@@ -531,7 +595,7 @@ sub open311_munge_update_params {
 
 =head2 should_skip_sending_update
 
-Do not try and send updates to the ATAK backend.
+Do not try and send updates to the ATAK or Symology backends.
 
 =cut
 
@@ -539,7 +603,7 @@ sub should_skip_sending_update {
     my ($self, $update) = @_;
 
     my $code = $update->problem->contact->email;
-    return 1 if $code =~ /^ATAK/;
+    return 1 if $code =~ /^(ATAK|Symology)/;
     return 0;
 }
 
@@ -558,6 +622,7 @@ sub open311_update_missing_data {
 Reports made via the app probably won't have a NSGRef because we don't
 display the road layer. Instead we'll look up the closest asset from the
 WFS service at the point we're sending the report over Open311.
+We also might need to map one value to another.
 
 =cut
 
@@ -566,6 +631,12 @@ WFS service at the point we're sending the report over Open311.
             if (my $ref = $self->lookup_site_code($row, 'usrn')) {
                 $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $ref });
             }
+        }
+
+        my $ref = $row->get_extra_field_value('NSGRef') || '';
+        my $cfg = $self->feature('area_code_mapping') || {};
+        if ($cfg->{$ref}) {
+            $row->update_extra_field({ name => 'NSGRef', description => 'NSG Ref', value => $cfg->{$ref} });
         }
 
 =item * Adds NSGRef from WFS service as app doesn't include road layer for Echo
@@ -678,6 +749,11 @@ sub open311_extra_data_exclude {
     return [];
 }
 
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+    return 'SKIP' if $row->category eq 'Request new container' && $row->get_extra_field_value('request_referral');
+}
+
 =head2 open311_post_send
 
 Restore the original detail field if it was changed by open311_extra_data_include
@@ -690,6 +766,18 @@ sub open311_post_send {
 
     if ($row->contact->email =~ /ATAK/ && $row->external_id) {
         $row->update({ state => 'investigating' });
+    }
+
+    if ($row->category eq 'Request new container' && $row->get_extra_field_value('request_referral') && !$row->get_extra_metadata('extra_email_sent')) {
+        my $emails = $self->feature('open311_email');
+        if (my $dest = $emails->{$row->category}) {
+            $h->{missing} = "Dear team, you have received this notification because a resident has tried to request a container but the system believes a similar request was recently made against this address. Please assess the request against Echo and then inform the customer of your decision. If authorising the request, please add it to Echo as a container request.\n\n";
+            my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ]);
+            $sender->send($row, $h);
+            if ($sender->success) {
+                $row->update_extra_metadata(extra_email_sent => 1);
+            }
+        }
     }
 
     my $error = $sender->error;
@@ -835,178 +923,6 @@ status of reports
 
 sub prevent_questionnaire_updating_status { 1 };
 
-=head2 admin_templates_external_status_code_hook
-
-Munges empty fields out of external status code used
-for triggering template responses so non-waste
-Echo status codes will trigger auto-templates
-
-=cut
-
-sub admin_templates_external_status_code_hook {
-    my ($self) = @_;
-    my $c = $self->{c};
-
-    my $res_code = $c->get_param('resolution_code') || '';
-    my $task_type = $c->get_param('task_type') || '';
-    my $task_state = $c->get_param('task_state') || '';
-
-    my $code = "$res_code,$task_type,$task_state";
-    $code = '' if $code eq ',,';
-    $code =~ s/,,$// if $code;
-
-    return $code;
-}
-
-=head2 Staff payments
-
-If a staff member is making a payment, then instead of using SCP, we redirect
-to Paye. We also need to check the completed payment against the same source.
-
-=cut
-
-around waste_cc_get_redirect_url => sub {
-    my ($orig, $self, $c, $back) = @_;
-
-    if ($c->stash->{is_staff}) {
-        my $payment = Integrations::Paye->new({
-            config => $self->feature('payment_gateway')
-        });
-
-        my $p = $c->stash->{report};
-        my $uprn = $p->get_extra_field_value('uprn');
-
-        my $amount = $p->get_extra_field_value( 'pro_rata' );
-        unless ($amount) {
-            $amount = $p->get_extra_field_value( 'payment' );
-        }
-        my $admin_fee = $p->get_extra_field_value('admin_fee');
-
-        my $redirect_id = mySociety::AuthToken::random_token();
-        $p->set_extra_metadata('redirect_id', $redirect_id);
-        $p->update;
-
-        my $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
-        my $address = $c->stash->{property}{address};
-        my @parts = split ',', $address;
-
-        my @items = ({
-            amount => $amount,
-            reference => $payment->config->{customer_ref},
-            description => $p->title,
-            lineId => $self->waste_cc_payment_line_item_ref($p),
-        });
-        if ($admin_fee) {
-            push @items, {
-                amount => $admin_fee,
-                reference => $payment->config->{customer_ref_admin_fee},
-                description => 'Admin fee',
-                lineId => $self->waste_cc_payment_admin_fee_line_item_ref($p),
-            };
-        }
-        my $result = $payment->pay({
-            returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
-            backUrl => $backUrl,
-            ref => $self->waste_cc_payment_sale_ref($p),
-            request_id => $p->id,
-            description => $p->title,
-            name => $p->name,
-            email => $p->user->email,
-            uprn => $uprn,
-            address1 => shift @parts,
-            address2 => shift @parts,
-            country => 'UK',
-            postcode => pop @parts,
-            items => \@items,
-            staff => $c->stash->{staff_payments_allowed} eq 'cnp',
-        });
-
-        if ( $result ) {
-            $c->stash->{xml} = $result;
-
-            # GET back
-            # requestId - should match above
-            # apnReference - transaction Ref, used later for query
-            # transactionState - InProgress
-            # invokeResult/status - Success/...
-            # invokeResult/redirectUrl - what is says
-            # invokeResult/errorDetails - what it says
-            if ( $result->{transactionState} eq 'InProgress' &&
-                 $result->{invokeResult}->{status} eq 'Success' ) {
-
-                 $p->set_extra_metadata('apnReference', $result->{apnReference});
-                 $p->update;
-
-                 my $redirect = $result->{invokeResult}->{redirectUrl};
-                 $redirect .= "?apnReference=$result->{apnReference}";
-                 return $redirect;
-             } else {
-                 # XXX - should this do more?
-                my $error = $result->{invokeResult}->{status};
-                $c->stash->{error} = $error;
-                return undef;
-             }
-         } else {
-            return undef;
-        }
-        return;
-    }
-
-    return $self->$orig($c, $back);
-};
-
-around garden_cc_check_payment_status => sub {
-    my ($orig, $self, $c, $p) = @_;
-
-    if (my $apn = $p->get_extra_metadata('apnReference')) {
-        my $payment = Integrations::Paye->new({
-            config => $self->feature('payment_gateway')
-        });
-
-        my $resp = $payment->query({
-            request_id => $p->id,
-            apnReference => $apn,
-        });
-
-        if ($resp->{transactionState} eq 'Complete') {
-            if ($resp->{paymentResult}->{status} eq 'Success') {
-                my $auth_details
-                    = $resp->{paymentResult}{paymentDetails}{authDetails};
-                $p->update_extra_metadata(
-                    authCode => $auth_details->{authCode},
-                    continuousAuditNumber => $resp->{paymentResult}{paymentDetails}{payments}{paymentSummary}{continuousAuditNumber},
-                );
-                $p->update_extra_field({ name => 'payment_method', value => 'csc' });
-                $p->update;
-
-                my $ref = $auth_details->{uniqueAuthId};
-                return $ref;
-            } else {
-                $c->stash->{error} = $resp->{paymentResult}->{status};
-                return undef;
-            }
-        } else {
-            $c->stash->{error} = $resp->{transactionState};
-            return undef;
-        }
-    }
-
-    return $self->$orig($c, $p);
-};
-
-=head2 waste_check_staff_payment_permissions
-
-Staff can make payments via a PAYE endpoint.
-
-=cut
-
-sub waste_check_staff_payment_permissions {
-    my $self = shift;
-    my $c = $self->{c};
-    return unless $c->stash->{is_staff};
-    $c->stash->{staff_payments_allowed} = 'paye-api';
-}
-
 =head2 waste_event_state_map
 
 State map for Echo states - not actually waste only as Echo
@@ -1059,83 +975,97 @@ sub waste_on_the_day_criteria {
     }
 }
 
-sub bin_services_for_address {
-    my $self = shift;
-    my $property = shift;
+sub waste_containers { $BRENT_CONTAINERS }
 
-    $self->{c}->stash->{containers} = $BRENT_CONTAINERS;
-    $self->{c}->stash->{container_actions} = $self->waste_container_actions;
-
-    my %service_to_containers = (
-        262 => [ 16 ],
-        265 => [ 6 ],
-        269 => [ 8 ],
-        316 => [ 11 ],
-        317 => [ 13 ],
-        807 => [ 46 ],
+sub waste_service_to_containers {
+    return (
+        $SERVICE_IDS{domestic_refuse} => [ $CONTAINER_IDS{rubbish_grey_bin} ],
+        $SERVICE_IDS{domestic_mixed} => [ $CONTAINER_IDS{recycling_blue_bin} ],
+        $SERVICE_IDS{fas_mixed} => [ $CONTAINER_IDS{recycling_clear_sack} ],
+        $SERVICE_IDS{domestic_food} => [ $CONTAINER_IDS{food_caddy} ],
+        $SERVICE_IDS{garden} => [ $CONTAINER_IDS{garden_green_bin} ],
+        $SERVICE_IDS{domestic_paper} => [ $CONTAINER_IDS{paper_blue_sack} ],
     );
-    my %request_allowed = map { $_ => 1 } keys %service_to_containers;
-    my %quantity_max = (
-        262 => 1,
-        265 => 1,
-        269 => 1,
-        316 => 1,
-        317 => 5,
-        807 => 1,
+}
+
+sub waste_quantity_max {
+    return (
+        $SERVICE_IDS{domestic_refuse} => 1,
+        $SERVICE_IDS{domestic_mixed} => 1,
+        $SERVICE_IDS{fas_mixed} => 1,
+        $SERVICE_IDS{domestic_food} => 1,
+        $SERVICE_IDS{garden} => 5,
+        $SERVICE_IDS{domestic_paper} => 1,
     );
+}
 
-    $self->{c}->stash->{quantity_max} = \%quantity_max;
+sub waste_bulky_missed_blocked_codes {
+    return {
+        # Not Completed
+        18491 => {
+            all => 'the collection could not be completed',
+        },
+    };
+}
 
-    $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
+=head2 garden_subscription_email_renew_reminder_opt_in
 
-    my $result = $self->{api_serviceunits};
-    return [] unless @$result;
+Gives users the option to opt-in or out of a reminder email for renewal
+when they first subscribe or renew.
 
-    my $events = $self->_parse_events($self->{api_events});
-    $self->{c}->stash->{open_service_requests} = $events->{enquiry};
+=cut
 
-    # If there is an open Garden subscription (1159) event, assume
-    # that means a bin is being delivered and so a pending subscription
-    if ($events->{enquiry}{1159}) {
-        $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
-        $self->{c}->stash->{open_garden_event} = 1;
+sub garden_subscription_email_renew_reminder_opt_in { 1 }
+
+sub garden_collection_time { '6:30am' }
+
+sub garden_echo_container_name { 'BRT - Paid Collection Container Quantity' }
+
+sub garden_container_data_extract {
+    my ($self, $data) = @_;
+    my $garden_bins = $data->{Value};
+    # $data->{Value} is a code for the number of bins and corresponds 1:1 (bin), 2:2 (bins) etc,
+    # until it gets to 9 when it corresponds to sacks
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
+    if ($garden_bins == '9') {
+        my $garden_cost = $costs->sacks(1) / 100;
+        return ($garden_bins, 1, $garden_cost);
+    } else {
+        my $garden_cost = $costs->bins($garden_bins) / 100;
+        return ($garden_bins, 0, $garden_cost);
     }
+}
 
-    # Small items collection event
-    if ($self->{c}->stash->{waste_features}->{bulky_missed}) {
-        $self->bulky_check_missed_collection($events, {
-            # Not Completed
-            18491 => {
-                all => 'the collection could not be completed',
-            },
-        });
+sub waste_extra_service_info_all_results {
+    my ($self, $property, $result) = @_;
+
+    if (!(@$result && grep { $_->{ServiceId} == $self->garden_service_id } @$result)) {
+        # No garden collection possible
+        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
     }
+}
 
-    my @to_fetch;
-    my %schedules;
-    my @task_refs;
-    my %expired;
+sub waste_extra_service_info {
+    my ($self, $property, @rows) = @_;
+
     my $calendar_save = {};
-    foreach (@$result) {
-        my $servicetask = $self->_get_current_service_task($_) or next;
-        my $schedules = _parse_schedules($servicetask);
-        # Brent has two overlapping schedules for food
-        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == 316 || $_->{ServiceId} == 263;
-        $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
+    foreach (@rows) {
+        next unless $_->{active};
+        my $schedules = $_->{Schedules};
 
-        next unless $schedules->{next} or $schedules->{last};
-        $schedules{$_->{Id}} = $schedules;
-        push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
-        push @task_refs, $schedules->{last}{ref} if $schedules->{last};
+        $_->{timeband} = _timeband_for_schedule($schedules->{next});
+
+        # Brent has two overlapping schedules for food
+        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == $SERVICE_IDS{domestic_food} || $_->{ServiceId} == $SERVICE_IDS{communal_refuse};
 
         # Check calendar allocation
-        if (($_->{ServiceId} == 262 || $_->{ServiceId} == 317 || $_->{ServiceId} == 807) && ($schedules->{description} =~ /every other/ || $schedules->{description} =~ /every \d+(th|st|nd|rd) week/) && $schedules->{next}{schedule}) {
+        if (($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{garden} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper}) && ($schedules->{description} =~ /every other/ || $schedules->{description} =~ /every \d+(th|st|nd|rd) week/) && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
             my $day = lc $allocation->{RoundName};
             $day =~ s/\s+//g;
             my ($week) = $allocation->{RoundGroupName} =~ /Week (\d+)/;
             my $links;
-            if ($_->{ServiceId} == 262 || $_->{ServiceId} == 807) {
+            if ($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper}) {
                 if ($week) {
                     $calendar_save->{number} = $week;
                 } elsif (($week) = $allocation->{RoundGroupName} =~ /WK(\w)/) {
@@ -1146,113 +1076,13 @@ sub bin_services_for_address {
                     $links = $self->{c}->cobrand->feature('waste_calendar_links');
                     $self->{c}->stash->{calendar_link} = $links->{$id};
                 }
-            } elsif ($_->{ServiceId} == 317) {
+            } elsif ($_->{ServiceId} == $SERVICE_IDS{garden}) {
                 my $id = sprintf("%s-%s", $day, $week);
                 my $links = $self->{c}->cobrand->feature('ggw_calendar_links');
                 $self->{c}->stash->{ggw_calendar_link} = $links->{$id};
             }
         }
-
     }
-    push @to_fetch, GetTasks => \@task_refs if @task_refs;
-
-    my $cfg = $self->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, 'brent', 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
-
-    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
-
-    my @out;
-    my %task_ref_to_row;
-    foreach (@$result) {
-        my $service_id = $_->{ServiceId};
-        my $service_name = $self->service_name_override($_);
-        next unless $schedules{$_->{Id}} || ( $service_name eq 'Garden waste' && $expired{$_->{Id}} );
-
-        my $schedules = $schedules{$_->{Id}} || $expired{$_->{Id}};
-        my $servicetask = $self->_get_current_service_task($_);
-
-        my $containers = $service_to_containers{$service_id};
-        my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
-
-        my $request_max = $quantity_max{$service_id};
-
-        my $timeband = _timeband_for_schedule($schedules->{next});
-
-        my $garden = 0;
-        my $garden_bins;
-        my $garden_sacks;
-        my $garden_cost = 0;
-        my $garden_due;
-        my $garden_overdue;
-        if ($service_name eq 'Garden waste') {
-            $garden = 1;
-            $garden_due = $self->waste_sub_due($schedules->{end_date});
-            $garden_overdue = $expired{$_->{Id}};
-            my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
-            foreach (@$data) {
-                if ( $_->{DatatypeName} eq 'BRT - Paid Collection Container Quantity' ) {
-                    $garden_bins = $_->{Value};
-                    # $_->{Value} is a code for the number of bins and corresponds 1:1 (bin), 2:2 (bins) etc,
-                    # until it gets to 9 when it corresponds to sacks
-                    if ($garden_bins == '9') {
-                        $garden_sacks = 1;
-                        $garden_cost = $self->garden_waste_sacks_cost_pa($garden_bins) / 100;
-                    } else {
-                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
-                    }
-                }
-            }
-            $request_max = $garden_bins;
-
-            if ($self->{c}->stash->{waste_features}->{garden_disabled}) {
-                $garden = 0;
-            }
-        }
-
-        my $row = {
-            id => $_->{Id},
-            service_id => $service_id,
-            service_name => $service_name,
-            garden_waste => $garden,
-            garden_bins => $garden_bins,
-            garden_sacks => $garden_sacks,
-            garden_cost => $garden_cost,
-            garden_due => $garden_due,
-            garden_overdue => $garden_overdue,
-            request_allowed => $request_allowed{$service_id} && $request_max && $schedules->{next},
-            requests_open => $open_requests,
-            request_containers => $containers,
-            request_max => $request_max,
-            service_task_id => $servicetask->{Id},
-            service_task_name => $servicetask->{TaskTypeName},
-            service_task_type_id => $servicetask->{TaskTypeId},
-            schedule => $schedules->{description},
-            last => $schedules->{last},
-            next => $schedules->{next},
-            end_date => $schedules->{end_date},
-            timeband => $timeband,
-        };
-        if ($row->{last}) {
-            my $ref = join(',', @{$row->{last}{ref}});
-            $task_ref_to_row{$ref} = $row;
-
-            $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
-
-            my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
-            my $missed_events = [
-                @{$events->{missed}->{$service_id} || []},
-                @{$events_unit->{missed}->{$service_id} || []},
-            ];
-            my $recent_events = $self->_events_since_date($row->{last}{date}, $missed_events);
-            $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
-        }
-        push @out, $row;
-    }
-
-    $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
-
-    return \@out;
 }
 
 sub _timeband_for_schedule {
@@ -1269,25 +1099,10 @@ sub _timeband_for_schedule {
     }
 }
 
-sub waste_container_actions {
-    return {
-        deliver => 1,
-        remove => 2
-    };
-}
-
-sub waste_subscription_types {
-    return {
-        New => 1,
-        Renew => 2,
-        Amend => 3,
-    };
-}
-
-sub missed_event_types { {
-    2936 => 'request',
-    2891 => 'missed',
-    2964 => 'bulky',
+sub missed_event_types { return {
+    $EVENT_TYPE_IDS{request} => 'request',
+    $EVENT_TYPE_IDS{missed} => 'missed',
+    $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
 
 around bulky_check_missed_collection => sub {
@@ -1306,16 +1121,16 @@ sub image_for_unit {
 
     my $base = '/i/waste-containers';
     my $images = {
-        262 => "$base/bin-grey",
-        265 => "$base/bin-grey-blue-lid-recycling",
-        316 => "$base/caddy-green-recycling",
-        317 => "$base/bin-green",
-        263 => "$base/large-communal-black",
-        266 => "$base/large-communal-blue-recycling",
-        271 => "$base/bin-brown",
-        267 => "$base/sack-black",
-        269 => "$base/sack-clear",
-        807 => "$base/bag-blue",
+        $SERVICE_IDS{domestic_refuse} => svg_container_bin("wheelie", '#767472'),
+        $SERVICE_IDS{domestic_mixed} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
+        $SERVICE_IDS{domestic_food} => "$base/caddy-green-recycling",
+        $SERVICE_IDS{garden} => svg_container_bin("wheelie", '#41B28A'),
+        $SERVICE_IDS{communal_refuse} => svg_container_bin("communal", '#333333'),
+        $SERVICE_IDS{communal_mixed} => svg_container_bin("communal", '#00A6D2', undef, 1),
+        $SERVICE_IDS{communal_food} => svg_container_bin("wheelie", '#8B5E3D'),
+        $SERVICE_IDS{fas_refuse} => svg_container_sack("normal", '#333333'),
+        $SERVICE_IDS{fas_mixed} => svg_container_sack("normal", '#d8d8d8'),
+        $SERVICE_IDS{domestic_paper} => "$base/bag-blue",
         bulky => "$base/electricals-batteries-textiles",
     };
     return $images->{$service_id};
@@ -1325,31 +1140,19 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        262 => 'Rubbish',
-        265 => 'Recycling',
-        316 => 'Food waste',
-        317 => 'Garden waste',
-        263 => 'Communal rubbish',
-        266 => 'Communal recycling',
-        271 => 'Communal food waste',
-        267 => 'Rubbish (black sacks)',
-        269 => 'Recycling (clear sacks)',
-        807 => 'Paper and cardboard (blue sacks)',
+        $SERVICE_IDS{domestic_refuse} => 'Rubbish',
+        $SERVICE_IDS{domestic_mixed} => 'Recycling',
+        $SERVICE_IDS{domestic_food} => 'Food waste',
+        $SERVICE_IDS{garden} => 'Garden waste',
+        $SERVICE_IDS{communal_refuse} => 'Communal rubbish',
+        $SERVICE_IDS{communal_mixed} => 'Communal recycling',
+        $SERVICE_IDS{communal_food} => 'Communal food waste',
+        $SERVICE_IDS{fas_refuse} => 'Rubbish (black sacks)',
+        $SERVICE_IDS{fas_mixed} => 'Recycling (clear sacks)',
+        $SERVICE_IDS{domestic_paper} => 'Paper and cardboard (blue sacks)',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
-}
-
-sub within_working_days {
-    my ($self, $dt, $days, $future) = @_;
-    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
-    $dt = $wd->add_days($dt, $days)->ymd;
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-    if ( $future ) {
-        return $today ge $dt;
-    } else {
-        return $today le $dt;
-    }
 }
 
 sub waste_munge_report_data {
@@ -1368,10 +1171,20 @@ sub waste_munge_report_data {
 
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
+
+    if ($c->get_param('original_booking_id')) {
+        if (my $booking_report = FixMyStreet::DB->resultset("Problem")->find({ id => $c->get_param('original_booking_id') })) {
+            $c->set_param('Original_Event_ID', $booking_report->external_id);
+        }
+    }
+
     $c->set_param('service_id', $id);
 }
 
 # Replace the usual checkboxes grouped by service with one radio list
+
+sub waste_request_single_radio_list { 1 }
+
 sub waste_munge_request_form_fields {
     my ($self, $field_list) = @_;
 
@@ -1381,10 +1194,12 @@ sub waste_munge_request_form_fields {
         my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
+        my ($cost, $hint) = $self->request_cost($id);
         push @radio_options, {
             value => $id,
             label => $self->{c}->stash->{containers}->{$id},
             disabled => $value->{disabled},
+            $hint ? (hint => $hint) : (),
         };
         $seen{$id} = 1;
     }
@@ -1400,6 +1215,25 @@ sub waste_munge_request_form_fields {
     );
 }
 
+=head2 request_cost
+
+Calculate how much, if anything, a request for a container should be.
+
+=cut
+
+sub request_cost {
+    my ($self, $id) = @_;
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
+    my $cost;
+    $cost = $costs->get_cost('request_cost_blue_bin') if $id == $CONTAINER_IDS{recycling_blue_bin};
+    $cost = $costs->get_cost('request_cost_food_caddy') if $id == $CONTAINER_IDS{food_caddy};
+    if ($cost) {
+        my $price = sprintf("£%.2f", $cost / 100);
+        $price =~ s/\.00$//;
+        my $hint = "There is a $price administration/delivery charge to replace your container";
+        return ($cost, $hint);
+    }
+}
 
 =head2 alternative_backend_field_names
 
@@ -1423,6 +1257,13 @@ sub waste_munge_request_data {
     my ($self, $id, $data, $form) = @_;
 
     my $c = $self->{c};
+
+    for (qw(how_long_lived contamination_reports ordered_previously)) {
+        $c->set_param("request_$_", $data->{$_} || '');
+    }
+    if (request_referral($id, $data)) {
+        $c->set_param('request_referral', 1);
+    }
 
     my $address = $c->stash->{property}->{address};
     my $container = $c->stash->{containers}{$id};
@@ -1458,38 +1299,36 @@ sub waste_munge_request_data {
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
 
     my $notes;
-    if ($data->{notes_damaged}) {
-        $notes = $c->stash->{label_for_field}->($form, 'notes_damaged', $data->{notes_damaged});
-        $data->{detail} .= " - $notes";
-    }
-    if ($data->{details_damaged}) {
-        $data->{detail} .= "\n\nDamage reported during collection: " . $data->{details_damaged};
-        $notes .= " - " . $data->{details_damaged};
-    }
     $c->set_param('Container_Request_Notes', $notes) if $notes;
 
     # XXX Share somewhere with reverse?
     my %service_id = (
-        16 => 262,
-        6 => 265,
-        8 => 269,
-        11 => 316,
-        13 => 317,
-        46 => 807,
+        $CONTAINER_IDS{rubbish_grey_bin} => $SERVICE_IDS{domestic_refuse},
+        $CONTAINER_IDS{recycling_blue_bin} => $SERVICE_IDS{domestic_mixed},
+        $CONTAINER_IDS{recycling_clear_sack} => $SERVICE_IDS{fas_mixed},
+        $CONTAINER_IDS{food_caddy} => $SERVICE_IDS{domestic_food},
+        $CONTAINER_IDS{garden_green_bin} => $SERVICE_IDS{garden},
+        $CONTAINER_IDS{paper_blue_sack} => $SERVICE_IDS{domestic_paper},
     );
     $c->set_param('service_id', $service_id{$id});
 }
 
+sub request_referral {
+    my ($id, $data) = @_;
+
+    # return 1 if ($data->{contamination_reports} || 0) >= 3; # Will be present on missing only
+    return 1 if ($data->{how_long_lived} || '') eq '3more'; # Will be present on new build only
+    return 1 if $data->{ordered_previously};
+}
+
+sub waste_request_form_first_title { 'Which container do you need?' }
 sub waste_request_form_first_next {
     my $self = shift;
-
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::Brent';
-    $self->{c}->stash->{form_title} = 'Which container do you need?';
 
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'request_refuse_call_us' if $choice == 16;
+        return 'request_refuse_call_us' if $choice == $CONTAINER_IDS{rubbish_grey_bin};
         return 'replacement';
     };
 }
@@ -1516,39 +1355,17 @@ sub waste_munge_request_form_data {
 =cut
 
 sub waste_auto_confirm_report { 1 }
-sub waste_staff_choose_payment_method { 0 }
-sub waste_cheque_payments { 0 }
 
-use constant GARDEN_WASTE_SERVICE_ID => 317;
+sub garden_service_id { $SERVICE_IDS{garden} }
 use constant GARDEN_WASTE_PAID_COLLECTION_BIN => 1;
 use constant GARDEN_WASTE_PAID_COLLECTION_SACK => 2;
 sub garden_service_name { 'Garden waste collection service' }
-sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
-sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
-sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
-sub garden_due_days { 90 }
+sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
+sub garden_due_days { 87 }
 
-sub garden_current_service_from_service_units {
-    my ($self, $services) = @_;
-
-    my $garden;
-    for my $service ( @$services ) {
-        if ( $service->{ServiceId} == GARDEN_WASTE_SERVICE_ID ) {
-            $garden = $self->_get_current_service_task($service);
-            last;
-        }
-    }
-
-    return $garden;
-}
-
-sub bin_payment_types {
-    return {
-        'csc' => 1,
-        'credit_card' => 2,
-        'direct_debit' => 3,
-        'cheque' => 4,
-    };
+sub waste_show_garden_modify {
+    my ($self, $unit) = @_;
+    return $self->{c}->stash->{is_staff};
 }
 
 sub waste_cc_payment_line_item_ref {
@@ -1601,22 +1418,6 @@ sub waste_cc_payment_admin_fee_line_item_ref {
     return "Brent-" . $p->id;
 }
 
-
-sub waste_garden_sub_payment_params {
-    my ($self, $data) = @_;
-    my $c = $self->{c};
-
-    my $container = $data->{container_choice} || '';
-    if ($container eq 'sack') {
-        my $bin_count = 1; # $data->{bins_wanted};
-        $data->{bin_count} = $bin_count;
-        $data->{new_bins} = $bin_count;
-        my $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
-        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
-        $c->set_param('payment', $cost_pa);
-    }
-}
-
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};
@@ -1624,7 +1425,7 @@ sub waste_garden_sub_params {
     my $container = $data->{container_choice} || '';
     $container = $container eq 'sack' ? GARDEN_WASTE_PAID_COLLECTION_SACK : GARDEN_WASTE_PAID_COLLECTION_BIN;
     $c->set_param('Paid_Collection_Container_Type', $container);
-    $c->set_param('Paid_Collection_Container_Quantity', $data->{bin_count});
+    $c->set_param('Paid_Collection_Container_Quantity', $data->{bins_wanted});
     $c->set_param('Payment_Value', $data->{cost_pa});
     if ( $data->{new_bins} > 0 && $container != GARDEN_WASTE_PAID_COLLECTION_SACK ) {
         $c->set_param('Container_Type', $container);
@@ -1647,33 +1448,6 @@ sub waste_garden_mod_params {
     }
 }
 
-=item * Sacks cost the same as bins
-
-=cut
-
-sub garden_waste_sacks_cost_pa {
-    return $_[0]->garden_waste_cost_pa();
-}
-
-=item * Garden subscription is half price in October-December.
-
-=cut
-
-sub garden_waste_cost_pa {
-    my ($self, $bin_count) = @_;
-
-    $bin_count ||= 1;
-
-    my $cost = $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
-    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
-
-    if ($now->month =~ /^(10|11|12)$/ ) {
-        $cost = $cost/2;
-    }
-
-    return $cost;
-}
-
 =item * Uses custom text for the title field for new reports.
 
 =cut
@@ -1691,23 +1465,6 @@ sub new_report_title_field_hint {
 =back
 
 =cut
-
-sub apply_garden_waste_discount {
-    my ($self, @charges ) = @_;
-
-    my $discount = $self->{c}->stash->{waste_features}->{ggw_discount_as_percent};
-    my $proportion_to_pay = 1 - $discount / 100;
-    my @discounted = map { $_ ? $_ * $proportion_to_pay : $_ } @charges;
-    return @discounted;
-}
-
-sub garden_waste_new_bin_admin_fee { 0 }
-
-sub waste_get_pro_rata_cost {
-    my $self = shift;
-
-    return $self->feature('payment_gateway')->{ggw_cost};
-}
 
 sub bulky_collection_time { { hours => 7, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59 } }
@@ -1727,16 +1484,6 @@ sub collection_date {
     return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
 }
 
-sub _bulky_refund_cutoff_date { }
-
-sub _bulky_date_to_dt {
-    my ($self, $date) = @_;
-    $date = (split(";", $date))[0];
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
-    my $dt = $parser->parse_datetime($date);
-    return $dt ? $dt->truncate( to => 'day' ) : undef;
-}
-
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
@@ -1744,7 +1491,7 @@ sub waste_munge_bulky_data {
     my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
 
     my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
-    $data->{extra_GUID} = $self->{c}->session->{$guid_key};
+    $data->{extra_GUID} = $self->{c}->waste_cache_get($guid_key);
     $data->{extra_reservation} = $ref;
 
     $data->{title} = "Small items collection";
@@ -1766,7 +1513,8 @@ sub waste_munge_bulky_data {
                 $data->{extra_Batteries} = 1;
             } elsif ($item eq 'Podback Bag') {
                 $data->{extra_Coffee_Pods} = 1;
-            } elsif ($item eq 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)') {
+            } elsif ($item eq 'Paint, up to 5 litres capacity (1 x 5 litre tin, 5 x 1 litre tins etc.)'
+                || $item eq 'Paint, 1 can, up to 5 litres') {
                 $data->{extra_Paint} = 1;
             } elsif ($item eq 'Textiles, up to 60 litres (one black sack / 3 carrier bags)') {
                 $data->{extra_Textiles} = 1;
@@ -1801,6 +1549,29 @@ sub waste_reconstruct_bulky_data {
     return $saved_data;
 }
 
+=item bulky_open_overdue
+
+Returns true if the booking is open the day after the day the collection was due.
+
+=cut
+
+sub bulky_open_overdue {
+    my ($self, $event) = @_;
+
+    if ($event->{state} eq 'open' && $self->_bulky_collection_overdue($event)) {
+        return 1;
+    }
+}
+
+sub _bulky_collection_overdue {
+    my $collection_due_date = $_[1]->{date};
+
+    $collection_due_date = $collection_due_date->clone->add(days => 1)->truncate(to => 'day');
+    my $today = DateTime->now->set_time_zone($collection_due_date->time_zone);
+
+    return $today > $collection_due_date;
+}
+
 sub _barnet_non_street {
     return [
         'Abandoned vehicles',
@@ -1809,20 +1580,6 @@ sub _barnet_non_street {
         'Overhanging foliage',
     ]
 };
-
-sub _camden_non_street {
-    return [
-        'Abandoned Vehicles',
-        'Dead animal',
-        'Flyposting',
-        'Public toilets',
-        'Recycling & rubbish (Missed bin)',
-        'Dott e-bike / e-scooter',
-        'Human Forest e-bike',
-        'Lime e-bike / e-scooter',
-        'Tier e-bike / e-scooter',
-    ]
-}
 
 sub _harrow_non_street {
     return [

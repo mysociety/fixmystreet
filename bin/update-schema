@@ -223,6 +223,8 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0089' if column_exists('body', 'cobrand');
+    return '0088' if index_exists('problem_created_idx');
     return '0087' if column_exists('manifest_theme', 'wasteworks_name');
     return '0086' if constraint_contains('problem_send_state_check', 'processing');
     return '0085' if column_exists('problem', 'send_state');

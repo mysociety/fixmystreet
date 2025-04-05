@@ -1,3 +1,12 @@
+[% IF disallowed == 'waste';
+    SET property_id = problem.waste_property_id;
+%]
+<p>
+   <a href="/waste[% IF property_id %]/[% property_id %][% END %]">See your bin collections</a>.
+</p>
+    [% RETURN %]
+[% END %]
+
 [% IF disallowed.match('reporter') AND (NOT disallowed.match('open') OR problem.is_open) %]
     <p>
         Only the original reporter may leave updates.
@@ -8,7 +17,7 @@
         [% END %]
     </p>
 [% ELSE %]
-    <p>[% loc('This report is now closed to updates.') %]
+    <p>[% loc('This report is now closed to updates from the public.') %]
        [% tprintf(loc('You can <a href="%s">make a new report in the same location</a>.'),
               c.uri_for( '/report/new', { longitude = longitude, latitude = latitude } )
           ) %]

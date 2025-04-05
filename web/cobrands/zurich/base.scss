@@ -83,8 +83,10 @@
 //  a percentage width on input#pc breaks iPhone landscape/portrait switching
 //  and the other changes make this fix pretty
 
-.postcode-form-box div {
-  border-color:transparent;
+.postcode-form-box {
+  div {
+    border-color:transparent;
+  }
   input#pc {
     max-width: 15em;
     background-color: #fff;
@@ -142,7 +144,7 @@ h2.static-with-rule {
 
 .admin-nav {
     background: #f4f4f4;
-    @include linear-gradient(#fbfbfb, #efefef);
+    background: linear-gradient(#fbfbfb, #efefef);
     border-bottom: 2px solid $table_border_color;
     ul {
         overflow:auto;
@@ -345,5 +347,3 @@ table#admin_bodies tr.is-deleted {
       page-break-before: always;
     }
 }
-
-@import "bikeable_banner";

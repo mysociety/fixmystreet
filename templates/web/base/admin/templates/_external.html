@@ -1,12 +1,47 @@
 [% IF errors.external_status_code %]
     <div class="form-error">[% errors.external_status_code %]</div>
 [% END %]
-<div class="admin-hint">
-  <p>
-    [% loc('If you want to use this template to prefill the update field when a report&rsquo;s <strong>external</strong> (e.g. Confirm) status code changes, enter the status code here.') %]
-  </p>
-</div>
-<p>
-  <label for="external_status_code">[% loc('External status code') %]</label>
-  <input type="text" id="external_status_code" name="external_status_code" class="form-control" size="30" value="[% rt.external_status_code | html %]">
-</p>
+
+[% IF c.cobrand.split_echo_external_status_code %]
+
+    [% parts = rt.external_status_code.split(',') ~%]
+
+    <div class="fms-admin-info">
+        <p>Response templates are used (as long as the Auto-response checkbox is ticked) when updates are received from backend systems such as Echo; additionally, on WasteWorks they are also used to display task completion status on the property’s bin day page.</p>
+        <p>To use a response template for an update on an event from Echo, you should only use some or all of the category, state, and Resolution Code ID fields. When an update is received on an event, the system will try and find a matching template based upon the report category, the new state, and if present any resolution code. For example, a template with a category of “Request new container” and a Resolution Code ID of 412 will be used when an update from Echo is received that completes a request event with the resolution “Container/s already on Site” (412); a template with a category of “Garden Subscription” and a state of “Fixed” will be used when any garden subscription event is Completed by Echo.</p>
+        <p>When displaying task completion status on a bin day page, to override the default resolution text from Echo, you should use the Resolution Code ID, optionally with the Task type ID or Task state. For example, a template with no category, a Resolution Code ID of 524 and a Task type ID of 3226 will be used on a bin day page when a Bromley Garden Waste (3226) collection was not completed due to textile contamination (524), instead of the default “Con - Textiles” text.</p>
+    </div>
+
+    <p>
+      <label for="resolution_code">External status code / Resolution Code ID</label>
+      <input type="text" id="resolution_code" name="resolution_code" class="form-control" size="30" value="[% parts.0 %]">
+    </p>
+
+    <p>
+      <label for="task_type">Task type ID</label>
+      <input type="text" id="task_type" name="task_type" class="form-control" size="30" value="[% parts.1 %]">
+    </p>
+
+    <p>
+      <label for="task_state">Task state</label>
+      <select class="form-control" name="task_state" id="task_state">
+          <option value="">---</option>
+        [% FOR opt IN ['Completed', 'Not Completed'] %]
+          <option value="[% opt %]"[% ' selected' IF parts.2 == opt %]>[% opt %]</option>
+        [% END %]
+      </select>
+    </p>
+
+[% ELSE %]
+
+    <div class="admin-hint">
+      <p>
+        [% loc('If you want to use this template to prefill the update field when a report&rsquo;s <strong>external</strong> (e.g. Confirm) status code changes, enter the status code here.') %]
+      </p>
+    </div>
+    <p>
+      <label for="external_status_code">[% loc('External status code') %]</label>
+      <input type="text" id="external_status_code" name="external_status_code" class="form-control" size="30" value="[% rt.external_status_code | html %]">
+    </p>
+
+[% END %]

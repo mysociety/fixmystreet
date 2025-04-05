@@ -88,7 +88,7 @@ $mech->create_contact_ok(
 
 my $staff_user = $mech->create_user_ok('staff@example.org', name => 'staff', from_body => $body->id);
 
-my $body3 = $mech->create_body_ok(164186, 'Northamptonshire Highways', {}, { cobrand => 'northamptonshire' });
+my $body3 = $mech->create_body_ok(164186, 'Northamptonshire Highways', { cobrand => 'northamptonshire' });
 my $ncc_staff_user = $mech->create_user_ok('ncc_staff@example.org', name => 'ncc staff', from_body => $body3->id);
 $mech->create_contact_ok(
     body_id => $body3->id,
@@ -398,9 +398,9 @@ subtest "Category extras includes form disabling string" => sub {
         });
         $contact4->push_extra_fields({ datatype_description => 'Please ring different numbers', description => 'What sort of dangerous?', code => 'danger_type',
             variable => 'true', order => '0', values => [
-                { name => 'slightly', key => 'slightly', disable => 1, disable_message => 'Ring the slightly number'  },
-                { name => 'very', key => 'very', disable => 1, disable_message => 'Ring the very number'  },
-                { name => 'extremely', key => 'extremely', disable => 1, disable_message => 'Ring the very number'  },
+                { name => 'slightly', key => 'slightly', disable_message => 'Ring the slightly number'  },
+                { name => 'very', key => 'very', disable_message => 'Ring the very number'  },
+                { name => 'extremely', key => 'extremely', disable_message => 'Ring the very number'  },
                 { name => 'No', key => 'no' }
             ]
         });

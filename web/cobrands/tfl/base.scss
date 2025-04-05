@@ -55,9 +55,7 @@ h3 {
     line-height: 1.238095238em; //26px
 }
 
-.btn--primary,
-.btn,
-.green-btn {
+.btn--primary, .btn {
     @include tflbutton;
 }
 
@@ -69,15 +67,6 @@ h3 {
     padding: 2.5em 0.5em;
 }
 
-div.form-error, p.form-error {
-    background: $red;
-}
-
-input.form-error, textarea.form-error {
-    border-color: $red;
-}
-
-
 .btn--back,
 .btn--forward,
 .btn--cancel,
@@ -86,14 +75,14 @@ input.form-error, textarea.form-error {
 .btn--shortlist,
 .btn--shortlisted {
     &:before {
-        @include svg-background-image('/cobrands/fixmystreet/images/button-icons-white');
+        background-image: url("/cobrands/fixmystreet/images/button-icons-white.svg");
     }
 }
 
 /* Header */
 
 #site-logo {
-    @include svg-background-image("/cobrands/tfl/images/Tfl_Logo_Blue-banner");
+    background-image: url("/cobrands/tfl/images/Tfl_Logo_Blue-banner.svg");
     background-repeat: no-repeat;
     background-size: 170px 60px;
     height: 60px;
@@ -126,16 +115,16 @@ input.form-error, textarea.form-error {
     div {
         display: block;
         border: 0;
-        input#sub {
-            @include tflbutton;
-            flex: unset;
-            margin-top: 1em;
-        }
-        input#pc {
-            width: 100%;
-            flex: unset;
-            @include tflfield;
-        }
+    }
+    input#sub {
+        @include tflbutton;
+        flex: unset;
+        margin-top: 1em;
+    }
+    input#pc {
+        width: 100%;
+        flex: unset;
+        @include tflfield;
     } 
 }
 

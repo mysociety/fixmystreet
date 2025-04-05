@@ -38,6 +38,8 @@ $nav_background_colour: #eee;
 $nav_colour: #000;
 $nav_hover_background_colour: $primary;
 
+$error_color: $lincs-plum;
+
 // Colour used for front page 'how to report a problem' steps
 $col_big_numbers: $lincs-text-2nd;
 
@@ -58,4 +60,12 @@ $search-help-margin-desktop: -2em -2em 0 -2em;
 $form-hint-color: transparentize(#000, 0.3);
 $form-hint-color-desktop: transparentize(#000, 0.3);
 
+$button-primary-bg-top: $primary;
+$button-primary-border: $primary;
 $button-primary-text: $lincs-text;
+
+$button-primary-hover-bg-top: darken($primary, 10%);
+$button-primary-hover-bg-bottom: darken($primary, 10%);
+$button-primary-hover-border: darken($primary, 10%);
+$button-primary-hover-text: #fff;
+

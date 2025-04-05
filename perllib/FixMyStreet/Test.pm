@@ -5,6 +5,7 @@ use parent qw(Exporter);
 use strict;
 use warnings FATAL => 'all';
 use utf8;
+use Data::Dumper::Concise::Sugar;
 use Test::More;
 use mySociety::Locale;
 
@@ -22,6 +23,8 @@ sub import {
     strict->import;
     warnings->import(FATAL => 'all');
     utf8->import;
+    Data::Dumper::Concise::Sugar->export_to_level(1);
+    binmode Test::More->builder->output, ':utf8';
     Test::More->export_to_level(1);
     $db->txn_begin;
 }
@@ -67,7 +70,7 @@ BEGIN {
         my ($self, $path, $content, $code) = @_;
         my $test_res = HTTP::Response->new();
         $test_res->code($code || 200);
-        $test_res->content($content);
+        $test_res->content(encode_utf8($content));
         $injected{$path} = $test_res;
     }
 }

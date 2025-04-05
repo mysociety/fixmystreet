@@ -1,0 +1,39 @@
+[% title = 'Your container request has been sent' %]
+[% INCLUDE waste/header.html %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        [% title %]
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+          [% INCLUDE 'waste/_report_ids.html' %]
+        </p>
+        [% IF reference %]
+        <p>
+          Your payment reference is [% reference %].
+        </p>
+        [% END %]
+    </div>
+</div>
+
+<p>
+[% message %]
+[% IF report.user.email AND report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
+We have sent a confirmation email
+[% IF reference %](you may also receive a payment receipt separately)[% END %]
+to [% report.user.email %].
+[% END %]
+</p>
+
+[% IF c.cobrand.wasteworks_config.request_timeframe %]
+<p>
+    Containers typically arrive within [% c.cobrand.wasteworks_config.request_timeframe %], but this may vary due to demand.
+</p>
+[% END %]
+
+[% TRY %][% PROCESS 'waste/_confirmation_after.html' %][% CATCH file %][% END %]
+
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
+
+[% INCLUDE footer.html %]

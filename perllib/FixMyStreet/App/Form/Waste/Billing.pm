@@ -1,3 +1,11 @@
+=head1 NAME
+
+FixMyStreet::App::Form::Waste::Billing - billing information for garden subs and renewals
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::App::Form::Waste::Billing;
 
 use utf8;
@@ -21,7 +29,7 @@ sub options_payment_method {
         shift @options;
     }
     if ($form->{c}->cobrand->waste_cheque_payments) {
-        push @options, { label => 'Telephone or Cheque Payment', value => 'cheque', data_show => '#form-cheque_reference-row' };
+        push @options, { label => 'Cheque Payment', value => 'cheque', data_show => '#form-cheque_reference-row' };
     }
     return @options;
 }

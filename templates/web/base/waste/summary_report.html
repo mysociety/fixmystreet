@@ -6,16 +6,25 @@ step1 = 'report';
 %]
 
 [% BLOCK answers %]
+  [% SET first_service = 1 %]
   [% FOR service IN data.keys.grep('^service-') %]
     [% NEXT UNLESS data.$service %]
     [% SET service_id = service.replace('service-', '') %]
     <div class="govuk-summary-list__row">
+      [% IF cobrand.moniker == 'bexley' %]
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% IF first_service; 'Bins missed'; END %]</dt>
+        <dd class="govuk-summary-list__value">
+            [% services.$service_id.service_name %]
+        </dd>
+        [% first_service = 0 %]
+      [% ELSE %]
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% services.$service_id.service_name %]</dt>
         <dd class="govuk-summary-list__value">
             [%~ IF services.$service_id.last.date %]
                 [%~ date.format(services.$service_id.last.date) | replace('~~~', services.$service_id.last.ordinal) %]
             [%~ END ~%]
         </dd>
+      [% END %]
     </div>
   [% END %]
 [% END %]

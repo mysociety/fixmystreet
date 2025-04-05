@@ -3,6 +3,7 @@
 %]
 
 [% BLOCK column %]
+    <h2 class="hidden-js">[% loc('Reports') %]</h2>
     <ul class="item-list item-list--reports" data-user-name="[% c.user.name %]" data-user-email="[% c.user.email %]">
         [% IF problems %]
             [% FOREACH problem IN problems %]

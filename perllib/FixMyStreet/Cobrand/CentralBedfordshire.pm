@@ -282,16 +282,25 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         external_id => 'CRNo',
+        flytipping_types => 'Fly-tipping types',
     );
-
-    return if $csv->dbi; # Already covered
 
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        return {
-            external_id => $report->external_id,
+        my $types = $csv->_extra_field($report, 'Type') || $csv->_extra_field($report, 'type_of_waste') || [];
+        $types = [$types] unless ref $types;
+        $types = join(';', sort @$types);
+
+        my $data = {
+            flytipping_types => $types,
         };
+
+        unless ($csv->dbi) {
+            $data->{external_id} = $report->external_id;
+        }
+
+        return $data;
     });
 }
 

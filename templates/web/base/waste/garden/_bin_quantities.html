@@ -70,11 +70,20 @@
       [%~ END %]>
     </div>
     <div class="fieldset-item">
-      [%# Subscribe has already applied discounts by this point %]
-      [% IF form.saved_data.apply_discount AND form_page != 'subscribe' %]
-        <span class="cost-pa" id="total_per_year">£[% tprintf('%.2f', cobrand.apply_garden_waste_discount(per_bin_cost / 100) ) %] per bin per year</span>
-      [% ELSE %]
-        <span class="cost-pa" id="total_per_year">£[% tprintf('%.2f', per_bin_cost / 100 ) %] per bin per year</span>
-      [% END %]
+      [% IF form_page == 'renew';
+            SET cost = garden_costs.per_bin_renewal;
+            SET first_cost = garden_costs.per_bin_renewal_first;
+        ELSE;
+            SET cost = garden_costs.per_bin;
+            SET first_cost = garden_costs.per_bin_first;
+        END %]
+
+        [% IF cost != first_cost %]
+          <span "cost-pa">£<span id="first-bin-cost-pa">[% tprintf('%.2f', first_cost / 100 ) %]</span> per year for the first bin.</span>
+          <br>
+          <span "cost-pa">£<span id="general-bin-cost-pa">[% tprintf('%.2f', cost / 100 ) %]</span> per bin per year for the rest.</span>
+        [% ELSE %]
+          <span class="cost-pa" id="total_per_year">£[% tprintf('%.2f', cost / 100 ) %] per bin per year</span>
+        [% END %]
     </div>
   </div>

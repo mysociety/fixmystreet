@@ -102,12 +102,6 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, London Borough of Hackney//;
 }
 
-=item * Hackney use OSM maps
-
-=cut
-
-sub map_type { 'OSM' }
-
 =item * Default map zoom level of 6
 
 =cut

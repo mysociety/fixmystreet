@@ -1,0 +1,122 @@
+<div class="govuk-grid-row" id="in-cab-logs">
+  [% IF property.garden_signup_eligible %]
+  <h3 class="govuk-heading-m waste-service-name">
+    Brown Wheelie Bin
+  </h3>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-quarter text-centered">
+      <img src="/i/waste-containers/bexley/garden-waste-brown-bin.png" alt="" class="waste-service-image">
+    </div>
+    <div class="govuk-grid-column-three-quarters">
+      <div class="waste-services-launch-panel" id="panel-GA-240">
+        <p><strong>Status:</strong> You do not have a Garden waste collection.
+        </p>
+        <p>
+          If you're a keen gardener, we can take away your garden waste. We'll
+          deliver a bin you can use, and empty it every two weeks.
+        </p>
+        <a class="btn btn--primary" href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Sign up for a garden waste collection</a>
+      </div>
+    </div>
+  </div>
+  [% END %]
+
+  [%# Allow superusers to see red tags and service updates for debugging purposes %]
+  [% IF c.user.is_superuser %]
+  <details>
+    <summary>🐞 Superuser debugging</summary>
+    <h2>Property</h2>
+    <dl>
+      <dt>UPRN</dt>
+      <dd>[% property.uprn %]</dd>
+      [% IF property.parent_property %]
+      <dt>Parent UPRN</dt>
+      <dd>[% property.parent_property.uprn %]</dd>
+      [% END %]
+      <dt>USRN</dt>
+      <dd>[% property.usrn %]</dd>
+    </dl>
+    <h2>Services</h2>
+    [% FOREACH service IN service_data %]
+    <dl>
+      <dt>ID</dt>
+      <dd>[% service.service_id %]</dd>
+      <dt>Name</dt>
+      <dd>[% service.service_name %]</dd>
+      <dt>Description</dt>
+      <dd>[% service.service_description %]</dd>
+      <dt>Round schedule</dt>
+      <dd>[% service.round_schedule %]</dd>
+    </dl>
+    <hr>
+    [% END %]
+    <h2>Recent scheduled collections</h2>
+    [% FOREACH round IN property.recent_collections.keys %]
+    <dl>
+      <dt>[% round %]</dt>
+      <dd>[% property.recent_collections.$round %]</dd>
+    </dl>
+    [% END %]
+    <h2>Completed or attempted collections</h2>
+    [% FOREACH round IN property.completed_or_attempted_collections.keys %]
+    <dl>
+      <dt>[% round %]</dt>
+      <dd>[% property.completed_or_attempted_collections.$round %]</dd>
+    </dl>
+    [% END %]
+    <h2>Missed collection reports</h2>
+    [% IF property.open_reports.missed.size %]
+    [% FOREACH report IN property.open_reports.missed %]
+        <p>[% report.key %]: [% report.value %]</p>
+      [% END %]
+    [% ELSE %]
+    <p>No existing missed collection reports</p>
+    [% END %]
+    <h2>Open container requests</h2>
+    [% IF property.open_reports.request.size %]
+    [% FOREACH report IN property.open_reports.request %]
+        <p>[% report.key %]: [% report.value %]</p>
+      [% END %]
+    [% ELSE %]
+    <p>No existing container requests</p>
+    [% END %]
+    <h2>Red tags</h2>
+    [% IF property.red_tags && property.red_tags.size %]
+    [% FOREACH tag IN property.red_tags %]
+    <h3>[% tag.reason %]</h3>
+    <dl>
+      <dt>Date</dt>
+      <dd>[% tag.date %]</dd>
+
+      <dt>UPRN</dt>
+      <dd>[% tag.uprn %]</dd>
+
+      <dt>Round</dt>
+      <dd>[% tag.round %]</dd>
+
+      <dt>Reason</dt>
+      <dd>[% tag.reason %]</dd>
+    </dl>
+    <hr>
+    [% END %]
+    [% ELSE %]
+    <p>No red tags</p>
+    [% END %]
+    <h2>Service updates</h2>
+    [% IF property.service_updates && property.service_updates.size %]
+    [% FOREACH update IN property.service_updates %]
+    <h3>[% update.reason %]</h3>
+    <dl>
+      <dt>Date</dt>
+      <dd>[% date.format(update.date, '%A, %-d~~~ %B %Y at %l:%M%p') | replace('~~~', update.ordinal) %]</dd>
+
+      <dt>Round</dt>
+      <dd>[% update.round %]</dd>
+      [% END %]
+    </dl>
+    [% ELSE %]
+    <p>No service updates</p>
+    [% END %]
+  </details>
+  [% END %]
+</div>

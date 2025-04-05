@@ -12,13 +12,11 @@
         </div>
     </div>
     <div class="row">
-        <div class="col">
-            [% IF type == 'singlevaluelist' %]
+        <div class="col js-metadata-option-disable-toggle">
             <p class="form-check">
                 <input type="checkbox" name="metadata[[% i %]].values[[% j %]].disable" value="1" id="metadata-[% i %]-values-[% j %]-disable" data-toggle-visibility="#js-disable-form-message-box-[% i %]-[% j %]" [% ' checked' IF option.disable %]>
                 <label for="metadata-[% i %]-values-[% j %]-disable">[% loc('Disable form when this option is selected') %]</label>
             </p>
-            [% END %]
             <p class="form-group [% 'hidden-js' IF NOT option.disable %]" id="js-disable-form-message-box-[% i %]-[% j %]">
                 <label for="disabled-message-[% i %]-[% j %]">[% loc('Message to show when form is disabled (HTML permitted)') %]</label>
                 <textarea id="disabled-message-[% i %]-[% j %]" name="metadata[[% i %]].values[[% j %]].disable_message" class="form-control">[% option.disable_message OR meta.datatype_description | html %]</textarea>

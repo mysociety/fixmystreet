@@ -1,0 +1,216 @@
+@import "../sass/h5bp";
+@import "./_variables";
+@import "../sass/mixins";
+@import "../sass/base";
+@import "../fixmystreet-uk-councils/societyworks-footer";
+
+html {
+    body, p {
+        font-size: 1.25rem;
+    }
+}
+
+// GENERAL COMPONENTS
+h1, h2, h3 {
+    font-family: $heading-font;
+}
+
+/* BUTTONS */
+.btn--primary,
+.postcode-form-box input#sub,
+#report-cta {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+  @include button-size();
+  text-decoration: none; // For #report-cta
+  font-size: 1.25rem;
+  @include nott-focus-state;
+}
+
+.btn-secondary,
+.nav-menu a.btn-secondary,
+a#geolocate_link,
+.my-account-buttons a{
+  @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+  @include button-size();
+  border-width: 0.125rem;
+  border-radius: $button-border-radius;
+  text-decoration: none; // For .my-account-buttons
+  font-size: 1.25rem;
+  @include nott-focus-state;
+}
+
+input[type="text"],
+textarea,
+.postcode-form-box div,
+.form-control {
+    border: 2px solid $grey;
+    border-radius: 0.25rem;
+    @include nott-focus-state;
+}
+
+a,
+.nav-menu span {
+    @include nott-focus-state;
+}
+
+.site-message {
+    border: 0.3rem solid $blue-900;
+    border-radius: 0.5rem;
+
+    :first-child {
+        margin-top: 0;
+    }
+}
+
+// HEADER
+header, .nav-wrapper {
+    .container {
+        max-width: none;
+    }
+}
+
+.nav-menu a,
+.nav-menu a:visited {
+    background-color: $blue-900;
+    border-bottom: none;
+    color: $primary_text;
+    font-weight: 700;
+}
+
+.nav-menu span {
+    background-color: $blue-1000;
+    color: $primary_text;
+    border-bottom: none;
+    font-weight: 700;
+}
+
+#site-logo {
+    background-size: 9.0625rem;
+    height: 5.5rem;
+    width: 16.5rem;
+    background-image: url("/cobrands/nottinghamshirepolice/images/logo.svg");
+}
+
+// FOOTER
+footer.main-footer {
+    background-color: $blue-900;
+    color: $primary_text;
+    padding-top: 4rem;
+    a {
+        color: $primary_text;
+        &:hover {
+            color: rgb(253, 168, 209);
+        }
+    }
+
+    .main-content {
+        display: flex;
+        flex-flow: column wrap;
+        -webkit-box-align: center;
+        align-items: center;
+        flex-wrap: wrap;
+        -webkit-box-pack: justify;
+        justify-content: space-between;
+        padding-bottom: 4rem;
+        gap: 5rem;
+
+        .first-column {
+            display: flex;
+            flex-flow: column wrap;
+            -webkit-box-align: start;
+            align-items: start;
+            -webkit-box-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            align-items: center;
+            color: rgb(255, 255, 255);
+            gap: 2.5rem;
+
+            .social-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+        }
+    }
+
+    .list-wrapper {
+        display: flex;
+        flex-flow: column wrap;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        color: rgb(255, 255, 255);
+        gap: 2.5rem;
+    }
+
+    ul {
+        display: flex;
+        flex-flow: column wrap;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        list-style: none;
+        margin: 0px;
+        padding: 0px;
+        text-align: center;
+    }
+
+    li {
+        list-style: none;
+
+        &.contact-wrapper {
+            display: flex;
+            flex-flow: column wrap;
+        }
+
+        &.default {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+
+        &.opening-hours {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            font-weight: bold;
+        }
+    }
+
+    .section-title {
+        font-family: $heading-font;
+        font-optical-sizing: auto;
+        font-style: normal;
+        font-size: 1.5rem;
+        line-height: 1.333;
+        font-weight: bold;
+        margin-bottom: 2.5rem;
+        display: inline-block;
+    }
+
+    .credits {
+        text-align: center;
+    }
+}
+
+// HOMEPAGE
+a#geolocate_link {
+    margin-top: 1rem;
+}
+
+.postcode-form-box div {
+    border-radius: 0.3rem;
+}
+
+#front-main-container {
+    box-sizing: border-box;
+}
+
+.site-message {
+    border: 0.3571428571rem solid $primary;
+    padding: 20px;
+    padding-top: 24px;
+    padding-left: 75px;
+    font-size: 1rem;
+}

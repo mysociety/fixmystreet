@@ -9,6 +9,8 @@ use Path::Tiny;
 use Time::Piece;
 use FixMyStreet::DateRange;
 use FixMyStreet::Reporting;
+use List::Util qw(uniq);
+use List::MoreUtils qw(part);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -129,6 +131,10 @@ sub index : Path : Args(0) {
         $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
         $c->forward('/report/stash_category_groups', [ $c->stash->{contacts} ]);
 
+        foreach (@{$c->stash->{category_groups}}) {
+            $_->{group_id} = "group-" . $_->{name};
+        }
+
         my %group_names = map { $_->{name} => $_->{categories} } @{$c->stash->{category_groups}};
         # See if we've had anything from the body dropdowns
         $c->stash->{category} = [ $c->get_param_list('category') ];
@@ -175,12 +181,12 @@ sub index : Path : Args(0) {
     my $reporting = $c->forward('construct_rs_filter', [ $c->get_param('updates') ]);
 
     if ( my $export = $c->get_param('export') ) {
-        $reporting->csv_parameters;
         if ($export == 1) {
             # Existing method, generate and serve
             if ($reporting->premade_csv_exists) {
                 $reporting->filter_premade_csv_http($c);
             } else {
+                $reporting->csv_parameters;
                 $reporting->generate_csv_http($c);
             }
         } elsif ($export == 2) {
@@ -198,7 +204,6 @@ sub index : Path : Args(0) {
         }
     } else {
         $c->forward('generate_grouped_data');
-        $self->generate_summary_figures($c);
     }
 }
 
@@ -289,6 +294,26 @@ sub generate_grouped_data : Private {
             my $bm = $map{$b} // $map{$state_map->{$b}};
             $am <=> $bm;
         } @rows;
+    } elsif ($group_by eq 'category+state' || $group_by eq 'category') {
+        @rows = ();
+        my @sorting_categories;
+        my %category_to_group;
+        for my $group (@{$c->stash->{category_groups}}) {
+            for my $category (@{$group->{categories}}) {
+                push @sorting_categories, $category->category;
+                if (!$category_to_group{$category->category}) {
+                    $category_to_group{$category->category} = $group->{name};
+                } else {
+                    $category_to_group{$category->category} = 'Multiple';
+                }
+            }
+        };
+        my ($single_group, $multiple_groups) = part { $category_to_group{$_} eq 'Multiple'} @sorting_categories;
+        my @multiple = sort (uniq(@$multiple_groups));
+
+        push @rows, @$single_group if $single_group;
+        push @rows, @multiple if scalar @multiple;
+        $c->stash->{category_to_group} = \%category_to_group;
     } else {
         @rows = sort @rows;
     }
@@ -297,42 +322,6 @@ sub generate_grouped_data : Private {
 
     $c->stash->{grouped} = \%grouped;
     $c->stash->{totals} = \%totals;
-}
-
-sub generate_summary_figures {
-    my ($self, $c) = @_;
-    my $state_map = $c->stash->{state_map};
-
-    # problems this month by state
-    $c->stash->{"summary_$_"} = 0 for values %$state_map;
-
-    return if $c->cobrand->moniker =~ /^(fixmystreet|cyclinguk)/; # Not wanted on .com or cyclinguk
-
-    $c->stash->{summary_open} = $c->stash->{objects_rs}->count;
-
-    my $params = $c->stash->{params};
-    $params = { map { my $n = $_; s/me\./problem\./ unless /me\.confirmed/; $_ => $params->{$n} } keys %$params };
-
-    my $comments = $c->model('DB::Comment')->to_body(
-        $c->stash->{body}
-    )->search(
-        {
-            %$params,
-            'me.id' => { 'in' => \"(select min(id) from comment where me.problem_id=comment.problem_id and problem_state not in ('', 'confirmed') group by problem_state)" },
-        },
-        {
-            join     => 'problem',
-            group_by => [ 'problem_state' ],
-            select   => [ 'problem_state', { count => 'me.id' } ],
-            as       => [ qw/problem_state count/ ],
-        }
-    );
-
-    while (my $comment = $comments->next) {
-        my $meta_state = $state_map->{$comment->problem_state};
-        next if $meta_state eq 'open';
-        $c->stash->{"summary_$meta_state"} += $comment->get_column('count');
-    }
 }
 
 sub status : Local : Args(0) {
@@ -389,13 +378,6 @@ sub csv : Local : Args(1) {
 
     $reporting->http_setup($c);
     $c->res->body($csv->openr_raw);
-}
-
-sub generate_body_response_time : Private {
-    my ( $self, $c ) = @_;
-
-    my $avg = $c->stash->{body}->calculate_average($c->cobrand->call_hook("body_responsiveness_threshold"));
-    $c->stash->{body_average} = $avg ? int($avg / 60 / 60 / 24 + 0.5) : 0;
 }
 
 sub heatmap : Local : Args(0) {

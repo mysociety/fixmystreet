@@ -12,7 +12,7 @@
     last_seven_fixed = last_seven_days.fixed_total | format_number;
     other_categories_formatted = other_categories | format_number;
 -%]
-[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass => 'dashboard fullwidthpage' %]
+[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass = 'dashboard' %]
 
 <div class="dashboard-header">
     <h1>[% loc('Dashboard') %]
@@ -29,8 +29,8 @@
                 data-values-reports="[[% problems_reported_by_period.join(',') %]]"
                 data-values-fixed="[[% problems_fixed_by_period.join(',') %]]"
                 ></canvas>
-            <span class="label" data-datasetindex="0"><strong style="color: #F4A140">[% tprintf(nget("%s problem reported", "%s problems reported", problems_reported_by_period.last), decode(problems_reported) _ '</strong>') %]</span>
-            <span class="label" data-datasetindex="1"><strong style="color: #62B356">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", problems_fixed_by_period.last), decode(problems_fixed) _ '</strong>') %]</span>
+            <span class="label" data-datasetindex="0"><strong style="color: #D97B0C">[% tprintf(nget("%s problem reported", "%s problems reported", problems_reported_by_period.last), decode(problems_reported) _ '</strong>') %]</span>
+            <span class="label" data-datasetindex="1"><strong style="color: #56A54A">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", problems_fixed_by_period.last), decode(problems_fixed) _ '</strong>') %]</span>
         </div>
     </div>
 </div>
@@ -41,20 +41,20 @@
         <div class="dashboard-sparklines">
             <div>
                 <div class="labelled-sparkline">
-                    <canvas width="200" height="50" data-color="#F4A140" data-values="[% last_seven_days.problems.join(' ') %]"></canvas>
-                    <span class="label" data-datasetindex="0"><strong style="color: #F4A140;">[% tprintf(nget("%s problem reported", "%s problems reported", last_seven_days.problems_total), decode(last_seven_reported) _ '</strong>') %]</span>
+                    <canvas width="200" height="50" data-color="#D97B0C" data-values="[% last_seven_days.problems.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #D97B0C;">[% tprintf(nget("%s problem reported", "%s problems reported", last_seven_days.problems_total), decode(last_seven_reported) _ '</strong>') %]</span>
                 </div>
             </div>
             <div>
                 <div class="labelled-sparkline">
-                    <canvas width="200" height="50" data-color="#4FADED" data-values="[% last_seven_days.updated.join(' ') %]"></canvas>
-                    <span class="label" data-datasetindex="0"><strong style="color: #4FADED;">[% tprintf(nget("%s update on problems", "%s updates on problems", last_seven_days.updated_total), decode(last_seven_updated) _ '</strong>') %]</span>
+                    <canvas width="200" height="50" data-color="#269AE9" data-values="[% last_seven_days.updated.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #269AE9;">[% tprintf(nget("%s update on problems", "%s updates on problems", last_seven_days.updated_total), decode(last_seven_updated) _ '</strong>') %]</span>
                 </div>
             </div>
             <div>
                 <div class="labelled-sparkline">
-                    <canvas width="200" height="50" data-color="#62B356" data-values="[% last_seven_days.fixed.join(' ') %]"></canvas>
-                    <span class="label" data-datasetindex="0"><strong style="color: #62B356;">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", last_seven_days.fixed_total), decode(last_seven_fixed) _ '</strong>') %]</span>
+                    <canvas width="200" height="50" data-color="#56A54A" data-values="[% last_seven_days.fixed.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #56A54A;">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", last_seven_days.fixed_total), decode(last_seven_fixed) _ '</strong>') %]</span>
                 </div>
             </div>
         </div>
@@ -94,20 +94,7 @@
 
 <div class="dashboard-row">
     <div class="dashboard-item dashboard-item--6">
-      [% IF body %]
-        <h2 class="dashboard-subheading">[% loc('Top 5 wards') %]</h2>
-        <p>[% loc('Number of problems reported in each ward, in the last 7 days.') %]</p>
-        <table class="dashboard-ranking-table">
-            <tbody>
-              [% FOR line IN wards %]
-                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s report", "%s reports", line.reports), line.reports) %]</td></tr>
-              [% END %]
-            </tbody>
-            <tfoot>
-                <tr><td>[% loc('Other wards') %]</td><td>[% tprintf(nget("%s report", "%s reports", other_wards), other_wards) %]</td></tr>
-            </tfoot>
-        </table>
-      [% ELSE %]
+      [% IF NOT body AND c.cobrand.moniker != 'fixmystreet' %]
         <h2 class="dashboard-subheading">[% loc('Top 5 responsive councils') %]</h2>
         <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
         <table class="dashboard-ranking-table">

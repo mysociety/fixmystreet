@@ -8,11 +8,11 @@
     <p class="[% show_wards_hidden_class %]"><a href="?show_wards=1" class="js-ward-select-multiple">[% ward_link_multiple %]</a></p>
     <form method="get" action="">
     <section class="full-width">
-    <ul class="item-list item-list--wards">
+    <ul class="item-list item-list--wards govuk-checkboxes govuk-checkboxes--small">
       [% FOR child IN children.values.sort('name') %]
-        <li class="item-list__item item-list--wards__item">
-          <label class="[% show_wards_shown_class %]">
-            <input type="checkbox" name="ward" value="[% child.name | html %]">
+        <li class="govuk-checkboxes__item">
+          <input class="[% show_wards_shown_class %] govuk-checkboxes__input" id="[% child.name | lower | replace(' ', '-') %]" type="checkbox" name="ward" value="[% child.name | html %]">
+          <label class="[% show_wards_shown_class %] govuk-label govuk-checkboxes__label" for="[% child.name | lower | replace(' ', '-') %]">
             [% child.name %]
           </label>
           <a class="[% show_wards_hidden_class %]" href="[% child.url %]">[% child.name %]</a>

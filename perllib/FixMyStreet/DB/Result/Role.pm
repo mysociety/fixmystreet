@@ -56,6 +56,6 @@ __PACKAGE__->many_to_many( users => 'user_roles', 'user' );
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 
-with 'FixMyStreet::Roles::Extra';
+with 'FixMyStreet::Roles::DB::Extra';
 
 1;

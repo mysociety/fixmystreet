@@ -245,10 +245,12 @@ fixmystreet.cachet = (function(){
                 imagesToGet.push(img.src);
                 imagesToGet.push(img.src.replace('.jpeg', '.fp.jpeg'));
             });
-            var imagePromises = imagesToGet.map(function(url) {
-                return cacheURL(url);
-            });
-            return Promise.all(imagePromises).finally(function() {
+            // Fetch URLs sequentially rather than in parallel
+            return imagesToGet.reduce(function(p, url) {
+                return p.then(function() {
+                    return cacheURL(url);
+                });
+            }, Promise.resolve()).finally(function() {
                 fixmystreet.offlineBanner.progress();
                 fixmystreet.offlineData.add(item.url, item.lastupdate);
             });
@@ -259,10 +261,12 @@ fixmystreet.cachet = (function(){
     // This fetches the HTML and any img elements in that HTML
     function cacheReports(items) {
         fixmystreet.offlineBanner.startProgress(items.length);
-        var promises = items.map(function(item) {
-            return cacheReport(item);
-        });
-        return Promise.all(promises);
+        // We want to cache these one at a time to avoid hammering the server
+        return items.reduce(function(p, item) {
+            return p.then(function() {
+                return cacheReport(item);
+            });
+        }, Promise.resolve());
     }
 
     return {
@@ -415,9 +419,19 @@ if ($('#offline_list').length) {
 } else {
     fixmystreet.offlineBanner.make(false);
 
-    // On /my/planned, when online, cache all shortlisted
+    // On /my/planned, when online, cache all shortlisted automatically on mobile.
+    // On desktop, show a button to cache them.
     if (location.pathname === '/my/planned') {
-        fixmystreet.offline.updateCachedReports();
+        if ($("html").hasClass("mobile")) {
+            $(".js-cache-reports").closest(".shadow-wrap").hide();
+            fixmystreet.offline.updateCachedReports();
+        } else {
+            $(".js-cache-reports").on("click", function(e) {
+                e.preventDefault();
+                $(".js-cache-reports").closest(".shadow-wrap").hide();
+                fixmystreet.offline.updateCachedReports();
+            });
+        }
     }
 
     // Catch additions and removals from the shortlist

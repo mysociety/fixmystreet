@@ -1,7 +1,7 @@
 package Integrations::SCP;
 
 use Moo;
-with 'FixMyStreet::Roles::SOAPIntegration';
+with 'Integrations::Roles::SOAP';
 with 'FixMyStreet::Roles::Syslog';
 
 use DateTime;
@@ -117,7 +117,7 @@ sub pay {
             'scpbase:lgItemDetails' => ixhash(
                 'scpbase:fundCode' => $args->{fund_code},
                 'scpbase:additionalReference' => $_->{lineId},
-                'scpbase:narrative' => $args->{uprn},
+                'scpbase:narrative' => $args->{uprn}, # Needs to differ for Bexley
                 'scpbase:accountName' => {
                     'scpbase:surname' => $args->{name},
                 },

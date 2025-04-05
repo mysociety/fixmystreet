@@ -12,7 +12,7 @@ Functions specific to Peterborough bulky waste collections.
 
 package FixMyStreet::Cobrand::Peterborough::Bulky;
 use Moo::Role;
-with 'FixMyStreet::Roles::CobrandBulkyWaste';
+with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
 use utf8;
 use DateTime;
@@ -39,6 +39,12 @@ a bulky waste collection
 
 sub max_bulky_collection_dates       {2}
 
+=item * Max length of location details text is 250 characters
+
+=cut
+
+sub bulky_location_max_length {250}
+
 =item * Bulky workpack name is of the form 'Waste-BULKY WASTE-<date>' or
 'Waste-WHITES-<date>'
 
@@ -48,38 +54,19 @@ sub bulky_workpack_name {
     qr/Waste-(BULKY WASTE|WHITES)-(?<date_suffix>\d{6})/;
 }
 
-=item * User can cancel bulky collection up to 15:00 before the day of
-collection
+=item * User can amend/refund/cancel up to 14:00 the working day before the bulky collection
 
 =cut
 
-sub bulky_cancellation_cutoff_time {
-    {   hours   => 15,
-        minutes => 0,
-    }
-}
+sub bulky_cancellation_cutoff_time { { hours => 14, minutes => 0, working_days => 1 } }
+sub bulky_amendment_cutoff_time { { hours => 14, minutes => 0, working_days => 1 } }
+sub bulky_refund_cutoff_time { { hours => 14, minutes => 0, working_days => 1 } }
 
 =item * Bulky collections start at 6:45 each (working) day
 
 =cut
 
-sub bulky_collection_time {
-    {   hours   => 6,
-        minutes => 45,
-    }
-}
-
-=item * Bulky collections can be amended up to 2pm before the day of collection
-
-=back
-
-=cut
-
-sub bulky_amendment_cutoff_time {
-    my $time = $_[0]->wasteworks_config->{amendment_cutoff_time} || "14:00";
-    my ($hours, $minutes) = split /:/, $time;
-    return { hours => $hours, minutes => $minutes };
-}
+sub bulky_collection_time { { hours => 6, minutes => 45 } }
 
 sub bulky_daily_slots { $_[0]->wasteworks_config->{daily_slots} || 40 }
 
@@ -96,7 +83,8 @@ sub find_available_bulky_slots {
         = 'peterborough:bartec:available_bulky_slots:'
         . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
         . $property->{uprn};
-    return $c->session->{$key} if $c->session->{$key};
+    my $data = $c->waste_cache_get($key);
+    return $data if $data;
 
     my $bartec = $self->feature('bartec');
     $bartec = Integrations::Bartec->new(%$bartec);
@@ -176,9 +164,7 @@ sub find_available_bulky_slots {
         }
     }
 
-    $c->session->{$key} = \@available_slots;
-
-    return \@available_slots;
+    return $c->waste_cache_set($key, \@available_slots);
 }
 
 sub collection_date {
@@ -207,6 +193,10 @@ sub check_bulky_slot_available {
     my $suffix_date_parser = DateTime::Format::Strptime->new( pattern => '%d%m%y' );
     my $workpack_dt = $self->_bulky_date_to_dt($date);
     next unless $workpack_dt;
+
+    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
+    my $cutoff = $self->_bulky_cancellation_cutoff_date($workpack_dt);
+    return 0 if $now > $cutoff;
 
     my $date_from = $workpack_dt->clone->strftime('%FT%T');
     my $date_to = $workpack_dt->clone->set(
@@ -272,28 +262,6 @@ sub bulky_can_refund_collection {
 
     return $p->get_extra_field_value('CHARGEABLE') ne 'FREE'
         && $self->within_bulky_refund_window($p);
-}
-
-# A cancellation made less than 24 hours before the collection is scheduled to
-# begin is not entitled to a refund.
-sub _bulky_refund_cutoff_date {
-    my ($self, $collection_dt) = @_;
-    my $collection_time = $self->bulky_collection_time();
-    my $cutoff_dt       = $collection_dt->clone->set(
-        hour   => $collection_time->{hours},
-        minute => $collection_time->{minutes},
-    )->subtract( days => 1 );
-    return $cutoff_dt;
-}
-
-sub _bulky_amendment_cutoff_date {
-    my ($self, $collection_date) = @_;
-    my $cutoff_time = $self->bulky_amendment_cutoff_time();
-    my $cutoff_dt = $collection_date->clone->set(
-        hour   => $cutoff_time->{hours},
-        minute => $cutoff_time->{minutes},
-    )->subtract( days => 1 );
-    return $cutoff_dt;
 }
 
 sub waste_munge_bulky_data {
@@ -386,24 +354,6 @@ sub bulky_allowed_property {
            $self->bulky_enabled
         && $property->{has_black_bin}
         && !$property->{commercial_property};
-}
-
-sub bulky_available_feature_types {
-    my $self = shift;
-
-    return unless $self->bulky_enabled;
-
-    my $cfg = $self->feature('bartec');
-    my $bartec = Integrations::Bartec->new(%$cfg);
-    my @types = @{ $bartec->Features_Types_Get() };
-
-    # Limit to the feature types that are for bulky waste
-    my $waste_cfg = $self->body->get_extra_metadata("wasteworks_config", {});
-    if ( my $classes = $waste_cfg->{bulky_feature_classes} ) {
-        my %classes = map { $_ => 1 } @$classes;
-        @types = grep { $classes{$_->{FeatureClass}->{ID}} } @types;
-    }
-    return { map { $_->{ID} => $_->{Name} } @types };
 }
 
 sub bulky_nice_item_list {

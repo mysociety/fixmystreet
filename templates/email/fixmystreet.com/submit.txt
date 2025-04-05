@@ -1,3 +1,6 @@
+[% IF cobrand.moniker == 'bexley' && report.cobrand_data == 'waste' ~%]
+[% PROCESS 'waste/submit.txt' ~%]
+[% ELSE ~%]
 Subject: Problem Report: [% report.title %]
 
 Dear [% bodies_name %],
@@ -25,8 +28,8 @@ Subject: [% report.title %]
 
 Details: [% report.detail %]
 
-[% FOR field IN report.get_extra_fields %][% IF field.value ~%]
-[% field.description OR field.name %]: [% field.value %]
+[% FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length ~%]
+[% field.description OR field.name %]: [% field.value_label OR field.value %]
 
 [% END %][% END ~%]
 
@@ -38,16 +41,6 @@ Latitude: [% report.latitude %]
 
 Longitude: [% report.longitude %]
 
-[% IF report.get_extra_field_value('road_name') ~%]
-Road: [% report.get_extra_field_value('road_name') %]
-[% END %]
-[% IF report.get_extra_field_value('sect_label') ~%]
-Section: [% report.get_extra_field_value('sect_label') %]
-[% END %]
-[% IF report.get_extra_field_value('area_name') ~%]
-Area: [% report.get_extra_field_value('area_name') %]
-[% END %]
-
 View OpenStreetMap of this location: [% osm_url %]
 
 [% closest_address %]----------
@@ -57,52 +50,35 @@ Replies to this email will go to the user who submitted the problem.
 [% signature %]
 
 [% IF cobrand.moniker == 'fixmystreet' %]
-----------
-
-Never retype another FixMyStreet report
-
-Good news: we can now send these reports from FixMyStreet
-directly into your customer service queue. Find out how:
-
-    https://www.fixmystreet.com/pro
 
 ----------
 
 Where did this report come from?
 
-FixMyStreet is an independent website, built by the charity mySociety(<https://www.mysociety.org/>) to make it easier for citizens to report problems in their community.
-
+FixMyStreet is an independent service, built by the charity mySociety <https://www.mysociety.org/> to make it easier for citizens to report problems in their community. Read our FAQs <https://www.fixmystreet.com/about/information-for-councils/> to find out more about FixMyStreet.
 
 Why has this report come to this email address?
 
 We do our best to ensure reports go to the right place at each council. If there’s a better contact address for reports about [% category_footer %] issues, please let us know at <support@fixmystreet.com>. We can also add or remove categories if you wish.
-
 
 How do we reply to this report?
 
 Replies to this email will go directly into the report-maker's inbox. Your reply is not published on the FixMyStreet website (unless you use FixMyStreet Pro, which can display responses to help close the feedback loop).
 
 Can you include more information in these reports?
-If you need to receive extra data that isn’t currently included in the report, please let us know what’s missing at <support@fixmystreet.com>.
-
-
-Can you include more information in these reports?
 
 If you need to receive extra data that isn’t currently included in the report, please let us know what’s missing at <support@fixmystreet.com>.
-
 
 Do we have to receive email reports from FixMyStreet?
 
-When FixMyStreet first launched in 2007 it was in response to many councils not offering an easy-to-use online reporting service. Many residents still prefer FixMyStreet because of its simplicity and because it removes the need for them to know which council is responsible for what problem.
-
-These days FixMyStreet acts as a national reporting platform, bringing all of the local authorities and government organisations together on one system, triaging reports between councils at all levels, highways agencies and housing associations. Local authorities no longer need to receive email reports from FixMyStreet as they can be integrated into existing council business systems - and there are a few different ways this can be achieved.
-
+No! Local authorities no longer need to receive email reports from FixMyStreet as they can be integrated into existing council systems - and there are a few different ways this can be achieved.
 
 How can FixMyStreet connect directly with council systems?
 
-1. You can do this yourself (for free) using our Open311 API
+1. You can do this yourself (for free) using our Open311 API: <https://www.fixmystreet.com/about/open311-api-info>
 2. We can build and maintain the integration for you (carries an annual fee)
-3. You can become a FixMyStreet Pro user. FixMyStreet Pro is a more advanced version of FixMyStreet, which seeks to eliminate the significant costs councils incur from duplicate reporting, unnecessary contact and failure demand (we have the stats to prove it!).
+3. You can become a FixMyStreet Pro <https://www.societyworks.org/services/highways/> user. FixMyStreet Pro is a more advanced version of FixMyStreet, which seeks to eliminate the significant costs councils incur from duplicate reporting, unnecessary contact and failure demand (we have the stats to prove it!).
 
-As a charitable organisation our goal is to help improve services for citizens and local authorities. To find out more about connecting FixMyStreet to your own systems, please get in touch at <support@fixmystreet.com>.
+As a charity our goal is to help improve services for citizens and local authorities. To find out more about connecting FixMyStreet to your own systems, please get in touch at <support@fixmystreet.com>.
+[% END %]
 [% END %]

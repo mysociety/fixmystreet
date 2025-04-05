@@ -52,7 +52,7 @@
 [% IF problem.duplicate_of %]
     [% INCLUDE 'report/duplicate-no-updates.html' %]
 [% ELSIF problem.cobrand_data == 'noise' %]
-    <p>[% loc('This report is now closed to updates.') %]</p>
+    <p>[% loc('This report is now closed to updates from the public.') %]</p>
 [% ELSIF NOT shown_form  %]
     [% PROCESS 'report/update-form-wrapper.html' %]
 [% END %]

@@ -65,9 +65,10 @@ describe('Clicking the map', function() {
 describe('Leaving updates', function() {
     function leave_update() {
         cy.get('[name=update]').type('Update');
+        // [id=].last() due to #2341
         cy.get('.js-new-report-user-show').last().click();
         cy.get('.js-new-report-show-sign-in').last().should('be.visible').click();
-        // [id=].last() due to #2341
+        cy.wait(500);
         cy.get('[id=form_username_sign_in]').last().type('user@example.org');
         cy.get('[name=password_sign_in]').last().type('password');
         cy.get('[name=password_sign_in]').last().parents('form').first().submit();

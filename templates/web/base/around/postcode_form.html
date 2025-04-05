@@ -1,7 +1,7 @@
-<div id="front-main">
+<main id="front-main">
     <div id="front-main-container">
         [% UNLESS possible_location_matches %]
-            [% INCLUDE 'around/intro.html' %]
+            [% PROCESS 'around/intro.html' %]
         [% END %]
 
         [%
@@ -19,9 +19,15 @@
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
             <label for="pc">[% question %]:</label>
             [% INCLUDE 'around/_postcode_form_examples.html' %]
+            [% IF location_error_pc_lookup %]
+            <p id="pc-error" class="form-error">
+                <span class="visuallyhidden">Error:</span>
+                [% loc('Please enter a valid postcode or area') %]
+            </p>
+            [% END %]
             <div>
-                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint"
-                [%~ IF c.cobrand.moniker == 'oxfordshire' %] placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]"[% END %]>
+                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint [% IF location_error_pc_lookup %]search-help pc-error[% END %]"
+                [%~ IF c.cobrand.moniker == 'oxfordshire' %] placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]"[% END %] aria-label="Add a postcode or address. Alternatively, there is a geolocate button at the end of this form">
                 [% INCLUDE 'around/_postcode_submit_button.html' %]
             </div>
 
@@ -35,11 +41,19 @@
             [% ELSIF c.user_exists AND c.user.categories.size %]
               <input type="hidden" name="filter_category" value="[% c.user.categories_string | html %]">
             [% END %]
+            [% IF c.cobrand.moniker == 'zurich' AND ( c.get_param('prefill_category') OR c.get_param('prefill_description') ) %]
+                <input type="hidden" name="prefill_category" value="[% c.get_param('prefill_category') %]">
+                <input type="hidden" name="prefill_description" value="[% c.get_param('prefill_description') %]">
+            [% END %]
             [%~ SET link_params = {
                     geolocate = 1
                 };
                 IF c.get_param('filter_category'); link_params.filter_category = c.get_param('filter_category'); END;
                 IF c.get_param('filter_group'); link_params.filter_group = c.get_param('filter_group'); END;
+                IF c.cobrand.moniker == 'zurich';
+                    IF c.get_param('prefill_category'); link_params.prefill_category = c.get_param('prefill_category'); END;
+                    IF c.get_param('prefill_description'); link_params.prefill_description = c.get_param('prefill_description'); END;
+                END;
             %]
             [% INCLUDE 'around/_postcode_form_geolocation.html' url=c.uri_for('/around', link_params) %]
 
@@ -48,4 +62,4 @@
             [% END %]
         </form>
     </div>
-</div>
+</main>

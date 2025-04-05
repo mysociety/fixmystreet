@@ -5,7 +5,7 @@
       [% PROCESS errors %]
     </div>
   [% END %]
-    <div id="front-main">
+    <main id="front-main">
       <div id="front-main-container">
         <h1>[% loc('Bins, rubbish and recycling') %]</h1>
         <form class="postcode-form-box" method="post" id="postcodeForm">
@@ -17,7 +17,9 @@
           <ul>
             <li>Find your bin collection days</li>
             <li>Report a missed bin collection</li>
-            [% IF c.cobrand.moniker != 'bexley' %]
+            [% IF c.cobrand.moniker == 'bexley' %]
+            <li>Request a bin delivery or removal</li>
+            [% ELSE %]
             <li>Order new or additional bins</li>
             <li>Subscribe to garden waste collection service</li>
             [% END %]
@@ -27,7 +29,7 @@
           </ul>
       </form>
       </div>
-  </div>
+    </main>
 [% END %]
 [% PROCESS 'waste/header.html' %]
 [% INCLUDE footer.html %]

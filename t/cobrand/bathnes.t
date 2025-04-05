@@ -11,10 +11,18 @@ END { FixMyStreet::App->log->enable('info'); }
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::BathNES');
 $cobrand->mock('area_types', sub { [ 'UTA' ] });
 
-my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', {}, { cobrand => 'bathnes' });
-my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights');
+my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', { cobrand => 'bathnes' });
+my @cats = ('Litter', 'Other', 'Potholes', 'Traffic lights', 'Disabled');
 for my $contact ( @cats ) {
-    $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");
+   my $c =  $mech->create_contact_ok(body_id => $body->id, category => $contact, email => "$contact\@example.org");
+    if ($contact eq 'Disabled') {
+        $c->push_extra_fields({
+            code => '_fms_disable_',
+            'disable_form' => 'true',
+            description => 'form_disabled',
+        });
+        $c->update;
+    }
 }
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body);
@@ -292,6 +300,21 @@ subtest 'check cobrand correctly reset on each request' => sub {
         $mech->host('bathnes.fixmystreet.com');
         $mech->get_ok( '/contact?reject=1&id=' . $problem->id );
         $mech->content_contains('Reject report');
+    }
+};
+
+subtest "staff can't allocate a report to a disabled category" => sub {
+    FixMyStreet::override_config {
+        'ALLOWED_COBRANDS' => [ 'bathnes' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+            areas => ",2551,", category => 'Potholes', cobrand => 'bathnes',
+            user => $normaluser, service => 'iOS'
+        });
+        $mech->log_in_ok( $superuser->email );
+        $mech->get_ok('/admin/report_edit/' . $p->id);
+        $mech->content_contains('<option value="Disabled" disabled>Disabled (disabled)</option>');
     }
 };
 

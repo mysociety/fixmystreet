@@ -62,7 +62,7 @@
 [% END %]
 [% IF NOT c.user.email_verified %]
     <label for="form_email">[% loc('Email address (optional)') %]</label>
-    <input class="form-control" type="text" value="[% report.user.email | html %]" name="email" id="form_email">
+    <input class="form-control" type="email" value="[% report.user.email | html %]" name="email" id="form_email" autocomplete="email">
 [% END %]
 
 [% IF c.user.has_permission_to("report_inspect", bodies_ids) OR c.user.has_permission_to("report_mark_private", bodies_ids) %]

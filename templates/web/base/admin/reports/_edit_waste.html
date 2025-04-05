@@ -45,12 +45,15 @@
 
 <li><label class="inline-text" for="external_id">[% loc('External ID') %]:</label>
     <input type="text" class="form-control" name="external_id" id="external_id" value="[% problem.external_id | html %]">
-
+[% SET readonly = 'readonly' %]
+[% IF c.cobrand.moniker == 'peterborough' %]
+    [% SET readonly = '' %]
+[% END %]
 <li><label class="inline-text" for="name">[% loc('Name:') %]</label>
-    <input type='text' readonly class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
+    <input type='text' [% readonly %] class="form-control" name='name' id='name' value='[% problem.name | html %]'></li>
 
 <li><label class="inline-text" for="username">[% loc('User:') %]</label>
-    <input type='text' readonly class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
+    <input type='text' [% readonly %] class="form-control" id='username' name='username' value='[% problem.user.username | html %]'>
 </li>
 
 [% IF problem.phone_waste != problem.user.username %]
@@ -82,14 +85,18 @@
   [% IF problem.get_extra_field_value('uprn') %]
     <li>UPRN: [% problem.get_extra_field_value('uprn') %]
   [% END %]
-  [% IF problem.get_extra_field_value('property_id') %]
-    <li>Property ID: <a href="/waste/[% problem.get_extra_field_value('property_id') %]">[% problem.get_extra_field_value('property_id') %]</a>
+  [% IF problem.waste_property_id %]
+    <li>Property ID: <a href="/waste/[% problem.waste_property_id %]">[% problem.waste_property_id %]</a>
   [% END %]
   [% IF problem.get_extra_field_value('service_id') %]
     <li>Service ID: [% problem.get_extra_field_value('service_id') %]
   [% END %]
   [% IF c.cobrand.moniker == 'bromley' %]
     <li>Source: [% problem.get_extra_field_value('Source') %]
+  [% END %]
+  [% IF c.cobrand.moniker == 'merton' %]
+    <li>Echo ID: [% problem.get_extra_field_value('echo_id') OR 'None' %]
+    <li>Dynamics ID: [% problem.get_extra_metadata('crimson_external_id') OR 'None' %]
   [% END %]
 
   [%~ IF extra_fields.size ~%]
@@ -117,7 +124,7 @@ BLOCK show_fields;
 END
 %]
 
-[% IF (c.cobrand.moniker == 'bromley' OR c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') AND problem.get_extra_field_value('Container_Type') %]
+[% IF (c.cobrand.moniker == 'bromley' OR c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' OR c.cobrand.moniker == 'merton') AND problem.get_extra_field_value('Container_Type') %]
 <h2>Request information</h2>
 <ul>
 [% INCLUDE show_fields fields=[
@@ -146,7 +153,7 @@ END
 </ul>
 [% END %]
 
-[% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton') AND problem.get_extra_field_value('Subscription_Details_Containers') %]
+[% IF (c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' OR c.cobrand.moniker == 'merton') AND problem.get_extra_field_value('Subscription_Details_Containers') %]
 <h2>Subscription information</h2>
 <ul>
 [% INCLUDE show_fields fields=[
@@ -157,6 +164,21 @@ END
     [ 'Delivery container', 'Bin_Delivery_Detail_Container' ],
     [ 'Delivery quantity', 'Bin_Delivery_Detail_Quantity' ],
     [ 'End date', 'Subscription_End_Date' ],
+    [ 'End date', 'End_Date' ],
+    [ 'Current containers', 'current_containers' ],
+    [' New containers', 'new_containers' ],
+] %]
+</ul>
+[% END %]
+
+[% IF (c.cobrand.moniker == 'sutton') AND problem.get_extra_field_value('Paid_Container_Type') %]
+<h2>Subscription information</h2>
+<ul>
+[% INCLUDE show_fields fields=[
+    [ 'Subscription container', 'Paid_Container_Type' ],
+    [ 'Subscription quantity', 'Paid_Container_Quantity' ],
+    [ 'Delivery container', 'Container_Type' ],
+    [ 'Delivery quantity', 'Quantity' ],
     [ 'Current containers', 'current_containers' ],
     [' New containers', 'new_containers' ],
 ] %]
@@ -204,6 +226,10 @@ END
     [ 'SCP reference', 'scpReference', 1 ],
     [ 'Payment code', 'PaymentCode' ],
     [ 'DD collection date', 'dd_date', 1 ],
+    # AccessPay
+    [ 'DD customer ID', 'direct_debit_customer_id', 1 ],
+    [ 'DD contract ID', 'direct_debit_contract_id', 1 ],
+    [ 'DD reference', 'direct_debit_reference', 1 ],
 ] %]
 [%
 SET payment_method = problem.get_extra_field_value('LastPayMethod');

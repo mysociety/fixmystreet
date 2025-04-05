@@ -66,6 +66,7 @@
         <option value="noshow" [% 'selected' IF (NOT show_location_page || show_location_page == 'noshow') %]>[% loc("Don't show") %]</option>
         <option value="staff" [% 'selected' IF show_location_page == 'staff' %]>[% loc('Staff') %]</option>
         <option value="users" [% 'selected' IF show_location_page == 'users' %]>[% loc('Users') %]</option>
+    </select>
 
     <p>
     <input type=checkbox name="show_individual_notes" value=1 id="waste_show_individual_notes"
@@ -86,9 +87,12 @@
     <h3>General Options</h3>
 
     <p>
-    <input type=checkbox name="food_bags_disabled" value="1" id="waste_food_bags_disabled"
-        [% 'checked' IF food_bags_disabled %]>
-    <label class="inline" for="waste_food_bags_disabled">Food bag ordering disabled</label>
+    <label for="waste_food_bags_disabled">Food bag ordering disabled</label>
+    <select class="form-control" name="food_bags_disabled" id="waste_food_bags_disabled">
+        <option value="" [% 'selected' IF NOT food_bags_disabled %]>No</option>
+        <option value="stock" [% 'selected' IF food_bags_disabled == 'stock' %]>Out of stock</option>
+        <option value="off" [% 'selected' IF food_bags_disabled == 'off' %]>Yes</option>
+    </select>
   [% END %]
 
     <hr />

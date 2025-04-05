@@ -5,7 +5,7 @@ use CGI::Simple;
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(2224, 'East Sussex Council',
-    { send_method => 'Open311', api_key => 'KEY', endpoint => 'endpoint', jurisdiction => 'eastsussex' }, { cobrand => 'eastsussex' });
+    { send_method => 'Open311', api_key => 'KEY', endpoint => 'endpoint', jurisdiction => 'eastsussex', cobrand => 'eastsussex' });
 my $contact = $mech->create_contact_ok(body => $body, category => 'Pothole', email => 'POTHOLE');
 $contact->set_extra_fields(
     { code => 'urgent', description => 'Is it urgent?', variable => 'true' },

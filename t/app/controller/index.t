@@ -2,6 +2,9 @@ use FixMyStreet::TestMech;
 use DateTime;
 use Web::Scraper;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 use t::Mock::Nominatim;

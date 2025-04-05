@@ -1,4 +1,3 @@
-use utf8;
 use FixMyStreet::App::Form::Waste::Bulky;
 use FixMyStreet::Cobrand::Peterborough;
 use FixMyStreet::TestMech;
@@ -18,8 +17,8 @@ $c->mock( req => sub {$req} );
 my $body = $mech->create_body_ok(
     2566,
     'Peterborough City Council',
-    {},
-    {   cobrand           => 'peterborough',
+    { cobrand => 'peterborough' },
+    {
         wasteworks_config => {
             item_list => [
                 {   bartec_id => '1001',

@@ -92,8 +92,6 @@ sub new_report_title_field_label {
 =item * The front page text is tweaked to explain existing report numbers
 can be looked up.
 
-=back
-
 =cut
 
 sub enter_postcode_text {
@@ -111,6 +109,16 @@ sub disambiguate_location {
         span   => '0.976148231905086,1.17860658530345',
         bounds => [ 52.6402179235688, -0.820651304784901, 53.6163661554738, 0.357955280518546 ],
     };
+}
+
+=item * Uses OSM as the geocoder as Bing returns addresses for non-existent searches
+
+=back
+
+=cut
+
+sub get_geocoder {
+    return 'OSM';
 }
 
 =head2 lookup_site_code_config
@@ -233,6 +241,32 @@ sub open311_get_user {
     $user->update({ name => $request->{contact_name} }) if !$user->name;
 
     return $user;
+}
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        staff_role => 'Staff Role',
+    );
+
+    return if $csv->dbi; # All covered already
+
+    my $user_lookup = $self->csv_staff_users;
+    my $userroles = $self->csv_staff_roles($user_lookup);
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $by = $report->get_extra_metadata('contributed_by');
+        my $staff_role = '';
+        if ($by) {
+            $staff_role = join(',', @{$userroles->{$by} || []});
+        }
+        return {
+            staff_role => $staff_role,
+        };
+    });
 }
 
 1;

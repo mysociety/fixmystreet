@@ -182,6 +182,30 @@ sub process_update {
         return;
     }
 
+    # Comments are ordered randomly.
+    # Some cobrands/APIs do not handle ordering by age their end (e.g.
+    # Northumberland + Alloy) so we skip comment for now if an older unsent
+    # one exists for the problem. Otherwise an older update may overwrite a
+    # newer one in Alloy etc.
+    my $formatter = FixMyStreet::DB->schema->storage->datetime_parser;
+    my $unsent_comment_for_problem
+        = $problem->comments->search(
+            {
+                state => 'confirmed',
+                send_state => 'unprocessed',
+                confirmed => { '<' =>
+                        $formatter->format_datetime( $comment->confirmed ) },
+                id => { '!=' => $comment->id },
+            },
+            { rows => 1 },
+        )->single;
+
+    if ($unsent_comment_for_problem) {
+        $self->log( $comment,
+            'Skipping for now because of older unprocessed update' );
+        return;
+    }
+
     # Some cobrands (e.g. Buckinghamshire) don't want to receive updates
     # from anyone except the original problem reporter.
     if (my $skip = $cobrand->call_hook(should_skip_sending_update => $comment)) {
@@ -202,7 +226,7 @@ sub process_update {
 
     my $id = $o->post_service_request_update( $comment );
 
-    $cobrand->call_hook(open311_post_send_updates => $comment);
+    $cobrand->call_hook(open311_post_send_updates => $comment, $id);
 
     if ( $id ) {
         $comment->update( {
@@ -237,6 +261,8 @@ sub summary_failures {
     my $sending_errors;
     while (my $row = $u->next) {
         next unless $row->problem->whensent;
+        next if $row->send_fail_reason eq "Skipping posting due to wait" && $row->send_fail_count < 5;
+        next if $row->problem->to_body_named('Bromley') && $row->send_fail_reason =~ /Invalid ActionType specified/; # Bromley issue with certain updates
         my $url = $base_url . "/report/" . $row->problem_id;
         $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* $url, update " . $row->id . " failed "
             . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp

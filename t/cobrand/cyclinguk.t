@@ -1,6 +1,7 @@
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
+use FixMyStreet::Script::Questionnaires;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -11,8 +12,8 @@ END { FixMyStreet::App->log->enable('info'); }
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::BathNES');
 $cobrand->mock('area_types', sub { [ 'UTA' ] });
 
-my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', {}, { cobrand => 'bathnes' });
-my $cyclinguk = $mech->create_body_ok(2551, 'Cycling UK', {}, { cobrand => 'cyclinguk' });
+my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', { cobrand => 'bathnes' });
+my $cyclinguk = $mech->create_body_ok(2551, 'Cycling UK', { cobrand => 'cyclinguk' });
 $cyclinguk->body_areas->delete;
 
 my $contact = $mech->create_contact_ok(
@@ -30,13 +31,14 @@ my $super = $mech->create_user_ok( 'super@example.com', name => 'Super User', is
 $staff->alerts->create({
     alert_type => 'council_problems',
     parameter => $body->id,
-    whensubscribed => \"current_timestamp - '1 hour'::interval",
+    whensubscribed => DateTime->now->subtract( hours => 1 ),
     cobrand => 'cyclinguk',
     confirmed => 1,
 });
 
 my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
     areas => ",2651,", category => 'Potholes', cobrand => 'fixmystreet',
+    whensent => DateTime->now->subtract( weeks => 5 ),
     user => $user,
 });
 
@@ -45,6 +47,11 @@ FixMyStreet::override_config {
     COBRAND_FEATURES => {
         base_url => {
             cyclinguk => "http://cyclinguk.fixmystreet.com/",
+        },
+        send_questionnaire => {
+            fixmystreet => {
+                Bath => 0,
+            }
         },
     },
     MAPIT_URL => 'http://mapit.uk/',
@@ -64,6 +71,8 @@ subtest '.com and council cobrand reports do not appear on site' => sub {
     is $mech->res->code, 404;
     $mech->get_ok('/reports/Bath+and+North+East+Somerset');
     $mech->content_lacks($problem->title);
+    $mech->get_ok('/rss/problems');
+    $mech->content_lacks($problem->title);
     $mech->log_in_ok($super->email);
     $mech->get('/admin/report_edit/' . $problem->id);
     is $mech->res->code, 404;
@@ -73,6 +82,8 @@ subtest '.com and council cobrand reports do not appear on site' => sub {
     $mech->get('/report/' . $problem->id);
     is $mech->res->code, 404;
     $mech->get_ok('/reports/Bath+and+North+East+Somerset');
+    $mech->content_lacks($problem->title);
+    $mech->get_ok('/rss/problems');
     $mech->content_lacks($problem->title);
     $mech->log_in_ok($super->email);
     $mech->get('/admin/report_edit/' . $problem->id);
@@ -86,6 +97,11 @@ subtest 'cyclinguk cobrand reports do appear on site' => sub {
     $mech->content_contains($problem->title);
     $mech->get_ok('/reports/Bath+and+North+East+Somerset');
     $mech->content_contains($problem->title);
+
+    subtest 'But no questionnaire sent' => sub {
+        FixMyStreet::Script::Questionnaires::send();
+        $mech->email_count_is(0);
+    };
 };
 
 $mech->log_in_ok($super->email);
@@ -160,10 +176,34 @@ subtest 'Admin users limited correctly' => sub {
 
 $mech->log_out_ok;
 
+$mech->create_comment_for_problem($problem2, $user2, $user2->name, 'This is a comment', 0, 'confirmed', 'confirmed');
+$staff->alerts->create({
+    alert_type => 'new_updates',
+    parameter => $problem2->id,
+    whensubscribed => DateTime->now->subtract( hours => 2 ),
+    cobrand => 'cyclinguk',
+    confirmed => 1,
+});
+$staff->alerts->create({
+    alert_type => 'new_updates',
+    parameter => $problem3->id,
+    whensubscribed => DateTime->now->subtract( hours => 2 ),
+    cobrand => 'cyclinguk',
+    confirmed => 1,
+});
+
 subtest 'Test alerts working okay' => sub {
     FixMyStreet::Script::Alerts::send_other();
     my $text = $mech->get_text_body_from_email;
     like $text, qr{report/@{[$problem->id]}};
+    unlike $text, qr{report/@{[$problem2->id]}};
+    like $text, qr{report/@{[$problem3->id]}};
+};
+
+subtest 'Test update alerts working okay' => sub {
+    FixMyStreet::Script::Alerts::send_updates();
+    my $text = $mech->get_text_body_from_email;
+    like $text, qr{This is a test comment};
     unlike $text, qr{report/@{[$problem2->id]}};
     like $text, qr{report/@{[$problem3->id]}};
 };
@@ -187,7 +227,7 @@ subtest 'New report user info fields' => sub {
         },
         'submit report form ok'
     );
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     is $report->name, "First Last";
     $mech->log_out_ok;
 
@@ -209,7 +249,7 @@ subtest 'New report user info fields' => sub {
         },
         'submit report form ok'
     );
-    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     is $report->name, "Brand New";
     is $report->get_extra_metadata('CyclingUK_marketing_opt_in'), 'yes';
 
@@ -231,7 +271,7 @@ subtest 'New report user info fields' => sub {
         },
         'submit report form ok'
     );
-    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     is $report->name, "Brand New";
     is $report->get_extra_metadata('CyclingUK_marketing_opt_in'), 'no';
 };

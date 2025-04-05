@@ -39,16 +39,11 @@
             background-color: transparent;
         }
     }
-
-    span.report-a-problem-btn,
-    span.report-a-problem-btn:hover {
-        color: $nav_colour;
-    }
 }
 
 div.form-error,
 p.form-error {
-    @include flex-container();
+    display: flex;
 }
 
 #front-main {
@@ -69,15 +64,13 @@ p.form-error {
 }
 
 .postcode-form-box {
-    overflow: visible;
-
     div {
         width: 100%;
         max-width: 30em;
+    }
 
-        input#sub {
-            padding: 0.5em 1.5em;
-        }
+    input#sub {
+        padding: 0.5em 1.5em;
     }
 }
 

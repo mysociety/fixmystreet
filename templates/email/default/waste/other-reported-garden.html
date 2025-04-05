@@ -1,0 +1,132 @@
+[%
+
+USE pounds = format('%.2f');
+PROCESS 'waste/_garden_data.html';
+
+BLOCK show_fields;
+    FOR field IN fields;
+        IF field.2;
+            SET val = report.get_extra_metadata(field.1);
+        ELSE;
+            SET val = report.get_extra_field_value(field.1);
+        END;
+        IF val;
+            '<p style="' _ p_style _ '">';
+            IF payments;
+                field.0 _ ': £' _ pounds(val / 100) _ "\n\n";
+            ELSE;
+                field.0 _ ': ' _ val _ "\n\n";
+            END;
+            '</p>';
+        END;
+    END;
+END;
+
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+
+  <p style="[% p_style %]">Dear [% report.name %],</p>
+
+  <p style="[% p_style %]">[% email_summary %]</p>
+
+    [% INCLUDE '_council_reference.html' problem=report %]
+
+[% IF type != 'cancel' ~%]
+  <p style="[% p_style %]">
+    You have signed up for:
+  </p>
+[% END %]
+
+[% IF quantity ~%]
+  <p style="[% p_style %]">
+    [% IF sacks ~%]
+        Garden waste sack collection: [% sack_quant %] [% nget('roll', 'rolls', sack_quant) %]
+    [% ELSE ~%]
+        Number of bin subscriptions: [% quantity %]
+    [% END ~%]
+  </p>
+[% END %]
+
+[% IF additional_quantity ~%]
+  <p style="[% p_style %]">
+    Number of additional bin subscriptions: [% additional_quantity %]
+  </p>
+[% END %]
+
+[% IF new_bins > 0 AND NOT sacks ~%]
+  <p style="[% p_style %]">
+    Bins to be delivered: [% new_bins %]
+  </p>
+[% ELSIF new_bins < 0 AND NOT sacks ~%]
+  <p style="[% p_style %]">
+    Bins to be removed: [% 0 - new_bins %]
+  </p>
+[% END %]
+
+[% INCLUDE show_fields payments=1 fields=[
+    [ 'Subscription cost', 'payment' ],
+    [ 'Payment', 'pro_rata' ],
+    [ 'Admin fee for new bin(s)', 'admin_fee' ],
+] %]
+
+[% IF total %]
+  <p style="[% p_style %]">
+    Total: £[% pounds(total / 100) %]
+  </p>
+[% END %]
+
+[% IF cobrand.moniker == 'brent' %]
+    [% IF type == 'new' OR type == 'renew' ~%]
+      <p style="[% p_style %]">
+        Your subscription will last until the end of March [% renew_year_end %] and starts after your first collection date.
+      </p>
+    [% END %]
+[% ELSE %]
+    [% IF type == 'new' ~%]
+      <p style="[% p_style %]">
+        Your subscription will last for 12 months and starts after your first collection date.
+      </p>
+    [% END %]
+[% END %]
+
+  <p style="[% p_style %]">
+    You can <a href="[% cobrand.feature('waste_features').garden_check_bin_day_link %]">check your collection day online</a>.
+  </p>
+
+[% IF new_bins > 0 ~%]
+  <p style="[% p_style %]">
+    [% IF cobrand.moniker == 'bexley' OR cobrand.moniker == 'brent' OR cobrand.moniker == 'merton' OR cobrand.moniker == 'sutton' %]
+      We will aim to deliver your [% IF sacks %]sacks[% ELSE %]new bin(s)[% END %] within 10 working days.
+    [% ELSE %]
+      We will aim to deliver your [% IF sacks %]roll of sacks[% ELSE %]new bin(s)[% END %] within 20 working days.
+    [% END %]
+    You don’t need to be at home for the delivery - we’ll leave them outside your address.
+  </p>
+[% END %]
+
+  <p style="[% p_style %]">
+    Your garden waste needs to be at the boundary of your property by
+    [% cobrand.garden_collection_time %] on the day of collection.
+    <a href="[% cobrand.feature('waste_features').garden_what_can_be_collected_link %]">Find out what you can put in your garden waste</a>.
+  </p>
+
+  <p style="[% p_style %]">
+    [% INCLUDE 'waste/signature.html' %]
+  </p>
+
+  [% end_padded_box | safe %]
+</th>
+
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

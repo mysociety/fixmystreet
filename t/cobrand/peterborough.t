@@ -39,8 +39,9 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
     can_be_devolved => 1,
+    cobrand => 'peterborough',
 };
-my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params, { cobrand => 'peterborough' });
+my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
 my $contact = $mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping');
 my $user = $mech->create_user_ok('peterborough@example.org', name => 'Council User', from_body => $peterborough);
 $peterborough->update( { comment_user_id => $user->id } );
@@ -370,7 +371,7 @@ subtest "flytipping on non PCC land is emailed" => sub {
         is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
         is $p->state, 'closed', 'report closed having sent email';
         is $p->comments->count, 1, 'comment added';
-        like $p->comments->first->text, qr/As this is private land/, 'correct comment text';
+        like $p->comments->first->text, qr/You can report cases.*?clear the waste\.\n\n/, 'correct comment text';
         ok !Open311->test_req_used, 'no open311 sent';
 
         $mech->email_count_is(1);

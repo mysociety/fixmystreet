@@ -30,7 +30,8 @@ use Moo;
 with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::ConfirmValidation';
 with 'FixMyStreet::Roles::Open311Multi';
-with 'FixMyStreet::Roles::SCP';
+with 'FixMyStreet::Roles::Cobrand::SCP';
+with 'FixMyStreet::Roles::Cobrand::Waste';
 with 'FixMyStreet::Cobrand::Peterborough::Bulky';
 
 =head2 Defaults
@@ -115,7 +116,9 @@ sub geocoder_munge_results {
     my ($self, $result) = @_;
     $result->{display_name} = '' unless $result->{display_name} =~ /City of Peterborough/;
     $result->{display_name} =~ s/, UK$//;
+    $result->{display_name} =~ s/, United Kingdom$//;
     $result->{display_name} =~ s/, City of Peterborough, East of England, England//;
+    $result->{display_name} =~ s/, City of Peterborough, Cambridgeshire and Peterborough, England//;
 }
 
 =head2 (around) open311_update_missing_data
@@ -378,7 +381,7 @@ sub _fetch_features_url {
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
-    my @contacts = $csv->body->contacts->search(undef, { order_by => [ 'category' ] } )->all;
+    my @contacts = $csv->body->contacts->order_by('category')->all;
     my %extra_columns;
     foreach my $contact (@contacts) {
         foreach (@{$contact->get_metadata_for_storage}) {
@@ -492,34 +495,35 @@ sub _premises_for_postcode {
 
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
 
-    unless ( $c->session->{$key} ) {
-        my $cfg = $self->feature('bartec');
-        my $bartec = Integrations::Bartec->new(%$cfg);
-        my $response = $bartec->Premises_Get($pc);
+    my $data = $c->waste_cache_get($key);
+    return $data if $data;
 
-        if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
-            my $blocked = $cfg->{blocked_uprns} || [];
-            my %blocked = map { $_ => 1 } @$blocked;
-            @$response = grep { !$blocked{$_->{UPRN}} } @$response;
-        }
+    my $cfg = $self->feature('bartec');
+    my $bartec = Integrations::Bartec->new(%$cfg);
+    my $response = $bartec->Premises_Get($pc);
 
-        $c->session->{$key} = [ map { {
-            id => $pc . ":" . $_->{UPRN},
-            uprn => $_->{UPRN},
-            usrn => $_->{USRN},
-            address => $self->_format_address($_),
-            latitude => $_->{Location}->{Metric}->{Latitude},
-            longitude => $_->{Location}->{Metric}->{Longitude},
-        } } @$response ];
+    if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
+        my $blocked = $cfg->{blocked_uprns} || [];
+        my %blocked = map { $_ => 1 } @$blocked;
+        @$response = grep { !$blocked{$_->{UPRN}} } @$response;
     }
 
-    return $c->session->{$key};
+    $data = [ map { {
+        id => $pc . ":" . $_->{UPRN},
+        uprn => $_->{UPRN},
+        usrn => $_->{USRN},
+        address => $self->_format_address($_),
+        latitude => $_->{Location}->{Metric}->{Latitude},
+        longitude => $_->{Location}->{Metric}->{Longitude},
+    } } @$response ];
+
+    return $c->waste_cache_set($key, $data);
 }
 
 sub clear_cached_lookups_postcode {
     my ($self, $pc) = @_;
     my $key = "peterborough:bartec:premises_for_postcode:$pc";
-    delete $self->{c}->session->{$key};
+    $self->{c}->waste_cache_delete($key);
 }
 
 sub clear_cached_lookups_property {
@@ -528,8 +532,8 @@ sub clear_cached_lookups_property {
     # might be prefixed with postcode if it's come straight from the URL
     $uprn =~ s/^.+\://g;
 
-    foreach ( qw/look_up_property bin_services_for_address/ ) {
-        delete $self->{c}->session->{"peterborough:bartec:$_:$uprn"};
+    foreach ( qw/bin_services_for_address/ ) {
+        $self->{c}->waste_cache_delete("peterborough:bartec:$_:$uprn");
     }
 
     $self->clear_cached_lookups_bulky_slots($uprn);
@@ -542,8 +546,7 @@ sub clear_cached_lookups_bulky_slots {
     $uprn =~ s/^.+\://g;
 
     for (qw/earlier later/) {
-        delete $self->{c}
-            ->session->{"peterborough:bartec:available_bulky_slots:$_:$uprn"};
+        $self->{c}->waste_cache_delete("peterborough:bartec:available_bulky_slots:$_:$uprn");
     }
 }
 
@@ -589,9 +592,9 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $base = '/i/waste-containers';
     my $images = {
-        6533 => "$base/bin-black",
-        6534 => "$base/bin-green",
-        6579 => "$base/bin-brown",
+        6533 => svg_container_bin('wheelie', '#333333'),
+        6534 => svg_container_bin("wheelie", '#41B28A'),
+        6579 => svg_container_bin("wheelie", '#8B5E3D'),
         bulky => "$base/bulky-white",
     };
     return $images->{$service_id};
@@ -767,8 +770,8 @@ sub bin_services_for_address {
             $property->{has_black_bin} = 1;
         }
 
-        my $last_obj = { date => $last, ordinal => ordinal($last->day) } if $last;
-        my $next_obj = { date => $next, ordinal => ordinal($next->day) } if $next;
+        my $last_obj = $last ? { date => $last, ordinal => ordinal($last->day) } : undef;
+        my $next_obj = $next ? { date => $next, ordinal => ordinal($next->day) } : undef;
         my $row = {
             id => $_->{JobID},
             last => $last_obj,
@@ -799,7 +802,7 @@ sub bin_services_for_address {
             # If on the day, but before 5pm, show a special message to call
             # (which is slightly different for staff, who are actually allowed to report)
             if ($last->ymd eq $now->ymd && $now->hour < 17) {
-                my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council";
+                my $is_staff = $self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->get_column('name') eq "Peterborough City Council";
                 $row->{report_allowed} = $is_staff ? 1 : 0;
                 $row->{report_locked_out} = [ "ON DAY PRE 5PM" ];
                 # Set a global flag to show things in the sidebar
@@ -1157,7 +1160,7 @@ sub waste_munge_problem_data {
 sub waste_munge_problem_form_fields {
     my ($self, $field_list) = @_;
 
-    my $not_staff = !($self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->name eq "Peterborough City Council");
+    my $not_staff = !($self->{c}->user_exists && $self->{c}->user->from_body && $self->{c}->user->from_body->get_column('name') eq "Peterborough City Council");
     my $label_497 = $not_staff
     ? 'The bin wasn’t returned to the collection point (Please phone 01733 747474 to report this issue)'
     : 'The bin wasn’t returned to the collection point';
@@ -1259,10 +1262,9 @@ sub waste_munge_problem_form_fields {
 
 }
 
+sub waste_request_form_first_title { 'Which bins do you need?' }
 sub waste_request_form_first_next {
     my $self = shift;
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::Peterborough';
-    $self->{c}->stash->{form_title} = 'Which bins do you need?';
     return 'replacement' unless $self->{c}->get_param('bags_only');
     return 'about_you';
 }

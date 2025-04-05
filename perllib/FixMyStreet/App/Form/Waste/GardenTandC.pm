@@ -12,6 +12,8 @@ has_field tandc => (
         my $text;
         if ($cobrand->moniker eq 'brent') {
             $text = 'I agree to the <a href="/about/garden_terms" target="_blank">terms and conditions</a> and accept that if my bin does not display a valid bin sticker, it will not be collected';
+        } elsif ($cobrand->moniker eq 'bexley') {
+            $text = 'I agree to the <a href="https://www.bexley.gov.uk/services/rubbish-and-recycling/garden-waste-collection-service/sign-garden-waste-collection" target="_blank">terms and conditions</a>';
         } else {
             $text = 'I agree to the <a href="/about/garden_terms" target="_blank">terms and conditions</a>';
         }

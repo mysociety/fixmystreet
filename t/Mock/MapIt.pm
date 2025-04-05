@@ -34,21 +34,15 @@ my @PLACES = (
     [ '?', 51.615499, -0.556667, 163793, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED', 53822, 'Adstock', 'CPC' ],
     [ '?', 51.615965, -0.556367, 163793, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED', 53822, 'Adstock', 'CPC' ],
     [ '?', 51.615439, -0.558362, 163793, 'Buckinghamshire Council', 'CTY', 2257, 'Chiltern District Council', 'DIS', 2796, 'Chalfont Common', 'DIW', 143422, 'Chalfont St Peter', 'CED' ],
-    [ 'HP19 8FF', 51.822364, -0.826409, 163793, 'Buckinghamshire Council', 'CTY', 2258, 'Aylesbury Vale District Council', 'DIS', 144545, 'Gatehouse', 'DIW', 143444, 'Aylesbury North-West', 'CED' ],
-    [ '?', 51.995, -0.986 , 163793, 'Buckinghamshire Council', 'CTY', 2258, 'Aylesbury Vale District Council', 'DIS', 144539, 'Buckingham South', 'DIW', 143424, 'Buckingham West', 'CED' ],
-    [ '?', 51.940, -0.887, 163793, 'Buckinghamshire Council', 'CTY', 2258, 'Aylesbury Vale District Council', 'DIS', 144531, 'Winslow', 'DIW', 143404, 'Winslow', 'CED' ],
-    [ '?', 51.563, -0.499, 163793, 'Buckinghamshire Council', 'CTY', 2256, 'South Bucks District Council', 'DIS', 144508, 'Denham', 'DIW', 143412, 'Denham', 'CED' ],
-    [ 'HP9 2PJ', 51.611, -0.644, 163793, 'Buckinghamshire Council', 'CTY', 2256, 'South Bucks District Council', 'DIS', 144516, 'Beaconsfield North', 'DIW', 143415, 'Beaconsfield', 'CED' ],
-    [ '?', 51.628661, -0.748238, 163793, 'Buckinghamshire Council', 'CTY', 2255, 'Wycombe District Council', 'DIS', 2744, 'Abbey', 'DIW', 143428, 'Abbey', 'CED' ],
-    [ '?', 51.566667, -0.766667, 163793, 'Buckinghamshire Council', 'CTY', 2255, 'Wycombe District Council', 'DIS', 2752, 'Marlow South East', 'DIW', 143427, 'Marlow', 'CED' ],
     [ 'SW1A 1AA', 51.501009, -0.141588, 2504, 'Westminster City Council', 'LBO' ],
     [ '?', 51.507461, -0.126890, 2504, 'Westminster City Council', 'LBO' ],
+    [ '?', 51.49228, -0.1488, 2504, 'Westminster City Council', 'LBO' ],
     [ 'GL50 2PR', 51.896268, -2.093063, 2226, 'Gloucestershire County Council', 'CTY', 2326, 'Cheltenham Borough Council', 'DIS', 4544, 'Lansdown', 'DIW', 143641, 'Lansdown and Park', 'CED' ],
     [ 'OX20 1SZ', 51.754926, -1.256179, 2237, 'Oxfordshire County Council', 'CTY', 2421, 'Oxford City Council', 'DIS' ],
     [ 'OX16 9UP', 52.038712, -1.346397, 2237, 'Oxfordshire County Council', 'CTY', 2419, 'Cherwell District Council', 'DIS', 151767, "Banbury, Calthorpe & Easington", "DIW" ],
-    [ 'RG9 6TL', 51.561705, -0.868388, 163793, 'Buckinghamshire Council', 'CTY'],
+    [ 'RG9 6TL', 51.561705, -0.868388, 163793, 'Buckinghamshire Council', 'UTA'],
     [ 'PE9 2GX', 52.656144, -0.502566, 2232, 'Lincolnshire County Council', 'CTY'],
-    [ 'LE15 0GJ', 52.670447, -0.727877, 2600, 'Rutland County Council', 'CTY'],
+    [ 'LE15 0GJ', 52.670447, -0.727877, 2600, 'Rutland County Council', 'UTA'],
     [ 'BR1 3UH', 51.4021, 0.01578, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 3UH', 51.402096, 0.015784, 2482, 'Bromley Council', 'LBO' ],
     [ 'BR1 3UH', 51.402092, 0.015783, 2482, 'Bromley Council', 'LBO', 8141, 'Bromley Town', 'LBW' ],
@@ -58,7 +52,12 @@ my @PLACES = (
     [ '?', 51.422382, -0.064555, 2482, 'Bromley Council', 'LBO' ],
     # National Sports Centre in Crystal Palace Park
     [ '?', 51.419275, -0.071410, 2482, 'Bromley Council', 'LBO' ],
+    # On a light asset
+    [ '?', 51.398387, 0.022775, 2482, 'Bromley Council', 'LBO' ],
+    # Point in a park
+    [ '?', 51.403986, 0.007803, 2482, 'Bromley Council', 'LBO' ],
     [ 'KT1 1AA', 51.408688, -0.304465, 2480, 'Kingston upon Thames Council', 'LBO' ],
+    [ '?', 51.427796, -0.254369, 2480, 'Kingston upon Thames Council', 'LBO' ], # Commons Extension park
     [ 'SM2 5HF', 51.354679, -0.183895, 2498, 'Sutton Borough Council', 'LBO' ],
     [ '?', 51.466707, 0.181108, 2494, 'London Borough of Bexley', 'LBO' ],
     [ '?', 51.512868, 0.125436, 2494, 'London Borough of Bexley', 'LBO' ],
@@ -73,9 +72,9 @@ my @PLACES = (
     [ 'E8 1DY', 51.552267, -0.063316, 2508, 'Hackney Borough Council', 'LBO' ],
     [ 'E8 2DY', 51.552287, -0.063326, 2508, 'Hackney Council', 'LBO' ],
     [' E6 1AX', 51.524448, -0.077625, 2508, 'Hackney Council', 'LBO', 144379, 'Hoxton East & Shoreditch', 'LBW' ],
-    [ 'TW7 5JN', 51.482286, -0.328163, 2483, 'Hounslow Borough Council', 'LBO' ],
-    [ '?', 51.48111, -0.327219, 2483, 'Hounslow Borough Council', 'LBO' ],
-    [ '?', 51.482045, -0.327219, 2483, 'Hounslow Borough Council', 'LBO' ],
+    [ 'TW7 5JN', 51.482286, -0.328163, 2483, 'Hounslow Highways', 'LBO' ],
+    [ '?', 51.48111, -0.327219, 2483, 'Hounslow Highways', 'LBO' ],
+    [ '?', 51.482045, -0.327219, 2483, 'Hounslow Highways', 'LBO' ],
     [ '?', 51.345714, -0.227959, 2457, 'Epsom and Ewell Borough Council', 'DIS' ],
     [ 'CW11 1HZ', 53.145324, -2.370437, 21069, 'Cheshire East Council', 'UTA', 135301, 'Sandbach Town', 'UTW' ],
     [ '?', 50.78301, -0.646929 ],
@@ -93,6 +92,10 @@ my @PLACES = (
     [ 'The Circus', 51.386269, -2.364050, 2551, 'Bath and North East Somerset Council', 'UTA' ],
     [ 'SM1 1AA', 51.359723, -0.193146, 2498, 'Sutton Council', 'LBO' ],
     [ 'SM4 5DX', 51.400975, -0.19655, 2500, 'Merton Council', 'LBO' ],
+    [ '?', 51.411907, -0.170620, 2500, 'Merton Council', 'LBO' ], # Lavendar Park
+    [ '?', 51.429054, -0.253360, 2500, 'Merton Council', 'LBO' ], # Wimbledon Common
+    [ '?', 51.393623, -0.137502, 2500, 'Merton Council', 'LBO' ], # Mitcham Common
+    [ '?', 51.403673, -0.186162, 2500, 'Merton Council', 'LBO' ], # Morden Hall Park
     [ 'SY4 5DL', 52.855684, -2.723877, 2238, 'Shropshire Council', 'UTA' ],
     # Norway
     [ '3290', 59, 10, 709, 'Larvik', 'NKO', 7, 'Vestfold', 'NFY' ],
@@ -116,6 +119,9 @@ my @PLACES = (
     [ 'NE61 1BE', 55.169081, -1.691012, 2248, 'Northumberland County Council', 'UTA' ],
     [ 'SG17 5TQ', 52.03553, -0.36067, 21070, 'Central Bedfordshire Council', 'UTA' ],
     [ '?', 51.558568, -0.207702, 2489, 'Barnet Borough Council', 'DIS' ],
+    [ '?', 51.418776, 0.005357, 2492, 'Lewisham Borough Council', 'DIS' ],
+    [ '?', 52.956196, -1.151204, 2412, 'Gedling Borough Council', 'DIS', 2236, 'Nottinghamshire County Council', 'CTY' ],
+    [ 'KT11 1LZ', 51.293415, -0.441269, 2242, 'Surrey County Council', 'DIS'],
 );
 
 sub dispatch_request {
@@ -178,21 +184,29 @@ sub dispatch_request {
             $self->output({2650 => {parent_area => undef, id => 2650, name => "Aberdeen Council", type => "UTA"}});
         } elsif ($areas eq 'DIS,LBO,MTD,UTA,CTY,COI,LGD') {
             $self->output({2508 => {parent_area => undef, id => 2508, name => "Hackney Council", type => "LBO"}});
+        } elsif ($areas eq 'DIS,LBO,MTD,UTA,CTY,COI,LGD,CPC') {
+            $self->output({2508 => {parent_area => undef, id => 2508, name => "Hackney Council", type => "LBO"}});
         } elsif ($areas eq 'GRE') {
             $self->output({2493 => {parent_area => undef, id => 2493, name => "Greenwich Borough Council", type => "LBO"}});
         } elsif ($areas eq 'LBO' || $areas eq 'LBO,UTA,DIS') {
             $self->output({
                 2482 => {parent_area => undef, id => 2482, name => "Bromley Borough Council", type => "LBO"},
-                2483 => {parent_area => undef, id => 2483, name => "Hounslow Borough Council", type => "LBO"},
+                2483 => {parent_area => undef, id => 2483, name => "Hounslow Highways", type => "LBO"},
             });
         } elsif ($areas eq 60705) {
             $self->output({60705 => {parent_area => 2245, id => 60705, name => "Trowbridge", type => "CPC"}});
         }
     },
 
-    sub (POST + /areas) {
+    sub (POST + /areas + %*) {
         my ($self, $areas) = @_;
-        $self->output({53319 => {parent_area => 2217, id => 53319, name => "Bradenham", type => "CPC"}});
+        my $out = {
+            53319 => { parent_area => 2217, id => 53319, name => "Bradenham", type => "CPC" },
+        };
+        if ($areas->{URL} =~ /59087/) {
+            $out->{59087} = { parent_area => 2538, id => 59087, name => "Castle Bromwich", type => "CPC" },
+        }
+        $self->output($out);
     },
 
     sub (GET + .geojson) {

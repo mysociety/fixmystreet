@@ -24,7 +24,12 @@ END
         [%~ FOREACH group_or_cat IN category_groups ~%]
             <div class="govuk-radios__item">
           [% IF group_or_cat.name %]
-                <input class="govuk-radios__input" required id="category_[% group_or_cat.id %]" type="radio" name="category" value="[% group_or_cat.name %]" data-subcategory="[% group_or_cat.id %]"[% ' checked' IF filter_group == group_or_cat.name %]>
+                <input class="govuk-radios__input" required type="radio" name="category"
+                    id="category_[% group_or_cat.id %]"
+                    data-valuealone="[% group_or_cat.name %]"
+                    value="G|[% group_or_cat.name %]"
+                    data-subcategory="[% group_or_cat.id %]"
+                    [%~ ' checked' IF filter_group == group_or_cat.name %]>
             <label class="govuk-label govuk-radios__label" for="category_[% group_or_cat.id %]">[% group_or_cat.name %]</label>
             [% group_hint = group_or_cat.categories.first.get_extra_metadata('group_hint') %]
             [%~ IF group_hint %]
@@ -32,9 +37,15 @@ END
               [% group_hint | safe %]
             </div>
             [% END ~%]
-          [% ELSE # A category not in a group %]
-            [% cat_lc = group_or_cat.category | lower =%]
-            <input class="govuk-radios__input" required id="category_[% group_or_cat.id %]" type="radio" name="category" data-category_display="[% group_or_cat.category_display %]" value='[% group_or_cat.category %]'
+          [% ELSE # A category not in a group, or a hoisted category %]
+            [% cat_lc = group_or_cat.category | lower;
+                hoisted = group_or_cat.get_extra_metadata('hoisted');
+            =%]
+            <input class="govuk-radios__input" required type="radio" name="category"
+                id="category_[% group_or_cat.id %]"
+                data-category_display="[% group_or_cat.category_display %]"
+                data-valuealone="[% group_or_cat.category %]"
+                value='[% "H|" _ hoisted _ "|" IF hoisted %][% group_or_cat.category %]'
                 [%~ ' checked' IF ( report.category == group_or_cat.category || category_lc == cat_lc ) AND NOT filter_group ~%]
                 [%~ ' data-nh="1"' IF group_or_cat.get_extra_metadata('nh_council_cleaning') ~%]
                 >

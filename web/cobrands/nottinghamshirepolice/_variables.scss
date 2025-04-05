@@ -1,0 +1,129 @@
+// Styling based on https://preview-pcc-nottinghamshire.cloud.contensis.com/Preview/1/news/more-officers-take-to-the-streets-to-tackle-antisocial-behaviour-and-serious-violence
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+$blue-1000: rgb(0, 0, 37); // Active state navbar
+$blue-900: rgb(29, 26, 58); //For navbar and secondary buttons
+$blue-500: rgb(23, 33, 128); // Background sections
+$blue-400: rgb(46, 49, 146); // Blue cards
+$blue-300: rgb(78, 188, 246); // Focus outline colour
+$grey-bg: rgb(247, 247, 249);
+$grey: rgb(211, 213, 222); // Input borders
+$black: rgb(29, 26, 58);
+$white: #fff;
+$red: rgb(183, 44, 93); // Use for buttons and errors. Example here: https://preview-pcc-nottinghamshire.cloud.contensis.com/Preview/1/news/more-officers-take-to-the-streets-to-tackle-antisocial-behaviour-and-serious-violence
+$pink: rgb(169, 16, 177);
+
+$error_color: $red;
+
+$green: #016200; //For buttons and links
+$green-600: #065325; // Hover effect buttons
+
+$grey-100: #f5f5f57a; //Background for most sections the website
+$grey-200: #f5f5f5; // Background for banners
+
+$yellow: #e2ca76; // For info boxes body with no title and tags
+$yellow-400: #eee3ba; // body for info boxes with title tag
+
+$primary: $red;
+$primary_b: $black;
+$primary_text: $white;
+$primary_link_color: rgb(0, 0, 238);
+$primary_link_hover_color: rgb(0, 0, 238);
+$primary_link_hover_decoration: underline;
+$link-color: rgb(0, 0, 238); // Browser link colour
+$link-text-decoration: none;
+$link-hover-text-decoration: underline;
+$link-hover-color: rgb(0, 0, 238);
+
+$focus-bg-top: $yellow;
+$focus-bg-bottom: $yellow;
+$focus-text: $black;
+
+$button-padding-top: 1rem;
+$button-padding-bottom: 1rem;
+$button-padding-left: 1.5rem;
+$button-padding-right: 1.5rem;
+
+$button-border-radius: 0.25rem;
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom:$pink;
+$button-primary-hover-bg-top:$pink;
+$button-primary-hover-border:$pink;
+$button-primary-hover-text: $primary_text;
+$button-primary-focus-bg-bottom: $primary;
+$button-primary-focus-bg-top: $primary;
+$button-primary-focus-border: $primary; 
+$button-primary-focus-text: $primary_text;
+
+$button-secondary-bg-top: $white;
+$button-secondary-bg-bottom: $white;
+$button-secondary-border: $blue-900;
+$button-secondary-text: $blue-900;
+$button-secondary-hover-bg-bottom: $blue-900;
+$button-secondary-hover-bg-top: $blue-900;
+$button-secondary-hover-border: $blue-900;
+$button-secondary-hover-text: $primary_text;
+$button-secondary-focus-bg-bottom: $white;
+$button-secondary-focus-bg-top: $white;
+$button-secondary-focus-border: $blue-900; 
+$button-secondary-focus-text: $blue-900;
+
+$base_bg: $white;
+$base_fg: $black;
+
+$error_color: $red;
+
+// FONTS
+$arial-font: Arial, Helvetica, sans-serif;
+
+$heading-font: "Manrope", sans-serif;
+$body-font: $arial-font;
+$meta-font: $arial-font;
+
+// HEADER
+$mappage-header-height: 7.5rem;
+$header-top-border-width: 0;
+$nav_background_colour: $blue-900;
+$nav_colour: $white;
+$nav_hover_background_colour: $blue-1000;
+
+// FRONTPAGE
+// Mobile
+$front-main-color: $primary_b;
+$front-main-background: $grey-100;
+$postcodeform-background: $white;
+$postcodeform-color: $primary_b;
+
+// Desktop
+$front-main-background-desktop: $blue-900;
+$front-main-container-background-desktop: $grey-bg;
+$front-main-color-desktop: $primary_b;
+$postcodeform-color-desktop: $black;
+
+$geolocation-link-border: $primary;
+$geolocation-link: $primary;
+$geolocation-link-background-color: $white;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: $primary_b;
+$layout_front_stats_color: $primary_b;
+$col_click_map: $primary;
+
+$mappage-sidebar-width: 32em;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+$sticky-sidebar-link-color: $primary;
+
+$container-max-width: 90rem;
+
+@mixin nott-focus-state {
+  &:focus {
+    outline: $blue-300 solid 0.25rem;
+    outline-offset: 0.1rem;
+  }
+}

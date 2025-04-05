@@ -79,6 +79,21 @@ sub reopening_disallowed {
     return 1;
 }
 
+=item * Jobs from Confirm that are completed (marked as fixed or closed) are not displayed after 48 hours
+
+=cut
+
+sub report_age {
+    return {
+        closed => {
+            job => '48 hours',
+        },
+        fixed => {
+            job => '48 hours',
+        },
+    };
+}
+
 =item * We do not send questionnaires.
 
 =cut
@@ -221,83 +236,33 @@ sub disambiguate_location {
     };
 }
 
+=head2 is_defect
+
+Returns true if it's a fetched job from Confirm.
+
+=cut
+
+sub is_defect {
+    my ($self, $p) = @_;
+    return $p->external_id && $p->external_id =~ /^JOB_/;
+}
+
 =head2 pin_colour
 
-Green for anything completed or closed, yellow for the rest.
+Green for anything completed or closed, yellow for the rest,
+apart from defects which are blue.
 
 =cut
 
 sub pin_colour {
     my ( $self, $p ) = @_;
 
-    return 'green' if $p->is_fixed || $p->is_closed;
-
-    return 'yellow';
+    return 'blue-work' if $self->is_defect($p);
+    return 'green-tick' if $p->is_fixed || $p->is_closed;
+    return 'yellow-cone';
 }
 
-sub extra_around_pins {
-    my ($self, $bbox) = @_;
-
-    if (!defined($bbox)) {
-        return [];
-    }
-
-    my $res = $self->pins_from_wfs($bbox);
-
-    return $res;
-}
-
-
-# Get defects from WDM feed and display them on /around page.
-sub pins_from_wfs {
-    my ($self, $bbox) = @_;
-
-    my $wfs = $self->defect_wfs_query($bbox);
-
-    # Generate a negative fake ID so it doesn't clash with FMS report IDs.
-    my $fake_id = -1;
-    my @pins = map {
-        my $coords = $_->{geometry}->{coordinates};
-        my $props = $_->{properties};
-        {
-            id => $fake_id--,
-            latitude => @$coords[1],
-            longitude => @$coords[0],
-            colour => 'defects',
-            title => $props->{description},
-        };
-    } @{ $wfs->{features} };
-
-    return \@pins;
-}
-
-sub defect_wfs_query {
-    my ($self, $bbox) = @_;
-
-    return if FixMyStreet->test_mode eq 'cypress';
-
-    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
-    my $uri = URI->new("https://$host/confirm.php");
-    my $suffix = FixMyStreet->config('STAGING_SITE') ? "staging" : "assets";
-    $uri->query_form(
-        layer => 'jobs',
-        url => "https://gloucestershire.$suffix",
-        bbox => $bbox,
-    );
-
-    try {
-        my $response = get($uri);
-        my $json = JSON->new->utf8->allow_nonref;
-        return $json->decode($response);
-    } catch {
-        # Ignore WFS errors.
-        return {};
-    };
-}
-
-sub path_to_pin_icons {
-    return '/cobrands/oxfordshire/images/';
-}
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 =head2 open311_config
 

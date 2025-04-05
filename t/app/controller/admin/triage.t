@@ -1,6 +1,9 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
@@ -11,7 +14,7 @@ my $superuser = $mech->create_user_ok(
     is_superuser => 1
 );
 
-my $iow = $mech->create_body_ok(2636, 'Isle of Wight Council', { can_be_devolved => 1 }, { cobrand => 'isleofwight' } );
+my $iow = $mech->create_body_ok(2636, 'Isle of Wight Council', { can_be_devolved => 1, cobrand => 'isleofwight' } );
 my $iow_contact = $mech->create_contact_ok(
     body_id     => $iow->id,
     category    => 'Potholes',
@@ -69,6 +72,21 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/report/' . $report->id);
         $mech->content_contains('CONFIRM Subject');
+    };
+
+    subtest "private reports appear correctly on the triage page" => sub {
+        $mech->get_ok('/admin/triage');
+        $mech->content_contains($report->title);
+
+        $report->update({ non_public => 1 });
+        $mech->get_ok('/admin/triage');
+        $mech->content_lacks($report->title);
+
+        $user->user_body_permissions->create( { body => $iow, permission_type => 'report_mark_private' } );
+        $mech->get_ok('/admin/triage');
+        $mech->content_contains($report->title);
+
+        $report->update({ non_public => 0 });
     };
 
     subtest "user has to select a category" => sub {

@@ -1,0 +1,45 @@
+[%
+
+PROCESS 'waste/_email_data.html';
+
+title = report.title | html;
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  [% IF is_container_request %]
+    <h1 style="[% h1_style %]">New updates on your replacement bin request</h1>
+  [% ELSE %]
+    <h1 style="[% h1_style %]">New updates on <a href="[% problem_url %]">[% is_missed_collection ? 'your missed collection report' : title %]</a></h1>
+  [% END %]
+  [%~ INCLUDE '_email_comment_list.html' %]
+  [% IF is_missed_collection || is_container_request %]
+      <p style="border-bottom: 1px solid #D2D2D2; padding-bottom: 20px; margin: 20px auto; text-align: center">
+        <a style="[% button_style %]" href="[% cobrand.feature('waste_features').contact_us_link %]">
+          Contact us
+        </a>
+      </p>
+  [% END %]
+  [% IF unsubscribe_url %]
+    <p style="[% p_style %]"><a href="[% unsubscribe_url %]">Unsubscribe from alerts about this report</a></p>
+  [% END %]
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    [% IF is_missed_collection || is_container_request %]
+      [% INCLUDE 'waste/_sidebar_content.html' %]
+      [% INCLUDE 'waste/_council_reference_alert_update.html' problem=report p_style=secondary_p_style %]
+    [% ELSE  %]
+      <h2 style="[% h2_style %]">[% title %]</h2>
+      [% report.detail | html_para_email(secondary_p_style) %]
+      [% INCLUDE '_council_reference_alert_update.html' problem=report p_style=secondary_p_style %]
+    [% END %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

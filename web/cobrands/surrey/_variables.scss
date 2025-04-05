@@ -1,0 +1,126 @@
+// Styling based on https://www.surreycc.gov.uk/
+
+/* COLOURS */
+
+$surrey_green: #00604d;
+$surrey_blue: #005bab; // Links
+$surrey_orange: #ee7600; // Hover for buttons
+$surrey_orange_light: #ffd699; // Focus
+$surrey_black: #000000;
+$surrey_grey:#eee; // Use as background for sections
+$surrey_white: #fff;
+$surrey_red: #d20000;
+
+$primary: $surrey_green;
+$primary_b: $surrey_black;
+$primary_text: $surrey_white;
+
+$base_bg: $surrey_white;
+$base_fg: $surrey_black;
+
+/* NAVBAR */
+$nav_colour: $primary_text;
+$nav_background_colour: $primary;
+$nav_hover_background_colour: $primary;
+$mappage-header-height: 70px;
+$header-top-border-width: 0;
+
+/* FONTS */
+$heading-font: 'Open Sans',Arial,Helvetica,sans-serif;
+$body-font: 'Open Sans',Arial,Helvetica,sans-serif;
+$meta-font: 'Open Sans',Arial,Helvetica,sans-serif;
+
+
+/* BUTTONS */
+$button-border-radius: 0px;
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom:$surrey_orange;
+$button-primary-hover-bg-top:$surrey_orange;
+$button-primary-hover-border:$primary;
+$button-primary-hover-text: $primary_b;
+$button-primary-focus-bg-bottom: $surrey_orange;
+$button-primary-focus-bg-top: $surrey_orange;
+$button-primary-focus-border: $surrey_orange_light; 
+$button-primary-focus-text: $primary_b;
+
+$button-secondary-bg-top: $surrey_white;
+$button-secondary-bg-bottom: $surrey_white;
+$button-secondary-border: $primary;
+$button-secondary-text: $primary;
+$button-secondary-hover-bg-bottom: $primary;
+$button-secondary-hover-bg-top: $primary;
+$button-secondary-hover-border: $primary;
+$button-secondary-hover-text: $primary_text;
+$button-secondary-focus-bg-bottom: $surrey_orange;
+$button-secondary-focus-bg-top: $surrey_orange;
+$button-secondary-focus-border: $primary; 
+$button-secondary-focus-text: $primary_b;
+
+$link-color: $surrey_blue;
+$link-hover-color:  $surrey_blue;
+$link-visited-color: $surrey_blue;
+$link-text-decoration: none;
+$link-hover-text-decoration: underline;
+
+/* OTHER VARIABLES */
+$col_click_map: $primary;
+
+$front-main-background: $primary;
+$front-main-color: $primary_text;
+$postcodeform-background: $primary;
+$postcodeform-color-desktop: $primary_text;
+
+$front-main-color-desktop: $primary_text;
+$front-main-background-desktop:$primary;
+$front-main-container-background-desktop: $primary;
+$postcodeform-background-desktop: transparent !default;
+$form-hint-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
+$front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
+
+
+// $front-main-background-desktop: no-repeat center/cover url("/cobrands/westnorthants/images/all-saints.jpeg");
+// $front-main-container-background-desktop: transparentize($surrey_white, 0.05);
+// $front-main-color-desktop: $primary_b;
+
+$geolocation-link-border: $primary;
+$geolocation-link: $primary;
+$geolocation-link-background-color: $surrey_white;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: $primary_b;
+$layout_front_stats_color: $primary_b;
+$col_click_map: $primary;
+
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+$sticky-sidebar-link-color: $primary;
+
+/* MIXINS */
+@mixin surrey-focus {
+  &:focus {
+    outline: 0.3rem solid $surrey_orange_light;
+    outline-offset: -0.1rem;
+  }
+}
+
+@mixin navbar-btn {
+  color: $primary_text;
+  border: 2px solid $base_bg;
+  border-radius: 0;
+  &:hover {
+    background-color: $base_bg;
+    color: $primary !important;
+    text-decoration: none;
+  }
+}
+
+@mixin surrey-button-focus {
+  &:focus {
+    color: $primary_b;
+    background-color: $surrey_orange;
+    outline: 0.3rem solid $surrey_orange_light;
+    outline-offset: -0.1rem;
+  }
+}

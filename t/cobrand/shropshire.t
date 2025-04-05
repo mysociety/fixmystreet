@@ -10,7 +10,7 @@ use Open311::PopulateServiceList;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2238, 'Shropshire Council', {}, { cobrand => 'shropshire' });
+my $body = $mech->create_body_ok(2238, 'Shropshire Council', { cobrand => 'shropshire' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Bridges', email => 'bridges@example.org');
 
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'Test Report', {
@@ -163,7 +163,6 @@ subtest 'check open311_contact_meta_override' => sub {
     };
     $processor->_current_service( { service_code => 100, service_name => 'Abandoned vehicle' } );
     $processor->_add_meta_to_contact( $contact );
-    $contact->discard_changes;
     my @extra_fields = $contact->get_extra_fields;
 
     is $extra_fields[0][0]->{fieldtype}, 'date', "added fieldtype 'date' to 'Abandoned since'";
@@ -182,7 +181,7 @@ FixMyStreet::override_config {
             from_body => $body, password => 'password');
 
         $mech->log_in_ok( $staffuser->email );
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $report->non_public(1);
         $report->update;
         $mech->get_ok('/dashboard?export=1');

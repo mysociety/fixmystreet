@@ -1,3 +1,13 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::TfL - code specific to the Transport for London cobrand
+
+=head1 SYNOPSIS
+
+Transport for London is an FMS integration. It covers multiple London Borough areas
+
+=cut
+
 package FixMyStreet::Cobrand::TfL;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -6,6 +16,15 @@ use warnings;
 use utf8;
 
 use Moo;
+
+=head1 DESCRIPTION
+
+TfL has features related to covering multiple London areas. It doesn't have an external
+integration with a backend, but does have single sign-on with Azure for staff users - they
+are assigned an FMS account and user role when logging in.
+
+=cut
+
 with 'FixMyStreet::Roles::BoroughEmails';
 
 use POSIX qw(strcoll);
@@ -14,6 +33,176 @@ use FixMyStreet::MapIt;
 use mySociety::ArrayUtils;
 use Utils;
 
+sub council_area_id { [ $_[0]->london_boroughs, $_[0]->surrounding_london ] }
+
+sub council_area { return 'TfL'; }
+sub council_name { return 'TfL'; }
+sub council_url { return 'tfl'; }
+sub area_types  { [ 'LBO', 'UTA', 'DIS' ] }
+
+=head1 Defaults
+
+=over 4
+
+=item * TfL only allows contact form to report abusive reports
+
+=cut
+
+sub abuse_reports_only { 1 }
+
+=item * Reports made to TfL do not get followed up by a questionnaire
+
+=cut
+
+sub send_questionnaires { 0 }
+
+=item * TfL geocoding automatically sets town to London
+
+=cut
+
+sub disambiguate_location {
+    my $self    = shift;
+    my $string  = shift;
+
+    if ($string =~ /victoria coach station|vcs/i) {
+        return { result => { latitude => 51.49228, longitude => -0.1488 } };
+    }
+
+    return {
+        %{ $self->SUPER::disambiguate_location() },
+        town   => "London",
+    };
+}
+
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+    $result->{display_name} =~ s/, London, Greater London, England//;
+}
+
+=item * We use OpenStreetMap for geocoding
+
+=cut
+
+sub get_geocoder { 'OSM' }
+
+=item * TfL is not a council so prevent council related versions of text appearing on the web and in emails
+
+=cut
+
+sub is_council { 0 }
+
+=item * TfL is set to resend a report if the category is updated
+
+=cut
+
+sub category_change_force_resend { 1 }
+
+=item * TfL has customised front page prompt for entering a search
+
+=cut
+
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter a London postcode, or street name and area, or a reference number of a problem previously reported';
+}
+
+=item * TfL has its own privacy policy, which we redirect to from /about/privacy
+
+=cut
+
+sub privacy_policy_url { 'https://tfl.gov.uk/corporate/privacy-and-cookies/reporting-street-problems' }
+
+sub about_hook {
+    my $self = shift;
+    my $c = $self->{c};
+
+    if ($c->stash->{template} eq 'about/privacy.html') {
+        $c->res->redirect($self->privacy_policy_url);
+        $c->detach;
+    }
+}
+
+=item * TfL has green pins for closed/fixed, red for confirmed, and orange for everything else
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'green' if $p->is_closed;
+    return 'green' if $p->is_fixed;
+    return 'red' if $p->state eq 'confirmed';
+    return 'orange'; # all the other `open_states` like "in progress"
+}
+
+=item * Superusers and TfL staff can access the TfL admin
+
+=cut
+
+sub admin_allow_user {
+    my ( $self, $user ) = @_;
+    return 1 if $user->is_superuser;
+    return undef unless defined $user->from_body;
+    return $user->from_body->get_column('name') eq 'TfL';
+}
+
+
+=item * Restrict admin users to tfl.gov.uk email addresses
+
+=cut
+
+sub admin_user_domain { 'tfl.gov.uk' }
+
+=item * Sets anonymous reports to show a button for anonymous reporting
+
+=cut
+
+sub allow_anonymous_reports { 'button' }
+
+=item * TfL sends out confirmation emails when a report is made
+
+=cut
+
+sub report_sent_confirmation_email { 'id' }
+
+=item * TfL only shows reports on the map and in the report list for 6 weeks
+
+=cut
+
+sub report_age { '6 weeks' }
+
+=item * TfL doesn't show reports made before the go-live date (2019-12-09)
+
+=cut
+
+sub cut_off_date { '2019-12-09 12:00' }
+
+=back
+
+=head2 relative_url_for_report & base_url_for_report
+
+These are overridden so the method in UKCouncils doesn't create
+a fixmystreet.com link (because of the false-returning owns_problem call)
+
+=cut
+
+sub relative_url_for_report { "" }
+sub base_url_for_report {
+    my $self = shift;
+    return $self->base_url;
+}
+
+=head1 Multi council features
+
+TfL covers a lot of areas and has features necessary to work across areas.
+It sends emails in some categories to different addresses depending on Borough
+using L<FixMyStreet::Roles::BoroughEmails>.
+
+The cobrand covers London and its surrounding areas, as e.g. some bus stops are
+outside London.
+
+=cut
+
+# A list of all the London Borough MapIt IDs
 sub london_boroughs { (
     2511, 2489, 2494, 2488, 2482, 2505, 2512, 2481, 2484, 2495,
     2493, 2508, 2502, 2509, 2487, 2485, 2486, 2483, 2507, 2503,
@@ -21,23 +210,24 @@ sub london_boroughs { (
     2496, 2501, 2504,
 ) }
 
-# Surrounding areas for bus stops which can be outside London
+=pod
+
+These are Clockwise from top left: South Bucks, Three Rivers, Watford, Hertsmere,
+Welwyn Hatfield, Broxbourne, Epping Forest, Brentwood, Thurrock, Dartford, Sevenoaks,
+Tandridge, Reigate and Banstead, Epsom and Ewell, Mole Valley, Elmbridge, Spelthorne, Slough
+
+=cut
+
 sub surrounding_london { (
-    # Clockwise from top left: South Bucks, Three Rivers, Watford, Hertsmere,
-    # Welwyn Hatfield, Broxbourne, Epping Forest, Brentwood, Thurrock,
-    # Dartford, Sevenoaks, Tandridge, Reigate and Banstead, Epsom and Ewell,
-    # Mole Valley, Elmbridge, Spelthorne, Slough
     2256, 2338, 2346, 2339, 2344, 2340, 2311, 2309, 2615,
     2358, 2350, 2448, 2453, 2457, 2454, 2455, 2456, 2606,
 ) }
 
-sub council_area_id { [ $_[0]->london_boroughs, $_[0]->surrounding_london ] }
+=over 4
 
-sub council_area { return 'TfL'; }
-sub council_name { return 'TfL'; }
-sub council_url { return 'tfl'; }
-sub area_types  { [ 'LBO', 'UTA', 'DIS' ] }
-sub is_council { 0 }
+=item * For staff, the Borough the report is made in is shown when listing reports
+
+=cut
 
 sub borough_for_report {
     my ($self, $problem) = @_;
@@ -52,47 +242,11 @@ sub borough_for_report {
     return $areas->{$council_match}{name};
 }
 
-sub abuse_reports_only { 1 }
-sub send_questionnaires { 0 }
+=item * Extra bodies can appear from configuration (e.g. hire bike companies)
 
-sub disambiguate_location {
-    my $self    = shift;
-    my $string  = shift;
+=item * A few categories don't appear to admins as we don't want to be able to resend reports to them
 
-    return {
-        %{ $self->SUPER::disambiguate_location() },
-        town   => "London",
-    };
-}
-
-sub get_geocoder { 'OSM' }
-
-sub category_change_force_resend { 1 }
-
-sub enter_postcode_text {
-    my ($self) = @_;
-    return 'Enter a London postcode, or street name and area, or a reference number of a problem previously reported';
-}
-
-sub privacy_policy_url { 'https://tfl.gov.uk/corporate/privacy-and-cookies/reporting-street-problems' }
-
-sub about_hook {
-    my $self = shift;
-    my $c = $self->{c};
-
-    if ($c->stash->{template} eq 'about/privacy.html') {
-        $c->res->redirect($self->privacy_policy_url);
-        $c->detach;
-    }
-}
-
-# These need to be overridden so the method in UKCouncils doesn't create
-# a fixmystreet.com link (because of the false-returning owns_problem call)
-sub relative_url_for_report { "" }
-sub base_url_for_report {
-    my $self = shift;
-    return $self->base_url;
-}
+=cut
 
 sub categories_restriction {
     my ($self, $rs) = @_;
@@ -103,9 +257,15 @@ sub categories_restriction {
     return $rs->search( { category => { -not_in => $self->_tfl_no_resend_categories } } );
 }
 
-sub admin_user_domain { 'tfl.gov.uk' }
+=back
 
-sub allow_anonymous_reports { 'button' }
+=head1 Problem display and searching
+
+=over 4
+
+=item * You can search for reports from the front page using FMS[id].
+
+=cut
 
 sub lookup_by_ref_regex {
     return qr/^\s*((?:FMS\s*)?\d+)\s*$/i;
@@ -121,12 +281,9 @@ sub lookup_by_ref {
     return 0;
 }
 
-sub report_sent_confirmation_email { 'id' }
+=item * Limit problem listings history to problems that have been updated in the last 3 years
 
-sub report_age { '6 weeks' }
-
-# We don't want any reports made before the go-live date visible
-sub cut_off_date { '2019-12-09 12:00' }
+=cut
 
 sub problems_restriction {
     my ($self, $rs) = @_;
@@ -148,6 +305,10 @@ sub problems_sql_restriction {
     return $q;
 }
 
+=item * Reports are deleted from TfL after 7 years if they are safety critical, or after 3 years if they are not
+
+=cut
+
 sub inactive_reports_filter {
     my ($self, $time, $rs) = @_;
     if ($time < 7*12) {
@@ -158,31 +319,60 @@ sub inactive_reports_filter {
     return $rs;
 }
 
+=item * Include all reports in duplicate spotting, not just open ones
+
+=cut
+
+sub around_nearby_filter {
+    my ($self, $params) = @_;
+
+    delete $params->{states};
+}
+
+=back
+
+=head1 OIDC single sign on
+
+TfL staff users use an Azure single-sign on integration
+
+=over 4
+
+=item * Single sign on is enabled if the configuration is set up
+
+=cut
+
+sub social_auth_enabled {
+    my $self = shift;
+
+    return $self->feature('oidc_login') ? 1 : 0;
+}
+
+=item * Non-staff users must change their passwords annually; staff users don't use passwords so are excluded
+
+=cut
+
 sub password_expiry {
-    return if FixMyStreet->test_mode;
+    my ($self) = @_;
+
+    my $email = $self->{c}->user->email;
+    my $domain_email = $self->admin_user_domain;
+    return if $email =~ /$domain_email$/;
+
     # uncoverable statement
     86400 * 365
 }
 
-sub pin_colour {
-    my ( $self, $p, $context ) = @_;
-    return 'green' if $p->is_closed;
-    return 'green' if $p->is_fixed;
-    return 'red' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
-}
+=item * Different single sign-ons send user details differently, user_from_oidc extracts the relevant parts
 
-sub admin_allow_user {
-    my ( $self, $user ) = @_;
-    return 1 if $user->is_superuser;
-    return undef unless defined $user->from_body;
-    return $user->from_body->name eq 'TfL';
-}
+=cut
 
-sub around_nearby_filter {
-    my ($self, $params) = @_;
-    # Include all reports in duplicate spotting
-    delete $params->{states};
+sub user_from_oidc {
+    my ($self, $payload) = @_;
+
+    my $name = join(" ", $payload->{given_name}, $payload->{family_name});
+    my $email = $payload->{email} ? lc($payload->{email}) : '';
+
+    return ($name, $email);
 }
 
 sub state_groups_inspect {
@@ -235,12 +425,8 @@ sub dashboard_export_problems_add_columns {
     );
     $csv->splice_csv_column('fixed', action_scheduled => 'Action scheduled');
 
-    my @contacts = $csv->body->contacts->search(undef, { order_by => [ 'category' ] } )->all;
+    my @contacts = $csv->body->contacts->order_by('category')->all;
     my %extra_columns;
-    if (@{$csv->category}) {
-        my %picked_cats = map { $_ => 1} @{$csv->category};
-        @contacts = grep { $picked_cats{$_->category} } @contacts;
-    }
     foreach my $contact (@contacts) {
         foreach (@{$contact->get_metadata_for_storage}) {
             next if $_->{code} eq 'safety_critical';
@@ -337,7 +523,7 @@ sub must_have_2fa {
     my $ip = $self->{c}->req->address;
     return 'skip' if $is_internal_network->($ip);
     return 1 if $user->is_superuser;
-    return 1 if $user->from_body && $user->from_body->name eq 'TfL';
+    return 1 if $user->from_body && $user->from_body->get_column('name') eq 'TfL';
     return 0;
 }
 
@@ -346,7 +532,7 @@ sub update_email_shortlisted_user {
     my $c = $self->{c};
     my $cobrand = FixMyStreet::Cobrand::TfL->new; # $self may be FMS
     my $shortlisted_by = $update->problem->shortlisted_user;
-    if ($shortlisted_by && $shortlisted_by->from_body && $shortlisted_by->from_body->name eq 'TfL' && $shortlisted_by->id ne $update->user_id) {
+    if ($shortlisted_by && $shortlisted_by->from_body && $shortlisted_by->from_body->get_column('name') eq 'TfL' && $shortlisted_by->id ne $update->user_id) {
         $c->send_email('alert-update.txt', {
             additional_template_paths => [
                 FixMyStreet->path_to( 'templates', 'email', 'tfl' ),
@@ -394,6 +580,22 @@ sub report_new_munge_before_insert {
     $report->set_extra_fields(@$extra);
 }
 
+=back
+
+=head2 report_validation
+
+Allow through "TfL" as a name if reporting as staff.
+
+=cut
+
+sub report_validation {
+    my ($self, $report, $errors) = @_;
+
+    if ($errors->{name} && $report->name eq 'TfL' && $report->user->from_body) {
+        delete $errors->{name};
+    }
+}
+
 sub report_new_is_on_tlrn {
     my ( $self ) = @_;
 
@@ -424,6 +626,16 @@ sub munge_reports_area_list {
 
 sub munge_report_new_contacts { }
 
+sub disable_login_for_email {
+    my ($self, $email) = @_;
+
+    my $staff_email = $self->admin_user_domain;
+
+    if ($email =~ /$staff_email$/) {
+        $self->{c}->detach('/page_error_403_access_denied', ['Please use the staff login option']);
+    }
+}
+
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
@@ -433,12 +645,12 @@ sub munge_report_new_bodies {
     my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
 
     if (!$on_he_road) {
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'National Highways' } values %$bodies;
     }
     # Environment agency added with odour category for FixmyStreet
     # in all England areas, but should not show for cobrands
     if ( $bodies->{'Environment Agency'} ) {
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'Environment Agency' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'Environment Agency' } values %$bodies;
     }
 }
 
@@ -449,12 +661,12 @@ sub munge_surrounding_london {
     my %london_hash = map { $_ => 1 } $self->london_boroughs;
     if (!grep { $london_hash{$_} } keys %$all_areas) {
         # Don't send any TfL categories
-        %$bodies = map { $_->id => $_ } grep { $_->name ne 'TfL' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'TfL' } values %$bodies;
     }
 
     # Hackney doesn't have any of the council TfL categories so don't show
     # any Hackney categories on red routes
-    my %bodies = map { $_->name => $_->id } values %$bodies;
+    my %bodies = map { $_->get_column('name') => $_->id } values %$bodies;
     if ( $bodies{'Hackney Council'} && $self->report_new_is_on_tlrn ) {
         delete $bodies->{ $bodies{'Hackney Council'} };
     }
@@ -470,8 +682,8 @@ sub munge_red_route_categories {
         my %council_cats = map { $_ => 1 } @{ $self->_tfl_council_categories };
         my %extra_bodies = map { $_ => 1 } @{ $self->feature('categories_restriction_bodies') || [] };
         @$contacts = grep {
-            ( $_->body->name eq 'TfL' && !$council_cats{$_->category} )
-            || $extra_bodies{$_->body->name}
+            ( $_->body->get_column('name') eq 'TfL' && !$council_cats{$_->category} )
+            || $extra_bodies{$_->body->get_column('name')}
             || $cleaning_cats{$_->category}
             || @{ mySociety::ArrayUtils::intersection( $self->_cleaning_groups, $_->groups ) }
         } @$contacts;
@@ -482,7 +694,7 @@ sub munge_red_route_categories {
             map { $_ => 1 } @{ $self->_tlrn_categories },
             map { $_ => 1 } @{ $self->_tfl_council_categories },
         );
-        @$contacts = grep { !( $_->body->name eq 'TfL' && $tlrn_cats{$_->category } ) } @$contacts;
+        @$contacts = grep { !( $_->body->get_column('name') eq 'TfL' && $tlrn_cats{$_->category } ) } @$contacts;
     }
 }
 
@@ -539,9 +751,10 @@ sub _tlrn_categories { [
     "Manhole Cover - Missing",
     "Mobile Crane Operation",
     "Other (TfL)",
+    "Overgrown vegetation",
     "Pavement Defect (uneven surface / cracked paving slab)",
     "Pavement Overcrowding",
-    "Pothole",
+    "Pothole (major)",
     "Pothole (minor)",
     "Roadworks",
     "Scaffold complaint",

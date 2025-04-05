@@ -1,29 +1,47 @@
 @import "_colours";
 @import "../sass/layout";
 
-#site-header {
-    background: $merton-jade-j3;
-}
+// HEADER
 .nav-menu {
     padding: 0;
     background: transparent;
+    max-width: calc(100vw - 185px);
+    display: flex;
+    align-items: center;
 
     a:hover {
         color: $link-hover-color;
         background: transparent;
     }
 
+    a:visited {
+        color: $merton-dark-green;
+    }
+
     span {
         color: #333;
     }
+
+    li a, li span {
+        text-align: center;
+    }
+    li .report-a-problem-btn {
+        white-space: nowrap;
+    }
 }
 
+.merton-header {
+    border-top-width: 5px;
+    padding: 11px 0;
+}
+.merton-header__logo {
+    width: 186px;
+    background-position-y: 6px;
+}
+
+// HOMEPAGE
 #front-main {
     padding: 3em 1em;
-
-    #postcodeForm {
-        overflow: visible;
-    }
 }
 
 #front_stats big {
@@ -31,8 +49,8 @@
 }
 
 body.mappage {
-    $merton-header-height: 100px;
-    $merton-nav-height: 60px;
+    $merton-header-height: 87px;
+    $merton-nav-height: 64px;
 
     #site-header,
     .nav-wrapper {
@@ -47,4 +65,9 @@ body.mappage {
     .nav-wrapper {
         background-color: $merton-jade-j3;
     }
+}
+
+// WASTEWORKS
+body.waste h1.govuk-heading-xl:not(:empty) {
+    font-size: 2.375rem;
 }

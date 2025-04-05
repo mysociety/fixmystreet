@@ -18,15 +18,7 @@
   font-family: $body-font;
   font-size: 1.1em;
   line-height: 1.4;
-  color: #fff !important;
   font-weight: 600;
-  padding: .9em 1em;
-  background: $westminster_blue_btns;
-  border: none;
-  border-radius: 4.5px;
   -webkit-font-smoothing: antialiased;
   cursor: pointer;
-  &:hover {
-    background: $westminster_blue_btns_hover;
-  }
 }

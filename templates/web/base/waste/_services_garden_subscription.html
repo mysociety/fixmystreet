@@ -1,0 +1,11 @@
+[% IF unit.garden_sacks %]
+    £[% tprintf('%.2f', unit.garden_cost) %] per year
+[% ELSE %]
+    £[% tprintf('%.2f', unit.garden_cost) %] per year
+    (
+    [%~ unit.garden_bins %] [% nget('bin', 'bins', unit.garden_bins) ~%]
+    [%~ IF unit.garden_container_end_date AND unit.garden_container_end_date != unit.end_date %],
+    until [% date.format(unit.garden_container_end_date _ ' 00:00:00', '%d %B %Y') ~%]
+    [%~ END ~%]
+    )
+[% END %]

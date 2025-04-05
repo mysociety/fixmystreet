@@ -1,7 +1,7 @@
 package Integrations::Pay360;
 
 use Moo;
-with 'FixMyStreet::Roles::SOAPIntegration';
+with 'Integrations::Roles::SOAP';
 
 has config => (
     is => 'ro'

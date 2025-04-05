@@ -13,7 +13,12 @@
                 <p class='form-error'>[% field_errors.bodies %]</p>
             [% END %]
 
+            [% IF !prefill_category %]
             [% PROCESS "report/new/category_wrapper.html" %]
+            [% ELSE %]
+            <input type="hidden" name="category" id="category" value="[% prefill_category %]">
+            <input type="hidden" name="prefill_category" id="prefill_category" value="[% prefill_category %]">
+            [% END %]
 
             [% PROCESS 'report/form/photo_upload.html' %]
             [% PROCESS 'report/new/after_photo.html' %]
@@ -22,7 +27,18 @@
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
-            <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" required>[% report.detail | html %]</textarea>
+            <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" required>[%
+                IF report.detail;
+                    report.detail;
+                ELSIF prefill_description;
+                    prefill_description;
+                END;
+            %]</textarea>
+
+                [% IF prefill_description %]
+                    [%# need this hidden field for non-JS users so value gets from /around to /report/new %]
+                    <input type="hidden" name="prefill_description" id="prefill_description" value="[% prefill_description %]">
+                [% END %]
 
                 <label for="form_username_register">[% loc('Your email') %]</label>
                 [% IF field_errors.username_register %]
@@ -34,7 +50,7 @@
                 [% IF field_errors.name %]
                     <p class='form-error'>[% field_errors.name %]</p>
                 [% END %]
-                <input class="form-control js-form-name" type="text" value="[% report.name | html %]" name="name" id="form_name">
+                <input class="form-control js-form-name" type="text" value="[% report.name | html %]" name="name" id="form_name" autocomplete="name">
 
                 <label for="form_phone">[% loc('Phone number') %]</label>
                 [% IF field_errors.phone %]
@@ -45,8 +61,8 @@
                 <div class="form-txt-submit-box">
                     [%# class of submit_sign_in so name can be optional, name of submit_register so it doesn't try and sign us in %]
                     <p>
-                    <input class="desk-only green-btn js-submit_sign_in" type="submit" name="submit_register" value="[% loc('Submit') %]">
-                    <input class="mob-only green-btn js-submit_sign_in" type="submit" name="submit_register_mobile" value="[% loc('Submit') %]">
+                    <input class="desk-only btn btn--primary js-submit_sign_in" type="submit" name="submit_register" value="[% loc('Submit') %]">
+                    <input class="mob-only btn btn--primary js-submit_sign_in" type="submit" name="submit_register_mobile" value="[% loc('Submit') %]">
                     </p>
                 </div>
 

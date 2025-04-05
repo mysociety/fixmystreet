@@ -1,9 +1,4 @@
-[% IF unit.service_id == 531 ~%]
-[% domestic_collection = 1 ~%]
-[% ELSIF unit.service_id == 533 ~%]
-[% communal_collection = 1 ~%]
-[% END ~%]
-
+[% PROCESS 'waste/_services_header.html' %]
 [% PROCESS 'waste/_service_missed.html' %]
 
   <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
@@ -17,16 +12,9 @@
   </span>
 [% ELSIF unit.request_allowed %]
   [% any_request_allowed = 1 %]
-  <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
-    <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
-    <input type="submit" value="Request a [% unit.service_name == 'Garden Waste' ? 'replacement' : 'new' %] [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
-  </form>
+  [% PROCESS 'waste/_services_request.html' %]
 [% ELSIF unit.garden_waste AND NOT waste_features.garden_modify_disabled AND NOT (unit.garden_due OR unit.garden_overdue) %]
-  <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
-    <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="submit" value="Request more [% unit.service_name FILTER lower %] containers" class="waste-service-descriptor waste-service-link">
-  </form>
+  [% PROCESS 'waste/_services_garden_modify.html' %]
 [% END %]
 
 [% IF unit.garden_waste %]
@@ -34,7 +22,9 @@
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Subscription</dt>
-        <dd class="govuk-summary-list__value">£[% tprintf('%.2f', unit.garden_cost )%] per year ([% unit.garden_bins %] [% nget('bin', 'bins', unit.garden_bins) %])</dd>
+        <dd class="govuk-summary-list__value">
+          [%~ PROCESS 'waste/_services_garden_subscription.html' ~%]
+        </dd>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Renewal</dt>   
@@ -59,7 +49,7 @@
   [% IF NOT unit.garden_due AND NOT waste_features.garden_modify_disabled %]
   <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="submit" value="Modify your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
+    <input type="submit" value="Change your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
   </form>
   [% END %]
   <form method="post" action="[% c.uri_for_action('waste/garden_cancel', [ property.id ]) %]">
@@ -68,9 +58,3 @@
   </form>
   [% END %]
 [% END %]
-
-  <form method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">
-    <input type="hidden" name="service_id" value="[% unit.service_id %]">
-    <input type="hidden" name="category" id="category" value="General Enquiry">
-    <input type="submit" value="Contact us about a [% unit.service_name FILTER lower %] collection" class="waste-service-descriptor waste-service-link">
-  </form>

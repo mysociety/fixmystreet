@@ -63,6 +63,13 @@ sub shrink {
     return $self->strip;
 }
 
+# Shrinks a picture to the specified percentage of the original, but keeping in proportion.
+sub shrink_to_percentage {
+    my ($self, $percentage) = @_;
+    $self->image->Scale(geometry => "$percentage%");
+    return $self;
+}
+
 # Shrinks a picture to a given dimension (defaults to 90x60(, cropping so that
 # it is exactly that.
 sub crop {

@@ -7,7 +7,7 @@ color_blue_darker = "#00527C"
 color_blue_pale = "#D6E2EB"
 color_grey = "#D2D2D2"
 color_gunmetal = "#42494C"
-color_gunmetal_light = "#81959D"
+color_gunmetal_light = "#4E646B"
 color_yellow = "#FDD008"
 color_red_dark = "#ce2626"
 color_green_dark = "#39a515"
@@ -87,9 +87,9 @@ wrapper_max_width = 620 # in pixels without "px" suffix
 wrapper_min_width = 520 # in pixels without "px" suffix
 
 hint_min_width = wrapper_min_width - (column_padding * 2)
-hint_style = "min-width: ${ hint_min_width }px; padding: ${ column_padding }px; color: $body_text_color; font-size: 12px; line-height: 18px;"
+hint_style = "min-width: ${ hint_min_width }px; padding: ${ column_padding }px; color: $body_text_color; background: $color_white; box-sizing:border-box; font-size: 12px; line-height: 18px;"
 
-warning_style = "min-width: ${ hint_min_width }x; padding: ${ column_padding }px; background-color: $color_red_dark; color: $color_white;"
+warning_style = "min-width: ${ hint_min_width }x; padding: ${ column_padding }px; background-color: $color_red_dark; color: $color_white; box-sizing: border-box;"
 
 header_style = "padding: $header_padding; background: $header_background_color; color: $header_text_color;"
 
@@ -111,11 +111,14 @@ secondary_p_style = "font-size: 14px; line-height: 20px; $p_style"
 preview_photo_style = "display: block; margin: 0 0 1em 1em; border: $preview_photo_border;"
 map_image_style = "display: block; width: 100%; height: auto;"
 
+# A list of reports/comments, not a bullet pointed list
 list_item_style = "padding-bottom: 20px; margin-bottom: 20px; border-bottom: $list_item_border_bottom;"
 list_item_h2_style = "margin: 0 0 16px 0; font-size: 21px; line-height: 24px;"
 list_item_p_style = "margin: 0 0 16px 0;"
 list_item_date_style = "font-size: 14px; line-height: 20px; margin: 0; color: $color_gunmetal_light;"
 list_item_photo_style = "float: right; margin: 0 0 1em 1em; border: none;"
+
+ul_attrs = 'style="margin:0; margin-left: 25px; padding:0;" align="left" type="disc"'
 
 contact_meta_style = "padding: 15px ${ column_padding }px; vertical-align: top; background-color: $secondary_column_background_color; border-bottom: 1px solid $column_divider_color;"
 contact_th_style = "vertical-align: top; padding: 0.4em 1em 0 0; white-space: nowrap; text-align: left;"

@@ -16,17 +16,16 @@ FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 # Create test data
+my $date = DateTime->now->subtract(days => 1)->strftime('%Y-%m-%dT%H:%M:%SZ');
 my $user = $mech->create_user_ok( 'sutton@example.com', name => 'Sutton Council' );
 my $normal_user = $mech->create_user_ok( 'user@example.com', name => 'Norma Normal' );
 my $body = $mech->create_body_ok( 2498, 'Sutton Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
-    send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
-}, {
+    send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1,
     cobrand => 'sutton'
 });
 my $kingston = $mech->create_body_ok( 2480, 'Kingston upon Thames Council', {
     comment_user => $user,
-}, {
     cobrand => 'kingston',
 });
 
@@ -148,7 +147,7 @@ FixMyStreet::override_config {
             }
         }, "submit details");
         $mech->content_contains('Thank you for reporting');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         my $id = $report->id;
         ok $report, "Found the report";
         is $report->title, 'Test graffiti', 'Got the correct report';
@@ -169,7 +168,6 @@ sub new { my $c = shift; bless { @_ }, $c; }
 package main;
 
 subtest 'updating of waste reports' => sub {
-    my $date = DateTime->now->subtract(days => 1)->strftime('%Y-%m-%dT%H:%M:%SZ');
     my $integ = Test::MockModule->new('SOAP::Lite');
     $integ->mock(call => sub {
         my ($cls, @args) = @_;
@@ -201,6 +199,7 @@ subtest 'updating of waste reports' => sub {
                     { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 15003 },
                     { CoreState => 'Closed', Name => 'Completed', Id => 15004 },
                     { CoreState => 'Closed', Name => 'Partially Completed', Id => 15005 },
+                    { CoreState => 'Closed', Name => 'Not Completed', Id => 15006 },
                 ] } },
             });
         } else {
@@ -213,9 +212,12 @@ subtest 'updating of waste reports' => sub {
         user => $normal_user,
         category => 'Garden Subscription',
         cobrand_data => 'waste',
+        non_public => 1,
     });
     $reports[1]->update({ external_id => 'something-else' }); # To test loop
     $report = $reports[0];
+    # Set last update to before the time of the first update we've mocked.
+    $report->update({ lastupdate => $date });
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'sutton',
@@ -256,6 +258,14 @@ subtest 'updating of waste reports' => sub {
         is $report->comments->count, 1, 'No new update';
         is $report->state, 'investigating', 'State unchanged';
 
+        $report->update({ external_id => 'waste-15006-' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Fetching data for report/;
+        $report->discard_changes;
+        is $report->comments->count, 1, 'No new update';
+        is $report->state, 'investigating', 'No state change';
+
         $report->update({ external_id => 'waste-15004-' });
         stdout_like {
             $cobrand->waste_fetch_events({ verbose => 1 });
@@ -280,25 +290,7 @@ subtest 'updating of waste reports' => sub {
             waste => { kingston => 1, sutton => 1 }
         },
     }, sub {
-        my $in = <<EOF;
-<?xml version="1.0" encoding="UTF-8"?>
-<Envelope>
-  <Header>
-    <Action>action</Action>
-    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
-  </Header>
-  <Body>
-    <NotifyEventUpdated>
-      <event>
-        <Guid>waste-15004-</Guid>
-        <EventTypeId>1638</EventTypeId>
-        <EventStateId>15002</EventStateId>
-        <ResolutionCodeId></ResolutionCodeId>
-      </event>
-    </NotifyEventUpdated>
-  </Body>
-</Envelope>
-EOF
+        my $in = $mech->echo_notify_xml('waste-15004-', 1638, 15002, '');
         my $mech2 = $mech->clone;
         $mech2->host('kingston.example.org');
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
@@ -312,27 +304,12 @@ EOF
         $report->update_extra_field({ name => 'Collection_Date', value => '2023-09-26T00:00:00Z' });
         $report->set_extra_metadata( item_1 => 'Armchair' );
         $report->set_extra_metadata( item_2 => 'BBQ' );
+        $report->push_extra_fields( # Add extra fields expected on a Bulky waste report
+            { name => 'Bulky_Collection_Bulky_Items', value => '3::85::83'}, { name => 'Bulky_Collection_Notes', value => 'One::Two::Three' }
+        );
         $report->update({ category => 'Bulky collection', external_id => 'waste-15005-' });
 
-        $in = <<EOF;
-<?xml version="1.0" encoding="UTF-8"?>
-<Envelope>
-  <Header>
-    <Action>action</Action>
-    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
-  </Header>
-  <Body>
-    <NotifyEventUpdated>
-      <event>
-        <Guid>waste-15005-</Guid>
-        <EventTypeId>1636</EventTypeId>
-        <EventStateId>15005</EventStateId>
-        <ResolutionCodeId></ResolutionCodeId>
-      </event>
-    </NotifyEventUpdated>
-  </Body>
-</Envelope>
-EOF
+        $in = $mech->echo_notify_xml('waste-15005-', 1636, 15005, '');
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $report->comments->count, 4, 'A new update';
         $report->discard_changes;
@@ -344,39 +321,27 @@ EOF
         $report->set_extra_metadata( payment_reference => 'Pay123' );
         $report->update({ external_id => 'waste-with-image' });
 
-        $in = <<EOF;
-<?xml version="1.0" encoding="UTF-8"?>
-<Envelope>
-  <Header>
-    <Action>action</Action>
-    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
-  </Header>
-  <Body>
-    <NotifyEventUpdated>
-      <event>
-        <Guid>waste-with-image</Guid>
-        <EventTypeId>1638</EventTypeId>
-        <EventStateId>15004</EventStateId>
-        <ResolutionCodeId></ResolutionCodeId>
-      </event>
-    </NotifyEventUpdated>
-  </Body>
-</Envelope>
-EOF
+        $in = $mech->echo_notify_xml('waste-with-image', 1638, 15004, '');
         $mech2->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
         is $report->comments->count, 5, 'A new update';
         $report->discard_changes;
         is $report->state, 'fixed - council', 'A state change';
-        my $update = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $update = FixMyStreet::DB->resultset("Comment")->order_by('-id')->first;
         is $update->photo, '34c2a90ba9eb225b87ca1bac05fddd0e08ac865f.jpeg';
-
         FixMyStreet::Script::Alerts::send_updates();
-        my $body = $mech->get_text_body_from_email;
+        my $body = $mech->get_email->as_string;
         my $id = $report->id;
         like $body, qr/Reference: LBS-$id/;
         like $body, qr/Armchair/;
         like $body, qr/26 September/;
         like $body, qr/Your collection has now been completed/;
+        $mech->host('sutton.example.org');
+        (my $token) = $body =~ m#http://sutton.example.org(/R/.*?)"#;
+        $mech->get_ok($token);
+        (my $photo_link_thumbnail) = $mech->content =~ m#Photo of this report" src="(/photo.*?1)"#;
+        (my $photo_link_full) = $mech->content =~ m#a href="(/photo.*?1)"#;
+        $mech->get_ok($photo_link_thumbnail, "Successfully call thumbnail image");
+        $mech->get_ok($photo_link_full, "Successfully call full image");
     };
 };
 

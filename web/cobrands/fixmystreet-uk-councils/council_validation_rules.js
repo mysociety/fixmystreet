@@ -34,7 +34,7 @@ body_validation_rules = {
           maxlength: 256
         }
     },
-    'Hounslow Borough Council': confirm_validation_rules,
+    'Hounslow Highways': confirm_validation_rules,
     'Isle of Wight Council': confirm_validation_rules,
     'Island Roads': confirm_validation_rules,
     'Lincolnshire County Council': confirm_validation_rules,
@@ -106,5 +106,16 @@ body_validation_rules = {
             maxlength: 20
         }
     },
-    'Southwark Council': confirm_validation_rules
+    'Southwark Council': confirm_validation_rules,
+    'Surrey County Council': {
+      title: {
+          required: true,
+          notEmail: true
+      },
+      detail: {
+          maxlength: 1000,
+          required: true,
+          notEmail: true
+      }
+  }
 };

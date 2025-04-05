@@ -1,0 +1,14 @@
+[% IF service_data.size %]
+  [% ft = property.frequency_types %]
+  <dl class="waste__address">
+    <dd class="waste__address__property">
+      [% IF ft.fortnightly %]
+        Your collection schedule is Week [% ft.fortnightly %]
+      [% ELSIF ft.weekly %]
+        Your bins are collected every week
+      [% ELSE %]
+        Your bins are collected twice a week
+      [% END %]
+    </dd>
+  </dl>
+[% END %]

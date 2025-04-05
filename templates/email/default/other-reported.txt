@@ -1,11 +1,19 @@
-[% IF report.category == 'Bulky collection' ~%]
+[% IF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' OR report.category == 'Amend Garden Subscription' ~%]
+[% PROCESS 'waste/other-reported-garden.txt' ~%]
+[% ELSIF report.category == 'Bulky collection' ~%]
 [% PROCESS 'waste/other-reported-bulky.txt' ~%]
+[% ELSIF report.cobrand_data == 'waste' ~%]
+[% PROCESS 'waste/other-reported.txt' ~%]
 [% ELSE ~%]
 Subject: Your report has been logged: [% report.title %]
 
 Hello [% report.name %],
 
+[% IF cobrand.moniker == 'northnorthants' %]
+Your report to [% report.body %] has been logged on the Highways reporting system.
+[% ELSE %]
 Your report to [% report.body %] has been logged on [% site_name %].
+[% END %]
 
 [% IF report.non_public ~%]
 It has been marked as private and will not be visible to the general public;

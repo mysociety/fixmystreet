@@ -10,8 +10,7 @@
     padding-bottom: 0;
     a,
     span,
-    a.report-a-problem-btn,
-    span.report-a-problem-btn {
+    a.report-a-problem-btn {
         line-height: 1em;
         font-size: 18px;
         cursor: pointer;
@@ -20,7 +19,7 @@
         margin-left: 0.5em;
     }
 
-    span.report-a-problem-btn, span {
+    span {
         background-color: $primary_b;
         color: $nav_colour;
 
@@ -33,14 +32,13 @@
 
     :first-child {
         a,
-        span,
-        span.report-a-problem-btn {
+        span {
             margin-top: 1em;
         }
     }
 
     a.report-a-problem-btn {
-        @include border-radius(0);
+        border-radius: 0;
         &:hover {
             background-color: $primary_b;
             color: $nav_colour;

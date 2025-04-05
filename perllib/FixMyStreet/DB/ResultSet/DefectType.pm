@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Moo;
 
-with('FixMyStreet::Roles::ContactExtra');
+with('FixMyStreet::Roles::DB::ContactExtra');
 
 sub join_table {
     return 'contact_defect_types';

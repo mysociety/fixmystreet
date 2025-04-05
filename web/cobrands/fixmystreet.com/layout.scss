@@ -89,7 +89,7 @@ body.mappage {
 
 .nav-menu--main {
     a:hover {
-        @include linear-gradient(#000, #444 10%, #444 95%, #111);
+        background: linear-gradient(#000, #444 10%, #444 95%, #111);
     }
     a.report-a-problem-btn:hover {
         background: $primary/1.1;
@@ -109,7 +109,7 @@ body.mappage {
 }
 body.mappage {
     #site-header {
-        @include linear-gradient(#000, #222 10%, #222 90%, #000);
+        background: linear-gradient(#000, #222 10%, #222 90%, #000);
     }
 }
 
@@ -119,44 +119,42 @@ body.mappage {
     top: -1em;
 }
 
-body.twothirdswidthpage,
-body.fullwidthpage {
-    #front-main {
-        color: #333;
-        padding-bottom: 5em;
-        padding-top: 4em;
+#front-main {
+    color: #333;
+    padding-bottom: 5em;
+    padding-top: 4em;
 
-        h1 {
-            font-size: 3em;
-            font-weight: bold;
-            font-family: $body-font;
+    h1 {
+        font-size: 3em;
+        font-weight: bold;
+        font-family: $body-font;
+    }
+    h2 {
+        font-family: $body-font;
+    }
+}
+
+.postcode-form-box {
+    div {
+        font-size: 1.3em;
+        width: 24em;
+    }
+    label {
+        font-family: $body-font;
+    }
+    input#pc {
+        color: #777;
+        font-size: 0.9em;
+        height: 2.6em;
+        &:focus {
+            outline: 0;
         }
-        h2 {
-            font-family: $body-font;
-        }
-        #postcodeForm {
-            div {
-                font-size: 1.3em;
-                width: 24em;
-                label {
-                    font-family: $body-font;
-                }
-                input#pc {
-                    color: #777;
-                    font-size: 0.9em;
-                    height: 2.6em;
-                    &:focus {
-                        outline: 0;
-                    }
-                }
-                input#sub {
-                    font-size: 1.1em;
-                    height: 2.4em;
-                    font-family: $body-font;
-                    font-weight: bold;
-                }
-            }
-        }
+    }
+    input#sub {
+        font-size: 1.1em;
+        height: 2.4em;
+        font-family: $body-font;
+        font-weight: bold;
     }
 }
 
@@ -213,8 +211,7 @@ body.frontpage {
     .site-logo__fallback {
         width: $fms-logo-width;
         padding-top: $fms-logo-height;
-        // No need for svg-background-image() here because the
-        // logo on the homepage is an inline SVG, and the only browsers
+        // The logo on the homepage is an inline SVG, and the only browsers
         // not to show it will be IE8 and below, which are @1x.
         background-image: url("/cobrands/fixmystreet.com/images/site-logo-homepage.png");
         background-size: $fms-logo-width $fms-logo-height;
@@ -226,7 +223,7 @@ body.frontpage {
 }
 
 .next-steps {
-  @include flex-container();
+  display: flex;
   margin-bottom: 2em; // add some space between this and the footer
 }
 
@@ -360,12 +357,12 @@ footer {
 
 .dashboard-fms-case-studies {
     & > div {
-        @include flex-container();
-        @include flex-wrap(wrap);
-        @include justify-content(space-between);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
 
         a {
-            @include box-sizing(border-box);
+            box-sizing: border-box;
             display: block;
             width: 48%;
             margin-bottom: 0;

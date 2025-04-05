@@ -1,3 +1,4 @@
+[% SET bodyclass = 'alertpage' %]
 [%
     IF pretty_pc;
         title = tprintf( loc("Local RSS feeds and email alerts for ‘%s’"), pretty_pc );
@@ -6,7 +7,7 @@
     END;
 %]
 
-[% INCLUDE 'header.html', title = title, bodyclass = 'fullwidthpage' %]
+[% INCLUDE 'header.html' %]
 
 [% IF pretty_pc %]
     [%
@@ -19,8 +20,10 @@
 <h1>[% title %]</h1>
 
 [% IF photos.size %]
+<script type="module" src="[% version('/js/overflow-focus-scroll.js') %]"></script>
 <div class="alerts__nearby-activity">
     <h2>[% loc('Photos of recent nearby reports') %]</h2>
+    <overflow-focus-scroll>
     <div class="alerts__nearby-activity__photos">
       [% FOREACH p IN photos %]
         <a href="/report/[% p.id %]">
@@ -29,11 +32,11 @@
         </a>
       [% END %]
     </div>
+    </overflow-focus-scroll>
 </div>
 [% END %]
 
-<form id="alerts" class="js-alert-list" name="alerts" method="post" action="/alert/subscribe">
-
+<form class="validate js-alert-list" method="post" action="/alert/subscribe">
   [% INCLUDE 'alert/_list.html' %]
 
 </form>

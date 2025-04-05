@@ -1,6 +1,5 @@
 [%
 
-email_summary = "Mae problem newydd yn eich ardal wedi'i hadrodd gan ddefnyddiwr " _ site_name _ " .";
 email_footer = "Os oes cyfeiriad e-bost mwy priodol ar gyfer negeseuon am " _ category_footer _ ", rhowch wybod i ni. Bydd hyn yn helpu i wella'r gwasanaeth i bobl leol. Rydym hefyd yn croesawu unrhyw sylwadau eraill.";
 email_columns = 2;
 
@@ -51,8 +50,8 @@ am broblem leol y maent yn credu y gallai fod angen eich sylw.</p>
     [% report.detail | html_para_email(secondary_p_style) %]
   [% IF report.get_extra_fields %]
     <p style="[% secondary_p_style %]">
-      [%~ FOR field IN report.get_extra_fields %][% IF field.value %]
-      [% field.description OR field.name %]: [% field.value %]
+      [%~ FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length %]
+      [% field.description OR field.name %]: [% field.value_label OR field.value %]
       [% IF NOT loop.last %]<br>[% END %]
       [%~ END %][% END %]
     </p>

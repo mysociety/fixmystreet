@@ -30,7 +30,7 @@ $mappage-header-height: 7em;
 body.mappage {
     #site-header {
         // The header on a map page needs a shadow too
-        @include box-shadow(0 0 6px 1px #000);
+        box-shadow: 0 0 6px 1px #000;
         z-index: 2; // One more than #zurich-main-nav so it's on top
         .container {
             margin: 0;
@@ -44,7 +44,7 @@ body.mappage {
 
     // Except on admin pages where there's an admin nav directly underneath it
     &.admin #site-header {
-        @include box-shadow(none);
+        box-shadow: none;
     }
 }
 
@@ -97,7 +97,7 @@ body.mappage #site-logo {
 body.frontpage {
     // Front page content needs a shadow.
     .content {
-        @include box-shadow(0 0 6px 1px #000);
+        box-shadow: 0 0 6px 1px #000;
     }
 
     .table-cell {
@@ -114,7 +114,7 @@ body.frontpage {
 
     #zurich-footer-wrapper {
         padding: 1px 0;
-        @include box-shadow(0 -6px 6px -5px #000);
+        box-shadow: 0 -6px 6px -5px #000;
         position: relative;
     }
 }
@@ -140,12 +140,14 @@ body.frontpage {
     }
 }
 
-.postcode-form-box div {
+.postcode-form-box {
+  div {
     border-color: $dark_blue;
-    input#pc {
-      max-width: none;
-    }
   }
+  input#pc {
+    max-width: none;
+  }
+}
 
 .tablewrapper {
     padding: 1em;
@@ -324,7 +326,7 @@ body.mappage.admin {
             margin: 2em 0;
 
             &:hover {
-                @include linear-gradient(#fcc, #daa 50%);
+                background: linear-gradient(#fcc, #daa 50%);
             };
         }
     }

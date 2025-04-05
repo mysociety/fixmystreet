@@ -3,6 +3,7 @@ package FixMyStreet::App::Form::Waste::Garden;
 use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
+use WasteWorks::Costs;
 
 has_field service_id => ( type => 'Hidden' );
 
@@ -20,28 +21,19 @@ sub details_update_fields {
     my $bin_count = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $existing;
     my $new_bins = $bin_count - $current_bins;
 
-    my $cost_pa = $bin_count == 0 ? 0 : $form->{c}->cobrand->garden_waste_cost_pa($bin_count);
-    my $cost_now_admin = $form->{c}->cobrand->garden_waste_new_bin_admin_fee($new_bins);
+    my $costs = WasteWorks::Costs->new({
+        cobrand => $c->cobrand,
+        discount => $data->{apply_discount},
+        first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+    });
+    my $cost_pa = $bin_count == 0 ? 0 : $costs->bins($bin_count);
+    my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
     $c->stash->{cost_pa} = $cost_pa / 100;
     $c->stash->{cost_now_admin} = $cost_now_admin / 100;
-    if ($data->{apply_discount}) {
-        (
-            $c->stash->{cost_pa},
-            $c->stash->{cost_now_admin},
-            $c->stash->{per_bin_cost},
-            $c->stash->{per_new_bin_cost},
-            $c->stash->{per_new_bin_first_cost},
-            ) =
-        $c->cobrand->apply_garden_waste_discount(
-            $c->stash->{cost_pa},
-            $c->stash->{cost_now_admin},
-            $c->stash->{per_bin_cost},
-            $c->stash->{per_new_bin_cost},
-            $c->stash->{per_new_bin_first_cost},
-            );
-    }
     $c->stash->{cost_now} = $c->stash->{cost_now_admin} + $c->stash->{cost_pa};
     my $max_bins = $c->stash->{garden_form_data}->{max_bins};
+
+    $data->{_direct_debit_internal} = 1 if $c->cobrand->direct_debit_collection_method eq 'internal';
 
     return {
         current_bins => { default => $existing, range_end => $max_bins },
@@ -84,16 +76,22 @@ has_page existing => (
 has_page details => (
     title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_details.html',
-    fields => ['current_bins', 'bins_wanted', 'payment_method', 'cheque_reference', 'name', 'email', 'phone', 'password', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'payment_method', 'cheque_reference', 'name', 'email', 'phone', 'password', 'email_renewal_reminders', 'continue_review'],
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
-        return ['payment_method', 'cheque_reference', 'password'] if $c->stash->{staff_payments_allowed} && !$c->cobrand->waste_staff_choose_payment_method;
-        return ['password'] if $c->stash->{staff_payments_allowed};
-        return ['password'] if $c->cobrand->call_hook('waste_password_hidden');
+        my @fields;
+        push @fields, 'email_renewal_reminders' if !$c->cobrand->garden_subscription_email_renew_reminder_opt_in;
+        push @fields, 'password' if $c->stash->{staff_payments_allowed} or $c->cobrand->call_hook('waste_password_hidden');
+        push @fields, ('payment_method', 'cheque_reference') if $c->cobrand->garden_hide_payment_method_field;
+        return \@fields;
     },
     update_field_list => \&details_update_fields,
-    next => 'summary',
+    next => sub {
+        my ($data) = @_;
+        return 'bank_details' if $data->{_direct_debit_internal} && $data->{payment_method} eq 'direct_debit';
+        return 'summary';
+    },
 );
 
 has_page summary => (
@@ -110,16 +108,17 @@ has_page summary => (
         my $bin_count = $data->{bins_wanted} || 1;
         my $new_bins = $bin_count - $current_bins;
         my $cost_pa;
+        my $costs = WasteWorks::Costs->new({
+            cobrand => $c->cobrand,
+            discount => $data->{apply_discount},
+            first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+        });
         if (($data->{container_choice}||'') eq 'sack') {
-            $cost_pa = $c->cobrand->garden_waste_sacks_cost_pa() * $bin_count;
+            $cost_pa = $costs->sacks($bin_count);
         } else {
-            $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
+            $cost_pa = $costs->bins($bin_count);
         }
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
-        if ($data->{apply_discount}) {
-            ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
-                $cost_pa, $cost_now_admin);
-        }
+        my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
 
         my $total = $cost_now_admin + $cost_pa;
 
@@ -193,8 +192,8 @@ has_field current_bins => (
 );
 
 sub bins_wanted_label_method {
-    my $self = shift;
-    my $max_bins = $self->parent->{c}->stash->{garden_form_data}->{max_bins};
+    my ($self, $max_bins) = @_;
+    $max_bins ||= $self->parent->{c}->stash->{garden_form_data}->{max_bins};
     return "Number of bins to be emptied (including bins already on site) (0-$max_bins)";
 }
 
@@ -227,6 +226,8 @@ has_field password => (
         hint => 'Choose a password to sign in and manage your account in the future. If you don’t pick a password, you will still be able to sign in by clicking a link in an email we send to you.',
     },
 );
+
+with 'FixMyStreet::App::Form::Waste::Garden::EmailRenewalReminders';
 
 with 'FixMyStreet::App::Form::Waste::GardenTandC';
 

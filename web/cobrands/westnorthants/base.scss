@@ -1,0 +1,160 @@
+@import "../sass/h5bp";
+@import "./_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+@import "cookies";
+
+// HEADER
+#site-logo {
+  background-image: url("/cobrands/westnorthants/images/logo.svg");
+  background-size: contain;
+  height: $mappage-header-height;
+  width: 175px;
+}
+
+#report-cta {
+  border: 2px solid $primary;
+
+  &:focus {
+    background-color: $focus-bg-top;
+  }
+}
+
+// FRONT PAGE
+.postcode-form-box {
+  div {
+    border-width: 2px;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  input#sub {
+    background: $primary;
+
+    border-radius: 0;
+    &:hover {
+        background: $primary_link_hover_color;
+    }
+    &:focus {
+      background: $focus-bg-top;
+      color: $focus-text;
+    }
+  }
+}
+a#geolocate_link {
+  border-width: 2px; 
+}
+
+// GENERAL ELEMENTS
+h1 {
+  font-weight: 700;
+}
+
+.btn {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+}
+
+a,
+.fake-link {
+  &:focus {
+    background: $focus-bg-top;
+    text-decoration: none;
+    outline: 2px solid $primary_b;
+    color: $primary_b;
+  }
+}
+
+%item-list__item--link {
+  a {
+    color: $primary;
+    text-decoration: none;
+  }
+
+  a:focus {
+      background: $focus-bg-top;
+      color: $focus-text;
+      outline: none;
+  }
+}
+
+#front_stats {
+  background: $primary_b;
+}
+
+// FOOTER
+.westnorthants-footer {
+  background: $black;
+  padding: 25px 0px;
+  color: $primary_text;
+
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: row;
+    margin-left: 0;
+    flex-wrap: wrap;
+
+    li {
+      list-style: none;
+      margin-bottom: 0;
+      a {
+        color: $primary_text;
+        text-decoration: underline;
+
+        &:focus {
+          color: $primary_b;
+        }
+      }
+      &.social-icons a {
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+
+    &.list-links {
+      column-gap: 25px;
+      row-gap: 12.5px;
+      margin-bottom: 40px;
+      margin-top: 16px;
+    }
+
+    &.list-social-links {
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+  }
+
+  .footer-council-logo {
+    display: block;
+    background-image: url("/cobrands/westnorthants/images/logo-white.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 80px;
+    width: 240px;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+}
+
+// ADMIN
+.segmented-control.segmented-control--radio {
+  .btn {
+    background: $white;
+    color: $primary !important; //Overrides the button-variant mixin
+  }
+
+  input:checked+label {
+    background: $primary;
+    color: $white !important //Overrides the button-variant mixin;
+  }
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";

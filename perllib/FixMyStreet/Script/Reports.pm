@@ -12,7 +12,8 @@ has unconfirmed_data => ( is => 'ro', default => sub { {} } );
 # Static method, used by send-reports cron script and tests.
 # Creates a manager object from provided data and processes it.
 sub send {
-    my ($verbose, $nomail, $debug) = @_;
+    my ($verbose, $nomail, $debug, $id) = @_;
+    $debug = 1 if $id;
 
     my $manager = __PACKAGE__->new(
         verbose => $verbose,
@@ -26,6 +27,7 @@ sub send {
     $manager->log("starting to loop through unsent problem reports...");
     my $unsent_count = 0;
     while (my $row = $unsent->next) {
+        next if $id && $row->id != $id;
         $row = $db->txn_do(sub {
             my $p = FixMyStreet::DB->resultset('Problem')->search({ id => $row->id }, { for => \'UPDATE SKIP LOCKED' })->single;
             $p->update({ send_state => 'processing' }) if $p && $p->send_state eq 'unprocessed';
@@ -118,10 +120,7 @@ sub end_summary_failures {
         state => [ FixMyStreet::DB::Result::Problem::open_states() ],
         bodies_str => { '!=', undef },
         send_fail_count => { '>', 0 }
-    },
-    {
-        order_by => { -desc => 'confirmed' }
-    });
+    })->order_by('-confirmed');
     my %bodies;
     while (my $row = $unsent->next) {
         my $base_url = FixMyStreet->config('BASE_URL');

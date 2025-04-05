@@ -20,6 +20,8 @@ $green: #00A95D;
 $red-light: #FBE9E8;
 $red: #DC241F;
 
+$error_color: $red;
+
 $mappage-header-height: 60px;
 
 $body-font: Johnston100-Light, Arial, Helvetica, sans-serif;
@@ -73,6 +75,7 @@ $mobile-sticky-sidebar-button-menu-image: "menu-white";
     background: transparent;
     background-color: $blue-dark;
     color: $white !important;
+    outline-offset: 2px;
   }
 }
 

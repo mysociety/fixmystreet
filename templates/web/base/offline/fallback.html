@@ -1,4 +1,4 @@
-[% SET bodyclass = "fullwidthpage offlinepage" ~%]
+[% SET bodyclass = "offlinepage" ~%]
 [% INCLUDE 'header.html' %]
 
 <h1>[% loc('You are currently offline') %]</h1>
@@ -54,7 +54,7 @@
     </form>
     <p id="draft_save_message" class="hidden"><small>[% tprintf(loc('Draft report saved on %s'), '<span></span>') %]</small></p>
     <p class="submit-and-cancel">
-        <button class="btn btn-primary js-save-draft">[% loc('Save draft') %]</button>
+        <button class="btn btn--primary js-save-draft">[% loc('Save draft') %]</button>
     </p>
 </div>
 

@@ -1,4 +1,4 @@
-[% INCLUDE header.html %]
+[% INCLUDE waste/header.html %]
 
 <div class="govuk-error-summary">
     <h1 class="govuk-error-summary__title">
@@ -12,12 +12,19 @@
 </div>
 
 [% IF report && (report.get_extra_field_value('payment') > 0 OR report.get_extra_field_value('pro_rata') > 0) %]
+  [% IF retry_confirmation %]
+    <form method="GET">
+        <div class="govuk-form-group">
+            Press Retry below to retry your payment confirmation
+        </div>
+  [% ELSE %]
     <form method="POST" action="[% c.uri_for_action('waste/pay_retry') %]">
         <input type="hidden" name="id" value="[% report.id %]">
         <input type="hidden" name="token" value="[% report.get_extra_metadata('redirect_id') %]">
         <div class="govuk-form-group">
         Press Retry below to retry your payment for [% report.title %] by credit/debit card
         </div>
+  [% END %]
         <div class="govuk-form-group">
         <input class="govuk-button" type="submit" value="Retry">
         </div>

@@ -4,5 +4,5 @@
     <p class='form-error'>[% field_errors.name %]</p>
 [% END %]
 <input type="text" class="form-control [% valid_class OR 'validName' %] js-form-name [% extra_class %]"
-    value="[% object.name || c.user.name | html %]" name="name" id="form_name">
+    value="[% object.name || c.user.name | html %]" name="name" id="form_name" autocomplete="name" aria-required="true">
 <!-- /user_name.html -->

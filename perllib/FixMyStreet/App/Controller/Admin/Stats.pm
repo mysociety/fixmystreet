@@ -121,6 +121,8 @@ sub questionnaire : Local : Args(0) {
 sub refused : Local : Args(0) {
     my ($self, $c) = @_;
 
+    return unless $c->cobrand->moniker eq 'fixmystreet'; # Match stats index template
+
     my $contacts = $c->model('DB::Contact')->not_deleted->search([
         { email => 'REFUSED' },
         { 'body.can_be_devolved' => 1, 'me.send_method' => 'Refused' },

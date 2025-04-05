@@ -12,6 +12,7 @@ use base 'DBIx::Class::Schema';
 __PACKAGE__->load_namespaces(
     result_namespace => "+FixMyStreet::DB::Result",
     resultset_namespace => "+FixMyStreet::DB::ResultSet",
+    default_resultset_class => '+FixMyStreet::DB::ResultSet',
 );
 
 

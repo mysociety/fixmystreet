@@ -27,7 +27,7 @@
         color: $nav_colour;
     }
 
-    span, span:hover, span.report-a-problem-btn:hover {
+    span, span:hover {
         color: $color-societyworks-pink;
     }
 
@@ -57,17 +57,15 @@
     color: inherit;
     padding: 5% 1em;
 
-    #postcodeForm {
-        overflow: visible;
-
-        div {
-            width: 100%;
-            max-width: 30em;
-        }
-    }
-
     h1 {
         font-size: 3em;
+    }
+}
+
+.postcode-form-box {
+    div {
+        width: 100%;
+        max-width: 30em;
     }
 }
 

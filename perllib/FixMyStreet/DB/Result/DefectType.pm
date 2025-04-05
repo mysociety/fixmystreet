@@ -54,15 +54,15 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:03:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cep31JGvLRMAxKLSb4jSfA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2024-10-21 23:30:33
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZHTq6w1PAX60fOAaQckVkA
 
 __PACKAGE__->many_to_many( contacts => 'contact_defect_types', 'contact' );
 
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 
-with 'FixMyStreet::Roles::Extra';
+with 'FixMyStreet::Roles::DB::Extra';
 
 
 1;

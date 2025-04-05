@@ -66,7 +66,7 @@ $mappage-navbar-height: 64px;
     }
 
     // Active state
-    span, span.report-a-problem-btn {
+    span {
         color: $peabody-brick-d1;
         background-color: $peabody-white;
         border-bottom: 1.5px solid $peabody-orange;
@@ -99,14 +99,6 @@ $mappage-navbar-height: 64px;
         }
     }
 
-    // darken background for selected nav item
-    // span,
-    // span.report-a-problem-btn {
-    //     &, &:hover {
-    //         background-color: $nav_hover_background_colour;
-    //     }
-    // }
-
     // Add right border
     li {
         &:nth-child(2), &:nth-child(3), &:nth-child(4) {
@@ -137,10 +129,6 @@ $mappage-navbar-height: 64px;
         box-sizing: border-box;
         padding: 2em;
     }
-}
-
-.postcode-form-box {
-    overflow: visible;
 }
 
 .content {

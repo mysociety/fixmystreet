@@ -295,7 +295,7 @@ sub test_overrides {
             my $body = $db->resultset('Body')->find_or_create($params);
             $body->body_areas->find_or_create({ area_id => $input->{area_id} });
             ok $body, "found/created body " . $input->{body_name};
-            $body->set_extra_metadata(cobrand => $input->{body_cobrand});
+            $body->cobrand($input->{body_cobrand});
             $body->can_be_devolved(1);
             $body->update;
 

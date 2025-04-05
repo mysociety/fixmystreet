@@ -1,6 +1,6 @@
 [%
-    SET bodyclass = bodyclass || 'fullwidthpage';
     SET admin = 1;
+    SET sidebar = bodyclass.match('mappage') ? '' : 'admin/navigation.html';
     INCLUDE 'header.html' bodyclass = bodyclass _ ' admin';
 %]
 <style type="text/css">
@@ -12,4 +12,4 @@ select { width: auto; max-width: 100%; }
 .sm { font-size: smaller; }
 </style>
 
-[% INCLUDE 'admin/navigation.html' UNLESS bodyclass.match('mappage') %]
+[% IF sidebar %]<h1>[% title %]</h1>[% END %]

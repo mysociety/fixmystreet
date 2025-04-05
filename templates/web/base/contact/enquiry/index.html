@@ -1,5 +1,4 @@
 [% INCLUDE 'header.html',
-   bodyclass = 'twothirdswidthpage',
    title = loc('General Enquiry')
 %]
 
@@ -13,7 +12,7 @@
     [% IF field_errors.name %]
        <div class="form-error">[% field_errors.name %]</div>
     [% END %]
-    <input type="text" class="form-control required" name="name" id="form_name" value="[% ( form_name OR c.user.name ) | html %]" size="30">
+    <input type="text" class="form-control required" name="name" id="form_name"  autocomplete="name" value="[% ( form_name OR c.user.name ) | html %]" size="30">
 
     <label for="form_email">[% loc('Your email') %]</label>
     [% IF field_errors.username_register %]
@@ -73,7 +72,7 @@
         <p><input type="file" name="photo3" id="form_photo3"></p>
      </div>
 
-    <input class="final-submit green-btn" type="submit" value="[% loc('Send') %]">
+    <input class="final-submit btn btn--primary" type="submit" value="[% loc('Send') %]">
 
 </form>
 

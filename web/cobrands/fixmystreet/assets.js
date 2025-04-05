@@ -137,8 +137,14 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
         }
     },
 
-    setAttributeFields: function(feature) {
+    setAttributeFields: function(feature, no_action) {
         if (!this.fixmystreet.attributes) {
+            return;
+        }
+        // If we have a select layer with multiple asset layers, it is possible
+        // on category change that we get called on one asset layer with a
+        // selected asset from another layer. We do not want to confuse this.
+        if (this !== feature.layer) {
             return;
         }
         // Set the extra fields to the value of the selected feature
@@ -156,6 +162,10 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
             $inspect_fields.val(value);
             $mobile_display.append(field_name + ': ' + value + '<br>');
         });
+
+        if (!no_action && this.fixmystreet.actions && this.fixmystreet.actions.attribute_set) {
+            this.fixmystreet.actions.attribute_set.call(this, feature);
+        }
     },
 
     clearAttributeFields: function() {
@@ -871,7 +881,7 @@ function construct_hover_feature_control(asset_layers, options) {
 // fixmystreet.pin_prefix isn't always available here, due
 // to file loading order, so get it from the DOM directly.
 var map_data = document.getElementById('js-map-data');
-var pin_prefix = fixmystreet.pin_prefix || (map_data ? map_data.getAttribute('data-pin_prefix') : '/i/');
+var pin_prefix = fixmystreet.pin_prefix || (map_data ? map_data.getAttribute('data-pin_prefix') : '/i/pins/');
 
 fixmystreet.assets = {
     layers: [],
@@ -904,13 +914,13 @@ fixmystreet.assets = {
     }),
 
     style_default_select: new OpenLayers.Style({
-        externalGraphic: pin_prefix + "pin-spot.png",
+        externalGraphic: pin_prefix + "spot.png",
         fillColor: "#55BB00",
         graphicWidth: 48,
         graphicHeight: 64,
         graphicXOffset: -24,
         graphicYOffset: -56,
-        backgroundGraphic: pin_prefix + "pin-shadow.png",
+        backgroundGraphic: pin_prefix + "shadow/pin.png",
         backgroundWidth: 60,
         backgroundHeight: 30,
         backgroundXOffset: -7,
@@ -1525,6 +1535,9 @@ fixmystreet.message_controller = (function() {
         if ( $('#js-roads-responsibility').is(':visible') || $('.js-mobile-not-an-asset').length ) {
             return;
         }
+        if (hide_continue_button()) {
+            $('.js-reporting-page--next').show();
+        }
         $('.js-reporting-page--next').prop('disabled', false);
         $("#mob_ok, #toggle-fullscreen").removeClass('hidden-js');
     }
@@ -1536,6 +1549,16 @@ fixmystreet.message_controller = (function() {
             $("#mob_ok, #toggle-fullscreen").addClass('hidden-js');
         } else {
             $('.js-reporting-page--next').prop('disabled', true);
+            if (hide_continue_button()) {
+                $('.js-reporting-page--next').hide();
+            }
+        }
+    }
+
+    function hide_continue_button() {
+        var cobrands_to_hide = ['hart', 'surrey'];
+        if (cobrands_to_hide.indexOf(fixmystreet.cobrand) !== -1) {
+            return 1;
         }
     }
 

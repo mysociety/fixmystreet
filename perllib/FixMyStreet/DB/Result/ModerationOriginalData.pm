@@ -76,10 +76,9 @@ __PACKAGE__->belongs_to(
 use Moo;
 use FixMyStreet::Template::SafeString;
 use Text::Diff;
-use Data::Dumper;
 
-with 'FixMyStreet::Roles::Extra',
-     'FixMyStreet::Roles::PhotoSet';
+with 'FixMyStreet::Roles::DB::Extra',
+     'FixMyStreet::Roles::DB::PhotoSet';
 
 
 # Comments use 'text' rather than 'detail'

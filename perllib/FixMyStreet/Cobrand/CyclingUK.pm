@@ -53,6 +53,12 @@ sub problems_restriction {
     });
 }
 
+sub problems_sql_restriction {
+    my ($self, $item_table) = @_;
+
+    return "AND cobrand = 'cyclinguk'";
+}
+
 =item problems_on_map_restriction
 
 Same restriction on map as problems_restriction above.
@@ -98,6 +104,16 @@ sub do_not_reply_email {
     return $self->feature('do_not_reply_email') || $self->next::method();
 }
 
+=item * Follow .com questionnaire policy
+
+=cut
+
+sub send_questionnaire {
+    my ($self, $problem) = @_;
+    my $fms = FixMyStreet::Cobrand::FixMyStreet->new;
+    my ($send, $body) = $fms->per_body_config('send_questionnaire', $problem);
+    return $send // 1;
+}
 
 sub admin_allow_user {
     my ( $self, $user ) = @_;
@@ -218,7 +234,7 @@ sub dashboard_export_problems_add_columns {
             first_name => $first || '',
             last_name => $last || '',
             $csv->dbi ? () : (
-                user_email => $report->user->email || '',
+                user_email => $report->user ? $report->user->email : '',
             )
         };
     });

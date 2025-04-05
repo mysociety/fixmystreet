@@ -102,7 +102,7 @@ This admin page displays the overall configuration for the site.
 sub config_page : Path( 'config' ) : Args(0) {
     my ($self, $c) = @_;
     my $dir = FixMyStreet->path_to();
-    my $git_version = `cd $dir && git describe --tags`;
+    my $git_version = `cd $dir && git describe --tags 2>&1`;
     chomp $git_version;
     $c->stash(
         git_version => $git_version,
@@ -195,7 +195,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
 sub fetch_contacts : Private {
     my ( $self, $c ) = @_;
 
-    my $contacts = $c->stash->{body}->contacts->search(undef, { order_by => [ 'category' ] } );
+    my $contacts = $c->stash->{body}->contacts->order_by('category');
     $c->stash->{contacts} = $contacts;
     $c->stash->{live_contacts} = $contacts->not_deleted_admin;
     $c->stash->{any_not_confirmed} = $contacts->search({ state => 'unconfirmed' })->count;
@@ -270,7 +270,39 @@ sub update_edit : Path('update_edit') : Args(1) {
 
     $c->forward('check_username_for_abuse', [ $update->user ] );
 
-    if ( $c->get_param('submit') ) {
+    if ( $c->get_param('resend') ) {
+        $c->forward('/auth/check_csrf_token');
+
+        $update->send_state('unprocessed');
+        $update->whensent(undef);
+        $update->update();
+        $c->forward( 'log_edit',
+            [ $update->id, 'update', 'resend' ] );
+
+        $c->stash->{status_message} = _('Update will now be resent.');
+    }
+    elsif ( $c->get_param('mark_sent') ) {
+        $c->forward('/auth/check_csrf_token');
+
+        $update->send_state('sent');
+        $update->whensent( \'current_timestamp' );
+        $update->update();
+        $c->forward( 'log_edit',
+            [ $update->id, 'update', 'marked sent' ] );
+
+        $c->stash->{status_message} = _('Update has been marked as sent.');
+    }
+    elsif ( $c->get_param('mark_skip') ) {
+        $c->forward('/auth/check_csrf_token');
+
+        $update->send_state('skipped');
+        $update->update();
+        $c->forward( 'log_edit',
+            [ $update->id, 'update', 'mark skipped' ] );
+
+        $c->stash->{status_message} = _('Update has been marked to be skipped from sending.');
+    }
+    elsif ( $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
 
         my $old_state = $update->state;
@@ -278,7 +310,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
         my $edited = 0;
 
-        # $update->name can be null which makes ne unhappy
+        # $update->name can be null which makes me unhappy
         my $name = $update->name || '';
 
         if ( $c->get_param('name') ne $name
@@ -329,7 +361,6 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
 
     }
-
     return 1;
 }
 
@@ -587,7 +618,7 @@ sub update_extra_fields : Private {
             $meta->{required} = $c->get_param("metadata[$i].required") ? 'true' : 'false';
             $meta->{variable} = 'true';
             my $desc = $c->get_param("metadata[$i].description");
-            $meta->{description} = FixMyStreet::Template::sanitize($desc);
+            $meta->{description} = FixMyStreet::Template::sanitize($desc, 1);
             $meta->{datatype} = $c->get_param("metadata[$i].datatype");
 
             if ( $meta->{datatype} eq "singlevaluelist" || $meta->{datatype} eq "multivaluelist" ) {
@@ -610,7 +641,7 @@ sub update_extra_fields : Private {
         } elsif ($behaviour eq 'notice') {
             $meta->{variable} = 'false';
             my $desc = $c->get_param("metadata[$i].description");
-            $meta->{description} = FixMyStreet::Template::sanitize($desc);
+            $meta->{description} = FixMyStreet::Template::sanitize($desc, 1);
             $meta->{disable_form} = $c->get_param("metadata[$i].disable_form") ? 'true' : 'false';
         } elsif ($behaviour eq 'hidden') {
             $meta->{automated} = 'hidden_field';

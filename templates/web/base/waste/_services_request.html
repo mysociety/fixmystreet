@@ -1,0 +1,18 @@
+<form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+  [% form %]
+
+  [% IF c.cobrand.waste_request_single_radio_list %]
+    <input type="hidden" name="container-choice" value="[% unit.request_containers.0 %]">
+  [% ELSE %]
+    <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
+  [% END %]
+
+  [% IF c.cobrand.moniker == 'bromley' %]
+    <input type="submit" value="Request a [% unit.service_name.lower == 'garden waste' ? 'replacement' : 'new' %] [% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
+  [% ELSE %]
+    <input type="submit" value="Request a [% unit.service_name.lower == 'garden waste' ? 'replacement ' : '' %][% unit.service_name FILTER lower %] container" class="waste-service-descriptor waste-service-link">
+  [% END %]
+
+</form>

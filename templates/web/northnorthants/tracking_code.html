@@ -1,0 +1,67 @@
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" OR c.config.BASE_URL == 'https://staging.fixmystreet.com' %]
+<script nonce="[% csp_nonce %]">
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+
+  window.onload = () => {
+    const cookieBanner = document.getElementById("wncCookieBanner");
+    if (localStorage.getItem("wncCookieConsentMode") === null) {
+      cookieBanner.classList.remove("wnc-cookie-hidden");
+      cookieBanner.classList.add("wnc-cookie-show");
+    }
+
+    if (localStorage.getItem("wncCookieConsentMode") === null) {
+      gtag("consent", "default", {
+        ad_storage: "denied",
+        analytics_storage: "denied",
+        personalization_storage: "denied",
+        functionality_storage: "denied",
+        security_storage: "denied",
+      });
+    } else {
+      gtag(
+        "consent",
+        "default",
+        JSON.parse(localStorage.getItem("wncCookieConsentMode"))
+      );
+    }
+
+    gtag("js", new Date());
+    gtag("config", "G-E9YHJ0YHJY");
+  };
+</script>
+
+<!-- Google tag (gtag.js) -->
+<script
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=G-E9YHJ0YHJY"
+></script>
+
+<script nonce="[% csp_nonce %]">
+  function updateCookies(consent) {
+    const cookieBanner = document.getElementById("wncCookieBanner");
+    cookieBanner.classList.remove("wnc-cookie-show");
+    cookieBanner.classList.add("wnc-cookie-hidden");
+    setConsent(consent);
+  }
+
+  function setConsent(consent) {
+    const wncCookieConsentMode = {
+      functionality_storage: consent ? "granted" : "denied",
+      security_storage: consent ? "granted" : "denied",
+      ad_storage: "denied",
+      analytics_storage: consent ? "granted" : "denied",
+      personalization: "denied",
+    };
+    gtag("consent", "update", wncCookieConsentMode);
+    localStorage.setItem(
+      "wncCookieConsentMode",
+      JSON.stringify(wncCookieConsentMode)
+    );
+  }
+</script>
+[% ELSE %]
+<!-- Tracking code not inserted -->
+[% END %]

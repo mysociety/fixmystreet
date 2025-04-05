@@ -27,9 +27,15 @@ subtest 'dev index' => sub {
 
 subtest 'dev email index page' => sub {
     $mech->get_ok('/_dev/email/');
-    $mech->content_contains('login">login</a></li>');
-    $mech->content_contains('questionnaire?problem=' . $problem->id  . '">questionnaire</a></li>');
-    $mech->content_contains('update-confirm?update=' . $update->id . '">update-confirm</a></li>');
+
+    $mech->content_contains('login">HTML</a></li>');
+    $mech->content_contains('login?text=1">Plain text</a></li>');
+
+    $mech->content_contains('questionnaire?problem=' . $problem->id  . '">HTML</a></li>');
+    $mech->content_contains('questionnaire?problem=' . $problem->id  . '&text=1">Plain text</a></li>');
+
+    $mech->content_contains('update-confirm?update=' . $update->id . '">HTML</a></li>');
+    $mech->content_contains('update-confirm?update=' . $update->id . '&text=1">Plain text</a></li>');
 };
 
 subtest 'individual email previews' => sub {

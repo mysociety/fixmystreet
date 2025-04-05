@@ -7,7 +7,7 @@ use Open311::PopulateServiceList;
 
 # Create test data
 my $user = $mech->create_user_ok( 'rutland@example.com' );
-my $body = $mech->create_body_ok( 2600, 'Rutland County Council', {}, { cobrand => 'rutland' });
+my $body = $mech->create_body_ok( 2600, 'Rutland County Council', { cobrand => 'rutland' });
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',
@@ -148,8 +148,6 @@ subtest 'check open311_contact_meta_override' => sub {
     };
     $processor->_current_service( { service_code => 100, service_name => 'Traffic Lights' } );
     $processor->_add_meta_to_contact( $contact );
-
-    $contact->discard_changes;
 
     my $expected_hint = '<span>Text for Traffic Lights will go here</span>';
     my $expected_group_hint = '<span>Text for Lights, Signals and Sign will go here</span>';

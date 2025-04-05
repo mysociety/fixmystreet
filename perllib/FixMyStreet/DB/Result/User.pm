@@ -130,8 +130,20 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:03:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FturQPxHq1lLoflaefwmyg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2024-10-21 23:30:33
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6mJOWug7xqA+QvHY4ch4UA
+
+__PACKAGE__->has_many(
+  active_user_planned_reports => "FixMyStreet::DB::Result::UserPlannedReport",
+  sub {
+      my $args = shift;
+      return {
+          "$args->{foreign_alias}.user_id" => { -ident => "$args->{self_alias}.id" },
+          "$args->{foreign_alias}.removed" => undef,
+      };
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 # These are not fully unique constraints (they only are when the *_verified
 # is true), but this is managed in ResultSet::User's find() wrapper.
@@ -145,7 +157,7 @@ use FixMyStreet::SMS;
 use mySociety::EmailUtil;
 use namespace::clean -except => [ 'meta' ];
 
-with 'FixMyStreet::Roles::Extra';
+with 'FixMyStreet::Roles::DB::Extra';
 
 __PACKAGE__->many_to_many( planned_reports => 'user_planned_reports', 'report' );
 __PACKAGE__->many_to_many( roles => 'user_roles', 'role' );
@@ -251,8 +263,8 @@ sub questionnaire_notify {
 
 sub latest_anonymity {
     my $self = shift;
-    my $p = $self->problems->search(undef, { rows => 1, order_by => { -desc => 'id' } } )->first;
-    my $c = $self->comments->search(undef, { rows => 1, order_by => { -desc => 'id' } } )->first;
+    my $p = $self->problems->order_by('-id')->search(undef, { rows => 1 } )->first;
+    my $c = $self->comments->order_by('-id')->search(undef, { rows => 1 } )->first;
     my $p_created = $p ? $p->created->epoch : 0;
     my $c_created = $c ? $c->created->epoch : 0;
     my $obj = $p_created >= $c_created ? $p : $c;
@@ -263,9 +275,7 @@ sub latest_visible_problem {
     my $self = shift;
     return $self->problems->search({
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
-    }, {
-        order_by => { -desc => 'id' }
-    })->first;
+    })->order_by('-id')->first;
 }
 
 =head2 check_for_errors
@@ -429,6 +439,7 @@ sub remove_staff {
     $self->user_roles->delete;
     $self->admin_user_body_permissions->delete;
     $self->from_body(undef);
+    $self->user_planned_reports->active->remove();
     $self->area_ids(undef);
 }
 
@@ -637,6 +648,25 @@ around add_to_planned_reports => sub {
     return $self->$orig(@_);
 };
 
+after add_to_planned_reports => sub {
+    my ( $self, $report, $no_comment ) = @_;
+
+    unless ($no_comment) {
+        my $cobrand = $report->get_cobrand_logged;
+        $cobrand
+            = $cobrand->call_hook( get_body_handler_for_problem => $report )
+            || $cobrand;
+
+        my $report_extra = $cobrand->call_hook('record_update_extra_fields');
+        $report->add_to_comments(
+            {   text  => '',
+                user  => $self,
+                extra => { shortlisted_user => $self->email },
+            }
+        ) if $report_extra->{shortlisted_user};
+    }
+};
+
 # Override the default auto-created function as we don't want to ever delete anything
 around remove_from_planned_reports => sub {
     my ($orig, $self, $report) = @_;
@@ -645,24 +675,34 @@ around remove_from_planned_reports => sub {
     $report->update;
 };
 
+after remove_from_planned_reports => sub {
+    my ( $self, $report, $no_comment ) = @_;
+
+    unless ($no_comment) {
+        my $cobrand = $report->get_cobrand_logged;
+        $cobrand
+            = $cobrand->call_hook( get_body_handler_for_problem => $report )
+            || $cobrand;
+
+        my $report_extra = $cobrand->call_hook('record_update_extra_fields');
+        $report->add_to_comments(
+            {   text  => '',
+                user  => $self,
+                extra => { shortlisted_user => undef },
+            }
+        ) if $report_extra->{shortlisted_user};
+    }
+};
+
 sub active_planned_reports {
     my $self = shift;
     $self->planned_reports->search({ removed => undef });
 }
 
-has active_user_planned_reports => (
-    is => 'ro',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        [ $self->user_planned_reports->search({ removed => undef })->all ];
-    },
-);
-
 sub is_planned_report {
     my ($self, $problem) = @_;
     my $id = $problem->id;
-    return scalar grep { $_->report_id == $id } @{$self->active_user_planned_reports};
+    return scalar grep { $_->report_id == $id } $self->active_user_planned_reports->all;
 }
 
 has categories => (

@@ -4,6 +4,22 @@
  * OpenLayers.Format.GeoJSON.
  */
 
+OpenLayers.Strategy.FixMyStreetRoadworks = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
+    // Only when we manually ask it to be updated
+    activate: function() {
+        var activated = OpenLayers.Strategy.prototype.activate.call(this);
+        if(activated) {
+            this.layer.events.on({
+                "refresh": this.update,
+                scope: this
+            });
+        }
+        return activated;
+    },
+
+    CLASS_NAME: "OpenLayers.Strategy.FixMyStreetRoadworks"
+});
+
 (function(){
 
 var tilma_host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
@@ -13,11 +29,13 @@ var roadworks_defaults = {
     },
     srsName: "EPSG:27700",
     format_class: OpenLayers.Format.GeoJSON,
+    strategy_class: OpenLayers.Strategy.FixMyStreetRoadworks,
     stylemap: fixmystreet.assets.stylemap_invisible,
     non_interactive: true,
     always_visible: true,
     nearest_radius: 100,
     road: true,
+    name: "Street Manager",
     actions: {
         found: function(layer, feature) {
             if (fixmystreet.roadworks.filter(feature)) {
@@ -92,6 +110,17 @@ fixmystreet.roadworks.filter = function(feature) {
     return !categories.length || OpenLayers.Util.indexOf(categories, category) != -1;
 };
 
-fixmystreet.assets.add(roadworks_defaults);
+var roadworks_layer = fixmystreet.assets.add(roadworks_defaults);
+
+// Don't want to update it until they place a pin
+fixmystreet.roadworks.update = function(){
+    roadworks_layer.refresh({ force: true });
+};
+
+$(function(){
+    if (fixmystreet.page === 'new') {
+        fixmystreet.roadworks.update();
+    }
+});
 
 })();

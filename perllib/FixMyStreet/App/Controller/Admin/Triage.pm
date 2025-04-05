@@ -44,10 +44,12 @@ sub index : Path : Args(0) {
         $c->set_param('sort', 'created-asc');
     }
 
-    # Do not set stash->{body} to the $body as we want to show all a cobrand's
-    # reports, not just ones for the body (normally this would be the same, but
-    # e.g. Bucks include parishes)
-    my $body = $c->forward('/reports/body_find', [ $c->cobrand->council_area ]);
+    my $body = $c->stash->{body} = $c->forward('/reports/body_find', [ $c->cobrand->council_area ]);
+
+    # Set ignore_body_for_triage on the stash as we want load_and_group_problems
+    # to show all a cobrand's reports, not just ones for the body (normally this
+    # would be the same, but e.g. Bucks include parishes)
+    $c->stash->{ignore_body_for_triage} = 1;
 
     $c->forward( 'stash_report_filter_status' );
     $c->forward('/reports/stash_report_sort', [ $c->cobrand->reports_ordering ]);

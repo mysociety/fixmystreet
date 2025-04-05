@@ -2,7 +2,7 @@
 
 <div class="govuk-panel govuk-panel--confirmation">
     <h1 class="govuk-panel__title">
-        Thank you for contacting the London Borough of Sutton
+        Thank you for contacting Sutton Council
     </h1>
     <div class="govuk-panel__body">
         <p>
@@ -34,9 +34,9 @@ You have signed up for the garden waste collection at [% ADDRESS %].
 </p>
 -->
 
-[% SET container = report.get_extra_field_value('Subscription_Details_Containers') %]
+[% SET container = report.get_extra_field_value('Paid_Container_Type') %]
 [% SET new_bins = report.get_extra_field_value('new_containers') %]
-[% IF container == 28 %]
+[% IF container == 1928 %]
     [% SET container_str = 'sacks' %]
 [% ELSE %]
     [% SET container_str = nget('bin', 'bins', new_bins) %]
@@ -45,7 +45,7 @@ You have signed up for the garden waste collection at [% ADDRESS %].
 <p>
 [% IF action == 'new_subscription' %]
   [% IF new_bins > 0 %]
-    We will aim to deliver your garden waste [% container_str %] within 20 working days.
+    We will aim to deliver your garden waste [% container_str %] within 10 working days.
     Your subscription will start on the next garden waste collection date for your
     address after the delivery of your garden waste [% container_str %]. We will email you again
     when our waste team have delivered your [% container_str %].
@@ -54,19 +54,19 @@ You have signed up for the garden waste collection at [% ADDRESS %].
     If you are a returning customer, your service will continue from your last subscription end date.
     [% END %]
 [% ELSIF action == 'add_containers' %]
-    We will aim to deliver your garden waste [% container_str %] within 20 working days.
+    We will aim to deliver your garden waste [% container_str %] within 10 working days.
 [% ELSE %]
     Changes to your subscription will show up on your bin calender shortly.
 [% END %]
 </p>
 
 <p>
-You can <a target="_blank" href="https://www.sutton.gov.uk/-/check-your-bin-collection-days">check your collection day online</a>.
-Your garden waste needs to be at the boundary of your property by 6am on the day of collection.
+You can <a target="_blank" href="[% cobrand.feature('waste_features').garden_check_bin_day_link %]">check your collection day online</a>.
+Your garden waste needs to be at the boundary of your property by [% cobrand.garden_collection_time %] on the day of collection.
 </p>
 
 <p>
-<a target="_blank" href="https://www.sutton.gov.uk/-/garden-waste-collection-what-we-can-collect-and-what-we-can-t-collect">
+<a target="_blank" href="[% cobrand.feature('waste_features').garden_what_can_be_collected_link %]">
 Find out what you can put in your garden waste [% container_str %] on our website</a>.
 </p>
 

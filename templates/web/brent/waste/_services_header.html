@@ -1,0 +1,4 @@
+[% IF c.user.from_body OR c.user.is_superuser %]
+  <p><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Staff+general+enquiry&amp;service_id=[% unit.service_id %]">Staff general enquiry</a></p>
+  <p><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Additional+collection&amp;service_id=[% unit.service_id %]">Log an additional collection</a></p>
+[% END %]

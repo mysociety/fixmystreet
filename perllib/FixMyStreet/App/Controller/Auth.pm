@@ -44,10 +44,7 @@ sub general : Path : Args(0) {
 
     # decide which action to take
     $c->detach('code_sign_in') if $clicked_sign_in_by_code || ($data_email && !$data_password);
-    if (!$data_username && !$data_password && !$data_email && $c->get_param('social_sign_in')) {
-        $c->forward('social/handle_sign_in');
-    }
-
+    $c->detach('social/handle_sign_in') if $c->get_param('social_sign_in');
     $c->forward( 'sign_in', [ $data_username ] )
         && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
 
@@ -109,7 +106,7 @@ sub sign_in : Private {
     $c->logout();
 
     my $parsed = FixMyStreet::SMS->parse_username($username);
-
+    $c->cobrand->call_hook('disable_login_for_email', $parsed->{username}) unless $c->stash->{oauth_need_email};
     $c->forward('throttle_username', [$parsed]);
 
     if ($parsed->{username} && $password && $c->forward('authenticate', [ $parsed->{type}, $parsed->{username}, $password ])) {
@@ -193,6 +190,8 @@ sub email_sign_in : Private {
         return;
     }
 
+    $c->cobrand->call_hook('disable_login_for_email', $good_email) unless $c->get_param('oauth_need_email');
+
     my $password = $c->get_param('password_register');
     if ($password) {
         return unless $c->forward('/auth/test_password', [ $password ]);
@@ -260,7 +259,7 @@ sub get_token : Private {
 sub set_oauth_token_data : Private {
     my ( $self, $c, $token_data ) = @_;
 
-    foreach (qw/facebook_id twitter_id oidc_id extra logout_redirect_uri change_password_uri/) {
+    foreach (qw/facebook_id twitter_id oidc_id extra logout_redirect_uri change_password_uri roles/) {
         $token_data->{$_} = $c->session->{oauth}{$_} if $c->session->{oauth}{$_};
     }
 }
@@ -335,7 +334,7 @@ sub process_login : Private {
         %{ $user->get_extra() },
         %{ $data->{extra} }
     }) if $data->{extra};
-
+    $c->cobrand->call_hook(roles_from_oidc => $user, $c->session->{oauth}{roles});
     $user->update_or_insert;
     $c->authenticate( { $type => $data->{$type}, $ver => 1 }, 'no_password' );
 
@@ -466,18 +465,18 @@ sub check_csrf_token : Private {
     $c->stash->{csrf_time} = $time;
     my $gen_token = $c->forward('get_csrf_token');
     delete $c->stash->{csrf_time};
-    $c->detach('no_csrf_token')
-        unless $time
-            && $time > time() - 3600
-            && $token eq $gen_token;
+
+    my $valid_token = $token eq $gen_token;
+    unless ($time && $valid_token) {
+        my $msg = "Invalid CSRF token: ";
+        $msg .= "$token != $gen_token " unless $valid_token;
+        $msg .= "no time" unless $time;
+        $c->stash->{internal_message} = $msg;
+        $c->detach('/page_error_400_bad_request', []);
+    }
 
     # Also check recaptcha if needed
     $c->cobrand->call_hook('check_recaptcha');
-}
-
-sub no_csrf_token : Private {
-    my ($self, $c) = @_;
-    $c->detach('/page_error_400_bad_request', []);
 }
 
 =item common_password

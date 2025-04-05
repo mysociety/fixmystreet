@@ -44,7 +44,7 @@
       </p>
     </div>
     <p>
-      <strong>[% loc('Text for email alert:') %] </strong>
+      <strong>[% loc('Text for email alert:') %] </strong>[% loc('(Optional - above text included by default)') %]
       <textarea class="form-control" name="email" class="required">[% rt.email_text | html %]</textarea>
   </p>
 
@@ -86,7 +86,7 @@
     </p>
     [% IF rt.id %]
         <p>
-            <input class="delete btn-danger" type="submit" name="delete_template" value="[% loc('Delete template') %]" data-confirm="[% loc('Are you sure?') %]">
+            <input class="delete btn btn--danger" type="submit" name="delete_template" value="[% loc('Delete template') %]" data-confirm="[% loc('Are you sure?') %]">
         </p>
     [% END %]
 </form>

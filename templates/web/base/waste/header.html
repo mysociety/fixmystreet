@@ -1,18 +1,31 @@
 [%
-SET bodyclass = 'waste';
-IF c.cobrand.call_hook('bulky_enabled');
-  SET bodyclass = 'waste govuk bulky';
+IF NOT ajax_loading;
+    SET bodyclass = 'waste';
+    IF c.cobrand.call_hook('bulky_enabled');
+      SET bodyclass = 'waste govuk bulky';
+    END;
+    extra_js = [
+        version('/vendor/accessible-autocomplete.min.js'),
+        version('/js/waste.js')
+    ];
+    SET external_new_tab = '';
+    IF c.cobrand.moniker == 'bexley';
+      # Bexley want external links to open in new tab
+      SET external_new_tab = 'target="_blank"';
+      extra_js.push(version('/cobrands/bexley/waste.js'));
+    END;
+    INCLUDE header.html;
 END;
-%]
-[% extra_js = [
-    version('/vendor/accessible-autocomplete.min.js'),
-    version('/js/waste.js')
-] -%]
-[% INCLUDE header.html %]
+~%]
 
 [% site_message = c.cobrand.site_message('waste') %]
 [% IF site_message %]
 <div class="site-message">
-  [% site_message | html_para %]
+  [% site_message | html_para_conditional %]
+</div>
+[% END %]
+[% IF site_message_upcoming_downtime %]
+<div class="site-message">
+  [% site_message_upcoming_downtime | html_para %]
 </div>
 [% END %]

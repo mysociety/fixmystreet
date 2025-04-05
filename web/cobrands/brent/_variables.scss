@@ -43,6 +43,8 @@ $yellow-2: #fbfad5;
 $red: #d5281b; // Error
 $orange: #d34b1f;
 
+$error_color: $red;
+
 // END of color palette
 
 $accent-color: #248660;
@@ -67,8 +69,6 @@ $nav_colour: $gray-1;
 $nav_hover_background_colour: $primary;
 
 $header-top-border: false;
-
-$pin_prefix: '/cobrands/brent/images/';
 
 $col_click_map: $gray-1;
 $col_click_map_dark: darken($gray-1, 10%);

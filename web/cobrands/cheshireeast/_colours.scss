@@ -59,3 +59,12 @@ $front-main-container-background-desktop: #fff;
 $sticky-sidebar-bg-color: mix($green, #fff, 20%);
 $mobile-sticky-sidebar-button-bg: $green;
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$button-primary-bg-top: $col_button;
+$button-primary-border: $col_button;
+$button-primary-text: #fff;
+
+$button-primary-hover-bg-top: $green;
+$button-primary-hover-bg-bottom: $green;
+$button-primary-hover-border: $green;
+$button-primary-hover-text: #fff;

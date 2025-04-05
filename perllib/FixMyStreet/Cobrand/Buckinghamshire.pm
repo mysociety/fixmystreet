@@ -29,10 +29,12 @@ with 'FixMyStreet::Roles::BoroughEmails';
 use SUPER;
 
 
-use LWP::Simple;
+use LWP::UserAgent;
 use URI;
 use Try::Tiny;
 use Utils;
+
+use constant VEHICLE_LITTERING_CATEGORY => 'Littering From Vehicles';
 
 sub council_area_id { return 163793; }
 sub council_area { return 'Buckinghamshire'; }
@@ -85,15 +87,13 @@ sub around_nearby_filter {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $p->is_closed || ($context ne 'reports' && !$self->owns_problem($p));
-    return 'green' if $p->is_fixed;
-    return 'yellow' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
+    return 'grey-cross' if $p->is_closed || ($context ne 'reports' && !$self->owns_problem($p));
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
-sub path_to_pin_icons {
-    return '/cobrands/oxfordshire/images/';
-}
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 sub admin_user_domain { ( 'buckscc.gov.uk', 'buckinghamshire.gov.uk' ) }
 
@@ -141,8 +141,21 @@ sub permission_body_override {
 # Assume that any category change means the report should be resent
 sub category_change_force_resend { 1 }
 
-sub send_questionnaires {
-    return 0;
+sub send_questionnaires { 0 }
+
+=head2 post_report_sent
+
+Bucks have a special 'Littering From Vehicles' category; any reports made in
+that category are automatically set to 'Investigating'.
+
+=cut
+
+sub post_report_sent {
+    my ( $self, $problem ) = @_;
+
+    if ( $problem->category eq VEHICLE_LITTERING_CATEGORY ) {
+        $problem->update( { state => 'investigating' } );
+    }
 }
 
 sub open311_extra_data_exclude { [ 'road-placement' ] }
@@ -247,7 +260,7 @@ sub _add_claim_auto_response {
 
     # Attach auto-response template if present
     my $template = $row->response_templates->search({ 'me.state' => $row->state })->first;
-    my $description = $template->text if $template;
+    my $description = $template ? $template->text : undef;
     if ( $description ) {
         my $updates = Open311::GetServiceRequestUpdates->new(
             system_user => $user,
@@ -558,7 +571,7 @@ sub _parish_ids {
 }
 
 # Enable adding/editing of parish councils in the admin
-sub add_extra_areas {
+sub add_extra_areas_for_admin {
     my ($self, $areas) = @_;
 
     my $ids_string = join ",", @{ $self->_parish_ids };
@@ -570,17 +583,6 @@ sub add_extra_areas {
         %$extra_areas
     );
     return \%all_areas;
-}
-
-# Make sure CPC areas are included in point lookups for new reports
-sub add_extra_area_types {
-    my ($self, $types) = @_;
-
-    my @types = (
-        @$types,
-        'CPC',
-    );
-    return \@types;
 }
 
 sub is_two_tier { 1 }
@@ -730,66 +732,20 @@ around 'munge_sendreport_params' => sub {
     $row->areas($original_areas);
 };
 
-sub council_rss_alert_options {
-    my ($self, @args) = @_;
-    my ($options) = super();
-
-    # rename old district councils to 'area' and remove 'ward' from their wards
-    # remove 'County' from Bucks Council name
-    for my $area (@$options) {
-        for my $key (qw(rss_text text)) {
-            $area->{$key} =~ s/District Council/area/ && $area->{$key} =~ s/ ward//;
-            $area->{$key} =~ s/ County//;
-        }
-    }
-
-    return ($options);
-}
-
 sub car_park_wfs_query {
     my ($self, $row) = @_;
-
-    my $uri = URI->new("https://maps.buckscc.gov.uk/arcgis/services/Transport/BC_Car_Parks/MapServer/WFSServer");
-    $uri->query_form(
-        REQUEST => "GetFeature",
-        SERVICE => "WFS",
-        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
-        TYPENAME => "BC_CAR_PARKS",
-        VERSION => "1.1.0",
-        propertyName => 'OBJECTID,Shape',
-    );
-
-    try {
-        return $self->_get($self->_wfs_uri($row, $uri));
-    } catch {
-        # Ignore WFS errors.
-        return {};
-    };
+    my $uri = "https://maps.buckinghamshire.gov.uk/server/services/Transport/Car_Parks/MapServer/WFSServer";
+    return $self->_wfs_post($uri, $row, 'BC_CAR_PARKS', ['OBJECTID', 'Shape']);
 }
 
 sub speed_limit_wfs_query {
     my ($self, $row) = @_;
-
-    my $uri = URI->new("https://maps.buckscc.gov.uk/arcgis/services/Transport/OS_Highways_Speed/MapServer/WFSServer");
-    $uri->query_form(
-        REQUEST => "GetFeature",
-        SERVICE => "WFS",
-        SRSNAME => "urn:ogc:def:crs:EPSG::27700",
-        TYPENAME => "OS_Highways_Speed:CORPGIS.CORPORATE.OS_Highways_Speed",
-        VERSION => "1.1.0",
-        propertyName => 'OBJECTID,Shape,speed',
-    );
-
-    try {
-        return $self->_get($self->_wfs_uri($row, $uri));
-    } catch {
-        # Ignore WFS errors.
-        return {};
-    };
+    my $uri = "https://maps.buckinghamshire.gov.uk/server/services/Transport/OS_Highways_Speed/MapServer/WFSServer";
+    return $self->_wfs_post($uri, $row, 'OS_Highways_Speed:OS_Highways_Speed', ['OBJECTID', 'Shape', 'speed']);
 }
 
-sub _wfs_uri {
-    my ($self, $row, $base_uri) = @_;
+sub _wfs_post {
+    my ($self, $uri, $row, $typename, $properties) = @_;
 
     # This fn may be called before cobrand has been set in the
     # reporting flow and local_coords needs it to be set
@@ -799,33 +755,39 @@ sub _wfs_uri {
     my $buffer = 50; # metres
     my ($w, $s, $e, $n) = ($x-$buffer, $y-$buffer, $x+$buffer, $y+$buffer);
 
-    my $filter = "
-    <ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\">
+    $properties = map { "<wfs:PropertyName>$_</wfs:PropertyName>" } @$properties;
+    my $data = <<EOF;
+<wfs:GetFeature service="WFS" version="1.1.0" xmlns:wfs="http://www.opengis.net/wfs">
+  <wfs:Query typeName="$typename">
+    $properties
+    <ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
         <ogc:BBOX>
             <ogc:PropertyName>Shape</ogc:PropertyName>
-            <gml:Envelope xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:27700'>
+            <gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:27700">
                 <gml:lowerCorner>$w $s</gml:lowerCorner>
                 <gml:upperCorner>$e $n</gml:upperCorner>
             </gml:Envelope>
         </ogc:BBOX>
-    </ogc:Filter>";
-    $filter =~ s/\n\s+//g;
+    </ogc:Filter>
+  </wfs:Query>
+</wfs:GetFeature>
+EOF
 
-    # URI encodes ' ' as '+' but arcgis wants it to be '%20'
-    # Putting %20 into the filter string doesn't work because URI then escapes
-    # the '%' as '%25' so you get a double encoding issue.
-    #
-    # Avoid all of that and just put the filter on the end of the $base_uri
-    $filter = URI::Escape::uri_escape_utf8($filter);
-
-    return "$base_uri&filter=$filter";
+    try {
+        return $self->_post($uri, $data);
+    } catch {
+        # Ignore WFS errors.
+        return {};
+    };
 }
 
 # Wrapper around LWP::Simple::get to make mocking in tests easier.
-sub _get {
-    my ($self, $uri) = @_;
+sub _post {
+    my ($self, $uri, $data) = @_;
 
-    get($uri);
+    my $ua = LWP::UserAgent->new;
+    my $res = $ua->post($uri, Content_Type => "text/xml", Content => $data);
+    return $res->decoded_content;
 }
 
 around 'report_validation' => sub {
@@ -871,7 +833,8 @@ sub munge_contacts_to_bodies {
     if (!$greater_than_30) {
         # Look up the report's location on the speed limit WFS server
         my $speed_limit_xml = $self->speed_limit_wfs_query($report);
-        my $speed_limit = $1 if $speed_limit_xml =~ /<OS_Highways_Speed:speed>([\.\d]+)<\/OS_Highways_Speed:speed>/;
+        my $speed_limit;
+        $speed_limit = $1 if $speed_limit_xml =~ /<OS_Highways_Speed:speed>([\.\d]+)<\/OS_Highways_Speed:speed>/;
 
         if ($speed_limit) {
             $greater_than_30 = $speed_limit > 30 ? 'yes' : 'no';
@@ -912,7 +875,7 @@ sub owns_problem {
     }
 
     # Want to ignore National Highways here
-    my %areas = map { %{$_->areas} } grep { $_->name !~ /National Highways/ } @bodies;
+    my %areas = map { %{$_->areas} } grep { $_->get_column('name') !~ /National Highways/ } @bodies;
 
     foreach my $area_id ($self->area_ids_for_problems) {
         return 1 if $areas{$area_id};

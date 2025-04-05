@@ -1,0 +1,33 @@
+[% PROCESS 'waste/_email_data.html' ~%]
+Subject: New [% report.category %] - Reference number: [% report.id %]
+
+Dear [% bodies_name %],
+
+A user of [% site_name %] has submitted a [% report.category %].
+
+[% fuzzy %], or to provide an update on the problem,
+please visit the following link:
+
+    [% url %]
+
+----------
+
+[% IF is_no_collections_missed_enquiry ~%]
+Trying to report missed collection
+for business or organisation? [% report.category == 'Business or organisation missed collection enquiry' ? 'Yes' : 'No' %]
+
+[% END ~%]
+
+Name: [% report.name %]
+
+Email: [% report.user.email OR "None provided" %]
+
+Phone: [% report.user.phone OR "None provided" %]
+
+----------
+
+[% INCLUDE 'waste/_report_details.txt' %]
+
+----------
+
+[% signature %]

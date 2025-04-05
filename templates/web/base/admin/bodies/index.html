@@ -1,9 +1,5 @@
 [% INCLUDE 'admin/header.html' title=loc('Bodies') -%]
 
-[% IF body_errors.size %]
-    <p class="error">[% loc('Please correct the errors below') %]</p>
-[% END %]
-
 [% IF bodies.size == 0 %]
   <p class="fms-admin-info">
     [% loc('Currently no bodies have been created.') %]
@@ -74,10 +70,9 @@
 [% END %]
 
 [% IF (c.cobrand.moniker == 'zurich' AND admin_type == 'super') OR c.user.is_superuser %]
-    <div class="admin-box">
-      <h2>[% loc('Add body') %]</h2>
-      [% INCLUDE 'admin/bodies/form.html', body='' %]
-    </div>
+<p>
+    <a class="btn" href="[% c.uri_for_action('/admin/bodies/add') %]">[% loc('Add body') %]</a>
+</p>
 [% END %]
 
 [% INCLUDE 'admin/bodies/edit-league.html' %]

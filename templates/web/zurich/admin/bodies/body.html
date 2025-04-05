@@ -8,7 +8,7 @@
 [% END %]
 
 [% IF admin_type == 'super' AND body.parent AND NOT body.parent.parent # A division %]
-  [% IF NOT errors %]
+  [% IF NOT body_errors %]
     <table cellspacing="0" cellpadding="2" border="1">
         <tr>
             <th>[% loc('Category') %]</th>
@@ -33,19 +33,13 @@
     <h2>[% loc('Add new category') %]</h2>
   [% END %][%# Only show all the above if no errors with below form %]
 
-  [% IF errors %]
-    <div class="fms-admin-warning">
-        [% FOR error IN errors.values %][% error %][% IF NOT loop.last %]<br>[% END %][% END %]
-    </div>
+  [% IF NOT contact %]
+    <a class="btn" href="[% c.uri_for_action('/admin/bodies/add_category', [ body.id ]) %]">[% loc('Add new category') %]</a>
   [% END %]
 
-  [% INCLUDE 'admin/bodies/contact-form.html' %]
-
 [% END %]
 
-[% IF NOT errors %]
-    <h2>[% loc('Edit body details') %]</h2>
-    [% INCLUDE 'admin/bodies/form.html' %]
-[% END %]
+<h2>[% loc('Edit body details') %]</h2>
+[% INCLUDE 'admin/bodies/form.html' %]
 
 [% INCLUDE 'admin/footer.html' %]

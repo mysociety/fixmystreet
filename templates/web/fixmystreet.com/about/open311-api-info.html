@@ -1,0 +1,169 @@
+[% INCLUDE 'header.html', title = 'FixMyStreet Open311 API', sidebar='about/_sidebar.html' %]
+
+<h1>FixMyStreet Open311 API</h1>
+
+<h2>Route FixMyStreet reports directly into backend systems.</h2> 
+
+<p>By default, FixMyStreet reports are sent to authorities via email, which we understand is not always convenient for councils who are using backend systems to manage their fault reports.</p> 
+<p>Using the Open311 API, reports can be sent directly into backend systems, removing the need to receive emails, eliminating manual intervention and improving the user experience.</p>
+
+<dl>
+
+<dt>What is Open311?</dt>
+
+<dd>
+<p>In a nutshell, it’s a free, international technology, known as an open standard, that allows civic reporting services and systems to ‘talk to’ each other. </p>
+<p>Setting up an Open311 API endpoint for FixMyStreet will enable you to receive reports from FixMyStreet.com and the app directly into your backend system(s) instead of via email. It will also allow you to close/update reports on FixMyStreet.com or the app when work is completed.</p>
+<p>Open311 isn’t new (we’ve been using it to connect to council systems since 2011), but it still isn’t as widely known as it deserves to be.</p>
+
+</dd>
+
+<dt>How do I get started with Open311?</dt>
+
+<dd>
+<p>Setting up an Open311 endpoint yourself to provide access to one or more of your current services shouldn’t take you more than a few days of development: it usually only needs the support of your technical team and some project management time.</p>
+<p>We’re happy to give you some advice if you are just getting started, and you can <a href="https://github.com/mysociety/fixmystreet/wiki/Open311-FMS---Complete-Spec">find our full Open311 specification here</a>.</p>
+
+<ul>
+  <li>First, let us know you are planning to set up an Open311 endpoint by emailing support@fixmystreet.com. This way we know to expect your API key and can also provide some advice where appropriate.</li>
+  <li>Find everything you need to know in the <a href="https://github.com/mysociety/fixmystreet/wiki/Open311-FMS---Complete-Spec">complete tech spec for the Open311 endpoint</a>.</li>
+  <li>Once you’ve got a functional Open311 testing endpoint setup, email us the URL and API key and we’ll configure our FixMyStreet staging site to send appropriate FixMyStreet reports to that endpoint. From here you can inspect the data you receive and make adjustments until you’re happy.</li>
+  <li>You can then implement the spec we have given you access to, this includes:
+    <ul style="margin-bottom:0">
+      <li>Receiving reports (required)</li>
+      <li>Opening and closing reports (optional)</li>
+      <li>Listing services / Categories including extra questions (required)</li>
+      <li>Sending and receiving updates (optional)</li>
+      <li>Option to pull reports into the Open311 endpoint, this refers to reports not originally made in FixMyStreet </li>
+    </ul>
+  </li>
+  <li>Once you’re satisfied it’s working and you have a fully compliant endpoint, email support@fixmystreet.com and we’ll update the live site to point at your live endpoint.</li>
+</ul>
+
+<p><strong>Please note:</strong> Once set up, the Open311 endpoint will override the list of categories visible on the FixMyStreet.com site and app according to those used within the connected backend system. Any existing FixMyStreet categories will be removed UNLESS you still want some additional categories to remain as email only (please let us know this beforehand).</p>
+</dd>
+
+</dl>
+
+<h2>Frequently asked questions</h2>
+
+<dl>
+<dt>Is it genuinely free?</dt>
+<dd>Yes, Open311 is a free technology.</dd> 
+
+<dt>What if we can’t implement this ourselves due to time or resource constraints?</dt>
+<dd>We can build and maintain the integration for you (carries an annual fee). Please contact us if you’d like to discuss this at support@fixmystreet.com.</dd> 
+
+<dt>Can we integrate with FixMyStreet in a different way?</dt>
+<dd>Yes, you can, but Open311 is a standardised way of sharing information, and provides the foundations should you ever want to use FixMyStreet Pro in the future.</dd> 
+</dl>
+
+<h2>Limitations</h2>
+
+<p>Open311 fetches a list of acceptable types of report as dictated by you, the council, so that the receiving service (in this case, FixMyStreet) can display them as options for the report-maker to choose from, sends reports into a backend system of your choice and enables you to close or update reports accordingly.</p>
+<p>What it doesn’t do is the next steps that may be required to further refine the reporting process, reduce unnecessary contact or help triage reports. This is where you might want to consider using FixMyStreet Pro - a more advanced version of FixMyStreet, which seeks to eliminate the significant costs councils incur from duplicate reporting, unnecessary contact and failure demand.</p>
+
+<style>
+.dashboard-ranking-table td:last-child {
+    text-align: center;
+}
+.dashboard-ranking-table .feature-yes {
+    text-align: center;
+    font-size: 150%;
+    font-weight: bold;
+    color: green;
+}
+.dashboard-ranking-table .feature-no {
+    text-align: center;
+    font-size: 150%;
+    font-weight: bold;
+    color: red;
+}
+.dashboard-ranking-table {
+    margin-bottom: 1em;
+}
+</style>
+<table class="dashboard-ranking-table">
+  <tr>
+    <th>FixMyStreet features</th>
+    <th>Open311</th>
+    <th style="text-align:left">FixMyStreet Pro</th>
+  </tr>
+ <tr>
+    <td>Send reports into backend systems</td>
+    <td class="feature-yes">&#x2714;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+<tr>
+    <td>Close/update reports</td>
+    <td class="feature-yes">&#x2714;</td>
+     <td class="feature-yes">&#x2714;</td>
+  </tr>
+<tr>
+    <td>Categories dictated by your backend systems</td>
+    <td class="feature-yes">&#x2714;</td>
+     <td class="feature-yes">&#x2714;</td>
+  </tr>
+<tr>
+    <td>Extra questions</td>
+    <td class="feature-yes">&#x2714; *</td>
+     <td class="feature-yes">&#x2714;</td>
+  </tr>
+<tr>
+    <td>Private/unadopted land</td>
+    <td class="feature-yes">&#x2714; **</td>
+     <td class="feature-yes">&#x2714;</td>
+  </tr>
+ <tr>
+    <td>Duplicate report suggestions</td>
+    <td class="feature-no">&#10008;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+  <tr>
+    <td>Your own branded version of the service</td>
+    <td class="feature-no">&#10008;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+  <tr>
+    <td>Use of all other assets (line, point, polygon) e.g. streetlights</td>
+     <td class="feature-no">&#10008;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+ <tr>
+    <td>Case management features for staff</td>
+     <td class="feature-no">&#10008;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+ <tr>
+    <td>Private categories</td>
+     <td class="feature-no">&#10008;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+ <tr>
+    <td>Emergency messaging</td>
+     <td class="feature-no">&#10008;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+<tr>
+    <td>Site-wide messaging</td>
+     <td class="feature-no">&#10008;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+<tr>
+    <td>Display scheduled works on the map (either through assets or integrations)</td>
+     <td class="feature-no">&#10008;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+<tr>
+    <td>Integrate with parish and town councils, as well as contractors and external bodies</td>
+     <td class="feature-no">&#10008;</td>
+    <td class="feature-yes">&#x2714;</td>
+  </tr>
+</table>
+
+<p><strong>*</strong> The Open311 API will enable you to include extra questions within the report workflow, but you can’t customise the workflow any further (e.g. locking a category to prevent a report being made, which you can do with Pro)</p>
+<p><strong>**</strong> This is possible via the Open311 API, but it requires you to provide the asset data and may be subject to a one-off development fee.</p>
+<br />
+<p>If you’d like to learn more about FixMyStreet Pro, please send a message to enquiries@societyworks.org.</p>
+
+[% INCLUDE 'footer.html' %]

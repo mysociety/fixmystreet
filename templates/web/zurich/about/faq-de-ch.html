@@ -1,5 +1,4 @@
-[% INCLUDE 'header.html', title => loc('Help'), bodyclass => 'fullwidthpage' %]
-[% USE date %]
+[% INCLUDE 'header.html', title = loc('Help') %]
 
 <h1><a name="faq"></a>Hilfe</h1>
 
@@ -19,15 +18,8 @@
             <li>Grünflächen / Spielplätze</li>
             <li>Strasse / Trottoir / Platz</li>
             <li>VBZ / ÖV</li>
-            [% IF date.format(format = '%Y%m%d') >= 20190710 %]
             <li>Schädlinge</li>
-            [% END %]
             </ul>
-
-
-            [% IF date.format(format = '%Y%m%d') < 20190710 %]
-            <p>Ratten können in der Kategorie «Grünflächen / Spielplätze» gemeldet werden.</p>
-            [% END %]
 
             <h3>Was kann ich nicht über «Züri wie neu» melden?</h3>
 
@@ -67,4 +59,11 @@
 
             <p>«Züri wie neu» wurde von <a href="https://www.mysociety.org/">mySociety</a> programmiert.</p>
 
+            <h3>Was passiert mit meinen Kontaktinformationen?</h3>
+
+            <p>Die Angabe von Kontaktinformationen ist freiwillig. Diese Informationen werden ausschliesslich für Rückfragen zur Beantwortung Ihrer Anfrage verwendet. Ihre Kontaktinformationen werden nicht an Dritte weitergegeben. </p>
+
+            <h3>Wie kann ich meine Daten löschen lassen?</h3>
+
+            <p>Wenden Sie sich für die Löschung ihrer Daten aus «Züri wie neu» an das <a href=mailto:gis-zentrum@zuerich.ch>GIS Zentrum</a> der Stadt Zürich.</p>
 [% INCLUDE 'footer.html' %]

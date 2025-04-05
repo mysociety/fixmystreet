@@ -13,7 +13,7 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxon);
 my $role = FixMyStreet::DB->resultset("Role")->create({ body => $oxon, name => 'Role', permissions => [] });
 $counciluser->add_to_roles($role);
@@ -275,6 +275,7 @@ FixMyStreet::override_config {
     subtest 'extra CSV columns are present' => sub {
 
         $problems[1]->update_extra_field({ name => 'usrn', value => '20202020' });
+        $problems[1]->set_extra_metadata(contributed_by => $counciluser->id);
         $problems[1]->update({ external_id => $problems[1]->id });
         $problems[2]->update({ external_id => "123098123" });
 
@@ -284,7 +285,7 @@ FixMyStreet::override_config {
 
         my @rows = $mech->content_as_csv;
         is scalar @rows, 7, '1 (header) + 6 (reports) = 7 lines';
-        is scalar @{$rows[0]}, 23, '23 columns present';
+        is scalar @{$rows[0]}, 24, '24 columns present';
 
         is_deeply $rows[0],
             [
@@ -292,7 +293,7 @@ FixMyStreet::override_config {
                 'Created', 'Confirmed', 'Acknowledged', 'Fixed', 'Closed',
                 'Status', 'Latitude', 'Longitude', 'Query', 'Ward',
                 'Easting', 'Northing', 'Report URL', 'Device Type', 'Site Used',
-                'Reported As', 'HIAMS/Exor Ref', 'USRN',
+                'Reported As', 'HIAMS/Exor Ref', 'USRN', 'Staff Role'
             ],
             'Column headers look correct';
 
@@ -300,7 +301,43 @@ FixMyStreet::override_config {
         is $rows[1]->[22], '', 'Report without USRN has empty usrn field';
         is $rows[2]->[21], '', 'Report without HIAMS ref has empty ref field';
         is $rows[2]->[22], '20202020', 'USRN included in row if present';
+        is $rows[2]->[23], 'Role', 'Correct staff role';
         is $rows[3]->[21], '123098123', 'Older Exor report has correct ref';
+    };
+
+    subtest 'extra update CSV columns are present' => sub {
+
+        my $comment = $problems[1]->add_to_comments({
+            text => 'Test update',
+            user => $counciluser,
+            send_state => 'processed',
+            extra => {
+                contributed_by => $counciluser->id,
+            }
+        });
+
+        $mech->get_ok('/dashboard?export=1&updates=1');
+
+        my @rows = $mech->content_as_csv;
+        is scalar @rows, 4, '1 (header) + 3 (updates) = 4 lines';
+        is scalar @{$rows[0]}, 9, '9 columns present';
+
+        is_deeply $rows[0],
+            [
+                'Report ID',
+                'Update ID',
+                'Date',
+                'Status',
+                'Problem state',
+                'Text',
+                'User Name',
+                'Reported As',
+                'Staff Role',
+            ],
+            'Column headers look correct';
+
+        is $rows[3]->[8], 'Role', 'Correct role in output';
+        $comment->delete;
     };
 
     subtest 'role filter works okay pre-generated' => sub {
@@ -382,6 +419,8 @@ FixMyStreet::override_config {
         $comment->problem->set_extra_metadata(defect_item_category => 'Kerbing');
         $comment->problem->set_extra_metadata(defect_item_type => 'Damaged');
         $comment->problem->set_extra_metadata(defect_item_detail => '1 kerb unit or 1 linear m');
+        $comment->problem->set_extra_metadata(defect_length => '30mm');
+        $comment->problem->set_extra_metadata(defect_speed_of_road => '40mph');
         $comment->problem->set_extra_metadata(traffic_information => 'Signs and Cones');
         $comment->problem->set_extra_metadata(detailed_information => '100x100');
         $comment->problem->update;
@@ -409,6 +448,8 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[usrn]'), 13579, 'USRN sent with update';
         is $cgi->param('attribute[raise_defect]'), 1, 'Defect flag sent with update';
         is $cgi->param('attribute[defect_item_category]'), 'Kerbing';
+        is $cgi->param('attribute[defect_speed_of_road]'), '40mph';
+        is $cgi->param('attribute[defect_length]'), '30mm';
         is $cgi->param('attribute[extra_details]'), $user2->email . ' TM1 Damaged 100x100';
         is $cgi->param('service_code'), $comment->problem->category;
 
@@ -505,5 +546,40 @@ FixMyStreet::override_config {
         $mech->content_contains('<uri>http://oxfordshire.fixmystreet.com/rss/reports/Oxfordshire/Adwell?type=CPC</uri>', 'url to copy contains parish type information');
     };
 };
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'oxfordshire',
+    STAGING_FLAGS => { send_reports => 1 },
+    COBRAND_FEATURES => {
+        sub_ward_reporting => { oxfordshire => ['DIW', 'CPC'] },
+        open311_email => { oxfordshire => { 'Trees obstructing traffic light' => 'trafficlights@example.org' } }
+        },
+    MAPIT_URL => 'http://mapit.uk/',
+
+
+}, sub {
+    subtest "Trees obstructing traffic light category sends email too" => sub {
+        $mech->create_contact_ok( body_id => $oxon->id, category => 'Trees obstructing traffic light', email => 'OPEN311', send_method => 'Open311');
+        my ($report) = $mech->create_problems_for_body( 1, $oxon->id, 'Traffic light hidden', {
+                cobrand => 'oxfordshire',
+                category => 'Trees obstructing traffic light',
+                latitude => 51.754926,
+                longitude => -1.256179,
+        });
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $confirm_sent;
+        for my $email (@emails) {
+            my %headers = $email->header_str_pairs;
+            $confirm_sent = 1 if $headers{To} eq 'trafficlights@example.org';
+        };
+        is $confirm_sent, 1, "Traffic light email sent to traffic light email address";
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->{description}[0] =~ /Traffic light hidden/, 1, "Traffic light report also sent to open311";
+    };
+
+};
+
 
 done_testing();

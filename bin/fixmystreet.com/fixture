@@ -69,7 +69,7 @@ my $body = FixMyStreet::DB::Factory::Body->find_or_create({
     $opt->name ? (name => $opt->name) : (),
 });
 if ($opt->cobrand) {
-    $body->set_extra_metadata(cobrand => $opt->cobrand);
+    $body->cobrand($opt->cobrand);
     $body->update;
 }
 
@@ -126,34 +126,74 @@ if ($opt->test_fixtures) {
         categories => ['Fallen sign (NH)', 'Driver on phone (NH)', 'Flytipping (NH)']
     };
     $bodies->{HE} = FixMyStreet::DB::Factory::Body->find_or_create($params);
-    $bodies->{HE}->set_extra_metadata(cobrand => 'highwaysengland');
+    $bodies->{HE}->cobrand('highwaysengland');
     $bodies->{HE}->update;
     my $cats = join(', ', @{$params->{categories}});
     say "Created body $params->{name} for MapIt area ID $params->{area_id}, categories $cats";
 
     foreach (
         { area_id => 2504, categories => ['Damaged, dirty, or missing bin', 'Signs and bollards', 'Busking and Street performance'], name => 'Westminster City Council', cobrand => 'westminster' },
-        { area_id => 2482, categories => ['Lamp Column Damaged', 'Sign Light Not Working'], name => 'Bromley Council', cobrand => 'bromley' },
+        { area_id => 2482, categories => [
+                { group => 'Parks and Greenspace', category => 'Dog related incident' },
+                { group => 'Parks and Greenspace', category => 'Weeds' },
+                { group => 'Street Lighting and Road Signs', category => 'Sign Light Not Working' },
+                { group => 'Street Lighting and Road Signs', category => 'Lamp Column Damaged' },
+                { group => 'Street Cleansing', category => 'Dead Animal' },
+                { group => 'Street Cleansing', category => 'Dog Fouling' },
+            ], name => 'Bromley Council', cobrand => 'bromley' },
         { area_id => 164186, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
-        { area_id => 163793, categories => ['Flytipping', 'Roads', 'Parks', 'Snow and ice problem/winter salting', 'Grass cutting', 'Hedge problem'], name => 'Buckinghamshire Council', cobrand => 'buckinghamshire' },
-        { area_id => 53822, categories => [ 'Grass cutting', 'Hedge problem' ], name => 'Adstock Parish Council' }, # Buckinghamshire parish council
+        { area_id => 163793, categories => [
+                'Flytipping', 'Roads',
+                { group => 'Grass, hedges and weeds', category => 'Grass cutting' },
+                { group => 'Grass, hedges and weeds', category => 'Hedge problem' },
+                { group => 'Roads & Pavements', category => 'Parks' },
+                { group => 'Roads & Pavements', category => 'Snow and ice problem/winter salting' },
+            ], name => 'Buckinghamshire Council', cobrand => 'buckinghamshire' },
+        { area_id => 53822, categories => [
+                { group => 'Grass, hedges and weeds', category => 'Grass cutting' },
+                { group => 'Grass, hedges and weeds', category => 'Hedge problem' },
+            ], name => 'Adstock Parish Council' }, # Buckinghamshire parish council
         { area_id => 164186, categories => [ 'Graffiti' ], name => 'West Northamptonshire Council' },
-        { area_id => 2483, categories => [ 'Potholes', 'Other' ], name => 'Hounslow Borough Council', cobrand => 'hounslow' },
+        { area_id => 2483, categories => [
+                'Potholes', { category => 'Other', non_public => 1 },
+            ], name => 'Hounslow Highways', cobrand => 'hounslow' },
         { area_id => 2508, categories => [ 'Potholes', 'Other' ], name => 'Hackney Council', cobrand => 'hackney' },
-        { area_id => 2636, categories => [ 'Potholes', 'Private', 'Extra' ], name => 'Isle of Wight Council', cobrand => 'isleofwight' },
+        { area_id => 2636, categories => [
+                { category => 'Potholes', send_method => 'Triage' },
+                { category => 'Private', send_method => 'Triage', non_public => 1 },
+                { category => 'Extra', send_method => 'Triage' },
+            ], name => 'Isle of Wight Council', cobrand => 'isleofwight' },
         { area_id => 2232, categories => ['Damaged/missing cats eye'], name => 'Lincolnshire County Council', cobrand => 'lincolnshire' },
-        { area_id => 2566, categories => [ 'General fly tipping', 'Fallen branch', 'Light Out', 'Light Dim', 'Fallen Tree', 'Damaged Tree', 'Pothole' ], name => 'Peterborough City Council', cobrand => 'peterborough' },
-        { area_id => 2498, categories => [ 'Incorrect timetable', 'Glass broken', 'Mobile Crane Operation', 'Roadworks', 'Other (TfL)' ], name => 'TfL', cobrand => 'tfl' },
+        { area_id => 2226, categories => [
+                { group => 'A pothole in pavement', category => 'A pothole in pavement' },
+                { group => 'A pothole in road', category => 'A pothole in road' },
+            ],
+            name => 'Gloucestershire County Council', cobrand => 'gloucestershire' },
+        { area_id => 2326, categories => ['Flyposting', 'Graffiti'],
+            name => 'Cheltenham Borough Council' },
+        { area_id => 2566, categories => [
+                { group => 'Trees', category => 'Fallen Tree' },
+                { group => 'Trees', category => 'Damaged Tree' },
+                { group => 'Street lighting', category => 'Light Out' },
+                { group => 'Street lighting', category => 'Light Dim' },
+                'General fly tipping', 'Fallen branch', 'Pothole', 'Non offensive graffiti'
+            ], name => 'Peterborough City Council', cobrand => 'peterborough' },
+        { area_id => 2498, categories => [
+                { group => 'Bus Stops and Shelters', category => 'Incorrect timetable' },
+                { group => 'Bus Stops and Shelters', category => 'Glass broken' },
+                'Mobile Crane Operation', 'Roadworks', 'Other (TfL)'
+            ], name => 'TfL', cobrand => 'tfl' },
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks', 'Lamp Out of Light' ], name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
         { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council', cobrand => 'bathnes' },
         { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council', cobrand => 'shropshire' },
-        { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting' ], name => 'Merton Council', cobrand => 'merton' },
+        { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting', 'Parks' ], name => 'Merton Council', cobrand => 'merton' },
         { area_id => 2488, categories => [ 'Grass verges / shrub beds - littering' , 'Pavement damage', 'Fly-tipping', 'Dog fouling'], name => 'Brent Council', cobrand => 'brent' },
         { area_id => 2535, categories => [ 'Abandoned vehicles', 'Graffiti', 'Street lights'], name => 'Sandwell Borough Council' },
+        { area_id => 2242, categories => [ 'Abandoned vehicles', 'Graffiti', 'Street lights', 'Flooding inside a building'], name => 'Surrey County Council' },
     ) {
         $bodies->{$_->{area_id}} = FixMyStreet::DB::Factory::Body->find_or_create($_);
         if ($_->{cobrand}) {
-            $bodies->{$_->{area_id}}->set_extra_metadata(cobrand => $_->{cobrand});
+            $bodies->{$_->{area_id}}->cobrand($_->{cobrand});
             $bodies->{$_->{area_id}}->update;
         }
         my $cats = join(', ', @{$_->{categories}});
@@ -161,24 +201,10 @@ if ($opt->test_fixtures) {
         if ($_->{name} eq 'TfL') {
             $bodies->{$_->{area_id}}->body_areas->find_or_create({ area_id => '2506' });
         }
-    }
-
-    for my $cat_name ('Fallen Tree', 'Damaged Tree') {
-        my $cat = FixMyStreet::DB->resultset('Contact')->find({
-            body => $bodies->{2566},
-            category => $cat_name,
-        });
-        $cat->set_extra_metadata( group => 'Trees' );
-        $cat->update;
-    }
-
-    for my $cat_name ('Light Out', 'Light Dim') {
-        my $cat = FixMyStreet::DB->resultset('Contact')->find({
-            body => $bodies->{2566},
-            category => $cat_name,
-        });
-        $cat->set_extra_metadata( group => 'Street lighting' );
-        $cat->update;
+        # Merton is going to cover Kingston for tesing reporting on Commons
+        if ($_->{name} eq 'Merton Council') {
+            $bodies->{$_->{area_id}}->body_areas->find_or_create({ area_id => '2480' });
+        }
     }
 
     my $drain = FixMyStreet::DB->resultset('Contact')->find({
@@ -228,13 +254,6 @@ if ($opt->test_fixtures) {
     });
     $child_cat->update;
 
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{163793},
-        category => 'Grass cutting',
-    });
-    $child_cat->set_extra_metadata(group => 'Grass, hedges and weeds');
-    $child_cat->update;
-
     for my $cat ('Parks', 'Snow and ice problem/winter salting') {
         $child_cat = FixMyStreet::DB->resultset("Contact")->find({
             body => $bodies->{163793},
@@ -249,16 +268,8 @@ if ($opt->test_fixtures) {
             variable => 'true',
             automated => 'hidden_field',
         });
-        $child_cat->set_extra_metadata(group => 'Roads & Pavements');
         $child_cat->update;
     }
-
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{163793},
-        category => 'Hedge problem',
-    });
-    $child_cat->set_extra_metadata(group => 'Grass, hedges and weeds');
-    $child_cat->update;
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{53822},
@@ -276,47 +287,16 @@ if ($opt->test_fixtures) {
     });
     $child_cat->update;
 
-    for my $cat_name ('Grass cutting', 'Hedge problem') {
-        $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-            body => $bodies->{53822},
-            category => $cat_name,
-        });
-        $child_cat->set_extra_metadata(group => 'Grass, hedges and weeds');
-        if ($cat_name eq 'Hedge problem') {
-            $child_cat->set_extra_metadata(prefer_if_multiple => 1);
-        }
-        $child_cat->update;
-    }
+    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+        body => $bodies->{53822},
+        category => 'Hedge problem',
+    });
+    $child_cat->set_extra_metadata(prefer_if_multiple => 1);
+    $child_cat->update;
 
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2483},
-        category => 'Other',
-    });
-    $child_cat->update({
-        non_public => 1
-    });
-
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2636},
-        category => 'Potholes',
-    });
-    $child_cat->update({
-        send_method => 'Triage'
-    });
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2636},
-        category => 'Private',
-    });
-    $child_cat->update({
-        non_public => 1,
-        send_method => 'Triage'
-    });
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
         body => $bodies->{2636},
         category => 'Extra',
-    });
-    $child_cat->update({
-        send_method => 'Triage'
     });
     $child_cat->set_extra_fields({
         code => 'extra',
@@ -382,7 +362,6 @@ if ($opt->test_fixtures) {
         body => $bodies->{2482},
         category => 'Lamp Column Damaged',
     });
-    $child_cat->set_extra_metadata(group => 'Street Lighting and Road Signs');
     $child_cat->set_extra_fields({
         code => 'prow_reference',
         datatype => 'string',
@@ -390,14 +369,16 @@ if ($opt->test_fixtures) {
         variable => 'true',
         required => 'false',
         automated => 'hidden_field',
-    });
-    $child_cat->update;
-
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({
-        body => $bodies->{2482},
-        category => 'Sign Light Not Working',
-    });
-    $child_cat->set_extra_metadata(group => 'Street Lighting and Road Signs');
+    },
+    {
+        code => 'fms_layer_owner',
+        datatype => 'string',
+        order => 1,
+        variable => 'true',
+        required => 'false',
+        automated => 'hidden_field',
+    }
+    );
     $child_cat->update;
 
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({
@@ -476,12 +457,6 @@ if ($opt->test_fixtures) {
 
     FixMyStreet::DB->resultset('BodyArea')->create({ body_id => $bodies->{2498}->id, area_id => 2457 });
     FixMyStreet::DB->resultset('BodyArea')->create({ body_id => $bodies->{2498}->id, area_id => 2483 });
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({ body => $bodies->{2498}, category => 'Incorrect timetable' });
-    $child_cat->set_extra_metadata(group => ['Bus Stops and Shelters']);
-    $child_cat->update;
-    $child_cat = FixMyStreet::DB->resultset("Contact")->find({ body => $bodies->{2498}, category => 'Glass broken' });
-    $child_cat->set_extra_metadata(group => ['Bus Stops and Shelters']);
-    $child_cat->update;
     $child_cat = FixMyStreet::DB->resultset("Contact")->find({ body => $bodies->{2498}, category => 'Roadworks' });
     $child_cat->set_extra_fields({ code => 'extra', datatype => 'string', order => 1, variable => 'true' });
     $child_cat->update;

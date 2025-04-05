@@ -1,4 +1,3 @@
-use utf8;
 use open ':std', ':locale';
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
@@ -153,8 +152,8 @@ $report->update({ geocode => {
 
 $report->delete();
 
-my $council = $mech->create_body_ok(2333, 'Hart Council', {}, { cobrand => 'hart' });
-my $county = $mech->create_body_ok(2227, 'Hampshire Council', {}, { cobrand => 'hampshire' });
+my $council = $mech->create_body_ok(2333, 'Hart Council', { cobrand => 'hart' });
+my $county = $mech->create_body_ok(2227, 'Hampshire Council', { cobrand => 'hampshire' });
 
 my ($report_to_council) = $mech->create_problems_for_body(1, $council->id, '', {
         user => $user1,

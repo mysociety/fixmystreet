@@ -30,7 +30,7 @@ sub send {
         fixmystreet_body => $body,
     );
 
-    my $contact = $self->fetch_category($body, $row) or return;
+    my $contact = $self->fetch_category($body, $row, $row->get_extra_metadata('open311_category_override')) or return;
 
     my $cobrand = $body->get_cobrand_handler || $row->get_cobrand_logged;
     $cobrand->call_hook(open311_config => $row, $h, \%open311_params, $contact);
@@ -88,6 +88,7 @@ sub send {
     $row->discard_changes;
 
     if ( $skip || $resp ) {
+        $row->unset_extra_metadata('open311_category_override'); # If we were overridden, we don't want to keep that for future
         $row->update({ external_id => $resp });
         $self->success( 1 );
     } else {

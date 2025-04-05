@@ -1,9 +1,7 @@
+[% USE date(format='%Y%m%d') %]
 [% SET pboro_staff_request = ( NOT waste_features.request_disabled ) AND c.user_exists AND (c.user.is_superuser OR (c.user.from_body AND c.user.from_body.name == "Peterborough City Council")) %]
 <h3>More services</h3>
 <ul>
-  [% IF any_report_allowed AND NOT on_day_pre_5pm %]
-    <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
-  [% END %]
   [% IF pboro_staff_request AND NOT open_service_requests.425 %]
     <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]?skip_bags=1">Request a new bin</a></li>
   [% END %]
@@ -11,7 +9,7 @@
   [% IF show_garden_subscribe %]
     <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
   [% END %]
-  [% UNLESS waste_features.request_disabled OR open_service_requests.428 %]
+  [% UNLESS waste_features.request_disabled OR open_service_requests.428 OR c.cobrand.wasteworks_config.food_bags_disabled == 'off' %]
     <li>
         <form method="post" action="[% c.uri_for_action('waste/request', [ property.id ]) %]?bags_only=1">
             <input type="hidden" name="token" value="[% csrf_token %]">

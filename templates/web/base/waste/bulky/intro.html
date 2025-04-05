@@ -1,19 +1,25 @@
-[% service_name = "bulky goods" %]
-
-[% IF c.cobrand.moniker == 'brent' %]
-    [% service_name = "small items" %]
-[% END %]
+[% IF c.cobrand.moniker == 'brent' ~%]
+    [% service_name = "small items" ~%]
+[% ELSIF c.cobrand.moniker == 'merton' ~%]
+    [% service_name = "bulky waste" ~%]
+[% ELSE ~%]
+    [% service_name = "bulky goods" ~%]
+[% END ~%]
 
 <h3>Before you start your booking</h3>
 <ol>
+  [% IF c.cobrand.moniker != 'brent' %]
     <li>Requesting a [% service_name %] collection usually takes around <strong>10 minutes</strong></li>
+  [% END %]
   [% IF c.cobrand.moniker != 'brent' AND c.cobrand.moniker != 'bromley' %]
     <li>You can request up to <strong>[% c.cobrand.bulky_items_maximum | numwords %] items per collection</strong></li>
   [% END %]
-  [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' %]
-    [%
+    [%~
         USE pounds = format('%.2f');
         SET cfg = c.cobrand.wasteworks_config;
+    ~%]
+  [% IF cfg.band1_price %]
+    [%
         SET band1_items = cfg.band1_max;
         SET max_items = cfg.items_per_collection_max;
         SET base_price = cfg.base_price / 100;
@@ -22,10 +28,10 @@
     <li>The price you pay depends how many items you would like collected:
         <ul class="bulky-intro-pricing">
             <li class="bulky-intro-pricing">
-                Up to [% band1_items %] items = £[% pounds(band1_price) %]
+                1–[% band1_items %] items = £[% pounds(band1_price) %]
             </li>
             <li class="bulky-intro-pricing">
-                Up to [% max_items %] items = £[% pounds(base_price) %]
+                [% band1_items+1 %]–[% max_items %] items = £[% pounds(base_price) %]
             </li>
         </ul>
     </li>
@@ -36,21 +42,11 @@
     <li>Householders will be able to book up to <strong>three</strong> categories per collection. For example, a collection could include 10 AA batteries, two x 5 litre paint tins, one black sack of textiles.
     <li>To see your options for coffee pod recycling please visit
         <a href="https://www.podback.org/recycle-checker" target="_blank">https://www.podback.org/recycle-checker</a>
-  [% ELSIF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' %]
-    <li>In order to help us with your collection, you may wish to add pictures of the items to be collected and the location</li>
   [% ELSE %]
-    <li>In order to help us with your collection, we will ask you to optionally add pictures of the items to be collected and the location</li>
+    <li>In order to help us with your collection, you may wish to add pictures of the items to be collected and the location</li>
   [% END %]
     <li>Before confirming your booking, you need to check all the information provided is correct</li>
-    [% IF cobrand.moniker == 'peterborough' -%]
-    <li>You can amend the items in your booking up until [% c.cobrand.bulky_nice_cancellation_cutoff_time %] the day before the collection is scheduled by calling 01733 747474 (9am to 5pm Monday to Friday excluding bank holidays)</li>
-    [% END %]
-    [% UNLESS cobrand.call_hook('bulky_enabled_staff_only') %]
-        [% IF cobrand.moniker == 'peterborough' %]
-    <li><strong>Cancellations made by [% c.cobrand.bulky_nice_collection_time %]</strong> the day before collection is scheduled are entitled to a refund</li>
-        [% END %]
-    [% END %]
-    [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' %]
+    [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' || cobrand.moniker == 'merton' %]
     <li>Bookings are final and non refundable</li>
     [% END %]
 </ol>

@@ -187,7 +187,10 @@ sub oidc_sign_in : Private {
     $c->detach( '/page_error_403_access_denied', [] ) if FixMyStreet->config('SIGNUPS_DISABLED');
 
     my $cfg = $c->forward('oidc_config');
-    $c->detach( '/page_error_400_bad_request', [] ) unless $cfg;
+    unless ($cfg) {
+        $c->stash->{internal_message} = 'OIDC config not found';
+        $c->detach( '/page_error_400_bad_request', [] );
+    }
 
     my $oidc = $c->forward('oidc');
     my $nonce = $self->generate_nonce();
@@ -269,7 +272,10 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
             $c->detach('oauth_failure');
         }
     }
-    $c->detach('/page_error_400_bad_request', []) unless $c->get_param('code') && $c->get_param('state');
+    unless ( $c->get_param('code') && $c->get_param('state') ) {
+        $c->stash->{internal_message} = "Social::oidc_callback missing code (" . $c->get_param('code') . ") or state (" . $c->get_param('state') . ")";
+        $c->detach('/page_error_400_bad_request', []) ;
+    }
 
     # After a password reset on the OIDC endpoint the user isn't properly logged
     # in, so redirect them to the usual OIDC login process.
@@ -290,11 +296,13 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     }
 
     # The only other valid state param is 'login' at this point.
-    $c->detach('/page_error_400_bad_request', []) unless $c->get_param('state') eq 'login';
+    unless ($c->get_param('state') eq 'login') {
+        $c->stash->{internal_message} = "Social::oidc_callback invalid state: " . $c->get_param('state');
+        $c->detach('/page_error_400_bad_request', []) ;
+    }
 
-    my $id_token;
-    eval {
-        $id_token = $oidc->get_access_token(
+    my $token = eval {
+        $oidc->get_access_token(
             code => $c->get_param('code'),
             redirect_uri => $c->uri_for('/auth/OIDC')
         );
@@ -303,10 +311,20 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
         (my $message = $@) =~ s/at [^ ]*Auth.pm.*//;
         $c->detach('/page_error_500_internal_error', [ $message ]);
     }
+    my $id_token = $token->{id_token};
+    my $access_token = $token->{access_token};
 
     if (!$id_token) {
         $c->log->info("Social::oidc_callback no id_token: " . $oidc->{last_response}->{_content});
         $c->detach('oauth_failure');
+    }
+
+    if (FixMyStreet->config('STAGING_SITE')) {
+        my $message = '';
+        for my $key (sort keys %{$id_token->payload}) {
+            $message .= $key . " : " . $id_token->payload->{$key} . "\n" if $id_token->payload->{$key};
+        }
+        $c->log->info($message) if $message;
     }
 
     # sanity check the token audience is us...
@@ -333,7 +351,7 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     $c->session->{oauth}{id_token} = $id_token->token_string;
 
     # Cobrands can use different fields for name and email
-    my ($name, $email) = $c->cobrand->call_hook(user_from_oidc => $id_token->payload);
+    my ($name, $email) = $c->cobrand->call_hook(user_from_oidc => $id_token->payload, $access_token);
     $name = '' if $name && $name !~ /\w/;
 
     # There's a chance that a user may have multiple OIDC logins, so build a namespaced uid to prevent collisions
@@ -343,7 +361,10 @@ sub oidc_callback: Path('/auth/OIDC') : Args(0) {
     # which is passed to Open311 with reports made by this user.
     my $extra = $c->cobrand->call_hook(oidc_user_extra => $id_token);
 
-    $c->forward('oauth_success', [ 'oidc', $uid, $name, $email, $extra ]);
+    # TfL would like to set the user's roles when logging in through oidc
+    my $roles = $id_token->payload->{roles} || ();
+
+    $c->forward('oauth_success', [ 'oidc', $uid, $name, $email, $extra, $roles ]);
 }
 
 # Just a wrapper around random_token to make mocking easier.
@@ -367,7 +388,7 @@ sub oauth_failure : Private {
 }
 
 sub oauth_success : Private {
-    my ($self, $c, $type, $uid, $name, $email, $extra) = @_;
+    my ($self, $c, $type, $uid, $name, $email, $extra, $roles) = @_;
 
     my $user;
     if ($email) {
@@ -400,6 +421,7 @@ sub oauth_success : Private {
                 %$extra
             });
         }
+        $c->cobrand->call_hook(roles_from_oidc => $user, $roles);
         $user->in_storage() ? $user->update : $user->insert;
     } else {
         # We've got an ID, but no email
@@ -419,6 +441,7 @@ sub oauth_success : Private {
                     %$extra
                 });
             }
+            $c->cobrand->call_hook(roles_from_oidc => $user, $roles);
             $user->update;
         } else {
             # No matching ID, store ID for use later
@@ -426,6 +449,7 @@ sub oauth_success : Private {
             $c->session->{oauth}{name} = $name if $name;
             $c->session->{oauth}{extra} = $extra;
             $c->stash->{oauth_need_email} = 1;
+            $c->session->{oauth}{roles} = $roles if $roles;
         }
     }
 

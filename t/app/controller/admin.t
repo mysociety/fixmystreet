@@ -9,13 +9,16 @@ package main;
 
 use FixMyStreet::TestMech;
 
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 $oxfordshireuser->user_body_permissions->create({ body => $oxfordshire, permission_type => 'category_edit' });
 
@@ -172,7 +175,7 @@ subtest "Users with from_body can access their own council's admin" => sub {
         ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
         $mech->get_ok('/admin');
-        $mech->content_contains( 'FixMyStreet admin:' );
+        $mech->content_contains( 'Summary' );
     };
 };
 
@@ -182,7 +185,7 @@ subtest "Check admin index page redirects" => sub {
         ALLOWED_COBRANDS => [ 'oxfordshireuta' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $oxfordshire->set_extra_metadata(cobrand => 'oxfordshireuta');
+        $oxfordshire->cobrand('oxfordshireuta');
         $oxfordshire->update;
         ok $mech->get('/admin/bodies');
         is $mech->uri->path, '/admin/body/' . $oxfordshire->id, 'body redirects okay';

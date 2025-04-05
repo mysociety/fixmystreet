@@ -1,0 +1,100 @@
+[% IF cobrand.moniker == 'kingston' %][% SET prefix = 'RBK-' ~%]
+[% ELSIF cobrand.moniker == 'sutton' %][% SET prefix = 'LBS-' ~%]
+[% ELSE %][% SET prefix = '' %][% END ~%]
+Subject: Garden waste collection service - reference [% prefix %][% report.id %]
+
+[%
+
+USE pounds = format('%.2f');
+PROCESS 'waste/_garden_data.html';
+
+BLOCK show_fields;
+    FOR field IN fields;
+        IF field.2;
+            SET val = report.get_extra_metadata(field.1);
+        ELSE;
+            SET val = report.get_extra_field_value(field.1);
+        END;
+        IF val;
+            IF payments;
+                field.0 _ ': £' _ pounds(val / 100) _ "\n\n";
+            ELSE;
+                field.0 _ ': ' _ val _ "\n\n";
+            END;
+        END;
+    END;
+END
+~%]
+
+Dear [% report.name %],
+
+[% email_summary %]
+
+[% IF type != 'cancel' ~%]
+You have signed up for:
+[% END %]
+
+[% report.detail %]
+
+[% IF quantity ~%]
+[% IF sacks ~%]
+Garden waste sack collection: [% sack_quant %] [% nget('roll', 'rolls', sack_quant) %]
+[% ELSE ~%]
+Number of bin subscriptions: [% quantity %]
+[% END ~%]
+[% END %]
+
+[% IF additional_quantity ~%]
+Number of additional bin subscriptions: [% additional_quantity %]
+[% END %]
+
+[% IF new_bins > 0 AND NOT sacks ~%]
+Bins to be delivered: [% new_bins %]
+[% ELSIF new_bins < 0 AND NOT sacks ~%]
+Bins to be removed: [% 0 - new_bins %]
+[% END %]
+
+[% INCLUDE show_fields payments=1 fields=[
+    [ 'Subscription cost', 'payment' ],
+    [ 'Payment', 'pro_rata' ],
+    [ 'Admin fee for new bin(s)', 'admin_fee' ],
+] %]
+
+[% IF total ~%]
+Total: £[% pounds(total / 100) %]
+[% END %]
+
+[% IF cobrand.moniker == 'brent' %]
+
+[% IF type == 'new' OR type == 'renew' ~%]
+Your subscription will last until the end of March [% renew_year_end %] and starts after your first collection date.
+[% END %]
+
+[% ELSE %]
+
+[% IF type == 'new' ~%]
+Your subscription will last for 12 months and starts after your first collection date.
+[% END %]
+
+[% END %]
+
+You can check your collection day online:
+[% cobrand.feature('waste_features').garden_check_bin_day_link %]
+
+[% IF new_bins > 0 ~%]
+[% IF cobrand.moniker == 'bexley' OR cobrand.moniker == 'brent' OR cobrand.moniker == 'merton' OR cobrand.moniker == 'sutton' %]
+We will aim to deliver your [% IF sacks %]sacks[% ELSE %]new bin(s)[% END %] within 10 working days.
+[% ELSE %]
+We will aim to deliver your [% IF sacks %]roll of sacks[% ELSE %]new bin(s)[% END %] within 20 working days.
+[% END %]
+You don't need to be at home for the delivery - we'll leave them outside your address.
+[% END %]
+
+Your garden waste needs to be at the boundary of your property by [% cobrand.garden_collection_time %] on the
+day of collection. Find out what you can put in your garden waste:
+[% cobrand.feature('waste_features').garden_what_can_be_collected_link %]
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

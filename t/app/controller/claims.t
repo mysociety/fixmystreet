@@ -1,4 +1,3 @@
-use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Path::Tiny;
@@ -13,8 +12,8 @@ my $sample_blank = path(__FILE__)->parent(3)->child("fixtures", "blank.jpeg");
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(163793, 'Buckinghamshire Council', {
-    send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 },
-    { cobrand => 'buckinghamshire' });
+    send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1,
+    cobrand => 'buckinghamshire' });
 my $system_user = $mech->create_user_ok('system@bucks', from_body => $body);
 $body->update({ comment_user => $system_user });
 my $contact = $mech->create_contact_ok(body_id => $body->id, category => 'Claim', email => 'CLAIM');
@@ -116,7 +115,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Claim submitted');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->title, "Claim";
         is $report->bodies_str, $body->id;
         my $report_id = $report->id;
@@ -219,7 +218,7 @@ EOF
         $mech->submit_form_ok({ with_fields => { process => 'summary' } }, "Claim submitted");
         $mech->content_contains('Claim submitted');
         $mech->content_contains('is a lengthy process');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         my $report_id = $report->id;
         is $report->comments->count, 0, 'No updates added to report';
         FixMyStreet::Script::Reports::send();

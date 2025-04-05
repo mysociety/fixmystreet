@@ -80,7 +80,7 @@ sub create_problems {
     my $requests = $open311->get_service_requests( $args );
 
     unless ( $open311->success ) {
-        warn "Failed to fetch ServiceRequest Updates for " . $body->name . ":\n" . $open311->error
+        warn "Failed to fetch ServiceRequests for " . $body->name . ":\n" . $open311->error
             if $self->verbose;
         return 0;
     }
@@ -97,11 +97,17 @@ sub create_problems {
             next;
         }
         my $request_id = $request->{service_request_id};
+        my $is_confirm_job = $request_id =~ /^JOB_/;
 
         my ($latitude, $longitude) = ( $request->{lat}, $request->{long} );
 
-        ($latitude, $longitude) = Utils::convert_en_to_latlon_truncated( $longitude, $latitude )
-            if $self->convert_latlong;
+        # Body may have convert_latlong set to true if it gets *enquiries* from
+        # Confirm (these use easting/northing), but *jobs* from Confirm use
+        # lat & long, so conversion is not needed for them
+        ( $latitude, $longitude )
+            = Utils::convert_en_to_latlon_truncated( $longitude, $latitude )
+            if $self->convert_latlong
+            && !$is_confirm_job;
 
         my $all_areas =
           FixMyStreet::MapIt::call('point', "4326/$longitude,$latitude");
@@ -147,8 +153,18 @@ sub create_problems {
         # Skip if this problem already exists (e.g. it may have originated from FMS and is being mirrored back!)
         next if $self->schema->resultset('Problem')->to_body($body)->search( $criteria )->count;
 
-        if ($args->{start_date} && $args->{end_date} && ($updated lt $args->{start_date} || $updated gt $args->{end_date}) ) {
-            warn "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
+        # Skip this date check for Confirm jobs, otherwise we are likely to
+        # skip a bunch of valid jobs if calling the fetch script using
+        # explicit start and end values
+        if (   !$is_confirm_job
+            && $args->{start_date}
+            && $args->{end_date}
+            && (   $updated lt $args->{start_date}
+                || $updated gt $args->{end_date} )
+            )
+        {
+            warn
+                "Problem id $request_id for @{[$body->name]} has an invalid time, not creating: "
                 . "$updated either less than $args->{start_date} or greater than $args->{end_date}"
                 if $self->verbose >= 2;
             next;

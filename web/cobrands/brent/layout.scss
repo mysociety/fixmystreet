@@ -10,7 +10,7 @@
 
 .nav-wrapper {
   &:after {
-    @include svg-background-image("/cobrands/brent/images/bg-pattern");
+    background-image: url("/cobrands/brent/images/bg-pattern.svg");
     content: '';
     position: absolute;
     z-index: -1;
@@ -40,20 +40,12 @@ $nav-height: 90px;
   background-color: $base_bg;
 }
 
-body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body.waste {
+body:not(.mappage) {
   #site-logo {
-    @include svg-background-image("/cobrands/brent/images/brent-logo");
     background-size: 165px $logo-height;
     width: 165px;
-    padding: 0;
     padding-top: $nav-height;
     height: 0px;
-    overflow: hidden;
-    white-space: nowrap;
-
-    &:focus {
-      background-color: $link-focus-color;
-    }
   }
 
   #main-nav {
@@ -119,15 +111,8 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage, body
 body.mappage {
   // Add a red border-bottom *inside* the header
   #site-header {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     border-bottom: none;
-  }
-
-  #site-logo {
-    margin-top: 0.250em;
-    &:focus {
-      @include svg-background-image("/cobrands/brent/images/brent-logo-black");
-    }
   }
 
   // Reinstate the floated nav bar on map pages
@@ -173,7 +158,6 @@ body.mappage {
 }
 
 .report-list-filters {
-  color: $gray-2;
   @include brent-body;
 }
 

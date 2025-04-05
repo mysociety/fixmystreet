@@ -52,6 +52,11 @@
     </div>
 
     <div class="fieldset-item">
-      <span class="cost-pa">£[% tprintf('%.2f', per_bin_cost / 100 ) %] per bin per year</span>
+      [% IF form_page == 'renew';
+            SET cost = garden_costs.per_bin_renewal;
+        ELSE;
+            SET cost = garden_costs.per_bin;
+        END %]
+        <span class="cost-pa">£[% tprintf('%.2f', cost / 100 ) %] per bin per year</span>
     </div>
   </div>

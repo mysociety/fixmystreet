@@ -1,19 +1,19 @@
 [% INCLUDE 'header.html',
     title = loc('Hide my name'),
-    bodyclass = 'twothirdswidthpage' %]
+%]
 
 <form method="post" action="/my/anonymize" class="box-warning hide-name-form">
     <input type="hidden" name="token" value="[% csrf_token %]">
 
   [% IF update %]
     <input type="hidden" name="update" value="[% update.id %]">
-    <input class="btn-primary" type="submit" name="hide" value="[% loc('Hide my name in this update') %]">
+    <input class="btn btn--primary" type="submit" name="hide" value="[% loc('Hide my name in this update') %]">
   [% ELSIF problem %]
     [% IF problem.bodies_str %]
       <p>[% tprintf(loc('Your name has already been sent to %s, but we can hide it on this page:'), problem.body) %]</p>
     [% END %]
     <input type="hidden" name="problem" value="[% problem.id %]">
-    <input class="btn-primary" type="submit" name="hide" value="[% loc('Hide my name on this report') %]">
+    <input class="btn btn--primary" type="submit" name="hide" value="[% loc('Hide my name on this report') %]">
   [% END %]
 
   [% IF NOT c.user.from_body %]

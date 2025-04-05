@@ -19,14 +19,12 @@
 }
 
 .postcode-form-box {
-    overflow: visible;
-
     div {
         width: auto;
         max-width: 38em;
-        input#pc {
-            max-width: none;
-        }
+    }
+    input#pc {
+        max-width: none;
     }
 
     label {
@@ -35,15 +33,15 @@
 }
 
 .site-footer__section {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     float: left;
     padding: 0 1em;
     width: 25%;
 
     &:first-child {
-        @include flex-container();
-        @include flex-direction(column);
-        @include justify-content(space-between);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     &:nth-child(2) {

@@ -1,8 +1,10 @@
+[% IF cobrand.moniker == 'bexley' && report.cobrand_data == 'waste' %]
+  [% PROCESS 'waste/submit.html' %]
+[% ELSE %]
 [%
 
 PROCESS '_email_settings.html';
 
-email_summary = "A new problem in your area has been reported by a " _ site_name _ " user.";
 email_footer = PROCESS '_submit_footer.html';
 email_columns = 2;
 
@@ -51,8 +53,8 @@ of a local problem that they believe might require your attention.</p>
     [% report.detail | html_para_email(secondary_p_style) %]
   [% IF report.get_extra_fields %]
     <p style="[% secondary_p_style %]">
-      [%~ FOR field IN report.get_extra_fields %][% IF field.value %]
-        [% field.description OR field.name %]: [% field.value %]
+      [%~ FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length %]
+        <strong>[% field.description OR field.name %]:</strong> [% field.value_label OR field.value %]
         [% IF NOT loop.last %]<br>[% END %]
       [%~ END %][% END %]
     </p>
@@ -67,24 +69,7 @@ of a local problem that they believe might require your attention.</p>
       </a>)
       [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
     </p>
-  [% IF report.get_extra_field_value('road_name') %]
-    <p style="[% secondary_p_style %]">
-      <strong>Road:</strong>
-        [% report.get_extra_field_value('road_name') %]
-    </p>
-  [% END %]
-  [% IF report.get_extra_field_value('sect_label') %]
-    <p style="[% secondary_p_style %]">
-      <strong>Section:</strong>
-        [% report.get_extra_field_value('sect_label') %]
-    </p>
-  [% END %]
-  [% IF report.get_extra_field_value('area_name') %]
-    <p style="[% secondary_p_style %]">
-      <strong>Area:</strong>
-        [% report.get_extra_field_value('area_name') %]
-    </p>
-  [% END %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
+[% END %]

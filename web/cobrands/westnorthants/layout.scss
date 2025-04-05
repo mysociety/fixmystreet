@@ -1,0 +1,69 @@
+@import "_variables";
+@import "../sass/layout";
+
+body {
+  font-size: 1.2em;
+}
+
+a.platform-logo {
+    background-image: url(/cobrands/fixmystreet/images/fms-platform-logo-dark.svg);
+}
+
+// HEADER
+#site-logo {
+  width: 225px;
+}
+
+.nav-menu {
+  a, span {
+    padding: 0.25em 0.75em;
+    margin:0.5em 0;
+    font-size: 1em;
+    border-radius: 3px;
+  }
+
+  a.report-a-problem-btn {
+    border-radius: 3px;
+  }
+
+  span {
+    color:$primary_b;
+  }
+
+  a {
+    &:focus {
+      background: $focus-bg-top;
+      color: $focus-text;
+      outline: none;
+    }
+    &:visited {
+      &:hover {
+        color: $primary_text;
+      }
+    }
+  }
+}
+
+// FRONTPAGE
+#front-main {
+  padding: 3em 1em;
+}
+
+#front_stats {
+  border-color: $primary_b;
+}
+
+//FOOOTER
+.westnorthants-footer {
+  .container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  ul {
+    &.list-links {
+      margin-bottom: 15px;
+    }
+  }
+}

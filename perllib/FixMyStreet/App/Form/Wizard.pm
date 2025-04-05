@@ -26,6 +26,8 @@ has saved_data => ( is => 'rw', lazy => 1, isa => 'HashRef', default => sub {
 has previous_form => ( is => 'ro', isa => 'Maybe[HTML::FormHandler]', weak_ref => 1 );
 has csrf_token => ( is => 'ro', isa => 'Str' );
 
+has already_submitted_error => ( is => 'rw', isa => 'Bool', default => 0 );
+
 has_field saved_data => ( type => 'JSON' );
 has_field token => ( type => 'Hidden', required => 1 );
 has_field process => ( type => 'Hidden', required => 1 );
@@ -92,11 +94,17 @@ sub after_build {
     $self->update_field(unique_id => { default => $self->unique_id_session });
 
     # Update field list with any dynamic things (eg user-based, address lookup, geocoding)
+    my $updates = {};
     if ($page->has_update_field_list) {
-        my $updates = $page->update_field_list->($self) || {};
-        foreach my $field_name (keys %$updates) {
-            $self->update_field($field_name, $updates->{$field_name});
+        $updates = $page->update_field_list->($self) || {};
+    }
+    foreach my $fname ($self->current_page->all_fields) {
+        if ($self->field($fname)->type eq 'Photo') {
+            $self->update_photo($fname, $updates);
         }
+    }
+    foreach my $field_name (keys %$updates) {
+        $self->update_field($field_name, $updates->{$field_name});
     }
 }
 
@@ -116,6 +124,7 @@ after 'validate_form' => sub {
         # Mismatch of unique ID, resubmission?
         if ($self->unique_id_session && $page->check_unique_id && $self->unique_id_session ne ($self->unique_id_form || '')) {
             $self->add_form_error('You have already submitted this form.');
+            $self->already_submitted_error(1);
             return;
         }
 

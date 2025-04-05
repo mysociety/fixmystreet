@@ -4,22 +4,9 @@
 [% DEFAULT twitter_comment = 'I just used @fixmystreet, you should try it!' %]
 
 <div class="next-steps">
-  <div class="next-steps__step next-steps__step--social">
-    [% IF just_interacted %]
-      <h2>[% loc('Great work. Now spread the word!') %]</h2>
-      <p>[% loc('Share your report on Twitter and Facebook, and let your friends join the conversation.') %]</p>
-    [% ELSE %]
-      <h2>[% loc('Spread the word about FixMyStreet!') %]</h2>
-      <p>[% loc('You know how to get things fixed - now make sure your friends do too.') %]</p>
-    [% END %]
-    <p class="next-steps__step__cta">
-      <a href="https://twitter.com/intent/tweet?text=[% twitter_comment | uri %]&amp;url=[% share_url | uri %]&amp;related=fixmystreet,mysociety"><img src="/cobrands/fixmystreet.com/images/next-step-twitter.png" alt="Tweet it" width="120" height="37"></a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u=[% share_url | uri %]"><img src="/cobrands/fixmystreet.com/images/next-step-facebook.png" alt="Share on Facebook" width="120" height="37"></a>
-    </p>
-  </div>
   <div class="next-steps__step next-steps__step--donate">
-      <h2>[% loc('Help support FixMyStreet') %]</h2>
-      <p>[% loc('Even a small donation of £5 today will help mySociety run sites like FixMyStreet.') %]</p>
+      <h2>[% loc('Support FixMyStreet') %]</h2>
+      <p>[% loc('We are a charity – donate today to invest in safer, more accessible communities. Even a small donation of £5 goes a long way!') %]</p>
     <p class="next-steps__step__cta">
       <a href="https://www.mysociety.org/donate?utm_source=fixmystreet.com&amp;utm_content=[% utm_content | uri %]&amp;utm_medium=link&amp;utm_campaign=fms_thankyou_pages"><img src="/cobrands/fixmystreet.com/images/next-step-donate.png" alt="Donate now" width="138" height="37"></a>
     </p>

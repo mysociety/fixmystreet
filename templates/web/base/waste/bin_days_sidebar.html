@@ -2,17 +2,17 @@
        <div class="aside-download">
          <h3>Download your collection schedule</h3>
          <ul>
-           <li><a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar (.ics file)</a></li>
+           <li><a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar</a></li>
         [% IF c.cobrand.moniker == 'kingston' %]
             <li><a href="https://kingston-self.achieveservice.com/service/In_my_Area_Results?displaymode=collections&amp;altVal=&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li>
         [% ELSIF c.cobrand.moniker == 'sutton' %]
-            <li><a href="https://sutton-self.achieveservice.com/service/In_My_Area_Results?altval=LBS&amp;displaymode=collections&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li>
-        [% ELSIF c.cobrand.moniker == 'brent' AND (calendar_link OR ggw_calendar_link) %]
-            [%- IF calendar_link -%]
-              <li><a href="[% calendar_link %]">Download PDF waste calendar</a></li>
+            <li><a href="https://sutton-self.achieveservice.com/service/In_my_Area_Results__Sutton_?displaymode=collections&amp;altVal=LBS&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li>
+        [% ELSIF calendar_link OR ggw_calendar_link %]
+            [%- FOR link IN calendar_link -%]
+              <li><a [% external_new_tab | safe %] href="[% link.href OR link %]">[% link.text OR 'Download PDF waste calendar' %]</a></li>
             [%- END -%]
-            [%- IF ggw_calendar_link -%]
-              <li><a href="[% ggw_calendar_link %]">Download PDF garden waste calendar</a></li>
+            [%- FOR link IN ggw_calendar_link -%]
+              <li><a href="[% link.href OR link %]">[% link.text OR 'Download PDF garden waste calendar' %]</a></li>
             [%- END -%]
         [% END %]
          </ul>

@@ -1,20 +1,22 @@
 [%
-IF c.cobrand.call_hook('bulky_enabled');
-  SET bodyclass = 'waste govuk bulky';
-ELSE;
-  SET bodyclass = 'waste govuk';
+IF NOT ajax_loading;
+    IF c.cobrand.call_hook('bulky_enabled');
+      SET bodyclass = 'waste govuk bulky';
+    ELSE;
+      SET bodyclass = 'waste govuk';
+    END;
+    extra_js = [
+        version('/vendor/accessible-autocomplete.min.js'),
+        version('/js/waste.js'),
+        version('/cobrands/peterborough/waste.js')
+    ];
+    INCLUDE header.html;
 END;
-%]
-[% extra_js = [
-    version('/vendor/accessible-autocomplete.min.js'),
-    version('/js/waste.js'),
-    version('/cobrands/peterborough/waste.js')
-] ~%]
-[% INCLUDE header.html %]
+~%]
 
 [% site_message = c.cobrand.site_message('waste') %]
 [% IF site_message %]
 <div class="site-message">
-  [% site_message | html_para %]
+  [% site_message | html_para_conditional %]
 </div>
 [% END %]

@@ -11,7 +11,6 @@ sub anonymous_account { { email => 'anoncategory@example.org', name => 'Anonymou
 
 package main;
 
-use utf8;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -19,8 +18,8 @@ my $mech = FixMyStreet::TestMech->new;
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 $mech->log_in_ok( $superuser->email );
 my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
-my $body2 = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
-my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire Council', {}, { cobrand => 'buckinghamshire' });
+my $body2 = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
+my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire Council', { cobrand => 'buckinghamshire' });
 
 my $user = $mech->create_user_ok('user@example.com', name => 'OCC User', from_body => $body2);
 $user->user_body_permissions->create({ body => $body2, permission_type => 'category_edit' });
@@ -37,8 +36,21 @@ $mech->content_contains('Aberdeen City Council');
 $mech->content_like(qr{AB\d\d});
 $mech->content_contains("http://www.example.org/around");
 
+subtest 'check body creation' => sub {
+    $mech->get_ok('/admin/bodies');
+    $mech->follow_link_ok({ text => 'Add body' });
+
+    $mech->submit_form_ok( { with_fields => {
+        name => 'New body',
+    } } );
+    $mech->content_contains('New body');
+    $mech->get_ok('/admin/bodies');
+    $mech->content_contains('New body');
+};
+
 subtest 'check contact creation' => sub {
     $mech->get_ok('/admin/body/' . $body->id);
+    $mech->follow_link_ok({ text => 'Add new category' });
 
     $mech->submit_form_ok( { with_fields => {
         category   => 'test category',
@@ -54,6 +66,7 @@ subtest 'check contact creation' => sub {
     $mech->content_contains( '<td>test note' );
     $mech->content_like( qr/<td>\s*unconfirmed\s*<\/td>/ ); # No private
 
+    $mech->follow_link_ok({ text => 'Add new category' });
     $mech->submit_form_ok( { with_fields => {
         category   => 'private category',
         email      => 'test@example.com',
@@ -64,6 +77,7 @@ subtest 'check contact creation' => sub {
     $mech->content_contains( 'private category' );
     $mech->content_like( qr{test\@example.com\s*</td>\s*<td>\s*confirmed\s*<br>\s*<small>\s*Private\s*</small>\s*</td>} );
 
+    $mech->follow_link_ok({ text => 'Add new category' });
     $mech->submit_form_ok( { with_fields => {
         category => 'test/category',
         email    => 'test@example.com',
@@ -71,6 +85,7 @@ subtest 'check contact creation' => sub {
         non_public => 'on',
     } } );
 
+    $mech->follow_link_ok({ text => 'Add new category' });
     $mech->submit_form_ok( { with_fields => {
         category => 'test \' ’ category',
         email    => 'test@example.com',
@@ -364,7 +379,7 @@ FixMyStreet::override_config {
 
 subtest 'allow anonymous reporting' => sub {
     $body->discard_changes;
-    $body->set_extra_metadata(cobrand => "anonallowedbycategory");
+    $body->cobrand("anonallowedbycategory");
     $body->update;
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => {
@@ -374,7 +389,7 @@ subtest 'allow anonymous reporting' => sub {
     $mech->content_contains('Values updated');
     my $contact = $body->contacts->find({ category => 'test category' });
     is $contact->get_extra_metadata('anonymous_allowed'), 1, 'Anonymous reports allowed flag set';
-    $body->unset_extra_metadata('cobrand');
+    $body->cobrand(undef);
     $body->update;
 };
 
@@ -408,6 +423,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'group editing works' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
+        $mech->follow_link_ok({ text => 'Add new category' });
         $mech->content_contains('Parent categories');
 
         $mech->submit_form_ok( { with_fields => {
@@ -425,6 +441,7 @@ FixMyStreet::override_config {
 
     subtest 'group can be unset' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
+        $mech->follow_link_ok({ text => 'Add new category' });
         $mech->content_contains('Parent categories');
 
         $mech->submit_form_ok( { with_fields => {
@@ -452,12 +469,12 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'multi group editing works' => sub {
         $mech->get_ok('/admin/body/' . $body->id);
+        $mech->follow_link_ok({ text => 'Add new category' });
         $mech->content_contains('Parent categories');
 
         # have to do this as a post as adding a second group requires
         # javascript
-        $mech->post_ok( '/admin/body/' . $body->id, {
-            posted     => 'new',
+        $mech->post_ok( '/admin/body/' . $body->id . '/_add', {
             token      => $mech->form_id('category_edit')->value('token'),
             category   => 'grouped category',
             email      => 'test@example.com',
@@ -589,7 +606,7 @@ subtest 'check setting cobrand on body' => sub {
 
         subtest "superuser can set body's cobrand" => sub {
             $body2->discard_changes;
-            $body2->unset_extra_metadata('cobrand');
+            $body2->cobrand(undef);
             $body2->update;
 
             $mech->get_ok('/admin/body/' . $body2->id);
@@ -599,14 +616,14 @@ subtest 'check setting cobrand on body' => sub {
             $mech->submit_form_ok(
                 {
                     with_fields => {
-                        'extra[cobrand]' => 'oxfordshire'
+                        'cobrand' => 'oxfordshire'
                     }
                 }
             );
             $mech->content_contains('Values updated');
 
             $body2->discard_changes;
-            is $body2->get_extra_metadata('cobrand'), 'oxfordshire';
+            is $body2->cobrand, 'oxfordshire';
         };
 
         subtest "superuser can unset body's cobrand" => sub {
@@ -615,18 +632,18 @@ subtest 'check setting cobrand on body' => sub {
             $mech->submit_form_ok(
                 {
                     with_fields => {
-                        'extra[cobrand]' => undef
+                        'cobrand' => undef
                     }
                 }
             );
             $mech->content_contains('Values updated');
 
             $body2->discard_changes;
-            is $body2->get_extra_metadata('cobrand'), '';
+            is $body2->cobrand, undef;
         };
 
         subtest "cannot use the same cobrand for multiple bodies" => sub {
-            $body2->set_extra_metadata('cobrand', 'oxfordshire');
+            $body2->cobrand('oxfordshire');
             $body2->update;
 
             $mech->get_ok('/admin/body/' . $body->id);
@@ -634,7 +651,7 @@ subtest 'check setting cobrand on body' => sub {
             $mech->submit_form_ok(
                 {
                     with_fields => {
-                        'extra[cobrand]' => 'oxfordshire'
+                        'cobrand' => 'oxfordshire'
                     }
                 }
             );
@@ -642,9 +659,9 @@ subtest 'check setting cobrand on body' => sub {
             $mech->content_contains('This cobrand is already assigned to another body: Oxfordshire County Council');
 
             $body->discard_changes;
-            is $body->get_extra_metadata('cobrand'), undef;
+            is $body->cobrand, undef;
             $body2->discard_changes;
-            is $body2->get_extra_metadata('cobrand'), 'oxfordshire';
+            is $body2->cobrand, 'oxfordshire';
         };
     };
 };
@@ -681,8 +698,8 @@ subtest 'check editing a contact when category groups disabled does not remove e
            category_groups => { default => 1 },
         }
     }, sub {
-        $mech->post_ok( '/admin/body/' . $body->id, {
-            posted     => 'new',
+        $mech->get_ok( '/admin/body/' . $body->id . '/_add');
+        $mech->post_ok( '/admin/body/' . $body->id . '/_add', {
             token      => $mech->form_id('category_edit')->value('token'),
             category   => 'group editing test category',
             email      => 'test@example.com',

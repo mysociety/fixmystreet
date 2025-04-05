@@ -1,7 +1,7 @@
 # TODO
 # Overdue alerts
 
-use utf8;
+use Test::Output;
 use DateTime;
 use Email::MIME;
 use File::Temp;
@@ -12,6 +12,7 @@ use Path::Tiny;
 use t::Mock::MapItZurich;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Inactive;
 my $mech = FixMyStreet::TestMech->new;
 
 FixMyStreet::App->log->disable('info');
@@ -56,6 +57,7 @@ FixMyStreet::override_config {
     STAGING_FLAGS => { send_reports => 1 },
     BASE_URL => 'https://www.zurich',
     ALLOWED_COBRANDS => 'zurich',
+    GEOCODER => 'Zurich',
     MAPIT_URL => 'http://mapit.zurich/',
     MAPIT_TYPES => [ 'O08' ],
     MAPIT_ID_WHITELIST => [ 423017 ],
@@ -246,7 +248,7 @@ subtest "changing of categories" => sub {
     is( $report->category, "Cat1", "Category set to Cat1" );
 
     # get the latest comment
-    my $comments_rs = $report->comments->search({},{ order_by => { -desc => "created" } });
+    my $comments_rs = $report->comments->order_by('-created');
     ok ( !$comments_rs->first, "There are no comments yet" );
 
     # change the category via the web interface
@@ -269,6 +271,7 @@ subtest "private categories" => sub {
     $mech->log_in_ok( 'super@example.org' );
     $mech->get_ok('/admin/bodies');
     $mech->follow_link_ok({ text => 'Division 1' });
+    $mech->follow_link_ok({ text => 'Füge neue Kategorie hinzu' });
     $mech->submit_form_ok({ with_fields => {
         category => 'Allgemein',
         state => 'inactive',
@@ -295,6 +298,85 @@ subtest "private categories" => sub {
 
     $mech->get_ok('/admin/report_edit/' . $report->id);
     $mech->content_contains('<option value="Allgemein">StadtPeople (STA)</option>');
+};
+
+subtest "Auto select category and input description from url" => sub {
+    $mech->log_out_ok;
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&filter_category=Cat1');
+    $mech->content_contains('Kategorie', 'filter_category works as standard');
+    $mech->content_contains("value='Cat1' checked>", 'Category selected as standard behaviour');
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_category=Cat1');
+    $mech->content_lacks('Kategorie', 'Category list not present with only prefill_category argument');
+    $mech->content_contains('input type="hidden" name="category" id="category" value="Cat1"', 'Category pre-selected with only prefill_category argument');
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_description=Test 1234');
+    $mech->content_contains('Kategorie', 'Categories present when prefill_description present alone');
+    $mech->content_contains('Test 1234</textarea>', 'Detail prefilled when prefill_description present alone');
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_category=Cat1&prefill_description=Test 1234 Äï');
+    $mech->content_lacks('Kategorie', 'Category list not present');
+    $mech->submit_form_ok({ with_fields => {
+        username_register  => 'auser@example.org',
+        phone => '0123 4567 899',
+    }}, 'Text pre-filled');
+    $mech->content_contains('Klicken Sie auf den Link im');
+    ok (my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test 1234 Äï'}), "Report created with text from url");
+    is $report->category, 'Cat1', "Report in correct category from url";
+    $report->update({ confirmed => DateTime->now });
+};
+
+subtest "Auto select category and input description from url works on validation fail" => sub {
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_category=Cat1&prefill_description=Test 1234 Äï');
+    $mech->content_lacks('Kategorie', 'Category list not present');
+    $mech->submit_form_ok({ with_fields => {
+        username_register  => 'auser@example.org',
+    }}, 'No phone number so fails validation');
+    $mech->content_contains('Diese Information wird benötigt', 'Error for phone number');
+    $mech->content_lacks('Kategorie', 'Category list not present');
+    $mech->content_contains('input type="hidden" name="category" id="category" value="Cat1"', 'Category pre-selected after form validation fail');
+    $mech->content_contains('Test 1234 Äï</textarea>', 'Detail prefilled after form validation fail');
+};
+
+subtest "Auto select private category and input description from url" => sub {
+    $mech->get_ok('/report/new?lat=47.381817&lon=8.529156&prefill_category=Allgemein&prefill_description=Test 5678');
+    $mech->submit_form_ok({ with_fields => {
+        username_register  => 'auser@example.org',
+        phone => '0123 4567 899',
+    }}, 'Text pre-filled');
+    $mech->content_contains('Klicken Sie auf den Link im');
+    ok (my $report = FixMyStreet::DB->resultset("Problem")->find({ title => 'Test 5678'}), "Report created with text from url");
+    is $report->category, 'Allgemein', "Report in correct category from url";
+    is $report->bodies_str, $division->id, "Report in correct body";
+    $report->update({ confirmed => DateTime->now });
+    send_reports_for_zurich();
+    $mech->clear_emails_ok;
+};
+
+subtest "Auto select category and input description from front page" => sub {
+    my $module = Test::MockModule->new('FixMyStreet::Geocode::Zurich');
+    $module->mock(string => sub { { latitude => 47.376056, longitude => 8.525481 } });
+
+    $mech->get_ok('/?prefill_category=Allgemein&prefill_description=Test 5678');
+    $mech->submit_form_ok({ with_fields => {
+        pc  => 'Langstrasse',
+    }});
+    is $mech->uri->path, '/around', 'Redirected to around page';
+
+    my $tree = HTML::TreeBuilder->new_from_content($mech->content);
+    my $input = $tree->look_down('id' => 'prefill_category');
+    is $input->attr('value'), 'Allgemein', 'Prefill category input has right value';
+    is $input->attr('type'), 'hidden', 'Prefill category input is hidden';
+    $mech->content_lacks('form_category_fieldset', 'Category fieldset not present');
+    is $tree->look_down('id' => 'form_detail')->as_text, 'Test 5678', 'Prefill description input has right value';
+
+    $mech->follow_link_ok({ text => 'Skip this step' });
+    is $mech->uri->path, '/report/new';
+    is_deeply { $mech->uri->query_form }, {
+        skipped => 1,
+        latitude => 47.376056,
+        longitude => 8.525481,
+        prefill_category => 'Allgemein',
+        prefill_description => 'Test 5678',
+        pc => 'Langstrasse',
+    }, "correct params passed to /report/new";
 };
 
 sub get_moderated_count {
@@ -801,7 +883,7 @@ my $internal;
 subtest 'test flagged users make internal reports' => sub {
     $user->update({ flagged => 1 });
     $mech->submit_form( with_fields => { phone => "01234", category => 'Cat1', detail => 'Details' } );
-    $internal = FixMyStreet::DB->resultset('Problem')->search(undef, { order_by => { -desc => 'id' }, rows => 1 })->single;
+    $internal = FixMyStreet::DB->resultset('Problem')->order_by('-id')->search(undef, { rows => 1 })->single;
     is $internal->non_public, 1;
     $mech->clear_emails_ok;
 };
@@ -954,7 +1036,7 @@ subtest "test stats" => sub {
 
     my $export_count = get_export_rows_count($mech);
     if (defined $export_count) {
-        is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports';
+        is $export_count - $EXISTING_REPORT_COUNT, 5, 'Correct number of reports';
         $mech->content_contains('fixed - council');
     }
 
@@ -963,7 +1045,7 @@ subtest "test stats" => sub {
     $report->update({ non_public => 0 });
 
     $export_count =  get_export_rows_count($mech, '&ym=' . DateTime->now->strftime("%m.%Y"));
-    is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports when filtering by month';
+    is $export_count - $EXISTING_REPORT_COUNT, 5, 'Correct number of reports when filtering by month';
 };
 
 subtest "test admin_log" => sub {
@@ -1097,6 +1179,67 @@ subtest 'CSV export includes lastupdate for problem' => sub {
     my @rows = $mech->content_as_csv;
     is $rows[0]->[3], 'Last Updated', "Last Updated field has correct column heading";
     isnt $rows[1]->[3], '', "Last Updated field isn't blank";
+};
+
+subtest 'Anonymise reports that are over two years old' => sub {
+    use_ok 'FixMyStreet::Script::Inactive';
+
+    my $now = DateTime->now;
+    my @old_reports = $mech->create_problems_for_body( 2, $division->id, 'Anonymise Test', {
+        state => 'submitted',
+        confirmed => undef,
+        created => $now->subtract( years => 4 ),
+        cobrand => 'zurich',
+        areas => ',423017,',
+    });
+
+    my @two_year_old_reports = $mech->create_problems_for_body( 2, $division->id, 'Anonymise Test', {
+        state => 'submitted',
+        confirmed => undef,
+        created => $now->add( months => 25 ),
+        cobrand => 'zurich',
+        areas => ',423017,',
+    });
+
+    my @less_than_two_year_old_reports = $mech->create_problems_for_body( 2, $division->id, 'Anonymise Test', {
+        state => 'submitted',
+        confirmed => undef,
+        created => $now->add( years => 1 ),
+        cobrand => 'zurich',
+        areas => ',423017,',
+    });
+
+    my %opts = (
+        anonymize => '24m',
+        created => 1,
+        state => 'all',
+        verbose => 1,
+        'dry-run' => 1,
+    );
+
+    my $user_id = $old_reports[0]->user_id;
+    my ($report1, $report2) = ($old_reports[0]->id, $old_reports[1]->id);
+
+    stdout_is { FixMyStreet::Script::Inactive->new(%opts)->reports; }
+    "DRY RUN\nAnonymizing problem #$report1\nAnonymizing problem #$report2\n", "Dry run output of reports to be anonymised";
+
+    for my $report (@old_reports) {
+        $report->discard_changes;
+        is $report->user->id, $user_id, "Report over two years old not anonymised without commit";
+    };
+
+    $opts{'dry-run'} = 0;
+    stdout_is { FixMyStreet::Script::Inactive->new(%opts)->reports; }
+    "Anonymizing problem #$report1\nAnonymizing problem #$report2\n", "List of reports being anonymised";
+
+    for my $report (@old_reports) {
+        $report->discard_changes;
+        isnt $report->user->id, $user_id, "Report over two years old assigned to anonymous user";
+    };
+    for my $report (@two_year_old_reports, @less_than_two_year_old_reports) {
+        $report->discard_changes;
+        is $report->user->id, $user_id, "Report two years old or less not assigned to anonymous user";
+    };
 };
 
 };

@@ -12,6 +12,8 @@
             [%- tprintf('Reference:&nbsp;%s', problem.external_id) %].
         [%- ELSIF c.cobrand.moniker == 'isleofwight' %]
             [%- tprintf('Enquiry ref:&nbsp;%s', problem.external_id) %].
+        [%- ELSIF problem.to_body_named('Surrey County') %]
+            Council ref: [% problem.external_id.replace("Zendesk_", "") %].
         [%- ELSE %]
             [%- tprintf(loc('Council ref:&nbsp;%s'), problem.external_id) %].
         [%- END %]
@@ -22,10 +24,21 @@
             [%- tprintf('Report ref:&nbsp;%s', problem.id) %].
         [%- ELSIF c.cobrand.moniker == 'tfl' %]
             [%- tprintf('TfL ref:&nbsp;FMS%s', problem.id) %].
-        [%- ELSIF c.cobrand.moniker == 'northamptonshire' %]
+        [%- ELSIF c.cobrand.moniker == 'northamptonshire' OR c.cobrand.moniker == 'westnorthants' OR c.cobrand.moniker == 'northnorthants'%]
             [%- IF NOT c.cobrand.is_defect(problem) %]
                 [% tprintf(loc('ref:&nbsp;%s'), problem.id) %].
             [%- END -%]
+        [%- ELSIF c.cobrand.moniker == 'gloucestershire' %]
+            [%- IF c.cobrand.is_defect(problem) %]
+                [%- tprintf('Reference:&nbsp;%s', problem.external_id) %].
+            [%- ELSE %]
+                [%- tprintf(loc('FixMyStreet ref:&nbsp;%s'), problem.id) %].
+            [%- END -%]
+        [%- ELSIF c.cobrand.moniker == 'nottinghamshirepolice' %]
+        [%- ELSIF c.cobrand.moniker == 'surrey' %]
+            [% # don't display anything - problem.can_display_external_id not set so external id will not show either %]
+        [%- ELSIF problem.cobrand_data == 'waste' %]
+            [%- tprintf('WasteWorks ref:&nbsp;%s', problem.id) %].
         [%- ELSE %]
             [%- tprintf(loc('FixMyStreet ref:&nbsp;%s'), problem.id) %].
         [%- END %]

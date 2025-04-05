@@ -3,8 +3,8 @@ package Integrations::Echo;
 use Moo;
 use strict;
 use warnings;
-with 'FixMyStreet::Roles::SOAPIntegration';
-with 'FixMyStreet::Roles::ParallelAPI';
+with 'Integrations::Roles::SOAP';
+with 'Integrations::Roles::ParallelAPI';
 with 'FixMyStreet::Roles::Syslog';
 
 use DateTime;
@@ -17,6 +17,7 @@ has action => ( is => 'lazy', default => sub { $_[0]->attr . "/Service/" } );
 has username => ( is => 'ro' );
 has password => ( is => 'ro' );
 has url => ( is => 'ro' );
+has address_types => ( is => 'ro' );
 
 has sample_data => ( is => 'ro', default => 0 );
 
@@ -183,15 +184,14 @@ sub GetPointAddress {
 sub FindPoints {
     my $self = shift;
     my $pc = shift;
-    my $cfg = shift;
 
     my $obj = ixhash(
         PointType => 'PointAddress',
         Postcode => $pc,
     );
-    if ($cfg->{address_types}) {
+    if ($self->address_types) {
         my @types;
-        foreach (@{$cfg->{address_types}}) {
+        foreach (@{$self->address_types}) {
             my $obj = _id_ref($_, 'PointAddressType');
             push @types, { ObjectRef => $obj };
         }
@@ -200,7 +200,7 @@ sub FindPoints {
     return [
         { Description => '1 Example Street, Bromley, BR1 1AA', Id => '11345', SharedRef => { Value => { anyType => '1000000001' } } },
         { Description => '2 Example Street, Bromley, BR1 1AA', Id => '12345', SharedRef => { Value => { anyType => '1000000002' } } },
-        $cfg->{address_types} ? () : ({ Description => '3 Example Street, Bromley, BR1 1AA', Id => '13345', SharedRef => { Value => { anyType => '1000000003' } } }),
+        $self->address_types ? () : ({ Description => '3 Example Street, Bromley, BR1 1AA', Id => '13345', SharedRef => { Value => { anyType => '1000000003' } } }),
         { Description => '4 Example Street, Bromley, BR1 1AA', Id => '14345', SharedRef => { Value => { anyType => '1000000004' } } },
         { Description => '5 Example Street, Bromley, BR1 1AA', Id => '15345', SharedRef => { Value => { anyType => '1000000005' } } },
     ] if $self->sample_data;
@@ -368,15 +368,13 @@ sub GetServiceUnitsForObject {
 }
 
 sub GetServiceTaskInstances {
-    my ($self, @tasks) = @_;
+    my ($self, $start, $end, @tasks) = @_;
 
     my @objects;
     foreach (@tasks) {
         my $obj = _id_ref($_, 'ServiceTask');
         push @objects, { ObjectRef => $obj };
     }
-    my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
-    my $end = $start->clone->add(months => 3);
     my $query = ixhash(
         From => dt_to_hash($start),
         To => dt_to_hash($end),
@@ -417,8 +415,9 @@ sub GetEventType {
 }
 
 sub GetEventsForObject {
-    my ($self, $type, $id, $event_type) = @_;
-    my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => 3);
+    my ($self, $type, $id, $event_type, $months) = @_;
+    $months ||= 3;
+    my $from = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->subtract(months => $months);
     if ($self->sample_data) {
         return [ {
             # Missed collection for service 542 (food waste)
@@ -470,9 +469,32 @@ sub ReserveAvailableSlotsForEvent {
     $from = $parser->parse_datetime($from);
     $to = $parser->parse_datetime($to);
 
+    my @data;
+    if ($event_type == 3130) {
+        push @data, Data => [
+            # Non-pop bookcase
+            { ExtensibleDatum => ixhash(
+                ChildData => { ExtensibleDatum => [ ixhash(
+                    DatatypeId => 57230,
+                    Value => 1842,
+                ) ] },
+                DatatypeId => 57229,
+            ) },
+            # Armchair - POP
+            { ExtensibleDatum => ixhash(
+                ChildData => { ExtensibleDatum => [ ixhash(
+                    DatatypeId => 57230,
+                    Value => 1839,
+                ) ] },
+                DatatypeId => 57229,
+            ) }
+        ];
+    }
+
     my @req = ('ReserveAvailableSlotsForEvent',
         event => ixhash(
             Guid => $guid,
+            @data,
             EventObjects => { EventObject => ixhash(
                 EventObjectType => 'Source',
                 ObjectRef => _id_ref($property, 'PointAddress'),
@@ -490,7 +512,25 @@ sub ReserveAvailableSlotsForEvent {
     return [] unless ref $res eq 'HASH';
 
     $self->log($res);
-    return force_arrayref($res->{ReservedTaskInfo}{ReservedSlots}, 'ReservedSlot');
+    my $tasks = force_arrayref($res, 'ReservedTaskInfo');
+    my %data;
+    foreach (@$tasks) {
+        my $slots = Integrations::Echo::force_arrayref($_->{ReservedSlots}, 'ReservedSlot');
+        foreach (@$slots) {
+            my $datetime = $_->{StartDate}{DateTime};
+            push @{$data{$datetime}}, $_;
+        }
+    }
+
+    my @combined;
+    foreach (sort keys %data) {
+        my $slots = $data{$_};
+        if (@$slots == @$tasks) { # All matching dates
+            $slots->[0]{Reference} = join('::', map { $_->{Reference} } @$slots);
+            push @combined, $slots->[0];
+        }
+    }
+    return \@combined;
 }
 
 sub CancelReservedSlotsForEvent {

@@ -83,9 +83,10 @@ __PACKAGE__->has_many(
 
 use Moo;
 use namespace::clean -except => [ 'meta' ];
+use List::Util qw(any);
 
-with 'FixMyStreet::Roles::Extra',
-    'FixMyStreet::Roles::Translatable';
+with 'FixMyStreet::Roles::DB::Extra',
+    'FixMyStreet::Roles::DB::Translatable';
 
 __PACKAGE__->many_to_many( response_templates => 'contact_response_templates', 'response_template' );
 __PACKAGE__->many_to_many( response_priorities => 'contact_response_priorities', 'response_priority' );
@@ -174,6 +175,18 @@ sub get_metadata_for_storage {
     return \@metadata;
 }
 
+sub get_metadata_label_lookup {
+    my $self = shift;
+    my $metadata = $self->get_metadata_for_storage;
+    my %lookup;
+    foreach (@$metadata) {
+        if (my $values = $_->{values}) {
+            $lookup{$_->{code}} = { map { $_->{key} => $_->{name} } @$values };
+        }
+    }
+    return \%lookup;
+}
+
 sub id_field {
     my $self = shift;
     return $self->get_extra_metadata('id_field') || 'fixmystreet_id';
@@ -184,6 +197,12 @@ sub disable_form_field {
     my $metadata = $self->get_all_metadata;
     my ($field) = grep { $_->{code} eq '_fms_disable_' } @$metadata;
     return $field;
+}
+
+sub is_disabled {
+    my $self = shift;
+    my $metadata = $self->get_all_metadata;
+    return any { ($_->{disable_form} || '') eq 'true' } @$metadata;
 }
 
 sub sent_by_open311 {

@@ -58,6 +58,7 @@ create table body (
     jurisdiction text,
     api_key      text,
     send_method  text,
+    cobrand      text,
     send_comments boolean not null default 'f',
     comment_user_id int references users(id),
     suppress_alerts boolean not null default 'f',
@@ -69,6 +70,7 @@ create table body (
     deleted boolean not null default 'f',
     extra jsonb
 );
+CREATE INDEX body_cobrand_idx ON body(cobrand);
 
 create table body_areas (
     body_id integer not null references body(id),
@@ -257,6 +259,7 @@ create table problem (
     -- subcategory to enable filtering in reporting --
     subcategory text
 );
+create index problem_created_idx on problem(created);
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
 create index problem_external_id_idx on problem(external_id);

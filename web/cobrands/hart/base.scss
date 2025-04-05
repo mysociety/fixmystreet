@@ -38,7 +38,7 @@
 
 #report-cta, #nav-link {
     background-color: $nav_hover_background_colour;
-    @include border-radius(0);
+    border-radius: 0;
     padding: 12px 10px;
     font-size: 18px;
     line-height: 100%;
@@ -69,8 +69,7 @@
     padding-bottom: 1em;
 
     a,
-    span,
-    span.report-a-problem-btn {
+    span {
 
         font-size: 18px;
         text-decoration: none;
@@ -93,8 +92,7 @@
 
     :first-child {
         a,
-        span,
-        span.report-a-problem-btn {
+        span {
             margin-top: 0;
         }
     }
@@ -103,10 +101,6 @@
         a, span{
             border-bottom: 0;
         }
-    }
-
-    span.report-a-problem-btn {
-        cursor: pointer;
     }
 }
 

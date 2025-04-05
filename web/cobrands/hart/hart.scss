@@ -117,24 +117,24 @@ a {
 }
 
 .btn, 
-.btn--primary, .btn--primary,
-.btn--secondary, .btn--secondary,
-#front-main #postcodeForm div input#sub {
-  @include border-radius($button-border-radius);
+.btn--primary,
+.btn-secondary,
+.postcode-form-box input#sub {
+  border-radius: $button-border-radius;
   @extend .h6;
 }
 
-.btn ,.btn--primary, .btn--primary, .green-btn {
+.btn, .btn--primary {
   @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
   @include hart-boxshadow(6px, 6px, 0 , 0, $hart_primary_light);
 }
 
-.btn--secondary, .btn--secondary, .form-submit {
+.btn-secondary, .form-submit {
   @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
 }
 
-// Green button not the same as .green-btn
-.postcode-form-box div input#sub {
+// Green button not the same as .btn--primary
+.postcode-form-box input#sub {
   @include button-variant($bg-top: $primary, $bg-bottom: $primary, $border: $primary, $text: $primary_text, $hover-bg-bottom: $primary_b, $hover-bg-top: $primary_b, $hover-border: $primary_text, $hover-text: $primary_text);
 }
 
@@ -175,9 +175,14 @@ a {
 }
 
 #hart_hants_note {
-    background-color: lighten($hart_primary, 30%);
+    background-color: $hart_primary;
     padding: 0.5em;
-    font-size: 0.8em;
+    font-size: 1em;
+    color: #fff;
+    font-weight: bold;
+}
+#hart_hants_note a {
+    color: #fff;
 }
 
 // Footer
@@ -274,17 +279,17 @@ a {
               }
   
               &.social-media-link-icon--facebook > span:not(.extlink) {
-                  @include svg-background-image('/cobrands/hart//images/social-fb');
+                  background-image: url("/cobrands/hart//images/social-fb.svg");
                   width: 16px;
               }
   
               &.social-media-link-icon--twitter > span:not(.extlink) {
-                  @include svg-background-image('/cobrands/hart//images/social-tw');
+                  background-image: url("/cobrands/hart//images/social-tw.svg");
                   width: 29px;
               }
   
               &.social-media-link-icon--youtube > span:not(.extlink) {
-                  @include svg-background-image('/cobrands/hart//images/social-yt');
+                  background-image: url("/cobrands/hart//images/social-yt.svg");
                   width: 33px;
               }
   
@@ -300,7 +305,7 @@ a {
                   height: 15px;
                   background-size: contain;
                   background-repeat: no-repeat;
-                  @include svg-background-image('/cobrands/hart//images/external-link');
+                  background-image: url("/cobrands/hart//images/external-link.svg");
               }
           }
       }
@@ -361,7 +366,7 @@ a {
           a {
               display: block;
               width: auto;
-              @include svg-background-image('/cobrands/hart/images/logo');
+              background-image: url("/cobrands/hart/images/logo.svg");
               background-size: contain;
               background-repeat: no-repeat;
               width: 71px;
@@ -449,3 +454,12 @@ a.bbd-web-chat {
   height: 1px;
   word-wrap: normal;
 }
+
+.site-message {
+    background-color: #FBA553;
+    color: #000;
+    border: none;
+    p {
+        font-weight: bold;
+    }
+  }

@@ -15,7 +15,7 @@ use FixMyStreet::Cobrand;
 use Getopt::Long::Descriptive;
 
 my ($opts, $usage) = describe_options(
-    '%c %o',
+    '%c %o <cobrands>',
     ['nomail|n', 'do not actually send any email'],
     ['verbose|v', 'more verbose output'],
     ['help|h', "print usage message and exit" ],
@@ -25,9 +25,8 @@ $usage->die if $opts->help;
 my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
 CronFns::language($site);
 
-my @monikers = qw/kingston sutton/;
-
-for (@monikers) {
+# What is left on command line are the cobrands
+for (@ARGV) {
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($_)->new;
     $cobrand->send_bulky_payment_echo_update_failed(
         {   nomail  => $opts->nomail,

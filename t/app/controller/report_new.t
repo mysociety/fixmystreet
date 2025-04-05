@@ -40,10 +40,11 @@ for my $body (
     { area_id => 2333, name => 'Hart Council', cobrand => 'hart' },
     { area_id => 2535, name => 'Sandwell Borough Council' },
     { area_id => 1000, name => 'National Highways', cobrand => 'highwaysengland' },
+    # Different name to test the display name mapping below
     { area_id => 2483, name => 'Hounslow Borough Council', cobrand => 'hounslow' },
 ) {
     my $extra = { cobrand => $body->{cobrand} } if $body->{cobrand};
-    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, {}, $extra);
+    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, $extra);
     $body_ids{$body->{area_id}} = $body_obj->id;
 }
 
@@ -680,9 +681,9 @@ subtest "category groups" => sub {
         my $div = '<div[^>]*>\s*';
         my $div_end = '</div>\s*';
         my $pavements_label = '<label[^>]* for="category_Pavements">Pavements</label>\s*' . $div_end;
-        my $pavements_input = '<input[^>]* value="Pavements" data-subcategory="Pavements">\s*';
-        my $pavements_input_checked = '<input[^>]* value="Pavements" data-subcategory="Pavements" checked>\s*';
-        my $roads = $div . '<input[^>]* value="Roads" data-subcategory="Roads">\s*<label[^>]* for="category_Roads">Roads</label>\s*' . $div_end;
+        my $pavements_input = '<input[^>]* value="G|Pavements"\s+data-subcategory="Pavements">\s*';
+        my $pavements_input_checked = '<input[^>]* value="G|Pavements"\s+data-subcategory="Pavements" checked>\s*';
+        my $roads = $div . '<input[^>]* value="G|Roads"\s+data-subcategory="Roads">\s*<label[^>]* for="category_Roads">Roads</label>\s*' . $div_end;
         my $trees_label = '<label [^>]* for="category_\d+">Trees</label>\s*' . $div_end;
         my $trees_input = $div . '<input[^>]* value=\'Trees\'>\s*';
         my $trees_input_checked = $div . '<input[^>]* value=\'Trees\' checked>\s*';
@@ -708,18 +709,28 @@ subtest "category groups" => sub {
         $mech->content_like(qr{$fieldset_pavements$options});
         $mech->content_like(qr{$fieldset_roads$options});
         # Server submission of pavement subcategory
-        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon&category=Pavements&category.Pavements=Potholes");
+        $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon&category=G|Pavements&category.Pavements=Potholes");
         $mech->content_like(qr{$pavements_input_checked$pavements_label$roads$trees_input$trees_label</fieldset>});
         $mech->content_like(qr{$fieldset_pavements$optionsS});
         $mech->content_like(qr{$fieldset_roads$options});
 
         $contact9->update( { extra => { group => 'Lights' } } );
         $mech->get_ok("/report/new?lat=$saved_lat&lon=$saved_lon");
-        $streetlighting = $div . '<input[^>]*value=\'Street lighting\'>\s*<label[^>]* for="category_\d+">Street lighting</label>\s*' . $div_end;
+        $streetlighting = $div . '<input[^>]*value=\'H|Lights\|Street lighting\'>\s*<label[^>]* for="category_\d+">Street lighting</label>\s*' . $div_end;
+        $potholes_input = $div . '<input[^>]* value=\'H|Pavements\|Potholes\'>\s*';
         $potholes_label = '<label[^>]* for="category_\d+">Potholes</label>\s*' . $div_end;
         $mech->content_like(qr{$potholes_input$potholes_label$roads$streetlighting$trees_input$trees_label</fieldset>});
         $mech->content_unlike(qr{$fieldset_pavements});
         $mech->content_like(qr{$fieldset_roads$options});
+
+        $mech->submit_form_ok({ with_fields => {
+            category => 'H|Lights|Street lighting',
+            title => 'Test Report',
+            detail => 'Test report details',
+            username_register => 'jo@example.org',
+            name => 'Jo Bloggs',
+        } });
+        $mech->content_contains('Now check your email');
     };
 };
 
@@ -834,7 +845,7 @@ subtest "check map click ajax response" => sub {
     };
     ok $extra_details->{titles_list}, 'Bromley sends back list of titles';
     like $extra_details->{councils_text}, qr/Bromley Council/, 'correct council text';
-    like $extra_details->{councils_text_private}, qr/^These details will be sent to the council, but will never be shown online/, 'correct private council text';
+    like $extra_details->{councils_text_private}, qr/^These details will be sent to the responsible organisation, but will never be shown online/, 'correct private council text';
     like $extra_details->{category}, qr/Trees/, 'category looks correct';
     is_deeply $extra_details->{bodies}, [ "Bromley Council" ], 'correct bodies';
     ok !$extra_details->{contribute_as}, 'no contribute as section';
@@ -858,6 +869,7 @@ subtest "check map click ajax response" => sub {
     }, sub {
         $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.482286&longitude=-0.328163' );
     };
+
     is_deeply $extra_details->{display_names}, { 'Hounslow Borough Council' => 'Hounslow Highways' }, 'council display name mapping correct';
 
     FixMyStreet::override_config {
@@ -1291,6 +1303,7 @@ subtest "report confirmation page" => sub {
     }, sub {
         my ($report, $report2) = $mech->create_problems_for_body(2, $body_ids{2226}, 'Title',{
             category => 'Potholes', cobrand => 'fixmystreet',
+            dt => DateTime->now(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone),
         });
         $report->discard_changes;
 
@@ -1333,7 +1346,7 @@ subtest "report confirmation page" => sub {
 
         subtest "going to confirmation page now redirects to the report page" => sub {
             # make report 10 minutes old and regenerate token
-            my $created = $report->created->subtract({ minutes => 10 });
+            my $created = $report->created->subtract({ minutes => 45 });
             $report->update({ created => $created, confirmed => $created });
             $token = $report->confirmation_token;
             $mech->get_ok("/report/confirmation/" . $report->id . "?token=$token");
@@ -1363,7 +1376,7 @@ subtest "categories from deleted bodies shouldn't be visible for new reports" =>
 };
 
 subtest "check field overrides for categories" => sub {
-    my $body = $mech->create_body_ok(2238, "A", {}, { cobrand => "overrides" });
+    my $body = $mech->create_body_ok(2238, "A", { cobrand => "overrides" });
     my $contact = $mech->create_contact_ok(
         body_id => $body->id,
         category => 'test',
@@ -1412,7 +1425,7 @@ subtest "check field overrides for categories" => sub {
     $contact->unset_extra_metadata('detail_hint');
     $contact->update;
 
-    my $second_body = $mech->create_body_ok(2238, "B", {}, {});
+    my $second_body = $mech->create_body_ok(2238, "B", {});
     my $second_contact = $mech->create_contact_ok(
         body_id => $second_body->id,
         category => 'test',

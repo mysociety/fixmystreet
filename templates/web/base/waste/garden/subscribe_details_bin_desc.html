@@ -1,0 +1,52 @@
+<div class="waste-service-hint-banner">
+  <div class="waste-service-hint-banner__image">
+    [% IF cobrand.moniker == 'brent' %]
+      <img src="/i/waste-containers/bin-green.png" alt="">
+    [% ELSIF cobrand.moniker == 'bromley' %]
+      <img src="/i/waste-containers/bin-black-brown-lid-recycling.png" alt="">
+    [% ELSIF cobrand.moniker == 'kingston' %]
+      <img src="/i/waste-containers/bin-grey-green-lid-recycling.png" alt="">
+    [% ELSIF cobrand.moniker == 'merton' %]
+      [% image = PROCESS "waste/garden/wheelie.svg" %]
+      <span style="--primary-color: #8B5E3D;">[% image.replace('<svg', '<svg style="height:auto;max-width:100%;"') | safe %]</span>
+    [% ELSIF cobrand.moniker == 'sutton' %]
+      <img src="/i/waste-containers/bin-green-brown-lid.png" alt="">
+    [% ELSE %]
+      <!-- Normally an image of the garden bin goes here -->
+    [% END %]
+  </div>
+  <div class="waste-service-hint__content">
+    <p>
+      [% IF cobrand.moniker == 'bexley' %]
+        Our garden waste bins are brown, have a 240L capacity and are
+        collected fortnightly, apart from the Christmas and new year period
+        when there will be 4 weeks between collections.</p><p>
+        Neighbours can share a garden waste service, but the bin must be put
+        out at the property that has the contract allocated to them.
+        [%
+        SET first_bin_discount = garden_costs.first_bin_discount_absolute_amount / 100;
+        -%]
+        [% IF first_bin_discount %]
+          </p><p>
+          Note the first bin costs £[% tprintf('%.2f', first_bin_discount) %] less if you choose to pay by Direct Debit.
+        [% END %]
+      [% ELSIF cobrand.moniker == 'brent' %]
+        Our 240 litre wheelie bins are green, and hold the equivalent of 5 or 6 bags of green garden waste.
+      [% ELSIF cobrand.moniker == 'bromley' %]
+        Each wheelie bin holds the equivalent of 5 or 6 bags of green garden waste,
+        and will be collected fortnightly during gardening season (March–November)
+        and monthly outside of gardening season (December–February).
+      [% ELSIF cobrand.moniker == 'kingston' %]
+        Each garden waste bin holds 240 litres of waste. We collect them every 2 weeks.
+      [% ELSIF cobrand.moniker == 'merton' %]
+        Our garden waste bins are brown. They have a 140L or 240L
+        capacity, which is about the same size as a small or standard wheelie bin.
+      [% ELSIF cobrand.moniker == 'sutton' %]
+        Each garden waste bin holds 240 litres of waste. We collect them every 2 weeks.
+      [% ELSE %]
+        Each garden waste bin holds 240 litres of waste. We collect them every 2 weeks.
+      [% END %]
+    </p>
+  </div>
+</div>
+

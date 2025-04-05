@@ -5,14 +5,24 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
-    title => 'Cancel your green garden waste subscription',
+    title => 'Cancel your garden waste subscription',
     template => 'waste/garden/cancel.html',
-    fields => ['confirm', 'submit'],
+    fields => ['name', 'phone', 'email', 'confirm', 'submit'],
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        my $ask_staff = $c->cobrand->call_hook('waste_cancel_asks_staff_for_user_details');
+        my $staff = $c->stash->{is_staff};
+        return ['name', 'phone', 'email'] unless $staff && $ask_staff;
+        return [];
+    },
     finished => sub {
         return $_[0]->wizard_finished('process_garden_cancellation');
     },
     next => 'done',
 );
+
+with 'FixMyStreet::App::Form::Waste::AboutYou';
 
 has_page done => (
     title => 'Subscription cancelled',
@@ -24,6 +34,7 @@ has_field confirm => (
     option_label => 'I confirm I wish to cancel my subscription',
     required => 1,
     label => "Confirm",
+    order => 998,
 );
 
 has_field submit => (

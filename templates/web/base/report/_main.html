@@ -16,25 +16,6 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
     <input type="hidden" name="id" value="[% problem.id %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="hidden" name="[% IF c.user.is_planned_report(problem) %]shortlist-remove[% ELSE %]shortlist-add[% END %]" value="1">
-    <p><input
-        type="submit"
-        id="shortlist-report"
-        data-label-remove="[% loc('Remove from shortlist') %]"
-        data-label-add="[% loc('Add to shortlist') %]"
-        data-value-remove="[% loc('Shortlisted') %]"
-        data-value-add="[% loc('Shortlist') %]"
-        data-class-remove="btn--shortlisted"
-        data-class-add="btn--shortlist"
-    [%~ IF c.user.is_planned_report(problem) ~%]
-        value="[% loc('Shortlisted') %]"
-        aria-label="[% loc('Remove from shortlist') %]"
-        class="btn--shortlisted"
-    [%~ ELSE ~%]
-        value="[% loc('Shortlist') %]"
-        aria-label="[% loc('Add to shortlist') %]"
-        class="btn--shortlist"
-    [%~ END ~%]
-    ></p>
 </form>
 [% END %]
 
@@ -113,7 +94,7 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
             <input type="text" class="form-control" name="moderation_reason" value="[% (c.req.params.moderation_reason || '') | html %]">
         </p>
         <p>
-            <input type="submit" class="green-btn" value="[% loc('Save changes') %]">
+            <input type="submit" class="btn btn--primary" value="[% loc('Save changes') %]">
             <input type="button" class="hidden-nojs btn cancel" value="[% loc('Discard changes') %]">
         </p>
     </div>
@@ -130,11 +111,17 @@ can_moderate_title = c.user.can_moderate_title(problem, can_moderate)
             aria-label="[% loc('Moderate this report') %]">[% loc('Moderate') %]</a>
       [% END %]
       [% IF permissions.planned_reports %]
-          [%~ IF c.user.is_planned_report(problem) ~%]
-            <label class="btn btn--shortlisted" for="shortlist-report" role="menuitem" aria-label="[% loc('Remove from shortlist') %]">[% loc('Shortlisted') %]</label>
-          [%~ ELSE ~%]
-            <label class="btn btn--shortlist" for="shortlist-report" role="menuitem" aria-label="[% loc('Add to shortlist') %]">[% loc('Shortlist') %]</label>
-          [%~ END ~%]
+        <button class="btn [% IF c.user.is_planned_report(problem) %]btn--shortlisted[% ELSE %]btn--shortlist[% END %]" 
+                form="planned_form" 
+                aria-label="[% IF c.user.is_planned_report(problem) %][% loc('Remove from shortlist') %][% ELSE %][% loc('Add to shortlist') %][% END %]"
+                data-label-remove="[% loc('Remove from shortlist') %]" 
+                data-value-remove="[% loc('Shortlisted') %]" 
+                data-class-remove="btn--shortlisted" 
+                data-label-add="[% loc('Add to shortlist') %]" 
+                data-value-add="[% loc('Shortlist') %]" 
+                data-class-add="btn--shortlist">
+            [% IF c.user.is_planned_report(problem) %][% loc('Shortlisted') %][% ELSE %][% loc('Shortlist') %][% END %]
+        </button>
       [% END %]
     </div>
   [% END %]

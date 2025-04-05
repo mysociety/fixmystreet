@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
+use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Cobrand::HighwaysEngland;
@@ -7,6 +8,8 @@ use HighwaysEngland;
 use DateTime;
 use File::Temp 'tempdir';
 use Test::MockModule;
+use t::Mock::OpenIDConnect;
+use t::Mock::MicrosoftGraph;
 
 my $he_mock = Test::MockModule->new('HighwaysEngland');
 $he_mock->mock('database_file', sub { FixMyStreet->path_to('t/geocode/roads.sqlite'); });
@@ -43,9 +46,31 @@ $r = $he->geocode_postcode('m1');
 ok $r->{error}, "searching for lowecase road only generates error";
 
 my $mech = FixMyStreet::TestMech->new;
-my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method => 'Email::Highways' }, { cobrand => 'highwaysengland' });
+my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method => 'Email::Highways', cobrand => 'highwaysengland' });
 
-$mech->create_contact_ok(email => 'highways@example.com', body_id => $highways->id, category => 'Pothole (NH)');
+$mech->create_contact_ok(email => 'testareaemail@nh', body_id => $highways->id, category => 'Pothole (NH)');
+
+my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $highways, password => 'password');
+
+$staffuser->alerts->create({
+    alert_type => 'council_problems',
+    parameter => $highways->id,
+    whensubscribed => DateTime->now->subtract( hours => 1 ),
+    cobrand => 'highwaysengland',
+    confirmed => 1,
+});
+
+FixMyStreet::DB->resultset("Role")->create({
+    body => $highways,
+    name => 'Inspector',
+    permissions => ['moderate', 'user_edit'],
+});
+my $role_admin = FixMyStreet::DB->resultset("Role")->create({
+    body => $highways,
+    name => 'Admin',
+    permissions => ['moderate', 'user_edit'],
+});
+$staffuser->add_to_roles($role_admin);
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'highwaysengland', 'fixmystreet' ],
@@ -53,6 +78,15 @@ FixMyStreet::override_config {
     CONTACT_EMAIL => 'fixmystreet@example.org',
     COBRAND_FEATURES => {
         contact_email => { highwaysengland => 'highwaysengland@example.org' },
+        contact_name => { highwaysengland => 'National Highways' },
+        borough_email_addresses => {
+            highwaysengland => {
+                'testareaemail@nh' => [ {
+                    'areas' => [ 'Area 1' ],
+                    'email' => 'area1email@example.org',
+                } ],
+            },
+        },
         updates_allowed => {
             highwaysengland => 'open',
         },
@@ -87,11 +121,13 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         $mech->email_count_is(1);
         my $email = $mech->get_email;
+        is $email->header('To'), '"National Highways" <area1email@example.org>';
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Heard from: Facebook/, 'where hear included in email';
-        like $body, qr/Road: M1/, 'road data included in email';
-        like $body, qr/Area: Area 1/, 'area data included in email';
-        unlike $body, qr/Never retype another FixMyStreet report/, 'FMS not mentioned in email';
+        like $body, qr/Road name: M1/, 'road data included in email';
+        like $body, qr/Area name: Area 1/, 'area data included in email';
+        unlike $body, qr/FixMyStreet is an independent service/, 'FMS not mentioned in email';
+        $mech->clear_emails_ok;
     };
 
     subtest "check things redacted appropriately" => sub {
@@ -111,7 +147,7 @@ FixMyStreet::override_config {
         );
         $mech->content_contains('Thank you');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->title, 'Test Redact report from [phone removed]';
         is $report->detail, 'Please could you email me on [email removed] or ring me on [phone removed] or [phone removed].';
 
@@ -129,12 +165,12 @@ FixMyStreet::override_config {
         $report->cobrand("fixmystreet");
         $report->update;
 
-        $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
         $mech->email_count_is(1);
         my $email = $mech->get_email;
         my $body = $mech->get_text_body_from_email($email);
-        like $body, qr/Never retype another FixMyStreet report/, 'FMS template used for email';
+        like $body, qr/FixMyStreet is an independent service/, 'FMS template used for email';
+        $mech->clear_emails_ok;
     };
 
     my ($problem) = $mech->create_problems_for_body(1, $highways->id, 'Title', { created => '2021-11-30T12:34:56' });
@@ -177,6 +213,14 @@ FixMyStreet::override_config {
         $mech->get_ok('/reports/National+Highways');
         $mech->content_contains('Hackney');
     };
+
+    subtest 'Test alerts working okay' => sub {
+        my ($problem2) = $mech->create_problems_for_body(1, $highways->id, 'Title', { cobrand => 'highwaysengland' });
+        FixMyStreet::Script::Alerts::send_other();
+        my $text = $mech->get_text_body_from_email;
+        unlike $text, qr{report/@{[$problem->id]}};
+        like $text, qr{report/@{[$problem2->id]}};
+    };
 };
 
 subtest 'Dashboard CSV extra columns' => sub {
@@ -205,8 +249,6 @@ subtest 'Dashboard CSV extra columns' => sub {
         cobrand => 'fixmystreet',
     });
 
-    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
-        from_body => $highways, password => 'password');
     $mech->log_in_ok( $staffuser->email );
 
     my $now = DateTime->now;
@@ -225,13 +267,13 @@ subtest 'Dashboard CSV extra columns' => sub {
     };
     $mech->content_contains('URL","Device Type","Site Used","Reported As","User Email","User Phone","Area name","Road name","Section label","How you found us","Update 1","Update 1 date","Update 1 name","Update 2","Update 2 date","Update 2 name"');
     my @row1 = (
-        'http://highwaysengland.example.org/report/' . $problem1->id,
+        'http://nationalhighways.example.org/report/' . $problem1->id,
         'desktop', 'highwaysengland', '', $problem1->user->email, '', '"South West"', 'M5', '', '"Social media"',
         '"This is an update"', $comment1->confirmed->datetime, '"Council User"',
         '"Second update"', $comment2->confirmed->datetime, 'public',
     );
     $mech->content_contains(join ',', @row1);
-    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
+    $mech->content_contains('http://nationalhighways.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
 
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
@@ -243,20 +285,32 @@ subtest 'Dashboard CSV extra columns' => sub {
     };
     $mech->content_contains('URL","Device Type","Site Used","Reported As","User Email","User Phone","Area name","Road name","Section label","How you found us","Update 1","Update 1 date","Update 1 name","Update 2","Update 2 date","Update 2 name"');
     @row1 = (
-        'http://highwaysengland.example.org/report/' . $problem1->id,
+        'http://nationalhighways.example.org/report/' . $problem1->id,
         'desktop', 'highwaysengland', '', $problem1->user->email, '', '"South West"', 'M5', '', '"Social media"',
         '"This is an update"', $comment1->confirmed->datetime, '"Council User"',
         '"Second update"', $comment2->confirmed->datetime, 'public',
     );
     $mech->content_contains(join ',', @row1);
-    $mech->content_contains('http://highwaysengland.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
+    $mech->content_contains('http://nationalhighways.example.org/report/' . $problem2->id .',mobile,fixmystreet,,' . $problem2->user->email . ',,"Area 7",,M1/111,"Search engine"');
 
+    $comment1->delete;
+    $comment2->delete;
 };
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'highwaysengland' ],
     MAPIT_URL => 'http://mapit.uk/',
 }, sub {
+    subtest 'update message' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->first;
+        $mech->create_comment_for_problem($report, $staffuser, 'Staff user', 'Normal update', 'f', 'confirmed', 'confirmed');
+        $mech->create_comment_for_problem($report, $staffuser, 'National Highways', 'Body update', 'f', 'confirmed', 'confirmed', { extra => { contributed_as => 'body' } });
+        $mech->get_ok('/report/' . $report->id);
+        my $metas = $mech->extract_update_metas;
+        like $metas->[0], qr/Posted by Staff user at/;
+        like $metas->[1], qr/Posted by National Highways at/;
+    };
+
     subtest 'Categories must end with (NH)' => sub {
         my $superuser = $mech->create_user_ok('super@example.com', name => 'Admin',
             from_body => $highways, password => 'password', is_superuser => 1);
@@ -264,7 +318,7 @@ FixMyStreet::override_config {
 
         my $expected_error = 'Category must end with (NH).';
 
-        $mech->get_ok('/admin/body/' . $highways->id);
+        $mech->get_ok('/admin/body/' . $highways->id . '/_add');
         $mech->submit_form_ok( { with_fields => {
             category   => 'no suffix category',
             title_hint => 'test',
@@ -300,6 +354,56 @@ FixMyStreet::override_config {
         my $edited_contact = $highways->contacts->find({ category => "suffix category edited (NH)" });
         is defined($contact), 1, "Contact category was edited to one with a valid suffix.";
     };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'highwaysengland',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        oidc_login => {
+            highwaysengland => {
+                client_id => 'example_client_id',
+                secret => 'example_secret_key',
+                auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
+                token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
+                logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
+                display_name => 'MyAccount',
+                role_map => {
+                    'Department' => 'Inspector',
+                },
+            }
+        }
+    }
+}, sub {
+  subtest 'National Highways department lookup' => sub {
+    my $email = $mech->uniquify_email('oidc@nationalhighways.example.org');
+    my $redirect_pattern = qr{oidc\.example\.org/oauth2/v2\.0/authorize};
+
+    $mech->log_out_ok;
+    $mech->cookie_jar({});
+    $mech->host('oidc.example.org');
+
+    my $resolver = Test::MockModule->new('Email::Valid');
+    $resolver->mock('address', sub { $email });
+    my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
+    $social->mock('generate_nonce', sub { 'MyAwesomeRandomValue' });
+
+    my $mock_api = t::Mock::OpenIDConnect->new( host => 'oidc.example.org' );
+    LWP::Protocol::PSGI->register($mock_api->to_psgi_app, host => 'oidc.example.org');
+    $mock_api->cobrand('highwaysengland');
+
+    $mech->get_ok('/my');
+    $mech->submit_form(button => 'social_sign_in');
+    is $mech->res->previous->code, 302, "button redirected";
+    like $mech->res->previous->header('Location'), $redirect_pattern, "redirect to oauth URL";
+
+    $mech->get_ok('/auth/OIDC?code=response-code&state=login');
+    is $mech->uri->path, '/my', 'Successfully on /my page';
+
+    my $user = FixMyStreet::DB->resultset( 'User' )->find( { email => $email } );
+    my @roles = sort map { $_->name } $user->roles->all;
+    is_deeply ['Inspector'], \@roles, 'Correct roles assigned to user';
+  };
 };
 
 done_testing();

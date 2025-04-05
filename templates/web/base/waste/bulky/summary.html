@@ -5,6 +5,11 @@ IF c.cobrand.moniker == 'brent';
 ELSE;
     SET index_url = c.uri_for_action('waste/bulky/index', [ property.id ]);
 END;
+IF c.action == 'waste/bulky/amend';
+    SET amend_form_url = c.uri_for_action('waste/bulky/amend', [ property.id, amending_booking.id ]);
+ELSE;
+    SET amend_form_url = index_url;
+END;
 SET user_details_main_column = 0;
 IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton';
     SET user_details_main_column = 1;
@@ -20,7 +25,7 @@ SET data = form.saved_data;
 
 [% BLOCK change_answers_button %]
   [% UNLESS problem %]
-    <form method="post" action="[% index_url %]">
+    <form method="post" action="[% amend_form_url %]">
       <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
       <input type="hidden" name="goto" value="[% goto %]">
       <input type="submit" class="fake-link" value="Change answers">
@@ -109,8 +114,8 @@ SET data = form.saved_data;
           <dd>[% cobrand.bulky_nice_collection_date(data.chosen_date) %]</dd>
       </dl>
 
-      [% IF !problem
-        || cobrand.bulky_collection_can_be_cancelled( problem, 1 ) %]
+      [% IF (!problem AND cobrand.bulky_cancel_enabled == 'public')
+        || cobrand.bulky_can_cancel_collection( problem, 1 ) %]
         <div class="govuk-warning-text due">
           <div class="govuk-warning-text__img">
             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -123,18 +128,17 @@ SET data = form.saved_data;
                   <p class="govuk-!-margin-bottom-3">You can cancel this booking any time before the collection
                      takes place on or before [% cobrand.bulky_nice_collection_date(data.chosen_date) %].
                      Bookings are not refundable.</p>
+              [% ELSIF c.cobrand.moniker == 'peterborough' %]
+                  <p class="govuk-!-margin-bottom-3">You can cancel and receive a refund up to
+                    [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
               [% ELSE %]
                   <p class="govuk-!-margin-bottom-3">You can cancel this booking till
                     [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
-                  [% IF !cobrand.call_hook('bulky_enabled_staff_only') AND cobrand.bulky_can_refund %]
+                  [% IF cobrand.moniker == 'bromley' %]
                       <p class="govuk-!-margin-bottom-0">
-                        [% IF cobrand.moniker == 'bromley' %]
                           [% minimum_charge = pounds(c.cobrand.bulky_minimum_charge / 100) %]
                           You can get a full refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.
                           Cancellations within 24 hours of collection are only eligible for a partial refund for any amount paid over the minimum charge of £[% minimum_charge %].
-                        [% ELSE %]
-                          You can get a refund if cancelled by [% cobrand.bulky_nice_collection_time %] on the day prior to your collection.
-                        [% END %]
                       </p>
                   [% END %]
               [% END %]
@@ -159,12 +163,18 @@ SET data = form.saved_data;
       [% IF c.cobrand.moniker != 'brent' %]
       <dl>
         <dt>Price</dt>
-        [% IF problem %]
-            [% payment = problem.get_extra_field_value('payment') %]
-        [% ELSE %]
-            [% payment = cobrand.bulky_total_cost(data) %]
-        [% END %]
-        <dd>£[% pounds(payment / 100) %]</dd>
+        [% IF problem;
+            payment = problem.get_extra_field_value('payment') OR 0;
+            already_paid = cobrand.get_total_paid(problem) - payment;
+        ELSE;
+            payments = cobrand.bulky_total_cost(data);
+            payment = payments.amount;
+            already_paid = payments.already_paid;
+        END %]
+        <dd>£[% pounds(payment / 100) %] [% IF already_paid ~%]
+                (£[% pounds(already_paid / 100) %] already paid)
+            [%~ END %]
+        </dd>
       </dl>
       [% END %]
       <div class="govuk-!-margin-bottom-4">
@@ -215,7 +225,7 @@ SET data = form.saved_data;
                   </div>
                   <div class="govuk-warning-text__content" style="display:flex; align-items:center;">
                       <span class="govuk-warning-text__assistive">Warning for item: [% item.item %]</span>
-                      <p class="govuk-!-margin-bottom-0">[% extra_text %]</p>
+                      <p class="govuk-!-margin-bottom-0">[% extra_text | safe %]</p>
                   </div>
                 </div>
               </td>
@@ -258,8 +268,12 @@ SET data = form.saved_data;
       <p>
         <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/amend', [ property.id, problem.id ] ) %]">Amend this booking</a>
       </p>
+    [% ELSIF cobrand.moniker == 'merton' %]
+      <p>
+      If you would like to make any changes to your booking, call us on 020 8274 4902 at least 2 working days before your collection day.
+      </p>
     [% END %]
-    [% IF cobrand.bulky_collection_can_be_cancelled(problem) %]
+    [% IF cobrand.bulky_can_cancel_collection(problem) %]
       <p>
         <a class="govuk-button govuk-button--secondary" href="[%
             IF problem.category == 'Small items collection';
@@ -274,13 +288,7 @@ SET data = form.saved_data;
     [% INCLUDE 'waste/_button_show_upcoming.html' %]
 
   [% ELSE %]
-    <form class="waste" method="post" action="[%
-      IF c.action == 'waste/bulky/amend';
-        c.uri_for_action('waste/bulky/amend', [ property.id, amending_booking.id ]);
-      ELSE;
-        index_url;
-      END;
-    %]">
+    <form class="waste" method="post" action="[% amend_form_url %]">
       [% PROCESS form %]
     </form>
   [% END %]

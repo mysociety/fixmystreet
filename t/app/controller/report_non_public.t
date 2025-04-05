@@ -70,7 +70,7 @@ subtest "Logged email working on private report" => sub {
         }, "submit details");
     };
     $mech->content_contains('Thank you for reporting this issue');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->state, 'confirmed', "report is now confirmed";
     is $report->non_public, 1;

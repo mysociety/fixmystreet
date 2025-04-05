@@ -241,6 +241,30 @@ __PACKAGE__->has_many(
   },
 );
 
+__PACKAGE__->has_many(
+  confirmed_comments => "FixMyStreet::DB::Result::Comment",
+  sub {
+      my $args = shift;
+      return {
+          "$args->{foreign_alias}.problem_id" => { -ident => "$args->{self_alias}.id" },
+          "$args->{foreign_alias}.state" => 'confirmed',
+      };
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+__PACKAGE__->has_many(
+  answered_questionnaires => "FixMyStreet::DB::Result::Questionnaire",
+  sub {
+      my $args = shift;
+      return {
+          "$args->{foreign_alias}.problem_id" => { -ident => "$args->{self_alias}.id" },
+          "$args->{foreign_alias}.whenanswered" => { '!=' => undef },
+      };
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 __PACKAGE__->might_have(
   contributed_by => "FixMyStreet::DB::Result::User",
   sub {
@@ -277,11 +301,11 @@ my $IM = eval {
 
 use constant SENDER_REGEX => qr/^.*::/;
 
-with 'FixMyStreet::Roles::Abuser',
-     'FixMyStreet::Roles::Extra',
-     'FixMyStreet::Roles::Moderation',
-     'FixMyStreet::Roles::Translatable',
-     'FixMyStreet::Roles::PhotoSet';
+with 'FixMyStreet::Roles::DB::Abuser',
+     'FixMyStreet::Roles::DB::Extra',
+     'FixMyStreet::Roles::DB::Moderation',
+     'FixMyStreet::Roles::DB::Translatable',
+     'FixMyStreet::Roles::DB::PhotoSet';
 
 =head2
 
@@ -395,11 +419,7 @@ sub visible_states_remove {
 sub public_asset_id {
     my $self = shift;
 
-    my $current_cobrand = $self->result_source->schema->cobrand;
-
-    my $cobrand_for_problem = $current_cobrand->call_hook(
-        get_body_handler_for_problem => $self );
-
+    my $cobrand_for_problem = $self->body_handler;
     return unless $cobrand_for_problem;
 
     # Should be of the form:
@@ -422,6 +442,15 @@ around service => sub {
     $s =~ s/_/ /g;
     return $s;
 };
+
+sub service_display {
+    my $self = shift;
+    my $service = $self->service;
+    return '' if $service eq 'Open311' || $service eq 'unknown' || $service eq 'test';
+    $service =~ s/PWA \((.*)\)/$1/;
+    $service =~ s/PWA/mobile/; # Might as well
+    return $service;
+}
 
 sub title_safe {
     my $self = shift;
@@ -748,13 +777,13 @@ sub meta_line {
     my $anonymous = $cobrand->call_hook('is_problem_anonymous');
 
     if ( $problem->anonymous || $anonymous ) {
-        if ( $problem->service and $category && $category ne _('Other') ) {
+        if ( $problem->service_display && $category && $category ne _('Other') ) {
             $meta =
             sprintf( _('Reported via %s in the %s category anonymously at %s'),
-                $problem->service, $category, $date_time );
-        } elsif ( $problem->service ) {
+                $problem->service_display, $category, $date_time );
+        } elsif ( $problem->service_display ) {
             $meta = sprintf( _('Reported via %s anonymously at %s'),
-                $problem->service, $date_time );
+                $problem->service_display, $date_time );
         } elsif ( $category and $category ne _('Other') ) {
             $meta = sprintf( _('Reported in the %s category anonymously at %s'),
                 $category, $date_time );
@@ -770,15 +799,15 @@ sub meta_line {
             $problem_name = sprintf('%s (%s)', $problem->name, $problem->user->name );
         }
 
-        if ( $problem->service and $category && $category ne _('Other') ) {
+        if ( $problem->service_display && $category && $category ne _('Other') ) {
             $meta = sprintf(
                 _('Reported via %s in the %s category by %s at %s'),
-                $problem->service, $category,
+                $problem->service_display, $category,
                 $problem_name,    $date_time
             );
-        } elsif ( $problem->service ) {
+        } elsif ( $problem->service_display ) {
             $meta = sprintf( _('Reported via %s by %s at %s'),
-                $problem->service, $problem_name, $date_time );
+                $problem->service_display, $problem_name, $date_time );
         } elsif ( $category and $category ne _('Other') ) {
             $meta = sprintf( _('Reported in the %s category by %s at %s'),
                 $category, $problem_name, $date_time );
@@ -903,7 +932,10 @@ sub response_template_for {
             push @$state_params, { 'me.state' => $state, 'me.external_status_code' => ["", undef] };
         }
         if ($ext_code_changed) {
-            push @$state_params, { 'me.state' => '', 'me.external_status_code' => $ext_code };
+            # The double comma option here dates from Echo updates with only a
+            # resolution code ID being stored in the database as "CODE,,". Once
+            # they're all updated to only be CODE, this can be removed.
+            push @$state_params, { 'me.state' => '', 'me.external_status_code' => [$ext_code, "$ext_code,,"] };
         };
 
         $template = $self->response_templates->search({
@@ -968,7 +1000,9 @@ sub duration_string {
     my $cobrand = $problem->result_source->schema->cobrand;
     my $body = $cobrand->call_hook( link_to_council_cobrand => $problem )
         || $problem->body(1);
-    return unless $problem->whensent;
+    return
+        unless $problem->whensent
+        && $problem->service ne 'Open311';
     my $s = sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
     );
@@ -1014,8 +1048,7 @@ sub updates_sent_to_body {
     return unless $self->send_method_used && $self->send_method_used =~ /Open311/;
 
     # Some bodies only send updates *to* FMS, they don't receive updates.
-    my $cobrand = $self->get_cobrand_logged;
-    my $handler = $cobrand->call_hook(get_body_handler_for_problem => $self);
+    my $handler = $self->body_handler;
     my $ret = $handler && $handler->call_hook(updates_sent_to_body => $self);
     return $ret if defined $ret;
 
@@ -1193,6 +1226,26 @@ has get_cobrand_logged => (
     },
 );
 
+=head2 body_handler
+
+Calls the get_body_handler_for_problem hook on the cobrand the report was logged against.
+In the UK, this returns the corresponding cobrand for the body a report was sent to, and
+on fixmystreet.com it returns Buckinghamshire for Bucks parish bodies, and FixMyStreet for
+Kingston/Sutton reports (rather than themselves, as they are only waste).
+
+=cut
+
+has body_handler => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $cobrand = $self->get_cobrand_logged;
+        my $handler = $cobrand->call_hook(get_body_handler_for_problem => $self);
+        return $handler;
+    },
+);
+
 sub cobrand_name_for_state {
     my ($self, $cobrand) = @_;
     my $cobrand_name = $cobrand->moniker;
@@ -1283,7 +1336,7 @@ sub static_map {
     my $pin = $map_data->{pins}->[0];
     if ($pin) {
         my $im = Image::Magick->new;
-        $im->read(FixMyStreet->path_to('web', 'i', 'pin-yellow.png'));
+        $im->read(FixMyStreet->path_to('web', 'i', 'pins/yellow/pin.png'));
         $im->Scale( geometry => '48x64' );
         $image->Composite(image => $im, gravity => 'NorthWest',
             x => $pin->{px} - 24, y => $pin->{py} - 64);
@@ -1355,7 +1408,7 @@ has inspection_log_entry => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        return $self->admin_log_entries->search({ action => 'inspected' }, { order_by => { -desc => 'whenedited' } })->first;
+        return $self->admin_log_entries->search({ action => 'inspected' })->order_by('-whenedited')->first;
     },
 );
 
@@ -1424,5 +1477,166 @@ sub confirmation_token {
     return $hash;
 }
 
+sub create_related_things {
+    my ($self, $no_reporter_alert) = @_;
+
+    # Set up a reporter alert
+    unless ($no_reporter_alert || $self->get_cobrand_logged->call_hook('suppress_reporter_alerts', $self)) {
+        FixMyStreet::DB->resultset("Alert")->find_or_create( {
+            user         => $self->user,
+            alert_type   => 'new_updates',
+            parameter    => $self->id,
+            cobrand      => $self->cobrand,
+            cobrand_data => $self->cobrand_data,
+            lang         => $self->lang,
+        } )->confirm;
+    }
+
+    # If there is a special template, create a comment using that
+    foreach my $body (values %{$self->bodies}) {
+        my $user = $body->comment_user or next;
+
+        my $updates = Open311::GetServiceRequestUpdates->new(
+            blank_updates_permitted => 1,
+        );
+
+        my $template = $self->response_template_for('confirmed', 'dummy', '', '');
+        my ($description, $email_text) = $updates->comment_text_for_request($template, {}, $self);
+        next unless $description;
+
+        $self->add_to_comments({
+            user => $user,
+            external_id => 'auto-internal',
+            send_state => 'processed',
+            text => $description,
+            private_email_text => $email_text,
+            problem_state => 'confirmed',
+            state => 'unconfirmed',
+            confirmed => \'current_timestamp', # So that it will always be first
+        });
+    }
+}
+
+=head2 Waste related activity
+
+=head3 waste_property_id
+
+Return the property ID used in the URL of a bin day page. This is usually
+property_id on the report, but could be the UPRN (e.g. Bexley).
+
+=cut
+
+sub waste_property_id {
+    my $self = shift;
+    return $self->get_extra_field_value('uprn') if $self->cobrand eq 'bexley';
+    return $self->get_extra_field_value('property_id');
+}
+
+=head3 waste_confirm_payment
+
+This is called when a payment has been confirmed in order to record the
+payment, perhaps send an email, add a payment confirmation update for
+already-sent bulky collections, cancel a previous collection if an amendment,
+and so on.
+
+=cut
+
+sub waste_confirm_payment {
+    my ($self, $reference) = @_;
+    my $cobrand = $self->get_cobrand_logged;
+
+    my $already_confirmed;
+    if ($self->category eq 'Bulky collection' || $self->category eq 'Small items collection') {
+        $already_confirmed = $cobrand->bulky_send_before_payment;
+    }
+
+    return unless $self->state eq 'unconfirmed' || $already_confirmed;
+    return if $already_confirmed && $self->get_extra_metadata('payment_reference'); # Already confirmed
+
+    my $rs = $self->result_source->schema->resultset('Problem');
+    my $db = $self->result_source->storage;
+    my $no_reporter_alert = ($self->get_extra_metadata('contributed_as') || '') eq 'anonymous_user';
+
+    my @problems = ($self);
+    if (my $grouped_ids = $self->get_extra_metadata('grouped_ids')) {
+        foreach my $id (@$grouped_ids) {
+            my $problem = $rs->find({ id => $id }) or next;
+            push @problems, $problem;
+        }
+    }
+
+    if ($cobrand->suppress_report_sent_email($self)) {
+        # Send bulky confirmation email after report confirmation (see
+        # the suppress_report_sent_email for SLWP)
+        $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
+    }
+
+    foreach my $p (@problems) {
+        $db->txn_do(sub {
+            $p = $rs->search({ id => $p->id }, { for => \'UPDATE' })->single;
+            $p->update_extra_field( {
+                name => 'LastPayMethod',
+                description => 'LastPayMethod',
+                value => $cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
+            }) if $p->get_extra_field_value('payment_method');
+            $p->update_extra_field( {
+                name => 'PaymentCode',
+                description => 'PaymentCode',
+                value => $reference
+            }) if $reference;
+            $p->set_extra_metadata('payment_reference', $reference) if $reference;
+            $p->confirm;
+            $p->create_related_things($no_reporter_alert);
+            $p->update;
+        });
+    }
+
+    if ($already_confirmed) {
+        $self->discard_changes;
+        $self->bulky_add_payment_confirmation_update($reference);
+    }
+
+    if (my $previous = $self->get_extra_metadata('previous_booking_id')) {
+        $previous = $rs->find($previous);
+        $previous->bulky_cancel_collection('amendment');
+        my $update = $cobrand->bulky_is_cancelled($previous, 'unconfirmed');
+        $update->confirm;
+        $update->update;
+    }
+}
+
+sub bulky_add_payment_confirmation_update {
+    my ($self, $reference) = @_;
+    my $cobrand = $self->get_cobrand_logged;
+
+    my $payment = $self->get_extra_field_value('payment') || 0;
+    $payment = sprintf( '%.2f', $payment / 100 );
+    my $reference_text = 'reference ';
+    if (!$reference) {
+        $reference_text .= $self->get_extra_metadata('chequeReference') . ' (phone/cheque)';
+    } else {
+        $reference_text .= $reference;
+    }
+    my $payments = $cobrand->get_all_payments($self);
+    $payments = join('|', map { "$_->{ref}|$_->{amount}" } @$payments);
+    my $comment = $self->add_to_comments({
+        text => "Payment confirmed, $reference_text, amount £$payment",
+        user => $cobrand->body->comment_user || $self->user,
+        extra => {
+            fms_extra_payments => $payments,
+        }
+    });
+    $self->cancel_update_alert($comment->id);
+}
+
+sub bulky_cancel_collection {
+    my ($self, $type, $non_user_cancel) = @_;
+
+    $self->state('cancelled');
+    my $description = $non_user_cancel
+        ? "Cancelled" : $type eq 'amendment' ? 'Cancelled due to amendment' : "Cancelled at user request";
+    $self->detail($self->detail . " | " . $description);
+    $self->update;
+}
 
 1;

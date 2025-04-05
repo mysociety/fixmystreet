@@ -117,9 +117,9 @@ sub send_service_request {
                     return $service_request_id;
                 } else {
                     my $timeout_warning = "Timed out while trying to fetch service_request_id for token $token"
-                        . " and create remote case for FMS problem ID $problem->id.";
+                        . " and create remote case for FMS problem ID " . $problem->id;
                     $self->error($self->error . $timeout_warning);
-                    warn $timeout_warning unless FixMyStreet->test_mode;
+                    warn "$timeout_warning\n" unless FixMyStreet->test_mode;
                     return 0;
                 }
             }
@@ -469,6 +469,8 @@ sub _populate_service_request_update_params {
             $status = 'FOR_TRIAGE';
         } elsif ( $state eq 'closed' ) {
             $status = 'CLOSED';
+        } elsif ( $state eq 'cancelled' ) {
+            $status = 'CANCELLED';
         } elsif ($comment->mark_open && $self->mark_reopen) {
             $status = 'REOPEN';
         }
@@ -519,6 +521,14 @@ sub _populate_service_request_update_params {
 
         $params->{first_name} = $comment->extra->{first_name} if $comment->extra->{first_name};
         $params->{last_name} = $comment->extra->{last_name} if $comment->extra->{last_name};
+    }
+
+    my $extra = $comment->get_extra_metadata;
+    foreach (grep { /^fms_extra_/ } keys %$extra) {
+        my $attr_name = $_;
+        $attr_name =~ s/fms_extra_//;
+        my $name = sprintf( 'attribute[%s]', $attr_name );
+        $params->{ $name } = $extra->{$_};
     }
 
     return $params;

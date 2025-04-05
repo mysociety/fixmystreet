@@ -44,7 +44,7 @@
     <dl>
       [% FOR item IN form.items_extra; IF item.value.message %]
         <dt>[% item.key %]</dt>
-        <dd>[% item.value.message %]</dd>
+        <dd>[% item.value.message | safe %]</dd>
       [% END; END %]
     </dl>
 
@@ -87,7 +87,7 @@ END; END %]
       <li>Textiles: Up to 3 - each one up to 60L (eg 3 carrier bags or one black bin bag)</li>
       <li>Small electrical items: Up to 4 small electrical items</li>
       <li>Batteries: 1 tied bag of domestic batteries (minimum of ten and maximum of 100)</li>
-      <li>Paint: Up to 4 - each item can be up to 5 litres of capacity (for example 1 x 5 litre tin or 5 x 1 litre tin), the maximum total for a booking is 20 litres of capacity</li>
+      <li>Paint: Up to 20 litres total capacity (no more than 4 tins maximum)</li>
     </ul>
   </div>
 </div>
@@ -117,7 +117,7 @@ END; END %]
     <hr>
   </div>
   [% END %]
-  [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' %]
+  [% IF c.cobrand.bulky_pricing_strategy.strategy == 'banded' %]
   <p id="band-pricing-info"></p>
   [% END %]
   <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+

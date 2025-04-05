@@ -11,7 +11,7 @@
     height: 80px;
     padding: 24px 0;
     background-position:0;
-    background-size: 200px 80px;
+    background-size: 208px auto;
 }
 
 #front_stats big {
@@ -33,7 +33,6 @@
         }
     }
     a.report-a-problem-btn,
-    span.report-a-problem-btn,
     span {
         background-color: $nav_hover_background_colour;
         color: $text_black;

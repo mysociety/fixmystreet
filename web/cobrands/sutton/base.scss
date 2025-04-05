@@ -141,6 +141,11 @@ a,
 
 // GENERAL
 
+.site-message {
+  background-color: #f9b34a;
+  border: none;
+}
+
 .page-title-wrapper {
     padding: 1em 1em;
     h1 {
@@ -170,20 +175,20 @@ a,
     div {
         border: none;
         $border-radius: 50px;
-        input#pc {
-            @include sutton-form-input($margin: 0 0 0 0, $padding: 5px 0.5em);
-            font-size: 1.25em;
+    }
+    input#pc {
+        @include sutton-form-input($margin: 0 0 0 0, $padding: 5px 0.5em);
+        font-size: 1.25em;
 
-            &:hover {
-                background-color: $white;
-            }
+        &:hover {
+            background-color: $white;
         }
+    }
 
-        input#sub {
-            margin-left: 0.5em;
-            font-size: 1.25em;
-            @include sutton-button($background-color: $green, $color: $white);
-        }
+    input#sub {
+        margin-left: 0.5em;
+        font-size: 1.25em;
+        @include sutton-button($background-color: $green, $color: $white);
     }
 }
 
@@ -254,7 +259,6 @@ p.form-error {
 }
 
 .btn,
-.green-btn,
 .lbs-button--tertiary {
     @include sutton-button;
 }
@@ -405,7 +409,7 @@ p.form-error {
     .content[role="main"] {
         background-color: $white;
 
-        label {
+        label:last-child {
             margin-bottom: 0.5em;
         }
     }

@@ -83,7 +83,7 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                 band1_price => 'int',
                 band1_max => 'int',
                 free_mode => 'bool',
-                food_bags_disabled => 'bool',
+                food_bags_disabled => 'sel',
                 show_location_page => 'sel',
                 show_individual_notes => 'bool',
             );
@@ -125,8 +125,6 @@ sub bulky_items : Chained('body') {
     $c->stash->{item_list} = $cfg->{item_list} || [];
 
     my $cobrand = $c->stash->{body}->get_cobrand_handler;
-    $c->stash->{available_features} =
-        $cobrand->call_hook('bulky_available_feature_types') if $cobrand;
     $c->stash->{per_item_pricing_property_types} =
         $cobrand->call_hook('bulky_per_item_pricing_property_types');
 
@@ -144,9 +142,8 @@ sub bulky_items : Chained('body') {
             }
             my $item = {
                 bartec_id => $c->get_param("bartec_id[$i]"),
-                category => $c->get_param("category[$i]"),
                 name => $c->get_param("name[$i]"),
-                message => $c->get_param("message[$i]"),
+                message => FixMyStreet::Template::sanitize($c->get_param("message[$i]")),
                 price => $c->get_param("price[$i]"),
                 max => $c->get_param("max[$i]"),
             };
@@ -163,7 +160,7 @@ sub bulky_items : Chained('body') {
             if ($any_value) {
                 # OK to store errors in $item itself as it won't get persisted,
                 # and $i might not be the same when form is re-rendered.
-                foreach (qw(name category bartec_id)) {
+                foreach (qw(name bartec_id)) {
                     if (!$item->{$_}) {
                         $item->{errors} ||= {};
                         $item->{errors}->{$_} = _("This field is required.");
@@ -196,9 +193,9 @@ sub fetch_wasteworks_bodies : Private {
     my ( $self, $c ) = @_;
 
     my @bodies = $c->model('DB::Body')->search({
-        extra => { '\?' => 'cobrand' },
+        cobrand => { '!=' => undef },
     }, {
-        columns => [ "id", "name", "extra" ],
+        columns => [ "id", "name", "cobrand" ],
     })->active;
 
     @bodies = grep {

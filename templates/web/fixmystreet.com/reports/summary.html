@@ -6,7 +6,7 @@
     version('/vendor/chart.min.js'),
     version('/js/dashboard.js')
 ] -%]
-[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass => 'dashboard fullwidthpage' %]
+[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass = 'dashboard' %]
 
 <div class="dashboard-header">
     <h1>[% loc('Dashboard') %] – [% body.name %]</h1>
@@ -18,52 +18,31 @@
         <div class="healthcheck-unit healthcheck-unit--good">
             <h3>Email delivery</h3>
             <p>
-                Along with most UK councils, [% body.name %] receives reports
-                from FixMyStreet.com via email; you can see a full list of
-                the email addresses we send reports to at the bottom of this page.
+                [% body.name %] receives reports from FixMyStreet via email; you can see a full list of the email addresses we send reports to at the bottom of this page.
             </p>
         </div>
         <div class="healthcheck-unit healthcheck-unit--bad">
             <h3>Integration with back end systems</h3>
             <p>
-                [% body.name %] is not currently taking advantage of
-                <a href="https://www.fixmystreet.com/pro">FixMyStreet Pro</a>,
-                to create efficiencies and make savings. By submitting reports
-                directly into your asset management system or CRM, FixMyStreet
-                Pro can reduce duplication and re-keying costs.
+                Local authorities can connect with FixMyStreet in a number of different ways so that reports drop directly into your existing system(s) instead of arriving by email.
             </p>
-            <p>
-                The <a href="https://www.fixmystreet.com/pro">FixMyStreet Pro</a>
-                integration will create a two way flow of information and
-                significantly improve the customer journey whilst encouraging
-                citizens to engage with you digitally.
-            </p>
-            <div class="healthcheck-cta-trio">
-                <div class="dashboard-item dashboard-item--4">
-                    <h3 style="margin-top: 0;">Ask questions</h3>
-                    <a href="https://www.societyworks.org/contact/" class="btn">
-                        Contact us
-                    </a>
-                </div>
-                <div class="dashboard-item dashboard-item--4">
-                    <h3 style="margin-top: 0;">Schedule a<br>one-to-one demo</h3>
-                    <a href="https://www.societyworks.org/demo-request/" class="btn">
-                        Request a demo
-                    </a>
-                </div>
-                <div class="dashboard-item dashboard-item--4">
-                    <h3 style="margin-top: 0;">See FixMyStreet Pro for&nbsp;yourself</h3>
-                    <a href="https://showcase.societyworks.org/" class="btn">
-                        Try our live demo
-                    </a>
-                </div>
-            </div>
+            <ol>
+                <li>You can do this yourself (for free) using our <a href="/about/open311-api-info">Open311 API</a></li>
+                <li>We can build and maintain the integration for you (carries an annual fee)</li>
+                <li>You can become a <a href="https://www.societyworks.org/services/highways/"> FixMyStreet Pro</a> user. FixMyStreet Pro is a more advanced version of FixMyStreet, which seeks to eliminate the significant costs councils incur from duplicate reporting, unnecessary contact and failure demand.</li>
+            </ol>
+
+            <p>FixMyStreet is an independent web service run by the charity mySociety to make it easier for anyone to report a problem in their local area without needing to have any knowledge of council boundaries or responsibilities.</p>
+
+            <p>As a charity our goal is to help improve services for citizens and local authorities. If you would like some help connecting FixMyStreet to your own system(s), please send an email to support@fixmystreet.com.</p>
         </div>
     </div>
 </div>
 [% END %]
 
-<form method="GET">
+<h2 id="results">Reports received by [% body.name %]</h2>
+
+<form method="GET" action="#results">
     <div class="filters">
         <p>
             <label for="area">[% loc('Problems reported in area:') %]</label>
@@ -107,7 +86,7 @@
       [% IF group_by == new_gb %]
         <strong title="Currently grouped by [% text %]">[% text %]</strong>
       [% ELSE %]
-        <a href="[% c.uri_with({ group_by => new_gb }) %]" title="Group by [% text %]">[% text %]</a>
+        <a href="[% c.uri_with({ group_by => new_gb }) %]#results" title="Group by [% text %]">[% text %]</a>
       [% END %]
     [% END %]
 
@@ -140,21 +119,6 @@
 
 <div class="dashboard-row">
     <div class="dashboard-item dashboard-item--6">
-        <h2 class="dashboard-subheading">[% tprintf( loc('How responsive is %s?'), body.name ) %]</h2>
-        <p>[% loc('Average time between a problem being reported and being fixed, last 100 reports.') %]</p>
-        <table class="dashboard-ranking-table">
-            <tbody>
-              [% FOR line IN top_five_bodies %]
-                <tr><td>[% line.name %]</td><td>[% tprintf(nget("%s day", "%s days", line.days), line.days) %]</td></tr>
-              [% END %]
-            </tbody>
-            <tfoot>
-                <tr><td>[% body.name %]</td><td>[% tprintf(nget("%s day", "%s days", body_average), body_average) %]</td></tr>
-                <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
-            </tfoot>
-        </table>
-    </div>
-    <div class="dashboard-item dashboard-item--6">
         <h2 class="dashboard-subheading">[% tprintf( loc('Most popular categories in %s'), body.name ) %]</h2>
         <p>[% loc('Number of problems reported in each category, in the last 7 days.') %]</p>
         <table class="dashboard-ranking-table">
@@ -170,26 +134,6 @@
         </table>
     </div>
 </div>
-
-[% IF body.send_method.match('Email') OR body.send_method == '' %]
-<div class="dashboard-row dashboard-row--yellow">
-    <div class="dashboard-item dashboard-item--12 dashboard-fms-case-studies">
-        <h2 style="margin-bottom: 1em">How FixMyStreet Pro helps other councils</h2>
-        <div>
-            <a href="https://www.fixmystreet.com/pro/take-a-tour/oxfordshire/">
-                <small>Case study</small>
-                <h3>East Herts District Council</h3>
-                <p>FixMyStreet Pro plays beautifully with Yotta’s Mayrise system, with two-way integration extending the power of both services.</p>
-            </a>
-            <a href="https://www.fixmystreet.com/pro/take-a-tour/bristol/">
-                <small>Case study</small>
-                <h3>Bristol City Council</h3>
-                <p>Bristol have put FixMyStreet at the heart of their anti-litter campaign, and are involving many citizens in their work.</p>
-            </a>
-        </div>
-    </div>
-</div>
-[% END %]
 
 <div class="dashboard-row">
     <div class="dashboard-item dashboard-item--12">
@@ -214,6 +158,9 @@
         <p>
           [% loc('We currently send all reports to the email addresses below.') %]
         </p>
+        <p>
+          [% loc('You can find lots more information about FixMyStreet in <a href="/about/information-for-councils">our FAQs</a>. For anything else, please <a href="/contact">get in touch</a>') %]
+        </p>
         <table class="dashboard-ranking-table" style="margin-bottom: 1em;">
           <tr>
             <th>[% loc('Category') %]</th>
@@ -228,36 +175,12 @@
           [% END %]
         </table>
         <p>
-          [% loc('If you would like to change either the categories or the contact emails above then <a href="/contact">get in touch</a>.') %]
+          [% loc('If there’s a better contact address for the reports you are receiving, tell us by emailing support@fixmystreet.com and we’ll update it for you.') %]
         <p>
         <p>
-          [% loc('Did you know that if you used the approved open standard Open311 you could send reports directly into your own backend services &ndash; and get much more control over what additional information you request?') %]
-        </p>
-        <p>
-          [% loc('If that&rsquo;s new to you, <a href="https://www.mysociety.org/2013/01/10/open311-introduced/">take a look at our simple Open311 primer</a> to see what you need to do to get up and running in a few days.') %]
+          [% loc('You can find lots more information about FixMyStreet in <a href="/about/information-for-councils">our FAQs</a>. For anything else, please <a href="/contact">get in touch</a>') %]
         </p>
         [% END %]
-    </div>
-</div>
-
-<div class="dashboard-row dashboard-row--yellow" style="text-align: center; margin-bottom: -1em;">
-    <div class="dashboard-item dashboard-item--4">
-        <h3 style="margin-top: 0;">Ask questions</h3>
-        <a href="https://www.societyworks.org/contact/" class="btn">
-            Contact us
-        </a>
-    </div>
-    <div class="dashboard-item dashboard-item--4">
-        <h3 style="margin-top: 0;">Schedule a one-to-one demo</h3>
-        <a href="https://www.societyworks.org/demo-request/" class="btn">
-            Request a demo
-        </a>
-    </div>
-    <div class="dashboard-item dashboard-item--4">
-        <h3 style="margin-top: 0;">See FixMyStreet Pro for&nbsp;yourself</h3>
-        <a href="https://demo.fixmystreet.com/" class="btn">
-            Try our live demo
-        </a>
     </div>
 </div>
 

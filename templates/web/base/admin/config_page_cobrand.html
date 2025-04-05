@@ -5,7 +5,7 @@
 
 <h2>By feature</h2>
 
-<table>
+<table class="admin--config">
     <tr>
         <th scope="col">Cobrand</th><th scope="col">Value</th>
     </tr>
@@ -22,12 +22,14 @@
     [% CASE 'borough_email_addresses' %] - report email sending based upon a sub-area (e.g. Bucks districts, TfL boroughs)
     [% CASE 'bottomline' %] - login details (why not in payment_gateway?)
     [% CASE 'category_groups' %] - enables category groups
+    [% CASE 'categories_restriction_bodies' %] - extra bodies for TfL
     [% CASE 'claims' %] - enabling of the claims section
     [% CASE 'contact_email' %] - for sending of abuse emails
     [% CASE 'contact_name' %] - for use in emails
     [% CASE 'contact_us_url' %] - separate contact us form
     [% CASE 'content_security_policy' %] - security hardening where possible
     [% CASE 'do_not_reply_email' %] - special do not reply email if possible, needs them setting up SPF/DMARC or delegation
+    [% CASE 'dwf_evo_claim' %] - details for connecting to Evo, and earliest claim date
     [% CASE 'echo' %] - login details for sending and receiving, plus address types and NLPG
     [% CASE 'example_places' %] - front page examples to use
     [% CASE 'extra_state_mapping' %] - allows special mapping of extra states (for Northants, could be consolidated with State display special cases?)
@@ -57,6 +59,7 @@
     [% CASE 'verp_email_domain' %] - custom domain to handle VERP bounces
     [% CASE 'waste' %] - enabling of the waste section
     [% CASE 'waste_features' %] - waste configuration
+    [% CASE 'whitespace' %] - login details for sending and receiving, plus missed collection state mapping
     [% END %]
         </th>
     </tr>

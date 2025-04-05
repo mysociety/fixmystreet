@@ -1,17 +1,48 @@
 [%
 title = 'Submit container request';
 thing = 'container request';
-summary_title = 'Container request';
-step1 = 'request';
+summary_title = 'Container requests';
+step1 = first_page;
 %]
 
-[% BLOCK answers %]
-    [% SET container_id = data.item('container-choice') %]
+[% BLOCK row %]
     <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% containers.$container_id %]</dt>
-        <dd class="govuk-summary-list__value">[% data.request_reason.ucfirst %]</dd>
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% key %]</dt>
+        <dd class="govuk-summary-list__value">[% value %]</dd>
     </div>
 [% END %]
 
-[% PROCESS waste/summary.html %]
+[% BLOCK answers %]
+    [% SET container_id = data.item('container-choice') %]
 
+    [% IF data.request_reason == 'change_capacity';
+        # Work out the removed container (matching code in Sutton.pm)
+        IF container_id == 1;
+            SET remove_container = containers.3;
+        ELSIF container_id == 3;
+            IF c.stash.quantities.4;
+                SET remove_container = containers.4;
+            ELSE;
+                SET remove_container = containers.1;
+            END;
+        ELSIF container_id == 27;
+            SET remove_container = containers.26;
+        END;
+        INCLUDE row key=remove_container value='1x to collect';
+        INCLUDE row key=containers.$container_id value='1x to deliver';
+    ELSIF data.request_reason == 'damaged';
+        INCLUDE row key=containers.$container_id value='Damaged (1x to deliver, 1x to collect)';
+    ELSE;
+        SET reason = data.request_reason.ucfirst.replace('_', ' ');
+        INCLUDE row key=containers.$container_id value=reason _ ' (1x to deliver)';
+    END %]
+
+  [% IF data.payment %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Administration/delivery charge</dt>
+        <dd class="govuk-summary-list__value">£[% tprintf( '%.2f', data.payment / 100 ) %]</dd>
+    </div>
+  [% END %]
+[% END %]
+
+[% PROCESS waste/summary.html %]

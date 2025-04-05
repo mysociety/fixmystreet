@@ -27,6 +27,20 @@
         }
     );
 
+    IF c.cobrand.moniker == 'zurich' AND ( prefill_category OR prefill_description );
+        url_skip = c.uri_for(
+            '/report/new',
+            {
+                pc                  => pc
+                latitude            => latitude,
+                longitude           => longitude,
+                skipped             => 1,
+                prefill_category    => prefill_category,
+                prefill_description => prefill_description,
+            }
+        );
+    END;
+
     PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
 

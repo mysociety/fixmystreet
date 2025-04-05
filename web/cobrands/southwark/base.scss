@@ -103,7 +103,7 @@ a {
   background-color: $link-focus-background-colour;
 }
 
-.btn, .btn--primary, .btn-primary, .green-btn {
+.btn, .btn--primary {
   @include cobrand-btn-primary;
 }
 
@@ -115,12 +115,12 @@ a#geolocate_link {
   font-size: 0.875rem;
 }
 
-.item-list--wards__item, .item-list--reports__item {
+.item-list--reports__item {
   margin: 0;
   border-top: 1px solid $secondary_button_border_color;
 }
 
-.item-list--wards__item a, .item-list--reports__item a {
+.item-list--reports__item a {
   color: $primary-b;
   text-decoration: none;
 
@@ -200,14 +200,6 @@ input#pc,
 .report-list-filters {
   color: $white;
   @include cobrand-body;
-}
-
-input.form-error, textarea.form-error {
-  border-color: $error-color;
-}
-
-div.form-error, p.form-error {
-  background: $error-color;
 }
 
 .form-section-description, .change_location {

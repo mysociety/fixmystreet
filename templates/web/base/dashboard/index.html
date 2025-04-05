@@ -8,7 +8,6 @@
     INCLUDE 'header.html'
         title = loc('Dashboard')
         robots = 'noindex, nofollow'
-        bodyclass = 'fullwidthpage'
 %]
 
 <form>
@@ -21,7 +20,7 @@
 <h1>[% loc('Summary statistics') %]</h1>
 [% END %]
 
-<div class="filters">
+<div class="filters dashboard-filters">
   [% IF body %]
     [% IF extra_bodies %]
     <p>
@@ -53,8 +52,8 @@
         <label for="category">[% loc('Category:') %]</label>
         <select class="form-control js-multiple" multiple name="category" id="category">
             [% BLOCK category_option %]
-            [% SET category = cat.category | html %]
-                <option value='[% cat.category | html %]'[% ' selected' IF display_categories.$category %]>[% cat.category_display | html %]</option>
+            [% SET category_safe = mark_safe(cat.category) %]
+                <option value='[% cat.category | html %]'[% ' selected' IF display_categories.$category_safe %]>[% cat.category_display | html %]</option>
             [% END %]
             [%~ INCLUDE 'report/new/_category_select.html' include_group_option=1 ~%]
         </select>
@@ -154,7 +153,18 @@
         <th scope="col">[% loc('Total') %]</th>
       [% END %]
     </tr>
+  [% SET current_category = '' %]
   [% FOR k IN rows %][% k_safe = mark_safe(k) %]
+    [% IF category_to_group.$k_safe AND category_to_group.$k_safe != current_category %]
+    [% SET current_category = category_to_group.$k_safe %]
+      <tr>
+        [% IF group_by == 'category+state' %]
+        <th colspan="5" scope="colgroup">[% category_to_group.$k_safe %]</th>
+        [% ELSE %]
+        <th colspan="2" scope="colgroup">[% category_to_group.$k_safe %]</th>
+        [% END %]
+      </tr>
+    [% END %]
     <tr>
       [% IF group_by == 'state' %]
         <th scope="row">[% prettify_state(k) %]</th>
@@ -188,17 +198,5 @@
         <td>[% totals.total OR 0 %]</td>
     </tr>
 </table>
-
-[% IF summary_open %]
-<p>
-[% loc('Within the specified timeframe:') %]
-[%
-summary_open = summary_open | format_number;
-summary_closed = summary_closed | format_number;
-summary_fixed = summary_fixed | format_number;
-tprintf( loc('%s opened, %s closed, %s fixed'),
-    decode(summary_open), decode(summary_closed), decode(summary_fixed) ) %]
-</p>
-[% END %]
 
 [% INCLUDE 'footer.html' %]

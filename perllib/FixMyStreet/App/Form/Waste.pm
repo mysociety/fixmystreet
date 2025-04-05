@@ -45,8 +45,11 @@ before after_build => sub {
 
     my $c = $self->c;
 
-    map { $saved_data->{$_} = 1 } grep { /^(service|container)-/ && $c->req->params->{$_} } keys %{$c->req->params};
-    $saved_data->{'container-choice'} = $c->get_param('container-choice') if $c->get_param('container-choice');
+    my %fields = map { $_->name => 1 } @{$self->fields};
+    map { $saved_data->{$_} = 1 } grep { /^(service|container|parent)-/ && $fields{$_} && $c->req->params->{$_} } keys %{$c->req->params};
+    if (my $choice = $c->get_param('container-choice')) {
+        $saved_data->{'container-choice'} = $choice if $fields{'container-choice'};
+    }
 };
 
 sub validate {
@@ -59,7 +62,7 @@ sub validate {
     my $c = $self->c;
     my $cobrand = $c->cobrand->moniker;
     my $is_staff_user = ($c->user_exists && ($c->user->from_body || $c->user->is_superuser));
-    my $staff_provide_email = (ref $self) =~ /Garden/ && ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton');
+    my $staff_provide_email = (ref $self) =~ /Garden/ && $c->cobrand->call_hook('garden_staff_provide_email');
 
     $email->add_error('Please provide an email address')
         unless $email->is_inactive || $email->value || ($is_staff_user && !$staff_provide_email);

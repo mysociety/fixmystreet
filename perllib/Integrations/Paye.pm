@@ -9,7 +9,7 @@ Integrations::Paye - integration with the Capita paye.net interface
 package Integrations::Paye;
 
 use Moo;
-with 'FixMyStreet::Roles::SOAPIntegration';
+with 'Integrations::Roles::SOAP';
 
 use Data::Dumper;
 use Sys::Syslog;
@@ -100,11 +100,13 @@ sub credentials {
 
     my $ref = $args->{ref} . ':' . time;
     my $hmac = Digest::HMAC->new(MIME::Base64::decode($self->config->{paye_hmac}), "Crypt::Digest::SHA256");
-    $hmac->add(join('!', 'CapitaPortal', $self->config->{paye_siteID}, $ref, $ts, 'Original', $self->config->{paye_hmac_id}));
+
+    my $subject_type = $self->config->{paye_subjectType} || 'CapitaPortal';
+    $hmac->add(join('!', $subject_type, $self->config->{paye_siteID}, $ref, $ts, 'Original', $self->config->{paye_hmac_id}));
 
     return ixhash(
         'common:subject' => ixhash(
-            'common:subjectType' => 'CapitaPortal',
+            'common:subjectType' => $subject_type,
             'common:identifier' => $self->config->{paye_siteID},
             'common:systemCode' => 'APN',
         ),
@@ -142,7 +144,7 @@ sub pay {
                 'reference' => $_->{reference},
                 'amountInMinorUnits' => $_->{amount},
                 'additionalInfo' => ixhash(
-                    'narrative' => $args->{uprn},
+                    'narrative' => $args->{narrative} || $args->{uprn},
                     'additionalReference' => $_->{lineId},
                 ),
                 'accountDetails' => {

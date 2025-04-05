@@ -27,7 +27,7 @@ We have sent a confirmation email (you may also receive a payment receipt separa
 [%- END -%]
 <p>
   [% IF action == 'new_subscription' %]
-    Your Garden Waste subscription won't show on your check your <a href="/waste/[% property_id %]">collection day lookup page</a> until your containers have been delivered. Containers typically arrive within two weeks, but this may vary due to demand.
+    Your garden waste subscription won't show on your check your <a href="/waste/[% property_id %]">collection day lookup page</a> until your containers have been delivered. Containers typically arrive within two weeks, but this may vary due to demand.
   [% ELSIF action == 'add_containers' %]
     Bins typically arrive within two weeks, but this may vary due to demand.
   [% ELSE %]
@@ -44,7 +44,7 @@ We have sent a confirmation email (you may also receive a payment receipt separa
   [% next_waste = date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
 [% END %]
 [% IF next_waste %]
-<p>Your first green garden waste collection will be [% next_waste %].</p>
+<p>Your first garden waste collection will be [% next_waste %].</p>
 [% END %]
 
 <p><a class="govuk-button" href="/waste/[% property_id %]">Show upcoming bin days</a></p>

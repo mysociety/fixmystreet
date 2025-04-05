@@ -13,6 +13,10 @@ Bristol is a unitary authority, with its own Open311 server.
 package FixMyStreet::Cobrand::Bristol;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
+use Moo;
+with 'FixMyStreet::Roles::Open311Alloy';
+with 'FixMyStreet::Roles::Open311Multi';
+
 use strict;
 use warnings;
 
@@ -80,13 +84,13 @@ Bristol uses the following pin colours:
 
 =over 4
 
-=item * grey: closed as 'not responsible'
+=item * grey: closed
 
-=item * green: fixed or otherwise closed
+=item * green: fixed
 
-=item * red: newly open
+=item * yellow: newly open
 
-=item * yellow: any other open state
+=item * orange: any other open state
 
 =back
 
@@ -94,11 +98,13 @@ Bristol uses the following pin colours:
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if $p->state eq 'not responsible';
-    return 'green' if $p->is_fixed || $p->is_closed;
-    return 'red' if $p->state eq 'confirmed';
-    return 'yellow';
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
+
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
 
@@ -122,9 +128,39 @@ sub categories_restriction {
     ] } );
 }
 
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        (
+            staff_role => 'Staff Role',
+        )
+    );
+
+    return if $csv->dbi; # All covered already
+
+    my $user_lookup = $self->csv_staff_users;
+    my $userroles = $self->csv_staff_roles($user_lookup);
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $by = $csv->_extra_metadata($report, 'contributed_by');
+        my $staff_role = '';
+        if ($by) {
+            $staff_role = join(',', @{$userroles->{$by} || []});
+        }
+        return {
+            staff_role => $staff_role,
+        };
+    });
+}
+
+
 =head2 open311_config
 
-Bristol's endpoint requires an email address, so flag to always send one (with
+Bristol's original endpoint requires an email address, so flag to always send one (with
 a fallback if one not provided).
 
 =cut
@@ -134,11 +170,48 @@ sub open311_config {
 
     $params->{always_send_email} = 1;
     $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
+    $params->{upload_files_for_updates} = 1;
 }
 
 sub open311_config_updates {
     my ($self, $params) = @_;
     $params->{multi_photos} = 1;
+}
+
+=head2 open311_update_missing_data
+
+All reports sent to Alloy should have a USRN set so the street parent
+can be found and the locality can be looked up as well.
+
+The USRN may be set by the roads asset layer, but staff can report anywhere
+so are not restricted to the road layer and anyone can be make reports on
+specific Bristol owned properties that don't have a USRN
+
+=cut
+
+sub lookup_site_code_config {
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    return {
+        buffer => 200, # metres
+        url => "https://$host/proxy/bristol/wfs/",
+        typename => "COD_LSG",
+        property => "USRN",
+        version => '2.0.0',
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        accept_feature => sub { 1 },
+        reversed_coordinates => 1,
+    };
+}
+
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    if ($contact->email =~ /^Alloy-/ && !$row->get_extra_field_value('usrn')) {
+        if (my $usrn = $self->lookup_site_code($row)) {
+            $row->update_extra_field({ name => 'usrn', value => $usrn });
+        }
+    };
 }
 
 =head2 open311_contact_meta_override
@@ -157,6 +230,33 @@ sub open311_contact_meta_override {
         $_->{automated} = 'server_set' if $server_set{$_->{code}};
         $_->{automated} = 'hidden_field' if $hidden_field{$_->{code}};
     }
+}
+
+sub open311_post_send {
+    my ($self, $row, $h) = @_;
+
+    # Check Open311 was successful
+    return unless $row->external_id;
+    return if $row->get_extra_metadata('extra_email_sent');
+
+    # For Flytipping with witness, send an email also
+    my $witness = $row->get_extra_field_value('Witness') || 0;
+    return unless $witness;
+
+    my $emails = $self->feature('open311_email') or return;
+    my $dest = $emails->{$row->category} or return;
+    $dest = [ $dest, 'FixMyStreet' ];
+
+    $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
+
+    my $sender = FixMyStreet::SendReport::Email->new(
+        use_verp => 0, use_replyto => 1, to => [ $dest ] );
+    $sender->send($row, $h);
+    if ($sender->success) {
+        $row->set_extra_metadata(extra_email_sent => 1);
+    }
+
+    $row->remove_extra_field('fixmystreet_id');
 }
 
 =head2 post_report_sent
@@ -195,12 +295,15 @@ sub munge_overlapping_asset_bodies {
     } elsif ($self->check_report_is_on_cobrand_asset) {
         # We are not in a Bristol area but the report is in a park that Bristol is responsible for,
         # so only show Bristol categories.
-        %$bodies = map { $_->id => $_ } grep { $_->name eq $self->council_name } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') eq $self->council_name } values %$bodies;
     } else {
         # We are not in a Bristol area and the report is not in a park that Bristol is responsible for,
         # so only show other categories.
-        %$bodies = map { $_->id => $_ } grep { $_->name ne $self->council_name } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne $self->council_name } values %$bodies;
     }
+}
+
+sub open311_munge_update_params {
 }
 
 sub check_report_is_on_cobrand_asset {
@@ -214,7 +317,8 @@ sub check_report_is_on_cobrand_asset {
 
     my $park = $self->_park_for_point(
         $self->{c}->stash->{latitude},
-        $self->{c}->stash->{longitude}
+        $self->{c}->stash->{longitude},
+        'parks',
     );
     return 0 unless $park;
 
@@ -222,7 +326,7 @@ sub check_report_is_on_cobrand_asset {
 }
 
 sub _park_for_point {
-    my ( $self, $lat, $lon ) = @_;
+    my ( $self, $lat, $lon, $type ) = @_;
 
     my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
 
@@ -230,7 +334,7 @@ sub _park_for_point {
     my $cfg = {
         url => "https://$host/mapserver/bristol",
         srsname => "urn:ogc:def:crs:EPSG::27700",
-        typename => "parks",
+        typename => $type,
         filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
         outputformat => 'GML3',
     };
@@ -238,7 +342,48 @@ sub _park_for_point {
     my $features = $self->_fetch_features($cfg, $x, $y, 1);
     my $park = $features->[0];
 
+    if ($type eq 'flytippingparks') {
+        return $park;
+    }
     return { site_code => $park->{"ms:parks"}->{"ms:SITE_CODE"} } if $park;
+}
+
+sub get_body_sender {
+    my ( $self, $body, $problem ) = @_;
+
+    my $emails = $self->feature('open311_email');
+    if ($problem->category eq 'Flytipping' && $emails->{flytipping_parks}) {
+        my $park = $self->_park_for_point(
+            $problem->latitude,
+            $problem->longitude,
+            'flytippingparks',
+        );
+        if ($park) {
+            $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping_parks});
+            return { method => 'Email' };
+        }
+
+    }
+    return $self->SUPER::get_body_sender($body, $problem);
+}
+
+sub munge_sendreport_params {
+    my ($self, $row, $h, $params) = @_;
+
+    if ( my $email = $row->get_extra_metadata('flytipping_email') ) {
+        $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
+
+        my $to = [ [ $email, $self->council_name ] ];
+
+        my $witness = $row->get_extra_field_value('Witness') || 0;
+        if ($witness) {
+            my $emails = $self->feature('open311_email');
+            my $dest = $emails->{$row->category};
+            push @$to, [ $dest, $self->council_name ];
+        }
+
+        $params->{To} = $to;
+    }
 }
 
 1;

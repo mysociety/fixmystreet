@@ -1,4 +1,3 @@
-use utf8;
 use CGI::Simple;
 use DateTime;
 use Test::MockModule;
@@ -29,8 +28,9 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
     can_be_devolved => 1,
+    cobrand => 'isleofwight',
 };
-my $isleofwight = $mech->create_body_ok(2636, 'Isle of Wight Council', $params, { cobrand => 'isleofwight' });
+my $isleofwight = $mech->create_body_ok(2636, 'Isle of Wight Council', $params);
 my $contact = $mech->create_contact_ok(
     body_id => $isleofwight->id,
     category => 'Potholes',

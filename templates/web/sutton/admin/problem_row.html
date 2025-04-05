@@ -26,7 +26,7 @@
         <td>[% prettify_state(problem.state, 1) %]<br><small>
             [% loc('Created') %]:&nbsp;[% PROCESS format_time time=problem.created %]
             <br>[% loc('When sent') %]:&nbsp;[% PROCESS format_time time=problem.whensent %]
-            [%- IF problem.is_visible %]<br>[% loc('Confirmed:' ) %]&nbsp;[% PROCESS format_time time=problem.confirmed %][% END -%]
+            [%- IF problem.is_visible AND problem.created != problem.confirmed %]<br>[% loc('Confirmed:') %]&nbsp;[% PROCESS format_time time=problem.confirmed %][% END -%]
             [%- IF problem.is_fixed %]<br>[% prettify_state('fixed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
             [%- IF problem.is_closed %]<br>[% prettify_state('closed') %]: [% PROCESS format_time time=problem.lastupdate %][% END -%]
             [%- IF problem.is_open %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]

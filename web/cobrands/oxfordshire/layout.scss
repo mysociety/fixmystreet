@@ -8,7 +8,7 @@ $mappage-header-height: 10em;
 }
 
 #site-header {
-    @include box-sizing(border-box); // so that $mappage-header-height doesn't have to account for internal padding
+    box-sizing: border-box; // so that $mappage-header-height doesn't have to account for internal padding
     background: $color-oxfordshire-dark-green url("/cobrands/oxfordshire/images/occ-badge-nav-bg.png");
     background-repeat: no-repeat;
     background-position: 125% 31%;
@@ -40,10 +40,10 @@ $mappage-header-height: 10em;
 .nav-menu--main {
     margin-top: 5.5em;
     float: none;
-    @include flex-container();
+    display: flex;
 
     li {
-        @include flex(1 1 0%); // flex-basis (3rd argument) must have a unit, to avoid IE10-11 bugs
+        flex: 1 1 0%; // flex-basis (3rd argument) must have a unit, to avoid IE10-11 bugs
         padding: 8px 16px;
         position: relative;
     }
@@ -114,20 +114,19 @@ $mappage-header-height: 10em;
 
 .postcode-form-box {
     margin-right: 0;
-    overflow: visible;
 
     div {
         width: auto;
         max-width: 38em;
         margin: 0.75em 0 0 0;
+    }
 
-        input#pc {
-            max-width: 80%;
-        }
+    input#pc {
+        max-width: 80%;
+    }
 
-        input#sub {
-            padding: 0.6em 1.5em;
-        }
+    input#sub {
+        padding: 0.6em 1.5em;
     }
 }
 
@@ -158,21 +157,6 @@ $mappage-header-height: 10em;
     }
 }
 
-// Fix location of aside sidebar
-body.twothirdswidthpage {
-    .content {
-        .sticky-sidebar {
-            aside {
-                li { // from occ website
-                  padding-left: 19px;
-                  font: 0.813em "Trebuchet MS";
-                  background: url("/cobrands/oxfordshire/images/dot6x6.jpg") no-repeat 0 5px;
-                }
-            }
-        }
-    }
-}
-
 body.mappage {
   #oxford-wrapper {
     width: auto;
@@ -197,7 +181,7 @@ body.mappage {
       margin-top: 0;
       padding: 0;
       height: (10 * 16px) - 70px - 4px - 1px; // $mappage-header-height minus .nav-wrapper top, minus .nav-wrapper borders
-      @include flex-align(center);
+      align-items: center;
 
       li {
           padding-top: 0;

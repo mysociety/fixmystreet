@@ -1,0 +1,275 @@
+@import "../sass/h5bp";
+@import "./_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+@import "cookies";
+
+// HEADER
+#site-logo {
+  background-image: url("/cobrands/northnorthants/images/logo.svg");
+  background-size: contain;
+  height: $mappage-header-height;
+  width: 175px;
+}
+
+.nav-menu {
+  a {
+    color: $primary;
+
+    &:focus {
+      background: $focus-bg-top;
+      color: $focus-text;
+      outline: none;
+    }
+
+    &:hover {
+      color: $primary;
+      text-decoration: $link-hover-text-decoration;
+    }
+
+    &:visited {
+      color: $primary;
+      &:hover {
+        color: $primary;
+      }
+
+      &:focus {
+        color: $primary_b;
+      }
+    }
+  }
+
+  span {
+    background-color: $white;
+  }
+}
+
+// FRONT PAGE
+.postcode-form-box {
+  div {
+    border-width: 0px;
+  }
+
+  input#pc {
+    border: 2px solid black;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+
+  input#sub {
+    background: $primary;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+
+    &:hover {
+        background: $primary_link_hover_color;
+    }
+    &:focus {
+      background: $focus-bg-top;
+      color: $focus-text;
+    }
+  }
+}
+
+.dev-site-notice {
+  pointer-events: initial !important;
+
+}
+
+.dev-site-notice:hover {
+  opacity: 0;
+}
+
+a#geolocate_link {
+  border-width: 2px;
+}
+
+// GENERAL ELEMENTS
+h1 {
+  font-weight: 700;
+}
+
+.btn,
+.btn--primary,
+.postcode-form-box input#sub,
+#report-cta,
+.nav-menu--main a.report-a-problem-btn  {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+
+    text-decoration: none; // For #report-cta
+
+    &:focus {
+      box-shadow: $black 0px -3px 0px 0px inset;
+      outline: none;
+    }
+}
+
+.btn-secondary,
+.nav-menu a.btn-secondary,
+a#geolocate_link,
+.my-account-buttons a{
+    @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+
+    text-decoration: none; // For .my-account-buttons
+
+    &:focus {
+      box-shadow: $black 0px -3px 0px 0px inset;
+      outline: none;
+    }
+}
+
+a,
+.fake-link {
+  &:focus {
+    background: $focus-bg-top;
+    text-decoration: none;
+    outline: 2px solid $primary_b;
+    color: $primary_b;
+  }
+}
+
+%item-list__item--link {
+  a {
+    text-decoration: none;
+    h3 {
+      color: $primary;
+      text-decoration: $link-text-decoration;
+    }
+
+    &:hover {
+      h3 {
+        text-decoration: $link-hover-text-decoration;
+      }
+    }
+  }
+
+  a:focus {
+      background: $focus-bg-top;
+      color: $focus-text;
+      outline: 2px solid $primary_b;
+
+      h3 {
+        text-decoration: none;
+      }
+  }
+}
+
+input {
+  &:focus {
+    outline: none;
+    box-shadow: $yellow 0px 0px 0px 2px, $black 0px 0px 0px 4px;
+    transition: box-shadow 0.3s ease 0s;
+  }
+}
+
+#front_stats {
+  background: $primary_b;
+}
+
+// FOOTER
+.northnorthants-footer {
+  background: $black;
+  padding: 25px 0px;
+  color: $primary_text;
+
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: row;
+    margin-left: 0;
+    flex-wrap: wrap;
+
+    li {
+      list-style: none;
+      margin-bottom: 0;
+      a {
+        color: $primary_text;
+
+
+        &:hover {
+          opacity: 0.8;
+        }
+
+        &:focus {
+          color: $primary_b;
+          box-shadow: $white 0px -2px 0px 0px inset;
+        }
+      }
+      &.social-icons a {
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+
+    &.list-links {
+      flex-direction: column;
+      column-gap: 15px;
+      row-gap: 25px;
+      margin-bottom: 40px;
+      margin-top: 16px;
+    }
+
+    &.list-social-links {
+      gap: 20px;
+      margin-bottom: 15px;
+
+      a {
+        display: block;
+        height: 55px;
+        padding: 5px;
+        background-color: transparent;
+        &:focus {
+          outline: transparent solid 2px;
+          border-radius: 4px;
+          box-shadow: $yellow 0px 0px 0px 3px;
+          transition: box-shadow 0.3s ease 0s;
+
+          svg path {
+            fill: $yellow;
+          }
+        }
+      }
+    }
+  }
+
+  .footer-council-logo {
+    display: block;
+    background-image: url("/cobrands/northnorthants/images/logo-white.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 80px;
+    width: 240px;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+}
+
+// ADMIN
+.segmented-control.segmented-control--radio {
+  .btn {
+    background: $white;
+    color: $primary !important; //Overrides the button-variant mixin
+  }
+
+  input:checked+label {
+    background: $primary;
+    color: $white !important //Overrides the button-variant mixin;
+  }
+
+  .btn, input:checked+label {
+    &:hover {
+      background-color: $button-primary-hover-bg-top;
+      color: $white !important;
+    }
+  }
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";

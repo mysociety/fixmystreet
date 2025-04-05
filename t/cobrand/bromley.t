@@ -10,6 +10,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use Open311::PostServiceRequestUpdates;
+use Open311::GetServiceRequestUpdates;
 use Open311::PopulateServiceList;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -23,12 +24,13 @@ LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org'
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com', name => 'Bromley' );
+my $standard_user = $mech->create_user_ok('test@example.com', name => 'Bob Betts');
 my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     can_be_devolved => 1, send_extended_statuses => 1, comment_user => $user,
-    send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1
-}, {
+    send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test', send_comments => 1,
     cobrand => 'bromley'
 });
+my $lewisham = $mech->create_body_ok( 2492, 'Lewisham Borough Council');
 my $staffuser = $mech->create_user_ok( 'staff@example.com', name => 'Staffie', from_body => $body );
 my $role = FixMyStreet::DB->resultset("Role")->create({
     body => $body, name => 'Role A', permissions => ['moderate', 'user_edit', 'report_mark_private', 'report_inspect', 'contribute_as_body'] });
@@ -46,7 +48,17 @@ $contact->set_extra_fields(
     { code => 'service_request_id_ext', datatype => 'number', },
 );
 $contact->update;
-my $tfl = $mech->create_body_ok( 2482, 'TfL');
+my $streetlights = $mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Streetlights',
+    email => 'LIGHT',
+);
+$streetlights->set_extra_fields(
+    { code => 'fms_layer_owner', datatype => 'string', automated => 'hidden_field' },
+);
+$streetlights->update;
+
+my $tfl = $mech->create_body_ok( 2482, 'TfL', { cobrand => 'tfl' });
 $mech->create_contact_ok(
     body_id => $tfl->id,
     category => 'Traffic Lights',
@@ -276,6 +288,27 @@ subtest 'Private comments on updates are added to open311 description' => sub {
     };
 };
 
+subtest 'ensure flytip information is added to open311 description' => sub {
+    $report->set_extra_fields({ name => 'FLYTIP_Q', value => 'Large sofa and household waste' });
+    $report->send_state('unprocessed');
+    $report->update;
+
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        ALLOWED_COBRANDS => [ 'fixmystreet', 'bromley' ],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        FixMyStreet::Script::Reports::send();
+    };
+
+    $report->discard_changes;
+    is $report->send_state, 'sent', 'Report marked as sent';
+
+    my $req = Open311->test_req_used;
+    my $c = CGI::Simple->new($req->content);
+    like $c->param('description'), qr/Flytip information: Large sofa and household waste/, 'flytip information included in description';
+};
+
 for my $test (
     {
         cobrand => 'bromley',
@@ -349,7 +382,7 @@ subtest 'check display of TfL reports' => sub {
     }, sub {
         $mech->follow_link_ok({ text_regex => qr/Back to all reports/i });
     };
-    $mech->content_like(qr{<a title="TfL Test[^>]*www.example.org[^>]*><img[^>]*grey});
+    $mech->content_like(qr{<a title="TfL Test[^>]*www.example.org[^>]*><img[^>]*red});
     $mech->content_like(qr{<a title="Test Test[^>]*href="/[^>]*><img[^>]*yellow});
 };
 
@@ -606,10 +639,359 @@ for my $test (
         };
         $processor->_current_service( { service_code => $test->{code}, service_name => 'Lamp on during day' } );
         $processor->_add_meta_to_contact( $contact );
-        $contact->discard_changes;
         my @extra_fields = $contact->get_extra_fields;
         is $extra_fields[0][2]->{code}, $test->{result}, $test->{description};
     };
 }
+
+subtest 'Can select asset that is in Lewisham area on Bromley Cobrand' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['bromley', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_in_ok('test@example.com');
+        $mech->get_ok('/report/new/?longitude=0.005357&latitude=51.418776');
+        $mech->content_contains('That location is not covered by Bromley Council', 'Area in Lewisham not reportable on Bromley cobrand');
+        $mech->get_ok('/report/new/?longitude=-0.071410&latitude=51.419275&category=Streetlights');
+        $mech->submit_form_ok( { with_fields => {
+                title => 'Lamp issue in Lewisham on Bromley',
+                detail => 'Lamp issue over the border',
+                fms_layer_owner => 'bromley',
+                longitude => 0.005357,
+                latitude => 51.418776,
+                fms_extra_title => 'Mr'
+            }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
+        my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        is $problem->title, 'Lamp issue in Lewisham on Bromley', 'Report has been made';
+        is $problem->body, 'Bromley Council', 'Problem on correct body';
+    };
+};
+
+subtest 'Can select asset that is in Lewisham area on FMS' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['fixmystreet', 'tfl'],
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        $mech->log_in_ok('test@example.com');
+        $mech->get_ok('/report/new/?longitude=0.005357&latitude=51.418776');
+        $mech->content_contains('We do not yet have details for the council that covers this location', 'Lewisham does not have Bromley categories');
+        $mech->get_ok('/report/new/?longitude=-0.071410&latitude=51.419275&category=Streetlights');
+        $mech->submit_form_ok( { with_fields => {
+                title => 'Lamp issue in Lewisham on FMS',
+                detail => 'Lamp issue over the border',
+                fms_layer_owner => 'bromley',
+                longitude => 0.005357,
+                latitude => 51.418776,
+                fms_extra_title => 'Mr'
+            }}, 'Location in Lewisham ok as clicked from Bromley location onto Bromley asset');
+        my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        is $problem->title, 'Lamp issue in Lewisham on FMS', 'Report has been made';
+        is $problem->body, 'Bromley Council', 'Problem on correct body';
+    };
+};
+
+package SOAP::Result;
+sub result { return $_[0]->{result}; }
+sub new { my $c = shift; bless { @_ }, $c; }
+
+package main;
+
+subtest 'redirecting of reports between backends' => sub {
+    my $integ = Test::MockModule->new('SOAP::Lite');
+    $integ->mock(call => sub {
+        my ($cls, @args) = @_;
+        my $method = $args[0]->name;
+        if ($method eq 'GetEventType') {
+            return SOAP::Result->new(result => {
+                Workflow => { States => { State => [
+                    { CoreState => 'New', Name => 'New', Id => 15001 },
+                    { CoreState => 'Pending', Name => 'Unallocated', Id => 15002 },
+                    { CoreState => 'Pending', Name => 'Allocated to Crew', Id => 15003 },
+                    { CoreState => 'Closed', Name => 'Completed', Id => 15004,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 201, Name => '' },
+                        { ResolutionCodeId => 202, Name => 'Spillage on Arrival' },
+                      ] } },
+                    { CoreState => 'Closed', Name => 'Not Completed', Id => 15005,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 203, Name => 'Nothing Found' },
+                        { ResolutionCodeId => 204, Name => 'Too Heavy' },
+                        { ResolutionCodeId => 205, Name => 'Inclement Weather' },
+                      ] } },
+                    { CoreState => 'Closed', Name => 'Rejected', Id => 15006,
+                      ResolutionCodes => { StateResolutionCode => [
+                        { ResolutionCodeId => 206, Name => 'Out of Time' },
+                        { ResolutionCodeId => 207, Name => 'Duplicate' },
+                      ] } },
+                ] } },
+            });
+        } elsif ($method eq 'GetEvent') {
+            my ($key, $type, $value) = ${$args[3]->value}->value;
+            my $external_id = ${$value->value}->value->value;
+            is $external_id, 'guid';
+            return SOAP::Result->new(result => {
+                Guid => 'hmm',
+                Id => 'id',
+                Data => {
+                    ExtensibleDatum => [
+                        {
+                            DatatypeId => 55418,
+                            DatatypeName => "Veolia Notes",
+                            Value => "Outgoing notes from Echo",
+                        },
+                    ],
+                },
+            });
+        } else {
+            is $method, 'UNKNOWN';
+        }
+    });
+
+    $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Environmental Services',
+        email => 'LBB_RRE_FROM_VEOLIA_STREETS',
+    );
+    $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Street Services',
+        email => '3045',
+    );
+
+    my $contact = $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Street issue',
+        email => 'Conf_irm',
+    );
+    FixMyStreet::DB->resultset("ResponseTemplate")->create({
+        body_id => $body->id,
+        title => 'Completed',
+        text => 'Template text',
+        auto_response => 1,
+        state => '',
+        external_status_code => 67,
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'bromley',
+        COBRAND_FEATURES => {
+            echo => { bromley => {
+                url => 'https://www.example.org/',
+                receive_action => 'action',
+                receive_username => 'un',
+                receive_password => 'password',
+            } },
+            waste => { bromley => 1 },
+        },
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Street issue', {
+            category => 'Street issue',
+            whensent => DateTime->now,
+        });
+
+        my $in = $mech->echo_notify_xml('guid', 2104, 15004, 1252, 'FMS-' . $report->id);
+        my $detail = $report->detail;
+
+        subtest 'A report sent to Confirm, then redirected to Echo' => sub {
+            $report->update({ external_id => 12345 });
+
+            my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+                <service_requests_updates>
+                <request_update>
+                <update_id>UPDATE_1</update_id>
+                <service_request_id>12345</service_request_id>
+                <status>REFERRED_TO_VEOLIA_STREETS</status>
+                <description>This is a handover note</description>
+                <updated_datetime>UPDATED_DATETIME</updated_datetime>
+                </request_update>
+                </service_requests_updates>
+            };
+            my $update_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+            $requests_xml =~ s/UPDATED_DATETIME/$update_dt/g;
+
+            my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+            Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+            my $update = Open311::GetServiceRequestUpdates->new(
+                system_user => $staffuser,
+                current_open311 => $o,
+                current_body => $body,
+            );
+            $update->process_body;
+            $report->discard_changes;
+            is $report->comments->count, 1;
+            is_deeply [ map { $_->state } $report->comments->all ], ['hidden'];
+            is $report->whensent, undef;
+            is $report->get_extra_metadata('handover_notes'), 'This is a handover note';
+            is $report->category, 'Street Services';
+
+            FixMyStreet::Script::Reports::send();
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('service_code'), 3045;
+            is $c->param('description'), "$detail | Handover notes - This is a handover note";
+        };
+
+        my $event_guid = '05a10cb2-44c9-48d9-92a2-cc6788994bae';
+
+        subtest '...then redirected back to Confirm' => sub {
+            $report->update({ external_id => $event_guid, whensent => DateTime->now, send_method_used => 'Open311' });
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 2, 'A new update';
+            is_deeply [ map { $_->state } $report->comments->order_by('id')->all ], ['hidden', 'confirmed'];
+            $report->discard_changes;
+            is $report->external_id, 12345, 'ID changed back';
+            is $report->state, 'in progress', 'A state change';
+            is $report->category, 'Environmental Services';
+            isnt $report->whensent, undef;
+
+            Open311->_inject_response('/servicerequestupdates.xml', '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>42</update_id></request_update></service_request_updates>');
+
+            my $updates = Open311::PostServiceRequestUpdates->new();
+            $updates->send;
+
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('status'), 'REFERRED_TO_LBB_STREETS';
+            is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
+            is $c->param('description'), 'Outgoing notes from Echo';
+
+            is_deeply [ map { $_->state } $report->comments->order_by('id')->all ], ['hidden', 'hidden'];
+        };
+
+        subtest 'A report sent to Echo, redirected to Confirm' => sub {
+            $report->comments->delete;
+            $report->unset_extra_metadata('original_bromley_external_id');
+            $report->update({ external_id => $event_guid });
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 1, 'A new update';
+            is_deeply [ map { $_->state } $report->comments->all ], ['hidden'];
+            $report->discard_changes;
+            is $report->whensent, undef;
+            is $report->external_id, $event_guid, 'ID not changed';
+            is $report->state, 'in progress', 'A state change';
+            is $report->category, 'Environmental Services';
+            FixMyStreet::Script::Reports::send();
+
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
+            is $c->param('description'), "$detail | Handover notes - Outgoing notes from Echo";
+        };
+
+        subtest 'A second referral update comes in, should be a normal update' => sub {
+            $report->update({ external_id => 'bromley-id' });
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 2, 'A new update';
+            my @updates = $report->comments->order_by('id')->all;
+            is_deeply [ map { $_->state } @updates ], ['hidden', 'confirmed'];
+            is_deeply [ map { $_->problem_state } @updates ], ['in progress', 'Environmental Services'];
+            $report->discard_changes;
+            isnt $report->whensent, undef; # Got sent in last subtest
+            is $report->external_id, 'bromley-id', 'ID not changed';
+        };
+
+        subtest "comment on a closed echo report result in a resend under 'Street Services'" => sub {
+            my $event_id = 123;
+
+            my $echo = Test::MockModule->new('Integrations::Echo');
+
+            $echo->mock('GetEvent', sub { {
+                Guid => $event_guid,
+                ResolvedDate => { DateTime => '2024-03-21T12:00:00Z' },
+                Id => $event_id,
+            } } );
+
+            ($report) = $mech->create_problems_for_body(1, $body->id, 'echo report', {
+                    cobrand => 'bromley',
+                    whensent => 'now()',
+                    send_state => 'sent',
+                    send_method_used => 'Open311',
+                    external_id => $event_guid,
+                });
+            $report->add_to_comments({
+                text => 'Completed',
+                user => $user,
+                send_state => 'processed',
+                problem_state => 'fixed - council',
+                external_id => 'waste',
+            });
+            $report->state('fixed - council');
+            $report->set_extra_metadata(external_status_code => 67);
+            my $comment = $report->add_to_comments({
+                text => 'comment on closed event',
+                user => $user,
+                mark_open => 1,
+            });
+            $report->cobrand_data('waste');
+            $report->update;
+            my $updates = Open311::PostServiceRequestUpdates->new();
+            $updates->send;
+
+            $comment->discard_changes;
+            is $comment->send_state, 'unprocessed', "did not send";
+
+            $comment->update({ send_fail_count => 0 });
+            $report->update({ cobrand_data => '' });
+
+            $updates->send;
+
+            $report->discard_changes;
+            is $report->get_extra_metadata('open311_category_override'), 'Street Services', 'category override applied';
+            is $report->get_extra_metadata('external_status_code'), undef;
+            is $report->state, 'confirmed';
+            is $report->send_state, 'unprocessed', 'report set to be resent';
+
+            $comment->discard_changes;
+            is $comment->send_state, 'skipped', "skipped sending comment";
+
+            FixMyStreet::Script::Reports::send();
+
+            $report->discard_changes;
+            is $report->send_state, 'sent', 'report was resent';
+
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            my $detail = $report->detail;
+            is $c->param('attribute[Original_Event_ID_(if_applicable)]'), $event_id, 'old event ID included in attributes';
+            like $c->param('description'), qr/Closed report has a new comment: comment on closed event\r\nBromley pkg-tcobrandbromleyt-bromley\@example.com\r\n$detail/, 'Comment on closed report included in new report description';
+        };
+
+        subtest "Another update from Echo on this new sent report closes it again" => sub {
+            $report->update({ external_id => $event_guid });
+            my $in = $mech->echo_notify_xml('guid', 2104, 15004, 67, 'FMS-' . $report->id);
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 3, 'A new update';
+            $report->discard_changes;
+            is $report->state, 'fixed - council', 'A state change';
+            is $report->get_extra_metadata('external_status_code'), 67;
+            my $comment = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $comment->text, "Outgoing notes from Echo\n\nTemplate text";
+        };
+
+        subtest "Echo then redirect it back to Confirm" => sub {
+            my $in = $mech->echo_notify_xml('guid', 2104, 15004, 1252, 'FMS-' . $report->id);
+            $mech->post('/waste/echo', Content_Type => 'text/xml', Content => $in);
+            is $report->comments->count, 4, 'A new update';
+            $report->discard_changes;
+            is $report->state, 'in progress', 'A state change';
+            is $report->get_extra_metadata('external_status_code'), 1252;
+            my $comment = FixMyStreet::DB->resultset("Comment")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $comment->text, 'Completed';
+
+            FixMyStreet::Script::Reports::send();
+
+            $report->discard_changes;
+            is $report->send_state, 'sent', 'report was resent';
+
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('service_code'), 'LBB_RRE_FROM_VEOLIA_STREETS';
+        };
+
+    };
+};
 
 done_testing();

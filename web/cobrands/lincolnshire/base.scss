@@ -22,21 +22,21 @@ h1, h2, h3 {
 #site-logo {
   height: 64px;
   width: 163px;
-  background-size: 162.5px 55.5px;
-  background-image: url(/cobrands/lincolnshire/images/site-logo.png);
-  background-image: url(/cobrands/lincolnshire/images/site-logo.svg),none;
-  
-  
+  background-size: 162.5px 53.5px;
+  background-image: url(/cobrands/lincolnshire/images/logo.png);
 }
 
-.body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
-  #site-logo {
-    @media (min-width: 48em) {
-      height: 100px;
-      width: 249px;
-      background-size: 249px 81px;
-    }
-  }
+.site-message {
+  background-color: $lincs-pop;
+  color: #fff;
+  border: 0;
+}
+
+.site-message__reporting {
+  background-color: $lincs-pop;
+  color: #fff;
+  padding: 1em;
+  margin: 1em 0;
 }
 
 #report-cta {
@@ -50,8 +50,10 @@ h1, h2, h3 {
   }
 }
 
-.postcode-form-box div {
-  border-color: $lincs-border;
+.postcode-form-box {
+  div {
+    border-color: $lincs-border;
+  }
   input#sub {
     background-color: $lincs-link;
     font-family: 'Roboto', 'Arial', sans-serif;
@@ -69,21 +71,6 @@ h1, h2, h3 {
   }
 }
 
-.btn-primary,
-.green-btn,
-.btn--primary {
-  background: none; // remove gradient bg
-  background-color: $primary;
-  border-color: $primary;
-  &:hover,
-  &:active,
-  &:focus {
-    background: none; // remove gradient bg
-    border-color: darken($primary, 10%);
-    background-color: darken($primary, 10%);
-  }
-}
-
 .form-box, 
 .alerts__cta-box {
   background-color: $lincs-panel;
@@ -95,16 +82,6 @@ h1, h2, h3 {
 
 .description_tips .dont {
   color: $lincs-plum;
-}
-
-input.form-error, 
-textarea.form-error {
-  border-color: $lincs-plum;
-}
-
-div.form-error, 
-p.form-error {
-  background-color: $lincs-plum;
 }
 
 body.mappage .big-green-banner {
@@ -143,7 +120,7 @@ body.mappage .big-green-banner {
 }
 
 .fms-admin-warning {
-  background-color: $lincs-error; 
+  background-color: $lincs-error;
   border-color: darken($lincs-error, 10%);
 }
 

@@ -13,14 +13,27 @@ $(function() {
 
     var costs = $('.js-bin-costs'),
         cost = costs.data('per_bin_cost') / 100,
+        first_bin_discount = costs.data('first_bin_discount') / 100,
+        first_cost = costs.data('per_bin_first_cost') / 100,
         per_new_bin_first_cost = costs.data('per_new_bin_first_cost') / 100,
         per_new_bin_cost = costs.data('per_new_bin_cost') / 100,
         pro_rata_bin_cost = costs.data('pro_rata_bin_cost') / 100;
+
+    function calculate_first_cost() {
+        if (typeof window.garden_waste_first_bin_discount_applies === "function" &&
+            window.garden_waste_first_bin_discount_applies()
+        ) {
+            return first_cost - first_bin_discount;
+        }
+        return first_cost;
+    }
+
     function bin_cost_new() {
       var total_bins = parseInt($('#bins_wanted').val() || 0);
       var existing_bins = parseInt($('#current_bins').val() || 0);
       var new_bins = total_bins - existing_bins;
-      var total_per_year = total_bins * cost;
+      var calculated_first_cost = calculate_first_cost();
+      var total_per_year = (total_bins-1) * cost + calculated_first_cost;
       var admin_fee = 0;
       if (new_bins > 0 && per_new_bin_first_cost) {
           admin_fee += per_new_bin_first_cost;
@@ -30,10 +43,14 @@ $(function() {
       }
       var total_cost = total_per_year + admin_fee;
 
+      if ($('#first-bin-cost-pa').length) {
+          $('#first-bin-cost-pa').text(calculated_first_cost.toFixed(2));
+      }
       $('#cost_pa').text(total_per_year.toFixed(2));
       $('#cost_now').text(total_cost.toFixed(2));
       $('#cost_now_admin').text(admin_fee.toFixed(2));
     }
+    window.garden_waste_bin_cost_new = bin_cost_new;
     $('#subscribe_details #bins_wanted, #subscribe_details #current_bins').on('change', bin_cost_new);
     $('#renew #bins_wanted, #renew #current_bins').on('change', bin_cost_new);
 
@@ -42,7 +59,7 @@ $(function() {
       var existing_bins = parseInt($('#current_bins').val() || 0);
       var new_bins = total_bins - existing_bins;
       var pro_rata_cost = 0;
-      var total_per_year = total_bins * cost;
+      var total_per_year = (total_bins-1) * cost + first_cost;
       var admin_fee = 0;
       var new_bin_text = new_bins == 1 ? 'bin' : 'bins';
       $('#new_bin_text').text(new_bin_text);
@@ -143,7 +160,7 @@ $(function() {
         data = data ? data.message : '';
         var wrapper = select.closest('.bulky-item-wrapper');
         if (data) {
-            wrapper.find('.item-message').text(data);
+            wrapper.find('.item-message').html(data);
             wrapper.find('.bulky-item-message').css('display', 'flex');
         } else {
             wrapper.find('.bulky-item-message').hide();

@@ -7,6 +7,7 @@ sub import {
     strict->import;
     warnings->import(FATAL => 'all');
     utf8->import;
+    Data::Dumper::Concise::Sugar->export_to_level(1);
     Test::More->export_to_level(1);
 }
 
@@ -751,6 +752,31 @@ sub content_as_csv {
         push @rows, $row;
     }
     return @rows;
+}
+
+sub echo_notify_xml {
+    my ($self, $guid, $event_type, $event_state, $res_code, $client_ref) = @_;
+    my $in = <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<Envelope>
+  <Header>
+    <Action>action</Action>
+    <Security><UsernameToken><Username>un</Username><Password>password</Password></UsernameToken></Security>
+  </Header>
+  <Body>
+    <NotifyEventUpdated>
+      <event>
+        <Guid>$guid</Guid>
+        <EventTypeId>$event_type</EventTypeId>
+        <EventStateId>$event_state</EventStateId>
+        <ResolutionCodeId>$res_code</ResolutionCodeId>
+      </event>
+    </NotifyEventUpdated>
+  </Body>
+</Envelope>
+EOF
+    $in =~ s/<event>/<event><ClientReference>$client_ref<\/ClientReference>/ if $client_ref;
+    return $in;
 }
 
 1;

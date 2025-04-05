@@ -1,0 +1,4 @@
+[% IF problem.cobrand_data == 'waste' %]
+    [% SET property_id = problem.waste_property_id %]
+Check your bin collections day: https://recycling-services.merton.gov.uk/waste[% IF property_id %]/[% property_id %][% END %]
+[% END %]

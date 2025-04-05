@@ -50,7 +50,10 @@ sub parse {
             message => sprintf("Response doesn't include 'id_token'")
         ) unless exists $result->{id_token};
 
-        $token = OIDC::Lite::Model::IDToken->load($result->{id_token});
+        $token = {
+            id_token => OIDC::Lite::Model::IDToken->load($result->{id_token}),
+            access_token => $result->{access_token},
+        };
 
     } else {
 

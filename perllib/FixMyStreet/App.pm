@@ -29,6 +29,7 @@ use Catalyst (
     'SmartURI',
     'FixMyStreet::Session::RotateSession',
     'FixMyStreet::Session::StoreSessions',
+    'FixMyStreet::Session::WasteCache',
 );
 
 extends 'Catalyst';

@@ -1,17 +1,27 @@
+[% USE date(format='%Y%m%d') ~%]
 [% PROCESS 'waste/header.html' %]
 [% IF property %]
     [% INCLUDE 'waste/_address_display.html' %]
 [% END %]
 
-<h1 class="govuk-heading-xl">Please call us</h1>
+<h1 class="govuk-heading-xl">Please complete this form to apply for a new/replacement refuse bin</h1>
 
-<p class="govuk-body">New and replacement rubbish bins cost £50. To request
-one please call our contact centre on 0208 937 5050, Monday to Friday, 9am to
-5pm (except Bank holidays).</p>
+<p class="govuk-body">New and replacement rubbish bins cost:</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>£65 for a 140 litre bin</li>
+    <li>£80 for a 240 litre and above (subject to criteria).</li>
+</ul>
 
-<p class="govuk-body">Please note that all requests for new or replacement
-bins will be assessed by our Education and Outreach team. If your request is
-approved by the team, payment must then be received before bins can be
-delivered.</p>
+<p class="govuk-body">Please note that all requests for new or replacement bins will
+be assessed by our Waste and Recycling team. If your request is approved by the team,
+payment must then be received before bins can be delivered.</p>
+
+<p class="govuk-body">Current legislation allows the Council to charge you for
+a general waste bin. You can find out more by reading
+<a href="http://www.legislation.gov.uk/ukpga/1990/43/section/46" target="_blank">Section 46 of the Environmental Protection Act 1990</a>.
+</p>
+
+<p class="govuk-body"><a class="btn" href="https://brent-self.achieveservice.com/en/AchieveForms/?form_uri=sandbox-publish://AF-Form-cbd6c86f-4b36-47e5-b571-c86e6fcefaef/definition.json&redirectlink=%2Fen&cancelRedirectLink=%2Fen&consentMessage=yes">Apply for a new/replacement refuse bin</a>
+</p>
 
 [% INCLUDE footer.html %]

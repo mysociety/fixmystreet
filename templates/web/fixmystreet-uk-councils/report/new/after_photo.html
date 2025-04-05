@@ -1,9 +1,14 @@
-<div class="description_tips" aria-label="[% loc('Tips for perfect photos') %]">
+<div class="description_tips" id="js-photo-tips" aria-label="[% loc('Tips for perfect photos') %]">
     <ul class="do">
-        <li>Reports with photos in them tend to get fixed more quickly</li>
-        <li>[% loc('To help us locate the problem, include both a close-up and a wide shot') %]</li>
+        <li class="js-photo-tips-default-do">Reports with photos in them tend to get fixed more quickly</li>
+        <li class="js-photo-tips-default-do">[% loc('To help us locate the problem, include both a close-up and a wide shot') %]</li>
     </ul>
     <ul class="dont">
         <li id="js-photo-tips-avoid-personal-info">[% loc('Avoid personal information and vehicle number plates') %]</li>
+    </ul>
+</div>
+<div class="description_tips hidden" id="js-photo-tips-bucks-vehicle-littering" aria-label="[% loc('Tips for perfect photos') %]">
+    <ul class="do">
+        To help us resolve this problem please upload two images (screen shots from video); one of the vehicle index and one of the litter being thrown from the vehicle
     </ul>
 </div>

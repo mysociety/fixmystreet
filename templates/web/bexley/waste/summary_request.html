@@ -1,0 +1,55 @@
+[%
+  title = 'Submit bin request';
+  thing = 'bin request';
+  summary_title = 'Request details';
+  step1 = 'request';
+
+  data = form.saved_data;
+  requests = c.cobrand.requests_for_display(data);
+%]
+
+[% BLOCK answers %]
+  [% IF data.household_size %]
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Household size</dt>
+      <dd class="govuk-summary-list__value">[% data.household_size %] person(s)</dd>
+    </div>
+  [% END %]
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Reason</dt>
+    <dd class="govuk-summary-list__value">[% data.request_reason %]</dd>
+  </div>
+
+  [% # Deliveries %]
+  [% IF requests.0.size %]
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key govuk-summary-list__key--sub"><b>Deliver new:</b></dt>
+    </div>
+    [% FOR container IN requests.0 %]
+      [% INCLUDE container_row %]
+    [% END %]
+  [% END %]
+
+  [% # Removals %]
+  [% IF requests.1.size %]
+    <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-summary-list__key--sub"><b>Remove old:</b></dt>
+    </div>
+    [% FOR container IN requests.1 %]
+      [% INCLUDE container_row %]
+    [% END %]
+  [% END %]
+
+[% END %]
+
+[% PROCESS waste/summary.html %]
+
+[% BLOCK container_row %]
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key govuk-summary-list__key--sub">
+      [% container.name %][% IF container.description %] ([% container.description %])[% END %][% IF container.size_description %] - [% container.size_description %][% END %]
+    </dt>
+    <dd class="govuk-summary-list__value">[% container.quantity || 1 %]</dd>
+  </div>
+[% END %]

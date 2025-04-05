@@ -22,6 +22,23 @@ h4 {
     text-transform: none;
 }
 
+table {
+    border: 1px solid #ccc;
+    margin: 0.5em 0 1em;
+    border-collapse:collapse;
+}
+table th {
+    background-color: #f5f5f5;
+}
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 0.666em;
+}
+
+table th[scope="row"] {
+    text-align: left;
+}
+
 .boxout {
     background-color: $colour_off_white;
     padding: 0.5em 1.5em 1.5em;

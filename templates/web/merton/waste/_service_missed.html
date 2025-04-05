@@ -1,0 +1,32 @@
+[% IF unit.service_id == '2239-textiles' %]
+<p>Put in one <strong>tied</strong> plastic carrier bag beside or on top of your other bins or boxes. You need to use your own bag.
+<p><a href="https://www.merton.gov.uk/rubbish-and-recycling/report-a-missed-collection/textiles-batteries">What to do if we didn’t collect your textiles or shoes</a>
+[% ELSIF unit.service_id == '2239-batteries' %]
+<p>Put in one <strong>untied</strong> plastic carrier bag beside or on top of your other bins or boxes. You need to use your own bag.
+<p><a href="https://www.merton.gov.uk/rubbish-and-recycling/report-a-missed-collection/textiles-batteries">What to do if we didn’t collect your batteries</a>
+[% ELSIF NOT unit.report_allowed AND NOT unit.report_locked_out AND NOT (unit.next AND unit.next.state == 'In progress') AND NOT no_default %]
+  <span class="waste-service-descriptor" style="margin-top: 1.5em;">
+      [% PROCESS 'waste/_service_missed_fallback.html' %]
+  </span>
+[% ELSIF unit.report_open %]
+  <span class="waste-service-descriptor">
+    [% PROCESS 'waste/_service_missed_open.html' %]
+  </span>
+[% ELSIF unit.report_allowed %]
+  [% any_report_allowed = 1 %]
+  <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %][% '?original_booking_id=' _ original_booking IF original_booking %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="service-[% unit.service_id %]" value="1">
+    <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
+  </form>
+[% ELSIF unit.report_locked_out %]
+  <span class="waste-service-descriptor">A missed collection cannot be reported;
+    [% IF unit.report_locked_out_reason %]
+        [% unit.report_locked_out_reason %]
+    [% ELSE %]
+        please see the last collection status above.
+    [% END %]
+  </span>
+[% ELSIF unit.next AND unit.next.state == 'In progress' %]
+  <span class="waste-service-descriptor" style="margin-top: 1.5em;">A missed collection cannot be reported on the day of collection until the crew have finished their round.</span>
+[% END %]

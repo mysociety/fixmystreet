@@ -214,9 +214,7 @@ sub generate_dashboard {
     $last_seven_days{fixed_total} = sum @{$last_seven_days{fixed}};
     $last_seven_days{updated_total} = sum @{$last_seven_days{updated}};
 
-    if ($body) {
-        calculate_top_five_wards(\%data, $rs, $body);
-    } else {
+    if (!$body) {
         calculate_top_five_bodies(\%data);
     }
 
@@ -283,28 +281,6 @@ sub calculate_top_five_bodies {
 
     @top_five_bodies = @top_five_bodies[0..4] if @top_five_bodies > 5;
     $data->{top_five_bodies} = \@top_five_bodies;
-}
-
-sub calculate_top_five_wards {
-    my ($data, $rs, $body) = @_;
-
-    my $children = $body->area_children;
-    die $children->{error} if $children->{error};
-
-    my $week_ago = $dtf->format_datetime(DateTime->now->subtract(days => 7));
-    my $last_seven_days = $rs->search({ confirmed => { '>=', $week_ago } });
-    my $last_seven_days_count = $last_seven_days->count;
-    $last_seven_days = $last_seven_days->search(undef, { select => 'areas' });
-
-    while (my $row = $last_seven_days->next) {
-        $children->{$_}{reports}++ foreach grep { $children->{$_} } split /,/, $row->areas;
-    }
-    my @wards = sort { $b->{reports} <=> $a->{reports} } grep { $_->{reports} } values %$children;
-    @wards = @wards[0..4] if @wards > 5;
-
-    my $sum_five = (sum map { $_->{reports} } @wards) || 0;
-    $data->{other_wards} = $last_seven_days_count - $sum_five;
-    $data->{wards} = \@wards;
 }
 
 1;

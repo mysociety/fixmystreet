@@ -4,7 +4,11 @@
     </div>
     <div class="waste-service-hint__content">
         <p>You can change the number of bins in your subscription.</p>
-        <p>If we need to deliver more bins to you, there is a fee of £15 per bin for admin and delivery.</p>
-        <p>If you order more than one bin at once, the admin and delivery fee will be £7.50 for each additional bin.</p>
+        <p>If we need to deliver more bins to you, there is a fee of
+        £[% tprintf('%.2f', garden_costs.per_new_bin_first / 100 ) %]
+        per bin for admin and delivery.</p>
+        <p>If you order more than one bin at once, the admin and delivery fee will be
+        £[% tprintf('%.2f', garden_costs.per_new_bin / 100 ) %]
+        for each additional bin.</p>
     </div>
 </div>

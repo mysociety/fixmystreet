@@ -1,0 +1,43 @@
+[% PROCESS 'waste/_services_header.html' %]
+[% PROCESS 'waste/_service_missed.html' %]
+
+[% IF unit.requests_open.size %]
+  <span class="waste-service-descriptor">
+    A [% unit.service_name FILTER lower %] container request has been made
+  </span>
+
+  [% IF c.cobrand.moniker == 'merton' %]
+        [% IF NOT (property_time_banded AND unit.service_id == 2242) %]
+            <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Failure+to+deliver&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
+        [% END %]
+    [% END %]
+
+[% ELSIF unit.request_allowed %]
+  [% any_request_allowed = 1 %]
+  [% PROCESS 'waste/_services_request.html' %]
+[% ELSIF unit.garden_waste AND NOT waste_features.garden_modify_disabled AND NOT unit.garden_due AND c.cobrand.waste_show_garden_modify(unit) %]
+  [% PROCESS 'waste/_services_garden_modify.html' %]
+[% END %]
+
+[% IF c.cobrand.moniker == 'merton' %]
+    [% IF property_time_banded AND unit.service_id == 2242 %]
+    <span class="waste-service-descriptor">
+        You need to buy your own black sacks from a supermarket or other shop. If you have some blue general rubbish bags with a Merton Council logo, you can continue to use these until they run out, but we no longer provide new ones.
+    </span>
+    [% END %]
+    [% IF is_staff AND NOT unit.orange_bag %]
+        <a href="[% c.uri_for_action('waste/report', [ property.id ]) %]?additional=1&amp;service-[% unit.service_id %]=1" class="waste-service-link waste-service-descriptor">Request an additional [% unit.service_name FILTER lower %] collection</a>
+    [% END %]
+    [% IF NOT unit.orange_bag AND unit.report_allowed %]
+        <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
+    [% END %]
+[% END %]
+[% IF c.cobrand.moniker == 'sutton' AND (property.domestic_refuse_bin OR communal_property) %]
+    [% IF unit.report_allowed %]
+        <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
+    [% END %]
+[% END %]
+
+[% IF unit.garden_waste %]
+  [% PROCESS 'waste/_services_garden_current.html' %]
+[% END %]

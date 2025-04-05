@@ -1,0 +1,69 @@
+[%
+
+email_footer = "";
+email_columns = 2;
+
+PROCESS 'waste/_email_data.html';
+
+# Special case for programmatic email
+IF is_request_enquiry;
+    PROCESS 'waste/_submit_request_enquiry.html';
+    RETURN;
+END;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">New [% report.category %]</h1>
+  <h2 style="[% h2_style %] margin: 30px 0 10px 0">(for back office only)</h2>
+  <br>
+  <p style="[% p_style %]">
+    The enquiry reference number is <strong>[% report.id %]</strong>.
+  </p>
+
+  [% IF is_no_collections_missed_enquiry %]
+    <p>The below details have been submitted via WasteWorks for your attention because no collections were found at the property.</p>
+  [% END %]
+
+  <h2 style="[% h2_style %] margin: 30px 0 10px 0">Submission details:</h2>
+  <table [% table_reset | safe %]>
+   [% IF is_no_collections_missed_enquiry %]
+    <tr>
+      <th style="[% contact_th_style %]">Trying to report missed collection<br>for business or organisation?</th>
+      <td style="[% contact_td_style %]">[% report.category == 'Business or organisation missed collection enquiry' ? 'Yes' : 'No' %]</td>
+    </tr>
+   [% END %]
+    <tr>
+      <th style="[% contact_th_style %]">Name</th>
+      <td style="[% contact_td_style %]">[% report.name | html %]</td>
+    </tr>
+    <tr>
+      <th style="[% contact_th_style %]">Email</th>
+      <td style="[% contact_td_style %]">
+        [%~ IF report.user.email ~%]
+          <a href="mailto:[% report.user.email | html %]">[% report.user.email | html %]</a>
+        [%~ ELSE ~%]
+          <strong>No email address provided, only phone number</strong>
+        [%~ END ~%]
+      </td>
+    </tr>
+    [%~ IF report.user.phone %]
+      <tr>
+        <th style="[% contact_th_style %]">Phone</th>
+        <td style="[% contact_td_style %]"><a href="tel:[% report.user.phone | html %]">[% report.user.phone | html %]</a></td>
+      </tr>
+    [%~ END %]
+  </table>
+
+  [% end_padded_box | safe %]
+</th>
+
+[% WRAPPER '_email_sidebar.html' object = report %]
+  [% INCLUDE 'waste/_sidebar_content.html' %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

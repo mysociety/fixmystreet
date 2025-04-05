@@ -11,6 +11,12 @@ my $t = DateTime->new(year => 2016, month => 1, day => 1, hour => 12);
 $user->last_active($t);
 $user->update;
 
+my $anon_email = join('@', 'anonymous', 'brent.gov.uk');
+my $anon_user = $mech->create_user_ok($anon_email);
+$anon_user->last_active($t);
+$anon_user->email($anon_email); # Don't want uniquified one
+$anon_user->update;
+
 my $user_inactive = $mech->create_user_ok('inactive@example.com');
 $t = DateTime->now->subtract(months => 4);
 $user_inactive->last_active($t);
@@ -35,6 +41,7 @@ for (my $m = 1; $m <= 12; $m++) {
 
 $mech->create_comment_for_problem($problems[0], $user, 'Name', 'Update', 0, 'confirmed', $problems[0]->state);
 FixMyStreet::DB->resultset("Alert")->create({ alert_type => 'new_updates', parameter => $problems[2]->id, user => $user });
+$user->add_to_planned_reports($problems[1]);
 
 subtest 'Anonymization of inactive fixed/closed reports' => sub {
     $in->reports;
@@ -97,24 +104,34 @@ subtest 'Deleting reports' => sub {
 };
 
 subtest 'Anonymization of inactive users' => sub {
-    my $in = FixMyStreet::Script::Inactive->new( anonymize => 6, email => 3, verbose => 1 );
-    stdout_is { $in->users } "Anonymizing user #" . $user->id . "\nEmailing user #" . $user_inactive->id . "\n", 'users dealt with first time';
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['brent', 'fixmystreet'],
+        COBRAND_FEATURES => {
+            anonymous_account => {
+                brent => 'anonymous',
+            }
+        },
+    }, sub {
+        my $in = FixMyStreet::Script::Inactive->new( anonymize => 6, email => 3, verbose => 1 );
+        stdout_is { $in->users } "Anonymizing user #" . $user->id . "\nEmailing user #" . $user_inactive->id . "\n", 'users dealt with first time';
 
-    my $email = $mech->get_email;
-    my $user_email = $user_inactive->email;
-    like $email->as_string, qr/Your $user_email/, 'Inactive email sent';
-    $mech->clear_emails_ok;
+        my $email = $mech->get_email;
+        my $user_email = $user_inactive->email;
+        like $email->as_string, qr/Your $user_email/, 'Inactive email sent';
+        $mech->clear_emails_ok;
 
-    $user->discard_changes;
-    is $user->email, 'removed-' . $user->id . '@example.org', 'User has been anonymized';
-    is $user->from_body, undef;
+        $user->discard_changes;
+        is $user->email, 'removed-' . $user->id . '@example.org', 'User has been anonymized';
+        is $user->from_body, undef;
+        isnt $user->user_planned_reports->first->removed, undef;
 
-    stdout_is { $in->users } '', 'No output second time';
+        stdout_is { $in->users } '', 'No output second time';
 
-    $mech->email_count_is(0); # No further email sent
+        $mech->email_count_is(0); # No further email sent
 
-    $user->discard_changes;
-    is $user->email, 'removed-' . $user->id . '@example.org', 'User has been anonymized';
+        $user->discard_changes;
+        is $user->email, 'removed-' . $user->id . '@example.org', 'User has been anonymized';
+    };
 };
 
 subtest 'Test TfL deletion of safety critical reports' => sub {

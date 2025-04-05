@@ -7,21 +7,57 @@ use utf8;
 use DateTime;
 use DateTime::Format::Strptime;
 use DateTime::Format::W3CDTF;
+use Hash::Util qw(lock_hash);
 use Integrations::Echo;
 use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
 use FixMyStreet::DB;
 use Moo;
-with 'FixMyStreet::Roles::CobrandEcho';
-with 'FixMyStreet::Roles::CobrandPay360';
-with 'FixMyStreet::Roles::Open311Multi';
-with 'FixMyStreet::Roles::SCP';
-with 'FixMyStreet::Roles::CobrandBulkyWaste';
+use WasteWorks::Costs;
+with 'FixMyStreet::Roles::Cobrand::Echo';
+with 'FixMyStreet::Roles::Cobrand::Pay360';
+with 'FixMyStreet::Roles::Cobrand::SCP';
+with 'FixMyStreet::Roles::Cobrand::Waste';
+with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
-sub council_area_id { return 2482; }
+sub council_area_id { return [2482]; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
+
+use constant REFERRED_TO_BROMLEY => 'Environmental Services';
+use constant REFERRED_TO_VEOLIA => 'Street Services';
+
+my %SERVICE_IDS = (
+    domestic_refuse => 531,
+    fas_refuse => 532,
+    communal_refuse => 533,
+    domestic_mixed => 535,
+    communal_mixed => 536,
+    domestic_paper => 537,
+    communal_paper => 541,
+    domestic_food => 542,
+    communal_food => 544,
+    garden => 545,
+);
+lock_hash(%SERVICE_IDS);
+
+my %EVENT_TYPE_IDS = (
+    general_enquiry => 2148,
+    missed_refuse => 2095,
+    missed_mixed => 2096,
+    missed_paper => 2097,
+    missed_food => 2098,
+    missed_garden => 2099,
+    missed_clinical => 2100,
+    missed_commercial_refuse => 2101,
+    missed_commercial_recycling => 2102,
+    missed_bulky => 2103,
+    request => 2104,
+    bulky => 2175,
+    garden => 2106,
+);
+lock_hash(%EVENT_TYPE_IDS);
 
 sub report_validation {
     my ($self, $report, $errors) = @_;
@@ -102,7 +138,9 @@ sub geocode_postcode {
 # Bromley pins always yellow
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if ($context||'') ne 'reports' && !$self->owns_problem($p);
+    return 'bromley/green' if $p->is_fixed;
+    return 'grey' if $p->is_closed;
+    return 'red' if ($context||'') ne 'reports' && !$self->owns_problem($p);
     return 'yellow';
 }
 
@@ -115,9 +153,7 @@ sub recent_photos {
     });
 }
 
-sub send_questionnaires {
-    return 0;
-}
+sub send_questionnaires { 0 }
 
 sub ask_ever_reported {
     return 0;
@@ -148,6 +184,32 @@ sub title_list {
     return ["MR", "MISS", "MRS", "MS", "DR", 'PCSO', 'PC', 'N/A'];
 }
 
+sub check_report_is_on_cobrand_asset {
+    my $self = shift;
+
+    if ($self->{c}->get_param('fms_layer_owner') && $self->{c}->get_param('fms_layer_owner') eq 'bromley') {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    # in_bromley will be true if the point is within the administrative area of Bromley
+    my $in_bromley = grep ($self->council_area_id->[0] == $_, keys %{$self->{c}->stash->{all_areas}});
+
+    # cobrand will be true if the point is within an area of different responsibility from the norm
+    my $cobrand = $self->check_report_is_on_cobrand_asset;
+    if (!$in_bromley && $cobrand) {
+        my $bromley = FixMyStreet::DB->resultset('Body')->find({ name => $self->council_name });
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'Lewisham Borough Council' } values %$bodies;
+        %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'TfL' } values %$bodies;
+        $$bodies{$bromley->id} = $bromley;
+    }
+}
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
@@ -169,10 +231,22 @@ sub available_permissions {
     return $perms;
 }
 
+=item * open311_config
+
+Sets options for what data will be sent to the open311 integrations.
+
+Bromley require all images to be sent for Echo reports, as binaries for upload.
+
+We do not 'always_send_latlong' or 'extended_description'
+
+We do 'send_notpinpointed'
+
+=cut
+
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
-    if ($contact->category eq 'Bulky collection') {
+    if ($contact->email =~ /^\d+$/) {
         $params->{multi_photos} = 1;
         $params->{upload_files} = 1;
     }
@@ -183,7 +257,7 @@ sub open311_config {
 }
 
 sub open311_extra_data_include {
-    my ($self, $row, $h) = @_;
+    my ($self, $row, $h, $contact) = @_;
 
     my $title = $row->title;
 
@@ -220,7 +294,7 @@ sub open311_extra_data_include {
           value => $row->user->email }
     ];
 
-    if ( $row->category eq 'Garden Subscription' ) {
+    if ( $contact->category eq 'Garden Subscription' ) {
         if ( $row->get_extra_metadata('contributed_as') && $row->get_extra_metadata('contributed_as') eq 'anonymous_user' ) {
             push @$open311_only, { name => 'contributed_as', value => 'anonymous_user' };
         }
@@ -240,7 +314,7 @@ sub open311_extra_data_include {
 }
 
 sub open311_extra_data_exclude {
-    [ 'feature_id', 'prow_reference' ]
+    [ 'feature_id', 'prow_reference', 'fms_layer_owner' ]
 }
 
 sub open311_config_updates {
@@ -261,6 +335,29 @@ sub open311_pre_send {
         my $text = $row->detail . "\n\nPrivate comments: $private_comments";
         $row->detail($text);
     }
+
+    if (my $handover_notes = $row->get_extra_metadata('handover_notes')) {
+        my $text = $row->detail . " | Handover notes - $handover_notes";
+        $row->detail($text);
+    }
+
+    if (my $comment_id = $row->get_extra_metadata('echo_report_reopened_with_comment')) {
+        my $comment = FixMyStreet::DB->resultset('Comment')->find($comment_id);
+        if ($comment && $comment->text) {
+            my $text = 'Closed report has a new comment: ' . $comment->text . "\r\n" . $comment->user->name . ' ' . $comment->user->email . "\r\n" . $row->detail;
+            $row->detail($text);
+        }
+    }
+
+    # Any special extra questions to include
+    my $extra = $row->get_extra_fields;
+    foreach (@$extra) {
+        if ($_->{name} =~ /_Q$/ && $_->{value}) {
+            (my $name = ucfirst lc $_->{name}) =~ s/_q//;
+            my $text = "$name information: " . $_->{value} . "\n\n" . $row->detail;
+            $row->detail($text);
+        }
+    }
 }
 
 sub _include_user_title_in_extra {
@@ -276,30 +373,147 @@ sub _include_user_title_in_extra {
 sub open311_pre_send_updates {
     my ($self, $row) = @_;
 
-    $self->{bromley_original_update_text} = $row->text;
-
-    my $private_comments = $row->get_extra_metadata('private_comments');
-    if ($private_comments) {
-        my $text = $row->text . "\n\nPrivate comments: $private_comments";
-        $row->text($text);
-    }
-
     return $self->_include_user_title_in_extra($row);
 }
 
 sub open311_post_send_updates {
-    my ($self, $row) = @_;
+    my ($self, $comment, $external_id) = @_;
 
-    $row->text($self->{bromley_original_update_text});
+    if (($comment->problem_state || '') eq REFERRED_TO_BROMLEY) {
+        if ($external_id) {
+            $comment->state('hidden');
+        }
+    }
 }
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
+    # Inline the Open311Multi code here, as we need to adjust it
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+
+    # If the report was sent to Bromley (external ID is digits), but now is
+    # Echo (contact starts with digits), use a dummy code so open311-adapter
+    # thinks it is a Passthrough service and the update goes to Bromley.
+    if ($comment->problem->external_id =~ /^\d+$/ && $contact->email =~ /^\d+/) {
+        $params->{service_code} = 'DUMMY';
+    }
+
+    my $private_comments = $comment->get_extra_metadata('private_comments');
+    if ($private_comments) {
+        my $text = $params->{description} . "\n\nPrivate comments: $private_comments";
+        $params->{description} = $text;
+    }
+
     delete $params->{update_id};
     $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',
     $params->{update_id_ext} = $comment->id;
     $params->{service_request_id_ext} = $comment->problem->id;
+
+    if (($comment->problem_state || '') eq REFERRED_TO_BROMLEY) {
+        $params->{status} = 'REFERRED_TO_LBB_STREETS';
+        if (my $handover_notes = $comment->problem->get_extra_metadata('handover_notes')) {
+            $params->{description} = $handover_notes;
+        }
+    }
+}
+
+=head2 open311_waste_update_extra
+
+Ingore any updates from Echo that aren't New/Completed and don't have a resolution code
+
+=cut
+
+sub open311_waste_update_extra {
+    my ($self, $cfg, $event) = @_;
+
+    my $override_status;
+    my $event_type = $cfg->{event_types}{$event->{EventTypeId}};
+    my $state_id = $event->{EventStateId};
+    my $resolution_id = $event->{ResolutionCodeId} || '';
+    my $description = $event_type->{states}{$state_id}{name} || '';
+
+    my $closed_general_enquiry = $event->{EventTypeId} == $EVENT_TYPE_IDS{general_enquiry} && $description eq 'Closed';
+    my $not_new_completed = $description ne 'New' && $description ne 'Completed';
+    if ($not_new_completed && !$resolution_id && !$closed_general_enquiry) {
+        $override_status = "";
+    }
+
+    return (
+        defined $override_status ? (status => $override_status ) : (),
+    );
+}
+
+=head2 open311_get_update_munging
+
+This is used to perform Bromley's custom redirecting between Confirm and Echo
+backends. If we receive an update with a particular status/resolution, we need
+to make some changes to the update and associated report so that it is resent
+appropriately.
+
+=cut
+
+sub open311_get_update_munging {
+    my ($self, $comment, $state, $request) = @_;
+    my $problem = $comment->problem;
+
+    # An update from Bromley with a special referral state, means "resend to Echo"
+    if ($state eq 'referred to veolia streets') {
+        # Do we want to store the old category somewhere for display?
+        $problem->category(REFERRED_TO_VEOLIA); # Will be an Echo Event Type ID
+        $problem->state('in progress');
+        $comment->problem_state('in progress');
+        $problem->set_extra_metadata( original_bromley_external_id => $problem->external_id );
+        $problem->set_extra_metadata(handover_notes => $comment->text);
+        # Resending report, don't need comment to be public
+        $comment->state('hidden');
+        $problem->resend;
+        return;
+    }
+
+    # Fetch any outgoing notes on the Echo event
+    # If we pulled the update, we already have it, otherwise look it up
+    my $notes = "";
+    if ($self->_has_report_been_sent_to_echo($problem)) {
+        my $event = $request->{echo_event} || do {
+            my $echo = $self->feature('echo');
+            $echo = Integrations::Echo->new(%$echo);
+            my $event = $echo->GetEvent($request->{service_request_id}); # From the event, not the report
+            $echo->log($event->{Data}) if $event->{Data};
+            $event;
+        };
+        my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
+        foreach (@$data) {
+            $notes = $_->{Value} if $_->{DatatypeName} eq 'Veolia Notes';
+        }
+    }
+
+    # An update from Echo with resolution code 1252 means "refer to Bromley"
+    my $code = $comment->get_extra_metadata('external_status_code') || '';
+    if ($code eq '1252') {
+        $problem->category(REFERRED_TO_BROMLEY); # Will be LBB_RRE_FROM_VEOLIA_STREETS
+        $problem->state('in progress');
+        $comment->problem_state('in progress');
+        $problem->set_extra_metadata(handover_notes => $notes);
+
+        if (my $original_external_id = $problem->get_extra_metadata('original_bromley_external_id')) {
+            # Originally sent to Bromley, don't need to resend report
+            $problem->external_id($original_external_id);
+            $comment->problem_state(REFERRED_TO_BROMLEY);
+            $comment->send_state('unprocessed');
+        } elsif ($self->_has_report_been_sent_to_echo($problem)) {
+            # Resending report from Echo to Bromley for first time, don't need comment to be public
+            $comment->state('hidden');
+            $problem->resend;
+        } else {
+            # Assume it has already been sent to Bromley, no need to resend report
+            $comment->problem_state(REFERRED_TO_BROMLEY);
+            $comment->send_state('unprocessed');
+        }
+    } elsif ($notes) {
+        $comment->text($notes . "\n\n" . $comment->text);
+    }
 }
 
 sub open311_post_send {
@@ -374,15 +588,50 @@ sub open311_contact_meta_override {
     @$meta = grep { !$ignore{$_->{code}} } @$meta;
 }
 
+=head2 _has_report_been_sent_to_echo
+
+Assumes a report has been sent to Echo if the external ID is a GUID.
+
+=cut
+
+sub _has_report_been_sent_to_echo {
+    my ($self, $report) = @_;
+    my $guid_regex = qr/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+    return $report->external_id && $report->external_id =~ /$guid_regex/;
+}
+
 =head2 should_skip_sending_update
 
 Do not send updates to the backend if they were made by a staff user and
 don't have any text (public or private).
 
+Also, if an update is on a closed echo-backed report, skip it and instead
+set the report to be resent under the referring to Veolia category, since we
+can't update closed echo events.
+
 =cut
 
 sub should_skip_sending_update {
     my ($self, $update) = @_;
+
+    my $report = $update->problem;
+    if ($self->_has_report_been_sent_to_echo($report) && $report->cobrand_data ne 'waste') {
+        # We need to know whether to treat this as a normal update or a referral.
+        # We have the GUID but not the ID so we look this up.
+        my $cfg = $self->feature('echo');
+        my $echo = Integrations::Echo->new(%$cfg);
+        my $event = $echo->GetEvent($report->external_id);
+        if ($event->{ResolvedDate}) {
+            $report->update_extra_field({ name => 'Original_Event_ID_(if_applicable)', value => $event->{Id} });
+            $report->set_extra_metadata('open311_category_override' => REFERRED_TO_VEOLIA);
+            $report->set_extra_metadata('echo_report_reopened_with_comment' => $update->id);
+            $report->unset_extra_metadata('external_status_code');
+            $report->state('confirmed');
+            $report->resend;
+            $report->update;
+            return 1;
+        }
+    }
 
     my $private_comments = $update->get_extra_metadata('private_comments');
     my $has_text = $update->text || $private_comments;
@@ -404,38 +653,29 @@ sub munge_report_new_category_list {
     }
 }
 
-sub updates_disallowed {
-    my $self = shift;
-    my ($problem) = @_;
-
-    # No updates on waste reports
-    return 'waste' if $problem->cobrand_data eq 'waste';
-
-    return $self->next::method(@_);
-}
-
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $service_id = $unit->{service_id};
     my $base = '/i/waste-containers';
     my $images = {
-        531 => "$base/sack-black",
-        532 => "$base/sack-black",
-        533 => "$base/large-communal-grey-black-lid",
-        535 => "$base/box-green-mix",
-        536 => "$base/bin-grey-green-lid-recycling",
-        537 => "$base/box-black-paper",
-        541 => "$base/bin-grey-blue-lid-recycling",
-        542 => "$base/caddy-green-recycling",
-        544 => "$base/bin-brown-recycling",
-        545 => "$base/bin-black-brown-lid-recycling",
+        $SERVICE_IDS{domestic_refuse} => svg_container_sack("normal", '#333333'),
+        $SERVICE_IDS{fas_refuse} => svg_container_sack("normal", '#333333'),
+        $SERVICE_IDS{communal_refuse} => "$base/large-communal-grey-black-lid",
+        $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
+        $SERVICE_IDS{communal_mixed} => "$base/bin-grey-green-lid-recycling",
+        $SERVICE_IDS{domestic_paper} => "$base/box-black-paper",
+        $SERVICE_IDS{communal_paper} => "$base/bin-grey-blue-lid-recycling",
+        $SERVICE_IDS{domestic_food} => "$base/caddy-green-recycling",
+        $SERVICE_IDS{communal_food} => "$base/bin-brown-recycling",
+        $SERVICE_IDS{garden} => "$base/bin-black-brown-lid-recycling",
+        bulky => "$base/bulky-white",
     };
     return $images->{$service_id};
 }
 
 =head2 waste_on_the_day_criteria
 
-If it's before 5pm on the day of collection, treat an Outstanding task as if
+If it's before 5pm on the day of collection, treat an Outstanding/Delayed task as if
 it's the next collection and in progress, and do not allow missed collection
 reporting if the task is not completed.
 
@@ -445,7 +685,7 @@ sub waste_on_the_day_criteria {
     my ($self, $completed, $state, $now, $row) = @_;
 
     return unless $now->hour < 17;
-    if ($state eq 'Outstanding') {
+    if ($state eq 'Outstanding' || $state eq 'Delayed') {
         $row->{next} = $row->{last};
         $row->{next}{state} = 'In progress';
         delete $row->{last};
@@ -456,7 +696,6 @@ sub waste_on_the_day_criteria {
 }
 
 sub waste_staff_choose_payment_method { 0 }
-sub waste_cheque_payments { 0 }
 
 sub waste_event_state_map {
     return {
@@ -467,7 +706,7 @@ sub waste_event_state_map {
             Accepted => 'action scheduled',
         },
         Closed => {
-            Closed => 'fixed - council',
+            Closed => 'closed',
             Completed => 'fixed - council',
             'Not Completed' => 'unable to fix',
             'Partially Completed' => 'closed',
@@ -476,79 +715,34 @@ sub waste_event_state_map {
     };
 }
 
-use constant GARDEN_WASTE_SERVICE_ID => 545;
+sub garden_service_id { $SERVICE_IDS{garden} }
 sub garden_service_name { 'Green Garden Waste collection service' }
-sub garden_service_id { GARDEN_WASTE_SERVICE_ID }
-sub garden_current_subscription { shift->{c}->stash->{services}{+GARDEN_WASTE_SERVICE_ID} }
-sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
 sub garden_echo_container_name { 'LBB - GW Container' }
 sub garden_due_days { 48 }
 
-sub garden_current_service_from_service_units {
-    my ($self, $services) = @_;
-
-    my $garden;
-    for my $service ( @$services ) {
-        if ( $service->{ServiceId} == GARDEN_WASTE_SERVICE_ID ) {
-            $garden = $self->_get_current_service_task($service);
-            last;
-        }
-    }
-
-    return $garden;
-}
-
 sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        531 => 'Non-Recyclable Refuse',
-        532 => 'Non-Recyclable Refuse',
-        533 => 'Non-Recyclable Refuse',
-        535 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        536 => 'Mixed Recycling (Cans, Plastics & Glass)',
-        537 => 'Paper & Cardboard',
-        541 => 'Paper & Cardboard',
-        542 => 'Food Waste',
-        544 => 'Food Waste',
-        545 => 'Garden Waste',
+        $SERVICE_IDS{domestic_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{fas_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{communal_refuse} => 'Non-Recyclable Refuse',
+        $SERVICE_IDS{domestic_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $SERVICE_IDS{communal_mixed} => 'Mixed Recycling (Cans, Plastics & Glass)',
+        $SERVICE_IDS{domestic_paper} => 'Paper & Cardboard',
+        $SERVICE_IDS{communal_paper} => 'Paper & Cardboard',
+        $SERVICE_IDS{domestic_food} => 'Food Waste',
+        $SERVICE_IDS{communal_food} => 'Food Waste',
+        $SERVICE_IDS{garden} => 'Garden Waste',
     );
 
     return $service_name_override{$service->{ServiceId}} || $service->{ServiceName};
 }
 
-sub bin_payment_types {
+sub waste_containers {
     return {
-        'csc' => 1,
-        'credit_card' => 2,
-        'direct_debit' => 3,
-    };
-}
-
-sub waste_subscription_types {
-    return {
-        New => 1,
-        Renew => 2,
-        Amend => 3,
-    };
-}
-
-sub waste_container_actions {
-    return {
-        deliver => 1,
-        remove => 2
-    };
-}
-
-sub bin_services_for_address {
-    my $self = shift;
-    my $property = shift;
-
-    $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
-
-    $self->{c}->stash->{containers} = {
         1 => 'Green Box (Plastic)',
         3 => 'Wheeled Bin (Plastic)',
         12 => 'Black Box (Paper)',
@@ -558,52 +752,41 @@ sub bin_services_for_address {
         44 => 'Garden Waste Container',
         46 => 'Wheeled Bin (Food)',
     };
+}
 
-    $self->{c}->stash->{container_actions} = $self->waste_container_actions;
-
-    my %service_to_containers = (
-        535 => [ 1 ],
-        536 => [ 3 ],
-        537 => [ 12 ],
-        541 => [ 14 ],
-        542 => [ 9, 10 ],
-        544 => [ 46 ],
-        545 => [ 44 ],
+sub waste_service_to_containers {
+    return (
+        $SERVICE_IDS{domestic_mixed} => [ 1 ],
+        $SERVICE_IDS{communal_mixed} => [ 3 ],
+        $SERVICE_IDS{domestic_paper} => [ 12 ],
+        $SERVICE_IDS{communal_paper} => [ 14 ],
+        $SERVICE_IDS{domestic_food} => [ 9, 10 ],
+        $SERVICE_IDS{communal_food} => [ 46 ],
+        $SERVICE_IDS{garden} => [ 44 ],
     );
-    my %request_allowed = map { $_ => 1 } keys %service_to_containers;
-    my %quantity_max = (
-        535 => 6,
-        536 => 4,
-        537 => 6,
-        541 => 4,
-        542 => 6,
-        544 => 4,
-        545 => 6,
+}
+
+sub waste_quantity_max {
+    return (
+        $SERVICE_IDS{domestic_mixed} => 3,
+        $SERVICE_IDS{communal_mixed} => 3,
+        $SERVICE_IDS{domestic_paper} => 3,
+        $SERVICE_IDS{communal_paper} => 3,
+        $SERVICE_IDS{domestic_food} => 2,
+        $SERVICE_IDS{communal_food} => 2,
+        $SERVICE_IDS{garden} => 6,
     );
+}
 
-    $self->{c}->stash->{quantity_max} = \%quantity_max;
+sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
 
-    $self->{c}->stash->{garden_subs} = $self->waste_subscription_types;
+# Bulky collection event. No blocks on reporting a missed collection based on the state and resolution code.
+sub waste_bulky_missed_blocked_codes { {} }
 
-    my $result = $self->{api_serviceunits};
-    return [] unless @$result;
+sub waste_extra_service_info {
+    my ($self, $property, @rows) = @_;
 
-    my $events = $self->_parse_events($self->{api_events});
-    $self->{c}->stash->{open_service_requests} = $events->{enquiry};
-
-    # If there is an open Garden subscription (2106) event, assume
-    # that means a bin is being delivered and so a pending subscription
-    if ($events->{enquiry}{2106}) {
-        $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
-        $self->{c}->stash->{open_garden_event} = 1;
-    }
-
-    my $waste_cfg = $self->feature('waste_features');
-    if ($waste_cfg && $waste_cfg->{bulky_missed}) {
-        # Bulky collection event. No blocks on reporting a missed collection based on the
-        # state and resolution code.
-        $self->bulky_check_missed_collection($events, {});
-    }
+    my $waste_cfg = $self->{c}->stash->{waste_features};
 
     # If we have a service ID for trade properties, consider a property domestic
     # unless we see it.
@@ -614,115 +797,29 @@ sub bin_services_for_address {
         }
     }
 
-    my @to_fetch;
-    my %schedules;
-    my @task_refs;
-    my %expired;
-    foreach (@$result) {
+    foreach (@rows) {
         if (defined($trade_service_id) && $_->{ServiceId} eq $trade_service_id) {
             $property->{pricing_property_type} = 'Trade';
         }
-        my $servicetask = $self->_get_current_service_task($_) or next;
-        my $schedules = _parse_schedules($servicetask);
-        $expired{$_->{Id}} = $schedules if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
-        next unless $schedules->{next} or $schedules->{last};
-        $schedules{$_->{Id}} = $schedules;
-        push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ];
-        push @task_refs, $schedules->{last}{ref} if $schedules->{last};
-    }
-    push @to_fetch, GetTasks => \@task_refs if @task_refs;
-
-    my $cfg = $self->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-    my $calls = $echo->call_api($self->{c}, 'bromley', 'bin_services_for_address:' . $property->{id}, 1, @to_fetch);
-
-    my @out;
-    my %task_ref_to_row;
-    foreach (@$result) {
-        my $service_id = $_->{ServiceId};
-        my $service_name = $self->service_name_override($_);
-        next unless $schedules{$_->{Id}} || ( $service_name eq 'Garden Waste' && $expired{$_->{Id}} );
-
-        my $schedules = $schedules{$_->{Id}} || $expired{$_->{Id}};
-        my $servicetask = $self->_get_current_service_task($_);
-
-        my $containers = $service_to_containers{$service_id};
-        my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
-
-        my $request_max = $quantity_max{$service_id};
-
+        my $servicetask = $_->{ServiceTask};
         my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
         $self->{c}->stash->{assisted_collection} = $self->assisted_collection($data);
-
-        my $garden = 0;
-        my $garden_bins;
-        my $garden_cost = 0;
-        my $garden_due;
-        my $garden_overdue;
-        if ($service_name eq 'Garden Waste') {
-            $garden = 1;
-            $garden_due = $self->waste_sub_due($schedules->{end_date});
-            $garden_overdue = $expired{$_->{Id}};
-            foreach (@$data) {
-                next unless $_->{DatatypeName} eq 'LBB - GW Container'; # DatatypeId 5093
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
-                    if ( $_->{DatatypeName} eq 'Quantity' ) {
-                        $garden_bins = $_->{Value};
-                        $garden_cost = $self->garden_waste_cost_pa($garden_bins) / 100;
-                    }
-                }
-            }
-            $request_max = $garden_bins;
-
-            if ($self->{c}->stash->{waste_features}->{garden_disabled}) {
-                $garden = 0;
-            }
-        }
-
-        my $row = {
-            id => $_->{Id},
-            service_id => $service_id,
-            service_name => $service_name,
-            garden_waste => $garden,
-            garden_bins => $garden_bins,
-            garden_cost => $garden_cost,
-            garden_due => $garden_due,
-            garden_overdue => $garden_overdue,
-            request_allowed => $request_allowed{$service_id} && $request_max && $schedules->{next},
-            requests_open => $open_requests,
-            request_containers => $containers,
-            request_max => $request_max,
-            service_task_id => $servicetask->{Id},
-            service_task_name => $servicetask->{TaskTypeName},
-            service_task_type_id => $servicetask->{TaskTypeId},
-            schedule => $schedules->{description},
-            last => $schedules->{last},
-            next => $schedules->{next},
-            end_date => $schedules->{end_date},
-        };
-        if ($row->{last}) {
-            my $ref = join(',', @{$row->{last}{ref}});
-            $task_ref_to_row{$ref} = $row;
-
-            $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
-
-            my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
-            my $missed_events = [
-                @{$events->{missed}->{$service_id} || []},
-                @{$events_unit->{missed}->{$service_id} || []},
-            ];
-            my $recent_events = $self->_events_since_date($row->{last}{date}, $missed_events);
-            $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
-        }
-        push @out, $row;
     }
+}
 
-    $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
-
-    return \@out;
+sub garden_container_data_extract {
+    my ($self, $data) = @_;
+    my $moredata = Integrations::Echo::force_arrayref($data->{ChildData}, 'ExtensibleDatum');
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
+    foreach (@$moredata) {
+        # $container = $_->{Value} if $_->{DatatypeName} eq 'Container'; # should be 44
+        if ( $_->{DatatypeName} eq 'Quantity' ) {
+            my $garden_bins = $_->{Value};
+            my $garden_cost = $costs->bins($garden_bins) / 100;
+            return ($garden_bins, 0, $garden_cost);
+        }
+    }
 }
 
 sub assisted_collection {
@@ -744,56 +841,38 @@ sub _closed_event {
     return 0;
 }
 
-sub missed_event_types { {
-    2095 => 'missed',
-    2096 => 'missed',
-    2097 => 'missed',
-    2098 => 'missed',
-    2099 => 'missed',
-    2100 => 'missed',
-    2101 => 'missed',
-    2102 => 'missed',
-    2103 => 'missed',
-    2104 => 'request',
-    2175 => 'bulky',
+sub missed_event_types { return {
+    $EVENT_TYPE_IDS{missed_refuse} => 'missed',
+    $EVENT_TYPE_IDS{missed_mixed} => 'missed',
+    $EVENT_TYPE_IDS{missed_paper} => 'missed',
+    $EVENT_TYPE_IDS{missed_food} => 'missed',
+    $EVENT_TYPE_IDS{missed_garden} => 'missed',
+    $EVENT_TYPE_IDS{missed_clinical} => 'missed',
+    $EVENT_TYPE_IDS{missed_commercial_refuse} => 'missed',
+    $EVENT_TYPE_IDS{missed_commercial_recycling} => 'missed',
+    $EVENT_TYPE_IDS{missed_bulky} => 'missed',
+    $EVENT_TYPE_IDS{request} => 'request',
+    $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
-
-=over
-
-=item within_working_days
-
-Given a DateTime object and a number, return true if today is less than or
-equal to that number of working days (excluding weekends and bank holidays)
-after the date.
-
-=cut
-
-sub within_working_days {
-    my ($self, $dt, $days, $future) = @_;
-    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
-    $dt = $wd->add_days($dt, $days)->ymd;
-    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
-    if ( $future ) {
-        return $today ge $dt;
-    } else {
-        return $today le $dt;
-    }
-}
 
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
     my $c = $self->{c};
 
     my %container_types = map { $c->{stash}->{containers}->{$_} => $_ } keys %{ $c->stash->{containers} };
+    my $container_actions = {
+        deliver => 1,
+        remove => 2,
+    };
 
     $c->set_param('Subscription_Type', $type);
     $c->set_param('Subscription_Details_Container_Type', $container_types{'Garden Waste Container'});
-    $c->set_param('Subscription_Details_Quantity', $data->{bin_count});
+    $c->set_param('Subscription_Details_Quantity', $data->{bins_wanted});
     if ( $data->{new_bins} ) {
         if ( $data->{new_bins} > 0 ) {
-            $c->set_param('Container_Instruction_Action', $c->stash->{container_actions}->{deliver} );
+            $c->set_param('Container_Instruction_Action', $container_actions->{deliver} );
         } elsif ( $data->{new_bins} < 0 ) {
-            $c->set_param('Container_Instruction_Action',  $c->stash->{container_actions}->{remove} );
+            $c->set_param('Container_Instruction_Action',  $container_actions->{remove} );
         }
         $c->set_param('Container_Instruction_Container_Type', $container_types{'Garden Waste Container'});
         $c->set_param('Container_Instruction_Quantity', abs($data->{new_bins}));
@@ -811,12 +890,6 @@ sub garden_waste_dd_get_redirect_params {
     return ($token, $id);
 }
 
-sub garden_waste_check_pending {
-    my ($self, $report) = @_;
-    return $report;
-}
-
-
 sub _set_user_source {
     my $self = shift;
     my $c = $self->{c};
@@ -830,7 +903,6 @@ sub _set_user_source {
 
 sub waste_request_form_first_next {
     my $self = shift;
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Request::Bromley';
     return sub {
         my $data = shift;
         return 'replacement' if $data->{"container-44"};
@@ -894,51 +966,6 @@ sub waste_munge_enquiry_data {
     $self->_set_user_source;
 }
 
-sub waste_get_pro_rata_cost {
-    my ($self, $bins, $end) = @_;
-
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($end);
-    my $cost = $bins * $self->waste_get_pro_rata_bin_cost( $sub_end, $now );
-
-    return $cost;
-}
-
-sub waste_get_pro_rata_bin_cost {
-    my ($self, $end, $start) = @_;
-
-    my $weeks = $end->delta_days($start)->in_units('weeks');
-    $weeks -= 1 if $weeks > 0;
-
-    my $base = $self->feature('payment_gateway')->{pro_rata_minimum};
-    my $weekly_cost = $self->feature('payment_gateway')->{pro_rata_weekly};
-
-    my $cost = $base + ( $weeks * $weekly_cost );
-
-    return $cost;
-}
-
-sub waste_display_payment_method {
-    my ($self, $method) = @_;
-
-    my $display = {
-        direct_debit => _('Direct Debit'),
-        credit_card => _('Credit Card'),
-    };
-
-    return $display->{$method};
-}
-
-sub garden_waste_cost_pa {
-    my ($self, $bin_count) = @_;
-
-    $bin_count ||= 1;
-
-    return $self->feature('payment_gateway')->{ggw_cost} * $bin_count;
-}
-
-sub garden_waste_new_bin_admin_fee { 0 }
-
 sub waste_payment_ref_council_code { "LBB" }
 
 sub waste_cc_payment_line_item_ref {
@@ -955,19 +982,6 @@ sub waste_cc_payment_admin_fee_line_item_ref {
 sub waste_cc_payment_sale_ref {
     my ($self, $p) = @_;
     return "GGW" . $p->get_extra_field_value('uprn');
-}
-
-sub admin_templates_external_status_code_hook {
-    my ($self) = @_;
-    my $c = $self->{c};
-
-    my $res_code = $c->get_param('resolution_code') || '';
-    my $task_type = $c->get_param('task_type') || '';
-    my $task_state = $c->get_param('task_state') || '';
-
-    my $code = "$res_code,$task_type,$task_state";
-    $code = '' if $code eq ',,';
-    return $code;
 }
 
 sub dashboard_export_problems_add_columns {
@@ -1121,16 +1135,6 @@ sub collection_date {
     return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
 }
 
-sub _bulky_refund_cutoff_date { }
-
-sub _bulky_date_to_dt {
-    my ($self, $date) = @_;
-    $date = (split(";", $date))[0];
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T', time_zone => FixMyStreet->local_time_zone);
-    my $dt = $parser->parse_datetime($date);
-    return $dt ? $dt->truncate( to => 'day' ) : undef;
-}
-
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
@@ -1138,7 +1142,7 @@ sub waste_munge_bulky_data {
     my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
 
     my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
-    $data->{extra_GUID} = $self->{c}->session->{$guid_key};
+    $data->{extra_GUID} = $self->{c}->waste_cache_get($guid_key);
     $data->{extra_reservation} = $ref;
 
     $data->{title} = "Bulky goods collection";
@@ -1146,6 +1150,7 @@ sub waste_munge_bulky_data {
     $data->{category} = "Bulky collection";
     $data->{extra_Collection_Date} = $date;
     $data->{extra_Exact_Location} = $data->{location};
+    $data->{extra_Notes} = $data->{location}; # We also want to pass this in to the Notes field
 
     my @items_list = @{ $self->bulky_items_master_list };
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
@@ -1250,18 +1255,8 @@ sub cancel_bulky_collections_without_payment {
                         continuousAuditNumber => $can,
                         payment_reference => $tx_id,
                     );
-                    $report->set_extra_fields(
-                        {
-                            name => 'LastPayMethod',
-                            description => 'LastPayMethod',
-                            value => $self->bin_payment_types->{'csc'}
-                        },
-                        {
-                            name => 'PaymentCode',
-                            description => 'PaymentCode',
-                            value => $tx_id
-                        },
-                    );
+                    $report->update_extra_field({ name => 'LastPayMethod', value => $self->bin_payment_types->{'csc'} });
+                    $report->update_extra_field({ name => 'PaymentCode', value => $tx_id });
                     $report->update;
                     $report->add_to_comments({
                         text => "Payment confirmed, reference $tx_id",
@@ -1278,7 +1273,7 @@ sub cancel_bulky_collections_without_payment {
                 user_id => $self->body->comment_user_id,
                 extra => { bulky_cancellation => 1 },
             });
-            $report->state('closed');
+            $report->state('cancelled');
             $report->detail(
                 $report->detail . " | Cancelled since payment was not made in time"
             );

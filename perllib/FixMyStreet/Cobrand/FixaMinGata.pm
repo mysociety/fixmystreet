@@ -9,6 +9,8 @@ use Carp;
 use mySociety::MaPit;
 use DateTime;
 
+sub site_key { 'fixamingata' }
+
 sub country {
     return 'SE';
 }
@@ -18,6 +20,7 @@ sub language_override { 'sv' }
 
 sub enter_postcode_text {
     my ( $self ) = @_;
+
     return _('Enter a nearby postcode, or street name and area');
 }
 
@@ -87,17 +90,22 @@ sub geocoder_munge_results {
 
 sub area_types {
     my $self = shift;
+
     return $self->next::method() if FixMyStreet->staging_flag('skip_checks');
+
     [ 'KOM' ];
 }
 
 sub geocode_postcode {
     my ( $self, $s ) = @_;
+
     # Most people write Swedish postcodes like this:
     # XXX XX, so let's remove the space
     $s =~ s/\ //g;
+
     if ($s =~ /^\d{5}$/) {
         my $location = mySociety::MaPit::call('postcode', $s);
+
         if ($location->{error}) {
             return {
                 error => $location->{code} =~ /^4/
@@ -105,24 +113,30 @@ sub geocode_postcode {
                     : $location->{error}
             };
         }
+
         return {
             latitude  => $location->{wgs84_lat},
             longitude => $location->{wgs84_lon},
         };
     }
+
     return {};
 }
 
 # Vad gör den här funktionen? Är "Sverige" rätt här?
 sub geocoded_string_check {
     my ( $self, $s ) = @_;
+
     return 1 if $s =~ /, Sverige/;
+
     return 0;
 }
 
 sub find_closest {
     my ( $self, $problem ) = @_;
+
     $problem = $problem->{problem} if ref $problem eq 'HASH';
+
     return FixMyStreet::Geocode::OSM->closest_road_text( $self, $problem->latitude, $problem->longitude );
 }
 
@@ -132,6 +146,7 @@ sub guess_road_operator {
 
     my $highway = $inforef->{highway} || "unknown";
     my $refs    = $inforef->{ref}     || "unknown";
+
     return "Trafikverket"
         if $highway eq "trunk" || $highway eq "primary";
 
@@ -139,6 +154,7 @@ sub guess_road_operator {
         return "Trafikverket"
             if $ref =~ m/E ?\d+/ || $ref =~ m/Fv\d+/i;
     }
+
     return '';
 }
 
@@ -167,9 +183,13 @@ sub filter_all_council_ids_list {
 # confirmed state), and red otherwise.
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
+
     return 'green' if $p->is_closed;
+
     return 'green' if $p->is_fixed;
+
     return 'yellow' if $p->is_in_progress;
+
     return 'red';
 }
 
@@ -181,11 +201,6 @@ sub state_groups_inspect {
     ]
 }
 
-sub always_view_body_contribute_details {
-    my ( $self, $contributed_as ) = @_;
-    return $contributed_as eq '';
-}
-
 # Average responsiveness will only be calculated if a body
 # has at least this many fixed reports.
 # (Used in the Top 5 list in /reports)
@@ -195,6 +210,15 @@ sub body_responsiveness_threshold {
 
 sub suggest_duplicates { 1 }
 
-sub default_show_name { 1 }
+sub path_to_email_templates {
+    my ( $self, $lang_code ) = @_;
+
+    my $paths = [
+        FixMyStreet->path_to( 'templates', 'email', $self->moniker ),
+        FixMyStreet->path_to( 'templates', 'email', 'fixamingata'),
+    ];
+
+    return $paths;
+}
 
 1;

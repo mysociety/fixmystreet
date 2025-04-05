@@ -1,7 +1,7 @@
+[% is_missed_collection = report.category == 'Report missed collection' %]
 [%
 
 title = report.title | html;
-email_summary = "New updates on “" _ title _ "”";
 email_columns = 2;
 
 PROCESS '_email_settings.html';
@@ -21,8 +21,12 @@ INCLUDE '_email_top.html';
   [% end_padded_box | safe %]
 </th>
 [% WRAPPER '_email_sidebar.html' object = report %]
-    <h2 style="[% h2_style %]">[% title %]</h2>
-    [% report.detail | html_para_email(secondary_p_style) %]
+    [% IF cobrand.moniker == 'bexley' && is_missed_collection %]
+      [% INCLUDE 'waste/_sidebar_content.html' %]
+    [% ELSE  %]
+      <h2 style="[% h2_style %]">[% title %]</h2>
+      [% report.detail | html_para_email(secondary_p_style) %]
+    [% END %]
     [% TRY %][% INCLUDE '_council_reference_alert_update.html' problem=report p_style=secondary_p_style %][% CATCH file %][% END %]
 [% END %]
 

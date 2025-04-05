@@ -12,7 +12,7 @@ my $mech = FixMyStreet::TestMech->new;
 use open ':std', ':encoding(UTF-8)';
 
 my $nh = $mech->create_body_ok(164186, 'Northamptonshire Highways', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1 }, { cobrand => 'northamptonshire' });
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', send_comments => 1, can_be_devolved => 1, cobrand => 'northamptonshire' });
 # Associate body with North Northamptonshire area
 FixMyStreet::DB->resultset('BodyArea')->find_or_create({
     area_id => 164185,
@@ -349,7 +349,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Dear West Northamptonshire Council,/;
         like $body, qr/http:\/\/www\.example\.org/, 'correct link';
-        like $body, qr/Never retype another FixMyStreet report/, 'Has FMS promo text';
+        like $body, qr/FixMyStreet is an independent service/, 'Has FMS promo text';
     };
 
     subtest 'Check report emails to police use correct branding' => sub {
@@ -364,7 +364,7 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email($email);
         like $body, qr/Dear Northamptonshire Police,/;
         like $body, qr/http:\/\/www\.example\.org/, 'correct link';
-        like $body, qr/Never retype another FixMyStreet report/, 'Has FMS promo text';
+        like $body, qr/FixMyStreet is an independent service/, 'Has FMS promo text';
     };
 
     subtest 'Check report emails to highways use correct branding' => sub {

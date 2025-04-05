@@ -4,6 +4,11 @@
 <meta name="viewport" content="initial-scale=1.0, width=device-width, viewport-fit=cover">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 [% IF page_refresh %]
+    <script type="module" src="[% version('/cobrands/fixmystreet-uk-councils/refresh.js') %]"
+        id="page-refresh" data-every="[% page_refresh %]"></script>
+    <script nomodule>
+        setTimeout(function(){ location.reload() }, [% page_refresh %] * 1000);
+    </script>
     <noscript>
         <meta http-equiv="refresh" content="[% page_refresh %];url=?page_loading=1">
     </noscript>
@@ -36,7 +41,7 @@
 h.style.overflow="hidden";h.appendChild(c)}b=n(f,b);c.fake?(c.parentNode.removeChild(c),h.style.overflow=g,h.offsetHeight):f.parentNode.removeChild(f);return!!b}k={_version:"3.11.4"};var g=function(){};g.prototype=k;g=new g;var h=e.documentElement,p=function(){var b=d.matchMedia||d.msMatchMedia;return b?function(d){return(d=b(d))&&d.matches||!1}:function(b){var a=!1;m("@media "+b+" { #modernizr { position: absolute; } }",function(b){a="absolute"===("getComputedStyle"in d?getComputedStyle(b):b.currentStyle).position});
 return a}}();k.mq=p;d.Modernizr=g})(window,document);
     var fixmystreet=fixmystreet||{};fixmystreet.page="[% page %]";fixmystreet.cobrand="[% c.cobrand.moniker %]";fixmystreet.password_minimum_length=[% cobrand.password_minimum_length %];
-    (function(a){a=a.documentElement;a.className=a.className.replace(/\bno-js\b/,"js");var b=Modernizr.mq("(min-width: 48em)")?"desktop":"mobile";"IntersectionObserver"in window&&(a.className+=" lazyload");"mobile"==b&&(a.className+=' mobile[% " map-fullscreen only-map map-reporting" IF page == "around" || page == "new" %]')})(document);
+    (function(a){a=a.documentElement;a.className=a.className.replace(/\bno-js\b/,"js");var b=Modernizr.mq("(min-width: 48em)")?"desktop":"mobile";"IntersectionObserver"in window&&(a.className+=" lazyload");"mobile"===b&&(a.className+=" mobile"[% IF page == "around" || page == "new" %],Modernizr.mq("(max-height: 30em)")||(a.className+=" map-fullscreen only-map map-reporting")[% END %])})(document);
 </script>
 
 <script nonce="[% csp_nonce %]">
@@ -54,6 +59,7 @@ if ('serviceWorker' in navigator) {
 [% END %]
 
 <meta name="format-detection" content="telephone=no">
+<meta name="google" content="notranslate">
 
 [% INCLUDE 'header_rss.html' %]
 

@@ -1,0 +1,15 @@
+[% IF schedule2_property;
+    SET em = ['uk.veolia.waste.mertonschedule2.mailbox', 'veolia.com'];
+    em = em.join('@');
+%]
+
+<p>
+    This service is not available at this property.
+    Please email your enquiry to <a href="[% em %]">[% em %]</a>.
+</p>
+
+[% ELSE %]
+
+<p>There are no collections scheduled for this address.</p>
+
+[% END %]

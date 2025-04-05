@@ -8,7 +8,8 @@
     [% IF report.category == 'Bulky collection' AND (row.item_problem_state == 'closed' OR row.item_problem_state == 'fixed - council' OR row.item_problem_state == 'unable to fix') %]
       [% INCLUDE 'waste/_bulky_email_comment_end.html' %]
     [% ELSE %]
-      [% email_sanitize_html(update) | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
+      [% email_sanitize_html(update, private_email ? "item_private_email_text" : undef) | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
+      [% IF NOT private_email %]
       <p class="user-name" style="[% list_item_date_style %]">
         [%~ IF update.item_anonymous %]
           [%~ loc('Posted anonymously') -%]
@@ -17,6 +18,7 @@
         [%~ END %]
         [% '(' _ cobrand.prettify_dt(update.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
       </p>
+      [% END %]
     [% END %]
     </div>
 [% END %]

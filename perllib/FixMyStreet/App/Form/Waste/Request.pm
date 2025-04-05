@@ -24,10 +24,9 @@ has_page summary => (
     # For payments, updating the submit button
     update_field_list => sub {
         my $form = shift;
-        if ($form->can('summary_submit_button_label')) {
-            if (my $label = $form->summary_submit_button_label($form->saved_data)) {
-                return { submit => { value => $label } };
-            }
+        my $data = $form->saved_data;
+        if ($data->{payment}) {
+            return { submit => { value => 'Continue to payment' } };
         }
         return {};
     },
@@ -63,7 +62,9 @@ sub validate {
     my $any = 0;
 
     foreach ($self->all_fields) {
-        $any = 1 if $_->name =~ /^container-/ && ($_->value || $self->saved_data->{$_->name});
+        # Either a container-* has been selected, or
+        # Kingston/Merton special cases for change-size-first-page
+        $any = 1 if $_->name =~ /^container-|how_many_exchange|medical_condition/ && ($_->value || $self->saved_data->{$_->name});
     }
     $self->add_form_error('Please specify what you need')
         unless $any;

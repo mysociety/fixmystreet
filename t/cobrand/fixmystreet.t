@@ -7,7 +7,6 @@ sub council_area_id { 2514 }
 sub cut_off_date { DateTime->now->subtract(days => 30)->strftime('%Y-%m-%d') }
 
 package main;
-use utf8;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::UpdateAllReports;
@@ -17,8 +16,8 @@ my $mech = FixMyStreet::TestMech->new;
 my $resolver = Test::MockModule->new('Email::Valid');
 $resolver->mock('address', sub { $_[1] });
 
-my $body = $mech->create_body_ok( 2514, 'Birmingham', {}, { cobrand => 'birmingham' } );
-$mech->create_body_ok( 2482, 'Bromley', {}, { cobrand => 'bromley' });
+my $body = $mech->create_body_ok( 2514, 'Birmingham', { cobrand => 'birmingham' } );
+$mech->create_body_ok( 2482, 'Bromley', { cobrand => 'bromley' });
 
 $mech->create_body_ok(2482, 'Bike provider');
 
@@ -185,11 +184,6 @@ FixMyStreet::override_config {
         });
 
         $mech->get_ok('/about/council-dashboard');
-        $mech->content_contains('How responsive is Birmingham?');
-        # Average of 55 days means the older problem was included in the calculation.
-        $mech->content_lacks('<td>Birmingham</td><td>55 days</td></tr>');
-        # 10 days means the older problem was ignored.
-        $mech->content_contains('<td>Birmingham</td><td>10 days</td></tr>');
     };
 };
 
@@ -216,6 +210,12 @@ subtest 'check heatmap page for cllr' => sub {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'fixmystreet',
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        extra_parishes => {
+            fixmystreet => [ 59087 ],
+        }
+    }
 }, sub {
     subtest 'test enforced 2FA for superusers' => sub {
         my $test_email = 'test@example.com';
@@ -229,6 +229,22 @@ FixMyStreet::override_config {
             { with_fields => { username => $test_email, password_sign_in => 'password' } },
             "sign in using form" );
         $mech->content_contains('requires two-factor');
+
+        # Sign up for 2FA
+        $mech->submit_form_ok({ with_fields => { '2fa_action' => 'activate' } }, "submit 2FA activation");
+        my ($token) = $mech->content =~ /name="secret32" value="([^"]*)">/;
+        use Auth::GoogleAuth;
+        my $auth = Auth::GoogleAuth->new({ secret32 => $token });
+        my $code = $auth->code;
+        $mech->submit_form_ok({ with_fields => { '2fa_code' => $code } }, "provide correct 2FA code" );
+        $mech->content_contains('successfully enabled two-factor authentication', "2FA activated");
+    };
+
+    subtest 'test extra parish areas' => sub {
+        $mech->get_ok('/admin/bodies/add');
+        $mech->content_contains('Bradenham');
+        $mech->content_contains('Castle Bromwich');
+        $mech->log_out_ok;
     };
 };
 
@@ -562,7 +578,7 @@ FixMyStreet::override_config {
         }, "submit details");
         $mech->content_contains('Nearly done');
 
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->title, 'Test Redact report from [phone removed]';
         is $report->detail, 'Please could you email me on [email removed] or ring me on [phone removed].';
 

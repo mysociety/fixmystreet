@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Bexley - code specific to the Bexley Cobrand
+
+=head1 SYNOPSIS
+
+Bexley is an FMS integration with Confirm, Uniform and Symology backends.
+
+Also has a waste integration with Whitespace in L<FixMyStreet::Cobrand::Bexley::Waste>.
+
+=cut
+
 package FixMyStreet::Cobrand::Bexley;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
@@ -6,15 +18,47 @@ use warnings;
 use Time::Piece;
 use DateTime;
 use Moo;
-with 'FixMyStreet::Roles::Open311Multi';
-with 'FixMyStreet::Cobrand::Bexley::Waste';
+with 'FixMyStreet::Roles::Open311Multi',
+     'FixMyStreet::Cobrand::Bexley::Garden',
+     'FixMyStreet::Cobrand::Bexley::Waste';
 
 sub council_area_id { 2494 }
 sub council_area { 'Bexley' }
 sub council_name { 'London Borough of Bexley' }
 sub council_url { 'bexley' }
+
+=head2 Defaults
+
+=over 4
+
+=cut
+
+=item * Admin user domain is C<bexley.gov.uk>
+
+=cut
+
+sub admin_user_domain { 'bexley.gov.uk' }
+
+=item * Bexley uses its own geocoder (L<FixMyStreet::Geocode::Bexley>)
+
+Bexley provides a layer containing street names that
+supplements the standard geocoder
+
+=cut
+
 sub get_geocoder { 'Bexley' }
+
+=item * It has a default map zoom of 4
+
+=cut
+
 sub default_map_zoom { 4 }
+
+=item * It doesn't sent questionnaires to reporters
+
+=cut
+
+sub send_questionnaires { 0 }
 
 sub disambiguate_location {
     my $self    = shift;
@@ -26,6 +70,13 @@ sub disambiguate_location {
         bounds => [ 51.408484, 0.074653, 51.515542, 0.2234676 ],
     };
 }
+
+=item * It overrides Dartford border postcodes
+
+Allows starting to make a report if postcode is in Dartford
+on the border
+
+=cut
 
 sub geocode_postcode {
     my ( $self, $s ) = @_;
@@ -41,11 +92,36 @@ sub geocode_postcode {
     return $self->next::method($s);
 }
 
+=item * Report resending
+
+Report resend button is disabled. But we can resend reports upon category change, unless it will be going to the
+same Symology database, because that will reject saying it already has the
+ID.
+
+=cut
+
+=item * Customised pin colours
+
+Bexley has supplied their own colours for pins #4521
+
+=cut
+
+sub path_to_pin_icons { '/i/pins/bexley/' }
+
+sub pin_new_report_colour { 'yellow' }
+
+sub pin_colour {
+    my ( $self, $p ) = @_;
+    return 'bexley/aqua' if $p->state eq 'investigating';
+    return 'bexley/orange' if $p->state eq 'action scheduled';
+    return 'bexley/grape' if $p->state eq 'not responsible';
+    return 'green-tick' if $p->is_fixed;
+    return 'bexley/spring' if $p->is_closed;
+    return 'yellow';
+}
+
 sub disable_resend_button { 1 }
 
-# We can resend reports upon category change, unless it will be going to the
-# same Symology database, because that will reject saying it already has the
-# ID.
 sub category_change_force_resend {
     my ($self, $old, $new) = @_;
 
@@ -60,6 +136,21 @@ sub category_change_force_resend {
     # Otherwise, okay if we're switching between Symology DBs, but not within
     return ($old =~ /^StreetLighting/ xor $new =~ /^StreetLighting/);
 }
+
+=item * Only show open reports on map page
+
+=back
+
+=cut
+
+sub on_map_default_status { 'open' }
+
+=head2 munge_report_new_category_list
+
+For some categories Bexley staff use a different URL
+from the public in the notices
+
+=cut
 
 sub munge_report_new_category_list {
     my ($self, $options, $contacts, $extras) = @_;
@@ -77,8 +168,6 @@ sub munge_report_new_category_list {
         }
     }
 }
-
-sub on_map_default_status { 'open' }
 
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
@@ -139,6 +228,12 @@ sub open311_update_missing_data {
                 $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
             }
         }
+    } elsif ($contact->email =~ /^Whitespace/) {
+        if (!$row->get_extra_field_value('uprn')) {
+            if (my $ref = $feature->{properties}{UPRN}) {
+                $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
+            }
+        }
     } else { # Symology
         # Reports made via the app probably won't have a NSGRef because we don't
         # display the road layer. Instead we'll look up the closest asset from the
@@ -182,13 +277,11 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
-sub admin_user_domain { 'bexley.gov.uk' }
-
 sub open311_post_send {
     my ($self, $row, $h, $sender) = @_;
 
     # Check Open311 was successful, or if this was the first time a Symology report failed
-    if ($sender->contact->email !~ /^(Confirm|Uniform)/) { # it's a Symology report
+    if ($sender->contact->email !~ /^(Confirm|Uniform|Agile)/) { # it's a Symology report
         # failed at least once, assume email was sent on first failure
         return if $row->send_fail_count;
     } else {
@@ -225,7 +318,7 @@ sub open311_post_send {
         $p1_email = 1 if $burnt eq 'Yes';
     } elsif ($row->category eq 'Dead animal') {
         my $reportType = $row->get_extra_field_value('reportType') || '';
-        if ($reportType eq 'Horse / Large Animal' || $reportType eq 'Cat / Dog') {
+        if ($reportType eq 'Horse / Large Animal') {
             $outofhours_email = 1;
         };
         $p1_email = 1;
@@ -360,9 +453,36 @@ sub dashboard_export_problems_add_columns {
         my $report = shift;
 
         return {
-            user_email => $report->user->email || '',
+            user_email => $report->user ? $report->user->email : '',
         };
     });
+}
+
+=head2 waste_auto_confirm_report
+
+Missed collection reports are automatically confirmed
+
+=cut
+
+sub waste_auto_confirm_report {
+    my ($self, $report) = @_;
+    return $report->category eq 'Report missed collection'
+        || $report->category eq 'Request new container'
+        || $report->category eq 'Request container removal';
+}
+
+=head2 skip_alert_state_changed_to
+
+Bin request update/completion emails sent to user do not have a
+'State changed to:' line
+
+=cut
+
+sub skip_alert_state_changed_to {
+    my ( $self, $report ) = @_;
+
+    return $report->category eq 'Request new container'
+        || $report->category eq 'Request container removal';
 }
 
 1;

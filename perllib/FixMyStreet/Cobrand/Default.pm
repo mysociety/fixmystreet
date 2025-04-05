@@ -215,6 +215,17 @@ sub users {
     return $self->users_restriction(FixMyStreet::DB->resultset('User'));
 }
 
+=item users_staff_admin
+
+Returns a ResultSet of Users, restricted to staff users.
+
+=cut
+
+sub users_staff_admin {
+    my $self = shift;
+    return FixMyStreet::DB->resultset('User')->search({ from_body => { '!=', undef } });
+}
+
 =item users_restriction
 
 Used to restricts users in the admin in a cobrand in a particular way. Do
@@ -817,6 +828,7 @@ The MaPit types this site handles
 
 sub area_types          { FixMyStreet->config('MAPIT_TYPES') || [ 'ZZZ' ] }
 sub area_types_children { FixMyStreet->config('MAPIT_TYPES_CHILDREN') || [] }
+sub area_types_for_admin { $_[0]->area_types }
 
 =item fetch_area_children
 
@@ -934,14 +946,12 @@ sub council_rss_alert_options {
 
     my ( @options, @reported_to_options );
     foreach (values %$all_areas) {
-        $_->{short_name} = $self->short_name( $_ );
-        ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
         push @options, {
             type      => 'council',
-            id        => sprintf( 'area:%s:%s', $_->{id}, $_->{id_name} ),
+            id        => sprintf( 'area:%s', $_->{id} ),
             text      => sprintf( _('Problems within %s'), $_->{name}),
             rss_text  => sprintf( _('RSS feed of problems within %s'), $_->{name}),
-            uri       => $c->uri_for( '/rss/area/' . $_->{short_name} ),
+            uri       => $c->uri_for( '/rss/area/' . $_->{id} ),
         };
     }
 
@@ -1004,9 +1014,7 @@ sub body {
     my $self = shift;
 
     my $cobrand = $self->moniker;
-    return FixMyStreet::DB->resultset("Body")->find({
-        extra => { '@>' => encode_json({ "cobrand" => $cobrand }) },
-    })
+    return FixMyStreet::DB->resultset("Body")->find({ cobrand => $cobrand });
 }
 
 sub example_places {
@@ -1082,10 +1090,7 @@ for your cobrand.
 
 =cut
 
-sub path_to_pin_icons {
-    return '/i/';
-}
-
+sub path_to_pin_icons { '/i/pins/' }
 
 =item tweak_all_reports_map
 
@@ -1463,6 +1468,8 @@ inspector de-duplication and report duplicate suggestions features.
 
 Defaults to 1000m for inspectors, 250m for duplicate suggestions.
 
+Returning a distance of 0 means no nearby reports will be returned at all.
+
 Should return a hashref of the form
 
 {
@@ -1534,5 +1541,22 @@ Returns true when a report sent email should not be sent for the given report.
 =cut
 
 sub suppress_report_sent_email { 0; }
+
+
+=head2 staff_cant_assign_to_disabled_categories
+
+Returns true when staff can assign a report to a disabled category.
+
+=cut
+
+sub staff_can_assign_reports_to_disabled_categories { 1; }
+
+=item direct_debit_collection_method
+
+Returns the method of collection for Direct Debit payments.
+
+=cut
+
+sub direct_debit_collection_method { 'redirect' }
 
 1;

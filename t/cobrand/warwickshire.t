@@ -11,7 +11,7 @@ ok $processor, 'created object';
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $warks = $mech->create_body_ok(2243, 'Warwickshire County Council', {}, { cobrand => 'warwickshire' });
+my $warks = $mech->create_body_ok(2243, 'Warwickshire County Council', { cobrand => 'warwickshire' });
 
 subtest 'check Warwickshire override' => sub {
     my $processor = Open311::PopulateServiceList->new();
@@ -74,7 +74,6 @@ subtest 'check Warwickshire override' => sub {
         description => 'How big is the pothole',
     } ];
 
-    $contact->discard_changes;
     is_deeply $contact->get_extra_fields, $extra, 'No closest_address field returned for Warks';
     is $contact->get_extra_metadata('id_field'), 'external_id', 'id_field set correctly';
 };

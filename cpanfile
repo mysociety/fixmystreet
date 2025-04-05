@@ -11,7 +11,10 @@ requires 'Test::Differences', '0.67'; # [3]
 
 # Minimum versions of dependencies to upgrade for bugfixes
 requires 'CGI', '4.43';
+requires 'HTTP::Tiny', '0.090';
 requires 'Net::Server', '2.009';
+requires 'XML::LibXML', '2.0210';
+requires 'PkgConfig'; # If you don't have pkg-config installed, XML::LibXML won't install
 # For perl 5.20/5.22 support
   requires 'Guard', '1.023';
   requires 'PadWalker', '2.2';
@@ -59,7 +62,7 @@ requires 'Crypt::Eksblowfish::Bcrypt';
 requires 'Crypt::JWT';
 requires 'Crypt::Digest::SHA256';
 requires 'Data::Password::Common';
-requires 'DateTime', '1.51';
+requires 'DateTime', '1.65';
 requires 'DateTime::Format::Flexible';
 requires 'DateTime::Format::HTTP';
 requires 'DateTime::Format::ISO8601';
@@ -88,8 +91,6 @@ requires 'FCGI'; # Required by e.g. Plack::Handler::FCGI
 requires 'File::Find';
 requires 'File::Path';
 requires 'Geo::OLC';
-requires 'Geography::NationalGrid',
-    mirror => 'https://cpan.metacpan.org/';
 requires 'Getopt::Long', '2.52';
 requires 'Getopt::Long::Descriptive', '0.105';
 requires 'HTML::Entities';
@@ -154,12 +155,6 @@ feature 'uk', 'FixMyStreet.com specific requirements' => sub {
 feature 'zurich', 'Zueri wie neu specific requirements' => sub {
     # Geocoder
     requires 'SOAP::Lite', '1.20';
-};
-
-feature 'kiitc', 'KiitC specific requirements' => sub {
-    requires 'Spreadsheet::Read';
-    requires 'Spreadsheet::ParseExcel';
-    requires 'Spreadsheet::ParseXLSX';
 };
 
 # Moderation by from_body user

@@ -94,6 +94,8 @@ li .my-account-buttons a {
     </p>
     </fieldset>
 </li>
+
+[% IF c.cobrand.send_questionnaires %]
 [% current_pref = c.user.questionnaire_notify %]
 <li>
     <fieldset>
@@ -110,6 +112,8 @@ li .my-account-buttons a {
         <input class="btn btn--block" type="submit" value="[% loc('Update') %]">
     </p>
 </li>
+[% END %]
+
 </ul>
 </form>
 

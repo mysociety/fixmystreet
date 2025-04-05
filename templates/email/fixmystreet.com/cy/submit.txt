@@ -25,8 +25,8 @@ Pwnc: [% report.title %]
 
 Manylion: [% report.detail %]
 
-[% FOR field IN report.get_extra_fields %][% IF field.value ~%]
-[% field.description OR field.name %]: [% field.value %]
+[% FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length ~%]
+[% field.description OR field.name %]: [% field.value_label OR field.value %]
 
 [% END %][% END ~%]
 
@@ -35,16 +35,6 @@ Dwyreinio/Gogleiddio
 Lledred: [% report.latitude %]
 
 Hydred: [% report.longitude %]
-
-[% IF report.get_extra_field_value('road_name') ~%]
-Ffordd: [% report.get_extra_field_value('road_name') %]
-[% END %]
-[% IF report.get_extra_field_value('sect_label') ~%]
-Adran: [% report.get_extra_field_value('sect_label') %]
-[% END %]
-[% IF report.get_extra_field_value('area_name') ~%]
-Ardal: [% report.get_extra_field_value('area_name') %]
-[% END %]
 
 Gweld y lleoliad ar OpenStreetMap of this location: [% osm_url %]
 

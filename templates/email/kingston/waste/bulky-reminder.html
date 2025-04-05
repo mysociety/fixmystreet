@@ -7,7 +7,7 @@ email_columns = 2;
 PROCESS '_email_settings.html';
 INCLUDE '_email_top.html';
 
-property_id_uri = report.get_extra_field_value('property_id') | uri;
+property_id_uri = report.waste_property_id | uri;
 cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel_url _ '/' _ report.id;
 %]
 
@@ -15,6 +15,8 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   [% start_padded_box | safe %]
 
   <p style="[% p_style %]">Dear [% report.name %],</p>
+
+  <p style="[% p_style %]">[% email_summary %]</p>
 
   <p style="[% p_style %]">
     [% IF days == 3 %]
@@ -29,9 +31,7 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   [% INCLUDE 'waste/_bulky_extra_text.html' %]
 
   <p style="[% p_style %]">
-    Kind regards,
-    <br>
-    [% IF cobrand.moniker == 'sutton' %]Neighbourhood Services[% ELSE %]Waste Services Team[% END %]
+    [% INCLUDE 'waste/signature.html' %]
   </p>
 
   <p style="[% p_style %]">

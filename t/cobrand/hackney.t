@@ -1,4 +1,3 @@
-use utf8;
 use CGI::Simple;
 use DateTime;
 use DateTime::Format::W3CDTF;
@@ -28,9 +27,10 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
     can_be_devolved => 1,
+    cobrand => 'hackney',
 };
 
-my $hackney = $mech->create_body_ok(2508, 'Hackney Council', $params, { cobrand => 'hackney' });
+my $hackney = $mech->create_body_ok(2508, 'Hackney Council', $params);
 my $contact = $mech->create_contact_ok(
     body_id => $hackney->id,
     category => 'Potholes & stuff',
@@ -315,7 +315,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest "special send handling" => sub {
         my $cbr = Test::MockModule->new('FixMyStreet::Cobrand::Hackney');
-        my $p = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $p = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $contact2->update({ email => 'park:parks@example;estate:estates@example;other:OTHER', send_method => '' });
 
         subtest 'in a park' => sub {
@@ -448,7 +448,7 @@ Rubble";
         (my $c_title = $c->param('attribute[title]')) =~ s/\r\n/\n/g;
         is $c_title, $expected_title;
 
-        my $p = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $p = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $c->param('attribute[requested_datetime]'), DateTime::Format::W3CDTF->format_datetime($p->confirmed->set_nanosecond(0));
     };
 };

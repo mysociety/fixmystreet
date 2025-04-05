@@ -1,0 +1,250 @@
+@import "../sass/h5bp";
+@import "./_variables";
+@import "../sass/mixins";
+@import "../sass/base";
+@import "../fixmystreet-uk-councils/societyworks-footer";
+
+/* GENERAL COMPONENTS */
+html {
+  font-size: 87.5%;
+}
+
+h1, h2 {
+  font-weight: bold;
+}
+
+a {
+  font-weight: 600;
+  &:focus {
+      background-color: $surrey_orange_light;
+  }
+}
+
+.box-warning {
+  background-color: $surrey_grey;
+}
+
+input {
+  @include surrey-focus;
+}
+
+input[type="text"],
+textarea {
+  color: #222; // requested by Surrey
+  font-size: 1.175rem;
+  // workaround for Edge bug where autocomplete text is white
+  // https://stackoverflow.com/questions/78490541/how-do-i-override-the-being-autocompleted-input-color-in-microsoft-edge
+  -webkit-text-fill-color: #222;
+}
+
+
+.item-list__item {
+  a {
+    h3 {
+      font-weight: inherit;
+      color: $link-color;
+    }
+
+    small {
+      font-style: normal;
+    }
+
+    &:focus {
+      background-color: $surrey_orange_light;
+      border-color: $surrey_orange_light;
+      outline: 3px solid $primary_b;
+      outline-offset: 0;
+      h3, small {
+          color: $primary_b;
+      }
+    }
+  }
+}
+
+.item-list--front-page .item-list__item {
+  a {
+    padding: 0.5rem;
+    border-left: 3px solid #0D76A6;
+    background-color: $surrey_grey;
+
+    &:hover {
+      h3 {
+        text-decoration: underline;
+      }
+    }
+
+    &:focus {
+      background-color: $surrey_orange_light;
+      border-color: $surrey_orange_light;
+      outline: 3px solid $primary_b;
+      outline-offset: 0;
+    }
+  }
+
+  margin-bottom: 0.5rem;
+}
+
+div.form-error, p.form-error {
+  background: $surrey_red;
+  border-radius: 0;
+  padding: 5px 7px;
+}
+
+input.form-error, textarea.form-error {
+  border-color: $surrey_red;
+}
+
+/* HEADER */
+#site-logo {
+  $logo-width:55px;
+  $logo-height: 50px;
+  width:  $logo-width;
+  height: 70px; // Same as Surrey website.
+  background-size:  $logo-width  $logo-height;
+  background-image: url("/cobrands/surrey/images/surrey_county_council_white.png");
+  @include surrey-button-focus;
+}
+
+#report-cta {
+  @include navbar-btn;
+}
+
+/* BUTTONS */
+.btn--primary, 
+.postcode-form-box input#sub,
+.mappage .btn{
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text,$focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
+  border-radius: $button-border-radius;
+  text-decoration: none; // For #report-cta
+  @include surrey-focus;
+
+  &:disabled {
+    filter: saturate(0);
+    background-color: transparentize($color: #000000, $amount: 0.9);
+    opacity: 0.7;
+  }
+}
+
+.btn--secondary, 
+.btn-secondary, 
+.nav-menu a.btn-secondary,
+a#geolocate_link,
+.my-account-buttons a{
+  @include button-variant($bg-top: $button-secondary-bg-top, $bg-bottom: $button-secondary-bg-bottom, $border: $button-secondary-border, $text: $button-secondary-text, $hover-bg-bottom: $button-secondary-hover-bg-bottom, $hover-bg-top: $button-secondary-hover-bg-top, $hover-border: $button-secondary-hover-border, $hover-text: $button-secondary-hover-text,$focus-bg-bottom: $button-secondary-focus-bg-bottom, $focus-bg-top: $button-secondary-focus-bg-top, $focus-border: $button-secondary-focus-border, $focus-text: $button-secondary-focus-text);
+  border-width: 0.1rem;
+  border-radius: $button-border-radius;
+  text-decoration: none; // For .my-account-buttons
+  @include surrey-focus;
+
+  &:disabled {
+    filter: saturate(0);
+    background-color: transparentize($color: #000000, $amount: 0.9);
+    opacity: 0.7;
+  }
+}
+
+.postcode-form-box {
+  div {
+    border-width: 0;
+  }
+  input#sub  {
+    border-color: $primary_text;
+  }
+}
+
+#front-main {
+  border-top: 0.1rem solid $base_bg;
+}
+
+.site-message {
+  border: 0.3571428571rem solid $primary;
+  padding: 20px;
+  padding-top: 24px;
+  padding-left: 75px;
+  font-size: 1rem;
+
+  background-image: url('/cobrands/surrey/images/info-circle.svg');
+  background-repeat: no-repeat;
+  background-size: 35px;
+  background-position: left 25px top 20px;
+
+  h3 {
+    font-weight: bold;
+  }
+
+  &.error-message {
+    background-image: url('/cobrands/surrey/images/info-circle-red.svg');
+
+    border: 0.3571428571rem solid $surrey_red;
+  }
+}
+
+/* FOOTER */
+#happy-or-not-smiley-section {
+  background: #f3f6f9;
+}
+
+#happy-or-not-feedback-statement {
+  padding: 1em 0;
+  text-align: center;
+}
+
+.scc-subscribe {
+  background-color: #e0e7cf;
+  padding: 0.9375rem 0;
+  margin: 0 auto;
+
+  p {
+    margin-bottom: 0;
+  }
+
+  .scc-subscribe__icon:before {
+    color: $primary;
+    display: inline-block;
+    font-size: 2.5rem;
+    font-family: 'Font Awesome 6 Free';
+    margin-right: 0.625rem;
+    padding-bottom: 0.1875rem;
+    vertical-align: middle;
+  }
+}
+
+.scc-footer {
+  background-color: #333;
+  color: #fff;
+  padding: 2.375rem 0;
+  margin-top: 0;
+
+  a {
+    &:focus {
+      color: $primary_b;
+    }
+  }
+
+  .scc-footer__list {
+    margin: 0;
+    text-align: center;
+
+    .scc-footer__item {
+      margin-bottom: 0;
+      padding: 10px;
+      list-style: none;
+    }
+
+    .scc-footer__link {
+      color: $primary_text;
+      font-weight: 400;
+    }
+  }
+}
+
+.societyworks-footer p {
+  text-align: center;
+}
+
+/* Reporting flow overrides */
+
+/* Hide the continue button if a message is being shown */
+div.js-reporting-page:has(.unresponsive-council) .js-reporting-page--next {
+  display: none !important;
+}

@@ -18,7 +18,10 @@ use FixMyStreet::App::Form::Waste::Garden::Modify;
 use FixMyStreet::App::Form::Waste::Garden::Cancel;
 use FixMyStreet::App::Form::Waste::Garden::Renew;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
+use FixMyStreet::App::Form::Waste::Garden::Transfer;
+use WasteWorks::Costs;
 use Memcached;
+use Hash::Util qw(lock_hash);
 use JSON::MaybeXS;
 
 has feature => (
@@ -31,10 +34,23 @@ has index_template => (
     default => 'waste/form.html'
 );
 
+my %GARDEN_IDS = (
+    merton => { bin240 => 26, bin140 => 27, sack => 28 },
+    kingston => { bin240 => 26, bin140 => 27, sack => 28 },
+    sutton => { bin240 => 39, bin140 => 37, sack => 36 },
+);
+lock_hash(%GARDEN_IDS);
+
 sub auto : Private {
     my ( $self, $c ) = @_;
 
     $self->SUPER::auto($c);
+
+    # The check will exist by this point - let push endpoint through if needed
+    my $cobrand_check = $c->cobrand->feature( $self->feature );
+    $c->detach( '/page_error_404_not_found' )
+        if $cobrand_check eq 'echo-push-only'
+            && $c->action ne 'waste/echo/receive_echo_event_notification';
 
     $c->stash->{is_staff} = $c->user && $c->cobrand->admin_allow_user($c->user);
 
@@ -51,6 +67,11 @@ sub auto : Private {
 
     $c->stash->{staff_payments_allowed} = '';
     $c->cobrand->call_hook( 'waste_check_staff_payment_permissions' );
+
+    $c->cobrand->call_hook( 'waste_check_downtime' )
+        if $c->action ne 'waste/echo/receive_echo_event_notification'
+            && $c->action ne 'waste/pay'
+            && $c->action ne 'waste/pay_complete';
 
     return 1;
 }
@@ -77,7 +98,7 @@ sub index : Path : Args(0) {
         $c->stash->{continue_id} = $id;
         if (my $p = $c->cobrand->problems->search({ state => 'unconfirmed' })->find($id)) {
             if ($c->stash->{is_staff} && $c->stash->{waste_features}{bulky_retry_bookings}) {
-                my $property_id = $p->get_extra_field_value('property_id');
+                my $property_id = $p->waste_property_id;
                 my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
                 $saved_data->{continue_id} = $id;
                 my $saved_data_field = FixMyStreet::App::Form::Field::JSON->new(name => 'saved_data');
@@ -156,12 +177,19 @@ sub check_payment_redirect_id : Private {
     $c->stash->{report} = $p;
 }
 
+# This looks for pending unconfirmed DD reports in the database, as
+# we might not hear about them for days (though preferably, we can query
+# the DD system involved).
+# For Bexley, DD reports are confirmed immediately, and cancellations
+# might not be instant, so look for any open reports, not just DD
 sub get_pending_subscription : Private {
     my ($self, $c) = @_;
 
     my $uprn = $c->stash->{property}{uprn};
+    my $state = 'unconfirmed';
+    $state = 'confirmed' if $c->cobrand->moniker eq 'bexley';
     my $subs = $c->model('DB::Problem')->search({
-        state => 'unconfirmed',
+        state => $state,
         created => { '>=' => \"current_timestamp-'20 days'::interval" },
         category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
         title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New', 'Garden Subscription - Cancel'] },
@@ -170,7 +198,8 @@ sub get_pending_subscription : Private {
 
     my ($new, $cancel);
     while (my $sub = $subs->next) {
-        if ( $sub->get_extra_field_value('payment_method') eq 'direct_debit' ) {
+        my $payment_method = $sub->get_extra_field_value('payment_method') || '';
+        if ( $c->cobrand->moniker eq 'bexley' || $payment_method eq 'direct_debit' ) {
             if ( $sub->title eq 'Garden Subscription - New' ||
                  $sub->title eq 'Garden Subscription - Renew' ) {
                 $new = $sub;
@@ -180,7 +209,6 @@ sub get_pending_subscription : Private {
         }
 
     }
-    $new = $c->cobrand->call_hook( 'garden_waste_check_pending' => $new );
     $c->stash->{pending_subscription} ||= $new;
     $c->stash->{pending_cancellation} = $cancel;
 }
@@ -193,21 +221,22 @@ sub pay_retry : Path('pay_retry') : Args(0) {
     $c->forward('check_payment_redirect_id', [ $id, $token ]);
 
     my $p = $c->stash->{report};
-    $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->get_extra_field_value('property_id'));
+    $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->waste_property_id);
     $c->forward('pay', [ 'bin_days' ]);
 }
 
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $back) = @_;
 
+    my $p = $c->stash->{report};
+
     # If it's using the same flow as users, but is staff, mark as CSC payment
     if ( $c->stash->{staff_payments_allowed} eq 'cnp' ) {
-        my $p = $c->stash->{report};
         $p->update_extra_field({ name => 'payment_method', value => 'csc' });
         $p->update;
     }
 
-    if ( $c->cobrand->can('waste_cc_get_redirect_url') ) {
+    if ($c->cobrand->waste_cc_has_redirect($p)) {
         my $redirect_url = $c->cobrand->waste_cc_get_redirect_url($c, $back);
 
         if ( $redirect_url ) {
@@ -272,12 +301,12 @@ sub confirm_subscription : Private {
     my ($self, $c, $reference) = @_;
     my $p = $c->stash->{report};
 
-    $c->stash->{property_id} = $p->get_extra_field_value('property_id');
+    $c->stash->{property_id} = $p->waste_property_id;
 
-    my $already_confirmed;
     if ($p->category eq 'Bulky collection' || $p->category eq 'Small items collection') {
         $c->stash->{template} = 'waste/bulky/confirmation.html';
-        $already_confirmed = $c->cobrand->bulky_send_before_payment;
+    } elsif ($p->category eq 'Request new container') {
+        $c->stash->{template} = 'waste/request_confirm.html';
     } else {
         $c->stash->{template} = 'waste/garden/subscribe_confirm.html';
     }
@@ -287,52 +316,8 @@ sub confirm_subscription : Private {
     # rather than the default 'done' form one
     $c->stash->{override_template} = $c->stash->{template};
 
-    return unless $p->state eq 'unconfirmed' || $already_confirmed;
-
-    if ($c->cobrand->suppress_report_sent_email($p)) {
-        # Send bulky confirmation email after report confirmation (see
-        # the suppress_report_sent_email in CobrandSLWP.pm)
-        $p->send_logged_email({ %{$c->stash} }, 0, $c->cobrand);
-    }
-
-    $c->stash->{no_reporter_alert} = 1 if
-        $p->get_extra_metadata('contributed_as') &&
-        $p->get_extra_metadata('contributed_as') eq 'anonymous_user';
-
-    my $db = FixMyStreet::DB->schema->storage;
-    $db->txn_do(sub {
-        $p = FixMyStreet::DB->resultset('Problem')->search({ id => $p->id }, { for => \'UPDATE' })->single;
-        $p->update_extra_field( {
-            name => 'LastPayMethod',
-            description => 'LastPayMethod',
-            value => $c->cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
-        });
-        $p->update_extra_field( {
-            name => 'PaymentCode',
-            description => 'PaymentCode',
-            value => $reference
-        });
-        $p->set_extra_metadata('payment_reference', $reference) if $reference;
-        $p->confirm;
-        $c->forward( '/report/new/create_related_things', [ $p ] );
-        $p->update;
-    });
-
-    if ($already_confirmed) {
-        my $payment = $p->get_extra_field_value('payment');
-        $payment = sprintf( '%.2f', $payment / 100 );
-        my $reference_text = 'reference ';
-        if (!$reference) {
-            $reference_text .= $p->get_extra_metadata('chequeReference') . ' (phone/cheque)';
-        } else {
-            $reference_text .= $reference;
-        }
-        my $comment = $p->add_to_comments({
-            text => "Payment confirmed, $reference_text, amount £$payment",
-            user => $c->cobrand->body->comment_user || $p->user,
-        });
-        $p->cancel_update_alert($comment->id);
-    }
+    # Do everything needed to confirm a waste payment
+    $p->waste_confirm_payment($reference);
 }
 
 sub cancel_subscription : Private {
@@ -431,6 +416,22 @@ sub direct_debit : Path('dd') : Args(0) {
     $c->detach;
 }
 
+sub direct_debit_internal : Private {
+    my ($self, $c) = @_;
+
+    $c->forward('populate_dd_details');
+    $c->cobrand->call_hook('waste_setup_direct_debit');
+    $c->stash->{title} = "Direct Debit mandate";
+    $c->stash->{message} = "Your Direct Debit has been set up successfully.";
+    $c->stash->{template} = 'waste/dd_complete.html';
+
+    # Set an override template, so that the form processing can finish (to e.g.
+    # clear the session unique ID to prevent double submission) and have the
+    # form code load this template rather than the default 'done' form one
+    $c->stash->{override_template} = $c->stash->{template};
+    return 1;
+}
+
 # we process direct debit payments when they happen so this page
 # is only for setting expectations.
 sub direct_debit_complete : Path('dd_complete') : Args(0) {
@@ -470,7 +471,7 @@ sub direct_debit_error : Path('dd_error') : Args(0) {
     if ( $id && $token ) {
         $c->forward('check_payment_redirect_id', [ $id, $token ]);
         my $p = $c->stash->{report};
-        $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->get_extra_field_value('property_id'));
+        $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $p->waste_property_id);
         $c->forward('populate_dd_details');
     }
 
@@ -521,6 +522,8 @@ sub direct_debit_cancel_sub : Private {
     my $p = $c->stash->{report};
     my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
     $p->set_extra_metadata(payerReference => $ref);
+    # Bexley can have immediate cancellation
+    $p->confirm if $c->cobrand->moniker eq 'bexley';
     $p->update;
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
@@ -576,9 +579,10 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
 
     my $report = $c->model('DB::Problem')->find({ id => $id});
     $c->stash->{report} = $report;
-    $c->stash->{property_id} = $report->get_extra_field_value('property_id');
+    $c->stash->{property_id} = $report->waste_property_id;
 
-    if ( $report->get_extra_metadata('contributed_as') ne 'anonymous_user' ) {
+    my $contributed_as = $report->get_extra_metadata('contributed_as') || '';
+    if ( $contributed_as ne 'anonymous_user' ) {
         $c->stash->{sent_email} = 1;
         $c->send_email('waste/csc_payment_failed.txt', {
             to => [ [ $report->user->email, $report->name ] ],
@@ -599,9 +603,14 @@ sub csc_payment_failed : Path('csc_payment_failed') : Args(0) {
     $c->detach;
 }
 
-sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
+sub property_id : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
+    $c->stash->{property_id} = $id;
+}
 
+sub property : Chained('property_id') : PathPart('') : CaptureArgs(0) {
+    my ($self, $c) = @_;
+    my $id = $c->stash->{property_id};
 
     # Some actions chained off /waste/property require user to be logged in.
     # The redirect to /auth does not work if it follows the asynchronous
@@ -624,10 +633,8 @@ sub property : Chained('/') : PathPart('waste') : CaptureArgs(1) {
     # clear this every time they visit this page to stop stale content,
     # unless this load has happened whilst waiting for async Echo/Bartec API
     # calls to complete.
-    # HTMX used for partial refreshes, sends a hx-request header
-    my $loading = ($c->req->{headers}->{'hx-request'} || "") eq "true";
     # non-JS page loads include a page_loading=1 request param
-    $loading ||= $c->get_param('page_loading');
+    my $loading = $c->stash->{ajax_loading} = $c->req->{headers}->{'x-requested-with'} || $c->get_param('page_loading');
 
     if ( $c->req->path =~ m#^waste/[:\w %]+$#i && !$loading) {
         $c->cobrand->call_hook( clear_cached_lookups_property => $id );
@@ -703,9 +710,15 @@ sub bin_day_deny : Private {
     $c->detach('/page_error_403_access_denied', [ $msg ]);
 }
 
-sub calendar : Chained('property') : PathPart('calendar.ics') : Args(0) {
+sub calendar : Chained('property_id') : Args(0) {
+    my ($self, $c) = @_;
+    $c->forward('/about/page', ['waste-calendar']);
+}
+
+sub calendar_ics : Chained('property') : PathPart('calendar.ics') : Args(0) {
     my ($self, $c) = @_;
     $c->res->header(Content_Type => 'text/calendar');
+    $c->res->header(Cache_Control => 'max-age=86400');
     require Data::ICal::RFC7986;
     require Data::ICal::Entry::Event;
     my $calendar = Data::ICal::RFC7986->new(
@@ -754,15 +767,9 @@ sub construct_bin_request_form {
         my $maximum = $_->{request_max};
         foreach my $id (@$containers) {
             my $max = ref $maximum ? $maximum->{$id} : $maximum;
+            next unless $c->stash->{containers}->{$id}; # Must have a label
             push @$field_list, "container-$id" => {
                 type => 'Checkbox',
-                apply => [
-                    {
-                        when => { "quantity-$id" => sub { $max > 1 && $_[0] > 0 } },
-                        check => qr/^1$/,
-                        message => 'Please tick the box',
-                    },
-                ],
                 label => $name,
                 option_label => $c->stash->{containers}->{$id},
                 tags => { toggle => "form-quantity-$id-row" },
@@ -801,38 +808,65 @@ sub construct_bin_request_form {
 
 sub request : Chained('property') : Args(0) {
     my ($self, $c) = @_;
-    my $field_list = construct_bin_request_form($c);
 
-    $c->stash->{first_page} = 'request';
-    my $next = $c->cobrand->call_hook('waste_request_form_first_next');
+    my %form_settings
+        = $c->cobrand->call_hook( 'construct_bin_request_form', $c );
 
-    $c->stash->{page_list} = [
-        request => {
-            fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
-            title => $c->stash->{form_title} || 'Which containers do you need?',
-            check_unique_id => 0,
-            next => $next,
-        },
-    ];
+    my $field_list = $form_settings{field_list}
+        || construct_bin_request_form($c);
+
+    $c->stash->{first_page} = $form_settings{first_page} || 'request';
+
+    my $cls = ucfirst $c->cobrand->council_url;
+    $c->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::$cls";
+
+    if ( $form_settings{page_list} ) {
+        $c->stash->{page_list} = $form_settings{page_list};
+    } else {
+        my $next  = $c->cobrand->call_hook('waste_request_form_first_next');
+        my $title = $c->cobrand->call_hook('waste_request_form_first_title')
+            || 'Which containers do you need?';
+
+        $c->stash->{page_list} = [
+            request => {
+                fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
+                title => $title,
+                intro => 'request/intro.html',
+                check_unique_id => 0,
+                next => $next,
+            },
+        ];
+    }
+
+    $c->cobrand->call_hook("waste_munge_request_form_pages", $c->stash->{page_list}, $field_list);
     $c->stash->{field_list} = $field_list;
     $c->forward('form');
 }
 
 sub process_request_data : Private {
-    my ($self, $c, $form) = @_;
+    my ($self, $c, $form, $reports, $unconfirmed) = @_;
     my $data = $form->saved_data;
     $c->cobrand->call_hook("waste_munge_request_form_data", $data);
     my @services = grep { /^container-/ && $data->{$_} } sort keys %$data;
     my @reports;
+    push @reports, @$reports if $reports;
 
-    if (my $payment = $data->{payment}) {
-        # Will only be the one container
-        my $container = shift @services;
-        my ($id) = $container =~ /container-(.*)/;
+    my $payment = $data->{payment};
+    foreach (@services) {
+        my ($id) = /container-(.*)/;
         $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
-        $c->set_param('payment', $data->{payment});
-        $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
-        $c->forward('add_report', [ $data, 1 ]) or return;
+        if ($payment) {
+            unless ($c->cobrand->moniker eq 'kingston') {
+                $c->set_param('payment', $payment);
+            }
+            $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
+        }
+        $c->forward('add_report', [ $data, $unconfirmed || $payment ? 1 : 0 ]) or return;
+        push @reports, $c->stash->{report};
+    }
+    group_reports($c, @reports);
+
+    if ($payment) {
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
             $c->stash->{message} = 'Payment skipped on staging';
             $c->stash->{reference} = $c->stash->{report}->id;
@@ -844,17 +878,57 @@ sub process_request_data : Private {
                 $c->forward('pay', [ 'request' ]);
             }
         }
-        return 1;
     }
 
-    foreach (@services) {
-        my ($id) = /container-(.*)/;
-        $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
-        $c->forward('add_report', [ $data ]) or return;
-        push @reports, $c->stash->{report};
-    }
-    group_reports($c, @reports);
     return 1;
+}
+
+sub process_garden_transfer : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    # Get the current subscription for the old address
+    my $old_property_id = $data->{previous_ggw_address}->{value};
+    #$c->forward('get_original_sub', ['', $old_property_id]);
+
+    my $base = {};
+    $base->{name} = $c->get_param('name');
+    $base->{email} = $c->get_param('email');
+    $base->{phone} = $c->get_param('phone');
+
+    # Cancel the old subscription
+    my $cancel = { %$base };
+    $cancel->{category} = 'Cancel Garden Subscription';
+    $cancel->{title} = 'Garden Subscription - Cancel';
+    $cancel->{address} = $data->{previous_ggw_address}->{label};
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
+    $c->set_param($end_date_field, $now->ymd);
+    $c->set_param('property_id', $old_property_id);
+    $c->set_param('uprn', $data->{transfer_old_ggw_sub}{transfer_uprn});
+    $c->set_param('transferred_to', $c->stash->{property}->{uprn});
+    $c->forward('setup_garden_sub_params', [ $cancel, undef ]);
+    $c->forward('add_report', [ $cancel ]) or return;
+    $c->stash->{report}->confirm;
+    $c->stash->{report}->update;
+
+    # Create a report for it for the new address
+    my $new = { %$base };
+    $new->{category} = 'Garden Subscription';
+    $new->{title} = 'Garden Subscription - New';
+    $new->{bins_wanted} = $data->{transfer_old_ggw_sub}->{transfer_bin_number};
+    $new->{transfer_bin_type} = $data->{transfer_old_ggw_sub}->{transfer_bin_type};
+
+    my $expiry = $data->{transfer_old_ggw_sub}->{subscription_enddate};
+    $expiry = DateTime::Format::W3CDTF->parse_datetime($expiry);
+    $c->set_param($end_date_field, $expiry->ymd);
+    $c->set_param('property_id', '');
+    $c->set_param('uprn', '');
+    $c->set_param('transferred_from', $data->{transfer_old_ggw_sub}{transfer_uprn});
+    $c->forward('setup_garden_sub_params', [ $new, $c->cobrand->waste_subscription_types->{New} ]);
+    $c->forward('add_report', [ $new ]) or return;
+    $c->stash->{report}->confirm;
+    $c->stash->{report}->update;
 }
 
 sub group_reports {
@@ -862,6 +936,8 @@ sub group_reports {
     my $report = shift @reports;
     if (@reports) {
         $report->set_extra_metadata(grouped_ids => [ map { $_->id } @reports ]);
+        $report->set_extra_metadata(
+            grouped_titles => [ map { $_->title } @reports ] );
         $report->update;
     }
     $c->stash->{report} = $report;
@@ -928,14 +1004,36 @@ sub construct_bin_report_form {
 
     my $field_list = [];
 
+    my $show_all_services = $c->stash->{is_staff} && $c->get_param('additional');
     foreach (@{$c->stash->{service_data}}) {
-        next unless ( $_->{last} && $_->{report_allowed} && !$_->{report_open}) || $_->{report_only};
+        unless (
+            ( $_->{last}
+            && $_->{report_allowed}
+            && !$_->{report_open} )
+            || $_->{report_only}
+            || $show_all_services )
+        {
+            next;
+        }
+        next if $_->{orange_bag}; # Merton special entries
+
         my $id = $_->{service_id};
         my $name = $_->{service_name};
+        my $description = $_->{service_description};
+        my $contains_html = $_->{service_description_contains_html};
         push @$field_list, "service-$id" => {
             type => 'Checkbox',
             label => $name,
-            option_label => $name,
+
+            build_option_label_method => sub {
+                return $name
+                    unless $description;
+
+                return $description
+                    unless $contains_html;
+
+                return FixMyStreet::Template::SafeString->new($description);
+            },
         };
     }
 
@@ -967,14 +1065,17 @@ sub report : Chained('property') : Args(0) {
     my $field_list = construct_bin_report_form($c);
 
     $c->stash->{first_page} = 'report';
+    my $next = $c->cobrand->call_hook('waste_report_form_first_next') || 'about_you';
+
     $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Report';
     $c->stash->{page_list} = [
         report => {
             fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
             title => 'Select your missed collection',
-            next => 'about_you',
+            next => $next,
         },
     ];
+    $c->cobrand->call_hook("waste_munge_report_form_pages", $c->stash->{page_list}, $field_list);
     $c->stash->{field_list} = $field_list;
     $c->forward('form');
 }
@@ -1007,7 +1108,7 @@ sub enquiry : Chained('property') : Args(0) {
 
     my $category = $c->get_param('category');
     my $service = $c->get_param('service_id');
-    $c->detach('property_redirect') unless $category && $service && $c->stash->{services}{$service};
+    $c->detach('property_redirect') unless $category;
 
     my ($contact) = grep { $_->category eq $category } @{$c->stash->{contacts}};
     $c->detach('property_redirect') unless $contact;
@@ -1017,11 +1118,46 @@ sub enquiry : Chained('property') : Args(0) {
     foreach (@{$contact->get_metadata_for_input}) {
         $staff_form = 1 if $_->{code} eq 'staff_form';
         next if ($_->{automated} || '') eq 'hidden_field';
-        my $type = 'Text';
-        $type = 'TextArea' if 'text' eq ($_->{datatype} || '');
+
+        # Handle notices.
+        if ($_->{variable} && $_->{variable} eq 'false') {
+            my $id = $c->stash->{property}->{id};
+            $_->{description} =~ s/PROPERTY_ID/$id/;
+            push @$field_list, "extra_$_->{code}" => {
+                type => 'Notice', label => $_->{description}, required => 0, widget => 'NoRender',
+            };
+            next;
+        }
+
+        if ($_->{code} eq 'Image') {
+            push @$field_list, "location_photo_fileid" => {
+                type => 'FileIdPhoto', num_photos_required => 0, linked_field => 'location_photo',
+            };
+            push @$field_list, "location_photo" => {
+                label => $_->{description},
+                type => 'Photo',
+                tags => {
+                    max_photos => 1,
+                },
+            };
+            next;
+        }
+
+        my %config = (type => 'Text');
+        my $datatype = $_->{datatype} || '';
+        if ($datatype eq 'text') {
+            %config = (type => 'TextArea');
+        } elsif ($datatype eq 'multivaluelist') {
+            my @options = map { { label => $_->{name}, value => $_->{key} } } @{$_->{values}};
+            %config = (type => 'Multiple', widget => 'CheckboxGroup', options => \@options);
+        } elsif ($datatype eq 'singlevaluelist') {
+            my @options = map { { label => $_->{name}, value => $_->{key} } } @{$_->{values}};
+            %config = (type => 'Select', widget => 'RadioGroup', options => \@options);
+        }
+
         my $required = $_->{required} eq 'true' ? 1 : 0;
         push @$field_list, "extra_$_->{code}" => {
-            type => $type, label => $_->{description}, required => $required
+            %config, label => $_->{description}, required => $required
         };
     }
 
@@ -1051,7 +1187,7 @@ sub enquiry : Chained('property') : Args(0) {
             }
         },
     ];
-    $c->cobrand->call_hook("waste_munge_enquiry_form_fields", $field_list);
+    $c->cobrand->call_hook("waste_munge_enquiry_form_pages", $c->stash->{page_list}, $field_list);
     $c->stash->{field_list} = $field_list;
     $c->forward('form');
 }
@@ -1073,8 +1209,11 @@ sub process_enquiry_data : Private {
 }
 
 # staff should not be able to make payments for direct debit payments
+# Except in Bexley
 sub check_if_staff_can_pay : Private {
     my ($self, $c, $payment_type) = @_;
+
+    return 1 if $c->cobrand->moniker eq 'bexley';
 
     if ( $c->stash->{staff_payments_allowed} ) {
         if ( $payment_type && $payment_type eq 'direct_debit' ) {
@@ -1091,10 +1230,7 @@ sub garden_setup : Chained('property') : PathPart('') : CaptureArgs(0) {
 
     $c->detach('property_redirect') if $c->stash->{waste_features}->{garden_disabled};
 
-    $c->stash->{per_bin_cost} = $c->cobrand->garden_waste_cost_pa;
-    $c->stash->{per_sack_cost} = $c->cobrand->garden_waste_sacks_cost_pa;
-    $c->stash->{per_new_bin_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_cost};
-    $c->stash->{per_new_bin_first_cost} = $c->cobrand->feature('payment_gateway')->{ggw_new_bin_first_cost} || $c->stash->{per_new_bin_cost};
+    $c->stash->{garden_costs} = WasteWorks::Costs->new({ cobrand => $c->cobrand });
 }
 
 sub garden_check : Chained('garden_setup') : Args(0) {
@@ -1119,13 +1255,12 @@ sub garden : Chained('garden_setup') : Args(0) {
     $c->detach('property_redirect') if $c->cobrand->garden_current_subscription;
 
     $c->stash->{first_page} = 'intro';
-    my $service = $c->cobrand->garden_service_id;
     $c->stash->{garden_form_data} = {
-        max_bins => $c->stash->{quantity_max}->{$service}
+        max_bins => $c->cobrand->waste_garden_maximum
     };
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden';
     $c->cobrand->call_hook('waste_garden_subscribe_form_setup');
-    $c->forward('form');
+    $c->forward('garden_form');
 }
 
 sub garden_modify : Chained('garden_setup') : Args(0) {
@@ -1137,7 +1272,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
-    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
+    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{sack}) { # SLWP Sack
         if ($c->cobrand->moniker eq 'kingston') {
             my $payment_method = 'credit_card';
             $c->forward('check_if_staff_can_pay', [ $payment_method ]); # Should always be okay here
@@ -1154,9 +1289,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
         $c->forward('get_original_sub', ['user']);
 
-        my $service_id = $c->cobrand->garden_service_id;
-        my $max_bins = $c->stash->{quantity_max}->{$service_id};
-
+        my $max_bins = $c->cobrand->waste_garden_maximum;
         my $payment_method = 'credit_card';
         if ( $c->stash->{orig_sub} ) {
             my $orig_sub = $c->stash->{orig_sub};
@@ -1168,10 +1301,8 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
 
         $c->stash->{display_end_date} = DateTime::Format::W3CDTF->parse_datetime($service->{end_date});
         $c->stash->{garden_form_data} = {
-            pro_rata_bin_cost =>  $c->cobrand->waste_get_pro_rata_cost(1, $service->{end_date}),
             max_bins => $max_bins,
             bins => $service->{garden_bins},
-            end_date => $service->{end_date},
             payment_method => $payment_method,
         };
 
@@ -1184,7 +1315,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         $c->stash->{first_page} = 'alter';
     }
 
-    $c->forward('form');
+    $c->forward('garden_form');
 }
 
 sub garden_cancel : Chained('garden_setup') : Args(0) {
@@ -1203,7 +1334,9 @@ sub garden_cancel : Chained('garden_setup') : Args(0) {
     $c->forward('check_if_staff_can_pay', [ $payment_method ]);
 
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Cancel';
+    $c->stash->{form_class}
+        = $c->cobrand->call_hook('waste_cancel_form_class')
+        || 'FixMyStreet::App::Form::Waste::Garden::Cancel';
     $c->forward('form');
 }
 
@@ -1228,8 +1361,7 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
     } else {
         $c->stash->{first_page} = 'intro';
     }
-    my $service_id = $c->cobrand->garden_service_id;
-    my $max_bins = $c->stash->{quantity_max}->{$service_id};
+    my $max_bins = $c->cobrand->waste_garden_maximum;
     $c->stash->{garden_form_data} = {
         max_bins => $max_bins,
         bins => $service->{garden_bins},
@@ -1237,7 +1369,27 @@ sub garden_renew : Chained('garden_setup') : Args(0) {
 
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew';
     $c->cobrand->call_hook('waste_garden_renew_form_setup');
+    $c->forward('garden_form');
+}
+
+sub garden_transfer : Chained('garden_setup') : Args(0) {
+    my ($self, $c) = @_;
+
+    $c->detach( '/page_error_403_access_denied', [] ) unless $c->stash->{is_staff};
+
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Transfer';
     $c->forward('form');
+}
+
+sub garden_form : Private {
+    my ($self, $c) = @_;
+    $c->forward('form');
+
+    # We need to inspect the form to see if a discount has been applied, and if so,
+    # adjust the already fetched cost data for display on the site
+    my $data = $c->stash->{form}->saved_data;
+    my $costs = $c->stash->{garden_costs};
+    $costs->discount($data->{apply_discount});
 }
 
 sub process_garden_cancellation : Private {
@@ -1247,7 +1399,7 @@ sub process_garden_cancellation : Private {
     my $data = $form->saved_data;
 
     unless ( $c->stash->{is_staff} ) {
-        $data->{name} = $c->user->name;
+        $data->{name} = $c->user->name || 'Unknown name';
         $data->{email} = $c->user->email;
         $data->{phone} = $c->user->phone;
     }
@@ -1257,14 +1409,12 @@ sub process_garden_cancellation : Private {
 
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
-    $c->set_param($end_date_field, $now->ymd);
+    $c->set_param($end_date_field, $now->dmy('/'));
 
     my $service = $c->cobrand->garden_current_subscription;
-    if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == 26 || $service->{garden_container} == 27) {
+    if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin240} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin140}) {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
-    } else {
-        $data->{slwp_garden_sacks} = 1;
     }
     $c->forward('setup_garden_sub_params', [ $data, undef ]);
 
@@ -1301,15 +1451,18 @@ sub get_current_payment_method : Private {
 sub get_original_sub : Private {
     my ($self, $c, $type) = @_;
 
+    my $extra = { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) };
+    if ($c->cobrand->moniker eq 'bexley') {
+        # Bexley doesn't store property_id
+        $extra = { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) };
+    }
+
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
+        extra => $extra,
         state => { '!=' => 'hidden' },
-    },
-    {
-        order_by => { -desc => 'id' }
-    })->to_body($c->cobrand->body);
+    })->order_by('-id')->to_body($c->cobrand->body);
 
     if ($type eq 'user' && !$c->stash->{is_staff}) {
         $p = $p->search({
@@ -1318,6 +1471,7 @@ sub get_original_sub : Private {
     }
 
     my $r = $c->stash->{orig_sub} = $p->first;
+
     $c->cobrand->call_hook(waste_check_existing_dd => $r)
         if $r && ($r->get_extra_field_value('payment_method') || '') eq 'direct_debit';
 }
@@ -1325,16 +1479,17 @@ sub get_original_sub : Private {
 sub setup_garden_sub_params : Private {
     my ($self, $c, $data, $type) = @_;
 
-    my $address = $c->stash->{property}->{address};
+    my $address = $data->{address} || $c->stash->{property}->{address};
 
     $data->{detail} = "$data->{category}\n\n$address";
 
     my $service_id;
     if (my $service = $c->cobrand->garden_current_subscription) {
         $service_id = $service->{service_id};
-    } else {
+    } elsif ($c->cobrand->can('garden_service_id')) { # XXX TODO Does Bexley need its own? Or is this actually Echo only?
         $service_id = $c->cobrand->garden_service_id;
     }
+    $c->set_param('email_renewal_reminders_opt_in', $data->{email_renewal_reminders} eq 'Yes' ? 'Y' : 'N') if $data->{email_renewal_reminders};
     $c->set_param('service_id', $service_id);
     $c->set_param('current_containers', $data->{current_bins});
     $c->set_param('new_containers', $data->{new_bins});
@@ -1355,39 +1510,33 @@ sub process_garden_modification : Private {
     my $payment_method;
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
-    if (($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton') && $service->{garden_container} == 28) { # SLWP Sack
-        $data->{slwp_garden_sacks} = 1;
-        $data->{bin_count} = 1;
+    my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+    if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{sack}) { # SLWP Sack
+        $data->{bins_wanted} = 1;
         $data->{new_bins} = 1;
-        $payment = $c->cobrand->garden_waste_sacks_cost_pa();
+        $payment = $costs->sacks($data->{bins_wanted});
         $payment_method = 'credit_card';
-        ($payment) = $c->cobrand->apply_garden_waste_discount($payment) if $data->{apply_discount};
         $pro_rata = $payment; # Set so goes through flow below
     } else {
         my $bin_count = $data->{bins_wanted};
-        $data->{bin_count} = $bin_count;
         my $new_bins = $bin_count - $data->{current_bins};
         $data->{new_bins} = $new_bins;
 
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
-        ($cost_pa) = $c->cobrand->apply_garden_waste_discount($cost_pa) if $data->{apply_discount};
         # One-off ad-hoc payment to be made now
         if ( $new_bins > 0 ) {
-            my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($new_bins);
-            $pro_rata = $c->cobrand->waste_get_pro_rata_cost( $new_bins, $c->stash->{garden_form_data}->{end_date});
-            ($cost_now_admin, $pro_rata) = $c->cobrand->apply_garden_waste_discount(
-                $cost_now_admin, $pro_rata) if $data->{apply_discount};
+            my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
+            $pro_rata = $costs->pro_rata_cost($new_bins);
             $c->set_param('pro_rata', $pro_rata);
             $c->set_param('admin_fee', $cost_now_admin);
         }
         $payment_method = $c->stash->{garden_form_data}->{payment_method};
-        $payment = $cost_pa;
+        $payment = $costs->bins($bin_count);
         $payment = 0 if $payment_method ne 'direct_debit' && $new_bins < 0;
 
     }
     $c->set_param('payment', $payment);
 
-    $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{Amend} ]);
+    $c->forward('setup_garden_sub_params', [ $data, $c->cobrand->waste_subscription_types->{Amend} ]);
     $c->cobrand->call_hook(waste_garden_mod_params => $data);
     $c->forward('add_report', [ $data, 1 ]) or return;
 
@@ -1414,46 +1563,73 @@ sub process_garden_modification : Private {
     return 1;
 }
 
+sub process_garden_data : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+    my $dd_flow = $data->{payment_method} && $data->{payment_method} eq 'direct_debit';
+    my $type = $c->cobrand->waste_subscription_types->{New};
+    $c->forward('process_garden_new_or_renew', [ $data, 'new', $type, $dd_flow ]);
+}
+
 sub process_garden_renew : Private {
     my ($self, $c, $form) = @_;
 
     my $data = $form->saved_data;
-
     my $service = $c->cobrand->garden_current_subscription;
-    my $type;
-    if ( !$service || $c->cobrand->waste_sub_overdue( $service->{end_date} ) ) {
-        $data->{category} = 'Garden Subscription';
-        $data->{title} = 'Garden Subscription - New';
-        $type = $c->stash->{garden_subs}->{New};
-    } else {
-        $data->{category} = 'Garden Subscription';
-        $data->{title} = 'Garden Subscription - Renew';
-        $type = $c->stash->{garden_subs}->{Renew};
-    }
+    # If there is a service at all in Bexley, we want to renew, regardless of end date
+    my $bexley = $c->cobrand->moniker eq 'bexley';
+    my $new = !$service || (!$bexley && $c->cobrand->waste_sub_overdue($service->{end_date}));
+    my $type = $new ? $c->cobrand->waste_subscription_types->{New} : $c->cobrand->waste_subscription_types->{Renew};
 
-    $c->cobrand->call_hook(waste_garden_sub_payment_params => $data);
-    if (!$c->get_param('payment')) {
-        my $bin_count = $data->{bins_wanted};
-        $data->{bin_count} = $bin_count;
-        $data->{new_bins} = $bin_count - $data->{current_bins};
-
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
-        ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
-            $cost_pa, $cost_now_admin) if $data->{apply_discount};
-
-        $c->set_param('payment', $cost_pa);
-        $c->set_param('admin_fee', $cost_now_admin);
-    }
-
-    $c->forward('setup_garden_sub_params', [ $data, $type ]);
-    $c->forward('add_report', [ $data, 1 ]) or return;
-
-    # it should not be possible to get to here if it's direct debit but
-    # grab this so we can check and redirect to an information page if
-    # they manage to get here
+    # Get the payment method from the form data or the existing subscription
     my $payment_method = $data->{payment_method}
         || $c->forward('get_current_payment_method');
+
+    my $dd_flow = $payment_method eq 'direct_debit';
+    $c->forward('process_garden_new_or_renew', [ $data, 'renew', $type, $dd_flow ]);
+}
+
+sub process_garden_new_or_renew : Private {
+    my ($self, $c, $data, $calc_type, $cat_type, $dd_flow) = @_;
+
+    if ($cat_type eq $c->cobrand->waste_subscription_types->{New}) {
+        $data->{category} = 'Garden Subscription';
+        $data->{title} = 'Garden Subscription - New';
+    } elsif ($cat_type eq $c->cobrand->waste_subscription_types->{Renew}) {
+        $data->{category} = 'Garden Subscription';
+        $data->{title} = 'Garden Subscription - Renew';
+    }
+
+    $c->forward('garden_calculate_subscription_payment', [ $calc_type, $data ]);
+    $c->forward('setup_garden_sub_params', [ $data, $cat_type ]);
+    $c->forward('add_report', [ $data, 1 ]) or return;
+
+    if ($data->{new_bins} < 0 && $c->cobrand->call_hook('garden_renewal_reduction_sparks_container_removal')) {
+        my $service = $c->cobrand->garden_current_subscription;
+        my $id = $service ? $service->{garden_container} : $GARDEN_IDS{$c->cobrand->moniker}{bin240};
+        my $data = {
+            # Sutton request form needs container-choice and request_reason
+            'container-choice' => $id,
+            request_reason => 'collect',
+            # Kingston needs container- (and removal- to convert into N requests)
+            "container-$id" => 1,
+            # Both use removal-, Kingston in core and Sutton specficially for this
+            "removal-$id" => abs($data->{new_bins}),
+
+            # From the garden data
+            email => $data->{email},
+            name => $data->{name},
+            phone => $data->{phone},
+            category => 'Request new container',
+        };
+
+        # Set up a fake form to pass to process_request_data
+        my $cls = ucfirst $c->cobrand->council_url;
+        my $form_class = "FixMyStreet::App::Form::Waste::Request::$cls";
+        my $form = $form_class->new( page_list => [], page_name => 'summary', c => $c, saved_data => $data);
+        # Pass in report so it can be grouped, and mustn't confirm report before payment
+        $c->forward('process_request_data', [ $form, [ $c->stash->{report} ], 1 ]);
+    }
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->stash->{message} = 'Payment skipped on staging';
@@ -1466,62 +1642,57 @@ sub process_garden_renew : Private {
         $p->update;
         $c->forward('confirm_subscription', [ undef ] );
     } else {
-        if ( $payment_method eq 'direct_debit' ) {
-            $c->forward('direct_debit');
+        if ($dd_flow) {
+            if ($c->cobrand->direct_debit_collection_method eq 'internal') {
+                $c->stash->{form_data} = $data;
+                $c->forward('direct_debit_internal');
+            } else {
+                $c->forward('direct_debit');
+            }
         } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('csc_code');
         } else {
-            $c->forward('pay', [ 'garden_renew' ]);
+            $c->forward('pay', [ $calc_type eq 'renew' ? 'garden_renew' : 'garden' ]);
         }
     }
 
     return 1;
 }
 
-sub process_garden_data : Private {
-    my ($self, $c, $form) = @_;
-    my $data = $form->saved_data;
+sub garden_calculate_subscription_payment : Private {
+    my ($self, $c, $type, $data) = @_;
 
-    $data->{category} = 'Garden Subscription';
-    $data->{title} = 'Garden Subscription - New';
+    my $container = $data->{container_choice} || '';
+    my $costs = WasteWorks::Costs->new({
+        cobrand => $c->cobrand,
+        discount => $data->{apply_discount},
+        first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+    });
+    # Sack form handling
+    if ($container eq 'sack') {
+        if ($c->cobrand->moniker eq 'merton') {
+            # If renewing from bin to sacks, need to know bins to remove - better place for this?
+            my $sub = $c->cobrand->garden_current_subscription;
+            $data->{current_bins} = $sub->{garden_bins} if $sub;
+        }
+        $data->{new_bins} = $data->{bins_wanted}; # Always want all of them delivered
 
-    $c->cobrand->call_hook(waste_garden_sub_payment_params => $data);
-    if (!$c->get_param('payment')) {
+        $c->set_param('payment', $costs->sacks($data->{bins_wanted}));
+    } else {
         my $bin_count = $data->{bins_wanted};
-        $data->{bin_count} = $bin_count;
-        $data->{new_bins} = $bin_count - $data->{current_bins};
+        $data->{new_bins} = $bin_count - ($data->{current_bins} || 0);
 
-        my $cost_pa = $c->cobrand->garden_waste_cost_pa($bin_count);
-        my $cost_now_admin = $c->cobrand->garden_waste_new_bin_admin_fee($data->{new_bins});
-        ($cost_pa, $cost_now_admin) = $c->cobrand->apply_garden_waste_discount(
-            $cost_pa, $cost_now_admin) if $data->{apply_discount};
+        my $cost_pa;
+        if ($type eq 'renew') {
+            $cost_pa = $costs->bins_renewal($bin_count);
+        } else {
+            $cost_pa = $costs->bins($bin_count);
+        }
+        my $cost_now_admin = $costs->new_bin_admin_fee($data->{new_bins});
+
         $c->set_param('payment', $cost_pa);
         $c->set_param('admin_fee', $cost_now_admin);
     }
-
-    $c->forward('setup_garden_sub_params', [ $data, $c->stash->{garden_subs}->{New} ]);
-    $c->forward('add_report', [ $data, 1 ]) or return;
-
-    if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
-        $c->stash->{message} = 'Payment skipped on staging';
-        $c->stash->{reference} = $c->stash->{report}->id;
-        $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
-    } elsif ($c->cobrand->waste_cheque_payments && $data->{payment_method} eq 'cheque') {
-        $c->stash->{action} = 'new_subscription';
-        my $p = $c->stash->{report};
-        $p->set_extra_metadata('chequeReference', $data->{cheque_reference});
-        $p->update;
-        $c->forward('confirm_subscription', [ undef ]);
-    } else {
-        if ( $data->{payment_method} && $data->{payment_method} eq 'direct_debit' ) {
-            $c->forward('direct_debit');
-        } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
-            $c->forward('csc_code');
-        } else {
-            $c->forward('pay', [ 'garden' ]);
-        }
-    }
-    return 1;
 }
 
 sub add_report : Private {
@@ -1538,7 +1709,10 @@ sub add_report : Private {
     };
 
     # Don’t let staff inadvertently change their name when making reports
-    my $original_name = $c->user->name if $c->user_exists && $c->user->from_body && $c->user->email eq ($data->{email} || '');
+    my $original_name;
+    if ($c->user_exists && $c->user->from_body && $c->user->email eq ($data->{email} || '')) {
+        $original_name = $c->user->name;
+    }
 
     # We want to take what has been entered in the form, even if someone is logged in
     $c->stash->{ignore_logged_in_user} = 1;
@@ -1566,8 +1740,8 @@ sub add_report : Private {
     $c->set_param('category', $data->{category});
     $c->set_param('title', $data->{title});
     $c->set_param('detail', $data->{detail});
-    $c->set_param('uprn', $c->stash->{property}{uprn});
-    $c->set_param('property_id', $c->stash->{property}{id});
+    $c->set_param('uprn', $c->stash->{property}{uprn}) unless $c->get_param('uprn');
+    $c->set_param('property_id', $c->stash->{property}{id}) unless $c->get_param('property_id');
 
     # Data may contain duplicate photo data under different keys e.g.
     # 'item_photo_1' => 'c8a965ad74acad4104341a8ea893b1a1275efa4d.jpeg',
@@ -1585,6 +1759,9 @@ sub add_report : Private {
     $c->forward('/report/new/non_map_creation', [['/waste/remove_name_errors']]) or return;
 
     my $report = $c->stash->{report};
+
+    # Never send questionnaires for waste reports
+    $report->send_questionnaire(0);
 
     # store photos
     foreach (grep { /^(item|location)_photo/ } keys %$data) {
@@ -1612,6 +1789,8 @@ sub add_report : Private {
         }
         $c->forward('/report/new/redirect_or_confirm_creation', [ 1 ]);
     }
+
+    $c->cobrand->call_hook('waste_post_report_creation', $report);
 
     $c->user->update({ name => $original_name }) if $original_name;
 

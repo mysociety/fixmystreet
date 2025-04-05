@@ -1,0 +1,89 @@
+[% IF report.category == 'Request new container' ~%][% SET subject_type = 'request' ~%][% ELSE ~%][% SET subject_type = 'report' ~%][% END ~%]
+[% SET subject_text = 'Your ' _ subject_type _ ' has been logged' ~%]
+[% IF cobrand.moniker == 'kingston' ~%]
+    [% SET prefix = 'RBK-' ~%]
+    [% IF report.category == 'Request new container' ~%]
+        [% subject_text = 'Your bin request has been logged' ~%]
+    [% END ~%]
+[% ELSIF cobrand.moniker == 'sutton' %][% SET prefix = 'LBS-' ~%]
+[% ELSE %][% SET prefix = '' %][% END ~%]
+Subject: [% subject_text ~%], reference [% prefix %][% report.id %]
+
+Dear [% report.name %],
+
+Your [% subject_type %] to [% report.body %] has been logged.
+
+[% INCLUDE '_council_reference.txt' problem=report %]
+
+[% IF cobrand.moniker == 'bromley' %]
+
+[%# Nothing here at present %]
+
+[% ELSIF cobrand.moniker == 'sutton' %]
+
+[% IF report.category == 'Request new container' %]
+[% IF report.title.match('Garden') %]
+Please allow up to 10 working days for this order to be processed.
+[% ELSE %]
+Due to the current high demand, please allow up to
+[% cobrand.wasteworks_config.request_timeframe %] for this
+order to be processed. We thank you for your patience and understanding in
+advance.
+[% END %]
+
+If you have requested a bin, box or caddy to be collected as part of the request:
+
+* Please keep any bin, box or caddy accessible in your front garden or driveway, ready to be exchanged.
+
+* It must be visible from the public highway, so delivery drivers can see it.
+
+* We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.
+[% ELSIF report.category == 'Waste spillage' %]
+We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
+
+The issue has been logged and a clean up has been organised for within the next 24 hours.
+[% ELSIF report.category == 'Bin not returned' %]
+We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
+
+Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
+[% END %]
+
+[% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
+
+On delivery day - You do not need to be home for our crew to deliver the bin.
+
+Collecting your old bin - If you've requested a collection of your old bin, we'll schedule a specific date for our
+crew to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
+
+[% ELSIF cobrand.moniker == 'merton' AND (report.category == 'Waste spillage' OR report.category == 'Bin not returned') %]
+  Your report over the problem with your bin collection has been made to the council.
+
+[% ELSE %]
+
+[% IF report.category == 'Report missed collection' %]
+[% IF cobrand.moniker == 'brent' %]
+We will arrange another collection as soon as possible over the next two days. Please note that collections may also be attempted on a public holiday/weekend.
+[% ELSE %]
+We will arrange another collection as soon as possible over the next 2 working days.
+[% END %]
+[% ELSIF report.category == 'Request new container' %]
+We aim to deliver this container to you within
+[% cobrand.wasteworks_config.request_timeframe || '20 working days' %]. If
+you have requested a replacement bin please leave your broken one
+available for collection at the front of your property.
+[% END %]
+
+[% END %]
+
+Your [% subject_type %] has the title:
+
+[% report.title %]
+
+And details:
+
+[% report.detail %]
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

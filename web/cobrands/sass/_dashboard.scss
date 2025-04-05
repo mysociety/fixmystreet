@@ -21,7 +21,7 @@
 }
 
 .dashboard-item {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     padding: 1em;
 
     @media (min-width: 48em) {
@@ -82,7 +82,7 @@
 }
 
 .labelled-line-chart {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
 
     @media (min-width: 48em) {
         padding-right: 15%; // Same way round, regardless of text direction
@@ -115,7 +115,7 @@
     margin: 0 -1em;
 
     & > * {
-        @include box-sizing(border-box);
+        box-sizing: border-box;
         padding: 0 1em 1em 1em;
     }
 
@@ -157,7 +157,7 @@
 }
 
 .dashboard-search__input {
-    @include box-sizing(border-box);
+    box-sizing: border-box;
     width: 80%;
     float: $left;
     padding-#{$right}: 1em;
@@ -186,7 +186,7 @@
         height: 16px;
         background-repeat: no-repeat;
         background-size: 112px 16px;
-        @include svg-background-image('/cobrands/fixmystreet/images/button-icons');
+        background-image: url("/cobrands/fixmystreet/images/button-icons.svg");
         background-position: -96px 0;
         margin-#{$right}: 0.5em;
         vertical-align: -0.1em;
@@ -226,7 +226,7 @@
 
     // Force field elements onto a single line.
     @media (min-width: 48em) {
-        @include flex-container();
+        display: flex;
         flex-wrap: wrap;
     }
 
@@ -292,6 +292,17 @@
 
     .btn {
         padding: 0.5em 0.75em;
+    }
+}
+
+.dashboard-filters {
+    .multi-select-button {
+        max-width: 10em;
+    }
+
+    .form-control {
+        // To make them have the same height as the .multi-select-button
+        height: 3.3em;
     }
 }
 

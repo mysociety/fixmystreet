@@ -56,6 +56,7 @@ is($cobrand->updates->count, 1, 'One update in the right cobrand');
 my $nearby = $c->model('DB::Nearby')->nearby($c, distance => 5, ids => [], limit => 10, latitude => 0.003, longitude => 0.004);
 is(@$nearby, 1, 'One report close to the origin point');
 
+my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
 subtest 'testing report_age' => sub {
     # Delete all previous reports
     my @reports = FixMyStreet::DB->resultset('Problem')->all;
@@ -72,40 +73,40 @@ subtest 'testing report_age' => sub {
     my @problem_params = (
         {   title => 'open_less_month',
             state => 'confirmed',
-            dt    => DateTime->now->subtract( days => 14 ),
+            dt    => $now->clone->subtract( days => 14 ),
         },
         {   title => 'open_more_month',
             state => 'confirmed',
-            dt    => DateTime->now->subtract( months => 2 ),
+            dt    => $now->clone->subtract( months => 2 ),
         },
 
         {   title => 'closed_less_week',
             state => 'not responsible',
-            dt    => DateTime->now->subtract( days => 6 ),
+            dt    => $now->clone->subtract( days => 6 ),
         },
         {   title => 'closed_more_week',
             state => 'not responsible',
-            dt    => DateTime->now->subtract( weeks => 2 ),
+            dt    => $now->clone->subtract( weeks => 2 ),
         },
 
         {   title => 'fixed_less_day',
             state => 'fixed - council',
-            dt    => DateTime->now->subtract( hours => 23 ),
+            dt    => $now->clone->subtract( hours => 23 ),
         },
         {   title => 'fixed_more_day',
             state => 'fixed - council',
-            dt    => DateTime->now->subtract( days => 2 ),
+            dt    => $now->clone->subtract( days => 2 ),
         },
 
         {   title      => 'open_less_month_non_public',
             state      => 'confirmed',
             non_public => 1,
-            dt         => DateTime->now->subtract( days => 14 ),
+            dt         => $now->clone->subtract( days => 14 ),
         },
         {   title      => 'open_more_month_non_public',
             state      => 'confirmed',
             non_public => 1,
-            dt         => DateTime->now->subtract( months => 2 ),
+            dt         => $now->clone->subtract( months => 2 ),
         },
     );
     for (@problem_params) {

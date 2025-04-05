@@ -1,0 +1,27 @@
+[% IF unit.report_open %]
+  <span class="waste-service-descriptor">
+    A [% unit.service_name FILTER lower %] collection has already been reported as missed. Check status below:
+    <ul>
+      <li>Reported on: [% unit.report_details.reported ? date.format(unit.report_details.reported) : 'N/A' %]</li>
+      <li>Will be completed by: [% unit.report_details.will_be_completed ? date.format(unit.report_details.will_be_completed) : 'N/A' %]</li>
+      <li>Action: [% unit.report_details.latest_comment || 'Please leave your waste out, our contractor will return soon.' %]</li>
+    </ul>
+  </span>
+[% ELSIF unit.report_locked_out %]
+<div class="waste-service-descriptor">
+  <p>A missed collection cannot be reported.</p>
+  [% IF unit.report_locked_out_reason %]
+  <p><b>Reason</b>: <i>[% unit.report_locked_out_reason %]</i></p>
+  [% END %]
+  <p>Please see the service status at the top of this page for further information.</p>
+</div>
+[% ELSIF unit.report_allowed %]
+  [% any_report_allowed = 1 %]
+  <form method="post" name="[% unit.service_id %]-missed" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="service-[% unit.service_id %]" value="1">
+    <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
+  </form>
+[% ELSIF NOT no_default %]
+  <span class="waste-service-descriptor">Please note that missed collections can only be reported within 3 working days of your last collection day.</span>
+[% END %]

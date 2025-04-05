@@ -13,8 +13,8 @@ my $body    = $mech->create_body_ok(
         api_key      => 'key',
         endpoint     => 'endpoint',
         jurisdiction => 'jurisdiction',
+        cobrand => 'gloucestershire',
     },
-    { cobrand => 'gloucestershire', },
 );
 
 my $graffiti = $mech->create_contact_ok(
@@ -217,7 +217,7 @@ FixMyStreet::override_config {
                     );
                 } else {
                     $mech->content_contains(
-                        'This report is now closed to updates.',
+                        'This report is now closed to updates from the public.',
                         'Correct message shown',
                     );
                     $mech->content_lacks(

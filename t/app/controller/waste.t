@@ -1,4 +1,3 @@
-use utf8;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
@@ -9,8 +8,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2482, 'Bromley Council', {}, {
-    cobrand => 'bromley',
+my $body = $mech->create_body_ok(2482, 'Bromley Council', { cobrand => 'bromley' }, {
     wasteworks_config => { request_timeframe => "two weeks" }
 });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
@@ -119,7 +117,6 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
         $mech->content_contains('13345'); # For comparing against type check below
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
-        $mech->content_contains('waste__loading_wrapper');
         $mech->content_contains('find your address in our records');
     };
     subtest 'Address lookup' => sub {
@@ -129,19 +126,20 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { address => '12345' } });
         $mech->content_contains('2 Example Street');
         $mech->content_contains('Food Waste');
-        $mech->content_contains('every other Monday');
+        # $mech->content_contains('every other Monday');
     };
     subtest 'Thing already requested' => sub {
         $mech->content_contains('A food waste collection has been reported as missed');
         $mech->content_contains('A paper &amp; cardboard collection has been reported as missed'); # as part of service unit, not property
     };
     subtest 'Report a missed bin' => sub {
+        my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Bromley');
+        $cobrand->mock('send_questionnaires', sub { 1 }); # To test that questionnaires aren't sent, despite being enabled on the cobrand.
         $mech->content_contains('service-531', 'Can report, last collection was 27th');
         $mech->content_lacks('service-537', 'Cannot report, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'Cannot report, last collection was 20th');
         $mech->content_lacks('service-542', 'Cannot report, last collection was 18th');
         $mech->follow_link_ok({ text => 'Report a missed collection' });
-        $mech->content_contains('waste__loading_wrapper');
         $mech->content_contains('service-531', 'Checkbox, last collection was 27th');
         $mech->content_lacks('service-537', 'No checkbox, last collection was 27th but the service unit has a report');
         $mech->content_lacks('service-535', 'No checkbox, last collection was 20th');
@@ -181,7 +179,7 @@ FixMyStreet::override_config {
 
         $mech->clear_emails_ok;
         $mech->get_ok($link);
-        $mech->content_contains('Your missed collection has been reported');
+        $mech->content_contains('Thank you for reporting a missed collection');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         FixMyStreet::Script::Reports::send();
@@ -193,6 +191,9 @@ FixMyStreet::override_config {
 
         is $user->alerts->count, 1;
         $mech->clear_emails_ok;
+
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        is $report->send_questionnaire, 0;
     };
     subtest 'About You form is pre-filled when logged in' => sub {
         $mech->log_in_ok($user->email);
@@ -256,7 +257,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Containers typically arrive within two weeks,');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Quantity'), 2;
         is $report->get_extra_field_value('Container_Type'), 1;
@@ -277,7 +278,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your container request has been sent');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->title, 'Request new Garden Waste Container';
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Quantity'), 1;
@@ -290,8 +291,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-9' => 1, 'quantity-9' => 2, 'container-10' => 1, 'quantity-10' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user->email } });
-        $mech->content_like(qr{Outside Food Waste Container</dt>\s*<dd[^>]*>1</dd>});
-        $mech->content_like(qr{Kitchen Caddy</dt>\s*<dd[^>]*>2</dd>});
+        $mech->content_like(qr{Outside Food Waste Container</dt>\s*<dd[^>]*>\s*1 to deliver\s*</dd>});
+        $mech->content_like(qr{Kitchen Caddy</dt>\s*<dd[^>]*>\s*2 to deliver\s*</dd>});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Now check your email');
         my $link = $mech->get_link_from_email; # Only one email sent, this also checks
@@ -304,8 +305,8 @@ FixMyStreet::override_config {
         is $emails[0]->header('To'), '"Bromley Council" <request@example.org>';
         is $emails[1]->header('To'), $user->email;
         my $body = $mech->get_text_body_from_email($emails[1]);
-        like $body, qr/Your report to Bromley Council has been logged/;
-        my @reports = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' }, rows => 2 });
+        like $body, qr/Your request to Bromley Council has been logged/;
+        my @reports = FixMyStreet::DB->resultset("Problem")->order_by('-id')->search(undef, { rows => 2 });
         is $reports[0]->state, 'confirmed';
         is $reports[0]->get_extra_field_value('uprn'), 1000000002;
         is $reports[0]->get_extra_field_value('Quantity'), 2;
@@ -328,7 +329,8 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/waste/12345';
     };
     subtest 'Checking calendar' => sub {
-        $mech->follow_link_ok({ text => 'Add to your calendar (.ics file)' });
+        $mech->follow_link_ok({ text => 'Add to your calendar' });
+        $mech->follow_link_ok({ text_regex => qr/this link/ });
         $mech->content_contains('BEGIN:VCALENDAR');
         my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
         shift @events; # Header
@@ -351,7 +353,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('Notes'), 'Some notes';
         is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, $user->email;
@@ -374,7 +376,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('Notes'), 'Some notes';
         is $report->detail, "Some notes\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, $staff_user->email;
@@ -391,7 +393,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('Reason'), 'Reason';
         is $report->detail, "Behind the garden gate\n\nReason\n\n2 Example Street, Bromley, BR1 1AA";
         is $report->user->email, 'anne@example.org';
@@ -991,12 +993,12 @@ FixMyStreet::override_config {
         set_fixed_time('2021-04-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Garden Waste');
-        $mech->content_lacks('Modify your garden waste subscription');
+        $mech->content_lacks('Change your garden waste subscription');
         $mech->content_contains('Your subscription is now overdue', "overdue link if after expired");
         set_fixed_time('2021-03-05T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Your subscription is soon due for renewal', "due soon link if within 7 weeks of expiry");
-        $mech->content_lacks('Modify your garden waste subscription');
+        $mech->content_lacks('Change your garden waste subscription');
         $mech->get_ok('/waste/12345/garden_modify');
         is $mech->uri->path, '/waste/12345', 'link redirect to bin list if modify in renewal period';
         set_fixed_time('2021-02-10T17:00:00Z');
@@ -1005,7 +1007,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-02-08T17:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Your subscription is soon due for renewal', "no renewal notice if over 7 weeks before expiry");
-        $mech->content_contains('Modify your garden waste subscription');
+        $mech->content_contains('Change your garden waste subscription');
         $mech->log_out_ok;
     };
 
@@ -1355,8 +1357,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
         is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
@@ -1402,8 +1403,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
         is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
@@ -1442,8 +1442,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Garden Subscription', 'correct category on report';
         is $new_report->title, 'Garden Subscription - Amend', 'correct title on report';
@@ -1507,8 +1506,7 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->state, 'unconfirmed', 'report confirmed';
@@ -1823,11 +1821,10 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Subscription_End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
@@ -1953,10 +1950,7 @@ FixMyStreet::override_config {
         category => 'Garden Subscription',
         title => 'Garden Subscription - New',
         extra => { '@>' => '{"_fields":[{"name":"property_id","value":"12345"}]}' },
-    },
-    {
-        order_by => { -desc => 'id' }
-    })->first;
+    })->order_by('-id')->first;
     $report->update_extra_field({ name => 'payment_method', value => 'direct_debit' });
     $report->update;
 
@@ -2143,13 +2137,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
-        my $new_report = FixMyStreet::DB->resultset('Problem')->search(
-            { },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        my $new_report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Subscription_End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
@@ -2661,11 +2652,10 @@ FixMyStreet::override_config {
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
-            { order_by => { -desc => 'id' } },
-        )->first;
+        )->order_by('-id')->first;
 
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
-        is $new_report->get_extra_field_value('Subscription_End_Date'), '2021-03-09', 'cancel date set to current date';
+        is $new_report->get_extra_field_value('Subscription_End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->get_extra_field_value('Container_Instruction_Action'), 2, 'correct container request action';
         is $new_report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $new_report->state, 'confirmed', 'report confirmed';
@@ -2721,10 +2711,10 @@ FixMyStreet::override_config {
     set_fixed_time('2021-01-09T17:00:00Z'); # After sample data collection
     $mech->log_in_ok($staff_user->email);
     $mech->get_ok('/waste/12345');
-    $mech->content_contains('Modify your garden waste subscription');
+    $mech->content_contains('Change your garden waste subscription');
     $mech->log_out_ok;
     $mech->get_ok('/waste/12345');
-    $mech->content_lacks('Modify your garden waste subscription');
+    $mech->content_lacks('Change your garden waste subscription');
 };
 
 FixMyStreet::override_config {
@@ -2739,10 +2729,10 @@ FixMyStreet::override_config {
 }, sub {
     $mech->log_in_ok($staff_user->email);
     $mech->get_ok('/waste/12345');
-    $mech->content_lacks('Modify your garden waste subscription');
+    $mech->content_lacks('Change your garden waste subscription');
     $mech->log_out_ok;
     $mech->get_ok('/waste/12345');
-    $mech->content_lacks('Modify your garden waste subscription');
+    $mech->content_lacks('Change your garden waste subscription');
 };
 
 sub get_report_from_redirect {

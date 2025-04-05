@@ -75,31 +75,14 @@ a,
     }
 }
 
-.btn-primary,
-.green-btn,
-.btn--primary {
-    border: none;
-    background: $col_button;
-
-    &:focus,
-    &:hover,
-    &:active {
-        background: $col_button_hover;
-    }
-}
-
 .box-warning {
     background-color: #ecf3ec;
 }
 
 /* Front page */
-#front-main {
-  #postcodeForm {
-    div {
-      input#sub {
-        background: $green;
-      }
-    }
+.postcode-form-box {
+  input#sub {
+    background: $green;
   }
 }
 

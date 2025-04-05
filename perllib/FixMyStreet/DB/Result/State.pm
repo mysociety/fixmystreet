@@ -41,7 +41,7 @@ __PACKAGE__->add_unique_constraint("state_name_key", ["name"]);
 use Moo;
 use namespace::clean;
 
-with 'FixMyStreet::Roles::Translatable';
+with 'FixMyStreet::Roles::DB::Translatable';
 
 sub msgstr {
     my $self = shift;

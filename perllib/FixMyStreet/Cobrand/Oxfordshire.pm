@@ -57,7 +57,7 @@ sub disambiguate_location {
 }
 
 # don't send questionnaires to people who used the OCC cobrand to report their problem
-sub send_questionnaires { return 0; }
+sub send_questionnaires { 0 }
 
 # increase map zoom level so street names are visible
 sub default_map_zoom { 5 }
@@ -85,20 +85,18 @@ sub reports_ordering {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    return 'grey' if ($context||'') ne 'reports' && !$self->owns_problem($p);
-    return 'grey' if $p->is_closed;
-    return 'green' if $p->is_fixed;
-    return 'yellow' if $p->state eq 'confirmed';
-    return 'orange'; # all the other `open_states` like "in progress"
+    return 'grey-cross' if ($context||'') ne 'reports' && !$self->owns_problem($p);
+    return 'grey-cross' if $p->is_closed;
+    return 'green-tick' if $p->is_fixed;
+    return 'yellow-cone' if $p->state eq 'confirmed';
+    return 'orange-work'; # all the other `open_states` like "in progress"
 }
 
 sub pin_new_report_colour {
-    return 'yellow';
+    return 'yellow-cone';
 }
 
-sub path_to_pin_icons {
-    return '/cobrands/oxfordshire/images/';
-}
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 sub pin_hover_title {
     my ($self, $problem, $title) = @_;
@@ -172,6 +170,17 @@ sub open311_pre_send {
     }
 }
 
+sub _inspect_form_extra_fields {
+    return qw(
+        defect_item_category defect_item_type defect_item_detail defect_location_description
+        defect_initials defect_length defect_depth defect_width
+        defect_type_of_repair defect_marked_in defect_speed_of_road defect_type_of_road
+        defect_hazards_overhead_cables defect_hazards_blind_bends defect_hazards_junctions
+        defect_hazards_schools defect_hazards_bus_routes defect_hazards_traffic_signals
+        defect_hazards_parked_vehicles defect_hazards_roundabout defect_hazards_overhanging_trees
+    );
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
@@ -213,8 +222,8 @@ sub open311_munge_update_params {
         $details .= ' ' . ($p->get_extra_metadata('detailed_information') || '');
         $params->{'attribute[extra_details]'} = $details;
 
-        foreach (qw(defect_item_category defect_item_type defect_item_detail defect_location_description)) {
-            $params->{"attribute[$_]"} = $p->get_extra_metadata($_);
+        foreach (_inspect_form_extra_fields()) {
+            $params->{"attribute[$_]"} = $p->get_extra_metadata($_) || '';
         }
     }
 }
@@ -261,9 +270,24 @@ sub open311_skip_report_fetch {
 sub report_inspect_update_extra {
     my ( $self, $problem ) = @_;
 
-    foreach (qw(defect_item_category defect_item_type defect_item_detail defect_location_description)) {
-        my $value = $self->{c}->get_param($_);
+    foreach (_inspect_form_extra_fields()) {
+        my $value = $self->{c}->get_param($_) || '';
         $problem->set_extra_metadata($_ => $value) if $value;
+    }
+}
+
+sub open311_post_send {
+    my ($self, $row, $h, $sender) = @_;
+
+    if ($row->category eq 'Trees obstructing traffic light' && !$row->get_extra_metadata('extra_email_sent')) {
+        my $emails = $self->feature('open311_email');
+        if (my $dest = $emails->{$row->category}) {
+            my $sender = FixMyStreet::SendReport::Email->new( to => [ $dest ]);
+            $sender->send($row, $h);
+            if ($sender->success) {
+                $row->update_extra_metadata(extra_email_sent => 1);
+            }
+        }
     }
 }
 
@@ -335,7 +359,32 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         external_ref => 'HIAMS/Exor Ref',
         usrn => 'USRN',
+        staff_role => 'Staff Role',
     );
+
+    if ($csv->dbi) {
+        $csv->csv_extra_data(sub {
+            my $report = shift;
+            my $usrn = $csv->_extra_field($report, 'usrn') || '';
+            # Try and get a HIAMS reference first of all
+            my $ref = $csv->_extra_metadata($report, 'customer_reference');
+            unless ($ref) {
+                # No HIAMS ref which means it's either an older Exor report
+                # or a HIAMS report which hasn't had its reference set yet.
+                # We detect the latter case by the id and external_id being the same.
+                $ref = $report->{external_id} if $report->{id} ne ( $report->{external_id} || '' );
+            }
+            return {
+                external_ref => ( $ref || '' ),
+                usrn => $usrn,
+            };
+        });
+        return; # Rest already covered
+    }
+
+
+    my $user_lookup = $self->csv_staff_users;
+    my $userroles = $self->csv_staff_roles($user_lookup);
 
     $csv->csv_extra_data(sub {
         my $report = shift;
@@ -346,18 +395,56 @@ sub dashboard_export_problems_add_columns {
             # No HIAMS ref which means it's either an older Exor report
             # or a HIAMS report which hasn't had its reference set yet.
             # We detect the latter case by the id and external_id being the same.
-            if ($csv->dbi) {
-                $ref = $report->{external_id} if $report->{id} ne ( $report->{external_id} || '' );
-            } else {
-                $ref = $report->external_id if $report->id ne ( $report->external_id || '' );
-            }
+            $ref = $report->external_id if $report->id ne ( $report->external_id || '' );
+        }
+        my $by = $csv->_extra_metadata($report, 'contributed_by');
+        my $staff_role = '';
+        if ($by) {
+            $staff_role = join(',', @{$userroles->{$by} || []});
         }
         return {
             external_ref => ( $ref || '' ),
             usrn => $usrn,
+            staff_role => $staff_role,
         };
     });
 }
+
+=head2 dashboard_export_updates_add_columns
+
+Adds 'Staff Role' column.
+
+=cut
+
+sub dashboard_export_updates_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        staff_role => 'Staff Role',
+    );
+
+    $csv->objects_attrs({
+        '+columns' => ['user.email'],
+        join => 'user',
+    });
+    my $user_lookup = $self->csv_staff_users;
+    my $userroles = $self->csv_staff_roles($user_lookup);
+
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        my $by = $csv->_extra_metadata($report, 'contributed_by');
+        my $staff_role = '';
+        if ($by) {
+            $staff_role = join(',', @{$userroles->{$by} || []});
+        }
+        return {
+            staff_role => $staff_role,
+        };
+    });
+}
+
 
 sub defect_wfs_query {
     my ($self, $bbox) = @_;
@@ -431,7 +518,7 @@ sub pins_from_wfs {
             id => $fake_id--,
             latitude => @$coords[1],
             longitude => @$coords[0],
-            colour => 'defects',
+            colour => 'blue-work',
             title => $title,
         };
     } @{ $wfs->{features} };

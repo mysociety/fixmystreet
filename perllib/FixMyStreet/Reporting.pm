@@ -20,7 +20,7 @@ has body => ( is => 'ro', isa => Maybe[InstanceOf['FixMyStreet::DB::Result::Body
 has wards => ( is => 'ro', isa => ArrayRef[Int], default => sub { [] } );
 has category => ( is => 'ro', isa => ArrayRef[Str], default => sub { [] } );
 has state => ( is => 'ro', isa => Maybe[Str] );
-has start_date => ( is => 'ro',
+has start_date => ( is => 'rwp',
     isa => Str,
     default => sub {
         my $days30 = DateTime->now(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone)->subtract(days => 30);
@@ -197,16 +197,15 @@ sub _csv_parameters_problems {
     my $self = shift;
 
     my $groups = $self->cobrand->enable_category_groups ? 1 : 0;
-    my $join = ['comments'];
-    my $columns = ['comments.id', 'comments.problem_state', 'comments.confirmed', 'comments.mark_fixed'];
+    my $join = ['confirmed_comments', 'answered_questionnaires'];
+    my $columns = ['confirmed_comments.id', 'confirmed_comments.problem_state', 'confirmed_comments.confirmed', 'confirmed_comments.mark_fixed',
+        'answered_questionnaires.id', 'answered_questionnaires.whenanswered', 'answered_questionnaires.new_state'];
     if ($groups) {
         push @$join, 'contact';
         push @$columns, 'contact.id', 'contact.extra';
     }
 
-    my $rs = $self->objects_rs->search({
-        "comments.state" => ['confirmed', undef],
-    }, {
+    my $rs = $self->objects_rs->search(undef, {
         join => $join,
         collapse => 1,
         '+columns' => $columns,
@@ -270,10 +269,10 @@ Generates a CSV output to a file handler provided
 =cut
 
 sub generate_csv {
-    my ($self, $handle) = @_;
+    my ($self, $handle, $exclude_header) = @_;
 
     my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
-    $csv->print($handle, $self->csv_headers);
+    $csv->print($handle, $self->csv_headers) unless $exclude_header;
 
     my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;
     my $closed_states = FixMyStreet::DB::Result::Problem->closed_states;
@@ -290,10 +289,11 @@ sub generate_csv {
             ? '(anonymous)' : $obj->name;
 
         if ($asked_for{acknowledged}) {
-            my @updates = $obj->comments->all;
+            my @updates = $obj->confirmed_comments->all;
             @updates = sort { $a->confirmed <=> $b->confirmed || $a->id <=> $b->id } @updates;
             for my $comment (@updates) {
-                my $problem_state = $comment->problem_state or next;
+                next unless $comment->problem_state || $comment->mark_fixed;
+                my $problem_state = $comment->problem_state || '';
                 next if $problem_state eq 'confirmed';
                 $hashref->{acknowledged} //= $comment->confirmed;
                 $hashref->{action_scheduled} //= $problem_state eq 'action scheduled' ? $comment->confirmed : undef;
@@ -302,6 +302,16 @@ sub generate_csv {
                 if ($closed_states->{ $problem_state }) {
                     $hashref->{closed} = $comment->confirmed;
                     last;
+                }
+            }
+            my @questionnaires = $obj->answered_questionnaires->all;
+            @questionnaires = sort { $a->whenanswered <=> $b->whenanswered || $a->id <=> $b->id } @questionnaires;
+            for my $questionnaire (@questionnaires) {
+                my $problem_state = $questionnaire->new_state || '';
+                if ($fixed_states->{ $problem_state }) {
+                    if (!$hashref->{fixed} || $questionnaire->whenanswered lt $hashref->{fixed}) {
+                        $hashref->{fixed} = $questionnaire->whenanswered;
+                    }
                 }
             }
         }
@@ -461,11 +471,23 @@ sub filter_premade_csv {
         $state_column = 'DBState';
     }
 
+    my $add_on_today = 0;
+    my $today = DateTime->today(time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone);
+    my $end_date = $self->end_date;
+    if (!$end_date || $end_date ge $today->strftime('%Y-%m-%d')) {
+        $add_on_today = 1;
+        $end_date = $today->clone->subtract(days => 1)->strftime('%Y-%m-%d');
+    }
+
     my $range = FixMyStreet::DateRange->new(
         start_date => $self->start_date,
-        end_date => $self->end_date,
+        end_date => $end_date,
         formatter => FixMyStreet::DB->schema->storage->datetime_parser,
     );
+
+    my $all_states = $self->cobrand->call_hook('dashboard_export_include_all_states');
+    my $wards_re = join ('|', @{$self->wards});
+    my $category_re = join('|', map { quotemeta } @{$self->category});
 
     my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
     open my $fh, "<:encoding(utf8)", $self->premade_csv_filename;
@@ -478,16 +500,10 @@ sub filter_premade_csv {
         # Perform the same filtering as what construct_rs_filter does
         # by skipping rows from the CSV file that do not match
 
-        if (@{$self->wards}) {
-            my $match = 0;
-            foreach (@{$self->wards}) {
-                $match = 1 if $row->{Areas} =~ /,$_,/;
-            }
-            next unless $match;
-        }
+        next if $wards_re && $row->{Areas} !~ /,($wards_re),/;
 
         my $category = $row->{Subcategory} || $row->{Category};
-        next if @{$self->category} && !grep { /$category/ } @{$self->category};
+        next if @{$self->category} && $category !~ /^($category_re)$/;
 
         if ( $self->state && $fixed_states->{$self->state} ) { # Probably fixed - council
             next unless $fixed_states->{$row->{$state_column}};
@@ -495,7 +511,6 @@ sub filter_premade_csv {
             next if $row->{$state_column} ne $self->state;
         }
 
-        my $all_states = $self->cobrand->call_hook('dashboard_export_include_all_states');
         if ($all_states) {
             # Has to use created, because unconfirmed ones won't have a confirmed timestamp
             next if $row->{Created} lt $range->start_formatted;
@@ -514,6 +529,14 @@ sub filter_premade_csv {
         # fields etc have already been included. Exclude the first two columns,
         # Areas and Roles, that were only included for the filtering above
         $csv->print($handle, [ (@{$row}{@$arr})[$first_column..@$arr-$last_column-1] ]);
+    }
+
+    if ($add_on_today) {
+        # Add in any information from today the 'live' way
+        $self->_set_start_date($today->strftime('%Y-%m-%d'));
+        $self->construct_rs_filter;
+        $self->csv_parameters;
+        $self->generate_csv($handle, 1);
     }
 }
 

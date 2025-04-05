@@ -11,10 +11,8 @@ $header-top-border: false; // There is, but we want to do it ourselves
   margin-bottom: 4em; // Push content past abs. positioned nav
 }
 
-// Don't want larger logo on mappage.
-body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
-  // Display the BCC logo and header correctly
-
+// Display the BCC header correctly
+body:not(.mappage) {
   .nav-wrapper {
       margin-top: 69px;
       background-color: #6D6D6C;
@@ -92,15 +90,9 @@ body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
     }
 }
 
-#front_stats {
-    border-top: none;
-    padding: 1em 0;
-}
-
 body.mappage {
-  // Mappage header is 10px top border, 50px logo (7px 37px 6px), 4px bottom border
   #site-logo {
-     padding-top: 6px;
+     padding-top: 9px; // map header is 64px, image on base is 69 (12+45+12) so reduce top slightly
   }
 
   #main-nav {
@@ -151,15 +143,4 @@ body, .content {
 .site-message {
   font-size: 1em;
   padding: 20px;
-}
-
-// Adjust the size dropdown button and menu for mappage
-.mappage {
-  .multi-select-button {
-    max-width: 80px;
-  }
-  
-  .multi-select-menu {
-    left: -55px;
-  }
 }

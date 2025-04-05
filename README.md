@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 5.0; see CHANGELOG.md for a version history.
+Platform is now at version 6.0; see CHANGELOG.md for a version history.
 
 ## Installation
 
@@ -37,11 +37,6 @@ label in our GitHub issues hopefully labels some potential tasks that might be
 suitable for that situation, though please do search through the other issues
 to see if what you're after has been suggested or discussed - or feel free to
 add your own issue if not.
-
-## Mobile apps
-
-We've extracted all of the mobile apps from this repository into the
-[fixmystreet-mobile repository](https://github.com/mysociety/fixmystreet-mobile).
 
 ## Acknowledgements
 

@@ -1,6 +1,6 @@
 [% site_message = c.cobrand.site_message %]
 [% IF site_message %]
 <div class="front-main-other-issues-wrapper">
-  [% site_message | html_para %]
+  [% site_message | html_para_conditional %]
 </div>
 [% END %]

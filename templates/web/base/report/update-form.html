@@ -1,5 +1,5 @@
-[% allow_creation = (!c.cobrand.only_authed_can_create || (c.user && c.user.from_body)) AND NOT c.cobrand.updates_disallowed(problem) %]
-[% RETURN IF NOT allow_creation %]
+[% RETURN IF c.cobrand.only_authed_can_create AND NOT (c.user AND c.user.from_body) ~%]
+[% RETURN IF NOT updates_disallowed_checked AND c.cobrand.updates_disallowed(problem) ~%]
 
 <div id="update_form">
   [% IF NOT login_success AND NOT oauth_need_email %]

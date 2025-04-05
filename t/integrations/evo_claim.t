@@ -1,5 +1,3 @@
-use strict;
-use warnings;
 use Test::More;
 use Test::MockObject;
 use Test::MockModule;
@@ -125,7 +123,7 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'buckinghamshire',
 }, sub {
-    my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire Council', {}, { cobrand => 'buckinghamshire' });
+    my $bucks = $mech->create_body_ok(2217, 'Buckinghamshire Council', { cobrand => 'buckinghamshire' });
     my $cobrand = $bucks->get_cobrand_handler;
 
     # Create a new Problem row in the FixMyStreet database

@@ -1,0 +1,87 @@
+// Styling based on https://www.westnorthants.gov.uk/
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+
+$menu-image: 'menu-black';
+
+$red: #9d0b1d;
+$blue-100: #bec7d6;
+$blue: #385889; // Links default
+$blue-600: #0e335b; // Links hover
+$white: #fff;
+$black: #000;
+$yellow: #e2ca76;
+
+$error_color: $red;
+
+$primary: $blue;
+$primary_b: $black;
+$primary_text: $white;
+$primary_link_color: $blue;
+$primary_link_hover_color: $blue-600;
+$primary_link_hover_decoration: underline dotted;
+$link-color: $primary;
+$link-text-decoration: underline;
+$link-hover-text-decoration: underline dotted;
+$link-hover-color: $blue-600;
+
+$focus-bg-top: $yellow;
+$focus-bg-bottom: $yellow;
+$focus-text: $primary_b;
+
+$button-border-radius: 3px;
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $primary_link_hover_color;
+$button-primary-hover-bg-top: $primary_link_hover_color;
+$button-primary-hover-border: $primary_link_hover_color;
+$button-primary-hover-text: $primary_text;
+
+$base_bg: $white;
+$base_fg: $black;
+
+// FONTS
+$roboto: 'Roboto', sans-serif;
+
+$heading-font: $roboto;
+$body-font: $roboto;
+$meta-font: $roboto;
+
+// HEADER
+$mappage-header-height: 5em;
+$header-top-border-width: 0;
+$nav_background_colour: $white;
+$nav_colour: $blue;
+$nav_hover_background_colour: $primary;
+
+// FRONTPAGE
+// Mobile
+$front-main-color: $primary_b;
+$front-main-background: $blue-100;
+$postcodeform-background: $white;
+$postcodeform-color: $black;
+$postcodeform-color-desktop: $black;
+
+// Desktop
+$front-main-background-desktop: no-repeat center/cover url("/cobrands/westnorthants/images/all-saints.jpeg");
+$front-main-container-background-desktop: transparentize($white, 0.05);
+$front-main-color-desktop: $primary_b;
+
+$geolocation-link-border: $primary;
+$geolocation-link: $primary;
+$geolocation-link-background-color: $white;
+
+// Colour used for front page 'how to report a problem' steps
+$col_big_numbers: $primary_b;
+$layout_front_stats_color: $primary_b;
+$col_click_map: $blue;
+
+$mappage-sidebar-width: 27em;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+$sticky-sidebar-link-color: $primary;

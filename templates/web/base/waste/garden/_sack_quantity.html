@@ -29,10 +29,6 @@
     </div>
 
     <div class="fieldset-item">
-      [% IF form.saved_data.apply_discount AND form_page != 'subscribe' %]
-      <span class="cost-pa">£[% tprintf('%.2f', cobrand.apply_garden_waste_discount(per_sack_cost / 100) ) %] per subscription per year</span>
-      [% ELSE %]
-      <span class="cost-pa">£[% tprintf('%.2f', per_sack_cost / 100 ) %] per subscription per year</span>
-      [% END %]
+      <span class="cost-pa">£[% tprintf('%.2f', cost / 100 ) %] per subscription per year</span>
     </div>
   </div>

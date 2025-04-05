@@ -1,10 +1,14 @@
 use FixMyStreet::TestMech;
+
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 $mech->get_ok('/my/planned');
 is $mech->uri->path, '/auth', "got sent to the sign in page";
 
-my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', {}, { cobrand => 'oxfordshire' });
+my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $body2 = $mech->create_body_ok(2421, 'Oxford City Council');
 my ($problem) = $mech->create_problems_for_body(1, $body->id, 'Test Title');
 

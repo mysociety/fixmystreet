@@ -16,7 +16,7 @@
   $logo-height: 60px;
   width: 95px;
   height: 0;
-  @include svg-background-image("/cobrands/bromley/images/site-logo");
+  background-image: url("/cobrands/bromley/images/site-logo.svg");
   background-size: 95px $logo-height;
   background-position: center;
   background-repeat: no-repeat;
@@ -137,7 +137,7 @@ a:active {
     background-color: darken(#f5f5f5, 10%);
 
     &:after {
-      @include svg-background-image("/cobrands/bromley/images/report-tools");
+      background-image: url("/cobrands/bromley/images/report-tools.svg");
     }
   }
 }
@@ -178,22 +178,6 @@ input.field, input.text,
   font-family: $body-font;
 }
 
-.btn-primary,
-.green-btn,
-.btn--primary {
-  $bg: $bromley_blue;
-  $hover-bg: darken($bromley_blue, 10%);
-  @include button-variant($bg, $bg, false, #fff, $hover-bg, $hover-bg, false, #fff);
-  border-color: $bromley_blue !important;
-}
-
-.btn-primary--bg-white {
-  $bg: #fff;
-  $hover-bg: darken($bromley_blue, 10%);
-  @include button-variant($bg, $bg, false, $bromley_blue, $hover-bg, $hover-bg, false, $bg);
-  border-color: $bromley_blue !important;
-}
-
 .container .content {
   .frontpage & {
     &:first-child p {
@@ -209,11 +193,8 @@ input.field, input.text,
   }
 }
 
-.item-list--wards__item a:hover,
 .item-list--reports__item a:hover,
-.item-list--wards__item a:focus,
 .item-list--reports__item a:focus,
-.hovered.item-list--wards__item a,
 .hovered.item-list--reports__item a {
   background-color: mix($bromley_green, #fff, 30%);
 }
@@ -238,7 +219,7 @@ input.field, input.text,
 
 // Bromley's footer
 .site-footer {
-  @include svg-background-image("/cobrands/bromley/images/footer-blue-bg");
+  background-image: url("/cobrands/bromley/images/footer-blue-bg.svg");
   background-repeat: no-repeat;
   background-position: bottom right;
   background-color: #f5f3ed;
@@ -323,6 +304,9 @@ input.field, input.text,
     }
   }
 }
+
+// Bromley do not show their cookie icon - FD-4356
+#ccc-icon { display: none; }
 
 @import "../sass/waste";
 

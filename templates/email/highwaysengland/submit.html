@@ -1,6 +1,5 @@
 [%
 
-email_summary = "A new problem in your area has been reported by a " _ site_name _ " user.";
 email_footer = "Sent via FixMyStreet";
 email_columns = 2;
 
@@ -55,18 +54,14 @@ of a local problem that they believe might require your attention.</p>
       </a>
       [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
     </p>
+  [% IF report.get_extra_fields %]
     <p style="[% secondary_p_style %]">
-      <strong>Road:</strong>
-        [% report.get_extra_field_value('road_name') %]
+      [%~ FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length %]
+        <strong>[% field.description OR field.name %]:</strong> [% field.value_label OR field.value %]
+        [% IF NOT loop.last %]<br>[% END %]
+      [%~ END %][% END %]
     </p>
-    <p style="[% secondary_p_style %]">
-      <strong>Section:</strong>
-        [% report.get_extra_field_value('sect_label') %]
-    </p>
-    <p style="[% secondary_p_style %]">
-      <strong>Area:</strong>
-        [% report.get_extra_field_value('area_name') %]
-    </p>
+  [% END %]
     <p style="[% secondary_p_style %]">
       <strong>Heard from:</strong>
         [% report.get_extra_metadata('where_hear') %]

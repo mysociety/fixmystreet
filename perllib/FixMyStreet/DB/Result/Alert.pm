@@ -79,7 +79,7 @@ __PACKAGE__->belongs_to(
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 
-with 'FixMyStreet::Roles::Abuser';
+with 'FixMyStreet::Roles::DB::Abuser';
 
 =head2 confirm
 

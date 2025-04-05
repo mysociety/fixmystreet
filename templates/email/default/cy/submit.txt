@@ -25,8 +25,8 @@ Pwnc: [% report.title %]
 
 Manylion: [% report.detail %]
 
-[% FOR field IN report.get_extra_fields %][% IF field.value ~%]
-[% field.description OR field.name %]: [% field.value %]
+[% FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length ~%]
+[% field.description OR field.name %]: [% field.value_label OR field.value %]
 
 [% END %][% END ~%]
 

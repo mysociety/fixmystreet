@@ -8,13 +8,17 @@ body.frontpage #site-header {
 
 
 body.frontpage #site-logo {
-    background: url("/cobrands/rutland/RCCLogo.gif");
     background-size: contain;
-    height: 100px;
+    background-repeat: no-repeat;
+    height: 110px;
     width: 220px;
 }
 
 
 a.platform-logo {
     background-image: url(/cobrands/fixmystreet/images/fms-platform-logo-dark.svg);
+}
+
+.nav-menu--main span {
+  color: darken($primary, 10%);
 }

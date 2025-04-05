@@ -106,10 +106,10 @@ use FixMyStreet::Template::SafeString;
 use namespace::clean -except => [ 'meta' ];
 use FixMyStreet::Template;
 
-with 'FixMyStreet::Roles::Abuser',
-     'FixMyStreet::Roles::Extra',
-     'FixMyStreet::Roles::Moderation',
-     'FixMyStreet::Roles::PhotoSet';
+with 'FixMyStreet::Roles::DB::Abuser',
+     'FixMyStreet::Roles::DB::Extra',
+     'FixMyStreet::Roles::DB::Moderation',
+     'FixMyStreet::Roles::DB::PhotoSet';
 
 =head2 FOREIGNBUILDARGS
 
@@ -304,12 +304,13 @@ sub meta_line {
                 $body = "$body <img src='/cobrands/bromley/favicon.png' alt=''>";
             } elsif ($body eq 'Royal Borough of Greenwich') {
                 $body = "$body <img src='/cobrands/greenwich/favicon.png' alt=''>";
-            } elsif ($body eq 'Hounslow Borough Council') {
-                $body = 'Hounslow Highways';
             } elsif ($body eq 'Isle of Wight Council') {
                 $body = 'Island Roads';
             } elsif ($body eq 'Thamesmead') {
                $body = 'Peabody';
+            } elsif ($body eq 'National Highways') {
+                # Always use what was saved on the comment
+                $body = FixMyStreet::Template::html_filter($self->name);
             }
         }
         my $cobrand_always_view_body_user = $cobrand->call_hook(always_view_body_contribute_details => $contributed_as);

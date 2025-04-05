@@ -14,8 +14,18 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(163793, 'Buckinghamshire Council', {
-    send_method => 'Open311', api_key => 'key', endpoint => 'endpoint', jurisdiction => 'fms', can_be_devolved => 1 }, { cobrand => 'buckinghamshire' });
+my $body = $mech->create_body_ok(
+    163793,
+    'Buckinghamshire Council',
+    {   send_method     => 'Open311',
+        api_key         => 'key',
+        endpoint        => 'endpoint',
+        jurisdiction    => 'fms',
+        can_be_devolved => 1,
+        comment_user    => $mech->create_user_ok('comment_user@example.com'),
+        cobrand => 'buckinghamshire',
+    },
+);
 my $parish = $mech->create_body_ok(53822, 'Adstock Parish Council');
 my $parish2 = $mech->create_body_ok(58815, 'Aylesbury Town Council');
 my $deleted_parish = $mech->create_body_ok(58815, 'Aylesbury Parish Council');
@@ -115,6 +125,22 @@ subtest 'cobrand displays correct categories' => sub {
     is @{$json->{bodies}}, 2, 'Still Bucks and parish returned';
 };
 
+subtest 'parish alert signup' => sub {
+    $mech->get_ok('/alert/list?latitude=51.615559&longitude=-0.556903');
+    $mech->content_contains('Buckinghamshire Council');
+    $mech->content_contains('Chiltern District Council');
+    $mech->content_contains('All reports within Adstock parish');
+    $mech->content_contains('Only reports sent to Adstock Parish Council');
+    $mech->submit_form_ok({ with_fields => {
+        feed => 'area:53822',
+    } });
+};
+
+subtest 'privacy page contains link to Bucks privacy policy' => sub {
+    $mech->get_ok('/about/privacy');
+    $mech->content_contains('privacy-and-buckinghamshire-highways');
+};
+
 my ($report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
     category => 'Flytipping', cobrand => 'fixmystreet',
     latitude => 51.812244, longitude => -0.827363,
@@ -184,7 +210,7 @@ subtest 'Flytipping not on a road gets recategorised' => sub {
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council.');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping (off-road)", 'Report was recategorised correctly';
 };
@@ -201,7 +227,7 @@ subtest 'Flytipping not on a road on .com gets recategorised' => sub {
         }
     }, "submit details");
     $mech->content_contains('on its way to the council right now');
-    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping (off-road)", 'Report was recategorised correctly';
     ok $mech->host("buckinghamshire.fixmystreet.com"), "change host to bucks";
@@ -229,7 +255,7 @@ subtest 'Flytipping not on a road going to HE does not get recategorised' => sub
         }
     }, "submit details");
     $mech->content_contains('From the information you have given, we have passed this report on to:');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->category, "Flytipping", 'Report was not recategorised';
 
@@ -374,45 +400,11 @@ subtest 'extra CSV columns are present' => sub {
     is $rows[2]->[8], $counciluser->email, 'Staff User is correct if made on behalf of another user';
 };
 
-subtest 'old district council names are now just "areas"' => sub {
-
-    my %points = (
-       'Aylesbury Vale' => [
-           [ 51.822364, -0.826409 ], # AVDC offices
-           [ 51.995, -0.986 ], # Buckingham
-           [ 51.940, -0.887 ], # Winslow
-       ],
-        'Chiltern' => [
-           [ 51.615559, -0.556903, ],
-        ],
-        'South Bucks' => [
-            [ 51.563, -0.499 ], # Denham
-            [ 51.611, -0.644 ], # Beaconsfield Railway Station
-        ],
-         'Wycombe' => [
-             [ 51.628661, -0.748238 ], # High Wycombe
-             [ 51.566667, -0.766667 ], # Marlow
-         ],
-    );
-
-    for my $area (sort keys %points) {
-        for my $loc (@{$points{$area}}) {
-            $mech->get("/alert/list?latitude=$loc->[0];longitude=$loc->[1]");
-            $mech->content_contains("$area area");
-            $mech->content_lacks("$area District Council");
-            $mech->content_lacks("ward, $area District Council");
-            $mech->content_lacks('County Council');
-            $mech->content_contains('Buckinghamshire Council');
-        }
-    }
-
-};
-
 my $bucks = Test::MockModule->new('FixMyStreet::Cobrand::Buckinghamshire');
 
 subtest 'Prevents car park reports being made outside a car park' => sub {
     # Simulate no car parks found
-    $bucks->mock('_get', sub { "<wfs:FeatureCollection></wfs:FeatureCollection>" });
+    $bucks->mock('_post', sub { "<wfs:FeatureCollection></wfs:FeatureCollection>" });
 
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Barrier+problem');
     $mech->submit_form_ok({
@@ -427,7 +419,7 @@ subtest 'Prevents car park reports being made outside a car park' => sub {
 
 subtest 'Allows car park reports to be made in a car park' => sub {
     # Now simulate a car park being found
-    $bucks->mock('_get', sub {
+    $bucks->mock('_post', sub {
         "<wfs:FeatureCollection>
             <gml:featureMember>
                 <Transport_BC_Car_Parks:BC_CAR_PARKS>
@@ -462,7 +454,7 @@ subtest 'sends grass cutting reports on roads under 30mph to the parish' => sub 
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
-    $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 1', 'Got the correct report';
     is $report->bodies_str, $parish->id, 'Report was sent to parish';
@@ -496,7 +488,7 @@ subtest '.com reports get the logged email too' => sub {
         }
     }, "submit details");
     $mech->content_contains('Thank you for reporting');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 1b', 'Got the correct report';
     is $report->bodies_str, $parish->id, 'Report was sent to parish';
@@ -518,14 +510,14 @@ subtest 'sends grass cutting reports on roads 30mph or more to the council' => s
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 2', 'Got the correct report';
     is $report->bodies_str, $body->id, 'Report was sent to council';
 };
 
 subtest "server side speed limit lookup for council grass cutting report" => sub {
-    $bucks->mock('_get', sub { "<OS_Highways_Speed:speed>60.00000000</OS_Highways_Speed:speed>" });
+    $bucks->mock('_post', sub { "<OS_Highways_Speed:speed>60.00000000</OS_Highways_Speed:speed>" });
 
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
     $mech->submit_form_ok({
@@ -537,14 +529,14 @@ subtest "server side speed limit lookup for council grass cutting report" => sub
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council') or diag $mech->content;
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 3', 'Got the correct report';
     is $report->bodies_str, $body->id, 'Report was sent to council';
 };
 
 subtest "server side speed limit lookup for parish grass cutting report" => sub {
-    $bucks->mock('_get', sub { "<OS_Highways_Speed:speed>30.00000000</OS_Highways_Speed:speed>" });
+    $bucks->mock('_post', sub { "<OS_Highways_Speed:speed>30.00000000</OS_Highways_Speed:speed>" });
 
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
     $mech->submit_form_ok({
@@ -555,14 +547,14 @@ subtest "server side speed limit lookup for parish grass cutting report" => sub 
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 4', 'Got the correct report';
     is $report->bodies_str, $parish->id, 'Report was sent to parish';
 };
 
 subtest "server side speed limit lookup with unknown speed limit" => sub {
-    $bucks->mock('_get', sub { '' });
+    $bucks->mock('_post', sub { '' });
 
     $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903&category=Grass+cutting');
     $mech->submit_form_ok({
@@ -573,7 +565,7 @@ subtest "server side speed limit lookup with unknown speed limit" => sub {
         }
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test grass cutting report 5', 'Got the correct report';
     is $report->bodies_str, $body->id, 'Report was sent to council';
@@ -590,7 +582,7 @@ subtest 'treats problems sent to parishes as owned by Bucks' => sub {
     }, "submit details");
     $mech->content_contains('Your issue is on its way to the council');
 
-    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+    my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
     ok $report, "Found the report";
     is $report->title, 'Test Dirty signs report', 'Got the correct report';
 
@@ -752,6 +744,54 @@ subtest 'Check template setting' => sub {
         is $mech->uri->path, '/admin/templates/' . $body->id, 'redirected';
         is $body->response_templates->count, 2, "Duplicate response template was added";
     };
+};
+
+subtest 'Littering From Vehicles report' => sub {
+    my $contact_lfv = $mech->create_contact_ok(
+        body_id     => $body->id,
+        category    => 'Littering From Vehicles',
+        email       => 'vehicle_littering@example.org',
+        send_method => 'Email',
+        non_public  => 1,
+    );
+    my $tmpl_lfv = $body->response_templates->create(
+        {   title         => 'Littering From Vehicles Template',
+            text          => 'Thank you; we are investigating this.',
+            state         => 'confirmed',
+            auto_response => 1,
+        }
+    );
+    $tmpl_lfv->add_to_contacts($contact_lfv);
+
+    $mech->log_in_ok( $publicuser->email );
+
+    $mech->get_ok('/report/new?latitude=51.615559&longitude=-0.556903');
+    $mech->submit_form_ok(
+        {   with_fields => {
+                title    => 'Bad Volvo',
+                detail   => 'Spewing litter everywhere',
+                category => 'Littering From Vehicles',
+            },
+        },
+    );
+
+    my $report
+        = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+    is $report->category, 'Littering From Vehicles', 'correct category';
+    is $report->state,    'confirmed',               'correct initial state';
+    is $report->comments, 1, 'initial comment created';
+    my $comment = $report->comments->first;
+    is $comment->text,          'Thank you; we are investigating this.';
+    is $comment->state,         'unconfirmed';
+    is $comment->problem_state, 'confirmed';
+
+    FixMyStreet::Script::Reports::send();
+    $report->discard_changes;
+
+    is $report->state,    'investigating', 'state changed to investigating';
+    is $report->comments, 1,               'no more comments added';
+    $comment = $report->comments->first;
+    is $comment->state, 'confirmed', 'comment now confirmed';
 };
 
 };

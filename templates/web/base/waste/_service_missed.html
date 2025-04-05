@@ -1,0 +1,27 @@
+[% IF unit.report_open %]
+  <span class="waste-service-descriptor">
+    [% PROCESS 'waste/_service_missed_open.html' %]
+  </span>
+[% ELSIF unit.report_allowed %]
+  [% any_report_allowed = 1 %]
+  <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %][% '?original_booking_id=' _ original_booking IF original_booking %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="service-[% unit.service_id %]" value="1">
+    <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
+  </form>
+[% ELSIF unit.report_locked_out %]
+  <span class="waste-service-descriptor">A missed collection cannot be reported;
+    [% IF unit.report_locked_out_reason %]
+        [% unit.report_locked_out_reason %]
+    [% ELSE %]
+        please see the last collection status above.
+    [% END %]
+  </span>
+[% ELSIF unit.next AND unit.next.state == 'In progress' %]
+  <span class="waste-service-descriptor" style="margin-top: 1.5em;">A missed collection cannot be reported on the day of collection until the crew have finished their round.</span>
+[% ELSIF NOT no_default %]
+  <span class="waste-service-descriptor" style="margin-top: 1.5em;">
+      [% PROCESS 'waste/_service_missed_fallback.html' %]
+  </span>
+[% END %]
+

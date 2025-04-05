@@ -10,14 +10,10 @@
        <li><a href="[% c.uri_for_action('waste/report', [ property.id ]) %]">Report a missed collection</a></li>
     [% END %]
     [% IF any_request_allowed %]
-      <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a replacement container</a></li>
+      <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new/replacement container</a></li>
     [% END %]
     [% IF services.2238 %]
-     [% IF c.config.STAGING_SITE %]
-      <li><a href="https://kingston-self.test.achieveservice.com/service/Refuse_container_maintenance_in_Kingston?uprn=[% property.uprn %]">Request a larger/smaller or additional refuse container</a></li>
-     [% ELSE %]
-      <li><a href="https://kingston-self.achieveservice.com/service/Refuse_container_maintenance_in_Kingston?uprn=[% property.uprn %]">Request a larger/smaller or additional refuse container</a></li>
-     [% END %]
+      <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]?exchange=1">Request a larger/smaller refuse container</a></li>
     [% END %]
     [% IF show_garden_subscribe %]
       <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>

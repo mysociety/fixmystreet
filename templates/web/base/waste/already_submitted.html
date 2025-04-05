@@ -1,0 +1,19 @@
+[% SET title = 'Form Already Submitted' %]
+[% PROCESS 'waste/header.html' %]
+
+<div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title">
+  <div class="govuk-notification-banner__header">
+    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+      Important
+    </h2>
+  </div>
+  <div class="govuk-notification-banner__content">
+    <p class="govuk-notification-banner__heading">
+      You have already submitted this form.
+    </p>
+    <p class="govuk-body">To avoid duplicate submissions, this form cannot be resubmitted. If you need to make changes or have questions about your submission, please contact us.</p>
+    <a href="/waste" class="govuk-button">Return to homepage</a>
+  </div>
+</div>
+
+[% INCLUDE footer.html %]

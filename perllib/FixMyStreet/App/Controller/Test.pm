@@ -62,7 +62,7 @@ sub setup : Path('/_test/setup') : Args(1) {
         $category->update;
         $c->response->body("OK");
     } elsif ($test eq 'simple-service-check') {
-        my $problem = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $c->response->body($problem->service);
     } elsif ($test eq 'oxfordshire-defect') {
         my $body = FixMyStreet::DB->resultset("Body")->find({ name => 'Oxfordshire County Council' });

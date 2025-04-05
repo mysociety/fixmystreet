@@ -7,6 +7,7 @@ $mappage-header-height: 128px;
 $white: #fff;
 
 $red: #B10E1E;
+$error_color: $red;
 
 $royal: #2E358B;
 $fuchsia: #912B88;
@@ -64,3 +65,16 @@ $front-main-background-desktop: $grey_highlight;
 $sticky-sidebar-bg-color: mix($fuchsia, #fff, 20%);
 $mobile-sticky-sidebar-button-bg: $fuchsia;
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+// Button
+$button-primary-bg-top: $col_button;
+$button-primary-bg-bottom: $col_button;
+$button-primary-border: $col_button;
+$button-primary-text: $white;
+
+$button-primary-hover-bg-top: $col_button_hover;
+$button-primary-hover-bg-bottom:$col_button_hover;
+$button-primary-hover-border: $col_button_hover;
+$button-primary-hover-text: $white;
+
+$button-border-radius: 0px;

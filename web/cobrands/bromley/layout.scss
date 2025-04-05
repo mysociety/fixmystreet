@@ -13,23 +13,14 @@ body {
 
 // Alter the logo and the header on every page *but* the map page. On the map
 // page it stays small like in base.css
-body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
+body:not(.mappage) {
   #site-logo {
     $logo-height-desktop: 88px;
     width: 157px;
     height: 0;
-
-    @include svg-background-image("/cobrands/bromley/images/site-logo");
     background-size: 157px $logo-height-desktop;
-    background-position: center;
-    background-repeat: no-repeat;
-  
     //Not displaying the text
     padding-top: calc(#{$logo-height-desktop} + 10px);
-    overflow: hidden;
-    white-space: nowrap;
-    text-indent: -999999px;
-    z-index:2;
   }
 }
 
@@ -64,20 +55,11 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
     padding: 0.75em;
 
     margin: 0;
-    @include border-radius(0.25em);
+    border-radius: 0.25em;
     &:hover, &:focus {
       background: darken($bromley_blue, 10%);
       color: #fff;
       text-decoration: none;
-    }
-  }
-
-  span.report-a-problem-btn {
-    cursor:auto;
-    border-radius: 0.25em;
-    &:hover, &:focus {
-      color: $nav_colour !important;
-      background-color: $nav_hover_background_colour !important;
     }
   }
 
@@ -118,22 +100,13 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
   #front-main-container {
     position: relative;
     z-index: 2;
-
-    form#postcodeForm {
-      margin: 0 0;
-      text-align: left;
-      border-radius: 8px;
-      border: 2px solid $bromley_green;
-      max-width: 550px;
-      padding: 1.5em 2em;
-    }
   }
 
   &::after {
     content: '';
     display: block;
     position: absolute;
-    @include svg-background-image("/cobrands/bromley/images/curve-top");
+    background-image: url("/cobrands/bromley/images/curve-top.svg");
     background-position: bottom 0 right 0;
     background-size: contain;
     background-repeat: no-repeat;
@@ -142,6 +115,19 @@ body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.waste {
     right: 0;
     bottom: -2px;
     z-index: 1;
+  }
+}
+
+.postcode-form-box {
+  margin: 0 0;
+  text-align: left;
+  border-radius: 8px;
+  border: 2px solid $bromley_green;
+  max-width: 550px;
+  padding: 1.5em 2em;
+  .alertpage & {
+    border: none;
+    padding: 0;
   }
 }
 

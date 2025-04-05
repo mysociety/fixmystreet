@@ -35,13 +35,13 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2023-05-10 17:03:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HPmUxkshnYZE4h4Jgnh9vA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2024-10-21 23:30:33
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IU8WZrwpQ2UxbIVaII3B5A
 
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 
-with 'FixMyStreet::Roles::Extra';
+with 'FixMyStreet::Roles::DB::Extra';
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

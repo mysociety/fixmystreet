@@ -41,9 +41,6 @@ a {
     }
 }
 
-
-// This will prevent the update notifications buttons to have the same styling when checked and not checked. By default .btn doesn't have the primary button styling, it has a gray background colour, therefore in cobrands where the .btn has a primary button styling we get the .segmented-control looking the same no matter if they are selected or not.
-.btn:not(label),
 a#geolocate_link {
     @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
     border-width: $button-border-width;
@@ -56,8 +53,7 @@ a#geolocate_link {
     border-color: $primary_text;
 }
 
-.green-btn {
-    @include button-variant($bg-top: $gloucestershire_blue_button, $bg-bottom: $gloucestershire_blue_button, $border: $gloucestershire_blue_button, $text: $primary_text, $hover-bg-bottom: $primary_text, $hover-bg-top: $primary_text, $hover-border: $button-primary-hover-border, $hover-text: $gloucestershire_blue_button);
+.btn--primary {
     border-width: $button-border-width;
     @include focus-state;
 }
@@ -68,7 +64,7 @@ a#geolocate_link {
 }
 
 #site-logo {
-    @include svg-background-image("/cobrands/gloucestershire/images/gloucestershire-logo");
+    background-image: url("/cobrands/gloucestershire/images/gloucestershire-logo.svg");
     background-size: contain;
 }
 
@@ -103,17 +99,15 @@ a#geolocate_link {
 
 /* FRONTPAGE */
 .postcode-form-box {
-    div {
-        input#sub {
-            border: $button-border-width solid $button-primary-bg-top;
-            font-family: $body-font;
-            font-weight: 600;
-            background-color: $button-primary-bg-top;
+    input#sub {
+        border: $button-border-width solid $button-primary-bg-top;
+        font-family: $body-font;
+        font-weight: 600;
+        background-color: $button-primary-bg-top;
 
-            &:hover {
-                background-color: $button-primary-hover-bg-top;
-                color: $button-primary-text;
-            }
+        &:hover {
+            background-color: $button-primary-hover-bg-top;
+            color: $button-primary-text;
         }
     }
 }
@@ -180,19 +174,19 @@ a#geolocate_link {
         background-size: 26px;
 
         &.icon-facebook {
-            @include svg-background-image("/cobrands/gloucestershire/images/facebook");
+            background-image: url("/cobrands/gloucestershire/images/facebook.svg");
         }
         &.icon-twitter {
-            @include svg-background-image("/cobrands/gloucestershire/images/twitter");
+            background-image: url("/cobrands/gloucestershire/images/twitter.svg");
         }
         &.icon-instagram {
-            @include svg-background-image("/cobrands/gloucestershire/images/instagram");
+            background-image: url("/cobrands/gloucestershire/images/instagram.svg");
         }
         &.icon-youtube-play {
-            @include svg-background-image("/cobrands/gloucestershire/images/youtube");
+            background-image: url("/cobrands/gloucestershire/images/youtube.svg");
         }
         &.icon-rss {
-            @include svg-background-image("/cobrands/gloucestershire/images/rss");
+            background-image: url("/cobrands/gloucestershire/images/rss.svg");
         }
     }
 

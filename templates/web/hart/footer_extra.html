@@ -15,7 +15,7 @@
                     <div class="form-wrapper">
                       <div class="js-form-item form-item js-form-type-email form-item-email js-form-item-email">
                         <label for="edit-email">Email</label>
-                        <input data-drupal-selector="edit-email" type="email" id="edit-email" name="email" value="" size="60" maxlength="254" placeholder="Enter email address..." class="form-email">
+                        <input data-drupal-selector="edit-email" type="email" id="edit-email" name="email" value="" size="60" maxlength="254" placeholder="Enter email address..." class="form-email" autocomplete="email">
                       </div>
                       <div data-drupal-selector="edit-actions--2" class="form-actions webform-actions js-form-wrapper form-wrapper" id="edit-actions--2">
                         <input class="webform-button--submit button button--primary js-form-submit form-submit" data-drupal-selector="edit-actions-submit" type="submit" id="edit-actions-submit" name="op" value="Subscribe">
@@ -103,14 +103,14 @@
                       </a>
                     </li>
                     <li class="menu-item">
-                      <a href="https://www.hart.gov.uk/privacy" target="_blank">
+                      <a href=[% c.cobrand.privacy_policy_url %] target="_blank">
                         Privacy
                         <span class="visually-hidden">Opens in a new tab</span>
                       </a>
                     </li>
                     <li class="menu-item">
                       <a href="https://www.hart.gov.uk/cookies" target="_blank">
-                        Cookies 
+                        Cookies
                         <span class="visually-hidden">Opens in a new tab</span>
                       </a>
                     </li>
@@ -134,11 +134,5 @@
     </div>
   </div>
 </footer>
-<div class="societyworks-footer">
-  <div class="container">
-      <p>
-          Powered by
-          <a class="societyworks-footer__logo societyworks-footer__logo--fms-pro" href="https://www.societyworks.org/services/highways/">FixMyStreet Pro</a>
-      </p>
-  </div>
-</div>
+[% PROCESS '_footer_main_nav.html' %]
+[% PROCESS '_footer_extra_powered_by.html' %]

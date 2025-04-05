@@ -8,8 +8,8 @@ use Memcached;
 use Moo;
 use FixMyStreet;
 
-with 'FixMyStreet::Roles::SOAPIntegration';
-with 'FixMyStreet::Roles::ParallelAPI';
+with 'Integrations::Roles::SOAP';
+with 'Integrations::Roles::ParallelAPI';
 
 has attr => ( is => 'ro', default => 'http://bartec-systems.com/' );
 has action => ( is => 'lazy', default => sub { $_[0]->attr . "/Service/" } );

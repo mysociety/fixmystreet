@@ -2,7 +2,7 @@ use FixMyStreet::TestMech;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
-my $hounslow_id = $mech->create_body_ok(2483, 'Hounslow Borough Council', {}, { cobrand => 'hounslow' })->id;
+my $hounslow_id = $mech->create_body_ok(2483, 'Hounslow Highways', { cobrand => 'hounslow' })->id;
 $mech->create_contact_ok(
     body_id => $hounslow_id,
     category => 'Potholes',
@@ -20,6 +20,7 @@ $mech->create_contact_ok(
 );
 
 $mech->create_problems_for_body(1, $hounslow_id, 'An old problem made before Hounslow FMS launched', {
+    created => '2018-12-25 09:00',
     confirmed => '2018-12-25 09:00',
     lastupdate => '2018-12-25 09:00',
     latitude => 51.482286,

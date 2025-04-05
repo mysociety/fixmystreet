@@ -11,7 +11,11 @@ sub get {
 
     my $value = $self->SUPER::get(@_);
 
-    $value = FixMyStreet::Template::Variable->new($value) unless ref $value;
+    # We cannot pass a F::T::V to the template INCLUDE or PROCESS, it doesn't
+    # cope with it.  So special case the only place we want to use a variable
+    # template, which is the sidebar.
+    $value = FixMyStreet::Template::Variable->new($value)
+        unless ref $value || $_[0] eq 'sidebar';
 
     return $value;
 }

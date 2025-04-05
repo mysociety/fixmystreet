@@ -1,9 +1,9 @@
 package FixMyStreet::DB::ResultSet::ResponseTemplate;
-use base 'DBIx::Class::ResultSet';
+use base 'FixMyStreet::DB::ResultSet';
 
 use Moo;
 
-with('FixMyStreet::Roles::ContactExtra');
+with('FixMyStreet::Roles::DB::ContactExtra');
 
 sub join_table {
     return 'contact_response_templates';

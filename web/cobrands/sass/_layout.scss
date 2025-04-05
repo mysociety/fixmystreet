@@ -81,8 +81,8 @@ h1 {
   position: static;
   min-height: $mappage-header-height; // defaults to map header height; should be height of #site-header (eg: #site-logo + any vertical padding)
   height: 1px; // flex `align-items: center` doesn't work in IE10 and IE11 unless flex container has an explicit height (even when min-height means this explicit height gets ignored!)
-  @include flex-container();
-  @include flex-align(center);
+  display: flex;
+  align-items: center;
   float: $right; // we could use justify-content here, but float degrades better for non-flexbox browsers
   @if ($header-top-border) {
     margin-top: $header-top-border-width * -1; // visually compensate for border on #site-header
@@ -156,21 +156,13 @@ h1 {
     background-color: $primary;
     padding:0.25em 0.5em;
     margin:0.5em;
-    @include border-radius(0.25em);
+    border-radius: 0.25em;
     &:hover {
       background-color:$primary/1.1;
     }
   }
   span {
     color:$primary;
-  }
-  /* Stop mobile-only things */
-  span.report-a-problem-btn {
-    cursor: auto;
-  }
-  span.report-a-problem-btn:hover {
-    background-color: transparent;
-    color: $primary;
   }
 }
 
@@ -310,15 +302,15 @@ body.mappage.admin {
 // This goes inside #map_sidebar, and establishes a flex container allowing
 // us to split the sidebar into two side-by-side columns.
 .two_column_sidebar {
-  @include flex-container();
-  @include flex-align(stretch); // children will fill entire height of this element
+  display: flex;
+  align-items: stretch; // children will fill entire height of this element
   min-height: 100%; // this element will fill entire height of parent (#map_sidebar)
 
   & > * {
     // Columns should start at 50% width, and (eg: if scrollbars appear,
     // reducing the available width), shrink down to less than 50%.
-    @include box-sizing(border-box);
-    @include flex(0 1 auto);
+    box-sizing: border-box;
+    flex: 0 1 auto;
     width: 50%;
     padding: $mappage-sidebar-padding;
 
@@ -337,7 +329,7 @@ body.mappage.admin {
   // and leave the other column to shrink to the remaining space.
   #side-report {
     width: $mappage-sidebar-width;
-    @include flex(0 0 auto);
+    flex: 0 0 auto;
 
     @media (max-width: 79em) {
       width: $mappage-sidebar-width--medium;
@@ -399,6 +391,12 @@ body.mappage.admin {
   border-bottom: 1px solid #E7E1C0;
   background: #FDF4C5;
 
+  a {
+    display: block;
+    width: fit-content;
+    margin-top: 0.5rem;
+  }
+
   em {
     font-style: normal;
     text-decoration: underline;
@@ -457,16 +455,6 @@ a.platform-logo {
     height: 1.7em;
     width: 16em;
     padding-#{$right}: 0.25em;
-}
-
-// two thirds width page, also has option for a sidebar which can be sticky or not
-body.twothirdswidthpage {
-  #site-header + .container {
-    // This used to be on all containers, but there was a bug in Chrome, so now
-    // it's just here so that the sidebar links are still clickable with their
-    // negative z-index.
-    z-index: 1;
-  }
 }
 
 // Centre the login and password change pages,
@@ -652,7 +640,7 @@ body.authpage {
     margin-top: -6px;
     #{$left}: ((16px - 6px) / 2); // horizontally centre in 16px wide parent
     background-size: 108px 12px;
-    @include svg-background-image('/cobrands/fixmystreet/images/map-tools');
+    background-image: url("/cobrands/fixmystreet/images/map-tools.svg");
   }
 
   // Expanded arrow points towards edge of window.
@@ -693,7 +681,7 @@ body.authpage {
 #key-tools {
   border-top: 0.25em solid $primary;
   margin: 0;
-  @include box-shadow(0 0 1em 1em #fff);
+  box-shadow: 0 0 1em 1em #fff;
 
   li {
     border-#{$right}: none; // undo border-right/left from _base.scss
@@ -760,7 +748,7 @@ p.form-error {
 
 input.form-error,
 textarea.form-error {
-  @include border-radius(0 0 0.25em 0.25em);
+  border-radius: 0 0 0.25em 0.25em;
 }
 
 // If the form is .with-notes, limit the width of the inputs
@@ -778,9 +766,9 @@ textarea.form-error {
   // If the parent is .with-notes we know we have space to
   // float the sidebar content to the side of the form.
   .with-notes & {
-    float: #{$right};
+    position: absolute;
+    #{$right}: 1em;
     width: 13em;
-    margin-#{$right}: -15em;
   }
 
   div {
@@ -831,13 +819,8 @@ textarea.form-error {
       padding: 0;
     }
   }
-  .form-hint {
-    margin-top: -0.25em;
-    color: $form-hint-color-desktop;
-  }
   h2 {
     font-style:normal;
-    margin:0;
     color: $front-main-h2-color-desktop;
   }
 }
@@ -852,9 +835,10 @@ textarea.form-error {
     padding: 0;
     margin: 1em auto 0;
   }
-  overflow:hidden;
-  label {
-    margin:0.5em 0;
+  overflow: visible; // Doesn't cover the outline when focusing elements
+  .form-hint {
+    margin-top: -0.25em;
+    color: $form-hint-color-desktop;
   }
   div {
     width:20em;
@@ -896,13 +880,9 @@ textarea.form-error {
     margin-top: 1.3333em;
 }
 
-.alerts__columns {
-    @include clearfix;
-    @include flex-container();
-    > div {
-        width: 50%;
-        margin: 0 2em;
-    }
+.cta-box__input-wrapper {
+  gap: 1rem;
+  flex-wrap: nowrap;
 }
 
 .confirmation-header {
@@ -911,11 +891,16 @@ textarea.form-error {
     text-align: $left;
     padding: flip(3em 0 3em 132px, 3em 132px 3em 0); // for tick icon
     background-position: $left 2em;
+
+    p {
+      word-break: normal;
+    }
 }
 
 // Offline reporting UI
 #front-main {
   .draft-info-box p {
+      margin: 0.5em 0 0 0;
       background-color: white;
       border: solid 2px #ff3333;
   }
@@ -1070,7 +1055,7 @@ textarea.form-error {
 
 .keyboard-pin {
   display: none;
-  background-image: url('/i/pin-green-big.png');
+  background-image: url('/i/pins/green/big.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -1085,7 +1070,7 @@ textarea.form-error {
 
   &::after {
     content: "";
-    background-image: url('/i/pin-shadow-big.png');
+    background-image: url('/i/pins/shadow/big.png');
     background-size: contain;
     background-repeat: no-repeat;
     width: 88px;

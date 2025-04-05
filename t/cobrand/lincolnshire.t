@@ -12,8 +12,9 @@ my $params = {
     endpoint => 'endpoint',
     jurisdiction => 'home',
     can_be_devolved => 1,
+    cobrand => 'lincolnshire',
 };
-my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params, { cobrand => 'lincolnshire' });
+my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params);
 my $lincs_user = $mech->create_user_ok('lincs@example.org', name => 'Lincolnshire User', from_body => $body);
 my $superuser = $mech->create_user_ok('super@example.org', name => 'Super User', is_superuser => 1, email_verified => 1);
 my $superuser_email = $superuser->email;
@@ -32,7 +33,7 @@ FixMyStreet::override_config {
 }, sub {
     subtest "custom homepage text" => sub {
         $mech->get_ok('/');
-        $mech->content_contains('like potholes, broken paving slabs, or street lighting');
+        $mech->content_contains('like potholes, broken paving slabs, street lighting, or flooding');
     };
 
     subtest "fetching problems from Open311 includes user information" => sub {
@@ -101,6 +102,32 @@ FixMyStreet::override_config {
         is $p->user->email, $user2->email, 'correct email associated with problem';
 
         $p->delete;
+    };
+
+    subtest "Dashboard CSV export includes extra staff columns" => sub {
+        my $csv_staff = $mech->create_user_ok(
+            'csvstaff@lincolnshire.gov.uk',
+            name => 'CSV Staff',
+            from_body => $body,
+        );
+        my $csv_role = FixMyStreet::DB->resultset("Role")->create({
+            body => $body,
+            name => 'CSV Role',
+            permissions => ['moderate', 'user_edit'],
+        });
+        $csv_staff->add_to_roles($csv_role);
+
+        my @csv_problems = $mech->create_problems_for_body( 1, $body->id, 'CSV Export Test Issue', {
+            cobrand => 'lincolnshire',
+            user => $csv_staff,
+            extra => { contributed_by => $csv_staff->id },
+        });
+
+        $mech->log_in_ok($csv_staff->email);
+        $mech->get_ok('/dashboard?export=1');
+
+        $mech->content_contains('"Staff Role"');
+        $mech->content_like(qr/CSV Role/, "CSV export includes staff role");
     };
 };
 

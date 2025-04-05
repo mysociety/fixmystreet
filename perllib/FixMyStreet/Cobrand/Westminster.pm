@@ -25,7 +25,7 @@ use URI;
 
 =cut
 
-sub council_area_id { return 2504; }
+sub council_area_id { return [2504, 2505] } # 2505 Camden
 sub council_area { return 'Westminster'; }
 sub council_name { return 'Westminster City Council'; }
 sub council_url { return 'Westminster'; }
@@ -229,6 +229,24 @@ sub updates_restriction {
     return $self->next::method(@_)->search({
         "me.cobrand" => { '!=', 'fixmystreet' }
     });
+}
+
+=head2 munge_overlapping_asset_bodies
+
+Alters the list of available bodies for the location, depending on calculated
+responsibility. Here, we needt to make sure we get rid of Camden in the usual
+in-Westminster sense.
+
+=cut
+
+sub munge_overlapping_asset_bodies {
+    my ($self, $bodies) = @_;
+
+    my %bodies = map { $_->get_column('name') => 1 } values %$bodies;
+    if ( $bodies{'Camden Borough Council'} ) {
+        my $camden = FixMyStreet::Cobrand::Camden->new({ c => $self->{c} });
+        $camden->munge_overlapping_asset_bodies($bodies);
+    }
 }
 
 1;

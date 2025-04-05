@@ -1,4 +1,3 @@
-use utf8;
 use Test::MockModule;
 use Test::MockTime 'set_fixed_time';
 use FixMyStreet::TestMech;
@@ -17,7 +16,7 @@ my $user = $mech->create_user_ok('bob@example.org');
 
 my $body = $mech->create_body_ok( 2482, 'Bromley Council', {
     endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test',
-    }, { cobrand => 'bromley' } );
+    cobrand => 'bromley' } );
 $body->set_extra_metadata(
     wasteworks_config => {
         per_item_costs => 1,
@@ -57,6 +56,7 @@ create_contact(
     { category => 'Bulky collection', email => '2175@test.com' },
     { code => 'Collection_Date' },
     { code => 'Exact_Location' },
+    { code => 'Notes' },
     { code => 'payment' },
     { code => 'payment_method' },
     { code => 'Image' },
@@ -72,6 +72,23 @@ sub domestic_waste_service_units {
     return [ {
         Id => 1,
         ServiceId => 531,
+        ServiceTasks => { ServiceTask => {
+            Id => '401',
+            ServiceTaskSchedules => { ServiceTaskSchedule => {
+                ScheduleDescription => 'every Wednesday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                NextInstance => {
+                    CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                    OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    Ref => { Value => { anyType => [ '123', '456' ] } },
+                },
+            } },
+        } },
     } ]
 }
 
@@ -80,6 +97,23 @@ sub trade_waste_service_units {
     return [ {
         Id => 1,
         ServiceId => 532,
+        ServiceTasks => { ServiceTask => {
+            Id => '401',
+            ServiceTaskSchedules => { ServiceTaskSchedule => {
+                ScheduleDescription => 'every Wednesday',
+                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
+                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
+                NextInstance => {
+                    CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                    OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
+                },
+                LastInstance => {
+                    OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
+                    Ref => { Value => { anyType => [ '123', '456' ] } },
+                },
+            } },
+        } },
     } ]
 }
 
@@ -219,7 +253,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { postcode => 'BR1 1AF' } } );
         $mech->submit_form_ok( { with_fields => { address => '12345' } } );
 
-        $mech->content_contains('Bulky Waste');
+        $mech->content_contains('Bulky waste');
         $mech->submit_form_ok; # 'Book Collection'
         $mech->content_contains( 'Before you start your booking',
             'Should be able to access the booking form' );
@@ -237,8 +271,8 @@ FixMyStreet::override_config {
         };
 
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->content_contains('01 July');
-        $mech->content_contains('08 July');
+        $mech->content_contains('1 July');
+        $mech->content_contains('8 July');
         $mech->submit_form_ok(
             { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
         );
@@ -305,13 +339,14 @@ FixMyStreet::override_config {
         subtest 'Confirmation page' => sub {
             $mech->content_contains('Bulky collection booking confirmed');
 
-            $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
             is $report->detail, "Address: 2 Example Street, Bromley, BR1 1AF";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
+            is $report->get_extra_field_value('Notes'), 'in the middle of the drive';
             is $report->get_extra_field_value('Bulky_Collection_Details_Qty'), '2::2::2';
             is $report->get_extra_field_value('Bulky_Collection_Details_Item'), '3::85::83';
             is $report->get_extra_field_value('Bulky_Collection_Details_Description'), 'BBQ::Bicycle::Bath';
@@ -323,7 +358,7 @@ FixMyStreet::override_config {
             is $report->photo,
                 '685286eab13ad917f614937170661171b488f280.jpeg,74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
         };
-        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $report->confirmed('2023-08-30T00:00:00');
         $report->update;
         my $id = $report->id;
@@ -401,7 +436,7 @@ FixMyStreet::override_config {
             $mech->content_contains('3 items requested for collection');
             $mech->content_lacks('you can add up to 5 more items');
             $mech->content_contains('£30.00');
-            $mech->content_contains('01 July');
+            $mech->content_contains('1 July');
             $mech->content_lacks('Request a bulky waste collection');
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');
@@ -670,6 +705,7 @@ FixMyStreet::override_config {
             created => "2023-10-01T08:00:00Z",
             cobrand => "bromley",
         });
+        $p->set_extra_fields({ name => 'uprn', value => 'UPRN' });
         $p->set_extra_metadata('payment_reference', 'test');
         $p->set_extra_metadata('scpReference', 'unpaid');
         $p->update;
@@ -708,6 +744,7 @@ FixMyStreet::override_config {
         is $p->get_extra_field_value('LastPayMethod'), $cobrand->bin_payment_types->{'csc'};
         is $p->get_extra_field_value('PaymentCode'), 54321;
         is $p->comments->first->text, "Payment confirmed, reference 54321";
+        is $p->get_extra_field_value('uprn'), 'UPRN';
 
         # No payment non-staff and check confirms unpaid - cancelled.
         $p->set_extra_metadata('scpReference', 'unpaid');
@@ -716,7 +753,7 @@ FixMyStreet::override_config {
         $p->update;
         $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
         $p->discard_changes;
-        is $p->state, "closed";
+        is $p->state, "cancelled";
         my $cancellation_update = $p->comments->first;
         is $cancellation_update->text, "Booking cancelled since payment was not made in time";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
@@ -740,7 +777,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });
         $mech->content_contains('Payment Failed');
         $report->discard_changes;
-        is $report->state, 'closed', "report cancelled after staff marked as payment failed";
+        is $report->state, 'cancelled', "report cancelled after staff marked as payment failed";
         my $cancellation_update = $report->comments->first;
         is $cancellation_update->text, "Booking cancelled";
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;

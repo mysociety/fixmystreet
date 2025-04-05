@@ -45,14 +45,17 @@ has_page location => (
     update_field_list => sub {
         my ($form) = @_;
         my $fields = {};
-        $form->update_photo('location_photo', $fields);
         if ($form->c->cobrand->bulky_show_location_field_mandatory) {
             $fields->{location} = { required => 1 };
         }
         if ($form->c->cobrand->moniker eq 'kingston' || $form->c->cobrand->moniker eq 'sutton') {
-            $fields->{location}{label} = 'Please tell us where you will place the items for collection (include any access codes the crew will need)';
             $fields->{location}{tags}{hint} = 'For example, ‘On the driveway’';
         }
+
+        my $maxlength
+            = $form->c->cobrand->call_hook('bulky_location_max_length');
+        $fields->{location}{maxlength} = $maxlength if $maxlength;
+
         return $fields;
     },
 );
@@ -169,10 +172,11 @@ sub _get_dates {
         my $date = $c->cobrand->collection_date($_);
         $dates_booked{$date} = 1;
     }
+    my $existing_date;
     if (my $amend = $c->stash->{amending_booking}) {
         # Want to allow amendment without changing the date
-        my $date = $c->cobrand->collection_date($amend);
-        delete $dates_booked{$date};
+        $existing_date = $c->cobrand->collection_date($amend);
+        delete $dates_booked{$existing_date};
     }
 
     my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
@@ -180,9 +184,16 @@ sub _get_dates {
         my $dt = $parser->parse_datetime( $_->{date} );
         $dt
             ? {
-            label => $dt->strftime('%d %B'),
+            label => $dt->strftime('%A %e %B'),
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             disabled => $dates_booked{$_->{date}},
+            # The default behaviour in the fields.html template is to mark a radio
+            # button as checked if the existing value matches the option value. However,
+            # for Echo bulky dates the option value is a concatenation of the date and
+            # the reference, so the comparison won't ever match because we've got a new
+            # set of references. So we need to do the comparison here of just the dates
+            # and set the selected flag accordingly.
+            selected => $existing_date && $existing_date eq $_->{date},
             }
             : undef
         } @{
@@ -317,7 +328,11 @@ sub validate {
         my @fields = qw(chosen_date location location_photo);
         push @fields, map { ("item_$_", "item_photo_$_") } 1 .. $max_items;
         foreach (@fields) {
-            $same = 0 if ($old->{$_} || '') ne ($new->{$_} || '');
+            my $new = $new->{$_} || '';
+            if ($_ eq 'chosen_date') {
+                $new =~ s/;.*//; # Strip ref+expiry if present (Echo)
+            }
+            $same = 0 if ($old->{$_} || '') ne $new;
             last unless $same;
         }
         if ($same) {

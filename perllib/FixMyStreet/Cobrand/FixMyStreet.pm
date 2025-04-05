@@ -128,20 +128,17 @@ sub relative_url_for_report {
 sub munge_around_category_where {
     my ($self, $where) = @_;
 
-    my $iow = grep { $_->name eq 'Isle of Wight Council' } @{ $self->{c}->stash->{around_bodies} };
+    my $iow = grep { $_->get_column('name') eq 'Isle of Wight Council' } @{ $self->{c}->stash->{around_bodies} };
     if ($iow) {
         # display all the categories on Isle of Wight at the moment as there's no way to
         # do the expand bit later as we fetch it using ajax which uses a bounding box so
         # can't determine the body
         $where->{send_method} = [ { '!=' => 'Triage' }, undef ];
     }
-    my $waste = grep { $_->name =~ /Bromley Council|Peterborough City Council/ } @{ $self->{c}->stash->{around_bodies} };
-    if ($waste) {
-        $where->{'-or'} = [
-            extra => undef,
-            -not => { extra => { '@>' => '{"type":"waste"}' } }
-        ];
-    }
+    $where->{'-or'} = [
+        extra => undef,
+        -not => { extra => { '@>' => '{"type":"waste"}' } }
+    ];
 }
 
 sub _iow_category_munge {
@@ -159,7 +156,7 @@ sub _iow_category_munge {
 sub munge_reports_category_list {
     my ($self, $categories) = @_;
 
-    my %bodies = map { $_->body->name => $_->body } @$categories;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$categories;
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $categories);
     }
@@ -179,7 +176,7 @@ sub munge_reports_area_list {
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
-    my %bodies = map { $_->name => 1 } values %$bodies;
+    my %bodies = map { $_->get_column('name') => 1 } values %$bodies;
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand::TfL->new({ c => $self->{c} });
@@ -192,7 +189,7 @@ sub munge_report_new_bodies {
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
 
         if (!$on_he_road) {
-            %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
+            %$bodies = map { $_->id => $_ } grep { $_->get_column('name') ne 'National Highways' } values %$bodies;
         }
     }
 
@@ -210,6 +207,21 @@ sub munge_report_new_bodies {
         my $brent = FixMyStreet::Cobrand::Brent->new({ c => $self->{c} });
         $brent->munge_overlapping_asset_bodies($bodies);
     }
+
+    if ( $bodies{'Camden Borough Council'} ) {
+        my $camden = FixMyStreet::Cobrand::Camden->new({ c => $self->{c} });
+        $camden->munge_overlapping_asset_bodies($bodies);
+    }
+
+    if ( $bodies{'Lewisham Borough Council'} ) {
+        my $bromley = FixMyStreet::Cobrand::Bromley->new({ c => $self->{c} });
+        $bromley->munge_overlapping_asset_bodies($bodies);
+    }
+
+    if ( $bodies{'Merton Council'} ) {
+        my $merton = FixMyStreet::Cobrand::Merton->new({ c => $self->{c} });
+        $merton->munge_overlapping_asset_bodies($bodies);
+    }
 }
 
 sub munge_report_new_contacts {
@@ -218,7 +230,7 @@ sub munge_report_new_contacts {
     # Ignore contacts with a special type (e.g. waste, noise, claim)
     @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
 
-    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$contacts;
 
     if ( my $body = $bodies{'Isle of Wight Council'} ) {
         return $self->_iow_category_munge($body, $contacts);
@@ -255,7 +267,7 @@ sub munge_unmixed_category_groups {
     my ($self, $groups, $opts) = @_;
     return unless $opts->{reporting};
     my $bodies = $self->{c}->stash->{bodies};
-    my %bodies = map { $_->name => 1 } values %$bodies;
+    my %bodies = map { $_->get_column('name') => 1 } values %$bodies;
     if ($bodies{"Buckinghamshire Council"}) {
         my @category_groups = grep { $_->{name} ne 'Car park issue' } @$groups;
         my ($car_park_group) = grep { $_->{name} eq 'Car park issue' } @$groups;
@@ -470,9 +482,7 @@ sub problem_state_processed {
 }
 
 sub suppress_reporter_alerts {
-    my $self = shift;
-    my $c = $self->{c};
-    my $problem = $c->stash->{report};
+    my ($self, $problem) = @_;
     if ($problem->to_body_named('Westminster')) {
         return 1;
     }
@@ -482,7 +492,7 @@ sub suppress_reporter_alerts {
 sub must_have_2fa {
     my ($self, $user) = @_;
     return 1 if $user->is_superuser && !FixMyStreet->staging_flag('skip_must_have_2fa');
-    return 1 if $user->from_body && $user->from_body->name eq 'TfL';
+    return 1 if $user->from_body && $user->from_body->get_column('name') eq 'TfL';
     return 0;
 }
 
@@ -525,7 +535,7 @@ sub report_new_munge_after_insert {
 sub munge_contacts_to_bodies {
     my ($self, $contacts, $report) = @_;
 
-    my %bodies = map { $_->body->name => 1 } @$contacts;
+    my %bodies = map { $_->body->get_column('name') => 1 } @$contacts;
 
     if ($bodies{'Buckinghamshire Council'}) {
         # Make sure Bucks grass cutting reports are routed correctly
@@ -588,24 +598,31 @@ around 'munge_sendreport_params' => sub {
 sub reopening_disallowed {
     my ($self, $problem) = @_;
     my $c = $self->{c};
-    return 1 if $problem->to_body_named("Southwark") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Southwark Council");
-    return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Merton Council");
-    return 1 if $problem->to_body_named("Northumberland") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Northumberland County Council");
-    return 1 if $problem->to_body_named("Gloucestershire") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->name ne "Gloucestershire County Council");
+    return 1 if $problem->to_body_named("Southwark") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Southwark Council");
+    return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Merton Council");
+    return 1 if $problem->to_body_named("Northumberland") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Northumberland County Council");
+    return 1 if $problem->to_body_named("Gloucestershire") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Gloucestershire County Council");
     return $self->next::method($problem);
 }
 
-# Make sure CPC areas are included in point lookups for new reports
-# This is so that parish bodies (e.g. in Buckinghamshire) are available
-# for reporting to on .com
-sub add_extra_area_types {
-    my ($self, $types) = @_;
+=head2 add_extra_areas_for_admin
 
-    my @types = (
-        @$types,
-        'CPC',
-    );
-    return \@types;
+Add the parish IDs from Buckinghamshire's cobrand, plus any other IDs from
+configuration, so that we can manually add specific parish councils.
+
+=cut
+
+sub add_extra_areas_for_admin {
+    my ($self, $areas) = @_;
+
+    my $bucks = FixMyStreet::Cobrand::Buckinghamshire->new;
+    my @extra = @{ $bucks->_parish_ids };
+    my $extra = $self->feature('extra_parishes') || [];
+    push @extra, @$extra;
+    my $ids_string = join ",", @extra;
+    my $extra_areas = mySociety::MaPit::call('areas', [ $ids_string ]);
+    my %all_areas = ( %$areas, %$extra_areas );
+    return \%all_areas;
 }
 
 =head2 fetch_area_children
@@ -623,7 +640,7 @@ sub fetch_area_children {
     my $features = FixMyStreet->config('COBRAND_FEATURES') || {};
     my $bodies = $features->{categories_restriction_bodies} || {};
     $bodies = $bodies->{tfl} || [];
-    if ($body && any { $_ eq $body->name } @$bodies) {
+    if ($body && any { $_ eq $body->get_column('name') } @$bodies) {
         my $areas = FixMyStreet::MapIt::call('areas', 'LBO');
         foreach (keys %$areas) {
             $areas->{$_}->{name} =~ s/\s*(Borough|City|District|County) Council$//;

@@ -4,6 +4,7 @@ use Test::MockTime qw(:all);
 use Test::Output;
 use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::SendReport::Open311;
 use Catalyst::Test 'FixMyStreet::App';
@@ -50,7 +51,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 
 my $body = $mech->create_body_ok(2494, 'London Borough of Bexley', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' }, { cobrand => 'bexley' });
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', cobrand => 'bexley' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned and untaxed vehicles', email => "ConfirmABAN");
 $mech->create_contact_ok(body_id => $body->id, category => 'Lamp post', email => "StreetLightingLAMP");
 $mech->create_contact_ok(body_id => $body->id, category => 'Gulley covers', email => "GULL");
@@ -250,16 +251,35 @@ FixMyStreet::override_config {
         is $c->param('service_code'), 'StreetLightingLAMP', 'Report resent';
     };
 
-    subtest 'extra CSV columns present' => sub {
+    subtest 'extra CSV columns present, and questionnaire answers work' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->first;
+        my $fly = FixMyStreet::DB->resultset("Problem")->search({ category => 'Flytipping' })->single;
+        $fly->update({ confirmed => $fly->confirmed->clone->subtract(days => 2), state => 'fixed - user' });
+
+        FixMyStreet::DB->resultset("Questionnaire")->create({
+            problem => $fly,
+            whensent => $fly->confirmed,
+            whenanswered => $fly->confirmed->clone->add(hours => 1),
+            old_state => 'confirmed',
+            new_state => 'fixed - user',
+        });
+
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains(',Category,Subcategory,');
         $mech->content_contains('"Danger things","Something dangerous"');
-
-        my $report = FixMyStreet::DB->resultset("Problem")->first;
         $mech->content_contains(',"User Email"');
         $mech->content_contains(',' . $report->user->email);
-    };
+        $mech->content_like(qr/Flytipping,,[^,]*,2019-10-14T17:00:00,,2019-10-14T18:00:00,,"fixed - user"/);
 
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains(',Category,Subcategory,');
+        $mech->content_contains('"Danger things","Something dangerous"');
+        $mech->content_contains(',"User Email"');
+        $mech->content_contains(',' . $report->user->email);
+        $mech->content_like(qr/Flytipping,,[^,]*,2019-10-14T17:00:00,,2019-10-14T18:00:00,,"fixed - user"/);
+    };
 
     subtest 'testing special Open311 behaviour', sub {
         my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
@@ -417,19 +437,6 @@ FixMyStreet::override_config {
         }, "submit details");
         like $mech->get_text_body_from_email, qr/The report's reference number is $id/, 'Update confirmation email contains id number';
 };
-
-subtest 'test ID in questionnaire email' => sub {
-        $mech->clear_emails_ok;
-        (my $report) = $mech->create_problems_for_body(1, $body->id, 'On Road', {
-            category => 'Lamp post', cobrand => 'bexley',
-            latitude => 51.408484, longitude => 0.074653, areas => '2494',
-            whensent => DateTime->now->subtract(years => 1),
-        });
-        FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires();
-        my $text = $mech->get_text_body_from_email;
-        my $id = $report->id;
-        like $text, qr/The report's reference number is $id/, 'Questionnaire email contains id number';
-    };
 };
 
 subtest 'nearest road returns correct road' => sub {

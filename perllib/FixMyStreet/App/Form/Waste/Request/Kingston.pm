@@ -4,8 +4,9 @@ FixMyStreet::App::Form::Waste::Request::Kingston - Kingston-specific request new
 
 =head1 SYNOPSIS
 
-The Kingston container request form lets you request one container at a time
-(code for that in L<FixMyStreet::Roles::CobrandSLWP>).
+The Kingston container request form lets you request multiple containers,
+or change size of your refuse container (code for that in
+L<FixMyStreet::Cobrand::Kingston>).
 
 =head1 PAGES
 
@@ -17,8 +18,7 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
-use constant CONTAINER_RECYCLING_BIN => 12;
-use constant CONTAINER_RECYCLING_BOX => 16;
+use constant CONTAINER_REFUSE_240 => 2;
 
 =head2 About you
 
@@ -31,203 +31,82 @@ has_page about_you => (
     intro => 'about_you.html',
     title => 'About you',
     next => 'summary',
-);
-
-=head2 Reason for replacement
-
-The user is asked why they need a new container - damaged, missing, new
-resident (unless a garden bin) or they require more (if they have a green box).
-
-=cut
-
-has_page replacement => (
-    fields => ['request_reason', 'continue'],
-    title => 'Reason for request',
-    next => sub {
-        my $data = shift;
-        my $choice = $data->{"container-choice"};
-        my $reason = $data->{request_reason};
-        return 'recycling_swap' if $choice == CONTAINER_RECYCLING_BOX && $reason eq 'more';
-        return 'recycling_number' if $choice == CONTAINER_RECYCLING_BOX;
-        return 'notes_missing' if $reason eq 'missing';
-        return 'notes_damaged' if $reason eq 'damaged';
-        return 'about_you';
-    },
-);
-
-has_field request_reason => (
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Why do you need a replacement container?',
-);
-
-sub options_request_reason {
-    my $form = shift;
-    my $data = $form->saved_data;
-    my $choice = $data->{'container-choice'} || 0;
-    my $garden = $data->{'container-26'} || $data->{'container-27'} || $choice == 26 || $choice == 27;
-    my $green_box = $data->{'container-' . CONTAINER_RECYCLING_BOX} || $choice == CONTAINER_RECYCLING_BOX;
-    my $green_bin = ($data->{'container-' . CONTAINER_RECYCLING_BIN} || $choice == CONTAINER_RECYCLING_BIN) && !$form->{c}->stash->{container_recycling_bin} && $data->{recycling_swap} ne 'No';
-    my @options;
-    push @options, { value => 'new_build', label => 'I am a new resident without a container' }
-        if !$garden;
-    push @options, { value => 'damaged', label => 'My container is damaged' };
-    push @options, { value => 'missing', label => 'My container is missing' };
-    push @options, { value => 'more', label => 'I need an additional container/bin' }
-        if $green_box || $green_bin;
-    return @options;
-}
-
-=head2 Swapping boxes for a bin
-
-If they've got recycling boxes, and have either asked for more or have asked
-for a bin, the user is asked if they'd like to swap their boxes for a bin.
-
-=cut
-
-has_page recycling_swap => (
-    fields => ['recycling_swap', 'continue'],
-    title => 'Reason for request',
-    update_field_list => sub {
+    post_process => sub {
         my $form = shift;
-        my $c = $form->{c};
         my $data = $form->saved_data;
-        $data->{_container_recycling_bin} = $c->stash->{container_recycling_bin};
-        return {};
-    },
-    next => sub {
-        my $data = shift;
-        return 'recycling_swap_confirm' if $data->{recycling_swap} eq 'Yes';
-        return 'replacement' if $data->{"container-choice"} == CONTAINER_RECYCLING_BIN && !$data->{_container_recycling_bin};
-        return 'recycling_number';
-    },
-);
-
-has_field recycling_swap => (
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Would you like to replace your recycling box containers with a wheelie bin?',
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-    tags => {
-        hint => 'If you already have 3 or more recycling box containers, you may swap them for a recycling wheelie bin.',
+        my $c = $form->c;
+        if ($data) {
+            my @services = grep { /^container-\d/ && $data->{$_} } sort keys %$data;
+            my $total_paid_quantity = 0;
+            foreach (@services) {
+                my ($id) = /container-(.*)/;
+                my $quantity = $data->{"quantity-$id"};
+                my $names = $c->stash->{containers};
+                if ($names->{$id} !~ /bag|sack|food/i) {
+                    $total_paid_quantity += $quantity;
+                }
+            }
+            return unless $total_paid_quantity;
+            my ($cost) = $c->cobrand->request_cost(1, $total_paid_quantity);
+            $data->{payment} = $cost if $cost;
+        }
     },
 );
 
-=head2 Swapping confirmation
-
-They have to confirm that they have three or more recycling boxes if asking to
-swap.
-
-=cut
-
-has_page recycling_swap_confirm => (
-    fields => ['recycling_swap_confirm', 'continue'],
+has_page how_many => (
+    fields => ['how_many', 'continue'],
     title => 'Reason for request',
     next => 'about_you',
 );
 
-has_field recycling_swap_confirm => (
-    type => 'Checkbox',
+has_field how_many => (
     required => 1,
-    label => 'Confirmation',
-    option_label => 'I confirm that I have 3 or more recycling box containers',
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'How many people live in this household?',
+    options => [
+        { value => 'less5', label => '1 to 4' },
+        { value => '5more', label => '5 or more' },
+    ],
 );
 
-=head2 Quantity required
-
-If they've asked for replacement boxes, ask how many they need.
-
-=cut
-
-has_page recycling_number => (
-    fields => ['recycling_quantity', 'continue'],
-    title => 'Quantity',
+has_page how_many_exchange => (
+    fields => ['how_many_exchange', 'continue'],
+    title => 'Black bin size change request',
+    intro => 'request/intro.html',
     next => sub {
         my $data = shift;
-        my $reason = $data->{request_reason};
-        return 'notes_missing' if $reason eq 'missing';
-        return 'notes_damaged' if $reason eq 'damaged';
+        my $how_many = $data->{"how_many_exchange"};
+        if ($how_many eq 'less5' || $how_many eq '7more') {
+            return 'biggest_bin_allowed';
+        }
+        $data->{'container-' . CONTAINER_REFUSE_240} = 1;
+        $data->{'quantity-' . CONTAINER_REFUSE_240} = 1;
+        $data->{'removal-' . CONTAINER_REFUSE_240} = 1;
         return 'about_you';
     },
 );
 
-has_field recycling_quantity => (
+has_field how_many_exchange => (
     required => 1,
     type => 'Select',
     widget => 'RadioGroup',
-    build_label_method => sub {
-        my $self = shift;
-        my $reason = $self->parent->saved_data->{request_reason};
-        return 'How many recycling boxes would you like?' if $reason eq 'new_build';
-        return 'How many containers are missing?' if $reason eq 'missing';
-        return 'How many containers are damaged?' if $reason eq 'damaged';
-        return 'How many recycling boxes would you like?' if $reason eq 'more';
-    },
+    label => 'How many people live in this household?',
+    options => [
+        { value => 'less5', label => '1 to 4' },
+        { value => '5or6', label => '5 or 6' },
+        { value => '7more', label => '7 or more' },
+    ],
 );
 
-sub options_recycling_quantity {
-    my $form = shift;
-    my @options = map { { value => $_, label => $_ } } (1..5);
-    return @options;
-}
-
-=head2 Missing notes
-
-If they've said the container is missing, ask for free text extra information.
-
-=cut
-
-has_page notes_missing => (
-    fields => ['notes_missing', 'continue'],
-    title => 'Extra information',
-    next => 'about_you',
+has_page biggest_bin_allowed => (
+    fields => [],
+    template => 'waste/biggest_bin_allowed.html',
 );
-
-has_field notes_missing => (
-    required => 1,
-    type => 'Text',
-    widget => 'Textarea',
-    label => 'Can you give us any information about what happened to your container?',
-);
-
-=head2 Damaged notes
-
-If they've said the container is damaged, ask for the reason from a drop-down.
-
-=cut
-
-has_page notes_damaged => (
-    fields => ['notes_damaged', 'continue'],
-    intro => 'request_notes_damaged.html',
-    title => 'Extra information',
-    next => 'about_you',
-);
-
-has_field notes_damaged => (
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'What happened to your container?',
-);
-
-sub options_notes_damaged {
-    my $form = shift;
-    my @options = (
-        { value => 'collection', label => 'Damaged during collection' },
-        { value => 'wear', label => 'Wear and tear' },
-        { value => 'other', label => 'Other damage' },
-    );
-    return @options;
-}
 
 has_field submit => (
     type => 'Submit',
-    value => 'Request container',
+    value => 'Request containers',
     element_attr => { class => 'govuk-button' },
     order => 999,
 );

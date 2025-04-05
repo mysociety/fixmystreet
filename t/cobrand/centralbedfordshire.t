@@ -39,7 +39,7 @@ $ukc->mock('_fetch_features', sub {
 my $mech = FixMyStreet::TestMech->new;
 
 my $body = $mech->create_body_ok(21070, 'Central Bedfordshire Council', {
-    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j' }, { cobrand => 'centralbedfordshire' });
+    send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', cobrand => 'centralbedfordshire' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Bridges', email => "BRIDGES");
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POTHOLES");
 $mech->create_contact_ok(body_id => $body->id, category => 'Jadu', email => "Jadu");
@@ -110,6 +110,7 @@ FixMyStreet::override_config {
     subtest "it doesn't show old reports on the cobrand" => sub {
         $mech->create_problems_for_body(1, $body->id, 'An old problem made before Central Beds FMS launched', {
             state => 'fixed - user',
+            created => '2018-12-25 09:00',
             confirmed => '2018-12-25 09:00',
             lastupdate => '2018-12-25 09:00',
             latitude => 52.030692,
@@ -230,6 +231,8 @@ subtest 'check geolocation overrides' => sub {
 subtest 'Dashboard CSV extra columns' => sub {
     my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     $mech->log_in_ok( $staffuser->email );
+    $report->update_extra_field({ name => 'Type', value => ['Furniture', 'Bin bags'] });
+    $report->update;
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'centralbedfordshire',
@@ -238,7 +241,7 @@ subtest 'Dashboard CSV extra columns' => sub {
         $mech->get_ok('/dashboard?export=1');
     };
     $mech->content_contains('"Site Used","Reported As",CRNo');
-    $mech->content_contains('centralbedfordshire,,' . $report->external_id);
+    $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',"Bin bags;Furniture"');
 };
 
 

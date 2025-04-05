@@ -29,11 +29,10 @@ Latitude: [% report.latitude %]
 
 Longitude: [% report.longitude %]
 
-Road: [% report.get_extra_field_value('road_name') %]
+[% FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length ~%]
+[% field.description OR field.name %]: [% field.value_label OR field.value %]
 
-Section: [% report.get_extra_field_value('sect_label') %]
-
-Area: [% report.get_extra_field_value('area_name') %]
+[% END %][% END ~%]
 
 Heard from: [% report.get_extra_metadata('where_hear') %]
 
@@ -42,7 +41,3 @@ View OpenStreetMap of this location: [% osm_url %]
 [% closest_address %]----------
 
 [% signature %]
-
-If there is a more appropriate email address for messages about
-[% category_footer %], please let us know. This will help improve the
-service for local people. We also welcome any other feedback you may have.

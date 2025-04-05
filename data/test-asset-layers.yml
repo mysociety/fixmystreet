@@ -140,6 +140,10 @@ bromley:
       feature_id: 'FEATURE_ID'
     asset_category: ["Lamp Column Damaged", "Light Not Working", "Light On All Day", "Light blocked by vegetation"]
     asset_item: 'street light'
+    select_action: true
+    actions:
+      asset_found: fixmystreet.assets.bromley.set_asset_owner
+      asset_not_found: fixmystreet.assets.bromley.unset_asset_owner
   - wfs_feature: "PROW"
     stylemap: 'fixmystreet.assets.bromley.prow_stylemap'
     always_visible: true
@@ -170,6 +174,27 @@ bromley:
     actions:
       found: fixmystreet.assets.bromley.found
       not_found: fixmystreet.assets.bromley.not_found
+  - wfs_feature: 'Parks_Open_Spaces'
+    stylemap: fixmystreet.assets.bromley.parks_stylemap
+    asset_type: 'area'
+    asset_item: 'park'
+    non_interactive: true
+    asset_group: ["Parks and Greenspace"]
+    road: true
+    actions:
+      found: fixmystreet.assets.bromley.remove_park_message
+      not_found: fixmystreet.assets.bromley.add_park_message
+    no_asset_message: "We’ve noticed that you’ve selected a Parks and Greenspace category but that your map pin isn’t located within a park, are the location and category correct? You can change category by going back or relocate your map pin by clicking and dragging."
+  - wfs_feature: 'Parks_Open_Spaces'
+    non_interactive: true
+    nearest_radius: 0
+    road: true
+    asset_group: [ 'Highway Enforcement', 'Highway Major Works', 'Road, Pavement and PROW Issues', 'Street Cleansing', 'Street Lighting and Road Signs' ]
+    stylemap: fixmystreet.assets.stylemap_invisible
+    actions:
+      found: fixmystreet.assets.bromley.add_park_message
+      not_found: fixmystreet.assets.bromley.remove_park_message
+    no_asset_message: "We’ve noticed that you’ve selected a Streets category but that your map pin is located within a park, are the location and category correct? You can change category by going back or relocate your map pin by clicking and dragging."
 buckinghamshire:
   - - name: 'default'
       http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/bucks"
@@ -235,6 +260,29 @@ lincolnshire:
     asset_item_message: ''
     disable_pin_snapping: true
     stylemap: 'fixmystreet.assets.stylemap_invisible'
+merton:
+- - name: 'default'
+    max_resolution: 4.777314267158508
+    srsName: "EPSG:27700"
+    body: "Merton Council"
+- template: 'default'
+  name: 'merton parks'
+  http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/merton"
+  asset_category: ["Parks"]
+  asset_item: "Merton-owned park"
+  max_resolution: 1.194328566789627
+  wfs_feature: 'all_parks'
+  non_interactive: true
+  nearest_radius: 0
+  asset_item_message: 'Please pick a location in a highlighted Merton-owned park.'
+  no_asset_msgs_class: '.js-parks-merton'
+  road: true
+  usrn:
+    - { attribute: 'UPRN', field: 'uprn'}
+    - { attribute: 'Park_Name', field: 'ParkName'}
+  actions:
+    found: fixmystreet.assets.merton.park_found
+    not_found: fixmystreet.assets.merton.park_not_found
 northamptonshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/northamptonshire"
     geometryName: 'msGeometry'
@@ -323,7 +371,22 @@ peterborough:
           outFields: ''
       nearest_radius: 0.01
       stylemap: fixmystreet.assets.stylemap_invisible
-      asset_category: ['General fly tipping', 'Hazardous fly tipping', 'Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY' ]
+      asset_category: ['General fly tipping', 'Hazardous fly tipping']
+      non_interactive: true
+      road: true
+      asset_item: 'road'
+      asset_type: 'road'
+    - name: 'graffiti'
+      template: 'arcgis'
+      http_options:
+        params:
+          inSR: '3857'
+          outSR: '3857'
+          f: 'geojson'
+          outFields: ''
+      nearest_radius: 0.01
+      stylemap: fixmystreet.assets.stylemap_invisible
+      asset_category: ['Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY']
       non_interactive: true
       road: true
       asset_item: 'road'
@@ -351,12 +414,23 @@ peterborough:
     actions:
       found: fixmystreet.assets.peterborough.flytipping_pcc_found
       not_found: fixmystreet.assets.peterborough.flytipping_pcc_not_found
+  - template: 'graffiti'
+    http_options:
+      url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/4/query?'
+    actions:
+      found: fixmystreet.assets.peterborough.graffiti_pcc_found
+      not_found: fixmystreet.assets.peterborough.graffiti_pcc_not_found
   # PCC Property Leased Out NOT Responsible
   - template: 'flytipping'
     http_options:
       url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/3/query?'
     actions:
       found: fixmystreet.assets.peterborough.flytipping_leased_found
+  - template: 'graffiti'
+    http_options:
+      url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/3/query?'
+    actions:
+      found: fixmystreet.assets.peterborough.graffiti_leased_found
 shropshire:
   - http_wfs_url: "https://tilma.mysociety.org/mapserver/shropshire"
     asset_type: 'spot'
@@ -381,6 +455,128 @@ shropshire:
     actions:
       found: 'fixmystreet.assets.shropshire.street_found'
       not_found: 'fixmystreet.assets.shropshire.street_not_found'
+surrey:
+  - asset_type: 'spot'
+    max_resolution: 4.777314267158508
+    asset_id_field: 'assetNo'
+    srsName: "EPSG:4326"
+    body: "Surrey County Council"
+    format_class: OpenLayers.Format.GeoJSON
+    format_options: {ignoreExtraDims: true}
+    protocol_class: OpenLayers.Protocol.ArcgisHTTP
+    class: OpenLayers.Layer.VectorAssetMove
+    http_options:
+      params:
+        inSR: '4326'
+        f: 'geojson'
+  - always_visible: true
+    asset_type: road
+    road: true
+    actions:
+      found: fixmystreet.message_controller.road_found
+      not_found: fixmystreet.assets.surrey.road_not_found
+    permissive_categories: ['Flooding inside a building', 'Flooding not on the highway but in a park or private land']
+    no_asset_msg_id: '#js-not-a-road'
+    http_options:
+      params:
+        outFields: USRN
+        where: MAINTAINED_BY='Surrey CC'
+      url: https://tilma.mysociety.org/resource-proxy/proxy.php?https://surrey.assets/2/query?
+    non_interactive: true
+    class: OpenLayers.Layer.VectorNearest
+    stylemap: fixmystreet.assets.stylemap_invisible
+    usrn:
+      attribute: USRN
+      field: site_code
+tfl:
+  - - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/tfl"
+      name: 'road'
+      asset_type: 'spot'
+      max_resolution: 2.388657133579254
+      geometryName: 'msGeometry'
+      srsName: "EPSG:3857"
+    - name: 'assets'
+      template: 'road'
+      class: OpenLayers.Layer.VectorAssetMove
+      body: 'TfL'
+      actions:
+        asset_found: fixmystreet.assets.tfl.asset_found
+        asset_not_found: fixmystreet.assets.tfl.asset_not_found
+  - template: 'assets'
+    wfs_feature: "trafficsignals"
+    asset_id_field: 'Site'
+    attributes:
+        site: 'Site'
+    asset_group: "Traffic Lights"
+    asset_item: 'traffic signal'
+  - template: 'assets'
+    wfs_feature: "busstops"
+    asset_id_field: 'STOP_CODE'
+    attributes:
+        stop_code: 'STOP_CODE'
+        shelter_id: 'SHELTER_ID'
+    asset_group: "Bus Stops and Shelters"
+    asset_item: 'bus stop'
+  - template: 'assets'
+    wfs_feature: "busstations"
+    asset_id_field: 'Name'
+    feature_code: 'Name'
+    attributes:
+      station_name: 'Name'
+    asset_group: "Bus Stations"
+    asset_item: 'bus station'
+  - template: 'assets'
+    http_wfs_url: ''
+    http_options:
+      url: "https://tilma.staging.mysociety.org/streetmanager.php"
+      params:
+        points: 1
+        end_today: 1
+    srsName: "EPSG:27700"
+    format_class: OpenLayers.Format.GeoJSON
+    name: "Roadworks"
+    asset_category: "Roadworks"
+    stylemap: fixmystreet.assets.tfl.roadworks_stylemap
+    asset_id_field: 'work_ref'
+    asset_item: 'roadworks'
+    attributes:
+      promoter_works_ref: 'work_ref'
+      start: fixmystreet.assets.tfl.roadworks_attribute_start
+      end: fixmystreet.assets.tfl.roadworks_attribute_end
+      promoter: 'promoter'
+      works_desc: 'description'
+      works_state: 'status'
+      tooltip: 'summary'
+    filter_key: true
+    filter_value: fixmystreet.assets.tfl.roadworks_filter_value
+    actions:
+      asset_found: fixmystreet.assets.tfl.roadworks_asset_found
+      asset_not_found: fixmystreet.assets.tfl.roadworks_asset_not_found
+  - template: 'road'
+    wfs_feature: "RedRoutes"
+    name: "Red Routes"
+    max_resolution: 9.554628534317017
+    road: true
+    non_interactive: true
+    always_visible: true
+    nearest_radius: 0.1
+    stylemap: fixmystreet.assets.tfl.tlrn_stylemap
+    no_asset_msg_id: '#js-not-tfl-road'
+    actions:
+      found: fixmystreet.message_controller.road_found
+      not_found: fixmystreet.assets.tfl.red_routes_not_found
+  - template: 'road'
+    wfs_feature: "A13TLRN_DBFO"
+    max_resolution: 9.554628534317017
+    road: true
+    non_interactive: true
+    always_visible: true
+    nearest_radius: 0.1
+    stylemap: fixmystreet.assets.tfl.tlrn_stylemap
+    no_asset_msg_id: '#js-tlrn-dbfo-road'
+    actions:
+      found: fixmystreet.assets.tfl.a13_found
+      not_found: fixmystreet.message_controller.road_found
 westminster:
   - - asset_type: 'spot'
       max_resolution: 4.777314267158508

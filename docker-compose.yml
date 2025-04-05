@@ -1,8 +1,6 @@
-version: '3'
-
 services:
   nginx:
-    image: nginx:1.15.3
+    image: nginx:1.27.2
     depends_on:
       - fixmystreet
     ports:
@@ -21,8 +19,19 @@ services:
         condition: service_healthy
       memcached:
         condition: service_started
+    cgroup: host
+    stop_signal: SIGRTMIN+3
     volumes:
       - ./conf/general.yml-docker:/var/www/fixmystreet/fixmystreet/conf/general.yml
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - type: tmpfs
+        target: /run
+        tmpfs:
+          size: "104857600"
+      - type: tmpfs
+        target: /run/lock
+        tmpfs:
+          size: "104857600"
     environment:
       POSTGRES_PASSWORD: 'password'
       FMS_DB_HOST: 'postgres.svc'
@@ -37,7 +46,11 @@ services:
         aliases:
           - fixmystreet.svc
   postgres:
-    image: fixmystreet/postgres:9.6-en_GB
+    build:
+      dockerfile_inline: |
+        FROM postgres:13.11
+        RUN localedef -i en_GB -c -f UTF-8 -A /usr/share/locale/locale.alias en_GB.UTF-8
+        ENV LANG=en_GB.utf8
     restart: always
     volumes:
       - fixmystreet-pgdata:/var/lib/postgresql/data/pgdata
@@ -54,7 +67,7 @@ services:
       timeout: 5s
       retries: 5
   memcached:
-    image: memcached:1.5.10
+    image: memcached:1.6.32
     restart: always
     networks:
       default:

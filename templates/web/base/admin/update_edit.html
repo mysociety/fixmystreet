@@ -18,14 +18,14 @@
 <textarea class='form-control' name='email_detail' id='email_detail' cols=60 rows=10 readonly>[% update.private_email_text | html %]</textarea></li>
 [% END %]
 
-<li><label for="anonymous">[% loc('Anonymous:') %]</label>
+<li><label for="anonymous">[% loc('Show name publicly?') %]</label>
 <select class="form-control" name="anonymous" id="anonymous">
-<option [% 'selected ' IF update.anonymous %]value="1">[% loc('Yes') %]</option>
-<option [% 'selected ' IF !update.anonymous %]value="0">[% loc('No') %]</option>
+<option [% 'selected ' IF update.anonymous %]value="1">[% loc('No') %]</option>
+<option [% 'selected ' IF !update.anonymous %]value="0">[% loc('Yes') %]</option>
 </select></li>
 <li><label for="state">[% loc('State:') %]</label>
 <select class="form-control" name="state"  id="state">
-    [% FOREACH state IN [ ['confirmed', loc('Open')], ['hidden', loc('Hidden')], ['unconfirmed',loc('Unconfirmed')] ] %]
+    [% FOREACH state IN [ ['confirmed', loc('Confirmed')], ['hidden', loc('Hidden')], ['unconfirmed',loc('Unconfirmed')] ] %]
         <option [% 'selected ' IF state.0 == update.state %] value="[% state.0 %]">[% state.1 %]</option>
     [% END %]
 </select></li>
@@ -55,9 +55,41 @@
 </li>
 <li>[% loc('Cobrand:') %] [% update.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% update.cobrand_data OR loc('None') %]</li>
+[% IF update.external_id~%]
+  <li>[% loc('External ID') %]: [% update.external_id %] </li>
+[%~END %]
 <li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
+<li>[% loc('Confirmed: ') ~%]
+  [%~ IF update.confirmed ~%]
+    [% PROCESS format_time time=update.confirmed %]</li>
+  [% ELSE ~%]
+    Not confirmed
+  [% END %]
 [% IF update.get_extra_metadata('external_status_code') %]
 <li>[% loc('External status code:') %] [% update.get_extra_metadata('external_status_code') | html %]</li>
+[% END %]
+<li>[% loc('Send state:') %] [% update.send_state %]</li>
+<li>[% loc('When sent:') %]
+  [% IF update.whensent %]
+   [% PROCESS format_time time=update.whensent %]
+  [% ELSE %]
+    Not sent
+  [% END %]
+</li>
+[% IF c.user.is_superuser AND update.send_fail_count > 0 AND update.send_state != 'sent' AND update.send_state != 'skipped' %]
+<ul>
+  <li>[% loc('Send fail count:') %] [% update.send_fail_count %]</li>
+  <li>[% loc('Send fail reason:') %] [% update.send_fail_reason %]</li>
+  <li>[% loc('Last send fail:') %] [% PROCESS format_time time=update.send_fail_timestamp %]</li>
+</ul>
+  [% IF update.send_state != 'sent' %]
+    <input type="submit" class="btn" name="mark_sent" value="[% loc('Mark as sent') %]">
+  [% END %]
+  [% IF update.send_state != 'skipped' %]
+    <input type="submit" class="btn" name="mark_skip" value="[% loc('Mark as skipped') %]">
+  [% END %]
+[% ELSIF update.send_state == 'sent' OR update.send_state == 'skipped' %]
+  <input data-confirm="[% loc('Are you sure?') %]" class="btn" type="submit" name="resend" value="[% loc('Resend update') %]">
 [% END %]
 
 [% IF update.photo %]

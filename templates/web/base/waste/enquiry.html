@@ -5,17 +5,19 @@
 
 [% INCLUDE 'waste/_address_display.html' %]
 
+[% IF services.$service_id %]
 <dl class="waste__address">
     <dt class="waste__address__title">Service</dt>
     <dd class="waste__address__property">[% services.$service_id.service_name %]</dd>
 </dl>
+[% END %]
 
 <form class="waste" method="get" action="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]">
     <div class="govuk-form-group">
     [% PROCESS radio field = {
       id = 'category',
       html_name = 'category',
-      label = 'Category',
+      label = field_label || 'Category',
       options = field_options
     }
     %]

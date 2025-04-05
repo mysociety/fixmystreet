@@ -8,7 +8,7 @@ email_columns = 2;
 PROCESS '_email_settings.html';
 INCLUDE '_email_top.html';
 
-property_id_uri = report.get_extra_field_value('property_id') | uri;
+property_id_uri = report.waste_property_id | uri;
 cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel_url _ '/' _ report.id;
 %]
 
@@ -31,6 +31,13 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
     Collection date: [% collection_date %]
   </p>
 
+  [% IF cobrand.moniker == 'merton' %]
+    <p style="[% p_style %]">
+        If your collection includes both upholstered and non-upholstered items (such as a sofa and a fridge), we may collect them in two stages.
+        The second collection may be up to two working days after your chosen date.
+    </p>
+  [% END %]
+
   <p style="[% p_style %]">
     Items to be collected:
     [% INCLUDE 'waste/_bulky_list.html' %]
@@ -43,33 +50,27 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
 [% END %]
 
   <p style="[% p_style %]">
-    [%~ IF staff_cancellation && cobrand.moniker == 'peterborough' %]
-      If you wish to cancel your booking, please call 01733 74 74 74.
-    [% ELSIF cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston' %]
+    [%~ IF staff_cancellation %]
+      [% IF cobrand.moniker == 'peterborough' %]
+        If you wish to cancel your booking, please call 01733 74 74 74.
+      [% END %]
+    [% ELSIF cobrand.moniker != 'sutton' AND cobrand.moniker != 'kingston' AND cobrand.moniker != 'peterborough' %]
       If you wish to cancel your booking, please visit <a href="[% cancel_url %]">this link</a>.
     [% END %]
   </p>
 
-[% IF cobrand.moniker == 'peterborough' %]
-  <p style="[% p_style %]">
-    Please check the <a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections">bulky waste collection</a>
-    page on the council’s website for information about this service.
-    This includes when and where to put your items out for collection, cancelling the service and obtaining a refund.
-  </p>
-[% ELSIF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+[% IF cobrand.moniker == 'peterborough' OR cobrand.moniker == 'sutton' OR cobrand.moniker == 'kingston' %]
   [% INCLUDE 'waste/_bulky_extra_text.html' %]
 [% END %]
 
 [% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
   <p style="[% p_style %]">Check you’ve read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a>.</p>
-[% ELSIF cobrand.feature('waste_features').bulky_tandc_link %]
+[% ELSIF cobrand.feature('waste_features').bulky_tandc_link AND cobrand.moniker != 'peterborough' %]
   <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a></p>
 [% END %]
 
   <p style="[% p_style %]">
-    Kind regards,
-    <br>
-    [% IF cobrand.moniker == 'sutton' %]Neighbourhood Services[% ELSE %]Waste Services Team[% END %]
+    [% INCLUDE 'waste/signature.html' %]
   </p>
 
 [% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]

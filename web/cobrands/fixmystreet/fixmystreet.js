@@ -132,6 +132,13 @@ function isR2L() {
             settings.noneText = $select.data('none');
         }
 
+        if ($select.attr("id") == 'filter_categories' || $select.attr("id") == 'statuses') {
+            settings.menuItemsHTML = '<div class="govuk-multi-select govuk-multi-select--checkboxes">';
+            settings.menuItemHTML = '<label class="govuk-multi-select__label">';
+            settings.menuFieldsetHTML = '<fieldset class="multi-select-fieldset govuk-fieldset">';
+            settings.menuFieldsetLegendHTML = '<legend class="multi-select-fieldset govuk-fieldset__legend govuk-fieldset__legend--s">';
+        }
+
         if ( $select.data('all') ) {
             settings.allText = $select.data('all');
             settings.noneText = settings.noneText || settings.allText;
@@ -162,8 +169,39 @@ function isR2L() {
 
         $select.multiSelect(settings);
       });
-    }
+    },
+    bankDetailsFormatter: function(options) {
+        var settings = $.extend({}, options);
 
+        var sortCodeSelector = settings.sortCodeSelector || '#sort_code';
+        var accountNumberSelector = settings.accountNumberSelector || '#account_number';
+
+        function formatSortCode(input) {
+            // Remove all non-digits/non-dashes
+            var value = $(input).val().replace(/[^\d-]/g, '');
+
+            // Limit to 8 characters (6 digits + 2 hyphens)
+            $(input).val(value.substring(0, 8));
+        }
+
+        function formatAccountNumber(input) {
+            // Remove all non-digits and limit to 8 digits
+            var value = $(input).val().replace(/\D/g, '');
+            $(input).val(value.substring(0, 8));
+        }
+
+        return this.each(function() {
+            var $container = $(this);
+
+            $container.find(sortCodeSelector).on('input', function() {
+                formatSortCode(this);
+            });
+
+            $container.find(accountNumberSelector).on('input', function() {
+                formatAccountNumber(this);
+            });
+        });
+    }
   });
 })(jQuery);
 
@@ -224,7 +262,7 @@ fixmystreet.mobile_reporting = {
 fixmystreet.resize_to = {
   mobile_page: function() {
     $('html').addClass('mobile');
-    if (typeof fixmystreet !== 'undefined' && (fixmystreet.page === 'around' || fixmystreet.page === 'new')) {
+    if (typeof fixmystreet !== 'undefined' && (fixmystreet.page === 'around' || fixmystreet.page === 'new') && Modernizr.mq('(min-height: 30em)')) {
         fixmystreet.mobile_reporting.apply_ui();
     }
 
@@ -375,11 +413,7 @@ fixmystreet.set_up = fixmystreet.set_up || {};
 $.extend(fixmystreet.set_up, {
   basics: function() {
     // Preload the new report pin
-    if ( typeof fixmystreet !== 'undefined' && typeof fixmystreet.pin_prefix !== 'undefined' ) {
-        document.createElement('img').src = fixmystreet.pin_prefix + 'pin-' + fixmystreet.pin_new_report_colour + '.png';
-    } else {
-        document.createElement('img').src = '/i/pin-green.png';
-    }
+    document.createElement('img').src = '/i/pins/' + (fixmystreet.pin_new_report_colour || 'green') + '/pin.png';
 
     $('a[href*="around"]').each(function() {
         this.href = this.href + (this.href.indexOf('?') > -1 ? '&js=1' : '?js=1');
@@ -488,11 +522,11 @@ $.extend(fixmystreet.set_up, {
 
     /* set correct required status depending on what we submit */
     $('.js-submit_sign_in').on('click', function(e) {
-        $('.js-form-name').removeClass('required');
+        $('.js-form-name').removeClass('required').removeAttr('aria-required');
     } );
 
     $('.js-submit_register').on('click', function(e) {
-        $('.js-form-name').addClass('required');
+        $('.js-form-name').addClass('required').attr('aria-required', true);
     } );
 
     $('#facebook_sign_in, #twitter_sign_in, #oidc_sign_in').on('click', function(e){
@@ -503,39 +537,45 @@ $.extend(fixmystreet.set_up, {
         if (e.metaKey || e.ctrlKey) {
             return;
         }
+
         e.preventDefault();
-        var $form = $(this),
-            $submit = $form.find("input[type='submit']" ),
-            $labels = $('label[for="' + $submit.attr('id') + '"]'),
-            problemId = $form.find("input[name='id']").val(),
-            data = $form.serialize() + '&ajax=1',
-            changeValue,
-            buttonLabel,
-            buttonValue,
-            classToAdd,
-            classToRemove;
+        var $form = $(this);
+        var $submit = $('button[form="planned_form"]');
+        var problemId = $form.find("input[name='id']").val();
+        var data = $form.serialize() + '&ajax=1';
 
         $.post(this.action, data, function(data) {
-            if (data.outcome == 'add') {
-                $form.find("input[name='shortlist-add']" ).attr('name', 'shortlist-remove');
+            var inputName, newInputName, buttonLabel, buttonValue, classToAdd, classToRemove;
+
+            if (data.outcome === 'add') {
+                inputName = 'shortlist-add';
+                newInputName = 'shortlist-remove';
                 buttonLabel = $submit.data('label-remove');
                 buttonValue = $submit.data('value-remove');
                 classToAdd = $submit.data('class-remove');
                 classToRemove = $submit.data('class-add');
                 $('.shortlisted-status').remove();
                 $(document).trigger('shortlist-add', problemId);
-            } else if (data.outcome == 'remove') {
-                $form.find("input[name='shortlist-remove']" ).attr('name', 'shortlist-add');
+            } else if (data.outcome === 'remove') {
+                inputName = 'shortlist-remove';
+                newInputName = 'shortlist-add';
                 buttonLabel = $submit.data('label-add');
                 buttonValue = $submit.data('value-add');
-                $(document).trigger('shortlist-remove', problemId);
                 classToAdd = $submit.data('class-add');
                 classToRemove = $submit.data('class-remove');
+                $(document).trigger('shortlist-remove', problemId);
             }
-            $submit.val(buttonValue).attr('aria-label', buttonLabel).removeClass(classToRemove).addClass(classToAdd);
-            $labels.text(buttonValue).attr('aria-label', buttonLabel).removeClass(classToRemove).addClass(classToAdd);
+
+            $form.find("input[name='" + inputName + "']").attr('name', newInputName);
+            $submit.text(buttonValue)
+                   .attr('aria-label', buttonLabel)
+                   .removeClass(classToRemove)
+                   .addClass(classToAdd);
         });
     });
+
+    // Format account number and sort code
+    $('#bank-details-form').bankDetailsFormatter();
   },
 
   autocomplete: function() {
@@ -684,16 +724,36 @@ $.extend(fixmystreet.set_up, {
         });
         fixmystreet.hidden_elements = [];
 
-        // apply hide element rules
+        // Hide shown elements (that were previously triggered via
+        // show_element_rules). This prevents elements from remaining
+        // displayed if user clicks back to select another category.
+        $.each(fixmystreet.shown_elements, function() {
+            this.classList.add('hidden');
+        });
+        fixmystreet.shown_elements = [];
+
+        // apply hide & show element rules
+        var selectors;
         $.each(fixmystreet.bodies, function(index, body) {
             if ( typeof hide_element_rules !== 'undefined' && hide_element_rules[body] && hide_element_rules[body][category] ) {
-                var selectors = hide_element_rules[body][category];
+                selectors = hide_element_rules[body][category];
                 $(selectors.join(',')).each(function () {
                     if ($(this).css('display') === 'none') {
                         return;
                     }
                     $(this).hide();
                     fixmystreet.hidden_elements.push($(this));
+                });
+            }
+
+            if ( typeof show_element_rules !== 'undefined' &&
+                show_element_rules[body] &&
+                show_element_rules[body][category] )
+            {
+                selectors = show_element_rules[body][category];
+                $(selectors.join(',')).each(function () {
+                    this.classList.remove('hidden');
+                    fixmystreet.shown_elements.push(this);
                 });
             }
         });
@@ -720,18 +780,18 @@ $.extend(fixmystreet.set_up, {
         var $subcategory_page = $('.js-reporting-page--subcategory');
         var subcategory_id = $(this).data("subcategory");
         $(".js-subcategory").addClass('hidden-js');
-        var $input;
+        var val;
         if (subcategory_id === undefined) {
             $subcategory_page.addClass('js-reporting-page--skip');
-            $input = $(this);
+            val = $(this).data('valuealone'); // Don't want "H" hoisted bit of the submitted value
         } else {
             $subcategory_page.removeClass('js-reporting-page--skip');
             var $subcategory = $("#subcategory_" + subcategory_id);
             $subcategory.removeClass('hidden-js');
-            $input = $subcategory.find('input:checked');
+            val = $subcategory.find('input:checked').val();
         }
         if (!no_event) {
-            category_changed($input.val());
+            category_changed(val);
         }
     });
 
@@ -851,6 +911,7 @@ $.extend(fixmystreet.set_up, {
              * a bug in the web browser but I doubt it is going to be fixed any
              * time soon. Introduce some padding so this does not happen. */
             category_row.style.paddingBottom = window.innerHeight + 'px';
+            disable_on_empty();
         } else {
             // Hide all the copied subcategories
             document.querySelectorAll('.js-filter-subcategory').forEach(function(fieldset) {
@@ -861,6 +922,19 @@ $.extend(fixmystreet.set_up, {
                 items[i].classList.remove('js-filter-disabled');
             }
             category_row.style.paddingBottom = null;
+            disable_on_empty();
+        }
+
+        function disable_on_empty() {
+            // If there are no items found, give a message and disable the Continue button
+            if (items.length && items.length === document.querySelectorAll(".hidden-category-filter").length) {
+                $('#js-top-message').html('<p class="form-error" id="filter-category-error">Please try another search or delete your search and choose from the categories</p>');
+                $('.js-reporting-page--next').prop("disabled",true);
+                category_row.style.paddingBottom = null;
+            } else {
+                $('#filter-category-error').remove();
+                $('.js-reporting-page--next').prop("disabled",false);
+            }
         }
     };
 
@@ -885,6 +959,9 @@ $.extend(fixmystreet.set_up, {
                   $el.attr('maxlength', rule.maxlength);
                 } else {
                   $el.removeAttr('maxlength');
+                }
+                if (rule.required) {
+                  $el.attr('aria-required', true);
                 }
             }
         });
@@ -957,7 +1034,7 @@ $.extend(fixmystreet.set_up, {
       var $originalInputs = $('#form_photos, .js-photo-fields', $context);
       $originalInputs.each(function() {
         var $originalInput = $(this);
-        var $dropzone = $('<div tabindex=0>').addClass('dropzone');
+        var $dropzone = $('<div tabindex=0 role="button">').addClass('dropzone');
         var $fileid_input = $originalInput.data('upload-field') || 'upload_fileid';
         var max_photos = !isNaN($originalInput.data('max-photos')) ? $originalInput.data('max-photos') : 3;
 
@@ -996,14 +1073,18 @@ $.extend(fixmystreet.set_up, {
               $originalInput.show();
             },
             init: function() {
+              // Add aria-label for accessibility
+              // From https://github.com/dropzone/dropzone/pull/2214
+              this.hiddenFileInput.setAttribute("aria-label", "hidden file upload");
+
               this.on("addedfile", function(file) {
                 if (max_photos == 1 && prevFile) {
                     this.removeFile(prevFile);
                 }
-                $('input[type=submit]', $context).prop("disabled", true).removeClass('green-btn');
+                $('input[type=submit]', $context).prop("disabled", true);
               });
               this.on("queuecomplete", function() {
-                $('input[type=submit]', $context).prop('disabled', false).addClass('green-btn');
+                $('input[type=submit]', $context).prop('disabled', false);
               });
               this.on("success", function(file, xhrResponse) {
                 var $upload_fileids = $('input[name="' + $fileid_input + '"]', $context);
@@ -1080,17 +1161,75 @@ $.extend(fixmystreet.set_up, {
   report_list_filters: function() {
     // Hide the pin filter submit button. Not needed because we'll use JS
     // to refresh the map when the filter inputs are changed.
-    $(".report-list-filters [type=submit]").hide();
+    $(".report-list-filters-wrapper [type=submit]").hide();
 
     // There are also other uses of this besides report list filters activated here
     $('.js-multiple').make_multi();
 
+    // Make clicking on Everything when selected un-select everything (workaround)
+    var $elt = $('#filter_categories');
+    var all_label = $elt.data('all');
+    $('label:contains("' + all_label + '") input[name="filter_category_presets"]').on('click', function(e) {
+        var options = $elt.find('option').length;
+        var selected = $elt.find('option:selected').length;
+        if (selected === options) {
+            $elt.val([]);
+            $elt.trigger('change');
+        }
+    });
+
+    // Make clicking on the legends toggle all the checkboxes underneath
+    var container = $elt.next('.multi-select-container');
+    container.on('click', 'legend', function(){
+        var optgroup = $elt.find('optgroup[label="' + this.textContent + '"]');
+        var options = optgroup.find('option');
+        var options_selected = options.filter(':selected');
+
+        if (options.length === options_selected.length) {
+            // Switch them all off
+            options_selected.prop('selected', false);
+        } else {
+            // Switch them all on
+            options.not(options_selected).prop('selected', true);
+        }
+        $elt.trigger('change');
+    });
+
     function update_label(id, str) {
-        $(id).prev('label').addClass('hidden-js').after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
+        $(id).prevAll('label').addClass('hidden-js').attr('for', id.slice(1)).after(function(){ return $('<span>' + this.innerHTML + '</span>'); });
         $(id).next('.multi-select-container').children('.multi-select-button').attr('aria-label', str);
     }
     update_label('#statuses', translation_strings.select_status_aria_label);
     update_label('#filter_categories', translation_strings.select_category_aria_label);
+  },
+
+  has_selector_checker: function() {
+    var supportsHas = CSS.supports('selector(:has(*))');
+
+    if (!supportsHas) {
+        $('.govuk-multi-select__label').each(function() {
+            var label = $(this);
+            var input = label.find('input[type="checkbox"], input[type="radio"]');
+
+            if (input.attr('type') === 'checkbox') {
+              label.addClass('govuk-multi-select__label--checkbox');
+            } else if (input.attr('type') === 'radio') {
+              label.addClass('govuk-multi-select__label--radio');
+            }
+
+            if (input.prop('checked')) {
+              label.addClass('govuk-multi-select__label--checked');
+            }
+
+            input.on('change', function() {
+              if (this.checked) {
+                label.addClass('govuk-multi-select__label--checked');
+              } else {
+                label.removeClass('govuk-multi-select__label--checked');
+              }
+            });
+          });
+    }
   },
 
   label_accessibility_update: function() {
@@ -1310,6 +1449,10 @@ $.extend(fixmystreet.set_up, {
         $('.js-sign-in-password').show().css('visibility', 'visible');
     });
 
+    $('[name=sign_in_by_code]').on('click', function() {
+        $('#password_sign_in').removeClass('required');
+    });
+
     var show = function(selector) {
         var deferred = $.Deferred();
         $(selector).hide().removeClass('hidden-js').slideDown(400, function(){
@@ -1352,7 +1495,7 @@ $.extend(fixmystreet.set_up, {
         $('.js-new-report-user-hidden')[0].scrollIntoView({behavior: "smooth"});
         hide('.js-new-report-user-hidden');
         show('.js-new-report-user-shown').then(function(){
-            focusFirstVisibleInput();
+            $(this).find('.form-section-preview h2').trigger('focus');
         });
     });
 
@@ -1493,8 +1636,8 @@ $.extend(fixmystreet.set_up, {
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
     $('#distance').on('change', function() {
-        var dist = this.value;
-        if (!parseInt(dist)) {
+        var dist = this.value.replace(/,/, '.');
+        if (!parseFloat(dist)) {
             return;
         }
         var a = $('a.js-alert-local');
@@ -1512,12 +1655,26 @@ $.extend(fixmystreet.set_up, {
     });
     $('body').on('click', '#alert_email_button', function(e) {
         e.preventDefault();
+
+        var wrapper = this.closest('.js-alert-list');
+        var emailInput = wrapper.querySelector('input[type="email"]');
+        if (emailInput) {
+            emailInput.required = true;
+
+            if (!$(this).closest('form').validate().form()) {
+                emailInput.focus();
+                return;
+            }
+        }
+
         var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
         form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
-        $(this).closest('.js-alert-list').find('textarea, input[type=email], input[type=text], input[type=hidden], input[type=radio]:checked').each(function() {
-            var $v = $(this);
-            $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
+
+        var inputs = wrapper.querySelectorAll('textarea, input[type=email], input[type=text], input[type=hidden], input[type=radio]:checked');
+        [].forEach.call(inputs, function(i) {
+            $('<input/>').attr({ name:i.name, value:i.value, type:'hidden' }).appendTo(form);
         });
+
         $('body').append(form);
         form.trigger('submit');
     });
@@ -1723,12 +1880,13 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
 function re_select(group, category) {
     var group_id = group.replace(/[^a-z]+/gi, '');
     var cat_in_group = $("#subcategory_" + group_id + " input[value=\"" + category + "\"]");
+    // Want only the group/category name itself, not the G| H| prefixes
     if (cat_in_group.length) {
-        $('#form_category_fieldset input[value="' + group + '"]')[0].checked = true;
+        $('#form_category_fieldset input[data-valuealone="' + group + '"]')[0].checked = true;
         cat_in_group[0].checked = true;
     } else {
         var top_level = group || category;
-        var top_level_match = $("#form_category_fieldset input[value=\"" + top_level + "\"]");
+        var top_level_match = $("#form_category_fieldset input[data-valuealone=\"" + top_level + "\"]");
         if (top_level && top_level_match.length) {
             top_level_match[0].checked = true;
         }
@@ -1774,6 +1932,10 @@ fixmystreet.fetch_reporting_data = function() {
         fixmystreet.bodies = data.bodies || [];
         if (fixmystreet.body_overrides) {
             fixmystreet.body_overrides.clear();
+        }
+
+        if (data.bodies && data.bodies.indexOf('Bristol City Council') > -1) {
+            $('#category-filter-div').hide();
         }
 
         fixmystreet.update_councils_text(data);
@@ -1848,7 +2010,7 @@ fixmystreet.fetch_reporting_data = function() {
 fixmystreet.reporting = {};
 fixmystreet.reporting.selectedCategory = function() {
     var $group_or_cat_input = $('#form_category_fieldset input:checked'),
-        group_or_cat = $group_or_cat_input.val() || '',
+        group_or_cat = $group_or_cat_input.data('valuealone') || '', // Want only the group/category name itself, not the G| H| prefix
         group_id = group_or_cat.replace(/[^a-z]+/gi, ''),
         $subcategory = $("#subcategory_" + group_id),
         $subcategory_input = $subcategory.find('input:checked'),

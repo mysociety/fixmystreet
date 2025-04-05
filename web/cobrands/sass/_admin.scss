@@ -66,6 +66,25 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     .no-margin {
       margin: 0;
     }
+
+    // Shrink the sidebar to make more room for the main content
+    .container--sidebar {
+        .sticky-sidebar aside {
+            width: 11em;
+        }
+        @media only screen and (min-width: 48em) {
+            .sticky-sidebar {
+                width: 11em;
+            }
+        }
+    }
+}
+
+// Make sure config tables can't overflow
+.admin--config {
+    td + td {
+        overflow-wrap: anywhere;
+    }
 }
 
 .js #admin_contacts tr.is-deleted {
@@ -78,6 +97,9 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     margin:1.5em 0;
     h2 { // only really want on first-child
         margin-top: 0;
+    }
+    .multi-select-button {
+        white-space: normal;
     }
 }
 
@@ -188,7 +210,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 }
 
 .extra-metadata-item__header {
-    @include flex-container();
+    display: flex;
     line-height: 1;
     background: #f3f3f3;
 
@@ -241,7 +263,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 }
 
 .extra-metadata-item__header__title {
-    @include flex(1 0 auto);
+    flex: 1 0 auto;
     cursor: pointer;
 }
 
@@ -255,13 +277,13 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     padding: 0 1em;
 
     .row {
-        @include flex-container();
+        display: flex;
         margin: 0 -1em;
     }
 
     .col {
-        @include box-sizing(border-box);
-        @include flex(1 0 auto);
+        box-sizing: border-box;
+        flex: 1 0 auto;
         padding: 0 1em;
         width: 50%;
     }
@@ -331,4 +353,14 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 textarea.code {
     font-family: monospace;
     max-width: initial;
+}
+
+// WasteWorks
+
+// Some layout improvements for bulky items editing
+body.bulky-items {
+    // Make the page full width
+    .container {
+        max-width: 100%;
+    }
 }

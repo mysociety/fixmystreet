@@ -200,6 +200,12 @@ $.extend(fixmystreet.utils, {
             drag.activate();
         }
 
+        // Only now do we want to activate the Street Manager layer, if it's
+        // present, as we haven't needed it until now.
+        if (fixmystreet.roadworks) {
+            fixmystreet.roadworks.update();
+        }
+
         fixmystreet.maps.hide_keyboard_instructions();
 
         // check to see if markers are visible. We click the
@@ -800,12 +806,12 @@ $.extend(fixmystreet.utils, {
         });
         pin_layer_style_map.addUniqueValueRules('default', 'size', {
             'normal': {
-                externalGraphic: fixmystreet.pin_prefix + "pin-${colour}.png",
+                externalGraphic: "/i/pins/${colour}/pin.png",
                 graphicWidth: 48,
                 graphicHeight: 64,
                 graphicXOffset: -24,
                 graphicYOffset: -64,
-                backgroundGraphic: fixmystreet.pin_prefix + "pin-shadow.png",
+                backgroundGraphic: fixmystreet.pin_prefix + "shadow/pin.png",
                 backgroundWidth: 60,
                 backgroundHeight: 30,
                 backgroundXOffset: -7,
@@ -813,24 +819,24 @@ $.extend(fixmystreet.utils, {
                 popupYOffset: -40
             },
             'big': {
-                externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-big.png",
+                externalGraphic: "/i/pins/${colour}/big.png",
                 graphicWidth: 78,
                 graphicHeight: 105,
                 graphicXOffset: -39,
                 graphicYOffset: -105,
-                backgroundGraphic: fixmystreet.pin_prefix + "pin-shadow-big.png",
+                backgroundGraphic: fixmystreet.pin_prefix + "shadow/big.png",
                 backgroundWidth: 88,
                 backgroundHeight: 40,
                 backgroundXOffset: -10,
                 backgroundYOffset: -35
             },
             'small': {
-                externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-small.png",
+                externalGraphic: "/i/pins/${colour}/small.png",
                 graphicWidth: 24,
                 graphicHeight: 32,
                 graphicXOffset: -12,
                 graphicYOffset: -32,
-                backgroundGraphic: fixmystreet.pin_prefix + "pin-shadow-small.png",
+                backgroundGraphic: fixmystreet.pin_prefix + "shadow/small.png",
                 backgroundWidth: 30,
                 backgroundHeight: 15,
                 backgroundXOffset: -4,
@@ -838,7 +844,7 @@ $.extend(fixmystreet.utils, {
                 popupYOffset: -20
             },
             'mini': {
-                externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-mini.png",
+                externalGraphic: "/i/pins/${colour}/mini.png",
                 graphicWidth: 16,
                 graphicHeight: 20,
                 graphicXOffset: -8,
@@ -1096,6 +1102,7 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         btn.action = id;
         btn.className = "olButton";
         btn.tabIndex = "0";
+        btn.role = "button";
         this.div.appendChild(btn);
         this.buttons.push(btn);
         return btn;
@@ -1425,7 +1432,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             return true;
         }
 
-        if (!$("html").hasClass("mobile")) {
+        if (!$("html").hasClass("map-reporting")) {
             var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
             fixmystreet.display.begin_report(lonlat);
         }

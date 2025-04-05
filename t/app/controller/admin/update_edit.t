@@ -67,11 +67,8 @@ my $log_entries = FixMyStreet::DB->resultset('AdminLog')->search(
     {
         object_type => 'update',
         object_id   => $update->id
-    },
-    { 
-        order_by => { -desc => 'id' },
     }
-);
+)->order_by('-id');
 
 is $log_entries->count, 0, 'no admin log entries';
 
@@ -320,5 +317,55 @@ subtest 'hiding comment marked as fixed reopens report' => sub {
     is $report->state, 'confirmed', 'report reopened';
     $mech->content_contains('Problem marked as open');
 };
+
+subtest 'Test expanded information' => sub {
+    my $now = DateTime->now();
+    my $ymd = $now->year . '-' . sprintf("%02d", $now->month) . '-' . sprintf("%02d", $now->day);
+    $mech->get_ok('/admin/update_edit/' . $update->id );
+    $update->confirmed($now);
+    $mech->content_contains('Cobrand data: None');
+    $mech->content_contains('Confirmed: ' . $ymd );
+    $mech->content_contains('Send state: unprocessed');
+    $mech->content_lacks('External ID');
+    $mech->content_lacks('Send fail count');
+    $mech->content_lacks('Send fail reason');
+    $mech->content_lacks('Last send fail');
+    $update->external_id('12345');
+    $update->update;
+    $mech->get_ok('/admin/update_edit/' . $update->id );
+    $mech->content_contains('External ID: 12345');
+    $update->send_fail_count(2);
+    $update->send_fail_reason('500 error');
+    $update->send_fail_timestamp($now);
+    $update->update;
+    $mech->get_ok('/admin/update_edit/' . $update->id );
+    $mech->content_contains('Send fail count: 2');
+    $mech->content_contains('Send fail reason: 500 error');
+    $mech->content_contains('Last send fail: ' . $ymd);
+    $mech->content_contains('Mark as sent');
+    $mech->content_contains('Mark as skipped');
+    $mech->click('mark_sent');
+    $update = FixMyStreet::DB->resultset('Comment')->find( { id => $update->id } );
+    is $update->send_state, 'sent', 'send_state updated to sent';
+    is $update->whensent =~ /$ymd/, 1, 'whensent updated';
+    $mech->content_contains('Send state: sent');
+    is $log_entries->count, '11', 'Log entry updated';
+    $update->send_state('unprocessed');
+    $update->update;
+    $mech->get_ok('/admin/update_edit/' . $update->id );
+    $mech->click('mark_skip');
+    is $log_entries->count, '12', 'Log entry updated';
+    $update = FixMyStreet::DB->resultset('Comment')->find( { id => $update->id } );
+    is $update->send_state, 'skipped', 'send_state updated to skipped';
+    $mech->content_contains('Send state: skipped');
+    $mech->get_ok('/admin/update_edit/' . $update->id );
+    $mech->click('resend');
+    is $log_entries->count, '13', 'Log entry updated';
+    $update = FixMyStreet::DB->resultset('Comment')->find( { id => $update->id } );
+    is $update->whensent, undef, 'whensent is undefined';
+    $mech->get_ok('/admin/update_edit/' . $update->id );
+    $mech->content_contains('Send state: unprocessed');
+};
+
 
 done_testing();

@@ -68,7 +68,7 @@ sub problems_restriction {
     if (my $date = $self->cut_off_date) {
         my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
         $rs = $rs->search({
-            "$table.confirmed" => { '>=', $date }
+            "$table.created" => { '>=', $date }
         });
     }
     return $rs;
@@ -82,7 +82,7 @@ sub problems_sql_restriction {
         $q .= "AND regexp_split_to_array(bodies_str, ',') && ARRAY['$body_id']";
     }
     if (my $date = $self->cut_off_date) {
-        $q .= " AND confirmed >= '$date'";
+        $q .= " AND created >= '$date'";
     }
     return $q;
 }
@@ -91,7 +91,18 @@ sub problems_on_map_restriction {
     my ($self, $rs) = @_;
     # If we're a two-tier council show all problems on the map and not just
     # those for this cobrand's council to reduce duplicate reports.
-    return $self->is_two_tier ? $rs : $self->problems_restriction($rs);
+    # (but still respect the cut-off date)
+    if ($self->is_two_tier) {
+        if (my $date = $self->cut_off_date) {
+            my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+            $rs = $rs->search({
+                "$table.created" => { '>=', $date }
+            });
+        }
+        return $rs;
+    } else {
+        return $self->problems_restriction($rs);
+    }
 }
 
 sub updates_restriction {
@@ -138,6 +149,11 @@ sub users_restriction {
         -or => $or_query
     };
     return $rs->search($query);
+}
+
+sub users_staff_admin {
+    my $self = shift;
+    return FixMyStreet::DB->resultset('User')->search({ is_superuser => 0, from_body => $self->body->id });
 }
 
 sub base_url {
@@ -194,7 +210,7 @@ sub responsible_for_areas {
         if (grep ($self->council_area_id->[0] == $_, keys %$councils)) {
             return 1;
         } else {
-            return $self->check_report_is_on_cobrand_asset($self->council_area);
+            return $self->check_report_is_on_cobrand_asset;
         }
     } else {
         # The majority of cobrands only cover a single area, but e.g. Northamptonshire
@@ -235,9 +251,8 @@ sub all_reports_single_body {
 
 sub reports_body_check {
     my ( $self, $c, $code ) = @_;
-
-    # Deal with Bexley/Greenwich name not starting with short name
-    if ($code =~ /bexley|greenwich/i) {
+    # Some full names do not start with short name
+    if ( $self->is_london_or_royal($code) ) {
         my $body = $c->model('DB::Body')->search( { name => { -like => "%$code%" } } )->single;
         $c->stash->{body} = $body;
         return $body;
@@ -279,7 +294,7 @@ sub owns_problem {
     }
 
     foreach (@bodies) {
-        return 1 if $_->get_extra_metadata('cobrand', '') eq $self->moniker;
+        return 1 if ($_->cobrand||'') eq $self->moniker;
     }
 }
 
@@ -327,8 +342,8 @@ sub admin_allow_user {
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
     # Make sure TfL staff can't access other London cobrand admins
-    return undef if $user->from_body->name eq 'TfL';
-    return $user->from_body->get_extra_metadata('cobrand', '') eq $self->moniker;
+    return undef if $user->from_body->get_column('name') eq 'TfL';
+    return ($user->from_body->cobrand||'') eq $self->moniker;
 }
 
 sub admin_show_creation_graph { 0 }
@@ -386,7 +401,13 @@ sub munge_reports_category_list {
 sub munge_report_new_bodies {
     my ($self, $bodies) = @_;
 
-    my %bodies = map { $_->name => 1 } values %$bodies;
+    if ($self->{c}->action =~ /^waste/) {
+        my $body_id = $self->body->id;
+        %$bodies = map { $_->id => $_ } grep { $_->id eq $body_id } values %$bodies;
+        return;
+    }
+
+    my %bodies = map { $_->get_column('name') => 1 } values %$bodies;
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand::TfL->new({ c => $self->{c} });
@@ -431,7 +452,7 @@ sub munge_report_new_contacts {
         @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
     }
 
-    my %bodies = map { $_->body->name => $_->body } @$contacts;
+    my %bodies = map { $_->body->get_column('name') => $_->body } @$contacts;
     if ( $bodies{'TfL'} ) {
         # Presented categories vary if we're on/off a red route
         my $tfl = FixMyStreet::Cobrand->get_class_for_moniker( 'tfl' )->new({ c => $self->{c} });
@@ -492,6 +513,8 @@ _nearest_uses_latlon config key is set by lookup_site_code_config, in which
 case lat/lons (EPSG 4326) are used. Useful if the assets are served by e.g.
 Alloy, not Confirm.
 
+Supply reversed_coordinates flag if the data from the WFS service returns
+co-ordinates the wrong way round (N/E or lat/lon).
 
 =cut
 
@@ -506,6 +529,9 @@ sub lookup_site_code {
     my $features = $self->_fetch_features($cfg, $x, $y);
     if ($cfg->{_nearest_uses_latlon}) {
         ($x, $y) = ($row->longitude, $row->latitude);
+    }
+    if ($cfg->{reversed_coordinates}) {
+        ($x, $y) = ($y, $x);
     }
     return $self->_nearest_feature($cfg, $x, $y, $features);
 }
@@ -559,7 +585,7 @@ sub _fetch_features_url {
         SERVICE => "WFS",
         SRSNAME => $cfg->{srsname},
         TYPENAME => $cfg->{typename},
-        VERSION => "1.1.0",
+        VERSION => $cfg->{version} || "1.1.0",
         outputformat => $cfg->{outputformat} || "geojson",
         $cfg->{filter} ? ( Filter => $cfg->{filter} ) : ( BBOX => $cfg->{bbox} ),
     );
@@ -713,12 +739,33 @@ sub csv_active_planned_reports {
     my ($self) = @_;
 
     my %reports_to_user;
-    my @cobrand_users = FixMyStreet::DB->resultset('User')->search({ from_body => $self->body->id});
+    my @cobrand_users = FixMyStreet::DB->resultset('User')->search(
+        { from_body => $self->body->id },
+        { prefetch => 'active_user_planned_reports' },
+    );
 
     for my $user (@cobrand_users) {
-        map { $reports_to_user{$_->report_id} = $user->name } @{$user->active_user_planned_reports};
+        map { $reports_to_user{$_->report_id} = $user->name } $user->active_user_planned_reports->all;
     }
     return \%reports_to_user;
+}
+
+sub csv_update_alerts {
+    my ($self) = @_;
+
+    my %ids_to_alert;
+
+    my @results = FixMyStreet::DB->resultset('Alert')->search({
+        alert_type => 'new_updates',
+        confirmed => 1,
+        whendisabled => undef,
+    }, {columns => ['parameter']})->all;
+
+    if (@results) {
+        %ids_to_alert = map { $_->parameter, ++$ids_to_alert{$_->parameter} } @results;
+    };
+
+    return \%ids_to_alert;
 }
 
 sub nearby_distances {

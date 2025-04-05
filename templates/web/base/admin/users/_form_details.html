@@ -12,7 +12,7 @@
 </li>
 
 <li><label for="email">[% loc('Email:') %]</label>
-<input type='text' class="form-control" id='email' name='email' value='[% user.email | html %]'>
+<input type='email' class="form-control" id='email' name='email' value='[% user.email | html %]' autocomplete="email">
 [% IF user %]
     <input class="btn" type="submit" name="send_login_email" value="[% loc('Send login email') %]">
 [% END %]

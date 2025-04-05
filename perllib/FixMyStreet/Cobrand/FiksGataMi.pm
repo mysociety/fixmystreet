@@ -152,19 +152,19 @@ sub council_rss_alert_options {
         push @options,
           {
             type => 'area',
-            id   => sprintf( 'area:%s:%s', $kommune->{id}, $id_kommune_name ),
+            id   => sprintf( 'area:%s', $kommune->{id} ),
             rss_text =>
               sprintf( _('RSS feed of %s'), $kommune->{name} ),
             text => $kommune->{name},
-            uri => $c->uri_for( '/rss/area', $short_kommune_name ),
+            uri => $c->uri_for( '/rss/area', $kommune->{id} ),
           },
           {
             type => 'area',
-            id   => sprintf( 'area:%s:%s', $fylke->{id}, $id_fylke_name ),
+            id   => sprintf( 'area:%s', $fylke->{id} ),
             rss_text =>
               sprintf( _('RSS feed of %s'), $fylke->{name} ),
             text => $fylke->{name},
-            uri => $c->uri_for( '/rss/area', $short_fylke_name ),
+            uri => $c->uri_for( '/rss/area', $fylke->{id} ),
           };
 
         push @reported_to_options,

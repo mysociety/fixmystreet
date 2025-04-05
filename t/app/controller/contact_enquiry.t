@@ -1,4 +1,3 @@
-use utf8;
 use Encode;
 use FixMyStreet::TestMech;
 use Path::Tiny;
@@ -12,7 +11,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok( 2483, 'Hounslow Borough Council', {
+my $body = $mech->create_body_ok( 2483, 'Hounslow Highways', {
     send_method => 'Open311',
     endpoint => 'endpoint',
     api_key => 'key',

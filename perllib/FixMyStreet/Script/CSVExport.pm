@@ -55,10 +55,11 @@ my $EXTRAS = {
     reassigned => { tfl => 1 },
     assigned_to => { northumberland => 1, tfl => 1 },
     staff_user => { bathnes => 1, bromley => 1, buckinghamshire => 1, northumberland => 1, peterborough => 1 },
-    staff_roles => { bromley => 1, northumberland => 1 },
-    user_details => { bathnes => 1, bexley => 1, brent => 1, camden => 1, cyclinguk => 1, highwaysengland => 1, kingston => 1, sutton => 1 },
+    staff_roles => { brent => 1, bristol => 1, bromley => 1, lincolnshire => 1, northumberland => 1, oxfordshire => 1 },
+    user_details => { bathnes => 1, bexley => 1, brent => 1, camden => 1, cyclinguk => 1, highwaysengland => 1, kingston => 1, southwark => 1, sutton => 1 },
     comment_content => { highwaysengland => 1 },
     db_state => { peterborough => 1 },
+    alerts_count => { surrey => 1 },
 };
 
 my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;
@@ -75,12 +76,13 @@ sub process {
     my %opts = @_;
     $opts{dbh} ||= do {
         my @args = FixMyStreet->dbic_connect_info;
+        $args[3]{RaiseError} = 1;
         DBI->connect(@args[0..3]) or die $!;
     };
     if ($opts{body}) {
         process_body($opts{body}, \%opts);
     } else {
-        my $bodies = $opts{dbh}->selectcol_arrayref("select id from body where extra->>'cobrand' !='' order by id");
+        my $bodies = $opts{dbh}->selectcol_arrayref("select id from body where cobrand != '' order by id");
         process_body($_, \%opts) foreach @$bodies;
     }
 }
@@ -146,6 +148,7 @@ sub process_body {
                 $hashref = initial_hashref($obj, $cobrand, $children);
             }
             process_comment($hashref, $obj);
+            process_questionnaire($hashref, $obj);
             if (my $fn = $reporting->csv_extra_data) {
                 my $extra = $fn->($obj, $hashref);
                 $hashref = { %$hashref, %$extra };
@@ -174,8 +177,10 @@ sub generate_sql {
         "to_json(date_trunc('second', me.created))#>>'{}' as created",
         "to_json(date_trunc('second', me.confirmed))#>>'{}' as confirmed",
         "to_json(date_trunc('second', me.whensent))#>>'{}' as whensent",
-        # Fetch the relevant bits of comments we need for timestamps
+        # Fetch the relevant bits of comments and questionnaires we need for timestamps
         "comments.id as comment_id, comments.problem_state, to_json(date_trunc('second', comments.confirmed))#>>'{}' as comment_confirmed, comments.mark_fixed",
+        "questionnaire.id as questionnaire_id, questionnaire.new_state as questionnaire_new_state",
+        "to_json(date_trunc('second', questionnaire.whenanswered))#>>'{}' as questionnaire_whenanswered",
         # Older reports did not store the group on the report, so fetch it from contacts
         "contact.extra->'group' AS group",
         # Fetch any relevant staff user and their roles
@@ -195,9 +200,10 @@ staff_roles AS (
 EOF
     my @sql_join = (
         '"contacts" "contact" ON CAST( "contact"."body_id" AS text ) = (regexp_split_to_array( "me"."bodies_str", \',\'))[1] AND "contact"."category" = "me"."category"',
-        '"comment" "comments" ON "comments"."problem_id" = "me"."id"',
+        '"comment" "comments" ON "comments"."problem_id" = "me"."id" AND "comments"."state" = \'confirmed\'',
         '"users" "contributed_by_user" ON "contributed_by_user"."id" = ("me"."extra"->>\'contributed_by\')::integer',
         'staff_roles ON contributed_by_user.id = staff_roles.user_id',
+        'questionnaire ON questionnaire.problem_id = me.id AND questionnaire.whenanswered IS NOT NULL',
     );
 
     if ($EXTRAS->{reassigned}{$cobrand->moniker}) {
@@ -224,6 +230,11 @@ EOF
         push @sql_select, "comments.text as comment_text", "comments.extra as comment_extra", "comment_user.name as comment_name", "row_number() over (partition by comments.problem_id order by comments.confirmed,comments.id) as comment_rn";
         push @sql_join, '"users" "comment_user" ON "comments"."user_id" = "comment_user"."id"';
     }
+    if ($EXTRAS->{alerts_count}{$cobrand->moniker}) {
+        push @sql_select, '"alerts_table"."alerts_count"';
+        push @sql_join, '"alerts_table" ON CAST("alerts_table"."parameter" AS INTEGER) = "me"."id"';
+        push @sql_with, "alerts_table AS (select parameter, count(*) AS alerts_count FROM alert WHERE alert_type='new_updates' AND confirmed IS NOT NULL AND whendisabled IS NULL GROUP BY 1)";
+    }
 
     my $sql_select = join(', ', @sql_select);
     my $sql_join = join(' ', map { "LEFT JOIN $_" } @sql_join);
@@ -238,10 +249,8 @@ EOF
     return <<EOF;
 DECLARE csr CURSOR WITH HOLD FOR $sql_with SELECT $sql_select FROM "problem" "me" $sql_join
 WHERE regexp_split_to_array("me"."bodies_str", ',') && ARRAY['$body_id']
-    -- Ignore non-confirmed comments, and ones with no or confirmed problem_state
-    AND ("comments"."state" = 'confirmed' OR "comments"."state" IS NULL)
     $where_states
-ORDER BY "me"."confirmed", "me"."id", "comments"."confirmed", "comments"."id";
+ORDER BY "me"."confirmed", "me"."id", "comments"."confirmed", "comments"."id", "questionnaire"."whenanswered", "questionnaire"."id";
 EOF
 }
 
@@ -301,13 +310,36 @@ row timestamps.
 sub process_comment {
     my ($hashref, $obj) = @_;
     return if $hashref->{closed}; # Once closed is set, ignore further more comments
-    my $problem_state = $obj->{problem_state} or return;
+    return unless $obj->{problem_state} || $obj->{mark_fixed};
+    my $problem_state = $obj->{problem_state} || '';
     return if $problem_state eq 'confirmed';
     $hashref->{acknowledged} //= $obj->{comment_confirmed};
     $hashref->{action_scheduled} //= $problem_state eq 'action scheduled' ? $obj->{comment_confirmed} : undef;
-    $hashref->{fixed} //= $fixed_states->{ $problem_state } || $obj->{mark_fixed} ?  $obj->{comment_confirmed} : undef;
+    if ($fixed_states->{ $problem_state } || $obj->{mark_fixed}) {
+        if (!$hashref->{fixed} || $obj->{comment_confirmed} lt $hashref->{fixed}) {
+            $hashref->{fixed} = $obj->{comment_confirmed};
+        }
+    }
     if ($closed_states->{ $problem_state }) {
         $hashref->{closed} = $obj->{comment_confirmed};
+    }
+}
+
+
+=head2 process_questionnaire
+
+Given a result row, look at the questionnaire entry to see if we need to set any
+row timestamps.
+
+=cut
+
+sub process_questionnaire {
+    my ($hashref, $obj) = @_;
+    my $new_state = $obj->{questionnaire_new_state} || '';
+    if ($fixed_states->{$new_state}) {
+        if (!$hashref->{fixed} || $obj->{questionnaire_whenanswered} lt $hashref->{fixed}) {
+            $hashref->{fixed} = $obj->{questionnaire_whenanswered};
+        }
     }
 }
 

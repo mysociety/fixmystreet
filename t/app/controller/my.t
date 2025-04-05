@@ -1,4 +1,8 @@
 use FixMyStreet::TestMech;
+
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
 my $mech = FixMyStreet::TestMech->new;
 
 $mech->get_ok('/my');
@@ -124,7 +128,7 @@ subtest 'test setting of notification preferences' => sub {
 subtest 'test display of bulky cancellation reports' => sub {
     my $body = $mech->create_body_ok(
         2566, 'Peterborough City Council',
-        {}, { cobrand => 'peterborough' },
+        { cobrand => 'peterborough' },
     );
 
     FixMyStreet::override_config { ALLOWED_COBRANDS => 'peterborough' }, sub {

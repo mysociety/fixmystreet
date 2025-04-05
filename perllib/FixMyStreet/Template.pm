@@ -156,6 +156,21 @@ sub html_paragraph_email_factory : FilterFactory('html_para_email') {
     }
 }
 
+=head2 html_paragraph_conditional
+
+Calls html_paragraph, but only if the text doesn't include
+a <p>, <ol>, or <ul>.
+
+=cut
+
+sub html_paragraph_conditional : Filter('html_para_conditional') {
+    my $text = shift;
+    if ($text !~ /<(p|ol|ul)[^>]*>/) {
+        $text = html_paragraph($text);
+    }
+    return $text;
+}
+
 sub sanitize {
     my ($text, $admin) = @_;
 
@@ -167,7 +182,12 @@ sub sanitize {
     $text = $$text if UNIVERSAL::isa($text, 'FixMyStreet::Template::SafeString');
 
     my %allowed_tags = map { $_ => 1 } qw( p ul ol li br b i strong em );
-    my %admin_tags = ( p => { class => 1, id => 1, style => 1 } );
+    my %admin_tags = (
+        p => { class => 1, id => 1, style => 1 },
+        h1 => 1,
+        h2 => 1,
+        h3 => 1,
+    );
     my $scrubber = HTML::Scrubber->new(
         rules => [
             %allowed_tags,

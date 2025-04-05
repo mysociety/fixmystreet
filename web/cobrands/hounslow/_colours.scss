@@ -55,3 +55,12 @@ $front-main-background-desktop: $primary;
 $geolocation-link: $primary_text;
 
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$button-primary-bg-top: $green;
+$button-primary-border: transparent;
+$button-primary-text: #fff;
+
+$button-primary-hover-bg-top: lighten($green, 5%);
+$button-primary-hover-bg-bottom: lighten($green, 5%);
+$button-primary-hover-border: transparent;
+$button-primary-hover-text: #fff;

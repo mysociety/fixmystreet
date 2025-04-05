@@ -297,7 +297,7 @@ you're doing is [customising your installation](/customising).
         <p><em>images</em></p>
         <p>
           Images, including navigation icons and sprites, used by the default site (and hence
-          available to other cobrands too) &mdash; for example <code>pin-green.png</code>
+          available to other cobrands too) &mdash; for example <code>pins/green/pin.png</code>
           is the green pin used on most cobrand's maps.
         </p>
       </dd>

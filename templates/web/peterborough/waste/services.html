@@ -9,7 +9,7 @@
   <form method="post" action="[% c.uri_for_action('waste/problem', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     [% IF c.cobrand.call_hook('bulky_enabled') %]
-      <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Report a problem with a [% unit.service_name FILTER lower %]" value="Report a problem" class="waste-service-descriptor waste-service-link">
+      <input class="btn btn--primary govuk-!-margin-bottom-2" type="submit" aria-label="Report a problem with a [% unit.service_name FILTER lower %]" value="Report a problem" class="waste-service-descriptor waste-service-link">
     [% ELSE %]
       <input type="submit" value="Report a problem with a [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
     [% END %]
@@ -28,7 +28,7 @@
       <input type="hidden" name="container-[% unit.request_containers.0 %]" value="1">
       <input type="hidden" name="skip_bags" value="1">
       [% IF c.cobrand.call_hook('bulky_enabled') %]
-        <input class="btn btn-primary govuk-!-margin-bottom-2" type="submit" aria-label="Request a new [% unit.service_name FILTER lower %]" value="Request a new bin" class="waste-service-descriptor waste-service-link">
+        <input class="btn btn--primary govuk-!-margin-bottom-2" type="submit" aria-label="Request a new [% unit.service_name FILTER lower %]" value="Request a new bin" class="waste-service-descriptor waste-service-link">
       [% ELSE %]
         <input type="submit" value="Request a new [% unit.service_name FILTER lower %]" class="waste-service-descriptor waste-service-link">
       [% END %]

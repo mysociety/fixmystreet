@@ -1,22 +1,19 @@
 [% SET title = form.title ~%]
 [% PROCESS 'waste/header.html' %]
 
-<div class="waste__loading_wrapper">
-
-  [% PROCESS 'govuk/fields.html' %]
-  [% PROCESS back %]
-  [% PROCESS errors %]
-  [% PROCESS title %]
-  [% IF property %]
+[% PROCESS 'govuk/fields.html' %]
+[% PROCESS back %]
+[% PROCESS errors %]
+[% PROCESS title %]
+[% IF property %]
     [% INCLUDE 'waste/_address_display.html' %]
-  [% END %]
+[% END %]
 
-  [% IF form.intro_template %][% PROCESS "waste/${form.intro_template}" %][% END %]
+[% IF form.intro_template %][% PROCESS "waste/${form.intro_template}" %][% END %]
 
 <form class="waste waste--[% form.current_page.name OR form.name %]" method="post"
-    [% IF form.current_page.name == 'location' %]enctype="multipart/form-data"[% END %]>
+    [% IF form.current_page.has_file_upload %]enctype="multipart/form-data"[% END %]>
   [% PROCESS form %]
 </form>
 
-</div>
 [% INCLUDE footer.html %]

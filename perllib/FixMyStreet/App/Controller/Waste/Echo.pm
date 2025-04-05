@@ -49,11 +49,24 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
     $c->detach('soap_error', [ 'Incorrect Action' ]) unless $action && $action eq $echo->{receive_action};
     $header = $header->{Security};
     $c->detach('soap_error', [ 'Missing Security header' ]) unless $header;
+
     my $token = $header->{UsernameToken};
     $c->detach('soap_error', [ 'Authentication failed' ])
-        unless $token && $token->{Username} eq $echo->{receive_username} && $token->{Password} eq $echo->{receive_password};
+        unless $token && $token->{Username} eq $echo->{receive_username};
+
+    my $passwords = $echo->{receive_password};
+    $passwords = [ $passwords ] unless ref $passwords eq 'ARRAY';
+    my $password_match;
+    foreach (@$passwords) {
+        $password_match = 1 if $_ eq $token->{Password};
+    }
+    $c->detach('soap_error', [ 'Authentication failed' ]) unless $password_match;
 
     my $event = $env->result;
+
+    # Return okay if we're in endpoint test mode
+    my $cobrand_check = $c->cobrand->feature('waste');
+    $c->detach('soap_ok') if $cobrand_check eq 'echo-push-only';
 
     my $cfg = { echo => Integrations::Echo->new(%$echo) };
     my $request = $c->cobrand->construct_waste_open311_update($cfg, $event);
@@ -155,7 +168,7 @@ sub check_existing_update : Private {
     my $cfg = { updates => $updates };
     $c->detach('soap_ok')
         unless $c->cobrand->waste_check_last_update(
-            $cfg, $p, $request->{status}, $request->{external_status_code});
+            'push', $cfg, $p, $request->{status}, $request->{external_status_code});
 }
 
 __PACKAGE__->meta->make_immutable;

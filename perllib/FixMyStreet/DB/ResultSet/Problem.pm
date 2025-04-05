@@ -1,5 +1,5 @@
 package FixMyStreet::DB::ResultSet::Problem;
-use base 'DBIx::Class::ResultSet';
+use base 'FixMyStreet::DB::ResultSet';
 
 use strict;
 use warnings;
@@ -9,7 +9,7 @@ use mySociety::Locale;
 use FixMyStreet::DB;
 
 use Moo;
-with 'FixMyStreet::Roles::FullTextSearch';
+with 'FixMyStreet::Roles::DB::FullTextSearch';
 __PACKAGE__->load_components('Helper::ResultSet::Me');
 sub text_search_columns { qw(id external_id bodies_str name title detail) }
 sub text_search_nulls { qw(external_id bodies_str) }
@@ -270,16 +270,40 @@ sub report_age_subquery {
     my $sub_q = [];
 
     for my $state ( @possible_states ) {
-        my $time = $args{report_age}{$state} // $default_time;
-
         # Call relevant function to get substates
         my $call = "${state}_states";
         my @substates = FixMyStreet::DB::Result::Problem->$call;
 
-        push @$sub_q, {
-            "$args{state_table}.state" => { '-in' => \@substates },
-            $args{report_age_field}    => { '>=' => \"current_timestamp-'$time'::interval" },
-        };
+        my $time = $args{report_age}{$state} // $default_time;
+        my %time_q;
+        if (ref $time eq 'HASH') {
+            # Gloucestershire have special settings for Confirm jobs
+            for my $type ( qw/job enquiry/ ) {
+                my %type_q;
+                if ( $type eq 'job' ) {
+                    %type_q = ( "$args{state_table}.external_id" => { '-like' => 'JOB_%' } );
+                } else {
+                    %type_q = (
+                        "$args{state_table}.external_id" => [
+                            { '=', undef },
+                            { '-not_like' => 'JOB_%' },
+                        ],
+                    );
+                }
+
+                my $time_str = $time->{$type} // $default_time;
+                push @$sub_q, {
+                    "$args{state_table}.state" => { '-in' => \@substates },
+                    $args{report_age_field}    => { '>=' => \"current_timestamp-'$time_str'::interval" },
+                    %type_q,
+                };
+            }
+        } else {
+            push @$sub_q, {
+                "$args{state_table}.state" => { '-in' => \@substates },
+                $args{report_age_field}    => { '>=' => \"current_timestamp-'$time'::interval" },
+            };
+        }
     }
 
     return { -or => $sub_q };

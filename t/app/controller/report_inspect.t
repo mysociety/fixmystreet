@@ -5,7 +5,7 @@ use Path::Class;
 my $mech = FixMyStreet::TestMech->new;
 
 my $brum = $mech->create_body_ok(2514, 'Birmingham City Council');
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_devolved => 1 }, { cobrand => 'oxfordshire' } );
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { can_be_devolved => 1, cobrand => 'oxfordshire' } );
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
 my $contact2 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Sheep', email => 'SHEEP', send_method => 'Open311' );
 my $contact3 = $mech->create_contact_ok( body_id => $oxon->id, category => 'Badgers & Voles', email => 'badgers@example.net' );
@@ -233,7 +233,7 @@ FixMyStreet::override_config {
             update => "This is a second public update, of normal update form, no actual change.",
         } });
         $report->discard_changes;
-        my $comment = ($report->comments( undef, { order_by => { -desc => 'id' } } )->all)[1]->text;
+        my $comment = ($report->comments->order_by('-id')->all)[1]->text;
         is $comment, "This is a public update.", 'Update was created';
         $mech->get_ok("/report/$report_id");
         my $meta = $mech->extract_update_metas;
@@ -620,7 +620,7 @@ FixMyStreet::override_config {
             photo1 => [ [ $sample_file, undef, Content_Type => 'image/jpeg' ], 1 ],
         } });
         $report->discard_changes;
-        my $comment = $report->comments(undef, { rows => 1, order_by => { -desc => "id" }})->first;
+        my $comment = $report->comments->order_by('-id')->first;
         is $comment->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg', 'photo added to comment';
         $mech->get_ok("/report/$report_id");
         $mech->content_contains("/photo/c/" . $comment->id . ".0.jpeg");
@@ -637,6 +637,11 @@ FixMyStreet::override_config {
     $ex_employee->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
     my $ex_employee_id = $ex_employee->id;
 
+    my $ex_employee_2 = $mech->create_user_ok('exemployee2@example.com', name => 'Ex Employee 2');
+    $ex_employee_2->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
+    $ex_employee_2->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
+    my $ex_employee_2_id = $ex_employee_2->id;
+
     my $ian = $mech->create_user_ok('inspector@example.com', name => 'Inspector Ian', from_body => $oxon);
 
     $user->user_body_permissions->create({ body => $oxon, permission_type => 'assign_report_to_user' });
@@ -646,6 +651,7 @@ FixMyStreet::override_config {
     $ian->user_body_permissions->create({ body => $oxon, permission_type => 'planned_reports' });
     $ian->update;
 
+    $ex_employee_2->add_to_planned_reports($report);
 
     my $role_a = FixMyStreet::DB->resultset("Role")->create({
     body => $oxon,
@@ -673,6 +679,8 @@ FixMyStreet::override_config {
         my @ians = $mech->content =~ /Inspector Ian/g;
         is @ians, 1, "Inspector should only be in dropdown once regardless of multiple permission assignment";
 
+        $mech->content_contains('Shortlisted by Ex Employee 2');
+        $mech->content_contains("option value='$ex_employee_2_id'", "Ex-staff does appear in dropdown as current holder");
         $mech->content_lacks("option value='$ex_employee_id'", "Anonymised ex-staff do not appear in dropdown");
 
         $mech->content_contains('Assign to:');

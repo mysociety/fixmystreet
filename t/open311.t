@@ -10,7 +10,6 @@ use CGI::Simple;
 use HTTP::Response;
 use DateTime;
 use DateTime::Format::W3CDTF;
-use utf8;
 use Encode;
 
 use_ok( 'Open311' );
@@ -596,6 +595,13 @@ foreach my $test (
         anon  => 0,
         status => 'CLOSED',
         extended => 'INTERNAL_REFERRAL',
+    },
+    {
+        desc => 'comment with cancelled state sends status of CLOSED',
+        state => 'cancelled',
+        anon  => 0,
+        status => 'CLOSED',
+        extended => 'CANCELLED',
     },
     {
         desc => 'comment with closed state sends status of CLOSED',

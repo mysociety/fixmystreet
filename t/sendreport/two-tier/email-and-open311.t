@@ -10,7 +10,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $user = $mech->create_user_ok('user@example.com');
 
 my $body_oxf = $mech->create_body_ok( 2237, 'Oxfordshire County Council',
-    {}, { cobrand => 'oxfordshire' } );
+    { cobrand => 'oxfordshire' } );
 my $body_cherwell
     = $mech->create_body_ok( 2419, 'Cherwell District Council' );
 

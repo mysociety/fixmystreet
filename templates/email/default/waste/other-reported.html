@@ -1,0 +1,111 @@
+[%
+
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+
+  [% IF report.category == 'Request new container' %]
+    [% IF cobrand.moniker == 'kingston' %]
+      <h1 style="[% h1_style %]">Your bin request has been&nbsp;logged</h1>
+    [% ELSE %]
+      <h1 style="[% h1_style %]">Your request has been&nbsp;logged</h1>
+    [% END %]
+  [% ELSE %]
+    <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
+  [% END %]
+
+  [% IF cobrand.moniker == 'sutton' %]
+  <p style="[% p_style %]">Thank you for contacting Sutton Council.</p>
+  [% END %]
+
+[% INCLUDE '_council_reference.html' problem=report %]
+
+[% IF cobrand.moniker == 'bromley' %]
+
+[%# Nothing here at present %]
+
+[% ELSIF cobrand.moniker == 'sutton' %]
+    [% IF report.category == 'Request new container' %]
+        <p style="[% p_style %]">
+          [% IF report.title.match('Garden') %]
+            Please allow up to 10 working days for this order to be processed.
+          [% ELSE %]
+            Due to the current high demand, please allow up to
+            [% cobrand.wasteworks_config.request_timeframe %]
+            for this order to be processed. We thank you for your patience and
+            understanding in advance.
+          [% END %]
+        </p>
+        <p style="[% p_style %]">If you have requested a bin, box or caddy to be collected as part of the request:</p>
+        <ul [% ul_attrs | safe %]>
+            <li>Please keep any bin, box or caddy accessible in your front garden or driveway, ready to be exchanged.</li>
+            <li>It must be visible from the public highway, so delivery drivers can see it.</li>
+            <li>We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.</li>
+        </ul>
+    [% ELSIF report.category == 'Waste spillage' %]
+      <p style="[% p_style %]">
+        We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.
+      </p>
+      <p style="[% p_style %]">
+        The issue has been logged and a clean up has been organised for within the next 24 hours.
+      </p>
+    [% ELSIF report.category == 'Bin not returned' %]
+      <p style="[% p_style %]">
+        We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
+      </p>
+      <p style="[% p_style %]">
+        Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
+      </p>
+    [% END %]
+
+[% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
+  <p style="[% p_style %]">
+    <b>On delivery day</b><br>
+    You do not need to be home for our crew to deliver the bin.
+  </p>
+  <p style="[% p_style %]">
+    <b>Collecting your old bin</b>
+    If you&apos;ve requested a collection of your old bin, we'll schedule a specific date for our crew
+    to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
+  </p>
+
+[% ELSIF cobrand.moniker == 'merton' AND (report.category == 'Waste spillage' OR report.category == 'Bin not returned') %]
+  <p style="[% p_style %]">
+  Your report over the problem with your bin collection has been made to the council.
+  </p>
+
+[% ELSE %]
+
+    [% IF report.category == 'Report missed collection' %]
+      [% IF cobrand.moniker == 'brent' %]
+        <p style="[% p_style %]">We will arrange another collection as soon as possible over the next two days. Please note that collections may also be attempted on a public holiday/weekend.</p>
+      [% ELSE %]
+        <p style="[% p_style %]">We will arrange another collection as soon as possible over the next 2 working days.</p>
+      [% END %]
+    [% ELSIF report.category == 'Request new container' %]
+      <p style="[% p_style %]">We aim to deliver this container to you within
+      [% cobrand.wasteworks_config.request_timeframe || '20 working days' %].
+      If you have requested a replacement bin please leave your
+      broken one available for collection at the front of your property.</p>
+    [% END %]
+
+[% END %]
+
+  <p style="[% p_style %]">
+    [% INCLUDE 'waste/signature.html' %]
+  </p>
+
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]
