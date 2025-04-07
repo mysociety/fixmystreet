@@ -31,14 +31,10 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">If you no longer wish to confirm this update, please take no further action.</p>
   [% end_padded_box | safe %]
 </th>
-<th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
-   <img style="[% map_image_style %]" src="[% inline_image(problem.static_map, 'map.jpeg') %]" width="310" height="200" alt="">
-   [% start_padded_box | safe %]
-     [%~ IF update.photo %]
-       <img style="[% preview_photo_style %]" src="[% inline_image(update.get_first_image_fp) %]" alt="" align="right">
-     [%~ END %]
+[% WRAPPER '_email_sidebar.html'
+     object = update
+     report = problem %]
      <p style="[% secondary_p_style %]">[% update.text | html %]</p>
-   [% end_padded_box | safe %]
-</th>
+[% END %]
 
 [% INCLUDE '_email_bottom.html' %]

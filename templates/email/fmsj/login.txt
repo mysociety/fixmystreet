@@ -1,0 +1,35 @@
+Subject: [% site_name %] paskyros informacija / Your [% site_name %] account details
+
+Spustelėkite toliau esančią nuorodą, kad patvirtintumėte savo el. pašto adresą.
+
+[% c.uri_for_action( 'auth/token', token ) | replace('https://', 'https://lt.') | replace('http://', 'http://lt.') %]
+
+[% IF c.get_param('r').match('waste') %]
+Kai tai padarysite, galėsite peržiūrėti arba keisti savo atliekų prenumeratą ir surinkimą.
+[% ELSE %]
+Kai tai padarysite, galėsite peržiūrėti ir tvarkyti visas ataskaitas ir atnaujinimus, kuriuos atlikote [% site_name %] meniu „Jūsų paskyra“.
+[% END %]
+
+Viso gero,
+[% site_name %] komanda
+
+Šis el. laiškas buvo išsiųstas automatiškai iš automatinės el. pašto paskyros, todėl į jį neatsakykite.
+
+
+*** ENGLISH ***
+
+Please click on the link below to confirm your email address.
+
+[% c.uri_for_action( 'auth/token', token ) %]
+
+[% IF c.get_param('r').match('waste') %]
+Once you've done this, you'll be able to view or amend your waste subscriptions and collections.
+[% ELSE %]
+Once you've done this, you'll be able to view and manage all reports and
+updates you've made on [% site_name %].
+[% END %]
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

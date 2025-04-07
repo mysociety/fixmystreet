@@ -1,0 +1,56 @@
+[%
+
+email_summary = "Prieš išsiųsdami savo " _ site_name _ " pranešimą, turite jį patvirtinti ${ report.body } // You need to confirm your " _ site_name _ " report before it can be sent to ${ report.body }.";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Patvirtinkite savo pranešimą</h1>
+  <p style="[% p_style %]">Paspaudę žemiau esančią nuorodą patvirtinkite, kad norite išsiųsti savo pranešimą [% report.body %].
+[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Atkreipkite dėmesį, kad [% c.cobrand.council_name %] nėra atsakinga už tokio tipo problemas, todėl jos bus siunčiamos į [% report.body %].
+[% END %]
+  </p>
+  [% IF report.non_public %]
+      <p style="[% p_style %]">Jūsų pranešimas nebus skelbiama viešai [% site_name %] svetainėje, bet bus išsiųsta į [% report.body %].</p>
+  [% ELSE %]
+      <p style="[% p_style %]">Jūsų pranešimas taip pat bus rodoma [% site_name %] svetainėje.</p>
+  [% END %]
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url | replace('https://', 'https://lt.') | replace('http://', 'http://lt.') %]">Taip, siųskite mano pranešimą</a>
+  </p>
+  <p style="[% p_style %]">Jei nebenorite siųsti šio pranešimo, nesiimkite jokių veiksmų.</p>
+  [% end_padded_box | safe %]
+  <br>
+  [% start_padded_box | safe %]
+  <h2 style="[% h2_style %]; text-align:center;">*** English ***</h2>
+  <h1 style="[% h1_style %]">Please confirm your report</h1>
+  <p style="[% p_style %]">Please click on the link below to confirm that you want to send your report to [% report.body %].
+[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Please note that [% c.cobrand.council_name %] is not responsible for this type
+of problem, so it will instead be sent to [% report.body %].
+[% END %]
+  </p>
+  [% IF report.non_public %]
+      <p style="[% p_style %]">Your report will not be published for public viewing on the [% site_name %] website but will be sent to [% report.body %].</p>
+  [% ELSE %]
+      <p style="[% p_style %]">Your report will also appear on the [% site_name %] website.</p>
+  [% END %]
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Yes, send my report</a>
+  </p>
+  <p style="[% p_style %]">If you no longer wish to send this report, please take no further action.</p>
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report, url = token_url %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

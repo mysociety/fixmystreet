@@ -13,8 +13,9 @@ Atnaujinimą:
 [% update.text %]
 
     Atkreipkite dėmesį, kad [% update.problem.body %] atnaujinimų nesiunčiame – jie skirti kaip vieta [% site_name %] vartotojams diskutuoti, palaikyti, patarti.
-
-[% signature %]
+    
+Viso gero,
+[% site_name %] komanda
 
 Šis el. laiškas buvo išsiųstas automatiškai iš automatinės el. pašto paskyros, todėl į jį neatsakykite.
 

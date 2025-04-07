@@ -1,0 +1,13 @@
+[%~
+    IF c.user_exists AND c.user.from_body AND ( c.user.categories.size OR c.user.area_ids.size );
+      reports_uri = '/my/inspector_redirect';
+    ELSE;
+      reports_uri = '/reports';
+      IF c.cobrand.council_area;
+         body_name = c.cobrand.council_area | uri;
+         reports_uri = "${reports_uri}/${body_name}";
+      END;
+    END;
+
+    INCLUDE navitem uri=reports_uri label=loc('Statistics');
+~%]
