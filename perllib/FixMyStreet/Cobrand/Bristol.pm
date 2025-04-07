@@ -317,7 +317,8 @@ sub check_report_is_on_cobrand_asset {
 
     my $park = $self->_park_for_point(
         $self->{c}->stash->{latitude},
-        $self->{c}->stash->{longitude}
+        $self->{c}->stash->{longitude},
+        'parks',
     );
     return 0 unless $park;
 
@@ -325,7 +326,7 @@ sub check_report_is_on_cobrand_asset {
 }
 
 sub _park_for_point {
-    my ( $self, $lat, $lon ) = @_;
+    my ( $self, $lat, $lon, $type ) = @_;
 
     my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
 
@@ -333,7 +334,7 @@ sub _park_for_point {
     my $cfg = {
         url => "https://$host/mapserver/bristol",
         srsname => "urn:ogc:def:crs:EPSG::27700",
-        typename => "parks",
+        typename => $type,
         filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
         outputformat => 'GML3',
     };
@@ -341,7 +342,48 @@ sub _park_for_point {
     my $features = $self->_fetch_features($cfg, $x, $y, 1);
     my $park = $features->[0];
 
+    if ($type eq 'flytippingparks') {
+        return $park;
+    }
     return { site_code => $park->{"ms:parks"}->{"ms:SITE_CODE"} } if $park;
+}
+
+sub get_body_sender {
+    my ( $self, $body, $problem ) = @_;
+
+    my $emails = $self->feature('open311_email');
+    if ($problem->category eq 'Flytipping' && $emails->{flytipping_parks}) {
+        my $park = $self->_park_for_point(
+            $problem->latitude,
+            $problem->longitude,
+            'flytippingparks',
+        );
+        if ($park) {
+            $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping_parks});
+            return { method => 'Email' };
+        }
+
+    }
+    return $self->SUPER::get_body_sender($body, $problem);
+}
+
+sub munge_sendreport_params {
+    my ($self, $row, $h, $params) = @_;
+
+    if ( my $email = $row->get_extra_metadata('flytipping_email') ) {
+        $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
+
+        my $to = [ [ $email, $self->council_name ] ];
+
+        my $witness = $row->get_extra_field_value('Witness') || 0;
+        if ($witness) {
+            my $emails = $self->feature('open311_email');
+            my $dest = $emails->{$row->category};
+            push @$to, [ $dest, $self->council_name ];
+        }
+
+        $params->{To} = $to;
+    }
 }
 
 1;

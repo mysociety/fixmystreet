@@ -1,10 +1,13 @@
 [% IF c.req.params.exchange %]
 
-<p>There is an £[% tprintf('%.2f', c.cobrand.request_cost(1, 1).0 / 100).replace('\.00$', '') %] administration/delivery charge for replacing your refuse bin.
+<p>There is a £[% tprintf('%.2f', c.cobrand.container_cost(2) / 100).replace('\.00$', '') %] cost for a replacement refuse bin,
+plus a £[% tprintf('%.2f', c.cobrand.admin_fee_cost / 100).replace('\.00$', '') %] administration/delivery charge.
+Further information about our container charging can be found in
+<a href="https://www.kingston.gov.uk/bins-recycling-rubbish/request-new-containers/2">our container charging policies</a>.
 
 [% ELSE %]
 
-<p>There is an £[% tprintf('%.2f', c.cobrand.request_cost(1, 1).0 / 100).replace('\.00$', '') %] administration/delivery charge for any container except for bags and food waste bins,
-reduced to £[% tprintf('%.2f', c.cobrand.request_cost(1, 1).0 / 200).replace('\.00$', '') %] for subsequent containers.</p>
+<p>There is an £[% tprintf('%.2f', c.cobrand.admin_fee_cost / 100).replace('\.00$', '') %] administration/delivery charge for any container except for bags and food waste bins,
+reduced to £[% tprintf('%.2f', c.cobrand.admin_fee_cost(no_first_fee=1) / 100).replace('\.00$', '') %] for subsequent containers.</p>
 
 [% END %]

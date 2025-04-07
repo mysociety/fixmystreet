@@ -3,9 +3,19 @@
 * Unreleased
     - Admin improvements:
         - Improve performance of admin reports search for email. #5284
-        - import-export-data script exports and imports send_method for category #4818
+        - import-export-data script exports and imports `send_method` for category #4818
+        - Include extra question answer labels in submit emails. #5383
+        - Add created flag to inactive processing script. #5386
     - Development improvements
-        - More logging when page_error is called, to aid troubleshooting. #5279
+        - More logging when `page_error` is called, to aid troubleshooting. #5279
+        - Docker changes needed for systemd to work. #5257
+        - Refactor map pin file locations. #5299
+        - Update tested Perl versions on GitHub. #5446
+        - Upgrade bundled `cpanm` and harden both it and `carton` for HTTPS. #5437
+    - Open311 improvements:
+        - Process update sending in order. #5298
+        - Only update lastupdate timestamp if update timestamp is newer. #5350
+        - Add ability to process extra question disable messages from endpoint. #5431
 
 * v6.0 (14th November 2024)
     - Front end improvements:

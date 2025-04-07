@@ -16,7 +16,7 @@ my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 my $bin_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082.json')->slurp_utf8);
 my $bin_140_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_140.json')->slurp_utf8);
 my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_sutton_4471550.json')->slurp_utf8);
-my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_4499005.json')->slurp_utf8);
+my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_sutton_4499005.json')->slurp_utf8);
 
 my $params = {
     send_method => 'Open311',
@@ -384,10 +384,11 @@ FixMyStreet::override_config {
         is $report->category, 'Request new container';
         is $report->title, 'Request new Mixed Recycling Blue Striped Bag';
     };
-    subtest 'Weekly collection cannot request a blue stripe bag' => sub {
+    subtest 'Weekly collection cannot request a blue stripe bag or unknown containers' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('"container-choice" value="18"');
+        $mech->content_lacks('"container-choice" value="24"');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 

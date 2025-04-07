@@ -414,11 +414,10 @@ p.form-error {
         border-top: 4px solid $green;
     }
 
-    #front-main + div{
+    #front-main + div:not(:has(.site-message)) {
         display: none;
     }
 }
-
 
 .bulky__summary {
     .item-summary-table {

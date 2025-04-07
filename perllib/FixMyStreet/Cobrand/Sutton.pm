@@ -42,14 +42,21 @@ my %CONTAINERS = (
     refuse_180 => 2,
     refuse_240 => 3,
     refuse_360 => 4,
+    refuse_1100 => 8,
+    refuse_bag => 10,
     recycling_box => 12,
     recycling_240 => 15,
+    recycling_360 => 16,
+    recycling_1100 => 20,
     recycling_blue_bag => 22,
-    paper_240 => 27,
     paper_140 => 26,
+    paper_240 => 27,
+    paper_360 => 28,
+    paper_1100 => 32,
     paper_bag => 34,
     food_indoor => 43,
     food_outdoor => 46,
+    food_240 => 51,
     garden_240 => 39,
     garden_140 => 37,
     garden_sack => 36,
@@ -128,46 +135,55 @@ sub image_for_unit {
         return svg_container_sack('normal', '#F5F5DC') if $container == $CONTAINERS{garden_sack};
         return "";
     }
-    if (my $container = $unit->{request_containers}[0]) {
-        return "$base/caddy-brown-large" if $container == 24;
-    }
+
+    my $container = $unit->{request_containers}[0] || 0;
     my $service_id = $unit->{service_id};
     if ($service_id eq 'bulky') {
         return "$base/bulky-black";
     }
+
     if ($service_id == $SERVICE_IDS{communal_refuse} && $unit->{schedule} =~ /fortnight|every other/i) {
         # Communal fortnightly is a wheelie bin, not a large bin
         return svg_container_bin('wheelie', '#8B5E3D');
     }
+
+    my $bag_blue_stripe = svg_container_sack('stripe', '#4f4cf0');
+    my $bag_red_stripe = svg_container_sack('stripe', '#E83651');
+    my $bag_clear = svg_container_sack('normal', '#d8d8d8');
     my $images = {
+        $CONTAINERS{recycling_blue_bag} => $bag_blue_stripe,
+        $CONTAINERS{paper_bag} => $bag_clear,
+        $CONTAINERS{food_outdoor} => "$base/caddy-brown-large",
+
+        # Fallback to the service if no container match
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('wheelie', '#8B5E3D'),
         $SERVICE_IDS{domestic_food} => "$base/caddy-brown-large",
         $SERVICE_IDS{domestic_paper} => svg_container_bin('wheelie', '#41B28A'),
         $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
-        $SERVICE_IDS{fas_refuse} => svg_container_sack('stripe', '#E83651'),
+        $SERVICE_IDS{fas_refuse} => $bag_red_stripe,
         $SERVICE_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
-        $SERVICE_IDS{fas_mixed} => svg_container_sack('stripe', '#4f4cf0'),
+        $SERVICE_IDS{fas_mixed} => $bag_blue_stripe,
         $SERVICE_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
         $SERVICE_IDS{communal_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
         $SERVICE_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'),
-        $SERVICE_IDS{fas_paper} => svg_container_sack('normal', '#d8d8d8'),
+        $SERVICE_IDS{fas_paper} => $bag_clear,
     };
-    return $images->{$service_id};
+    return $images->{$container} || $images->{$service_id};
 }
 
 sub waste_containers {
     my $self = shift;
     return {
-        10 => 'Refuse Red Stripe Bag',
-        22 => 'Mixed Recycling Blue Striped Bag',
-        34 => 'Paper & Card Recycling Clear Bag',
-        8 => 'Communal Refuse bin (1100L)',
-        20 => 'Communal Recycling bin (1100L)',
-        51 => 'Communal Food bin (240L)',
+        $CONTAINERS{refuse_bag} => 'Refuse Red Stripe Bag',
+        $CONTAINERS{recycling_blue_bag} => 'Mixed Recycling Blue Striped Bag',
+        $CONTAINERS{paper_bag} => 'Paper & Card Recycling Clear Bag',
+        $CONTAINERS{refuse_1100} => 'Communal Refuse bin (1100L)',
+        $CONTAINERS{recycling_1100} => 'Communal Recycling bin (1100L)',
+        $CONTAINERS{food_240} => 'Communal Food bin (240L)',
         $CONTAINERS{recycling_240} => 'Recycling bin (240L)',
-        16 => 'Recycling bin (360L)',
-        28 => 'Paper recycling bin (360L)',
-        32 => 'Communal Paper bin (1100L)',
+        $CONTAINERS{recycling_360} => 'Recycling bin (360L)',
+        $CONTAINERS{paper_360} => 'Paper recycling bin (360L)',
+        $CONTAINERS{paper_1100} => 'Communal Paper bin (1100L)',
         $CONTAINERS{refuse_140} => 'Standard Brown General Waste Wheelie Bin (140L)',
         $CONTAINERS{refuse_240} => 'Larger Brown General Waste Wheelie Bin (240L)',
         $CONTAINERS{refuse_360} => 'Extra Large Brown General Waste Wheelie Bin (360L)',

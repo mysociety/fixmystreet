@@ -7,6 +7,11 @@
   <table [% wrapper_table | safe %] style="[% wrapper_style %]">
     <tr>
       <th class="spacer-cell"></th>
+      <td height="24">&nbsp;</td>
+      <th class="spacer-cell"></th>
+    </tr>
+    <tr>
+      <th class="spacer-cell"></th>
       <th width="[% wrapper_max_width %]" style="[% td_style %][% hint_style %]" class="hint">
         [%~ IF email_footer.defined %]
           [% email_footer | safe %]

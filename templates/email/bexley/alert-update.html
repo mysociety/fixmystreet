@@ -3,12 +3,6 @@
 PROCESS 'waste/_email_data.html';
 
 title = report.title | html;
-email_summary
-  = is_missed_collection
-  ? "New updates on your missed collection report"
-  : is_container_request
-  ? 'New updates on your replacement bin request'
-  : "New updates on “" _ title _ "”";
 email_columns = 2;
 
 PROCESS '_email_settings.html';

@@ -28,6 +28,7 @@ IF container;
 END;
 
 IF cobrand.moniker == 'sutton'; SET sack_quant = 1;
+ELSIF cobrand.moniker == 'kingston'; SET sack_quant = 1;
 ELSE; SET sack_quant = quantity; END;
 
 SET pro_rata = report.get_extra_field_value('pro_rata');

@@ -142,8 +142,8 @@ sub get_pro_rata_bin_cost {
     my $weeks = $end->delta_days($start)->in_units('weeks');
     $weeks -= 1 if $weeks > 0;
 
-    my $base = $self->get_cost('pro_rata_minimum', $start);
-    my $weekly_cost = $self->get_cost('pro_rata_weekly', $start);
+    my $base = $self->get_cost('pro_rata_minimum');
+    my $weekly_cost = $self->get_cost('pro_rata_weekly');
     my $cost = sprintf "%.0f", ($base + ( $weeks * $weekly_cost ));
 
     return $cost;
@@ -259,9 +259,12 @@ sub _get_cost_from_array {
     my ($self, $costs, $date) = @_;
 
     # Default date if not provided to the current date
-    $date ||= DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime('%Y-%m-%d %H:%M');
+    $date ||= $now;
     $date = $date->strftime('%Y-%m-%d %H:%M') if ref $date; # A DateTime
     $date .= ' 00:00' if $date =~ /^\d\d\d\d-\d\d-\d\d$/; # If only a date provided
+    # If the date (a subscription end date) is in the past, use now
+    $date = $now if $date lt $now;
 
     my @sorted = sort { $b->{start_date} cmp $a->{start_date} } @$costs;
     foreach my $cost (@sorted) {

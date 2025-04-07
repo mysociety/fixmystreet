@@ -77,7 +77,7 @@ $ export LIBRARY_PATH=$HOMEBREW_PREFIX/lib
 
 #### c. Other
 
-You need Perl 5 (we currently test on 5.26 upwards, though it will probably work back to 5.14), ImageMagick with the perl bindings, and gettext.
+You need Perl 5 (we currently test on 5.32.1 upwards, though it will probably work back to 5.14), ImageMagick with the perl bindings, and gettext.
 If you're expecting a lot of traffic it's recommended that you install memcached: <http://memcached.org/>
 
 ### 3. Create a new PostgreSQL database

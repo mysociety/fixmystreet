@@ -191,7 +191,7 @@ END;
         [% speed_of_road = problem.get_extra_metadata('defect_speed_of_road') %]
         <select id="defect_speed_of_road" name="defect_speed_of_road" class="form-control" required>
             <option value=""[% ' selected' IF NOT speed_of_road %]>&nbsp;</option>
-            [% FOREACH option IN ['30mph', '40mph', '50mph', 'National', 'N/A'] %]
+            [% FOREACH option IN ['20mph', '30mph', '40mph', '50mph', 'National', 'N/A'] %]
                 <option value='[% option %]'[% ' selected' IF speed_of_road == option %]>[% option %]</option>
             [% END %]
         </select>

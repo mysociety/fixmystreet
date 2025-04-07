@@ -95,6 +95,26 @@ subtest 'Echo downtime' => sub {
             $mech->content_lacks('Please accept our apologies');
             is $cobrand->waste_check_downtime_file->{state}, 'up';
         };
+
+        $now = DateTime->new( year => 2025, month => 4, day => 1, time_zone => FixMyStreet->local_time_zone );
+        subtest 'Unplanned downtime' => sub {
+            $now->set_hour(10);
+            set_fixed_time($now->clone->set_time_zone('UTC'));
+            $mech->get('/waste');
+            is $mech->res->code, 503;
+            $mech->content_contains('Please refrain from calling');
+            is $cobrand->waste_check_downtime_file->{state}, 'down';
+        };
+
+        $now = DateTime->new( year => 2025, month => 4, day => 8, time_zone => FixMyStreet->local_time_zone );
+        subtest 'Unplanned downtime, special message' => sub {
+            $now->set_hour(10);
+            set_fixed_time($now->clone->set_time_zone('UTC'));
+            $mech->get('/waste');
+            is $mech->res->code, 503;
+            $mech->content_contains('This is a special message');
+            is $cobrand->waste_check_downtime_file->{state}, 'down';
+        };
     };
 };
 
