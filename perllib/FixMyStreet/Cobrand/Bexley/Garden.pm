@@ -77,7 +77,7 @@ sub lookup_subscription_for_uprn {
             $self->{c}->stash->{direct_debit_status} = 'active';
             $sub->{has_been_renewed} = 1;
         }
-        return $payment->{Amount};
+        return $payment->{Amount} // 0;
     };
 
     my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );

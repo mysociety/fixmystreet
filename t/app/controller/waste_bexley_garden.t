@@ -6,8 +6,8 @@ use FixMyStreet::TestMech;
 use JSON::MaybeXS;
 use List::MoreUtils qw(firstidx);
 
-FixMyStreet::App->log->disable('info');
-END { FixMyStreet::App->log->enable('info'); }
+FixMyStreet::App->log->disable('info', 'error');
+END { FixMyStreet::App->log->enable('info', 'error'); }
 
 my $addr_mock = Test::MockModule->new('BexleyAddresses');
 # We don't actually read from the file, so just put anything that is a valid path
@@ -1357,6 +1357,7 @@ FixMyStreet::override_config {
                         {
                             EndDate => '12/12/2025 12:21',
                             ServiceContractStatus => 'ACTIVE',
+                            WasteContainerQuantity => 2,
                             Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                         },
                     ],
@@ -1622,6 +1623,7 @@ FixMyStreet::override_config {
                                 ServiceContractStatus => 'ACTIVE',
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ],
                             },
                         ],
                     },
@@ -1721,6 +1723,7 @@ FixMyStreet::override_config {
                             Reference => $contract_id,
                             WasteContainerQuantity => 2,
                             ServiceContractStatus => 'ACTIVE',
+                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ],
                         },
                     ],
                 },
