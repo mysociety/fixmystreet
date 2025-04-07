@@ -160,6 +160,21 @@ sub waste_relevant_serviceunits {
     return @rows;
 }
 
+# Look for flag of assisted collection property (domestic only, so check all entries)
+sub _is_assisted {
+    my ($result, $service_ids) = @_;
+    my $assisted;
+    foreach (@$result) {
+        my $service_id = $_->{ServiceId};
+        return 0 if $service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{communal_refuse};
+        my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
+        foreach (@$data) {
+            $assisted = 1 if $_->{DatatypeName} eq "Assisted Collection" && $_->{Value};
+        }
+    }
+    return $assisted;
+}
+
 sub waste_extra_service_info_all_results {
     my ($self, $property, $result) = @_;
 
@@ -176,13 +191,7 @@ sub waste_extra_service_info_all_results {
     }
 
     $property->{has_no_services} = scalar @$result == 0;
-
-    foreach (@$result) {
-        my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-        foreach (@$data) {
-            $self->{c}->stash->{assisted_collection} = 1 if $_->{DatatypeName} eq "Assisted Collection" && $_->{Value};
-        }
-    }
+    $self->{c}->stash->{assisted_collection} = _is_assisted($result, $service_ids);
 }
 
 sub waste_extra_service_info {

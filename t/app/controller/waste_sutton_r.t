@@ -441,6 +441,17 @@ FixMyStreet::override_config {
             my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
             is $report->category, 'Report missed assisted collection';
         };
+        subtest 'FAS cannot be assisted even if it says it is' => sub {
+            my $dupe = dclone($above_shop_data);
+            # Give the entry an assisted collection
+            $dupe->[0]{Data}{ExtensibleDatum}[1] = {
+                DatatypeName => 'Assisted Collection',
+                Value => 1,
+            };
+            $e->mock('GetServiceUnitsForObject', sub { $dupe });
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('not set up for assisted collection');
+        };
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
