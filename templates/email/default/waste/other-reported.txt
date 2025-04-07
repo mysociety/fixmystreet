@@ -60,7 +60,7 @@ crew to remove it. We aim for this to be the same day as we deliver your new bin
 
 [% ELSE %]
 
-[% IF report.category == 'Report missed collection' %]
+[% IF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
 [% IF cobrand.moniker == 'brent' %]
 We will arrange another collection as soon as possible over the next two days. Please note that collections may also be attempted on a public holiday/weekend.
 [% ELSE %]
