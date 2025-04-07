@@ -11,7 +11,7 @@ has_field tandc => (
         my $cobrand = $_[0]->form->{c}->cobrand;
         my $text;
         if ($cobrand->moniker eq 'brent') {
-            $text = 'I agree to the <a href="/about/garden_terms" target="_blank">terms and conditions</a> and accept that if my bin does not display a valid bin sticker, it will not be collected';
+            $text = 'I agree to the <a href="/about/garden_terms" target="_blank">terms and conditions</a> and accept that if my bin does not display a valid bin sticker, it will not be collected. I acknowledge that it can take up to 10 days from signing up for my bin sticker to arrive.';
         } elsif ($cobrand->moniker eq 'bexley') {
             $text = 'I agree to the <a href="https://www.bexley.gov.uk/services/rubbish-and-recycling/garden-waste-collection-service/sign-garden-waste-collection" target="_blank">terms and conditions</a>';
         } else {
