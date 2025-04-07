@@ -302,7 +302,7 @@ fixmystreet.assets.bristol.property_not_found = function(layer) {
 };
 
 fixmystreet.assets.bristol.gullies_construct_selected_asset_message = function(asset) {
-    if (!asset.attributes.cyclical_cleanse) {
+    if (!asset.attributes.tags) {
         return '';
     }
     return "This gully will be cleansed as part of our annual programme. Once this has been scheduled we'll change this report to closed.";
