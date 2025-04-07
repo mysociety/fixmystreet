@@ -48,7 +48,9 @@ sub lookup_subscription_for_uprn {
     my ( $customer, $contract );
 
     my $results = $self->agile->CustomerSearch($uprn);
-    return if ($results->{error}||0) == 404;
+    # 'error' will usually be 404, maybe 400; we can't guarantee there aren't
+    # other possible values
+    return if $results->{error};
 
     # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
     my $customers = $results->{Customers} || [];
