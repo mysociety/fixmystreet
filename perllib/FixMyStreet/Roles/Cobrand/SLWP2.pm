@@ -322,7 +322,7 @@ sub waste_munge_report_data {
         $data->{category} = 'Request additional collection';
         $data->{title} = "Request additional $service collection";
     } else {
-        if ($c->stash->{assisted_collection}) {
+        if ($c->stash->{assisted_collection} && $id != $cfg->{bulky_service_id}) {
             $data->{category} = 'Report missed assisted collection';
         }
         $data->{title} = "Report missed $service";

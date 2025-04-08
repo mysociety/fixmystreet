@@ -868,7 +868,7 @@ has group_to_layer => (
             'Parks and open spaces' => 'Parks_and_Open_Spaces',
             'Allotments' => 'Allotments',
             'Council estates grounds maintenance' => 'Housing',
-            'Roadside verges and flower beds' => 'Highway_Verges',
+            'Roadside verges, Flower beds & Trees' => 'Highway_Verges',
         };
     },
 );
