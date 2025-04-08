@@ -7,7 +7,7 @@
   [% END %]
   <li><a href="https://www.peterborough.gov.uk/residents/rubbish-and-recycling/bin-waste-advice#additional-bins-9-0">Request an additional bin</a></li>
   [% IF show_garden_subscribe %]
-    <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
+    <li><a href="[% c.uri_for_action('waste/garden/subscribe', [ property.id ]) %]">Subscribe to Green Garden Waste collection</a></li>
   [% END %]
   [% UNLESS waste_features.request_disabled OR open_service_requests.428 OR c.cobrand.wasteworks_config.food_bags_disabled == 'off' %]
     <li>
