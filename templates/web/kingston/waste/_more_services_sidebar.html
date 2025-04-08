@@ -16,7 +16,7 @@
       <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]?exchange=1">Request a larger/smaller refuse container</a></li>
     [% END %]
     [% IF show_garden_subscribe %]
-      <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
+      <li><a href="[% c.uri_for_action('waste/garden/subscribe', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
     [% END %]
     [% IF property.show_bulky_waste %]
       <li>
