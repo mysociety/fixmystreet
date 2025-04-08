@@ -39,12 +39,6 @@ sub is_two_tier { 1 }
 
 sub admin_user_domain { 'southkesteven.gov.uk' }
 
-=item * Allows anonymous reporting.
-
-=cut
-
-sub allow_anonymous_reports { 'button' }
-
 =item * Has their own privacy policy.
 
 =cut
