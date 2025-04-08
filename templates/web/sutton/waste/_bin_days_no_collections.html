@@ -28,7 +28,7 @@
 [% IF show_garden_subscribe %]
 <h3 class="govuk-heading-m waste-service-name">Garden waste collection service</h3>
 <ul>
-    <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
+    <li><a href="[% c.uri_for_action('waste/garden/subscribe', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
 </ul>
 [% END %]
 
