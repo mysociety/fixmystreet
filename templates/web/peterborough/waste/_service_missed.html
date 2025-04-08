@@ -54,6 +54,6 @@
     [% IF unit.next AND unit.next.date.ymd == date.format(date.now, "%Y-%m-%d") %]
       <span class="waste-service-descriptor">The crew have not recorded your street as complete and may still be planning to attend. You will not be able to report a missed bin at this time.</span>
     [% ELSE %]
-      <span class="waste-service-descriptor">Please note that missed bin collections can only be reported until 4pm the next working day after your scheduled collection.</span>
+      <span class="waste-service-descriptor"><strong>Please note that missed bin collections can only be reported until 4pm the next working day after your scheduled collection. As this period has passed you are unable to now make a report. Please do not use any other form to attempt to make a report as this will be cancelled.</strong></span>
     [% END %]
   [% END %]
