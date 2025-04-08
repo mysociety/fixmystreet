@@ -219,7 +219,7 @@ payments and sets the contract status to "archived".
 =cut
 sub archive_contract {
     my ($self, $contract_id) = @_;
-    return $self->call('POST', "contract/$contract_id/archive");
+    return $self->call( 'POST', "contract/$contract_id/archive", {} );
 }
 
 =item cancel_plan
