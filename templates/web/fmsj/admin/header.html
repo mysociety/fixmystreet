@@ -1,0 +1,22 @@
+[%
+    SET admin = 1;
+    SET bodyclass = bodyclass.defined && bodyclass != '' ? bodyclass : 'twothirdswidthpage'
+    INCLUDE 'header.html' bodyclass=bodyclass _ ' admin';
+%]
+
+[%    
+    IF !bodyclass.match('mappage')
+        INCLUDE 'admin/_navigation.html';
+    END;
+%]
+
+<style type="text/css">
+dt { clear: left; float: left; font-weight: bold; }
+dd { margin-left: 8em !important; }
+.adminhidden { color: #666666; }
+.error { color: red; }
+select { width: auto; max-width: 100%; }
+.sm { font-size: smaller; }
+</style>
+
+[% IF !bodyclass.match('mappage') %]<h1>[% title %]</h1>[% END %]
