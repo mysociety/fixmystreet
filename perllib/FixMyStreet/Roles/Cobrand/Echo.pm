@@ -983,7 +983,7 @@ sub bulky_check_missed_collection {
             next unless $_->{report};
             my $reported_guid = $_->{report}->get_extra_field_value('Original_Event_ID');
             next unless $reported_guid;
-            $row->{report_open} = 1 if $reported_guid eq $guid;
+            $row->{report_open} = $_ if $reported_guid eq $guid;
         }
 
         $self->{c}->stash->{bulky_missed}{$guid} = $row;

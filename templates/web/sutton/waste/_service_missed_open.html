@@ -8,6 +8,7 @@
 
 [% IF unit.escalations.missed AND NOT unit.escalations.missed_open %]
     We’re sorry if this issue has not been resolved to your satisfaction;
-    <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Complaint+against+time&amp;service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.missed.id %]"
+    <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Complaint+against+time&amp;service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.missed.id %][%
+    '&amp;event_guid=' _ unit.escalations.missed.guid IF unit.escalations.missed.guid %]"
             class="waste-service-link">please report the problem here</a>
 [% END %]
