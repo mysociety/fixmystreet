@@ -8,6 +8,7 @@ We aim to resolve missed collection reports within 2 working days (Monday to Fri
 [% IF unit.escalations.missed AND NOT unit.escalations.missed_open %]
     <br>
     We’re sorry if this issue has not been resolved to your satisfaction;
-    <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Complaint+against+time&amp;service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.missed.id %]:[% unit.escalations.missed.ref %]"
+    <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Complaint+against+time&amp;service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.missed.id %]:[% unit.escalations.missed.ref %][%
+    '&amp;event_guid=' _ unit.escalations.missed.guid IF unit.escalations.missed.guid %]"
             class="waste-service-link">please report the problem here</a>
 [% END %]
