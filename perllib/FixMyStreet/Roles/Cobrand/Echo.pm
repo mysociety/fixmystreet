@@ -288,7 +288,7 @@ sub bin_services_for_address {
 
             my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
             my $recent_events = $events->combine($events_unit)->filter({ type => 'missed', service => $service_id, since => $row->{last}{date} });
-            $row->{report_open} = $recent_events ? 1 : 0;
+            $row->{report_open} = ($recent_events->list)[0];
         }
         push @out, $row;
     }
@@ -990,7 +990,7 @@ sub bulky_check_missed_collection {
             next unless $_->{report};
             my $reported_guid = $_->{report}->get_extra_field_value('Original_Event_ID');
             next unless $reported_guid;
-            $row->{report_open} = 1 if $reported_guid eq $guid;
+            $row->{report_open} = $_ if $reported_guid eq $guid;
         }
 
         $self->{c}->stash->{bulky_missed}{$guid} = $row;
