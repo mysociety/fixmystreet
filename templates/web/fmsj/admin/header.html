@@ -4,11 +4,9 @@
     INCLUDE 'header.html' bodyclass=bodyclass _ ' admin';
 %]
 
-[%    
-    IF !bodyclass.match('mappage')
-        INCLUDE 'admin/_navigation.html';
-    END;
-%]
+[% IF !bodyclass.match('mappage') %]
+[%   INCLUDE 'admin/_navigation.html' %]
+[% END %]
 
 <style type="text/css">
 dt { clear: left; float: left; font-weight: bold; }
