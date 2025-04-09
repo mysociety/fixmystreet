@@ -605,6 +605,85 @@ FixMyStreet::override_config {
 
             };
 
+            subtest 'original payment method of direct debit' => sub {
+                # $mech->delete_problems_for_body($body->id);
+                my $dd_contract_id = 'DD_CONTRACT_123';
+
+                my ($orig_dd_sub_report) = $mech->create_problems_for_body(
+                    1,
+                    $body->id,
+                    'Garden Subscription - New',
+                    {
+                        category    => 'Garden Subscription',
+                        external_id => "Agile-$contract_id",
+                        user => $user,
+                    },
+                );
+                $orig_dd_sub_report->update_extra_field(
+                    { name => 'payment_method', value => 'direct_debit' },
+                    { name => 'uprn', value => $uprn },
+                );
+                $orig_dd_sub_report->set_extra_metadata(direct_debit_contract_id => $dd_contract_id);
+                $orig_dd_sub_report->update;
+                FixMyStreet::Script::Reports::send();
+
+                my $aps_mock = Test::MockModule->new('Integrations::AccessPaySuite');
+                my $amend_plan_args;
+                $aps_mock->mock(amend_plan => sub {
+                    my ($self, $args) = @_;
+                    $amend_plan_args = $args;
+                    return 1;
+                });
+
+                $mech->log_in_ok( $user->email );
+                $mech->get_ok("/waste/$uprn/garden_modify");
+                like $mech->content, qr/current_bins.*value="2"/s, 'correct number of current bins prefilled';
+
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            bins_wanted => 3,
+                            name        => 'DD Modifier',
+                        },
+                    },
+                    "Modify"
+                );
+
+                # like $mech->text, qr/Garden waste collection3 bins/, 'correct bin total in summary';
+                my $new_annual_cost_pence = ($ggw_cost_first - $ggw_first_bin_discount) + (2 * $ggw_cost);
+                my $new_annual_cost_human = sprintf('%.2f', $new_annual_cost_pence / 100);
+                # like $mech->text, qr/Total£$new_annual_cost_human/, 'correct new annual payment total in summary';
+                # like $mech->text, qr/Total to pay today.0\.00/, 'correct today-payment in summary (zero for DD amend)';
+                # like $mech->text, qr/Your nameDD Modifier/, 'correct name in summary';
+                my $email = $user->email;
+                # like $mech->text, qr/$email/, 'correct email in summary';
+
+                $mech->submit_form_ok( { with_fields => { tandc => 1 } }, "Confirm" );
+
+                diag $mech->content;
+
+                ok $amend_plan_args, 'Integrations::AccessPaySuite->amend_plan was called';
+                isa_ok $amend_plan_args->{orig_sub}, 'FixMyStreet::DB::Result::Problem', 'amend_plan received report object for original sub';
+                is $amend_plan_args->{orig_sub}->id, $orig_dd_sub_report->id, 'amend_plan received correct original report object';
+                is $amend_plan_args->{amount}, $new_annual_cost_human, 'amend_plan called with correct new annual amount';
+
+                my $modify_report = FixMyStreet::DB->resultset('Problem')
+                    ->search({ title => 'Garden Subscription - Amend' })
+                    ->order_by('-id')->first;
+
+                ok $modify_report, "Found the amend report";
+                is $modify_report->category, 'Garden Subscription', 'Amend report: correct category';
+                is $modify_report->title, "Garden Subscription - Amend", 'Amend report: correct title';
+                is $modify_report->get_extra_field_value('payment_method'), 'direct_debit', 'Amend report: correct payment method';
+                is $modify_report->get_extra_field_value('current_containers'), 2, 'Amend report: correct current_containers';
+                is $modify_report->get_extra_field_value('new_containers'), 1, 'Amend report: correct new_containers';
+                is $modify_report->get_extra_field_value('total_containers'), 3, 'Amend report: correct total_containers';
+                is $modify_report->get_extra_field_value('type'), 'amend', 'Amend report: correct type';
+                is $modify_report->get_extra_field_value('customer_external_ref'), 'CUSTOMER_123', 'Amend report: correct customer_external_ref';
+                is $modify_report->state, 'confirmed', 'Amend report: state correct (confirmed for DD amend)';
+
+                $aps_mock->unmock_all;
+            };
+
         };
     };
 
