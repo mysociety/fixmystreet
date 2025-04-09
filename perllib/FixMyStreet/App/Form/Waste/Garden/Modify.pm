@@ -37,7 +37,11 @@ has_page alter => (
         my $new_bins = $bins_wanted - $current_bins;
 
         my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
-        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $form->saved_data->{apply_discount} });
+        my $costs = WasteWorks::Costs->new({
+            cobrand => $c->cobrand,
+            discount => $form->saved_data->{apply_discount},
+            first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+        });
         my $cost_pa = $costs->bins($bins_wanted);
         my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
         $c->stash->{cost_pa} = $cost_pa / 100;
@@ -75,7 +79,11 @@ has_page summary => (
         my $current_bins = $data->{current_bins};
         my $bin_count = $data->{bins_wanted};
         my $new_bins = $bin_count - $current_bins;
-        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+        my $costs = WasteWorks::Costs->new({
+            cobrand => $c->cobrand,
+            discount => $data->{apply_discount},
+            first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+        });
         my $pro_rata = $costs->pro_rata_cost($new_bins);
         my $cost_pa = $costs->bins($bin_count);
         my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
