@@ -305,7 +305,7 @@ fixmystreet.assets.bristol.gullies_construct_selected_asset_message = function(a
     if (!asset.attributes.TAGS) {
         return '';
     }
-    return "This gully will be cleansed as part of our annual programme. Once this has been scheduled we’ll change this report to closed.";
+    return '<div class="box-warning"><strong>This gully will be cleansed as part of our annual programme. Once this has been scheduled we’ll change this report to closed.</strong></div>';
 };
 
 /* Bromley */
