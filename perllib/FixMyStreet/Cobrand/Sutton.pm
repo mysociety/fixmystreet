@@ -127,6 +127,54 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
+around bulky_check_missed_collection => sub {
+    my ($orig, $self, $events, $blocked_codes) = @_;
+
+    $self->$orig($events, $blocked_codes);
+
+    # Now check for any old open missed collections that can be escalated
+
+    my $cfg = $self->feature('echo');
+    my $service_id = $cfg->{bulky_service_id};
+    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+
+    my $missed = $self->{c}->stash->{bulky_missed};
+    foreach my $guid (keys %$missed) {
+        my $missed_event = $missed->{$guid}{report_open};
+        next unless $missed_event;
+
+        my $open_escalation = 0;
+        foreach ($escalations->list) {
+            next unless $_->{report};
+            my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
+            next unless $missed_guid;
+            if ($missed_guid eq $missed_event->{guid}) {
+                $self->{c}->stash->{bulky_escalation_open}{$guid} = $_;
+                $open_escalation = 1;
+            }
+        }
+
+        if (
+            # And report is closed completed, or open
+            (!$missed_event->{closed} || $missed_event->{completed})
+            # And no existing escalation since last collection
+            && !$open_escalation
+        ) {
+            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+            # And two working days (from 6pm) have passed
+            my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
+            my $end = $wd->add_days($start, 2);
+            if ($now >= $start && $now < $end) {
+                $self->{c}->stash->{bulky_escalation}{$guid} = {
+                    id => $missed_event->{id},
+                    guid => $missed_event->{guid},
+                };
+            }
+        }
+    }
+};
+
 sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
 
@@ -567,6 +615,7 @@ sub waste_munge_enquiry_data {
         $detail = "$data->{extra_Notes}\n\n";
     } elsif ($data->{category} eq 'Complaint against time') {
         $data->{extra_Notes} = 'Originally Echo Event #' . $c->get_param('event_id');
+        $data->{extra_missed_guid} = $c->get_param('event_guid');
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;

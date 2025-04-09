@@ -32,6 +32,7 @@ sub parse {
 
         my $event = {
             id => $_->{Id},
+            guid => $_->{Guid},
             type => $type,
             event_type => $event_type || 0,
             service_id => $service_id || 0,
@@ -40,11 +41,8 @@ sub parse {
             $_->{EventDate} ? (date => construct_bin_date($_->{EventDate})) : (),
         };
 
-        my $report;
-        if ($type ne 'enquiry') {
-            $report = $self->cobrand->problems->search({ external_id => $_->{Guid} })->first;
-            $event->{report} = $report if $report;
-        }
+        my $report = $self->cobrand->problems->search({ external_id => $_->{Guid} })->first;
+        $event->{report} = $report if $report;
 
         if ($type eq 'request') {
             # Look up container type
@@ -62,7 +60,6 @@ sub parse {
             $self->cobrand->call_hook('parse_event_missed', $_, $event, $events);
         } elsif ($type eq 'bulky') {
             if ($report) {
-                $event->{guid} = $_->{Guid};
                 $event->{resolution} = $_->{ResolutionCodeId};
                 if ($closed) {
                     $event->{date} = construct_bin_date($_->{ResolvedDate});
