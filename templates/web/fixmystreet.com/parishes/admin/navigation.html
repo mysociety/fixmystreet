@@ -1,0 +1,26 @@
+[% INCLUDE 'about/_sticky-button-content-navbar.html' %]
+<div class="sticky-sidebar">
+    <aside>
+        <ul>
+            <li>
+                <a href="[% c.uri_for( '/parishes/admin' ) %]">Main</a>
+            </li>
+            <!--
+            <li>
+                <a href="[% c.uri_for( '/parishes/admin/templates' ) %]">Templates</a>
+            </li>
+            -->
+            <li>
+              [% IF NOT c.user.is_superuser %]
+                <a href="[% c.uri_for_action('parishes/stripe_portal' ) %]">Manage subscription</a>
+              [% ELSIF body.id %]
+                <a href="[% c.uri_for_action('parishes/stripe_portal' ) %]?parish=[% body.id %]">Manage subscription</a>
+              [% END %]
+            </li>
+            <li>
+                <a href="[% c.uri_for_action('auth/sign_out') %]">Sign out</a>
+            </li>
+        </ul>
+    </aside>
+</div>
+
