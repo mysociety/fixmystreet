@@ -1,0 +1,33 @@
+[% SET bodyclass = 'formflow govuk';
+   SET title = form.title;
+   SET extra_js = version('/vendor/accessible-autocomplete.min.js');
+%]
+
+[% INCLUDE header.html %]
+
+[% PROCESS 'govuk/fields.html' %]
+[% PROCESS errors %]
+[% PROCESS title %]
+
+[% IF form.intro_template %][% PROCESS "parishes/${form.intro_template}" %][% END %]
+
+<form method="post" enctype="multipart/form-data">
+  [% PROCESS form %]
+</form>
+
+[% IF form.current_page.name != 'intro' %]
+<button id='form-back' class="hidden-nojs govuk-button govuk-button--secondary">Back</button>
+[% END %]
+
+<script nonce="[% csp_nonce %]">
+(function(){
+    var back = document.getElementById('form-back');
+    back.addEventListener('click', function(e) {
+        history.back();
+    });
+
+    [% form.render_repeatable_js | safe %]
+})();
+</script>
+
+[% INCLUDE footer.html %]

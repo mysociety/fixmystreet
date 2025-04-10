@@ -1,0 +1,14 @@
+[% SET sidebar = 'parishes/admin/navigation.html' %]
+[% INCLUDE 'header.html' title='Admin' -%]
+
+<h1>Town/parish council admin</h1>
+
+[% IF c.user.is_superuser %]
+* Approvals
+[% ELSE %]
+* Categories
+* Address being sent to
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]
