@@ -1,0 +1,38 @@
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+ <script src="https://mapit.mysociety.org/static/mapit/js/reqwest.min.c949fe855720.js"></script>
+<script src="https://mapit.mysociety.org/static/mapit/leaflet/leaflet.f1cc0a70c78b.js"></script>
+
+    <div id="parish-map" style="float:right;height:300px;width:300px;"></div>
+<script>
+    var map = new L.Map("parish-map");
+    map.attributionControl.setPrefix('');
+    var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18
+    });
+    map.addLayer(osm);
+
+    var mapit = mapit || {};
+    mapit.area_loaded = function(data) {
+        var area = new L.GeoJSON(data);
+        mapit.areas.addLayer(area);
+        map.fitBounds(mapit.areas.getBounds());
+    };
+    mapit.areas = L.featureGroup().addTo(map);
+
+    reqwest({
+        url: '/mapit/area/[% form.saved_data.parish %].geojson?simplify_tolerance=0.0001',
+        type: 'json',
+        success: mapit.area_loaded
+    });
+</script>
+
+<p>
+Explanatory text about how to pick categories
+</p>
+
+<p>
+Categories from covering councils?
+</p>
