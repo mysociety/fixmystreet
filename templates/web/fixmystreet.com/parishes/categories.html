@@ -1,0 +1,93 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+<script src="/vendor/mapit.mysociety.org/reqwest.min.c949fe855720.js"></script>
+<script src="/vendor/mapit.mysociety.org/leaflet.f1cc0a70c78b.js"></script>
+
+<div id="parish-map" style="float:right;height:300px;width:300px;"></div>
+<script nonce="[% csp_nonce %]">
+    var map = new L.Map("parish-map");
+    map.attributionControl.setPrefix('');
+    var osm = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18
+    });
+    map.addLayer(osm);
+
+    var mapit = mapit || {};
+    mapit.area_loaded = function(data) {
+        var area = new L.GeoJSON(data);
+        mapit.areas.addLayer(area);
+        map.fitBounds(mapit.areas.getBounds());
+    };
+    mapit.areas = L.featureGroup().addTo(map);
+
+    reqwest({
+        url: '/mapit/area/[% form.saved_data.parish %].geojson?simplify_tolerance=0.0001',
+        type: 'json',
+        success: mapit.area_loaded
+    });
+</script>
+
+<style>
+.hfh-repinst div { display: inline-block; }
+.hfh-repinst .btn { vertical-align: baseline; }
+.parish-category-list ul { margin-bottom: 0; }
+#form-categories-row > div:first-child:last-child .rm_element { display: none; }
+</style>
+
+<h2>[% label_for_field(form, 'parish', form.saved_data.parish) %]</h2>
+
+<p>
+Thanks! We've included a map of your boundary here, to confirm we've found the right one.
+</p>
+
+<p>
+The next step is to pick what things you would like to receive reports about.
+</p>
+
+<p>
+Perhaps you are responsible for all grass cutting within your area, in which case you could have a "Grass cutting" category.
+Or perhaps you look after a particular playing field, so a "Lifford Lane playing field" category could work for that.
+
+[% IF category_groups.size %]
+<p>To help, below we list the existing higher-tier council categories currently covering your area, so you can see how
+your categories could fit in alongside them:
+</p>
+
+<ul class='parish-category-list'>
+    [%~ FOREACH group IN category_groups ~%]
+        [% IF group.name %]
+            <li>[% group.name %]
+            <ul>
+        [% END %]
+        [%~ FOREACH cat IN group.categories ~%]
+            [% NEXT IF cat.category_display == '-- Pick a category --' %]
+            <li>[% cat.category_display %]
+        [%~ END ~%]
+        [% IF group.name %]</ul>[% END %]
+    [% END %]
+</ul>
+[% END %]
+
+<p>
+If you have devolved responsibility for something in your area - say you look after
+all the road signs, but there already is a road signs category - then you can have a
+category of the same name, and within your boundary you will take precedence
+and receive reports in that category.
+</p>
+
+<p>If you are only responsible for some of the street lights, choose a category name
+that would make it clearer to the user which category they should pick. For example,
+"Road signs on the estate roads".
+
+<p>
+As a couple of examples:</p>
+
+<ul>
+    <li><strong>Bridgwater Town Council</strong> in Somerset is responsible for a wide array of things within their area &ndash; their categories include Dog fouling, Flytipping, Graffiti, Grass cutting, Litter/dog bins, Parks, Street lighting in parks, Trees in parks (not roads), and Weed growth.
+    <li><strong>Adstock Parish Council</strong> in Buckinghamshire is responsible for Flyposting, Grass cutting, Hedge problem, Dirty signs and Unauthorised signs.
+</ul>
+
+<p>We understand each parish/town council is different, and you have the freedom
+to pick what categories work for you. Please add the categories you would like below:</p>
