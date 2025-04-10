@@ -35,6 +35,10 @@
         [% PROCESS upload %]
     [% ELSIF field.type == 'Notice' %]
         [% PROCESS notice %]
+    [% ELSIF field.type == 'Repeatable' %]
+        [% PROCESS repeatable %]
+    [% ELSIF field.type == 'AddElement' OR field.type == 'RmElement' %]
+        [% field.render | safe %]
     [% ELSE %]
         [% field.html_name %] [% field.widget %] NOT HANDLED
     [% END %]
@@ -375,4 +379,9 @@
 
 [% BLOCK notice %]
     [% mark_safe(field.label) | html_para_conditional | replace('<p>', '<p class="govuk-body">') %]
+[% END %]
+
+[% BLOCK repeatable %]
+    [% field.render | safe %]
+    [%# TODO Is not doing govuk subfields, but does that matter %]
 [% END %]
