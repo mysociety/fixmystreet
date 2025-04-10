@@ -575,6 +575,17 @@ sub get_body_handler_for_problem {
 around 'munge_sendreport_params' => sub {
     my ($orig, $self, $row, $h, $params) = @_;
 
+    # Check if this is a Dott report made within Bristol
+    # and change the destination email address if so.
+    my @areas = split(",", $row->areas);
+    my %ids = map { $_ => 1 } @areas;
+    if ($row->category eq 'Abandoned Dott bike or scooter' && $ids{2561}) {
+        my $cobrand = FixMyStreet::Cobrand::Bristol->new;
+        if (my $email = $cobrand->feature("dott_email")) {
+            $params->{To}->[0]->[0] = $email;
+        }
+    }
+
     my $to = $params->{To}->[0]->[0];
     if ($to !~ /(cumbria|northamptonshire|nyorks|somerset)$/) {
         return $self->$orig($row, $h, $params);
