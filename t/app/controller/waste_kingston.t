@@ -837,6 +837,8 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
+        $mech->content_contains('£41.00');
+        $mech->content_lacks('£15.00');
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );

@@ -322,7 +322,10 @@ sub waste_munge_report_data {
         $data->{category} = 'Request additional collection';
         $data->{title} = "Request additional $service collection";
     } else {
-        if ($c->stash->{assisted_collection} && $id != $cfg->{bulky_service_id}) {
+        my $service_ids = $SERVICE_IDS{$self->moniker};
+        my %lookup = reverse %$service_ids;
+        my %assisted = map { $_ => 1 } qw(domestic_refuse domestic_mixed domestic_paper domestic_food garden small_items);
+        if ($c->stash->{assisted_collection} && $assisted{$lookup{$id}}) {
             $data->{category} = 'Report missed assisted collection';
         }
         $data->{title} = "Report missed $service";

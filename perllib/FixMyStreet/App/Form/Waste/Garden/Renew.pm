@@ -82,18 +82,19 @@ has_page summary => (
         my $current_bins = $data->{current_bins} || 0;
         my $bin_count = $data->{bins_wanted} || 1;
         my $new_bins = $bin_count - $current_bins;
-        my $cost_pa;
         my $costs = WasteWorks::Costs->new({
             cobrand => $c->cobrand,
-            discount => $form->saved_data->{apply_discount},
+            discount => $data->{apply_discount},
             first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
         });
+        my ($cost_pa, $cost_now_admin);
         if (($data->{container_choice}||'') eq 'sack') {
             $cost_pa = $costs->sacks_renewal($bin_count);
+            $cost_now_admin = 0;
         } else {
             $cost_pa = $costs->bins_renewal($bin_count);
+            $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
         }
-        my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
         my $total = $cost_now_admin + $cost_pa;
 
         $data->{cost_now_admin} = $cost_now_admin / 100;

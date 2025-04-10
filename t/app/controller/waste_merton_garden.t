@@ -893,6 +893,8 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         } });
+        $mech->content_contains('£' . $cost_human);
+        $mech->content_lacks('£' . $delivery_human);
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
         is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
@@ -1024,6 +1026,8 @@ FixMyStreet::override_config {
         $mech->content_contains('<span id="cost_pa">' . $cost_human);
         $mech->content_contains('<span id="cost_now">' . $cost_human);
         $mech->submit_form_ok({ with_fields => { name => 'Test McTest' } });
+        $mech->content_contains('£' . $cost_human);
+        $mech->content_lacks('£' . $delivery_human);
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
         is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );

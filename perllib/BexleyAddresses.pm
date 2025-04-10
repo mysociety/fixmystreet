@@ -82,7 +82,7 @@ sub addresses_for_postcode {
           $address_fields
      FROM lpi
      JOIN blpu ON lpi.uprn = blpu.uprn
-     JOIN street_descriptors sd ON sd.usrn = lpi.usrn
+     LEFT JOIN street_descriptors sd ON sd.usrn = lpi.usrn
     WHERE postcode = ?
       AND class != 'P' AND class != 'PP'
 SQL
@@ -125,7 +125,7 @@ sub address_for_uprn {
           $address_fields
      FROM lpi
      JOIN blpu ON lpi.uprn = blpu.uprn
-     JOIN street_descriptors sd ON sd.usrn = lpi.usrn
+     LEFT JOIN street_descriptors sd ON sd.usrn = lpi.usrn
     WHERE lpi.uprn = ?
 SQL
         undef,
