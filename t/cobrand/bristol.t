@@ -37,6 +37,15 @@ my $national_highways = $mech->create_body_ok(2561, 'National Highways');
 $national_highways->body_areas->create({ area_id => 2642 });
 $national_highways->body_areas->create({ area_id => 2608 });
 
+# Setup Dott Bikes to cover Bristol and Westminster
+my $dott = $mech->create_body_ok(2561, 'Dott');
+$dott->body_areas->create({ area_id => 2504 });
+$mech->create_contact_ok(
+    body_id => $dott->id,
+    category => 'Abandoned Dott bike or scooter',
+    email => 'dott-national@example.org',
+);
+
 my $open311_contact = $mech->create_contact_ok(
     body_id => $bristol->id,
     category => 'Street Lighting',
@@ -453,6 +462,82 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains(',"Reported As","Staff Role"', "'Staff Role' column added in csv export");
     $mech->content_contains('default,,Role', "Staff role added added in csv export");
+  };
+};
+
+subtest 'Dott Bikes destination handling' => sub {
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => ['fixmystreet', 'bristol'],
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        dott_email => {
+            bristol => 'dott-bristol@example.org'
+        }
+    }
+  }, sub {
+
+    subtest 'Dott report on Bristol cobrand' => sub {
+        my ($p) = $mech->create_problems_for_body(1, $dott->id, 'Title', {
+            cobrand => 'bristol',
+            category => 'Abandoned Dott bike or scooter',
+            areas => ',2561,',
+        } );
+
+        $mech->clear_emails_ok;
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to')->[0], 'dott-bristol@example.org', 'sent_to extra metadata set';
+
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        is $email->header('To'), 'Dott <dott-bristol@example.org>', 'email sent to correct address';
+    };
+
+    subtest 'Dott report in Bristol on FMS cobrand' => sub {
+        my ($p) = $mech->create_problems_for_body(1, $dott->id, 'Title', {
+            cobrand => 'fixmystreet',
+            category => 'Abandoned Dott bike or scooter',
+            areas => ',2561,',
+        } );
+
+        $mech->clear_emails_ok;
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to')->[0], 'dott-bristol@example.org', 'sent_to extra metadata set';
+
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        is $email->header('To'), 'Dott <dott-bristol@example.org>', 'email sent to correct address';
+    };
+
+    subtest 'Dott report in Westminster on FMS cobrand' => sub {
+        my ($p) = $mech->create_problems_for_body(1, $dott->id, 'Title', {
+            cobrand => 'fixmystreet',
+            category => 'Abandoned Dott bike or scooter',
+            areas => ',2504,',
+        } );
+
+        $mech->clear_emails_ok;
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to')->[0], 'dott-national@example.org', 'sent_to extra metadata set';
+
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        is $email->header('To'), 'Dott <dott-national@example.org>', 'email sent to correct address';
+    };
   };
 };
 

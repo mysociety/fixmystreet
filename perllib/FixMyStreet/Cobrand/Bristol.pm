@@ -384,6 +384,16 @@ sub munge_sendreport_params {
 
         $params->{To} = $to;
     }
+
+    # Check if this is a Dott report made within Bristol
+    # and change the destination email address if so.
+    my @areas = split(",", $row->areas);
+    my %ids = map { $_ => 1 } @areas;
+    if ($row->category eq 'Abandoned Dott bike or scooter' && $ids{2561}) {
+        if (my $email = $self->feature("dott_email")) {
+            $params->{To}->[0]->[0] = $email;
+        }
+    }
 }
 
 1;
