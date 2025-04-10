@@ -1,0 +1,44 @@
+[% SET sidebar = 'parishes/admin/navigation.html' %]
+[% INCLUDE 'header.html' title='Admin' -%]
+
+<h1>Town/parish council admin</h1>
+
+[% IF body %]
+<h2>[% body.name %]</h2>
+
+<form>
+<p>You currently have the following categories:
+  [% FOR contact IN body.contacts %]
+  <p>        <label class="hidden" for="contact-[% contact.id %]">Category</label>
+  <input type="text" id="contact-[% contact.id %]" name="contact-[% contact.id %]" value="[% contact.category_display %]">
+  [% END %]
+
+<p>
+    <label for="contact-new">New category</label>
+    <input type="text" id="contact-new" name="contact-new" value="">
+</p>
+
+<p>
+<label for="email">Which are being sent to the following email:</label>
+<input disabled type="email" id="email" name="email" value="[% contact.email %]">
+
+<p>You can make changes to your categories above; please
+<a href="/contact">contact us</a> to update your email address.
+<p>
+<input class="btn" type="submit" value="Submit changes">
+</form>
+
+[% ELSIF c.user.is_superuser %]
+<ul>
+    [% IF NOT parishes.size %]
+    <li>Empty
+    [% END %]
+    [% FOR parish IN parishes %]
+    <li>[% parish.name %]:
+        <a href="[% c.uri_for_action('admin/bodies/edit', [ parish.id ]) %]">FMS admin</a> |
+        <a href="[% c.uri_for_action('parishes/admin') %]?parish=[% parish.id %]">Parish admin</a>
+    [% END %]
+</ul>
+[% END %]
+
+[% INCLUDE 'footer.html' %]
