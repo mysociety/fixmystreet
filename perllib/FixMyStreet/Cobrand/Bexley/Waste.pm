@@ -67,7 +67,6 @@ sub fetch_whitespace_data {
         my $data = $self->whitespace->call_api($c, "bexley", "bin_days_page:$uprn", 0,
             GetSiteInfo => [$uprn],
             GetSiteCollections => [$uprn],
-            GetSiteWorksheets => [$uprn],
             GetSiteContracts => [$uprn],
         );
         $c->stash->{whitespace_data} = $data;
@@ -543,7 +542,7 @@ sub _open_reports {
     my %open_reports;
 
     foreach my $uprn (@uprns) {
-        my $worksheets = $self->fetch_whitespace_data('GetSiteWorksheets', $uprn);
+        my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
 
         for my $ws (@$worksheets) {
             next
