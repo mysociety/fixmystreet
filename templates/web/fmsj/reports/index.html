@@ -1,0 +1,79 @@
+[% USE Number.Format -%]
+[% extra_js = [
+    version('/vendor/chart.min.js'),
+    version('/vendor/accessible-autocomplete.min.js'),
+    version('/js/dashboard.js')
+] -%]
+[%
+    problems_reported = problems_reported_by_period.last | format_number;
+    problems_fixed = problems_fixed_by_period.last | format_number;
+    last_seven_reported = last_seven_days.problems_total | format_number;
+    last_seven_updated = last_seven_days.updated_total | format_number;
+    last_seven_fixed = last_seven_days.fixed_total | format_number;
+    other_categories_formatted = other_categories | format_number;
+-%]
+[% INCLUDE 'header.html', title = loc('Dashboard'), bodyclass = 'dashboard' %]
+
+<div class="dashboard-header">
+    <h1>[% loc('Dashboard') %]
+    [% IF body %] – [% body.name %] [% END %]
+    </h1>
+</div>
+
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--12">
+        <h2>[% loc('All time') %]</h2>
+        <div class="labelled-line-chart">
+            <canvas id="chart-all-reports" width="600" height="250"
+                data-labels="[[% FOR period IN problem_periods %]&quot;[% period %]&quot;[% IF NOT loop.last %],[% END %][% END %]]"
+                data-values-reports="[[% problems_reported_by_period.join(',') %]]"
+                data-values-fixed="[[% problems_fixed_by_period.join(',') %]]"
+                ></canvas>
+            <span class="label" data-datasetindex="0"><strong style="color: #D97B0C">[% tprintf(nget("%s problem reported", "%s problems reported", problems_reported_by_period.last), decode(problems_reported) _ '</strong>') %]</span>
+            <span class="label" data-datasetindex="1"><strong style="color: #56A54A">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", problems_fixed_by_period.last), decode(problems_fixed) _ '</strong>') %]</span>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-row">
+    <div class="dashboard-item dashboard-item--6">
+        <h2 class="dashboard-subheading">[% loc('Last 7 days') %]</h2>
+        <div class="dashboard-sparklines">
+            <div>
+                <div class="labelled-sparkline">
+                    <canvas width="200" height="50" data-color="#D97B0C" data-values="[% last_seven_days.problems.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #D97B0C;">[% tprintf(nget("%s problem reported", "%s problems reported", last_seven_days.problems_total), decode(last_seven_reported) _ '</strong>') %]</span>
+                </div>
+            </div>
+            <div>
+                <div class="labelled-sparkline">
+                    <canvas width="200" height="50" data-color="#269AE9" data-values="[% last_seven_days.updated.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #269AE9;">[% tprintf(nget("%s update on problems", "%s updates on problems", last_seven_days.updated_total), decode(last_seven_updated) _ '</strong>') %]</span>
+                </div>
+            </div>
+            <div>
+                <div class="labelled-sparkline">
+                    <canvas width="200" height="50" data-color="#56A54A" data-values="[% last_seven_days.fixed.join(' ') %]"></canvas>
+                    <span class="label" data-datasetindex="0"><strong style="color: #56A54A;">[% tprintf(nget("%s problem marked as fixed", "%s problems marked as fixed", last_seven_days.fixed_total), decode(last_seven_fixed) _ '</strong>') %]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-item dashboard-item--6">
+        <h2 class="dashboard-subheading">[% loc('Top 5 most used categories') %]</h2>
+        <p>[% loc('Number of problems reported in each category, in the last 7 days.') %]</p>
+        <table class="dashboard-ranking-table">
+            <tbody>
+              [% FOR line IN top_five_categories %]
+                [% line_count = line.count | format_number ~%]
+                <tr><td>[% line.category %]</td><td>[% tprintf(nget("%s report", "%s reports", line.count), decode(line_count)) %]</td></tr>
+              [% END %]
+            </tbody>
+            <tfoot>
+                <tr><td>[% loc('Other categories') %]</td><td>[% tprintf(nget("%s report", "%s reports", other_categories), decode(other_categories_formatted)) %]</td></tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

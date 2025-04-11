@@ -1,0 +1,28 @@
+[% extra_js = [
+    version('/js/contact.js')
+] -%]
+[% INCLUDE 'header.html',
+    title = loc('Contact Us')
+    robots = 'noindex,nofollow'
+    bodyclass = 'twothirdswidthpage'
+%]
+
+[% INCLUDE 'about/_sidebar.html' %]
+
+<h1>[% loc('Contact the team') %]</h1>
+
+[% INCLUDE 'contact/form.html' %]
+
+[% TRY %]
+    [% INCLUDE 'contact/_footer.html' %]
+[% CATCH file %]
+    <h4>[% loc("Don't like forms?") %]</h4>
+
+    <p>
+    [% tprintf( loc("You can contact technical support on <a href='mailto:%s'>%s</a>"), contact_email, contact_email) %]
+    </p>
+[% END %]
+
+[% TRY %][% INCLUDE 'contact/address.html' %][% CATCH file %][% END %]
+
+[% INCLUDE 'footer_help.html' pagefooter = 'yes' %]
