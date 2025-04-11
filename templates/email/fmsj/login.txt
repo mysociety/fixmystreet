@@ -1,23 +1,8 @@
-[%
-SET url = c.uri_for_action('auth/token', token);
-SET language = url.match('^https?://lt\.manrupi') ? 'lt' 
-         : url.match('^https?://en\.manrupi') ? 'en' 
-         : 'lt-en';
+Subject: [% site_name %] paskyros informacija / Your [% site_name %] account details
 
-SET lt_text = [% site_name %] _ " paskyros informacija";
-SET en_text = "Your " _ [% site_name %] _ " account details";
-
-SET email_subject = language == 'lt' ? lt_text
-                : language == 'en' ? en_text
-                : lt_text _ " / " _ en_text;
-%]
-
-Subject: [% email_subject %]
-
-[% IF language.match('lt') %]
 Spustelėkite toliau esančią nuorodą, kad patvirtintumėte savo el. pašto adresą.
 
-[% url | replace('https://man', 'https://lt.man') | replace('http://man', 'http://lt.man') %]
+[% c.uri_for_action( 'auth/token', token ) | replace('https://', 'https://lt.') | replace('http://', 'http://lt.') %]
 
 [% IF c.get_param('r').match('waste') %]
 Kai tai padarysite, galėsite peržiūrėti arba keisti savo atliekų prenumeratą ir surinkimą.
@@ -29,16 +14,13 @@ Viso gero,
 [% site_name %] komanda
 
 Šis el. laiškas buvo išsiųstas automatiškai iš automatinės el. pašto paskyros, todėl į jį neatsakykite.
-[% END %]
-[% IF language.match('lt-en') %]
+
 
 *** ENGLISH ***
 
-[% END %]
-[% IF language.match('en') %]
 Please click on the link below to confirm your email address.
 
-[% url | replace('https://man', 'https://en.man') | replace('http://man', 'http://en.man') %]
+[% c.uri_for_action( 'auth/token', token ) %]
 
 [% IF c.get_param('r').match('waste') %]
 Once you've done this, you'll be able to view or amend your waste subscriptions and collections.
@@ -51,4 +33,3 @@ updates you've made on [% site_name %].
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.
-[% END %]
