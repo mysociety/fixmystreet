@@ -323,7 +323,6 @@ textarea {
 
     a,
     button {
-      display: block;
       background-color: #f5f5f5;
       background-repeat: no-repeat;
       color: #333 !important;
@@ -341,34 +340,6 @@ textarea {
         text-decoration: none;
         background-color: #333;
         color: #fff !important;
-      }
-
-      &:after {
-        content: "";
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        margin-#{$left}: 0.5em;
-        vertical-align: -0.25em;
-        background-size: 112px 16px;
-        background-repeat: no-repeat;
-        background-image: url("/cobrands/fixmystreet/images/report-tools.svg");
-      }
-
-      &.abuse:after {
-        background-position: -96px 0;
-      }
-
-      &.feed:after {
-        background-position: -64px 0;
-      }
-
-      &.share:after {
-        background-position: -80px 0;
-      }
-
-      &.chevron:after {
-        background-position: flip(-16px 0, 0 0);
       }
     }
 
