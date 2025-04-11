@@ -67,7 +67,6 @@ sub fetch_whitespace_data {
         my $data = $self->whitespace->call_api($c, "bexley", "bin_days_page:$uprn", 0,
             GetSiteInfo => [$uprn],
             GetSiteCollections => [$uprn],
-            GetSiteContracts => [$uprn],
         );
         $c->stash->{whitespace_data} = $data;
         $c->stash->{whitespace_data_uprn} = $uprn;
