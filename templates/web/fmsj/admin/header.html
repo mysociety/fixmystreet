@@ -1,11 +1,11 @@
 [%
     SET admin = 1;
-    SET bodyclass = bodyclass.defined && bodyclass != '' ? bodyclass : 'twothirdswidthpage'
+    SET bodyclass = bodyclass.defined && bodyclass != '' ? bodyclass : 'twothirdswidthpage';
     INCLUDE 'header.html' bodyclass=bodyclass _ ' admin';
 %]
 
 [% IF !bodyclass.match('mappage') %]
-[%   INCLUDE 'admin/_navigation.html' %]
+[%   INCLUDE 'admin/navigation.html' %]
 [% END %]
 
 <style type="text/css">
