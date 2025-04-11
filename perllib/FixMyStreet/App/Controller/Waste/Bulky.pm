@@ -328,7 +328,27 @@ sub process_bulky_amend : Private {
 
     my $p = $c->stash->{amending_booking};
 
-    if ($c->cobrand->bulky_cancel_by_update) {
+    # In this case we don't want to go through the process of cancelling the original
+    # report as we don't want to risk losing the booking slot
+    if ( $c->cobrand->call_hook('update_report_for_same_day_amend', $p, $data) ) {
+        $p->create_related( moderation_original_data => {
+            title => $p->title,
+            detail => $p->detail,
+            photo => $p->photo,
+            anonymous => $p->anonymous,
+            category => $p->category,
+            extra => $p->extra,
+        });
+        $c->forward( '/admin/log_edit', [ $c->cobrand->body->comment_user->id, 'problem', 'edit' ] );
+        $p->photo('');
+        amend_extra_data($c, $p, $data);
+        $p->update;
+        $p->add_to_comments( {
+                text => 'Amend ' . $p->category,
+                user => $c->cobrand->body->comment_user,
+                problem_state => $p->state,
+        });
+    } elsif ($c->cobrand->bulky_cancel_by_update) {
         # In this case we want to update the event to mark it as cancelled,
         # then create a new event with the amended booking data from the form
         my $update = add_cancellation_update($c, $p, 'delayed');

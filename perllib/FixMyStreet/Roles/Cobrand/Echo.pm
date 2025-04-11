@@ -1302,6 +1302,94 @@ sub per_photo_size_limit_for_report_in_bytes {
     return min($max_size_per_image, $max_size_per_image_from_total);
 };
 
+=head2 update_report_for_same_day_amend
+
+This Echo only hook is used to check
+if a Bulky collection that has been changed
+has maintained the same date
+
+=cut
+
+sub update_report_for_same_day_amend {
+        my ($self, $p, $data) = @_;
+
+        my $collection_date = $p->get_extra_field_value('Collection_Date');
+        return $data->{chosen_date} =~ /^$collection_date;/
+};
+
+=head2 waste_munge_bulky_amend
+
+If a Bulky collection has been amended, but the
+date of collection remains the same, we need
+to reset the data in the original report as
+that will continue to reflect the actual
+booking
+
+=cut
+
+sub waste_munge_bulky_amend {
+    my ($self, $p, $data) = @_;
+
+    for my $extra (keys %{$p->get_extra_metadata}) {
+        if ($extra =~ /item_/) {
+            $p->unset_extra_metadata($extra);
+        }
+    }
+    $self->waste_munge_bulky_data($data);
+
+    $self->{c}->stash->{report} = $p;
+    $self->save_item_names_to_report($data);
+
+    my @fields = @{$p->get_extra_fields};
+    for my $field (@fields) {
+        if ($field->{name} eq 'Exact_Location') {
+            $field->{value} = $data->{location} || '';
+        } elsif ($field->{name} eq 'Bulky_Collection_Bulky_Items') {
+            $field->{value} = $data->{'extra_Bulky_Collection_Bulky_Items'} || '';
+        } elsif ($field->{name} eq 'Bulky_Collection_Notes') {
+            $field->{value} = $data->{'extra_Bulky_Collection_Bulky_Notes'} || '';
+        }  elsif ($field->{name} eq 'TEM_-_Bulky_Collection_Description') {
+            $field->{value} = $data->{'extra_TEM_-_Bulky_Collection_Description'} || '';
+        } elsif ($field->{name} eq 'TEM_-_Bulky_Collection_Item') {
+            $field->{value} = $data->{'extra_TEM_-_Bulky_Collection_Item'} || '';
+        }
+    };
+    $p->set_extra_fields(@fields);
+    $p->update;
+}
+
+=head2 open_311_bulky_update_same_date
+
+If a Bulky collection has been amended, but the
+date of collection remains the same, we have created
+an update on the original booking. We need to stack
+the service request update sent to Open311
+with the fields that may have changed, where
+an update call can be made to the original
+Echo event
+
+=cut
+
+sub open_311_bulky_update_same_date {
+    my ($self, $params, $comment) = @_;
+
+    if (
+        (
+            $comment->text eq 'Amend Bulky collection'
+            || $comment->text eq 'Amend Small items collection'
+        )
+    ) {
+        my @updateable_fields = (qw/Exact_Location Bulky_Collection_Bulky_Items Bulky_Collection_Notes
+        TEM_-_Bulky_Collection_Description TEM_-_Bulky_Collection_Item/);
+        my $fields = $comment->problem->get_extra_fields;
+        for my $name (@updateable_fields) {
+            if (my ($field) = grep { $_->{name} eq $name } @$fields) {
+                $params->{"attribute[$name]"} = $field->{value};
+            }
+        }
+    };
+}
+
 sub _bulky_date_to_dt {
     my ($self, $date) = @_;
     $date = (split(";", $date))[0];

@@ -5,6 +5,7 @@ use CGI::Simple;
 use Path::Tiny;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Alerts;
+use Open311::PostServiceRequestUpdates;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -590,6 +591,80 @@ FixMyStreet::override_config {
             $mech->content_contains('You have not changed anything');
         };
 
+        subtest 'Amend the items and keep the same date, not above the lower limit' => sub {
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            $mech->content_contains("Before you amend your booking");
+            $mech->submit_form_ok;
+            $mech->content_contains('Choose date for collection');
+            $mech->content_contains('Available dates');
+            $mech->content_contains('8 July'); # Existing date should always be there
+            $mech->content_contains('1 July');
+            $mech->content_contains('15 July');
+            $mech->submit_form_ok();
+            $mech->content_contains('Add items for collection');
+            $mech->content_like(
+                qr/<option value="Bath".*>Bath<\/option>/);
+            $mech->submit_form_ok({
+                with_fields => {
+                    'item_1' => 'Bath',
+                    'item_photo_1_fileid' => '', # Photo removed
+                    'item_2' => 'Bookcase, Shelving Unit',
+                    'item_3' => '',
+                },
+            });
+            $mech->submit_form_ok; # Location page
+            $mech->content_contains('Booking Summary');
+            $mech->content_lacks('You will be redirected to the council’s card payments provider.');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
+            $mech->content_lacks('BBQ');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bookcase, Shelving Unit/s);
+            $mech->content_contains('2 items requested for collection');
+            $mech->content_contains('£0.00 (£37.00 already paid)');
+            $mech->content_contains("<dd>Saturday 08 July 2023</dd>");
+            $mech->content_lacks('Cancel this booking');
+            $mech->content_lacks('Show upcoming bin days');
+        };
+
+        subtest 'Confirm amendment' => sub {
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+            $report->discard_changes;
+            is $report->state, 'confirmed', 'Report remains confirmed';
+
+            my %items = %{$report->get_extra_metadata}{'item_1', 'item_2', 'item_3', 'item_photo_1'};
+            is_deeply \%items, { 'item_photo_1' => undef, 'item_3' => undef,
+            'item_1' => 'Bath', 'item_2' => 'Bookcase, Shelving Unit' }, 'Report has been updated';
+
+            is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '83::6', 'Item codes have been updated';
+            is $report->photo, '', 'Photo removed from report';
+            my %moderated_items = %{$report->moderation_original_datas->next->extra}{'item_1', 'item_2', 'item_3', 'item_photo_1'};
+            is_deeply \%moderated_items, { 'item_photo_1' => '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg',
+            'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath' }, 'Report has saved moderated data';
+
+            my $comment = $report->comments->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $comment->text, 'Amend Bulky collection', 'Comment added for amend';
+            is $comment->user->id, $body_user->id, 'Update created by comment user';
+
+            $body->update({ send_method => 'Open311', send_comments => 1, api_key => 'key',
+            jurisdiction => 'merton', cobrand => 'merton', endpoint => 'test' });
+            $report->send_method_used('Open311');
+            $report->update;
+
+            my $updates = Open311::PostServiceRequestUpdates->new();
+            $updates->send;
+            my $req = Open311->test_req_used;
+            my $c = CGI::Simple->new($req->content);
+            is $c->param('attribute[Bulky_Collection_Bulky_Items]'), '83::6', 'Bulky items updated in send data';
+            is $c->param('attribute[Exact_Location]'), 'in the middle of the drive', 'Exact Location updated in send data';
+
+            FixMyStreet::Script::Alerts::send_updates();
+            my ($email) = $mech->get_email;
+            ok $mech->get_text_body_from_email($email) =~ /The following updates have been left on this report:\r\n\r\nAmend Bulky collection/, "Email alert sent to user";
+            $mech->clear_emails_ok;
+
+            $body->update({ send_method => undef }); # Restore for rest of tests
+        };
+
+        my $new_report;
         subtest 'Amend the date and items, not above the lower limit' => sub {
             $mech->get_ok("$base_path/bulky/amend/" . $report->id);
             $mech->content_contains("Before you amend your booking");
@@ -610,7 +685,7 @@ FixMyStreet::override_config {
                     'item_1' => 'Bath',
                     'item_photo_1_fileid' => '', # Photo removed
                     'item_2' => 'Bookcase, Shelving Unit',
-                    'item_3' => '',
+                    'item_3' => 'BBQ'
                 },
             });
             $mech->submit_form_ok; # Location page
@@ -619,20 +694,17 @@ FixMyStreet::override_config {
             $mech->content_lacks('You will be redirected to the council’s card payments provider.');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
             $mech->content_lacks('<img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
-            $mech->content_lacks('BBQ');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bookcase, Shelving Unit/s);
-            $mech->content_contains('2 items requested for collection');
+            $mech->content_contains('3 items requested for collection');
             $mech->content_contains('£0.00 (£37.00 already paid)');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
         };
 
-        my $new_report;
         subtest 'Confirm amendment' => sub {
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-
-            is $report->comments->count, 2; # Confirmation and then cancellation
+            is $report->comments->count, 3; # Previously amended update, confirmation and then cancellation
             $new_report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
 
             my $email = $mech->get_email;
@@ -681,7 +753,7 @@ FixMyStreet::override_config {
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
-            is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '83::6';
+            is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '83::6::3';
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
             is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '01/07/2023';
