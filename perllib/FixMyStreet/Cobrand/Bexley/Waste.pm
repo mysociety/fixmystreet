@@ -61,11 +61,14 @@ sub fetch_whitespace_data {
 
     my $c = $self->{c};
 
+    my $async = $c->action eq 'waste/bin_days'
+        && $c->req->method eq 'GET';
+
     my $data = $self->whitespace->call_api(
         $c,
         "bexley",
         "bin_days_page:$uprn",
-        0,
+        $async,
         GetSiteInfo        => [$uprn],
         GetSiteCollections => [$uprn],
     );
