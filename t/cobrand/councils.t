@@ -59,6 +59,8 @@ subtest "Test update shown/not shown appropriately" => sub {
             { type => 'reporter-open', state => 'closed', update => [0,0,0] },
             { type => 'reporter-open', state => 'in progress', update => [0,1,0] },
             { type => 'reporter/staff', update => [0,1,1] },
+            { type => 'reporter-open/staff', update => [0,1,1] },
+            { type => 'reporter-open/staff', state => 'closed', update => [0,0,1] },
             { type => 'reporter/staff-open', state => 'closed', update => [0,0,0] },
             { type => 'reporter/staff-open', state => 'in progress', update => [0,1,1] },
             { type => 'open', state => 'closed', update => [0,0,0] },
