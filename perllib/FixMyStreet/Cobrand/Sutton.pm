@@ -153,6 +153,7 @@ sub image_for_unit {
     my $images = {
         $CONTAINERS{recycling_blue_bag} => $bag_blue_stripe,
         $CONTAINERS{paper_bag} => $bag_clear,
+        $CONTAINERS{refuse_bag} => $bag_red_stripe,
         $CONTAINERS{food_outdoor} => "$base/caddy-brown-large",
 
         # Fallback to the service if no container match

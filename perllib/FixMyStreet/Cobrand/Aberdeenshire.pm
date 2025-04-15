@@ -36,7 +36,7 @@ with 'FixMyStreet::Roles::ConfirmValidation';
 
 sub council_area_id { '2648' }
 sub council_area { 'Aberdeenshire' }
-sub council_name { 'Aberdeenshire County Council' }
+sub council_name { 'Aberdeenshire Council' }
 sub council_url { 'aberdeenshire' }
 
 =item * Users with a Aberdeenshire.gov.uk email can always be found in the admin.
@@ -49,7 +49,7 @@ sub admin_user_domain { 'aberdeenshire.gov.uk' }
 
 =cut
 
-sub privacy_policy_url { 'https://aberdeenshirestorage.blob.core.windows.net/acblobstorage/168aac73-5139-4622-a980-7a9436c3e0a3/cusersspellascdocumentsroads-pn.pdf' }
+sub privacy_policy_url { 'https://publications.aberdeenshire.gov.uk/acblobstorage/168aac73-5139-4622-a980-7a9436c3e0a3/cusersspellascdocumentsroads-pn.pdf' }
 
 sub abuse_reports_only { 1 }
 
