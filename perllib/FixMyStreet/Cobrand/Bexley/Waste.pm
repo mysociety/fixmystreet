@@ -61,18 +61,16 @@ sub fetch_whitespace_data {
 
     my $c = $self->{c};
 
-    # Check if we've already fetched the data for this UPRN
-    if (!$c->stash->{whitespace_data} || $c->stash->{whitespace_data_uprn} ne $uprn) {
-        # If not, fetch all the data and store it in the stash
-        my $data = $self->whitespace->call_api($c, "bexley", "bin_days_page:$uprn", 0,
-            GetSiteInfo => [$uprn],
-            GetSiteCollections => [$uprn],
-        );
-        $c->stash->{whitespace_data} = $data;
-        $c->stash->{whitespace_data_uprn} = $uprn;
-    }
+    my $data = $self->whitespace->call_api(
+        $c,
+        "bexley",
+        "bin_days_page:$uprn",
+        0,
+        GetSiteInfo        => [$uprn],
+        GetSiteCollections => [$uprn],
+    );
 
-    return $c->stash->{whitespace_data}->{"$method $uprn"};
+    return $data->{"$method $uprn"};
 }
 
 sub waste_fetch_events {
