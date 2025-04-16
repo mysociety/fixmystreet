@@ -51,6 +51,25 @@
     border-width: 0px;
   }
 
+  .front-main-message {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: mix($green,$white, 15%);
+    margin: 1em -1em -1em;
+    padding: 1em;
+
+    p {
+      margin-bottom: 0.75rem;
+    }
+
+    svg {
+      height: 1.75rem;
+      width: 1.75rem;
+      vertical-align: middle;
+    }
+  }
+
   input#pc {
     border: 2px solid black;
     border-top-left-radius: 6px;

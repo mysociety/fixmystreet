@@ -30,6 +30,15 @@ a.platform-logo {
   padding: 5.625rem 1em;
   max-width: 1680px;
   margin: 0 auto;
+
+  .front-main-message {
+    width: auto;
+
+    svg {
+      height: 1.9rem;
+      width: 1.9rem;
+    }
+  }
 }
 
 #front_stats {
