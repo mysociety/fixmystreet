@@ -370,7 +370,7 @@ FixMyStreet::override_config {
     $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });
     subtest 'No requesting a red stripe bag' => sub {
         $mech->get_ok('/waste/12345/request');
-        $mech->content_lacks('"container-choice" value="6"');
+        $mech->content_lacks('"container-choice" value="10"');
     };
     subtest 'Fortnightly collection can request a blue stripe bag' => sub {
         $mech->get_ok('/waste/12345/request');
