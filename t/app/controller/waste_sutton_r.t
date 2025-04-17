@@ -387,8 +387,8 @@ FixMyStreet::override_config {
     subtest 'Weekly collection cannot request a blue stripe bag or unknown containers' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345/request');
-        $mech->content_lacks('"container-choice" value="18"');
-        $mech->content_lacks('"container-choice" value="24"');
+        $mech->content_lacks('"container-choice" value="22"');
+        $mech->content_lacks('"container-choice" value="46"');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
