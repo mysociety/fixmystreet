@@ -45,7 +45,7 @@
       },
       "ServiceName": "Domestic Refuse Collection",
       "ServiceUnitTypeId": "65",
-      "ServiceId": "405"
+      "ServiceId": "967"
     },
     {
       "ServiceTasks": {
@@ -91,14 +91,14 @@
       "Id": "1002",
       "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
       "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
-      "ServiceId": "408",
+      "ServiceId": "971",
       "ServiceName": "Domestic Recycling Collection"
     },
     {
       "Id": "1003",
       "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
       "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
-      "ServiceId": "408",
+      "ServiceId": "975",
       "ServiceName": "Domestic Recycling Collection",
       "ServiceUnitTypeId": "65",
       "ServiceTasks": {

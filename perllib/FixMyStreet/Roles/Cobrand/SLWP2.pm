@@ -206,6 +206,9 @@ sub waste_extra_service_info {
             $property->{domestic_refuse_bin} = 1;
         }
         $self->{c}->stash->{communal_property} = 1 if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
+        if ($service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed}) {
+            $self->{c}->stash->{fas_property} = 1;
+        }
 
         # Check for time-banded property
         my $schedules = $_->{Schedules};
@@ -225,6 +228,9 @@ sub waste_service_containers {
     # Will get garden info later, in garden_container_data_extract
     # (as garden containers held in a totally different place)
     return if $service_id == $service_ids->{garden};
+
+    # FAS cannot request containers - FD-5401
+    return if $self->{c}->stash->{fas_property};
 
     my $waste_containers_no_request = $self->_waste_containers_no_request;
 

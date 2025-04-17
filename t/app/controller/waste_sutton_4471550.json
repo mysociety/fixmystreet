@@ -39,12 +39,12 @@
         }
       },
       "ServiceName": "Domestic Refuse Collection",
-      "ServiceId": "941",
+      "ServiceId": "940",
       "Id": "1001"
     },
     {
-      "ServiceName": "FAS Paper Collection",
-      "ServiceId": "949",
+      "ServiceName": "Domestic Paper Collection",
+      "ServiceId": "948",
       "Id": "1003",
       "Data": {
         "ExtensibleDatum": {
@@ -89,7 +89,7 @@
     },
     {
       "ServiceName": "Domestic Recycling Collection",
-      "ServiceId": "945",
+      "ServiceId": "944",
       "Id": "1004",
       "Data": {
         "ExtensibleDatum": [
