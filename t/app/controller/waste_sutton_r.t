@@ -456,9 +456,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Time banded property display' => sub {
-        my $dupe = dclone($bin_data);
-        $dupe->[0]{ServiceTasks}{ServiceTask}[0]{ServiceTaskSchedules}{ServiceTaskSchedule}{Allocation}{RoundGroupName} = 'SF Night Time Economy';
-        $e->mock('GetServiceUnitsForObject', sub { $dupe });
+        $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Put your bags out between 6pm and 8pm');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
