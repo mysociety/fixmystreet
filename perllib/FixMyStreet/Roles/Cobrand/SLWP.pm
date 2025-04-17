@@ -207,14 +207,6 @@ sub waste_extra_service_info {
             $property->{domestic_refuse_bin} = 1;
         }
         $self->{c}->stash->{communal_property} = 1 if $service_id == $TASK_IDS{communal_refuse} || $service_id == $TASK_IDS{communal_food} || $service_id == $TASK_IDS{communal_paper} || $service_id == $TASK_IDS{communal_mixed};
-
-        # Check for time-banded property
-        my $schedules = $_->{Schedules};
-        if ($self->moniker eq 'sutton' && $schedules->{next}{schedule}) {
-            my $round_group_name = $schedules->{next}{schedule}{Allocation}{RoundGroupName} || '';
-            $self->{c}->stash->{property_time_banded} = 1 if $round_group_name eq "SF Night Time Economy";
-        }
-
     }
 }
 

@@ -206,15 +206,10 @@ sub waste_extra_service_info {
             $property->{domestic_refuse_bin} = 1;
         }
         $self->{c}->stash->{communal_property} = 1 if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
-        $self->{c}->stash->{fas_property} = 1 if $service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed};
 
-        # Check for time-banded property
-        my $schedules = $_->{Schedules};
-        if ($self->moniker eq 'sutton' && $schedules->{next}{schedule}) {
-            my $round_group_name = $schedules->{next}{schedule}{Allocation}{RoundGroupName} || '';
-            $self->{c}->stash->{property_time_banded} = 1 if $round_group_name eq "SF Night Time Economy";
+        if ($service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed}) {
+            $self->{c}->stash->{fas_property} = 1 if $service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed};
         }
-
     }
 }
 
