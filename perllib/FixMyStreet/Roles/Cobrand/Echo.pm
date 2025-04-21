@@ -285,6 +285,12 @@ sub bin_services_for_address {
 
             $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
 
+            if ($self->moniker eq 'sutton') {
+                # Sutton needs to know about events from before the last collection in case there
+                # have been missed container escalations that are still relevant
+                $row->{all_events} = $events->filter({ service => $service_id });
+            }
+
             my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
             $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
             my $recent_events = $row->{events}->filter({ type => 'missed' });
