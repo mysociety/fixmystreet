@@ -3,8 +3,24 @@
 
 [% IF unit.requests_open.size %]
   <span class="waste-service-descriptor">
+    [% IF cobrand.moniker != 'sutton' %]
     A [% unit.service_name FILTER lower %] container request has been made
+    [% ELSE %]
+        A [% unit.service_name FILTER lower %] container request was made on [% date.format(unit.requests_open.values.0.date, '%A, %-d %B') %].
+
+        [% IF unit.escalations.container AND NOT unit.escalations.container_open %]
+            If the issue is still not resolved, please
+            <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.container.id %]&amp;event_guid=[% unit.escalations.container.guid %]&amp;category=Failure+to+Deliver+Bags%2FContainers"
+                class="waste-service-link waste-service-descriptor">report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
+        [% END %]
+    [% END %]
   </span>
+
+    [% IF unit.escalations.container_open %]
+      <span class="waste-service-descriptor">
+        A chase was raised on [% date.format(unit.escalations.container_open.date, '%-d %B') %] and should be completed within 2 working days, [% date.format(unit.escalations.container_open.target_date, '%-d %B') %]
+      </span>
+    [% END %]
 
   [% IF c.cobrand.moniker == 'merton' %]
         [% IF NOT (property_time_banded AND unit.service_id == 2242) %]
