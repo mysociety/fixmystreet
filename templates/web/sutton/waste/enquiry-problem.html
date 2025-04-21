@@ -25,6 +25,11 @@ IF service.escalations.missed;
     f.push(field);
 END;
 
+IF service.escalations.container;
+    SET field = { value = 'Failure to Deliver Bags/Containers', label = 'Escalate container delivery failure' };
+    f.push(field);
+END;
+
 PROCESS waste/enquiry.html
     title = 'Report a problem'
     field_options = f;
