@@ -180,30 +180,76 @@ sub munge_bin_services_for_address {
 
     # Escalations
     foreach (@$rows) {
-        my $events = $_->{events} or next;
-        my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
-        my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
-        if (
-            # If there's a missed bin report
-            $missed_event
-            # And report is closed completed, or open
-            && (!$missed_event->{closed} || $missed_event->{completed})
-            # And no existing escalation since last collection
-            && !$escalation_event
-        ) {
-            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-            # And two working days (from 6pm) have passed
-            my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
-            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
-            # And window is one day (weekly) two WDs (fortnightly)
-            my $window = $_->{schedule} =~ /fortnight|every other/ ? 2 : 1;
-            my $end = $wd->add_days($start, $window);
-            if ($now >= $start && $now < $end) {
-                $_->{escalations}{missed} = $missed_event->{id};
-            }
-        } elsif ($escalation_event) {
-            $_->{escalations}{missed_open} = $escalation_event->{id};
+        $self->_setup_missed_collection_escalations_for_service($_);
+        $self->_setup_container_request_escalations_for_service($_);
+    }
+}
+
+sub _setup_missed_collection_escalations_for_service {
+    my ($self, $row) = @_;
+    my $events = $row->{events} or return;
+
+    my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
+    my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
+    if (
+        # If there's a missed bin report
+        $missed_event
+        # And report is closed completed, or open
+        && (!$missed_event->{closed} || $missed_event->{completed})
+        # And no existing escalation since last collection
+        && !$escalation_event
+    ) {
+        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+        # And two working days (from 6pm) have passed
+        my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+        my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
+        # And window is one day (weekly) two WDs (fortnightly)
+        my $window = $row->{schedule} =~ /fortnight|every other/ ? 2 : 1;
+        my $end = $wd->add_days($start, $window);
+        if ($now >= $start && $now < $end) {
+            $row->{escalations}{missed} = $missed_event->{id};
         }
+    } elsif ($escalation_event) {
+        $row->{escalations}{missed_open} = $escalation_event->{id};
+    }
+}
+
+sub _setup_container_request_escalations_for_service {
+    my ($self, $row) = @_;
+    my $open_requests = $row->{requests_open};
+
+    # If there are no open container requests, there's nothing for us to do
+    return unless scalar keys %$open_requests;
+
+    # We're only expecting one open container request per service
+    my $open_request_event = (values %$open_requests)[0];
+    my $escalation_events = $row->{all_events}->filter({ event_type => 3141 });
+
+    foreach my $escalation_event ($escalation_events->list) {
+        my $escalation_event_report = $escalation_event->{report};
+        next unless $escalation_event_report;
+
+        if ($escalation_event_report->get_extra_field_value('container_request_guid') eq $open_request_event->{guid}) {
+            $row->{escalations}{container_open} = $escalation_event;
+            # We've marked that there is already an escalation event for the container
+            # request, so there's nothing left to do
+            return;
+        }
+    }
+
+    # There's an open container request with no matching escalation so
+    # we check now to see if it's within the window for an escalation to be raised
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+
+    # Window starts on the 21st working day after the request was made
+    my $start = $wd->add_days($open_request_event->{date}, 21)->set_hour(0);
+
+    # Window ends a further 10 working days after the start date
+    my $end = $wd->add_days($start, 11);
+
+    if ($now >= $start && $now < $end) {
+        $row->{escalations}{container} = $open_request_event;
     }
 }
 
@@ -616,6 +662,9 @@ sub waste_munge_enquiry_data {
     } elsif ($data->{category} eq 'Complaint against time') {
         $data->{extra_Notes} = 'Originally Echo Event #' . $c->get_param('event_id');
         $data->{extra_missed_guid} = $c->get_param('event_guid');
+    } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
+        $data->{extra_Notes} = 'Originally Echo Event #' . $c->get_param('event_id');
+        $data->{extra_container_request_guid} = $c->get_param('event_guid');
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;

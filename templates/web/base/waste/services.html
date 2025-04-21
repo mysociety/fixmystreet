@@ -6,6 +6,19 @@
     A [% unit.service_name FILTER lower %] container request has been made
   </span>
 
+    [% IF c.cobrand.moniker == 'sutton' %]
+        [% IF unit.escalations.container_open %]
+          <span class="waste-service-descriptor">
+            An escalation has been raised
+          </span>
+        [% END %]
+        [% IF unit.escalations.container %]
+            <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.container.id %]&amp;event_guid=[% unit.escalations.container.guid %]&amp;category=Failure+to+Deliver+Bags%2FContainers"
+                class="waste-service-link waste-service-descriptor">Report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
+        [% END %]
+    [% END %]
+
+
   [% IF c.cobrand.moniker == 'merton' %]
         [% IF NOT (property_time_banded AND unit.service_id == 2242) %]
             <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Failure+to+deliver&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
