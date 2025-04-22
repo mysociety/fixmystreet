@@ -326,6 +326,9 @@ sub waste_munge_report_data {
         my %assisted = map { $_ => 1 } qw(domestic_refuse domestic_mixed domestic_paper domestic_food garden small_items);
         if ($c->stash->{assisted_collection} && $assisted{$lookup{$id}}) {
             $data->{category} = 'Report missed assisted collection';
+        } else {
+            # Reset in case more than one service being reported at once
+            $data->{category} = 'Report missed collection';
         }
         $data->{title} = "Report missed $service";
     }
