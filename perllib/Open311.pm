@@ -504,7 +504,7 @@ sub _populate_service_request_update_params {
 
     my $cobrand = $self->fixmystreet_body->get_cobrand_handler || $comment->get_cobrand_logged;
     $cobrand->call_hook(open311_munge_update_params => $params, $comment, $self->fixmystreet_body);
-
+    $cobrand->call_hook(open_311_bulky_update_same_date => $params, $comment);
     if ( $comment->photo ) {
         my $cobrand = $comment->get_cobrand_logged;
         my $email_base_url = $cobrand->base_url($comment->cobrand_data);

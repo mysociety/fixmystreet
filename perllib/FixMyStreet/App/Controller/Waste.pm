@@ -1745,17 +1745,7 @@ sub add_report : Private {
     $c->set_param('uprn', $c->stash->{property}{uprn}) unless $c->get_param('uprn');
     $c->set_param('property_id', $c->stash->{property}{id}) unless $c->get_param('property_id');
 
-    # Data may contain duplicate photo data under different keys e.g.
-    # 'item_photo_1' => 'c8a965ad74acad4104341a8ea893b1a1275efa4d.jpeg',
-    # 'item_photo_1_fileid' => 'c8a965ad74acad4104341a8ea893b1a1275efa4d.jpeg'.
-    # So ignore keys that end with 'fileid'.
-    # XXX Should fix this so there isn't duplicate data across different keys.
-    my @bulky_photo_data;
-    push @bulky_photo_data, $data->{location_photo} if $data->{location_photo};
-    for (grep { /^item_photo_\d+$/ } sort keys %$data) {
-        push @bulky_photo_data, $data->{$_} if $data->{$_};
-    }
-    $c->stash->{bulky_photo_data} = \@bulky_photo_data;
+    $c->forward('add_bulky_photo_data', [$data]);
 
     $c->forward('setup_categories_and_bodies') unless $c->stash->{contacts};
     $c->forward('/report/new/non_map_creation', [['/waste/remove_name_errors']]) or return;
@@ -1802,6 +1792,21 @@ sub add_report : Private {
     );
 
     return 1;
+}
+
+sub add_bulky_photo_data: Private {
+    my ($self, $c, $data) = @_;
+    # Data may contain duplicate photo data under different keys e.g.
+    # 'item_photo_1' => 'c8a965ad74acad4104341a8ea893b1a1275efa4d.jpeg',
+    # 'item_photo_1_fileid' => 'c8a965ad74acad4104341a8ea893b1a1275efa4d.jpeg'.
+    # So ignore keys that end with 'fileid'.
+    # XXX Should fix this so there isn't duplicate data across different keys.
+    my @bulky_photo_data;
+    push @bulky_photo_data, $data->{location_photo} if $data->{location_photo};
+    for (grep { /^item_photo_\d+$/ } sort keys %$data) {
+        push @bulky_photo_data, $data->{$_} if $data->{$_};
+    }
+    $c->stash->{bulky_photo_data} = \@bulky_photo_data;
 }
 
 sub remove_name_errors : Private {
