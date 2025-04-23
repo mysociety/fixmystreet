@@ -13,6 +13,14 @@ END { FixMyStreet::App->log->enable('info'); }
 my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 
+my $address_data = {
+    Id => 12345,
+    SharedRef => { Value => { anyType => '1000000002' } },
+    PointType => 'PointAddress',
+    PointAddressType => { Name => 'House', Id => 284 },
+    Coordinates => { GeoPoint => { Latitude => 51.359723, Longitude => -0.193146 } },
+    Description => '2 Example Street, Sutton, SM1 1AA',
+};
 my $bin_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082.json')->slurp_utf8);
 my $bin_140_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_140.json')->slurp_utf8);
 my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_sutton_4471550.json')->slurp_utf8);
@@ -87,6 +95,7 @@ FixMyStreet::override_config {
             url => 'http://example.org/',
         } },
         waste => { sutton => 1 },
+        waste_features => { sutton => { no_service_residential_address_types => [ 283, 284, 285 ] } },
         echo => { sutton => { bulky_service_id => 960 }},
         payment_gateway => { sutton => {
             cc_url => 'http://example.com',
@@ -392,10 +401,15 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
-    subtest 'Fetching property without services give Sutton specific error' => sub {
+    subtest 'Fetching property without services give Sutton specific errors' => sub {
         $e->mock('GetServiceUnitsForObject', sub { [] });
         $mech->get_ok('/waste/12345/');
         $mech->content_contains('Oh no! Something has gone wrong');
+        my $non_residential = { %$address_data, PointAddressType => { Id => 123 } };
+        $e->mock('GetPointAddress', sub { $non_residential });
+        $mech->get_ok('/waste/12345/');
+        $mech->content_contains('No schedule found for this property');
+        $e->mock('GetPointAddress', sub { $address_data });
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
@@ -629,16 +643,7 @@ sub get_report_from_redirect {
 
 sub shared_echo_mocks {
     my $e = Test::MockModule->new('Integrations::Echo');
-    $e->mock('GetPointAddress', sub {
-        return {
-            Id => 12345,
-            SharedRef => { Value => { anyType => '1000000002' } },
-            PointType => 'PointAddress',
-            PointAddressType => { Name => 'House' },
-            Coordinates => { GeoPoint => { Latitude => 51.359723, Longitude => -0.193146 } },
-            Description => '2 Example Street, Sutton, SM1 1AA',
-        };
-    });
+    $e->mock('GetPointAddress', sub { $address_data });
     $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     $e->mock('GetEventsForObject', sub { [] });
     $e->mock('GetTasks', sub { [] });

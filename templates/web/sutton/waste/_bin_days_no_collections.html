@@ -1,15 +1,25 @@
 [% IF waste_features.garden_disabled %]
 
-<h3 class="govuk-heading-m waste-service-name">Oh no! Something has gone wrong</h3>
-<p>
-    We are unable to find a waste collection schedule for this property. This may be because the property is a new build and has not completed the registration process correctly.
-</p>
-<p>
-    If you believe that your address is eligible for waste and recycling services, please call our customer services team on 020 8770 5000 (Monday to Friday from 9:00-17:00) or alternatively email us at <a href="mailto:neighbourhoodservices@sutton.gov.uk">neighbourhoodservices@sutton.gov.uk</a> and we'll look to put this right.
-</p>
-<p>
-    Please be aware that we do not provide collections to some property types such as commercial businesses, places of worship and schools.
-</p>
+  [% IF waste_features.no_service_residential_address_types.grep(property.type_id).size %]
+    <h3 class="govuk-heading-m waste-service-name">Oh no! Something has gone wrong.</h3>
+    <p>
+        We are unable to find a waste collection schedule for this property. This may be because the property is a new build and has not completed the registration process correctly.
+    </p>
+    <p>
+        Please be aware that we do not provide collections to some property types such as commercial businesses, places of worship and schools.
+    </p>
+    <p>
+        If you believe that your address is eligible for waste and recycling services, please call our customer services team on 020 8770 5000 (Monday to Friday from 9:00-17:00) or alternatively email us at <a href="mailto:neighbourhoodservices@sutton.gov.uk">neighbourhoodservices@sutton.gov.uk</a> and we'll look to put this right.
+    </p>
+  [% ELSE %]
+    <h3 class="govuk-heading-m waste-service-name">No schedule found for this property.</h3>
+    <p>
+        Please be aware that we do not provide collections to some property types such as commercial businesses, places of worship and schools.
+    </p>
+    <p>
+        You will need to contact your service provider directly to resolve any issues you may have.
+    </p>
+  [% END %]
 
 [% ELSE %]
 
