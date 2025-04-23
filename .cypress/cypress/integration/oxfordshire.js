@@ -104,7 +104,7 @@ describe("Oxfordshire cobrand", function() {
 
     var pothole = {
         typename: 'Pothole (Permanent)',
-        right_details: [ '0-1m²', '1-2m²' ],
+        right_details: [ '0-0.5m²', '0.5-1m²', '1-2m²', '>2m²' ],
         wrong_details: [
             '1 kerb unit or I liner length',
             'Greater than 1 kerb unit or I liner length',
@@ -118,8 +118,7 @@ describe("Oxfordshire cobrand", function() {
             'Greater than 1 kerb unit or I liner length',
         ],
         wrong_details: [
-            '0-1m²',
-            '1-2m²',
+            '0-0.5m²', '0.5-1m²', '1-2m²', '>2m²',
             'Blockage raised as a defect'
         ]
     };
@@ -130,8 +129,7 @@ describe("Oxfordshire cobrand", function() {
             'Greater than 1 kerb unit or I liner length'
         ],
         wrong_details: [
-            '0-1m²',
-            '1-2m²',
+            '0-0.5m²', '0.5-1m²', '1-2m²', '>2m²',
             'Blockage raised as a defect'
         ]
     };
@@ -142,8 +140,7 @@ describe("Oxfordshire cobrand", function() {
             'Greater than 1 kerb unit or I liner length'
         ],
         wrong_details: [
-            '0-1m²',
-            '1-2m²',
+            '0-0.5m²', '0.5-1m²', '1-2m²', '>2m²',
             'Blockage raised as a defect'
         ]
     };
@@ -154,8 +151,7 @@ describe("Oxfordshire cobrand", function() {
             'Greater than 1 kerb unit or I liner length'
         ],
         wrong_details: [
-            '0-1m²',
-            '1-2m²',
+            '0-0.5m²', '0.5-1m²', '1-2m²', '>2m²',
             'Blockage raised as a defect'
         ]
     };
@@ -165,8 +161,7 @@ describe("Oxfordshire cobrand", function() {
             'Blockage raised as a defect'
         ],
         wrong_details: [
-            '0-1m²',
-            '1-2m²',
+            '0-0.5m²', '0.5-1m²', '1-2m²', '>2m²',
             '1 kerb unit or I liner length',
             'Greater than 1 kerb unit or I liner length'
         ]
