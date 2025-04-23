@@ -473,12 +473,10 @@ sub bin_services_for_address {
 
     # To begin with we assume the property is eligible to sign up to GGW...
     $property->{garden_signup_eligible} = 1;
-    # unless it's got a parent property,
-    # or no services of its own
+    # unless it's got a parent property AND no services of its own (communal),
     # or it already has a subscription in Agile
     # or it has sacks
-    if (   $property->{parent_property}
-        || !@site_services_filtered
+    if (   $property->{is_communal}
         || $property->{has_garden_subscription}
         || $whitespace_sacks
     ) {

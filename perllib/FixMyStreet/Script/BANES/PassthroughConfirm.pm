@@ -84,7 +84,8 @@ sub _problems {
         'me.state' => { -not_in => [ FixMyStreet::DB::Result::Problem::hidden_states ] },
         external_id => { '!=' => undef },
         bodies_str => $self->body->id,
-        'contact.email' => { -not_like => '%@%' },
+        'contact.email' => { -not_like => 'Passthrough-%' },
+        'me.created' => { '>=' => '2025-04-22' },
         -or => [
             'me.extra' => undef,
             -not => { 'me.extra' => { '\?' => 'sent_to_banes_passthrough' } },

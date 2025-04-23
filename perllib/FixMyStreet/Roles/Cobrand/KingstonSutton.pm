@@ -9,12 +9,18 @@ FixMyStreet::Roles::Cobrand::KingstonSutton - shared code for Kingston and Sutto
 package FixMyStreet::Roles::Cobrand::KingstonSutton;
 
 use Moo::Role;
+use Hash::Util qw(lock_hash);
 
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
 use FixMyStreet::App::Form::Waste::Report::SLWP;
 use FixMyStreet::App::Form::Waste::Request::Kingston;
 use FixMyStreet::App::Form::Waste::Request::Sutton;
+
+my %CONTAINERS = (
+    refuse_bag => 10,
+);
+lock_hash(%CONTAINERS);
 
 =head2 Defaults
 
@@ -104,11 +110,8 @@ sub waste_password_hidden { 1 }
 # For renewal/modify
 sub waste_allow_current_bins_edit { 1 }
 
-sub _waste_containers_no_request { {
-    6 => 1, # Red stripe bag
-    17 => 1, # Recycling purple sack
-    29 => 1, # Recycling Single Use Bag
-    21 => 1, # Paper & Card Reusable bag
+sub _waste_containers_no_request { return {
+    $CONTAINERS{refuse_bag} => 1,
 } }
 
 =head2 waste_munge_report_form_fields

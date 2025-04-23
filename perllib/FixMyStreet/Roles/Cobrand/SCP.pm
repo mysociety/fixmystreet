@@ -163,26 +163,35 @@ sub cc_check_payment_status {
     return ($error, $auth_code, $can, $tx_id);
 }
 
-sub garden_cc_check_payment_status {
+sub cc_check_payment_and_update {
+    my ($self, $reference, $p) = @_;
+
+    my ($error, $auth_code, $can, $tx_id) = $self->cc_check_payment_status($reference);
+    if (!$error) {
+        $p->update_extra_metadata(
+            authCode => $auth_code,
+            continuousAuditNumber => $can,
+        );
+        return (undef, $tx_id);
+    }
+    return ($error, undef);
+}
+
+sub waste_cc_check_payment_status {
     my ($self, $c, $p) = @_;
 
     # need to get some ID Things which I guess we stored in pay
     my $scpReference = $p->get_extra_metadata('scpReference');
     $c->detach( '/page_error_404_not_found' ) unless $scpReference;
 
-    my ($error, $auth_code, $can, $tx_id) = $self->cc_check_payment_status($scpReference);
+    my ($error, $id) = $self->cc_check_payment_and_update($scpReference, $p);
     if ($error) {
         $c->stash->{error} = $error;
         return undef;
     }
 
-    $p->update_extra_metadata(
-        authCode => $auth_code,
-        continuousAuditNumber => $can,
-    );
-
-    # create sub in echo
-    return $tx_id;
+    # create sub
+    return $id;
 }
 
 1;

@@ -207,13 +207,9 @@ sub waste_extra_service_info {
         }
         $self->{c}->stash->{communal_property} = 1 if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
 
-        # Check for time-banded property
-        my $schedules = $_->{Schedules};
-        if ($self->moniker eq 'sutton' && $schedules->{next}{schedule}) {
-            my $round_group_name = $schedules->{next}{schedule}{Allocation}{RoundGroupName} || '';
-            $self->{c}->stash->{property_time_banded} = 1 if $round_group_name eq "SF Night Time Economy";
+        if ($service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed}) {
+            $self->{c}->stash->{fas_property} = 1;
         }
-
     }
 }
 
@@ -225,6 +221,9 @@ sub waste_service_containers {
     # Will get garden info later, in garden_container_data_extract
     # (as garden containers held in a totally different place)
     return if $service_id == $service_ids->{garden};
+
+    # FAS cannot request containers - FD-5401
+    return if $self->{c}->stash->{fas_property};
 
     my $waste_containers_no_request = $self->_waste_containers_no_request;
 
@@ -327,6 +326,9 @@ sub waste_munge_report_data {
         my %assisted = map { $_ => 1 } qw(domestic_refuse domestic_mixed domestic_paper domestic_food garden small_items);
         if ($c->stash->{assisted_collection} && $assisted{$lookup{$id}}) {
             $data->{category} = 'Report missed assisted collection';
+        } else {
+            # Reset in case more than one service being reported at once
+            $data->{category} = 'Report missed collection';
         }
         $data->{title} = "Report missed $service";
     }

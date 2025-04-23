@@ -298,6 +298,15 @@ sub categories_restriction {
     ] } );
 }
 
+=head2 open311_munge_update_params
+
+Stub needs to exist for FixMyStreet::Roles::Open311Multi
+
+=cut
+
+sub open311_munge_update_params {
+}
+
 =head2 open311_post_send
 
 BANES have a passthrough open311 endpoint that receives all categories with email
@@ -329,15 +338,6 @@ sub open311_post_send {
     }
 
     $row->remove_extra_field('fixmystreet_id');
-}
-
-=head2 open311_munge_update_params
-
-Stub needs to exist for FixMyStreet::Roles::Open311Multi
-
-=cut
-
-sub open311_munge_update_params {
 }
 
 =head2 dashboard_export_updates_add_columns

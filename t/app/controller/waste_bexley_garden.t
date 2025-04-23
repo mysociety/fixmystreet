@@ -2180,8 +2180,85 @@ FixMyStreet::override_config {
             };
         };
     };
-};
 
+    subtest 'Parent property scenarios' => sub {
+        my $child_uprn = 10002;
+        my $parent_uprn = 10001;
+        my $parent_site_id = 999;
+
+        default_mocks();
+        $whitespace_mock->mock( 'GetSiteInfo', sub {
+            my ($self, $uprn) = @_;
+            return {
+                AccountSiteUPRN => $child_uprn,
+                Site            => { SiteParentID => $parent_site_id }
+            } if $uprn == $child_uprn;
+            return { AccountSiteUPRN => $parent_uprn, Site => {} }; # Parent has no parent
+        });
+        $whitespace_mock->mock( 'GetAccountSiteID', sub {
+            my ($self, $site_id) = @_;
+            return { AccountSiteUprn => $parent_uprn } if $site_id == $parent_site_id;
+            return {};
+        });
+
+        # Scenario 1: Parent property exists, but child has its own services (kerbside)
+        subtest 'Kerbside with parent UPRN' => sub {
+            $whitespace_mock->mock( 'GetSiteCollections', sub {
+                my ($self, $uprn) = @_;
+                # Child has its own service
+                return [
+                    {   ServiceItemName      => 'RES-180',
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        ServiceName          => 'Green Bin',
+                        SiteServiceValidFrom => '2000-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule        => 'RND-1 Mon'
+                    }
+                ] if $uprn == $child_uprn;
+                return [];
+            });
+
+            $mech->get_ok("/waste/$child_uprn");
+            $mech->content_contains(
+                'Sign up for a garden waste collection',
+                'Sign-up button for garden shown',
+            );
+            $mech->content_contains(
+                'Subscribe to garden waste collection service',
+                'Sidebar garden sign-up link shown',
+            );
+        };
+
+        # Scenario 2: Parent property exists, child has NO services (communal)
+        subtest 'Communal with parent UPRN' => sub {
+            $whitespace_mock->mock( 'GetSiteCollections', sub {
+                my ($self, $uprn) = @_;
+                return [] if $uprn == $child_uprn; # Child has no services
+                # Parent has services
+                return [
+                    {   ServiceItemName      => 'RES-180',
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        ServiceName          => 'Green Bin',
+                        SiteServiceValidFrom => '2000-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule        => 'RND-1 Mon'
+                    }
+                ] if $uprn == $parent_uprn;
+                return [];
+            });
+
+            $mech->get_ok("/waste/$child_uprn");
+            $mech->content_lacks(
+                'Sign up for a garden waste collection',
+                'Sign-up button for garden not shown',
+            );
+            $mech->content_lacks(
+                'Subscribe to garden waste collection service',
+                'Sidebar garden sign-up link not shown',
+            );
+        };
+    };
+};
 
 my $archive_contract_called;
 my $archived_contract_id;
