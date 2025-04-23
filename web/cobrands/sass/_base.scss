@@ -785,7 +785,7 @@ ul.error {
   top: 1em;
   left: -5em;
   transform: rotate(-45deg);
-  z-index: 2;
+  z-index: 20;
   pointer-events: none;
 }
 
@@ -884,7 +884,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
   left: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.4);
-  z-index: 2; // So appears over map
+  z-index: 10; // So appears over map
 }
 
 #main-nav {
@@ -893,7 +893,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
   overflow: auto;
   left: 0;
   right: 0;
-  z-index: 3; // So appears over map and #js-menu-open-modal
+  z-index: 15; // So appears over map and #js-menu-open-modal
 }
 
 #main-nav-btn {
@@ -2520,7 +2520,7 @@ div.assigned-to {
     bottom: 0;
     height: auto; // override `.mobile #map_box` height:10em
     margin: 0;
-    z-index: 1; // stack above positioned elements later on the page (eg: .report-list-filters)
+    z-index: 5; // stack above positioned elements later on the page (eg: .report-list-filters)
 
     .sub-map-links {
       padding-bottom: env(safe-area-inset-bottom);

@@ -65,15 +65,11 @@ a#geolocate_link {
 }
 
 /* NAVBAR */
-.dev-site-notice {
-    z-index: 5;
-}
-
 #site-header {
     -moz-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
     -webkit-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2); 
     box-shadow:0 2px 4px 0 rgba(0, 0, 0, 0.2);
-    z-index: 4; // So the box-shadow can be seen when nav-mobile is open
+    z-index: 16; // So the box-shadow can be seen when nav-mobile is open
 }
 
 #site-logo {
