@@ -997,11 +997,10 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
     /* If handled by a parish (with a cut date of “Contact Parish Council” or “Contact Parish to Add”)
     prevent reporting and display a message informing the user which parish council handles the area */
     else if (data.Cut_By === 'PAR' && parish_regex.test(data.Cut_1)) {
-        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-parish-grass');
-        layer.fixmystreet.no_asset_msg_id = '#js-lincs-parish-grass';
         var text = $('#js-lincs-parish-grass').html();
         new_text = text.replace('{{PARISH_COUNCIL}}', data.Authority);
-        $('#js-lincs-parish-grass').html(new_text);
+        layer.fixmystreet.no_asset_message = new_text;
+        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-parish-grass');
     }
 
     function lincs_has_dates(cut_info) {
