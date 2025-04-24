@@ -1,0 +1,29 @@
+Subject: Summary of stuck reports for [% body.name %]
+
+[% overview %]
+
+[% IF stuck_reports.size > 0 OR unconfirmed_reports.size > 0 %]
+------------------------------------------------------------
+[% END %]
+
+[% FOR report IN stuck_reports %]
+[% SET url = cobrand.base_url _ "/admin/report_edit/" _ report.id %]
+[% report.category %] report [% url %] has failed to send [% report.send_fail_count %] times.
+
+The last failure was at [% report.send_fail_timestamp %] with error:
+
+[% report.send_fail_reason %]
+
+------------------------------------------------------------
+[% END %]
+
+[% FOR report IN unconfirmed_reports %]
+[% SET url = cobrand.base_url _ "/admin/report_edit/" _ report.id %]
+[% report.category %] report [% url %] is unconfirmed.
+
+It was created at [% report.created %].
+
+------------------------------------------------------------
+[% END %]
+
+
