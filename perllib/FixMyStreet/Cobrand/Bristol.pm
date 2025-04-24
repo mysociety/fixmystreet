@@ -236,6 +236,29 @@ sub open311_update_missing_data {
     };
 }
 
+around open311_extra_data_include => sub {
+    my ($orig, $self) = (shift, shift);
+    my $open311_only = $self->$orig(@_);
+
+    my ($row, $h, $contact) = @_;
+
+    # Add contributing user's roles to report title
+    if (my $contributed_by = $row->get_extra_metadata('contributed_by')) {
+        if (my $user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by })) {
+            my $roles = join(',', map { $_->name } $user->roles->all);
+            my $extra = $user->name;
+            $extra .= " - $roles" if $roles;
+            for (@$open311_only) {
+                if ($_->{name} eq 'title') {
+                    $_->{value} = "$extra\n\n$_->{value}";
+                }
+            }
+        }
+    }
+
+    return $open311_only;
+};
+
 =head2 open311_contact_meta_override
 
 We need to mark some of the attributes returned by Bristol's Open311 server
