@@ -785,7 +785,7 @@ ul.error {
   top: 1em;
   left: -5em;
   transform: rotate(-45deg);
-  z-index: 2;
+  z-index: 20;
   pointer-events: none;
 }
 
@@ -884,7 +884,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
   left: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.4);
-  z-index: 2; // So appears over map
+  z-index: 10; // So appears over map
 }
 
 #main-nav {
@@ -893,7 +893,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
   overflow: auto;
   left: 0;
   right: 0;
-  z-index: 3; // So appears over map and #js-menu-open-modal
+  z-index: 15; // So appears over map and #js-menu-open-modal
 }
 
 #main-nav-btn {
@@ -1270,6 +1270,51 @@ input.final-submit {
 
 .btn--small {
   font-size: 0.8em;
+}
+
+.floating-button-spacer {
+  &:before {
+    content: "";
+    display: block;
+    height: 2em;
+  }
+  &:has(.pre-button-messaging:empty):not(:has(button)) {
+    display: none;
+  }
+}
+.floating-button-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-top: 2em;
+    overflow: hidden;
+    z-index: 2;
+}
+.floating-button {
+    box-shadow: 0 0 2em 2em #fff;
+    background-color: #fff;
+    padding: 0 1em 1em;
+}
+
+.pre-button-messaging {
+    margin-bottom: 0.5em;
+    background-color: mix(#fff, $primary, 70%);
+    overflow: auto;
+    max-height: 50vh;
+}
+// Override box-warning's margin because the floating has its own
+.pre-button-messaging .box-warning {
+    margin-bottom: 0;
+}
+
+.js-floating-button-message {
+    padding: 0.5em;
+    & > :last-child { margin-bottom: 0; }
+}
+
+#js-category-stopper ~ .js-floating-button-message {
+    display: none;
 }
 
 // Most of our forms get their vertical spacing from the margin-top on labels.
@@ -2371,7 +2416,7 @@ html.js #map .noscript {
 }
 
 #change_asset_mobile,
-.map-page .js-mobile-not-an-asset,
+.map-page .js-floating-button-message,
 .only-map .category_meta_message {
   position: absolute;
   top: 2.25em;
@@ -2488,7 +2533,7 @@ div.assigned-to {
     bottom: 0;
     height: auto; // override `.mobile #map_box` height:10em
     margin: 0;
-    z-index: 1; // stack above positioned elements later on the page (eg: .report-list-filters)
+    z-index: 5; // stack above positioned elements later on the page (eg: .report-list-filters)
 
     .sub-map-links {
       padding-bottom: env(safe-area-inset-bottom);
@@ -3385,7 +3430,7 @@ $site-message-border: 1px solid #525252 !default;
   }
 }
 
-.js-post-category-messages,
+.pre-button-messaging,
 .extra-category-questions {
   h2 {
     font-size: 1.3rem;

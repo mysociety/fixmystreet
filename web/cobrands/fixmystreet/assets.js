@@ -58,15 +58,9 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
             // Show/hide the asset layer when the category is chosen
             if (this.relevant()) {
                 this.setVisibility(true);
-                if (this.fixmystreet.fault_layer) {
-                    this.fixmystreet.fault_layer.setVisibility(true);
-                }
                 this.zoom_to_assets();
             } else {
                 this.setVisibility(false);
-                if (this.fixmystreet.fault_layer) {
-                    this.fixmystreet.fault_layer.setVisibility(false);
-                }
             }
         } else {
             if (this.fixmystreet.body) {
@@ -368,7 +362,6 @@ OpenLayers.Layer.VectorNearest = OpenLayers.Class(OpenLayers.Layer.VectorBase, {
 (function(){
 
 var selected_feature = null;
-var fault_popup = null;
 
 /*
  * Adds the layer to the map and sets up event handlers and whatnot.
@@ -383,12 +376,6 @@ function init_asset_layer(layer, pins_layer) {
     // Don't cover the existing pins layer
     if (pins_layer) {
         layer.setZIndex(pins_layer.getZIndex()-1);
-    }
-
-    // Make sure the fault markers always appear beneath the linked assets
-    if (layer.fixmystreet.fault_layer) {
-        fixmystreet.map.addLayer(layer.fixmystreet.fault_layer);
-        layer.fixmystreet.fault_layer.setZIndex(layer.getZIndex()-1);
     }
 
     if (layer.fixmystreet.usrn || layer.fixmystreet.road) {
@@ -407,35 +394,11 @@ function init_asset_layer(layer, pins_layer) {
 
 }
 
-function close_fault_popup() {
-    if (!!fault_popup) {
-        fixmystreet.map.removePopup(fault_popup);
-        fault_popup.destroy();
-        fault_popup = null;
-    }
-}
-
 function asset_selected(e) {
-    close_fault_popup();
     var lonlat = e.feature.geometry.getBounds().getCenterLonLat();
 
     var layer = e.feature.layer;
     var feature = e.feature;
-
-    // Check if there is a known fault with the asset that's been clicked,
-    // and disallow selection if so.
-    var fault_feature = layer.find_matching_feature(feature, this.fixmystreet.fault_layer);
-    if (!!fault_feature) {
-        fault_popup = new OpenLayers.Popup.FramedCloud("popup",
-            e.feature.geometry.getBounds().getCenterLonLat(),
-            null,
-            "This fault (" + e.feature.attributes[this.fixmystreet.asset_id_field] + ")<br />has been reported.",
-            { size: new OpenLayers.Size(0, 0), offset: new OpenLayers.Pixel(0, 0) },
-            true, close_fault_popup);
-        fixmystreet.map.addPopup(fault_popup);
-        this.get_select_control().unselect(e.feature);
-        return;
-    }
 
     // Keep track of selection in case layer is reloaded or hidden etc.
     selected_feature = feature.clone();
@@ -476,34 +439,20 @@ function check_zoom_message_visibility() {
         return;
     }
     if (this.relevant()) {
-        var selected = fixmystreet.reporting.selectedCategory(),
-            category = this.fixmystreet.asset_group ? selected.group : selected.category,
-            prefix = category.replace(/[^a-z]/gi, ''),
-            id = "category_meta_message_" + prefix,
-            $p = $('.category_meta_message'),
-            message;
-        if ($p.length === 0) {
-            $p = $("<p>").prop('class', 'category_meta_message');
-            if ($('html').hasClass('mobile')) {
-                $p.appendTo('#map_box');
-            } else {
-                $p.appendTo('.js-reporting-page--active .js-post-category-messages');
-            }
-        }
-        $p.prop('id', id);
-
         if (this.getVisibility() && $('html').hasClass('mobile')) {
             fixmystreet.pageController.addMapPage(this);
         }
 
         if (this.getVisibility() && this.inRange) {
-            message = get_asset_pick_message.call(this);
+            delete this.map_messaging.zoom;
+            this.map_messaging.asset = get_asset_pick_message.call(this);
         } else {
-            message = 'Zoom in to pick a ' + this.fixmystreet.asset_item + ' from the map';
+            delete this.map_messaging.asset;
+            this.map_messaging.zoom = 'Zoom in to pick a ' + this.fixmystreet.asset_item + ' from the map';
         }
-        $p.html(message);
     } else {
-        update_message_display.call(this, null);
+        delete this.map_messaging.zoom;
+        delete this.map_messaging.asset;
         $('#' + this.id + '_map').remove();
     }
 }
@@ -517,27 +466,6 @@ function get_asset_pick_message() {
         message = 'You can pick a <b class="asset-' + this.fixmystreet.asset_type + '">' + this.fixmystreet.asset_item + '</b> from the map &raquo;';
     }
     return message;
-}
-
-/* This doesn't just use the class because e.g. an unselect event
- * can fire after a category change event, and that would then
- * update the new message using the text of the unselected layer. */
-function update_message_display(message) {
-    var list = this.fixmystreet.asset_group || this.fixmystreet.asset_category;
-    $.each(list, function(i, c) {
-        _update_message(message, c);
-    });
-}
-
-function _update_message(message, c) {
-    var prefix = c.replace(/[^a-z]/gi, ''),
-        id = "category_meta_message_" + prefix,
-        $p = $('#' + id);
-    if (message) {
-        $p.html(message).show();
-    } else {
-        $p.hide();
-    }
 }
 
 var lastVisible = 0;
@@ -620,19 +548,6 @@ function get_asset_stylemap() {
         'default': fixmystreet.assets.style_default,
         'select': fixmystreet.assets.style_default_select,
         'hover': fixmystreet.assets.style_default_hover
-    });
-}
-
-function get_fault_stylemap() {
-    return new OpenLayers.StyleMap({
-        'default': new OpenLayers.Style({
-            fillColor: "#FF6600",
-            fillOpacity: 1,
-            strokeColor: "#FF6600",
-            strokeOpacity: 1,
-            strokeWidth: 1.25,
-            pointRadius: 8
-        })
     });
 }
 
@@ -770,28 +685,30 @@ function construct_layer_class(options) {
     return layer_class;
 }
 
-function construct_fault_layer(options, protocol_options, layer_options) {
-    if (!options.wfs_fault_feature) {
-        return null;
+function update_floating_button_messaging(layer, messaging) {
+    var id = 'js-responsibility-message-' + layer.id;
+    var message = messaging.zoom || (layer.fixmystreet.asset_message_when_disabled ? messaging.asset : messaging.responsibility || messaging.asset);
+    var obj = $('#' + id);
+    if (message) {
+        var $div = $('<div id="' + id + '" class="js-floating-button-message"></div>').html(message);
+        if (obj.length) {
+            obj.replaceWith($div);
+        } else {
+            if ($('html').hasClass('mobile') && !layer.fixmystreet.asset_message_immediate) {
+                $div.appendTo('#map_box');
+            } else {
+                $div.appendTo('.js-reporting-page--active .pre-button-messaging');
+            }
+        }
+        if (messaging.responsibility) {
+            $div.addClass('js-not-an-asset');
+        } else {
+            $div.removeClass('js-not-an-asset');
+        }
+    } else {
+        obj.remove();
     }
-
-    // A non-interactive layer to display existing asset faults
-    var po = {
-        featureType: options.wfs_fault_feature
-    };
-    OpenLayers.Util.applyDefaults(po, protocol_options);
-    var fault_protocol = new OpenLayers.Protocol.WFS(po);
-    var lo = {
-        strategies: [new OpenLayers.Strategy.BBOX()],
-        protocol: fault_protocol,
-        styleMap: get_fault_stylemap(),
-        assets: true
-    };
-    OpenLayers.Util.applyDefaults(lo, layer_options);
-    asset_fault_layer = new OpenLayers.Layer.Vector("WFS", lo);
-    asset_fault_layer.events.register( 'loadstart', null, fixmystreet.maps.loading_spinner.show);
-    asset_fault_layer.events.register( 'loadend', null, fixmystreet.maps.loading_spinner.hide);
-    return asset_fault_layer;
+    $('.js-reporting-page--active').css('padding-bottom', $('.js-reporting-page--active .pre-button-messaging').height());
 }
 
 function construct_asset_layer(options) {
@@ -804,10 +721,18 @@ function construct_asset_layer(options) {
     var layer_class = construct_layer_class(options);
     var asset_layer = new layer_class(options.name || "WFS", layer_options);
 
-    var asset_fault_layer = construct_fault_layer(options, protocol_options, layer_options);
-    if (asset_fault_layer) {
-        asset_layer.fixmystreet.fault_layer = asset_fault_layer;
-    }
+    asset_layer.map_messaging = new Proxy({}, {
+        set: function(target, prop, value) {
+            target[prop] = value;
+            update_floating_button_messaging(asset_layer, target);
+            return true;
+        },
+        deleteProperty: function(target, prop) {
+            delete target[prop];
+            update_floating_button_messaging(asset_layer, target);
+            return true;
+        },
+    });
 
     return asset_layer;
 }
@@ -946,15 +871,11 @@ fixmystreet.assets = {
     },
     named_select_action_found: function(asset) {
         var fn = this.fixmystreet.construct_selected_asset_message || this.construct_selected_asset_message;
-        var message = fn.call(this, asset);
-        if (!message) {
-            message = get_asset_pick_message.call(this);
-        }
-        update_message_display.call(this, message);
+        var message = fn.call(this, asset) || get_asset_pick_message.call(this);
+        this.map_messaging.asset = message;
     },
     named_select_action_not_found: function() {
-        var message = get_asset_pick_message.call(this);
-        update_message_display.call(this, message);
+        this.map_messaging.asset = get_asset_pick_message.call(this);
     },
 
     selectedFeature: function() {
@@ -1457,22 +1378,18 @@ fixmystreet.message_controller = (function() {
     function show_responsibility_error(id, layer) {
         var layer_data = layer.fixmystreet;
 
-        $("#js-roads-responsibility .js-responsibility-message").addClass("hidden");
-
-        if (layer_data.no_asset_message) {
-            var cls = 'js-roads-layer-' + layer.id;
+        var cls = 'js-roads-layer-' + layer.id;
+        var div;
+        if (layer_data.no_asset_message !== undefined) {
             id = id || '#' + cls;
-            var nohash = id.replace('#', '');
-            if (!$(id).length) {
-                var div = $('<div class="hidden js-responsibility-message ' + cls + '"></div>');
-                var message = layer_data.no_asset_message[id] || layer_data.no_asset_message["default"] || layer_data.no_asset_message;
-                div.attr('id', nohash).html(message).appendTo('#js-roads-responsibility');
-            }
+            var message = layer_data.no_asset_message[id] || layer_data.no_asset_message["default"] || layer_data.no_asset_message;
+            div = $('<div/>').html(message);
         } else {
             id = id || '#js-not-an-asset';
+            div = $(id);
         }
 
-        var asset_strings = $(id).find('.js-roads-asset');
+        var asset_strings = div.find('.js-roads-asset');
         if (layer_data.asset_item) {
             asset_strings.html('a <b class="asset-' + layer_data.asset_type + '">' + layer_data.asset_item + '</b>');
         } else {
@@ -1493,50 +1410,22 @@ fixmystreet.message_controller = (function() {
             }
             return href;
         });
+
+        var msg = div.html();
         if ($('html').hasClass('mobile')) {
-            var msg = $(id).html();
-            var mobile_class = id.replace('#', '');
             $("body").addClass("map-with-crosshairs2");
-            $div = $('<div class="js-mobile-not-an-asset mob_' + mobile_class + '"></div>').html(msg);
-            $div.appendTo('#map_box');
-        } else {
-            $("#js-roads-responsibility").removeClass("hidden");
-            var top_sidebar = $('#map_sidebar').offset().top;
-            var top_message = $('#js-roads-responsibility').offset().top;
-            if (top_message < top_sidebar) {
-                $("#js-roads-responsibility")[0].scrollIntoView();
-            }
         }
-        $(id).removeClass("hidden");
+        layer.map_messaging.responsibility = msg;
     }
 
     // This hides the asset/road not found message
     function hide_responsibility_errors(id, layer) {
-        var layer_data = layer.fixmystreet;
-
-        if (layer_data.no_asset_message) {
-            id = '.js-roads-layer-' + layer.id;
-        } else {
-            id = id || '#js-not-an-asset';
-        }
-
-        // If the layer provides a class of messages, hide them all, otherwise hide the ID we're given
-        if (layer_data.no_asset_msgs_class) {
-            $(layer_data.no_asset_msgs_class).addClass("hidden");
-        } else {
-            $(id).addClass("hidden");
-        }
-        var mobile_id = id.replace(/[#.]/, '');
-        var mobile_class = '.mob_' + mobile_id;
-        $(mobile_class).remove();
-        if (!$("#js-roads-responsibility .js-responsibility-message:not(.hidden)").length) {
-            $("#js-roads-responsibility").addClass("hidden");
-        }
+        delete layer.map_messaging.responsibility;
     }
 
     // Show the reporting form, unless the road responsibility message is visible.
     function enable_report_form() {
-        if ( $('#js-roads-responsibility').is(':visible') || $('.js-mobile-not-an-asset').length ) {
+        if ( $('.js-not-an-asset').length ) {
             return;
         }
         if (hide_continue_button()) {
@@ -1645,7 +1534,7 @@ fixmystreet.message_controller = (function() {
         if (typeof stopper.message === 'function') {
             $msg = stopper.message();
         } else {
-            $msg = $('<div class="box-warning">' + stopper.message + '</div>');
+            $msg = $('<div class="js-stopper-notice box-warning">' + stopper.message + '</div>');
         }
         $msg.attr('id', stopperId);
         $msg.attr('role', 'alert');
@@ -1655,8 +1544,9 @@ fixmystreet.message_controller = (function() {
         if ($id.length) {
             $id.replaceWith($msg);
         } else {
-            $msg.appendTo('.js-reporting-page--active .js-post-category-messages');
+            $msg.prependTo('.js-reporting-page--active .pre-button-messaging');
         }
+        $('.js-reporting-page--active').css('padding-bottom', $('.js-reporting-page--active .pre-button-messaging').height());
         disable_report_form('stopper');
     }
 

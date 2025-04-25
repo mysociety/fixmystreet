@@ -9,6 +9,14 @@
     <p class='form-error'>[% field_errors.bodies %]</p>
 [% END %]
 
+[% BLOCK continue_button %]
+    <div class="floating-button-spacer"><div class="floating-button-wrapper"><div class="floating-button">
+        <div class="pre-button-messaging"></div>
+        <button class="btn btn--block btn--primary hidden-nojs js-reporting-page--next"
+            [%~ ' disabled' IF disabled %]>[% loc('Continue') %]</button>
+    </div></div></div>
+[% END %]
+
 <div data-page-name="category" class="js-reporting-page js-reporting-page--category js-reporting-page--active">
   [% IF public_councils_text_at_top %]
     [% INCLUDE public_councils_text %]
@@ -19,9 +27,7 @@
 
     [% PROCESS "report/new/category_wrapper.html" %]
     [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
-
-    <button class="btn btn--block btn--final btn--primary hidden-nojs js-reporting-page--next"
-        [% ' disabled' IF disable_form_message %]>[% loc('Continue') %]</button>
+    [% INCLUDE continue_button disabled=disable_form_message %]
 </div>
 
 <div data-page-name="subcategory" class="js-reporting-page js-reporting-page--subcategory js-reporting-page--skip[% ' hidden-nojs' UNLESS filter_group %]">
@@ -31,8 +37,7 @@
       [% END %]
     </div>
 
-    <div class="js-post-category-messages"></div>
-    <button class="btn btn--block btn--final btn--primary hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
+    [% INCLUDE continue_button %]
 </div>
 
 [% PROCESS "report/new/duplicate_suggestions.html" %]
@@ -42,8 +47,7 @@
   [% IF NOT disable_form_message %]
     [% PROCESS "report/new/category_extras.html" %]
   [% END %]
-    <div class="js-post-category-messages"></div>
-    <button class="btn btn--block btn--final btn--primary hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
+    [% INCLUDE continue_button %]
 </div>
 
 [% IF form_show_category_only %]
@@ -60,8 +64,7 @@
 
         [% PROCESS 'report/form/photo_upload.html' type='report' %]
         [% PROCESS 'report/new/after_photo.html' %]
-
-        <button class="btn btn--block btn--final btn--primary hidden-nojs js-reporting-page--next">[% loc('Continue') %]</button>
+        [% INCLUDE continue_button %]
     </div>
 [% END %]
 
@@ -95,6 +98,11 @@
     <div class="js-reporting-page--single-hidden">
         [% PROCESS report/form/user.html type='report' %]
     </div>
+
+    <div class="floating-button-spacer"><div class="floating-button-wrapper"><div class="floating-button">
+        <div class="pre-button-messaging"></div>
+    </div></div></div>
+
 </div>
 
 [% IF partial_token %]

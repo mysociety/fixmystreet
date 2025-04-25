@@ -153,7 +153,6 @@ fixmystreet.assets.banes.curo_found = function(layer) {
     }
 
     fixmystreet.message_controller.road_not_found(layer);
-    $('#js-roads-responsibility > strong').hide();
 
     var domain = 'curo-group.co.uk';
     var email = 'estates@' + domain;
@@ -163,7 +162,6 @@ fixmystreet.assets.banes.curo_found = function(layer) {
     }
 };
 fixmystreet.assets.banes.curo_not_found = function(layer) {
-    $('#js-roads-responsibility > strong').show();
     fixmystreet.message_controller.road_found(layer);
 };
 
@@ -346,17 +344,12 @@ fixmystreet.assets.bromley.unset_asset_owner = function() {
 };
 
 fixmystreet.assets.bromley.remove_park_message = function(layer) {
-    $('.js-bromley-park-message').remove();
+    delete layer.map_messaging.asset;
 };
 
 fixmystreet.assets.bromley.add_park_message = function(layer) {
-    var $msg = $('<div class="box-warning js-bromley-park-message"></div>');
-    $msg.html(layer.fixmystreet.no_asset_message);
-    if ($('.js-bromley-park-message').length) {
-        $('.js-bromley-park-message').replaceWith($msg);
-    } else {
-        $msg.appendTo('.js-reporting-page--active .js-post-category-messages');
-    }
+    layer.fixmystreet.asset_message_immediate = true;
+    layer.map_messaging.asset = layer.fixmystreet.no_asset_message;
 };
 
 /* Buckinghamshire */
@@ -691,42 +684,36 @@ function cb_should_not_require_road() {
             (!selected.group && !selected.category);
 }
 
-function cb_show_non_stopper_message() {
+function cb_show_non_stopper_message(layer) {
     // For reports about trees on private roads, Central Beds want the
     // "not our road" message to be shown and also for the report to be
     // able to be made.
     // The existing stopper message code doesn't allow for this situation, so
     // this function is used to show a custom DOM element that contains the
     // message.
-    if ($('html').hasClass('mobile')) {
-        var msg = $("#js-custom-not-council-road").html();
-        $div = $('<div class="js-mobile-not-an-asset"></div>').html(msg);
-        $div.appendTo('#map_box');
-    } else {
-        $("#js-custom-roads-responsibility").removeClass("hidden");
-    }
+    var msg = $("#js-not-council-road").html();
+    layer.map_messaging.asset = msg;
 }
 
-function cb_hide_non_stopper_message() {
-    $('.js-mobile-not-an-asset').remove();
-    $("#js-custom-roads-responsibility").addClass("hidden");
+function cb_hide_non_stopper_message(layer) {
+    delete layer.map_messaging.asset;
 }
 
 fixmystreet.assets.centralbedfordshire.found = function(layer, feature) {
     fixmystreet.message_controller.road_found(layer, feature, function(feature) {
-        cb_hide_non_stopper_message();
+        cb_hide_non_stopper_message(layer);
         if (OpenLayers.Util.indexOf(centralbeds_types, feature.attributes.adoption) != -1) {
             return true;
         }
         if (cb_should_not_require_road()) {
-            cb_show_non_stopper_message();
+            cb_show_non_stopper_message(layer);
             return true;
         }
         return false;
     }, "#js-not-council-road");
 };
 fixmystreet.assets.centralbedfordshire.not_found = function(layer) {
-    cb_hide_non_stopper_message();
+    cb_hide_non_stopper_message(layer);
     if (cb_should_not_require_road()) {
         fixmystreet.message_controller.road_found(layer);
     } else {
@@ -875,35 +862,35 @@ fixmystreet.assets.isleofwight.streets_stylemap = new OpenLayers.StyleMap({
 });
 
 fixmystreet.assets.isleofwight.not_found_msg_update = function() {
-    $('.category_meta_message').html('Please select an item or a road/pavement/path on the map &raquo;');
-    $('.category_meta_message').removeClass('meta-highlight');
     $("input[name=asset_details]").val('');
+    fixmystreet.assets.named_select_action_not_found.call(this);
 };
 
 fixmystreet.assets.isleofwight.found_item = function(asset) {
-  var id = asset.attributes.central_asset_id || '';
-  if (id !== '') {
-      var attrib = asset.attributes;
-      var asset_name = attrib.feature_type_name + '; ' + attrib.site_name + '; ' + attrib.feature_location;
-      $('.category_meta_message').html('You have selected ' + asset_name);
-      $('.category_meta_message').addClass('meta-highlight');
-      $("input[name=asset_details]").val(asset_name);
-  } else {
-      fixmystreet.assets.isleofwight.not_found_msg_update();
-  }
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+
+fixmystreet.assets.isleofwight.construct_message = function(asset) {
+    var id = asset.attributes.central_asset_id || '';
+    if (id !== '') {
+        var attrib = asset.attributes;
+        var asset_name = attrib.feature_type_name + '; ' + attrib.site_name + '; ' + attrib.feature_location;
+        $("input[name=asset_details]").val(asset_name);
+        return 'You have selected ' + asset_name;
+    }
 };
 
 fixmystreet.assets.isleofwight.line_found_item = function(layer, feature) {
     if ( fixmystreet.assets.selectedFeature() ) {
         return;
     }
-    fixmystreet.assets.isleofwight.found_item(feature);
+    fixmystreet.assets.isleofwight.found_item.call(layer, feature);
 };
 fixmystreet.assets.isleofwight.line_not_found_msg_update = function(layer) {
     if ( fixmystreet.assets.selectedFeature() ) {
         return;
     }
-    fixmystreet.assets.isleofwight.not_found_msg_update();
+    fixmystreet.assets.isleofwight.not_found_msg_update.call(layer);
 };
 
 /* Lincolnshire */
@@ -1010,11 +997,10 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
     /* If handled by a parish (with a cut date of “Contact Parish Council” or “Contact Parish to Add”)
     prevent reporting and display a message informing the user which parish council handles the area */
     else if (data.Cut_By === 'PAR' && parish_regex.test(data.Cut_1)) {
-        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-parish-grass');
-        layer.fixmystreet.no_asset_msg_id = '#js-lincs-parish-grass';
         var text = $('#js-lincs-parish-grass').html();
         new_text = text.replace('{{PARISH_COUNCIL}}', data.Authority);
-        $('#js-lincs-parish-grass').html(new_text);
+        layer.fixmystreet.no_asset_message = new_text;
+        fixmystreet.message_controller.road_found(layer, null, function() { return false; }, '#js-lincs-parish-grass');
     }
 
     function lincs_has_dates(cut_info) {
@@ -1301,11 +1287,10 @@ fixmystreet.assets.oxfordshire.owned_asset_found = function(asset) {
 };
 
 fixmystreet.assets.oxfordshire.drain_construct_selected_asset_message = function(asset) {
-    var type = this.fixmystreet.http_options.params.TYPENAME.slice(0, -1);
     var junctionInspectionLayer = window.fixmystreet.assets.layers.filter(function(elem) {
         return elem.fixmystreet.body == "Oxfordshire County Council" &&
         elem.fixmystreet.http_options &&
-        elem.fixmystreet.http_options.format.featureType == type + '_inspections';
+        elem.fixmystreet.http_options.format.featureType == 'junction_inspections';
     });
     var inspection;
     if (junctionInspectionLayer[0]) {
@@ -1315,7 +1300,7 @@ fixmystreet.assets.oxfordshire.drain_construct_selected_asset_message = function
         });
     }
     var last_clean = '';
-    var message = ' ';
+    var message = '';
     if (inspection && inspection[0]) {
         if (asset.attributes.last_inspected && (inspection[0].attributes.junction_cleaned === 'true' || inspection[0].attributes.channel_cleaned === 'true')) {
             last_clean = occ_format_date(asset.attributes.last_inspected);
@@ -1341,7 +1326,7 @@ function occ_format_date(date_field) {
 // may not have loaded. So make sure we poke for a check when the data comes
 // in.
 function occ_inspection_layer_loadend() {
-    var type = this.fixmystreet.http_options.params.TYPENAME.replace('_inspections', 's');
+    var type = this.fixmystreet.http_options.params.TYPENAME.replace(/_inspections/g, 's');
     var layer = fixmystreet.assets.layers.filter(function(elem) {
         return test_layer_typename(elem.fixmystreet, "Oxfordshire County Council", type);
     });
@@ -1351,11 +1336,7 @@ function occ_inspection_layer_loadend() {
 if (fixmystreet.cobrand == 'oxfordshire' || fixmystreet.cobrand == 'fixmystreet') {
     $(function(){
         var layer;
-        layer = fixmystreet.map.getLayersByName('Oxon Junction Inspections')[0];
-        if (layer) {
-            layer.events.register( 'loadend', layer, occ_inspection_layer_loadend);
-        }
-        layer = fixmystreet.map.getLayersByName('Oxon Channel Inspections')[0];
+        layer = fixmystreet.map.getLayersByName('Oxon Drain Inspections')[0];
         if (layer) {
             layer.events.register( 'loadend', layer, occ_inspection_layer_loadend);
         }
@@ -1554,38 +1535,30 @@ fixmystreet.assets.peterborough.bin_asset_details = function() {
     return a.Reference + ", " + a.Location;
 };
 
-fixmystreet.assets.peterborough.flytipping_pcc_found = function(layer) {
-    $("#js-environment-message").addClass("hidden");
-};
-fixmystreet.assets.peterborough.flytipping_pcc_not_found = function() {
-    for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
-        var layer = fixmystreet.assets.layers[i];
-        if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
-            $('#js-environment-message').addClass('hidden');
-            return;
-        }
-    }
-    $('#js-environment-message').removeClass('hidden');
-};
-fixmystreet.assets.peterborough.flytipping_leased_found = function() {
-    $('#js-environment-message').removeClass('hidden');
-};
+// Show a special flytipping/graffiti message on private or leased land, not a
+// road. If we're in a leased area, show the message; if we're not on PCC land
+// at all, show the message if we're not on a road.
 
-fixmystreet.assets.peterborough.graffiti_pcc_found = function(layer) {
-    $("#js-graffiti-message").addClass("hidden");
+fixmystreet.assets.peterborough.pcc_found = function(layer) {
+    delete layer.map_messaging.asset;
 };
-fixmystreet.assets.peterborough.graffiti_pcc_not_found = function() {
+fixmystreet.assets.peterborough.pcc_not_found = function(layer) {
     for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
-        var layer = fixmystreet.assets.layers[i];
-        if ( layer.fixmystreet.name == 'Adopted Highways' && layer.selected_feature ) {
-            $('#js-graffiti-message').addClass('hidden');
+        var l = fixmystreet.assets.layers[i];
+        if ( l.fixmystreet.name == 'Adopted Highways' && l.selected_feature ) {
+            delete layer.map_messaging.asset;
             return;
         }
     }
-    $('#js-graffiti-message').removeClass('hidden');
+    var msg = $(layer.fixmystreet.message_template).html();
+    layer.map_messaging.asset = msg;
 };
-fixmystreet.assets.peterborough.graffiti_leased_found = function() {
-    $('#js-graffiti-message').removeClass('hidden');
+fixmystreet.assets.peterborough.leased_found = function(layer) {
+    var msg = $(layer.fixmystreet.message_template).html();
+    layer.map_messaging.asset = msg;
+};
+fixmystreet.assets.peterborough.leased_not_found = function(layer) {
+    delete layer.map_messaging.asset;
 };
 
 /* Shropshire */

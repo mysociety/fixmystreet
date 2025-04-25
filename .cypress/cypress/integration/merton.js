@@ -66,11 +66,10 @@ describe('stoppers for park category', function() {
     cy.visit('http://merton.localhost:3001/report/new?latitude=51.400975&longitude=-0.19655');
     cy.wait('@report-ajax');
     cy.pickCategory('Parks');
-    cy.contains('Please select a Merton-owned park from the map').should('be.visible');
-    cy.contains('To report an issue at Morden Hall Park').should('not.be.visible');
-    cy.contains('To report an issue at Mitcham Common').should('not.be.visible');
-    cy.contains('To report an issue at Wimbledon Common').should('not.be.visible');
-    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.pre-button-messaging').contains('Please select a Merton-owned park from the map');
+    cy.get('.pre-button-messaging').contains('To report an issue at Morden Hall Park').should('not.exist');
+    cy.get('.pre-button-messaging').contains('To report an issue at Mitcham Common').should('not.exist');
+    cy.get('.pre-button-messaging').contains('To report an issue at Wimbledon Common').should('not.exist');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
   });
 
@@ -80,7 +79,6 @@ describe('stoppers for park category', function() {
     cy.wait('@report-ajax');
     cy.pickCategory('Parks');
     cy.wait('@merton-parks');
-    cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
   });
 
@@ -90,11 +88,10 @@ describe('stoppers for park category', function() {
     cy.wait('@report-ajax');
     cy.pickCategory('Parks');
     cy.wait('@merton-parks');
-    cy.contains('Please select a Merton-owned park from the map').should('not.be.visible');
-    cy.contains('To report an issue at Morden Hall Park').should('be.visible');
-    cy.contains('To report an issue at Mitcham Common').should('not.be.visible');
-    cy.contains('To report an issue at Wimbledon Common').should('not.be.visible');
-    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.pre-button-messaging').contains('Please select a Merton-owned park from the map').should('not.exist');
+    cy.get('.pre-button-messaging').contains('To report an issue at Morden Hall Park');
+    cy.get('.pre-button-messaging').contains('To report an issue at Mitcham Common').should('not.exist');
+    cy.get('.pre-button-messaging').contains('To report an issue at Wimbledon Common').should('not.exist');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
   });
 
@@ -104,11 +101,10 @@ describe('stoppers for park category', function() {
     cy.wait('@report-ajax');
     cy.pickCategory('Parks');
     cy.wait('@merton-parks');
-    cy.contains('Please select a Merton-owned park from the map').should('not.be.visible');
-    cy.contains('To report an issue at Morden Hall Park').should('not.be.visible');
-    cy.contains('To report an issue at Mitcham Common').should('be.visible');
-    cy.contains('To report an issue at Wimbledon Common').should('not.be.visible');
-    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.pre-button-messaging').contains('Please select a Merton-owned park from the map').should('not.exist');
+    cy.get('.pre-button-messaging').contains('To report an issue at Morden Hall Park').should('not.exist');
+    cy.get('.pre-button-messaging').contains('To report an issue at Mitcham Common');
+    cy.get('.pre-button-messaging').contains('To report an issue at Wimbledon Common').should('not.exist');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
   });
 
@@ -118,12 +114,10 @@ describe('stoppers for park category', function() {
     cy.wait('@report-ajax');
     cy.pickCategory('Parks');
     cy.wait('@merton-parks');
-    cy.contains('Please select a Merton-owned park from the map').should('not.be.visible');
-    cy.contains('To report an issue at Morden Hall Park').should('not.be.visible');
-    cy.contains('To report an issue at Mitcham Common').should('not.be.visible');
-    cy.contains('To report an issue at Wimbledon Common').should('be.visible');
-
-    cy.get('#map_sidebar').scrollTo('bottom');
+    cy.get('.pre-button-messaging').contains('Please select a Merton-owned park from the map').should('not.exist');
+    cy.get('.pre-button-messaging').contains('To report an issue at Morden Hall Park').should('not.exist');
+    cy.get('.pre-button-messaging').contains('To report an issue at Mitcham Common').should('not.exist');
+    cy.get('.pre-button-messaging').contains('To report an issue at Wimbledon Common');
     cy.get('.js-reporting-page--next:visible').should('be.disabled');
   });
 
@@ -133,7 +127,6 @@ describe('stoppers for park category', function() {
     cy.wait('@report-ajax');
     cy.pickCategory('Parks');
     cy.wait('@merton-parks');
-    cy.get('#map_sidebar').scrollTo('bottom');
     cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
     cy.nextPageReporting();
     cy.nextPageReporting();
