@@ -189,6 +189,9 @@ sub _setup_missed_collection_escalations_for_service {
     my ($self, $row) = @_;
     my $events = $row->{events} or return;
 
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+
     my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
     my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
     if (
@@ -196,6 +199,8 @@ sub _setup_missed_collection_escalations_for_service {
         $missed_event
         # And report is closed completed, or open
         && (!$missed_event->{closed} || $missed_event->{completed})
+        # And the event source is the same as the current property (for communal)
+        && ($missed_event->{source} || 0) == $property->{id}
         # And no existing escalation since last collection
         && !$escalation_event
     ) {

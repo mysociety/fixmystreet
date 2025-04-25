@@ -666,6 +666,22 @@ FixMyStreet::override_config {
             $mech->content_lacks('Report a problem with a non-recyclable refuse collection');
         };
 
+        subtest 'Open missed collection but by a different flat' => sub {
+            # So say this result was what was returned by a ServiceUnit GetEventsForObject call, not the address one
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19240, # Allocated to Crew
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12346 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with a non-recyclable refuse collection');
+        };
+
         subtest 'Open missed collection' => sub {
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
@@ -673,6 +689,7 @@ FixMyStreet::override_config {
                 EventStateId => 19240, # Allocated to Crew
                 ServiceId => 940, # Refuse
                 EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
             } ] });
 
             set_fixed_time('2022-09-10T19:00:00Z');
@@ -718,6 +735,7 @@ FixMyStreet::override_config {
                 ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
                 ServiceId => 940, # Refuse
                 EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
             } ] });
 
             set_fixed_time('2022-09-10T19:00:00Z');
@@ -748,6 +766,7 @@ FixMyStreet::override_config {
                 ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
                 ServiceId => 940, # Refuse
                 EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
             } ] });
 
             set_fixed_time('2022-09-10T19:00:00Z');
@@ -776,12 +795,14 @@ FixMyStreet::override_config {
                 EventStateId => 0,
                 ServiceId => 940, # Refuse
                 EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
             }, {
                 Id => '112112322',
                 EventTypeId => 3134, # Complaint against time
                 EventStateId => 0,
                 ServiceId => 940, # Refuse
                 EventDate => { DateTime => "2022-09-13T19:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
             } ] });
 
             set_fixed_time('2022-09-14T19:00:00Z');

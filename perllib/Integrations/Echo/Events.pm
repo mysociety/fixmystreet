@@ -30,6 +30,14 @@ sub parse {
         # Only care about open requests/enquiries
         next if $type eq 'request' && $closed && !$self->include_closed_requests;
 
+        my $source;
+        my $objects = Integrations::Echo::force_arrayref($_->{EventObjects}, 'EventObject');
+        foreach (@$objects) {
+            if ($_->{EventObjectType} eq 'Source') {
+                $source = $_->{ObjectRef}{Value}{anyType};
+            }
+        }
+
         my $event = {
             id => $_->{Id},
             guid => $_->{Guid},
@@ -38,6 +46,7 @@ sub parse {
             service_id => $service_id || 0,
             closed => $closed,
             completed => $completed,
+            source => $source,
             $_->{EventDate} ? (date => construct_bin_date($_->{EventDate})) : (),
         };
 
