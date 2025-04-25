@@ -11,6 +11,8 @@ has body => (
     default => sub { FixMyStreet::DB->resultset('Body')->find( { name => 'Bath and North East Somerset Council' } ) or die $! }
 );
 
+has verbose => ( is => 'ro' );
+
 sub send_reports {
     my ($self) = @_;
 
@@ -40,7 +42,7 @@ sub send_reports {
             $row->external_id($confirm_id);
             $row->update;
         } else {
-            STDERR->print("Failed to post over Open311\n\n" . $reporter->error . "\n");
+            STDERR->print("Failed to post over Open311\n\n" . $reporter->error . "\n") if $self->verbose;
         }
     }
 };
@@ -73,7 +75,7 @@ sub send_comments {
             $row->set_extra_metadata( passthrough_id => $id );
             $row->update;
         } else {
-            STDERR->print("Failed to post over Open311\n\n" . $o->error . "\n");
+            STDERR->print("Failed to post over Open311\n\n" . $o->error . "\n") if $self->verbose;
         }
     }
 }
