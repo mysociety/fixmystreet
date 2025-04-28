@@ -158,11 +158,6 @@ sub image_for_unit {
     my $images = {
         $TASK_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),
         $TASK_IDS{domestic_food} => "$base/caddy-brown-large",
-        '2239-textiles' => {
-            alt => 'These should be presented in a tied carrier bag.',
-            type => 'png1',
-            src => "$base/merton/bag-tied-orange",
-        },
         '2239-batteries' => {
             alt => 'These should be presented in an untied carrier bag.',
             type => 'png1',
@@ -213,7 +208,7 @@ sub waste_garden_maximum { 3 }
 
 Merton want staff to be able to request any domestic container
 for a property and also to not be restricted to only ordering
-one container. And they want to show special textile/battery
+one container. And they want to show special battery
 options.
 
 =cut
@@ -225,7 +220,7 @@ sub staff_override_request_options {
 
     foreach (@$rows) {
         if ($_->{service_id} eq $TASK_IDS{domestic_food}) {
-            # Add textiles and battery options at the bottom
+            # Add battery options at the bottom
             my $new_row = {
                 %$_,
                 report_allowed => 0,
@@ -235,12 +230,6 @@ sub staff_override_request_options {
                 requests_open => {},
                 request_containers => [], # request_allowed not enough
                 orange_bag => 1,
-                service_id => '2239-textiles',
-                service_name => 'Textiles and shoes',
-            }; # shallow copy
-            push @$rows, $new_row;
-            $new_row = {
-                %$new_row,
                 service_id => '2239-batteries',
                 service_name => 'Batteries',
             };
@@ -253,7 +242,7 @@ sub staff_override_request_options {
     my @containers_on_property;
 
     foreach my $row (@$rows) {
-        next if $row->{orange_bag}; # Ignore batteries/textiles
+        next if $row->{orange_bag}; # Ignore batteries
         push @containers_on_property, @{$row->{request_containers}};
         $row->{request_allowed} = 1;
         $row->{request_max} = 3;
