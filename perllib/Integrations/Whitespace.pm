@@ -202,16 +202,6 @@ sub GetSiteIncidents {
     return $res->{RoundIncidents}->{RoundIncidents};
 }
 
-sub GetSiteContracts {
-    my ($self, $uprn) = @_;
-
-    my $res = $self->call('GetSiteContracts', sitecontractInput => ixhash( Uprn => $uprn ));
-
-    my $contracts = force_arrayref($res->{SiteContracts}, 'SiteContract');
-
-    return $contracts;
-}
-
 sub GetFullWorksheetDetails {
     my ( $self, $ws_id ) = @_;
 

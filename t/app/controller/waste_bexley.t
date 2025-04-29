@@ -337,8 +337,26 @@ FixMyStreet::override_config {
         subtest 'service_sort sorts correctly' => sub {
             my $cobrand = FixMyStreet::Cobrand::Bexley->new;
             $cobrand->{c} = Test::MockObject->new;
-            $cobrand->{c}->mock( stash => sub { {} } );
+
+            my %session_hash;
+            $cobrand->{c}->mock( session => sub { \%session_hash } );
+            $cobrand->{c}->mock( waste_cache_set => sub {
+                Catalyst::Plugin::FixMyStreet::Session::WasteCache::waste_cache_set(@_);
+            });
+
+            my $log = Test::MockObject->new;
+            $log->mock( info => sub {} );
+            $cobrand->{c}->mock( log => sub { $log } );
+
+            $cobrand->{c}->mock( stash => sub { {
+                whitespace_data => {
+                    'GetSiteCollections 10001' => _site_collections()->{10001},
+                    'GetSiteInfo 10001' => _site_info()->{10001},
+                },
+            } } );
+
             $cobrand->{c}->mock( cobrand => sub { $cobrand });
+
             my @sorted = $cobrand->service_sort(
                 @{  $cobrand->bin_services_for_address(
                         { uprn => 10001, usrn => 321 }
