@@ -1374,6 +1374,28 @@ $.extend(fixmystreet.set_up, {
         if (fixmystreet.page !== 'around' && fixmystreet.page !== 'new' && !$('#toggle-fullscreen').length) {
             $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
         }
+
+        // Implement triple tap for skipping the map
+        if ($('#skip-map-mobile').length) {
+            var skipUrl = $('#skip-map-mobile').attr('href');
+            var tapCount = 0;
+            var tapTimer;
+            var tapDelay = 500; //miliseconds
+
+            $(document).on('touchend', function(e) {
+                tapCount++;
+
+                clearTimeout(tapTimer);
+
+
+                tapTimer = setTimeout(function() {
+                    if (tapCount === 3) {
+                    window.location.href = skipUrl;
+                    }
+                    tapCount = 0;
+                }, tapDelay);
+            });
+        }
     }
 
     // Show/hide depending on whether it has any children to show

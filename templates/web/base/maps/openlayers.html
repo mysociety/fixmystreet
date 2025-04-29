@@ -42,7 +42,8 @@
 <div id="map_box">
     [% pre_map %]
     <div id="map">
-      <a href="#map_sidebar" class="skiplink">[% loc('Skip map') %]</a>
+      [% tprintf(loc('<a id="skip-map-mobile" class="skiplink" href="%s" aria-label="%s" rel="nofollow">Skip this step</a>'), url_skip, loc('Can\'t use the map to start a report? tap 3 consecutive times to skip it')) %]
+      <a href="#map_sidebar" class="skiplink">[% loc('Skip map controls') %]</a>
       [% IF noscript_map_template == 'maps/noscript_map_base_wmx.html' %]
           [% INCLUDE 'maps/noscript_map_base_wmx.html' js = 1 %]
       [% ELSE %]
