@@ -58,6 +58,8 @@
 %]
 
 [% IF allow_creation %]
+[% tprintf(loc('<a id="skip-map-mobile" href="%s" aria-label="Can\'t use the map to start a report? swipe up with two fingers" rel="nofollow">Skip this step</a>'), url_skip) %]
+
 <form action="[% c.uri_for('/report/new') %]" method="post" name="mapForm" id="mapForm" enctype="multipart/form-data" class="validate" novalidate>
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="hidden" name="pc" value="[% pc | html %]">

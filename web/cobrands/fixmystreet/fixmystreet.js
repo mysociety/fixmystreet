@@ -1335,6 +1335,32 @@ $.extend(fixmystreet.set_up, {
         if (fixmystreet.page !== 'around' && fixmystreet.page !== 'new' && !$('#toggle-fullscreen').length) {
             $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
         }
+
+        // Implement two-finger swipe up for map skipping
+        if ($('#skip-map-mobile').length) {
+            var touchStartY = 0;
+            var touchCount = 0;
+            var skipUrl = $('#skip-map-mobile').attr('href');
+
+            $(document).on('touchstart', function(e) {
+            touchCount = e.originalEvent.touches.length;
+            if (touchCount === 2) {
+                touchStartY = e.originalEvent.touches[0].clientY;
+            }
+            });
+
+            $(document).on('touchend', function(e) {
+            if (touchCount === 2) {
+                var touchEndY = e.originalEvent.changedTouches[0].clientY;
+                var deltaY = touchStartY - touchEndY;
+                
+                if (deltaY > 40) {
+                window.location.href = skipUrl;
+                }
+                touchCount = 0;
+            }
+            });
+        }
     }
 
     // Show/hide depending on whether it has any children to show

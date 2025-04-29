@@ -421,6 +421,11 @@ body.mappage.admin {
   }
 }
 
+#skip-map-mobile {
+  // It's not needed on dektop because of .map-alternatives
+  display: none;
+}
+
 // Only want to capture footers that are inside .content
 // (like the one in base)
 .content {
