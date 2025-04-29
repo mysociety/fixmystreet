@@ -79,7 +79,7 @@ my $flytipping = $mech->create_contact_ok(
                 { key => 0, name => 'No' },
                 { key => 1, name => 'Yes' },
             ] },
-            { code => 'Size', values => [
+            { code => 'SizeOfIssue', values => [
                 { key => 0, name => 'Small' },
                 { key => 1, name => 'Medium' },
                 { key => 2, name => 'Large' },
@@ -251,7 +251,7 @@ FixMyStreet::override_config {
             category => $flytipping->category,
             extra => { _fields => [
                 { name => 'Witness', value => 1 },
-                { name => 'Size', value => "0" },
+                { name => 'SizeOfIssue', value => "0" },
             ] },
         } );
 
@@ -263,7 +263,7 @@ FixMyStreet::override_config {
         is $p->get_extra_metadata('extra_email_sent'), 1;
         my $email = $mech->get_text_body_from_email;
         like $email, qr/Witness: Yes/;
-        like $email, qr/Size: Small/;
+        like $email, qr/SizeOfIssue: Small/;
     };
 
     subtest "flytipping in parks only sends email" => sub {
@@ -276,7 +276,7 @@ FixMyStreet::override_config {
             category => $flytipping->category,
             extra => { _fields => [
                 { name => 'Witness', value => 0 },
-                { name => 'Size', value => "0" },
+                { name => 'SizeOfIssue', value => "0" },
             ] },
         } );
 
@@ -288,14 +288,14 @@ FixMyStreet::override_config {
         is_deeply $p->get_extra_metadata('sent_to'), ['parksemail@example.org'];
         my $email = $mech->get_text_body_from_email;
         like $email, qr/Witness: No/;
-        like $email, qr/Size: Small/;
+        like $email, qr/SizeOfIssue: Small/;
 
         ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
             cobrand => 'bristol',
             category => $flytipping->category,
             extra => { _fields => [
                 { name => 'Witness', value => 1 },
-                { name => 'Size', value => "0" },
+                { name => 'SizeOfIssue', value => "0" },
             ] },
         } );
 
@@ -307,7 +307,7 @@ FixMyStreet::override_config {
         is_deeply $p->get_extra_metadata('sent_to'), ['parksemail@example.org', 'flytipping@example.org'];
         $email = $mech->get_text_body_from_email;
         like $email, qr/Witness: Yes/;
-        like $email, qr/Size: Small/;
+        like $email, qr/SizeOfIssue: Small/;
     };
 
     subtest "other category does not send email" => sub {
@@ -443,6 +443,8 @@ my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'New title', {
     extra => {contributed_by => $staff_user->id},
 });
 
+my @flytipping_reports = FixMyStreet::DB->resultset('Problem')->search({ category => 'Flytipping' });
+
 subtest 'Dashboard CSV extra columns' => sub {
   my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
   FixMyStreet::override_config {
@@ -454,14 +456,22 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->log_in_ok( $comment_user->email );
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains(',"Reported As","Staff Role"', "'Staff Role' column added");
+    $mech->content_contains(',"Staff Role","Flytipping size"', "'Flytipping size' column added");
     $mech->content_contains('default,,Role', "Staff role added");
+    $mech->content_contains('website,bristol,,,0', "Flytipping size added");
     $p->created(DateTime->now->subtract( days => 1));
     $p->confirmed(DateTime->now->subtract( days => 1));
     $p->update;
+    for my $flytipping_report (@flytipping_reports) {
+        $flytipping_report->confirmed($p->confirmed);
+        $flytipping_report->update;
+    };
     FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains(',"Reported As","Staff Role"', "'Staff Role' column added in csv export");
+    $mech->content_contains(',"Staff Role","Flytipping size"', "'Flytipping size' column added in csv export");
     $mech->content_contains('default,,Role', "Staff role added added in csv export");
+    $mech->content_contains('website,bristol,,,0', "Flytipping size added in csv export");
   };
 };
 

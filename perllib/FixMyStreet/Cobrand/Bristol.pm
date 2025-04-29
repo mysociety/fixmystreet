@@ -135,16 +135,17 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         (
             staff_role => 'Staff Role',
+            SizeOfIssue => 'Flytipping size'
         )
     );
-
-    return if $csv->dbi; # All covered already
 
     my $user_lookup = $self->csv_staff_users;
     my $userroles = $self->csv_staff_roles($user_lookup);
 
     $csv->csv_extra_data(sub {
         my $report = shift;
+
+        return { SizeOfIssue => $csv->_extra_field($report, 'SizeOfIssue') } if $csv->dbi; # Everything else covered already
 
         my $by = $csv->_extra_metadata($report, 'contributed_by');
         my $staff_role = '';
@@ -153,6 +154,7 @@ sub dashboard_export_problems_add_columns {
         }
         return {
             staff_role => $staff_role,
+            SizeOfIssue => $csv->_extra_field($report, 'SizeOfIssue'),
         };
     });
 }
