@@ -178,6 +178,7 @@ sub _inspect_form_extra_fields {
         defect_hazards_overhead_cables defect_hazards_blind_bends defect_hazards_junctions
         defect_hazards_schools defect_hazards_bus_routes defect_hazards_traffic_signals
         defect_hazards_parked_vehicles defect_hazards_roundabout defect_hazards_overhanging_trees
+        defect_traffic_management_agreed
     );
 }
 
@@ -213,7 +214,7 @@ sub open311_munge_update_params {
         $params->{'attribute[easting]'} = $e;
         $params->{'attribute[northing]'} = $n;
         my $details = $comment->user->email . ' ';
-        if (my $traffic = $p->get_extra_metadata('traffic_information')) {
+        if (my $traffic = $p->get_extra_metadata('defect_traffic_management_agreed')) {
             $details .= 'TM1 ' if $traffic eq 'Signs and Cones';
             $details .= 'TM2 ' if $traffic eq 'Stop and Go Boards';
         }

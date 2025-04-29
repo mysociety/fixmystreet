@@ -421,7 +421,7 @@ FixMyStreet::override_config {
         $comment->problem->set_extra_metadata(defect_item_detail => '1 kerb unit or 1 linear m');
         $comment->problem->set_extra_metadata(defect_length => '30mm');
         $comment->problem->set_extra_metadata(defect_speed_of_road => '40mph');
-        $comment->problem->set_extra_metadata(traffic_information => 'Signs and Cones');
+        $comment->problem->set_extra_metadata(defect_traffic_management_agreed => 'Signs and Cones');
         $comment->problem->set_extra_metadata(detailed_information => '100x100');
         $comment->problem->update;
 
