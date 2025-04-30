@@ -143,6 +143,12 @@ sub open311_update_missing_data {
             $row->update_extra_field({ name => 'central_asset_id', value => $id });
         }
     }
+
+    # Q29 ('Insurance form requested ?') is required by Confirm but hidden from
+    # the user, so here we give it a default value (BLNK = 'Blank').
+    if ($contact->get_extra_field(code => 'Q29')  && !$row->get_extra_field_value('Q29')) {
+        $row->update_extra_field({ name => 'Q29', value => "BLNK" });
+    }
 }
 
 sub disambiguate_location {
