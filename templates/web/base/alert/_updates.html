@@ -5,12 +5,13 @@
     </a>
 
     [% IF NOT c.user_exists OR c.user.alert_updates_by(c.cobrand) != 'phone' %]
-        [% loc('Receive email when updates are left on this problem.') %]
+      <span id="report-updates-data-title">[% loc('Receive email when updates are left on this problem.') %]</span>
     [% ELSE %]
-        [% loc('Receive a text when updates are left on this problem.') %]
+      <span id="report-updates-data-title">[% loc('Receive a text when updates are left on this problem.') %]</span>
     [% END %]
     </p>
 
+    <button type="button" class="close-drawer screen-reader-only">&#10005; Close</button>
     [% PROCESS 'auth/form_extra.html' %]
 
   [% IF c.user_exists %]

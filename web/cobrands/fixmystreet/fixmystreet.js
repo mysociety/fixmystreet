@@ -20,27 +20,66 @@ function isR2L() {
     // A sliding drawer from the bottom of the page, small version
     // that doesn't change the main content at all.
     small_drawer: function(id) {
-        var $this = $(this), d = $('#' + id);
+        var $this = $(this), d = $('#' + id),
+        keyboardTriggered = false,
+        previousFocus;
+
+        this.on('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                keyboardTriggered = true;
+            }
+        });
+
         this.on('click', function(e) {
             e.preventDefault();
+            previousFocus = $(document.activeElement);
             if (!$this.hasClass('hover')) {
                 if (opened) {
                     opened.trigger('click');
                 }
                 if (!$this.addClass('hover').data('setup')) {
+                    var parentWidth = d.parent().width();
+                    var isMobile = $('html').hasClass('mobile');
+                    var bottomValue = ( $(window).height() - $this.offset().top + 3 ) + 'px';
                     d.hide().removeClass('hidden-js').css({
                     padding: '1em',
-                    background: '#fff'
+                    background: '#fff',
+                    position: 'fixed',
+                    top: isMobile ? '0' : '',
+                    left: '0',
+                    bottom: isMobile ? '' : bottomValue,
+                    'z-index': 9999,
+                    width: isMobile ? '100vw' : parentWidth
                     });
                     $this.data('setup', true);
                 }
-                d.slideDown();
+                d.slideDown(function() {
+                    $this.attr('aria-expanded', 'true');
+                    // We want to focus on first focusable element inside the drawer, but only if the user has use the keyboard. It is a bit odd having this behaviour when using the mouse.
+                    if (keyboardTriggered) {
+                        d.find('a, button, input, select, textarea').first().focus();
+                        keyboardTriggered = false;
+                    }
+                });
                 opened = $this;
             } else {
                 $this.removeClass('hover');
-                d.slideUp();
+                d.slideUp(function() {
+                    $this.attr('aria-expanded', 'false');
+                });
                 opened = null;
             }
+        });
+
+        d.on('click', '.close-drawer', function() {
+            $this.removeClass('hover');
+            d.slideUp(function() {
+                $this.attr('aria-expanded', 'false');
+                if (previousFocus) {
+                    previousFocus.focus();
+                }
+            });
+            opened = null;
         });
     },
 
@@ -98,7 +137,7 @@ function isR2L() {
 
                 // Insert the .shadow-wrap controls into the top of the drawer.
                 $sw.addClass('static').prependTo($drawer);
-                $('#key-tools').addClass('area-js');
+                $('.js-key-tools').addClass('area-js');
                 $('#key-tool-wards').addClass('hover');
 
                 // Animate the drawer into place, enitrely covering the sidebar.
@@ -1417,8 +1456,12 @@ $.extend(fixmystreet.set_up, {
         $('#key-tool-wards').drawer('council_wards', false);
         $('#key-tool-around-updates').drawer('updates_ajax', true);
     }
-    $('#key-tool-report-updates').small_drawer('report-updates-data');
-    $('#key-tool-report-share').small_drawer('report-share');
+    $('.js-key-tool-report-updates').each(function() {
+        $(this).small_drawer('report-updates-data');
+    });
+    $('.js-key-tool-report-share').each(function() {
+        $(this).small_drawer('report-share');
+    });
   },
 
   ward_select_multiple: function() {

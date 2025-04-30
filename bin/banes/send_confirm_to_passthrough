@@ -13,10 +13,19 @@ BEGIN {    # set all the paths to the perl code
     require "$d/../../setenv.pl";
 }
 
+use Getopt::Long::Descriptive;
 use FixMyStreet::Script::BANES::PassthroughConfirm;
 
-my $send = FixMyStreet::Script::BANES::PassthroughConfirm->new;
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['verbose|v', 'more verbose output'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
 
+my $send = FixMyStreet::Script::BANES::PassthroughConfirm->new({
+    verbose => $opts->verbose
+});
 
 $send->send_reports;
 $send->send_comments;

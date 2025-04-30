@@ -310,18 +310,14 @@ sub open311_munge_update_params {
 =head2 open311_post_send
 
 BANES have a passthrough open311 endpoint that receives all categories with email
-addresses.
-
-These then need to be sent to the specified email address after a successful
-open311 send.
+addresses. These are sent to the specified email address after an Open311 attempt.
 
 =cut
 
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 
-    # Check Open311 was successful and the email not previously sent
-    return unless $row->external_id;
+    # Check the email not previously sent
     return if $row->get_extra_metadata('extra_email_sent');
 
     my $contact = $row->contact->email;
