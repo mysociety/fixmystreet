@@ -1336,29 +1336,25 @@ $.extend(fixmystreet.set_up, {
             $('#sub_map_links').append('<a href="#" id="toggle-fullscreen" data-expand-text="'+ translation_strings.expand_map +'" data-compress-text="'+ translation_strings.collapse_map +'" >'+ translation_strings.expand_map +'</span>');
         }
 
-        // Implement two-finger swipe up for map skipping
+        // Implement triple tap for skipping the map
         if ($('#skip-map-mobile').length) {
-            var touchStartY = 0;
-            var touchCount = 0;
             var skipUrl = $('#skip-map-mobile').attr('href');
-
-            $(document).on('touchstart', function(e) {
-            touchCount = e.originalEvent.touches.length;
-            if (touchCount === 2) {
-                touchStartY = e.originalEvent.touches[0].clientY;
-            }
-            });
+            var tapCount = 0;
+            var tapTimer;
+            var tapDelay = 500; //miliseconds
 
             $(document).on('touchend', function(e) {
-            if (touchCount === 2) {
-                var touchEndY = e.originalEvent.changedTouches[0].clientY;
-                var deltaY = touchStartY - touchEndY;
-                
-                if (deltaY > 40) {
-                window.location.href = skipUrl;
-                }
-                touchCount = 0;
-            }
+                tapCount++;
+
+                clearTimeout(tapTimer);
+
+
+                tapTimer = setTimeout(function() {
+                    if (tapCount === 3) {
+                    window.location.href = skipUrl;
+                    }
+                    tapCount = 0;
+                }, tapDelay);
             });
         }
     }
