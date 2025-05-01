@@ -34,15 +34,23 @@ subtest 'No reports to send' => sub {
             commit => 1,
         });
         my @emails = $mech->get_email;
-        $mech->email_count_is(1);
-        my $email = $emails[0];
+        $mech->email_count_is(2);
+        my $email_stuck = $emails[0];
+        my $email_unconfirmed = $emails[1];
 
-        is $email->header('Subject'), "Summary of stuck reports for Body", 'correct subject';
-        is $email->header('To'), 'out-address@test', 'correct destination';
-        is $email->header('From'), 'Test <do-not-reply@testcobrand>', 'correct sender';
+        is $email_stuck->header('Subject'), "Summary of stuck reports for Body", 'correct subject';
+        is $email_stuck->header('To'), 'out-address@test', 'correct destination';
+        is $email_stuck->header('From'), 'Test <do-not-reply@testcobrand>', 'correct sender';
 
-        my $email_body = $mech->get_text_body_from_email($email);
-        like $email_body, qr/There are 0 stuck reports and 0 unconfirmed reports for categories 'Graffiti' and 'Potholes'/, 'correct overview';
+        my $email_body = $mech->get_text_body_from_email($email_stuck);
+        like $email_body, qr/There are 0 stuck reports for categories 'Graffiti' and 'Potholes'/, 'correct overview';
+
+        is $email_unconfirmed->header('Subject'), "Summary of stuck reports for Body", 'correct subject';
+        is $email_unconfirmed->header('To'), 'out-address@test', 'correct destination';
+        is $email_unconfirmed->header('From'), 'Test <do-not-reply@testcobrand>', 'correct sender';
+
+        $email_body = $mech->get_text_body_from_email($email_unconfirmed);
+        like $email_body, qr/There are 0 unconfirmed reports for categories 'Graffiti' and 'Potholes'/, 'correct overview';
     };
 };
 
@@ -91,9 +99,14 @@ subtest 'Reports to send' => sub {
             unconfirmed => 1,
             commit => 1,
         });
-        my $email = $mech->get_email;
+        my @emails = $mech->get_email;
+        $mech->email_count_is(2);
+        my $email_stuck = $emails[0];
+        my $email_unconfirmed = $emails[1];
 
         my $stuck_expected = <<EOF;
+------------------------------------------------------------
+
 Graffiti report base-url/admin/report_edit/$graffiti_id has failed to send 2 times.
 
 The last failure was at 2025-04-24T13:00:00 with error:
@@ -107,23 +120,27 @@ Potholes report base-url/admin/report_edit/$pothole_id has failed to send 3 time
 The last failure was at 2025-04-24T14:00:00 with error:
 
 [{"Code":40,"Message":"There is not an active contract for this address linked to the customer",...
-
-------------------------------------------------------------
 EOF
 
-        my $email_body = $mech->get_text_body_from_email($email);
+        my $email_body = $mech->get_text_body_from_email($email_stuck);
+        $email_body =~ s/\r\n/\n/g;
         is_string_nows $email_body, <<EOF;
-There are 2 stuck reports and 1 unconfirmed report for categories 'Graffiti' and 'Potholes'
-
-------------------------------------------------------------
+There are 2 stuck reports for categories 'Graffiti' and 'Potholes'
 
 $stuck_expected
+EOF
+        unlike $email_body, qr/Bins/s, 'does not contain the stuck bins report';
+
+        $email_body = $mech->get_text_body_from_email($email_unconfirmed);
+        $email_body =~ s/\r\n/\n/g;
+        is_string_nows $email_body, <<EOF;
+There is 1 unconfirmed report for categories 'Graffiti' and 'Potholes'
+
+------------------------------------------------------------
 
 Graffiti report base-url/admin/report_edit/$graffiti_unconfirmed_id is unconfirmed.
 
 It was created at 2025-04-24T11:00:00.
-
-------------------------------------------------------------
 EOF
         unlike $email_body, qr/Bins/s, 'does not contain the stuck bins report';
 
@@ -132,16 +149,14 @@ EOF
             body => $body,
             categories => ['Graffiti', 'Potholes'],
             email => 'out-address@test',
-            unconfirmed => 1,
             commit => 1,
         });
-        $email = $mech->get_email;
+        my $email = $mech->get_email;
 
         $email_body = $mech->get_text_body_from_email($email);
+        $email_body =~ s/\r\n/\n/g;
         is_string_nows $email_body, <<EOF;
-There are 2 stuck reports and 0 unconfirmed reports for categories 'Graffiti' and 'Potholes'
-
-------------------------------------------------------------
+There are 2 stuck reports for categories 'Graffiti' and 'Potholes'
 
 $stuck_expected
 EOF
