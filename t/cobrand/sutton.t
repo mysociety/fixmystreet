@@ -71,6 +71,9 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1 },
 }, sub {
+    my $echo = Test::MockModule->new('Integrations::Echo');
+    $echo->mock('GetEvent', sub { {} });
+
     subtest 'test waste duplicate' => sub {
         my $sender = FixMyStreet::SendReport::Open311->new(
             bodies => [ $body ], body_config => { $body->id => $body },
@@ -105,11 +108,10 @@ FixMyStreet::override_config {
         my $sender = FixMyStreet::SendReport::Open311->new(
             bodies => [ $body ], body_config => { $body->id => $body },
         );
-        my $echo = Test::MockModule->new('Integrations::Echo');
-        $echo->mock('GetEvent', sub { {
-            Guid => 'a-guid',
-            Id => 123,
-        } } );
+        $echo->mock('GetEvent', sub {
+            return {} if $_[2] eq 'ClientReference';
+            return { Guid => 'a-guid', Id => 123 }
+        });
         Open311->_inject_response('/requests.xml', '<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Duplicate Event! Original eventID: 123</description></error></errors>', 500);
         $sender->send($report, {
             easting => 1,
@@ -118,6 +120,61 @@ FixMyStreet::override_config {
         });
         is $sender->success, 1;
         is $report->external_id, 'a-guid';
+    };
+
+    subtest 'test internal error, no event, at the Echo side' => sub {
+        $report->update({ external_id => undef });
+        my $sender = FixMyStreet::SendReport::Open311->new(
+            bodies => [ $body ], body_config => { $body->id => $body },
+        );
+        $echo->mock('GetEvent', sub { {} });
+        Open311->_inject_response('/requests.xml', '<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Internal error</description></error></errors>', 500);
+        $sender->send($report, {
+            easting => 1,
+            northing => 2,
+            url => 'http://example.org/',
+        });
+        is $sender->success, 0;
+        is $report->external_id, undef;
+    };
+
+    subtest 'test internal error, event accepted, at the Echo side' => sub {
+        my $sender = FixMyStreet::SendReport::Open311->new(
+            bodies => [ $body ], body_config => { $body->id => $body },
+        );
+        $echo->mock('GetEvent', sub {
+            my $fn = (caller(2))[3];
+            if ($fn =~ /open311_post_send_check/) {
+                return { Guid => 'c-guid', Id => 123 }
+            } else {
+                return {};
+            }
+        });
+        Open311->_inject_response('/requests.xml', '<?xml version="1.0" encoding="utf-8"?><errors><error><code></code><description>Internal error</description></error></errors>', 500);
+        $sender->send($report, {
+            easting => 1,
+            northing => 2,
+            url => 'http://example.org/',
+        });
+        is $sender->success, 1;
+        is $report->external_id, 'c-guid';
+    };
+
+    subtest 'test event already existing at the Echo side' => sub {
+        my $sender = FixMyStreet::SendReport::Open311->new(
+            bodies => [ $body ], body_config => { $body->id => $body },
+        );
+        $echo->mock('GetEvent', sub {
+            return { Guid => 'b-guid', Id => 123 };
+        });
+        $sender->send($report, {
+            easting => 1,
+            northing => 2,
+            url => 'http://example.org/',
+        });
+        is $sender->success, 1;
+        is $report->external_id, 'b-guid';
+        $echo->mock('GetEvent', sub { {} });
     };
 
     subtest 'correct payment data sent across' => sub {
@@ -158,7 +215,7 @@ FixMyStreet::override_config {
         like $body, qr/Dear Sutton Council,\s+A user of FixMyStreet has submitted/;
         like $body, qr{http://www.example.org/report/$id};
     };
-
+    undef $echo;
 };
 
 package SOAP::Result;
@@ -358,6 +415,7 @@ FixMyStreet::override_config {
             bodies => [ $body ], body_config => { $body->id => $body },
         );
         my $echo = Test::MockModule->new('Integrations::Echo');
+        $echo->mock('GetEvent', sub { {} });
         $echo->mock('CancelReservedSlotsForEvent', sub {
             is $_[1], $report->get_extra_field_value('GUID');
         });

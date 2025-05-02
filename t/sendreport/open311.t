@@ -16,6 +16,9 @@ $ukc->mock('lookup_site_code', sub {
     return "Road ID";
 });
 
+my $echo = Test::MockModule->new('Integrations::Echo');
+$echo->mock(GetEvent => sub { {} });
+
 package main;
 sub test_overrides; # defined below
 

@@ -162,6 +162,7 @@ FixMyStreet::override_config {
     $echo->mock( 'CancelReservedSlotsForEvent', sub { [] } );
     $echo->mock( 'GetTasks', sub { [] } );
     $echo->mock( 'GetEventsForObject', sub { [] } );
+    $echo->mock( 'GetEvent', sub { {} } );
     $echo->mock( 'FindPoints',sub { [
         {
             Description => '2 Example Street, Bromley, BR1 1AF',
