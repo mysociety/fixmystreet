@@ -6,11 +6,14 @@ $heading-font: "Museo300-display", MuseoSans, Helmet, Freesans, sans-serif !defa
 $menu-image: "menu-white" !default;
 $close-menu-image: "close-#{$menu-image}" !default;
 
-$link-color: #005ea5 !default;
-$link-hover-color: #2b8cc4 !default;
+$link-color: #005A9E !default;
+$link-hover-color: #024274 !default;
+$link-focus-color: #333 !default;
 $link-visited-color: $link-color !default;
-$link-text-decoration: none !default;
+$link-text-decoration: underline !default;
 $link-hover-text-decoration: underline !default;
+$link-focus-text-decoration: underline !default;
+$link-focus-background: #ffe100 !default;
 
 $error_color: #D50404 !default;
 
@@ -42,6 +45,8 @@ $col_fixed_label_light: mix($col_fixed_label, #fff, 10%) !default;
 $form-control-border-color: #aaaaaa !default;
 $header-top-border-width: 0.25em !default;
 $header-top-border: $header-top-border-width solid $primary !default;
+$header-link-text-decoration: none !default;
+$header-link-hover-text-decoration: none !default;
 
 $container-max-width: 60em !default;
 
@@ -253,6 +258,11 @@ a,
 .fake-link {
   text-decoration: $link-text-decoration;
   color: $link-color;
+  text-underline-offset : .1578em; // Improves readability by not overlapping with the element
+  -webkit-text-decoration-skip-ink: none;
+  text-decoration-skip-ink: none;
+  -webkit-text-decoration-skip: none;
+  text-decoration-skip: none; // So the text-decoration doesn't get cut
 
   &:visited {
     color: $link-visited-color;
@@ -262,6 +272,14 @@ a,
   &:active {
     text-decoration: $link-hover-text-decoration;
     color: $link-hover-color;
+    text-decoration-thickness: 3px;
+  }
+
+  &:focus {
+    text-decoration: $link-focus-text-decoration;
+    color: $link-focus-color;
+    background-color: $link-focus-background;
+    text-decoration-thickness: 3px;
   }
 }
 
@@ -915,6 +933,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
     color: #333;
     font-size: 1.25em;
     border-bottom: 1px solid #ccc;
+    text-decoration: $header-link-text-decoration;
   }
   a:visited {
     color: #333;
@@ -923,6 +942,7 @@ html.mobile.js-nav-open #js-menu-open-modal {
     background-color: #333;
     color: #fff;
     text-decoration: none;
+    text-decoration: $header-link-hover-text-decoration;
   }
   span {
     background-color: mix(#fff, $primary, 70%);
