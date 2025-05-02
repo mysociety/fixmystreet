@@ -8,8 +8,6 @@ with 'FixMyStreet::Roles::Cobrand::Waste',
      'FixMyStreet::Roles::Cobrand::SLWP2',
      'FixMyStreet::Roles::Cobrand::SCP';
 
-use Digest::SHA qw(sha1_hex);
-use Encode qw(encode_utf8);
 use Hash::Util qw(lock_hash);
 
 sub council_area_id { return 2498; }
