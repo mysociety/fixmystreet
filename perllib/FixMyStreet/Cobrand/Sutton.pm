@@ -247,11 +247,16 @@ sub _setup_container_request_escalations_for_service {
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
 
-    # Window starts on the 21st working day after the request was made
-    my $start = $wd->add_days($open_request_event->{date}, 21)->set_hour(0);
+    my $start_days = 21; # Window starts on the 21st working day after the request was made
+    my $window_days = 10; # Window ends a further 10 working days after the start date
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
+        # For staging site testing (but not automated testing) use quicker/smaller windows
+        $start_days = 1;
+        $window_days = 2;
+    }
 
-    # Window ends a further 10 working days after the start date
-    my $end = $wd->add_days($start, 11);
+    my $start = $wd->add_days($open_request_event->{date}, $start_days)->set_hour(0);
+    my $end = $wd->add_days($start, $window_days + 1); # Before this
 
     if ($now >= $start && $now < $end) {
         $row->{escalations}{container} = $open_request_event;
