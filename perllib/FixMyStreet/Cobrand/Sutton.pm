@@ -228,6 +228,10 @@ sub service_name_override {
     return $service_name_override{$service->{ServiceId}} // '';
 }
 
+sub _waste_containers_no_request { return {
+    $CONTAINERS{refuse_bag} => 1,
+} }
+
 sub waste_request_single_radio_list { 1 }
 
 =head2 waste_munge_request_form_fields

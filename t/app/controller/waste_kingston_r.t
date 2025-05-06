@@ -454,20 +454,9 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('"container-10" value="1"');
     };
-    subtest 'Fortnightly collection can request a blue stripe bag' => sub {
+    subtest 'No requesting a blue stripe bag' => sub {
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-22' => 1 }});
-        $mech->submit_form_ok({ with_fields => { 'removal-22' => 0 } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-        $mech->content_contains('request has been sent');
-        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "2 Example Street, Kingston, KT1 1AA";
-        is $report->category, 'Request new container';
-        is $report->title, 'Request Mixed Recycling Blue Striped Bag delivery';
-    };
-    subtest 'Weekly collection cannot request a blue stripe bag' => sub {
+        $mech->content_lacks('"container-22" value="1"');
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('"container-22" value="1"');
