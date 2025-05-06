@@ -408,6 +408,7 @@ FixMyStreet::override_config {
                             Reference => $contract_id,
                             WasteContainerQuantity => 2,
                             ServiceContractStatus => 'ACTIVE',
+                            UPRN => '10001',
                             Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
                         },
                     ],
@@ -2328,6 +2329,7 @@ $agile_mock->mock( 'CustomerSearch', sub { {
                     EndDate => '01/02/2025 00:00',
                     Reference => 'CONTRACT_123',
                     WasteContainerQuantity => 1,
+                    UPRN => '10001',
                     ServiceContractStatus => 'ACTIVE',
                     Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
                 },
