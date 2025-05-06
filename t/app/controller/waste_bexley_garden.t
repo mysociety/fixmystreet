@@ -407,6 +407,7 @@ FixMyStreet::override_config {
                             Reference => $contract_id,
                             WasteContainerQuantity => 2,
                             ServiceContractStatus => 'ACTIVE',
+                            UPRN => '10001',
                             Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
                         },
                     ],
