@@ -226,6 +226,7 @@ sub service_name_override {
 
 sub _waste_containers_no_request { return {
     $CONTAINERS{refuse_bag} => 1,
+    $CONTAINERS{garden_sack} => 1,
 } }
 
 sub waste_request_single_radio_list { 1 }
