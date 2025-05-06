@@ -6,8 +6,8 @@ $heading-font: "Museo300-display", MuseoSans, Helmet, Freesans, sans-serif !defa
 $menu-image: "menu-white" !default;
 $close-menu-image: "close-#{$menu-image}" !default;
 
-$link-color: #005ea5 !default;
-$link-hover-color: #2b8cc4 !default;
+$link-color: #005A9E !default;
+$link-hover-color: #1573b9 !default;
 $link-visited-color: $link-color !default;
 $link-text-decoration: none !default;
 $link-hover-text-decoration: underline !default;
@@ -262,6 +262,12 @@ a,
   &:active {
     text-decoration: $link-hover-text-decoration;
     color: $link-hover-color;
+  }
+
+  &:focus-visible {
+    box-shadow: 0px 0px 0px 5px #000;
+    outline: 3px solid $primary;
+    outline-offset: 2px;
   }
 }
 

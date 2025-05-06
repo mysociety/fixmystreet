@@ -11,14 +11,13 @@ sub run {
     my $params = shift;
     my $cobrand = $params->{body}->get_cobrand_handler;
 
-    my @stuck_reports = FixMyStreet::DB->resultset('Problem')->to_body($params->{body}->id)->search({
+    my $resultset = FixMyStreet::DB->resultset('Problem')->to_body($params->{body}->id);
+    my @stuck_reports = $resultset->search({
         category => $params->{categories},
         send_state => 'unprocessed',
         state => [ FixMyStreet::DB::Result::Problem::open_states() ],
         send_fail_count => { '>', 0 },
     })->order_by('-confirmed')->all;
-    my $stuck_reports_count = scalar @stuck_reports;
-    my $category_count = scalar @{$params->{categories}};
 
     foreach (@stuck_reports) {
         my $reason = $_->send_fail_reason;
@@ -28,10 +27,10 @@ sub run {
         $_->send_fail_reason($reason);
     }
 
-    my @unconfirmed_reports;
-    my $unconfirmed_reports_count;
+    send_email('stuck', $params, $cobrand, \@stuck_reports);
+
     if ($params->{unconfirmed}) {
-        @unconfirmed_reports = FixMyStreet::DB->resultset('Problem')->to_body($params->{body}->id)->search({
+        my @unconfirmed_reports = $resultset->search({
             category => $params->{categories},
             state => 'unconfirmed',
             -or => [
@@ -39,15 +38,25 @@ sub run {
                 -not => { extra => { '\?' => 'stuck_email_sent' } }
             ],
         })->order_by('-created')->all;
-        $unconfirmed_reports_count = scalar @unconfirmed_reports;
-    }
 
-    my $overview = "There " . PL_V("is", $stuck_reports_count) . " $stuck_reports_count stuck " . PL_N("report", $stuck_reports_count);
-    if ($params->{unconfirmed}) {
-        $overview .= " and $unconfirmed_reports_count unconfirmed " . PL_N("report", $unconfirmed_reports_count);
+        send_email('unconfirmed', $params, $cobrand, \@unconfirmed_reports);
+
+        if ($params->{commit}) {
+            foreach (@unconfirmed_reports) {
+                $_->set_extra_metadata( stuck_email_sent => 1 );
+                $_->update;
+            }
+        }
     }
+}
+
+sub send_email {
+    my ($type, $params, $cobrand, $reports) = @_;
+
+    my $count = scalar @$reports;
+    my $category_count = scalar @{$params->{categories}};
+    my $overview = "There " . PL_V("is", $count) . " $count $type " . PL_N("report", $count);
     $overview .= " for " . PL_N('category', $category_count) . " " . WORDLIST(map { "'$_'" } @{$params->{categories}});
-
 
     FixMyStreet::Email::send_cron(
         FixMyStreet::DB->schema,
@@ -56,8 +65,7 @@ sub run {
             body => $params->{body},
             cobrand => $cobrand,
             overview => $overview,
-            stuck_reports => \@stuck_reports,
-            unconfirmed_reports => \@unconfirmed_reports,
+            $type eq 'stuck' ? (stuck_reports => $reports) : (unconfirmed_reports => $reports),
         },
         { To => $params->{email} },
         undef,    # env_from
@@ -65,13 +73,6 @@ sub run {
         $cobrand,
         "en-gb",
     );
-
-    if ($params->{commit}) {
-        foreach (@unconfirmed_reports) {
-            $_->set_extra_metadata( stuck_email_sent => 1 );
-            $_->update;
-        }
-    }
 }
 
 1;

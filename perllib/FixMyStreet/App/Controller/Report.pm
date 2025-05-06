@@ -458,8 +458,6 @@ sub inspect : Private {
         my %update_params = ();
 
         if ($permissions->{report_inspect}) {
-            $problem->set_extra_metadata( traffic_information => $c->get_param('traffic_information') );
-
             my $old_detailed_information
                 = $problem->get_extra_metadata('detailed_information') // '';
             if ( my $info = $c->get_param('detailed_information') ) {

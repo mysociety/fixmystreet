@@ -358,7 +358,9 @@ sub post_report_sent {
     my ($self, $problem) = @_;
 
     if ( $self->{cache_flytipping_email} ) {
-        $self->_post_report_sent_close($problem, 'report/new/flytipping_text.html');
+        my $template = 'report/new/flytipping_text.html';
+        $template = 'report/new/graffiti_text.html' if $problem->category =~ /graffiti/i;
+        $self->_post_report_sent_close($problem, $template);
     }
 }
 

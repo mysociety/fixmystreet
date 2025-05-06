@@ -1028,7 +1028,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/report/$report2_id");
         $mech->submit_form_ok({ button => 'save', with_fields => {
             public_update => "This is a public update.", include_update => "1",
-            traffic_information => 'Signs and cones',
+            defect_traffic_management_agreed => 'Signs and cones',
             state => 'action scheduled', raise_defect => 1,
             defect_item_category => 'Kerbing',
         } });
