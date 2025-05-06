@@ -219,6 +219,7 @@ sub waste_service_containers {
 
     my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
     my ($containers, $request_max);
+    $request_max = 1;
     foreach (@$data) {
         next if $service_id == $TASK_IDS{communal_refuse} || $service_id == $TASK_IDS{communal_food} || $service_id == $TASK_IDS{communal_paper} || $service_id == $TASK_IDS{communal_mixed};
         my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
@@ -239,16 +240,12 @@ sub waste_service_containers {
             next if $container == $CONTAINERS{garden_sack};
 
             $self->{c}->stash->{quantities}->{$container} = $quantity;
-
-            # The most you can request is one
-            $request_max->{$container} = 1;
         }
     }
 
     if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{food_indoor}}) {
         # Can always request a food caddy
         push @$containers, $CONTAINERS{food_indoor}; # Food waste bin (kitchen)
-        $request_max->{$CONTAINERS{food_indoor}} = 1;
     }
 
     return ($containers, $request_max);

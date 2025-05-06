@@ -13,7 +13,6 @@ with 'FixMyStreet::Roles::Cobrand::Echo';
 sub waste_bulky_missed_blocked_codes {}
 sub waste_containers {}
 sub waste_service_to_containers {}
-sub waste_quantity_max {}
 sub waste_extra_service_info {}
 
 sub garden_subscription_event_id {}

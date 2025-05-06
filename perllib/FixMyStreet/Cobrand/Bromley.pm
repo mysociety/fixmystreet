@@ -770,27 +770,17 @@ sub waste_containers {
 
 sub waste_service_to_containers {
     return (
-        $SERVICE_IDS{domestic_mixed} => [ 1 ],
-        $SERVICE_IDS{communal_mixed} => [ 3 ],
-        $SERVICE_IDS{domestic_paper} => [ 12 ],
-        $SERVICE_IDS{communal_paper} => [ 14 ],
-        $SERVICE_IDS{domestic_food} => [ 9, 10 ],
-        $SERVICE_IDS{communal_food} => [ 46 ],
-        $SERVICE_IDS{garden} => [ 44 ],
+        $SERVICE_IDS{domestic_mixed} => { containers => [ 1 ], max => 3 },
+        $SERVICE_IDS{communal_mixed} => { containers => [ 3 ], max => 3 },
+        $SERVICE_IDS{domestic_paper} => { containers => [ 12 ], max => 3 },
+        $SERVICE_IDS{communal_paper} => { containers => [ 14 ], max => 3 },
+        $SERVICE_IDS{domestic_food} => { containers => [ 9, 10 ], max => 2 },
+        $SERVICE_IDS{communal_food} => { containers => [ 46 ], max => 2 },
+        $SERVICE_IDS{garden} => { containers => [ 44 ] },
     );
 }
 
-sub waste_quantity_max {
-    return (
-        $SERVICE_IDS{domestic_mixed} => 3,
-        $SERVICE_IDS{communal_mixed} => 3,
-        $SERVICE_IDS{domestic_paper} => 3,
-        $SERVICE_IDS{communal_paper} => 3,
-        $SERVICE_IDS{domestic_food} => 2,
-        $SERVICE_IDS{communal_food} => 2,
-        $SERVICE_IDS{garden} => 6,
-    );
-}
+sub waste_garden_maximum { 6 }
 
 sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
 

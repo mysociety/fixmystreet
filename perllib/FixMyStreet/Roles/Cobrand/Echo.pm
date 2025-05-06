@@ -18,7 +18,6 @@ with 'FixMyStreet::Roles::EnforcePhotoSizeOpen311PreSend';
 
 requires 'waste_containers';
 requires 'waste_service_to_containers';
-requires 'waste_quantity_max';
 requires 'waste_extra_service_info';
 
 requires 'garden_subscription_event_id';
@@ -150,8 +149,6 @@ sub bin_services_for_address {
     my %service_to_containers = $self->waste_service_to_containers;
     my %request_allowed = map { $_ => 1 } keys %service_to_containers;
 
-    my %quantity_max = $self->waste_quantity_max;
-    $self->{c}->stash->{quantity_max} = \%quantity_max;
     my $quantities = $self->{c}->stash->{quantities} = {};
 
     my $result = $self->{api_serviceunits};
@@ -217,8 +214,8 @@ sub bin_services_for_address {
         my $servicetask = $_->{ServiceTask};
 
         my ($containers, $request_max) = $self->call_hook(waste_service_containers => $_);
-        $containers ||= $service_to_containers{$service_id};
-        $request_max ||= $quantity_max{$service_id};
+        $containers ||= $service_to_containers{$service_id}{containers};
+        $request_max ||= $service_to_containers{$service_id}{max};
 
         my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
         $self->call_hook(waste_munge_bin_services_open_requests => $open_requests);
@@ -902,13 +899,6 @@ sub waste_sub_overdue {
 }
 
 # Garden waste
-
-sub waste_garden_maximum {
-    my $self = shift;
-    my $c = $self->{c};
-    my $service = $self->garden_service_id;
-    return $c->stash->{quantity_max}->{$service};
-}
 
 sub waste_display_payment_method {
     my ($self, $method) = @_;

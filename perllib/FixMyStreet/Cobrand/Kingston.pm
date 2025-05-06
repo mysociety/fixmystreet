@@ -75,11 +75,7 @@ sub waste_payment_ref_council_code { "RBK" }
 
 sub garden_collection_time { '6:30am' }
 
-sub waste_quantity_max {
-    return (
-        $SERVICE_IDS{garden} => 5, # Garden waste maximum
-    );
-}
+sub waste_garden_maximum { 5 }
 
 sub waste_munge_bin_services_open_requests {
     my ($self, $open_requests) = @_;
