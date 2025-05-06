@@ -12,7 +12,7 @@
         %][% INCLUDE 'icons/warning.html' width='1.5em' height='1.5em' %]</a></li>
         [% END %]
         [% IF c.cobrand.moniker != 'zurich' %]
-        <li><a rel="nofollow" class="has-inline-svg js-key-tool-report-updates" aria-expanded="false" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %][% INCLUDE 'icons/rss.html' width='1.3em' height='1.3em' %]</a></li>
+        <li><a rel="nofollow" class="has-inline-svg js-key-tool-report-updates" aria-expanded="false" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %][% INCLUDE 'icons/rss.html' width='1.5em' height='1.5em' %]</a></li>
         [% END %]
         [% IF c.cobrand.moniker == 'fixmystreet' %]
         <li><a rel="nofollow" class="has-inline-svg js-key-tool-report-share" href="#report-share" aria-expanded="false">[% loc('Share') %][% INCLUDE 'icons/share.html' width='1.5em' height='1.5em' %]</a></li>
