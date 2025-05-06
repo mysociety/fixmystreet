@@ -166,4 +166,6 @@ sub disambiguate_location {
     };
 }
 
+sub lookup_site_code {} # XXX waiting for asset layer
+
 1;
