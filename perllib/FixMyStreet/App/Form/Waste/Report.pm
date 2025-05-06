@@ -38,6 +38,7 @@ has_field continue => (
     type => 'Submit',
     value => 'Continue',
     element_attr => { class => 'govuk-button' },
+    order => 999,
 );
 
 has_field submit => (
