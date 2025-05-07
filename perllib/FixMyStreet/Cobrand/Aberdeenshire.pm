@@ -167,6 +167,19 @@ sub open311_update_missing_data {
     }
 }
 
+=head2 open311_config
+
+Send multiple photos as files to Open311
+
+=cut
+
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
+}
+
 =item * Make a few improvements to the display of geocoder results
 
 Remove 'Aberdeenshire' and 'Alba / Scotland', skip any that don't mention Aberdeenshire at all
