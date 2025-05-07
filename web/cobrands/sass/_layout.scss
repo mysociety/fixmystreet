@@ -670,20 +670,20 @@ body.authpage {
   width: $mappage-sidebar-width;
   overflow: hidden;
   padding-top: 2em;
-  
-  &.static {
-    padding: 0 0 1em;
-    margin: 0 -1em; // overlap parent side padding
-    position: static;
-    width: auto; // avoid horizontal scrollbar as drawer opens (on devices with permanent scroll bars)
-  }
-  
+
   .js & {
     // If JS is not available then shadow wrap position will be static and won't cover any other content on the page.
     position: fixed;
     z-index: 10; //this is just to ensure anything inside .content that has position set goes sites it
     bottom: 0;
     #{$left}: 0;
+  }
+
+  &.static {
+    padding: 0 0 1em;
+    margin: 0 -1em; // overlap parent side padding
+    position: static;
+    width: auto; // avoid horizontal scrollbar as drawer opens (on devices with permanent scroll bars)
   }
 }
 
