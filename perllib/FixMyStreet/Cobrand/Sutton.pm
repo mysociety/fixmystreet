@@ -8,8 +8,6 @@ with 'FixMyStreet::Roles::Cobrand::Waste',
      'FixMyStreet::Roles::Cobrand::SLWP2',
      'FixMyStreet::Roles::Cobrand::SCP';
 
-use Digest::SHA qw(sha1_hex);
-use Encode qw(encode_utf8);
 use Hash::Util qw(lock_hash);
 
 sub council_area_id { return 2498; }
@@ -102,11 +100,7 @@ sub garden_collection_time { '6am' }
 
 sub waste_garden_allow_cancellation { 'staff' }
 
-sub waste_quantity_max {
-    return (
-        $SERVICE_IDS{garden} => 5, # Garden waste maximum
-    );
-}
+sub waste_garden_maximum { 5 }
 
 sub waste_munge_bin_services_open_requests {
     my ($self, $open_requests) = @_;
@@ -229,6 +223,11 @@ sub service_name_override {
 
     return $service_name_override{$service->{ServiceId}} // '';
 }
+
+sub _waste_containers_no_request { return {
+    $CONTAINERS{refuse_bag} => 1,
+    $CONTAINERS{garden_sack} => 1,
+} }
 
 sub waste_request_single_radio_list { 1 }
 

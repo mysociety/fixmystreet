@@ -764,6 +764,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { extra_detail => "They left the mattress" } });
         $mech->submit_form_ok({ form_number => 1 });
+        $mech->content_contains('Submit missed bulky collection');
         $mech->submit_form_ok({ form_number => 3 });
 
         my $missed = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;

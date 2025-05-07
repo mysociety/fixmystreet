@@ -41,12 +41,21 @@ my %CONTAINERS = (
     refuse_180 => 2,
     refuse_240 => 3,
     refuse_360 => 4,
+    refuse_1100 => 8,
+    refuse_bag => 10,
     recycling_box => 12,
     recycling_240 => 15,
+    recycling_360 => 16,
+    recycling_1100 => 20,
+    recycling_blue_bag => 22,
     paper_240 => 27,
     paper_140 => 26,
+    paper_360 => 28,
+    paper_1100 => 32,
+    paper_bag => 34,
     food_indoor => 43,
     food_outdoor => 46,
+    food_240 => 51,
     garden_240 => 39,
     garden_140 => 37,
     garden_sack => 36,
@@ -66,11 +75,7 @@ sub waste_payment_ref_council_code { "RBK" }
 
 sub garden_collection_time { '6:30am' }
 
-sub waste_quantity_max {
-    return (
-        $SERVICE_IDS{garden} => 5, # Garden waste maximum
-    );
-}
+sub waste_garden_maximum { 5 }
 
 sub waste_munge_bin_services_open_requests {
     my ($self, $open_requests) = @_;
@@ -99,30 +104,37 @@ sub image_for_unit {
         return "";
     }
 
-    if ($unit->{service_id} eq 'bulky') {
+    my $container = $unit->{request_containers}[0] || 0;
+    my $service_id = $unit->{service_id};
+    if ($service_id eq 'bulky') {
         return "$base/bulky-black";
     }
 
-    # Base mixed recycling (2241) on the container itself
-    my %containers = map { $_ => 1 } @{$unit->{request_containers}};
-    return svg_container_bin("wheelie", '#41B28A') if $containers{$CONTAINERS{recycling_240}};
-    return "$base/box-green-mix" if $containers{$CONTAINERS{recycling_box}};
-
-    my $service_id = $unit->{service_id};
+    my $bag_blue_stripe = svg_container_sack('stripe', '#4f4cf0');
+    my $bag_red_stripe = svg_container_sack('stripe', '#E83651');
+    my $bag_clear = svg_container_sack('normal', '#d8d8d8');
+    my $wheelie_green = svg_container_bin("wheelie", '#41B28A');
     my $images = {
+        $CONTAINERS{recycling_box} => "$base/box-green-mix",
+        $CONTAINERS{recycling_240} => $wheelie_green,
+        $CONTAINERS{recycling_blue_bag} => $bag_blue_stripe,
+        $CONTAINERS{paper_bag} => $bag_clear,
+        $CONTAINERS{refuse_bag} => $bag_red_stripe,
+        $CONTAINERS{food_outdoor} => "$base/caddy-brown-large",
+
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'), # refuse
         $SERVICE_IDS{domestic_food} => "$base/caddy-brown-large", # food
         $SERVICE_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1), # paper and card
-        $SERVICE_IDS{domestic_mixed} => svg_container_bin("wheelie", '#41B28A'), # dry mixed
-        $SERVICE_IDS{fas_refuse} => svg_container_sack('stripe', '#E83651'), # domestic refuse bag
+        $SERVICE_IDS{domestic_mixed} => $wheelie_green,
+        $SERVICE_IDS{fas_refuse} => $bag_red_stripe,
         $SERVICE_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'), # Communal refuse
-        $SERVICE_IDS{fas_mixed} => svg_container_sack('stripe', '#4f4cf0'), # domestic recycling bag
+        $SERVICE_IDS{fas_mixed} => $bag_blue_stripe,
         $SERVICE_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'), # Communal food
         $SERVICE_IDS{communal_paper} => svg_container_bin("communal", '#767472', '#00A6D2'), # Communal paper
         $SERVICE_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'), # Communal recycling
-        $SERVICE_IDS{fas_paper} => svg_container_sack('normal', '#d8d8d8'), # domestic paper bag
+        $SERVICE_IDS{fas_paper} => $bag_clear,
     };
-    return $images->{$service_id};
+    return $images->{$container} || $images->{$service_id};
 }
 
 sub waste_containers {
@@ -140,21 +152,18 @@ sub waste_containers {
     };
     return {
         %$black_bins,
-        10 => 'Refuse Red Stripe Bag',
-        22 => 'Mixed Recycling Blue Striped Bag',
-        34 => 'Paper & Card Recycling Clear Bag',
-        8 => 'Communal Refuse bin (1100L)',
-        20 => 'Communal Recycling bin (1100L)',
-        51 => 'Communal Food bin (240L)',
-        $CONTAINERS{recycling_240} => 'Recycling bin (240L)',
-        16 => 'Recycling bin (360L)',
-        28 => 'Paper recycling bin (360L)',
-        32 => 'Communal Paper bin (1100L)',
+        $CONTAINERS{refuse_bag} => 'Refuse Red Stripe Bag',
+        $CONTAINERS{recycling_blue_bag} => 'Mixed Recycling Blue Striped Bag',
+        $CONTAINERS{paper_bag} => 'Paper & Card Recycling Clear Bag',
+        $CONTAINERS{refuse_1100} => 'Communal Refuse bin (1100L)',
+        $CONTAINERS{recycling_1100} => 'Communal Recycling bin (1100L)',
+        $CONTAINERS{food_240} => 'Communal Food bin (240L)',
+        $CONTAINERS{paper_1100} => 'Communal Paper bin (1100L)',
         $CONTAINERS{recycling_240} => 'Green recycling bin (240L)',
-        16 => 'Green recycling bin (360L)',
+        $CONTAINERS{recycling_360} => 'Green recycling bin (360L)',
         $CONTAINERS{recycling_box} => 'Green recycling box (55L)',
         $CONTAINERS{paper_240} => 'Blue lid paper and cardboard bin (240L)',
-        28 => 'Blue lid paper and cardboard bin (360L)',
+        $CONTAINERS{paper_360} => 'Blue lid paper and cardboard bin (360L)',
         $CONTAINERS{food_indoor} => 'Food waste bin (kitchen)',
         $CONTAINERS{food_outdoor} => 'Food waste bin (outdoor)',
         $CONTAINERS{paper_140} => 'Blue lid paper and cardboard bin (180L)',
@@ -193,6 +202,13 @@ sub service_name_override {
 
     return $service_name_override{$service->{ServiceId}} // '';
 }
+
+sub _waste_containers_no_request { return {
+    $CONTAINERS{refuse_bag} => 1,
+    $CONTAINERS{recycling_blue_bag} => 1,
+    $CONTAINERS{paper_bag} => 1,
+    $CONTAINERS{garden_sack} => 1,
+} }
 
 sub waste_request_single_radio_list { 0 }
 

@@ -979,25 +979,16 @@ sub waste_containers { $BRENT_CONTAINERS }
 
 sub waste_service_to_containers {
     return (
-        $SERVICE_IDS{domestic_refuse} => [ $CONTAINER_IDS{rubbish_grey_bin} ],
-        $SERVICE_IDS{domestic_mixed} => [ $CONTAINER_IDS{recycling_blue_bin} ],
-        $SERVICE_IDS{fas_mixed} => [ $CONTAINER_IDS{recycling_clear_sack} ],
-        $SERVICE_IDS{domestic_food} => [ $CONTAINER_IDS{food_caddy} ],
-        $SERVICE_IDS{garden} => [ $CONTAINER_IDS{garden_green_bin} ],
-        $SERVICE_IDS{domestic_paper} => [ $CONTAINER_IDS{paper_blue_sack} ],
+        $SERVICE_IDS{domestic_refuse} => { containers => [$CONTAINER_IDS{rubbish_grey_bin} ], max => 1 },
+        $SERVICE_IDS{domestic_mixed} => { containers => [ $CONTAINER_IDS{recycling_blue_bin} ], max => 1 },
+        $SERVICE_IDS{fas_mixed} => { containers => [ $CONTAINER_IDS{recycling_clear_sack} ], max => 1 },
+        $SERVICE_IDS{domestic_food} => { containers => [ $CONTAINER_IDS{food_caddy} ], max => 1 },
+        $SERVICE_IDS{garden} => { containers => [ $CONTAINER_IDS{garden_green_bin} ] },
+        $SERVICE_IDS{domestic_paper} => { containers => [ $CONTAINER_IDS{paper_blue_sack} ], max => 1 },
     );
 }
 
-sub waste_quantity_max {
-    return (
-        $SERVICE_IDS{domestic_refuse} => 1,
-        $SERVICE_IDS{domestic_mixed} => 1,
-        $SERVICE_IDS{fas_mixed} => 1,
-        $SERVICE_IDS{domestic_food} => 1,
-        $SERVICE_IDS{garden} => 5,
-        $SERVICE_IDS{domestic_paper} => 1,
-    );
-}
+sub waste_garden_maximum { 5 }
 
 sub waste_bulky_missed_blocked_codes {
     return {

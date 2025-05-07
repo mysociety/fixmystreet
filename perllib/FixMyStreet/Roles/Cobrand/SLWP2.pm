@@ -242,17 +242,16 @@ sub waste_service_containers {
             $quantity = $_->{Value} if $_->{DatatypeName} eq 'Container Quantity';
         }
 
-        next if $waste_containers_no_request->{$container};
-
         next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/; # Blue stripe bag on a weekly collection
 
         if ($container && $quantity) {
             push @$containers, $container;
-            next if $container == $CONTAINERS{garden_sack};
 
             $self->{c}->stash->{quantities}->{$container} = $quantity;
 
-            if ($self->moniker eq 'kingston') {
+            if ($waste_containers_no_request->{$container}) {
+                $request_max->{$container} = 0; # Cannot request these
+            } elsif ($self->moniker eq 'kingston') {
                 if ($container == $CONTAINERS{food_outdoor} || $container == $CONTAINERS{paper_240} || $container == $CONTAINERS{recycling_240}) {
                     $request_max->{$container} = 3;
                 } elsif ($container == $CONTAINERS{recycling_box}) {
@@ -268,12 +267,12 @@ sub waste_service_containers {
             if ($self->moniker eq 'sutton') {
                 if ($container == $CONTAINERS{refuse_140} || $container == $CONTAINERS{refuse_360}) {
                     push @$containers, $CONTAINERS{refuse_240};
-                    $request_max->{+$CONTAINERS{refuse_240}} = 1;
+                    $request_max->{$CONTAINERS{refuse_240}} = 1;
                 } elsif ($container == $CONTAINERS{refuse_240}) {
                     push @$containers, $CONTAINERS{refuse_140};
-                    $request_max->{+$CONTAINERS{refuse_140}} = 1;
+                    $request_max->{$CONTAINERS{refuse_140}} = 1;
                 } elsif ($container == $CONTAINERS{paper_140}) {
-                    $request_max->{+$CONTAINERS{paper_240}} = 1;
+                    $request_max->{$CONTAINERS{paper_240}} = 1;
                     # Swap 140 for 240 in container list
                     @$containers = map { $_ == $CONTAINERS{paper_140} ? $CONTAINERS{paper_240} : $_ } @$containers;
                 }
@@ -281,15 +280,15 @@ sub waste_service_containers {
         }
     }
 
-    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{+$CONTAINERS{food_indoor}}) {
+    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{food_indoor}}) {
         # Can always request a food caddy
         push @$containers, $CONTAINERS{food_indoor}; # Food waste bin (kitchen)
-        $request_max->{+$CONTAINERS{food_indoor}} = 1;
+        $request_max->{$CONTAINERS{food_indoor}} = 1;
     }
     if ($self->moniker eq 'kingston' && grep { $_ == $CONTAINERS{recycling_box} } @$containers) {
         # Can request a bin if you have a box
         push @$containers, $CONTAINERS{recycling_240};
-        $request_max->{+$CONTAINERS{recycling_240}} = 3;
+        $request_max->{$CONTAINERS{recycling_240}} = 3;
     }
 
     return ($containers, $request_max);

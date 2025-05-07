@@ -17,11 +17,6 @@ use FixMyStreet::App::Form::Waste::Report::SLWP;
 use FixMyStreet::App::Form::Waste::Request::Kingston;
 use FixMyStreet::App::Form::Waste::Request::Sutton;
 
-my %CONTAINERS = (
-    refuse_bag => 10,
-);
-lock_hash(%CONTAINERS);
-
 =head2 Defaults
 
 =over 4
@@ -109,10 +104,6 @@ sub waste_password_hidden { 1 }
 
 # For renewal/modify
 sub waste_allow_current_bins_edit { 1 }
-
-sub _waste_containers_no_request { return {
-    $CONTAINERS{refuse_bag} => 1,
-} }
 
 =head2 waste_munge_report_form_fields
 

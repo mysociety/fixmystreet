@@ -260,7 +260,14 @@ has_field tandc => (
     build_option_label_method => sub {
         my $form = $_[0]->form;
         my $c = $form->c;
-        my $label = FixMyStreet::Template::SafeString->new('I have read the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">bulky waste collection</a> page on the council’s website');
+        my $link = $c->cobrand->call_hook('bulky_tandc_link');
+        my $label;
+        if ($c->cobrand->moniker eq 'sutton') {
+            $label = 'I have read the <a href="' . $link . '" target="_blank">terms and conditions</a> of the service on the council’s website and agree to them.';
+        } else {
+            $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste collection</a> page on the council’s website';
+        }
+        $label = FixMyStreet::Template::SafeString->new($label);
         return $label;
     },
 );
