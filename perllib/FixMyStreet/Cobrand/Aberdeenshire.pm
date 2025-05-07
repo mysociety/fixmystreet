@@ -185,15 +185,15 @@ sub lookup_site_code_config {
 
     # uncoverable subroutine
     # uncoverable statement
-    {
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    return {
         buffer => 1000, # metres
-        url => "https://to.eu.ngrok.io/tilma.staging.mysociety.org/mapserver/aberdeenshire",
+        url => "https://$host/mapserver/aberdeenshire",
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => "WSS",
         property => "siteCode",
         accept_feature => sub { 1 }
-    }
+    };
 }
-
 
 1;
