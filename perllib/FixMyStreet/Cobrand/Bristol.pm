@@ -108,6 +108,39 @@ sub pin_colour {
 
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
+=head2 category_change_force_resend
+
+If a report was sent to a backend, when the category
+changes to a category that is email or a different backend
+it will be resent.
+
+If it was sent to an email and the category is changed to
+a backend it will also be resent.
+
+=cut
+
+sub _contact_type {
+    my $contact = shift;
+
+    return 'Alloy' if $contact->email =~ /^Alloy-/;
+    return 'Email' if ($_->send_method || '') eq 'Email';
+    return 'Confirm';
+}
+
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+
+    # Get the Open311 identifiers
+    my $contacts = $self->{c}->stash->{contacts};
+
+    ($old) = map { _contact_type($_) } grep { $_->category eq $old } @$contacts;
+    ($new) = map { _contact_type($_) } grep { $_->category eq $new } @$contacts;
+
+    return 0 if $old eq 'Confirm' && $new eq 'Confirm';
+    return 0 if $old eq 'Alloy' && $new eq 'Alloy';
+    return 1;
+}
+
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
