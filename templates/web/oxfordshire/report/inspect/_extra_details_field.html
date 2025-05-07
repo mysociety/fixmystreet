@@ -20,19 +20,19 @@
     function update_prefix() {
         var prefix = document.getElementById('js-defect-prefix');
         var text = '';
-        var traffic = document.getElementById('traffic_information');
+        var traffic = document.getElementById('defect_traffic_management_agreed');
         if (traffic.selectedIndex) {
             text += 'TM' + traffic.selectedIndex + ' ';
         }
         var type = document.getElementById('defect_item_type');
         type = type.options[type.selectedIndex].value;
         type = type.split(' ')[0];
-        text += (type == 'Sweep') ? 'S&F' : type;
+        text += type;
         text += ' ';
         prefix.textContent = text;
     }
 
-    document.getElementById('traffic_information').addEventListener('change', update_prefix);
+    document.getElementById('defect_traffic_management_agreed').addEventListener('change', update_prefix);
     document.getElementById('defect_item_type').addEventListener('change', update_prefix);
 })();
 </script>

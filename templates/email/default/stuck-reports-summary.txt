@@ -1,0 +1,27 @@
+Subject: Summary of [%
+    IF unconfirmed_reports.size; 'unconfirmed';
+    ELSE; 'stuck';
+    END
+%] reports for [% body.name %]
+
+[% overview %]
+
+[% IF stuck_reports.size %][% FOR report IN stuck_reports %]
+
+------------------------------------------------------------
+
+[% report.category %] report [% report.admin_url(cobrand) %] has failed to send [% report.send_fail_count %] times.
+
+The last failure was at [% report.send_fail_timestamp %] with error:
+
+[% report.send_fail_reason %]
+[% END %][% END %]
+
+[% IF unconfirmed_reports.size %][% FOR report IN unconfirmed_reports %]
+
+------------------------------------------------------------
+
+[% report.category %] report [% report.admin_url(cobrand) %] is unconfirmed.
+
+It was created at [% report.created %].
+[% END %][% END %]

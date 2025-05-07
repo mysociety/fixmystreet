@@ -1,0 +1,50 @@
+#!/usr/bin/env perl
+#
+# This script sends a summary of stuck reports to
+# a given email for the given categories and body
+
+use v5.14;
+use warnings;
+
+BEGIN {    # set all the paths to the perl code
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use CronFns;
+use Getopt::Long::Descriptive;
+use FixMyStreet::DB;
+use FixMyStreet::Cobrand;
+use FixMyStreet::Script::SendStuckReportsSummary;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['body=s', 'body to filter by'],
+    ['category=s@', 'categories to filter by'],
+    ['email=s', 'email to send the summary to'],
+    ['unconfirmed|u', 'include unconfirmed reports'],
+    ['commit|c', 'actually send the email'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+$usage->die unless $opts->email && $opts->category && $opts->body;
+
+my $body = FixMyStreet::DB->resultset('Body')->find({ name => $opts->body });
+die "Couldn't find body " . $opts->body unless $body;
+
+my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
+CronFns::language($site);
+
+unless ($opts->{commit}) {
+    print "Running in dry mode. Email will not be sent but printed instead.";
+}
+
+FixMyStreet::Script::SendStuckReportsSummary::run({
+    body => $body,
+    categories => $opts->category,
+    email => $opts->email,
+    unconfirmed => $opts->unconfirmed,
+    commit => $opts->commit,
+});

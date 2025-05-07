@@ -10,7 +10,8 @@ SET fields = [
     [ 'defect_item_type', 'Defect type' ],
     [ 'defect_item_detail', 'Defect detail' ],
     [ 'defect_location_description', 'Location description' ],
-    [ 'traffic_information', 'Traffic management required?' ],
+    [ 'defect_traffic_management_agreed', 'Traffic management required?' ],
+    [ 'traffic_information', 'Traffic management required?' ], # Old name
     [ 'defect_initials', 'Initials' ],
     [ 'defect_length', 'Length (mm)' ],
     [ 'defect_width', 'Width (mm)' ],
@@ -118,12 +119,12 @@ END;
             </optgroup>
         </select>
 
-        <label for="traffic_information">[% loc('Traffic management required?') %]</label>
-        [% traffic_info = problem.get_extra_metadata('traffic_information') %]
-        <select id="traffic_information" name="traffic_information" class="form-control">
-            <option value=""[% ' selected' IF NOT traffic_info %]>&nbsp;</option>
+        <label for="defect_traffic_management_agreed">[% loc('Traffic management required?') %]</label>
+        [% tma = problem.get_extra_metadata('defect_traffic_management_agreed') %]
+        <select id="defect_traffic_management_agreed" name="defect_traffic_management_agreed" class="form-control">
+            <option value=""[% ' selected' IF NOT tma %]>&nbsp;</option>
             [% FOREACH option IN ['Signs and Cones', 'Stop and Go Boards'] %]
-                <option value='[% option %]'[% ' selected' IF traffic_info == option %]>[% option %]</option>
+                <option value='[% option %]'[% ' selected' IF tma == option %]>[% option %]</option>
             [% END %]
         </select>
 

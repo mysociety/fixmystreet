@@ -42,7 +42,8 @@ my $params = {
     cobrand => 'peterborough',
 };
 my $peterborough = $mech->create_body_ok(2566, 'Peterborough City Council', $params);
-my $contact = $mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping');
+$mech->create_contact_ok(email => 'FLY', body_id => $peterborough->id, category => 'General fly tipping');
+$mech->create_contact_ok(email => 'Bartec-Graffiti', body_id => $peterborough->id, category => 'Non offensive graffiti');
 my $user = $mech->create_user_ok('peterborough@example.org', name => 'Council User', from_body => $peterborough);
 $peterborough->update( { comment_user_id => $user->id } );
 
@@ -334,7 +335,7 @@ subtest "flytipping on PCC land witnessed is only sent by email" => sub {
     };
 };
 
-subtest "flytipping on non PCC land is emailed" => sub {
+subtest "flytipping/graffiti on non PCC land is emailed" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
@@ -376,6 +377,30 @@ subtest "flytipping on non PCC land is emailed" => sub {
 
         $mech->email_count_is(1);
         my $email = $mech->get_email;
+        ok $email, "got an email";
+        $mech->clear_emails_ok;
+
+        ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
+            category => 'Non offensive graffiti',
+            latitude => 52.5608,
+            longitude => 0.2405,
+            cobrand => 'peterborough',
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        is $p->send_state, 'sent', 'Report marked as sent';
+        is $p->get_extra_metadata('flytipping_email'), undef, 'flytipping_email extra metadata unset';
+        is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
+        is $p->state, 'closed', 'report closed having sent email';
+        is $p->comments->count, 1, 'comment added';
+        like $p->comments->first->text, qr/For graffiti on private land/, 'correct comment text';
+        ok !Open311->test_req_used, 'no open311 sent';
+
+        my @email = $mech->get_email;
+        $mech->email_count_is(1);
+        $email = $mech->get_email;
         ok $email, "got an email";
     };
 };

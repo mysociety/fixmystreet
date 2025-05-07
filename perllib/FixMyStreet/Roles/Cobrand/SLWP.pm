@@ -1,6 +1,7 @@
 =head1 NAME
 
 FixMyStreet::Roles::Cobrand::SLWP - shared code for anything with the SLWP Echo
+(just Merton at present)
 
 =head1 DESCRIPTION
 
@@ -128,7 +129,6 @@ sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
 
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
-    return 1 if $self->moniker eq 'kingston';
     return $unit->{garden_sacks} ? 0 : 1;
 }
 
@@ -147,9 +147,6 @@ sub waste_relevant_serviceunits {
             next unless $service_name;
 
             my $schedules = _parse_schedules($task, 'task');
-
-            # Ignore retired diesel rounds
-            next if $self->moniker eq 'kingston' && !$schedules->{next} && $service_id != $self->garden_service_id;
 
             push @rows, {
                 Id => $_->{Id},
@@ -222,6 +219,7 @@ sub waste_service_containers {
 
     my $data = Integrations::Echo::force_arrayref($task->{Data}, 'ExtensibleDatum');
     my ($containers, $request_max);
+    $request_max = 1;
     foreach (@$data) {
         next if $service_id == $TASK_IDS{communal_refuse} || $service_id == $TASK_IDS{communal_food} || $service_id == $TASK_IDS{communal_paper} || $service_id == $TASK_IDS{communal_mixed};
         my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
@@ -242,45 +240,12 @@ sub waste_service_containers {
             next if $container == $CONTAINERS{garden_sack};
 
             $self->{c}->stash->{quantities}->{$container} = $quantity;
-
-            if ($self->moniker eq 'kingston') {
-                if ($container == $CONTAINERS{food_outdoor} || $container == $CONTAINERS{paper_240} || $container == $CONTAINERS{recycling_240}) {
-                    $request_max->{$container} = 3;
-                } elsif ($container == $CONTAINERS{recycling_box}) {
-                    $request_max->{$container} = 5;
-                } else {
-                    $request_max->{$container} = 1;
-                }
-            } else {
-                # The most you can request is one
-                $request_max->{$container} = 1;
-            }
-
-            if ($self->moniker eq 'sutton') {
-                if ($container == $CONTAINERS{refuse_140} || $container == $CONTAINERS{refuse_360}) {
-                    push @$containers, $CONTAINERS{refuse_240};
-                    $request_max->{+$CONTAINERS{refuse_240}} = 1;
-                } elsif ($container == $CONTAINERS{refuse_240}) {
-                    push @$containers, $CONTAINERS{refuse_140};
-                    $request_max->{+$CONTAINERS{refuse_140}} = 1;
-                } elsif ($container == $CONTAINERS{paper_140}) {
-                    $request_max->{+$CONTAINERS{paper_240}} = 1;
-                    # Swap 140 for 240 in container list
-                    @$containers = map { $_ == $CONTAINERS{paper_140} ? $CONTAINERS{paper_240} : $_ } @$containers;
-                }
-            }
         }
     }
 
-    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{+$CONTAINERS{food_indoor}}) {
+    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{food_indoor}}) {
         # Can always request a food caddy
         push @$containers, $CONTAINERS{food_indoor}; # Food waste bin (kitchen)
-        $request_max->{+$CONTAINERS{food_indoor}} = 1;
-    }
-    if ($self->moniker eq 'kingston' && grep { $_ == $CONTAINERS{recycling_box} } @$containers) {
-        # Can request a bin if you have a box
-        push @$containers, $CONTAINERS{recycling_240};
-        $request_max->{+$CONTAINERS{recycling_240}} = 3;
     }
 
     return ($containers, $request_max);

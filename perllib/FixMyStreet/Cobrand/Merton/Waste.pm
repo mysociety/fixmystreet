@@ -200,11 +200,7 @@ sub alternative_backend_field_names {
     return $alternative_name{$field};
 }
 
-sub waste_quantity_max {
-    return (
-        $TASK_IDS{garden} => 3, # Garden waste maximum
-    );
-}
+sub waste_garden_maximum { 3 }
 
 =item munge_bin_services_for_address
 

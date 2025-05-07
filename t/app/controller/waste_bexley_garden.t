@@ -394,6 +394,40 @@ FixMyStreet::override_config {
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
+        subtest 'with active contract elsewhere' => sub {
+            $agile_mock->mock( 'CustomerSearch', sub { {
+                Customers => [
+                    {
+                        CustomerExternalReference => 'CUSTOMER_123',
+                        CustomertStatus => 'ACTIVATED',
+                        ServiceContracts => [
+                            {
+                                # 42 days away
+                                EndDate => '14/03/2024 12:00',
+                                Reference => $contract_id,
+                                WasteContainerQuantity => 2,
+                                ServiceContractStatus => 'INACTIVE',
+                                UPRN => '10001',
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
+                            },
+                            {
+                                # 42 days away
+                                EndDate => '14/03/2024 12:00',
+                                Reference => $contract_id,
+                                WasteContainerQuantity => 2,
+                                ServiceContractStatus => 'ACTIVE',
+                                UPRN => '10002',
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
+                            },
+                        ],
+                    },
+                ],
+            } } );
+
+            $mech->get_ok("/waste/$uprn");
+            like $mech->content, qr/You do not have a Garden waste collection/;
+        };
+
         subtest 'with no garden container in Whitespace' => sub {
             $agile_mock->mock( 'CustomerSearch', sub { {
                 Customers => [
@@ -407,6 +441,7 @@ FixMyStreet::override_config {
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
                                 ServiceContractStatus => 'ACTIVE',
+                                UPRN => '10001',
                                 Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
                             },
                         ],
@@ -457,6 +492,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'RENEWALDUE',
+                                    UPRN => '10001',
                                     Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
@@ -487,6 +523,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
+                                    UPRN => '10001',
                                     Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
@@ -638,6 +675,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
+                                    UPRN => '10001',
                                     Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
@@ -666,6 +704,7 @@ FixMyStreet::override_config {
                                     Reference => $contract_id,
                                     WasteContainerQuantity => 2,
                                     ServiceContractStatus => 'ACTIVE',
+                                    UPRN => '10001',
                                     Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
@@ -1069,6 +1108,7 @@ FixMyStreet::override_config {
                                 {
                                     EndDate => '12/12/2024 12:21',
                                     ServiceContractStatus => 'NOACTIVE',
+                                    UPRN => '10001',
                                     Payments => [
                                         {
                                             PaymentStatus => "Paid",
@@ -1080,6 +1120,7 @@ FixMyStreet::override_config {
                                 {
                                     EndDate => '12/12/2025 12:21',
                                     ServiceContractStatus => 'ACTIVE',
+                                    UPRN => '10001',
                                     Payments => [
                                         {
                                             PaymentStatus => $status,
@@ -1122,6 +1163,7 @@ FixMyStreet::override_config {
                         {
                             EndDate => '12/12/2025 12:21',
                             ServiceContractStatus => 'ACTIVE',
+                            UPRN => '10001',
                             WasteContainerQuantity => 2,
                             Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                         },
@@ -1268,6 +1310,7 @@ FixMyStreet::override_config {
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
                                 ServiceContractStatus => 'ACTIVE',
+                                UPRN => '10001',
                             },
                         ],
                     },
@@ -1384,6 +1427,7 @@ FixMyStreet::override_config {
                             {
                                 EndDate => '12/12/2025 12:21',
                                 ServiceContractStatus => 'ACTIVE',
+                                UPRN => '10001',
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
                                 Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ],
@@ -1486,6 +1530,7 @@ FixMyStreet::override_config {
                             Reference => $contract_id,
                             WasteContainerQuantity => 2,
                             ServiceContractStatus => 'ACTIVE',
+                            UPRN => '10001',
                             Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ],
                         },
                     ],
@@ -1683,6 +1728,7 @@ FixMyStreet::override_config {
                                     Reference => 'CONTRACT_123',
                                     WasteContainerQuantity => 1,
                                     ServiceContractStatus => 'ACTIVE',
+                                    UPRN => '10001',
                                     Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
@@ -1755,6 +1801,7 @@ FixMyStreet::override_config {
                                     Reference => 'CONTRACT_123',
                                     WasteContainerQuantity => 1,
                                     ServiceContractStatus => 'ACTIVE',
+                                    UPRN => '10001',
                                     Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                 },
                             ],
@@ -1842,6 +1889,7 @@ FixMyStreet::override_config {
                                 Reference => 'CONTRACT_123',
                                 WasteContainerQuantity => 1,
                                 ServiceContractStatus => 'ACTIVE',
+                                UPRN => '10001',
                                 Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                             },
                         ],
