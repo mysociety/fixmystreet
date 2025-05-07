@@ -136,11 +136,11 @@ site code.
 sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
-    # In case the client hasn't given us a central asset ID, look up the
+    # In case the client hasn't given us a site code, look up the
     # closest asset from the WFS service at the point we're sending the report
-    if (!$row->get_extra_field_value('central_asset_id')) {
+    if (!$row->get_extra_field_value('site_code')) {
         if (my $id = $self->lookup_site_code($row)) {
-            $row->update_extra_field({ name => 'central_asset_id', value => $id });
+            $row->update_extra_field({ name => 'site_code', value => $id });
         }
     }
 
@@ -180,6 +180,20 @@ sub disambiguate_location {
     };
 }
 
-sub lookup_site_code {} # XXX waiting for asset layer
+sub lookup_site_code_config {
+    my ($self, $property) = @_;
+
+    # uncoverable subroutine
+    # uncoverable statement
+    {
+        buffer => 1000, # metres
+        url => "https://to.eu.ngrok.io/tilma.staging.mysociety.org/mapserver/aberdeenshire",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "WSS",
+        property => "siteCode",
+        accept_feature => sub { 1 }
+    }
+}
+
 
 1;
