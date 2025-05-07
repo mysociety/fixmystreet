@@ -1817,6 +1817,7 @@ fixmystreet.assets.tfl.tlrn_stylemap = new OpenLayers.StyleMap({
     NOTE: This must be kept in sync with the list in the TfL cobrand module.
 */
 var tlrn_categories = [
+    "Abandoned bicycle (non-electrical)",
     "All out - three or more street lights in a row",
     "Blocked drain",
     "Damage - general (Trees)",

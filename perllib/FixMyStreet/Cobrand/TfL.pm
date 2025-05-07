@@ -729,6 +729,7 @@ sub is_hardcoded_category {
 
 # Reports in these categories can only be made on a red route
 sub _tlrn_categories { [
+    "Abandoned bicycle (non-electrical)",
     "All out - three or more street lights in a row",
     "Blocked drain",
     "Damage - general (Trees)",
