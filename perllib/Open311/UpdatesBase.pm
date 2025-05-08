@@ -271,8 +271,8 @@ sub _process_update {
 
     # If nothing to show (no text change, photo, or state change), don't show this update
     $comment->state('hidden') unless
-        $comment->text && (!$latest || $latest->text ne $comment->text)
-        || $comment->photo
+        ($comment->text && (!$latest || $latest->text ne $comment->text))
+        || ($comment->photo && (!$latest || $latest->photo ne $comment->photo))
         || ($comment->problem_state && $state ne $old_state);
 
     my $cobrand = $body->get_cobrand_handler;
