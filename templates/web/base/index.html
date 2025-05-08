@@ -3,8 +3,8 @@
 [% SET bodyclass = 'frontpage' %]
 [% INCLUDE 'header.html', title = '', inline_css = 1 %]
 
-[% IF error %]
-    <p class="form-error">[% error %]</p>
+[% IF gone_error %]
+    <p class="form-error">[% gone_error %]</p>
 [% END %]
 
 [% PROCESS 'front/site-message.html' %]
