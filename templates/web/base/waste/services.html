@@ -6,6 +6,19 @@
     A [% unit.service_name FILTER lower %] container request has been made
   </span>
 
+    [% IF c.cobrand.moniker == 'sutton' %]
+        [% IF unit.escalations.container_open %]
+          <span class="waste-service-descriptor">
+            An escalation has been raised
+          </span>
+        [% END %]
+        [% IF unit.escalations.container %]
+            <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.container.id %]&amp;event_guid=[% unit.escalations.container.guid %]&amp;category=Failure+to+Deliver+Bags%2FContainers"
+                class="waste-service-link waste-service-descriptor">Report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
+        [% END %]
+    [% END %]
+
+
   [% IF c.cobrand.moniker == 'merton' %]
         [% IF NOT (property_time_banded AND unit.service_id == 2242) %]
             <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Failure+to+deliver&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
@@ -32,9 +45,16 @@
         <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
     [% END %]
 [% END %]
+
 [% IF c.cobrand.moniker == 'sutton' AND (property.domestic_refuse_bin OR communal_property) %]
-    [% IF unit.report_allowed %]
-        <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
+    [% IF unit.escalations.missed_open %]
+      <span class="waste-service-descriptor">
+        An escalation has been raised
+      </span>
+    [% END %]
+    [% IF unit.report_allowed OR unit.escalations.missed %]
+        <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %][% '&amp;event_id=' _ unit.escalations.missed IF unit.escalations.missed %]"
+            class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
     [% END %]
 [% END %]
 
