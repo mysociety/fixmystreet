@@ -9,6 +9,7 @@
   [%~ ELSIF cfg == 'reporter/staff-open' %] the problem reporter or staff will be able to leave updates.
   [%~ ELSIF cfg == 'open' %] open reports can have updates left on them.
   [%~ ELSIF cfg == 'reporter-not-open/staff-open' %] staff can leave updates on an open report, and only the problem reporter can leave updates on a closed or fixed report.
+  [%~ ELSIF cfg == 'open/staff' %] staff can leave updates on a closed or fixed report, and anyone can leave updates on an open report.
   [%~ END %]
 </span>
 [% END %]
