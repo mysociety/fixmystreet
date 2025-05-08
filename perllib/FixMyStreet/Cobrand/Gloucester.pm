@@ -17,6 +17,7 @@ use strict;
 use warnings;
 
 use Moo;
+with 'FixMyStreet::Roles::Open311Alloy';
 
 =head2 Defaults
 

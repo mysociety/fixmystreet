@@ -214,8 +214,10 @@ sub bin_services_for_address {
         my $servicetask = $_->{ServiceTask};
 
         my ($containers, $request_max) = $self->call_hook(waste_service_containers => $_);
-        $containers ||= $service_to_containers{$service_id}{containers};
-        $request_max ||= $service_to_containers{$service_id}{max};
+        if ($service_to_containers{$service_id}) {
+            $containers ||= $service_to_containers{$service_id}{containers};
+            $request_max ||= $service_to_containers{$service_id}{max};
+        }
 
         my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
         $self->call_hook(waste_munge_bin_services_open_requests => $open_requests);

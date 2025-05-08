@@ -82,7 +82,7 @@ my $roadworks = $mech->create_contact_ok(
 my $flytipping = $mech->create_contact_ok(
     body_id => $bristol->id,
     category => 'Flytipping',
-    email => 'FLY',
+    email => 'Alloy-FLY',
     extra => {
         _fields => [
             { code => 'Witness', values => [
@@ -97,6 +97,13 @@ my $flytipping = $mech->create_contact_ok(
         ]
     }
 );
+
+my $flyposting = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Flyposting',
+    email => 'Alloy-FLYPOST',
+);
+
 my $north_somerset_contact = $mech->create_contact_ok(
     body_id => $north_somerset->id,
     category => 'North Somerset Potholes',
@@ -558,6 +565,47 @@ subtest 'Dott Bikes destination handling' => sub {
         is $email->header('To'), 'Dott <dott-national@example.org>', 'email sent to correct address';
     };
   };
+};
+
+FixMyStreet::override_config {
+ALLOWED_COBRANDS => ['bristol'],
+MAPIT_URL => 'http://mapit.uk/',
+COBRAND_FEATURES => {}
+  }, sub {
+
+    subtest 're-categorising auto-resends' => sub {
+        my ($report) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $open311_contact->category,
+            areas => ',2561,',
+        } );
+        $report->update({ send_state => 'sent', send_method_used => 'Open311' });
+
+        $mech->log_in_ok($comment_user->email);
+        $mech->get_ok('/admin/report_edit/' . $report->id);
+
+        $mech->submit_form_ok({ with_fields => { category => 'Flooding' } });
+        $report->discard_changes;
+        is $report->send_state, 'sent', "Changed from Confirm category to Confirm category, remain sent";
+
+        $mech->submit_form_ok({ with_fields => { category => 'Flyposting' } });
+        $report->discard_changes;
+        is $report->send_state, 'unprocessed', "Changed from Confirm category to Alloy category, set to resend";
+
+        $report->update({ send_state => 'sent', send_method_used => 'Open311' });
+        $mech->submit_form_ok({ with_fields => { category => 'Flytipping' } });
+        $report->discard_changes;
+        is $report->send_state, 'sent', "Changed from Alloy category to Alloy category, remain sent";
+
+        $mech->submit_form_ok({ with_fields => { category => 'Inactive roadworks' } });
+        $report->discard_changes;
+        is $report->send_state, 'unprocessed', "Changed from Alloy category to email category, set to resend";
+
+        $report->update({ send_state => 'sent', send_method_used => 'Open311', category => 'Flytipping' });
+        $mech->submit_form_ok({ with_fields => { category => 'Flooding' } });
+        $report->discard_changes;
+        is $report->send_state, 'unprocessed', "Changed from Alloy category to Confirm category, set to resend";
+    };
 };
 
 done_testing();
