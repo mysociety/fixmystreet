@@ -4,6 +4,8 @@
     This includes when and where to put your items out for collection, cancelling the service and obtaining a refund.
 </p>
 
+[% IF NOT staff_cancellation %]
 <p style="[% p_style %]">
     Visit our WasteWorks portal to <a href="[% cancel_url %]">cancel your booking</a>.
 </p>
+[% END %]
