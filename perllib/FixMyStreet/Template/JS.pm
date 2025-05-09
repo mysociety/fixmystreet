@@ -31,6 +31,9 @@ sub pick_asset_layers {
     } elsif ($cobrand eq 'southkesteven') {
         # South Kesteven needs Lincolnshire's assets.
         %cobrands = map { $_ => $cobrands->{$_} } ('lincolnshire', 'southkesteven');
+    } elsif ($cobrand eq 'gloucester' || $cobrand eq 'gloucestershire') {
+        # Gloucester needs Gloucestershire's asset layers and vice versa.
+        %cobrands = map { $_ => $cobrands->{$_} } ('gloucester', 'gloucestershire');
     } else {
         # Only the cobrand's assets itself
         %cobrands = map { $_ => $cobrands->{$_} } ($cobrand);
