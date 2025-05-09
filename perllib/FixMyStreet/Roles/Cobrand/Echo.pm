@@ -110,7 +110,7 @@ sub bin_addresses_for_postcode {
 sub _allow_async_echo_lookup {
     my $self = shift;
     my $action = $self->{c}->action;
-    return 0 if $action eq 'waste/pay_retry' || $action eq 'waste/direct_debit_error' || $action eq 'waste/calendar_ics' || $action eq 'waste/garden_transfer';
+    return 0 if $action eq 'waste/pay_retry' || $action eq 'waste/direct_debit_error' || $action eq 'waste/calendar_ics' || $action eq 'waste/garden/transfer';
     return 1;
 }
 

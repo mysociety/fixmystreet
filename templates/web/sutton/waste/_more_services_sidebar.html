@@ -13,7 +13,7 @@
       <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a bin, box, caddy or bags</a></li>
     [% END %]
     [% IF show_garden_subscribe %]
-      <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
+      <li><a href="[% c.uri_for_action('waste/garden/subscribe', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
     [% END %]
     <li><a href="https://www.sutton.gov.uk/w/household-reuse-and-recycling-centre-at-kimpton-park-way">Book your visit to the recycling centre</a></li>
     [% IF property.show_bulky_waste %]
