@@ -1,0 +1,97 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+require 5.8.0;
+
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use Text::CSV;
+
+my $csv = Text::CSV->new ({ binary => 1, auto_diag => 1 });
+die "Usage: $0 <csv_file>\n" unless @ARGV;
+open my $in, "<:encoding(utf8)", $ARGV[0] or die "$ARGV[0]: $!";
+
+open my $point, ">:encoding(utf8)", 'point.csv' or die "$!";
+open my $polygon, ">:encoding(utf8)", 'polygon.csv' or die "$!";
+open my $line, ">:encoding(utf8)", 'line.csv' or die "$!";
+
+my %row_data = ();
+
+while (my $row = $csv->getline($in)) {
+    if ($row->[1] eq '004') { # Not relevant if we're not doing anything with usrn
+	$row_data{$row->[2]}->{usrn} = $row->[4];
+    } elsif ($row->[1] eq '007') {
+	$row_data{$row->[2]}->{wkt} = $row->[12];
+	$row_data{$row->[2]}->{location_text} = $row->[6];
+	($row_data{$row->[2]}->{shape_type}) = $row->[12] =~ /^(.*?) /;
+    } elsif ($row->[1] eq '010') {
+	$row_data{$row->[2]}->{location_type} = _location_codes($row->[9]);
+    } elsif ($row->[1] eq '008') {
+	if ($row->[6]) { # Actual start date
+	    $row_data{$row->[2]}->{start_date} = _date_only($row->[6]);
+	} elsif ($row->[13]){ # Estimated start date
+	    $row_data{$row->[2]}->{start_date} = _date_only($row->[13]);
+	}   
+    }
+};
+
+for my $file ($point, $polygon, $line) {
+    $csv->say($file, ['WKT', 'usrn', 'location_desc', 'location_type', 'start_date' ] );
+};
+
+for my $key (sort keys %row_data) {
+    $csv->say(&_file_names($row_data{$key}->{shape_type}), [$row_data{$key}->{wkt}, $row_data{$key}->{usrn}, $row_data{$key}->{location_text}, $row_data{$key}->{location_type}, $row_data{$key}->{start_date}]);
+}
+
+for my $file ($point, $polygon, $line) {
+    close $file;
+};
+
+# PUT FILES INTO A GPKG file using ogr2ogr
+
+# ogr2ogr -f 'GPKG' scottish_road_works_commissioner.gpkg line.csv line -oo KEEP_GEOM_COLUMNS=No
+# ogr2ogr -f 'GPKG' scottish_road_works_commissioner.gpkg -update polygon.csv polygon -oo KEEP_GEOM_COLUMNS=No
+# ogr2ogr -f 'GPKG' scottish_road_works_commissioner.gpkg -update point.csv point -oo KEEP_GEOM_COLUMNS=No
+
+# Not sure why there is no fid
+
+
+sub _location_codes {
+    my $code = shift;
+    my %map = (
+	1 => 'Carriageway',
+	2 => 'Footway',
+	3 => 'Verge',
+	4 => 'Cycleway',
+	);
+    return $map{$code} || '';
+};
+
+sub _date_only {
+    my $date = shift;
+
+    $date =~ s/ .*//;
+    return $date;
+};
+
+sub _file_names {
+    my $type = shift;
+    
+    my %files = (
+	POINT => $point,
+	MULTIPOINT => $point,
+	LINESTRING => $line,
+	MULTILINESTRING => $line,
+	POLYGON => $polygon,
+	MULTIPOLYGON => $polygon,
+	);
+
+    return $files{$type};
+}
