@@ -587,6 +587,14 @@ around 'munge_sendreport_params' => sub {
     }
 
     my $to = $params->{To}->[0]->[0];
+
+    # Special National Highways - due to NH exemption in UK's
+    # get_body_handler_for_problem, we are here on .com NH reports
+    if ($to =~ /\@nh$/) {
+        my $cobrand = FixMyStreet::Cobrand::HighwaysEngland->new;
+        return $cobrand->munge_sendreport_params($row, $h, $params);
+    }
+
     if ($to !~ /(cumbria|northamptonshire|nyorks|somerset)$/) {
         return $self->$orig($row, $h, $params);
     }
