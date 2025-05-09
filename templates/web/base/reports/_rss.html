@@ -16,14 +16,14 @@
                 tprintf(loc('Get updates of problems in this %s'), thing);
             END
             %]
-            [% INCLUDE 'icons/rss.html' width='1.3em' height='1.3em' %]
+            [% INCLUDE 'icons/rss.html' width='1.5em' height='1.5em' %]
             </a>
         </li>
         [% IF children.size %]
             [% TRY %]
                 [% INCLUDE 'reports/_rss_other_districts.html' %]
             [% CATCH %]
-                <li><a href="#council_wards" id="key-tool-wards" class="has-inline-svg">[% ward_text %][% INCLUDE 'icons/chevron-right.html' width='1.5em' height='1.5em' %]</a></li>
+                <li><a href="#council_wards" id="key-tool-wards" class="has-inline-svg">[% ward_text %][% INCLUDE 'icons/chevron-right.html' width='1.5rem' height='1.5rem' %]</a></li>
             [% END %]
         [% END %]
     </ul>
