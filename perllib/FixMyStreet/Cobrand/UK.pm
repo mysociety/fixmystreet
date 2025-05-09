@@ -481,6 +481,9 @@ sub _updates_disallowed_check {
         return $cfg unless $staff;
     } elsif ($cfg eq 'open') {
         return $cfg unless $open;
+    } elsif ($cfg eq 'open/staff') {
+        # Allow anyone on open reports, only staff on closed/fixed reports
+        return $cfg unless $open || $staff;
     } elsif ($cfg eq 'reporter') {
         return $cfg unless $reporter;
     } elsif ($cfg eq 'reporter-open') {
