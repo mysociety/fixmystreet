@@ -119,7 +119,8 @@ sub end_summary_failures {
         send_state => 'unprocessed',
         state => [ FixMyStreet::DB::Result::Problem::open_states() ],
         bodies_str => { '!=', undef },
-        send_fail_count => { '>', 0 }
+        send_fail_count => { '>', 0 },
+       -not => { cobrand => 'bexley', cobrand_data => 'waste' }, # Bexley are emailed these
     })->order_by('-confirmed');
     my %bodies;
     while (my $row = $unsent->next) {
