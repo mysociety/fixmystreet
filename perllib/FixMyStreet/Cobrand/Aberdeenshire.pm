@@ -136,14 +136,34 @@ site code.
 sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
-    # In case the client hasn't given us a central asset ID, look up the
+    # In case the client hasn't given us a site code, look up the
     # closest asset from the WFS service at the point we're sending the report
-    if (!$row->get_extra_field_value('central_asset_id')) {
+    if (!$row->get_extra_field_value('site_code')) {
         if (my $id = $self->lookup_site_code($row)) {
-            $row->update_extra_field({ name => 'central_asset_id', value => $id });
+            $row->update_extra_field({ name => 'site_code', value => $id });
         }
     }
+
+    # Q29 ('Insurance form requested ?') is required by Confirm but hidden from
+    # the user, so here we give it a default value (BLNK = 'Blank').
+    if ($contact->get_extra_field(code => 'Q29')  && !$row->get_extra_field_value('Q29')) {
+        $row->update_extra_field({ name => 'Q29', value => "BLNK" });
+    }
 }
+
+=head2 open311_config
+
+Send multiple photos as files to Open311
+
+=cut
+
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
+}
+
 
 sub disambiguate_location {
     my $self = shift;
@@ -159,5 +179,22 @@ sub disambiguate_location {
         ],
     };
 }
+
+sub lookup_site_code_config {
+    my ($self, $property) = @_;
+
+    # uncoverable subroutine
+    # uncoverable statement
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    return {
+        buffer => 1000, # metres
+        url => "https://$host/mapserver/aberdeenshire",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "WSS",
+        property => "siteCode",
+        accept_feature => sub { 1 }
+    };
+}
+
 
 1;
