@@ -65,6 +65,7 @@ subtest 'Reports to send' => sub {
             send_fail_count => 2,
             send_fail_timestamp => '2025-04-24T13:00:00Z',
             send_fail_reason => "Failed to send over Open311\n\nrequest failed: 500 Internal Server Error\nerror: 500: UPRN 12345 does not have a subscription to be renewed, or is invalid at /data/vhost/open311-adapter.mysociety.org/open311-adapter-2025-04-25T10-56-30/",
+            extra => { property_address => '123 Test Street' },
         });
         my $graffiti_id = $stuck_graffiti_report->id;
         my ($stuck_potholes_report) = $mech->create_problems_for_body(1, $body->id, 'TITLE', {
@@ -74,6 +75,7 @@ subtest 'Reports to send' => sub {
             send_fail_count => 3,
             send_fail_timestamp => '2025-04-24T14:00:00Z',
             send_fail_reason => "Failed to send over Open311\n\nrequest failed: 500 Internal Server Error\nerror: 500: [{\"Code\":40,\"Message\":\"There is not an active contract for this address linked to the customer\",\"MessageDetails\":\"   at Contender.BusinessLogic.External.ExternalBL.HandleMicroservice",
+            extra => { property_address => '234 Test Street' },
         });
         my $pothole_id = $stuck_potholes_report->id;
         my ($stuck_bins_report) = $mech->create_problems_for_body(1, $body->id, ',ITLE', {
@@ -83,11 +85,13 @@ subtest 'Reports to send' => sub {
             send_fail_count => 0,
             send_fail_timestamp => '2025-04-24T13:00:00Z',
             send_fail_reason => 'something went wrong',
+            extra => { property_address => '345 Test Street' },
         });
         my ($unconfirmed_graffiti_report) = $mech->create_problems_for_body(1, $body->id, 'TITLE', {
             category => $graffiti->category,
             state => 'unconfirmed',
-            created => '2025-04-24T11:00:00Z'
+            created => '2025-04-24T11:00:00Z',
+            extra => { property_address => '456 Test Street' },
         });
         my $graffiti_unconfirmed_id = $unconfirmed_graffiti_report->id;
 
@@ -109,6 +113,8 @@ subtest 'Reports to send' => sub {
 
 Graffiti report base-url/admin/report_edit/$graffiti_id has failed to send 2 times.
 
+123 Test Street; all reports there: base-url/admin/reports?search=123%20Test%20Street
+
 The last failure was at 2025-04-24T13:00:00 with error:
 
 UPRN 12345 does not have a subscription to be renewed, or is invalid
@@ -116,6 +122,8 @@ UPRN 12345 does not have a subscription to be renewed, or is invalid
 ------------------------------------------------------------
 
 Potholes report base-url/admin/report_edit/$pothole_id has failed to send 3 times.
+
+234 Test Street; all reports there: base-url/admin/reports?search=234%20Test%20Street
 
 The last failure was at 2025-04-24T14:00:00 with error:
 
@@ -139,6 +147,8 @@ There is 1 unconfirmed report for categories 'Graffiti' and 'Potholes'
 ------------------------------------------------------------
 
 Graffiti report base-url/admin/report_edit/$graffiti_unconfirmed_id is unconfirmed.
+
+456 Test Street; all reports there: base-url/admin/reports?search=456%20Test%20Street
 
 It was created at 2025-04-24T11:00:00.
 EOF
