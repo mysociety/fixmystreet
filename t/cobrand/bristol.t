@@ -5,6 +5,7 @@ use FixMyStreet::Script::Reports;
 use Open311::PopulateServiceList;
 use Test::MockModule;
 use t::Mock::Tilma;
+use CGI::Simple;
 use File::Temp 'tempdir';
 use FixMyStreet::Script::CSVExport;
 use DateTime;
@@ -25,6 +26,15 @@ my $bristol = $mech->create_body_ok( 2561, 'Bristol City Council', {
 });
 $comment_user->update({ from_body => $bristol->id });
 $comment_user->user_body_permissions->create({ body => $bristol, permission_type => 'report_edit' });
+
+my $role = FixMyStreet::DB->resultset("Role")->create({
+    body => $bristol,
+    name => 'Role',
+    permissions => ['moderate', 'user_edit'],
+});
+
+my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $bristol, name => 'Staff User');
+$staff_user->add_to_roles($role);
 
 # Setup Bristol to cover North Somerset and South Gloucestershire
 $bristol->body_areas->create({ area_id => 2642 });
@@ -343,9 +353,16 @@ FixMyStreet::override_config {
         my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
             cobrand => 'bristol',
             category => $graffiti->category,
+            extra => { contributed_by => $staff_user->id },
         } );
 
         FixMyStreet::Script::Reports::send();
+
+        subtest 'staff user added to title attribute' => sub {
+            my $req = Open311->test_req_used;
+            my $cgi = CGI::Simple->new($req->content);
+            is $cgi->param('attribute[title]'), "Staff User - Role\r\n\r\nTitle Test 1 for " . $bristol->id;
+        };
 
         $p->discard_changes;
         is $p->get_extra_field_value('usrn'), '1234567', 'USRN added to extra field after sending to Open311';
@@ -429,14 +446,6 @@ FixMyStreet::override_config {
 
 };
 
-my $role = FixMyStreet::DB->resultset("Role")->create({
-    body => $bristol,
-    name => 'Role',
-    permissions => ['moderate', 'user_edit'],
-});
-
-my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $bristol, name => 'Staff User');
-$staff_user->add_to_roles($role);
 my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'New title', {
     user => $staff_user,
     state => 'confirmed',
