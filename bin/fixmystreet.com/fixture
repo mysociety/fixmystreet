@@ -120,6 +120,8 @@ for my $cat ('Dropped Kerbs', 'Skips') {
 if ($opt->test_fixtures) {
     my $bodies;
 
+    FixMyStreet::DB->resultset("Config")->create({ key => "tlrn_categories", value => ["Other (TfL)", "Mobile Crane Operation"] });
+
     my $params = {
         name => 'National Highways',
         area_id => 2608,
