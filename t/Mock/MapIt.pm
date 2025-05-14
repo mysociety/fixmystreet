@@ -197,18 +197,12 @@ sub dispatch_request {
             });
         } elsif ($areas eq 60705) {
             $self->output({60705 => {parent_area => 2245, id => 60705, name => "Trowbridge", type => "CPC"}});
+        } elsif ($areas eq 59087) {
+            $self->output({
+                53319 => { parent_area => 2217, id => 53319, name => "Bradenham", type => "CPC" },
+                59087 => { parent_area => 2538, id => 59087, name => "Castle Bromwich", type => "CPC" },
+            });
         }
-    },
-
-    sub (POST + /areas + %*) {
-        my ($self, $areas) = @_;
-        my $out = {
-            53319 => { parent_area => 2217, id => 53319, name => "Bradenham", type => "CPC" },
-        };
-        if ($areas->{URL} =~ /59087/) {
-            $out->{59087} = { parent_area => 2538, id => 59087, name => "Castle Bromwich", type => "CPC" },
-        }
-        $self->output($out);
     },
 
     sub (GET + .geojson) {
