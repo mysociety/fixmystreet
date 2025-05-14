@@ -18,6 +18,11 @@ create table sessions (
     expires      integer
 );
 
+create table config (
+    key text not null primary key,
+    value jsonb
+);
+
 -- users table
 create table users (
     id              serial  not null primary key,
