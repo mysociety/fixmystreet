@@ -208,14 +208,11 @@ subtest 'check heatmap page for cllr' => sub {
     };
 };
 
+FixMyStreet::DB->resultset("Config")->create({ key => 'extra_parishes', value => [ 59087 ] });
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'fixmystreet',
     MAPIT_URL => 'http://mapit.uk/',
-    COBRAND_FEATURES => {
-        extra_parishes => {
-            fixmystreet => [ 59087 ],
-        }
-    }
 }, sub {
     subtest 'test enforced 2FA for superusers' => sub {
         my $test_email = 'test@example.com';
