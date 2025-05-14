@@ -105,7 +105,7 @@ fixmystreet.roadworks.display_message = function(feature) {
 
 fixmystreet.roadworks.filter = function(feature) {
   var category = fixmystreet.reporting.selectedCategory().category,
-        data = document.getElementById('roadworks-categories').dataset.roadworksCategories || [],
+        data = document.getElementById('roadworks-categories').dataset.roadworksCategories || '[]',
         categories = JSON.parse(data);
     return !categories.length || OpenLayers.Util.indexOf(categories, category) != -1;
 };
