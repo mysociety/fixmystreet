@@ -1052,7 +1052,7 @@ subtest "test admin_log" => sub {
     my @entries = FixMyStreet::DB->resultset('AdminLog')->search({
         object_type => 'problem',
         object_id   => $report->id,
-    });
+    })->order_by('-id');
 
     # XXX: following is dependent on all of test up till now, rewrite to explicitly
     # test which things need to be logged!

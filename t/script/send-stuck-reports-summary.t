@@ -69,6 +69,7 @@ subtest 'Reports to send' => sub {
         });
         my $graffiti_id = $stuck_graffiti_report->id;
         my ($stuck_potholes_report) = $mech->create_problems_for_body(1, $body->id, 'TITLE', {
+            dt => DateTime->now->subtract( minutes => 5 ),
             category => $potholes->category,
             send_state => 'unprocessed',
             state => 'confirmed',
