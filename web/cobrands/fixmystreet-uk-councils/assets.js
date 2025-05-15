@@ -778,6 +778,31 @@ fixmystreet.assets.eastsussex.construct_selected_asset_message = function(asset)
     }
 };
 
+/* Gloucester */
+
+fixmystreet.assets.gloucester = {};
+
+/* Gloucester have separate layers for free and paid car parks which
+ * they want to act as a single layer, with selection required.
+ * The car_park_found and car_park_not_found functions fire separately for each
+ * sub layer so we need to make sure that we:
+ * 1. Don't block when a selection is made in one but not the other.
+ * 2. Do block when there isn't a selection in either.
+ * 3. Only apply the block to one layer so we don't show the block message twice. */
+
+fixmystreet.assets.gloucester.car_park_found = function(layer, asset) {
+    var free_car_parks_layer = fixmystreet.map.getLayersByName('free_car_parks')[0];
+    fixmystreet.message_controller.road_found(free_car_parks_layer);
+};
+
+fixmystreet.assets.gloucester.car_park_not_found = function(layer) {
+    var free_car_parks_layer = fixmystreet.map.getLayersByName('free_car_parks')[0];
+    var paid_car_parks_layer = fixmystreet.map.getLayersByName('paid_car_parks')[0];
+    if (!free_car_parks_layer.selected_feature && !paid_car_parks_layer.selected_feature) {
+        fixmystreet.message_controller.road_not_found(free_car_parks_layer, function() { return true; });
+    }
+};
+
 /* Gloucestershire */
 
 fixmystreet.assets.gloucestershire = {};
