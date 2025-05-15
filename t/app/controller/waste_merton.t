@@ -115,7 +115,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Every Friday fortnightly');
         $mech->content_contains('Friday 2 September');
         $mech->content_contains('Report a mixed recycling collection as missed');
-        $mech->content_contains('Textiles and shoes');
+        $mech->content_contains('Batteries');
     };
 
     subtest 'Schedule 2 property' => sub {
@@ -583,7 +583,6 @@ FixMyStreet::override_config {
         my $panel = $root->look_down(id => 'panel-2240');
         is $panel->as_text =~ /.*Please note that missed collections can only be reported.*/, 1, "Paper and card past reporting deadline";
         $mech->content_lacks('Report a problem with a paper and card collection', 'Can not report a problem with paper and card as past reporting deadline');
-        $mech->content_lacks('Report a problem with a textiles and shoes collection', 'Can not report a problem with a textiles collection as orange bags');
         $mech->content_lacks('Report a problem with a batteries collection', 'Can not report a problem with a batteries collection as orange bagss');
         $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
