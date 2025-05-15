@@ -1,9 +1,12 @@
 package FixMyStreet::Script::Waste::CheckPayments;
 
 use Moo;
+with 'FixMyStreet::Roles::Syslog';
 use FixMyStreet::DB;
 
 has cobrand => ( is => 'ro' );
+
+has log_ident => ( is => 'ro', default => 'www.fixmystreet.com_checkpayments' );
 
 sub check_payments {
     my $self = shift;
@@ -25,6 +28,7 @@ sub check_payments {
         } elsif (my $apn = $row->get_extra_metadata('apnReference')) {
             ($error, $reference) = $cobrand->paye_check_payment_and_update($apn, $row);
         }
+        $self->log("Checked " . $row->id . ", ref " . ($reference||'-') . ", error " . ($error||'-'));
         if ($reference) {
             $row->waste_confirm_payment($reference);
         }

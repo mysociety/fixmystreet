@@ -268,8 +268,9 @@ FixMyStreet::override_config {
     };
 
     subtest 'extra CSV columns present, and questionnaire answers work' => sub {
-        my $report = FixMyStreet::DB->resultset("Problem")->first;
         my $fly = FixMyStreet::DB->resultset("Problem")->search({ category => 'Flytipping' })->single;
+        $fly->update_extra_field({ name => 'uprn', value => '10000001' });
+        $fly->update_extra_field({ name => 'payment_method', value => 'credit_card' });
         $fly->update({ confirmed => $fly->confirmed->clone->subtract(days => 2), state => 'fixed - user' });
 
         FixMyStreet::DB->resultset("Questionnaire")->create({
@@ -283,8 +284,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains(',Category,Subcategory,');
         $mech->content_contains('"Danger things","Something dangerous"');
-        $mech->content_contains(',"User Email"');
-        $mech->content_contains(',' . $report->user->email);
+        $mech->content_contains(',"User Email",UPRN,"Payment method"');
+        $mech->content_contains(',' . $fly->user->email . ',10000001,credit_card');
         $mech->content_like(qr/Flytipping,,[^,]*,2019-10-14T17:00:00,,2019-10-14T18:00:00,,"fixed - user"/);
 
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
@@ -292,8 +293,8 @@ FixMyStreet::override_config {
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains(',Category,Subcategory,');
         $mech->content_contains('"Danger things","Something dangerous"');
-        $mech->content_contains(',"User Email"');
-        $mech->content_contains(',' . $report->user->email);
+        $mech->content_contains(',"User Email",UPRN,"Payment method"');
+        $mech->content_contains(',' . $fly->user->email . ',10000001,credit_card');
         $mech->content_like(qr/Flytipping,,[^,]*,2019-10-14T17:00:00,,2019-10-14T18:00:00,,"fixed - user"/);
     };
 

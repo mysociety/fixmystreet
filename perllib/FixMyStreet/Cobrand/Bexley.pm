@@ -440,6 +440,8 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         user_email => 'User Email',
+        uprn => 'UPRN',
+        payment_method => 'Payment method',
     );
 
     $csv->objects_attrs({
@@ -447,13 +449,19 @@ sub dashboard_export_problems_add_columns {
         join => 'user',
     });
 
-    return if $csv->dbi; # Already covered
-
     $csv->csv_extra_data(sub {
         my $report = shift;
 
+        my $uprn = $csv->_extra_field($report, 'uprn') || '';
+        my $payment_method = $csv->_extra_field($report, 'payment_method') || '';
         return {
-            user_email => $report->user ? $report->user->email : '',
+            uprn => $uprn,
+            payment_method => $payment_method,
+            $csv->dbi ? (
+                # user_email already covered
+            ) : (
+                user_email => $report->user ? $report->user->email : '',
+            ),
         };
     });
 }

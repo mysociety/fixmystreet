@@ -464,6 +464,15 @@ sub updates_disallowed {
     return $self->_updates_disallowed_check($cfg, $problem, $body_user);
 }
 
+=head2 _updates_disallowed_check
+
+NOTE: If you add a new check/configuration string to this method,
+you may also need to update the following files:
+F<templates/web/fixmystreet-uk-councils/about/faq-en-gb.html> and
+F<templates/web/fixmystreet-uk-councils/admin/bodies/_updates_disallowed_hint.html>.
+
+=cut
+
 sub _updates_disallowed_check {
     my ($self, $cfg, $problem, $body_user) = @_;
 
@@ -481,6 +490,9 @@ sub _updates_disallowed_check {
         return $cfg unless $staff;
     } elsif ($cfg eq 'open') {
         return $cfg unless $open;
+    } elsif ($cfg eq 'open/staff') {
+        # Allow anyone on open reports, only staff on closed/fixed reports
+        return $cfg unless $open || $staff;
     } elsif ($cfg eq 'reporter') {
         return $cfg unless $reporter;
     } elsif ($cfg eq 'reporter-open') {

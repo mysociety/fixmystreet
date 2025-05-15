@@ -8,7 +8,7 @@
        <li><a href="[% c.uri_for_action('waste/request', [ property.id ]) %]">Request a new container</a></li>
      [% END %]
      [% IF show_garden_subscribe %]
-       <li><a href="[% c.uri_for_action('waste/garden', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
+       <li><a href="[% c.uri_for_action('waste/garden/subscribe', [ property.id ]) %]">Subscribe to [% c.cobrand.garden_service_name %]</a></li>
      [% END %]
      [% IF domestic_collection AND (c.user.from_body OR c.user.is_superuser) %]
      <!--

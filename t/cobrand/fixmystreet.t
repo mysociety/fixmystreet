@@ -491,36 +491,47 @@ FixMyStreet::override_config {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'fixmystreet',
     MAPIT_URL => 'http://mapit.uk/',
+    BASE_URL => 'https://www.fixmystreet.com',
+    COBRAND_FEATURES => {
+        borough_email_addresses => {
+            highwaysengland => {
+                'potholes@nh' => [ {
+                    'areas' => [ 'Area 1' ],
+                    'email' => 'area1email@example.org',
+                } ],
+            },
+        },
+    },
 }, sub {
     my $hampshire = $mech->create_body_ok(2227, 'Hampshire County Council');
-    my $he = $mech->create_body_ok(2227, 'National Highways');
+    my $he = $mech->create_body_ok(2227, 'National Highways', { send_method => 'Email::Highways', cobrand => 'highwaysengland' });
     $mech->create_contact_ok(body_id => $hampshire->id, category => 'Flytipping', email => 'foo@bexley');
     $mech->create_contact_ok(body_id => $hampshire->id, category => 'Trees', email => 'foo@bexley');
     $mech->create_contact_ok(body_id => $hampshire->id, category => 'Messy roads', email => 'foo@bexley', extra => {litter_category_for_he => 1});
-    $mech->create_contact_ok(body_id => $he->id, category => 'Slip Roads (NH)', email => 'litter@he', group => 'Litter');
-    $mech->create_contact_ok(body_id => $he->id, category => 'Main Carriageway (NH)', email => 'litter@he', group => 'Litter');
-    $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@he');
+    $mech->create_contact_ok(body_id => $he->id, category => 'Slip Roads (NH)', email => 'litter@nh', group => 'Litter');
+    $mech->create_contact_ok(body_id => $he->id, category => 'Main Carriageway (NH)', email => 'litter@nh', group => 'Litter');
+    $mech->create_contact_ok(body_id => $he->id, category => 'Potholes (NH)', email => 'potholes@nh');
+
+    our $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+    sub mock_road {
+        my ($name, $litter) = @_;
+        $he_mod->mock('_fetch_features', sub {
+            my ($self, $cfg, $x, $y) = @_;
+            my $road = {
+                properties => { area_name => 'Area 1', ROA_NUMBER => $name, sect_label => "$name/111" },
+                geometry => {
+                    type => 'LineString',
+                    coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+                }
+            };
+            if ($cfg->{typename} eq 'highways_litter_pick') {
+                return $litter ? [$road] : [];
+            }
+            return [$road];
+        });
+    }
 
     subtest 'fixmystreet changes litter options for National Highways' => sub {
-
-        our $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
-        sub mock_road {
-            my ($name, $litter) = @_;
-            $he_mod->mock('_fetch_features', sub {
-                my ($self, $cfg, $x, $y) = @_;
-                my $road = {
-                    properties => { area_name => 'Area 1', ROA_NUMBER => $name, sect_label => "$name/111" },
-                    geometry => {
-                        type => 'LineString',
-                        coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
-                    }
-                };
-                if ($cfg->{typename} eq 'highways_litter_pick') {
-                    return $litter ? [$road] : [];
-                }
-                return [$road];
-            });
-        }
 
         # Motorway, NH responsible for litter (but not in dataset), council categories will also be present
         mock_road("M1", 0);
@@ -563,8 +574,29 @@ FixMyStreet::override_config {
         is $elements[1]->attr('value') eq 'Messy roads', 1, 'Subcategory is Messy roads - checkbox selected litter category';
     };
 
-    subtest "check things redacted appropriately" => sub {
+    subtest "check .com report uses borough_email_addresses" => sub {
         $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
+        $mech->submit_form_ok({ with_fields => {
+            title => "Test Report for HE",
+            detail => 'Test report details.',
+            category => 'Potholes (NH)',
+            name => 'Highways England',
+            username_register => 'highways@example.org',
+        } }, "submit good details");
+        $mech->content_contains('Now check your email');
+
+        my $link = $mech->get_link_from_email;
+        $mech->get_ok($link);
+
+        FixMyStreet::Script::Reports::send();
+        my $email = $mech->get_email;
+        is $email->header('To'), '"National Highways" <area1email@example.org>';
+        $mech->clear_emails_ok;
+        $mech->log_out_ok;
+    };
+
+    subtest "check things redacted appropriately" => sub {
+        $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143&1");
         my $title = "Test Redact report from 07000 000000";
         my $detail = 'Please could you email me on test@example.org or ring me on (01234) 567 890.';
         $mech->submit_form_ok({

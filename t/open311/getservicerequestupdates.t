@@ -887,6 +887,54 @@ subtest "hides duplicate updates from endpoint" => sub {
 
 };
 
+subtest "hides duplicate updates with photo from endpoint" => sub {
+    my $guard = LWP::Protocol::PSGI->register(t::Mock::Static->to_psgi_app, host => 'example.com');
+
+    my $update_dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
+    my $template = qq{<?xml version="1.0" encoding="utf-8"?>
+    <service_requests_updates>
+    <request_update>
+    <update_id>UPDATE_{n}</update_id>
+    <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+    <status>FIXED</status>
+    <description>This is a note</description>
+    <updated_datetime>$update_dt</updated_datetime>
+    <media_url>http://example.com/image.jpeg</media_url>
+    </request_update>
+    </service_requests_updates>
+    };
+
+    $problem->comments->delete;
+
+    (my $requests_xml = $template) =~ s/{n}/1/;
+    (my $requests_xml2 = $template) =~ s/{n}/2/;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+    $update->process_body;
+    $problem->discard_changes;
+    is $problem->comments->count, 1;
+    is $problem->comments->search({ state => 'confirmed' })->count, 1;
+    is $problem->comments->search({ state => 'confirmed' })->first->photo,
+        '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml2);
+    $update->process_body;
+    $problem->discard_changes;
+    is $problem->comments->count, 2;
+    is $problem->comments->search({ state => 'confirmed' })->count, 1;
+    is $problem->comments->search({ state => 'confirmed' })->first->photo,
+        '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+
+};
+
 subtest 'check that can limit fetching to a body' => sub {
     my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
     <service_requests_updates>

@@ -39,7 +39,7 @@
     </dl>
   [% WRAPPER 'waste/_garden_status_messages.html' %]
    [% IF (unit.garden_due OR unit.garden_overdue) AND NOT waste_features.garden_renew_disabled %]
-    <form method="post" action="[% c.uri_for_action('waste/garden_renew', [ property.id ]) %]">
+    <form method="post" action="[% c.uri_for_action('waste/garden/renew', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="Renew your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
   </form>
@@ -47,12 +47,12 @@
   [% END %]
   [% IF NOT pending_cancellation && NOT unit.garden_overdue %]
   [% IF NOT unit.garden_due AND NOT waste_features.garden_modify_disabled %]
-  <form method="post" action="[% c.uri_for_action('waste/garden_modify', [ property.id ]) %]">
+  <form method="post" action="[% c.uri_for_action('waste/garden/modify', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="Change your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
   </form>
   [% END %]
-  <form method="post" action="[% c.uri_for_action('waste/garden_cancel', [ property.id ]) %]">
+  <form method="post" action="[% c.uri_for_action('waste/garden/cancel', [ property.id ]) %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="Cancel your [% unit.service_name FILTER lower %] subscription" class="waste-service-descriptor waste-service-link">
   </form>

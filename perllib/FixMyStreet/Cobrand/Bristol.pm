@@ -214,6 +214,25 @@ sub open311_config_updates {
     $params->{multi_photos} = 1;
 }
 
+=head2 open311_filter_contacts_for_deletion
+
+The default Open311 protection is to allow the category name/group to be
+changed without being overwritten by the category name of its existing service
+code. We protect all categories that are Open311 protected, which will have
+been manually added, from being removed by the Open311 populate service list
+script.
+
+=cut
+
+sub open311_filter_contacts_for_deletion {
+    my ($self, $contacts) = @_;
+
+    # Don't delete open311 protected contacts when importing
+    return $contacts->search({
+        -not => { extra => { '@>' => '{"open311_protect":1}' } }
+    });
+}
+
 =head2 open311_update_missing_data
 
 All reports sent to Alloy should have a USRN set so the street parent

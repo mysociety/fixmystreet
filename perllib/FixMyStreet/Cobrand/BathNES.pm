@@ -411,7 +411,7 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
-=head2
+=head2 open311_filter_contacts_for_deletion
 
 We protect all BANES categories that are open311 protected from being removed.
 
