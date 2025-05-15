@@ -34,7 +34,7 @@ sub contract_updates : Path('/waste/access_paysuite/contract_updates') : Args(0)
         $c->stash->{orig_sub} = $report;
         $c->stash->{property}{uprn} = $report->get_extra_field_value('uprn');
         $c->set_param('token', $c->forward('/auth/get_csrf_token'));
-        $c->forward('/waste/process_garden_cancellation', [$data]);
+        $c->forward('/waste/garden/process_garden_cancellation', [$data]);
     }
 
     $c->response->status(200);

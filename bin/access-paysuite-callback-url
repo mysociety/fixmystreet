@@ -21,8 +21,8 @@ with 'FixMyStreet::Roles::Cobrand::AccessPaySuite';
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['name=s', 'Required - Name of body to set/clear/check call back for'],
-    ['entity=s', 'Required - type of callback'],
-    ['url=s', 'Required - url to send signals to'],
+    ['entity=s', 'Required - type of callback. If this is not set, returns information on setup'],
+    ['url=s', 'Required - url to send signals to. If this is not set, clears the webhook'],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;

@@ -202,8 +202,12 @@ sub process_garden_cancellation : Private {
     my ($self, $c, $form) = @_;
 
     my $payment_method = $c->forward('/waste/get_current_payment_method');
-    my $data = $form->saved_data;
-
+    my $data;
+    if (ref $form eq 'HASH') {
+        $data = $form;
+    } else {
+        $data = $form->saved_data;
+    }
     unless ( $c->stash->{is_staff} ) {
         $data->{name} = $c->user->name || 'Unknown name';
         $data->{email} = $c->user->email;
@@ -467,7 +471,6 @@ sub process_garden_transfer : Private {
 
     # Get the current subscription for the old address
     my $old_property_id = $data->{previous_ggw_address}->{value};
-    #$c->forward('get_original_sub', ['', $old_property_id]);
 
     my $base = {};
     $base->{name} = $c->get_param('name');

@@ -1984,6 +1984,9 @@ FixMyStreet::override_config {
                 like $mech->text,
                     qr/Manage garden waste bins/,
                     'management link shown';
+                like $mech->text,
+                    qr/Payment methodDebit or Credit Card/,
+                    'payment method displayed';
             };
 
             subtest 'Whitespace data, but no Agile data' => sub {
@@ -2329,9 +2332,9 @@ $agile_mock->mock( 'CustomerSearch', sub { {
                     EndDate => '01/02/2025 00:00',
                     Reference => 'CONTRACT_123',
                     WasteContainerQuantity => 1,
-                    UPRN => '10001',
                     ServiceContractStatus => 'ACTIVE',
-                    Payments => [ { PaymentStatus => 'Paid', Amount => '100' } ]
+                    UPRN => '10001',
+                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                 },
             ],
         },
