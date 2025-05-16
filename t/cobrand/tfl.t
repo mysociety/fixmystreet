@@ -17,6 +17,7 @@ use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
 LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
 
+FixMyStreet::DB->resultset("Config")->create({ key => 'tlrn_categories', value => ["Flooding", "Pothole (major)"] });
 
 my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 FixMyStreet::DB->resultset('BodyArea')->find_or_create({

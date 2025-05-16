@@ -1,15 +1,20 @@
 [% scripts.push(
     version('/vendor/jquery-3.6.0.min.js'),
-) %]
-[% PROCESS 'footer_extra_js_base.html' highways=1 %]
-[%~
+);
+IF bodyclass.match('mappage');
+%]
+<div id="tlrn-categories" data-tlrn-categories="[% cobrand.tlrn_categories_json %]"></div>
+[%
+END;
+
+PROCESS 'footer_extra_js_base.html' highways=1;
+
 IF bodyclass.match('mappage');
   scripts.push(
     version('/cobrands/tfl/js.js'),
   );
-END
-%]
-[%~
+END;
+
 IF c.user_exists AND ((c.user.from_body AND c.user.from_body.name == 'TfL') OR c.user.is_superuser);
     scripts.push(
         version('/cobrands/tfl/staff.js'),

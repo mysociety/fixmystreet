@@ -14,6 +14,8 @@ END { FixMyStreet::App->log->enable('info'); }
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 $mech->host('westminster.fixmystreet.com');
 
+FixMyStreet::DB->resultset("Config")->create({ key => 'tlrn_categories', value => ["Flooding", "Pothole (major)"] });
+
 my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Westminster');
 $cobrand->mock('lookup_site_code', sub {
     my ($self, $row) = @_;
