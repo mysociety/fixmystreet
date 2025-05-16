@@ -1,0 +1,214 @@
+use FixMyStreet::Cobrand::Gloucester;
+use FixMyStreet::Script::Reports;
+use FixMyStreet::TestMech;
+use Test::Deep;
+
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
+
+my $mech    = FixMyStreet::TestMech->new;
+my $cobrand = FixMyStreet::Cobrand::Gloucester->new;
+my $body    = $mech->create_body_ok(
+    2325,
+    'Gloucester City Council',
+    {   send_method  => 'Open311',
+        api_key      => 'key',
+        endpoint     => 'endpoint',
+        jurisdiction => 'jurisdiction',
+        cobrand => 'gloucester',
+        can_be_devolved => 1,
+    },
+);
+
+# Email only
+my $graffiti = $mech->create_contact_ok(
+    body_id  => $body->id,
+    category => 'Graffiti',
+    email    => 'graffiti@gloucester.dev',
+    send_method => 'Email',
+);
+
+# Open311 only
+my $flytipping = $mech->create_contact_ok(
+    body_id  => $body->id,
+    category => 'Flytipping',
+    email    => 'Flytipping',
+);
+
+# Open311 but sends email too if certain answer provided
+my $dog_fouling = $mech->create_contact_ok(
+    body_id  => $body->id,
+    category => 'Dog fouling',
+    email    => 'Dog_fouling',
+);
+$dog_fouling->set_extra_fields(
+    {   code        => 'did_you_witness',
+        datatype    => 'singlevaluelist',
+        description => 'Question',
+        required    => 1,
+        variable    => 1,
+        values      => [
+            { key => 'No', name => 'No' }, { key => 'Yes', name => 'Yes' },
+        ],
+    },
+);
+$dog_fouling->update;
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'gloucester' ],
+    MAPIT_URL        => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
+    COBRAND_FEATURES => {
+        anonymous_account => { gloucester => 'anonymous' },
+        open311_email => {
+            gloucester => {
+                'Dog fouling' => 'enviro-crime@gloucester.dev'
+            }
+        },
+    },
+}, sub {
+    ok $mech->host('gloucester'), 'change host to gloucester';
+    $mech->get_ok('/');
+    $mech->content_like(qr/Enter a Gloucester postcode/);
+
+    subtest 'Send report' => sub {
+        subtest 'Email only' => sub {
+            $mech->get('/report/new?longitude=-2.2458&latitude=51.86506');
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i } );
+            $mech->submit_form_ok(
+                {   button      => 'report_anonymously',
+                    with_fields => {
+                        category => 'Graffiti',
+                        detail   => 'Test report details',
+                        title    => 'Test Report',
+                    }
+                }
+            );
+            like $mech->text, qr/Your issue is on its way/;
+
+            my $report
+                = FixMyStreet::DB->resultset('Problem')->order_by('-id')
+                ->first;
+            FixMyStreet::Script::Reports::send();
+            $report->discard_changes;
+
+            is $report->send_state,  'sent', 'sent successfully';
+            is $report->external_id, undef, 'no external ID';
+            is $report->get_extra_field_value('did_you_witness'), undef,
+                'no witness question';
+            is $report->get_extra_metadata('extra_email_sent'), undef,
+                'no extra_email_sent';
+
+            $mech->email_count_is(1), 'one email sent';
+        };
+
+        subtest 'Open311 only' => sub {
+            $mech->delete_problems_for_body($body->id);
+            $mech->clear_emails_ok;
+
+            $mech->get('/report/new?longitude=-2.2458&latitude=51.86506');
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i } );
+            $mech->submit_form_ok(
+                {   button      => 'report_anonymously',
+                    with_fields => {
+                        category => 'Flytipping',
+                        detail   => 'Test report details',
+                        title    => 'Test Report',
+                    }
+                }
+            );
+            like $mech->text, qr/Your issue is on its way/;
+
+            my $report
+                = FixMyStreet::DB->resultset('Problem')->order_by('-id')
+                ->first;
+            $report->confirm;
+            $report->update;
+            FixMyStreet::Script::Reports::send();
+            $report->discard_changes;
+
+            is $report->send_state,  'sent', 'sent successfully';
+            is $report->external_id, '248', 'has external ID';
+            is $report->get_extra_field_value('did_you_witness'), undef,
+                'no witness question';
+            is $report->get_extra_metadata('extra_email_sent'), undef,
+                'no extra_email_sent';
+
+            $mech->email_count_is(0), 'no email sent';
+        };
+
+        subtest 'Open311 and email' => sub {
+            subtest "Does not send email if 'No' selected" => sub {
+                $mech->delete_problems_for_body($body->id);
+                $mech->clear_emails_ok;
+
+                $mech->get('/report/new?longitude=-2.2458&latitude=51.86506&category=Dog fouling');
+                $mech->submit_form_ok(
+                    {   button      => 'report_anonymously',
+                        with_fields => {
+                            category        => 'Dog fouling',
+                            detail          => 'Test report details',
+                            title           => 'Test Report',
+                            did_you_witness => 'No',
+                        }
+                    }
+                );
+                like $mech->text, qr/Your issue is on its way/;
+
+                my $report
+                    = FixMyStreet::DB->resultset('Problem')->order_by('-id')
+                    ->first;
+                $report->confirm;
+                $report->update;
+                FixMyStreet::Script::Reports::send();
+                $report->discard_changes;
+
+                is $report->send_state,  'sent', 'sent successfully';
+                is $report->external_id, '248', 'has external ID';
+                is $report->get_extra_field_value('did_you_witness'), 'No',
+                    'witness question answered';
+                is $report->get_extra_metadata('extra_email_sent'), undef,
+                    'no extra_email_sent';
+
+                $mech->email_count_is(0), 'no email sent';
+            };
+
+            subtest "Sends email if 'Yes' selected" => sub {
+                $mech->delete_problems_for_body($body->id);
+                $mech->clear_emails_ok;
+
+                $mech->get('/report/new?longitude=-2.2458&latitude=51.86506&category=Dog fouling');
+                $mech->submit_form_ok(
+                    {   button      => 'report_anonymously',
+                        with_fields => {
+                            category        => 'Dog fouling',
+                            detail          => 'Test report details',
+                            title           => 'Test Report',
+                            did_you_witness => 'Yes',
+                        }
+                    }
+                );
+                like $mech->text, qr/Your issue is on its way/;
+
+                my $report
+                    = FixMyStreet::DB->resultset('Problem')->order_by('-id')
+                    ->first;
+                $report->confirm;
+                $report->update;
+                FixMyStreet::Script::Reports::send();
+                $report->discard_changes;
+
+                is $report->send_state,  'sent', 'sent successfully';
+                is $report->external_id, '248', 'has external ID';
+                is $report->get_extra_field_value('did_you_witness'), 'Yes',
+                    'witness question answered';
+                is $report->get_extra_metadata('extra_email_sent'), 1,
+                    'has extra_email_sent';
+
+                $mech->email_count_is(1), 'email sent';
+            };
+        };
+    };
+};
+
+done_testing();
