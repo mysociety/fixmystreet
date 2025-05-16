@@ -60,7 +60,7 @@ around waste_cc_get_redirect_url => sub {
             };
         }
         my %args = (
-            returnUrl => $c->uri_for('pay_complete', $p->id, $redirect_id ) . '',
+            returnUrl => $c->uri_for_action('/waste/pay_complete', [ $p->id, $redirect_id ] ) . '',
             backUrl => $backUrl,
             ref => $self->waste_cc_payment_sale_ref($p),
             request_id => $p->id,

@@ -70,6 +70,12 @@ sub enter_postcode_text {
     return 'Enter a Gloucester postcode or street name';
 }
 
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
+
 =item * TODO: Don't show reports before the go-live date
 
 =cut
