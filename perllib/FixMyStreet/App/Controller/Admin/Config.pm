@@ -16,6 +16,9 @@ Admin pages for viewing/editing site configuration
 
 =cut
 
+use JSON::MaybeXS;
+use Try::Tiny;
+
 =head2 index
 
 This admin page displays the overall configuration for the site.
@@ -26,6 +29,47 @@ sub index : Path( '' ) : Args(0) {
     my ($self, $c) = @_;
 
     $c->forward('git_version');
+    $c->forward('/auth/get_csrf_token');
+
+    my @db_config = FixMyStreet::DB->resultset("Config")->order_by('key')->all;
+    my $json = JSON->new->utf8->pretty->canonical->allow_nonref;
+
+    if ($c->req->method eq 'POST') {
+        $c->forward('/auth/check_csrf_token');
+        $c->stash->{errors} ||= {};
+
+        my $db = FixMyStreet::DB->schema->storage;
+        my $txn_guard = $db->txn_scope_guard;
+
+        foreach my $entry (@db_config) {
+            if (my $cfg = $c->get_param("db-config-" . $entry->key)) {
+                try {
+                    $entry->update({ value => $json->decode($cfg) });
+                } catch {
+                    my $e = $_;
+                    $e =~ s/ at \/.*$//; # trim the filename/lineno
+                    $c->stash->{errors}->{$entry->key} =
+                        sprintf(_("Not a valid JSON string: %s"), $e);
+                };
+            }
+        }
+
+        if (!%{$c->stash->{errors}}) {
+            $txn_guard->commit;
+            $c->stash->{db_status_message} = _("Updated!");
+        }
+    }
+
+    foreach (@db_config) {
+        if (my $new_cfg = $c->get_param("db-config-" . $_->key)) {
+            $_->{json} = $new_cfg;
+        } else {
+            $_->{json} = $json->encode($_->value);
+        }
+    }
+    $c->stash(
+        db_config => \@db_config,
+    );
 }
 
 sub git_version : Private {
