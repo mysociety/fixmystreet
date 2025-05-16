@@ -4,35 +4,22 @@ use Moo::Role;
 use Data::Dumper;
 use Sys::Syslog;
 
-has log_open => (
-    is => 'ro',
-    lazy => 1,
-    builder => '_syslog_open',
-);
+# We do force the connection to be a unix socket, because one side effect is we
+# can set the ident per-call, unlike with native handling.
+Sys::Syslog::setlogsock('unix');
 
-sub _syslog_open {
-    my $self = shift;
-    my $ident = $self->log_ident or return 0;
-    my $opts = 'pid,ndelay';
-    my $facility = 'local6';
-    my $log;
-    eval {
-        Sys::Syslog::setlogsock('unix');
-        openlog($ident, $opts, $facility);
-        $log = $ident;
-    };
-    $log;
-}
-
-sub DEMOLISH {
-    my $self = shift;
-    closelog() if $self->log_open;
-}
-
+# Syslog has a global ident, which we use to send to different outputs, so we
+# call openlog on each log to make sure the ident is the correct one. We are
+# not using `ndelay`, so only one connection should be made, at the first log.
 sub log {
     my ($self, $str) = @_;
-    $self->log_open or return;
     $str = Dumper($str) if ref $str;
+
+    my $ident = $self->log_ident or return;
+    my $opts = '';
+    my $facility = 'local6';
+    openlog($ident, $opts, $facility);
+
     syslog('debug', '%s', $str);
 }
 
