@@ -151,6 +151,41 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 
 </table>
 
+[% FOREACH c IN db_config %]
+  [% IF loop.first %]
+    <h2 id="db">Database site configuration</h2>
+    [% db_status_message %]
+    <form method="post" action="#db">
+    <table class="admin--config">
+    <tr><th width="20%">Key</th>
+        <th>Value</th>
+    </tr>
+  [% END %]
+  [% SET value = c.value.size ? c.value.join(', ') : c.value %]
+    <tr>
+        <td>[% c.key %]</td>
+        <td>[% value %]
+            <details[% IF errors.${c.key} %] open[% END %]>
+            <summary>Edit</summary>
+        <p>
+            <label for="body_config">JSON:</label>
+            [% IF errors.${c.key} %]
+            <div class="form-error">[% errors.${c.key} %]</div>
+            [% END %]
+            <textarea cols="60" rows="10" required name="db-config-[% c.key %]" class="code">
+                [%~ c.json ~%]
+            </textarea>
+        </p>
+    </details>
+    </tr>
+  [% IF loop.last %]
+        </table>
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        <input type="submit" class="btn" value="Update">
+    </form>
+  [% END %]
+[% END %]
+
 <h2>Cobrand module</h2>
 
 Other things can be changed on a cobrand basis by using functions in an
