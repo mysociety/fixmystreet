@@ -67,7 +67,7 @@
       [% FOR cobrand IN feature.value %]
     <tr>
         <td><a href="cobrand_features/[% cobrand.key %]">[% cobrand.key %]</a></td>
-        <td>[% INCLUDE 'admin/config_page_value.html' key=feature.key value=cobrand.value cobrand=cobrand.key %]</td>
+        <td>[% INCLUDE 'admin/config/value.html' key=feature.key value=cobrand.value cobrand=cobrand.key %]</td>
     </tr>
       [% END %]
 
