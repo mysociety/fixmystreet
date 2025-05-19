@@ -336,6 +336,13 @@ sub _duplicate_waste_report {
     $renew->confirm;
     $renew->insert unless $dry_run;
     $self->log("created new confirmed report: " . $renew->id) unless $dry_run;
+
+    unless ($dry_run) {
+        # Mark user as active as they're renewing their DD
+        $renew->user->set_last_active;
+        $renew->user->update;
+    }
+
     return $renew;
 }
 

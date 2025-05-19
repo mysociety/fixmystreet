@@ -1087,6 +1087,10 @@ sub process_user : Private {
         $report->user->password($params{password_register});
     }
 
+    # In case e.g. being created on behalf of this user,
+    # or a waste report that's immediately confirmed
+    $report->user->set_last_active;
+
     return 1;
 }
 
