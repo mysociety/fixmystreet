@@ -147,12 +147,12 @@ FixMyStreet::override_config {
         set_fixed_time('2022-09-09T16:30:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_like(qr/Friday 9 September\s+\(this collection has been adjusted from its usual time\)\s+\(In progress\)/);
-        $mech->content_contains(', at  4:00pm');
+        $mech->content_like(qr/, at  4:00p\.?m\.?/);
         $mech->content_lacks('Report a mixed recycling collection as missed');
         $mech->content_contains('Report a non-recyclable waste collection as missed');
         set_fixed_time('2022-09-09T19:00:00Z');
         $mech->get_ok('/waste/12345');
-        $mech->content_contains(', at  4:00pm');
+        $mech->content_like(qr/, at  4:00p\.?m\.?/);
         $mech->content_lacks('Report a mixed recycling collection as missed');
         $mech->content_contains('Report a non-recyclable waste collection as missed');
         set_fixed_time('2022-09-13T19:00:00Z');
