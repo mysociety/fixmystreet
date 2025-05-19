@@ -70,6 +70,12 @@ sub enter_postcode_text {
     return 'Enter a Gloucester postcode or street name';
 }
 
+=item * It has a default map zoom of 3
+
+=cut
+
+sub default_map_zoom { 3 }
+
 =item * TODO: Don't show reports before the go-live date
 
 =cut
