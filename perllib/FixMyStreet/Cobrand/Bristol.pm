@@ -37,6 +37,8 @@ sub council_area { return 'Bristol'; }
 sub council_name { return 'Bristol City Council'; }
 sub council_url { return 'bristol'; }
 
+use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
+
 =item * Bristol use the OS Maps API at all zoom levels.
 
 =cut
@@ -105,29 +107,6 @@ sub pin_colour {
 }
 
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
-
-use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
-
-=head2 categories_restriction
-
-Categories covering the Bristol area have a mixture of Open311 and Email send
-methods. Bristol only want Open311 categories to be visible on their cobrand,
-not the email categories from FMS.com. We've set up the Email categories with a
-devolved send_method, so can identify Open311 categories as those which have a
-blank send_method. Also National Highways categories have a blank send_method.
-Additionally the special roadworks category should be shown.
-
-=cut
-
-sub categories_restriction {
-    my ($self, $rs) = @_;
-    return $rs->search( { -or => [
-        'me.category' => ROADWORKS_CATEGORY, # Special new category
-        'me.send_method' => undef, # Open311 categories
-        'me.send_method' => '', # Open311 categories that have been edited in the admin
-    ] } );
-}
-
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
