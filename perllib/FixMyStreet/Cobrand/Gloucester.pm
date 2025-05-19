@@ -106,6 +106,17 @@ sub disambiguate_location {
     };
 }
 
+# Include details of selected assets from their WFS service in the the alloy
+# report body.
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    if (my $wfs_asset_info = $row->get_extra_field_value('wfs_asset_info')) {
+        my $text = "Asset Info: $wfs_asset_info\n\n" . $row->detail;
+        $row->detail($text);
+    }
+}
+
 # For categories where user has said they have witnessed activity, send
 # an email
 sub open311_post_send {
