@@ -93,30 +93,14 @@ sub domestic_waste_service_units {
     } ]
 }
 
-sub trade_waste_service_units {
-    my ($self, $service_id) = @_;
-    return [ {
-        Id => 1,
-        ServiceId => 532,
-        ServiceTasks => { ServiceTask => {
-            Id => '401',
-            ServiceTaskSchedules => { ServiceTaskSchedule => {
-                ScheduleDescription => 'every Wednesday',
-                StartDate => { DateTime => '2020-01-01T00:00:00Z' },
-                EndDate => { DateTime => '2050-01-01T00:00:00Z' },
-                NextInstance => {
-                    CurrentScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
-                    OriginalScheduledDate => { DateTime => '2020-06-03T00:00:00Z' },
-                },
-                LastInstance => {
-                    OriginalScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
-                    CurrentScheduledDate => { DateTime => '2020-05-27T00:00:00Z' },
-                    Ref => { Value => { anyType => [ '123', '456' ] } },
-                },
-            } },
-        } },
-    } ]
-}
+my $address = {
+    Id  => '12345',
+    PointAddressType => { Id   => 1, Name => 'Detached', },
+    SharedRef => { Value => { anyType => '1000000002' } },
+    PointType => 'PointAddress',
+    Coordinates => { GeoPoint => { Latitude => 51.402092, Longitude => 0.015783 } },
+    Description => '2 Example Street, Bromley, BR1 1AF',
+};
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
@@ -126,7 +110,6 @@ FixMyStreet::override_config {
         waste => { bromley => 1 },
         waste_features => {
             bromley => {
-                bulky_trade_service_id => 532,
                 bulky_enabled => 1,
                 bulky_tandc_link => 'tandc_link',
                 bulky_quantity_1_code => 2,
@@ -169,16 +152,7 @@ FixMyStreet::override_config {
             SharedRef  => { Value => { anyType => 1000000002 } }
         }
     ] });
-    $echo->mock('GetPointAddress', sub {
-        return {
-            Id  => '12345',
-            PointAddressType => { Id   => 1, Name => 'Detached', },
-            SharedRef => { Value => { anyType => '1000000002' } },
-            PointType => 'PointAddress',
-            Coordinates => { GeoPoint => { Latitude => 51.402092, Longitude => 0.015783 } },
-            Description => '2 Example Street, Bromley, BR1 1AF',
-        };
-    });
+    $echo->mock('GetPointAddress', sub { $address });
     $echo->mock('GetServiceUnitsForObject', \&domestic_waste_service_units );
 
     my $reserve_mock = sub {
@@ -659,9 +633,11 @@ FixMyStreet::override_config {
     }
 
     subtest 'Different pricing depending on domestic or trade property' => sub {
-        $echo->mock('GetServiceUnitsForObject', \&trade_waste_service_units );
+        $echo->mock('GetPointAddress', sub { return { %$address,
+            PointAddressType => { Id => 151, Name => 'Commercial - Agricultural' }
+        } });
         test_prices('£20.00', '£20.00');
-        $echo->mock('GetServiceUnitsForObject', \&domestic_waste_service_units );
+        $echo->mock('GetPointAddress', sub { $address });
         test_prices('£10.00', '£10.00');
     };
 

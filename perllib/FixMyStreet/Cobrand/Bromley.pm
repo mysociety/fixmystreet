@@ -790,22 +790,12 @@ sub waste_bulky_missed_blocked_codes { {} }
 sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
 
-    my $waste_cfg = $self->{c}->stash->{waste_features};
-
-    # If we have a service ID for trade properties, consider a property domestic
-    # unless we see it.
-    my $trade_service_id;
-    if ($waste_cfg) {
-        if ($trade_service_id = $waste_cfg->{bulky_trade_service_id}) {
-            $property->{pricing_property_type} = 'Domestic';
-        }
-    }
+    # Work out domestic/trade pricing based upon property type
+    my $cfg = $self->feature('echo');
+    my $type = $property->{type_name} || '';
+    $property->{pricing_property_type} = $type =~ /^Commercial|Dual Use/ ? 'Trade' : 'Domestic';
 
     foreach (@rows) {
-        if (defined($trade_service_id) && $_->{ServiceId} eq $trade_service_id) {
-            $property->{pricing_property_type} = 'Trade';
-        }
-
         my $servicetask = $_->{ServiceTask};
         my $data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
         $self->{c}->stash->{assisted_collection} = $self->assisted_collection($data);
