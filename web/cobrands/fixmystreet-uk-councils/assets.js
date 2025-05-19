@@ -782,6 +782,11 @@ fixmystreet.assets.eastsussex.construct_selected_asset_message = function(asset)
 
 fixmystreet.assets.gloucester = {};
 
+fixmystreet.assets.gloucester.watercourses_filter = function(feature) {
+    var maintenanceDuty = feature.attributes.Maintenance_Duty;
+    return maintenanceDuty && maintenanceDuty.startsWith('GCiC');
+};
+
 /* Gloucester have separate layers for free and paid car parks which
  * they want to act as a single layer, with selection required.
  * The car_park_found and car_park_not_found functions fire separately for each
