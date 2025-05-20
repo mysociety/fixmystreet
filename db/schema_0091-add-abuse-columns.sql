@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE abuse ADD safe BOOLEAN NOT NULL DEFAULT 'f';
+ALTER TABLE abuse ADD created TIMESTAMP NOT NULL DEFAULT current_timestamp;
+
+COMMIT;
