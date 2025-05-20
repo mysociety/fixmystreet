@@ -70,8 +70,7 @@ sub is_abuser {
         $email = $to;
     }
 
-    my ($domain) = $email =~ m{ @ (.*) \z }x;
-    return $schema->resultset('Abuse')->search( { email => [ $email, $domain ] } )->first;
+    return $schema->resultset('Abuse')->check($email);
 }
 
 sub _render_template {
