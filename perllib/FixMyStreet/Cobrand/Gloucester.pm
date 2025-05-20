@@ -76,6 +76,12 @@ sub enter_postcode_text {
 
 sub contact_extra_fields { [ 'display_name' ] }
 
+=item * It has a default map zoom of 3
+
+=cut
+
+sub default_map_zoom { 3 }
+
 =item * TODO: Don't show reports before the go-live date
 
 =cut
