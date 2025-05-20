@@ -840,8 +840,11 @@ fixmystreet.assets.gloucester.car_park_not_found = function(layer) {
 
 fixmystreet.assets.gloucester.public_relevant = function(options) {
     return (options.group || options.category) &&
-        options.group != 'Graffiti' &&
         options.group != 'Car parks' &&
+        options.group != 'Graffiti' &&
+        options.group != 'Litter bins' &&
+        options.group != 'Playground and park equipment' &&
+        options.group != 'Public toilets' &&
         options.group != 'Watercourse' &&
         options.category != 'Dog fouling';
 };
