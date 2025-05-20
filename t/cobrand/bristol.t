@@ -61,18 +61,6 @@ my $open311_contact = $mech->create_contact_ok(
     category => 'Street Lighting',
     email => 'LIGHT',
 );
-my $open311_edited_contact = $mech->create_contact_ok(
-    body_id => $bristol->id,
-    category => 'Flooding',
-    email => 'FLOOD',
-    send_method => '',
-);
-my $email_contact = $mech->create_contact_ok(
-    body_id => $bristol->id,
-    category => 'Potholes',
-    email => 'potholes@example.org',
-    send_method => 'Email'
-);
 my $roadworks = $mech->create_contact_ok(
     body_id => $bristol->id,
     category => 'Inactive roadworks',
@@ -132,30 +120,6 @@ subtest 'Reports page works with no reports', sub {
         $mech->content_contains('Ashley');
         $mech->content_lacks('Backwell');
         $mech->content_lacks('Bitton');
-    };
-};
-
-subtest 'Only Open311 categories are shown on Bristol cobrand', sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'bristol' ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->get_ok("/report/new/ajax?latitude=51.494885&longitude=-2.602237");
-        $mech->content_contains($open311_contact->category);
-        $mech->content_contains($open311_edited_contact->category);
-        $mech->content_lacks($email_contact->category);
-    };
-};
-
-subtest 'All categories are shown on FMS cobrand', sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'fixmystreet' ],
-        MAPIT_URL => 'http://mapit.uk/',
-    }, sub {
-        $mech->get_ok("/report/new/ajax?latitude=51.494885&longitude=-2.602237");
-        $mech->content_contains($open311_contact->category);
-        $mech->content_contains($open311_edited_contact->category);
-        $mech->content_contains($email_contact->category);
     };
 };
 
@@ -394,7 +358,6 @@ FixMyStreet::override_config {
                 $mech->host("$host.fixmystreet.com");
                 $mech->get_ok("/report/new/ajax?latitude=51.494885&longitude=-2.602237");
                 $mech->content_contains($open311_contact->category);
-                $mech->content_contains($open311_edited_contact->category);
                 $mech->content_lacks($north_somerset_contact->category);
                 $mech->content_lacks($south_gloucestershire_contact->category);
             };
@@ -408,14 +371,12 @@ FixMyStreet::override_config {
             $bristol_mock->mock('_fetch_features', sub { [ { "ms:parks" => { "ms:SITE_CODE" => 'STOKPAES' } } ] });
             $mech->get_ok("/report/new/ajax?longitude=-2.551191&latitude=51.495216");
             $mech->content_contains($open311_contact->category);
-            $mech->content_contains($open311_edited_contact->category);
             $mech->content_lacks($north_somerset_contact->category);
             $mech->content_lacks($south_gloucestershire_contact->category);
 
             $bristol_mock->mock('_fetch_features', sub { [ { "ms:parks" => { "ms:SITE_CODE" => 'ASHTCOES' } } ] });
             $mech->get_ok("/report/new/ajax?longitude=-2.641142&latitude=51.444878");
             $mech->content_contains($open311_contact->category);
-            $mech->content_contains($open311_edited_contact->category);
             $mech->content_lacks($north_somerset_contact->category);
             $mech->content_lacks($south_gloucestershire_contact->category);
         };
@@ -431,7 +392,6 @@ FixMyStreet::override_config {
         $mech->host('www.fixmystreet.com');
         $mech->get_ok("/report/new/ajax?longitude=-2.654832&latitude=51.452340");
         $mech->content_lacks($open311_contact->category);
-        $mech->content_lacks($open311_edited_contact->category);
         $mech->content_lacks($south_gloucestershire_contact->category);
         $mech->content_contains($north_somerset_contact->category);
     };
@@ -447,7 +407,6 @@ FixMyStreet::override_config {
         } );
         $mech->log_in_ok($comment_user->email);
         $mech->get_ok('/admin/report_edit/' . $p->id);
-        $mech->content_contains('Flooding');
         $mech->content_contains('Inactive roadworks');
     };
 

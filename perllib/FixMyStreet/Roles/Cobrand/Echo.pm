@@ -138,6 +138,7 @@ sub look_up_property {
         latitude => $result->{Coordinates}{GeoPoint}{Latitude},
         longitude => $result->{Coordinates}{GeoPoint}{Longitude},
         type_id => $result->{PointAddressType}{Id},
+        type_name => $result->{PointAddressType}{Name},
     };
 }
 
