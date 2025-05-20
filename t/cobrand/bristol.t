@@ -543,7 +543,7 @@ COBRAND_FEATURES => {}
         $mech->log_in_ok($comment_user->email);
         $mech->get_ok('/admin/report_edit/' . $report->id);
 
-        $mech->submit_form_ok({ with_fields => { category => 'Flooding' } });
+        $mech->submit_form_ok({ with_fields => { category => 'Street Lighting' } });
         $report->discard_changes;
         is $report->send_state, 'sent', "Changed from Confirm category to Confirm category, remain sent";
 
@@ -561,7 +561,7 @@ COBRAND_FEATURES => {}
         is $report->send_state, 'unprocessed', "Changed from Alloy category to email category, set to resend";
 
         $report->update({ send_state => 'sent', send_method_used => 'Open311', category => 'Flytipping' });
-        $mech->submit_form_ok({ with_fields => { category => 'Flooding' } });
+        $mech->submit_form_ok({ with_fields => { category => 'Street Lighting' } });
         $report->discard_changes;
         is $report->send_state, 'unprocessed', "Changed from Alloy category to Confirm category, set to resend";
     };
