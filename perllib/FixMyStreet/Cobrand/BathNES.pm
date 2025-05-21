@@ -298,6 +298,20 @@ sub categories_restriction {
     ] } );
 }
 
+# Skip updates trying to send to the wrong backend; BANES have all reports
+# going to their own endpoint on top of Confirm anyway, so any category change
+# without resending doesn't need to receive updates
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+    my $problem = $update->problem;
+    my $contact = $problem->contact || return 1;
+    my $code = $contact->email;
+    my $external_id = $problem->external_id;
+    return 1 if $code =~ /^Passthrough/ && $external_id !~ /^Passthrough/;
+    return 1 if $code !~ /^Passthrough/ && $external_id =~ /^Passthrough/;
+    return 0;
+}
+
 =head2 open311_munge_update_params
 
 Stub needs to exist for FixMyStreet::Roles::Open311Multi
