@@ -637,9 +637,10 @@ sub add_extra_areas_for_admin {
 
     my $bucks = FixMyStreet::Cobrand::Buckinghamshire->new;
     my @extra = @{ $bucks->_parish_ids };
-    my $extra = $self->feature('extra_parishes') || [];
+    my $extra = FixMyStreet::DB->resultset("Config")->get('extra_parishes') || [];
     push @extra, @$extra;
     my $ids_string = join ",", @extra;
+    return $areas unless $ids_string;
     my $extra_areas = mySociety::MaPit::call('areas', [ $ids_string ]);
     my %all_areas = ( %$areas, %$extra_areas );
     return \%all_areas;

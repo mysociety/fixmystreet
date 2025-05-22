@@ -728,45 +728,12 @@ sub is_hardcoded_category {
 }
 
 # Reports in these categories can only be made on a red route
-sub _tlrn_categories { [
-    "Abandoned bicycle (non-electrical)",
-    "All out - three or more street lights in a row",
-    "Blocked drain",
-    "Damage - general (Trees)",
-    "Dead animal in the carriageway or footway",
-    "Debris in the carriageway",
-    "Drain Cover - Missing or Damaged",
-    "Fallen Tree",
-    "Flooding",
-    "Graffiti / Flyposting (non-offensive)",
-    "Graffiti / Flyposting (offensive)",
-    "Graffiti / Flyposting on street light (non-offensive)",
-    "Graffiti / Flyposting on street light (offensive)",
-    "Graffiti / Flyposting – Political or Anti-Vaccination",
-    "Grass Cutting and Hedges",
-    "Hoarding complaint",
-    "Light on during daylight hours",
-    "Lights out in Pedestrian Subway",
-    "Low hanging branches",
-    "Manhole Cover - Damaged (rocking or noisy)",
-    "Manhole Cover - Missing",
-    "Mobile Crane Operation",
-    "Other (TfL)",
-    "Overgrown vegetation",
-    "Pavement Defect (uneven surface / cracked paving slab)",
-    "Pavement Overcrowding",
-    "Pothole (major)",
-    "Pothole (minor)",
-    "Roadworks",
-    "Scaffold complaint",
-    "Single Light out (street light)",
-    "Standing water",
-    "Street Light - Equipment damaged, pole leaning",
-    "Streetspace Feedback",
-    "Unstable hoardings",
-    "Unstable scaffolding",
-    "Worn out road markings",
-] }
+sub _tlrn_categories {
+    return FixMyStreet::DB->resultset("Config")->get('tlrn_categories') || [];
+}
+sub tlrn_categories_json {
+    return JSON::MaybeXS->new->encode(_tlrn_categories());
+}
 
 sub _cleaning_categories { [
     'Street cleaning',

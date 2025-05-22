@@ -85,6 +85,8 @@ $contact->update;
 
 $mech->create_contact_ok(body_id => $parish->id, category => 'Street lighting', email => 'streetlight@example.org', send_method => 'Email', state => 'staff');
 
+FixMyStreet::DB->resultset("Config")->create({ key => 'buckinghamshire_parishes', value => [ 53822, 58815 ] });
+
 my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'buckinghamshire', 'fixmystreet' ],

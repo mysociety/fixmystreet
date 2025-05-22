@@ -35,7 +35,7 @@ sub fallback : Local {
     my ($self, $c) = @_;
 
     # Fetch git version
-    $c->forward('/admin/config_page');
+    $c->forward('/admin/config/git_version');
 
 }
 

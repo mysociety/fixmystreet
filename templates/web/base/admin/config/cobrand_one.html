@@ -11,7 +11,7 @@
   [% FOR feature IN config %]
     <tr>
         <td><a href="/admin/config/cobrand_features#feature-[% feature.key %]">[% feature.key %]</a></td>
-        <td>[% INCLUDE 'admin/config_page_value.html', key=feature.key value=feature.value cobrand=cob %]</td>
+        <td>[% INCLUDE 'admin/config/value.html', key=feature.key value=feature.value cobrand=cob %]</td>
     </tr>
   [% END %]
 
@@ -22,7 +22,7 @@
   [% FOR feature IN fallback %]
     <tr>
         <td><a href="/admin/config/cobrand_features#feature-[% feature.key %]">[% feature.key %]</a></td>
-    <td>[% INCLUDE 'admin/config_page_value.html', key=feature.key value=feature.value %]</td>
+    <td>[% INCLUDE 'admin/config/value.html', key=feature.key value=feature.value %]</td>
   [% END %]
 
 </table>

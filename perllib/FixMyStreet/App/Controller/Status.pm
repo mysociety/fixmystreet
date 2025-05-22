@@ -36,7 +36,7 @@ sub index : Path : Args(0) {
     $c->forward('/admin/stats/gather');
 
     # Fetch git version
-    $c->forward('/admin/config_page');
+    $c->forward('/admin/config/git_version');
 
     my $chosen = $format;
     unless ($chosen) {
