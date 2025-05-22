@@ -606,34 +606,56 @@ FixMyStreet::override_config {
             };
 
             subtest 'original payment method of direct debit' => sub {
-                # $mech->delete_problems_for_body($body->id);
+                $mech->delete_problems_for_body($body->id);
+                my $dd_customer_id = 'DD_CUSTOMER_123';
                 my $dd_contract_id = 'DD_CONTRACT_123';
+
+                my $access_mock
+                    = Test::MockModule->new('Integrations::AccessPaySuite');
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Active' } ] },
+                );
+                $access_mock->mock(
+                    create_contract => sub {
+                        {   Id             => 'CONTRACT_123',
+                            DirectDebitRef => 'APIRTM-DEFGHIJ1KL'
+                        };
+                    }
+                );
+                $access_mock->mock(
+                    create_payment => sub { {} } # Empty hash implies success
+                );
+
+                my $amend_plan_args;
+                $access_mock->mock(
+                    amend_plan => sub {
+                        my ( $self, $args ) = @_;
+                        $amend_plan_args = $args;
+                        return 1;
+                    }
+                );
 
                 my ($orig_dd_sub_report) = $mech->create_problems_for_body(
                     1,
                     $body->id,
-                    'Garden Subscription - New',
+                    'Title which is overwritten below because we don\'t want the junk that is appended by default',
                     {
                         category    => 'Garden Subscription',
-                        external_id => "Agile-$contract_id",
+                        title => 'Garden Subscription - New',
+                        external_id => "Agile-$dd_contract_id",
                         user => $user,
                     },
                 );
-                $orig_dd_sub_report->update_extra_field(
+                $orig_dd_sub_report->set_extra_fields(
                     { name => 'payment_method', value => 'direct_debit' },
                     { name => 'uprn', value => $uprn },
                 );
-                $orig_dd_sub_report->set_extra_metadata(direct_debit_contract_id => $dd_contract_id);
+                $orig_dd_sub_report->set_extra_metadata(
+                    direct_debit_customer_id => $dd_customer_id,
+                    direct_debit_contract_id => $dd_contract_id,
+                );
                 $orig_dd_sub_report->update;
                 FixMyStreet::Script::Reports::send();
-
-                my $aps_mock = Test::MockModule->new('Integrations::AccessPaySuite');
-                my $amend_plan_args;
-                $aps_mock->mock(amend_plan => sub {
-                    my ($self, $args) = @_;
-                    $amend_plan_args = $args;
-                    return 1;
-                });
 
                 $mech->log_in_ok( $user->email );
                 $mech->get_ok("/waste/$uprn/garden_modify");
@@ -681,7 +703,7 @@ FixMyStreet::override_config {
                 is $modify_report->get_extra_field_value('customer_external_ref'), 'CUSTOMER_123', 'Amend report: correct customer_external_ref';
                 is $modify_report->state, 'confirmed', 'Amend report: state correct (confirmed for DD amend)';
 
-                $aps_mock->unmock_all;
+                $access_mock->unmock_all;
             };
 
         };
