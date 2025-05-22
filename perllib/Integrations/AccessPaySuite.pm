@@ -342,8 +342,8 @@ sub one_off_payment {
         # Assuming a successful response might return some data, but 1 indicates success
         return 1;
     } elsif (ref $resp eq 'HASH' && !keys %$resp) {
-         # Handle cases where success might be an empty hash {}
-         return 1;
+        # Handle cases where success might be an empty hash {}
+        return 1;
     } else {
         # Handle unexpected response format or potential success cases not returning a hash
         # Log or handle as appropriate, returning 1 for presumed success if no error indicated
