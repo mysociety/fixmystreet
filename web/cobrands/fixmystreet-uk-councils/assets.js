@@ -265,37 +265,16 @@ fixmystreet.assets.bristol.park_stylemap = new OpenLayers.StyleMap({
     })
 });
 
-
-var bristol_owned_assets = {
-    road: false,
-    property: false
+fixmystreet.assets.bristol.road_property_found = function(layer) {
+    var roads = fixmystreet.map.getLayersByName('bristol_roads')[0];
+    fixmystreet.message_controller.road_found(roads);
 };
 
-fixmystreet.assets.bristol.road_found = function(layer) {
-    bristol_owned_assets.road = true;
-    fixmystreet.message_controller.road_found(layer);
-};
-
-fixmystreet.assets.bristol.property_found = function(layer) {
-    bristol_owned_assets.property = true;
-    fixmystreet.message_controller.road_found(layer);
-};
-
-fixmystreet.assets.bristol.road_not_found = function(layer) {
-    bristol_owned_assets.road = false;
-    if (!bristol_owned_assets.road && !bristol_owned_assets.property && !fixmystreet.staff_set_up) {
-        fixmystreet.message_controller.road_not_found(layer, function() {return true;});
-    } else {
-        fixmystreet.message_controller.road_found(layer);
-    }
-};
-
-fixmystreet.assets.bristol.property_not_found = function(layer) {
-    bristol_owned_assets.property = false;
-    if (!bristol_owned_assets.road && !bristol_owned_assets.property && !fixmystreet.staff_set_up) {
-        fixmystreet.message_controller.road_not_found(layer, function() {return true;});
-    } else {
-        fixmystreet.message_controller.road_found(layer);
+fixmystreet.assets.bristol.road_property_not_found = function(layer) {
+    var roads = fixmystreet.map.getLayersByName('bristol_roads')[0];
+    var property = fixmystreet.map.getLayersByName('bristol_property')[0];
+    if (!roads.selected_feature && !property.selected_feature && !fixmystreet.staff_set_up) {
+        fixmystreet.message_controller.road_not_found(roads, function() {return true;});
     }
 };
 
