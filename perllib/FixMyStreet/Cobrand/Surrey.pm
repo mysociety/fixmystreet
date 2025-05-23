@@ -173,7 +173,11 @@ sub problems_restriction {
 sub problems_sql_restriction {
     my ($self, $item_table) = @_;
     my $date = $self->cut_off_date;
-    return " AND ( created >= '$date' OR service = 'Open311' )";
+    if ($item_table ne 'comment') {
+        return " AND ( created >= '$date' OR service = 'Open311' )";
+    } else {
+        return " AND created >= '$date'";
+    }
 }
 
 sub problems_on_map_restriction {
