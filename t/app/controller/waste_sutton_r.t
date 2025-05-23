@@ -61,6 +61,17 @@ create_contact({ category => 'Report missed assisted collection', email => '3146
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
+create_contact({ category => 'Complaint against time', email => '3134' }, 'Waste',
+    { code => 'Notes', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+);
+create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3141' }, 'Waste',
+    { code => 'Notes', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'container_request_guid', required => 0, automated => 'hidden_field' },
+);
 create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
     { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
@@ -267,6 +278,7 @@ FixMyStreet::override_config {
         $e->mock('GetEventsForObject', sub { [ {
             # Request
             EventTypeId => 3129,
+            EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
                 {
@@ -278,13 +290,14 @@ FixMyStreet::override_config {
             ] },
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) container request has been made');
+        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) container request was made on Saturday, 10 September');
         $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
         $mech->get_ok('/waste/12345/request');
         $mech->content_like(qr/name="container-choice" value="12"\s+disabled/s); # green
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
+            EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
@@ -297,27 +310,29 @@ FixMyStreet::override_config {
             ] },
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A food waste container request has been made');
+        $mech->content_contains('A food waste container request was made on Saturday, 10 September');
         $mech->get_ok('/waste/12345/request');
         $mech->content_like(qr/name="container-choice" value="43"\s+disabled/s); # indoor
         $mech->content_like(qr/name="container-choice" value="46"\s*>/s); # outdoor
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3145,
+            EventStateId => 0,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             ServiceId => 944,
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection has been reported as missed');
+        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection was reported as missed on Saturday, 10 September');
         $mech->content_lacks('Request a mixed recycling (cans, plastics &amp; glass) container');
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3145,
+            EventStateId => 0,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             ServiceId => 948,
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A paper &amp; card collection has been reported as missed');
+        $mech->content_contains('A paper &amp; card collection was reported as missed on Saturday, 10 September');
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
@@ -328,12 +343,13 @@ FixMyStreet::override_config {
             like $id, qr/^100[1-3]$/; # recycling service unit
             return [ {
                 EventTypeId => 3145,
+                EventStateId => 0,
                 EventDate => { DateTime => "2022-09-10T17:00:00Z" },
                 ServiceId => 944,
             } ]
         });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection has been reported as missed');
+        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection was reported as missed on Saturday, 10 September');
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
     subtest 'No requesting if open request of different size' => sub {
@@ -342,6 +358,7 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
+            EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
@@ -358,6 +375,7 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
+            EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
@@ -619,6 +637,7 @@ FixMyStreet::override_config {
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3227, # Waste spillage
             ServiceId => 940, # Refuse
+            EventDate => { DateTime => "2022-09-10T17:00:00Z" },
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
@@ -628,6 +647,289 @@ FixMyStreet::override_config {
         $mech->content_unlike(qr/name="category" value="Waste spillage"\s+disabled/s);
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
+
+    subtest 'Escalations of missed collections' => sub {
+        subtest 'No missed collection' => sub {
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+            $mech->content_lacks('name="category" value="Complaint against time');
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with a non-recyclable refuse collection');
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with a non-recyclable refuse collection');
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with a non-recyclable refuse collection');
+        };
+
+        subtest 'Open missed collection but by a different flat' => sub {
+            # So say this result was what was returned by a ServiceUnit GetEventsForObject call, not the address one
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19240, # Allocated to Crew
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12346 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with a non-recyclable refuse collection');
+        };
+
+        subtest 'Open missed collection' => sub {
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19240, # Allocated to Crew
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('report a failure to resolve a missed collection');
+
+            subtest 'actually make the report' => sub {
+                $mech->follow_link_ok({ text => 'report a failure to resolve a missed collection report' });
+                $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+                $mech->submit_form_ok( { with_fields => { submit => '1' } });
+                $mech->content_contains('Your enquiry has been submitted');
+                $mech->content_contains('Return to property details');
+                $mech->content_contains('/waste/12345"');
+                my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+                is $report->category, 'Complaint against time', "Correct category";
+                is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
+                is $report->user->email, 'schmoe@example.org', 'User details added to report';
+                is $report->name, 'Joe Schmoe', 'User details added to report';
+                is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
+            };
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+        };
+
+        subtest 'Completed missed collection' => sub {
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19241, # Completed
+                ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+        };
+
+        subtest 'Not Completed missed collection' => sub {
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19242, # Not Completed
+                ResolvedDate => { DateTime => "2022-09-10T17:00:00Z" },
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+        };
+
+        subtest 'Existing escalation event' => sub {
+            # Now mock there is an existing escalation
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 0,
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            }, {
+                Id => '112112322',
+                EventTypeId => 3134, # Complaint against time
+                EventStateId => 0,
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-13T19:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-14T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_contains('A chase was raised on 13 September and should be completed within 2 working days, 15 September');
+        };
+
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
+    subtest 'Escalations of container delivery failure' => sub {
+        my $request_time = "2025-02-03T08:00:00Z";
+
+        my $window_start_time = "2025-03-04T00:00:00Z";
+        my $just_before_window = "2025-03-03T23:59:59Z";
+
+        my $window_end_time = "2025-03-18T23:59:59Z";
+        my $just_after_window = "2025-03-19T00:00:00Z";
+
+        my $open_container_request_event = {
+            Id => '112112321',
+            EventTypeId => 3129, # Container request
+            EventDate => { DateTime => $request_time },
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 1, DatatypeName => 'Container Type' }, # Refuse container
+                    ] },
+                },
+            ] },
+            Guid => 'container-request-event-guid',
+        };
+        my $escalation_event = {
+            Id => '112112323',
+            EventTypeId => 3141, # Failure to Deliver Bags/Containers
+            EventStateId => 0,
+            ServiceId => 940, # Refuse
+            EventDate => { DateTime => "2022-09-13T19:00:00Z" },
+            Guid => 'container-escalation-event-guid',
+        };
+        my ($escalation_report) = $mech->create_problems_for_body(
+            1, $body->id,
+            'Container escalation', {
+                cobrand => 'sutton',
+                external_id => 'container-escalation-event-guid',
+                cobrand_data => 'waste',
+            }
+        );
+        $escalation_report->set_extra_fields({ name => 'container_request_guid', value => 'container-request-event-guid' });
+        $escalation_report->update;
+
+
+        $e->mock('GetEventsForObject', sub { [ $open_container_request_event, $escalation_event ] });
+
+        subtest "Open request already escalated; can't escalate" => sub {
+            foreach my $config ((
+                { 'time' => $just_before_window, label => 'before window' },
+                { 'time' => $window_start_time,  label => 'window start' },
+                { 'time' => $window_end_time,    label => 'window end' },
+                { 'time' => $just_after_window,  label => 'after window' },
+            )) {
+                subtest $config->{label} => sub {
+                    set_fixed_time($config->{time});
+                    $mech->get_ok('/waste/12345');
+                    $mech->content_lacks('Request a non-recyclable refuse container');
+                    $mech->content_lacks('report a failure to deliver a non-recyclable refuse container');
+                    $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
+                    $mech->content_contains('A chase was raised on 13 September and should be completed within 2 working days, 15 September');
+                };
+            }
+        };
+
+        $e->mock('GetEventsForObject', sub { [ $open_container_request_event ] });
+
+        subtest "Open request not escalated but outside window; can't escalate" => sub {
+            foreach my $config ((
+                { 'time' => $just_before_window, label => 'before window' },
+                { 'time' => $just_after_window,  label => 'after window' },
+            )) {
+                subtest $config->{label} => sub {
+                    set_fixed_time($config->{time});
+                    $mech->get_ok('/waste/12345');
+                    $mech->content_lacks('Request a non-recyclable refuse container');
+                    $mech->content_lacks('report a failure to deliver a non-recyclable refuse container');
+                    $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
+                    $mech->content_lacks('A chase was raised');
+                };
+            }
+        };
+
+        subtest "Open request not escalated and inside window; can escalate" => sub {
+            foreach my $config ((
+                { 'time' => $window_start_time, label => 'window start' },
+                { 'time' => $window_end_time,  label => 'window end' },
+            )) {
+                subtest $config->{label} => sub {
+                    set_fixed_time($config->{time});
+                    $mech->get_ok('/waste/12345');
+                    $mech->content_lacks('Request a non-recyclable refuse container');
+                    $mech->content_contains('report a failure to deliver a non-recyclable refuse container');
+                    $mech->content_contains('A non-recyclable refuse container request was made');
+                    $mech->content_lacks('A chase was raised');
+                };
+            }
+        };
+
+        subtest 'Making an escalation' => sub {
+            set_fixed_time($window_start_time);
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'report a failure to deliver a non-recyclable refuse container' });
+
+            $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+
+            $mech->submit_form_ok( { with_fields => { submit => '1' } });
+            $mech->content_contains('Your enquiry has been submitted');
+            $mech->content_contains('Return to property details');
+            $mech->content_contains('/waste/12345"');
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->category, 'Failure to Deliver Bags/Containers', "Correct category";
+            is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
+            is $report->user->email, 'schmoe@example.org', 'User email added to report';
+            is $report->name, 'Joe Schmoe', 'User name added to report';
+            is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
+            is $report->get_extra_field_value('container_request_guid'), 'container-request-event-guid';
+        };
+
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
 
 };
 

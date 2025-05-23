@@ -4,16 +4,17 @@ f = [];
 service_id = c.req.params.service_id;
 service = services.$service_id;
 
-IF property.domestic_refuse_bin OR communal_property;
+IF service.report_allowed AND (property.domestic_refuse_bin OR communal_property);
     SET field = { value = 'Bin not returned', label = 'My wheelie bin, box or caddy was not returned correctly after collection' };
-    IF open_service_requests.3135.$service_id;
+    IF service.events.filter(event_type = 3135);
         field.disabled = 1;
     END;
     f.push(field);
 END;
-IF property.domestic_refuse_bin;
+
+IF service.report_allowed AND property.domestic_refuse_bin;
     SET field = { value = 'Waste spillage', label = 'Spillage during collection' };
-    IF open_service_requests.3227.$service_id;
+    IF service.events.filter(event_type = 3227);
         field.disabled = 1;
     END;
     f.push(field);

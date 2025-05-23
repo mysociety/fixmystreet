@@ -828,13 +828,6 @@ sub assisted_collection {
     return ($ac_flag && $ac_end gt $today);
 }
 
-sub _closed_event {
-    my ($self, $event) = @_;
-    return 1 if $event->{ResolvedDate};
-    return 1 if $event->{ResolutionCodeId} && $event->{ResolutionCodeId} != 584; # Out of Stock
-    return 0;
-}
-
 sub missed_event_types { return {
     $EVENT_TYPE_IDS{missed_refuse} => 'missed',
     $EVENT_TYPE_IDS{missed_mixed} => 'missed',
