@@ -269,13 +269,19 @@ sub pay_complete : Path('pay_complete') : Args(2) {
     $c->forward('check_payment_redirect_id', [ $id, $token ]);
     my $p = $c->stash->{report};
 
-    my $ref = $c->cobrand->waste_cc_check_payment_status($c, $p);
+    my $already_paid = $p->waste_check_payment_state;
+    my $ref;
+    if ($already_paid) {
+        $ref = $p->get_extra_metadata('payment_reference');
+    } else {
+        $ref = $c->cobrand->waste_cc_check_payment_status($c, $p);
+    }
 
     if ( $ref ) {
         $c->stash->{title} = 'Payment successful';
         $c->stash->{reference} = $ref;
         $c->stash->{action} = $p->title eq 'Garden Subscription - Amend' ? 'add_containers' : 'new_subscription';
-        $c->forward( 'confirm_subscription', [ $ref ] );
+        $c->forward( 'confirm_subscription', [ $ref, $already_paid ] );
     } else {
         $c->stash->{template} = 'waste/pay_error.html';
         $c->detach;
@@ -283,7 +289,7 @@ sub pay_complete : Path('pay_complete') : Args(2) {
 }
 
 sub confirm_subscription : Private {
-    my ($self, $c, $reference) = @_;
+    my ($self, $c, $reference, $already_paid) = @_;
     my $p = $c->stash->{report};
 
     $c->stash->{property_id} = $p->waste_property_id;
@@ -302,7 +308,7 @@ sub confirm_subscription : Private {
     $c->stash->{override_template} = $c->stash->{template};
 
     # Do everything needed to confirm a waste payment
-    $p->waste_confirm_payment($reference);
+    $p->waste_confirm_payment($reference) unless $already_paid;
 }
 
 sub cancel_subscription : Private {

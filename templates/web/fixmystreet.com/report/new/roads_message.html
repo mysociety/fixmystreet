@@ -90,6 +90,6 @@
 </div>
 <div id="js-graffiti-message" class="hidden">
     <p>
-    [% INCLUDE 'report/new/graffiti_text.html' %]
+    [% graffiti_text = INCLUDE 'report/new/graffiti_text.html' %][% graffiti_text | add_links | html_para %]
     </p>
 

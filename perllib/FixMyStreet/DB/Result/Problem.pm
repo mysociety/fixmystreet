@@ -1534,6 +1534,26 @@ sub waste_property_id {
     return $self->get_extra_field_value('property_id');
 }
 
+=head3 waste_check_payment
+
+This is called to see if a report has already had payment made on it.
+
+=cut
+
+sub waste_check_payment_state {
+    my ($self, $reference) = @_;
+    my $cobrand = $self->get_cobrand_logged;
+
+    my $already_confirmed;
+    if ($self->category eq 'Bulky collection' || $self->category eq 'Small items collection') {
+        $already_confirmed = $cobrand->bulky_send_before_payment;
+    }
+
+    return 1 unless $self->state eq 'unconfirmed' || $already_confirmed;
+    return 1 if $already_confirmed && $self->get_extra_metadata('payment_reference');
+    return 0;
+}
+
 =head3 waste_confirm_payment
 
 This is called when a payment has been confirmed in order to record the
@@ -1547,13 +1567,12 @@ sub waste_confirm_payment {
     my ($self, $reference) = @_;
     my $cobrand = $self->get_cobrand_logged;
 
+    return if $self->waste_check_payment_state;
+
     my $already_confirmed;
     if ($self->category eq 'Bulky collection' || $self->category eq 'Small items collection') {
         $already_confirmed = $cobrand->bulky_send_before_payment;
     }
-
-    return unless $self->state eq 'unconfirmed' || $already_confirmed;
-    return if $already_confirmed && $self->get_extra_metadata('payment_reference'); # Already confirmed
 
     my $rs = $self->result_source->schema->resultset('Problem');
     my $db = $self->result_source->storage;
