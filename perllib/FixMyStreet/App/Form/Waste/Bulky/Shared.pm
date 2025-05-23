@@ -264,6 +264,11 @@ has_field tandc => (
         my $label;
         if ($c->cobrand->moniker eq 'sutton') {
             $label = 'I have read the <a href="' . $link . '" target="_blank">terms and conditions</a> of the service on the council’s website and agree to them.';
+        } elsif ($c->cobrand->moniker eq 'bromley') {
+            $label = '&bull; I confirm that the bulky waste items will be available from 7.00am on the day of collection
+<br>&bull; I confirm the bulky waste items will be left outside at the front of the property but not on the public highway, in an easy accessible location.
+<br>&bull; I confirm I understand that items cannot be collected from inside the property
+<br>&bull; I confirm I have read the information for the <a href="' . $link . '" target="_blank">bulky waste service</a>';
         } else {
             $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste collection</a> page on the council’s website';
         }
