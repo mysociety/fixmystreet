@@ -79,6 +79,11 @@ has_page summary => (
         my $current_bins = $data->{current_bins};
         my $bin_count = $data->{bins_wanted};
         my $new_bins = $bin_count - $current_bins;
+
+        # We need to make sure we have payment_method before we call
+        # garden_waste_first_bin_discount_applies
+        $data->{payment_method}
+            = $c->stash->{garden_form_data}->{payment_method};
         my $costs = WasteWorks::Costs->new({
             cobrand => $c->cobrand,
             discount => $data->{apply_discount},
@@ -90,7 +95,6 @@ has_page summary => (
         my $total = $cost_pa;
         $pro_rata += $cost_now_admin;
 
-        $data->{payment_method} = $c->stash->{garden_form_data}->{payment_method};
         $data->{cost_now_admin} = $cost_now_admin / 100;
         $data->{display_pro_rata} = $pro_rata < 0 ? 0 : $pro_rata / 100;
         $data->{display_total} = $total / 100;
