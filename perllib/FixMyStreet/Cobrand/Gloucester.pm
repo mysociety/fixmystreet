@@ -107,13 +107,13 @@ sub disambiguate_location {
 }
 
 # Include details of selected assets from their WFS service in the the alloy
-# report body.
+# report description.
 sub open311_pre_send {
     my ($self, $row, $open311) = @_;
 
     if (my $wfs_asset_info = $row->get_extra_field_value('wfs_asset_info')) {
-        my $text = "Asset Info: $wfs_asset_info\n\n" . $row->detail;
-        $row->detail($text);
+        my $text = "Asset Info: $wfs_asset_info\n\n" . $row->get_extra_field_value('description');
+        $row->update_extra_field({ name => 'description', value => $text });
     }
 }
 
