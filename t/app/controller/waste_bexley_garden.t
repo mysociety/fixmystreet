@@ -666,6 +666,13 @@ FixMyStreet::override_config {
                 $mech->log_in_ok( $user->email );
                 $mech->get_ok("/waste/$uprn/garden_modify");
                 like $mech->content, qr/current_bins.*value="2"/s, 'correct number of current bins prefilled';
+                my $old_annual_cost_pence
+                    = $ggw_cost_first - $ggw_first_bin_discount + $ggw_cost;
+                my $old_annual_cost_human
+                    = sprintf( '%.2f', $old_annual_cost_pence / 100 );
+                like $mech->text,
+                    qr/Total per year.*£$old_annual_cost_human/,
+                    'correct original cost displayed';
 
                 $mech->submit_form_ok(
                     {   with_fields => {
@@ -676,18 +683,22 @@ FixMyStreet::override_config {
                     "Modify"
                 );
 
-                # like $mech->text, qr/Garden waste collection3 bins/, 'correct bin total in summary';
-                my $new_annual_cost_pence = ($ggw_cost_first - $ggw_first_bin_discount) + (2 * $ggw_cost);
+                my $new_annual_cost_pence = $old_annual_cost_pence + $ggw_cost;
                 my $new_annual_cost_human = sprintf('%.2f', $new_annual_cost_pence / 100);
-                # like $mech->text, qr/Total£$new_annual_cost_human/, 'correct new annual payment total in summary';
-                # like $mech->text, qr/Total to pay today.0\.00/, 'correct today-payment in summary (zero for DD amend)';
-                # like $mech->text, qr/Your nameDD Modifier/, 'correct name in summary';
+
+                like $mech->text, qr/Garden waste collection3 bins/,
+                    'correct bin total in summary';
+                like $mech->text, qr/Total£$new_annual_cost_human/,
+                    'correct new annual payment total in summary';
+# TODO
+# like $mech->text, qr/Total to pay today.0\.00/,
+    # 'correct today-payment in summary (zero for DD amend)';
+                like $mech->text, qr/Your nameDD Modifier/,
+                    'correct name in summary';
                 my $email = $user->email;
-                # like $mech->text, qr/$email/, 'correct email in summary';
+                like $mech->text, qr/$email/, 'correct email in summary';
 
                 $mech->submit_form_ok( { with_fields => { tandc => 1 } }, "Confirm" );
-
-                diag $mech->content;
 
                 ok $amend_plan_args, 'Integrations::AccessPaySuite->amend_plan was called';
                 isa_ok $amend_plan_args->{orig_sub}, 'FixMyStreet::DB::Result::Problem', 'amend_plan received report object for original sub';
