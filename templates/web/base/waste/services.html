@@ -11,7 +11,7 @@
         [% IF unit.escalations.container AND NOT unit.escalations.container_open %]
             If the issue is still not resolved, please
             <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.container.id %]&amp;event_guid=[% unit.escalations.container.guid %]&amp;category=Failure+to+Deliver+Bags%2FContainers"
-                class="waste-service-link waste-service-descriptor">report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
+                class="waste-service-link">report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
         [% END %]
     [% END %]
   </span>
