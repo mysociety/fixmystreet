@@ -485,6 +485,7 @@ sub direct_debit_modify : Private {
 
     my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
     $p->set_extra_metadata(payerReference => $ref);
+    $p->confirm if $c->cobrand->moniker eq 'bexley';
     $p->update;
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 

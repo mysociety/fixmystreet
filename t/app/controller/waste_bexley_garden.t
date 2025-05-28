@@ -684,9 +684,8 @@ FixMyStreet::override_config {
                     'correct bin total in summary';
                 like $mech->text, qr/Total£$new_annual_cost_human/,
                     'correct new annual payment total in summary';
-# TODO
-# like $mech->text, qr/Total to pay today.0\.00/,
-    # 'correct today-payment in summary (zero for DD amend)';
+                like $mech->text, qr/Total to pay today.55\.00/,
+                    'correct today-payment in summary';
                 like $mech->text, qr/Your nameDD Modifier/,
                     'correct name in summary';
                 my $email = $user->email;
@@ -712,7 +711,8 @@ FixMyStreet::override_config {
                 is $modify_report->get_extra_field_value('total_containers'), 3, 'Amend report: correct total_containers';
                 is $modify_report->get_extra_field_value('type'), 'amend', 'Amend report: correct type';
                 is $modify_report->get_extra_field_value('customer_external_ref'), 'CUSTOMER_123', 'Amend report: correct customer_external_ref';
-                is $modify_report->state, 'confirmed', 'Amend report: state correct (confirmed for DD amend)';
+                is $modify_report->state, 'confirmed',
+                    'Amend report: state correct (confirmed for DD amend)';
 
                 $access_mock->unmock_all;
             };
