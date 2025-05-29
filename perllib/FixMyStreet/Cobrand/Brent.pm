@@ -1122,7 +1122,7 @@ sub image_for_unit {
         $SERVICE_IDS{fas_refuse} => svg_container_sack("normal", '#333333'),
         $SERVICE_IDS{fas_mixed} => svg_container_sack("normal", '#d8d8d8'),
         $SERVICE_IDS{domestic_paper} => "$base/bag-blue",
-        bulky => "$base/electricals-batteries-textiles",
+        small_items => "$base/electricals-batteries-textiles",
     };
     return $images->{$service_id};
 }
@@ -1465,9 +1465,9 @@ sub bulky_can_refund { 0 }
 sub bulky_free_collection_available { 0 }
 sub bulky_hide_later_dates { 1 }
 
-sub bulky_allowed_property {
+sub small_items_allowed_property {
     my ( $self, $property ) = @_;
-    return $self->bulky_enabled;
+    return $self->small_items_enabled;
 }
 
 sub collection_date {

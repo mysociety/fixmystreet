@@ -29,7 +29,7 @@
           <p>If you would like to make any changes to your booking, call us on 020 8274 4902 at least 2 working days before your collection day.</p>
         [% END %]
         [% IF c.cobrand.bulky_can_cancel_collection(booking) %]
-          [% IF c.cobrand.moniker != 'brent' %]
+          [% IF type == 'bulky' %]
             <a class="btn btn--primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel', [ property.id, booking.id ]) %]">Cancel booking</a>
           [% ELSE %]
             <a class="btn btn--primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel_small', [ property.id, booking.id ]) %]">Cancel booking</a>
@@ -100,7 +100,7 @@
     [% END %]
   [% END %]
 
-[% IF c.cobrand.moniker != 'brent' %]
+[% IF type == 'bulky' %]
 <dl class="govuk-summary-list govuk-!-margin-bottom-3 govuk-!-padding-bottom-0">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Cost</dt>
@@ -132,7 +132,7 @@
     <!-- END #07 -->
   [% END %]
   [% IF waste_features.bulky_multiple_bookings OR NOT pending_bulky_collections %]
-    [% IF c.cobrand.moniker != 'brent' %]
+    [% IF type == 'bulky' %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
     [% ELSE %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index_small', [ property.id ]) %]">
