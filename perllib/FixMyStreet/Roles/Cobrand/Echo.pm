@@ -172,7 +172,10 @@ sub bin_services_for_address {
     # Bulky/small items collection event
     my $waste_cfg = $self->{c}->stash->{waste_features};
     if ($waste_cfg && $waste_cfg->{bulky_missed}) {
-        $self->bulky_check_missed_collection($events, $self->waste_bulky_missed_blocked_codes);
+        $self->booked_check_missed_collection('bulky', $events, $self->waste_bulky_missed_blocked_codes);
+    }
+    if ($waste_cfg && $waste_cfg->{small_items_missed}) {
+        $self->booked_check_missed_collection('small_items', $events, $self->waste_bulky_missed_blocked_codes);
     }
 
     my @to_fetch;
@@ -959,13 +962,13 @@ sub bulky_refetch_slots {
     }
 }
 
-sub bulky_check_missed_collection {
-    my ($self, $events, $blocked_codes) = @_;
+sub booked_check_missed_collection {
+    my ($self, $type, $events, $blocked_codes) = @_;
 
     my $cfg = $self->feature('echo');
-    my $service_id = $cfg->{bulky_service_id} or return;
-    my $service_id_missed = $cfg->{bulky_service_id_missed};
-    my $event_type_id = $cfg->{bulky_event_type_id} or return;
+    my $service_id = $cfg->{$type . '_service_id'} or return;
+    my $service_id_missed = $cfg->{$type . '_service_id_missed'};
+    my $event_type_id = $cfg->{$type . '_event_type_id'} or return;
     my $bulky_events = $events->filter({ event_type => $event_type_id });
     return unless $bulky_events;
     my $missed_events = $events->filter({ type => 'missed', service => $service_id });
@@ -973,7 +976,7 @@ sub bulky_check_missed_collection {
     foreach my $event ($bulky_events->list) {
         my $guid = $event->{guid};
         my $row = {
-            service_name => 'Bulky waste',
+            service_name => $type eq 'small_items' ? 'Small items' : 'Bulky waste',
             service_id => $service_id_missed || $service_id,
         };
         my $in_time = $self->within_working_days($event->{date}, 2);
@@ -1000,7 +1003,7 @@ sub bulky_check_missed_collection {
             $row->{report_open} = $_ if $reported_guid eq $guid;
         }
 
-        $self->{c}->stash->{bulky_missed}{$guid} = $row;
+        $self->{c}->stash->{booked_missed}{$guid} = $row;
     }
 }
 

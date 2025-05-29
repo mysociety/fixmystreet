@@ -73,16 +73,16 @@ FixMyStreet::override_config {
         waste_features => {
             brent => {
                 small_items_enabled => 1,
-                bulky_missed => 1,
-                bulky_multiple_bookings => 1,
+                small_items_missed => 1,
+                small_items_multiple_bookings => 1,
                 small_items_tandc_link => 'tandc_link',
             },
         },
         echo => {
             brent => {
-                bulky_service_id => 274,
-                bulky_service_id_missed => 787,
-                bulky_event_type_id => 2964,
+                small_items_service_id => 274,
+                small_items_service_id_missed => 787,
+                small_items_event_type_id => 2964,
                 url => 'http://example.org',
             },
         },

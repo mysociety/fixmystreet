@@ -4,6 +4,8 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Bulky::Shared';
 
+has small_items => ( is => 'ro', default => 1 );
+
 has_page intro => (
     title => 'Book small items collection',
     intro => 'small_items/intro.html',
