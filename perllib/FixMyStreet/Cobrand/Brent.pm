@@ -1536,7 +1536,7 @@ sub waste_munge_bulky_data {
     $data->{extra_Exact_Location} = $data->{location};
 
     my (%types);
-    my $max = $self->bulky_items_maximum;
+    my $max = $c->stash->{booking_maximum};
     my $other_item = 'Small electricals: Other item under 30x30x30 cm';
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
