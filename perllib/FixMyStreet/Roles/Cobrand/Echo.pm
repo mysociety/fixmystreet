@@ -203,8 +203,11 @@ sub bin_services_for_address {
         'bin_services_for_address:' . $property->{id},
         $background, @to_fetch);
 
-    if ($self->can('bulky_enabled')) {
+    if ($self->can('bulky_allowed_property')) {
         $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
+    }
+    if ($self->can('small_items_allowed_property')) {
+        $property->{show_small_items} = $self->small_items_allowed_property($property);
     }
 
     my @out;

@@ -72,7 +72,7 @@ FixMyStreet::override_config {
         waste => { brent => 1 },
         waste_features => {
             brent => {
-                bulky_enabled => 1,
+                small_items_enabled => 1,
                 bulky_missed => 1,
                 bulky_multiple_bookings => 1,
                 small_items_tandc_link => 'tandc_link',
