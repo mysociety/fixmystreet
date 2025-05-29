@@ -1144,7 +1144,11 @@ sub add_report : Private {
 
     $c->cobrand->call_hook(
         clear_cached_lookups_property => $c->stash->{property}{id},
-        'skip_echo', # We do not want to remove/cancel anything in Echo just before payment
+    );
+    $c->cobrand->call_hook(
+        clear_cached_lookups_bulky_slots => $c->stash->{property}{id},
+        skip_echo => 1, # We do not want to remove/cancel anything in Echo just before payment
+        delete_guid => 1, # We don't need the cached GUID any more
     );
 
     return 1;
