@@ -4,8 +4,11 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var live = $(location).attr('href').search('www.fixmystreet.com') + 1;
+var host = live ? 'tilma.mysociety.org' : 'tilma.staging.mysociety.org';
+
 fixmystreet.assets.add({
-    http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/highways",
+    http_wfs_url: "https://" + host + "/mapserver/highways",
     asset_type: 'area',
     wfs_feature: "Highways",
     // this covers zoomed right out on Cumbrian sections of
