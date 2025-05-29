@@ -301,56 +301,35 @@ sub get_all_payments {
     return $refs;
 }
 
-sub find_unconfirmed_bulky_collections {
-    my ( $self, $uprn ) = @_;
+sub find_booked_collections {
+    my ( $self, $uprn, $recent, $retry ) = @_;
 
-    return $self->problems->search({
-        category => 'Bulky collection',
-        extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
-        state => 'unconfirmed',
-    })->order_by('-id');
-}
+    my %recent_states = map { $_ => 1 } grep { $_ ne 'cancelled' } FixMyStreet::DB::Result::Problem->closed_states, FixMyStreet::DB::Result::Problem->fixed_states;
+    my %pending_states = map { $_ => 1 } FixMyStreet::DB::Result::Problem->open_states;
 
-sub find_pending_bulky_collections {
-    my ( $self, $uprn ) = @_;
-
-    my $rs = $self->problems->search({
+    my @reports = $self->problems->search({
         category => ['Bulky collection', 'Small items collection'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
-        state => [ FixMyStreet::DB::Result::Problem->open_states ],
-    })->order_by('-id');
-
-    return wantarray ? $self->_recently($rs) : $rs;
-}
-
-sub find_recent_bulky_collections {
-    my ( $self, $uprn ) = @_;
-
-    my @closed = grep { $_ ne 'cancelled' } FixMyStreet::DB::Result::Problem->closed_states;
-    my $rs = $self->problems->search({
-        category => ['Bulky collection', 'Small items collection'],
-        extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
-        state => [ @closed, FixMyStreet::DB::Result::Problem->fixed_states ],
-    })->order_by('-id');
-
-    return wantarray ? $self->_recently($rs) : $rs;
-}
-
-sub _recently {
-    my ($self, $rs) = @_;
-
-    # If we've already sent it, and we want a full list for display, we don't
-    # want to show ones without a reference
-    if ($self->bulky_send_before_payment) {
-        $rs = $rs->search({
-            extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
-        });
-    }
+    })->order_by('-id')->all;
 
     my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( days => 10 );
-    my @all = $rs->all;
-    @all = grep { my $date = $self->collection_date($_); $date >= $dt } @all;
-    return @all;
+    my $out;
+    foreach (@reports) {
+        my $key = $_->category eq 'Small items collection' ? 'small_items' : 'bulky';
+
+        my $date = $self->collection_date($_);
+        next if $recent && $date < $dt;
+
+        # If we've already sent it, and we want a full list for display, we don't
+        # want to show ones without a reference
+        next if $recent && $key eq 'bulky' && $self->bulky_send_before_payment && !$_->get_extra_metadata('payment_reference') && !$_->get_extra_metadata('chequeReference');
+
+        push @{$out->{$key}{unconfirmed}}, $_ if $retry && $_->state eq 'unconfirmed';
+        push @{$out->{$key}{pending}}, $_ if $pending_states{$_->state};
+        push @{$out->{$key}{recent}}, $_ if $recent_states{$_->state};
+    }
+
+    return $out;
 }
 
 sub _bulky_collection_window {
