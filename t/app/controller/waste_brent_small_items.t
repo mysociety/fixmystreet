@@ -21,7 +21,7 @@ $body->set_extra_metadata(
         base_price => 0,
         show_location_page => 'users',
         show_individual_notes => 1,
-        item_list => [
+        small_item_list => [
             { bartec_id => '1', name => 'Tied bag of domestic batteries (min 10 - max 100)', max => '1' },
             { bartec_id => '2', name => 'Podback Bag' },
             { bartec_id => '3', name => 'Paint, 1 can, up to 5 litres' },

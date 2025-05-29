@@ -254,12 +254,15 @@ sub view : Private {
         address => $p->get_extra_metadata('property_address'),
     };
 
+    my $items_extra;
     if ($p->category eq 'Small items collection') {
         $c->stash->{small_items} = 1;
         $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
+        $items_extra = $c->cobrand->call_hook('small_items_extra');
     } else {
         $c->stash->{small_items} = 0;
         $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{items_per_collection_max} || 5;
+        $items_extra = $c->cobrand->call_hook('bulky_items_extra', exclude_pricing => 1);
     }
 
     $c->stash->{template} = 'waste/bulky/summary.html';
@@ -268,7 +271,7 @@ sub view : Private {
 
     my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
     $c->stash->{form} = {
-        items_extra => $c->cobrand->call_hook('bulky_items_extra', exclude_pricing => 1),
+        items_extra => $items_extra,
         saved_data  => $saved_data,
     };
 }

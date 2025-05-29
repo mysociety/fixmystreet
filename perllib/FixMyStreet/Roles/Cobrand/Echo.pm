@@ -1029,7 +1029,7 @@ sub bulky_nice_item_list {
             push @fields, { item => $value, display => $display };
         }
     }
-    my $items_extra = $self->bulky_items_extra(exclude_pricing => 1);
+    my $items_extra = $report->category eq 'Small items collection' ? $self->small_items_extra() : $self->bulky_items_extra(exclude_pricing => 1);
 
     return [
         map {

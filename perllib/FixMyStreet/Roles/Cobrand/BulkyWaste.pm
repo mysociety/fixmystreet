@@ -51,6 +51,7 @@ sub small_items_enabled {
 }
 
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
+sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
 
 sub bulky_tandc_link {
@@ -134,6 +135,18 @@ sub bulky_is_cancelled {
     }
 }
 
+sub small_items_extra {
+    my ($self) = @_;
+
+    my $json = JSON::MaybeXS->new;
+    my %hash;
+    for my $item ( @{ $self->small_items_master_list } ) {
+        $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
+        $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
+        $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
+    }
+    return \%hash;
+}
 sub bulky_items_extra {
     my ($self, %args) = @_;
 
