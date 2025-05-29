@@ -7,7 +7,7 @@
     A [% unit.service_name FILTER lower %] container request has been made
     [% ELSE %]
         A [% unit.service_name FILTER lower %] container request was made on [% date.format(unit.requests_open.values.0.date, '%A, %-d %B') %].
-        We aim to deliver the container within [% c.cobrand.request_timeframe %].
+        We aim to deliver the container within [% cobrand.wasteworks_config.request_timeframe %].
 
         [% IF unit.escalations.container AND NOT unit.escalations.container_open %]
             <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.container.id %]&amp;event_guid=[% unit.escalations.container.guid %]&amp;category=Failure+to+Deliver+Bags%2FContainers"
