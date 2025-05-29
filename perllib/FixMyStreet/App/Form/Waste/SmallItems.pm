@@ -268,7 +268,7 @@ sub validate {
     }
 
     if ($self->current_page->name eq 'add_items') {
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $self->c->stash->{booking_maximum};
         my %given;
         for my $num ( 1 .. $max_items ) {
             my $val = $self->field("item_$num")->value or next;
