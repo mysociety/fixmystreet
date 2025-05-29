@@ -152,7 +152,7 @@ SET data = form.saved_data;
         [% PROCESS change_answers_button goto='add_items' %]
       </div>
       [% items = [] %]
-      [% FOR num IN [ 1 .. cobrand.bulky_items_maximum ];
+      [% FOR num IN [ 1 .. c.stash.booking_maximum ];
         item_key = 'item_' _ num;
         photo_key = 'item_photo_' _ num;
         item = data.$item_key;
@@ -180,7 +180,7 @@ SET data = form.saved_data;
       <div class="govuk-!-margin-bottom-4">
         <p class="govuk-!-margin-bottom-0">[% tprintf(nget('%d item requested for collection.', '%d items requested for collection.', items.size), items.size) %]</p>
         [% IF c.cobrand.moniker == 'peterborough' %]
-            [% remaining = cobrand.bulky_items_maximum - items.size %]
+            [% remaining = c.stash.booking_maximum - items.size %]
             <small>([% tprintf(nget('you can add up to %d more item', 'you can add up to %d more items', remaining), remaining) %])</small>
         [% END %]
       </div>
