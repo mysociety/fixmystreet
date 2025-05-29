@@ -117,13 +117,27 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
     }
 }
 
+sub small_items : Chained('body') {
+    my ( $self, $c ) = @_;
+    $c->stash->{item_list_key} = 'small_item_list';
+    $c->stash->{template} = 'admin/waste/bulky_items.html';
+    $c->forward('booked_items');
+}
+
 sub bulky_items : Chained('body') {
+    my ( $self, $c ) = @_;
+    $c->stash->{item_list_key} = 'item_list';
+    $c->forward('booked_items');
+}
+
+sub booked_items : Private {
     my ( $self, $c ) = @_;
 
     $c->forward('/auth/get_csrf_token');
 
+    my $key = $c->stash->{item_list_key};
     my $cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
-    $c->stash->{item_list} = $cfg->{item_list} || [];
+    $c->stash->{item_list} = $cfg->{$key} || [];
 
     my $cobrand = $c->stash->{body}->get_cobrand_handler;
     $c->stash->{per_item_pricing_property_types} =
@@ -180,12 +194,13 @@ sub bulky_items : Chained('body') {
         }
         unless ($c->stash->{has_errors}) {
             my @sorted = sort { $a->{name} cmp $b->{name} } @items;
-            $cfg->{item_list} = \@sorted;
+            my $cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
+            $cfg->{$key} = \@sorted;
             $c->stash->{body}->set_extra_metadata("wasteworks_config", $cfg);
             $c->stash->{body}->update;
             $c->flash->{status_message} = _("Updated!");
             $c->res->redirect(
-                $c->uri_for_action( '/admin/waste/bulky_items',
+                $c->uri_for_action( $c->action,
                     [ $c->stash->{body}->id ]
                 )
             );
