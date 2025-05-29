@@ -6,7 +6,7 @@ extends 'FixMyStreet::App::Form::Waste::Bulky::Shared';
 
 has_page intro => (
     title => 'Book small items collection',
-    intro => 'bulky/intro.html',
+    intro => 'small_items/intro.html',
     fields => ['continue'],
     next => 'about_you',
 );

@@ -49,6 +49,7 @@ sub setup_small : Chained('/waste/property') : PathPart('small_items') : Capture
         $c->detach('/waste/property_redirect');
     }
 
+    $c->stash->{small_items} = 1;
     $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
 }
 
@@ -234,8 +235,10 @@ sub view : Private {
     };
 
     if ($p->category eq 'Small items collection') {
+        $c->stash->{small_items} = 1;
         $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
     } else {
+        $c->stash->{small_items} = 0;
         $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{items_per_collection_max} || 5;
     }
 

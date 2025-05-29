@@ -75,7 +75,7 @@ FixMyStreet::override_config {
                 bulky_enabled => 1,
                 bulky_missed => 1,
                 bulky_multiple_bookings => 1,
-                bulky_tandc_link => 'tandc_link',
+                small_items_tandc_link => 'tandc_link',
             },
         },
         echo => {
