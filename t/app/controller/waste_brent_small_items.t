@@ -17,7 +17,7 @@ my $user_phone = $mech->create_user_ok('0123456789');
 my $body = $mech->create_body_ok(2488, 'Brent Council', { cobrand => 'brent' });
 $body->set_extra_metadata(
     wasteworks_config => {
-        items_per_collection_max => 11,
+        small_items_per_collection_max => 11,
         base_price => 0,
         show_location_page => 'users',
         show_individual_notes => 1,

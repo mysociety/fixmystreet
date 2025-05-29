@@ -1154,7 +1154,7 @@ sub waste_munge_bulky_data {
     my $cfg = $self->feature('waste_features');
     my $quantity_1_code = $cfg->{bulky_quantity_1_code};
 
-    my $max = $self->bulky_items_maximum;
+    my $max = $c->stash->{booking_maximum};
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
             push @item_names, $item;

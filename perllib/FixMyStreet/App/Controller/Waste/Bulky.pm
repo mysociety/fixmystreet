@@ -28,6 +28,8 @@ sub setup : Chained('/waste/property') : PathPart('bulky') : CaptureArgs(0) {
     if ( !$c->stash->{property}{show_bulky_waste} ) {
         $c->detach('/waste/property_redirect');
     }
+
+    $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{items_per_collection_max} || 5;
 }
 
 sub setup_small : Chained('/waste/property') : PathPart('small_items') : CaptureArgs(0) {
@@ -37,6 +39,8 @@ sub setup_small : Chained('/waste/property') : PathPart('small_items') : Capture
     if ( !$c->stash->{property}{show_bulky_waste} ) {
         $c->detach('/waste/property_redirect');
     }
+
+    $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
 }
 
 sub bulky_item_options_method {
@@ -57,7 +61,7 @@ sub bulky_item_options_method {
 sub item_list : Private {
     my ($self, $c) = @_;
 
-    my $max_items = $c->cobrand->bulky_items_maximum;
+    my $max_items = $c->stash->{booking_maximum};
     my $field_list = [];
 
     my $notes_field = {
@@ -197,6 +201,12 @@ sub view : Private {
         address => $p->get_extra_metadata('property_address'),
     };
 
+    if ($p->category eq 'Small items collection') {
+        $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
+    } else {
+        $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{items_per_collection_max} || 5;
+    }
+
     $c->stash->{template} = 'waste/bulky/summary.html';
 
     $c->forward('/report/load_updates');
@@ -232,7 +242,7 @@ sub cancel_small : PathPart('cancel') : Chained('setup_small') : Args(1) {
 
 sub process_bulky_data : Private {
     my ($self, $c, $form) = @_;
-    my $data = renumber_items($form->saved_data, $c->cobrand->bulky_items_maximum);
+    my $data = renumber_items($form->saved_data, $c->stash->{booking_maximum});
 
     if (!$c->cobrand->bulky_free_collection_available) {
         # Either was picked in the form, or if not present will be card
@@ -322,7 +332,7 @@ sub renumber_items {
 
 sub process_bulky_amend : Private {
     my ($self, $c, $form) = @_;
-    my $data = renumber_items($form->saved_data, $c->cobrand->bulky_items_maximum);
+    my $data = renumber_items($form->saved_data, $c->stash->{booking_maximum});
 
     $c->stash->{override_confirmation_template} = 'waste/bulky/confirmation.html';
 
@@ -387,7 +397,7 @@ sub amend_extra_data {
         $p->unset_extra_metadata('location_photo');
     }
 
-    my $max = $c->cobrand->bulky_items_maximum;
+    my $max = $c->stash->{booking_maximum};
     for (1..$max) {
         if ($data->{"item_photo_$_"}) {
             $p->set_extra_metadata("item_photo_$_" => $data->{"item_photo_$_"})

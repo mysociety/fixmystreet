@@ -274,7 +274,7 @@ sub waste_munge_bulky_data {
     $data->{category} = "Bulky collection";
     $data->{extra_DATE} = $data->{chosen_date};
 
-    my $max = $self->bulky_items_maximum;
+    my $max = $c->stash->{booking_maximum};
     for (1..$max) {
         my $two = sprintf("%02d", $_);
         $data->{"extra_ITEM_$two"} = $data->{"item_$_"};
@@ -313,7 +313,7 @@ sub waste_munge_bulky_amend {
     $p->update_extra_field({ name => 'DATE', value => $data->{chosen_date} });
     $p->update_extra_field({ name => 'CREW NOTES', value => $data->{location} });
 
-    my $max = $self->{c}->cobrand->bulky_items_maximum;
+    my $max = $self->{c}->stash->{booking_maximum};
     for (1..$max) {
         my $two = sprintf("%02d", $_);
         $p->update_extra_field({ name => "ITEM_$two", value => $data->{"item_$_"} || '' });

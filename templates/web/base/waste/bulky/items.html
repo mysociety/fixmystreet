@@ -94,7 +94,7 @@ END; END %]
 [% END %]
 
 <form id="item-selection-form" class="waste" method="post" enctype="multipart/form-data">
-  [% FOR num IN [ 1 .. c.cobrand.bulky_items_maximum ] %]
+  [% FOR num IN [ 1 .. c.stash.booking_maximum ] %]
   <div class="bulky-item-wrapper">
     [% # Building names beforehand because override_fields does not seem to like them being built inside its arg list %]
     [% item = 'item_' _ num %]
