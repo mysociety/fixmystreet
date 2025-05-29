@@ -483,18 +483,11 @@ sub property : Chained('property_id') : PathPart('') : CaptureArgs(0) {
         $c->detach( '/page_error_404_not_found', [] );
     }
 
-    if ($c->cobrand->can('bulky_enabled')) {
-        my @pending = $c->cobrand->find_pending_bulky_collections($property->{uprn});
-        $c->stash->{pending_bulky_collections} = @pending ? \@pending : undef;
-
-        my @recent = $c->cobrand->find_recent_bulky_collections($property->{uprn});
-        $c->stash->{recent_bulky_collections} = @recent ? \@recent : undef;
-
+    if ($c->cobrand->can('find_booked_collections')) {
         my $cfg = $c->cobrand->feature('waste_features');
-        if ($cfg->{bulky_retry_bookings} && $c->stash->{is_staff}) {
-            my @unconfirmed = $c->cobrand->find_unconfirmed_bulky_collections($property->{uprn})->all;
-            $c->stash->{unconfirmed_bulky_collections} = @unconfirmed ? \@unconfirmed : undef;
-        }
+        my $retry = $cfg->{bulky_retry_bookings} && $c->stash->{is_staff};
+        my $collections = $c->cobrand->find_booked_collections($property->{uprn}, 'recent', $retry);
+        $c->stash->{collections} = $collections;
     }
 
     $c->stash->{latitude} = Utils::truncate_coordinate( $property->{latitude} );
