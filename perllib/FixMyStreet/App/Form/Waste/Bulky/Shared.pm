@@ -76,7 +76,7 @@ has_page summary => (
     update_field_list => sub {
         my ($form) = @_;
         my $data = $form->saved_data;
-        my $new = _renumber_items($data, $form->c->cobrand->bulky_items_maximum);
+        my $new = _renumber_items($data, $form->c->stash->{booking_maximum});
         %$data = %$new;
         return {};
     },
@@ -328,7 +328,7 @@ sub validate {
     }
 
     if ($self->current_page->name eq 'add_items') {
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $self->c->stash->{booking_maximum};
         my %given;
         for my $num ( 1 .. $max_items ) {
             my $val = $self->field("item_$num")->value or next;
@@ -368,7 +368,7 @@ sub validate {
     if ($self->current_page->name eq 'summary' && $self->c->stash->{amending_booking}) {
         my $old = $self->c->cobrand->waste_reconstruct_bulky_data($self->c->stash->{amending_booking});
         my $new = $self->saved_data;
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $self->c->stash->{booking_maximum};
         my $same = 1;
         my @fields = qw(chosen_date location location_photo);
         push @fields, map { ("item_$_", "item_photo_$_") } 1 .. $max_items;

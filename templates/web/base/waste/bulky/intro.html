@@ -12,7 +12,7 @@
     <li>Requesting a [% service_name %] collection usually takes around <strong>10 minutes</strong></li>
   [% END %]
   [% IF c.cobrand.moniker != 'brent' AND c.cobrand.moniker != 'bromley' %]
-    <li>You can request up to <strong>[% c.cobrand.bulky_items_maximum | numwords %] items per collection</strong></li>
+    <li>You can request up to <strong>[% c.stash.booking_maximum | numwords %] items per collection</strong></li>
   [% END %]
     [%~
         USE pounds = format('%.2f');

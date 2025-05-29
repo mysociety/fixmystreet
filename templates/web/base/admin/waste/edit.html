@@ -3,24 +3,25 @@
 
 [% INCLUDE status_message %]
 
-<ul>
-    <li><a href="[% c.uri_for_action('admin/waste/bulky_items', [ body.id ]) %]">[% loc("Bulky items list") %]</a></li>
-</ul>
+[% IF errors %]
+    <p class="error">[% loc('Please correct the errors below') %]</p>
+[% END %]
 
 <h2>Site wide configuration</h2>
 
-<h3>Bulky Collections</h3>
-
-[% IF errors %]
-    <p class="error">[% loc('Please correct the errors below') %]</p>
+[% IF errors.site_wide %]
+    <div class="form-error">[% errors.site_wide %]</div>
 [% END %]
 
 <form method="post">
     <input type="hidden" name="token" value="[% csrf_token %]" >
 
-    [% IF errors.site_wide %]
-        <div class="form-error">[% errors.site_wide %]</div>
-    [% END %]
+  [% IF body.get_cobrand_handler.bulky_enabled %]
+    <h3>Bulky Collections</h3>
+
+    <ul>
+        <li><a href="[% c.uri_for_action('admin/waste/bulky_items', [ body.id ]) %]">[% loc("Bulky items list") %]</a></li>
+    </ul>
 
     <div style="display:flex;gap:1em;">
     <div>
@@ -59,6 +60,19 @@
     <input class="form-control" type=text name="per_item_min_collection_price" id="waste_per_item_min_collection_price"
         value="[% per_item_min_collection_price %]">
     </div>
+
+    <hr>
+  [% END %]
+
+    <h3>Small Items Collections</h3>
+
+    <div>
+    <label for="waste_small_items_per_collection_max">Maximum items per collection (1-200)</label>
+    <input class="form-control" type=text max=200 min=1 name="small_items_per_collection_max" id="waste_small_items_per_collection_max"
+        value="[% small_items_per_collection_max %]">
+    </div>
+
+    <hr>
 
     <p>
     <label for="show_location_page">[% loc('Show location information page') %]</label>
