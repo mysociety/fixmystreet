@@ -1,8 +1,8 @@
-[% IF pending_bulky_collections AND NOT c.user_exists %]
+[% IF collections.$type.pending AND NOT c.user_exists %]
     [% PROCESS waste/_bulky_not_signed_user.html %]
 [% END %]
 
-[% FOR booking IN pending_bulky_collections; booking_guid = booking.external_id %]
+[% FOR booking IN collections.$type.pending; booking_guid = booking.external_id %]
     [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
@@ -50,7 +50,7 @@
     <!-- END #04 -->
   [% END %]
 
-  [% FOR booking IN recent_bulky_collections; booking_guid = booking.external_id; %]
+  [% FOR booking IN collections.$type.recent; booking_guid = booking.external_id; %]
     [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
@@ -74,10 +74,10 @@
     </div>
   [% END %]
 
-  [% IF unconfirmed_bulky_collections %]
+  [% IF collections.$type.unconfirmed %]
     <hr>
     <h2>Unconfirmed&nbsp;bookings</h2>
-    [% FOR booking IN unconfirmed_bulky_collections %]
+    [% FOR booking IN collections.$type.unconfirmed %]
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Collection date</dt>
@@ -126,12 +126,12 @@
 [% END %]
 
 <div class="waste-services-launch-panel">
-  [% IF NOT c.user_exists AND (pending_bulky_collections OR recent_bulky_collections) %]
+  [% IF NOT c.user_exists AND (collections.$type.pending OR collections.$type.recent) %]
     <!-- #07 Should be displayed when: user HASN'T signed in -->
     <a class="btn btn--primary govuk-!-margin-bottom-2" href="/auth?r=waste/[% property.id %]">View existing bookings</a>
     <!-- END #07 -->
   [% END %]
-  [% IF waste_features.bulky_multiple_bookings OR NOT pending_bulky_collections %]
+  [% IF waste_features.bulky_multiple_bookings OR NOT collections.$type.pending %]
     [% IF type == 'bulky' %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
     [% ELSE %]
