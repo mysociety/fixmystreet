@@ -865,9 +865,9 @@ FixMyStreet::override_config {
                     set_fixed_time($config->{time});
                     $mech->get_ok('/waste/12345');
                     $mech->content_lacks('Request a non-recyclable refuse container');
-                    $mech->content_lacks('report a failure to deliver a non-recyclable refuse container');
+                    $mech->content_lacks('If it hasn’t been delivered, report the issue here');
                     $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
-                    $mech->content_contains('A chase was raised on 13 September and should be completed within 2 working days, 15 September');
+                    $mech->content_contains('A problem with this delivery was reported on Tuesday, 13 September. We aim to complete your request within 2 working days (Thursday, 15 September)');
                 };
             }
         };
@@ -883,9 +883,9 @@ FixMyStreet::override_config {
                     set_fixed_time($config->{time});
                     $mech->get_ok('/waste/12345');
                     $mech->content_lacks('Request a non-recyclable refuse container');
-                    $mech->content_lacks('report a failure to deliver a non-recyclable refuse container');
+                    $mech->content_lacks('If it hasn’t been delivered, report the issue here');
                     $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
-                    $mech->content_lacks('A chase was raised');
+                    $mech->content_lacks('A problem with this delivery');
                 };
             }
         };
@@ -899,9 +899,9 @@ FixMyStreet::override_config {
                     set_fixed_time($config->{time});
                     $mech->get_ok('/waste/12345');
                     $mech->content_lacks('Request a non-recyclable refuse container');
-                    $mech->content_contains('report a failure to deliver a non-recyclable refuse container');
+                    $mech->content_contains('If it hasn’t been delivered, report the issue here');
                     $mech->content_contains('A non-recyclable refuse container request was made');
-                    $mech->content_lacks('A chase was raised');
+                    $mech->content_lacks('A problem with this delivery');
                 };
             }
         };
@@ -909,7 +909,7 @@ FixMyStreet::override_config {
         subtest 'Making an escalation' => sub {
             set_fixed_time($window_start_time);
             $mech->get_ok('/waste/12345');
-            $mech->follow_link_ok({ text => 'report a failure to deliver a non-recyclable refuse container' });
+            $mech->follow_link_ok({ text => 'If it hasn’t been delivered, report the issue here' });
 
             $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
 

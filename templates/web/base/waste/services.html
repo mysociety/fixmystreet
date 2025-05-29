@@ -7,18 +7,18 @@
     A [% unit.service_name FILTER lower %] container request has been made
     [% ELSE %]
         A [% unit.service_name FILTER lower %] container request was made on [% date.format(unit.requests_open.values.0.date, '%A, %-d %B') %].
+        We aim to deliver the container within [% c.cobrand.request_timeframe %].
 
         [% IF unit.escalations.container AND NOT unit.escalations.container_open %]
-            If the issue is still not resolved, please
             <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.container.id %]&amp;event_guid=[% unit.escalations.container.guid %]&amp;category=Failure+to+Deliver+Bags%2FContainers"
-                class="waste-service-link">report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
+                class="waste-service-link">If it hasn’t been delivered, report the issue here</a>
         [% END %]
     [% END %]
   </span>
 
     [% IF unit.escalations.container_open %]
       <span class="waste-service-descriptor">
-        A chase was raised on [% date.format(unit.escalations.container_open.date, '%-d %B') %] and should be completed within 2 working days, [% date.format(unit.escalations.container_open.target_date, '%-d %B') %]
+        A problem with this delivery was reported on [% date.format(unit.escalations.container_open.date, '%A, %-d %B') %]. We aim to complete your request within 2 working days ([% date.format(unit.escalations.container_open.target_date, '%A, %-d %B') %]).
       </span>
     [% END %]
 
