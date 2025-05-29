@@ -68,6 +68,7 @@
     <hr>
   [% END %]
 
+  [% IF body.get_cobrand_handler.small_items_enabled %]
     <h3>Small Items Collections</h3>
 
     <div>
@@ -77,6 +78,7 @@
     </div>
 
     <hr>
+  [% END %]
 
     <p>
     <label for="show_location_page">[% loc('Show location information page') %]</label>

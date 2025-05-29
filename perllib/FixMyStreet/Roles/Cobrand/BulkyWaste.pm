@@ -44,6 +44,12 @@ sub bulky_enabled_staff_only {
     return $cfg->{bulky_enabled} && $cfg->{bulky_enabled} eq 'staff';
 }
 
+sub small_items_enabled {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return $cfg->{small_items_enabled};
+}
+
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
 
@@ -110,7 +116,6 @@ Users of this role must supply the following:
 
 =cut
 
-requires 'bulky_allowed_property';
 requires 'bulky_cancellation_cutoff_time';
 requires 'bulky_collection_time';
 requires 'bulky_collection_window_days';
