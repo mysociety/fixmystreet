@@ -4,7 +4,12 @@
 [% INCLUDE status_message %]
 
 <ul>
+  [% IF c.cobrand.bulky_enabled %]
     <li><a href="[% c.uri_for_action('admin/waste/bulky_items', [ body.id ]) %]">[% loc("Bulky items list") %]</a></li>
+  [% END %]
+  [% IF c.cobrand.small_items_enabled %]
+    <li><a href="[% c.uri_for_action('admin/waste/small_items', [ body.id ]) %]">Small items list</a></li>
+  [% END %]
 </ul>
 
 <h2>Site wide configuration</h2>
