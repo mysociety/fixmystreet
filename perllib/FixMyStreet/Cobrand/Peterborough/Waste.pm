@@ -123,8 +123,6 @@ sub clear_cached_lookups_property {
     foreach ( qw/bin_services_for_address/ ) {
         $self->{c}->waste_cache_delete("peterborough:bartec:$_:$uprn");
     }
-
-    $self->clear_cached_lookups_bulky_slots($uprn);
 }
 
 sub clear_cached_lookups_bulky_slots {
@@ -134,7 +132,7 @@ sub clear_cached_lookups_bulky_slots {
     $uprn =~ s/^.+\://g;
 
     for (qw/earlier later/) {
-        $self->{c}->waste_cache_delete("peterborough:bartec:available_bulky_slots:$_:$uprn");
+        $self->{c}->waste_cache_delete("peterborough:bartec:available_slots:$_:$uprn");
     }
 }
 
