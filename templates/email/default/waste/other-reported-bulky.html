@@ -65,6 +65,8 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
 
 [% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
   <p style="[% p_style %]">Check you’ve read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a>.</p>
+[% ELSIF report.category == 'Small items collection' AND cobrand.feature('waste_features').small_items_tandc_link %]
+  <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').small_items_tandc_link %]">terms and conditions</a></p>
 [% ELSIF cobrand.feature('waste_features').bulky_tandc_link AND cobrand.moniker != 'peterborough' %]
   <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a></p>
 [% END %]
