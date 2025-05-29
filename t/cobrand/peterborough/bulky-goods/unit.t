@@ -7,6 +7,7 @@ use DateTime;
 use DateTime::Format::Strptime;
 use FixMyStreet::TestMech;
 use FixMyStreet::Cobrand::Peterborough;
+use Integrations::Bartec::Booking;
 use Catalyst::Plugin::FixMyStreet::Session::WasteCache;
 
 subtest '_bulky_collection_window' => sub {
@@ -42,7 +43,7 @@ subtest '_bulky_collection_window' => sub {
     );
 };
 
-subtest 'find_available_bulky_slots' => sub {
+subtest 'find_available_slots' => sub {
     my $dummy_property = { uprn => 123456789 };
     my $mock_bartec    = Test::MockModule->new('Integrations::Bartec');
     $mock_bartec->mock(
@@ -64,6 +65,7 @@ subtest 'find_available_bulky_slots' => sub {
     my $mech = FixMyStreet::TestMech->new;
     my $body = $mech->create_body_ok(2566, 'Peterborough City Council', { cobrand => 'peterborough' }, { wasteworks_config => { daily_slots => 40 } });
     my $cobrand = FixMyStreet::Cobrand::Peterborough->new;
+    my $booking = Integrations::Bartec::Booking->new( cobrand => $cobrand, property => $dummy_property );
     $cobrand->{c} = Test::MockObject->new;
     my %session_hash;
     $cobrand->{c}->mock( waste_cache_get => sub {
@@ -77,7 +79,7 @@ subtest 'find_available_bulky_slots' => sub {
 
     $mock_bartec->mock( 'Premises_FutureWorkpacks_Get', &_future_workpacks );
     is_deeply(
-        $cobrand->find_available_bulky_slots($dummy_property),
+        $booking->find_available_slots(),
         [   {   date        => '2022-08-05T00:00:00',
                 workpack_id => 75474,
             },
@@ -91,7 +93,7 @@ subtest 'find_available_bulky_slots' => sub {
     $mock_bartec->mock( 'Premises_FutureWorkpacks_Get',
         &_future_workpacks($start_date) );
     is_deeply(
-        $cobrand->find_available_bulky_slots( $dummy_property, $start_date ),
+        $booking->find_available_slots( $start_date ),
         [   {   date        => '2022-09-23T00:00:00',
                 workpack_id => 75499,
             },
@@ -112,8 +114,8 @@ subtest 'find_available_bulky_slots' => sub {
 
     is_deeply(
         [ sort keys %{$session_hash{waste}} ],
-        [   'peterborough:bartec:available_bulky_slots:earlier:123456789',
-            'peterborough:bartec:available_bulky_slots:later:123456789',
+        [   'peterborough:bartec:available_slots:earlier:123456789',
+            'peterborough:bartec:available_slots:later:123456789',
         ],
         'cache keys should be set',
     );
@@ -121,8 +123,7 @@ subtest 'find_available_bulky_slots' => sub {
     %session_hash = ();
     like(
         exception {
-            $cobrand->find_available_bulky_slots( $dummy_property,
-                '17-09-22' )
+            $booking->find_available_slots( '17-09-22' )
         },
         qr/Invalid date provided/,
     );
@@ -225,7 +226,7 @@ sub _future_workpacks {
 
         # Extra workpacks, to test that the number of available slot dates is
         # not limited if a start date is provided to
-        # find_available_bulky_slots()
+        # find_available_slots()
         {   'id'           => 75800,
             'WorkPackDate' => '2022-10-08T00:00:00',
             'WorkPackName' => 'Waste-Round 16-081022',
@@ -400,7 +401,7 @@ sub _jobs_arrayref {
     return [ map { { Job => { UPRN => $uprn++ } } } 1 .. $job_count ];
 }
 
-### end 'find_available_bulky_slots'
+### end 'find_available_slots'
 
 subtest '_bulky_check_within_a_window cancellation' => sub {
     my $mock_pbro = Test::MockModule->new('FixMyStreet::Cobrand::Peterborough');

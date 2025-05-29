@@ -39,6 +39,11 @@ sub setup : Chained('/waste/property') : PathPart('bulky') : CaptureArgs(0) {
     }
 
     $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{items_per_collection_max} || 5;
+    $c->stash->{booking_class} = $c->cobrand->booking_class->new(
+        cobrand => $c->cobrand,
+        property => $c->stash->{property},
+        type => 'bulky',
+    );
 }
 
 sub setup_small : Chained('/waste/property') : PathPart('small_items') : CaptureArgs(0) {
@@ -51,6 +56,11 @@ sub setup_small : Chained('/waste/property') : PathPart('small_items') : Capture
 
     $c->stash->{small_items} = 1;
     $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
+    $c->stash->{booking_class} = Integrations::Echo::Booking->new(
+        cobrand => $c->cobrand,
+        property => $c->stash->{property},
+        type => 'small_items',
+    );
 }
 
 sub bulky_item_options_method {
@@ -184,7 +194,9 @@ sub index : PathPart('') : Chained('setup') : Args(0) {
 
     if ( $c->stash->{form}->current_page->name eq 'intro' ) {
         $c->cobrand->call_hook(
-            clear_cached_lookups_bulky_slots => $c->stash->{property}{id} );
+            clear_cached_lookups_bulky_slots => $c->stash->{property}{id},
+            delete_guid => 1,
+        );
     }
 }
 
@@ -218,7 +230,9 @@ sub amend : Chained('setup') : Args(1) {
 
     if ( $c->stash->{form}->current_page->name eq 'intro' ) {
         $c->cobrand->call_hook(
-            clear_cached_lookups_bulky_slots => $c->stash->{property}{id} );
+            clear_cached_lookups_bulky_slots => $c->stash->{property}{id},
+            delete_guid => 1,
+        );
     }
 }
 
