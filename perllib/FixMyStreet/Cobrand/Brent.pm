@@ -1598,7 +1598,7 @@ sub bulky_location_text_prompt {
 
 sub bulky_location_photo_prompt {
     my $self = shift;
-    return 'Please check the <a href="' . $self->bulky_tandc_link . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
+    return 'Please check the <a href="' . $self->small_items_tandc_link . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
         . 'Help us by attaching a photo of where the items will be left for collection (optional).';
 }
 

@@ -268,7 +268,8 @@ has_field tandc => (
     build_option_label_method => sub {
         my $form = $_[0]->form;
         my $c = $form->c;
-        my $link = $c->cobrand->call_hook('bulky_tandc_link');
+        my $link = $c->stash->{small_items} ? 'small_items_tandc_link' : 'bulky_tandc_link';
+        $link = $c->cobrand->call_hook($link);
         my $label;
         if ($c->cobrand->moniker eq 'sutton') {
             $label = 'I have read the <a href="' . $link . '" target="_blank">terms and conditions</a> of the service on the council’s website and agree to them.';

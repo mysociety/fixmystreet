@@ -1,6 +1,6 @@
 [%
 USE date(format = c.cobrand.bin_day_format);
-IF c.cobrand.moniker == 'brent';
+IF small_items;
     SET index_url = c.uri_for_action('waste/bulky/index_small', [ property.id ]);
 ELSE;
     SET index_url = c.uri_for_action('waste/bulky/index', [ property.id ]);
@@ -35,7 +35,7 @@ SET data = form.saved_data;
 
 
 <h1 class="govuk-heading-xl govuk-!-margin-bottom-9">
-  [% IF cobrand.moniker == 'brent' %]
+  [% IF small_items %]
     Your small items collection
   [% ELSE %]
     [% IF problem %]
@@ -160,7 +160,7 @@ SET data = form.saved_data;
         NEXT UNLESS item;
         items.push({ item => item, photo => data.$photo_key, notes => data.$notes_key });
       END %]
-      [% IF c.cobrand.moniker != 'brent' %]
+      [% IF NOT small_items %]
       <dl>
         <dt>Price</dt>
         [% IF problem;
