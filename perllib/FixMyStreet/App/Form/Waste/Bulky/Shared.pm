@@ -168,7 +168,7 @@ sub _get_dates {
     my ( $c, $last_earlier_date ) = @_;
 
     my %dates_booked;
-    foreach (@{$c->stash->{pending_bulky_collections} || []}) {
+    foreach (@{$c->stash->{collections}{bulky}{pending} || []}) {
         my $date = $c->cobrand->collection_date($_);
         $dates_booked{$date} = 1;
     }
