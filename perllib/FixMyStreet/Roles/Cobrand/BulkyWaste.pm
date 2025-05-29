@@ -45,7 +45,6 @@ sub bulky_enabled_staff_only {
 }
 
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
-sub bulky_items_maximum { $_[0]->wasteworks_config->{items_per_collection_max} || 5 }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
 sub bulky_tandc_link {
     my $self = shift;
@@ -75,7 +74,7 @@ sub bulky_pricing_strategy {
     my $self = shift;
     my $base_price = $self->wasteworks_config->{base_price};
     my $band1_max = $self->wasteworks_config->{band1_max};
-    my $max = $self->bulky_items_maximum;
+    my $max = $self->{c}->stash->{booking_maximum};
     if ($self->bulky_per_item_costs) {
         my $min_collection_price = $self->wasteworks_config->{per_item_min_collection_price} || 0;
         return encode_json({ strategy => 'per_item', min => $min_collection_price });
@@ -179,7 +178,7 @@ sub bulky_total_cost {
             my $price_key = $self->bulky_per_item_price_key;
             my %prices = map { $_->{name} => $_->{$price_key} } @{ $self->bulky_items_master_list };
             my $total = 0;
-            my $max = $self->bulky_items_maximum;
+            my $max = $c->stash->{booking_maximum};
             for (1..$max) {
                 my $item = $data->{"item_$_"} or next;
                 $total += $prices{$item};
@@ -192,7 +191,7 @@ sub bulky_total_cost {
             }
         } elsif ($cfg->{band1_price}) {
             my $count = 0;
-            my $max = $self->bulky_items_maximum;
+            my $max = $c->stash->{booking_maximum};
             for (1..$max) {
                 my $item = $data->{"item_$_"} or next;
                 $count++;
