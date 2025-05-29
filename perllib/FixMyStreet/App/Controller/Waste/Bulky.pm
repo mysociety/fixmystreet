@@ -180,7 +180,7 @@ sub index_small : PathPart('') : Chained('setup_small') : Args(0) {
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems';
 
     my $cfg = $c->cobrand->feature('waste_features');
-    if ($c->stash->{collections}{small_items}{pending} && !$cfg->{bulky_multiple_bookings}) {
+    if ($c->stash->{collections}{small_items}{pending} && !$cfg->{small_items_multiple_bookings}) {
         $c->detach('/waste/property_redirect');
     }
     $c->detach('index_booking');
@@ -352,6 +352,22 @@ sub process_bulky_data : Private {
     } else {
         $c->forward('/waste/add_report', [ $data ]) or return;
     }
+    return 1;
+}
+
+sub process_small_items_data : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    $c->cobrand->call_hook("waste_munge_small_items_data", $data);
+
+    # Read extra details in loop
+    foreach (grep { /^extra_/ } keys %$data) {
+        my ($id) = /^extra_(.*)/;
+        $c->set_param($id, $data->{$_});
+    }
+
+    $c->forward('/waste/add_report', [ $data ]) or return;
     return 1;
 }
 
