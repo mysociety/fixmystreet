@@ -419,8 +419,13 @@ sub report_new_is_on_he_road {
         $self->{c}->stash->{latitude},
     );
 
+    my $url = 'https://tilma.mysociety.org/mapserver/highways';
+    if (FixMyStreet->config("STAGING_SITE")) {
+        $url = 'https://tilma.staging.mysociety.org/mapserver/highways';
+    }
+
     my $cfg = {
-        url => "https://tilma.staging.mysociety.org/mapserver/highways",
+        url => $url,
         srsname => "urn:ogc:def:crs:EPSG::4326",
         typename => "Highways",
         filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>15</Distance></DWithin></Filter>",

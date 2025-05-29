@@ -4,8 +4,10 @@ if (!fixmystreet.maps) {
     return;
 }
 
+var host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
+
 var defaults = {
-    http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/highways",
+    http_wfs_url: "https://" + host + "/mapserver/highways",
     asset_type: 'area',
     // this covers zoomed right out on Cumbrian sections of
     // the M6
