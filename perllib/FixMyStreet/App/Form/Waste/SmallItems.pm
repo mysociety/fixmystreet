@@ -73,9 +73,9 @@ has_page summary => (
         my $c = $form->c;
 
         # Some cobrands may set a new chosen_date on the form
-        my $slot_still_available = $c->cobrand->call_hook(
-            check_bulky_slot_available => $form->saved_data->{chosen_date},
-            form                       => $form,
+        my $slot_still_available = $c->stash->{booking_class}->check_slot_available(
+            $form->saved_data->{chosen_date},
+            form => $form,
         );
 
         return 1 if $slot_still_available;
@@ -151,12 +151,7 @@ sub _get_dates {
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             }
             : undef
-        } @{
-        $c->cobrand->call_hook(
-            'find_available_bulky_slots', $c->stash->{property},
-            $last_earlier_date,
-        )
-        };
+        } @{ $c->stash->{booking_class}->find_available_slots($last_earlier_date) };
 
     return @dates;
 }
