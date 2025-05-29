@@ -827,7 +827,7 @@ sub construct_bin_report_form {
     # Plus side, gets the report missed stuff built in; minus side it
     # doesn't have any next/last collection stuff which is assumed
     my $allow_report_bulky = 0;
-    foreach (values %{ $c->stash->{bulky_missed} || {} }) {
+    foreach (values %{ $c->stash->{booked_missed} || {} }) {
         $allow_report_bulky = $_ if $_->{report_allowed} && !$_->{report_open};
     }
     if ($allow_report_bulky) {

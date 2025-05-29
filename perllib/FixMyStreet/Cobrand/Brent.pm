@@ -1125,16 +1125,6 @@ sub missed_event_types { return {
     $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
 
-around bulky_check_missed_collection => sub {
-    my ($orig, $self) = (shift, shift);
-    $orig->($self, @_);
-    if ($self->{c}->stash->{bulky_missed}) {
-        foreach (values %{$self->{c}->stash->{bulky_missed}}) {
-            $_->{service_name} = 'Small items';
-        }
-    }
-};
-
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $service_id = $unit->{service_id};
@@ -1184,7 +1174,7 @@ sub waste_munge_report_data {
     my $service = $c->stash->{services}{$id}{service_name};
 
     my $cfg = $self->feature('echo');
-    my $service_id_missed = $cfg->{bulky_service_id_missed};
+    my $service_id_missed = $cfg->{small_items_service_id_missed};
     if (!$service && $id == $service_id_missed) {
         $service = 'small items / clinical';
     }
@@ -1504,7 +1494,7 @@ sub collection_date {
     return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
 }
 
-sub waste_munge_bulky_data {
+sub waste_munge_small_items_data {
     my ($self, $data) = @_;
 
     my $c = $self->{c};
