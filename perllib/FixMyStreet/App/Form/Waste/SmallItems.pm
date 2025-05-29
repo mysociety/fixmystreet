@@ -89,7 +89,7 @@ has_page summary => (
         return 0;
     },
     finished => sub {
-        return $_[0]->wizard_finished('process_bulky_data');
+        return $_[0]->wizard_finished('process_small_items_data');
     },
 
 );
