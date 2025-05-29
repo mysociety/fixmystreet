@@ -808,6 +808,39 @@ fixmystreet.assets.gloucester.car_park_not_found = function(layer) {
     }
 };
 
+/* Similar to car parks, Gloucester make use of separate layers for public land
+ * and public highways which they want to act as a single public layer with
+ * reports in most categories needing to be made within or nearby assets in these.
+ * The public_found and public_not_found functions fire separately for each
+ * sub layer so we need to make sure that we:
+ * 1. Don't block when a selection is made in one but not the other.
+ * 2. Do block when there isn't a selection in either.
+ * 3. Only apply the block to one layer so we don't show the block message twice. */
+
+fixmystreet.assets.gloucester.public_relevant = function(options) {
+    return (options.group || options.category) &&
+        options.group != 'Car parks' &&
+        options.group != 'Graffiti' &&
+        options.group != 'Litter bins' &&
+        options.group != 'Playground and park equipment' &&
+        options.group != 'Public toilets' &&
+        options.group != 'Watercourse' &&
+        options.category != 'Dog fouling';
+};
+
+fixmystreet.assets.gloucester.public_found = function(layer, asset) {
+    var public_land = fixmystreet.map.getLayersByName('public_land')[0];
+    fixmystreet.message_controller.road_found(public_land);
+};
+
+fixmystreet.assets.gloucester.public_not_found = function(layer) {
+    var public_land = fixmystreet.map.getLayersByName('public_land')[0];
+    var public_highways = fixmystreet.map.getLayersByName('public_highways')[0];
+    if (!public_land.selected_feature && !public_highways.selected_feature) {
+        fixmystreet.message_controller.road_not_found(public_land, function() { return true; });
+    }
+};
+
 /* Gloucestershire */
 
 fixmystreet.assets.gloucestershire = {};
