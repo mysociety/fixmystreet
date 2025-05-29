@@ -71,6 +71,10 @@
   [% IF body.get_cobrand_handler.small_items_enabled %]
     <h3>Small Items Collections</h3>
 
+    <ul>
+        <li><a href="[% c.uri_for_action('admin/waste/small_items', [ body.id ]) %]">Small items list</a></li>
+    </ul>
+
     <div>
     <label for="waste_small_items_per_collection_max">Maximum items per collection (1-200)</label>
     <input class="form-control" type=text max=200 min=1 name="small_items_per_collection_max" id="waste_small_items_per_collection_max"

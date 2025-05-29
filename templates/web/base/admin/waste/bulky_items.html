@@ -1,4 +1,7 @@
-[% INCLUDE 'admin/header.html' title=loc('Bulky items list') bodyclass="bulky-items" -%]
+[%
+title = item_list_key == 'small_item_list' ? 'Small items list' : 'Bulky items list';
+INCLUDE 'admin/header.html' bodyclass="bulky-items";
+-%]
 [% PROCESS 'admin/report_blocks.html' %]
 
 [% INCLUDE status_message %]
