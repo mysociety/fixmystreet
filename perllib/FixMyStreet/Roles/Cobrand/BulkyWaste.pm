@@ -46,11 +46,18 @@ sub bulky_enabled_staff_only {
 
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
+
 sub bulky_tandc_link {
     my $self = shift;
     my $cfg = $self->feature('waste_features') || {};
     return FixMyStreet::Template::SafeString->new($cfg->{bulky_tandc_link});
 }
+sub small_items_tandc_link {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return FixMyStreet::Template::SafeString->new($cfg->{small_items_tandc_link});
+}
+
 sub bulky_show_location_page {
     my ($self) = @_;
 

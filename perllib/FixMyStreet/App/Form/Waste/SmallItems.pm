@@ -8,7 +8,7 @@ extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
     title => 'Book small items collection',
-    intro => 'bulky/intro.html',
+    intro => 'small_items/intro.html',
     fields => ['continue'],
     next => 'about_you',
 );
@@ -221,7 +221,7 @@ has_field tandc => (
     build_option_label_method => sub {
         my $form = $_[0]->form;
         my $c = $form->c;
-        my $label = FixMyStreet::Template::SafeString->new('I have read and agree to the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected');
+        my $label = FixMyStreet::Template::SafeString->new('I have read and agree to the <a href="' . $c->cobrand->call_hook('small_items_tandc_link') . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected');
         return $label;
     },
 );
@@ -246,7 +246,7 @@ has_field location_photo => (
     build_label_method => sub {
         my $self = shift;
 
-        return 'Please check the <a href="' . $self->parent->{c}->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
+        return 'Please check the <a href="' . $self->parent->{c}->cobrand->call_hook('small_items_tandc_link') . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
         . 'Help us by attaching a photo of where the items will be left for collection (optional).'
     }
 );
