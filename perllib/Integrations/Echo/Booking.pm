@@ -23,8 +23,8 @@ has type => ( is => 'ro', isa => Enum['bulky', 'small_items'] );
 has config => ( is => 'lazy', default => sub { $_[0]->cobrand->feature('echo') });
 has echo => ( is => 'lazy', default => sub { Integrations::Echo->new(%{$_[0]->config}) });
 
-has service_id_key => ( is => 'lazy', default => sub { 'bulky_service_id' });
-has event_type_id_key => ( is => 'lazy', default => sub { 'bulky_event_type_id' });
+has service_id_key => ( is => 'lazy', default => sub { $_[0]->type . '_service_id' });
+has event_type_id_key => ( is => 'lazy', default => sub { $_[0]->type . '_event_type_id' });
 has service_id => ( is => 'lazy', default => sub { $_[0]->config->{$_[0]->service_id_key} });
 has event_type_id => ( is => 'lazy', default => sub { $_[0]->config->{$_[0]->event_type_id_key} });
 

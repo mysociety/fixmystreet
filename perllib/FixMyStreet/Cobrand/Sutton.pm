@@ -139,18 +139,18 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
-around bulky_check_missed_collection => sub {
-    my ($orig, $self, $events, $blocked_codes) = @_;
+around booked_check_missed_collection => sub {
+    my ($orig, $self, $type, $events, $blocked_codes) = @_;
 
-    $self->$orig($events, $blocked_codes);
+    $self->$orig($type, $events, $blocked_codes);
 
     # Now check for any old open missed collections that can be escalated
 
     my $cfg = $self->feature('echo');
-    my $service_id = $cfg->{bulky_service_id};
-    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+    my $service_id = $cfg->{$type . '_service_id'} or return;
 
-    my $missed = $self->{c}->stash->{bulky_missed};
+    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+    my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
         next unless $missed_event;

@@ -35,7 +35,7 @@
             <a class="btn btn--primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel_small', [ property.id, booking.id ]) %]">Cancel booking</a>
           [% END %]
         [% END %]
-        [% PROCESS 'waste/_service_missed.html' unit=bulky_missed.$booking_guid original_booking=booking.id no_default=1 %]
+        [% PROCESS 'waste/_service_missed.html' unit=booked_missed.$booking_guid original_booking=booking.id no_default=1 %]
     </div>
   [% END %]
 
@@ -70,9 +70,9 @@
     </dl>
     <div class="waste-services-launch-panel">
         <a class="btn btn--primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">Check collection details</a>
-        [% PROCESS 'waste/_service_missed.html' unit=bulky_missed.$booking_guid original_booking=booking.id no_default=1 %]
+        [% PROCESS 'waste/_service_missed.html' unit=booked_missed.$booking_guid original_booking=booking.id no_default=1 %]
         [% IF c.cobrand.moniker == 'sutton' %]
-        [% IF bulky_missed.$booking_guid.escalations.missed_open %]
+        [% IF booked_missed.$booking_guid.escalations.missed_open %]
             <span class="waste-service-descriptor">Thank you for reporting an issue with this collection; we are investigating.</span>
         [% END %]
         [% END %]
@@ -136,7 +136,7 @@
     <a class="btn btn--primary govuk-!-margin-bottom-2" href="/auth?r=waste/[% property.id %]">View existing bookings</a>
     <!-- END #07 -->
   [% END %]
-  [% IF waste_features.bulky_multiple_bookings OR NOT collections.$type.pending %]
+  [% IF (type == 'bulky' AND waste_features.bulky_multiple_bookings) OR (type == 'small_items' AND waste_features.small_items_multiple_bookings) OR NOT collections.$type.pending %]
     [% IF type == 'bulky' %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
     [% ELSE %]
