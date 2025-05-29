@@ -176,15 +176,30 @@ sub item_list : Private {
 
 sub index : PathPart('') : Chained('setup') : Args(0) {
     my ($self, $c) = @_;
-
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Bexley' if $c->cobrand->moniker eq 'bexley';
     my $cfg = $c->cobrand->feature('waste_features');
-    if ($c->stash->{pending_bulky_collections} && !$cfg->{bulky_multiple_bookings}) {
+    if ($c->stash->{collections}{bulky}{pending} && !$cfg->{bulky_multiple_bookings}) {
         $c->detach('/waste/property_redirect');
     }
+    $c->detach('index_booking');
+}
+
+sub index_small : PathPart('') : Chained('setup_small') : Args(0) {
+    my ($self, $c) = @_;
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems';
+
+    my $cfg = $c->cobrand->feature('waste_features');
+    if ($c->stash->{collections}{small_items}{pending} && !$cfg->{bulky_multiple_bookings}) {
+        $c->detach('/waste/property_redirect');
+    }
+    $c->detach('index_booking');
+}
+
+sub index_booking : Private {
+    my ($self, $c) = @_;
 
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Bulky';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Bexley' if $c->cobrand->moniker eq 'bexley';
     $c->forward('item_list');
     $c->forward('form');
 
@@ -196,19 +211,14 @@ sub index : PathPart('') : Chained('setup') : Args(0) {
     }
 }
 
-sub index_small : PathPart('') : Chained('setup_small') : Args(0) {
-    my ($self, $c) = @_;
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems';
-    $c->detach('index');
-}
-
 sub amend : Chained('setup') : Args(1) {
     my ($self, $c, $id) = @_;
 
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Amend';
 
-    my $collection = $c->cobrand->find_pending_bulky_collections($c->stash->{property}{uprn})->find($id);
+    my $collections = $c->cobrand->find_booked_collections($c->stash->{property}{uprn});
+    my $collection = (grep { $_->id == $id } @{$collections->{bulky}{pending}})[0];
     $c->detach('/waste/property_redirect')
         if !$c->cobrand->call_hook('bulky_can_amend_collection', $collection);
 
@@ -268,7 +278,9 @@ sub cancel : Chained('setup') : Args(1) {
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
-    my $collection = $c->cobrand->find_pending_bulky_collections($c->stash->{property}{uprn})->find($id);
+    my $collections = $c->cobrand->find_booked_collections($c->stash->{property}{uprn});
+    my $type = $c->stash->{small_items} ? 'small_items' : 'bulky';
+    my $collection = (grep { $_->id == $id } @{$collections->{$type}{pending}})[0];
     $c->detach('/waste/property_redirect')
         if !$c->cobrand->call_hook('bulky_can_cancel_collection', $collection);
 
