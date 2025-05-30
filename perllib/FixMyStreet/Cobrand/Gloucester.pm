@@ -80,7 +80,7 @@ sub contact_extra_fields { [ 'display_name' ] }
 
 =cut
 
-sub default_map_zoom { 3 }
+sub default_map_zoom { 5 }
 
 =item * TODO: Don't show reports before the go-live date
 

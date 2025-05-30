@@ -805,7 +805,7 @@ sub _post_report_sent_close {
     });
     $problem->add_to_comments({
         text => $text,
-        user_id => $self->body->comment_user_id,
+        user => $self->body->comment_user,
         problem_state => 'closed',
         cobrand => $problem->cobrand,
         send_state => 'processed',

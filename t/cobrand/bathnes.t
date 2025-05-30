@@ -3,6 +3,7 @@ use FixMyStreet::TestMech;
 use File::Temp 'tempdir';
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
+use Open311::PostServiceRequestUpdates;
 my $mech = FixMyStreet::TestMech->new;
 
 # disable info logs for this test run
@@ -15,6 +16,7 @@ $cobrand->mock('lookup_site_code', sub { return '12345' });
 
 my $body = $mech->create_body_ok(2551, 'Bath and North East Somerset Council', {
     send_method => 'Open311',
+    send_comments => 1,
     api_key => 'key',
     endpoint => 'endpoint',
     jurisdiction => 'bathnes',
@@ -343,6 +345,7 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'bathnes',
 }, sub {
+    my $problem;
     subtest "email category emails sent" => sub {
         $mech->clear_emails_ok;
         my @problems = FixMyStreet::DB->resultset('Problem')->search({ })->all;
@@ -356,7 +359,7 @@ FixMyStreet::override_config {
             cobrand => 'bathnes',
             category => $confirm_contact->category,
         } );
-        my ($email_problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+        ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
             category => $email_contact->category, cobrand => 'bathnes', user => $normaluser
         });
 
@@ -365,7 +368,17 @@ FixMyStreet::override_config {
         my @emails = $mech->get_email;
         my $email = grep { $_->header('To') eq 'test@example.org' } @emails;
         is $email, 1, "Email address modified to remove Passthrough prefix";
-    }
+    };
+
+    subtest "update skipped" => sub {
+        # Passthrough category, Confirm external ID
+        $problem->update({ external_id => '123456', send_method_used => 'Open311' });
+        my $comment = $mech->create_comment_for_problem($problem, $problem->user, 'Name', 'Text', 0, 'confirmed', 'confirmed');
+        my $updates = Open311::PostServiceRequestUpdates->new;
+        $updates->send;
+        $comment->discard_changes;
+        is $comment->send_state, 'skipped', "skipped sending comment";
+    };
 };
 
 done_testing();
