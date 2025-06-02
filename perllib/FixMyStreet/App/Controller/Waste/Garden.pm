@@ -113,6 +113,7 @@ sub modify : Chained('setup') : PathPart('garden_modify') : Args(0) {
         };
 
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Modify';
+        $c->stash->{current_payment_method} = $payment_method;
     }
 
     $c->stash->{first_page} = 'intro';
