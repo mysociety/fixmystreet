@@ -118,7 +118,7 @@ sub build_request_url {
     my ($self, $method, $path, $data) = @_;
     my $url = $self->endpoint . $self->build_path($path);
 
-    if ($data && ($method eq 'GET' || $method eq 'DELETE')) {
+    if ($data && ($method eq 'GET' || $method eq 'DELETE' || $method eq 'PATCH')) {
         my $query = $self->build_form_data($data);
         $url .= '?' . $query if $query;
     }
