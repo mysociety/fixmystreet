@@ -58,7 +58,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
   [% IF problem.send_method_used %]
     ([% problem.send_method_used %])
   [% END %]
-  [% IF (problem.state == 'confirmed' OR problem.state == 'for triage') AND problem.whensent AND NOT c.cobrand.disable_resend_button %]
+  [% IF problem.state == 'confirmed' AND problem.whensent AND NOT c.cobrand.disable_resend_button %]
     <input data-confirm="[% loc('Are you sure?') %]" class="btn" type="submit" name="resend" value="[% loc('Resend report') %]">
   [% ELSIF NOT problem.whensent %]
     <input type="submit" class="btn" name="mark_sent" value="[% loc('Mark as sent') %]">

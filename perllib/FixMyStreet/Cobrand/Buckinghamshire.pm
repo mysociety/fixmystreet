@@ -148,8 +148,6 @@ sub send_questionnaires { 0 }
 Bucks have a special 'Littering From Vehicles' category; any reports made in
 that category are automatically set to 'Investigating'.
 
-If a report is sent when it's in the "for triage" state, set it back to open.
-
 =cut
 
 sub post_report_sent {
@@ -157,10 +155,6 @@ sub post_report_sent {
 
     if ( $problem->category eq VEHICLE_LITTERING_CATEGORY ) {
         $problem->update( { state => 'investigating' } );
-    }
-
-    if ( $problem->state eq 'for triage' ) {
-        $problem->update( { state => 'confirmed' } );
     }
 }
 
@@ -473,18 +467,7 @@ sub disable_phone_number_entry {
     return $staff ? 0 : 1;
 }
 
-=head2 report_sent_confirmation_email
-
-Don't send report has been logged emails for reports in the "for triage" state.
-Otherwise, we will using the report ID as its identifier.
-
-=cut
-
-sub report_sent_confirmation_email {
-    my ($self, $report) = @_;
-    return if $report && $report->state eq 'for triage';
-    return 'id';
-}
+sub report_sent_confirmation_email { 'id' }
 
 sub handle_email_status_codes { 1 }
 
