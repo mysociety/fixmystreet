@@ -3,7 +3,7 @@
     <p>Please contact your managing agent if you have damaged or missing containers.</p>
 [% END %]
 
-[% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe %]
+[% IF any_report_allowed OR any_request_allowed OR show_garden_subscribe OR property.show_bulky_waste OR property.show_small_items %]
   <h3>More services</h3>
    <ul>
      [% IF any_report_allowed %]
@@ -19,6 +19,11 @@
     [% IF property.show_bulky_waste %]
       <li>
           <a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Book bulky goods collection</a>
+      </li>
+    [% END %]
+    [% IF property.show_small_items %]
+      <li>
+          <a href="[% c.uri_for_action('waste/bulky/index_small', [ property.id ]) %]">Book small items collection</a>
       </li>
     [% END %]
   </ul>

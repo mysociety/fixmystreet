@@ -132,9 +132,8 @@ sub image_for_unit {
 
     my $container = $unit->{request_containers}[0] || 0;
     my $service_id = $unit->{service_id};
-    if ($service_id eq 'bulky') {
-        return "$base/bulky-black";
-    }
+    return "$base/bulky-black" if $service_id eq 'bulky';;
+    return "$base/electricals-batteries-textiles" if $service_id eq 'small_items';
 
     if ($service_id == $SERVICE_IDS{communal_refuse} && $unit->{schedule} =~ /fortnight|every other/i) {
         # Communal fortnightly is a wheelie bin, not a large bin
@@ -534,6 +533,8 @@ sub waste_munge_enquiry_data {
     $data->{detail} = $detail;
 }
 
+sub bulky_show_individual_notes { $_[0]->{c}->stash->{small_items} ? 0 : 1 }
+
 =head2 Bulky waste collection
 
 Sutton starts collections at 6am, and lets you cancel up until 6am.
@@ -546,6 +547,11 @@ sub bulky_allowed_property {
     my $type = $property->{type_id} || 0;
     my $valid_type = grep { $_ == $type } @{ $cfg->{bulky_address_types} || [] };
     return $self->bulky_enabled && $property->{has_bulky_service} && $valid_type;
+}
+
+sub small_items_allowed_property {
+    my ( $self, $property ) = @_;
+    return $self->small_items_enabled && $property->{has_small_items_service};
 }
 
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
@@ -571,6 +577,6 @@ sub bulky_location_text_prompt {
     "Please tell us where you will place the items for collection (the bulky waste collection crews are different to the normal round collection crews and will not know any access codes to your property, so please include access codes here if appropriate)";
 }
 
-sub bulky_item_notes_field_mandatory { 1 }
+sub bulky_item_notes_field_mandatory { $_[0]->{c}->stash->{small_items} ? 0 : 1 }
 
 1;

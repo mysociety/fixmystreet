@@ -39,6 +39,21 @@ for ($body, $sutton) {
     create_contact($_);
 }
 
+my $small = $mech->create_contact_ok(body => $sutton,
+    category => 'Small items collection',
+    email => '3144@test.com',
+    group => ['Waste'], extra => { type => 'waste' });
+$small->set_extra_fields(
+    { code => 'uprn', required => 1, automated => 'hidden_field' },
+    { code => 'property_id', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 0, automated => 'hidden_field' },
+    { code => 'TEM_-_Small_Item_Recycling_Small_Item_Type' },
+    { code => 'Exact_Location' },
+    { code => 'GUID' },
+    { code => 'reservation' },
+);
+$small->update;
+
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'kingston',

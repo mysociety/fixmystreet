@@ -189,6 +189,9 @@ sub waste_extra_service_info_all_results {
     if (@$result && $cfg->{bulky_service_id} && grep { $_->{ServiceId} == $cfg->{bulky_service_id} } @$result) {
         $property->{has_bulky_service} = 1;
     }
+    if (@$result && $cfg->{small_items_service_id} && grep { $_->{ServiceId} == $cfg->{small_items_service_id} } @$result) {
+        $property->{has_small_items_service} = 1;
+    }
 
     $property->{has_no_services} = scalar @$result == 0;
     $self->{c}->stash->{assisted_collection} = _is_assisted($result, $service_ids);
