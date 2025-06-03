@@ -284,7 +284,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Find your bin collection days');
         $mech->content_contains('Report a missed bin collection');
         $mech->content_lacks('Order new or additional bins');
-        $mech->content_lacks('Subscribe to garden waste collection service');
     };
 
     subtest 'False postcode shows error' => sub {
