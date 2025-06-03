@@ -497,6 +497,8 @@ sub direct_debit_modify : Private {
 
     my $i = $c->cobrand->get_dd_integration;
 
+    # TODO Display error messages to user
+
     # if reducing bin count then there won't be an ad-hoc payment
     if ( $ad_hoc ) {
         my $one_off_ref = $i->one_off_payment( {

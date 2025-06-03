@@ -164,8 +164,11 @@ sub parse_response {
         $error_message = $response_content;
     }
 
+    $error_message ||= 'API call failed';
+    $self->log("Error: $error_message");
+
     return {
-        error => $error_message || "API call failed",
+        error => $error_message,
         code => $resp->code,
         content => $response_content,
     };
@@ -258,8 +261,6 @@ Takes a hashref of parameters:
 - orig_sub - The original subscription report object containing the contract_id in metadata
 - amount - The new amount to be taken (decimal number with max 2 decimal places)
 
-Returns 1 on success or a hashref with an error key on failure.
-
 =cut
 
 sub amend_plan {
@@ -321,7 +322,9 @@ sub one_off_payment {
         };
         my $resp = $self->create_contract($customer_id, $contract_data);
 
-        # TODO: Check $resp for errors before proceeding
+        if ( ref $resp eq 'HASH' && $resp->{error} ) {
+            die 'Could not create ad hoc contract: ' . $resp->{error};
+        }
 
         $adhoc_contract_id = $resp->{Id};
         # Store the new adhoc contract ID back in metadata for future use
@@ -337,7 +340,7 @@ sub one_off_payment {
     });
 
     if (ref $resp eq 'HASH' && $resp->{error}) {
-        return $resp; # Return the error hash
+        die 'Could not create ad hoc payment: ' . $resp->{error};
     } elsif (ref $resp eq 'HASH' && keys %$resp) {
         # Assuming a successful response might return some data, but 1 indicates success
         return 1;
