@@ -317,7 +317,7 @@ sub add_flags : Private {
     my %email2user = map { $_->email => $_ } grep { $_->email } @$users;
     my %phone2user = map { $_->phone => $_ } grep { $_->phone } @$users;
     my %username2user = (%email2user, %phone2user);
-    my $usernames = $c->model('DB::Abuse')->search($search);
+    my $usernames = $c->model('DB::Abuse')->unsafe->search($search);
 
     foreach my $username (map { $_->email } $usernames->all) {
         # Slight abuse of the boolean flagged value
@@ -424,7 +424,7 @@ Checks if $user is in the abuse table and sets username_in_abuse accordingly.
 sub check_username_for_abuse : Private {
     my ( $self, $c, $user ) = @_;
 
-    my $is_abuse = $c->model('DB::Abuse')->find({ email => [ $user->phone, $user->email ] });
+    my $is_abuse = $c->model('DB::Abuse')->unsafe->find({ email => [ $user->phone, $user->email ] });
 
     $c->stash->{username_in_abuse} = 1 if $is_abuse;
 }
