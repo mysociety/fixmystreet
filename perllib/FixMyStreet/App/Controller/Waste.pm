@@ -485,6 +485,7 @@ sub direct_debit_modify : Private {
 
     my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
     $p->set_extra_metadata(payerReference => $ref);
+    $p->confirm if $c->cobrand->moniker eq 'bexley';
     $p->update;
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
@@ -495,6 +496,8 @@ sub direct_debit_modify : Private {
     my $ad_hoc = $pro_rata + $admin_fee;
 
     my $i = $c->cobrand->get_dd_integration;
+
+    # TODO Display error messages to user
 
     # if reducing bin count then there won't be an ad-hoc payment
     if ( $ad_hoc ) {
@@ -1307,6 +1310,7 @@ sub garden_modify : Chained('garden_setup') : Args(0) {
         };
 
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Modify';
+        $c->stash->{current_payment_method} = $payment_method;
     }
 
     $c->stash->{first_page} = 'intro';
@@ -1511,7 +1515,15 @@ sub process_garden_modification : Private {
     my $payment_method;
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
-    my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+    my $costs = WasteWorks::Costs->new(
+        {   cobrand            => $c->cobrand,
+            discount           => $data->{apply_discount},
+            first_bin_discount => $c->cobrand->call_hook(
+                garden_waste_first_bin_discount_applies => $data
+            ) || 0,
+        }
+    );
+
     if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{sack}) { # SLWP Sack
         # This must be Kingston
         $data->{bins_wanted} = 1;
