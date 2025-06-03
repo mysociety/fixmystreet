@@ -377,18 +377,10 @@ sub _send_aggregated_alert(%) {
     $user->set_last_active;
     $user->update;
 
-    my @check;
-    if ($user->email_verified) {
-        push @check, $user->email;
-        my ($domain) = $user->email =~ m{ @ (.*) \z }x;
-        push @check, $domain;
-    }
-    if ($user->phone_verified) {
-        push @check, $user->phone;
-    }
-    return if $data{schema}->resultset('Abuse')->search( {
-        email => \@check,
-    } )->first;
+    return if $data{schema}->resultset('Abuse')->check(
+        $user->email_verified ? $user->email : undef,
+        $user->phone_verified ? $user->phone : undef,
+    );
 
     my $token = $data{schema}->resultset("Token")->new_result( {
         scope => 'alert',

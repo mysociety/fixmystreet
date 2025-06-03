@@ -475,7 +475,9 @@ create table flickr_imported (
 create unique index flickr_imported_id_idx on flickr_imported(id);
 
 create table abuse (
-    email text primary key check( lower(email) = email )
+    email text primary key check( lower(email) = email ),
+    safe boolean not null default 'f',
+    created timestamp not null default current_timestamp
 );
 
 create table textmystreet (
