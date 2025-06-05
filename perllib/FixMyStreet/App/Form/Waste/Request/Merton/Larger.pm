@@ -2,7 +2,7 @@ package FixMyStreet::App::Form::Waste::Request::Merton::Larger;
 
 use utf8;
 use HTML::FormHandler::Moose;
-extends 'FixMyStreet::App::Form::Waste::Request';
+extends 'FixMyStreet::App::Form::Waste::Request::Merton';
 
 use constant CONTAINER_REFUSE_240 => 2;
 
@@ -28,13 +28,6 @@ has_field medical_condition => (
     ],
 );
 
-has_page about_you => (
-    fields => ['name', 'email', 'phone', 'continue'],
-    intro => 'about_you.html',
-    title => 'About you',
-    next => 'summary',
-);
-
 has_page how_much => (
     fields => ['how_much', 'continue'],
     intro => 'request/intro.html',
@@ -45,6 +38,7 @@ has_page how_much => (
         return 'how_many' if $how_much eq 'less1';
         return 'request_static' if $how_much eq '3more';
         $data->{'container-' . CONTAINER_REFUSE_240} = 1;
+        $data->{'quantity-' . CONTAINER_REFUSE_240} = 1;
         return 'about_you';
     },
 );
@@ -68,6 +62,7 @@ has_page how_many => (
         my $data = shift;
         return 'request_static' if $data->{how_many} eq 'less5';
         $data->{'container-' . CONTAINER_REFUSE_240} = 1;
+        $data->{'quantity-' . CONTAINER_REFUSE_240} = 1;
         return 'about_you';
     },
 );
