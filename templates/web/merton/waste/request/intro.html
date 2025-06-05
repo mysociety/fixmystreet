@@ -1,3 +1,9 @@
+[% IF form.current_page.name == 'medical_condition' %]
+<p class="govuk-body">
+There is a £[% tprintf('%.2f', c.cobrand.request_cost(2) / 100).replace('\.00$', '') %] cost for a larger refuse bin.
+</p>
+[% END ~%]
+
 [% IF form.current_page.name == 'how_much' %]
 <p class="govuk-body">
 You must not put hazardous clinical waste in your rubbish bin. This includes used syringes, and items contaminated with infectious body fluids.
