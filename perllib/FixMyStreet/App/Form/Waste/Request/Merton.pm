@@ -4,6 +4,15 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
+my %CONTAINERS_NO_ADDITIONAL = (
+    2 => 'refuse_240',
+    3 => 'refuse_360',
+    35 => 'refuse_180',
+
+    26 => 'garden_240',
+    27 => 'garden_140',
+);
+
 has_page about_you => (
     fields => ['name', 'email', 'phone', 'continue'],
     intro => 'about_you.html',
@@ -62,8 +71,22 @@ sub options_request_reason {
         { value => 'new_build', label => 'I am a new resident without a container' },
         { value => 'damaged', label => 'Damaged' },
         { value => 'missing', label => 'Missing' },
-        { value => 'more', label => 'I need an additional container/bin' },
     );
+    my $data = $form->saved_data;
+    my $only_refuse_or_garden = 1;
+    my @services = grep { /^container-\d/ && $data->{$_} } sort keys %$data;
+    foreach (@services) {
+        my ($id) = /container-(.*)/;
+        if (!$CONTAINERS_NO_ADDITIONAL{$id}) {
+            $only_refuse_or_garden = 0;
+            last;
+        }
+    }
+
+    push @options,
+        { value => 'more', label => 'I need an additional container/bin' }
+        unless $only_refuse_or_garden;
+
     return @options;
 }
 
