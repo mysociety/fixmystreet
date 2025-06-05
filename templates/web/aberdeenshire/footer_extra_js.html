@@ -1,1 +1,22 @@
 [% PROCESS 'footer_extra_js_base.html' roadworks=1 validation=1 %]
+
+[% scripts.push( version('/cobrands/aberdeenshire/vendor/banner.js') ) %]
+[% scripts.push( version('/cobrands/aberdeenshire/vendor/banner-cookie-control.js') ) %]
+
+[% # Code provided by Aberdeenshire Council %]
+<div id="ccc" role="region" aria-label="Cookie preferences" aria-live="polite" style="z-index: 2147483647;">
+    <button aria-expanded="false" id="ccc-icon" class="ccc-icon--left ccc-icon--dark ccc-icon--highlight"
+        aria-label="Set cookie preferences" style="">
+        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 72.5 72.5"
+            enable-background="new 0 0 72.5 72.5" aria-hidden="true">
+            <g id="triangle">
+                <path d="M0,0l72.5,72.5H0V0z"></path>
+            </g>
+            <g id="star">
+                <path
+                    d="M33.2,51.9l-3.9-2.6l1.6-4.4l-4.7,0.2L25,40.6l-3.7,2.9l-3.7-2.9l-1.2,4.5l-4.7-0.2l1.6,4.4l-3.9,2.6l3.9,2.6l-1.6,4.4l4.7-0.2l1.2,4.5l3.7-2.9l3.7,2.9l1.2-4.5l4.7,0.2l-1.6-4.4L33.2,51.9z M24.6,55.3c-0.3,0.4-0.8,0.8-1.3,1s-1.1,0.3-1.9,0.3c-0.9,0-1.7-0.1-2.3-0.4s-1.1-0.7-1.5-1.4c-0.4-0.7-0.6-1.6-0.6-2.6c0-1.4,0.4-2.5,1.1-3.3c0.8-0.8,1.8-1.1,3.2-1.1c1.1,0,1.9,0.2,2.6,0.7s1.1,1.1,1.4,2L23,50.9c-0.1-0.3-0.2-0.5-0.3-0.6c-0.1-0.2-0.3-0.4-0.5-0.5s-0.5-0.2-0.7-0.2c-0.6,0-1.1,0.2-1.4,0.7c-0.2,0.4-0.4,0.9-0.4,1.7c0,1,0.1,1.6,0.4,2c0.3,0.4,0.7,0.5,1.2,0.5c0.5,0,0.9-0.1,1.2-0.4s0.4-0.7,0.6-1.2l2.3,0.7C25.2,54.3,25,54.8,24.6,55.3z">
+                </path>
+            </g>
+        </svg>
+    </button>
+</div>
