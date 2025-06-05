@@ -9,6 +9,22 @@ has_page about_you => (
     intro => 'about_you.html',
     title => 'About you',
     next => 'summary',
+    post_process => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        my $c = $form->c;
+
+        my @services = grep { /^container-\d/ && $data->{$_} } sort keys %$data;
+        my $total = 0;
+        foreach (@services) {
+            my ($id) = /container-(.*)/;
+            my $quantity = $data->{"quantity-$id"} or next;
+            if (my $cost = $c->cobrand->request_cost($id)) {
+                $total += $cost * $quantity;
+            }
+        }
+        $data->{payment} = $total if $total;
+    },
 );
 
 has_page replacement => (
