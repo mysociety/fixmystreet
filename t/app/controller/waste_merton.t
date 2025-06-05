@@ -50,6 +50,8 @@ create_contact({ category => 'Request new container', email => '1635' }, 'Waste'
     { code => 'Action', required => 1, automated => 'hidden_field' },
     { code => 'Reason', required => 1, automated => 'hidden_field' },
     { code => 'Notes', required => 0, automated => 'hidden_field' },
+    { code => 'payment', required => 1, automated => 'hidden_field' },
+    { code => 'payment_method', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Assisted collection add', email => 'assisted' }, 'Waste',
     { code => 'Crew_Notes', description => 'Notes', required => 1, datatype => 'text' },
@@ -102,12 +104,42 @@ FixMyStreet::override_config {
             open311_api_key => 'api_key',
         } },
         waste => { merton => 1 },
+        payment_gateway => { merton => {
+            request_cost_1 => 1800,
+            request_cost_2 => 1800,
+        } },
     },
     STAGING_FLAGS => {
         send_reports => 1,
     },
 }, sub {
     my ($e) = shared_echo_mocks();
+
+    my $sent_params = {};
+    my $call_params = {};
+    my $pay = Test::MockModule->new('Integrations::Adelante');
+
+    $pay->mock(call => sub {
+        my $self = shift;
+        my $method = shift;
+        $call_params = shift;
+    });
+    $pay->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        $pay->original('pay')->($self, $sent_params);
+        return {
+            UID => '12345',
+            Link => 'http://example.org/faq',
+        };
+    });
+    my $query_return = { Status => 'Authorised', PaymentID => '54321' };
+    $pay->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        return $query_return;
+    });
+
     subtest 'Address lookup' => sub {
         set_fixed_time('2022-09-10T12:00:00Z');
         $mech->get_ok('/waste/12345');
@@ -307,8 +339,18 @@ FixMyStreet::override_config {
         $mech->content_lacks('request_reason_text', 'Staff only field for extra information absent');
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $sent_params->{items}[0]{reference}, 'LBM-RNC-' . $new_report->id;
+        is $sent_params->{items}[0]{amount}, 1800, 'correct amount used';
+        check_extra_data_pre_confirm($new_report);
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+
+        check_extra_data_post_confirm($new_report);
         $mech->content_contains('request has been sent');
+
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container";
@@ -330,8 +372,18 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-1' => 1, 'quantity-1' => 2 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build', 'request_reason_text' => 'Large household' x 10 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $sent_params->{items}[0]{reference}, 'LBM-RNC-' . $new_report->id;
+        is $sent_params->{items}[0]{amount}, 3600, 'correct amount used';
+        check_extra_data_pre_confirm($new_report, payment_method => 'csc');
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+
+        check_extra_data_post_confirm($new_report, 1);
         $mech->content_contains('request has been sent');
+
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\nAdditional details: " . "Large household" x 10;
@@ -410,7 +462,16 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { how_much => '1or2' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('name="goto" value="medical_condition"');
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        is $sent_params->{items}[0]{reference}, 'LBM-RNC-' . $new_report->id;
+        is $sent_params->{items}[0]{amount}, 1800, 'correct amount used';
+        check_extra_data_pre_confirm($new_report);
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+
+        check_extra_data_post_confirm($new_report);
         $mech->content_contains('request has been sent');
         $mech->content_contains('consider your request');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
@@ -702,6 +763,47 @@ sub shared_echo_mocks {
     } );
 
     return $e;
+}
+
+sub get_report_from_redirect {
+    my $url = shift;
+
+    return ('', '', '') unless $url;
+
+    my ($report_id, $token) = ( $url =~ m#/(\d+)/([^/]+)$# );
+    my $new_report = FixMyStreet::DB->resultset('Problem')->find( {
+            id => $report_id,
+    });
+
+    return undef unless $new_report->get_extra_metadata('redirect_id') eq $token;
+    return ($token, $new_report, $report_id);
+}
+
+sub check_extra_data_pre_confirm {
+    my $report = shift;
+    ok $report, "report passed to check_extra_data_pre_confirm";
+
+    my %params = (
+        payment_method => 'credit_card',
+        state => 'unconfirmed',
+        @_
+    );
+    $report->discard_changes;
+    is $report->category, 'Request new container';
+    is $report->get_extra_field_value('payment_method'), $params{payment_method}, 'correct payment method on report';
+    is $report->state, $params{state}, 'report state correct';
+}
+
+sub check_extra_data_post_confirm {
+    my ($report, $pay_method) = @_;
+    $pay_method ||= 2;
+    ok $report, "report passed to check_extra_data_post_confirm";
+
+    $report->discard_changes;
+    is $report->state, 'confirmed', 'report confirmed';
+    is $report->get_extra_field_value('LastPayMethod'), $pay_method, 'correct echo payment method field';
+    is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
+    is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 }
 
 done_testing;
