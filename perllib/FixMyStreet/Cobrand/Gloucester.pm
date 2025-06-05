@@ -36,12 +36,6 @@ sub council_url { 'gloucester' }
 
 sub admin_user_domain { 'gloucester.gov.uk' }
 
-=item * Allows anonymous reporting
-
-=cut
-
-sub allow_anonymous_reports { 'button' }
-
 =item * Gloucester use their own privacy policy
 
 =cut
