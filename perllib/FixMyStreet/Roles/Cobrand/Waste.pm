@@ -15,6 +15,7 @@ sub bin_payment_types {
         'credit_card' => 2,
         'direct_debit' => 3,
         'cheque' => 4,
+        'waived' => 5,
     };
 }
 

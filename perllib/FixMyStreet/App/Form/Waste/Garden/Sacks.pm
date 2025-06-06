@@ -31,13 +31,13 @@ with 'FixMyStreet::App::Form::Waste::Garden::Sacks::Choice';
 has_page sacks_details => (
     title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/sacks/subscribe_details.html',
-    fields => ['bins_wanted', 'payment_method', 'cheque_reference', 'name', 'email', 'phone', 'password', 'continue_review'],
+    fields => ['bins_wanted', 'payment_method', 'payment_explanation', 'cheque_reference', 'name', 'email', 'phone', 'password', 'continue_review'],
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
         my @fields;
         if ($c->cobrand->garden_hide_payment_method_field) {
-            push @fields, 'payment_method', 'cheque_reference', 'password';
+            push @fields, 'payment_method', 'payment_explanation', 'cheque_reference', 'password';
         } elsif ($c->stash->{staff_payments_allowed}) {
             push @fields, 'password';
         } elsif ($c->cobrand->call_hook('waste_password_hidden')) {
