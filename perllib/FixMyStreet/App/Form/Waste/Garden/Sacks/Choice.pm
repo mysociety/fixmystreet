@@ -48,7 +48,7 @@ sub options_container_choice {
             { value => 'bin240', label => '240L bin', hint => 'About the same size as a standard wheelie bin' };
     } else {
         push @containers,
-            { value => 'bin', label => 'Bins', hint => '240L capacity, which is about the same size as a standard wheelie bin' };
+            { value => 'bin', label => 'Bins', hint => '240L capacity' };
     }
     push @containers,
         { value => 'sack', label => 'Sacks', hint => "Buy a roll of $num sacks and use them anytime within your subscription year" };
