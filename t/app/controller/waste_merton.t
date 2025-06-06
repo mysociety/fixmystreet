@@ -338,6 +338,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('request_reason_text', 'Staff only field for extra information absent');
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_lacks('No payment to be taken');
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
@@ -371,16 +372,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'container-1' => 1, 'quantity-1' => 2 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build', 'request_reason_text' => 'Large household' x 10 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
-
-        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-
-        is $sent_params->{items}[0]{reference}, 'LBM-RNC-' . $new_report->id;
-        is $sent_params->{items}[0]{amount}, 3600, 'correct amount used';
-        check_extra_data_pre_confirm($new_report, payment_method => 'csc');
-        $mech->get_ok("/waste/pay_complete/$report_id/$token");
-
-        check_extra_data_post_confirm($new_report, 1);
+        $mech->content_contains('No payment to be taken');
+        $mech->submit_form_ok({ with_fields => { payment_method => 'waived' } });
+        $mech->content_contains('Explanation field is required');
+        $mech->submit_form_ok({ with_fields => { payment_method => 'waived', payment_explanation => 'Paid in cash' } });
         $mech->content_contains('request has been sent');
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
