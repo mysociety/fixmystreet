@@ -37,12 +37,12 @@ with 'FixMyStreet::App::Form::Waste::Garden::Sacks::Choice';
 has_page sacks_details => (
     title => 'Renew your garden waste subscription',
     template => 'waste/garden/sacks/renew.html',
-    fields => ['bins_wanted', 'payment_method', 'cheque_reference', 'name', 'phone', 'email', 'apply_discount', 'continue_review'],
+    fields => ['bins_wanted', 'payment_method', 'payment_explanation', 'cheque_reference', 'name', 'phone', 'email', 'apply_discount', 'continue_review'],
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
         my @fields;
-        push @fields, 'payment_method', 'cheque_reference' if $c->cobrand->garden_hide_payment_method_field;
+        push @fields, 'payment_method', 'payment_explanation', 'cheque_reference' if $c->cobrand->garden_hide_payment_method_field;
         push @fields, 'bins_wanted' unless $page->form->with_bins_wanted;
         push @fields, 'apply_discount' if (!($c->stash->{waste_features}->{ggw_discount_as_percent}) || !($c->stash->{is_staff}));
         return \@fields;
