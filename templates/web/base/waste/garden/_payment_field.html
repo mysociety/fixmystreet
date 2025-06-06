@@ -1,11 +1,13 @@
 [% IF NOT c.cobrand.garden_hide_payment_method_field %]
 
-  [% PROCESS form override_fields=['payment_method', 'cheque_reference'] %]
+  [% PROCESS form override_fields=['payment_method', 'payment_explanation', 'cheque_reference'] %]
 
 <script nonce="[% csp_nonce %]">
 (function(){
     var id;
     id = document.getElementById('form-cheque_reference-row');
+    if (id) { id.className += ' hidden-js'; }
+    id = document.getElementById('form-payment_explanation-row');
     if (id) { id.className += ' hidden-js'; }
 })();
 </script>

@@ -89,4 +89,34 @@ sub options_request_reason {
     return @options;
 }
 
+has_page summary => (
+    fields => ['submit', 'payment_method', 'payment_explanation', 'cheque_reference'],
+    title => 'Submit container request',
+    template => 'waste/summary_request.html',
+    finished => sub {
+        return $_[0]->wizard_finished('process_request_data');
+    },
+    # For payments, updating the submit button
+    update_field_list => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        if ($data->{payment}) {
+            return { submit => { value => 'Continue to payment' } };
+        }
+        return {};
+    },
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        my $data = $page->form->saved_data;
+        if (!$c->stash->{is_staff} || !$data->{payment}) {
+            return ['payment_method', 'cheque_reference', 'payment_explanation'];
+        }
+        return ['cheque_reference'];
+    },
+    next => 'done',
+);
+
+with 'FixMyStreet::App::Form::Waste::Billing';
+
 1;
