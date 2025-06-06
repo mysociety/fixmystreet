@@ -121,23 +121,7 @@ has_page done => (
     template => 'waste/bulky/confirmation.html',
 );
 
-has_field payment_method => (
-    label => 'How do you want to pay',
-    type => 'Select',
-    required => 1,
-    default => 'credit_card',
-    widget => 'RadioGroup',
-    options => [
-        { label => 'Debit or Credit Card', value => 'credit_card', data_hide => '#form-cheque_reference-row' },
-        { label => 'Cheque payment', value => 'cheque', data_show => '#form-cheque_reference-row' }
-    ],
-);
-
-has_field cheque_reference =>(
-    label => 'Payment reference',
-    type => 'Text',
-    required_when => { payment_method => 'cheque' },
-);
+with 'FixMyStreet::App::Form::Waste::Billing';
 
 has_field continue => (
     type => 'Submit',
