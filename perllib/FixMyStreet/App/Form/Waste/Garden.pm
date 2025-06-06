@@ -218,6 +218,7 @@ has_field apply_discount => (
 );
 
 with 'FixMyStreet::App::Form::Waste::Billing';
+with 'FixMyStreet::App::Form::Waste::Garden::AboutYou';
 
 has_field password => (
     type => 'Password',

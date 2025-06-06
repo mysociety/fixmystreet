@@ -167,6 +167,7 @@ has_field bins_wanted => (
 );
 
 with 'FixMyStreet::App::Form::Waste::Billing';
+with 'FixMyStreet::App::Form::Waste::Garden::AboutYou';
 with 'FixMyStreet::App::Form::Waste::GardenTandC';
 
 has_field continue_review => (
