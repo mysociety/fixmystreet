@@ -61,7 +61,7 @@ has_page location => (
 );
 
 has_page summary => (
-    fields => ['submit', 'tandc', 'payment_method', 'cheque_reference'],
+    fields => ['submit', 'tandc', 'payment_method', 'payment_explanation', 'cheque_reference'],
     title => 'Submit collection booking',
     template => 'waste/bulky/summary.html',
     next => sub { $_[0]->{no_slots} ? 'choose_date_earlier' : 'done' },
@@ -69,8 +69,18 @@ has_page summary => (
         my $page = shift;
         my $c = $page->form->c;
 
-        if (!($c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'kingston') || !$c->stash->{is_staff}) {
-            return ['payment_method', 'cheque_reference']
+        my $cobrand = $c->cobrand->moniker;
+        if ($cobrand ne 'sutton' && $cobrand ne 'kingston' && $cobrand ne 'merton') {
+            return ['payment_method', 'payment_explanation', 'cheque_reference'];
+        }
+        if (!$c->stash->{is_staff}) {
+            return ['payment_method', 'payment_explanation', 'cheque_reference'];
+        }
+        if ($cobrand eq 'merton') {
+            return ['cheque_reference'];
+        }
+        if ($cobrand eq 'kingston' || $cobrand eq 'sutton') {
+            return ['payment_explanation'];
         }
     },
     # Return to 'Choose date' page if slot has been taken in the meantime.
