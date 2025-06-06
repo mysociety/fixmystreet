@@ -59,7 +59,6 @@ FixMyStreet::override_config {
     MAPIT_URL        => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     COBRAND_FEATURES => {
-        anonymous_account => { gloucester => 'anonymous' },
         open311_email => {
             gloucester => {
                 'Dog fouling' => 'enviro-crime@gloucester.dev'
@@ -76,19 +75,24 @@ FixMyStreet::override_config {
             $mech->get('/report/new?longitude=-2.2458&latitude=51.86506');
             $mech->follow_link_ok( { text_regex => qr/skip this step/i } );
             $mech->submit_form_ok(
-                {   button      => 'report_anonymously',
+                {   button      => 'submit_register',
                     with_fields => {
                         category => 'Graffiti',
                         detail   => 'Test report details',
                         title    => 'Test Report',
+                        name     => 'Test User',
+                        username_register => 'test@example.org',
                     }
                 }
             );
-            like $mech->text, qr/Your issue is on its way/;
+            like $mech->text, qr/Nearly done! Now check your email/;
 
             my $report
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
                 ->first;
+            $report->confirm;
+            $report->update;
+            $mech->clear_emails_ok; # Clear initial confirmation email
             FixMyStreet::Script::Reports::send();
             $report->discard_changes;
 
@@ -109,21 +113,24 @@ FixMyStreet::override_config {
             $mech->get('/report/new?longitude=-2.2458&latitude=51.86506');
             $mech->follow_link_ok( { text_regex => qr/skip this step/i } );
             $mech->submit_form_ok(
-                {   button      => 'report_anonymously',
+                {   button      => 'submit_register',
                     with_fields => {
                         category => 'Flytipping',
                         detail   => 'Test report details',
                         title    => 'Test Report',
+                        name     => 'Test User',
+                        username_register => 'test@example.org',
                     }
                 }
             );
-            like $mech->text, qr/Your issue is on its way/;
+            like $mech->text, qr/Nearly done! Now check your email/;
 
             my $report
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
                 ->first;
             $report->confirm;
             $report->update;
+            $mech->clear_emails_ok; # Clear initial confirmation email
             FixMyStreet::Script::Reports::send();
             $report->discard_changes;
 
@@ -144,22 +151,25 @@ FixMyStreet::override_config {
 
                 $mech->get('/report/new?longitude=-2.2458&latitude=51.86506&category=Dog fouling');
                 $mech->submit_form_ok(
-                    {   button      => 'report_anonymously',
+                    {   button      => 'submit_register',
                         with_fields => {
                             category        => 'Dog fouling',
                             detail          => 'Test report details',
                             title           => 'Test Report',
                             did_you_witness => 'No',
+                            name            => 'Test User',
+                            username_register => 'test@example.org',
                         }
                     }
                 );
-                like $mech->text, qr/Your issue is on its way/;
+                like $mech->text, qr/Nearly done! Now check your email/;
 
                 my $report
                     = FixMyStreet::DB->resultset('Problem')->order_by('-id')
                     ->first;
                 $report->confirm;
                 $report->update;
+                $mech->clear_emails_ok; # Clear initial confirmation email
                 FixMyStreet::Script::Reports::send();
                 $report->discard_changes;
 
@@ -179,22 +189,25 @@ FixMyStreet::override_config {
 
                 $mech->get('/report/new?longitude=-2.2458&latitude=51.86506&category=Dog fouling');
                 $mech->submit_form_ok(
-                    {   button      => 'report_anonymously',
+                    {   button      => 'submit_register',
                         with_fields => {
                             category        => 'Dog fouling',
                             detail          => 'Test report details',
                             title           => 'Test Report',
                             did_you_witness => 'Yes',
+                            name            => 'Test User',
+                            username_register => 'test@example.org',
                         }
                     }
                 );
-                like $mech->text, qr/Your issue is on its way/;
+                like $mech->text, qr/Nearly done! Now check your email/;
 
                 my $report
                     = FixMyStreet::DB->resultset('Problem')->order_by('-id')
                     ->first;
                 $report->confirm;
                 $report->update;
+                $mech->clear_emails_ok; # Clear initial confirmation email
                 FixMyStreet::Script::Reports::send();
                 $report->discard_changes;
 
