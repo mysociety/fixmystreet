@@ -86,6 +86,7 @@ sub categories_restriction {
     return $rs->search({
         'me.category' => {
             -not_in => [
+                # Hide all categories with parent 'Noxious weeds'
                 'Giant Hogweed',
                 'Himalayan Balsam',
                 'Japanese Knotweed',
