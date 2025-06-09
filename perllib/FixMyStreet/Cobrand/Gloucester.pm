@@ -76,6 +76,21 @@ sub contact_extra_fields { [ 'display_name' ] }
 
 sub default_map_zoom { 5 }
 
+=item * Ignores any contact whose category starts with "Ash Tree located on"
+
+=cut
+
+sub categories_restriction {
+    my ($self, $rs) = @_;
+
+    return $rs->search({
+        'me.category' => [
+            { -not_like => 'Ash Tree located on%' },
+            { '!=' => 'Noxious weeds' },
+        ]
+    });
+}
+
 =item * TODO: Don't show reports before the go-live date
 
 =cut
