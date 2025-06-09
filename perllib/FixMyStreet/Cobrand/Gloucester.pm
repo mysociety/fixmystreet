@@ -76,7 +76,7 @@ sub contact_extra_fields { [ 'display_name' ] }
 
 sub default_map_zoom { 5 }
 
-=item * Ignores any contact whose category starts with "Ash Tree located on"
+=item * Ignores some categories that are not relevant to Gloucester
 
 =cut
 
@@ -85,6 +85,7 @@ sub categories_restriction {
 
     return $rs->search({
         'me.category' => [
+            '-and',
             { -not_like => 'Ash Tree located on%' },
             { '!=' => 'Noxious weeds' },
         ]
