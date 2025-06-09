@@ -87,7 +87,7 @@ sub categories_restriction {
         'me.category' => [
             '-and',
             { -not_like => 'Ash Tree located on%' },
-            { '!=' => 'Noxious weeds' },
+            { -not_like => 'Noxious weeds' },
         ]
     });
 }
