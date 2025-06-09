@@ -76,6 +76,22 @@ sub contact_extra_fields { [ 'display_name' ] }
 
 sub default_map_zoom { 5 }
 
+=item * Ignores some categories that are not relevant to Gloucester
+
+=cut
+
+sub categories_restriction {
+    my ($self, $rs) = @_;
+
+    return $rs->search({
+        'me.category' => [
+            '-and',
+            { -not_like => 'Ash Tree located on%' },
+            { '!=' => 'Noxious weeds' },
+        ]
+    });
+}
+
 =item * TODO: Don't show reports before the go-live date
 
 =cut
