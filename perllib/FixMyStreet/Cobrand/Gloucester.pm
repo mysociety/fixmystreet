@@ -84,11 +84,16 @@ sub categories_restriction {
     my ($self, $rs) = @_;
 
     return $rs->search({
-        'me.category' => [
-            '-and',
-            { -not_like => 'Ash Tree located on%' },
-            { -not_like => 'Noxious weeds' },
-        ]
+        'me.category' => {
+            -not_in => [
+                'Giant Hogweed',
+                'Himalayan Balsam',
+                'Japanese Knotweed',
+                'Nettles, brambles, dandelions etc.',
+                'Ragwort',
+            ],
+            -not_like => 'Ash Tree located on%',
+        },
     });
 }
 
