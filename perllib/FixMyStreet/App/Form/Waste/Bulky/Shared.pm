@@ -61,7 +61,7 @@ has_page location => (
 );
 
 has_page summary => (
-    fields => ['submit', 'tandc', 'payment_method', 'cheque_reference'],
+    fields => ['submit', 'tandc', 'payment_method', 'payment_explanation', 'cheque_reference'],
     title => 'Submit collection booking',
     template => 'waste/bulky/summary.html',
     next => sub { $_[0]->{no_slots} ? 'choose_date_earlier' : 'done' },
@@ -69,8 +69,18 @@ has_page summary => (
         my $page = shift;
         my $c = $page->form->c;
 
-        if (!($c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'kingston') || !$c->stash->{is_staff}) {
-            return ['payment_method', 'cheque_reference']
+        my $cobrand = $c->cobrand->moniker;
+        if ($cobrand ne 'sutton' && $cobrand ne 'kingston' && $cobrand ne 'merton') {
+            return ['payment_method', 'payment_explanation', 'cheque_reference'];
+        }
+        if (!$c->stash->{is_staff}) {
+            return ['payment_method', 'payment_explanation', 'cheque_reference'];
+        }
+        if ($cobrand eq 'merton') {
+            return ['cheque_reference'];
+        }
+        if ($cobrand eq 'kingston' || $cobrand eq 'sutton') {
+            return ['payment_explanation'];
         }
     },
     # Return to 'Choose date' page if slot has been taken in the meantime.
@@ -114,23 +124,7 @@ has_page done => (
     template => 'waste/bulky/confirmation.html',
 );
 
-has_field payment_method => (
-    label => 'How do you want to pay',
-    type => 'Select',
-    required => 1,
-    default => 'credit_card',
-    widget => 'RadioGroup',
-    options => [
-        { label => 'Debit or Credit Card', value => 'credit_card', data_hide => '#form-cheque_reference-row' },
-        { label => 'Cheque payment', value => 'cheque', data_show => '#form-cheque_reference-row' }
-    ],
-);
-
-has_field cheque_reference =>(
-    label => 'Payment reference',
-    type => 'Text',
-    required_when => { payment_method => 'cheque' },
-);
+with 'FixMyStreet::App::Form::Waste::Billing';
 
 has_field continue => (
     type => 'Submit',
