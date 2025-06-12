@@ -654,13 +654,12 @@ function cb_should_not_require_road() {
     // or if one of the groups containing either the "Trees", "Fly Tipping" or "Public Rights of way"
     // categories has been selected.
     var selected = fixmystreet.reporting.selectedCategory();
-    return selected.category === "Trees" ||
-            (selected.group === "Grass, Trees, Verges and Weeds" && !selected.category) ||
-            selected.category === "Fly Tipping" ||
-            (selected.group === "Flytipping, Bins and Graffiti" && !selected.category) ||
-            selected.category === 'Housing Fly-tipping' ||
-            selected.category === 'Public Rights of way' ||
-            (!selected.group && !selected.category);
+    return selected.group === "Trees" ||
+        selected.group === "Housing" ||
+        selected.category == "Public Rights of way" ||
+        selected.category == "Salt bins" ||
+        selected.category == "Vegetation" ||
+        (!selected.group && !selected.category);
 }
 
 function cb_show_non_stopper_message(layer) {
