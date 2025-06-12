@@ -29,7 +29,7 @@ sub map_tiles {
     if ($params{aerial}) {
         return $self->SUPER::map_tiles(%params);
     } else {
-        my $tile_url = sprintf($self->base_tile_url, $self->layer);
+        my $tile_url = sprintf($self->os_tile_url, $self->layer);
         my $key = $self->key;
         return [
             "$tile_url/$z/" . ($x-1) . "/" . ($y-1) . ".png?key=$key",
