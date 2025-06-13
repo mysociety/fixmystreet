@@ -179,7 +179,7 @@ for (
 
         subtest 'Login button not displayed' => sub {
             $mech->get_ok("/auth");
-            $mech->content_lacks("Login with MyWestminster");
+            $mech->content_lacks("Sign in with MyWestminster");
         };
     };
 }
