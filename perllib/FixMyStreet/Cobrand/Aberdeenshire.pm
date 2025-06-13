@@ -169,8 +169,11 @@ sub disambiguate_location {
     my $self = shift;
     my $string = shift;
 
+    my $town = 'Aberdeenshire';
+
     return {
         %{ $self->SUPER::disambiguate_location() },
+        town   => $town,
         centre => '57.24185467,-2.62923456',
         span   => '0.95461349,2.03725374',
         bounds => [
@@ -194,6 +197,25 @@ sub lookup_site_code_config {
         property => "siteCode",
         accept_feature => sub { 1 }
     };
+}
+
+=item * Uses the OSM geocoder
+
+=cut
+
+sub get_geocoder { 'OSM' }
+
+
+=item * Make a few improvements to the display of geocoder results
+
+Remove 'Aberdeenshire' and 'Alba / Scotland', skip any that don't mention Aberdeenshire at all
+
+=cut
+
+sub geocoder_munge_results {
+    my ($self, $result) = @_;
+    $result->{display_name} = '' unless $result->{display_name} =~ /Aberdeenshire/;
+    $result->{display_name} =~ s#, Aberdeenshire, Alba / Scotland##;
 }
 
 1;
