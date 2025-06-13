@@ -33,7 +33,7 @@
     [% IF oidc_config %]
       <div class="form-box">
         <button name="social_sign_in" value="oidc" class="btn btn--block btn--social btn--oidc">
-            [% tprintf(loc('Login with %s'), oidc_config.display_name) %]
+            [% tprintf(loc('Sign in with %s'), oidc_config.display_name) %]
         </button>
       </div>
     [% END %]
