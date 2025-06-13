@@ -34,11 +34,6 @@ sub council_url { 'isleofwight' }
 sub all_reports_single_body { { name => "Isle of Wight Council" } }
 sub link_to_council_cobrand { "Island Roads" }
 
-sub enter_postcode_text {
-    my ($self) = @_;
-    return 'Enter an ' . $self->council_area . ' postcode, or street name and area';
-}
-
 =item * Users with an islandroads.com email can always be found in the admin.
 
 =cut

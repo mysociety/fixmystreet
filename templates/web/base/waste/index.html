@@ -18,11 +18,13 @@
             <li>Find your bin collection days</li>
             <li>Report a missed bin collection</li>
             [% IF c.cobrand.moniker == 'bexley' %]
-            <li>Request a bin delivery or removal</li>
+                <li>Request a bin delivery or removal</li>
+            [% ELSIF c.cobrand.moniker == 'sutton' %]
+                <li>Order replacement bins</li>
             [% ELSE %]
-            <li>Order new or additional bins</li>
-            <li>Subscribe to garden waste collection service</li>
+                <li>Order new or additional bins</li>
             [% END %]
+            <li>Subscribe to garden waste collection service</li>
             [% IF c.cobrand.call_hook('bulky_enabled') && (c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston') %]
               <li>Book a bulky waste collection</li>
             [% END %]

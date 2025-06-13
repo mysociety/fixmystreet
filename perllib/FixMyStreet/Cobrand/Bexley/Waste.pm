@@ -77,6 +77,11 @@ sub fetch_whitespace_data {
     return $data->{"$method $uprn"};
 }
 
+sub clear_cached_lookups_property {
+    my ($self, $uprn) = @_;
+    $self->{c}->waste_cache_delete("bin_days_page:$uprn");
+}
+
 sub waste_fetch_events {
     my ( $self, $params ) = @_;
 

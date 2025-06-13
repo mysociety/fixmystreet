@@ -28,6 +28,8 @@ my $kingston = $mech->create_body_ok( 2480, 'Kingston upon Thames Council', {
     comment_user => $user,
     cobrand => 'kingston',
 });
+$user->update({ from_body => $body->id });
+$user->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 
 FixMyStreet::DB->resultset('ResponseTemplate')->create({
     body_id => $body->id,
@@ -60,6 +62,7 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     longitude => 0.015784,
     category => 'Report missed collection',
     cobrand => 'sutton',
+    cobrand_data => 'waste',
     areas => '2498',
     user => $user,
     send_method_used => 'Open311',
@@ -159,7 +162,14 @@ FixMyStreet::override_config {
         like $body, qr{http://www.example.org/report/$id};
     };
 
+    subtest 'check payment code is censored' => sub {
+        ok $mech->host("sutton.example.org"), "change host to Sutton";
+        $mech->get_ok('/admin/report_edit/' . $report->id);
+        $mech->content_contains('xxxx4321');
+    };
 };
+
+$report->delete; # Not needed for next bit
 
 package SOAP::Result;
 sub result { return $_[0]->{result}; }
