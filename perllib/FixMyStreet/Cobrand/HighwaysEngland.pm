@@ -361,12 +361,26 @@ sub munge_report_new_bodies {
     %$bodies = map { $_->id => $_ } grep { $_->get_column('name') eq 'National Highways' } values %$bodies;
 }
 
-# Strip all (NH) from end of category names
+=head2 munge_report_new_contacts
+
+National Highways categories have a suffix of (NH) so
+they do not conflict with a council's categories but
+should not present to the user with that so we strip
+it for the display name.
+
+This has extended to Traffic Scotland (TS) and we
+use the same stripping so use this method as
+Traffic Scotland do not have a cobrand.
+
+=cut
+
 sub munge_report_new_contacts {
-    my ($self, $contacts) = @_;
+    my ($self, $contacts, $code) = @_;
+
+    $code = $code || 'NH';
     foreach my $c (@$contacts) {
         my $clean_name = $c->category_display;
-        if ($clean_name =~ s/ \(NH\)//) {
+        if ($clean_name =~ s/ \($code\)//) {
             $c->set_extra_metadata(display_name => $clean_name);
         }
     }
@@ -423,8 +437,13 @@ sub report_new_is_on_he_road {
         $self->{c}->stash->{latitude},
     );
 
+    my $url = 'https://tilma.mysociety.org/mapserver/highways';
+    if (FixMyStreet->config("STAGING_SITE")) {
+        $url = 'https://tilma.staging.mysociety.org/mapserver/highways';
+    }
+
     my $cfg = {
-        url => "https://tilma.mysociety.org/mapserver/highways",
+        url => $url,
         srsname => "urn:ogc:def:crs:EPSG::4326",
         typename => "Highways",
         filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>15</Distance></DWithin></Filter>",

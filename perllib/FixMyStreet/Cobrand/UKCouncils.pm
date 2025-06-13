@@ -423,13 +423,15 @@ sub munge_report_new_bodies {
         $tfl->munge_surrounding_london($bodies);
     }
 
-    if ( $bodies{'National Highways'} ) {
+    if ( $bodies{'National Highways'} || $bodies{'Traffic Scotland'} ) {
+        # Traffic Scotland and National Highways have a combined layer
         my $c = $self->{c};
         my $he = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $c });
         my $on_he_road = $c->stash->{on_he_road} = $he->report_new_is_on_he_road;
 
+        my $highways_body_name = $bodies{'National Highways'} ? 'National Highways' : 'Traffic Scotland';
         if (!$on_he_road) {
-            %$bodies = map { $_->id => $_ } grep { $_->name ne 'National Highways' } values %$bodies;
+            %$bodies = map { $_->id => $_ } grep { $_->name ne $highways_body_name } values %$bodies;
         }
     }
 
@@ -481,6 +483,11 @@ sub munge_report_new_contacts {
     if ( $bodies{'National Highways'} ) {
         my $nh = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $self->{c} });
         $nh->national_highways_cleaning_groups($contacts);
+    }
+
+    if ( $bodies{'Traffic Scotland'} ) {
+        my $nh = FixMyStreet::Cobrand::HighwaysEngland->new({ c => $self->{c} });
+        $nh->munge_report_new_contacts($contacts, 'TS');
     }
 
     $self->call_hook(munge_cobrand_asset_categories => $contacts);
