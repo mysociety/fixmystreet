@@ -145,18 +145,29 @@ sub open311_update_missing_data {
     }
 }
 
+=item * Make a few improvements to the display of geocoder results
+
+Remove 'Aberdeenshire' and 'Alba / Scotland', skip any that don't mention Aberdeenshire at all
+
+=cut
+
 sub disambiguate_location {
     my $self = shift;
     my $string = shift;
 
+    my $town = 'Aberdeenshire';
+
     return {
         %{ $self->SUPER::disambiguate_location() },
+        town   => $town,
         centre => '57.24185467,-2.62923456',
         span   => '0.95461349,2.03725374',
         bounds => [
             56.74712850, -3.80164643,
             57.70174199, -1.76439269,
         ],
+        result_only_if => 'Aberdeenshire',
+        result_strip => ', Aberdeenshire, Alba / Scotland',
     };
 }
 
