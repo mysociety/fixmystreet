@@ -787,6 +787,45 @@ fixmystreet.assets.gloucester.watercourses_filter = function(feature) {
     return maintenanceDuty && maintenanceDuty.startsWith('GCiC');
 };
 
+fixmystreet.assets.cobranduk = {};
+
+/* Gloucester have separate layers for watercourses and ponds which
+ * they want to act as a single layer, with selection required.
+ * This is similar to other combined layers so this is a generic
+ * function requiring the two layer to be combined to have names
+ * which are then specified in an array in layer.fixmystreet.combined
+ *
+ * 1. Don't block when a selection is made in one but not the other.
+ * 2. Do block when there isn't a selection in either.
+ * 3. Only apply the block to one layer so we don't show the block message twice. */
+
+fixmystreet.assets.cobranduk.combined_road_found = function(layer, asset) {
+    var combined = layer.fixmystreet.combined;
+    var name = layer.fixmystreet.name;
+    if (!combined || !name) {
+        console.warn("Layers not set up correctly");
+        return;
+    } else {
+        var key_layer = fixmystreet.map.getLayersByName(combined[0])[0];
+        fixmystreet.message_controller.road_found(key_layer);
+    }
+};
+
+fixmystreet.assets.cobranduk.combined_road_not_found = function(layer) {
+    var combined = layer.fixmystreet.combined;
+    var name = layer.fixmystreet.name;
+    if (!combined || !name) {
+        console.warn("Layers not set up correctly");
+        return;
+    } else {
+        var key_layer = fixmystreet.map.getLayersByName(combined[0])[0];
+        var secondary_layer = fixmystreet.map.getLayersByName(combined[1])[0];
+        if (!key_layer.selected_feature && !secondary_layer.selected_feature) {
+            fixmystreet.message_controller.road_not_found(key_layer, function() { return true; });
+        }
+    }
+};
+
 /* Gloucester have separate layers for free and paid car parks which
  * they want to act as a single layer, with selection required.
  * The car_park_found and car_park_not_found functions fire separately for each
