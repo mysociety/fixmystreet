@@ -234,9 +234,9 @@ sub process_bulky_data : Private {
     my ($self, $c, $form) = @_;
     my $data = renumber_items($form->saved_data, $c->cobrand->bulky_items_maximum);
 
+    my $payment_method = $data->{payment_method} || 'credit_card';
     if (!$c->cobrand->bulky_free_collection_available) {
         # Either was picked in the form, or if not present will be card
-        my $payment_method = $data->{payment_method} || 'credit_card';
         $c->set_param('payment_method', $payment_method);
         if ($payment_method eq 'credit_card' && $c->stash->{staff_payments_allowed} eq 'paye') {
             $c->set_param('payment_method', 'csc');
@@ -274,14 +274,11 @@ sub process_bulky_data : Private {
         }
 
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
-            $c->stash->{message} = 'Payment skipped on staging';
-            $c->stash->{reference} = $c->stash->{report}->id;
-            $c->forward('/waste/confirm_subscription', [ $c->stash->{reference} ] );
-        } elsif ($data->{payment_method} && $data->{payment_method} eq 'cheque') {
-            my $p = $c->stash->{report};
-            $p->set_extra_metadata('chequeReference', $data->{cheque_reference});
-            $p->update;
-            $c->forward('/waste/confirm_subscription', [ undef ]);
+            $c->forward('/waste/pay_skip', []);
+        } elsif ($payment_method eq 'cheque') {
+            $c->forward('/waste/pay_skip', [ $data->{cheque_reference}, undef ]);
+        } elsif ($payment_method eq 'waived') {
+            $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
         } else {
             if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
                 $c->forward('/waste/csc_code');

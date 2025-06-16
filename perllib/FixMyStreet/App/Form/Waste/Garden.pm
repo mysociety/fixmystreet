@@ -76,14 +76,14 @@ has_page existing => (
 has_page details => (
     title_ggw => 'Subscribe to the %s',
     template => 'waste/garden/subscribe_details.html',
-    fields => ['current_bins', 'bins_wanted', 'payment_method', 'cheque_reference', 'name', 'email', 'phone', 'password', 'email_renewal_reminders', 'continue_review'],
+    fields => ['current_bins', 'bins_wanted', 'payment_method', 'payment_explanation', 'cheque_reference', 'name', 'email', 'phone', 'password', 'email_renewal_reminders', 'continue_review'],
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
         my @fields;
         push @fields, 'email_renewal_reminders' if !$c->cobrand->garden_subscription_email_renew_reminder_opt_in;
         push @fields, 'password' if $c->stash->{staff_payments_allowed} or $c->cobrand->call_hook('waste_password_hidden');
-        push @fields, ('payment_method', 'cheque_reference') if $c->cobrand->garden_hide_payment_method_field;
+        push @fields, ('payment_method', 'payment_explanation', 'cheque_reference') if $c->cobrand->garden_hide_payment_method_field;
         return \@fields;
     },
     update_field_list => \&details_update_fields,
@@ -218,6 +218,7 @@ has_field apply_discount => (
 );
 
 with 'FixMyStreet::App::Form::Waste::Billing';
+with 'FixMyStreet::App::Form::Waste::Garden::AboutYou';
 
 has_field password => (
     type => 'Password',

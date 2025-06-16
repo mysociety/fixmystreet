@@ -311,9 +311,7 @@ sub process_garden_modification : Private {
     $c->forward('/waste/add_report', [ $data, 1 ]) or return;
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
-        $c->stash->{message} = 'Payment skipped on staging';
-        $c->stash->{reference} = $c->stash->{report}->id;
-        $c->forward('/waste/confirm_subscription', [ $c->stash->{reference} ] );
+        $c->forward('/waste/pay_skip', []);
     } else {
         if ( $pro_rata && $c->stash->{staff_payments_allowed} eq 'paye' ) {
             $c->forward('/waste/csc_code');
@@ -401,16 +399,13 @@ sub process_garden_new_or_renew : Private {
         $c->forward('/waste/process_request_data', [ $form, [ $c->stash->{report} ], 1 ]);
     }
 
+    my $payment_method = $data->{payment_method};
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
-        $c->stash->{message} = 'Payment skipped on staging';
-        $c->stash->{reference} = $c->stash->{report}->id;
-        $c->forward('/waste/confirm_subscription', [ $c->stash->{reference} ] );
-    } elsif ($c->cobrand->waste_cheque_payments && $data->{payment_method} eq 'cheque') {
-        $c->stash->{action} = 'new_subscription';
-        my $p = $c->stash->{report};
-        $p->set_extra_metadata('chequeReference', $data->{cheque_reference});
-        $p->update;
-        $c->forward('/waste/confirm_subscription', [ undef ] );
+        $c->forward('/waste/pay_skip', []);
+    } elsif ($c->cobrand->waste_cheque_payments && $payment_method eq 'cheque') {
+        $c->forward('/waste/pay_skip', [ $data->{cheque_reference}, undef ]);
+    } elsif ($payment_method eq 'waived') {
+        $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
     } else {
         if ($dd_flow) {
             if ($c->cobrand->direct_debit_collection_method eq 'internal') {

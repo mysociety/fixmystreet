@@ -1,11 +1,13 @@
 package FixMyStreet::Cobrand::Merton::Waste;
 
+use utf8;
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Waste',
      'FixMyStreet::Roles::Cobrand::SLWP',
      'FixMyStreet::Roles::Cobrand::Adelante';
 
 use Hash::Util qw(lock_hash);
+use WasteWorks::Costs;
 use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton::Larger;
@@ -292,6 +294,35 @@ sub waste_request_form_first_next {
     };
 }
 
+sub waste_munge_request_form_fields {
+    my ($self, $field_list) = @_;
+
+    for (my $i=0; $i<@$field_list; $i+=2) {
+        my ($key, $value) = ($field_list->[$i], $field_list->[$i+1]);
+        next unless $key =~ /^container-(\d+)/;
+        my $id = $1;
+        my $cost = $self->request_cost($id);
+        if ($cost) {
+            my $price = sprintf("£%.2f", $cost / 100);
+            $price =~ s/\.00$//;
+            $value->{option_hint} = "There is a $price cost for this container";
+        }
+    }
+}
+
+=head2 request_cost
+
+Calculate how much, if anything, a request for a container should be.
+
+=cut
+
+sub request_cost {
+    my ($self, $id) = @_;
+    my $costs = WasteWorks::Costs->new({ cobrand => $self });
+    my $cost = $costs->get_cost('request_cost_' . $id);
+    return $cost;
+}
+
 sub waste_munge_request_data {
     my ($self, $id, $data, $form) = @_;
 
@@ -400,6 +431,7 @@ sub waste_cc_payment_reference {
     my ($self, $p) = @_;
     my $type = 'GWS'; # Garden
     $type = 'BWC' if $p->category eq 'Bulky collection';
+    $type = 'RNC' if $p->category eq 'Request new container';
     return $self->waste_payment_ref_council_code . "-$type-" . $p->id;
 }
 
