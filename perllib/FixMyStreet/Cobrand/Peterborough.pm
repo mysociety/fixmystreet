@@ -768,7 +768,7 @@ sub bin_services_for_address {
 
         my %requests_open = map { $_ => 1 } @request_service_ids_open;
 
-        if ( $container_id == 6533 ) {    # Black bin
+        if ( $container_id == 6533 || $container_id == 6836 ) {    # Black bin
             $property->{has_black_bin} = 1;
         }
 
