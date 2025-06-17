@@ -47,6 +47,12 @@ sub is_defect {
     return $p->service eq 'Open311';
 }
 
+=item * Uses the OSM geocoder.
+
+=cut
+
+sub get_geocoder { 'OSM' }
+
 =item * The default map zoom is a bit more zoomed-in
 
 =cut
