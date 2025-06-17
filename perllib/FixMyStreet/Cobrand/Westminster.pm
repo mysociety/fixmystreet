@@ -37,6 +37,7 @@ sub disambiguate_location {
         town   => 'Westminster',
         centre => '51.513444,-0.160467',
         bounds => [ 51.483816, -0.216088, 51.539793, -0.111101 ],
+        result_strip => ', City of Westminster, Greater London, England',
     };
 }
 

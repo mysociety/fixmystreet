@@ -110,6 +110,7 @@ sub disambiguate_location {
         centre => '51.366836,0.040623',
         span   => '0.154963,0.24347',
         bounds => [ 51.289355, -0.081112, 51.444318, 0.162358 ],
+        result_strip => ', London Borough of Bromley, London, Greater London, England|, London, Greater London, England',
     };
 }
 

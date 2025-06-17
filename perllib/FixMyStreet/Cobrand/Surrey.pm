@@ -37,6 +37,7 @@ sub disambiguate_location {
         span   => '0.4000678,0.9071629',
         bounds => [ 51.0714965, -0.8489465, 51.4715643, 0.0582164 ],
         town => 'Surrey',
+        result_strip => ', Surrey, England',
     };
 }
 

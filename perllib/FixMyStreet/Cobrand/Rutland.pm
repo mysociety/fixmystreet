@@ -93,6 +93,7 @@ sub disambiguate_location {
     my $string  = shift;
 
     return {
+        result_strip => ', Rutland, England',
         bounds => [52.524755166940075, -0.8217480325342802, 52.7597945702699, -0.4283542728893742]
     };
 }

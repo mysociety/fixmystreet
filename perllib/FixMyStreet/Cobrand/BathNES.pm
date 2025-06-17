@@ -84,12 +84,6 @@ sub contact_extra_fields_validation {
 
 =cut
 
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-    $result->{display_name} =~ s/, United Kingdom$//;
-    $result->{display_name} =~ s/, Bath and North East Somerset, West of England, England//;
-}
-
 =head2 disambiguate_location
 
 Geocoder tweaked to always search in Bath and NES areas.
@@ -131,6 +125,7 @@ sub disambiguate_location {
         span   => '0.166437921041471,0.429359043406088',
         bounds => [ 51.2730478766607, -2.70792015294201, 51.4394857977022, -2.27856110953593 ],
         string => $string,
+        result_strip => ', Bath and North East Somerset, West of England, England',
     };
 }
 

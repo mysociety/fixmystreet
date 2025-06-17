@@ -90,14 +90,9 @@ sub disambiguate_location {
             52.6402363580567, -0.804316148045751,
             53.0599717881525, -0.212500442433404
         ],
+        result_only_if => 'South Kesteven',
+        result_strip => ', South Kesteven, Lincolnshire, England',
     };
-}
-
-
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-    $result->{display_name} = '' unless $result->{display_name} =~ /South Kesteven/;
-    $result->{display_name} =~ s/, South Kesteven, Lincolnshire, England//;
 }
 
 1;

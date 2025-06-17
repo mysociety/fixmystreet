@@ -26,6 +26,7 @@ sub disambiguate_location {
         centre => '51.4099496632915,-0.197255310605401',
         span   => '0.0612811278185319,0.130096741684365',
         bounds => [ 51.3801834993027, -0.254262247988426, 51.4414646271213, -0.124165506304061 ],
+        result_strip => ', London Borough of Merton, London, Greater London, England',
     };
 }
 

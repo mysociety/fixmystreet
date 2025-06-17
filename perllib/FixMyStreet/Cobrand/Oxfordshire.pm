@@ -53,6 +53,7 @@ sub disambiguate_location {
         centre => '51.765765,-1.322324',
         span   => '0.709058,0.849434',
         bounds => [ 51.459413, -1.719500, 52.168471, -0.870066 ],
+        result_strip => ', Oxfordshire, England',
     };
 }
 

@@ -105,6 +105,7 @@ sub disambiguate_location {
         %{ $self->SUPER::disambiguate_location() },
         centre => '50.675761,-1.296571',
         bounds => [ 50.574653, -1.591732, 50.767567, -1.062957 ],
+        result_strip => ', Isle of Wight, England',
     };
 }
 

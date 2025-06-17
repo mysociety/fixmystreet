@@ -108,18 +108,13 @@ sub disambiguate_location {
         %{ $self->SUPER::disambiguate_location() },
         centre => '53.180415,-2.349354',
         bounds => [ 52.947150, -2.752929, 53.387445, -1.974789 ],
+        result_only_if => 'Cheshire East',
+        result_strip => ', Cheshire East, North West England, England',
     };
 }
 
 sub enter_postcode_text {
     'Enter a postcode, or a road and place name';
-}
-
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-    $result->{display_name} = '' unless $result->{display_name} =~ /Cheshire East/;
-    $result->{display_name} =~ s/, UK$//;
-    $result->{display_name} =~ s/, Cheshire East, North West England, England//;
 }
 
 =head2 lookup_site_code_config

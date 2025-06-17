@@ -63,6 +63,8 @@ sub disambiguate_location {
         town   => $town,
         centre => '51.552267,-0.063316',
         bounds => [ 51.519814, -0.104511, 51.577784, -0.016527 ],
+        result_only_if => 'Hackney',
+        result_strip => ', London, Greater London, England|, London Borough of Hackney',
     };
 }
 
@@ -88,10 +90,6 @@ sub geocoder_munge_results {
             return;
         }
     }
-    $result->{display_name} = '' unless $result->{display_name} =~ /Hackney/;
-    $result->{display_name} =~ s/, United Kingdom$//;
-    $result->{display_name} =~ s/, London, Greater London, England//;
-    $result->{display_name} =~ s/, London Borough of Hackney//;
 }
 
 =item * Default map zoom level of 6

@@ -49,6 +49,7 @@ sub disambiguate_location {
         centre => '51.546390811297,-0.157422262955539',
         span   => '0.0603011959324533,0.108195286339115',
         bounds => [ 51.5126591342049, -0.213511484504216, 51.5729603301373, -0.105316198165101 ],
+        result_strip => ', London Borough of Camden, London, Greater London, England',
     };
 }
 

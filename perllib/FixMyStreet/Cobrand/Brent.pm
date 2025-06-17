@@ -172,19 +172,10 @@ sub disambiguate_location { {
     span   => '0.0727325098393763,0.144085171830317',
     bounds => [ 51.52763684136, -0.335577710963202, 51.6003693511994, -0.191492539132886 ],
     town => 'Brent',
+    result_strip => ', London Borough of Brent, London, Greater London, England',
 } }
 
-=item * Filters down search results to be the street name and the postcode only
-
 =back
-
-=cut
-
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-
-    $result->{display_name} =~ s/, London Borough of Brent, London, Greater London, England//;
-}
 
 =head2 check_report_is_on_cobrand_asset
 
