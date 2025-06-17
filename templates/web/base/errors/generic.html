@@ -1,5 +1,5 @@
 [% IF message == 'invalid id_token' ~%]
-[% title = BLOCK %][% TRY %][% PROCESS 'errors/_sso_title.html' %][% CATCH file %]Login[% END %][% END ~%]
+[% title = BLOCK %][% TRY %][% PROCESS 'errors/_sso_title.html' %][% CATCH file %]Sign in[% END %][% END ~%]
 [% END %]
 [% DEFAULT title = loc('Error') %]
 [% DEFAULT header_class = 'failure' %]
