@@ -477,18 +477,11 @@ sub property : Chained('property_id') : PathPart('') : CaptureArgs(0) {
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
     $c->detach( '/page_error_404_not_found', [] ) unless $property && $property->{id};
 
-    if ($c->cobrand->can('bulky_enabled')) {
-        my @pending = $c->cobrand->find_pending_bulky_collections($property->{uprn});
-        $c->stash->{pending_bulky_collections} = @pending ? \@pending : undef;
-
-        my @recent = $c->cobrand->find_recent_bulky_collections($property->{uprn});
-        $c->stash->{recent_bulky_collections} = @recent ? \@recent : undef;
-
+    if ($c->cobrand->can('find_booked_collections')) {
         my $cfg = $c->cobrand->feature('waste_features');
-        if ($cfg->{bulky_retry_bookings} && $c->stash->{is_staff}) {
-            my @unconfirmed = $c->cobrand->find_unconfirmed_bulky_collections($property->{uprn})->all;
-            $c->stash->{unconfirmed_bulky_collections} = @unconfirmed ? \@unconfirmed : undef;
-        }
+        my $retry = $cfg->{bulky_retry_bookings} && $c->stash->{is_staff};
+        my $collections = $c->cobrand->find_booked_collections($property->{uprn}, 'recent', $retry);
+        $c->stash->{collections} = $collections;
     }
 
     $c->stash->{latitude} = Utils::truncate_coordinate( $property->{latitude} );
@@ -828,7 +821,7 @@ sub construct_bin_report_form {
     # Plus side, gets the report missed stuff built in; minus side it
     # doesn't have any next/last collection stuff which is assumed
     my $allow_report_bulky = 0;
-    foreach (values %{ $c->stash->{bulky_missed} || {} }) {
+    foreach (values %{ $c->stash->{booked_missed} || {} }) {
         $allow_report_bulky = $_ if $_->{report_allowed} && !$_->{report_open};
     }
     if ($allow_report_bulky) {
@@ -1138,7 +1131,11 @@ sub add_report : Private {
 
     $c->cobrand->call_hook(
         clear_cached_lookups_property => $c->stash->{property}{id},
-        'skip_echo', # We do not want to remove/cancel anything in Echo just before payment
+    );
+    $c->cobrand->call_hook(
+        clear_cached_lookups_bulky_slots => $c->stash->{property}{id},
+        skip_echo => 1, # We do not want to remove/cancel anything in Echo just before payment
+        delete_guid => 1, # We don't need the cached GUID any more
     );
 
     return 1;

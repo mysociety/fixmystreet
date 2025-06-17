@@ -177,13 +177,6 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
-sub _closed_event {
-    my ($self, $event) = @_;
-    return 1 if $event->{ResolvedDate};
-    return 1 if $event->{ResolutionCodeId} && $event->{ResolutionCodeId} != 584; # Out of Stock
-    return 0;
-}
-
 sub garden_collection_time { '6:00am' }
 
 sub waste_renewal_bins_wanted_disabled { 1 }

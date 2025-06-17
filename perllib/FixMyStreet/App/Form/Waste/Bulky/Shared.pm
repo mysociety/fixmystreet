@@ -85,9 +85,9 @@ has_page summary => (
         }
 
         # Some cobrands may set a new chosen_date on the form
-        my $slot_still_available = $c->cobrand->call_hook(
-            check_bulky_slot_available => $form->saved_data->{chosen_date},
-            form                       => $form,
+        my $slot_still_available = $c->stash->{booking_class}->check_slot_available(
+            $form->saved_data->{chosen_date},
+            form => $form,
         );
 
         return 1 if $slot_still_available;
@@ -168,7 +168,7 @@ sub _get_dates {
     my ( $c, $last_earlier_date ) = @_;
 
     my %dates_booked;
-    foreach (@{$c->stash->{pending_bulky_collections} || []}) {
+    foreach (@{$c->stash->{collections}{bulky}{pending} || []}) {
         my $date = $c->cobrand->collection_date($_);
         $dates_booked{$date} = 1;
     }
@@ -196,12 +196,7 @@ sub _get_dates {
             selected => $existing_date && $existing_date eq $_->{date},
             }
             : undef
-        } @{
-        $c->cobrand->call_hook(
-            'find_available_bulky_slots', $c->stash->{property},
-            $last_earlier_date,
-        )
-        };
+        } @{ $c->stash->{booking_class}->find_available_slots($last_earlier_date) };
 
     return @dates;
 }
@@ -318,7 +313,7 @@ sub validate {
     }
 
     if ($self->current_page->name eq 'add_items') {
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $self->c->stash->{booking_maximum};
         my %given;
         for my $num ( 1 .. $max_items ) {
             my $val = $self->field("item_$num")->value or next;
@@ -335,7 +330,7 @@ sub validate {
     if ($self->current_page->name eq 'summary' && $self->c->stash->{amending_booking}) {
         my $old = $self->c->cobrand->waste_reconstruct_bulky_data($self->c->stash->{amending_booking});
         my $new = $self->saved_data;
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $self->c->stash->{booking_maximum};
         my $same = 1;
         my @fields = qw(chosen_date location location_photo);
         push @fields, map { ("item_$_", "item_photo_$_") } 1 .. $max_items;

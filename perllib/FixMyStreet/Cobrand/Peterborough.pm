@@ -317,7 +317,7 @@ sub open311_pre_send {
         my $title = "Crew notes: " . ( $row->get_extra_field_value("CREW NOTES") || "" );
         $title .= "\n\nItems:\n";
 
-        my $max = $self->bulky_items_maximum;
+        my $max = $row->get_cobrand_logged->wasteworks_config->{items_per_collection_max} || 5;
         for (1..$max) {
             my $two = sprintf("%02d", $_);
             if (my $item = $row->get_extra_field_value("ITEM_$two")) {
@@ -537,8 +537,6 @@ sub clear_cached_lookups_property {
     foreach ( qw/bin_services_for_address/ ) {
         $self->{c}->waste_cache_delete("peterborough:bartec:$_:$uprn");
     }
-
-    $self->clear_cached_lookups_bulky_slots($uprn);
 }
 
 sub clear_cached_lookups_bulky_slots {
@@ -548,7 +546,7 @@ sub clear_cached_lookups_bulky_slots {
     $uprn =~ s/^.+\://g;
 
     for (qw/earlier later/) {
-        $self->{c}->waste_cache_delete("peterborough:bartec:available_bulky_slots:$_:$uprn");
+        $self->{c}->waste_cache_delete("peterborough:bartec:available_slots:$_:$uprn");
     }
 }
 
