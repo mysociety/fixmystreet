@@ -49,7 +49,7 @@ subtest 'check with usercheck' => sub {
         is $abuse_rs->find('example.net')->safe, 1, 'new safe entry created';
         ok !$abuse_rs->check('safe@example.org'), 'safe domain is okay';
         is $abuse_rs->count, 3, 'No new entry';
-        ok $abuse_rs->check('unsafe@example.com'), 'unsafe email is not okay';
+        ok $abuse_rs->check('unsafe@Example.com'), 'unsafe email is not okay';
         is $abuse_rs->count, 3, 'No new entry';
         ok $abuse_rs->check('newunsafe@example.com'), 'new unsafe email is not okay';
         is $abuse_rs->count, 4, 'New entry';

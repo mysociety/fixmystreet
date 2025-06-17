@@ -45,6 +45,7 @@ sub check {
     my @check;
     my $domain;
     if ($email) {
+        $email = lc $email;
         ($domain) = $email =~ m{ @ (.*) \z }x;
         push @check, $email, $domain;
     }
