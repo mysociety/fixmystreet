@@ -67,7 +67,7 @@ sub fetch_whitespace_data {
 
     my $data = $self->whitespace->call_api(
         $c,
-        "bexley",
+        $self->council_url,
         "bin_days_page:$uprn",
         $async,
         GetSiteInfo        => [$uprn],
@@ -79,7 +79,7 @@ sub fetch_whitespace_data {
 
 sub clear_cached_lookups_property {
     my ($self, $uprn) = @_;
-    $self->{c}->waste_cache_delete("bin_days_page:$uprn");
+    $self->{c}->waste_cache_delete($self->council_url . ":whitespace:bin_days_page:$uprn");
 }
 
 sub waste_fetch_events {
