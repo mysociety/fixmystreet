@@ -21,12 +21,42 @@ use utf8;
 use strict;
 use warnings;
 use DateTime;
+use Hash::Util qw(lock_hash);
 use Integrations::Bartec;
 use List::Util qw(any);
 use Sort::Key::Natural qw(natkeysort_inplace);
 use FixMyStreet::WorkingDays;
 use FixMyStreet::App::Form::Waste::Request::Peterborough;
 use Utils;
+
+my %SERVICES = (
+    new_all_bins => 425,
+    new_black_240 => 419,
+    new_black_360 => 422,
+    new_food_both => 493,
+    new_food_bag => 428,
+    new_green_240 => 420,
+    new_food_caddy_large => 424,
+    new_food_caddy_small => 423,
+    missed_assisted => 492,
+    missed_food => 252,
+    lid_green_240 => 537,
+    lid_black_240 => 538,
+    lid_brown_240 => 539,
+    wheels_green_240 => 540,
+    wheels_black_240 => 541,
+    wheels_brown_240 => 542,
+    not_returned => 497,
+);
+lock_hash(%SERVICES);
+
+my %CONTAINERS = (
+    black_240 => 6533,
+    black_1100 => 6836,
+    green_240 => 6534,
+    brown_240 => 6579,
+);
+lock_hash(%CONTAINERS);
 
 sub service_name_override {
     my $self = shift;
@@ -150,9 +180,9 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $base = '/i/waste-containers';
     my $images = {
-        6533 => svg_container_bin('wheelie', '#333333'),
-        6534 => svg_container_bin("wheelie", '#41B28A'),
-        6579 => svg_container_bin("wheelie", '#8B5E3D'),
+        $CONTAINERS{black_240} => svg_container_bin('wheelie', '#333333'),
+        $CONTAINERS{green_240} => svg_container_bin("wheelie", '#41B28A'),
+        $CONTAINERS{brown_240} => svg_container_bin("wheelie", '#8B5E3D'),
         bulky => "$base/bulky-white",
     };
     return $images->{$service_id};
@@ -164,29 +194,29 @@ sub bin_services_for_address {
 
     $self->{c}->stash->{containers} = {
         # For new containers
-        419 => "240L Black",
-        420 => "240L Green",
-        425 => "All bins",
-        493 => "Both food bins",
-        424 => "Large food caddy",
-        423 => "Small food caddy",
-        428 => "Food bags",
+        $SERVICES{new_black_240} => "240L Black",
+        $SERVICES{new_green_240} => "240L Green",
+        $SERVICES{new_all_bins} => "All bins",
+        $SERVICES{new_food_both} => "Both food bins",
+        $SERVICES{new_food_caddy_large} => "Large food caddy",
+        $SERVICES{new_food_caddy_small} => "Small food caddy",
+        $SERVICES{new_food_bag} => "Food bags",
 
         "FOOD_BINS" => "Food bins",
         "ASSISTED_COLLECTION" => "Assisted collection",
 
         # For missed collections or repairs
-        6533 => "240L Black",
-        6534 => "240L Green",
-        6579 => "240L Brown",
+        $CONTAINERS{black_240} => "240L Black",
+        $CONTAINERS{green_240} => "240L Green",
+        $CONTAINERS{brown_240} => "240L Brown",
         "LARGE BIN" => "360L Black", # Actually would be service 422
     };
 
     my %container_request_ids = (
-        6533 => [ 419 ], # 240L Black
-        6534 => [ 420 ], # 240L Green
-        6579 => undef, # 240L Brown
-        6836 => undef, # Refuse 1100l
+        $CONTAINERS{black_240} => [ $SERVICES{new_black_240} ], # 240L Black
+        $CONTAINERS{green_240} => [ $SERVICES{new_green_240} ], # 240L Green
+        $CONTAINERS{brown_240} => undef, # 240L Brown
+        $CONTAINERS{black_1100} => undef, # Refuse 1100l
         6837 => undef, # Refuse 660l
         6839 => undef, # Refuse 240l
         6840 => undef, # Recycling 1100l
@@ -198,10 +228,10 @@ sub bin_services_for_address {
     );
 
     my %container_service_ids = (
-        6533 => 255, # 240L Black
-        6534 => 254, # 240L Green
-        6579 => 253, # 240L Brown
-        6836 => undef, # Refuse 1100l
+        $CONTAINERS{black_240} => 255, # 240L Black
+        $CONTAINERS{green_240} => 254, # 240L Green
+        $CONTAINERS{brown_240} => 253, # 240L Brown
+        $CONTAINERS{black_1100} => undef, # Refuse 1100l
         6837 => undef, # Refuse 660l
         6839 => undef, # Refuse 240l
         6840 => undef, # Recycling 1100l
@@ -211,10 +241,10 @@ sub bin_services_for_address {
     );
 
     my %container_request_max = (
-        6533 => 1, # 240L Black
-        6534 => 1, # 240L Green
-        6579 => 1, # 240L Brown
-        6836 => undef, # Refuse 1100l
+        $CONTAINERS{black_240} => 1, # 240L Black
+        $CONTAINERS{green_240} => 1, # 240L Green
+        $CONTAINERS{brown_240} => 1, # 240L Brown
+        $CONTAINERS{black_1100} => undef, # Refuse 1100l
         6837 => undef, # Refuse 660l
         6839 => undef, # Refuse 240l
         6840 => undef, # Recycling 1100l
@@ -320,11 +350,11 @@ sub bin_services_for_address {
         my @report_service_ids_open = grep { $open_requests->{$_} } $report_service_id;
         my $request_service_ids = $container_request_ids{$container_id};
         # Open request for same thing, or for all bins, or for large black bin
-        my @request_service_ids_open = grep { $open_requests->{$_} || $open_requests->{425} || ($_ == 419 && $open_requests->{422}) } @$request_service_ids;
+        my @request_service_ids_open = grep { $open_requests->{$_} || $open_requests->{$SERVICES{new_all_bins}} || ($_ == $SERVICES{new_black_240} && $open_requests->{$SERVICES{new_black_360}}) } @$request_service_ids;
 
         my %requests_open = map { $_ => 1 } @request_service_ids_open;
 
-        if ( $container_id == 6533 || $container_id == 6836 ) {    # Black bin
+        if ( $container_id == $CONTAINERS{black_240} || $container_id == $CONTAINERS{black_1100} ) {    # Black bin
             $property->{has_black_bin} = 1;
         }
 
@@ -349,7 +379,7 @@ sub bin_services_for_address {
             report_allowed => $last ? $self->_waste_report_allowed($last) : 0,
             # is there already a missed collection report open for this container
             # (or a missed assisted collection for any container)?
-            report_open => ( @report_service_ids_open || $open_requests->{492} ) ? 1 : 0,
+            report_open => ( @report_service_ids_open || $open_requests->{$SERVICES{missed_assisted}} ) ? 1 : 0,
         };
         if ($row->{report_allowed}) {
             # We only get here if we're within the 1.5 day window after the collection.
@@ -395,13 +425,13 @@ sub bin_services_for_address {
 
     my @food_containers;
     if ($bags_only) {
-        push(@food_containers, 428) unless $open_requests->{428};
+        push(@food_containers, $SERVICES{new_food_bag}) unless $open_requests->{$SERVICES{new_food_bag}};
     } else {
-        unless ( $open_requests->{493} || $open_requests->{425} ) { # Both food bins, or all bins
-            push(@food_containers, 424) unless $open_requests->{424}; # Large food caddy
-            push(@food_containers, 423) unless $open_requests->{423}; # Small food caddy
+        unless ( $open_requests->{$SERVICES{new_food_both}} || $open_requests->{$SERVICES{new_all_bins}} ) { # Both food bins, or all bins
+            push(@food_containers, $SERVICES{new_food_caddy_large}) unless $open_requests->{$SERVICES{new_food_caddy_large}}; # Large food caddy
+            push(@food_containers, $SERVICES{new_food_caddy_small}) unless $open_requests->{$SERVICES{new_food_caddy_small}}; # Small food caddy
         }
-        push(@food_containers, 428) unless $skip_bags || $open_requests->{428};
+        push(@food_containers, $SERVICES{new_food_bag}) unless $skip_bags || $open_requests->{$SERVICES{new_food_bag}};
     }
 
     push(@out, {
@@ -412,18 +442,18 @@ sub bin_services_for_address {
         request_allowed => 1,
         request_max => 1,
         request_only => 1,
-        report_only => !$open_requests->{252}, # Can report if no open report
+        report_only => !$open_requests->{$SERVICES{missed_food}}, # Can report if no open report
     }) if @food_containers;
 
     # All bins, black bin, green bin, large black bin, small food caddy, large food caddy, both food bins
-    my $any_open_bin_request = any { $open_requests->{$_} } (425, 419, 420, 422, 423, 424, 493);
+    my $any_open_bin_request = any { $open_requests->{$_} } ($SERVICES{new_all_bins}, $SERVICES{new_black_240}, $SERVICES{new_green_240}, $SERVICES{new_black_360}, $SERVICES{new_food_caddy_small}, $SERVICES{new_food_caddy_large}, $SERVICES{new_food_both});
     unless ( $bags_only || $any_open_bin_request ) {
         # We want this one to always appear first
         unshift @out, {
             id => "_ALL_BINS",
             service_name => "All bins",
             service_id => "_ALL_BINS",
-            request_containers => [ 425 ],
+            request_containers => [ $SERVICES{new_all_bins} ],
             request_allowed => 1,
             request_max => 1,
             request_only => 1,
@@ -502,11 +532,11 @@ sub waste_munge_request_form_data {
     # In the UI we show individual checkboxes for large and small food caddies.
     # If the user requests both containers then we want to raise a single
     # request for both, rather than one request for each.
-    if ($data->{"container-424"} && $data->{"container-423"}) {
-        $data->{"container-424"} = 0;
-        $data->{"container-423"} = 0;
-        $data->{"container-493"} = 1;
-        $data->{"quantity-493"} = 1;
+    if ($data->{"container-$SERVICES{new_food_caddy_large}"} && $data->{"container-$SERVICES{new_food_caddy_small}"}) {
+        $data->{"container-$SERVICES{new_food_caddy_large}"} = 0;
+        $data->{"container-$SERVICES{new_food_caddy_small}"} = 0;
+        $data->{"container-$SERVICES{new_food_both}"} = 1;
+        $data->{"quantity-$SERVICES{new_food_both}"} = 1;
     }
 }
 
@@ -522,14 +552,14 @@ sub waste_munge_report_form_data {
 
         $data->{assisted_detail} = "";
         $data->{assisted_detail} .= "Food bins\n\n" if $data->{"service-FOOD_BINS"};
-        $data->{assisted_detail} .= "Black bin\n\n" if $data->{"service-6533"};
-        $data->{assisted_detail} .= "Green bin\n\n" if $data->{"service-6534"};
-        $data->{assisted_detail} .= "Brown bin\n\n" if $data->{"service-6579"};
+        $data->{assisted_detail} .= "Black bin\n\n" if $data->{"service-$CONTAINERS{black_240}"};
+        $data->{assisted_detail} .= "Green bin\n\n" if $data->{"service-$CONTAINERS{green_240}"};
+        $data->{assisted_detail} .= "Brown bin\n\n" if $data->{"service-$CONTAINERS{brown_240}"};
 
         $data->{"service-FOOD_BINS"} = 0;
-        $data->{"service-6533"} = 0;
-        $data->{"service-6534"} = 0;
-        $data->{"service-6579"} = 0;
+        $data->{"service-$CONTAINERS{black_240}"} = 0;
+        $data->{"service-$CONTAINERS{green_240}"} = 0;
+        $data->{"service-$CONTAINERS{brown_240}"} = 0;
         $data->{"service-ASSISTED_COLLECTION"} = 1;
     }
 }
@@ -644,12 +674,12 @@ sub waste_munge_report_data {
     my $c = $self->{c};
 
     my %container_service_ids = (
-        "FOOD_BINS" => 252, # Food bins (pseudocontainer hardcoded in bin_services_for_address)
-        "ASSISTED_COLLECTION" => 492, # Will only be set by waste_munge_report_form_data (if property has assisted attribute)
-        6533 => 255, # 240L Black
-        6534 => 254, # 240L Green
-        6579 => 253, # 240L Brown
-        6836 => undef, # Refuse 1100l
+        "FOOD_BINS" => $SERVICES{missed_food}, # Food bins (pseudocontainer hardcoded in bin_services_for_address)
+        "ASSISTED_COLLECTION" => $SERVICES{missed_assisted}, # Will only be set by waste_munge_report_form_data (if property has assisted attribute)
+        $CONTAINERS{black_240} => 255, # 240L Black
+        $CONTAINERS{green_240} => 254, # 240L Green
+        $CONTAINERS{brown_240} => 253, # 240L Brown
+        $CONTAINERS{black_1100} => undef, # Refuse 1100l
         6837 => undef, # Refuse 660l
         6839 => undef, # Refuse 240l
         6840 => undef, # Recycling 1100l
@@ -695,7 +725,7 @@ sub waste_munge_problem_data {
     my $category = $self->body->contacts->find({ email => "Bartec-$id" })->category;
     my $category_verbose = $service_details->{label};
 
-    if ($container_id == 6533 && $category =~ /Lid|Wheels/) { # 240L Black repair
+    if ($container_id == $CONTAINERS{black_240} && $category =~ /Lid|Wheels/) { # 240L Black repair
         my $attributes = $c->stash->{property}->{attributes};
         if ($attributes->{"LARGE BIN"}) {
             # For large bins, we need to raise a new bin request instead
@@ -724,37 +754,37 @@ sub waste_munge_problem_form_fields {
     : 'The bin wasn’t returned to the collection point';
 
     my %services_problems = (
-        538 => {
-            container => 6533,
+        $SERVICES{lid_black_240} => {
+            container => $CONTAINERS{black_240},
             container_name => "Black bin",
             label => "The bin’s lid is damaged",
         },
-        541 => {
-            container => 6533,
+        $SERVICES{wheels_black_240} => {
+            container => $CONTAINERS{black_240},
             container_name => "Black bin",
             label => "The bin’s wheels are damaged",
         },
-        537 => {
-            container => 6534,
+        $SERVICES{lid_green_240} => {
+            container => $CONTAINERS{green_240},
             container_name => "Green bin",
             label => "The bin’s lid is damaged",
         },
-        540 => {
-            container => 6534,
+        $SERVICES{wheels_green_240} => {
+            container => $CONTAINERS{green_240},
             container_name => "Green bin",
             label => "The bin’s wheels are damaged",
         },
-        539 => {
-            container => 6579,
+        $SERVICES{lid_brown_240} => {
+            container => $CONTAINERS{brown_240},
             container_name => "Brown bin",
             label => "The bin’s lid is damaged",
         },
-        542 => {
-            container => 6579,
+        $SERVICES{wheels_brown_240} => {
+            container => $CONTAINERS{brown_240},
             container_name => "Brown bin",
             label => "The bin’s wheels are damaged",
         },
-        497 => {
+        $SERVICES{not_returned} => {
             container_name => "General",
             label => $label_497,
             disabled => $not_staff,
@@ -781,10 +811,8 @@ sub waste_munge_problem_form_fields {
 
         # Don't allow any problem reports on a bin if a new one is currently
         # requested. Check for large bin requests for black bins as well
-        # 419/420 are new black/green bin requests, 422 is large black bin request
-        # 6533/6534 are black/green containers
-        my $black_bin_request = (($open_requests->{419} || $open_requests->{422}) && $id == 6533);
-        my $green_bin_request = ($open_requests->{420} && $id == 6534);
+        my $black_bin_request = (($open_requests->{$SERVICES{new_black_240}} || $open_requests->{$SERVICES{new_black_360}}) && $id == $CONTAINERS{black_240});
+        my $green_bin_request = ($open_requests->{$SERVICES{new_green_240}} && $id == $CONTAINERS{green_240});
 
         my $categories = $services{$id};
         foreach (sort keys %$categories) {
@@ -801,11 +829,11 @@ sub waste_munge_problem_form_fields {
             $name = '';
         }
     }
-    push @$field_list, "service-497" => {
+    push @$field_list, "service-$SERVICES{not_returned}" => {
         type => 'Checkbox',
-        label => $self->{c}->stash->{services_problems}->{497}->{container_name},
-        option_label => $self->{c}->stash->{services_problems}->{497}->{label},
-        disabled => $open_requests->{497} || $self->{c}->stash->{services_problems}->{497}->{disabled},
+        label => $self->{c}->stash->{services_problems}->{$SERVICES{not_returned}}->{container_name},
+        option_label => $self->{c}->stash->{services_problems}->{$SERVICES{not_returned}}->{label},
+        disabled => $open_requests->{$SERVICES{not_returned}} || $self->{c}->stash->{services_problems}->{$SERVICES{not_returned}}->{disabled},
     };
 
     push @$field_list, "extra_detail" => {
