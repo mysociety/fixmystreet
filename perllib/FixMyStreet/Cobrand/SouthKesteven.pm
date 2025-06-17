@@ -63,6 +63,8 @@ The original reporter can reopen a closed/fixed report.
 Note: Staff permissions are handled separately, via relevant_staff_user
 check.
 
+=back
+
 =cut
 
 sub body_disallows_state_change {
@@ -76,15 +78,6 @@ sub body_disallows_state_change {
 
     return 1;
 }
-
-
-=item * Uses the OSM geocoder.
-
-=back
-
-=cut
-
-sub get_geocoder { 'OSM' }
 
 sub disambiguate_location {
     my $self = shift;

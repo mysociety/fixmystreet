@@ -207,16 +207,6 @@ sub get_town {
     return $town;
 }
 
-
-=head2 get_geocoder
-
-The OSM geocoder is used for Surrey.
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
-
 =head2 categories_restriction
 
 Surrey don't want a particular district category on their cobrand.

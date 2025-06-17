@@ -449,9 +449,6 @@ sub report_sent_confirmation_email { 'id' }
 
 sub handle_email_status_codes { 1 }
 
-# Try OSM for Bucks as it provides better disamiguation descriptions.
-sub get_geocoder { 'OSM' }
-
 sub categories_restriction {
     my ($self, $rs) = @_;
     return $rs if $self->{c}->stash->{categories_for_point}; # Admin page

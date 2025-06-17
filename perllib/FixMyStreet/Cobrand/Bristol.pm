@@ -51,12 +51,6 @@ sub map_type { 'OS::API' }
 
 sub admin_user_domain { 'bristol.gov.uk' }
 
-=item * Bristol uses the OSM geocoder
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
 =item * We do not send questionnaires.
 
 =back

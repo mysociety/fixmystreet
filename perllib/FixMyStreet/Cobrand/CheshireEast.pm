@@ -62,12 +62,6 @@ sub default_map_zoom { 3 }
 
 sub filter_report_description { "" }
 
-=item * Uses the OSM geocoder.
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
 =item * Uses custom text for the title field for new reports.
 
 =cut

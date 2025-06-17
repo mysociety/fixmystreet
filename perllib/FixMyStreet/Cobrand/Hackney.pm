@@ -66,14 +66,6 @@ sub disambiguate_location {
     };
 }
 
-=item * Hackney use the OSM geocoder
-
-=cut
-
-sub get_geocoder {
-    return 'OSM'; # default of Bing gives poor results, let's try overriding.
-}
-
 =item * Ask the geocoder for full address details
 
 =cut

@@ -148,12 +148,6 @@ sub privacy_policy_url {
     'https://www.brent.gov.uk/the-council-and-democracy/access-to-information/data-protection-and-privacy/brent-privacy-policy'
 }
 
-=item * Uses the OSM geocoder
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
 =item * Doesn't allow the reopening of reports
 
 =cut

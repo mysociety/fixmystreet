@@ -49,14 +49,6 @@ sub admin_user_domain { 'bathnes.gov.uk' }
 
 sub on_map_default_status { 'open' }
 
-=item * Uses OSM because default of Bing gives poor results.
-
-=cut
-
-sub get_geocoder {
-    return 'OSM';
-}
-
 =item * Sends out confirmation emails when a report is sent.
 
 =cut

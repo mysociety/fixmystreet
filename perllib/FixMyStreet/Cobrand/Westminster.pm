@@ -52,14 +52,6 @@ sub admin_user_domain { 'westminster.gov.uk' }
 
 sub allow_anonymous_reports { 'button' }
 
-=item * Uses the OSM geocoder.
-
-=cut
-
-sub get_geocoder {
-    return 'OSM'; # default of Bing gives poor results, let's try overriding.
-}
-
 =item * Uses custom text for the title field for new reports.
 
 =cut

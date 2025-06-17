@@ -79,12 +79,6 @@ sub geocoder_munge_results {
     $result->{display_name} =~ s/, London, Greater London, England//;
 }
 
-=item * We use OpenStreetMap for geocoding
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
 =item * TfL is not a council so prevent council related versions of text appearing on the web and in emails
 
 =cut

@@ -75,8 +75,6 @@ sub privacy_policy_url {
     'https://www.thamesmeadnow.org.uk/terms-and-conditions/privacy-statement/'
 }
 
-sub get_geocoder { 'OSM' }
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

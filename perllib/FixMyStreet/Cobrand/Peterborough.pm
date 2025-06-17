@@ -61,12 +61,6 @@ sub send_questionnaires { 0 }
 
 sub max_title_length { 50 }
 
-=item * Geocoder is OSM
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
 =item * We allow 'display_name' as an extra field on contacts
 
 =back

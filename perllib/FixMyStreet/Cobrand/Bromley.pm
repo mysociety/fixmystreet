@@ -113,10 +113,6 @@ sub disambiguate_location {
     };
 }
 
-sub get_geocoder {
-    return 'OSM'; # default of Bing gives poor results, let's try overriding.
-}
-
 sub geocode_postcode {
     my ( $self, $s ) = @_;
 

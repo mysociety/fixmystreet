@@ -33,7 +33,6 @@ sub council_area_id {
 sub council_area { return 'Camden'; }
 sub council_name { return 'Camden Council'; }
 sub council_url { return 'camden'; }
-sub get_geocoder { 'OSM' }
 sub cut_off_date { '2023-02-01' }
 
 sub enter_postcode_text { 'Enter a Camden postcode or street name' }

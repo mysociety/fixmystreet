@@ -37,12 +37,6 @@ sub council_url { 'northamptonshire' }
 
 sub admin_user_domain { 'northamptonshire.gov.uk' }
 
-=item * Uses the OSM geocoder.
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
 =item * This is a two-tier authority.
 
 =cut

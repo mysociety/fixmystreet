@@ -55,8 +55,6 @@ sub report_validation {
 
 sub enter_postcode_text { 'Enter a postcode, street name and area, or check an existing report number' }
 
-sub get_geocoder { 'OSM' }
-
 sub admin_user_domain { 'merton.gov.uk' }
 
 # Merton requested something other than @merton.gov.uk due to their CRM misattributing reports to staff.

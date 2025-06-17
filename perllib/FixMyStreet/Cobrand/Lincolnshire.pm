@@ -111,15 +111,9 @@ sub disambiguate_location {
     };
 }
 
-=item * Uses OSM as the geocoder as Bing returns addresses for non-existent searches
-
 =back
 
 =cut
-
-sub get_geocoder {
-    return 'OSM';
-}
 
 =head2 lookup_site_code_config
 
