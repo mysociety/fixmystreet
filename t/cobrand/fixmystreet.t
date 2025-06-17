@@ -628,27 +628,6 @@ FixMyStreet::override_config {
     };
 
     subtest "check things redacted appropriately" => sub {
-        $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
-        $mech->submit_form_ok({ with_fields => {
-            title => "Test Report for HE",
-            detail => 'Test report details.',
-            category => 'Potholes (NH)',
-            name => 'Highways England',
-            username_register => 'highways@example.org',
-        } }, "submit good details");
-        $mech->content_contains('Now check your email');
-
-        my $link = $mech->get_link_from_email;
-        $mech->get_ok($link);
-
-        FixMyStreet::Script::Reports::send();
-        my $email = $mech->get_email;
-        is $email->header('To'), '"National Highways" <area1email@example.org>';
-        $mech->clear_emails_ok;
-        $mech->log_out_ok;
-    };
-
-    subtest "check things redacted appropriately" => sub {
         $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143&1");
         my $title = "Test Redact report from 07000 000000";
         my $detail = 'Please could you email me on test@example.org or ring me on (01234) 567 890.';

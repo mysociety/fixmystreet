@@ -4,15 +4,24 @@ if (!fixmystreet.maps) {
     return;
 }
 
-var live = $(location).attr('href').search('www.fixmystreet.com') + 1;
-var host = live ? 'tilma.mysociety.org' : 'tilma.staging.mysociety.org';
+var host = fixmystreet.staging ? 'tilma.staging.mysociety.org' : 'tilma.mysociety.org';
 
-fixmystreet.assets.add({
+var defaults = {
     http_wfs_url: "https://" + host + "/mapserver/highways",
     asset_type: 'area',
-    wfs_feature: "Highways",
     // this covers zoomed right out on Cumbrian sections of
     // the M6
+    max_resolution: 20,
+    srsName: "EPSG:3857"
+};
+
+fixmystreet.assets.add(defaults, {
+    wfs_feature: "Highways",
+    stylemap: fixmystreet.assets.stylemap_invisible,
+    always_visible: true,
+
+    non_interactive: true,
+    road: true,
     usrn: [
         {
             field: 'road_name',
@@ -27,12 +36,6 @@ fixmystreet.assets.add({
             attribute: 'sect_label'
         }
     ],
-    max_resolution: 20,
-    srsName: "EPSG:3857",
-    always_visible: true,
-    non_interactive: true,
-    road: true,
-    //stylemap: fixmystreet.assets.stylemap_invisible,
     // motorways are wide and the lines to define them are narrow so we
     // need a bit more margin for error in finding the nearest to stop
     // clicking in the middle of them being undetected
