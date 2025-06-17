@@ -54,6 +54,8 @@ subtest 'check with usercheck' => sub {
         ok $abuse_rs->check('newunsafe@example.com'), 'new unsafe email is not okay';
         is $abuse_rs->count, 4, 'New entry';
         is $abuse_rs->find('example.com')->safe, 0, 'new unsafe entry created';
+        ok !$abuse_rs->check('07700 900000'), 'Mobile phone number';
+        is $abuse_rs->count, 4, 'No new entry';
     };
 };
 

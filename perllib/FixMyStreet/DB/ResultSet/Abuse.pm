@@ -55,6 +55,8 @@ sub check {
     my $existing = $rs->search( { email => \@check } )->first;
     return !$existing->safe if $existing;
 
+    return 0 unless $domain;
+
     my $check = usercheck($domain);
     if ($check eq 'bad') {
         $rs->create({ email => $domain, safe => 0 });
