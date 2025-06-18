@@ -79,6 +79,7 @@ sub options_request_reason {
         my ($id) = /container-(.*)/;
         if (!$CONTAINERS_NO_ADDITIONAL{$id}) {
             $only_refuse_or_garden = 0;
+            last;
         }
     }
 
