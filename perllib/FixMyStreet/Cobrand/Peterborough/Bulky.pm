@@ -273,6 +273,32 @@ sub bulky_can_refund_collection {
         && $self->within_bulky_refund_window($p);
 }
 
+sub bulky_refund_collection {
+    my ($self, $collection_report) = @_;
+    my $c = $self->{c};
+    $c->send_email(
+        'waste/bulky-refund-request.txt',
+        {   to => [
+                [ $c->cobrand->contact_email, $c->cobrand->council_name ]
+            ],
+
+            payment_method =>
+                $collection_report->get_extra_field_value('payment_method'),
+            payment_code =>
+                $collection_report->get_extra_field_value('PaymentCode'),
+            auth_code =>
+                $collection_report->get_extra_metadata('authCode'),
+            continuous_audit_number =>
+                $collection_report->get_extra_metadata(
+                'continuousAuditNumber'),
+            original_sr_number => $c->get_param('ORIGINAL_SR_NUMBER'),
+            payment_date       => $collection_report->created,
+            scp_response       =>
+                $collection_report->get_extra_metadata('scpReference'),
+        },
+    );
+}
+
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
@@ -398,6 +424,36 @@ sub unset_free_bulky_used {
     # 'FREE BULKY USED' attribute defined in Bartec
     $bartec->delete_premise_attribute( $c->stash->{property}{uprn},
         'FREE BULKY USED' );
+}
+
+sub _bulky_send_optional_text {
+    my ($self, $report, $url, $params) = @_;
+
+    my %message_data = ();
+    my $title;
+    if ($params->{text_type} eq 'confirmed') {
+        $title = 'Bulky waste booking';
+    } else {
+        $title = 'Bulky waste reminder';
+    }
+    $message_data{to} = $report->phone_waste;
+    my $address = $report->detail;
+    $address =~ s/\s\|.*?$//; # Address may contain ref to Bartec report
+    $message_data{body} =
+    sprintf("%s\n\n
+            Date: %s
+            Items: %d
+            %s
+            Reference: %d
+            Please note the items put out for collection must be the items you specified when you booked.",
+            $title,
+            $self->bulky_nice_collection_date($report->get_extra_field_value('DATE')),
+            scalar grep ({ $_->{name} =~ /^ITEM/ && $_->{value} } @{$report->get_extra_fields}),
+            $address,
+            $report->id);
+    FixMyStreet::SMS->new(cobrand => $self, notify_choice => 'waste')->send(
+        %message_data,
+    );
 }
 
 1;

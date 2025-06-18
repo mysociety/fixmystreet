@@ -45,6 +45,7 @@ sub check {
     my @check;
     my $domain;
     if ($email) {
+        $email = lc $email;
         ($domain) = $email =~ m{ @ (.*) \z }x;
         push @check, $email, $domain;
     }
@@ -53,6 +54,8 @@ sub check {
     }
     my $existing = $rs->search( { email => \@check } )->first;
     return !$existing->safe if $existing;
+
+    return 0 unless $domain;
 
     my $check = usercheck($domain);
     if ($check eq 'bad') {
