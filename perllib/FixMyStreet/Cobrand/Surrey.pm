@@ -37,6 +37,7 @@ sub disambiguate_location {
         span   => '0.4000678,0.9071629',
         bounds => [ 51.0714965, -0.8489465, 51.4715643, 0.0582164 ],
         town => 'Surrey',
+        result_strip => ', Surrey, England',
     };
 }
 
@@ -206,16 +207,6 @@ sub get_town {
     my $town = $address->{town} || $address->{city} || $address->{TOWN_NAME} || $address->{locality} || $address->{village} || $address->{suburb};
     return $town;
 }
-
-
-=head2 get_geocoder
-
-The OSM geocoder is used for Surrey.
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
 
 =head2 categories_restriction
 

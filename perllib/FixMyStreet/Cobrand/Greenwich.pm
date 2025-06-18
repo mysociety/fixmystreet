@@ -67,6 +67,7 @@ sub disambiguate_location {
         centre => '51.4743770385684,0.0555696523982184',
         span   => '0.089851200483885,0.150572372434415',
         bounds => [ 51.423679096602, -0.0263872255863898, 51.5135302970859, 0.124185146848025 ],
+        result_strip => ', Royal Borough of Greenwich, London, Greater London, England',
     };
 }
 

@@ -233,6 +233,7 @@ sub disambiguate_location {
             51.57753580138198, -2.687537158717889,
             52.11256544152442, -1.6152019220946803,
         ],
+        result_strip => ', Gloucestershire, England',
     };
 }
 

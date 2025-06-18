@@ -53,6 +53,7 @@ sub disambiguate_location {
         centre => '51.7852948471218,-0.812140044990842',
         span   => '0.596065946222112,0.664092167105497',
         bounds => [ 51.4854160129405, -1.1406945585036, 52.0814819591626, -0.476602391398098 ],
+        result_strip => ', Buckinghamshire, England',
     };
 }
 
@@ -470,9 +471,6 @@ sub disable_phone_number_entry {
 sub report_sent_confirmation_email { 'id' }
 
 sub handle_email_status_codes { 1 }
-
-# Try OSM for Bucks as it provides better disamiguation descriptions.
-sub get_geocoder { 'OSM' }
 
 sub categories_restriction {
     my ($self, $rs) = @_;

@@ -115,18 +115,13 @@ sub disambiguate_location {
         centre => '53.1128371079972,-0.237920757894981',
         span   => '0.976148231905086,1.17860658530345',
         bounds => [ 52.6402179235688, -0.820651304784901, 53.6163661554738, 0.357955280518546 ],
+        result_strip => ', Lincolnshire, Greater Lincolnshire, England',
     };
 }
-
-=item * Uses OSM as the geocoder as Bing returns addresses for non-existent searches
 
 =back
 
 =cut
-
-sub get_geocoder {
-    return 'OSM';
-}
 
 =head2 lookup_site_code_config
 

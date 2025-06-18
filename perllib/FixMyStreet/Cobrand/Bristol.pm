@@ -51,12 +51,6 @@ sub map_type { 'OS::API' }
 
 sub admin_user_domain { 'bristol.gov.uk' }
 
-=item * Bristol uses the OSM geocoder
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
 =item * We do not send questionnaires.
 
 =back
@@ -77,6 +71,7 @@ sub disambiguate_location {
         centre => '51.4526044866206,-2.7706173308649',
         span   => '0.202810508012753,0.60740886659825',
         bounds => [ 51.3415749466466, -3.11785543094126, 51.5443854546593, -2.51044656434301 ],
+        result_strip => ', City of Bristol, West of England, England',
     };
 }
 

@@ -75,8 +75,6 @@ sub privacy_policy_url {
     'https://www.thamesmeadnow.org.uk/terms-and-conditions/privacy-statement/'
 }
 
-sub get_geocoder { 'OSM' }
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -85,18 +83,11 @@ sub disambiguate_location {
         %{ $self->SUPER::disambiguate_location() },
         bounds => [ 51.49, 0.075, 51.514, 0.155 ],
         string => $string,
+        result_only_if => 'Greenwich|Bexley|Thamesmead',
+        result_strip => ', London, Greater London, England',
     };
 
     return $results;
-}
-
-sub geocoder_munge_results {
-    my $self = shift;
-    my ($result) = @_;
-    if ($result->{display_name} !~ /Greenwich|Bexley|Thamesmead/) {
-        $result->{display_name} = '';
-    }
-
 }
 
 my @categories = qw( blockbuildings hardsurfaces grass water treegroups planting );

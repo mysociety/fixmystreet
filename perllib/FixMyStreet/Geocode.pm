@@ -98,7 +98,8 @@ sub cache {
         $js = $cache_file->slurp_utf8;
     } else {
         $url .= '&' . $args if $args;
-        $ua->timeout(15);
+        $ua->agent("FixMyStreet/1.0");
+        $ua->timeout(10);
         $js = LWP::Simple::get($url);
         # The returned data is not correctly decoded if the content type is
         # e.g. application/json. Which all of our geocoders return.

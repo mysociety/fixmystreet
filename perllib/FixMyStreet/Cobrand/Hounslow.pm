@@ -40,11 +40,8 @@ sub disambiguate_location {
         centre => '51.468495,-0.366134',
         town => $town,
         bounds => [ 51.420739, -0.461502, 51.502850, -0.243443 ],
+        result_strip => ', London Borough of Hounslow, London, Greater London, England',
     };
-}
-
-sub get_geocoder {
-    return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
 sub new_report_title_field_label {
