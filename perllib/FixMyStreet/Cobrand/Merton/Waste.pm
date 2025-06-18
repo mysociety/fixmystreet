@@ -270,9 +270,10 @@ sub staff_override_request_options {
         request_max => 3,
     );
 
-    my %all_containers = %{$self->waste_containers};
-    foreach my $k (sort { $a <=> $b } keys %all_containers) {
-        next if $all_containers{$k} =~ /Communal/;
+    my %all_containers = reverse %{$self->waste_containers};
+    foreach my $v (sort { $a cmp $b } keys %all_containers) {
+        next if $v =~ /Communal/;
+        my $k = $all_containers{$v};
         next if grep { $k == $_ } @containers_on_property;
         push @{$new_row{request_containers}}, $k;
     }
