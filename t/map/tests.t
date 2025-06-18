@@ -9,9 +9,9 @@ my $requires = {
     'GoogleOL' => 'map-google-ol.js',
     'HighwaysEngland' => 'map-fms.js',
     'Hounslow' => 'map-wmts-hounslow.js',
-    'MasterMap' => 'map-mastermap.js',
-    'OS::FMS' => 'map-fms-os.js',
     'OS::API' => 'map-os.js',
+    'OS::API_BNG' => 'map-os-bng.js',
+    'OS::Leisure' => 'map-os-bng.js',
     'OSM' => 'OpenStreetMap.js',
     'OSM::Cymru' => 'OSMCymru.js',
     'OSM::CycleMap' => 'OpenStreetMap.js',
@@ -21,7 +21,7 @@ my $requires = {
 };
 
 foreach (FixMyStreet::Map->maps) {
-    next if /Base|UKCouncilWMTS/; # Only its subclasses have JS
+    next if /Base|UKCouncilWMTS|OML/; # Only its subclasses have JS
     my $js = $_->map_javascript;
     my $test_file = $js->[-1];
     s/^FixMyStreet::Map:://;

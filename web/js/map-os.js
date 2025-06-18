@@ -16,10 +16,11 @@ OpenLayers.Layer.OSMaps = OpenLayers.Class(OpenLayers.Layer.OSM, {
         }
 
         var year = (new Date()).getFullYear();
-        var attribution = 'Contains National Highways and OS data &copy; Crown copyright and database rights ' + year;
+        var attribution = '<div class="os-api-branding copyright">Contains National Highways and OS data<br>&copy; Crown copyright and database rights ' + year;
         if (fixmystreet.os_licence) {
             attribution += " " + fixmystreet.os_licence;
         }
+        attribution += '</div>';
         this.attribution = attribution;
 
         options = OpenLayers.Util.extend({

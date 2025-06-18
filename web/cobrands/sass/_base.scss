@@ -2416,14 +2416,53 @@ html.js #map .noscript {
 .olControlAttribution {
   bottom: 3.25em !important;
   bottom: calc(env(safe-area-inset-bottom) + 3.25em) !important;
-  #{$right}: 0.25em !important;
-  #{$left}: 0.25em !important;
+  #{$right}: 0em !important;
+  #{$left}: 0em !important;
   color: #222222;
   font-size: 0.75em !important;
 }
 .olControlAttribution img {
   vertical-align: bottom;
 }
+
+.os-api-branding {
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  display: block;
+  z-index: 1000;
+  pointer-events: none;
+}
+.os-api-branding.logo {
+  left: 0;
+  padding: 8px;
+  width: 90px;
+  height: 24px;
+  background-image: url(/i/os-logo-maps.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  box-sizing: content-box;
+}
+.os-api-branding.copyright {
+  right: 0;
+  padding: 0 4px;
+  font: 10px sans-serif;
+  line-height: 16px;
+  background: rgba(255, 255, 255, 0.7);
+}
+.os-api-branding.copyright a:link,
+.os-api-branding.copyright a:visited,
+.os-api-branding.copyright a:hover,
+.os-api-branding.copyright a:active {
+  color: #0071bc;
+  text-decoration: none;
+  pointer-events: all;
+  cursor: pointer;
+}
+.os-api-branding.copyright a:hover {
+  text-decoration: underline;
+}
+
 .olControlDragFeatureFMSOver {
   cursor: move;
   cursor: -webkit-grab;
