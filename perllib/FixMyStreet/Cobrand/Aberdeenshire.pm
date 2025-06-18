@@ -149,6 +149,10 @@ sub open311_update_missing_data {
     if ($contact->get_extra_field(code => 'Q29')  && !$row->get_extra_field_value('Q29')) {
         $row->update_extra_field({ name => 'Q29', value => "BLNK" });
     }
+    # Same for ST03 ('What is the issue with the light?')
+    if ($contact->get_extra_field(code => 'ST03')  && !$row->get_extra_field_value('ST03')) {
+        $row->update_extra_field({ name => 'ST03', value => "BLNK" });
+    }
 }
 
 =head2 open311_config
