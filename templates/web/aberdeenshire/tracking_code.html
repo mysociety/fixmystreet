@@ -1,11 +1,89 @@
-[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
-
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','????????');</script>
-<!-- End Google Tag Manager -->
-
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" OR 1 # XXX remove before merge %]
+<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.x.min.js" type="text/javascript"></script>
+<script>
+  var cookie_control_config = {
+    apiKey: "76b723a38e6a5f44dc71823e6c18a0aef4292135",
+    product: "PRO_MULTISITE",
+    initialState: "OPEN",
+    text: {
+      title: "This website uses cookies",
+      intro:
+        "Some of these cookies are essential, while others help us to improve your experience by providing insights into how the site is being used.",
+      necessaryTitle: "Necessary cookies",
+      necessaryDescription:
+        "Necessary cookies enable core functionality. The website cannot function properly without these cookies, and can only be disabled by changing your browser preferences.",
+      acceptRecommended: "Accept recommended settings",
+    },
+    statement: {
+      description: "You can find more information on our",
+      name: "cookie page",
+      url: "/online/site-information/",
+      updated: "28/10/2021",
+    },
+    necessaryCookies: [
+      "SVT",
+      "XSRF-TOKEN",
+      "XSRF-V",
+      "__RequestVerificationToken",
+      "UMB*",
+      "civic_*",
+      "CookieControl",
+    ],
+    optionalCookies: [
+      {
+        name: "analytics",
+        label: "Google Analytics",
+        description:
+          "We use Google Analytics to collect information about how you use our website. We do this to help make sure the site is meeting the needs of its users and to help us make improvements.",
+        cookies: [
+          "_ga",
+          "_ga*",
+          "_gid",
+          "_gat",
+          "__utma",
+          "__utmt",
+          "__utmb",
+          "__utmc",
+          "__utmz",
+          "__utmv",
+        ],
+        recommendedState: false,
+        onAccept: function () {
+          gtag("js", new Date());
+          gtag("config", "G-9DGNGEBDLT");
+          gtag("consent", "update", { analytics_storage: "granted" });
+        },
+        onRevoke: function () {
+          gtag("consent", "update", { analytics_storage: "denied" });
+        },
+      },
+    ],
+    position: "LEFT",
+    theme: "DARK",
+    branding: {
+      backgroundColor: "#004990",
+      toggleText: "#FFF",
+      toggleColor: "#2f2f5f",
+      toggleBackground: "black",
+      buttonIcon: null,
+      buttonIconWidth: "64px",
+      buttonIconHeight: "64px",
+      removeIcon: false,
+      removeAbout: true,
+    },
+    accessibility: {
+      highlightFocus: true,
+      outline: true,
+    },
+  };
+  CookieControl.load(cookie_control_config);
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9DGNGEBDLT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+</script>
 [% END %]
