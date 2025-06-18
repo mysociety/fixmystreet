@@ -395,7 +395,7 @@ sub process_garden_new_or_renew : Private {
         $c->forward('/waste/process_request_data', [ $form, [ $c->stash->{report} ], 1 ]);
     }
 
-    my $payment_method = $data->{payment_method};
+    my $payment_method = $data->{payment_method} || '';
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
         $c->forward('/waste/pay_skip', []);
     } elsif ($c->cobrand->waste_cheque_payments && $payment_method eq 'cheque') {
