@@ -1,8 +1,12 @@
 [%
+IF bodyclass.match('mappage');
+    scripts.push(
+        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
+    );
+END;
 IF bodyclass.match('mappage') AND NOT bodyclass.match('formflow') AND NOT bodyclass.match('accountpage');
     scripts.push(
         version('/cobrands/fixmystreet-uk-councils/js.js'),
-        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
         version('/cobrands/fixmystreet/assets.js'),
     );
     IF validation;
@@ -36,11 +40,6 @@ IF bodyclass.match('mappage') AND NOT bodyclass.match('formflow') AND NOT bodycl
     scripts.push(
         version('/cobrands/fixmystreet-uk-councils/assets.js'),
         version('/js/asset_layers.js')
-    );
-END;
-IF bodyclass.match('mappage') AND bodyclass.match('formflow');
-    scripts.push(
-        version('/vendor/OpenLayers.Projection.OrdnanceSurvey.js'),
     );
 END;
 ~%]
