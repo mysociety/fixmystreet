@@ -144,14 +144,26 @@ sub open311_update_missing_data {
         }
     }
 
-    # Q29 ('Insurance form requested ?') is required by Confirm but hidden from
-    # the user, so here we give it a default value (BLNK = 'Blank').
-    if ($contact->get_extra_field(code => 'Q29')  && !$row->get_extra_field_value('Q29')) {
-        $row->update_extra_field({ name => 'Q29', value => "BLNK" });
-    }
-    # Same for ST03 ('What is the issue with the light?')
-    if ($contact->get_extra_field(code => 'ST03')  && !$row->get_extra_field_value('ST03')) {
-        $row->update_extra_field({ name => 'ST03', value => "BLNK" });
+    # A bunch of Confirm attributes are required but Aberdeenshire don't want them
+    # shown to the user, so here we set a default value for them as necessary.
+    my %defaults = (
+        MR01 => 'n/a',
+        MR02 => 'n/a',
+        Q29 => 'YES',
+        Q33 => 'NK', # not known
+        Q36 => 'NK',
+        Q37 => 'NK',
+        Q38 => 'NK',
+        Q39 => 'NK',
+        Q43 => 'NK',
+        ST03 => 'BLNK', # blank
+        WM01 => 'NK',
+    );
+    foreach (keys %defaults) {
+        my $v = $defaults{$_};
+        if ($contact->get_extra_field(code => $_)  && !$row->get_extra_field_value($_)) {
+            $row->update_extra_field({ name => $_, value => $v });
+        }
     }
 }
 
