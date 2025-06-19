@@ -136,14 +136,50 @@ site code.
 sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
-    # In case the client hasn't given us a central asset ID, look up the
+    # In case the client hasn't given us a site code, look up the
     # closest asset from the WFS service at the point we're sending the report
-    if (!$row->get_extra_field_value('central_asset_id')) {
+    if (!$row->get_extra_field_value('site_code')) {
         if (my $id = $self->lookup_site_code($row)) {
-            $row->update_extra_field({ name => 'central_asset_id', value => $id });
+            $row->update_extra_field({ name => 'site_code', value => $id });
+        }
+    }
+
+    # A bunch of Confirm attributes are required but Aberdeenshire don't want them
+    # shown to the user, so here we set a default value for them as necessary.
+    my %defaults = (
+        MR01 => 'n/a',
+        MR02 => 'n/a',
+        Q29 => 'YES',
+        Q33 => 'NK', # not known
+        Q36 => 'NK',
+        Q37 => 'NK',
+        Q38 => 'NK',
+        Q39 => 'NK',
+        Q43 => 'NK',
+        ST03 => 'BLNK', # blank
+        WM01 => 'NK',
+    );
+    foreach (keys %defaults) {
+        my $v = $defaults{$_};
+        if ($contact->get_extra_field(code => $_)  && !$row->get_extra_field_value($_)) {
+            $row->update_extra_field({ name => $_, value => $v });
         }
     }
 }
+
+=head2 open311_config
+
+Send multiple photos as files to Open311
+
+=cut
+
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    $params->{multi_photos} = 1;
+    $params->{upload_files} = 1;
+}
+
 
 sub disambiguate_location {
     my $self = shift;
@@ -202,5 +238,22 @@ sub pin_colour {
     return 'red' if $p->state eq 'confirmed';
     return 'orange-work';
 }
+
+sub lookup_site_code_config {
+    my ($self, $property) = @_;
+
+    # uncoverable subroutine
+    # uncoverable statement
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    return {
+        buffer => 1000, # metres
+        url => "https://$host/mapserver/aberdeenshire",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => "WSS",
+        property => "siteCode",
+        accept_feature => sub { 1 }
+    };
+}
+
 
 1;
