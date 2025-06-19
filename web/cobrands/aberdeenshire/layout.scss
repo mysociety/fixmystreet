@@ -46,15 +46,29 @@
 #front-main {
   margin: 0 0 45px 0;
   padding: 5em 1em 5em 1em;
+
+  #front-main-container {
+    padding: 2em;
+    box-sizing: border-box;
+  }
+}
+
+.postcode-form-box {
+  margin-top: 2rem;
+}
+
+.site-message {
+  font-size: 1rem;
 }
 
 #front_stats {
-  border-color: $primary_b;
+  border-color: $cobrand_purple;
 }
 
 /* MAP PAGE */
 .big-green-banner {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  line-height: 125%;
 }
 
 /* FOOTER */
