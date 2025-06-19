@@ -74,7 +74,7 @@ sub feature {
     my $features = FixMyStreet->config('COBRAND_FEATURES');
     return unless $features && ref $features eq 'HASH';
     return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
-    return $features->{$feature}->{$self->moniker} || $features->{$feature}->{_fallback};
+    return $features->{$feature}->{$self->moniker} // $features->{$feature}->{_fallback};
 }
 
 sub csp_config {

@@ -39,12 +39,6 @@ sub council_url { return 'bristol'; }
 
 use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
 
-=item * Bristol use the OS Maps API at all zoom levels.
-
-=cut
-
-sub map_type { 'OS::API' }
-
 =item * Users with a bristol.gov.uk email can always be found in the admin.
 
 =cut
