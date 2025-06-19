@@ -58,8 +58,8 @@ sub string {
 
     my ( $error, @valid_locations, $latitude, $longitude, $address );
     foreach (@$js) {
-        $_->{display_name} =~ s/$params->{result_strip}//g if $params->{result_strip};
         next if $params->{result_only_if} && $_->{display_name} !~ /$params->{result_only_if}/;
+        $_->{display_name} =~ s/$params->{result_strip}//g if $params->{result_strip};
 
         $c->cobrand->call_hook(geocoder_munge_results => $_);
         next unless $_->{display_name};
