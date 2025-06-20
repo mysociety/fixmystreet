@@ -178,7 +178,10 @@ sub example_places {
 
 sub enter_postcode_text {
     my ($self) = @_;
-    return 'Enter a ' . $self->council_area . ' postcode, or street name and area';
+    my $area = $self->council_area;
+    my $a = 'a';
+    $a = 'an' if $area =~ /^[AEIOU]/;
+    return "Enter $a $area postcode, or street name and area";
 }
 
 sub area_check {

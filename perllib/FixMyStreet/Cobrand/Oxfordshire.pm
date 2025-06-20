@@ -39,11 +39,6 @@ sub report_validation {
     return $errors;
 }
 
-sub enter_postcode_text {
-    my ($self) = @_;
-    return 'Enter an Oxfordshire postcode, or street name and area';
-}
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
