@@ -828,7 +828,8 @@ sub _atak_wfs_query {
     my $asset_layer = $self->_group_to_asset_layer($group);
     return unless $asset_layer;
 
-    my $uri = URI->new('https://tilma.mysociety.org/mapserver/brent');
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $uri = URI->new("https://$host/mapserver/brent");
     $uri->query_form(
         REQUEST => "GetFeature",
         SERVICE => "WFS",

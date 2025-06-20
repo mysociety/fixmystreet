@@ -14,6 +14,10 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.staging.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+
 my $gc = Test::MockModule->new('FixMyStreet::Geocode');
 
 $gc->mock('cache', sub {
@@ -460,9 +464,6 @@ subtest "Open311 attribute changes" => sub {
         $problem->delete;
     };
 };
-
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'brent', 'tfl' ],
