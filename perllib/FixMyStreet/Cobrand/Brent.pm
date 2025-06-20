@@ -470,7 +470,7 @@ sub dashboard_export_problems_add_columns {
     );
 
     my $values;
-    if (my $flytipping = $self->body->contacts->search({ category => 'Fly-tipping' })->first) {
+    if (my $flytipping = $self->body->contacts->search({ category => 'Fly-tip Small - Less than one bag' })->first) {
         foreach my $field (@{$flytipping->get_extra_fields}) {
             next unless @{$field->{values} || []};
             foreach (@{$field->{values}}) {
@@ -552,6 +552,49 @@ sub dashboard_export_problems_add_columns {
 
         return $data;
     });
+}
+
+=head2 Flytipping sending
+
+Certain categories are used depending on location within park/estate. The
+categories are named the same but end in (Parks) and (Estates).
+
+=cut
+
+sub report_new_munge_before_insert {
+    my ($self, $report) = @_;
+
+    return unless $report->category =~ /Fly-tip/;
+    return unless $report->to_body_named('Brent');
+    (my $cat_base = $report->category) =~ s/ \(.*\)$//;
+
+    my $type = $self->problem_is_within_area_type($report);
+    if ($type eq 'ms:Parks_and_Open_Spaces') {
+        $report->category("$cat_base (Parks)");
+    } elsif ($type eq 'ms:Housing') {
+        $report->category("$cat_base (Estates)");
+    } else {
+        $report->category($cat_base);
+    }
+}
+
+sub problem_is_within_area_type {
+    my ($self, $problem) = @_;
+
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my ($x, $y) = $problem->local_coords;
+    my $filter = "(<Filter xmlns:gml=\"http://www.opengis.net/gml\"><Intersects><PropertyName>geom</PropertyName><gml:Point srsName=\"27700\"><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Intersects></Filter>)";
+    my $cfg = {
+        url => "https://$host/mapserver/brent",
+        srsname => "urn:ogc:def:crs:EPSG::27700",
+        typename => 'Parks_and_Open_Spaces,Housing',
+        outputformat => "GML3",
+        filter => $filter x 2,
+    };
+
+    my $features = $self->_fetch_features($cfg, $x, $y, 1) || [];
+    my $type = scalar @$features ? (keys %{$features->[0]})[0] : '';
+    return $type;
 }
 
 =head2 open311_config

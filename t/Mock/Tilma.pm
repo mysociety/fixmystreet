@@ -111,6 +111,40 @@ sub dispatch_request {
         return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
     },
 
+    sub (GET + /mapserver/brent + ?*) {
+        my ($self, $args) = @_;
+        my $header = '<?xml version="1.0" encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc">';
+
+        if ($args->{Filter} =~ /519730,186383/) {
+            return [ 200, [ 'Content-Type' => 'application/xml' ], [ $header .
+  '<gml:featureMember>
+    <ms:Housing>
+      <ms:site_name>Some houses</ms:site_name>
+    </ms:Housing>
+  </gml:featureMember>
+</wfs:FeatureCollection>'
+            ] ];
+        } elsif ($args->{Filter} =~ /519515,186474/) {
+            return [ 200, [ 'Content-Type' => 'application/xml' ], [ $header .
+  '<gml:featureMember>
+    <ms:Parks_and_Open_Spaces>
+      <ms:site_name>King Edward VII Park, Wembley</ms:site_name>
+    </ms:Parks_and_Open_Spaces>
+  </gml:featureMember>
+</wfs:FeatureCollection>'
+            ] ];
+        } else {
+            return [ 200, [ 'Content-Type' => 'application/xml' ], [ $header .
+'</wfs:FeatureCollection>'
+            ] ];
+        }
+    },
+
     sub (GET + /mapserver/thamesmead + ?*) {
         my ($self, $args) = @_;
 
