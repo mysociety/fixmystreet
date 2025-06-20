@@ -14,6 +14,10 @@ my $mech = FixMyStreet::TestMech->new;
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+my $tilma = t::Mock::Tilma->new;
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.staging.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+
 my $gc = Test::MockModule->new('FixMyStreet::Geocode');
 
 $gc->mock('cache', sub {
@@ -172,7 +176,8 @@ sub create_contact {
     $contact->update;
 }
 
-create_contact({ category => 'Fly-tipping', email => 'flytipping@brent.example.org' },
+$contact = $mech->create_contact_ok(body => $brent, category => 'Fly-tip Small - Less than one bag', email => 'flytipping@brent.example.org');
+$contact->set_extra_fields(
     { code => 'Did_you_see_the_Flytip_take_place?_', required => 1, values => [
         { name => 'Yes', key => 1 }, { name => 'No', key => 0 }
     ] },
@@ -187,6 +192,7 @@ create_contact({ category => 'Fly-tipping', email => 'flytipping@brent.example.o
         { name => 'Appliance', key => 13 }, { name => 'Bagged waste', key => 3 }
     ] },
 );
+$contact->update;
 
 create_contact({ category => 'Report missed collection', email => 'missed' });
 create_contact({ category => 'Request new container', email => 'request@example.org' },
@@ -460,9 +466,6 @@ subtest "Open311 attribute changes" => sub {
         $problem->delete;
     };
 };
-
-my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'brent', 'tfl' ],
@@ -945,6 +948,41 @@ FixMyStreet::override_config {
         # Get the most recent report
         my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         is $report->get_extra_field_value('location_name'), 'King Edward VII Park, Wembley', 'Location name is set';
+    };
+
+    subtest 'Fly-tipping category selection' => sub {
+        $mech->get_ok('/report/new?latitude=51.564493&longitude=-0.277156');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Fly-tip Small - Less than one bag',
+            }
+        }, "submit details");
+        my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
+        is $report->category, 'Fly-tip Small - Less than one bag (Parks)';
+
+        $mech->get_ok('/report/new?latitude=51.563623&longitude=-0.274082');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Fly-tip Small - Less than one bag',
+            }
+        }, "submit details");
+        $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
+        is $report->category, 'Fly-tip Small - Less than one bag (Estates)';
+
+        $mech->get_ok('/report/new?latitude=51.563683&longitude=-0.276120');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Fly-tip Small - Less than one bag',
+            }
+        }, "submit details");
+        $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
+        is $report->category, 'Fly-tip Small - Less than one bag';
     };
 
     subtest "Doesn't overwrite location_name if already set" => sub {
