@@ -236,23 +236,27 @@ sub geocoder_munge_results {
 
 =head2 pin_colour
 
-Green for anything completed or closed, red for confirmed,
-orange for other open, blue for pulled in reports.
+* Green if fixed or closed
+* Orange if defect or in progress
+* Red if open/confirmed
 
 =cut
 
 sub is_defect {
     my ($self, $p) = @_;
-    #return $p->external_id && $p->external_id =~ /^JOB_/;
     return $p->user_id == $self->body->comment_user_id;
 }
 
 sub pin_colour {
     my ( $self, $p ) = @_;
-    return 'blue' if $self->is_defect($p);
+
     return 'green' if $p->is_fixed || $p->is_closed;
-    return 'red' if $p->state eq 'confirmed';
-    return 'orange-work';
+
+    return 'orange' if $self->is_defect($p)
+        || $p->is_in_progress;
+
+    # Confirmed/open
+    return 'red';
 }
 
 1;
