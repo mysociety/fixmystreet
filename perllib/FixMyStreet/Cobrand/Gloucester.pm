@@ -241,7 +241,7 @@ each one until a match is found.
 sub lookup_site_code {
     my ($self, $row, $contact) = @_;
 
-    my $category = $contact->category;
+    my $category = $contact->email;
     my $layers = $self->_asset_layer_mapping->{$category};
     return unless $layers && @$layers;
 
