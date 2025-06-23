@@ -2,7 +2,7 @@ Subject: [% site_name %] paskyros informacija / Your [% site_name %] account det
 
 Spustelėkite toliau esančią nuorodą, kad patvirtintumėte savo el. pašto adresą.
 
-[% c.uri_for_action( 'auth/token', token ) | replace('https://', 'https://lt.') | replace('http://', 'http://lt.') %]
+[% c.uri_for_action( 'auth/token', token ) | replace('https://man', 'https://lt.man') | replace('http://man', 'http://lt.man') %]
 
 [% IF c.get_param('r').match('waste') %]
 Kai tai padarysite, galėsite peržiūrėti arba keisti savo atliekų prenumeratą ir surinkimą.
@@ -20,7 +20,7 @@ Viso gero,
 
 Please click on the link below to confirm your email address.
 
-[% c.uri_for_action( 'auth/token', token ) %]
+[% c.uri_for_action( 'auth/token', token ) | replace('https://man', 'https://en.man') | replace('http://man', 'http://en.man') %]
 
 [% IF c.get_param('r').match('waste') %]
 Once you've done this, you'll be able to view or amend your waste subscriptions and collections.
