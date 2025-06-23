@@ -33,12 +33,6 @@ sub council_area { 'Southwark' }
 sub council_name { 'Southwark Council' }
 sub council_url { 'southwark' }
 
-=item * Southwark use the OS Maps API at all zoom levels.
-
-=cut
-
-sub map_type { 'OS::API' }
-
 =item * Don't show reports before the go-live date, 22nd March 2023
 
 =cut
