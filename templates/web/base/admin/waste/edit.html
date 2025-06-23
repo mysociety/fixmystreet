@@ -22,6 +22,9 @@
         <div class="form-error">[% errors.site_wide %]</div>
     [% END %]
 
+[% IF cobrand.bulky_points_per_item_pricing %]
+    <input type=hidden name="per_item_costs" value=1>
+[% ELSE %]
     <div style="display:flex;gap:1em;">
     <div>
     <label for="waste_base_price">Price for a collection (in <strong>pence</strong>)</label>
@@ -53,6 +56,7 @@
     <input type=checkbox name="per_item_costs" value=1 id="waste_per_item_costs"
         [% 'checked' IF per_item_costs %]>
     <label class="inline" for="waste_per_item_costs">Charge per item, not per collection</label>
+[% END %]
 
     <div>
     <label for="waste_per_item_min_collection_price">Minimum price for a per-item charged collection (in <strong>pence</strong>)</label>
