@@ -38,7 +38,7 @@ Total cost: £[% pounds(payment / 100) %]
 If you wish to cancel your booking, please call 01733 74 74 74.
 [% END %]
 
-[% ELSE %]
+[% ELSIF cobrand.moniker != 'bexley' %]
 
 If you wish to cancel your booking, please visit:
 
