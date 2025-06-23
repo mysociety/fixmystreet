@@ -138,64 +138,62 @@ SQL
 sub build_address_string {
     my $row = shift;
 
-    my $sao;
+    my ($sao, $sao_text);
     if ( $row->{has_parent} ) {
         $sao = _join_extended(
-            ', ',
-            $row->{sao_text},
+            '-',
             _join_extended(
-                '-',
-                _join_extended(
-                    '', $row->{sao_start_number},
-                    $row->{sao_start_suffix},
-                ),
-                _join_extended(
-                    '',
-                    $row->{sao_end_number},
-                    $row->{sao_end_suffix},
-                ),
+                '', $row->{sao_start_number},
+                $row->{sao_start_suffix},
+            ),
+            _join_extended(
+                '',
+                $row->{sao_end_number},
+                $row->{sao_end_suffix},
             ),
         );
+        $sao_text = $row->{sao_text};
     }
 
     my $pao = _join_extended(
-        ', ',
-        $row->{pao_text},
+        '-',
         _join_extended(
-            '-',
-            _join_extended(
-                '',
-                $row->{pao_start_number},
-                $row->{pao_start_suffix},
-            ),
-            _join_extended(
-                '',
-                $row->{pao_end_number},
-                $row->{pao_end_suffix},
-            ),
+            '',
+            $row->{pao_start_number},
+            $row->{pao_start_suffix},
+        ),
+        _join_extended(
+            '',
+            $row->{pao_end_number},
+            $row->{pao_end_suffix},
         ),
     );
 
-    return _join_extended(
-        ', ',
-        $sao,
+    # "If there is a SAO number/range value, it should be inserted either on the
+    # same line as the PAO_text (if there is a PAO_text value), or on the same
+    # line as the PAO number/range + Street Name (if there is only a PAO
+    # number/range value and no PAO_text value)."
+    if ($sao && $pao && !$row->{pao_text}) {
+        $pao = "$sao, $pao";
+        $sao = '';
+    }
+
+    my @rows = (
+        $sao_text,
+        _join_extended( ' ', $sao, $row->{pao_text} ),
         _join_extended( ' ', $pao, $row->{street_descriptor} ),
         $row->{locality_name},
         $row->{town_name},
         mySociety::PostcodeUtil::canonicalise_postcode( $row->{postcode} ),
     );
+
+    return _join_extended( ', ', @rows );
 }
 
 # Only joins strings that are true / non-empty
 sub _join_extended {
     my ( $sep, @strings ) = @_;
-
-    my @strings_true_only;
-    for (@strings) {
-        push @strings_true_only, $_ if $_;
-    }
-
-    return join $sep, @strings_true_only;
+    return join $sep, grep { $_ } @strings;
 }
 
 sub _sort_addresses {
