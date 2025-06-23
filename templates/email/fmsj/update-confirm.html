@@ -14,7 +14,7 @@ INCLUDE '_email_top.html';
   <h1 style="[% h1_style %]">Patvirtinkite atnaujinimą</h1>
   <p style="[% p_style %]">Spustelėkite toliau esančią nuorodą, kad patvirtintumėte atnaujinimą [% site_name %].</p>
   <p style="margin: 20px auto; text-align: center">
-    <a style="[% button_style %]" href="[% token_url | replace('https://', 'https://lt.') | replace('http://', 'http://lt.') %]">Taip, patvirtinkite mano atnaujinimą</a>
+    <a style="[% button_style %]" href="[% token_url | replace('https://man', 'https://lt.man') | replace('http://man', 'http://lt.man') %]">Taip, patvirtinkite mano atnaujinimą</a>
   </p>
   <p style="[% p_style %]">Atkreipkite dėmesį, kad [% update.problem.body %] atnaujinimų nesiunčiame – jie skirti kaip vieta [% site_name %] vartotojams diskutuoti, palaikyti, patarti.</p>
   <p style="[% p_style %]">Jei nenorite patvirtinti šio atnaujinimo, nesiimkite tolesnių veiksmų.</p>
@@ -25,7 +25,7 @@ INCLUDE '_email_top.html';
   <h1 style="[% h1_style %]">Please confirm your update</h1>
   <p style="[% p_style %]">Please click on the link below to confirm your update on [% site_name %].</p>
   <p style="margin: 20px auto; text-align: center">
-    <a style="[% button_style %]" href="[% token_url %]">Yes, confirm my update</a>
+    <a style="[% button_style %]" href="[% token_url | replace('https://man', 'https://en.man') | replace('http://man', 'http://en.man') %]">Yes, confirm my update</a>
   </p>
   <p style="[% p_style %]">Note that we do not send updates to [% update.problem.body %] - they are intended as a place for [% site_name %] users to discuss, support, and offer advice.</p>
   <p style="[% p_style %]">If you no longer wish to confirm this update, please take no further action.</p>
