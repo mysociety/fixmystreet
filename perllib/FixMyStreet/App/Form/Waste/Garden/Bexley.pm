@@ -16,6 +16,24 @@ has_page bank_details => (
     template => 'waste/bank_details.html',
     fields => ['name_title', 'first_name', 'surname', 'address1', 'address2', 'address3', 'address4', 'post_code', 'account_holder', 'account_number', 'sort_code', 'submit_bank_details'],
     next => 'summary',
+    update_field_list => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        my $address = $form->c->stash->{property}{address};
+        my ($first, $last) = split_name($data->{name});
+        my @rows = split /, /, $address;
+        my $pc = pop @rows;
+        return {
+            first_name => { default => $first },
+            surname => { default => $last },
+            address1 => { default => $rows[0] },
+            address2 => { default => $rows[1] },
+            address3 => { default => $rows[2] },
+            address4 => { default => $rows[3] },
+            post_code => { default => $pc },
+            account_holder => { default => $data->{name} },
+        };
+    },
 );
 
 sub validate {
@@ -29,6 +47,13 @@ sub validate {
     }
 
     $self->next::method();
+}
+
+sub split_name {
+    my ( $name ) = @_;
+    return ('', '') unless $name;
+    my ( $first, $last ) = ( $name =~ /(\S+)(?:\.?\s+(.+))?/ );
+    return ( $first || '', $last || '');
 }
 
 1;
