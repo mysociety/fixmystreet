@@ -10,6 +10,12 @@ use DateTime::Format::Strptime;
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
+sub bulky_allowed_property {
+    my ($self, $property) = @_;
+    my $class = $property->{class} || '';
+    return $self->bulky_enabled && $class =~ /^RD/ ? 1 : 0;
+}
+
 sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59, days_before => 2, working_days => 1 } }
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
 sub bulky_collection_window_days { 56 }
