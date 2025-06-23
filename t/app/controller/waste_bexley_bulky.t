@@ -363,10 +363,10 @@ FixMyStreet::override_config {
 
     subtest 'Bulky goods email reminders' => sub {
         # No 3 day email
-        #set_fixed_time('2025-07-01T05:44:59Z');
+        set_fixed_time('2025-07-01T05:44:59Z');
         my $cobrand = $body->get_cobrand_handler;
-        #$cobrand->bulky_reminders;
-        #$mech->email_count_is(0);
+        $cobrand->bulky_reminders;
+        $mech->email_count_is(0);
         set_fixed_time('2025-07-03T05:44:59Z');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         # Check no payment reference, no email
@@ -382,11 +382,11 @@ FixMyStreet::override_config {
         my $reminder_email_html = $mech->get_html_body_from_email($email);
         like $reminder_email_txt, qr/Address: 1 Test Street, Bexley, DA1 1AA/, 'Includes collection address';
         like $reminder_email_txt, qr/Friday 04 July 2025/, 'Includes collection date';
-        #unlike $reminder_email_txt, qr#http://bexley.example.org/waste/10001/bulky/cancel#, 'No cancellation link';
+        unlike $reminder_email_txt, qr#http://bexley.example.org/waste/10001/bulky/cancel#, 'No cancellation link';
         like $reminder_email_html, qr/Thank you for booking a bulky waste collection with London Borough of Bexley/, 'Includes Bexley greeting (html mail)';
         like $reminder_email_html, qr/Address: 1 Test Street, Bexley, DA1 1AA/, 'Includes collection address (html mail)';
         like $reminder_email_html, qr/Friday 04 July 2025/, 'Includes collection date (html mail)';
-        #unlike $reminder_email_html, qr#http://bexley.example.org/waste/10001/bulky/cancel#, 'No cancellation link (html mail)';
+        unlike $reminder_email_html, qr#http://bexley.example.org/waste/10001/bulky/cancel#, 'No cancellation link (html mail)';
         $mech->clear_emails_ok;
     };
 
