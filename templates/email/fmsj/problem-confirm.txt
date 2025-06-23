@@ -6,7 +6,7 @@ Paspaudę žemiau esančią nuorodą patvirtinkite, kad norite išsiųsti savo p
 [% IF report.non_public %]Jūsų pranešimas nebus skelbiama viešai [% site_name %] svetainėje, bet bus išsiųsta į [% report.body %].
 [% ELSE %]Jūsų pranešimas taip pat bus rodoma [% site_name %] svetainėje.[% END %]
 
-[% token_url | replace('https://', 'https://lt.') | replace('http://', 'http://lt.') %]
+[% token_url | replace('https://man', 'https://lt.man') | replace('http://man', 'http://lt.man') %]
 
 Jei jūsų el. pašto programa neleidžia spustelėti šios nuorodos, nukopijuokite ir įklijuokite ją į savo žiniatinklio naršyklę ir paspauskite „Grįžti“.
 
@@ -40,7 +40,7 @@ Please click on the link below to confirm that you want to send your report to
 published for public viewing on the [% site_name %] website but will be sent to [% report.body %].
 [% ELSE %]Note that your report will also appear on the [% site_name %] website.[% END %]
 
-[% token_url %]
+[% token_url | replace('https://man', 'https://en.man') | replace('http://man', 'http://en.man') %]
 
 If your email program does not let you click on this link, copy and paste it
 into your web browser and press return.
