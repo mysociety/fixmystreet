@@ -29,6 +29,7 @@ sub bulky_free_collection_available { 0 }
 
 sub _bulky_date_to_dt {
     my ($self, $date) = @_;
+    $date = (split(";", $date))[0];
     my $parser = DateTime::Format::Strptime->new( pattern => '%F', time_zone => FixMyStreet->local_time_zone);
     my $dt = $parser->parse_datetime($date);
     return $dt ? $dt->truncate( to => 'day' ) : undef;
@@ -37,9 +38,162 @@ sub _bulky_date_to_dt {
 # We will send and then cancel if payment not received
 
 sub bulky_send_before_payment { 1 }
+sub bulky_cancel_by_update { 1 }
 
 # No earlier/later (make this Peterborough only?)
 
 sub bulky_hide_later_dates { 1 }
+
+# Look up slots
+
+sub find_available_bulky_slots {
+    my ( $self, $property, $last_earlier_date_str, $no_cache ) = @_;
+
+    my $key = $self->council_url . ":whitespace:available_bulky_slots:" . $property->{id};
+    if (!$no_cache) {
+        my $data = $self->{c}->waste_cache_get($key);
+        return $data if $data;
+    }
+
+    my $ws = $self->whitespace;
+    my $window = $self->_bulky_collection_window($last_earlier_date_str);
+    my @available_slots;
+    my $slots = $ws->GetCollectionSlots($property->{uprn}, $window->{date_from}, $window->{date_to});
+    foreach (@$slots) {
+        (my $date = $_->{AdHocRoundInstanceDate}) =~ s/T00:00:00//;
+        $date = $self->_bulky_date_to_dt($date);
+        next if FixMyStreet::Cobrand::UK::is_public_holiday(date => $date);
+        next if $_->{SlotsFree} <= 0;
+        push @available_slots, {
+            date => $date->date,
+            reference => $_->{AdHocRoundInstanceID},
+            expiry => '',
+        };
+    }
+
+    $self->{c}->waste_cache_set($key, \@available_slots) if !$no_cache;
+
+    return \@available_slots;
+}
+
+# Check again at the end
+sub check_bulky_slot_available {
+    my ( $self, $chosen_date_string, %args ) = @_;
+
+    # chosen_date_string is of the form
+    # '2023-08-29;12345;'
+    my ( $collection_date) = $chosen_date_string =~ /[^;]+/g;
+
+    my $property = $self->{c}->stash->{property};
+    my $available_slots = $self->find_available_bulky_slots(
+        $property, undef, 'no_cache' );
+
+    my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
+    return $slot ? 1 : 0;
+}
+
+# Submission
+
+sub save_item_names_to_report {
+    my ($self, $data) = @_;
+
+    my $report = $self->{c}->stash->{report};
+    foreach (grep { /^item_\d/ } keys %$data) {
+        $report->set_extra_metadata($_ => $data->{$_}) if $data->{$_};
+    }
+}
+
+sub waste_munge_bulky_data {
+    my ($self, $data) = @_;
+
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+    my $address = $property->{address};
+    my $uprn = $property->{uprn};
+
+    my ($date, $ref) = split(";", $data->{chosen_date});
+
+    $data->{title} = "Bulky waste collection";
+    $data->{detail} = "Address: " . $c->stash->{property}->{address};
+    $data->{category} = "Bulky collection";
+    $data->{extra_collection_date} = $date;
+    $data->{extra_round_instance_id} = $ref;
+
+    my @items_list = @{ $self->bulky_items_master_list };
+    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
+
+    my @ids;
+    my $max = $self->bulky_items_maximum;
+    for (1..$max) {
+        if (my $item = $data->{"item_$_"}) {
+            push @ids, $items{$item};
+        };
+    }
+    $data->{extra_bulky_items} = join("::", @ids);
+    $self->bulky_total_cost($data);
+
+    $c->set_param('uprn', $uprn);
+}
+
+=head2 suppress_report_sent_email
+
+For Bulky Waste reports, we want to send the email after payment has been confirmed, so we
+suppress the email here.
+
+=cut
+
+sub suppress_report_sent_email {
+    my ($self, $report) = @_;
+    if ($report->cobrand_data eq 'waste' && $report->category eq 'Bulky collection') {
+        return 1;
+    }
+    return 0;
+}
+
+sub bulky_nice_item_list {
+    my ($self, $report) = @_;
+
+    my @item_nums = map { /^item_(\d+)/ } grep { /^item_\d/ } keys %{$report->get_extra_metadata};
+    my @items = sort { $a <=> $b } @item_nums;
+
+    my @fields;
+    for my $item (@items) {
+        if (my $value = $report->get_extra_metadata("item_$item")) {
+            push @fields, { item => $value, display => $value };
+        }
+    }
+    my $items_extra = $self->bulky_items_extra(exclude_pricing => 1);
+
+    return [
+        map {
+            value => $_->{display},
+            message => $items_extra->{$_->{item}}{message},
+        },
+        @fields,
+    ];
+}
+
+sub waste_reconstruct_bulky_data {
+    my ($self, $p) = @_;
+
+    my $saved_data = {
+        "chosen_date" => $p->get_extra_field_value('collection_date'),
+        "location" => $p->get_extra_field_value('bulky_location'),
+        "parking" => $p->get_extra_field_value('bulky_parking'),
+        "pension" => $p->get_extra_field_value('pension'),
+        "disability" => $p->get_extra_field_value('disability'),
+    };
+
+    my @fields = split /::/, $p->get_extra_field_value('bulky_items');
+    for my $id (1..@fields) {
+        $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
+    }
+
+    $saved_data->{name} = $p->name;
+    $saved_data->{email} = $p->user->email;
+    $saved_data->{phone} = $p->phone_waste;
+
+    return $saved_data;
+}
 
 1;

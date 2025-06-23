@@ -1309,11 +1309,8 @@ FixMyStreet::override_config {
         $mech->content_contains('test@example.org');
         $mech->content_contains('Please review the information you’ve provided before you submit your enquiry.');
         $mech->submit_form_ok( { with_fields => { submit => 'Submit' } } );
-        $mech->content_contains('Nearly done! Now check your email');
+        $mech->content_contains('Your enquiry has been submitted');
 
-        my $report = FixMyStreet::DB->resultset('Problem')->first;
-        $report->confirm;
-        $report->update;
         $mech->clear_emails_ok; # Clear initial confirmation email
         FixMyStreet::Script::Reports::send();
 
@@ -1349,15 +1346,12 @@ FixMyStreet::override_config {
             $mech->content_contains('test@example.org');
             $mech->content_contains('Please review the information you’ve provided before you submit your enquiry.');
             $mech->submit_form_ok( { with_fields => { submit => 'Submit' } } );
-            $mech->content_contains('Nearly done! Now check your email');
+            $mech->content_contains('Your enquiry has been submitted');
 
             my $report = FixMyStreet::DB->resultset('Problem')->first;
             is_deeply $report->get_extra_field_value('Container'), $_->{containers};
             is $report->get_extra_field_value('complaint_type'), $_->{complaint_type};
 
-            $report->confirm;
-            $report->confirmed(DateTime->now());
-            $report->update;
             $mech->clear_emails_ok; # Clear initial confirmation email
             FixMyStreet::Script::Reports::send();
 
