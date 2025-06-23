@@ -1,0 +1,91 @@
+Subject: Problemos pranešimas / Problem Report: [% report.title %]
+
+Gerbiai [% bodies_name %],
+
+[% missing %][% multiple %][% site_name %] naudotojas pateikė šį pranešimą apie vietinę problemą, kuri, jo manymu, gali pareikalauti jūsų dėmesio. 
+
+    [% url | replace('://man', '://lt.man') | replace('://en.man', '://lt.man') %]
+
+[% has_photo %]----------
+
+Vardas: [% report.name %]
+
+El. paštas: [% report.user.email OR "Nenurodyta" %]
+
+Telefonas: [% report.user.phone OR "Nenurodyta" %]
+
+Kategorija: [% report.category %]
+
+Tema: [% report.title %]
+
+Išsamiau: [% report.detail %]
+
+[% FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length ~%]
+[% field.description OR field.name %]: [% field.value_label OR field.value %]
+
+[% END %][% END ~%]
+
+Platuma: [% report.latitude %]
+
+Ilguma: [% report.longitude %]
+
+Peržiūrėti šios vietovės OpenStreetMap: [% osm_url %]
+
+[% closest_address %]----------
+
+Atsakymai į šį pranešimą bus siunčiami tiesiai [% report.name %], naudotojui, kuris pranešė apie problemą. 
+
+Viso gero,
+[% site_name %] komanda
+
+Jei yra tinkamesnis el. pašto adresas pranešimams apie [% category_footer %], praneškite mums. Tai padės pagerinti paslaugą vietos gyventojams. 
+Taip pat laukiame bet kokių kitų jūsų atsiliepimų. 
+
+
+*** ENGLISH ***
+
+Dear [% bodies_name %],
+
+[% missing %][% multiple %]A user of
+[% site_name %] has submitted the following report
+of a local problem that they believe might require your attention.
+
+[% fuzzy %], or to provide an update on the problem,
+please visit the following link:
+
+    [% url | replace('://man', '://en.man') | replace('://lt.man', '://en.man') %]
+
+[% has_photo %]----------
+
+Name: [% report.name %]
+
+Email: [% report.user.email OR "None provided" %]
+
+Phone: [% report.user.phone OR "None provided" %]
+
+Category: [% report.category %]
+
+Subject: [% report.title %]
+
+Details: [% report.detail %]
+
+[% FOR field IN report.get_extra_fields %][% IF field.value_label OR field.value.length ~%]
+[% field.description OR field.name %]: [% field.value_label OR field.value %]
+
+[% END %][% END ~%]
+
+Latitude: [% report.latitude %]
+
+Longitude: [% report.longitude %]
+
+View OpenStreetMap of this location: [% osm_url %]
+
+[% closest_address %]----------
+
+Replies to this email will go to the user who submitted the problem.
+
+[% signature %]
+
+If there is a more appropriate email address for messages about
+[% category_footer %], please let us know. This will help improve the
+service for local people. We also welcome any other feedback you may have.
