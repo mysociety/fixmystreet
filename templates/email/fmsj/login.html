@@ -1,15 +1,6 @@
 [%
-SET url = c.uri_for_action('auth/token', token);
-SET language = url.match('^https?://lt\.manrupi') ? 'lt' 
-         : url.match('^https?://en\.manrupi') ? 'en' 
-         : 'lt-en';
 
-SET lt_text = "Spustelėkite toliau pateiktą nuorodą, kad patvirtintumėte savo el. pašto adresą ir prisijunkite prie " _ site_name;
-SET en_text = "Click the link below to confirm your email address and log into " _ site_name;
-
-email_summary = language == 'lt' ? lt_text
-                : language == 'en' ? en_text
-                : lt_text _ " / " _ en_text;
+email_summary = [% site_name %] paskyros informacija / Your [% site_name %] account details;
 email_columns = 1;
 
 PROCESS '_email_settings.html';
@@ -19,7 +10,6 @@ INCLUDE '_email_top.html';
 %]
 
 <th style="[% td_style %][% only_column_style %]">
-[% IF language.match('lt') %]
   <h1 style="[% h1_style %]">Dėkojame, kad naudojatės [% site_name %]</h1>
   <p style="[% p_style %]">Spustelėkite toliau esančią nuorodą, kad patvirtintumėte savo el. pašto adresą ir prisijunkite prie [% site_name %].</p>
   <p style="margin: 20px auto; text-align: center">
@@ -32,11 +22,7 @@ INCLUDE '_email_top.html';
     Kai tai padarysite, galėsite peržiūrėti ir tvarkyti visas ataskaitas ir atnaujinimus, kuriuos atlikote [% site_name %] meniu „Jūsų paskyra“.
     [% END %]
   </p>
-[% END %]
-[% IF language.match('lt-en') %]
   <h2 style="[% h2_style %]; text-align:center; padding-top: 2em;">*** English ***</h2>
-[% END %]
-[% IF language.match('en') %]
   <h1 style="[% h1_style %]">Thanks for using [% site_name %]</h1>
   <p style="[% p_style %]">Please click on the link below to confirm your email address and log into [% site_name %].</p>
   <p style="margin: 20px auto; text-align: center">
@@ -50,7 +36,6 @@ INCLUDE '_email_top.html';
     updates you&rsquo;ve made from the &ldquo;Your account&rdquo; menu on [% site_name %].
     [% END %]
   </p>
-[% END %]
 </th>
 
 [% INCLUDE '_email_bottom.html' %]
