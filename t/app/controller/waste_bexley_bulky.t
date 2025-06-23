@@ -115,10 +115,21 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { postcode => 'DA1 1AA' } } );
         $mech->submit_form_ok( { with_fields => { address => '10001' } } );
 
-        #$mech->content_contains('Bulky waste');
-        #$mech->submit_form_ok({ form_number => 3 });
-        #$mech->content_contains( 'Before you start your booking',
-        #    'Should be able to access the booking form' );
+        $mech->content_contains('Bulky waste');
+        $mech->submit_form_ok({ form_number => 3 });
+        $mech->content_contains( 'Before you start your booking',
+            'Should be able to access the booking form' );
+    };
+
+    my $report;
+    subtest 'Bulky goods collection booking' => sub {
+        $mech->get_ok('/waste/10001/bulky');
+
+        subtest 'Intro page' => sub {
+            $mech->content_contains('Book bulky goods collection');
+            $mech->content_contains('Before you start your booking');
+            $mech->submit_form_ok;
+        };
     };
 };
 
