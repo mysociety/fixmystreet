@@ -269,6 +269,12 @@ has_field tandc => (
 <br>&bull; I confirm the bulky waste items will be left outside at the front of the property but not on the public highway, in an easy accessible location.
 <br>&bull; I confirm I understand that items cannot be collected from inside the property
 <br>&bull; I confirm I have read the information for the <a href="' . $link . '" target="_blank">bulky waste service</a>';
+        } elsif ($c->cobrand->moniker eq 'bexley') {
+            $label = '&bull; I confirm that the submitted information is current and correct, and any misrepresentations could lead to a cancellation of the arranged service without refund.
+<br>&bull; I understand that collections can take place any time after 6am.
+<br>&bull; I understand that the arranged service cannot be edited or cancelled once payment has been submitted and refunds are not provided.
+<br>&bull; I understand that only the items added to the booking will be taken. Items must be accessible on the collection day and left in a neat and safe manner. Items cannot be left for collection on the public highway.
+<br>&bull; I understand I may be subject to further charges if proof of pension cannot be provided when requested.';
         } else {
             $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste collection</a> page on the council’s website';
         }
