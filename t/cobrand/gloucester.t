@@ -2,13 +2,30 @@ use FixMyStreet::Cobrand::Gloucester;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 use Test::Deep;
+use Test::MockModule;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 my $mech    = FixMyStreet::TestMech->new;
-my $cobrand = FixMyStreet::Cobrand::Gloucester->new;
-my $body    = $mech->create_body_ok(
+my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Gloucester');
+$cobrand->mock(
+    '_fetch_features',
+    sub {
+        return [
+            {   properties => { itemId => 'an_asset_id' },
+                geometry   => {
+                    type        => 'LineString',
+                    coordinates =>
+                        [ [ 383171, 218526 ], [ 383171, 218528 ], ],
+                }
+            }
+        ];
+    },
+);
+
+
+my $body = $mech->create_body_ok(
     2325,
     'Gloucester City Council',
     {   send_method  => 'Open311',
@@ -32,7 +49,7 @@ my $graffiti = $mech->create_contact_ok(
 my $flytipping = $mech->create_contact_ok(
     body_id  => $body->id,
     category => 'Flytipping',
-    email    => 'Flytipping',
+    email    => 'Regular_fly-tipping_(not_witnessed_and_no_evidence_likely)',
 );
 
 # Open311 but sends email too if certain answer provided
@@ -134,12 +151,15 @@ FixMyStreet::override_config {
             FixMyStreet::Script::Reports::send();
             $report->discard_changes;
 
+
             is $report->send_state,  'sent', 'sent successfully';
             is $report->external_id, '248', 'has external ID';
             is $report->get_extra_field_value('did_you_witness'), undef,
                 'no witness question';
             is $report->get_extra_metadata('extra_email_sent'), undef,
                 'no extra_email_sent';
+            is $report->get_extra_field_value('asset_resource_id'), 'an_asset_id',
+                'asset_resource_id set';
 
             $mech->email_count_is(0), 'no email sent';
         };

@@ -163,4 +163,125 @@ sub open311_post_send {
     }
 }
 
+=head2 _asset_layer_mapping
+
+Gloucester's Alloy integration has assets separated into different layers.
+When looking up a parent asset for a report that doesn't have one, we need
+to know which layer(s) to check. This method provides a mapping from the
+report category to the relevant asset layer(s). The asset layer names
+correspond to asset layers configured in the Tilma proxy service.
+
+=cut
+
+sub _asset_layer_mapping {
+    return {
+        'Broken_glass' => [ 'adopted_streets' ],
+        'Damaged_dog_bin' => [ 'dog_bins' ],
+        'Damaged_dual_use_bin' => [ 'all_street_bins' ],
+        'Damaged_litter_bin' => [ 'all_street_bins' ],
+        'Damaged_nameplate' => [ 'adopted_streets' ],
+        'Damaged_or_dangerous_playground_equipment' => [ 'play_areas' ],
+        'Damaged_park_furniture' => [ 'adopted_streets', 'all_sites' ],
+        'Dangerous_nameplate' => [ 'adopted_streets' ],
+        'Dead_animal_that_needs_removing' => [ 'all_streets', 'all_sites' ],
+        'Debris_on_pavement_or_road' => [ 'adopted_streets' ],
+        'Dog_fouling_(not_witnessed)' => [ 'adopted_streets' ],
+        'Faded_nameplate_1' => [ 'adopted_streets' ],
+        'Fly-posting' => [ 'adopted_streets', 'all_sites' ],
+        'Items_in_watercourse' => [ 'adopted_streets', 'all_sites' ],
+        'Leaves' => [ 'adopted_streets' ],
+        'Litter_in_street_or_public_area' => [ 'adopted_streets' ],
+        'Missing_bin' => [ 'all_street_bins' ],
+        'Missing_nameplate' => [ 'adopted_streets' ],
+        'Non-offensive_graffiti' => [ 'all_streets', 'all_sites' ],
+        'Offensive_graffiti_(not_witnessed)' => [ 'all_streets', 'all_sites' ],
+        'Overflowing_bin' => [ 'all_street_bins' ],
+        'Overgrown_grass' => [ 'all_sites', 'all_plots' ],
+        'Overgrown_hedges' => [ 'all_sites', 'all_plots' ],
+        'Overgrown_weeds' => [ 'all_sites', 'all_plots' ],
+        'Regular_fly-tipping_(not_witnessed_and_no_evidence_likely)' => [ 'adopted_streets', 'all_sites' ],
+        'Spillage_after_recycling_collection' => [ 'all_streets' ],
+        'Spillage_after_waste_collection' => [ 'all_streets' ],
+        'Syringes_or_drugs_equipment' => [ 'all_streets', 'all_sites' ],
+        'Unclean_public_toilets' => [ 'public_toilets' ],
+    };
+}
+
+=head2 open311_update_missing_data
+
+This is a hook called before sending a report to Open311. For the Gloucester
+Alloy integration, all reports must be associated with a parent asset. If the
+user hasn't selected one during reporting (e.g. on the app or with JavaScript
+disabled), this method calls C<lookup_site_code> to find the nearest suitable
+asset and attach it to the report.
+
+=cut
+
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    # If the report doesn't already have an asset, associate it with the
+    # closest feature from the Alloy asset layers.
+    if (!$row->get_extra_field_value('asset_resource_id')) {
+        if (my $item_id = $self->lookup_site_code($row, $contact)) {
+            $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
+        }
+    }
+}
+
+=head2 lookup_site_code
+
+This overrides the parent implementation to handle Gloucester's specific
+multi-layer asset configuration in Alloy. Based on the report's category, it
+determines which asset layer(s) to query using C<_asset_layer_mapping>. It
+then iterates through the specified layers, searching for the nearest asset on
+each one until a match is found.
+
+=cut
+
+sub lookup_site_code {
+    my ($self, $row, $contact) = @_;
+
+    my $category = $contact->email;
+    my $layers = $self->_asset_layer_mapping->{$category};
+    return unless $layers && @$layers;
+
+    for my $layer (@$layers) {
+        my $cfg = $self->lookup_site_code_config($layer);
+        my ($x, $y) = $row->local_coords;
+        my $features = $self->_fetch_features($cfg, $x, $y);
+        if ($cfg->{_nearest_uses_latlon}) {
+            ($x, $y) = ($row->longitude, $row->latitude);
+        }
+        if (my $item_id = $self->_nearest_feature($cfg, $x, $y, $features)) {
+            return $item_id;
+        }
+    }
+    return;
+}
+
+=head2 lookup_site_code_config
+
+This method generates the configuration required by C<lookup_site_code> to
+query a specific asset layer in Gloucester's Alloy system. Unlike other cobrands
+that might have a single, static configuration, this one is parameterised by
+the asset C<$layer> to allow for checking multiple different layers for a single report.
+
+=cut
+
+sub lookup_site_code_config {
+    my ($self, $layer) = @_;
+
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    return {
+        buffer => 200, # metres
+        _nearest_uses_latlon => 1,
+        proxy_url => "https://$host/alloy/layer.php",
+        layer => $layer,
+        url => "https://gloucester.assets",
+        property => "itemId",
+        accept_feature => sub { 1 },
+    };
+}
+
 1;
