@@ -944,6 +944,7 @@ sub image_for_unit {
 
     my $service_id = $unit->{service_id};
 
+    return '/i/waste-containers/bulky-white' if $service_id eq 'bulky';
     return '/i/waste-containers/bexley/' . $images->{$service_id};
 }
 
