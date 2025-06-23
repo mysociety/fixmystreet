@@ -1,0 +1,23 @@
+Subject: Jūsų [% site_name %] el. pašto adreso atnaujinimas // Updating your [% site_name %] email address
+
+Norėdami patvirtinti, kad norite atnaujinti savo el. pašto adresą [% site_name %], spustelėkite žemiau esančią nuorodą.
+
+[% c.uri_for_action( 'auth/token', token ) | replace('https://man', 'https://lt.man') | replace('http://man', 'http://lt.man') %]
+
+Viso gero,
+[% site_name %] komanda
+
+Šis el. laiškas buvo išsiųstas automatiškai iš automatinės el. pašto paskyros, todėl į jį neatsakykite.
+
+
+*** ENGLISH ***
+
+Please click on the link below to confirm you wish to update your
+email address on [% site_name %].
+
+[% c.uri_for_action( 'auth/token', token ) | replace('https://man', 'https://en.man') | replace('http://man', 'http://en.man') %]
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
