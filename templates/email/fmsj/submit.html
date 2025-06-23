@@ -15,7 +15,7 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">[% missing %][% multiple %][% site_name %] naudotojas pateikė šį pranešimą apie vietinę problemą, kuri, jo manymu, gali pareikalauti jūsų dėmesio.</p>
 
   <p style="margin: 20px auto; text-align: center">
-    <a style="[% button_style %]" href="[% url %]">Rodyti visą pranešimą</a>
+    <a style="[% button_style %]" href="[% url  | replace('://man', '://lt.man') | replace('://en.man', '://lt.man') %]">Rodyti visą pranešimą</a>
   </p>
   <h2 style="[% h2_style %] margin: 30px 0 10px 0">Pranešė:</h2>
   <table [% table_reset | safe %]>
@@ -50,7 +50,7 @@ INCLUDE '_email_top.html';
 of a local problem that they believe might require your attention.</p>
 
   <p style="margin: 20px auto; text-align: center">
-    <a style="[% button_style %]" href="[% url %]">Show full report</a>
+    <a style="[% button_style %]" href="[% url | replace('://man', '://en.man') | replace('://lt.man', '://en.man') %]">Show full report</a>
   </p>
   <h2 style="[% h2_style %] margin: 30px 0 10px 0">Reported by:</h2>
   <table [% table_reset | safe %]>
