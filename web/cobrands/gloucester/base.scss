@@ -79,12 +79,15 @@ a {
 
 /* SITE MESSAGE */
 .site-message {
-    color: $primary;
     padding: 1.5rem;
     background-color: $gloucester_white;
     border: none;
     border-top: 4px solid $primary;
     word-wrap: break-word;
+
+    :first-child {
+        margin-top: 0;
+    }
 }
 
 /* FOOTER */
