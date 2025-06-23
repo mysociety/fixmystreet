@@ -1,0 +1,33 @@
+[%
+
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% only_column_style %]">
+  <h1 style="[% h1_style %]">Pakeiskite savo [% site_name %] el. pašto adresą</h1>
+  <p style="[% p_style %]">Prašome paspausti žemiau esančią nuorodą, kad patvirtintumėte savo el. pašto adreso pakeitimą [% site_name %] sistemoje. 
+    Norint patvirtinti pakeitimą, turite būti prisijungęs prie savo [% site_name %] paskyros šiuo įrenginiu ir paspausti nuorodą per 24 valandas.</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) | replace('://man', '://lt.man') | replace('://en.man', '://lt.man') %]">Pakeisti el. pašto adresą</a>
+  </p>
+  <p style="[% p_style %]">Jei nebebesate norite pakeisti savo el. pašto adreso, tiesiog ignoruokite šį laišką.</p>
+
+  <h2 style="[% h2_style %]; text-align:center; padding-top: 2em;">*** English ***</h2>
+  <h1 style="[% h1_style %]">Change your [% site_name %] email&nbsp;address</h1>
+  <p style="[% p_style %]">Please click on the link below to confirm you wish to update your
+email address on [% site_name %]. You must be logged in to your [% site_name %] account on this device and click on the link within 24 hours.</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% c.uri_for_action( 'auth/token', token ) | replace('://man', '://en.man') | replace('://lt.man', '://en.man') %]">Change my email address</a>
+  </p>
+  <p style="[% p_style %]">If you no longer wish to change your email address, just ignore this email.</p>
+  
+</th>
+
+
+
+[% INCLUDE '_email_bottom.html' %]
