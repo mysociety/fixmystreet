@@ -89,6 +89,7 @@ sub bulky_pricing_strategy {
 =head2 Requirements
 
 Users of this role must supply the following:
+* whether bulky collections are allowed for a particular property or not;
 * time up to which cancellation can be made;
 * time collections start;
 * number of days to look into the future for collection dates
@@ -97,6 +98,7 @@ Users of this role must supply the following:
 
 =cut
 
+requires 'bulky_allowed_property';
 requires 'bulky_cancellation_cutoff_time';
 requires 'bulky_collection_time';
 requires 'bulky_collection_window_days';
