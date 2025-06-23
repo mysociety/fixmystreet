@@ -230,4 +230,17 @@ sub GetFullWorksheetDetails {
     return $res->{FullWSDetails};
 }
 
+sub GetCollectionSlots {
+    my ( $self, $uprn, $from, $to ) = @_;
+    my $res = $self->call( 'GetCollectionSlots',
+        collectionSlotsInputInput => ixhash(
+            Uprn => $uprn,
+            ServiceId => 78,
+            NextCollectionFromDate => $from,
+            NextCollectionToDate => $to,
+        )
+    );
+    return force_arrayref($res->{ApiAdHocRoundInstances}, 'ApiAdHocRoundInstance');;
+}
+
 1;

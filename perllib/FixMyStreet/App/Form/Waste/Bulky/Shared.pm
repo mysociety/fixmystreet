@@ -180,7 +180,9 @@ sub _get_dates {
         delete $dates_booked{$existing_date};
     }
 
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+    my $pattern = '%FT%T';
+    $pattern = '%F' if $c->cobrand->moniker eq 'bexley'; # Move more to this over time?
+    my $parser = DateTime::Format::Strptime->new( pattern => $pattern );
     my @dates  = grep {$_} map {
         my $dt = $parser->parse_datetime( $_->{date} );
         my $label = $c->cobrand->moniker eq 'brent' ? '%d %B' : '%A %e %B';
