@@ -20,6 +20,7 @@ use DateTime;
 use Moo;
 with 'FixMyStreet::Roles::Open311Multi',
      'FixMyStreet::Cobrand::Bexley::Garden',
+     'FixMyStreet::Cobrand::Bexley::Bulky',
      'FixMyStreet::Cobrand::Bexley::Waste';
 
 sub council_area_id { 2494 }
