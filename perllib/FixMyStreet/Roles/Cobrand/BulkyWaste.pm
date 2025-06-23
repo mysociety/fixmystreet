@@ -638,6 +638,8 @@ sub _bulky_send_reminder_email {
 
     return unless $report->user->email;
 
+    return if $self->moniker eq 'bexley' && $h->{days} == 3; # No 3 day reminder
+
     $h->{url} = $self->base_url_for_report($report) . $report->tokenised_url($report->user);
 
     my $result = FixMyStreet::Email::send_cron(
