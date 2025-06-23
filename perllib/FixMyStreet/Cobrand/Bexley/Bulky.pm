@@ -42,4 +42,34 @@ sub bulky_send_before_payment { 1 }
 
 sub bulky_hide_later_dates { 1 }
 
+# Look up slots
+
+sub find_available_bulky_slots {
+    my ( $self, $property, $last_earlier_date_str, $no_cache ) = @_;
+
+    my $key = $self->council_url . ":whitespace:available_bulky_slots:" . $property->{id};
+    if (!$no_cache) {
+        my $data = $self->{c}->waste_cache_get($key);
+        return $data if $data;
+    }
+
+    my $ws = $self->whitespace;
+    my $window = $self->_bulky_collection_window($last_earlier_date_str);
+    my @available_slots;
+    my $slots = $ws->GetCollectionSlots($property->{uprn}, $window->{date_from}, $window->{date_to});
+    foreach (@$slots) {
+        my $date = $_->{AdHocRoundInstanceDate};
+        $date = $self->_bulky_date_to_dt($date);
+        next if FixMyStreet::Cobrand::UK::is_public_holiday(date => $date);
+        push @available_slots, {
+            date => $date->datetime,
+            id => $_->{AdHocRoundInstanceID},
+        };
+    }
+
+    $self->{c}->waste_cache_set($key, \@available_slots) if !$no_cache;
+
+    return \@available_slots;
+}
+
 1;
