@@ -13,7 +13,7 @@ INCLUDE '_email_top.html';
   <h1 style="[% h1_style %]">Dėkojame, kad naudojatės [% site_name %]</h1>
   <p style="[% p_style %]">Spustelėkite toliau esančią nuorodą, kad patvirtintumėte savo el. pašto adresą ir prisijunkite prie [% site_name %].</p>
   <p style="margin: 20px auto; text-align: center">
-    <a style="[% button_style %]" href="[% url | replace('://man', '://lt.man') | replace('://lt.man', '://lt.man') %]">Taip, tai mano adresas</a>
+    <a style="[% button_style %]" href="[% url | replace('://man', '://lt.man') | replace('://en.man', '://lt.man') %]">Taip, tai mano adresas</a>
   </p>
   <p style="[% p_style %]">
     [% IF c.get_param('r').match('waste') %]
