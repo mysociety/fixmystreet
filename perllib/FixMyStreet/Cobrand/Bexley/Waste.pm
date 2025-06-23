@@ -243,6 +243,8 @@ sub look_up_property {
         $upcoming_bank_holiday = 1;
     }
 
+    my $address = BexleyAddresses::address_for_uprn($uprn);
+
     return {
         # 'id' is same as 'uprn' for Bexley, but since the wider wasteworks code
         # (e.g. FixMyStreet/App/Controller/Waste.pm) calls 'id' in some cases
@@ -250,12 +252,11 @@ sub look_up_property {
         id => $site->{AccountSiteUPRN},
         uprn => $site->{AccountSiteUPRN},
         usrn => $usrn,
-        address => FixMyStreet::Template::title(
-            BexleyAddresses::address_for_uprn($uprn) ),
+        address => FixMyStreet::Template::title($address->{address}),
         latitude => $site->{Site}->{SiteLatitude},
         longitude => $site->{Site}->{SiteLongitude},
         upcoming_bank_holiday => $upcoming_bank_holiday,
-
+        show_bulky_waste => $self->bulky_allowed_property($address),
         %parent_property,
     };
 }
