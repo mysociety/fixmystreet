@@ -78,7 +78,17 @@ sub fetch_whitespace_data {
 
 sub clear_cached_lookups_property {
     my ($self, $uprn) = @_;
+
+    # Need to call this before clearing GUID
+    $self->clear_cached_lookups_bulky_slots($uprn);
+
     $self->{c}->waste_cache_delete($self->council_url . ":whitespace:bin_days_page:$uprn");
+}
+
+sub clear_cached_lookups_bulky_slots {
+    my ( $self, $uprn ) = @_;
+
+    $self->{c}->waste_cache_delete($self->council_url . ":whitespace:available_bulky_slots:$uprn");
 }
 
 sub waste_fetch_events {
