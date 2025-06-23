@@ -145,6 +145,12 @@ sub open311_update_missing_data {
     }
 }
 
+=item * Make a few improvements to the display of geocoder results
+
+Remove 'Aberdeenshire' and 'Alba / Scotland', skip any that don't mention Aberdeenshire at all
+
+=cut
+
 sub disambiguate_location {
     my $self = shift;
     my $string = shift;
@@ -160,26 +166,9 @@ sub disambiguate_location {
             56.74712850, -3.80164643,
             57.70174199, -1.76439269,
         ],
+        result_only_if => 'Aberdeenshire',
+        result_strip => ', Aberdeenshire, Alba / Scotland',
     };
-}
-
-=item * Uses the OSM geocoder
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
-
-=item * Make a few improvements to the display of geocoder results
-
-Remove 'Aberdeenshire' and 'Alba / Scotland', skip any that don't mention Aberdeenshire at all
-
-=cut
-
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-    $result->{display_name} = '' unless $result->{display_name} =~ /Aberdeenshire/;
-    $result->{display_name} =~ s#, Aberdeenshire, Alba / Scotland##;
 }
 
 =head2 pin_colour
