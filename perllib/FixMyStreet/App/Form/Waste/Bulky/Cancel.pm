@@ -38,6 +38,8 @@ has_field confirm => (
         my $text = 'I confirm I wish to cancel my bulky collection';
         if ($cobrand->moniker eq 'kingston' || $cobrand->moniker eq 'sutton') {
             $text = 'I acknowledge that the collection fee is non-refundable and would like to cancel my bulky collection';
+        } elsif ($cobrand->moniker eq 'bexley') {
+            $text = 'I confirm I wish to cancel my bulky collection and other text here TBC';
         }
         return $text;
     },
