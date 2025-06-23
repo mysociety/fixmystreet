@@ -15,7 +15,7 @@
         <td>
             [% IF item.errors.message %]<label for="[[% i %]]">[% item.errors.message %]</label>[% END %]
             <input type="text" value="[% item.message %]" name="message[[% i %]]" />
-        [% IF per_item_costs %]
+        [% IF per_item_costs AND NOT item_points%]
             </td>
             <td>
                 [% IF item.errors.price %]<label for="[[% i %]]">[% item.errors.price %]</label>[% END %]
@@ -24,6 +24,13 @@
             <input type="hidden" value="[% item.price %]" name="price[[% i %]]" />
         [% END %]
         </td>
+        [% IF item_points %]
+        <td>
+            [% IF item.errors.points %]<label for="[[% i %]]">[% item.errors.points %]</label>[% END %]
+            <input type="text" value="[% item.points %]" name="points[[% i %]]" style="max-width: 4em;" />
+        </td>
+        [% ELSE %]
+        [% END %]
         [% FOR property_type IN per_item_pricing_property_types %]
             [% price_for_property_type = "price_$property_type" %]
             <td>
@@ -50,7 +57,9 @@
                 <th>Feat. Type ID</th>
                 <th>Name</th>
                 <th>Message</th>
-                [% IF per_item_costs %]
+                [% IF item_points %]
+                    <th>Points</th>
+                [% ELSIF per_item_costs %]
                     <th>Price (pence)</th>
                 [% END %]
                 [% FOR property_type IN per_item_pricing_property_types %]
