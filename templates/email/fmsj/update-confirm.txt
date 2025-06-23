@@ -4,7 +4,7 @@ Sveiki [% update.name %],
 
 Spustelėkite toliau esančią nuorodą, kad patvirtintumėte atnaujinimą [% site_name %]:
 
-[% token_url | replace('https://man', 'https://lt.man') | replace('http://man', 'http://lt.man') %]
+[% token_url | replace('://man', '://lt.man') | replace('://en.man', '://lt.man') %]
 
 Jei jūsų el. pašto programa neleidžia spustelėti šios nuorodos, nukopijuokite ir įklijuokite ją į savo žiniatinklio naršyklę ir paspauskite „Grįžti“.
 
@@ -26,7 +26,7 @@ Hello [% update.name %],
 
 Please click on the link below to confirm your update on [% site_name %]:
 
-[% token_url | replace('https://man', 'https://en.man') | replace('http://man', 'http://en.man') %]
+[% token_url | replace('://man', '://en.man') | replace('://lt.man', '://en.man') %]
 
 If your email program does not let you click on this link, copy and paste it into your web browser and press return.
 
