@@ -19,6 +19,8 @@ use warnings;
 use JSON::MaybeXS;
 use LWP::UserAgent;
 use Moo;
+use Try::Tiny;
+use DateTime::Format::Strptime;
 
 =pod
 
@@ -165,23 +167,58 @@ sub open311_munge_update_params {
     }
 }
 
-
 =head2 open311_get_update_munging
 
-The incoming update might be for a defect which has superseded an existing one,
-so if that's the case we need to identify and close it.
+Aberdeenshire want certain defect fields shown in updates on FMS.
+
+These values, if present, are passed back from open311-adapter in the
+<extras> element. If the template being used for this update has placeholders
+like '{{targetDate}}', '{{featureSPD}}', or '{{featureCCAT}}' in its text,
+they get replaced with the value from Confirm. If there is no value then 'TBC'
+is used for targetDate, or an empty string for featureSPD and featureCCAT.
+
+Additionally, the incoming update might be for a defect which has superseded an
+existing one, so if that's the case we need to identify and close it.
 
 =cut
 
 sub open311_get_update_munging {
     my ($self, $comment, $state, $request) = @_;
 
+    my $text = $comment->text;
+
+    # Handle targetDate with date parsing
+    if ($text =~ /\{\{targetDate}}/) {
+        my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+        my $targetDate = 'TBC';
+        if ($request->{extras} && $request->{extras}->{targetDate}) {
+            try {
+                my $date = $parser->parse_datetime($request->{extras}->{targetDate});
+                $targetDate = $date->strftime("%d/%m/%Y");
+            };
+        }
+        $text =~ s/\{\{targetDate}}/$targetDate/;
+    }
+
+    # Handle other fields as-is
+    for my $field (qw(featureSPD featureCCAT)) {
+        if ($text =~ /\{\{$field}}/) {
+            my $value = '';
+            if ($request->{extras} && $request->{extras}->{$field}) {
+                $value = $request->{extras}->{$field};
+            }
+            $text =~ s/\{\{$field}}/$value/;
+        }
+    }
+
+    $comment->text($text);
+
     my $supersedes = $request->{extras}{supersedes};
     return unless $supersedes && $supersedes =~ /^DEFECT_/;
 
     $self->_supersede_report($comment->problem, $supersedes);
-}
 
+}
 
 =head2 open311_report_fetched
 
@@ -392,5 +429,6 @@ sub skip_alert_state_changed_to { 1 }
 =cut
 
 sub default_map_zoom { 5 }
+
 
 1;
