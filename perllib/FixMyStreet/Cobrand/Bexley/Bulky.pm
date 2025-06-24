@@ -46,6 +46,9 @@ sub bulky_hide_later_dates { 1 }
 
 sub bulky_points_per_item_pricing { 1 }
 
+sub bulky_disabled_item_photos { 1 }
+sub bulky_disabled_location_photo { 1 }
+
 # Look up slots
 
 sub find_available_bulky_slots {
