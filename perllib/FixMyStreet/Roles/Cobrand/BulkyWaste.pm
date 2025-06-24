@@ -675,6 +675,9 @@ sub bulky_location_text_prompt {
   "(e.g., On the driveway; To the left of the front door; By the front hedge, etc.)."
 }
 
+sub bulky_disabled_item_photos { 0 }
+sub bulky_disabled_location_photo { 0 }
+
 sub bulky_location_photo_prompt {
     my $self = shift;
     'Please check the <a href="' . $self->call_hook('bulky_tandc_link') . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"

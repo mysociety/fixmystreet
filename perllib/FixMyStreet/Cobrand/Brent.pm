@@ -1502,6 +1502,7 @@ sub bulky_collection_window_days { 28 }
 sub bulky_can_refund { 0 }
 sub bulky_free_collection_available { 0 }
 sub bulky_hide_later_dates { 1 }
+sub bulky_disabled_item_photos { 1 }
 
 sub bulky_allowed_property {
     my ( $self, $property ) = @_;
