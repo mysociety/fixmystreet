@@ -42,6 +42,13 @@ has_page location => (
     fields   =>
         [ 'location', 'location_photo', 'location_photo_fileid', 'continue' ],
     next => 'summary',
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        if ($c->cobrand->bulky_disabled_location_photo) {
+            return ['location_photo', 'location_photo_fileid'];
+        }
+    },
     update_field_list => sub {
         my ($form) = @_;
         my $fields = {};
