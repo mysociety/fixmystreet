@@ -92,6 +92,9 @@ sub categories_restriction {
                 'Japanese Knotweed',
                 'Nettles, brambles, dandelions etc.',
                 'Ragwort',
+
+                # Hide Gloucestershire County's 'Dead animal' category
+                'Dead animal at the side of the road',
             ],
             -not_like => 'Ash Tree located on%',
         },
