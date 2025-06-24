@@ -19,6 +19,8 @@ use warnings;
 use JSON::MaybeXS;
 use LWP::UserAgent;
 use Moo;
+use Try::Tiny;
+use DateTime::Format::Strptime;
 
 =pod
 
@@ -246,6 +248,35 @@ sub lookup_site_code_config {
         property => "siteCode",
         accept_feature => sub { 1 }
     };
+}
+
+=head2 open311_get_update_munging
+
+Aberdeenshire want defects' "targetDate" field shown in updates on FMS.
+
+This value, if present, is passed back from open311-adapter in the
+<extras> element. If the template being used for this update has '{{targetDate}}'
+in its text, it gets replaced with the value from Confirm. If there is no value
+then 'TBC' is used.
+
+=cut
+
+sub open311_get_update_munging {
+    my ($self, $comment, $state, $request) = @_;
+
+    my $text = $comment->text;
+    if ($text =~ /\{\{targetDate}}/) {
+        my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+        my $targetDate = 'TBC';
+        if ($request->{extras} && $request->{extras}->{targetDate}) {
+            try {
+                my $date = $parser->parse_datetime($request->{extras}->{targetDate});
+                $targetDate = $date->strftime("%d/%m/%Y");
+            };
+        }
+        $text =~ s/\{\{targetDate}}/$targetDate/;
+        $comment->text($text);
+    }
 }
 
 
