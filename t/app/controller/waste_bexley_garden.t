@@ -15,7 +15,13 @@ $addr_mock->mock( 'database_file', '/' );
 my $dbi_mock = Test::MockModule->new('DBI');
 $dbi_mock->mock( 'connect', sub {
     my $dbh = Test::MockObject->new;
-    $dbh->mock( 'selectrow_hashref', sub { {} } );
+    $dbh->mock( 'selectrow_hashref', sub { {
+        postcode => 'DA1 1AA',
+        has_parent => 0,
+        pao_start_number => 1,
+        street_descriptor => 'Test Street',
+        town_name => 'Bexley',
+    } } );
     return $dbh;
 } );
 
@@ -1026,6 +1032,10 @@ FixMyStreet::override_config {
             name => 'Test McTest',
             email => 'test@example.net'
         }});
+
+        $mech->content_like(qr/name="first_name"[^>]*value="Test"/);
+        $mech->content_like(qr/name="address1"[^>]*value="1 Test Street"/);
+        $mech->content_like(qr/name="post_code"[^>]*value="DA1 1AA"/);
 
         my %valid_fields = (
             name_title => 'Mr',

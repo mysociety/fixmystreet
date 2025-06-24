@@ -150,7 +150,8 @@ sub open311_update_missing_data {
         MR01 => 'n/a',
         MR02 => 'n/a',
         Q29 => 'YES',
-        Q33 => 'NK', # not known
+        Q31 => 'NK', # not known
+        Q33 => 'NK',
         Q36 => 'NK',
         Q37 => 'NK',
         Q38 => 'NK',
@@ -180,6 +181,11 @@ sub open311_config {
     $params->{upload_files} = 1;
 }
 
+=item * Make a few improvements to the display of geocoder results
+
+Remove 'Aberdeenshire' and 'Alba / Scotland', skip any that don't mention Aberdeenshire at all
+
+=cut
 
 sub disambiguate_location {
     my $self = shift;
@@ -196,7 +202,30 @@ sub disambiguate_location {
             56.74712850, -3.80164643,
             57.70174199, -1.76439269,
         ],
+        result_only_if => 'Aberdeenshire',
+        result_strip => ', Aberdeenshire, Alba / Scotland',
     };
+}
+
+=head2 pin_colour
+
+Green for anything completed or closed, red for confirmed,
+orange for other open, blue for pulled in reports.
+
+=cut
+
+sub is_defect {
+    my ($self, $p) = @_;
+    #return $p->external_id && $p->external_id =~ /^JOB_/;
+    return $p->user_id == $self->body->comment_user_id;
+}
+
+sub pin_colour {
+    my ( $self, $p ) = @_;
+    return 'blue' if $self->is_defect($p);
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'red' if $p->state eq 'confirmed';
+    return 'orange-work';
 }
 
 sub lookup_site_code_config {
@@ -215,48 +244,5 @@ sub lookup_site_code_config {
     };
 }
 
-=item * Uses the OSM geocoder
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
-
-=item * Make a few improvements to the display of geocoder results
-
-Remove 'Aberdeenshire' and 'Alba / Scotland', skip any that don't mention Aberdeenshire at all
-
-=cut
-
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-    $result->{display_name} = '' unless $result->{display_name} =~ /Aberdeenshire/;
-    $result->{display_name} =~ s#, Aberdeenshire, Alba / Scotland##;
-}
-
-=head2 pin_colour
-
-* Green if fixed or closed
-* Orange if defect or in progress
-* Red if open/confirmed
-
-=cut
-
-sub is_defect {
-    my ($self, $p) = @_;
-    return $p->user_id == $self->body->comment_user_id;
-}
-
-sub pin_colour {
-    my ( $self, $p ) = @_;
-
-    return 'green' if $p->is_fixed || $p->is_closed;
-
-    return 'orange' if $self->is_defect($p)
-        || $p->is_in_progress;
-
-    # Confirmed/open
-    return 'red';
-}
 
 1;
