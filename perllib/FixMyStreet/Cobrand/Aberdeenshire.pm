@@ -150,7 +150,8 @@ sub open311_update_missing_data {
         MR01 => 'n/a',
         MR02 => 'n/a',
         Q29 => 'YES',
-        Q33 => 'NK', # not known
+        Q31 => 'NK', # not known
+        Q33 => 'NK',
         Q36 => 'NK',
         Q37 => 'NK',
         Q38 => 'NK',
