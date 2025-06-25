@@ -716,7 +716,7 @@ sub process_request_data : Private {
         my ($id) = /container-(.*)/;
         $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
         if ($payment) {
-            unless ($c->cobrand->moniker eq 'kingston') {
+            unless ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'merton') {
                 $c->set_param('payment', $payment);
             }
             $c->set_param('payment_method', $payment_method);
