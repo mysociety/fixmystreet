@@ -222,7 +222,8 @@ sub oidc_sign_in : Private {
     # The OIDC endpoint may require a specific URI to be called to log the user
     # out when they log out of FMS.
     if ( my $redirect_uri = $cfg->{logout_uri} ) {
-        $redirect_uri .= "?post_logout_redirect_uri=";
+        my $param = $cfg->{logout_uri_redirect_param} || 'post_logout_redirect_uri';
+        $redirect_uri .= "?$param=";
         $redirect_uri .= URI::Escape::uri_escape( $c->uri_for('/auth/sign_out') );
         $oauth{logout_redirect_uri} = $redirect_uri;
     }
