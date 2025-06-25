@@ -107,6 +107,12 @@ FixMyStreet::override_config {
         payment_gateway => { merton => {
             request_cost_1 => 1800,
             request_cost_2 => 1800,
+            request_cost_26 => 1800,
+            adelante => {
+                cost_code => 'cost_code',
+                cost_code_admin_fee => 'admin_code',
+                request_cost_code => 'req_code',
+            }
         } },
     },
     STAGING_FLAGS => {
@@ -331,6 +337,7 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Action]'), '1';
         is $cgi->param('attribute[Reason]'), '1';
     };
+
     subtest 'Request new build container' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('Other containers', 'Does not contain "other" section if not staff');
@@ -346,6 +353,7 @@ FixMyStreet::override_config {
 
         is $sent_params->{items}[0]{reference}, 'LBM-RNC-' . $new_report->id;
         is $sent_params->{items}[0]{amount}, 1800, 'correct amount used';
+        is $sent_params->{items}[0]{cost_code}, 'req_code';
         check_extra_data_pre_confirm($new_report);
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
 
@@ -361,6 +369,44 @@ FixMyStreet::override_config {
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '1';
         is $cgi->param('attribute[Reason]'), '4';
+    };
+
+    subtest 'Request new garden container' => sub {
+        $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '26';
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-26' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        is $sent_params->{items}[0]{reference}, 'LBM-RNC-' . $new_report->id;
+        is $sent_params->{items}[0]{amount}, 1800, 'correct amount used';
+        is $sent_params->{items}[0]{cost_code}, 'admin_code';
+        check_extra_data_pre_confirm($new_report);
+
+        $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '1';
+    };
+
+    subtest 'Request both refuse and garden container' => sub {
+        $bin_data->[0]{ServiceTasks}{ServiceTask}[0]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '26';
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-1' => 1, 'container-26' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->waste_submit_check({ with_fields => { process => 'summary' } });
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        is $sent_params->{items}[0]{reference}, 'LBM-RNC-' . $new_report->id;
+        is $sent_params->{items}[0]{amount}, 1800, 'correct amount used';
+        is $sent_params->{items}[0]{cost_code}, 'req_code';
+        my $other_id = $new_report->get_extra_metadata('grouped_ids')->[0];
+        is $sent_params->{items}[1]{reference}, 'LBM-RNC-' . $other_id;
+        is $sent_params->{items}[1]{amount}, 1800, 'correct amount used';
+        is $sent_params->{items}[1]{cost_code}, 'admin_code';
+        check_extra_data_pre_confirm($new_report);
+
+        $bin_data->[0]{ServiceTasks}{ServiceTask}[0]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '19';
     };
 
     subtest 'Request new build container as staff' => sub {
@@ -463,12 +509,14 @@ FixMyStreet::override_config {
 
         is $sent_params->{items}[0]{reference}, 'LBM-RNC-' . $new_report->id;
         is $sent_params->{items}[0]{amount}, 1800, 'correct amount used';
+        is $sent_params->{items}[0]{cost_code}, 'req_code';
         check_extra_data_pre_confirm($new_report);
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
 
         check_extra_data_post_confirm($new_report);
         $mech->content_contains('request has been sent');
         $mech->content_contains('consider your request');
+
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA";
