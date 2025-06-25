@@ -787,6 +787,19 @@ fixmystreet.assets.gloucester.watercourses_filter = function(feature) {
     return maintenanceDuty && maintenanceDuty.startsWith('GCiC');
 };
 
+fixmystreet.assets.gloucester.street_or_plot_found = function(layer, asset) {
+    var selected_usrn = layer.selected_feature.attributes.itemId;
+    $('input[name="asset_resource_id"]').val(selected_usrn);
+    fixmystreet.assets.cobranduk.combined_road_found(layer, asset);
+};
+
+fixmystreet.assets.gloucester.street_or_plot_not_found = function(layer) {
+    var outcome = fixmystreet.assets.cobranduk.combined_road_not_found(layer);
+    if (outcome === 'no') {
+        $('input[name="asset_resource_id"]').val('');
+    }
+};
+
 fixmystreet.assets.cobranduk = {};
 
 /* Gloucester have separate layers for watercourses and ponds which
@@ -816,13 +829,15 @@ fixmystreet.assets.cobranduk.combined_road_not_found = function(layer) {
     var name = layer.fixmystreet.name;
     if (!combined || !name) {
         console.warn("Layers not set up correctly");
-        return;
+        return 'error';
     } else {
         var key_layer = fixmystreet.map.getLayersByName(combined[0])[0];
         var secondary_layer = fixmystreet.map.getLayersByName(combined[1])[0];
         if (!key_layer.selected_feature && !secondary_layer.selected_feature) {
             fixmystreet.message_controller.road_not_found(key_layer, function() { return true; });
+            return 'no';
         }
+        return 'yes';
     }
 };
 
