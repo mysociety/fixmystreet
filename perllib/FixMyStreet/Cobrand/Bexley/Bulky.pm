@@ -7,6 +7,7 @@ FixMyStreet::Cobrand::Bexley::Bulky - code specific to Bexley WasteWorks Bulky W
 package FixMyStreet::Cobrand::Bexley::Bulky;
 
 use DateTime::Format::Strptime;
+use FixMyStreet::App::Form::Waste::Bulky::Bexley;
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
 
@@ -123,6 +124,8 @@ sub waste_munge_bulky_data {
     $data->{category} = "Bulky collection";
     $data->{extra_collection_date} = $date;
     $data->{extra_round_instance_id} = $ref;
+    $data->{extra_pension} = $data->{pension};
+    $data->{extra_disability} = $data->{disability};
 
     my @items_list = @{ $self->bulky_items_master_list };
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
