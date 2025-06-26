@@ -45,8 +45,6 @@ sub bulky_cancel_by_update { 1 }
 
 sub bulky_hide_later_dates { 1 }
 
-sub bulky_points_per_item_pricing { 1 }
-
 sub bulky_disabled_item_photos { 1 }
 sub bulky_disabled_location_photo { 1 }
 
@@ -96,6 +94,48 @@ sub check_bulky_slot_available {
 
     my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
     return $slot ? 1 : 0;
+}
+
+# Pricing
+
+sub bulky_points_per_item_pricing { 1 }
+sub bulky_items_maximum { 104 } # XXX for oap, 52 for non
+
+sub bulky_item_points_total {
+    my ($self, $data) = @_;
+    my %points = map { $_->{name} => $_->{points} } @{ $self->bulky_items_master_list };
+    my $points = 0;
+    my $max = $self->bulky_items_maximum;
+    for (1..$max) {
+        my $item = $data->{"item_$_"} or next;
+        $points += $points{$item};
+    }
+    return $points;
+}
+
+sub bulky_points_to_price {
+    my ($self, $points, $levels) = @_;
+    my $total = 0;
+    foreach (@$levels) {
+        if ($points >= $_->{min}) {
+            $total = $_->{price};
+        }
+    }
+    return $total;
+}
+
+sub bulky_pricing_model {
+    my ($self, $data) = @_;
+    my $cfg = $self->wasteworks_config;
+
+    my $parser = DateTime::Format::Strptime->new( pattern => '%F' );
+    my $dt = $parser->parse_datetime($data->{chosen_date});
+    my $saturday = $dt->day_of_week == 6 ? 'yes' : 'no';
+
+    my $pension = lc $data->{pension};
+
+    my $points = $cfg->{points}{$saturday}{$pension};
+    return $points;
 }
 
 # Submission

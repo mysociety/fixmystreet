@@ -71,15 +71,21 @@ sub bulky_item_notes_field_mandatory { 0 }
 
 sub bulky_show_individual_notes { $_[0]->wasteworks_config->{show_individual_notes} };
 
+sub bulky_points_per_item_pricing { 0 }
+
 sub bulky_pricing_strategy {
     my $self = shift;
     my $base_price = $self->wasteworks_config->{base_price};
     my $band1_max = $self->wasteworks_config->{band1_max};
-    my $max = $self->bulky_items_maximum;
-    if ($self->bulky_per_item_costs) {
+    if ($self->bulky_points_per_item_pricing) {
+        my $data = $self->{c}->stash->{form}->saved_data;
+        my $points = $self->bulky_pricing_model($data);
+        return encode_json({ strategy => 'points', points => $points });
+    } elsif ($self->bulky_per_item_costs) {
         my $min_collection_price = $self->wasteworks_config->{per_item_min_collection_price} || 0;
         return encode_json({ strategy => 'per_item', min => $min_collection_price });
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
+        my $max = $self->bulky_items_maximum;
         return encode_json({ strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] });
     } else {
         return encode_json({ strategy => 'single' });
@@ -132,6 +138,7 @@ sub bulky_items_extra {
     for my $item ( @{ $self->bulky_items_master_list } ) {
         $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
         $hash{ $item->{name} }{price} = $item->{$price_key} if $item->{$price_key} && $per_item;
+        $hash{ $item->{name} }{points} = $item->{points} if $item->{points};
         $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
         $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
     }
@@ -146,7 +153,9 @@ sub bulky_minimum_cost {
 
     my $cfg = $self->wasteworks_config;
 
-    if ( $cfg->{per_item_costs} ) {
+    if ($self->bulky_points_per_item_pricing) {
+        return $cfg->{per_item_min_collection_price};
+    } elsif ( $cfg->{per_item_costs} ) {
 
         my $price_key = $self->bulky_per_item_price_key;
         # Get the item with the lowest cost
@@ -177,7 +186,16 @@ sub bulky_total_cost {
         $data->{extra_CHARGEABLE} = 'CHARGED';
 
         my $cfg = $self->wasteworks_config;
-        if ($cfg->{per_item_costs}) {
+        if ($self->bulky_points_per_item_pricing) {
+            my $points = $self->bulky_item_points_total($data);
+            my $levels = $self->bulky_pricing_model($data);
+            my $total = $self->bulky_points_to_price($points, $levels);
+            if ($total eq 'max') {
+                # Shouldn't ever reach here! Set stupid price
+                $total = 999_999_999;
+            }
+            $c->stash->{payment} = $total;
+        } elsif ($cfg->{per_item_costs}) {
             my $price_key = $self->bulky_per_item_price_key;
             my %prices = map { $_->{name} => $_->{$price_key} } @{ $self->bulky_items_master_list };
             my $total = 0;
