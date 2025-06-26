@@ -185,6 +185,13 @@ FixMyStreet::override_config {
             'item_1' => 'BBQ',
             'item_2' => 'Bicycle',
             'item_3' => 'Bath',
+            'item_4' => 'Bath',
+            'item_5' => 'Bath',
+        } });
+        $mech->content_contains('too many points');
+        $mech->submit_form_ok({ with_fields => {
+            'item_4' => '',
+            'item_5' => '',
         } });
         $mech->submit_form_ok({ with_fields => { location => 'Front garden or driveway' } });
         $mech->content_contains('3 items requested for collection');
@@ -391,6 +398,36 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
     };
 
+    subtest 'OAP pricing' => sub {
+        $mech->get_ok('/waste/10001/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ with_fields => { pension => 'Yes', disability => 'No' } });
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2025-07-04;3;' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath', 'item_4' => 'Bath', 'item_5' => 'Bath' } });
+        $mech->content_lacks('too many points');
+        $mech->submit_form_ok({ with_fields => { location => 'Front garden or driveway' } });
+        $mech->content_contains('5 items requested for collection');
+        $mech->content_contains('£66.00');
+    };
+
+    subtest 'Saturday pricing' => sub {
+        $mech->get_ok('/waste/10001/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ with_fields => { pension => 'No', disability => 'No' } });
+        $mech->content_contains('4 July');
+        $mech->content_contains('5 July');
+        $mech->content_lacks('7 July');
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2025-07-05;4;' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath', 'item_4' => 'Bath', 'item_5' => 'Bath' } });
+        $mech->content_contains('too many points');
+        $mech->submit_form_ok({ with_fields => { 'item_4' => '', 'item_5' => '' } });
+        $mech->submit_form_ok({ with_fields => { location => 'Front garden or driveway' } });
+        $mech->content_contains('3 items requested for collection');
+        $mech->content_contains('£89.50');
+    };
+
 };
 
 done_testing;
@@ -413,7 +450,6 @@ sub add_extra_metadata {
     $body->set_extra_metadata(
         wasteworks_config => {
             per_item_min_collection_price => 4550,
-            base_price => 6930,
             show_location_page => 'users',
             item_list => [
                 { bartec_id => '83', name => 'Bath', points => 4 },
@@ -422,6 +458,32 @@ sub add_extra_metadata {
                 { bartec_id => '3', name => 'BBQ', points => 2 },
                 { bartec_id => '6', name => 'Bookcase, Shelving Unit', points => 1 },
             ],
+            points => {
+                no => {
+                    no => [
+                        { min => 1, price => 4550 },
+                        { min => 9, price => 6930 },
+                        { min => 13, price => 'max' },
+                    ],
+                    yes => [
+                        { min => 1, price => 4330 },
+                        { min => 17, price => 6600 },
+                        { min => 25, price => 'max' },
+                    ],
+                },
+                yes => {
+                    no => [
+                        { min => 1, price => 6550 },
+                        { min => 9, price => 8950 },
+                        { min => 13, price => 'max' },
+                    ],
+                    yes => [
+                        { min => 1, price => 6550 },
+                        { min => 17, price => 8950 },
+                        { min => 25, price => 'max' },
+                    ],
+                },
+            },
         },
     );
     $body->update;
