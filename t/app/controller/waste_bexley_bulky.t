@@ -176,6 +176,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok;
         };
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ with_fields => { pension => 'No', disability => 'No' } });
         $mech->content_contains('4 July');
         $mech->content_contains('5 July');
         $mech->content_lacks('7 July');
@@ -449,5 +450,7 @@ sub _contact_extra_data {
         { code => 'collection_date' },
         { code => 'round_instance_id' },
         { code => 'bulky_items' },
+        { code => 'pension' },
+        { code => 'disability' },
     );
 }

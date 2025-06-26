@@ -311,5 +311,13 @@ SET data = form.saved_data;
     <dd>[% data.email %]</dd>
     <dt>Phone</dt>
     <dd>[% data.phone OR 'Not given' %]</dd>
+
+[% IF c.cobrand.moniker == 'bexley' %]
+    <dt>State pension?</dt>
+    <dd>[% data.pension %]</dd>
+    <dt>Physical disability?</dt>
+    <dd>[% data.disability %]</dd>
+[% END %]
+
   </dl>
 [% END %]
