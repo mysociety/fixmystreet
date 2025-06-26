@@ -41,6 +41,12 @@ sub council_area { 'Aberdeenshire' }
 sub council_name { 'Aberdeenshire Council' }
 sub council_url { 'aberdeenshire' }
 
+=item * We do not show reports made before go-live on 2025-06-25.
+
+=cut
+
+sub cut_off_date { '2025-06-25' }
+
 =item * Users with a Aberdeenshire.gov.uk email can always be found in the admin.
 
 =cut
