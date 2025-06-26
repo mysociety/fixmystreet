@@ -75,6 +75,9 @@ sub find_available_bulky_slots {
         };
     }
 
+    # Make sure there's a Saturday XXX TODO remove
+    push @available_slots, { date => '2025-07-26', id => 'saturday' };
+
     $self->{c}->waste_cache_set($key, \@available_slots) if !$no_cache;
 
     return \@available_slots;
