@@ -14,10 +14,12 @@ has_page intro => (
         my $data = $form->saved_data;
         my $c = $form->c;
         $data->{_residency_check} = 1 if $c->cobrand->moniker eq 'peterborough';
+        $data->{_pension_check} = 1 if $c->cobrand->moniker eq 'bexley';
         return {};
     },
     next => sub {
         return 'residency_check' if $_[0]->{_residency_check};
+        return 'pension_check' if $_[0]->{_pension_check};
         'about_you';
     }
 );
@@ -25,6 +27,11 @@ has_page intro => (
 has_page residency_check => (
     fields => ['resident', 'continue'],
     next => sub { $_[0]->{resident} eq 'Yes' ? 'about_you' : 'cannot_book' },
+);
+
+has_page pension_check => (
+    fields => ['pension', 'disability', 'continue'],
+    next => 'about_you',
 );
 
 has_page cannot_book => (
@@ -62,6 +69,28 @@ has_field resident => (
     widget => 'RadioGroup',
     required => 1,
     label => 'Do you live at the property or are you booking on behalf of the householder?',
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
+has_field pension => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    required => 1,
+    label => 'Is anyone at the property in receipt of a state pension?',
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
+has_field disability => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    required => 1,
+    label => 'Do you have a physical disability?',
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
