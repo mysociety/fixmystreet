@@ -330,25 +330,41 @@ sub validate {
         }
     }
 
+    my $cobrand = $self->c->cobrand;
     if ($self->current_page->name eq 'add_items') {
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $cobrand->bulky_items_maximum;
         my %given;
+
+        my $points = 0;
+        my %points = map { $_->{name} => $_->{points} } @{ $cobrand->bulky_items_master_list };
+
         for my $num ( 1 .. $max_items ) {
             my $val = $self->field("item_$num")->value or next;
             $given{$val}++;
+            $points += $points{$val} if $points{$val};
         }
+
         my %max = map { $_->{name} => $_->{max} } @{ $self->items_master_list };
         foreach (sort keys %given) {
             if ($max{$_} && $given{$_} > $max{$_}) {
                 $self->add_form_error("Too many of item: $_");
             }
         }
+
+        # Points need to check maximum
+        if ($cobrand->bulky_points_per_item_pricing) {
+            my $levels = $cobrand->bulky_pricing_model($self->saved_data);
+            my $total = $cobrand->bulky_points_to_price($points, $levels);
+            if ($total eq 'max') {
+                $self->add_form_error("You have used too many points");
+            }
+        }
     }
 
     if ($self->current_page->name eq 'summary' && $self->c->stash->{amending_booking}) {
-        my $old = $self->c->cobrand->waste_reconstruct_bulky_data($self->c->stash->{amending_booking});
+        my $old = $cobrand->waste_reconstruct_bulky_data($self->c->stash->{amending_booking});
         my $new = $self->saved_data;
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $cobrand->bulky_items_maximum;
         my $same = 1;
         my @fields = qw(chosen_date location location_photo);
         push @fields, map { ("item_$_", "item_photo_$_") } 1 .. $max_items;
