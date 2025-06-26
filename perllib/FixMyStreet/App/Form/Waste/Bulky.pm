@@ -36,7 +36,10 @@ has_page about_you => (
     intro => 'bulky/about_you_preamble.html',
     fields => ['name', 'email', 'phone', 'continue'],
     title => 'About you',
-    next => 'choose_date_earlier',
+    next => sub {
+        return 'pension_check' if $_[0]->{_pension_check};
+        'choose_date_earlier';
+    },
     update_field_list => sub {
         my $form = shift;
         my $c = $form->c;
