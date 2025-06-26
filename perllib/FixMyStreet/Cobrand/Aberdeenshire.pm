@@ -257,6 +257,46 @@ sub lookup_site_code_config {
     };
 }
 
+=head2 problems_restriction/problems_sql_restriction/problems_on_map_restriction
+
+Reports made on FMS.com before the cut off date are not shown on the Aberdeenshire cobrand;
+however if a report was fetched over Open311 it is shown regardless of the cut off date.
+
+=cut
+
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs if FixMyStreet->staging_flag('skip_checks');
+
+    $rs = $rs->to_body($self->body);
+
+    my $date = $self->cut_off_date;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    return $rs->search([
+        { "$table.created" => { '>=', $date } },
+        { "$table.service" => 'Open311' },
+    ]);
+}
+
+sub problems_sql_restriction {
+    my ($self, $item_table) = @_;
+    my $date = $self->cut_off_date;
+    if ($item_table ne 'comment') {
+        return " AND ( created >= '$date' OR service = 'Open311' )";
+    } else {
+        return " AND created >= '$date'";
+    }
+}
+
+sub problems_on_map_restriction {
+    my ($self, $rs) = @_;
+    my $date = $self->cut_off_date;
+    my $table = ref $rs eq 'FixMyStreet::DB::ResultSet::Nearby' ? 'problem' : 'me';
+    return $rs->search([
+        { "$table.created" => { '>=', $date } },
+        { "$table.service" => 'Open311' },
+    ]);
+}
 
 =head2 dashboard_export_problems_add_columns
 
