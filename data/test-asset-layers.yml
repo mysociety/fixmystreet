@@ -370,36 +370,45 @@ peterborough:
       asset_id_field: 'UNITID'
       asset_type: 'spot'
       asset_item: 'light'
-    - name: 'flytipping'
+
+    - name: 'pcc_property'
       template: 'arcgis'
-      http_options:
-        params:
-          inSR: '3857'
-          outSR: '3857'
-          f: 'geojson'
-          outFields: ''
+      # this prevents issues when public and non public land are right next to each other
       nearest_radius: 0.01
       stylemap: fixmystreet.assets.stylemap_invisible
-      asset_category: ['General fly tipping', 'Hazardous fly tipping']
       non_interactive: true
       road: true
       asset_item: 'road'
       asset_type: 'road'
-    - name: 'graffiti'
-      template: 'arcgis'
+
+    # PCC Property Combined
+    - name: 'pcc_property_combined'
+      template: 'pcc_property'
       http_options:
+        url: 'https://tilma.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/4/query?'
         params:
           inSR: '3857'
           outSR: '3857'
-          f: 'geojson'
+          f: 'json'
           outFields: ''
-      nearest_radius: 0.01
-      stylemap: fixmystreet.assets.stylemap_invisible
-      asset_category: ['Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY']
-      non_interactive: true
-      road: true
-      asset_item: 'road'
-      asset_type: 'road'
+      actions:
+        found: fixmystreet.assets.peterborough.pcc_found
+        not_found: fixmystreet.assets.peterborough.pcc_not_found
+
+    # PCC Property Leased Out NOT Responsible
+    - name: 'pcc_property_leased_out'
+      template: 'pcc_property'
+      http_options:
+        url: 'https://tilma.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/3/query?'
+        params:
+          inSR: '3857'
+          outSR: '3857'
+          f: 'json'
+          outFields: ''
+      actions:
+        found: fixmystreet.assets.peterborough.leased_found
+        not_found: fixmystreet.assets.peterborough.leased_not_found
+
   - template: 'trees'
     wfs_feature: "tree_points"
     asset_type: 'spot'
@@ -416,36 +425,28 @@ peterborough:
     actions:
       asset_found: fixmystreet.assets.peterborough.lighting_asset_found
       asset_not_found: fixmystreet.assets.peterborough.lighting_asset_not_found
-  # PCC Property Combined
-  - template: 'flytipping'
+
+  - asset_category: ['General fly tipping', 'Hazardous fly tipping' ]
+    template: 'pcc_property_combined'
     message_template: '#js-environment-message'
-    http_options:
-      url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/4/query?'
-    actions:
-      found: fixmystreet.assets.peterborough.pcc_found
-      not_found: fixmystreet.assets.peterborough.pcc_not_found
-  - template: 'graffiti'
-    message_template: '#js-graffiti-message'
-    http_options:
-      url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/4/query?'
-    actions:
-      found: fixmystreet.assets.peterborough.pcc_found
-      not_found: fixmystreet.assets.peterborough.pcc_not_found
-  # PCC Property Leased Out NOT Responsible
-  - template: 'flytipping'
+  - asset_category: ['General fly tipping', 'Hazardous fly tipping' ]
+    template: 'pcc_property_leased_out'
     message_template: '#js-environment-message'
-    http_options:
-      url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/3/query?'
-    actions:
-      found: fixmystreet.assets.peterborough.leased_found
-      not_found: fixmystreet.assets.peterborough.leased_not_found
-  - template: 'graffiti'
+
+  - asset_category: ['Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY' ]
+    template: 'pcc_property_combined'
     message_template: '#js-graffiti-message'
-    http_options:
-      url: 'https://tilma.staging.mysociety.org/resource-proxy/proxy.php?https://peterborough.assets/3/query?'
-    actions:
-      found: fixmystreet.assets.peterborough.leased_found
-      not_found: fixmystreet.assets.peterborough.leased_not_found
+  - asset_category: ['Offensive graffiti', 'Non offensive graffiti', 'Offensive graffiti - STAFF ONLY' ]
+    template: 'pcc_property_leased_out'
+    message_template: '#js-graffiti-message'
+
+  - asset_category: ['Abandoned vehicles']
+    template: 'pcc_property_combined'
+    message_template: '#js-abandoned-vehicles-message'
+  - asset_category: ['Abandoned vehicles']
+    template: 'pcc_property_leased_out'
+    message_template: '#js-abandoned-vehicles-message'
+
 shropshire:
   - http_wfs_url: "https://tilma.mysociety.org/mapserver/shropshire"
     asset_type: 'spot'
