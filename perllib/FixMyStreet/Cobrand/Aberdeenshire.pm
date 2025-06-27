@@ -43,6 +43,12 @@ sub council_area { 'Aberdeenshire' }
 sub council_name { 'Aberdeenshire Council' }
 sub council_url { 'aberdeenshire' }
 
+=item * We do not show reports made before go-live on 2025-06-25.
+
+=cut
+
+sub cut_off_date { '2025-06-25' }
+
 =item * Users with a Aberdeenshire.gov.uk email can always be found in the admin.
 
 =cut
@@ -151,7 +157,6 @@ sub open311_update_missing_data {
     my %defaults = (
         MR01 => 'n/a',
         MR02 => 'n/a',
-        Q29 => 'YES',
         Q31 => 'NK', # not known
         Q33 => 'NK',
         Q36 => 'NK',
@@ -167,6 +172,10 @@ sub open311_update_missing_data {
         if ($contact->get_extra_field(code => $_)  && !$row->get_extra_field_value($_)) {
             $row->update_extra_field({ name => $_, value => $v });
         }
+    }
+    # Q29 is the odd one out - default value depends on the category
+    if ($contact->get_extra_field(code => 'Q29')  && !$row->get_extra_field_value('Q29')) {
+        $row->update_extra_field({ name => 'Q29', value => ($contact->category eq 'Property/Vehicle Damage') ? 'YES' : 'NO' });
     }
 }
 
@@ -279,5 +288,29 @@ sub open311_get_update_munging {
     }
 }
 
+
+=head2 dashboard_export_problems_add_columns
+
+Aberdeenshire include the external ID of reports in the CSV export
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        external_id => 'Confirm ID',
+    );
+
+    return if $csv->dbi;
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        return {
+            external_id => $report->external_id,
+        };
+    });
+}
 
 1;
