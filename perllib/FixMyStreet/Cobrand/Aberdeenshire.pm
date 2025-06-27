@@ -258,4 +258,28 @@ sub lookup_site_code_config {
 }
 
 
+=head2 dashboard_export_problems_add_columns
+
+Aberdeenshire include the external ID of reports in the CSV export
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        external_id => 'Confirm ID',
+    );
+
+    return if $csv->dbi;
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+
+        return {
+            external_id => $report->external_id,
+        };
+    });
+}
+
 1;
