@@ -36,6 +36,12 @@ FixMyStreet::override_config {
             $mech->content_contains('website,aberdeenshire,,9876543', 'Pre-generated CSV contains external ID');
             $mech->log_out_ok;
         };
+
+        subtest 'Front page has correct wording' => sub {
+            $mech->get_ok("/");
+            $mech->content_contains("<h1>Report a problem</h1>");
+            $mech->content_contains("Report, view and check progress on a road, roadside");
+        };
 };
 
 
