@@ -43,5 +43,92 @@ has_field disability => (
     ],
 );
 
-1;
+has_page location => (
+    title    => 'Location details',
+    intro => 'bulky/location.html',
+    fields   =>
+        [ 'location', 'parking', 'parking_extra_details', 'location_photo', 'location_photo_fileid', 'continue' ],
+    next => 'summary',
+    field_ignore_list => sub {
+        return ['location_photo', 'location_photo_fileid'];
+    },
+);
 
+has_field location => (
+    label => 'Where can the items be left for collection?',
+    type => 'Select',
+    required => 1,
+    widget => 'RadioGroup',
+    options_method => sub {
+        my $self = shift;
+        my $data = $self->form->saved_data;
+        my @options = (
+            'Front garden or driveway',
+            'Rear of property (only for properties with no frontage)',
+            'Side of property (only for properties with no frontage)',
+            'Inside garage (left open)',
+            'Inside or alongside communal bin-store (flats only)',
+            'In the car park (flats only)',
+            'In the bulky waste store (flats only)',
+            'Report to office (flats or schools only)',
+        );
+        if ($data->{disability} eq 'Yes') {
+            push @options,
+                'Inside the property (ground-floor only)';
+        }
+        @options = map { { label => $_, value => $_ } } @options;
+        return \@options;
+    },
+);
+
+has_field parking => (
+    label => 'Are there any parking restrictions outside the property?',
+    type => 'Select',
+    required => 1,
+    widget => 'RadioGroup',
+    options => [
+        {   label     => 'No',
+            value     => 'No',
+            data_hide => '#form-parking_extra_details-row',
+        },
+        {   label => 'Yes – Single Yellow Lines',
+            value => 'Yes - Single Yellow Lines',
+            data_show => '#form-parking_extra_details-row',
+        },
+        {   label     => 'Yes – Double Yellow Lines',
+            value     => 'Yes - Double Yellow Lines',
+            data_hide => '#form-parking_extra_details-row',
+        },
+        {   label     => 'Yes – Red Lines',
+            value     => 'Yes - Red Lines',
+            data_hide => '#form-parking_extra_details-row',
+        },
+        {   label => 'Yes – Controlled Parking Zone',
+            value => 'Yes - Controlled Parking Zone',
+            data_show => '#form-parking_extra_details-row',
+        },
+        {   label => 'Yes – Resident Permit Holders Only',
+            value => 'Yes - Resident Permit Holders Only',
+            data_show => '#form-parking_extra_details-row',
+        },
+    ],
+);
+
+has_field parking_extra_details => (
+    label => 'Tell us about the parking restrictions (up to 250 characters)',
+    type => 'Text',
+    widget => 'Textarea',
+    maxlength => 250,
+    required_when => {
+        parking => sub {
+            $_[1]->form->field('parking')->value
+                =~ /^Yes - (Single Yellow Lines|Controlled Parking Zone|Resident Permit Holders Only)$/;
+        },
+    },
+    tags => {
+        hint => 'Include details such as time restrictions etc.',
+        initial_hidden => 1,
+    },
+);
+
+1;
