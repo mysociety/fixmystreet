@@ -5,7 +5,8 @@
 <div id="js-environment-message" class="hidden box-warning">
     [% INCLUDE 'report/new/flytipping_text.html' %]
 </div>
+<div id="js-abandoned-vehicles-message" class="hidden box-warning">
+    [% abandoned_vehicles_text = INCLUDE 'report/new/abandoned_vehicles_text.html' %][% abandoned_vehicles_text | add_links | html_para %]
+</div>
 <div id="js-graffiti-message" class="hidden box-warning">
-    <p>
     [% graffiti_text = INCLUDE 'report/new/graffiti_text.html' %][% graffiti_text | add_links | html_para %]
-    </p>
