@@ -530,6 +530,7 @@ sub report_new_munge_before_insert {
     # Make sure TfL reports are marked safety critical
     $self->SUPER::report_new_munge_before_insert($report);
 
+    FixMyStreet::Cobrand::Brent::report_new_munge_before_insert($self, $report);
     FixMyStreet::Cobrand::Buckinghamshire::report_new_munge_before_insert($self, $report);
     FixMyStreet::Cobrand::Merton::report_new_munge_before_insert($self, $report);
 }
