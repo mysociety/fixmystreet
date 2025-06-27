@@ -50,6 +50,22 @@ sub bulky_disabled_location_photo { 1 }
 
 # Look up slots
 
+=head2 bulky_collection_window_start_date
+
+Bexley have a 4pm cut-off for looking to book next day collections.
+
+=cut
+
+sub bulky_collection_window_start_date {
+    my ($self, $now) = @_;
+    my $start_date = $now->clone->truncate( to => 'day' )->add( days => 1 );
+    # If past 4pm, push start date one day later
+    if ($now->hour >= 16) {
+        $start_date->add( days => 1 );
+    }
+    return $start_date;
+}
+
 sub find_available_bulky_slots {
     my ( $self, $property, $last_earlier_date_str, $no_cache ) = @_;
 
