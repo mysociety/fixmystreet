@@ -42,6 +42,13 @@ FixMyStreet::override_config {
             $mech->content_contains("<h1>Report a problem</h1>");
             $mech->content_contains("Report, view and check progress on a road, roadside");
         };
+
+        subtest 'FAQ page has correct wording' => sub {
+            $mech->get_ok("/faq");
+            $mech->content_contains("This service is for reporting issues on roads, roadside and pavements");
+            $mech->content_contains("You will need to either provide your email address or sign in with");
+            $mech->content_contains("service as a mobile app");
+        };
 };
 
 
