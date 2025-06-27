@@ -313,4 +313,13 @@ sub dashboard_export_problems_add_columns {
     });
 }
 
+=head2 skip_alert_state_changed_to
+
+Aberdeenshire don't want the state of the report to be shown in update emails.
+
+=cut
+
+sub skip_alert_state_changed_to { 1 }
+
+
 1;
