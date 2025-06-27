@@ -241,7 +241,14 @@ SET data = form.saved_data;
         [% PROCESS change_answers_button goto='location' %]
       </div>
       <p>
-        [% IF data.location %]
+        [% IF data.parking %]
+          <dl>
+              <dt>Location</dt>
+              <dd>[% data.location %]</dd>
+              <dt>Parking restrictions</dt>
+              <dd>[% data.parking %]</dd>
+          </dl>
+        [% ELSIF data.location %]
           [% data.location %]
         [% ELSE %]
           No description provided.

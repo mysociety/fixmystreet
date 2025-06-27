@@ -193,7 +193,7 @@ FixMyStreet::override_config {
             'item_4' => '',
             'item_5' => '',
         } });
-        $mech->submit_form_ok({ with_fields => { location => 'Front garden or driveway' } });
+        $mech->submit_form_ok({ with_fields => { parking => 'No', location => 'Front garden or driveway' } });
         $mech->content_contains('3 items requested for collection');
         $mech->content_contains('£69.30');
 
@@ -406,7 +406,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { chosen_date => '2025-07-04;3;' } });
         $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath', 'item_4' => 'Bath', 'item_5' => 'Bath' } });
         $mech->content_lacks('too many points');
-        $mech->submit_form_ok({ with_fields => { location => 'Front garden or driveway' } });
+        $mech->submit_form_ok({ with_fields => { parking => 'No', location => 'Front garden or driveway' } });
         $mech->content_contains('5 items requested for collection');
         $mech->content_contains('£66.00');
     };
@@ -423,7 +423,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath', 'item_4' => 'Bath', 'item_5' => 'Bath' } });
         $mech->content_contains('too many points');
         $mech->submit_form_ok({ with_fields => { 'item_4' => '', 'item_5' => '' } });
-        $mech->submit_form_ok({ with_fields => { location => 'Front garden or driveway' } });
+        $mech->submit_form_ok({ with_fields => { parking => 'No', location => 'Front garden or driveway' } });
         $mech->content_contains('3 items requested for collection');
         $mech->content_contains('£89.50');
     };
@@ -514,5 +514,7 @@ sub _contact_extra_data {
         { code => 'bulky_items' },
         { code => 'pension' },
         { code => 'disability' },
+        { code => 'bulky_location' },
+        { code => 'bulky_parking' },
     );
 }
