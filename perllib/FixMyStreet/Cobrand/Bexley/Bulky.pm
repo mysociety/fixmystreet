@@ -185,6 +185,8 @@ sub waste_munge_bulky_data {
     $data->{extra_round_instance_id} = $ref;
     $data->{extra_pension} = $data->{pension};
     $data->{extra_disability} = $data->{disability};
+    $data->{extra_bulky_location} = $data->{location};
+    $data->{extra_bulky_parking} = $data->{parking};
 
     my @items_list = @{ $self->bulky_items_master_list };
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
