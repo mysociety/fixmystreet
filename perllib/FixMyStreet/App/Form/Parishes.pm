@@ -9,7 +9,6 @@ use Path::Tiny;
 use File::Copy;
 use Digest::SHA qw(sha1_hex);
 use File::Basename;
-use Memcached;
 
 has c => ( is => 'ro' );
 
@@ -121,34 +120,8 @@ has_field parish => (
 );
 
 sub options_parish {
-    my $key = "fixmystreet:options_parish_data";
-    my $expiry = 24 * 60 * 60; # 24 hours
-
-    my $out = Memcached::get_or_calculate($key, $expiry, sub {
-        use LWP::Simple;
-        my $areas = mySociety::MaPit::call('areas', 'CPC');
-        my %count;
-        my %parents;
-        foreach (values %$areas) {
-            $count{$_->{name}}++;
-        }
-        foreach (values %$areas) {
-            if ($count{$_->{name}} > 1) {
-                $parents{$_->{parent_area}} = 1;
-            }
-        }
-        my $parents_data = mySociety::MaPit::call('areas', [ keys %parents ]);
-        my @out = map {
-            my $label = $_->{name};
-            if ($count{$label} > 1) {
-                my $parent = $parents_data->{$_->{parent_area}};
-                $label .= " (" . $parent->{name} . ")";
-            }
-            { label => $label, value => $_->{id} },
-        } sort { $a->{name} cmp $b->{name} } values %$areas;
-        return \@out;
-    });
-    return @$out;
+    my $areas = decode_json(path(FixMyStreet->path_to('data/parishes.json'))->slurp_utf8);
+    return @$areas;
 }
 
 has_field delivery => (
