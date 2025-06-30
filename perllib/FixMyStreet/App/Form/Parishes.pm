@@ -117,6 +117,19 @@ has_field parish => (
     empty_select => 'Please pick your town/parish council',
     label => 'Please pick your town/parish council',
     tags => { autocomplete => 1 },
+    validate_method => sub {
+        my $self = shift;
+        my $v = $self->value;
+        my $existing = FixMyStreet::DB->resultset("Body")->search(
+            { 'body_areas.area_id' => $v }, { join => 'body_areas' })->first;
+        if ($existing) {
+            # TODO What to do here?
+            $self->add_error('That parish already exists in our system :)');
+            my $c = $self->form->c;
+            $c->res->redirect('/about/parishes/existing');
+            $c->detach;
+        }
+    },
 );
 
 sub options_parish {
