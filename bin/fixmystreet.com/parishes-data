@@ -1,0 +1,51 @@
+#!/usr/bin/env perl
+
+use utf8;
+use JSON::MaybeXS;
+use Path::Tiny;
+use FixMyStreet::MapIt;
+
+# Get all parishes
+my $areas = FixMyStreet::MapIt::call('areas', 'CPC');
+
+# Find non-uniquely named areas
+my %count;
+my %count_same_parent;
+foreach (values %$areas) {
+    $count{$_->{name}}++;
+    $count_same_parent{$_->{name}}{$_->{parent_area}}++;
+}
+
+# Find all parent areas for those areas
+my %parents;
+foreach (values %$areas) {
+    if ($count{$_->{name}} > 1) {
+        $parents{$_->{parent_area}} = 1;
+    }
+}
+
+# Add parent name to those areas
+my $parents_data = FixMyStreet::MapIt::call('areas', [ keys %parents ]);
+my @out = map {
+    my $label = $_->{name};
+    my $parent_id = $_->{parent_area};
+    if ($count{$label} > 1) {
+        my $parent = $parents_data->{$parent_id};
+        my $after = $parent->{name};
+        if ($count_same_parent{$label}{$parent_id} > 1) {
+            print "$label $parent_id $_->{id}\n";
+            my $touching = FixMyStreet::MapIt::call('area/touches', $_->{id}, type => 'CPC');
+            $after .= "; near " . join(", ", map { $_->{name} } sorted_areas($touching));
+        }
+        $label .= " ($after)";
+    }
+    { label => $label, value => $_->{id} };
+} sorted_areas($areas);
+
+my $out = JSON->new->utf8->canonical->encode(\@out);
+path(FixMyStreet->path_to('data/parishes.json'))->spew_utf8($out);
+
+sub sorted_areas {
+    my $areas = shift;
+    sort { $a->{name} cmp $b->{name} || $a->{id} <=> $b->{id} } values %$areas;
+}
