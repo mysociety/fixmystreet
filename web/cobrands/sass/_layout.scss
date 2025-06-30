@@ -753,6 +753,16 @@ body.authpage {
   }
 }
 
+.my-account-preferences-list--email,
+.my-account-preferences-list--phone {
+  flex-direction: row;
+  align-items: center;
+
+  a.btn {
+    padding: 0.5em 1em;
+  }
+}
+
 /*FORMS*/
 input[type=text],
 input[type=password],
