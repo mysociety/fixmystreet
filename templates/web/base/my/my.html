@@ -23,43 +23,32 @@
 <p class="form-success">[% flash_message %]</p>
 [% END %]
 
-<style>
-/* TODO XXX */
-li .my-account-buttons {
-    float: right;
-    margin: 0;
-}
-li .my-account-buttons a {
-    padding: 0 0.5em;
-}
-</style>
-
 <form method="post" action="[% c.uri_for_action('/my/notify_preference') %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
-<ul>
-<li>[% loc('Name:') %] [% c.user.name %]
-<li>[% loc('Email:') %] [% c.user.email OR '-' %]
+<ul class="my-account-preferences-list">
+<li><strong>[% loc('Name:') %]</strong> [% c.user.name %]
+<li class="my-account-preferences-list--email"><span><strong>[% loc('Email:') %]</strong> [% c.user.email OR '-' %]</span>
     <p class="my-account-buttons my-account-buttons--email">
       [% IF NOT c.user.email %]
-        <a href="/auth/change_email">[% loc('Add') %]</a>
+        <a class="btn" href="/auth/change_email">[% loc('Add') %]</a>
       [% ELSIF c.user.email_verified %]
-        <a href="/auth/change_email">[% loc('Change') %]</a>
+        <a class="btn" href="/auth/change_email">[% loc('Change') %]</a>
       [% ELSE %]
-        <a href="/auth/verify/email">[% loc('Verify') %]</a>
-        <a href="/auth/change_email">[% loc('Change') %]</a>
+        <a class="btn" href="/auth/verify/email">[% loc('Verify') %]</a>
+        <a class="btn" href="/auth/change_email">[% loc('Change') %]</a>
       [% END %]
     </p>
-<li>[% loc('Phone:') %] [% c.user.phone_display OR '-' %]
+<li class="my-account-preferences-list--phone"><span><strong>[% loc('Phone:') %]</strong> [% c.user.phone_display OR '-' %]</span>
     <p class="my-account-buttons">
       [% IF NOT c.user.phone %]
-        <a href="/auth/change_phone">[% loc('Add') %]</a>
+        <a class="btn" href="/auth/change_phone">[% loc('Add') %]</a>
       [% ELSIF c.user.phone_verified %]
-        <a href="/auth/change_phone">[% loc('Change') %]</a>
+        <a class="btn" href="/auth/change_phone">[% loc('Change') %]</a>
       [% ELSE %]
        [% IF c.cobrand.sms_authentication %]
-        <a href="/auth/verify/phone">[% loc('Verify') %]</a>
+        <a class="btn" href="/auth/verify/phone">[% loc('Verify') %]</a>
        [% END %]
-        <a href="/auth/change_phone">[% loc('Change') %]</a>
+        <a class="btn" href="/auth/change_phone">[% loc('Change') %]</a>
       [% END %]
     </p>
 [% current_pref = c.user.get_extra_metadata('update_notify') %]
@@ -119,20 +108,22 @@ li .my-account-buttons a {
 
 <p class="my-account-buttons">
   [% IF c.session.oauth.change_password_uri %]
-    <a class="change-password" href="[% c.session.oauth.change_password_uri | html %]">[% loc('Change password') %]</a>
+    <a class="btn change-password has-inline-svg" href="[% c.session.oauth.change_password_uri | html %]">[% INCLUDE 'icons/password.html' width='1em' height='1em' %][% loc('Change password') %]</a>
   [% ELSE %]
-    <a class="change-password" href="/auth/change_password">
+    <a class="btn change-password has-inline-svg" href="/auth/change_password">
     [%~ IF c.user.password ~%]
+      [% INCLUDE 'icons/password.html' width='1em' height='1em' %]
       [% loc('Change password') %]
     [%~ ELSE ~%]
+      [% INCLUDE 'icons/password.html' width='1em' height='1em' %]
       [% loc('Set password') %]
     [%~ END ~%]
     </a>
   [% END %]
   [% IF c.user AND (c.user.from_body OR c.user.is_superuser) %]
-  <a href="/auth/generate_token">[% loc('Security') %]</a>
+  <a class="btn has-inline-svg" href="/auth/generate_token">[% INCLUDE 'icons/security.html' width='1em' height='1em' %][% loc('Security') %]</a>
   [% END %]
-  <a href="/auth/sign_out">[% loc('Sign out') %]</a>
+  <a class="btn has-inline-svg" href="/auth/sign_out">[% INCLUDE 'icons/sign-out.html' width='1em' height='1em' %][% loc('Sign out') %] </a>
 </p>
 
 <h2>[% loc('Your reports') %]</h2>
