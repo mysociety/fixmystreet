@@ -73,35 +73,61 @@ has security => (
 
 has backend_type => ( is => 'ro', default => 'whitespace' );
 
+has max_retries => (
+    is => 'lazy',
+    default => sub { $ENV{WHITESPACE_MAX_RETRIES} || 1 },
+);
+
+has retry_wait_seconds => (
+    is => 'lazy',
+    default => sub { $ENV{WHITESPACE_RETRY_WAIT_SECONDS} || 5 },
+);
+
 sub call {
     my ($self, $method, @params) = @_;
 
-    require SOAP::Lite;
+    for (my $i = 1; $i <= $self->max_retries; $i++) {
+        my $response = eval {
+            require SOAP::Lite;
 
-    # SOAP::Lite uses some global constants to set e.g. the request's
-    # Content-Type header and various envelope XML attributes. On new() it sets
-    # up those XML attributes, and even if you call soapversion on the object's
-    # serializer after, it does nothing if the global version matches the
-    # object's current version (which it will!), and then uses those same
-    # constants anyway. So we have to set the version globally before creating
-    # the object (during the call to self->endpoint), and also during the
-    # call() (because it uses the constants at that point to set the
-    # Content-Type header), and then set it back after so it doesn't break
-    # other users of SOAP::Lite.
-    SOAP::Lite->soapversion(1.1);
+            # SOAP::Lite uses some global constants to set e.g. the request's
+            # Content-Type header and various envelope XML attributes. On new() it sets
+            # up those XML attributes, and even if you call soapversion on the object's
+            # serializer after, it does nothing if the global version matches the
+            # object's current version (which it will!), and then uses those same
+            # constants anyway. So we have to set the version globally before creating
+            # the object (during the call to self->endpoint), and also during the
+            # call() (because it uses the constants at that point to set the
+            # Content-Type header), and then set it back after so it doesn't break
+            # other users of SOAP::Lite.
+            SOAP::Lite->soapversion(1.1);
 
-    @params = make_soap_structure(@params);
-    my $som = $self->endpoint->call(
-        $method => @params,
-        $self->security
-    );
+            @params = make_soap_structure(@params);
 
-    SOAP::Lite->soapversion(1.2);
+            my $som = $self->endpoint->call(
+                $method => @params,
+                $self->security
+            );
 
-    # TODO: Better error handling
-    die $som->faultstring if ($som->fault);
+            SOAP::Lite->soapversion(1.2);
 
-    return $som->result;
+            # TODO: Better error handling
+            die $som->faultstring if ($som->fault);
+
+            return $som->result;
+        };
+
+        if ($@) {
+            $self->log($method . " call with params " . Dumper(@params) . " failed with error :" .  $@);
+            if ($i == $self->max_retries) {
+                die;
+            }
+            sleep $self->retry_wait_seconds;
+            next;
+        }
+
+        return $response;
+    }
 }
 
 sub GetSiteCollections {
