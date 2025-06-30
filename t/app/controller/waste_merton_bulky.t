@@ -942,14 +942,14 @@ FixMyStreet::override_config {
         ok set_fixed_time('2023-07-08T13:44:59Z'), "Set current date to collection date before 6pm";
         ok $report->update({ state => 'confirmed', external_id => 'a-guid'}), 'Reopen the report from previous test which cancelled it';
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Report a bulky waste collection as missed', "Not able to report a missed collection on day of collection before 6pm");
+        $mech->content_lacks('Report a missed bulky waste collection', "Not able to report a missed collection on day of collection before 6pm");
         ok set_fixed_time('2023-07-08T18:00:59Z'), "Set current date to collection date after 6pm";
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a bulky waste collection as missed', "Can report missed collection on day of collection after 6pm");
+        $mech->content_contains('Report a missed bulky waste collection', "Can report missed collection on day of collection after 6pm");
         ok $report->update({ state => 'fixed - council', external_id => 'a-guid' }), 'Set report to fixed for next tests';
         ok set_fixed_time('2023-07-05T05:44:59Z'), 'Set current date to 5th July';
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Report a bulky waste collection as missed');
+        $mech->content_lacks('Report a missed bulky waste collection');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
@@ -960,7 +960,7 @@ FixMyStreet::override_config {
             EventStateId => 12400,
         } ] } );
         $mech->get_ok('/waste/12345');
-        $mech->content_lacks('Report a bulky waste collection as missed', 'Too long ago');
+        $mech->content_lacks('Report a missed bulky waste collection', 'Too long ago');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
@@ -971,7 +971,7 @@ FixMyStreet::override_config {
             EventStateId => 12400,
         } ] } );
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a bulky waste collection as missed', 'In time, normal completion');
+        $mech->content_contains('Report a missed bulky waste collection', 'In time, normal completion');
         $mech->submit_form_ok({ form_number => 1 }, "Follow link for reporting a missed bulky collection");
         $mech->content_contains('Bulky waste collection');
         $mech->submit_form_ok({ form_number => 1 });
