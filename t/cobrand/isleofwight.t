@@ -278,7 +278,10 @@ subtest "fetched requests do not use the description text" => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'isleofwight',
     }, sub {
-        $update->create_problems( $o, $isleofwight );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $isleofwight, $args);
+        $update->create_problems( $o, $isleofwight, $args, $requests );
+
     };
 
     my $p = FixMyStreet::DB->resultset('Problem')->search(

@@ -42,7 +42,9 @@ sub fetch {
         $self->system_user( $body->comment_user );
         $self->convert_latlong( $body->convert_latlong );
         $self->fetch_all( $body->get_extra_metadata('fetch_all_problems') );
-        $self->create_problems( $o, $body );
+        my $args = $self->format_args;
+        my $requests = $self->get_requests($o, $body, $args);
+        $self->create_problems( $o, $body, $args, $requests );
     }
 }
 
@@ -59,8 +61,8 @@ sub create_open311_object {
     return $o;
 }
 
-sub create_problems {
-    my ( $self, $open311, $body ) = @_;
+sub format_args {
+    my $self = shift;
 
     my $args = {};
 
@@ -77,13 +79,27 @@ sub create_problems {
         $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $dt );
     }
 
+    return $args;
+}
+
+sub get_requests {
+    my ( $self, $open311, $body, $args ) = @_;
+
     my $requests = $open311->get_service_requests( $args );
 
     unless ( $open311->success ) {
         warn "Failed to fetch ServiceRequests for " . $body->name . ":\n" . $open311->error
             if $self->verbose;
-        return 0;
+        return;
     }
+
+    return $requests;
+}
+
+sub create_problems {
+    my ( $self, $open311, $body, $args, $requests ) = @_;
+
+    return unless $requests;
 
     my $contacts = $self->schema->resultset('Contact')
         ->not_deleted_admin

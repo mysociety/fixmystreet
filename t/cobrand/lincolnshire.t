@@ -39,7 +39,9 @@ FixMyStreet::override_config {
     subtest "fetching problems from Open311 includes user information" => sub {
         my $requests_xml = xml_reports({ id => 123, name => 'John Smith', email => $user_email });
         Open311->_inject_response('/requests.xml', $requests_xml);
-        $update->create_problems( $o, $body );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
 
         my $p = FixMyStreet::DB->resultset('Problem')->search(
             { external_id => 'lincs-123' },
@@ -70,7 +72,9 @@ FixMyStreet::override_config {
     subtest "ignores user information if name is missing" => sub {
         my $requests_xml = xml_reports({ id => 456, name => '', email => $user_email });
         Open311->_inject_response('/requests.xml', $requests_xml);
-        $update->create_problems( $o, $body );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
 
         my $p = FixMyStreet::DB->resultset('Problem')->search(
             { external_id => 'lincs-456' },
@@ -88,7 +92,9 @@ FixMyStreet::override_config {
     subtest "is okay if account exists with no name" => sub {
         my $requests_xml = xml_reports({ id => 456, name => 'John Smith', email => $user2->email });
         Open311->_inject_response('/requests.xml', $requests_xml);
-        $update->create_problems( $o, $body );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
 
         my $p = FixMyStreet::DB->resultset('Problem')->search(
             { external_id => 'lincs-456' },
@@ -139,7 +145,9 @@ FixMyStreet::override_config {
     subtest "fetching problems from Open311 on staging doesn't include private user information" => sub {
         my $requests_xml = xml_reports({ id => 123, name => 'John Smith', email => $user_email });
         Open311->_inject_response('/requests.xml', $requests_xml);
-        $update->create_problems( $o, $body );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
 
         my $p = FixMyStreet::DB->resultset('Problem')->search(
             { external_id => 'lincs-123' },
@@ -156,7 +164,9 @@ FixMyStreet::override_config {
     subtest 'fetching problems from Open311 on staging stores user info for @lincolnshire.gov.uk addresses' => sub {
         my $requests_xml = xml_reports({ id => 124, name => 'Simon Neil', email => 'blackhole@lincolnshire.gov.uk' });
         Open311->_inject_response('/requests.xml', $requests_xml);
-        $update->create_problems( $o, $body );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
 
         my $p = FixMyStreet::DB->resultset('Problem')->search(
             { external_id => 'lincs-124' },
@@ -171,7 +181,9 @@ FixMyStreet::override_config {
     subtest 'fetching problems from Open311 on staging stores user info for extant superusers' => sub {
         my $requests_xml = xml_reports({ id => 125, name => 'Super Duper', email => $superuser_email });
         Open311->_inject_response('/requests.xml', $requests_xml);
-        $update->create_problems( $o, $body );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
 
         my $p = FixMyStreet::DB->resultset('Problem')->search(
             { external_id => 'lincs-125' },
