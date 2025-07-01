@@ -371,7 +371,7 @@ FixMyStreet::override_config {
     }
 
     foreach my $host (qw/bristol www/) {
-        subtest "reports on $host cobrand in Ashton Court and Stoke Park Estate show Bristol categories" => sub {
+        subtest "reports on $host cobrand in Ashton Court and Stoke Park Estate etc show Bristol categories" => sub {
             $mech->host("$host.fixmystreet.com");
 
             $bristol_mock->mock('_fetch_features', sub { [ { "ms:parks" => { "ms:SITE_CODE" => 'STOKPAES' } } ] });
@@ -385,8 +385,28 @@ FixMyStreet::override_config {
             $mech->content_contains($open311_contact->category);
             $mech->content_lacks($north_somerset_contact->category);
             $mech->content_lacks($south_gloucestershire_contact->category);
+
+            $bristol_mock->mock('_fetch_features', sub { [ { "ms:CarParks" => { "ms:site_code" => 'LONGCP' } } ] });
+            $mech->get_ok("/report/new/ajax?longitude=-2.641142&latitude=51.444878");
+            $mech->content_contains($open311_contact->category);
+            $mech->content_lacks($north_somerset_contact->category);
+            $mech->content_lacks($south_gloucestershire_contact->category);
         };
     }
+
+    subtest 'locations outside Bristol in a different park' => sub {
+        $bristol_mock->mock('_fetch_features', sub { [ { "ms:CarParks" => { "ms:site_code" => 'ELSEWHERE' } } ] });
+
+        $mech->host('bristol.fixmystreet.com');
+        $mech->get_ok("/report/new/ajax?longitude=-2.654832&latitude=51.452340");
+        $mech->content_contains("That location is not covered by Bristol City Council");
+
+        $mech->host('www.fixmystreet.com');
+        $mech->get_ok("/report/new/ajax?longitude=-2.654832&latitude=51.452340");
+        $mech->content_lacks($open311_contact->category);
+        $mech->content_lacks($south_gloucestershire_contact->category);
+        $mech->content_contains($north_somerset_contact->category);
+    };
 
     subtest 'locations outside Bristol and not in park' => sub {
         $bristol_mock->mock('_fetch_features', sub { [] });

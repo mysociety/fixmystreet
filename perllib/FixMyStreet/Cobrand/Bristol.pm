@@ -358,16 +358,23 @@ sub check_report_is_on_cobrand_asset {
     my @relevant_parks_site_codes = (
         'ASHTCOES', # Ashton Court Estate
         'STOKPAES', # Stoke Park Estate
+        'LONGCP', # Long Ashton Park And Ride Car Park
     );
 
     my $park = $self->_park_for_point(
         $self->{c}->stash->{latitude},
         $self->{c}->stash->{longitude},
-        'parks',
+        'parks,CarParks',
     );
     return 0 unless $park;
 
-    return grep { $_ eq $park->{site_code} } @relevant_parks_site_codes;
+    my $code;
+    if ($park->{"ms:parks"}) {
+        $code = $park->{"ms:parks"}->{"ms:SITE_CODE"};
+    } elsif ($park->{"ms:CarParks"}) {
+        $code = $park->{"ms:CarParks"}->{"ms:site_code"};
+    }
+    return grep { $_ eq $code } @relevant_parks_site_codes;
 }
 
 sub _park_for_point {
@@ -376,21 +383,22 @@ sub _park_for_point {
     my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
 
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $filter = "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>";
+    if (my $c = () = $type =~ /,/g) {
+        $filter = "($filter)" x ($c+1);
+    }
     my $cfg = {
         url => "https://$host/mapserver/bristol",
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => $type,
-        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+        filter => $filter,
         outputformat => 'GML3',
     };
 
     my $features = $self->_fetch_features($cfg, $x, $y, 1);
     my $park = $features->[0];
 
-    if ($type eq 'flytippingparks') {
-        return $park;
-    }
-    return { site_code => $park->{"ms:parks"}->{"ms:SITE_CODE"} } if $park;
+    return $park;
 }
 
 sub get_body_sender {
