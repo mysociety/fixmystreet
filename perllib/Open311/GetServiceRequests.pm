@@ -14,6 +14,7 @@ has bodies => ( is => 'ro', default => sub { [] } );
 has bodies_exclude => ( is => 'ro', default => sub { [] } );
 has fetch_all => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
+has commit => ( is => 'ro', default => 1 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 has convert_latlong => ( is => 'rw', default => 0 );
 
@@ -241,6 +242,8 @@ sub create_problems {
         my $problem = $self->schema->resultset('Problem')->new($params);
 
         next if $cobrand && $cobrand->call_hook(open311_skip_report_fetch => $problem);
+
+        next unless $self->commit;
 
         $open311->add_media($request->{media_url}, $problem)
             if $request->{media_url};
