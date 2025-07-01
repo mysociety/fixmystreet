@@ -242,7 +242,7 @@ INCLUDE show_fields fields=[
     [ 'DD reference', 'direct_debit_reference', 1 ],
 ] %]
 [%
-SET payment_method = problem.get_extra_field_value('LastPayMethod');
+SET payment_method = problem.get_extra_field_value('payment_method');
 IF payment_method;
     '<li>Last payment method: ';
     PROCESS 'waste/garden/_payment_method.html';
