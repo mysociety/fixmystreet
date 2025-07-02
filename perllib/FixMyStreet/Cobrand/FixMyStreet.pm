@@ -680,4 +680,28 @@ sub fetch_area_children {
     }
 }
 
+# For staging demo purposes
+
+sub open311_extra_data {
+    my ($self, $row, $h) = @_;
+    if (FixMyStreet->config('STAGING_SITE')) {
+        my @bodies = values %{$row->bodies};
+        if ($bodies[0]->jurisdiction eq 'alloy_demo') {
+            my $include = [
+                { name => 'report_url',
+                  value => $h->{url} },
+                { name => 'title',
+                  value => $row->title },
+                { name => 'description',
+                  value => $row->detail },
+                { name => 'category',
+                  value => $row->category },
+                { name => 'group',
+                  value => $row->get_extra_metadata('group', '') },
+            ];
+            return ($include);
+        }
+    }
+};
+
 1;

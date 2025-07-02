@@ -73,6 +73,15 @@ sub svg_container_box {
     };
 }
 
+=head2 waste_suggest_retry_on_no_property_data
+
+Whether or not to show a page suggesting the user retries later
+if we're not able to retrieve data for the property.
+
+=cut
+
+sub waste_suggest_retry_on_no_property_data { 0 }
+
 # Garden related
 
 sub garden_subscription_email_renew_reminder_opt_in { 0 }

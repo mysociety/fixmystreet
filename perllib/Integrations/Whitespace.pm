@@ -13,9 +13,23 @@ package Integrations::Whitespace;
 use strict;
 use warnings;
 use Moo;
+use Data::Dumper;
 
 with 'Integrations::Roles::SOAP';
 with 'Integrations::Roles::ParallelAPI';
+with 'FixMyStreet::Roles::Syslog';
+
+has log_ident => (
+    is => 'ro',
+    default => sub {
+        my $feature = 'whitespace';
+        my $features = FixMyStreet->config('COBRAND_FEATURES');
+        return unless $features && ref $features eq 'HASH';
+        return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
+        my $f = $features->{$feature}->{_fallback};
+        return $f->{log_ident};
+    }
+);
 
 has attr => ( is => 'ro', default => 'http://webservices.whitespacews.com/' );
 has username => ( is => 'ro' );
@@ -106,7 +120,11 @@ sub GetSiteInfo {
     my $res = $self->call( 'GetSiteInfo',
         siteInfoInput => ixhash( Uprn => $uprn ) );
 
-    return $res->{Site};
+    my $site = $res->{Site};
+    if (!$site) {
+        $self->log("GetSiteInfo response without site for $uprn: " . Dumper($res));
+    }
+    return $site;
 }
 
 sub GetAccountSiteID {

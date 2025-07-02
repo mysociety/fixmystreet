@@ -493,7 +493,13 @@ sub property : Chained('property_id') : PathPart('') : CaptureArgs(0) {
     }
 
     my $property = $c->stash->{property} = $c->cobrand->call_hook(look_up_property => $id);
-    $c->detach( '/page_error_404_not_found', [] ) unless $property && $property->{id};
+    unless ($property && $property->{id}) {
+        if ($c->cobrand->waste_suggest_retry_on_no_property_data) {
+            $c->stash->{template} = 'waste/no_property_details_suggest_retry.html';
+            $c->detach;
+        }
+        $c->detach( '/page_error_404_not_found', [] );
+    }
 
     if ($c->cobrand->can('bulky_enabled')) {
         my @pending = $c->cobrand->find_pending_bulky_collections($property->{uprn});
