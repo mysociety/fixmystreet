@@ -108,7 +108,7 @@
       <div class="govuk-checkboxes__item">
         <input type="checkbox" class="govuk-checkboxes__input" id="[% field.id %]-[% loop.index %]"
             name="[% field.html_name %]" value="[% item.value %]"[% ' aria-describedby="' _ field.id _ '-item-hint"' IF hint %]
-            [% 'data-toggle-visibility="#' _ field.get_tag('toggle') _ '"' IF field.get_tag('toggle') ~%]
+            [% 'data-toggle-visibility="#' _ field.get_tag('toggle') _ '"' IF field.get_tag('toggle') %]
             [% 'checked' IF field.fif.grep(item.value).size %]
             [% 'disabled' IF item.disabled %]>
         <label class="govuk-label govuk-checkboxes__label" for="[% field.id %]-[% loop.index %]">

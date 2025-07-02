@@ -760,6 +760,12 @@ FixMyStreet::override_config {
         unlike $body, qr/Bins to be removed: 1/;
         like $body, qr/Total:.*?$two_cost_human/;
     };
+    subtest 'request multiple containers' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-26' => 1, 'quantity-26' => 2 } });
+        $mech->content_contains('Why do you need a replacement container');
+        $mech->content_lacks('need an additional');
+    };
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     remove_test_subs( $p->id );
