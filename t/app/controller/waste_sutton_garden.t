@@ -490,6 +490,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'check new sub credit card payment with no bins required' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z');
         $mech->get_ok('/waste/12345/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
@@ -505,7 +506,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
-        check_extra_data_pre_confirm($new_report, new_bins => 0);
+        check_extra_data_pre_confirm($new_report, new_bins => 0, immediate_start => 1);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
@@ -535,7 +536,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
         is $sent_params->{items}[0]{amount}, 2000, 'correct amount used';
-        check_extra_data_pre_confirm($new_report, new_bins => 0);
+        check_extra_data_pre_confirm($new_report, new_bins => 0, immediate_start => 1);
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
@@ -1252,8 +1253,13 @@ sub check_extra_data_pre_confirm {
     is $report->get_extra_field_value('Paid_Container_Quantity'), $params{quantity}, 'correct bin count';
     is $report->get_extra_field_value('Paid_Container_Type'), $params{bin_type}, 'correct bin type';
     if ($params{type} eq 'New') {
-        is $report->get_extra_field_value('Start_Date'), '19/03/2021';
-        is $report->get_extra_field_value('End_Date'), '18/03/2022';
+        if ($params{immediate_start}) {
+            is $report->get_extra_field_value('Start_Date'), '09/03/2021';
+            is $report->get_extra_field_value('End_Date'), '08/03/2022';
+        } else {
+            is $report->get_extra_field_value('Start_Date'), '19/03/2021';
+            is $report->get_extra_field_value('End_Date'), '18/03/2022';
+        }
     } elsif ($params{type} eq 'Renew') {
         is $report->get_extra_field_value('Start_Date'), '31/03/2021';
         is $report->get_extra_field_value('End_Date'), '30/03/2022';
