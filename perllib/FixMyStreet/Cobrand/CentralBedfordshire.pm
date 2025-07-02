@@ -284,6 +284,7 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         external_id => 'CRNo',
         flytipping_types => 'Fly-tipping types',
+        cleaning_type => 'Cleaning types',
     );
 
     $csv->csv_extra_data(sub {
@@ -293,8 +294,17 @@ sub dashboard_export_problems_add_columns {
         $types = [$types] unless ref $types;
         $types = join(';', sort @$types);
 
+        my $issues = [];
+        my $category = $csv->dbi ? $report->{category} : $report->category;
+        if ($category eq 'Cleaning Contract Reports') {
+            $issues = $csv->_extra_field($report, 'Issue') || [];
+        }
+        $issues = [$issues] unless ref $issues;
+        $issues = join(';', sort @$issues);
+
         my $data = {
             flytipping_types => $types,
+            cleaning_type => $issues,
         };
 
         unless ($csv->dbi) {
