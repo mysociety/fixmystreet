@@ -21,10 +21,11 @@ $mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Pothole', e
             external_id => '9876543'
         });
 
-
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'aberdeenshire' ],
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR }, # ensure cached CSVs are tidied
 }, sub {
         subtest 'CSV has external ID column ' => sub {
             $mech->log_in_ok($staff_user->email);
