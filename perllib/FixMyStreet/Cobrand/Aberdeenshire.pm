@@ -290,5 +290,12 @@ Aberdeenshire don't want the state of the report to be shown in update emails.
 
 sub skip_alert_state_changed_to { 1 }
 
+=item * Default map zoom level of 5, up from 3
+
+=cut
+
+sub default_map_zoom { 5 }
+
+
 
 1;
