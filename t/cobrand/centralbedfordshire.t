@@ -41,6 +41,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $body = $mech->create_body_ok(21070, 'Central Bedfordshire Council', {
     send_method => 'Open311', api_key => 'key', 'endpoint' => 'e', 'jurisdiction' => 'j', cobrand => 'centralbedfordshire' });
 $mech->create_contact_ok(body_id => $body->id, category => 'Bridges', email => "BRIDGES");
+$mech->create_contact_ok(body_id => $body->id, category => 'Cleaning Contract Reports', email => "CLEANING");
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POTHOLES");
 $mech->create_contact_ok(body_id => $body->id, category => 'Jadu', email => "Jadu");
 
@@ -232,7 +233,14 @@ subtest 'Dashboard CSV extra columns' => sub {
     my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     $mech->log_in_ok( $staffuser->email );
     $report->update_extra_field({ name => 'Type', value => ['Furniture', 'Bin bags'] });
+    $report->update_extra_field({ name => 'Issue', value => 'Cobwebs' });
     $report->update;
+    my ($cleaning) = $mech->create_problems_for_body(1, $body->id, 'Cleaning Test Report', {
+        category => 'Cleaning Contract Reports', cobrand => 'centralbedfordshire',
+        latitude => 52.030695, longitude => -0.357033, areas => ',117960,11804,135257,148868,21070,37488,44682,59795,65718,83582,',
+    });
+    $cleaning->update_extra_field({ name => 'Issue', value => 'Cobwebs' });
+    $cleaning->update;
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => 'centralbedfordshire',
@@ -240,8 +248,9 @@ subtest 'Dashboard CSV extra columns' => sub {
     }, sub {
         $mech->get_ok('/dashboard?export=1');
     };
-    $mech->content_contains('"Site Used","Reported As",CRNo');
-    $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',"Bin bags;Furniture"');
+    $mech->content_contains('"Site Used","Reported As",CRNo,"Fly-tipping types","Cleaning types"');
+    $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',"Bin bags;Furniture",');
+    $mech->content_contains(',centralbedfordshire,,,,Cobwebs');
 };
 
 
