@@ -1,0 +1,41 @@
+[%
+
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <h1 style="[% h1_style %]">Please confirm your&nbsp;report</h1>
+  <p style="[% p_style %]">As you weren't signed in when reporting the problem,
+you will need to confirm your submission. Once you do so, it will be sent to us.
+</p>
+<p style="[% p_style %]">[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Please note that [% c.cobrand.council_name %] is not responsible for this type
+of problem, so it will instead be sent to [% report.body %].
+[% END %]
+
+[% TRY %][% INCLUDE '_problem-confirm_extra.html' %][% CATCH file %][% END %]
+  </p>
+  [% IF report.non_public %]
+      <p style="[% p_style %]">Your report will not be published for public viewing on the [% site_name %] website but will be sent to [% report.body %].</p>
+  [% ELSE %]
+      <p style="[% p_style %]">Your report will also appear on the [% site_name %] website.</p>
+  [% END %]
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Submit this report to us</a>
+  </p>
+  <p style="[% p_style %]">If you no longer wish to send this report, please take no further action.</p>
+  [% TRY %][% INCLUDE '_problem-confirm_footer.html' %][% CATCH file %][% END %]
+  [% end_padded_box | safe %]
+</th>
+[% WRAPPER '_email_sidebar.html' object = report, url = token_url %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    [% report.detail | html_para_email(secondary_p_style) %]
+[% END %]
+
+[% INCLUDE '_email_bottom.html' %]

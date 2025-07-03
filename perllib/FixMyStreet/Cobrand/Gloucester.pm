@@ -193,37 +193,23 @@ correspond to asset layers configured in the Tilma proxy service.
 =cut
 
 sub _asset_layer_mapping {
-    return {
-        'Broken_glass' => [ 'adopted_streets' ],
-        'Damaged_dog_bin' => [ 'dog_bins' ],
-        'Damaged_dual_use_bin' => [ 'all_street_bins' ],
-        'Damaged_litter_bin' => [ 'all_street_bins' ],
-        'Damaged_nameplate' => [ 'adopted_streets' ],
-        'Damaged_or_dangerous_playground_equipment' => [ 'play_areas' ],
-        'Damaged_park_furniture' => [ 'adopted_streets', 'all_plots' ],
-        'Dangerous_nameplate' => [ 'adopted_streets' ],
-        'Dead_animal_that_needs_removing' => [ 'all_streets', 'all_plots' ],
-        'Debris_on_pavement_or_road' => [ 'adopted_streets' ],
-        'Dog_fouling_(not_witnessed)' => [ 'adopted_streets' ],
-        'Faded_nameplate_1' => [ 'adopted_streets' ],
-        'Fly-posting' => [ 'adopted_streets', 'all_plots' ],
-        'Items_in_watercourse' => [ 'adopted_streets', 'all_plots' ],
-        'Leaves' => [ 'adopted_streets' ],
-        'Litter_in_street_or_public_area' => [ 'adopted_streets' ],
-        'Missing_bin' => [ 'all_street_bins' ],
-        'Missing_nameplate' => [ 'adopted_streets' ],
-        'Non-offensive_graffiti' => [ 'all_streets', 'all_plots' ],
-        'Offensive_graffiti_(not_witnessed)' => [ 'all_streets', 'all_plots' ],
-        'Overflowing_bin' => [ 'all_street_bins' ],
-        'Overgrown_grass' => [  'all_plots' ],
-        'Overgrown_hedges' => [ 'all_plots' ],
-        'Overgrown_weeds' => [  'all_plots' ],
-        'Regular_fly-tipping_(not_witnessed_and_no_evidence_likely)' => [ 'adopted_streets', 'all_plots' ],
-        'Spillage_after_recycling_collection' => [ 'all_streets' ],
-        'Spillage_after_waste_collection' => [ 'all_streets' ],
-        'Syringes_or_drugs_equipment' => [ 'all_streets', 'all_plots' ],
-        'Unclean_public_toilets' => [ 'public_toilets' ],
-    };
+    my $self = shift;
+    my $layers = $self->feature("asset_layers") or return;
+    my $out;
+    foreach my $layer (@$layers) {
+        next unless ref $layer eq 'HASH' && $layer->{http_options};
+        if ($layer->{asset_category}) {
+            my $cat = ref $layer->{asset_category} ? $layer->{asset_category} : [ $layer->{asset_category} ];
+            foreach (@$cat) {
+                push @{$out->{category}{$_}}, $layer->{http_options}{params}{layer};
+            }
+        }
+        if ($layer->{asset_group}) {
+            my $g = $layer->{asset_group};
+            push @{$out->{group}{$g}}, $layer->{http_options}{params}{layer};
+        }
+    }
+    return $out;
 }
 
 =head2 open311_update_missing_data
@@ -242,41 +228,53 @@ sub open311_update_missing_data {
     # If the report doesn't already have an asset, associate it with the
     # closest feature from the Alloy asset layers.
     if (!$row->get_extra_field_value('asset_resource_id')) {
-        if (my $item_id = $self->lookup_site_code($row, $contact)) {
+        if (my $item_id = $self->lookup_site_codes($row, $contact)) {
             $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
         }
     }
 }
 
-=head2 lookup_site_code
+=head2 lookup_site_codes
 
-This overrides the parent implementation to handle Gloucester's specific
-multi-layer asset configuration in Alloy. Based on the report's category, it
-determines which asset layer(s) to query using C<_asset_layer_mapping>. It
-then iterates through the specified layers, searching for the nearest asset on
-each one until a match is found.
+The Alloy layer code uses lat/lon rather than easting/northing, and
+can have multiple layers depending upon the report's category.
 
 =cut
 
-sub lookup_site_code {
+sub lookup_site_codes {
     my ($self, $row, $contact) = @_;
 
-    my $category = $contact->email;
-    my $layers = $self->_asset_layer_mapping->{$category};
-    return unless $layers && @$layers;
-
-    for my $layer (@$layers) {
-        my $cfg = $self->lookup_site_code_config($layer);
-        my ($x, $y) = $row->local_coords;
-        my $features = $self->_fetch_features($cfg, $x, $y);
-        if ($cfg->{_nearest_uses_latlon}) {
-            ($x, $y) = ($row->longitude, $row->latitude);
-        }
-        if (my $item_id = $self->_nearest_feature($cfg, $x, $y, $features)) {
-            return $item_id;
+    my $mapping = $self->_asset_layer_mapping or return;
+    my @groups = map { [ 'group', $_ ] } @{$contact->groups};
+    my $category = [ 'category', $contact->category ];
+    foreach (@groups, $category) {
+        my ($type, $name) = @$_;
+        my $layers = $mapping->{$type}{$name};
+        next unless $layers && @$layers;
+        for my $layer (@$layers) {
+            my $item_id = $self->lookup_site_code($row, $layer);
+            return $item_id if $item_id;
         }
     }
-    return;
+}
+
+sub _fetch_features_url {
+    my ($self, $cfg) = @_;
+
+    # Convert bbox from EN to lat/lon
+    my ($w, $s, $e, $n) = split(/,/, $cfg->{bbox});
+    ($s, $w) = Utils::convert_en_to_latlon($w, $s);
+    ($n, $e) = Utils::convert_en_to_latlon($e, $n);
+    my $bbox = "$w,$s,$e,$n";
+
+    my $uri = URI->new($cfg->{proxy_url});
+    $uri->query_form(
+        layer => $cfg->{layer},
+        url => $cfg->{url},
+        bbox => $bbox,
+    );
+
+    return $uri;
 }
 
 =head2 lookup_site_code_config

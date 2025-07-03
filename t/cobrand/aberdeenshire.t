@@ -1,6 +1,7 @@
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::CSVExport;
+use FixMyStreet::Script::Alerts;
 use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
@@ -48,6 +49,35 @@ FixMyStreet::override_config {
             $mech->content_contains("This service is for reporting issues on roads, roadside and pavements");
             $mech->content_contains("You will need to either provide your email address or sign in with");
             $mech->content_contains("service as a mobile app");
+        };
+
+        subtest 'State changes aren’t shown in update emails' => sub {
+            my $alert_user = $mech->create_user_ok('alerts@example.com', name => 'Alert User');
+
+            my $alert = FixMyStreet::DB->resultset('Alert')->create({
+                user       => $alert_user,
+                alert_type => 'new_updates',
+                parameter  => $report->id,
+                confirmed  => 1,
+                cobrand    => 'aberdeenshire',
+                whensubscribed => DateTime->now->subtract(days => 1),
+            });
+            ok $alert, 'created alert for user';
+
+            $mech->create_comment_for_problem(
+                $report, $staff_user, 'Staff User', 'Update with state change',
+                'f', 'confirmed', 'investigating',
+                { confirmed => DateTime->now }
+            );
+
+            $mech->clear_emails_ok;
+            FixMyStreet::Script::Alerts::send_updates();
+
+            $mech->email_count_is(1);
+            my $email_body = $mech->get_text_body_from_email;
+
+            like $email_body, qr/Update with state change/, 'email contains the update text';
+            unlike $email_body, qr/State changed to:/, 'email does not contain state change text for Aberdeenshire';
         };
 };
 

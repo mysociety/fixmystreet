@@ -8,7 +8,7 @@ FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 my $mech    = FixMyStreet::TestMech->new;
-my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Gloucester');
+my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
 $cobrand->mock(
     '_fetch_features',
     sub {
@@ -17,7 +17,7 @@ $cobrand->mock(
                 geometry   => {
                     type        => 'LineString',
                     coordinates =>
-                        [ [ 383171, 218526 ], [ 383171, 218528 ], ],
+                        [ [ -2.24586, 51.86506 ], [ -2.24586, 51.86506 ], ],
                 }
             }
         ];
@@ -81,6 +81,12 @@ FixMyStreet::override_config {
                 'Dog fouling' => 'enviro-crime@gloucester.dev'
             }
         },
+        asset_layers => { gloucester => [
+            {
+                http_options => { params => { layer => 'plots' } },
+                asset_category => ['Flytipping'],
+            }
+        ] },
     },
 }, sub {
     ok $mech->host('gloucester'), 'change host to gloucester';
