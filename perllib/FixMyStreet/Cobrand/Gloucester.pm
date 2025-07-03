@@ -107,11 +107,27 @@ sub categories_restriction {
 
 # sub cut_off_date { '2024-03-31' }
 
-=pod
-
 =back
 
+=head2 pin_colour
+
+* Yellow if open/confirmed
+
+* Orange if in progress
+
+* Green if fixed
+
+* Grey if closed
+
 =cut
+
+sub pin_colour {
+    my ( $self, $p ) = @_;
+    return 'orange' if $p->is_in_progress;
+    return 'green' if $p->is_fixed;
+    return 'grey' if $p->is_closed;
+    return 'yellow';
+}
 
 sub disambiguate_location {
     my $self = shift;
