@@ -264,6 +264,32 @@ sub bulky_can_refund_collection {
         && $self->within_bulky_refund_window($p);
 }
 
+sub bulky_refund_collection {
+    my ($self, $collection_report) = @_;
+    my $c = $self->{c};
+    $c->send_email(
+        'waste/bulky-refund-request.txt',
+        {   to => [
+                [ $c->cobrand->contact_email, $c->cobrand->council_name ]
+            ],
+
+            payment_method =>
+                $collection_report->get_extra_field_value('payment_method'),
+            payment_code =>
+                $collection_report->get_extra_field_value('PaymentCode'),
+            auth_code =>
+                $collection_report->get_extra_metadata('authCode'),
+            continuous_audit_number =>
+                $collection_report->get_extra_metadata(
+                'continuousAuditNumber'),
+            original_sr_number => $c->get_param('ORIGINAL_SR_NUMBER'),
+            payment_date       => $collection_report->created,
+            scp_response       =>
+                $collection_report->get_extra_metadata('scpReference'),
+        },
+    );
+}
+
 sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 

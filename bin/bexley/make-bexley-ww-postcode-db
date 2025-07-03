@@ -118,10 +118,10 @@ sub process_row {
     if ( $record_id == $lookups->{types}{street} ) {
         $queries->{insert_sd}->execute($row_h{USRN}, $row_h{STREET_DESCRIPTOR}, $row_h{LOCALITY_NAME}, $row_h{TOWN_NAME});
     } elsif ( $record_id == $lookups->{types}{blpu} ) {
-        return if $status != 1;
+        return if $status != 1 && $status != 6;
         $queries->{insert_blpu}->execute($row_h{UPRN}, $row_h{BLPU_CLASS}, !!$row_h{PARENT_UPRN});
     } elsif ( $record_id == $lookups->{types}{lpi} ) {
-        return if $status != 1 || !$row_h{POSTCODE};
+        return if ($status != 1 && $status != 6) || !$row_h{POSTCODE};
 
         # Remove whitespace from postcode
         my $postcode = $row_h{POSTCODE} =~ s/ //gr;

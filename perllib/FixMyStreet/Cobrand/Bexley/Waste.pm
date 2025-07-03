@@ -66,7 +66,7 @@ sub fetch_whitespace_data {
 
     my $data = $self->whitespace->call_api(
         $c,
-        "bexley",
+        $self->council_url,
         "bin_days_page:$uprn",
         $async,
         GetSiteInfo        => [$uprn],
@@ -74,6 +74,11 @@ sub fetch_whitespace_data {
     );
 
     return $data->{"$method $uprn"};
+}
+
+sub clear_cached_lookups_property {
+    my ($self, $uprn) = @_;
+    $self->{c}->waste_cache_delete($self->council_url . ":whitespace:bin_days_page:$uprn");
 }
 
 sub waste_fetch_events {
@@ -506,6 +511,15 @@ sub bin_services_for_address {
 
     return \@site_services_filtered;
 }
+
+=head2 waste_suggest_retry_on_no_property_data
+
+Whitespace sometimes returns no data for a valid property, so we
+show a page suggesting the user retries later, rather than 404.
+
+=cut
+
+sub waste_suggest_retry_on_no_property_data { 1 }
 
 =head2 _remove_service_if_assisted_exists
 

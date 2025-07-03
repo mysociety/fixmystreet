@@ -284,7 +284,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Find your bin collection days');
         $mech->content_contains('Report a missed bin collection');
         $mech->content_lacks('Order new or additional bins');
-        $mech->content_lacks('Subscribe to garden waste collection service');
     };
 
     subtest 'False postcode shows error' => sub {
@@ -304,7 +303,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3NP' } } );
         $mech->content_contains('Select an address');
         $mech->content_contains(
-            '<option value="10001">Flat, 98a-99b, The Court, 1a-2b The Avenue, Little Bexlington, Bexley</option>'
+            '<option value="10001">Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley</option>'
         );
     };
 
@@ -315,7 +314,7 @@ FixMyStreet::override_config {
         $mech->content_contains("You do not have a Garden waste collection");
 
         $mech->content_contains(
-            '<dd class="waste__address__property">Flat, 98a-99b, The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP</dd>',
+            '<dd class="waste__address__property">Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP</dd>',
             'Correct address string displayed',
         );
         $mech->content_contains(
@@ -792,7 +791,7 @@ FixMyStreet::override_config {
         {
             $mech->content_contains( "<li>$_</li>", 'Bin type displayed' );
         }
-        $mech->content_contains( 'Flat, 98a-99b, The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP', 'Address displayed' );
+        $mech->content_contains( 'Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP', 'Address displayed' );
         $mech->content_contains(
             'Our waste contractor will return',
             'Additional message displayed',

@@ -75,8 +75,6 @@ sub privacy_policy_url {
     'https://www.thamesmeadnow.org.uk/terms-and-conditions/privacy-statement/'
 }
 
-sub get_geocoder { 'OSM' }
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -85,22 +83,16 @@ sub disambiguate_location {
         %{ $self->SUPER::disambiguate_location() },
         bounds => [ 51.49, 0.075, 51.514, 0.155 ],
         string => $string,
+        result_only_if => 'Greenwich|Bexley|Thamesmead',
+        result_strip => ', London, Greater London, England',
     };
 
     return $results;
 }
 
-sub geocoder_munge_results {
-    my $self = shift;
-    my ($result) = @_;
-    if ($result->{display_name} !~ /Greenwich|Bexley|Thamesmead/) {
-        $result->{display_name} = '';
-    }
-
-}
-
-my @categories = qw( hardsurfaces grass water treegroups planting );
+my @categories = qw( blockbuildings hardsurfaces grass water treegroups planting );
 my %category_titles = (
+    blockbuildings => 'Caretaker defects (staff only)',
     hardsurfaces => 'Hard surfaces/paths/road (Peabody)',
     grass => 'Grass and grass areas (Peabody)',
     water => 'Water areas (Peabody)',
@@ -119,11 +111,12 @@ sub area_type_for_point {
     );
 
     my $filter = "(<Filter><Contains><PropertyName>Extent</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>)";
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
     my $cfg = {
-        url => "https://tilma.mysociety.org/mapserver/thamesmead",
+        url => "https://$host/mapserver/thamesmead",
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => join(',', @categories),
-        filter => $filter x 5,
+        filter => $filter x 6,
         outputformat => "GML3",
     };
 

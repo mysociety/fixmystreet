@@ -41,6 +41,7 @@ sub disambiguate_location {
         centre => '51.284839,-0.8974600',
         span   => '0.180311,0.239375',
         bounds => [ 51.186005, -1.002295, 51.366316, -0.762920 ],
+        result_strip => ', Hart, Hampshire, England',
     };
 }
 

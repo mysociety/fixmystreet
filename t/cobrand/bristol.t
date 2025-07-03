@@ -51,6 +51,12 @@ my $open311_contact = $mech->create_contact_ok(
     category => 'Street Lighting',
     email => 'LIGHT',
 );
+my $open311_contact2 = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Flooding',
+    email => 'FLOOD',
+);
+
 my $roadworks = $mech->create_contact_ok(
     body_id => $bristol->id,
     category => 'Inactive roadworks',
@@ -60,7 +66,7 @@ my $roadworks = $mech->create_contact_ok(
 my $flytipping = $mech->create_contact_ok(
     body_id => $bristol->id,
     category => 'Flytipping',
-    email => 'FLY',
+    email => 'Alloy-FLY',
     extra => {
         _fields => [
             { code => 'Witness', values => [
@@ -75,6 +81,13 @@ my $flytipping = $mech->create_contact_ok(
         ]
     }
 );
+
+my $flyposting = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Flyposting',
+    email => 'Alloy-FLYPOST',
+);
+
 my $north_somerset_contact = $mech->create_contact_ok(
     body_id => $north_somerset->id,
     category => 'North Somerset Potholes',
@@ -341,7 +354,7 @@ FixMyStreet::override_config {
     }
 
     foreach my $host (qw/bristol www/) {
-        subtest "reports on $host cobrand in Ashton Court and Stoke Park Estate show Bristol categories" => sub {
+        subtest "reports on $host cobrand in Ashton Court and Stoke Park Estate etc show Bristol categories" => sub {
             $mech->host("$host.fixmystreet.com");
 
             $bristol_mock->mock('_fetch_features', sub { [ { "ms:parks" => { "ms:SITE_CODE" => 'STOKPAES' } } ] });
@@ -355,8 +368,28 @@ FixMyStreet::override_config {
             $mech->content_contains($open311_contact->category);
             $mech->content_lacks($north_somerset_contact->category);
             $mech->content_lacks($south_gloucestershire_contact->category);
+
+            $bristol_mock->mock('_fetch_features', sub { [ { "ms:CarParks" => { "ms:site_code" => 'LONGCP' } } ] });
+            $mech->get_ok("/report/new/ajax?longitude=-2.641142&latitude=51.444878");
+            $mech->content_contains($open311_contact->category);
+            $mech->content_lacks($north_somerset_contact->category);
+            $mech->content_lacks($south_gloucestershire_contact->category);
         };
     }
+
+    subtest 'locations outside Bristol in a different park' => sub {
+        $bristol_mock->mock('_fetch_features', sub { [ { "ms:CarParks" => { "ms:site_code" => 'ELSEWHERE' } } ] });
+
+        $mech->host('bristol.fixmystreet.com');
+        $mech->get_ok("/report/new/ajax?longitude=-2.654832&latitude=51.452340");
+        $mech->content_contains("That location is not covered by Bristol City Council");
+
+        $mech->host('www.fixmystreet.com');
+        $mech->get_ok("/report/new/ajax?longitude=-2.654832&latitude=51.452340");
+        $mech->content_lacks($open311_contact->category);
+        $mech->content_lacks($south_gloucestershire_contact->category);
+        $mech->content_contains($north_somerset_contact->category);
+    };
 
     subtest 'locations outside Bristol and not in park' => sub {
         $bristol_mock->mock('_fetch_features', sub { [] });
@@ -508,6 +541,47 @@ subtest 'Dott Bikes destination handling' => sub {
         is $email->header('To'), 'Dott <dott-national@example.org>', 'email sent to correct address';
     };
   };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => ['bristol'],
+    MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {}
+}, sub {
+
+    subtest 're-categorising auto-resends' => sub {
+        my ($report) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $open311_contact->category,
+            areas => ',2561,',
+        } );
+        $report->update({ send_state => 'sent', send_method_used => 'Open311' });
+
+        $mech->log_in_ok($comment_user->email);
+        $mech->get_ok('/admin/report_edit/' . $report->id);
+
+        $mech->submit_form_ok({ with_fields => { category => $open311_contact2->category } });
+        $report->discard_changes;
+        is $report->send_state, 'sent', "Changed from Confirm category to Confirm category, remain sent";
+
+        $mech->submit_form_ok({ with_fields => { category => $flyposting->category } });
+        $report->discard_changes;
+        is $report->send_state, 'unprocessed', "Changed from Confirm category to Alloy category, set to resend";
+
+        $report->update({ send_state => 'sent', send_method_used => 'Open311' });
+        $mech->submit_form_ok({ with_fields => { category => $flytipping->category } });
+        $report->discard_changes;
+        is $report->send_state, 'sent', "Changed from Alloy category to Alloy category, remain sent";
+
+        $mech->submit_form_ok({ with_fields => { category => $roadworks->category } });
+        $report->discard_changes;
+        is $report->send_state, 'unprocessed', "Changed from Alloy category to email category, set to resend";
+
+        $report->update({ send_state => 'sent', send_method_used => 'Open311', category => $flytipping->category });
+        $mech->submit_form_ok({ with_fields => { category => $open311_contact->category } });
+        $report->discard_changes;
+        is $report->send_state, 'unprocessed', "Changed from Alloy category to Confirm category, set to resend";
+    };
 };
 
 done_testing();

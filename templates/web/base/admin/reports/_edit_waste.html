@@ -112,13 +112,20 @@
 [%
 BLOCK show_fields;
     FOR field IN fields;
-        IF field.2;
+        IF field.2; # From metadata
             SET val = problem.get_extra_metadata(field.1);
         ELSE;
             SET val = problem.get_extra_field_value(field.1);
         END;
         IF val;
-            '<li>' _ field.0 _ ': ' _ val _ '</li>';
+            '<li>' _ field.0 _ ': ';
+            IF field.3; # Blank out except last 4
+                SET x = 'x';
+                x.repeat(val.length - 4) _ val.substr(-4);
+            ELSE;
+                val;
+            END;
+            '</li>';
         END;
     END;
 END
@@ -216,7 +223,9 @@ END
 
 <h2>Payment information</h2>
 <ul>
-[% INCLUDE show_fields fields=[
+[%
+SET sutton = cobrand.moniker == 'sutton';
+INCLUDE show_fields fields=[
     [ 'Payment', 'payment' ],
     [ 'Pro rata payment', 'pro_rata' ],
     [ 'Admin fee', 'admin_fee' ],
@@ -224,7 +233,7 @@ END
     [ 'Payment reference', 'chequeReference', 1 ],
     [ 'DD reference', 'payerReference', 1 ],
     [ 'SCP reference', 'scpReference', 1 ],
-    [ 'Payment code', 'PaymentCode' ],
+    [ 'Payment code', 'PaymentCode', 0, sutton ],
     [ 'DD collection date', 'dd_date', 1 ],
     # AccessPay
     [ 'DD customer ID', 'direct_debit_customer_id', 1 ],

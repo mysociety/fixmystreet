@@ -33,12 +33,6 @@ sub council_area { 'Southwark' }
 sub council_name { 'Southwark Council' }
 sub council_url { 'southwark' }
 
-=item * Southwark use the OS Maps API at all zoom levels.
-
-=cut
-
-sub map_type { 'OS::API' }
-
 =item * Don't show reports before the go-live date, 22nd March 2023
 
 =cut
@@ -85,6 +79,7 @@ sub disambiguate_location {
         centre => '51.4742389056488,-0.0740567820867757',
         span   => '0.0893021072823146,0.0821035484648614',
         bounds => [ 51.4206051986445, -0.111491915302168, 51.5099073059268, -0.029388366837307 ],
+        result_strip => ', London Borough of Southwark, London, Greater London, England',
     };
 }
 

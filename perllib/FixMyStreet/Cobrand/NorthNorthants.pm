@@ -44,13 +44,6 @@ sub enter_postcode_text { 'Enter a North Northamptonshire postcode, street name 
 
 =cut
 
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-
-    $result->{display_name} = '' unless $result->{display_name} =~ /North Northamptonshire/;
-    $result->{display_name} =~ s/, North Northamptonshire, England//;
-}
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -60,6 +53,8 @@ sub disambiguate_location {
         centre => '52.425635989845,-0.625888958117201',
         span   => '0.452023646239923,0.564659818768001',
         bounds => [ 52.1915706611928, -0.906250498116196, 52.6435943074328, -0.341590679348196 ],
+        result_only_if => 'North Northamptonshire',
+        result_strip => ', North Northamptonshire, England',
     };
 }
 

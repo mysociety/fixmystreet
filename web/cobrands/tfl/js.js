@@ -44,13 +44,24 @@ $(function() {
 OpenLayers.Layer.TLRN = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     name: 'TLRN',
     url: [
-        "//tilma.mysociety.org/tlrn/${z}/${x}/${y}.png",
-        "//a.tilma.mysociety.org/tlrn/${z}/${x}/${y}.png",
-        "//b.tilma.mysociety.org/tlrn/${z}/${x}/${y}.png",
-        "//c.tilma.mysociety.org/tlrn/${z}/${x}/${y}.png"
+        "//tilma.mysociety.org/mapcache/gmaps/tlrn@osmaps/${z}/${x}/${y}.png",
+        "//a.tilma.mysociety.org/mapcache/gmaps/tlrn@osmaps/${z}/${x}/${y}.png",
+        "//b.tilma.mysociety.org/mapcache/gmaps/tlrn@osmaps/${z}/${x}/${y}.png",
+        "//c.tilma.mysociety.org/mapcache/gmaps/tlrn@osmaps/${z}/${x}/${y}.png"
     ],
-    sphericalMercator: true,
     isBaseLayer: false,
+
+    initialize: function(name, options) {
+        options = OpenLayers.Util.extend({
+            units: "m",
+            projection: new OpenLayers.Projection("EPSG:27700"),
+            tileOrigin: new OpenLayers.LonLat(-238375, 1376256),
+            maxExtent: new OpenLayers.Bounds(-3276800, -3276800, 3276800, 3276800),
+            resolutions: [896, 448, 224, 112, 56, 28, 14, 7, 7/2, 7/4, 7/8, 7/16, 7/32, 7/64].slice(fixmystreet.zoomOffset || 0).slice(0, fixmystreet.numZoomLevels),
+        }, options);
+        OpenLayers.Layer.XYZ.prototype.initialize.call(this, name, '', options);
+    },
+
     CLASS_NAME: "OpenLayers.Layer.TLRN"
 });
 

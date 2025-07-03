@@ -107,6 +107,9 @@
                 <tr><td>[% loc('Overall average') %]</td><td>[% tprintf(nget("%s day", "%s days", average), average) %]</td></tr>
             </tfoot>
         </table>
+      [% ELSIF NOT body AND c.cobrand.moniker == 'fixmystreet' %]
+        <h2 class="dashboard-subheading">[% loc('Understanding FixMyStreet report data') %]</h2>
+        <p>[% loc('Interested in FixMyStreet report data? <a href="/about/understanding-report-data">Learn about what it can and can’t tell you</a>') %]</p>
       [% END %]
     </div>
     <div class="dashboard-item dashboard-item--6">

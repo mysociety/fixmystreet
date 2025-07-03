@@ -36,12 +36,6 @@ sub council_url { 'gloucester' }
 
 sub admin_user_domain { 'gloucester.gov.uk' }
 
-=item * Allows anonymous reporting
-
-=cut
-
-sub allow_anonymous_reports { 'button' }
-
 =item * Gloucester use their own privacy policy
 
 =cut
@@ -80,7 +74,32 @@ sub contact_extra_fields { [ 'display_name' ] }
 
 =cut
 
-sub default_map_zoom { 3 }
+sub default_map_zoom { 5 }
+
+=item * Ignores some categories that are not relevant to Gloucester
+
+=cut
+
+sub categories_restriction {
+    my ($self, $rs) = @_;
+
+    return $rs->search({
+        'me.category' => {
+            -not_in => [
+                # Hide all categories with parent 'Noxious weeds'
+                'Giant Hogweed',
+                'Himalayan Balsam',
+                'Japanese Knotweed',
+                'Nettles, brambles, dandelions etc.',
+                'Ragwort',
+
+                # Hide Gloucestershire County's 'Dead animal' category
+                'Dead animal at the side of the road',
+            ],
+            -not_like => 'Ash Tree located on%',
+        },
+    });
+}
 
 =item * TODO: Don't show reports before the go-live date
 
@@ -109,7 +128,19 @@ sub disambiguate_location {
             51.8075803711933, -2.30135343437398,
             51.8852240651802, -2.17725806881895
         ],
+        result_strip => ', Gloucestershire, England',
     };
+}
+
+# Include details of selected assets from their WFS service in the the alloy
+# report description.
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+
+    if (my $wfs_asset_info = $row->get_extra_field_value('wfs_asset_info')) {
+        my $text = "Asset Info: $wfs_asset_info\n\n" . $row->get_extra_field_value('description');
+        $row->update_extra_field({ name => 'description', value => $text });
+    }
 }
 
 # For categories where user has said they have witnessed activity, send

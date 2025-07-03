@@ -39,11 +39,6 @@ sub report_validation {
     return $errors;
 }
 
-sub enter_postcode_text {
-    my ($self) = @_;
-    return 'Enter an Oxfordshire postcode, or street name and area';
-}
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -53,6 +48,7 @@ sub disambiguate_location {
         centre => '51.765765,-1.322324',
         span   => '0.709058,0.849434',
         bounds => [ 51.459413, -1.719500, 52.168471, -0.870066 ],
+        result_strip => ', Oxfordshire, England',
     };
 }
 

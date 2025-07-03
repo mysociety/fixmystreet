@@ -49,14 +49,6 @@ sub admin_user_domain { 'bathnes.gov.uk' }
 
 sub on_map_default_status { 'open' }
 
-=item * Uses OSM because default of Bing gives poor results.
-
-=cut
-
-sub get_geocoder {
-    return 'OSM';
-}
-
 =item * Sends out confirmation emails when a report is sent.
 
 =cut
@@ -91,12 +83,6 @@ sub contact_extra_fields_validation {
 =back
 
 =cut
-
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-    $result->{display_name} =~ s/, United Kingdom$//;
-    $result->{display_name} =~ s/, Bath and North East Somerset, West of England, England//;
-}
 
 =head2 disambiguate_location
 
@@ -139,6 +125,7 @@ sub disambiguate_location {
         span   => '0.166437921041471,0.429359043406088',
         bounds => [ 51.2730478766607, -2.70792015294201, 51.4394857977022, -2.27856110953593 ],
         string => $string,
+        result_strip => ', Bath and North East Somerset, West of England, England',
     };
 }
 
@@ -296,6 +283,20 @@ sub categories_restriction {
         'me.send_method' => 'Email::BathNES', # Street Light Fault
         'me.send_method' => 'Blackhole', # Parks categories
     ] } );
+}
+
+# Skip updates trying to send to the wrong backend; BANES have all reports
+# going to their own endpoint on top of Confirm anyway, so any category change
+# without resending doesn't need to receive updates
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+    my $problem = $update->problem;
+    my $contact = $problem->contact || return 1;
+    my $code = $contact->email;
+    my $external_id = $problem->external_id;
+    return 1 if $code =~ /^Passthrough/ && $external_id !~ /^Passthrough/;
+    return 1 if $code !~ /^Passthrough/ && $external_id =~ /^Passthrough/;
+    return 0;
 }
 
 =head2 open311_munge_update_params

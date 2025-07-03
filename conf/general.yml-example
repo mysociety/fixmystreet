@@ -232,6 +232,9 @@ SMTP_PASSWORD: ''
 # Have I Been Pwned dataset
 CHECK_HAVEIBEENPWNED: 0
 
+# Set to API key if you want domains to be checked with usercheck.com
+CHECK_USERCHECK: ''
+
 # Gaze is a world-wide service for population density lookups. You can leave
 # this as is.
 GAZE_URL: 'https://gaze.mysociety.org/gaze'

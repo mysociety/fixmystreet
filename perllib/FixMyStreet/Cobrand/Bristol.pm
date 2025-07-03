@@ -39,23 +39,11 @@ sub council_url { return 'bristol'; }
 
 use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
 
-=item * Bristol use the OS Maps API at all zoom levels.
-
-=cut
-
-sub map_type { 'OS::API' }
-
 =item * Users with a bristol.gov.uk email can always be found in the admin.
 
 =cut
 
 sub admin_user_domain { 'bristol.gov.uk' }
-
-=item * Bristol uses the OSM geocoder
-
-=cut
-
-sub get_geocoder { 'OSM' }
 
 =item * We do not send questionnaires.
 
@@ -77,6 +65,7 @@ sub disambiguate_location {
         centre => '51.4526044866206,-2.7706173308649',
         span   => '0.202810508012753,0.60740886659825',
         bounds => [ 51.3415749466466, -3.11785543094126, 51.5443854546593, -2.51044656434301 ],
+        result_strip => ', City of Bristol, West of England, England',
     };
 }
 
@@ -107,6 +96,39 @@ sub pin_colour {
 }
 
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
+
+=head2 category_change_force_resend
+
+If a report was sent to a backend, when the category
+changes to a category that is email or a different backend
+it will be resent.
+
+If it was sent to an email and the category is changed to
+a backend it will also be resent.
+
+=cut
+
+sub _contact_type {
+    my $contact = shift;
+
+    return 'Alloy' if $contact->email =~ /^Alloy-/;
+    return 'Email' if ($_->send_method || '') eq 'Email';
+    return 'Confirm';
+}
+
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+
+    # Get the Open311 identifiers
+    my $contacts = $self->{c}->stash->{contacts};
+
+    ($old) = map { _contact_type($_) } grep { $_->category eq $old } @$contacts;
+    ($new) = map { _contact_type($_) } grep { $_->category eq $new } @$contacts;
+
+    return 0 if $old eq 'Confirm' && $new eq 'Confirm';
+    return 0 if $old eq 'Alloy' && $new eq 'Alloy';
+    return 1;
+}
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
@@ -313,16 +335,23 @@ sub check_report_is_on_cobrand_asset {
     my @relevant_parks_site_codes = (
         'ASHTCOES', # Ashton Court Estate
         'STOKPAES', # Stoke Park Estate
+        'LONGCP', # Long Ashton Park And Ride Car Park
     );
 
     my $park = $self->_park_for_point(
         $self->{c}->stash->{latitude},
         $self->{c}->stash->{longitude},
-        'parks',
+        'parks,CarParks',
     );
     return 0 unless $park;
 
-    return grep { $_ eq $park->{site_code} } @relevant_parks_site_codes;
+    my $code;
+    if ($park->{"ms:parks"}) {
+        $code = $park->{"ms:parks"}->{"ms:SITE_CODE"};
+    } elsif ($park->{"ms:CarParks"}) {
+        $code = $park->{"ms:CarParks"}->{"ms:site_code"};
+    }
+    return grep { $_ eq $code } @relevant_parks_site_codes;
 }
 
 sub _park_for_point {
@@ -331,21 +360,22 @@ sub _park_for_point {
     my ($x, $y) = Utils::convert_latlon_to_en($lat, $lon, 'G');
 
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my $filter = "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>";
+    if (my $c = () = $type =~ /,/g) {
+        $filter = "($filter)" x ($c+1);
+    }
     my $cfg = {
         url => "https://$host/mapserver/bristol",
         srsname => "urn:ogc:def:crs:EPSG::27700",
         typename => $type,
-        filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
+        filter => $filter,
         outputformat => 'GML3',
     };
 
     my $features = $self->_fetch_features($cfg, $x, $y, 1);
     my $park = $features->[0];
 
-    if ($type eq 'flytippingparks') {
-        return $park;
-    }
-    return { site_code => $park->{"ms:parks"}->{"ms:SITE_CODE"} } if $park;
+    return $park;
 }
 
 sub get_body_sender {

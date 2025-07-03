@@ -50,19 +50,14 @@ sub disambiguate_location {
         centre => '52.2230321460526,-1.03613790739017',
         span   => '0.500177808954568,0.627284685758849',
         bounds => [ 51.9772677832173, -1.33234611641128, 52.4774455921719, -0.705061430652433 ],
+        result_only_if => 'West Northamptonshire',
+        result_strip => ', West Northamptonshire, England',
     };
 }
 
-=item * Filters down search results to remove North Northants, and be the street name and the postcode only
+=item * Filters down search results to remove West Northants, and be the street name and the postcode only
 
 =cut
-
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-
-    $result->{display_name} = '' unless $result->{display_name} =~ /West Northamptonshire/;
-    $result->{display_name} =~ s/, West Northamptonshire, England//;
-}
 
 =item * Users with a westnorthants.gov.uk email can always be found in the admin.
 

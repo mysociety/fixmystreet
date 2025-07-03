@@ -48,7 +48,7 @@ sub disable_nearby_topup { 1 }
 
 sub map_type {
     my $self = shift;
-    return 'OS::FMS' if $self->feature('os_maps_url') || $self->feature('os_maps_api_key');
+    return 'OS::Leisure' if $self->feature('os_maps_leisure');
     return $self->next::method();
 }
 
@@ -499,6 +499,8 @@ sub _updates_disallowed_check {
         return $cfg unless $reporter && $open;
     } elsif ($cfg eq 'reporter/staff') {
         return $cfg unless $reporter || $staff;
+    } elsif ($cfg eq 'reporter-open/staff') {
+        return $cfg unless ( $reporter && $open )|| $staff;
     } elsif ($cfg eq 'reporter/staff-open') {
         return $cfg unless ($reporter || $staff) && $open;
     } elsif ($cfg eq 'notopen311') {

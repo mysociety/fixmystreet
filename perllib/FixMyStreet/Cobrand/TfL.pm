@@ -71,19 +71,9 @@ sub disambiguate_location {
     return {
         %{ $self->SUPER::disambiguate_location() },
         town   => "London",
+        result_strip => ', London, Greater London, England',
     };
 }
-
-sub geocoder_munge_results {
-    my ($self, $result) = @_;
-    $result->{display_name} =~ s/, London, Greater London, England//;
-}
-
-=item * We use OpenStreetMap for geocoding
-
-=cut
-
-sub get_geocoder { 'OSM' }
 
 =item * TfL is not a council so prevent council related versions of text appearing on the web and in emails
 

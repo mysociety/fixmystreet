@@ -102,6 +102,24 @@ sub waste_garden_allow_cancellation { 'staff' }
 
 sub waste_garden_maximum { 5 }
 
+=head2 ggw_immediate_start
+
+Call hook to accept and return the current_bins at the residence
+when a request is made for a new ggw subscription.
+
+If it returns a positive the SLWP2 code will start the subscription
+immediately.
+
+Otherwise it will set it to 10 days in the future to allow bin delivery.
+
+=cut
+
+sub ggw_immediate_start {
+    my ($self, $bins_on_site) = @_;
+
+    return $bins_on_site;
+}
+
 sub waste_munge_bin_services_open_requests {
     my ($self, $open_requests) = @_;
     if ($open_requests->{$CONTAINERS{refuse_140}}) { # Sutton

@@ -485,6 +485,40 @@ FixMyStreet::override_config {
 	};
 };
 
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.uk/',
+    CONTACT_EMAIL => 'fixmystreet@example.org',
+}, sub {
+    my $traffic_scotland = $mech->create_body_ok(2651, 'Traffic Scotland');
+    my $edinburgh = $mech->create_body_ok(2651, 'Aberdeen City Council');
+    $mech->create_contact_ok(body_id => $edinburgh->id, category => 'Flytipping', email => 'flytip@example.com');
+    $mech->create_contact_ok(body_id => $traffic_scotland->id, category => 'Pothole (TS)', email => 'trafficscotland@example.com');
+    my $he_mod = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+    $he_mod->mock('_fetch_features', sub {[]});
+
+    $mech->get_ok("/report/new?longitude=-3.189579&latitude=55.952055");
+    $mech->content_contains('data-valuealone="Flytipping"', 'Edinburgh category available when no traffic Scotland road');
+    $mech->content_lacks('data-valuealone="Pothole (TS)"', 'Traffic Scotland category not available when no road');
+    $he_mod->mock('_fetch_features', sub {
+        my ($self, $cfg, $x, $y) = @_;
+        return [
+            {
+                properties => { area_name => 'Area 1', ROA_NUMBER => 'M1', sect_label => 'M1/111' },
+                geometry => {
+                    type => 'LineString',
+                    coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+                }
+            },
+        ];
+    });
+    $mech->get_ok("/report/new?longitude=-3.189579&latitude=55.952055");
+    $mech->content_contains('data-valuealone="Flytipping"', 'Edinburgh category available when no traffic Scotland road');
+    $mech->content_contains('data-valuealone="Pothole (TS)"', 'Traffic Scotland category available when on a TS road');
+    $mech->content_contains('data-category_display="Pothole"', 'Traffic Scotland display excludes (TS)');
+};
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'fixmystreet',
     MAPIT_URL => 'http://mapit.uk/',
@@ -573,6 +607,7 @@ FixMyStreet::override_config {
 
     subtest "check .com report uses borough_email_addresses" => sub {
         $mech->get_ok("/report/new?longitude=-0.912160&latitude=51.015143");
+        $mech->content_contains('data-category_display="Potholes"', 'National Highways display excludes (NH)');
         $mech->submit_form_ok({ with_fields => {
             title => "Test Report for HE",
             detail => 'Test report details.',

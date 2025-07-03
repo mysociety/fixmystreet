@@ -61,12 +61,6 @@ sub permission_body_override {
     return \@out;
 }
 
-=item * Uses the OSM geocoder.
-
-=cut
-
-sub get_geocoder { 'OSM' }
-
 =item * /around map shows only open reports by default.
 
 =cut

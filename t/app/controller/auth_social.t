@@ -465,6 +465,42 @@ my @configurations = (
         user_extras => [
             [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],
         ],
+    }, {
+        type => 'oidc',
+        config => {
+            ALLOWED_COBRANDS => 'westminster',
+            MAPIT_URL => 'http://mapit.uk/',
+            COBRAND_FEATURES => {
+                anonymous_account => {
+                    westminster => 'test',
+                },
+                oidc_login => {
+                    westminster => {
+                        client_id => 'example_client_id',
+                        secret => 'example_secret_key',
+                        auth_uri => 'http://oidc.example.org/oauth2/v2.0/authorize',
+                        token_uri => 'http://oidc.example.org/oauth2/v2.0/token',
+                        logout_uri => 'http://oidc.example.org/oauth2/v2.0/logout',
+                        logout_uri_redirect_param => 'custom_redirect_uri',
+                        password_change_uri => 'http://oidc.example.org/oauth2/v2.0/password_change',
+                        display_name => 'MyWestminster'
+                    }
+                }
+            }
+        },
+        email => $mech->uniquify_email('oidc@example.org'),
+        uid => "westminster:example_client_id:my_cool_user_id",
+        mock => 't::Mock::OpenIDConnect',
+        mock_hosts => ['oidc.example.org'],
+        host => 'oidc.example.org',
+        error_callback => '/auth/OIDC?error=ERROR',
+        success_callback => '/auth/OIDC?code=response-code&state=login',
+        redirect_pattern => qr{oidc\.example\.org/oauth2/v2\.0/authorize},
+        logout_redirect_pattern => qr{http://oidc\.example\.org/oauth2/v2\.0/logout\?custom_redirect_uri=http%3A%2F%2Foidc.example.org%2Fauth%2Fsign_out&id_token_hint=},
+        password_change_pattern => qr{oidc\.example\.org/oauth2/v2\.0/password_change},
+        user_extras => [
+            [westminster_account_id => "1c304134-ef12-c128-9212-123908123901"],
+        ],
     },
     {
         type => 'oidc',

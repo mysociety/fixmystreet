@@ -16,6 +16,9 @@ has cobrand => ( is => 'ro' );
 has distance => ( is => 'ro' );
 has zoom => (is => 'ro' );
 
+has latitude => ( is => 'ro' );
+has longitude => ( is => 'ro' );
+
 # display_map C PARAMS
 # PARAMS include:
 # latitude, longitude for the centre point of the map
@@ -34,6 +37,10 @@ sub display_map {
     $params{aerial} = $c->get_param("aerial") && FixMyStreet->config('BING_MAPS_API_KEY') ? 1 : 0;
 
     my $map = $cls->new({
+        # Co-ordinates are in case the layer needs to decide things
+        # based upon that, such as OSM in Northern Ireland
+        latitude => $params{latitude},
+        longitude => $params{longitude},
         cobrand => $c->cobrand,
         distance => $c->stash->{distance},
         defined $c->get_param('zoom') ? (zoom => $c->get_param('zoom') + 0) : (),
@@ -55,7 +62,7 @@ sub calculate_zoom {
         $default_zoom = $cobrand_default_zoom;
     } else {
         my $dist = $self->distance
-            || FixMyStreet::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude} );
+            || FixMyStreet::Gaze::get_radius_containing_population( $self->latitude, $self->longitude );
         $default_zoom = $dist < 10 ? $self->default_zoom : $self->default_zoom - 1;
     }
 
@@ -65,7 +72,7 @@ sub calculate_zoom {
         $zoomOffset = $anyZoomOffset;
     }
 
-    my $zoom = $self->zoom || $default_zoom;
+    my $zoom = $self->zoom // $default_zoom;
     $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;
     $zoom = 0 if $zoom < 0;
 

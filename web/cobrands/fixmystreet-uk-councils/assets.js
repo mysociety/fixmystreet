@@ -778,6 +778,123 @@ fixmystreet.assets.eastsussex.construct_selected_asset_message = function(asset)
     }
 };
 
+/* Gloucester */
+
+fixmystreet.assets.gloucester = {};
+
+fixmystreet.assets.gloucester.watercourses_filter = function(feature) {
+    var maintenanceDuty = feature.attributes.Maintenance_Duty;
+    return maintenanceDuty && maintenanceDuty.startsWith('GCiC');
+};
+
+fixmystreet.assets.gloucester.street_or_plot_found = function(layer, asset) {
+    var selected_usrn = layer.selected_feature.attributes.itemId;
+    $('input[name="asset_resource_id"]').val(selected_usrn);
+    fixmystreet.assets.cobranduk.combined_road_found(layer, asset);
+};
+
+fixmystreet.assets.gloucester.street_or_plot_not_found = function(layer) {
+    var outcome = fixmystreet.assets.cobranduk.combined_road_not_found(layer);
+    if (outcome === 'no') {
+        $('input[name="asset_resource_id"]').val('');
+    }
+};
+
+fixmystreet.assets.cobranduk = {};
+
+/* Gloucester have separate layers for watercourses and ponds which
+ * they want to act as a single layer, with selection required.
+ * This is similar to other combined layers so this is a generic
+ * function requiring the two layer to be combined to have names
+ * which are then specified in an array in layer.fixmystreet.combined
+ *
+ * 1. Don't block when a selection is made in one but not the other.
+ * 2. Do block when there isn't a selection in either.
+ * 3. Only apply the block to one layer so we don't show the block message twice. */
+
+fixmystreet.assets.cobranduk.combined_road_found = function(layer, asset) {
+    var combined = layer.fixmystreet.combined;
+    var name = layer.fixmystreet.name;
+    if (!combined || !name) {
+        console.warn("Layers not set up correctly");
+        return;
+    } else {
+        var key_layer = fixmystreet.map.getLayersByName(combined[0])[0];
+        fixmystreet.message_controller.road_found(key_layer);
+    }
+};
+
+fixmystreet.assets.cobranduk.combined_road_not_found = function(layer) {
+    var combined = layer.fixmystreet.combined;
+    var name = layer.fixmystreet.name;
+    if (!combined || !name) {
+        console.warn("Layers not set up correctly");
+        return 'error';
+    } else {
+        var key_layer = fixmystreet.map.getLayersByName(combined[0])[0];
+        var secondary_layer = fixmystreet.map.getLayersByName(combined[1])[0];
+        if (!key_layer.selected_feature && !secondary_layer.selected_feature) {
+            fixmystreet.message_controller.road_not_found(key_layer, function() { return true; });
+            return 'no';
+        }
+        return 'yes';
+    }
+};
+
+/* Gloucester have separate layers for free and paid car parks which
+ * they want to act as a single layer, with selection required.
+ * The car_park_found and car_park_not_found functions fire separately for each
+ * sub layer so we need to make sure that we:
+ * 1. Don't block when a selection is made in one but not the other.
+ * 2. Do block when there isn't a selection in either.
+ * 3. Only apply the block to one layer so we don't show the block message twice. */
+
+fixmystreet.assets.gloucester.car_park_found = function(layer, asset) {
+    var free_car_parks_layer = fixmystreet.map.getLayersByName('free_car_parks')[0];
+    fixmystreet.message_controller.road_found(free_car_parks_layer);
+};
+
+fixmystreet.assets.gloucester.car_park_not_found = function(layer) {
+    var free_car_parks_layer = fixmystreet.map.getLayersByName('free_car_parks')[0];
+    var paid_car_parks_layer = fixmystreet.map.getLayersByName('paid_car_parks')[0];
+    if (!free_car_parks_layer.selected_feature && !paid_car_parks_layer.selected_feature) {
+        fixmystreet.message_controller.road_not_found(free_car_parks_layer, function() { return true; });
+    }
+};
+
+/* Similar to car parks, Gloucester make use of separate layers for public land
+ * and public highways which they want to act as a single public layer with
+ * reports in most categories needing to be made within or nearby assets in these.
+ * The public_found and public_not_found functions fire separately for each
+ * sub layer so we need to make sure that we:
+ * 1. Don't block when a selection is made in one but not the other.
+ * 2. Do block when there isn't a selection in either.
+ * 3. Only apply the block to one layer so we don't show the block message twice. */
+
+fixmystreet.assets.gloucester.public_relevant = function(options) {
+    return (options.group || options.category) &&
+        options.group != 'Car parks' &&
+        options.group != 'Graffiti' &&
+        options.group != 'Litter bins' &&
+        options.group != 'Playground and park equipment' &&
+        options.group != 'Public toilets' &&
+        options.group != 'Watercourse' &&
+        options.category != 'Dog fouling';
+};
+
+fixmystreet.assets.gloucester.public_found = function(layer, asset) {
+    var public_land = fixmystreet.map.getLayersByName('public_land')[0];
+    fixmystreet.message_controller.road_found(public_land);
+};
+
+fixmystreet.assets.gloucester.public_not_found = function(layer) {
+    var public_land = fixmystreet.map.getLayersByName('public_land')[0];
+    var public_highways = fixmystreet.map.getLayersByName('public_highways')[0];
+    if (!public_land.selected_feature && !public_highways.selected_feature) {
+        fixmystreet.message_controller.road_not_found(public_land, function() { return true; });
+    }
+};
+
 /* Gloucestershire */
 
 fixmystreet.assets.gloucestershire = {};
