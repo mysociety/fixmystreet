@@ -290,5 +290,10 @@ Aberdeenshire don't want the state of the report to be shown in update emails.
 
 sub skip_alert_state_changed_to { 1 }
 
+=item * Map starts at zoom level 5, closer than default and not based on population density.
+
+=cut
+
+sub default_map_zoom { 5 }
 
 1;
