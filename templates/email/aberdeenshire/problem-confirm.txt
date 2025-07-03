@@ -1,0 +1,38 @@
+Subject: Please confirm your report
+
+Hello [% report.name %],
+
+As you weren't signed in when reporting the problem, you will need to confirm
+your submission. Once you do so, it will be sent to us.
+
+[% token_url %]
+
+[% IF report.non_public %]Note that your report will not be
+published for public viewing on the [% site_name %] website but will be sent to [% report.body %].
+[% ELSE %]Note that your report will also appear on the [% site_name %] website.[% END %]
+
+If you no longer wish to send this report, please take no further action.
+
+If your email program does not let you click on this link, copy and paste it
+into your web browser and press return.
+[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Please note that [% c.cobrand.council_name %] is not responsible for this type
+of problem, so it will instead be sent to [% report.body %].
+[% END %]
+[% TRY %][% INCLUDE '_problem-confirm_extra.txt' %][% CATCH file %][% END %]
+Your problem had the title:
+
+[% report.title %]
+
+And details:
+
+[% report.detail %]
+
+Thank you for submitting a report through [% site_name %].
+
+
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
