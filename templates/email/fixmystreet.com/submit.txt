@@ -16,6 +16,8 @@ please visit the following link:
 
 [% has_photo %]----------
 
+Report ID: [% report.id %]
+
 Name: [% report.name %]
 
 Email: [% report.user.email OR 'None provided' %]
