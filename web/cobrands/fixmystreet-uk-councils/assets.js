@@ -1288,6 +1288,44 @@ fixmystreet.assets.northamptonshire.stylemap_barriers = new OpenLayers.StyleMap(
 
 fixmystreet.message_controller.add_ignored_body("Northamptonshire Highways");
 
+/* Northumberland */
+
+fixmystreet.assets.northumberland = {};
+
+var ncc_rightsofway_style = new OpenLayers.Style({
+    fill: false,
+    fillOpacity: 0,
+    strokeColor: "#000000",
+    strokeOpacity: 0.8,
+    strokeWidth: 5
+});
+
+var ncc_rightsofway_rules = [
+    create_rule(
+        function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Footpath'; },
+        { strokeColor: '#FF0000', strokeDashstyle: "dash" }
+    ),
+    create_rule(
+        function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Bridleway'; },
+        { strokeColor: '#4CE600', strokeDashstyle: "dash" }
+    ),
+    create_rule(
+        function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Byway Open to All Traffic'; },
+        { strokeColor: '#B7814A' }
+    ),
+    create_rule(
+        function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Restricted Byway'; },
+        { strokeColor: '#F789D8' }
+    )
+];
+ncc_rightsofway_style.addRules(ncc_rightsofway_rules);
+
+fixmystreet.assets.northumberland.rightsofway_stylemap = new OpenLayers.StyleMap({
+    'default': ncc_rightsofway_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': fixmystreet.assets.style_default_hover
+});
+
 /* Oxfordshire */
 
 fixmystreet.assets.oxfordshire = {};
