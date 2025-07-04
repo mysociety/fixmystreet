@@ -21,10 +21,11 @@ $mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Pothole', e
             external_id => '9876543'
         });
 
-
+my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'aberdeenshire' ],
     MAPIT_URL => 'http://mapit.uk/',
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR }, # ensure cached CSVs are tidied
 }, sub {
         subtest 'CSV has external ID column ' => sub {
             $mech->log_in_ok($staff_user->email);
@@ -78,6 +79,38 @@ FixMyStreet::override_config {
 
             like $email_body, qr/Update with state change/, 'email contains the update text';
             unlike $email_body, qr/State changed to:/, 'email does not contain state change text for Aberdeenshire';
+        };
+
+        subtest 'Old reports are not shown on Aberdeenshire cobrand' => sub {
+            note 'A newly created report is shown on Aberdeenshire cobrand';
+            my $json = $mech->get_ok_json('/around?ajax=1&bbox=-2.43112,57.27026,-2.42912,57.27226');
+            is_deeply($json->{pins}, [
+                [ "57.27126", "-2.43012", "red", $report->id, $report->title, "", 'false' ],
+            ], 'Problem is initially included in Aberdeenshire cobrand');
+
+            note 'Making the report predate the cut-off excludes it from Aberdeenshire cobrand';
+            my $dt = DateTime->new(year => 2024, month => 9, day => 1, hour => 12);
+            $report->update({
+                created => $dt,
+                confirmed => $dt,
+            });
+            $json = $mech->get_ok_json('/around?ajax=1&bbox=-2.43112,57.27026,-2.42912,57.27226');
+            is_deeply($json->{pins}, [], 'Problem is now excluded from Aberdeenshire cobrand');
+
+
+            note 'Reports fetched over Open311 are included even if they predate cut-off';
+            $dt = DateTime->new(year => 2024, month => 8, day => 1, hour => 12);
+            $report->update({
+                bodies_str => $aberdeenshire->id,
+                category => 'Potholes',
+                service => 'Open311',
+                created => $dt,
+                confirmed => $dt,
+            });
+            $json = $mech->get_ok_json('/around?ajax=1&show_old_reports=1&bbox=-2.43112,57.27026,-2.42912,57.27226');
+            is_deeply($json->{pins}, [
+                [ "57.27126", "-2.43012", "red", $report->id, $report->title, "", 'false' ],
+            ], 'Open311 report is initially in Aberdeenshire cobrand');
         };
 };
 
