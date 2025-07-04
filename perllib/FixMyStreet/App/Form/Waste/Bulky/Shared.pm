@@ -334,6 +334,9 @@ sub validate {
             my $val = $self->field("item_$num")->value or next;
             $given{$val}++;
         }
+        if (!%given) {
+            $self->add_form_error("Please select an item");
+        }
         my %max = map { $_->{name} => $_->{max} } @{ $self->items_master_list };
         foreach (sort keys %given) {
             if ($max{$_} && $given{$_} > $max{$_}) {
