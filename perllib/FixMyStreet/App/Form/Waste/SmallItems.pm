@@ -8,7 +8,7 @@ extends 'FixMyStreet::App::Form::Waste';
 
 has_page intro => (
     title => 'Book small items collection',
-    intro => 'bulky/intro.html',
+    intro => 'small_items/intro.html',
     fields => ['continue'],
     next => 'about_you',
 );
@@ -73,9 +73,9 @@ has_page summary => (
         my $c = $form->c;
 
         # Some cobrands may set a new chosen_date on the form
-        my $slot_still_available = $c->cobrand->call_hook(
-            check_bulky_slot_available => $form->saved_data->{chosen_date},
-            form                       => $form,
+        my $slot_still_available = $c->stash->{booking_class}->check_slot_available(
+            $form->saved_data->{chosen_date},
+            form => $form,
         );
 
         return 1 if $slot_still_available;
@@ -89,7 +89,7 @@ has_page summary => (
         return 0;
     },
     finished => sub {
-        return $_[0]->wizard_finished('process_bulky_data');
+        return $_[0]->wizard_finished('process_small_items_data');
     },
 
 );
@@ -151,12 +151,7 @@ sub _get_dates {
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             }
             : undef
-        } @{
-        $c->cobrand->call_hook(
-            'find_available_bulky_slots', $c->stash->{property},
-            $last_earlier_date,
-        )
-        };
+        } @{ $c->stash->{booking_class}->find_available_slots($last_earlier_date) };
 
     return @dates;
 }
@@ -199,7 +194,7 @@ We sort the items by ID so that we can manually set the ordering in the admin.
 
 sub _build_items_master_list {
     [ sort { $a->{bartec_id} <=> $b->{bartec_id} }
-            @{ $_[0]->c->cobrand->call_hook('bulky_items_master_list') } ];
+            @{ $_[0]->c->cobrand->call_hook('small_items_master_list') } ];
 }
 
 # Hash of item names mapped to extra text
@@ -211,7 +206,7 @@ has items_extra => (
 );
 
 sub _build_items_extra {
-    shift->c->cobrand->bulky_items_extra;
+    shift->c->cobrand->small_items_extra;
 }
 
 has_field tandc => (
@@ -221,7 +216,7 @@ has_field tandc => (
     build_option_label_method => sub {
         my $form = $_[0]->form;
         my $c = $form->c;
-        my $label = FixMyStreet::Template::SafeString->new('I have read and agree to the <a href="' . $c->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected');
+        my $label = FixMyStreet::Template::SafeString->new('I have read and agree to the <a href="' . $c->cobrand->call_hook('small_items_tandc_link') . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected');
         return $label;
     },
 );
@@ -246,7 +241,7 @@ has_field location_photo => (
     build_label_method => sub {
         my $self = shift;
 
-        return 'Please check the <a href="' . $self->parent->{c}->cobrand->call_hook('bulky_tandc_link') . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
+        return 'Please check the <a href="' . $self->parent->{c}->cobrand->call_hook('small_items_tandc_link') . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
         . 'Help us by attaching a photo of where the items will be left for collection (optional).'
     }
 );
@@ -268,7 +263,7 @@ sub validate {
     }
 
     if ($self->current_page->name eq 'add_items') {
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $self->c->stash->{booking_maximum};
         my %given;
         for my $num ( 1 .. $max_items ) {
             my $val = $self->field("item_$num")->value or next;
