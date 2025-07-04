@@ -100,6 +100,7 @@ FixMyStreet::override_config {
                 bulky_enabled => 1,
                 bulky_multiple_bookings => 1,
                 bulky_tandc_link => 'tandc_link',
+                bulky_contact_email => 'bulkycontact@example.org',
             },
         },
         payment_gateway => { bexley => {
@@ -157,6 +158,10 @@ FixMyStreet::override_config {
             paymentResult => {
                 status => 'SUCCESS',
                 paymentDetails => {
+                    authDetails => {
+                        authCode              => 112233,
+                        continuousAuditNumber => 123,
+                    },
                     paymentHeader => {
                         uniqueTranId => 54321
                     }
@@ -406,6 +411,72 @@ FixMyStreet::override_config {
         like $reminder_email_html, qr/Friday 04 July 2025/, 'Includes collection date (html mail)';
         unlike $reminder_email_html, qr#http://bexley.example.org/waste/10001/bulky/cancel#, 'No cancellation link (html mail)';
         $mech->clear_emails_ok;
+    };
+
+    subtest 'Bulky goods collection, cancelling' => sub {
+        set_fixed_time($good_date);
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('This collection has been cancelled');
+        $mech->content_contains("You can cancel this booking till");
+        $mech->content_contains("23:59 on 02 July 2025");
+        $mech->content_contains('/waste/10001/bulky/cancel/' . $report->id);
+        $mech->content_contains('Cancel this booking');
+
+        $mech->clear_emails_ok();
+
+        subtest 'No payment yet made' => sub {
+            $report->unset_extra_metadata('payment_reference');
+            $report->update;
+            $mech->get_ok('/waste/10001/bulky/cancel/' . $report->id);
+            $mech->content_lacks('you will receive a refund');
+            $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+            $mech->content_contains('Your booking has been cancelled');
+
+            $mech->email_count_is(0);
+
+            $report->discard_changes;
+            $report->set_extra_metadata(payment_reference => 12345);
+            $report->state('confirmed');
+            $report->update;
+        };
+
+        $mech->get_ok('/waste/10001/bulky/cancel/' . $report->id);
+        $mech->content_like(qr{<dt>Date</dt>\s*<dd>Friday 04 July 2025</dd>});
+        $mech->content_contains('BBQ');
+        $mech->content_contains('receive a refund of £69.30');
+        $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+        $mech->content_contains('Your booking has been cancelled');
+
+        my $report_id = $report->id;
+        my $email = $mech->get_email;
+
+        subtest 'Sends refund email' => sub {
+            is $email->header('Subject'),
+                'Refund requested for cancelled bulky waste collection ' . $report->id,
+                'Correct subject';
+            is $email->header('To'),
+                '"London Borough of Bexley" <bulkycontact@example.org>',
+                'Correct recipient';
+
+            my $text = $email->as_string;
+
+            like $text, qr/Address: 1 Test Street, Bexley, DA1 1AA/, "Includes resident's address";
+            my $name = $report->name;
+            like $text, qr/Resident's Name: ${name}/, "Includes resident's name";
+            my $user_email = $report->user->email;
+            like $text, qr/Resident's Email: ${user_email}/, "Includes resident's email";
+            # =C2=A3 is the quoted printable for '£'.
+            like $text, qr/Payment Amount: =C2=A369.30/, "Correct payment amount";
+            like $text, qr/Amount To Refund: =C2=A369.30/, "Correct payment amount";
+            like $text, qr/Capita SCP Response: 12345/,
+                'Correct SCP response';
+            # XXX Not picking up on mocked time
+            like $text, qr|Payment Date: \d{2}/\d{2}/\d{2} \d{2}:\d{2}|,
+                'Correct date format';
+            like $text, qr/CAN: 123/, 'Correct CAN';
+            like $text, qr/Auth Code: 112233/, 'Correct auth code';
+            like $text, qr/reference2: ${report_id}/, 'Correct reference2';
+        };
     };
 
     subtest 'OAP pricing' => sub {
