@@ -265,4 +265,55 @@ sub waste_reconstruct_bulky_data {
     return $saved_data;
 }
 
+sub bulky_booking_paid {
+    my ($self, $collection) = @_;
+    return $collection->get_extra_metadata('payment_reference');
+}
+
+# Refund window same as cancellation
+sub bulky_can_refund_collection {
+    my ($self, $collection) = @_;
+    return 0 if !$self->bulky_booking_paid($collection);
+    return 0 if !$self->within_bulky_cancel_window($collection);
+    return 1;
+}
+
+sub bulky_contact_email {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return $cfg->{bulky_contact_email};
+}
+
+sub bulky_refund_collection {
+    my ($self, $collection_report) = @_;
+    my $c = $self->{c};
+
+    my $charged = $collection_report->get_extra_field_value('payment');
+    $c->send_email(
+        'waste/bulky-refund-request.txt',
+        {   to => [
+                [ $self->bulky_contact_email, $self->council_name ]
+            ],
+
+            wasteworks_id => $collection_report->id,
+            payment_amount => $collection_report->get_extra_field_value('payment'),
+            refund_amount => $charged,
+            payment_method =>
+                $collection_report->get_extra_field_value('payment_method'),
+            payment_code =>
+                $collection_report->get_extra_field_value('PaymentCode'),
+            auth_code =>
+                $collection_report->get_extra_metadata('authCode'),
+            continuous_audit_number =>
+                $collection_report->get_extra_metadata('continuousAuditNumber'),
+            payment_date       => $collection_report->created,
+            scp_response       =>
+                $collection_report->get_extra_metadata('scpReference'),
+            detail  => $collection_report->detail,
+            resident_name => $collection_report->name,
+            resident_email => $collection_report->user->email,
+        },
+    );
+}
+
 1;
