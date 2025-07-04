@@ -893,7 +893,7 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'brent', 'tfl' ],
+    ALLOWED_COBRANDS => [ 'brent', 'tfl', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     COBRAND_FEATURES => {
@@ -983,6 +983,21 @@ FixMyStreet::override_config {
         }, "submit details");
         $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         is $report->category, 'Fly-tip Small - Less than one bag';
+    };
+
+    subtest 'Fly-tipping category selection on .com' => sub {
+        $mech->host('fixmystreet.com');
+        $mech->get_ok('/report/new?latitude=51.564493&longitude=-0.277156');
+        $mech->submit_form_ok({
+            with_fields => {
+                title => "Test Report",
+                detail => 'Test report details.',
+                category => 'Fly-tip Small - Less than one bag',
+            }
+        }, "submit details");
+        my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
+        is $report->category, 'Fly-tip Small - Less than one bag (Parks)';
+        $mech->host('brent.fixmystreet.com');
     };
 
     subtest "Doesn't overwrite location_name if already set" => sub {
