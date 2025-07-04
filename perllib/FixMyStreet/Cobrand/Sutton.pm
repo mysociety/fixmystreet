@@ -572,5 +572,6 @@ sub bulky_location_text_prompt {
 }
 
 sub bulky_item_notes_field_mandatory { 1 }
+sub bulky_show_individual_notes { 1 } # As mandatory, must be shown
 
 1;
