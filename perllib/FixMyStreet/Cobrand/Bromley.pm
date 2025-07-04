@@ -43,7 +43,6 @@ my %SERVICE_IDS = (
 lock_hash(%SERVICE_IDS);
 
 my %EVENT_TYPE_IDS = (
-    general_enquiry => 2148,
     missed_refuse => 2095,
     missed_mixed => 2096,
     missed_paper => 2097,
@@ -58,6 +57,19 @@ my %EVENT_TYPE_IDS = (
     garden => 2106,
 );
 lock_hash(%EVENT_TYPE_IDS);
+
+my %ALLOW_CLOSED_EVENT_TYPE_IDS = (
+    2148 => 'general_enquiry',
+    2105 => 'failure_to_deliver',
+    2118 => 'gate_not_closed',
+    2119 => 'waste_spillage',
+    2120 => 'bin_not_returned',
+    2159 => 'damage_to_third_party',
+    2162 => 'crew_behaviour',
+    2163 => 'damage_to_property',
+    2186 => 'wrongful_removal',
+);
+lock_hash(%ALLOW_CLOSED_EVENT_TYPE_IDS);
 
 sub report_validation {
     my ($self, $report, $errors) = @_;
@@ -445,7 +457,7 @@ sub open311_waste_update_extra {
     my $resolution_id = $event->{ResolutionCodeId} || '';
     my $description = $event_type->{states}{$state_id}{name} || '';
 
-    my $closed_general_enquiry = $event->{EventTypeId} == $EVENT_TYPE_IDS{general_enquiry} && $description eq 'Closed';
+    my $closed_general_enquiry = exists $ALLOW_CLOSED_EVENT_TYPE_IDS{$event->{EventTypeId}} && $description eq 'Closed';
     my $not_new_completed = $description ne 'New' && $description ne 'Completed';
     if ($not_new_completed && !$resolution_id && !$closed_general_enquiry) {
         $override_status = "";
