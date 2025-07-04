@@ -183,7 +183,9 @@ FixMyStreet::override_config {
             { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
         );
         $mech->submit_form_ok(
-            {   with_fields => {
+            {
+                form_number => 1,
+                fields => {
                     'item_1' => 'Tied bag of domestic batteries (min 10 - max 100)',
                     'item_2' => 'Toaster',
                     'item_3' => 'Podback Bag',
@@ -370,9 +372,10 @@ FixMyStreet::override_config {
                 $mech->submit_form_ok(
                     { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
                 );
-                $mech->submit_form_ok(
-                    {  with_fields => $test->{items} }
-                );
+                $mech->submit_form_ok({
+                    form_number => 1,
+                    fields => $test->{items}
+                });
                 for my $present_text (@{$test->{content_contains}}) {
                     ok $mech->content_contains($present_text);
                 }

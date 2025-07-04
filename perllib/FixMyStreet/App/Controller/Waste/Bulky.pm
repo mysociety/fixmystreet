@@ -78,22 +78,16 @@ sub item_list : Private {
         };
     }
 
-    for my $num ( 1 .. $max_items ) {
-        if ($c->cobrand->bulky_item_notes_field_mandatory) {
-            $notes_field = {
-                %$notes_field,
-                required_when => { "item_$num" => sub { $_[0] ne "" } },
-            };
-        }
-        push @$field_list,
+    sub item_fields {
+        my ($num, $notes_field) = @_;
+        return (
             "item_$num" => {
                 type => 'Select',
-                label => "Item $num",
+                label => "Item",
                 id => "item_$num",
                 empty_select => 'Please select an item',
                 tags => { autocomplete => 1 },
                 options_method => \&bulky_item_options_method,
-                $num == 1 ? (required => 1) : (),
                 messages => { required => 'Please select an item' },
             },
             "item_photo_$num" => {
@@ -107,7 +101,18 @@ sub item_list : Private {
                 num_photos_required => 0,
                 linked_field => "item_photo_$num",
             },
-            "item_notes_${num}" => $notes_field;
+            "item_notes_${num}" => $notes_field,
+        );
+    }
+
+    for my $num ( 1 .. $max_items ) {
+        if ($c->cobrand->bulky_item_notes_field_mandatory) {
+            $notes_field = {
+                %$notes_field,
+                required_when => { "item_$num" => sub { $_[0] ne "" } },
+            };
+        }
+        push @$field_list, item_fields($num, $notes_field);
     }
 
     $c->stash->{page_list} = [
@@ -130,6 +135,23 @@ sub item_list : Private {
         },
     ];
     $c->stash->{field_list} = $field_list;
+
+    # Blank page for template
+    my $form_class = $c->stash->{form_class};
+    my $form = $form_class->new(
+        page_list => [ add_items => {
+            fields => [ "continue", "item_999", "item_photo_999", "item_photo_999_fileid", "item_notes_999" ],
+        } ],
+        field_list => [ item_fields(999, $notes_field) ],
+        page_name => 'add_items',
+        csrf_token => $c->stash->{csrf_token},
+        c => $c,
+        no_preload => 1,
+        unique_id_session => $c->session->{form_unique_id},
+        unique_id_form => $c->get_param('unique_id'),
+    );
+    $form->process;
+    $c->stash->{blank_form} = $form;
 }
 
 sub index : PathPart('') : Chained('setup') : Args(0) {

@@ -620,6 +620,7 @@ $.extend(fixmystreet.set_up, {
   autocomplete: function() {
     $('.js-autocomplete').each(function() {
         var $this = $(this);
+        if (this.style.display === 'none') return; // Already set up
         accessibleAutocomplete.enhanceSelectElement({
             selectElement: this,
             displayMenu: 'overlay',
@@ -1073,6 +1074,7 @@ $.extend(fixmystreet.set_up, {
       var $originalInputs = $('#form_photos, .js-photo-fields', $context);
       $originalInputs.each(function() {
         var $originalInput = $(this);
+        if ($originalInput.css('display') === 'none') return; // Already set up
         var $dropzone = $('<div tabindex=0 role="button">').addClass('dropzone');
         var $fileid_input = $originalInput.data('upload-field') || 'upload_fileid';
         var max_photos = !isNaN($originalInput.data('max-photos')) ? $originalInput.data('max-photos') : 3;

@@ -252,7 +252,9 @@ FixMyStreet::override_config {
             { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
         );
         $mech->submit_form_ok(
-            {   with_fields => {
+            {
+                form_number => 1,
+                fields => {
                     'item_1' => 'BBQ',
                     'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                     'item_2' => 'Bicycle',
