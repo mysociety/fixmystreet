@@ -1592,6 +1592,16 @@ sub _bulky_collection_overdue {
     return $today > $collection_due_date;
 }
 
+sub bulky_location_text_prompt {
+    "Please provide the exact location where the items will be left and details of any access codes required for bin stores (e.g., on the driveway by the front gate; left hand side of the bin store – access code 2343)";
+}
+
+sub bulky_location_photo_prompt {
+    my $self = shift;
+    return 'Please check the <a href="' . $self->bulky_tandc_link . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
+        . 'Help us by attaching a photo of where the items will be left for collection (optional).';
+}
+
 sub _barnet_non_street {
     return [
         'Abandoned vehicles',

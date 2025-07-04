@@ -182,9 +182,10 @@ sub _get_dates {
     my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
     my @dates  = grep {$_} map {
         my $dt = $parser->parse_datetime( $_->{date} );
+        my $label = $c->cobrand->moniker eq 'brent' ? '%d %B' : '%A %e %B';
         $dt
             ? {
-            label => $dt->strftime('%A %e %B'),
+            label => $dt->strftime($label),
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             disabled => $dates_booked{$_->{date}},
             # The default behaviour in the fields.html template is to mark a radio
@@ -269,6 +270,8 @@ has_field tandc => (
 <br>&bull; I confirm the bulky waste items will be left outside at the front of the property but not on the public highway, in an easy accessible location.
 <br>&bull; I confirm I understand that items cannot be collected from inside the property
 <br>&bull; I confirm I have read the information for the <a href="' . $link . '" target="_blank">bulky waste service</a>';
+        } elsif ($c->cobrand->moniker eq 'brent') {
+            $label = 'I have read and agree to the <a href="' . $link . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected';
         } else {
             $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste collection</a> page on the council’s website';
         }
@@ -328,6 +331,26 @@ sub validate {
         foreach (sort keys %given) {
             if ($max{$_} && $given{$_} > $max{$_}) {
                 $self->add_form_error("Too many of item: $_");
+            }
+        }
+        if ($self->{c}->cobrand->moniker eq 'brent') {
+            my %category_count;
+            for my $name (keys %given) {
+                for my $list_item (@{ $self->items_master_list }) {
+                    if ($list_item->{'name'} eq $name) {
+                        if ($list_item->{'category'}) {
+                            $category_count{$list_item->{'category'}} += $given{$name};
+                        } else {
+                            $category_count{$list_item->{'name'}} += $given{$name};
+                        }
+                    }
+                }
+            }
+            if (scalar keys %category_count > 3) {
+                $self->add_form_error("Too many categories: maximum of 3 types");
+            }
+            if (scalar $category_count{'Small electrical items'} && scalar $category_count{'Small electrical items'} > 4) {
+                $self->add_form_error("Too many small electrical items: maximum 4");
             }
         }
     }
