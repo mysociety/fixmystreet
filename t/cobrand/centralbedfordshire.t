@@ -6,6 +6,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 use Catalyst::Test 'FixMyStreet::App';
+use FixMyStreet::Script::CSVExport;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -247,10 +248,15 @@ subtest 'Dashboard CSV extra columns' => sub {
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
         $mech->get_ok('/dashboard?export=1');
-    };
-    $mech->content_contains('"Site Used","Reported As",CRNo,"Fly-tipping types","Cleaning types"');
-    $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',"Bin bags;Furniture",');
-    $mech->content_contains(',centralbedfordshire,,,,Cobwebs');
+        $mech->content_contains('"Site Used","Reported As",CRNo,"Fly-tipping types","Cleaning types"');
+        $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',"Bin bags;Furniture"');
+        $mech->content_contains(',centralbedfordshire,,,,Cobwebs');
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Site Used","Reported As",CRNo,"Fly-tipping types","Cleaning types"');
+        $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',"Bin bags;Furniture"');
+        $mech->content_contains(',centralbedfordshire,,,,Cobwebs');
+    }
 };
 
 

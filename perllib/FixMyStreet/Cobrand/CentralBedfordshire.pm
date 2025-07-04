@@ -295,7 +295,8 @@ sub dashboard_export_problems_add_columns {
         $types = join(';', sort @$types);
 
         my $issues = [];
-        if ($report->category eq 'Cleaning Contract Reports') {
+        my $category = $csv->dbi ? $report->{category} : $report->category;
+        if ($category eq 'Cleaning Contract Reports') {
             $issues = $csv->_extra_field($report, 'Issue') || [];
         }
         $issues = [$issues] unless ref $issues;
