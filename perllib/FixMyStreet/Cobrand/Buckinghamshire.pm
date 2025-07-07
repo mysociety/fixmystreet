@@ -41,6 +41,15 @@ sub council_area { return 'Buckinghamshire'; }
 sub council_name { return 'Buckinghamshire Council'; }
 sub council_url { return 'buckinghamshire'; }
 
+=item * Bucks uses its own geocoder (L<FixMyStreet::Geocode::Buckinghamshire>)
+
+Bexley provides a layer containing Rights of Way that
+supplements the standard geocoder.
+
+=cut
+
+sub get_geocoder { 'Buckinghamshire' }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
@@ -86,6 +95,14 @@ sub around_nearby_filter {
     $params->{states}->{'internal referral'} = 1;
 }
 
+=item * Customised pin colours
+
+Bucks have a grey cross for closed / other council reports;
+green tick for fixed; yellow cone for open; orange at work
+for other open states.
+
+=cut
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'grey-cross' if $p->is_closed || ($context ne 'reports' && !$self->owns_problem($p));
@@ -96,7 +113,15 @@ sub pin_colour {
 
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
+=item * We use both their old and new domains for the admin_user_domain.
+
+=cut
+
 sub admin_user_domain { ( 'buckscc.gov.uk', 'buckinghamshire.gov.uk' ) }
+
+=item * Bucks use the triage system for handling parish redirected reports.
+
+=cut
 
 sub admin_pages {
     my $self = shift;
@@ -139,8 +164,16 @@ sub permission_body_override {
     return \@out;
 }
 
+=item * Bucks automatically resend any report upon a category change.
+
+=cut
+
 # Assume that any category change means the report should be resent
 sub category_change_force_resend { 1 }
+
+=item * We do not send questionnaires.
+
+=cut
 
 sub send_questionnaires { 0 }
 
