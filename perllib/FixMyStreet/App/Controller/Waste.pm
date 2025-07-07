@@ -210,6 +210,24 @@ sub pay_retry : Path('pay_retry') : Args(0) {
     $c->forward('pay', [ 'bin_days' ]);
 }
 
+sub pay_skip : Private {
+    my ($self, $c, $cheque, $waived) = @_;
+
+    if (FixMyStreet->staging_flag('skip_waste_payment')) {
+        $c->stash->{message} = 'Payment skipped on staging';
+        $c->stash->{reference} = $c->stash->{report}->id;
+        $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
+        return;
+    }
+
+    $c->stash->{action} = 'new_subscription';
+    my $p = $c->stash->{report};
+    $p->set_extra_metadata('chequeReference', $cheque) if $cheque;
+    $p->set_extra_metadata('payment_explanation', $waived) if $waived;
+    $p->update;
+    $c->forward('confirm_subscription', [ undef ] );
+}
+
 sub pay : Path('pay') : Args(0) {
     my ($self, $c, $back) = @_;
 
@@ -693,6 +711,7 @@ sub process_request_data : Private {
     push @reports, @$reports if $reports;
 
     my $payment = $data->{payment};
+    my $payment_method = $data->{payment_method} || 'credit_card';
     foreach (@services) {
         my ($id) = /container-(.*)/;
         $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
@@ -700,7 +719,7 @@ sub process_request_data : Private {
             unless ($c->cobrand->moniker eq 'kingston') {
                 $c->set_param('payment', $payment);
             }
-            $c->set_param('payment_method', $data->{payment_method} || 'credit_card');
+            $c->set_param('payment_method', $payment_method);
         }
         $c->forward('add_report', [ $data, $unconfirmed || $payment ? 1 : 0 ]) or return;
         push @reports, $c->stash->{report};
@@ -709,9 +728,9 @@ sub process_request_data : Private {
 
     if ($payment) {
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
-            $c->stash->{message} = 'Payment skipped on staging';
-            $c->stash->{reference} = $c->stash->{report}->id;
-            $c->forward('confirm_subscription', [ $c->stash->{reference} ] );
+            $c->forward('/waste/pay_skip', []);
+        } elsif ($payment_method eq 'waived') {
+            $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
         } else {
             if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
                 $c->forward('csc_code');
