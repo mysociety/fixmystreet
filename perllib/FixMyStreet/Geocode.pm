@@ -88,7 +88,7 @@ sub escape {
 }
 
 sub cache {
-    my ($type, $url, $args, $re) = @_;
+    my ($type, $url, $args, $re, $xml) = @_;
 
     my $cache_dir = path(FixMyStreet->config('GEO_CACHE'), $type)->absolute(FixMyStreet->path_to());
     my $cache_file = $cache_dir->child(md5_hex($url));
@@ -111,7 +111,7 @@ sub cache {
             $cache_file->spew_utf8($js);
         }
     }
-    $js = JSON->new->allow_nonref->decode($js) if $js;
+    $js = JSON->new->allow_nonref->decode($js) if $js && !$xml;
     return $js;
 }
 
