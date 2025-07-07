@@ -350,7 +350,7 @@ sub one_off_payment {
     } else {
         # Handle unexpected response format or potential success cases not returning a hash
         # Log or handle as appropriate, returning 1 for presumed success if no error indicated
-        warn "Unexpected response format from AccessPaySuite adhoc payment: " . Dumper($resp);
+        $self->log('Unexpected response format from AccessPaySuite adhoc payment: ' . Dumper($resp) );
         return 1; # Assuming success if no error hash
     }
 }
