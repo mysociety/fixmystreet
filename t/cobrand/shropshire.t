@@ -5,6 +5,7 @@ use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Catalyst::Test 'FixMyStreet::App';
+use FixMyStreet::Script::CSVExport;
 
 use Open311::PopulateServiceList;
 
@@ -176,7 +177,7 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'shropshire',
     PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
 }, sub {
-    subtest 'Dashboard CSV adds column "Private" for "non_public" attribute' => sub {
+    subtest 'Dashboard CSV adds column "Private" for "non_public" attribute and "Subscribers" ' => sub {
         my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
             from_body => $body, password => 'password');
 
@@ -185,12 +186,28 @@ FixMyStreet::override_config {
         $report->non_public(1);
         $report->update;
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Reported As",Private');
-        $mech->content_contains('website,shropshire,,Yes');
+        $mech->content_contains('"Reported As",Private,Subscribers');
+        $mech->content_contains('website,shropshire,,Yes,0');
+        $report->non_public(0);
+        $report->update;
+        my $alert = FixMyStreet::DB->resultset('Alert')->create( {
+            parameter  => $report->id,
+            alert_type => 'new_updates',
+            user       => $staffuser,
+        } )->confirm;
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('website,shropshire,,No,1');
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $report->non_public(1);
+        $report->update;
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Reported As",Private,Subscribers');
+        $mech->content_contains('website,shropshire,,Yes,1');
         $report->non_public(0);
         $report->update;
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('website,shropshire,,No');
+        $mech->content_contains('website,shropshire,,No,1');
+
     };
 };
 

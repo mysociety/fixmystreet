@@ -193,16 +193,27 @@ sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
     $csv->add_csv_columns(
-        private_report => 'Private'
+        private_report => 'Private',
+        alerts_count => "Subscribers",
     );
+
+    my $alerts_lookup = $csv->dbi ? undef : $self->csv_update_alerts;
 
     $csv->csv_extra_data(sub {
         my $report = shift;
 
         my $non_public = $csv->dbi ? $report->{non_public} : $report->non_public;
-        return {
-            private_report => $non_public ? 'Yes' : 'No'
-        };
+        if ($alerts_lookup) {
+            return {
+                alerts_count => ($alerts_lookup->{$report->id} || 0),
+                private_report => $non_public ? 'Yes' : 'No'
+            };
+        } else {
+            return {
+                alerts_count => ($report->{alerts_count} || 0),
+                private_report => $non_public ? 'Yes' : 'No'
+            }
+        }
     });
 }
 
