@@ -61,7 +61,7 @@ sub send_questionnaires { 0 }
 =cut
 
 sub enter_postcode_text {
-    return 'Enter a Gloucester postcode or street name';
+    return 'Enter a nearby Gloucester postcode or street name';
 }
 
 =item * Add display_name as an extra contact field
