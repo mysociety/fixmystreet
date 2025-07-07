@@ -485,7 +485,6 @@ sub direct_debit_modify : Private {
 
     my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
     $p->set_extra_metadata(payerReference => $ref);
-    $p->confirm if $c->cobrand->moniker eq 'bexley';
     $p->update;
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
@@ -517,6 +516,11 @@ sub direct_debit_modify : Private {
         amount => sprintf('%.2f', $total / 100),
         orig_sub => $c->stash->{orig_sub},
     } );
+
+    if ( $c->cobrand->moniker eq 'bexley' ) {
+        $p->confirm;
+        $p->update;
+    }
 }
 
 sub direct_debit_cancel_sub : Private {
@@ -525,8 +529,6 @@ sub direct_debit_cancel_sub : Private {
     my $p = $c->stash->{report};
     my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
     $p->set_extra_metadata(payerReference => $ref);
-    # Bexley can have immediate cancellation
-    $p->confirm if $c->cobrand->moniker eq 'bexley';
     $p->update;
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
@@ -537,6 +539,12 @@ sub direct_debit_cancel_sub : Private {
         payer_reference => $ref,
         report => $p,
     } );
+
+    # Bexley can have immediate cancellation
+    if ( $c->cobrand->moniker eq 'bexley' ) {
+        $p->confirm;
+        $p->update;
+    }
 }
 
 sub csc_code : Private {
