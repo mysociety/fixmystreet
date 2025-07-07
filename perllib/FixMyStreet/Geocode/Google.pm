@@ -16,9 +16,9 @@ use URI::Escape;
 # an array of matches if there are more than one. The information in the query
 # may be used to disambiguate the location in cobranded versions of the site.
 sub string {
-    my ( $cls, $s, $c ) = @_;
+    my ( $cls, $s, $cobrand ) = @_;
 
-    my $params = $c->cobrand->disambiguate_location($s);
+    my $params = $cobrand->disambiguate_location($s);
     # Allow cobrand to fixup the user input
     $s = $params->{string} if $params->{string};
 
@@ -27,7 +27,7 @@ sub string {
     # For some reason adding gl=uk is no longer sufficient to make google
     # think we are in the UK for some locations so we explicitly tell Google
     # the country.
-    if ($c->cobrand->country eq 'GB') {
+    if ($cobrand->country eq 'GB') {
         $components = "country:GB";
     }
 
@@ -49,19 +49,19 @@ sub string {
 
     $url .= '&components=' . $components if $components;
 
-    $c->stash->{geocoder_url} = $url;
+    my $out = { geocoder_url => $url };
     my $args = 'key=' . FixMyStreet->config('GOOGLE_MAPS_API_KEY');
     my $js = FixMyStreet::Geocode::cache('google', $url, $args, qr/"status"\s*:\s*"(OVER_QUERY_LIMIT|REQUEST_DENIED|INVALID_REQUEST|UNKNOWN_ERROR)"/);
     if (!$js) {
-        return { error => _('Sorry, we could not parse that location. Please try again.') };
+        return { %$out, error => _('Sorry, we could not parse that location. Please try again.') };
     }
-    return unless $js->{status} eq 'OK';
+    return $out unless $js->{status} eq 'OK';
 
     my $results = $js->{results};
     my ( $error, @valid_locations, $latitude, $longitude );
     foreach (@$results) {
         my $address = $_->{formatted_address};
-        next unless $c->cobrand->geocoded_string_check( $address );
+        next unless $cobrand->geocoded_string_check( $address );
         ( $longitude, $latitude ) =
             map { Utils::truncate_coordinate($_) }
             ($_->{geometry}{location}{lng}, $_->{geometry}{location}{lat});
@@ -72,8 +72,8 @@ sub string {
         });
         push (@valid_locations, $_);
     }
-    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
-    return { error => $error };
+    return { %$out, latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
+    return { %$out, error => $error };
 }
 
 1;

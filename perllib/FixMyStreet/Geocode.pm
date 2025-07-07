@@ -56,7 +56,9 @@ sub string {
         $service = __PACKAGE__ . '::OSM';
     }
 
-    return $service->string($s, $c);
+    my $out = $service->string($s, $c->cobrand);
+    $c->stash->{geocoder_url} = delete $out->{geocoder_url};
+    return $out;
 }
 
 sub reverse {
