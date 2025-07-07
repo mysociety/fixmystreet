@@ -3,6 +3,7 @@ use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use File::Temp 'tempdir';
+use_ok 'FixMyStreet::Geocode::Bexley';
 
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
@@ -794,6 +795,42 @@ subtest 'Littering From Vehicles report' => sub {
     is $report->comments, 1,               'no more comments added';
     $comment = $report->comments->first;
     is $comment->state, 'confirmed', 'comment now confirmed';
+};
+
+subtest 'geocoder' => sub {
+    my $geo = Test::MockModule->new('FixMyStreet::Geocode');
+    $geo->mock('cache', sub {
+        my ($typ, $url) = @_;
+        return [] if $typ eq 'osm';
+        return <<EOF if $typ eq 'bucks';
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs">
+<gml:featureMember>
+<ms:RouteWFS>
+<ms:msGeometry>
+<gml:LineString srsName="EPSG:27700">
+<gml:posList srsDimension="2">484232.512000 220244.945000 484260.047000 220241.346000 484290.051000 220231.889000 484324.392000 220223.081000 484366.318000 220212.804000 484409.267000 220202.497000 484426.594000 220197.527000 484446.839000 220191.060000 484472.382000 220186.052000 484490.818000 220181.483000 484512.697000 220176.254000 484535.996000 220171.189000 484553.216000 220166.124000 484572.217000 220160.637000 484592.723000 220153.969000 484611.333000 220149.240000 484632.366000 220143.772000 484646.830000 220141.587000 484657.943000 220140.529000 484668.963000 220139.144000 484678.201000 220141.342000 484685.309000 220145.649000 484687.462000 220147.803000 484700.600000 220135.527000 </gml:posList>
+</gml:LineString>
+</ms:msGeometry>
+<ms:RouteCode>AAB/1/1</ms:RouteCode>
+<ms:RouteNo>1</ms:RouteNo>
+<ms:StatusDescr>Footpath</ms:StatusDescr>
+<ms:AdminAreaDescr>Aston Abbotts</ms:AdminAreaDescr>
+</ms:RouteWFS>
+</gml:featureMember>
+</wfs:FeatureCollection>
+EOF
+    });
+
+    my $results = FixMyStreet::Geocode::Buckinghamshire->string("33A", $cobrand);
+    is_deeply $results, {
+        geocoder_url => "33A",
+        'latitude' => '51.87369',
+        'longitude' => '-0.773352',
+        address => 'AAB/1/1, Footpath, Aston Abbotts',
+    };
 };
 
 };
