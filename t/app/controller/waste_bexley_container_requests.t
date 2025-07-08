@@ -688,6 +688,11 @@ FixMyStreet::override_config {
         waste      => { bexley => 1 },
         whitespace => { bexley => { url => 'http://example.org/' } },
         agile => { bexley => { url => 'test' } },
+        payment_gateway => {
+            bexley => {
+                ggw_cost_first => 5000,
+            },
+        },
     },
 }, sub {
     my $whitespace_mock = $bexley_mocks{whitespace};
