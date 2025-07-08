@@ -2083,8 +2083,8 @@ FixMyStreet::override_config {
                     qr/Frequency.*Pending/,
                     'garden waste shown with pending Whitespace values';
                 like $mech->text,
-                    qr/100\.00 per year \(1 bin\)/,
-                    'garden waste shown with Agile values';
+                    qr/75\.00 per year \(1 bin\)/,
+                    'garden waste shown with calculated cost';
                 like $mech->text,
                     qr/Manage garden waste bins/,
                     'management link shown';
@@ -2156,8 +2156,8 @@ FixMyStreet::override_config {
                     qr/Frequency.*Weekly/,
                     'garden waste shown with Whitespace values';
                 like $mech->text,
-                    qr/100\.00 per year \(1 bin\)/,
-                    'garden waste shown with Agile values';
+                    qr/75\.00 per year \(1 bin\)/,
+                    'garden waste shown with calculated cost';
                 unlike $mech->text,
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
