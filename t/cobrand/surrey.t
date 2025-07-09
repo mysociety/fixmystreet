@@ -27,7 +27,7 @@ my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'surrey' ],
     MAPIT_URL => 'http://mapit.uk/',
-    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+    PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR }, # ensure cached CSVs are tidied
     COBRAND_FEATURES => {
         anonymous_account => {
             surrey => 'anonymous',

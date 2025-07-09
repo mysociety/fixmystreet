@@ -2,13 +2,29 @@ use FixMyStreet::Cobrand::Gloucester;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 use Test::Deep;
+use Test::MockModule;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 my $mech    = FixMyStreet::TestMech->new;
-my $cobrand = FixMyStreet::Cobrand::Gloucester->new;
-my $body    = $mech->create_body_ok(
+my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+$cobrand->mock(
+    '_fetch_features',
+    sub {
+        return [
+            {   properties => { itemId => 'an_asset_id' },
+                geometry   => {
+                    type        => 'LineString',
+                    coordinates =>
+                        [ [ -2.24586, 51.86506 ], [ -2.24586, 51.86506 ], ],
+                }
+            }
+        ];
+    },
+);
+
+my $body = $mech->create_body_ok(
     2325,
     'Gloucester City Council',
     {   send_method  => 'Open311',
@@ -32,27 +48,8 @@ my $graffiti = $mech->create_contact_ok(
 my $flytipping = $mech->create_contact_ok(
     body_id  => $body->id,
     category => 'Flytipping',
-    email    => 'Flytipping',
+    email    => 'Regular_fly-tipping_(not_witnessed_and_no_evidence_likely)',
 );
-
-# Open311 but sends email too if certain answer provided
-my $dog_fouling = $mech->create_contact_ok(
-    body_id  => $body->id,
-    category => 'Dog fouling',
-    email    => 'Dog_fouling',
-);
-$dog_fouling->set_extra_fields(
-    {   code        => 'did_you_witness',
-        datatype    => 'singlevaluelist',
-        description => 'Question',
-        required    => 1,
-        variable    => 1,
-        values      => [
-            { key => 'No', name => 'No' }, { key => 'Yes', name => 'Yes' },
-        ],
-    },
-);
-$dog_fouling->update;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'gloucester' ],
@@ -64,11 +61,17 @@ FixMyStreet::override_config {
                 'Dog fouling' => 'enviro-crime@gloucester.dev'
             }
         },
+        asset_layers => { gloucester => [
+            {
+                http_options => { params => { layer => 'plots' } },
+                asset_category => ['Flytipping'],
+            }
+        ] },
     },
 }, sub {
     ok $mech->host('gloucester'), 'change host to gloucester';
     $mech->get_ok('/');
-    $mech->content_like(qr/Enter a Gloucester postcode/);
+    $mech->content_like(qr/Enter a nearby Gloucester postcode/);
 
     subtest 'Send report' => sub {
         subtest 'Email only' => sub {
@@ -134,92 +137,17 @@ FixMyStreet::override_config {
             FixMyStreet::Script::Reports::send();
             $report->discard_changes;
 
+
             is $report->send_state,  'sent', 'sent successfully';
             is $report->external_id, '248', 'has external ID';
             is $report->get_extra_field_value('did_you_witness'), undef,
                 'no witness question';
             is $report->get_extra_metadata('extra_email_sent'), undef,
                 'no extra_email_sent';
+            is $report->get_extra_field_value('asset_resource_id'), 'an_asset_id',
+                'asset_resource_id set';
 
             $mech->email_count_is(0), 'no email sent';
-        };
-
-        subtest 'Open311 and email' => sub {
-            subtest "Does not send email if 'No' selected" => sub {
-                $mech->delete_problems_for_body($body->id);
-                $mech->clear_emails_ok;
-
-                $mech->get('/report/new?longitude=-2.2458&latitude=51.86506&category=Dog fouling');
-                $mech->submit_form_ok(
-                    {   button      => 'submit_register',
-                        with_fields => {
-                            category        => 'Dog fouling',
-                            detail          => 'Test report details',
-                            title           => 'Test Report',
-                            did_you_witness => 'No',
-                            name            => 'Test User',
-                            username_register => 'test@example.org',
-                        }
-                    }
-                );
-                like $mech->text, qr/Nearly done! Now check your email/;
-
-                my $report
-                    = FixMyStreet::DB->resultset('Problem')->order_by('-id')
-                    ->first;
-                $report->confirm;
-                $report->update;
-                $mech->clear_emails_ok; # Clear initial confirmation email
-                FixMyStreet::Script::Reports::send();
-                $report->discard_changes;
-
-                is $report->send_state,  'sent', 'sent successfully';
-                is $report->external_id, '248', 'has external ID';
-                is $report->get_extra_field_value('did_you_witness'), 'No',
-                    'witness question answered';
-                is $report->get_extra_metadata('extra_email_sent'), undef,
-                    'no extra_email_sent';
-
-                $mech->email_count_is(0), 'no email sent';
-            };
-
-            subtest "Sends email if 'Yes' selected" => sub {
-                $mech->delete_problems_for_body($body->id);
-                $mech->clear_emails_ok;
-
-                $mech->get('/report/new?longitude=-2.2458&latitude=51.86506&category=Dog fouling');
-                $mech->submit_form_ok(
-                    {   button      => 'submit_register',
-                        with_fields => {
-                            category        => 'Dog fouling',
-                            detail          => 'Test report details',
-                            title           => 'Test Report',
-                            did_you_witness => 'Yes',
-                            name            => 'Test User',
-                            username_register => 'test@example.org',
-                        }
-                    }
-                );
-                like $mech->text, qr/Nearly done! Now check your email/;
-
-                my $report
-                    = FixMyStreet::DB->resultset('Problem')->order_by('-id')
-                    ->first;
-                $report->confirm;
-                $report->update;
-                $mech->clear_emails_ok; # Clear initial confirmation email
-                FixMyStreet::Script::Reports::send();
-                $report->discard_changes;
-
-                is $report->send_state,  'sent', 'sent successfully';
-                is $report->external_id, '248', 'has external ID';
-                is $report->get_extra_field_value('did_you_witness'), 'Yes',
-                    'witness question answered';
-                is $report->get_extra_metadata('extra_email_sent'), 1,
-                    'has extra_email_sent';
-
-                $mech->email_count_is(1), 'email sent';
-            };
         };
     };
 };

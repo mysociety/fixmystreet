@@ -91,13 +91,15 @@ subtest 'basic parsing checks' => sub {
     my $update = Open311::GetServiceRequests->new(
         system_user => $user,
         start_date => $start_date,
-        end_date => $end_date
+        end_date => $end_date,
     );
     FixMyStreet::override_config {
         TIME_ZONE => 'Asia/Tokyo',
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $update->create_problems( $o, $body );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
     };
 
 
@@ -317,7 +319,9 @@ for my $test (
         FixMyStreet::override_config {
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
-            $update->create_problems( $o, $body );
+            my $args = $update->format_args;
+            my $requests = $update->get_requests($o, $body, $args);
+            $update->create_problems( $o, $body, $args, $requests );
         };
 
         my $p = FixMyStreet::DB->resultset('Problem')->search(
@@ -410,7 +414,9 @@ for my $test (
         FixMyStreet::override_config {
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
-            $update->create_problems( $o, $body );
+            my $args = $update->format_args;
+            my $requests = $update->get_requests($o, $body, $args);
+            $update->create_problems( $o, $body, $args, $requests );
         };
 
         my $p = FixMyStreet::DB->resultset('Problem')->search(
@@ -476,7 +482,9 @@ for my $test (
             MAPIT_URL => 'http://mapit.uk/',
             ALLOWED_COBRANDS => [ 'hounslow' ],
         }, sub {
-            $update->create_problems( $o, $hounslow );
+            my $args = $update->format_args;
+            my $requests = $update->get_requests($o, $hounslow, $args);
+            $update->create_problems( $o, $hounslow, $args, $requests );
         };
 
         my $q = FixMyStreet::DB->resultset('Problem')->search(
@@ -545,7 +553,9 @@ subtest 'Gloucestershire ' => sub {
         MAPIT_URL => 'http://mapit.uk/',
         ALLOWED_COBRANDS => [ 'gloucestershire' ],
     }, sub {
-        $update->create_problems( $o, $gloucestershire );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $gloucestershire, $args);
+        $update->create_problems( $o, $gloucestershire, $args, $requests );
     };
 
     my $q = FixMyStreet::DB->resultset('Problem')->search(
@@ -579,7 +589,9 @@ subtest "non_public contacts result in non_public reports" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $update->create_problems( $o, $body );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
     };
 
     my $p = FixMyStreet::DB->resultset('Problem')->search(
@@ -617,7 +629,9 @@ subtest "staff and non_public contacts result in non_public reports" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
-        $update->create_problems( $o, $body );
+        my $args = $update->format_args;
+        my $requests = $update->get_requests($o, $body, $args);
+        $update->create_problems( $o, $body, $args, $requests );
     };
 
     my $p = FixMyStreet::DB->resultset('Problem')->search(
@@ -668,7 +682,9 @@ for my $test (
             ALLOWED_COBRANDS => [ 'fixmystreet', 'buckinghamshire' ],
             MAPIT_URL => 'http://mapit.uk/',
         }, sub {
-            $update->create_problems( $o, $body2 );
+            my $args = $update->format_args;
+            my $requests = $update->get_requests($o, $body2, $args);
+            $update->create_problems( $o, $body2, $args, $requests );
         };
 
         my $p = FixMyStreet::DB->resultset('Problem')->search(

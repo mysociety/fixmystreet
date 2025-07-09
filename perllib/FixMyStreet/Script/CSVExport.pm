@@ -59,7 +59,7 @@ my $EXTRAS = {
     user_details => { bathnes => 1, bexley => 1, brent => 1, camden => 1, cyclinguk => 1, highwaysengland => 1, kingston => 1, southwark => 1, sutton => 1 },
     comment_content => { highwaysengland => 1 },
     db_state => { peterborough => 1 },
-    alerts_count => { surrey => 1 },
+    alerts_count => { surrey => 1, shropshire => 1 },
 };
 
 my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;

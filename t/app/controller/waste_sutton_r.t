@@ -500,13 +500,13 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('Report a problem with a non-recyclable refuse collection', 'Can report a problem with non-recyclable waste');
-        $mech->content_contains('Report a problem with a food waste collection', 'Can report a problem with food waste');
+        $mech->content_contains('Report a spillage or bin not returned issue with a non-recyclable refuse collection', 'Can report a problem with non-recyclable waste');
+        $mech->content_contains('Report a spillage or bin not returned issue with a food waste collection', 'Can report a problem with food waste');
         my $root = HTML::TreeBuilder->new_from_content($mech->content());
         my $panel = $root->look_down(id => 'panel-948');
         is $panel->as_text =~ /.*Please note that missed collections can only be reported.*/, 1, "Paper and card past reporting deadline";
-        $mech->content_lacks('Report a problem with a paper and card collection', 'Can not report a problem with paper and card as past reporting deadline');
-        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->content_lacks('Report a spillage or bin not returned issue with a paper and card collection', 'Can not report a problem with paper and card as past reporting deadline');
+        $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a non-recyclable refuse collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
         $mech->content_contains('We will use your feedback');
         $mech->content_lacks('We will not return to your address on this occasion');
@@ -541,7 +541,7 @@ FixMyStreet::override_config {
         $dupe->[0]{Data}{ExtensibleDatum}{Value} = 1;
         $e->mock('GetServiceUnitsForObject', sub { $dupe });
         $mech->get_ok('/waste/12345');
-        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a non-recyclable refuse collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
         $mech->submit_form_ok( { with_fields => { now_returned => 'Yes' } } );
         $mech->content_contains('We will not return to your address on this occasion');
@@ -574,7 +574,7 @@ FixMyStreet::override_config {
         $dupe->[0]{Data}{ExtensibleDatum}{Value} = 1;
         $e->mock('GetServiceUnitsForObject', sub { $dupe });
         $mech->get_ok('/waste/12345');
-        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a non-recyclable refuse collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
         $mech->submit_form_ok( { with_fields => { now_returned => 'No' } } );
         $mech->content_contains('We will return to your address as soon as we can to return the bin');
@@ -602,7 +602,7 @@ FixMyStreet::override_config {
 
    subtest 'test report a problem - waste spillage' => sub {
         $mech->get_ok('/waste/12345');
-        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a non-recyclable refuse collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Waste spillage' } });
         $mech->submit_form_ok( { with_fields => {
             extra_Notes => 'Rubbish left on driveway',
@@ -640,10 +640,10 @@ FixMyStreet::override_config {
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+        $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a non-recyclable refuse collection' });
         $mech->content_like(qr/name="category" value="Waste spillage"\s+disabled/s);
         $mech->back;
-        $mech->follow_link_ok({ text => 'Report a problem with a food waste collection' });
+        $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a food waste collection' });
         $mech->content_unlike(qr/name="category" value="Waste spillage"\s+disabled/s);
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
@@ -652,19 +652,19 @@ FixMyStreet::override_config {
         subtest 'No missed collection' => sub {
             set_fixed_time('2022-09-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-13T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-15T17:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
         };
 
         subtest 'Open missed collection but by a different flat' => sub {
@@ -680,7 +680,7 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-13T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
         };
 
         subtest 'Open missed collection' => sub {
@@ -695,14 +695,14 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-13T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('report a failure to resolve a missed collection');
+            $mech->content_contains('please report the problem here');
 
             subtest 'actually make the report' => sub {
-                $mech->follow_link_ok({ text => 'report a failure to resolve a missed collection report' });
+                $mech->follow_link_ok({ text => 'please report the problem here' });
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
                 $mech->submit_form_ok( { with_fields => { submit => '1' } });
                 $mech->content_contains('Your enquiry has been submitted');
@@ -718,11 +718,11 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-15T17:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('report a failure to resolve a missed collection');
+            $mech->content_contains('please report the problem here');
 
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
         };
 
         subtest 'Completed missed collection' => sub {
@@ -738,19 +738,19 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-13T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('report a failure to resolve a missed collection');
+            $mech->content_contains('please report the problem here');
 
             set_fixed_time('2022-09-15T17:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('report a failure to resolve a missed collection');
+            $mech->content_contains('please report the problem here');
 
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
         };
 
         subtest 'Not Completed missed collection' => sub {
@@ -766,19 +766,19 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-13T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-15T17:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
         };
 
         subtest 'Existing escalation event' => sub {
@@ -801,8 +801,8 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-14T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
-            $mech->content_contains('A chase was raised on 13 September and should be completed within 2 working days, 15 September');
+            $mech->content_lacks('please report the problem here');
+            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating.');
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
@@ -865,9 +865,9 @@ FixMyStreet::override_config {
                     set_fixed_time($config->{time});
                     $mech->get_ok('/waste/12345');
                     $mech->content_lacks('Request a non-recyclable refuse container');
-                    $mech->content_lacks('If it hasn’t been delivered, report the issue here');
+                    $mech->content_lacks('please report the problem here');
                     $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
-                    $mech->content_contains('A problem with this delivery was reported on Tuesday, 13 September. We aim to complete your request within 2 working days (Thursday, 15 September)');
+                    $mech->content_contains('Thank you for reporting an issue with this delivery; we are investigating.');
                 };
             }
         };
@@ -883,9 +883,9 @@ FixMyStreet::override_config {
                     set_fixed_time($config->{time});
                     $mech->get_ok('/waste/12345');
                     $mech->content_lacks('Request a non-recyclable refuse container');
-                    $mech->content_lacks('If it hasn’t been delivered, report the issue here');
+                    $mech->content_lacks('please report the problem here');
                     $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
-                    $mech->content_lacks('A problem with this delivery');
+                    $mech->content_lacks('Thank you for reporting an issue with this delivery');
                 };
             }
         };
@@ -899,9 +899,9 @@ FixMyStreet::override_config {
                     set_fixed_time($config->{time});
                     $mech->get_ok('/waste/12345');
                     $mech->content_lacks('Request a non-recyclable refuse container');
-                    $mech->content_contains('If it hasn’t been delivered, report the issue here');
+                    $mech->content_contains('please report the problem here');
                     $mech->content_contains('A non-recyclable refuse container request was made');
-                    $mech->content_lacks('A problem with this delivery');
+                    $mech->content_lacks('Thank you for reporting an issue with this delivery');
                 };
             }
         };
@@ -909,7 +909,7 @@ FixMyStreet::override_config {
         subtest 'Making an escalation' => sub {
             set_fixed_time($window_start_time);
             $mech->get_ok('/waste/12345');
-            $mech->follow_link_ok({ text => 'If it hasn’t been delivered, report the issue here' });
+            $mech->follow_link_ok({ text => 'please report the problem here' });
 
             $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
 

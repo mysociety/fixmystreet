@@ -90,13 +90,14 @@ $(function() {
     var maxNumItems;
 
     function disableAddItemButton() {
-        // It will disable button if the first item is empty or the max number of items has been reached.
+        // It will disable button if the last item is empty or the max number of items has been reached.
         var numItemsVisible = $('.bulky-item-wrapper:visible').length;
-        if (numItemsVisible == maxNumItems || !$('.bulky-item-wrapper').first().find('select').val()) {
-            $("#add-new-item").prop('disabled', true);
-        } else {
-            $("#add-new-item").prop('disabled', false);
-        }
+        var last_empty = !$('.bulky-item-wrapper:visible').last().find('select').val();
+        $("#add-new-item").prop('disabled', numItemsVisible == maxNumItems || last_empty);
+
+        // And hide/show first delete depending on if is only one or not
+        var first_delete = $('.bulky-item-wrapper:visible .delete-item');
+        first_delete.css('display', numItemsVisible === 1 ? 'none' : 'block');
     }
 
     function numberOfItems() {
@@ -192,10 +193,12 @@ $(function() {
         $('#band-pricing-info').text(message);
     }
 
-    $(function() {
-        maxNumItems = $('.bulky-item-wrapper').length;
+    var template = document.getElementById('bulky-item-template');
 
-        $('.govuk-select[name^="item_"]').change(function(e) {
+    $(function() {
+        maxNumItems = $('#item-selection-form').data('maximum');
+
+        $('#item-selection-form').on('change', '.govuk-select[name^="item_"]', function(e) {
             var $this = $(this);
             disableAddItemButton();
             // To display message if option has a data-extra message
@@ -206,28 +209,43 @@ $(function() {
 
         // Add items
         $("#add-new-item").click(function(){
-            var firstHidden = $('#item-selection-form > .bulky-item-wrapper:hidden:first');
-            var hiddenInput = firstHidden.find('input.autocomplete__input');
-            firstHidden.show();
-            hiddenInput.focus(); // To make it friendly to screen readers
-            $("#add-new-item").prop('disabled', true);
+            var new_id = 0;
+            for (var i=1; i<=maxNumItems; i++) {
+                if (!document.getElementById('item_' + i)) {
+                    new_id = i;
+                    break;
+                }
+            }
+
+            var newItem = template.content.cloneNode(true);
+            newItem.children[0].innerHTML = newItem.children[0].innerHTML.replace(/999/g, new_id);
+
+            var lastItem = $('#item-selection-form > .bulky-item-wrapper:last');
+            lastItem.after(newItem);
+
+            fixmystreet.set_up.dropzone();
+            fixmystreet.set_up.autocomplete();
+            newItem = $('#item-selection-form > .bulky-item-wrapper:last');
+            if (fixmystreet.cobrand == 'brent') {
+                var newNotes = newItem.find('[id^="form-item_notes_"]');
+                newNotes.hide();
+            }
+            var newInput = newItem.find('input.autocomplete__input');
+            newInput.focus(); // To make it friendly to screen readers
+            disableAddItemButton();
         });
 
-        //Erase bulky item
-        //https://github.com/OfficeForProductSafetyAndStandards/product-safety-database/blob/master/app/assets/javascripts/autocomplete.js#L40
-        $(".delete-item").click(function(){
+        // Erase bulky item
+        $('#item-selection-form').on('click', ".delete-item", function(){
             var $wrapper = $(this).closest('.bulky-item-wrapper');
-            var $enhancedElement = $wrapper.find('.autocomplete__input');
-            $wrapper.hide();
-            $enhancedElement.val('');
-            $wrapper.find('select.js-autocomplete').val('');
+            $wrapper.remove();
             disableAddItemButton();
             updateTotal();
             display_band_pricing();
         });
 
         if (fixmystreet.cobrand == 'brent') {
-            update_small_items_other_notes = function() {
+            var update_small_items_other_notes = function() {
                 var $this = $(this);
                 var $notes = $this.closest('.bulky-item-wrapper').find('[id^="form-item_notes_"]');
                 if ($this.val() == 'Small electricals: Other item under 30x30x30 cm') {
@@ -236,7 +254,7 @@ $(function() {
                     $notes.hide();
                 }
             };
-            $('.govuk-select[name^="item_"]').change(update_small_items_other_notes);
+            $('#item-selection-form').on('change', '.govuk-select[name^="item_"]', update_small_items_other_notes);
             $('.govuk-select[name^="item_"]').each(update_small_items_other_notes);
         }
 
@@ -249,7 +267,6 @@ $(function() {
                 select = $wrapper.find('select'),
                 value = select.val();
             if (value) {
-                $wrapper.show();
                 // If we do it immediately, it remains blank in Safari, I think
                 // some interaction with the 100ms polling in the autocomplete
                 // to spot changes to the value
@@ -257,9 +274,6 @@ $(function() {
                     $wrapper.find('.autocomplete__wrapper input').val(value);
                 }, 110);
                 update_extra_message(select);
-            } else {
-                $wrapper.hide();
-                $('.bulky-item-wrapper').first().show();
             }
         });
 

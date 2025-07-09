@@ -330,7 +330,9 @@ FixMyStreet::override_config {
 
         subtest 'higher band try' => sub {
             $mech->submit_form_ok(
-                {   with_fields => {
+                {
+                    form_number => 1,
+                    fields => {
                         'item_1' => 'BBQ',
                         'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                         'item_2' => 'Bicycle',
@@ -348,7 +350,9 @@ FixMyStreet::override_config {
         };
 
         $mech->submit_form_ok(
-            {   with_fields => {
+            {
+                form_number => 1,
+                fields => {
                     'item_1' => 'BBQ',
                     'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                     'item_2' => 'Bicycle',
@@ -822,17 +826,17 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve4==;2023-06-25T10:20:00' } }
         );
-        $mech->submit_form_ok(
-            {   with_fields => {
+        $mech->submit_form_ok({
+            form_number => 1,
+            fields => {
                 'item_1' => 'BBQ',
                 'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                 'item_2' => 'Bicycle',
                 'item_3' => 'Bath',
                 'item_4' => 'Bath',
                 'item_5' => 'Bath',
-                },
             },
-        );
+        });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->content_contains('How do you want to pay');
         $mech->content_contains('Debit or Credit Card');
@@ -1021,7 +1025,9 @@ FixMyStreet::override_config {
             { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve2==::reserve5==;2023-06-25T10:10:00' } }
         );
         $mech->submit_form_ok(
-            {   with_fields => {
+            {
+                form_number => 1,
+                fields => {
                     'item_1' => 'BBQ',
                     'item_notes_1' => 'BBQ note',
                     'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
@@ -1075,11 +1081,11 @@ FixMyStreet::override_config {
 
             set_fixed_time('2025-04-08T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');;
+            $mech->content_lacks('please report the problem here');;
 
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->follow_link_ok({ text => 'report a failure to resolve a missed collection report' });
+            $mech->follow_link_ok({ text => 'please report the problem here' });
 
             subtest 'actually make the report' => sub {
                 $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
@@ -1098,13 +1104,13 @@ FixMyStreet::override_config {
 
             set_fixed_time('2025-04-12T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('report a failure to resolve a missed collection');
+            $mech->content_contains('please report the problem here');
             set_fixed_time('2025-04-14T17:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('report a failure to resolve a missed collection');
+            $mech->content_contains('please report the problem here');
             set_fixed_time('2025-04-14T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_lacks('please report the problem here');
         };
 
         $escalation->update({ external_id => 'escalation-guid' });
@@ -1138,8 +1144,8 @@ FixMyStreet::override_config {
 
             set_fixed_time('2025-04-12T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('A chase was raised on 11 April and should be completed within 2 working days, 15 April');
-            $mech->content_lacks('report a failure to resolve a missed collection');
+            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating.');
+            $mech->content_lacks('please report the problem here');
         };
 
         $echo->mock('GetEventsForObject', sub { [] }); # reset

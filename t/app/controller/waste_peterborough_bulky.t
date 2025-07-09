@@ -381,11 +381,7 @@ FixMyStreet::override_config {
 
         subtest 'Add items page' => sub {
             $mech->content_contains('Add items for collection');
-            $mech->content_contains('Item 1');
-            $mech->content_contains('Item 2');
-            $mech->content_contains('Item 3');
-            $mech->content_contains('Item 4');
-            $mech->content_contains('Item 5');
+            $mech->content_contains('Item');
             $mech->content_like(
                 qr/<option value="Amplifiers".*>Amplifiers<\/option>/);
             $mech->content_contains('data-extra="{&quot;message&quot;:&quot;Please place in a clear bag&quot;}"');
@@ -395,7 +391,9 @@ FixMyStreet::override_config {
                 'Please select an item');
 
             $mech->submit_form_ok(
-                {   with_fields => {
+                {
+                    form_number => 1,
+                    fields => {
                         'item_1' => 'Amplifiers',
                         'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                         'item_2' => 'High chairs',
@@ -1284,7 +1282,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_contains("The following types of item have a maximum number that can be collected");
         $mech->content_contains('HiFi Stereos: 2');
-        $mech->submit_form_ok({ with_fields => { 'item_1' => 'HiFi Stereos', 'item_2' => 'HiFi Stereos', item_3 => 'HiFi Stereos' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'HiFi Stereos', 'item_2' => 'HiFi Stereos', item_3 => 'HiFi Stereos' } });
         $mech->content_contains('Too many of item: HiFi Stereos');
     };
 
@@ -1302,7 +1300,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
-        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1319,7 +1317,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
-        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->content_contains('a href="peterborough-bulky-waste-tandc.com"');
         $mech->content_lacks('Items must be out for collection by', 'Lacks Kingston/Sutton extra text');
         $mech->submit_form_ok({ with_fields => { location => ( 'a' x 251 ) } });
@@ -1416,7 +1414,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_like(qr/£<[^>]*>0\.00/);
-        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
         $mech->content_contains('Your booking is not complete yet');
@@ -1478,7 +1476,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_like(qr/£<[^>]*>23\.50/);
-        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
@@ -1520,7 +1518,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
-        $mech->submit_form_ok({ with_fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
         $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });

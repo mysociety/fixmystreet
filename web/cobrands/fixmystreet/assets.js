@@ -571,6 +571,12 @@ function construct_protocol_options(options) {
             format_class: OpenLayers.Format.GML.v3,
             format_options: {}
         });
+        /* Set this to the right namespace if you have multiple feature types
+         * being returned, as otherwise only one will be parsed */
+        if (options.wfs_feature_ns) {
+            options.format_options.featureNS = options.wfs_feature_ns;
+            options.format_options.featureType = options.wfs_feature;
+        }
         if (options.geometryName) {
             options.format_options.geometryName = options.geometryName;
         }

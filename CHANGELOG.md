@@ -14,6 +14,7 @@
         - import-export-data script exports and imports `send_method` for category #4818
         - Include extra question answer labels in submit emails. #5383
         - Add created flag to inactive processing script. #5386
+        - Include report ID in main submit template. #5568
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279
         - Docker changes needed for systemd to work. #5257

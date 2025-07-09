@@ -48,8 +48,10 @@ sub disable_nearby_topup { 1 }
 
 sub map_type {
     my $self = shift;
+    my $type = $self->next::method();
+    return $type if $type;
     return 'OS::Leisure' if $self->feature('os_maps_leisure');
-    return $self->next::method();
+    return;
 }
 
 sub process_open311_extras {

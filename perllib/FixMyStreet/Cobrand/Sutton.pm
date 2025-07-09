@@ -161,10 +161,7 @@ around bulky_check_missed_collection => sub {
             my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
             next unless $missed_guid;
             if ($missed_guid eq $missed_event->{guid}) {
-                my $wd = FixMyStreet::WorkingDays->new();
-                my $target = $wd->add_days($_->{date}, 2);
                 $missed->{$guid}{escalations}{missed_open} = $_;
-                $_->{target_date} = $target;
                 $open_escalation = 1;
             }
         }
@@ -227,10 +224,7 @@ sub _setup_missed_collection_escalations_for_service {
             $row->{escalations}{missed} = $missed_event;
         }
     } elsif ($escalation_event) {
-        my $wd = FixMyStreet::WorkingDays->new();
-        my $target = $wd->add_days($escalation_event->{date}, 2);
         $row->{escalations}{missed_open} = $escalation_event;
-        $escalation_event->{target_date} = $target;
     }
 }
 
@@ -251,9 +245,7 @@ sub _setup_container_request_escalations_for_service {
         next unless $escalation_event_report;
 
         if ($escalation_event_report->get_extra_field_value('container_request_guid') eq $open_request_event->{guid}) {
-            my $target = $wd->add_days($escalation_event->{date}, 2);
             $row->{escalations}{container_open} = $escalation_event;
-            $escalation_event->{target_date} = $target;
             # We've marked that there is already an escalation event for the container
             # request, so there's nothing left to do
             return;
@@ -743,5 +735,6 @@ sub bulky_location_text_prompt {
 }
 
 sub bulky_item_notes_field_mandatory { 1 }
+sub bulky_show_individual_notes { 1 } # As mandatory, must be shown
 
 1;
