@@ -1,0 +1,38 @@
+#!/usr/bin/env perl
+#
+# Takes a JSON file with report details and uses them to populate
+# missing reports
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use Getopt::Long::Descriptive;
+use FixMyStreet::Script::ProcessReportFile;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['file|f=s', 'file containing reports (JSON format)' , { required => 1 }],
+    ['body|b=s', 'body name to add reports to', { required => 1 } ],
+    ['commit|c', 'actually commit changes to the database'],
+    ['verbose|v', 'more verbose output'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+
+my %params = (
+    commit => $opts->commit,
+    verbose => $opts->verbose,
+    body_name => $opts->body,
+    file => $opts->file,
+);
+
+my $p = FixMyStreet::Script::ProcessReportFile->new( %params );
+$p->process;

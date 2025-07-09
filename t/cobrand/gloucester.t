@@ -71,7 +71,7 @@ FixMyStreet::override_config {
 }, sub {
     ok $mech->host('gloucester'), 'change host to gloucester';
     $mech->get_ok('/');
-    $mech->content_like(qr/Enter a Gloucester postcode/);
+    $mech->content_like(qr/Enter a nearby Gloucester postcode/);
 
     subtest 'Send report' => sub {
         subtest 'Email only' => sub {

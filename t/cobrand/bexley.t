@@ -7,7 +7,6 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::SendReport::Open311;
-use Catalyst::Test 'FixMyStreet::App';
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -501,9 +500,11 @@ subtest 'split postcode overridden' => sub {
 };
 
 subtest 'geocoder' => sub {
-    my $c = ctx_request('/');
-    my $results = FixMyStreet::Geocode::Bexley->string("Brampton Road", $c);
-    is_deeply $results, { error => [
+    my $cobrand = FixMyStreet::Cobrand::Bexley->new;
+    my $results = FixMyStreet::Geocode::Bexley->string("Brampton Road", $cobrand);
+    is_deeply $results, {
+        geocoder_url => "Brampton Road",
+        error => [
         {
             'latitude' => '49.766844',
             'longitude' => '-7.557122',

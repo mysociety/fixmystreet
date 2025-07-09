@@ -14,6 +14,7 @@ has bodies => ( is => 'ro', default => sub { [] } );
 has bodies_exclude => ( is => 'ro', default => sub { [] } );
 has fetch_all => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
+has commit => ( is => 'ro', default => 1 );
 has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->schema->connect } );
 has convert_latlong => ( is => 'rw', default => 0 );
 
@@ -42,7 +43,9 @@ sub fetch {
         $self->system_user( $body->comment_user );
         $self->convert_latlong( $body->convert_latlong );
         $self->fetch_all( $body->get_extra_metadata('fetch_all_problems') );
-        $self->create_problems( $o, $body );
+        my $args = $self->format_args;
+        my $requests = $self->get_requests($o, $body, $args);
+        $self->create_problems( $o, $body, $args, $requests );
     }
 }
 
@@ -59,8 +62,8 @@ sub create_open311_object {
     return $o;
 }
 
-sub create_problems {
-    my ( $self, $open311, $body ) = @_;
+sub format_args {
+    my $self = shift;
 
     my $args = {};
 
@@ -77,13 +80,27 @@ sub create_problems {
         $args->{end_date} = DateTime::Format::W3CDTF->format_datetime( $dt );
     }
 
+    return $args;
+}
+
+sub get_requests {
+    my ( $self, $open311, $body, $args ) = @_;
+
     my $requests = $open311->get_service_requests( $args );
 
     unless ( $open311->success ) {
         warn "Failed to fetch ServiceRequests for " . $body->name . ":\n" . $open311->error
             if $self->verbose;
-        return 0;
+        return;
     }
+
+    return $requests;
+}
+
+sub create_problems {
+    my ( $self, $open311, $body, $args, $requests ) = @_;
+
+    return unless $requests;
 
     my $contacts = $self->schema->resultset('Contact')
         ->not_deleted_admin
@@ -225,6 +242,8 @@ sub create_problems {
         my $problem = $self->schema->resultset('Problem')->new($params);
 
         next if $cobrand && $cobrand->call_hook(open311_skip_report_fetch => $problem);
+
+        next unless $self->commit;
 
         $open311->add_media($request->{media_url}, $problem)
             if $request->{media_url};

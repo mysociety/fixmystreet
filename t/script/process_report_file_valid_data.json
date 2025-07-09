@@ -1,0 +1,32 @@
+[
+    {
+        "address_id": "",
+        "address": "",
+        "description": "Defect type: Overhanging Trees & Vegetation",
+        "lat": "55.952055",
+        "long": "-3.189579",
+        "media_url": "",
+        "requested_datetime": "2025-07-01T11:01:14+01:00",
+        "service_code": "POT",
+        "service_name": "Overhanging Trees & Vegetation",
+        "service_request_id": "DEFECT_201582",
+        "status": "planned",
+        "updated_datetime": "2025-07-01T11:01:14+01:00",
+        "zipcode": ""
+    },
+    {
+        "address_id": "",
+        "address": "",
+        "description": "Defect type: Pothole\nDepth: 40mm - 100mm\nWidth: 200mm - 400mm\nDistance from edge: 150mm or over\nNumber of potholes: 1",
+        "lat": "55.952055",
+        "long": "-3.189579",
+        "media_url": "",
+        "requested_datetime": "2025-07-01T11:27:03+01:00",
+        "service_code": "POT",
+        "service_name": "Pothole",
+        "service_request_id": "DEFECT_201590",
+        "status": "planned",
+        "updated_datetime": "2025-07-01T11:27:03+01:00",
+        "zipcode": ""
+    }
+]

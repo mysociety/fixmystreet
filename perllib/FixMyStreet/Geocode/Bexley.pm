@@ -17,13 +17,13 @@ sub recase {
 }
 
 sub string {
-    my ($cls, $s, $c) = @_;
+    my ($cls, $s, $cobrand) = @_;
 
-    my $osm = $cls->SUPER::string($s, $c);
+    my $osm = $cls->SUPER::string($s, $cobrand);
     my $js = query_layer($s);
     return $osm unless $js && @{$js->{features}};
 
-    $c->stash->{geocoder_url} = $s;
+    my $out = { geocoder_url => $s };
 
     my ( $error, @valid_locations, $latitude, $longitude, $address );
     foreach (sort { $a->{properties}{ADDRESS} cmp $b->{properties}{ADDRESS} } @{$js->{features}}) {
@@ -50,17 +50,17 @@ sub string {
             latitude => $osm->{latitude},
             longitude => $osm->{longitude},
         };
-        return { error => $error };
+        return { %$out, error => $error };
     }
 
     if (ref $osm->{error} eq 'ARRAY') {
         push @$error, @{$osm->{error}};
-        return { error => $error };
+        return { %$out, error => $error };
     }
 
-    return { latitude => $latitude, longitude => $longitude, address => $address }
+    return { %$out, latitude => $latitude, longitude => $longitude, address => $address }
         if scalar @valid_locations == 1;
-    return { error => $error };
+    return { %$out, error => $error };
 }
 
 sub query_layer {
