@@ -150,28 +150,7 @@ sub open311_update_missing_data {
         }
     }
 
-    # A bunch of Confirm attributes are required but Aberdeenshire don't want them
-    # shown to the user, so here we set a default value for them as necessary.
-    my %defaults = (
-        MR01 => 'n/a',
-        MR02 => 'n/a',
-        Q31 => 'NK', # not known
-        Q33 => 'NK',
-        Q36 => 'NK',
-        Q37 => 'NK',
-        Q38 => 'NK',
-        Q39 => 'NK',
-        Q43 => 'NK',
-        ST03 => 'BLNK', # blank
-        WM01 => 'NK',
-    );
-    foreach (keys %defaults) {
-        my $v = $defaults{$_};
-        if ($contact->get_extra_field(code => $_)  && !$row->get_extra_field_value($_)) {
-            $row->update_extra_field({ name => $_, value => $v });
-        }
-    }
-    # Q29 is the odd one out - default value depends on the category
+    # Q29 isn't shown to the user, but its default value depends on the category
     if ($contact->get_extra_field(code => 'Q29')  && !$row->get_extra_field_value('Q29')) {
         $row->update_extra_field({ name => 'Q29', value => ($contact->category eq 'Property/Vehicle Damage') ? 'YES' : 'NO' });
     }
