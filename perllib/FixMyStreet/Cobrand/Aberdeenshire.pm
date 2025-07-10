@@ -177,6 +177,24 @@ sub open311_update_missing_data {
     }
 }
 
+=head2 open311_munge_update_params
+
+We pass any category change.
+
+=cut
+
+sub open311_munge_update_params {
+    my ( $self, $params, $comment ) = @_;
+
+    my $p = $comment->problem;
+
+    if ( $comment->text =~ /Category changed/ ) {
+        my $service_code = $p->contact->email;
+        $params->{service_code} = $service_code;
+    }
+}
+
+
 =head2 open311_config
 
 Send multiple photos as files to Open311
