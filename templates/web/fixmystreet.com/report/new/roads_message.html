@@ -92,4 +92,7 @@
     <p>
     [% graffiti_text = INCLUDE 'report/new/graffiti_text.html' %][% graffiti_text | add_links | html_para %]
     </p>
+</div>
+<div id="js-abandoned-vehicles-message" class="hidden">
+    [% abandoned_vehicles_text = INCLUDE 'report/new/abandoned_vehicles_text.html' %][% abandoned_vehicles_text | add_links | html_para %]
 
