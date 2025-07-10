@@ -4,6 +4,19 @@ if (!fixmystreet.maps) {
     return;
 }
 
+function create_rule(fn, style) {
+    var opts = {
+        filter: new OpenLayers.Filter.FeatureId({
+            type: OpenLayers.Filter.Function,
+            evaluate: fn
+        })
+    };
+    if (style) {
+        opts.symbolizer = style;
+    }
+    return new OpenLayers.Rule(opts);
+}
+
 function test_layer_typename(f, body, type) {
     return f && f.body == body && f.http_options && f.http_options.params && f.http_options.params.TYPENAME == type;
 }
@@ -72,24 +85,13 @@ var banes_lighting_default_style = new OpenLayers.Style({
     title: '${unitdescription} ${unitno}\r\nNot owned by B&NES. Owned by ${ownername}.'
 });
 
-var banes_rule_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: banes_owns_feature
-    }),
-    symbolizer: {
-        fillColor: "#FFFF00",
-        pointRadius: 6,
-        title: '${unitdescription} ${unitno}',
-    }
+var banes_rule_owned = create_rule(banes_owns_feature, {
+    fillColor: "#FFFF00",
+    pointRadius: 6,
+    title: '${unitdescription} ${unitno}',
 });
+var banes_rule_not_owned = create_rule(banes_does_not_own_feature);
 
-var banes_rule_not_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: banes_does_not_own_feature
-    })
-});
 banes_lighting_default_style.addRules([banes_rule_owned, banes_rule_not_owned]);
 
 fixmystreet.assets.banes.lighting_stylemap = new OpenLayers.StyleMap({
@@ -406,22 +408,8 @@ function bucks_does_not_own_feature(f) {
     return !bucks_owns_feature(f);
 }
 
-var bucks_rule_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: bucks_owns_feature
-    })
-});
-
-var bucks_rule_not_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: bucks_does_not_own_feature
-    }),
-    symbolizer: {
-        strokeColor: "#555555"
-    }
-});
+var bucks_rule_owned = create_rule(bucks_owns_feature);
+var bucks_rule_not_owned = create_rule(bucks_does_not_own_feature, { strokeColor: "#555555" });
 bucks_highways_style.addRules([bucks_rule_owned, bucks_rule_not_owned]);
 
 fixmystreet.assets.buckinghamshire.street_stylemap = new OpenLayers.StyleMap({
@@ -1300,6 +1288,44 @@ fixmystreet.assets.northamptonshire.stylemap_barriers = new OpenLayers.StyleMap(
 
 fixmystreet.message_controller.add_ignored_body("Northamptonshire Highways");
 
+/* Northumberland */
+
+fixmystreet.assets.northumberland = {};
+
+var ncc_rightsofway_style = new OpenLayers.Style({
+    fill: false,
+    fillOpacity: 0,
+    strokeColor: "#000000",
+    strokeOpacity: 0.8,
+    strokeWidth: 5
+});
+
+var ncc_rightsofway_rules = [
+    create_rule(
+        function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Footpath'; },
+        { strokeColor: '#ECA20C', strokeDashstyle: "dash" }
+    ),
+    create_rule(
+        function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Bridleway'; },
+        { strokeColor: '#70B5E2', strokeDashstyle: "dash" }
+    ),
+    create_rule(
+        function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Byway Open to All Traffic'; },
+        { strokeColor: '#E05F24' }
+    ),
+    create_rule(
+        function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Restricted Byway'; },
+        { strokeColor: '#6F133C', strokeDashstyle: "dash" }
+    )
+];
+ncc_rightsofway_style.addRules(ncc_rightsofway_rules);
+
+fixmystreet.assets.northumberland.rightsofway_stylemap = new OpenLayers.StyleMap({
+    'default': ncc_rightsofway_style,
+    'select': fixmystreet.assets.style_default_select,
+    'hover': fixmystreet.assets.style_default_hover
+});
+
 /* Oxfordshire */
 
 fixmystreet.assets.oxfordshire = {};
@@ -1346,25 +1372,12 @@ var occ_owned_default_style = new OpenLayers.Style({
     title: 'Not maintained by Oxfordshire County Council. Maintained by ${maintained_by}.'
 });
 
-var occ_rule_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: fixmystreet.assets.oxfordshire.owns_feature
-    }),
-    symbolizer: {
-        fillColor: occ_asset_fillColor,
-        pointRadius: 6,
-        title: ''
-    }
+var occ_rule_owned = create_rule(fixmystreet.assets.oxfordshire.owns_feature, {
+    fillColor: occ_asset_fillColor,
+    pointRadius: 6,
+    title: ''
 });
-
-var occ_rule_not_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: occ_does_not_own_feature
-    })
-});
-
+var occ_rule_not_owned = create_rule(occ_does_not_own_feature);
 occ_owned_default_style.addRules([occ_rule_owned, occ_rule_not_owned]);
 
 fixmystreet.assets.oxfordshire.owned_stylemap = new OpenLayers.StyleMap({
@@ -1462,25 +1475,12 @@ var occ_bridge_default_style = new OpenLayers.Style({
     title: 'Not maintained by Oxfordshire County Council.'
 });
 
-var occ_rule_bridge_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: fixmystreet.assets.oxfordshire.owns_bridge
-    }),
-    symbolizer: {
-        fillColor: occ_asset_fillColor,
-        pointRadius: 6,
-        title: ''
-    }
+var occ_rule_bridge_owned = create_rule(fixmystreet.assets.oxfordshire.owns_bridge, {
+    fillColor: occ_asset_fillColor,
+    pointRadius: 6,
+    title: ''
 });
-
-var occ_rule_bridge_not_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: occ_does_not_own_bridge
-    })
-});
-
+var occ_rule_bridge_not_owned = create_rule(occ_does_not_own_bridge);
 occ_bridge_default_style.addRules([occ_rule_bridge_owned, occ_rule_bridge_not_owned]);
 
 fixmystreet.assets.oxfordshire.bridge_stylemap = new OpenLayers.StyleMap({
@@ -1509,22 +1509,11 @@ function oxfordshire_light_not(f) {
 }
 
 var occ_light_default_style = new OpenLayers.Style(occ_default);
-var occ_rule_light_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: oxfordshire_light
-    })
-});
-var occ_rule_light_not_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: oxfordshire_light_not
-    }),
-    symbolizer: {
-        fillColor: "#868686",
-        strokeWidth: 1,
-        pointRadius: 4
-    }
+var occ_rule_light_owned = create_rule(oxfordshire_light);
+var occ_rule_light_not_owned = create_rule(oxfordshire_light_not, {
+    fillColor: "#868686",
+    strokeWidth: 1,
+    pointRadius: 4
 });
 occ_light_default_style.addRules([ occ_rule_light_owned, occ_rule_light_not_owned ]);
 
@@ -1698,22 +1687,11 @@ var shropshire_light_default_style = new OpenLayers.Style({
     strokeWidth: 2,
     pointRadius: 4
 });
-var shropshire_rule_light_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: shropshire_light
-    }),
-    symbolizer: {
-        fillColor: "#FFFF00",
-        pointRadius: 6
-    }
+var shropshire_rule_light_owned = create_rule(shropshire_light, {
+    fillColor: "#FFFF00",
+    pointRadius: 6
 });
-var shropshire_rule_light_not_owned = new OpenLayers.Rule({
-    filter: new OpenLayers.Filter.FeatureId({
-        type: OpenLayers.Filter.Function,
-        evaluate: shropshire_parish_light
-    })
-});
+var shropshire_rule_light_not_owned = create_rule(shropshire_parish_light);
 shropshire_light_default_style.addRules([ shropshire_rule_light_owned, shropshire_rule_light_not_owned ]);
 
 fixmystreet.assets.shropshire.streetlight_stylemap = new OpenLayers.StyleMap({
