@@ -23,9 +23,9 @@ my $nominatimbase = "https://nominatim.openstreetmap.org/";
 # an array of matches if there are more than one. The information in the query
 # may be used to disambiguate the location in cobranded versions of the site.
 sub string {
-    my ( $cls, $s, $c ) = @_;
+    my ( $cls, $s, $cobrand ) = @_;
 
-    my $params = $c->cobrand->disambiguate_location($s);
+    my $params = $cobrand->disambiguate_location($s);
     return $params->{result} if $params->{result};
 
     # Allow cobrand to fixup the user input
@@ -47,13 +47,13 @@ sub string {
         if $params->{bounds};
     $query_params{countrycodes} = $params->{country}
         if $params->{country};
-    $c->cobrand->call_hook(geocoder_munge_query_params => \%query_params);
+    $cobrand->call_hook(geocoder_munge_query_params => \%query_params);
     $url .= join('&', map { "$_=$query_params{$_}" } sort keys %query_params);
 
-    $c->stash->{geocoder_url} = $url;
+    my $out = { geocoder_url => $url };
     my $js = FixMyStreet::Geocode::cache('osm', $url);
     if (!$js) {
-        return { error => _('Sorry, we could not find that location.') };
+        return { %$out, error => _('Sorry, we could not find that location.') };
     }
 
     my ( $error, @valid_locations, $latitude, $longitude, $address );
@@ -61,7 +61,7 @@ sub string {
         next if $params->{result_only_if} && $_->{display_name} !~ /$params->{result_only_if}/;
         $_->{display_name} =~ s/$params->{result_strip}//g if $params->{result_strip};
 
-        $c->cobrand->call_hook(geocoder_munge_results => $_);
+        $cobrand->call_hook(geocoder_munge_results => $_);
         next unless $_->{display_name};
         ( $latitude, $longitude ) =
             map { Utils::truncate_coordinate($_) }
@@ -76,8 +76,8 @@ sub string {
         push (@valid_locations, $_);
     }
 
-    return { latitude => $latitude, longitude => $longitude, address => $address } if scalar @valid_locations == 1;
-    return { error => $error };
+    return { %$out, latitude => $latitude, longitude => $longitude, address => $address } if scalar @valid_locations == 1;
+    return { %$out, error => $error };
 }
 
 sub reverse_geocode {

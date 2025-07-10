@@ -42,7 +42,7 @@ BEGIN {
     require "$d/../setenv.pl";
 }
 
-use Data::Dumper;
+use JSON::MaybeXS;
 use Pod::Usage;
 use feature 'say';
 use File::Temp 'tempdir';
@@ -54,6 +54,7 @@ my %options = ( help => sub { pod2usage(0) } );
 GetOptions \%options,
     'geocoder=s',
     'help|h',
+    'verbose|v',
     'cobrand=s',
     'override-config=s',
     'use-cache';
@@ -63,10 +64,9 @@ my $s = join ' ', @ARGV
 
 local $ENV{FMS_OVERRIDE_CONFIG} = $options{'override-config'} if $options{'override-config'};
 
-eval 'use FixMyStreet';
-eval 'use FixMyStreet::App';
-eval 'use FixMyStreet::Cobrand';
-eval 'use FixMyStreet::Geocode';
+use FixMyStreet;
+use FixMyStreet::Cobrand;
+use FixMyStreet::Geocode;
 
 mySociety::Locale::gettext_domain( 'FixMyStreet' );
 
@@ -90,20 +90,18 @@ my $cobrand_option = $options{cobrand}
 my $cobrand_name = FixMyStreet::Cobrand->get_class_for_moniker($cobrand_option);
 my $cobrand = $cobrand_name->new();
 
-say "USING COBRAND $cobrand_name";
+say "USING COBRAND $cobrand_name" if $options{verbose};
 if ($cobrand->moniker ne lc($cobrand_option)) {
     say "!!! asked for $cobrand_option";
     say "!!! Check ALLOWED_COBRANDS setting in conf/general.yml (or supplied --override-config file)";
     say Dumper(\@allowed_cobrands);
+    exit;
 }
 
 say "USING GEOCODER $geocoder_name "
     . ( $options{'use-cache'} ? 
         'WITH ' . FixMyStreet->config('GEO_CACHE') :
-        'WITHOUT cache');
-
-my $c = FixMyStreet::App->new();
-$c->stash->{cobrand} = $cobrand;
+        'WITHOUT cache') if $options{verbose};
 
 FixMyStreet::override_config({
     # if we're not using cache, then set GEO_CACHE to a temporary directory
@@ -111,6 +109,6 @@ FixMyStreet::override_config({
         () :
         ( GEO_CACHE => (tempdir( CLEANUP => 1 ) . '/') ),
 }, sub {
-    my $result = $code_ref->( $s, $c );
-    say Dumper $result;
+    my $result = $code_ref->( $geocoder_name, $s, $cobrand );
+    say encode_json($result);
 });
