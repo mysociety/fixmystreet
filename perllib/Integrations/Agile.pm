@@ -75,4 +75,31 @@ sub CustomerSearch {
     );
 }
 
+sub LastCancelled {
+    my ( $self, $days ) = @_;
+
+    my $response = $self->call(
+        action     => 'lastCancelled',
+        controller => 'servicecontract',
+        data       => { NumberOfDays => $days },
+    );
+
+    if (ref $response eq 'HASH' && exists $response->{error}) {
+        return $response;
+    }
+
+    # TODO: Confirm which format is correct, the documentation suggests a hash
+    # with a ServiceContracts key but the actual response is an array. This
+    # is a workaround to handle both formats.
+    if (ref $response eq 'HASH' && exists $response->{ServiceContracts}) {
+        return $response->{ServiceContracts};
+    }
+    if (ref $response eq 'ARRAY') {
+        return $response;
+    }
+
+    warn "Unexpected response format from Agile LastCancelled\n";
+    return { error => "Unexpected response format from Agile LastCancelled" };
+}
+
 1;
