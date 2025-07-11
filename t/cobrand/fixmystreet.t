@@ -506,13 +506,13 @@ FixMyStreet::override_config {
     $mech->content_contains('data-valuealone="Flytipping"', 'Edinburgh category available when no traffic Scotland road');
     $mech->content_lacks('data-valuealone="Pothole (TS)"', 'Traffic Scotland category not available when no road');
     $he_mod->mock('_fetch_features', sub {
-        my ($self, $cfg, $x, $y) = @_;
+        my ($self, $cfg) = @_;
         return [
             {
                 properties => { area_name => 'Area 1', ROA_NUMBER => 'M1', sect_label => 'M1/111' },
                 geometry => {
                     type => 'LineString',
-                    coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+                    coordinates => [ [ -2, +2 ], [ +2, +2 ] ],
                 }
             },
         ];
@@ -551,12 +551,12 @@ FixMyStreet::override_config {
     sub mock_road {
         my ($name, $litter) = @_;
         $he_mod->mock('_fetch_features', sub {
-            my ($self, $cfg, $x, $y) = @_;
+            my ($self, $cfg) = @_;
             my $road = {
                 properties => { area_name => 'Area 1', ROA_NUMBER => $name, sect_label => "$name/111" },
                 geometry => {
                     type => 'LineString',
-                    coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+                    coordinates => [ [ -2, +2 ], [ +2, +2 ] ],
                 }
             };
             if ($cfg->{typename} eq 'highways_litter_pick') {

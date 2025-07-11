@@ -205,7 +205,7 @@ sub check_report_is_on_cobrand_asset {
         outputformat => 'GML3',
     };
 
-    my $features = $self->_fetch_features($cfg, -1, -1, 1);
+    my $features = $self->_fetch_features($cfg);
 
     if ($$features[0]) {
         return $$features[0]->{'ms:BrentDiffs'}->{'ms:name'};
@@ -601,7 +601,7 @@ sub problem_is_within_area_type {
         filter => $filter x 2,
     };
 
-    my $features = $self->_fetch_features($cfg, $x, $y, 1) || [];
+    my $features = $self->_fetch_features($cfg) || [];
     my $type = scalar @$features ? (keys %{$features->[0]})[0] : '';
     return $type;
 }
