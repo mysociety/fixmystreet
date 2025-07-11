@@ -3,7 +3,7 @@ Subject: Please confirm your report
 Hello [% report.name %],
 
 As you weren't signed in when reporting the problem, you will need to confirm
-your submission. Once you do so, it will be sent to us.
+your submission. Once you do so, your report will be sent to us.
 
 [% token_url %]
 

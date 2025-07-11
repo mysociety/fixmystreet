@@ -12,7 +12,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 use_ok 'FixMyStreet::Cobrand::Aberdeenshire';
 
-my $aberdeenshire = $mech->create_body_ok(2242, 'Aberdeenshire Council', { cobrand => 'aberdeenshire' });
+my $aberdeenshire = $mech->create_body_ok(2648, 'Aberdeenshire Council', { cobrand => 'aberdeenshire' });
 my $staff_user = $mech->create_user_ok( 'staff@example.com', name => 'Staff User', from_body => $aberdeenshire );
 $mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Pothole', email => 'potholes@example.org');
 $mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Surface Issue', email => 'surface_issue@example.org');
@@ -140,6 +140,41 @@ FixMyStreet::override_config {
             $cobrand->open311_munge_update_params($params, $regular_comment);
 
             is scalar keys %$params, 0, 'No parameters added for non-category change comments';
+        };
+
+        subtest "sends branded confirmation emails" => sub {
+            $mech->log_out_ok;
+            $mech->clear_emails_ok;
+            $mech->get_ok('/around');
+            $mech->submit_form_ok( { with_fields => { pc => 'AB51 5JQ', } },
+                "submit location" );
+
+            # click through to the report page
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link" );
+
+            $mech->submit_form_ok(
+                {
+                    button      => 'submit_register',
+                    with_fields => {
+                        title         => 'Test Report',
+                        detail        => 'Test report details.',
+                        photo1        => '',
+                        name          => 'Joe Bloggs',
+                        username_register => 'test-1@example.com',
+                        category      => 'Pothole',
+                    }
+                },
+                "submit good details"
+            );
+
+            $mech->email_count_is(1);
+            my $email = $mech->get_email;
+            ok $email, "got an email";
+            like $mech->get_text_body_from_email($email), qr/you will need to confirm.*your submission.*Once you do so, your report will be sent to us/, "confirmation email contains custom Aberdeenshire wording";
+            like $mech->get_html_body_from_email($email), qr/you will need to confirm your submission.*Once you do so, your report will be sent to us/s, "HTML confirmation email contains custom Aberdeenshire wording";
+
+            $mech->clear_emails_ok;
         };
 };
 
