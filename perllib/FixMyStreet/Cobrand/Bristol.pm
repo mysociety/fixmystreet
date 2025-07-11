@@ -372,7 +372,7 @@ sub _park_for_point {
         outputformat => 'GML3',
     };
 
-    my $features = $self->_fetch_features($cfg, $x, $y, 1);
+    my $features = $self->_fetch_features($cfg);
     my $park = $features->[0];
 
     return $park;
