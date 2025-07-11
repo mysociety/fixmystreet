@@ -93,30 +93,20 @@ END; END %]
 </div>
 [% END %]
 
-<form id="item-selection-form" class="waste" method="post" enctype="multipart/form-data">
+<form id="item-selection-form" class="waste" method="post" enctype="multipart/form-data"
+    data-maximum="[% c.cobrand.bulky_items_maximum %]"
+    >
   [% FOR num IN [ 1 .. c.cobrand.bulky_items_maximum ] %]
-  <div class="bulky-item-wrapper">
-    [% # Building names beforehand because override_fields does not seem to like them being built inside its arg list %]
-    [% item = 'item_' _ num %]
-    [% PROCESS form override_fields = [ item ] %]
-    [% PROCESS extra_text num = num %]
-  [% IF c.cobrand.call_hook('bulky_show_individual_notes') %]
-    [% notes = 'item_notes_' _ num %]
-    [% PROCESS form override_fields = [ notes ] %]
-  [% END %]
-  [% IF c.cobrand.moniker != 'brent' %]
-    [% photo = 'item_photo_' _ num %]
-    [% photo_fileid = photo _ '_fileid' %]
-    [% PROCESS form override_fields = [ photo, photo_fileid ] %]
-  [% END %]
-
-    [% IF num > 1 %]
-    <button type="button" class="delete-item btn-secondary govuk-!-margin-bottom-3">Delete item</button>
+    [% IF NOT first_empty OR form.field('item_' _ num).value %]
+      [% INCLUDE item_fields %]
+      [% IF NOT form.field('item_' _ num).value %][% SET first_empty = 1 %][% END %]
     [% END %]
-
-    <hr>
-  </div>
   [% END %]
+
+  <template id="bulky-item-template">
+      [% INCLUDE item_fields form=blank_form num=999 %]
+  </template>
+
   [% IF c.cobrand.bulky_pricing_strategy.strategy == 'banded' %]
   <p id="band-pricing-info"></p>
   [% END %]
@@ -139,6 +129,26 @@ END; END %]
 
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
 </form>
+
+[% BLOCK item_fields %]
+  <div class="bulky-item-wrapper">
+    [% # Building names beforehand because override_fields does not seem to like them being built inside its arg list %]
+    [% item = 'item_' _ num %]
+    [% PROCESS form override_fields = [ item ] %]
+    [% PROCESS extra_text num = num %]
+  [% IF c.cobrand.call_hook('bulky_show_individual_notes') %]
+    [% notes = 'item_notes_' _ num %]
+    [% PROCESS form override_fields = [ notes ] %]
+  [% END %]
+  [% IF NOT c.cobrand.bulky_disabled_item_photos %]
+    [% photo = 'item_photo_' _ num %]
+    [% photo_fileid = photo _ '_fileid' %]
+    [% PROCESS form override_fields = [ photo, photo_fileid ] %]
+  [% END %]
+    <button type="button" class="delete-item btn-secondary govuk-!-margin-bottom-3">Delete item</button>
+    <hr>
+  </div>
+[% END %]
 
 [% BLOCK extra_text %]
 <div class="govuk-warning-text due bulky-item-message">

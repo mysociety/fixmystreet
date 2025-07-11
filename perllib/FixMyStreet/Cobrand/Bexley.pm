@@ -20,6 +20,7 @@ use DateTime;
 use Moo;
 with 'FixMyStreet::Roles::Open311Multi',
      'FixMyStreet::Cobrand::Bexley::Garden',
+     'FixMyStreet::Cobrand::Bexley::Bulky',
      'FixMyStreet::Cobrand::Bexley::Waste';
 
 sub council_area_id { 2494 }
@@ -468,16 +469,11 @@ sub dashboard_export_problems_add_columns {
 
 =head2 waste_auto_confirm_report
 
-Missed collection reports are automatically confirmed
+Reports are automatically confirmed
 
 =cut
 
-sub waste_auto_confirm_report {
-    my ($self, $report) = @_;
-    return $report->category eq 'Report missed collection'
-        || $report->category eq 'Request new container'
-        || $report->category eq 'Request container removal';
-}
+sub waste_auto_confirm_report { 1 }
 
 =head2 skip_alert_state_changed_to
 

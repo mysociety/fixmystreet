@@ -245,7 +245,9 @@ FixMyStreet::override_config {
 
         subtest 'higher band try' => sub {
             $mech->submit_form_ok(
-                {   with_fields => {
+                {
+                    form_number => 1,
+                    fields => {
                         'item_1' => 'BBQ',
                         'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                         'item_2' => 'Bicycle',
@@ -263,7 +265,9 @@ FixMyStreet::override_config {
         };
 
         $mech->submit_form_ok(
-            {   with_fields => {
+            {
+                form_number => 1,
+                fields => {
                     'item_1' => 'BBQ',
                     'item_photo_1' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
                     'item_2' => 'Bicycle',
@@ -717,7 +721,8 @@ FixMyStreet::override_config {
             $mech->content_like(
                 qr/<option value="Bath".*>Bath<\/option>/);
             $mech->submit_form_ok({
-                with_fields => {
+                form_number => 1,
+                fields => {
                     'item_1' => 'Bath',
                     'item_photo_1_fileid' => '', # Photo removed
                     'item_2' => 'Bookcase, Shelving Unit',

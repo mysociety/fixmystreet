@@ -582,10 +582,6 @@ html.js {
     }
 
     .bulky-item-wrapper {
-        display: none;
-        &:first-child {
-            display: block;
-        }
         .delete-item {
           margin-top: 1em;
           display: inline-block;

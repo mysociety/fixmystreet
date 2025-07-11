@@ -71,15 +71,21 @@ sub bulky_item_notes_field_mandatory { 0 }
 
 sub bulky_show_individual_notes { $_[0]->wasteworks_config->{show_individual_notes} };
 
+sub bulky_points_per_item_pricing { 0 }
+
 sub bulky_pricing_strategy {
     my $self = shift;
     my $base_price = $self->wasteworks_config->{base_price};
     my $band1_max = $self->wasteworks_config->{band1_max};
-    my $max = $self->bulky_items_maximum;
-    if ($self->bulky_per_item_costs) {
+    if ($self->bulky_points_per_item_pricing) {
+        my $data = $self->{c}->stash->{form}->saved_data;
+        my $points = $self->bulky_pricing_model($data);
+        return encode_json({ strategy => 'points', points => $points });
+    } elsif ($self->bulky_per_item_costs) {
         my $min_collection_price = $self->wasteworks_config->{per_item_min_collection_price} || 0;
         return encode_json({ strategy => 'per_item', min => $min_collection_price });
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
+        my $max = $self->bulky_items_maximum;
         return encode_json({ strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] });
     } else {
         return encode_json({ strategy => 'single' });
@@ -89,6 +95,7 @@ sub bulky_pricing_strategy {
 =head2 Requirements
 
 Users of this role must supply the following:
+* whether bulky collections are allowed for a particular property or not;
 * time up to which cancellation can be made;
 * time collections start;
 * number of days to look into the future for collection dates
@@ -97,6 +104,7 @@ Users of this role must supply the following:
 
 =cut
 
+requires 'bulky_allowed_property';
 requires 'bulky_cancellation_cutoff_time';
 requires 'bulky_collection_time';
 requires 'bulky_collection_window_days';
@@ -130,6 +138,7 @@ sub bulky_items_extra {
     for my $item ( @{ $self->bulky_items_master_list } ) {
         $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
         $hash{ $item->{name} }{price} = $item->{$price_key} if $item->{$price_key} && $per_item;
+        $hash{ $item->{name} }{points} = $item->{points} if $item->{points};
         $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
         $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
     }
@@ -144,7 +153,9 @@ sub bulky_minimum_cost {
 
     my $cfg = $self->wasteworks_config;
 
-    if ( $cfg->{per_item_costs} ) {
+    if ($self->bulky_points_per_item_pricing) {
+        return $cfg->{per_item_min_collection_price};
+    } elsif ( $cfg->{per_item_costs} ) {
 
         my $price_key = $self->bulky_per_item_price_key;
         # Get the item with the lowest cost
@@ -175,7 +186,16 @@ sub bulky_total_cost {
         $data->{extra_CHARGEABLE} = 'CHARGED';
 
         my $cfg = $self->wasteworks_config;
-        if ($cfg->{per_item_costs}) {
+        if ($self->bulky_points_per_item_pricing) {
+            my $points = $self->bulky_item_points_total($data);
+            my $levels = $self->bulky_pricing_model($data);
+            my $total = $self->bulky_points_to_price($points, $levels);
+            if ($total eq 'max') {
+                # Shouldn't ever reach here! Set stupid price
+                $total = 999_999_999;
+            }
+            $c->stash->{payment} = $total;
+        } elsif ($cfg->{per_item_costs}) {
             my $price_key = $self->bulky_per_item_price_key;
             my %prices = map { $_->{name} => $_->{$price_key} } @{ $self->bulky_items_master_list };
             my $total = 0;
@@ -638,6 +658,8 @@ sub _bulky_send_reminder_email {
 
     return unless $report->user->email;
 
+    return if $self->moniker eq 'bexley' && $h->{days} == 3; # No 3 day reminder
+
     $h->{url} = $self->base_url_for_report($report) . $report->tokenised_url($report->user);
 
     my $result = FixMyStreet::Email::send_cron(
@@ -680,6 +702,9 @@ sub bulky_location_text_prompt {
   "Please provide the exact location where the items will be left ".
   "(e.g., On the driveway; To the left of the front door; By the front hedge, etc.)."
 }
+
+sub bulky_disabled_item_photos { 0 }
+sub bulky_disabled_location_photo { 0 }
 
 sub bulky_location_photo_prompt {
     my $self = shift;
@@ -737,6 +762,76 @@ sub _bulky_time_object_to_datetime {
     }
 
     return $dt;
+}
+
+sub bulky_cancel_no_payment_minutes {
+    my $self = shift;
+    $self->feature('waste_features')->{bulky_cancel_no_payment_minutes};
+}
+
+sub cancel_bulky_collections_without_payment {
+    my ($self, $params) = @_;
+
+    # Allow 30 minutes for payment before cancelling the booking.
+    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
+    my $cutoff_date = $dtf->format_datetime( DateTime->now->subtract( minutes => $self->bulky_cancel_no_payment_minutes ) );
+
+    my $rs = $self->problems->search(
+        {   category => 'Bulky collection',
+            created  => { '<'  => $cutoff_date },
+            external_id => { '!=', undef },
+            state => [ FixMyStreet::DB::Result::Problem->open_states ],
+            -not => { extra => { '@>' => '{"contributed_as":"another_user"}' } },
+            -or => [
+                extra => undef,
+                -not => { extra => { '\?' => 'payment_reference' } }
+            ],
+        },
+    );
+
+    while ( my $report = $rs->next ) {
+        my $scp_reference = $report->get_extra_metadata('scpReference');
+        if ($scp_reference) {
+
+            # Double check whether the payment was made.
+            my ($error, $reference) = $self->cc_check_payment_and_update($scp_reference, $report);
+            if (!$error) {
+                if ($params->{verbose}) {
+                    printf(
+                        'Booking %s for report %d was found to be paid (reference %s).' .
+                        ' Updating with payment information and not cancelling.',
+                        $report->external_id,
+                        $report->id,
+                        $reference,
+                    );
+                }
+                if ($params->{commit}) {
+                    $report->waste_confirm_payment($reference);
+                }
+                next;
+            }
+        }
+
+        if ($params->{commit}) {
+            $report->add_to_comments({
+                text => 'Booking cancelled since payment was not made in time',
+                user_id => $self->body->comment_user_id,
+                extra => { bulky_cancellation => 1 },
+            });
+            $report->state('cancelled');
+            $report->detail(
+                $report->detail . " | Cancelled since payment was not made in time"
+            );
+            $report->update;
+        }
+        if ($params->{verbose}) {
+            printf(
+                'Cancelled booking %s for report %d.',
+                $report->external_id,
+                $report->id,
+            );
+        }
+    }
 }
 
 1;

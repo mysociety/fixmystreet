@@ -42,6 +42,13 @@ has_page location => (
     fields   =>
         [ 'location', 'location_photo', 'location_photo_fileid', 'continue' ],
     next => 'summary',
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        if ($c->cobrand->bulky_disabled_location_photo) {
+            return ['location_photo', 'location_photo_fileid'];
+        }
+    },
     update_field_list => sub {
         my ($form) = @_;
         my $fields = {};
@@ -82,6 +89,13 @@ has_page summary => (
         if ($cobrand eq 'kingston' || $cobrand eq 'sutton') {
             return ['payment_explanation'];
         }
+    },
+    update_field_list => sub {
+        my ($form) = @_;
+        my $data = $form->saved_data;
+        my $new = _renumber_items($data, $form->c->cobrand->bulky_items_maximum);
+        %$data = %$new;
+        return {};
     },
     # Return to 'Choose date' page if slot has been taken in the meantime.
     # Otherwise, proceed to payment.
@@ -173,12 +187,15 @@ sub _get_dates {
         delete $dates_booked{$existing_date};
     }
 
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+    my $pattern = '%FT%T';
+    $pattern = '%F' if $c->cobrand->moniker eq 'bexley'; # Move more to this over time?
+    my $parser = DateTime::Format::Strptime->new( pattern => $pattern );
     my @dates  = grep {$_} map {
         my $dt = $parser->parse_datetime( $_->{date} );
+        my $label = $c->cobrand->moniker eq 'brent' ? '%d %B' : '%A %e %B';
         $dt
             ? {
-            label => $dt->strftime('%A %e %B'),
+            label => $dt->strftime($label),
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             disabled => $dates_booked{$_->{date}},
             # The default behaviour in the fields.html template is to mark a radio
@@ -263,6 +280,14 @@ has_field tandc => (
 <br>&bull; I confirm the bulky waste items will be left outside at the front of the property but not on the public highway, in an easy accessible location.
 <br>&bull; I confirm I understand that items cannot be collected from inside the property
 <br>&bull; I confirm I have read the information for the <a href="' . $link . '" target="_blank">bulky waste service</a>';
+        } elsif ($c->cobrand->moniker eq 'brent') {
+            $label = 'I have read and agree to the <a href="' . $link . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected';
+        } elsif ($c->cobrand->moniker eq 'bexley') {
+            $label = '&bull; I confirm that the submitted information is current and correct, and any misrepresentations could lead to a cancellation of the arranged service without refund.
+<br>&bull; I understand that collections can take place any time after 6am.
+<br>&bull; I understand that the arranged service cannot be edited or cancelled once payment has been submitted and refunds are not provided.
+<br>&bull; I understand that only the items added to the booking will be taken. Items must be accessible on the collection day and left in a neat and safe manner. Items cannot be left for collection on the public highway.
+<br>&bull; I understand I may be subject to further charges if proof of pension cannot be provided when requested.';
         } else {
             $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste collection</a> page on the council’s website';
         }
@@ -311,12 +336,21 @@ sub validate {
         }
     }
 
+    my $cobrand = $self->c->cobrand;
     if ($self->current_page->name eq 'add_items') {
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $cobrand->bulky_items_maximum;
         my %given;
+
+        my $points = 0;
+        my %points = map { $_->{name} => $_->{points} } @{ $cobrand->bulky_items_master_list };
+
         for my $num ( 1 .. $max_items ) {
             my $val = $self->field("item_$num")->value or next;
             $given{$val}++;
+            $points += $points{$val} if $points{$val};
+        }
+        if (!%given) {
+            $self->add_form_error("Please select an item");
         }
         my %max = map { $_->{name} => $_->{max} } @{ $self->items_master_list };
         foreach (sort keys %given) {
@@ -324,12 +358,42 @@ sub validate {
                 $self->add_form_error("Too many of item: $_");
             }
         }
+
+        # Points need to check maximum
+        if ($cobrand->bulky_points_per_item_pricing) {
+            my $levels = $cobrand->bulky_pricing_model($self->saved_data);
+            my $total = $cobrand->bulky_points_to_price($points, $levels);
+            if ($total eq 'max') {
+                $self->add_form_error("You have used too many points");
+            }
+        }
+
+        if ($self->{c}->cobrand->moniker eq 'brent') {
+            my %category_count;
+            for my $name (keys %given) {
+                for my $list_item (@{ $self->items_master_list }) {
+                    if ($list_item->{'name'} eq $name) {
+                        if ($list_item->{'category'}) {
+                            $category_count{$list_item->{'category'}} += $given{$name};
+                        } else {
+                            $category_count{$list_item->{'name'}} += $given{$name};
+                        }
+                    }
+                }
+            }
+            if (scalar keys %category_count > 3) {
+                $self->add_form_error("Too many categories: maximum of 3 types");
+            }
+            if (scalar $category_count{'Small electrical items'} && scalar $category_count{'Small electrical items'} > 4) {
+                $self->add_form_error("Too many small electrical items: maximum 4");
+            }
+        }
     }
 
     if ($self->current_page->name eq 'summary' && $self->c->stash->{amending_booking}) {
-        my $old = $self->c->cobrand->waste_reconstruct_bulky_data($self->c->stash->{amending_booking});
+        my $old = $cobrand->waste_reconstruct_bulky_data($self->c->stash->{amending_booking});
         my $new = $self->saved_data;
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $cobrand->bulky_items_maximum;
         my $same = 1;
         my @fields = qw(chosen_date location location_photo);
         push @fields, map { ("item_$_", "item_photo_$_") } 1 .. $max_items;
@@ -375,5 +439,30 @@ after 'process' => sub {
         $self->field('continue')->inactive(1);
     }
 };
+
+=head2 _renumber_items
+
+This function is used to make sure that the incoming item data uses 1, 2, 3,
+... in case the user had deleted a middle item and sent us 1, 3, 4, 6, ...
+
+=cut
+
+sub _renumber_items {
+    my ($data, $max) = @_;
+
+    my $c = 1;
+    my %items;
+    for (1..$max) {
+        next unless $data->{"item_$_"};
+        $items{"item_$c"} = $data->{"item_$_"};
+        $items{"item_notes_$c"} = $data->{"item_notes_$_"};
+        $items{"item_photo_$c"} = $data->{"item_photo_$_"};
+        $c++;
+    }
+    my $data_itemless = { map { $_ => $data->{$_} } grep { !/^item_(notes_|photo_)?\d/ } keys %$data };
+    $data = { %$data_itemless, %items };
+
+    return $data;
+}
 
 1;
