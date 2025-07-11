@@ -178,7 +178,7 @@ sub problem_is_within_area_type {
         filter => "<Filter xmlns:gml=\"http://www.opengis.net/gml\"><Intersects><PropertyName>geom</PropertyName><gml:Point srsName=\"27700\"><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Intersects></Filter>",
     };
 
-    my $features = $self->_fetch_features($cfg, $x, $y) || [];
+    my $features = $self->_fetch_features($cfg) || [];
     return scalar @$features ? 1 : 0;
 }
 

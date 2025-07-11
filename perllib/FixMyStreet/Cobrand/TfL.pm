@@ -604,7 +604,7 @@ sub report_new_is_on_tlrn {
         filter => "<Filter><Contains><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
     };
 
-    my $features = $self->_fetch_features($cfg, $x, $y);
+    my $features = $self->_fetch_features($cfg);
     return scalar @$features ? 1 : 0;
 }
 

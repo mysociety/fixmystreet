@@ -348,6 +348,26 @@ OpenLayers.Layer.BuckinghamshireLights = OpenLayers.Class(OpenLayers.Layer.Vecto
     CLASS_NAME: 'OpenLayers.Layer.BuckinghamshireLights'
 });
 
+fixmystreet.assets.buckinghamshire.prow_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        strokeColor: "#790d8a",
+        strokeOpacity: 0.8,
+        strokeWidth: 4
+    })
+});
+
+fixmystreet.assets.buckinghamshire.prow_selected = function(asset) {
+    var type = asset.attributes.InfraTypeGroupDescr;
+    if (type === 'Other') {
+        type = asset.attributes.InfraTypeDescr.replace('Other/', '');
+        if (type === 'Undefined') {
+            type = '';
+        }
+    }
+    var id = asset.attributes.InfraCode;
+    return 'You have selected ' + type + ' <b>' + id + '</b>';
+};
+
 fixmystreet.assets.buckinghamshire.streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
   'hover': fixmystreet.assets.style_default_hover,
