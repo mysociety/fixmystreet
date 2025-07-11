@@ -292,6 +292,8 @@ foreach my $test (
         changes     => {
             non_public => 'on',
         },
+        expect_comment => 1,
+        expected_text => 'Report made private',
         log_entries => [
             qw/edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],

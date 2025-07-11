@@ -554,9 +554,17 @@ sub inspect : Private {
             my $assignee = $c->model('DB::User')->find({ id => $assigned });
             $assignee->add_to_planned_reports($problem);
         }
+
+        my $made_private = (!$problem->non_public && $c->get_param('non_public'));
+        my $made_public = ($problem->non_public && !$c->get_param('non_public'));
+
         $problem->non_public($c->get_param('non_public') ? 1 : 0);
         if ($problem->non_public) {
             $problem->get_photoset->delete_cached(plus_updates => 1);
+        }
+
+        if ($made_private || $made_public) {
+            $problem->add_privacy_change_comment($c->user->obj, $made_private);
         }
 
         if ( !$c->forward( '/admin/reports/edit_location', [ $problem ] ) ) {

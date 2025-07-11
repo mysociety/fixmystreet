@@ -303,6 +303,9 @@ sub edit : Path('/admin/report_edit') : Args(1) {
 
         my $old_state = $problem->state;
 
+        my $made_private = (!$problem->non_public && $c->get_param('non_public'));
+        my $made_public = ($problem->non_public && !$c->get_param('non_public'));
+
         my %columns = (
             non_public => $c->get_param('non_public') ? 1 : 0,
         );
@@ -368,6 +371,11 @@ sub edit : Path('/admin/report_edit') : Args(1) {
                 problem_state => $problem->state,
             } );
         }
+
+        if ($made_private || $made_public) {
+            $problem->add_privacy_change_comment($c->user->obj, $made_private);
+        };
+
         $c->forward( '/admin/log_edit', [ $id, 'problem', 'edit' ] );
 
         $c->stash->{status_message} = _('Updated!');

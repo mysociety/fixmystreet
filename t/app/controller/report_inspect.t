@@ -199,7 +199,7 @@ FixMyStreet::override_config {
         is $report->state, 'confirmed', 'report state not changed';
         ok $report->non_public, 'report not public';
         ok !defined( $alert ) , 'not signed up for alerts';
-
+        $report->comments->first->delete;
         $report->update( { non_public => 0 } );
     };
     subtest "test basic inspect submission" => sub {
@@ -872,11 +872,17 @@ FixMyStreet::override_config {
         is $report->non_public, 0, 'Not set to non-public';
         $mech->get_ok("/report/$report_id");
         $mech->submit_form(button => 'save', with_fields => { include_update => 0, non_public => 1 });
-        is $report->comments->count, 0, "No updates left";
+        is $report->comments->count, 1, "1 update left";
+        my $comment = $report->comments->first;
+        ok $comment->text eq 'Report made private', 'Comment left for making report private';
+        $comment->delete;
         $report->discard_changes;
         is $report->non_public, 1, 'Now set to non-public';
         $mech->submit_form(button => 'save', with_fields => { include_update => 0, non_public => 0 });
-        is $report->comments->count, 0, "No updates left";
+        is $report->comments->count, 1, "1 update left";
+        $comment = $report->comments->first;
+        ok $comment->text eq 'Report made public', 'Comment left for making report public';
+        $comment->delete;
         $report->discard_changes;
         is $report->non_public, 0, 'Not set to non-public';
     };

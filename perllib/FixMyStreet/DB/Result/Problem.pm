@@ -1655,6 +1655,24 @@ sub bulky_add_payment_confirmation_update {
     $self->cancel_update_alert($comment->id);
 }
 
+=head2 add_privacy_change_comment
+
+Called with a user object and an optional variable.
+
+Variable should exist when noting report made private
+otherwise will note report made public.
+
+=cut
+
+sub add_privacy_change_comment {
+    my ($self, $user, $private) = @_;
+
+    $self->add_to_comments( {
+            text => $private ? 'Report made private' : 'Report made public',
+            user => $user,
+        });
+}
+
 sub bulky_cancel_collection {
     my ($self, $type, $non_user_cancel) = @_;
 
