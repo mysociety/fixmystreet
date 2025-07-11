@@ -1,0 +1,40 @@
+#!/usr/bin/env perl
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use Getopt::Long::Descriptive;
+use FixMyStreet::Cobrand;
+use FixMyStreet::Script::Bexley::CancelGardenWaste;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['days=i', 'How many days to check for cancellations (max 7)', { default => 7 } ],
+    ['uprn=s', 'A specific UPRN to cancel'],
+    ['verbose|v', 'Print verbose output'],
+    ['help|h', "print usage message and exit" ],
+);
+
+$usage->die if $opts->help;
+if ($opts->days > 7) {
+    $usage->die("Days must be 7 or less");
+}
+
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('bexley')->new;
+my $canceller = FixMyStreet::Script::Bexley::CancelGardenWaste->new(
+    cobrand => $cobrand,
+    verbose => $opts->verbose,
+);
+
+if ($opts->uprn) {
+    $canceller->cancel_by_uprn($opts->uprn);
+} else {
+    $canceller->cancel_from_api($opts->days);
+}
