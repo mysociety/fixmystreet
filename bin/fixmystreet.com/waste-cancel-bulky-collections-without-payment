@@ -16,14 +16,18 @@ use Getopt::Long::Descriptive;
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['commit|c', 'actually cancel the bookings'],
+    ['cobrand=s@', 'cobrands to check'],
     ['verbose|v', 'more verbose output'],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;
+$usage->die unless $opts->cobrand;
 
-my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('bromley')->new;
-$cobrand->cancel_bulky_collections_without_payment(
-    {   commit  => $opts->commit,
-        verbose => $opts->verbose,
-    },
-);
+foreach (@{$opts->cobrand}) {
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($_)->new;
+    $cobrand->cancel_bulky_collections_without_payment(
+        {   commit  => $opts->commit,
+            verbose => $opts->verbose,
+        },
+    );
+}
