@@ -13,6 +13,10 @@ use FixMyStreet::DateRange;
 use FixMyStreet::DB;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
+use Integrations::Echo::Booking;
+use Integrations::Echo::Events;
+
+sub booking_class { 'Integrations::Echo::Booking' }
 
 with 'FixMyStreet::Roles::EnforcePhotoSizeOpen311PreSend';
 
@@ -157,11 +161,10 @@ sub bin_services_for_address {
     return [] unless @$result;
 
     my $events = $self->_parse_events($self->{api_events});
-    $self->{c}->stash->{open_service_requests} = $events->{enquiry};
 
     # If there is an open Garden subscription event, assume
     # that means a bin is being delivered and so a pending subscription
-    if ($events->{enquiry}{$self->garden_subscription_event_id}) {
+    if ($events->filter({ event_type => $self->garden_subscription_event_id, closed => 0 })) {
         $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
         $self->{c}->stash->{open_garden_event} = 1;
     }
@@ -169,7 +172,10 @@ sub bin_services_for_address {
     # Bulky/small items collection event
     my $waste_cfg = $self->{c}->stash->{waste_features};
     if ($waste_cfg && $waste_cfg->{bulky_missed}) {
-        $self->bulky_check_missed_collection($events, $self->waste_bulky_missed_blocked_codes);
+        $self->booked_check_missed_collection('bulky', $events, $self->waste_bulky_missed_blocked_codes);
+    }
+    if ($waste_cfg && $waste_cfg->{small_items_missed}) {
+        $self->booked_check_missed_collection('small_items', $events, $self->waste_bulky_missed_blocked_codes);
     }
 
     my @to_fetch;
@@ -200,8 +206,11 @@ sub bin_services_for_address {
         'bin_services_for_address:' . $property->{id},
         $background, @to_fetch);
 
-    if ($self->can('bulky_enabled')) {
+    if ($self->can('bulky_allowed_property')) {
         $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
+    }
+    if ($self->can('small_items_allowed_property')) {
+        $property->{show_small_items} = $self->small_items_allowed_property($property);
     }
 
     my @out;
@@ -220,7 +229,7 @@ sub bin_services_for_address {
             $request_max ||= $service_to_containers{$service_id}{max};
         }
 
-        my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
+        my $open_requests = { map { $_->{container} => $_ } $events->filter({ type => 'request', containers => $containers })->list };
         $self->call_hook(waste_munge_bin_services_open_requests => $open_requests);
 
         my $garden = 0;
@@ -286,12 +295,9 @@ sub bin_services_for_address {
             $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
 
             my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
-            my $missed_events = [
-                @{$events->{missed}->{$service_id} || []},
-                @{$events_unit->{missed}->{$service_id} || []},
-            ];
-            my $recent_events = $self->_events_since_date($row->{last}{date}, $missed_events);
-            $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
+            $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
+            my $recent_events = $row->{events}->filter({ type => 'missed' });
+            $row->{report_open} = ($recent_events->list)[0];
         }
         push @out, $row;
     }
@@ -394,84 +400,14 @@ sub _get_current_service_task {
 
 sub missed_event_types {}
 
-sub _closed_event {
-    my ($self, $event) = @_;
-    return 1 if $event->{ResolvedDate};
-    return 0;
-}
-
 sub _parse_events {
     my ($self, $events_data, $params) = @_;
-    my $events = {};
-    my $missed_event_types = $self->missed_event_types;
-    foreach (@$events_data) {
-        my $event_type = $_->{EventTypeId};
-        my $service_id = $_->{ServiceId};
-        my $type = $missed_event_types->{$event_type} || 'enquiry';
-
-        # Only care about open requests/enquiries
-        my $closed = $self->_closed_event($_);
-        next if $type eq 'request' && $closed && !$params->{include_closed_requests};
-        next if $type eq 'enquiry' && $closed;
-
-        if ($type eq 'request') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-            foreach (@$data) {
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    if ($_->{DatatypeName} eq 'Container Type') {
-                        my $container = $_->{Value};
-                        $events->{request}->{$container} = $report ? { report => $report } : 1;
-                    }
-                }
-            }
-        } elsif ($type eq 'missed') {
-            $self->parse_event_missed($_, $closed, $events);
-        } elsif ($type eq 'bulky') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            if ($report) {
-                my $row = {
-                    report => $report,
-                    resolution => $_->{ResolutionCodeId},
-                };
-                if ($closed) {
-                    $row->{date} = construct_bin_date($_->{ResolvedDate});
-                    $row->{state} = $_->{EventStateId};
-                } else {
-                    $row->{date} = $self->collection_date($report);
-                    $row->{state} = 'open';
-                }
-                $events->{enquiry}{$event_type}{$_->{Guid}} = $row;
-            }
-        } else { # General enquiry of some sort
-            $events->{enquiry}{$event_type}{$service_id} = 1;
-        }
-    }
+    my $events = Integrations::Echo::Events->new({
+        cobrand => $self,
+        event_types => $self->missed_event_types,
+        include_closed_requests => $params->{include_closed_requests},
+    })->parse($events_data);
     return $events;
-}
-
-sub parse_event_missed {
-    my ($self, $event, $closed, $events) = @_;
-    my $report = $self->problems->search({ external_id => $event->{Guid} })->first;
-    my $service_id = $event->{ServiceId};
-    my $data = {
-        closed => $closed,
-        date => construct_bin_date($event->{EventDate}),
-    };
-    $data->{report} = $report if $report;
-    push @{$events->{missed}->{$service_id}}, $data;
-}
-
-sub _events_since_date {
-    my ($self, $last_date, $events) = @_;
-    my @since_events = grep { $_->{date} >= $last_date } @$events;
-    my @closed = grep { $_->{closed} } @since_events;
-    my @open = grep { !$_->{closed} } @since_events;
-    return {
-        @open ? (open => $open[0]) : (),
-        @closed ? (closed => $closed[0]) : (),
-    };
 }
 
 sub _schedule_object {
@@ -932,38 +868,42 @@ sub garden_current_service_from_service_units {
 }
 
 sub clear_cached_lookups_property {
-    my ( $self, $id, $skip_echo ) = @_;
-
-    # Need to call this before clearing GUID
-    $self->clear_cached_lookups_bulky_slots( $id, $skip_echo );
+    my ( $self, $id ) = @_;
 
     foreach my $key (
         $self->council_url . ":echo:look_up_property:$id",
         $self->council_url . ":echo:bin_services_for_address:$id",
-        $self->council_url . ":echo:bulky_event_guid:$id",
     ) {
         $self->{c}->waste_cache_delete($key);
     }
 }
 
 sub clear_cached_lookups_bulky_slots {
-    my ( $self, $id, $skip_echo ) = @_;
+    my ( $self, $id, %actions ) = @_;
 
+    my $booking = $self->{c}->stash->{booking_class};
+    return unless $booking; # Not in the bulky/small items flow
+
+    my $service_id = $booking->service_id;
     for (qw/earlier later/) {
-        $self->{c}->waste_cache_delete($self->council_url . ":echo:available_bulky_slots:$_:$id");
+        $self->{c}->waste_cache_delete($self->council_url . ":echo:available_slots:$_:$service_id:$id");
     }
 
-    return if $skip_echo;
+    my $guid_key = $booking->guid_key;
+    if (!$actions{skip_echo}) {
+        # We also need to cancel the reserved slots in Echo
+        my $guid = $self->{c}->waste_cache_get($guid_key);
+        return unless $guid;
 
-    # We also need to cancel the reserved slots in Echo
-    my $guid_key = $self->council_url . ":echo:bulky_event_guid:$id";
-    my $guid = $self->{c}->waste_cache_get($guid_key);
+        my $cfg = $self->feature('echo');
+        my $echo = Integrations::Echo->new(%$cfg);
+        $echo->CancelReservedSlotsForEvent($guid);
+    }
 
-    return unless $guid;
-
-    my $cfg = $self->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-    $echo->CancelReservedSlotsForEvent($guid);
+    # We don't want to do this when we're mid flow but need to fetch new slots, for example
+    if ($actions{delete_guid}) {
+        $self->{c}->waste_cache_delete($guid_key);
+    }
 }
 
 sub bulky_refetch_slots {
@@ -1018,21 +958,21 @@ sub bulky_refetch_slots {
     }
 }
 
-sub bulky_check_missed_collection {
-    my ($self, $events, $blocked_codes) = @_;
+sub booked_check_missed_collection {
+    my ($self, $type, $events, $blocked_codes) = @_;
 
     my $cfg = $self->feature('echo');
-    my $service_id = $cfg->{bulky_service_id} or return;
-    my $service_id_missed = $cfg->{bulky_service_id_missed};
-    my $event_type_id = $cfg->{bulky_event_type_id} or return;
-    my $bulky_events = $events->{enquiry}{$event_type_id};
+    my $service_id = $cfg->{$type . '_service_id'} or return;
+    my $service_id_missed = $cfg->{$type . '_service_id_missed'};
+    my $event_type_id = $cfg->{$type . '_event_type_id'} or return;
+    my $bulky_events = $events->filter({ event_type => $event_type_id });
     return unless $bulky_events;
-    my $missed_events = $events->{missed}->{$service_id} || [];
+    my $missed_events = $events->filter({ type => 'missed', service => $service_id });
 
-    foreach my $guid (keys %$bulky_events) {
-        my $event = $bulky_events->{$guid};
+    foreach my $event ($bulky_events->list) {
+        my $guid = $event->{guid};
         my $row = {
-            service_name => 'Bulky waste',
+            service_name => $type eq 'small_items' ? 'Small items' : 'Bulky waste',
             service_id => $service_id_missed || $service_id,
         };
         my $in_time = $self->within_working_days($event->{date}, 2);
@@ -1052,101 +992,14 @@ sub bulky_check_missed_collection {
         $row->{report_allowed} = $in_time && !$row->{report_locked_out};
 
         # Loop through the missed events and see if any of them is for this bulky event
-        foreach (@$missed_events) {
+        foreach ($missed_events->list) {
             next unless $_->{report};
             my $reported_guid = $_->{report}->get_extra_field_value('Original_Event_ID');
             next unless $reported_guid;
             $row->{report_open} = 1 if $reported_guid eq $guid;
         }
 
-        $self->{c}->stash->{bulky_missed}{$guid} = $row;
-    }
-}
-
-sub find_available_bulky_slots {
-    my ( $self, $property, $last_earlier_date_str, $no_cache ) = @_;
-
-    my $key
-        = $self->council_url . ":echo:available_bulky_slots:"
-        . ( $last_earlier_date_str ? 'later' : 'earlier' ) . ':'
-        . $property->{id};
-    if (!$no_cache) {
-        my $data = $self->{c}->waste_cache_get($key);
-        return $data if $data;
-    }
-
-    my $cfg = $self->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-
-    my $service_id = $cfg->{bulky_service_id};
-    my $event_type_id = $cfg->{bulky_event_type_id};
-
-    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $property->{id};
-    my $guid = $self->{c}->waste_cache_get($guid_key);
-    unless ($guid) {
-        require UUID::Tiny;
-        $guid = UUID::Tiny::create_uuid_as_string();
-        $self->{c}->waste_cache_set($guid_key, $guid);
-    }
-
-    my $window = $self->_bulky_collection_window($last_earlier_date_str);
-    my @available_slots;
-    my $slots = $echo->ReserveAvailableSlotsForEvent($service_id, $event_type_id, $property->{id}, $guid, $window->{date_from}, $window->{date_to});
-    $self->{c}->session->{first_date_returned} = undef;
-    foreach (@$slots) {
-        my $date = construct_bin_date($_->{StartDate})->datetime;
-        push @available_slots, {
-            date => $date,
-            reference => $_->{Reference},
-            expiry => construct_bin_date($_->{Expiry})->datetime,
-        };
-        $self->{c}->session->{first_date_returned} //= $date;
-    }
-
-    $self->{c}->waste_cache_set($key, \@available_slots) if !$no_cache;
-
-    return \@available_slots;
-}
-
-sub check_bulky_slot_available {
-    my ( $self, $chosen_date_string, %args ) = @_;
-
-    my $form = $args{form};
-
-    # chosen_date_string is of the form
-    # '2023-08-29T00:00:00;AS3aUwCS7NwGCTIzMDMtMTEwMTyNVqC8SCJe+A==;2023-08-25T15:49:38'
-    my ( $collection_date, undef, $slot_expiry_date )
-        = $chosen_date_string =~ /[^;]+/g;
-
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
-    my $slot_expiry_dt = $parser->parse_datetime($slot_expiry_date);
-
-    my $now_dt = DateTime->now;
-
-    # Note: Both $slot_expiry_dt and $now_dt are UTC
-    if ( $slot_expiry_dt <= $now_dt ) {
-        # Cancel the expired slots and call ReserveAvailableSlots again, try to
-        # get the same collection date
-        my $property = $self->{c}->stash->{property};
-        $self->clear_cached_lookups_bulky_slots($property->{id});
-
-        my $available_slots = $self->find_available_bulky_slots(
-            $property, undef, 'no_cache' );
-
-        my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
-
-        if ($slot) {
-            $form->saved_data->{chosen_date}
-                = $slot->{date} . ";"
-                . $slot->{reference} . ";"
-                . $slot->{expiry};
-
-            return 1;
-        } else {
-            return 0;
-        }
-    } else {
-        return 1;
+        $self->{c}->stash->{booked_missed}{$guid} = $row;
     }
 }
 
@@ -1175,7 +1028,7 @@ sub bulky_nice_item_list {
             push @fields, { item => $value, display => $display };
         }
     }
-    my $items_extra = $self->bulky_items_extra(exclude_pricing => 1);
+    my $items_extra = $report->category eq 'Small items collection' ? $self->small_items_extra() : $self->bulky_items_extra(exclude_pricing => 1);
 
     return [
         map {
