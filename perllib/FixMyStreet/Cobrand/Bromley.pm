@@ -1123,11 +1123,6 @@ sub bulky_refund_amount {
     return $charged;
 }
 
-sub bulky_cancel_no_payment_minutes {
-    my $self = shift;
-    $self->feature('waste_features')->{bulky_cancel_no_payment_minutes};
-}
-
 sub bulky_allowed_property {
     my ( $self, $property ) = @_;
     return $self->bulky_enabled;
@@ -1214,71 +1209,6 @@ sub bulky_per_item_pricing_property_types { ['Domestic', 'Trade'] }
 sub bulky_contact_email {
     my $self = shift;
     return $self->feature('bulky_contact_email');
-}
-
-sub cancel_bulky_collections_without_payment {
-    my ($self, $params) = @_;
-
-    # Allow 30 minutes for payment before cancelling the booking.
-    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
-    my $cutoff_date = $dtf->format_datetime( DateTime->now->subtract( minutes => $self->bulky_cancel_no_payment_minutes ) );
-
-    my $rs = $self->problems->search(
-        {   category => 'Bulky collection',
-            created  => { '<'  => $cutoff_date },
-            external_id => { '!=', undef },
-            state => [ FixMyStreet::DB::Result::Problem->open_states ],
-            -not => { extra => { '@>' => '{"contributed_as":"another_user"}' } },
-            -or => [
-                extra => undef,
-                -not => { extra => { '\?' => 'payment_reference' } }
-            ],
-        },
-    );
-
-    while ( my $report = $rs->next ) {
-        my $scp_reference = $report->get_extra_metadata('scpReference');
-        if ($scp_reference) {
-
-            # Double check whether the payment was made.
-            my ($error, $reference) = $self->cc_check_payment_and_update($scp_reference, $report);
-            if (!$error) {
-                if ($params->{verbose}) {
-                    printf(
-                        'Booking %s for report %d was found to be paid (reference %s).' .
-                        ' Updating with payment information and not cancelling.',
-                        $report->external_id,
-                        $report->id,
-                        $reference,
-                    );
-                }
-                if ($params->{commit}) {
-                    $report->waste_confirm_payment($reference);
-                }
-                next;
-            }
-        }
-
-        if ($params->{commit}) {
-            $report->add_to_comments({
-                text => 'Booking cancelled since payment was not made in time',
-                user_id => $self->body->comment_user_id,
-                extra => { bulky_cancellation => 1 },
-            });
-            $report->state('cancelled');
-            $report->detail(
-                $report->detail . " | Cancelled since payment was not made in time"
-            );
-            $report->update;
-        }
-        if ($params->{verbose}) {
-            printf(
-                'Cancelled booking %s for report %d.',
-                $report->external_id,
-                $report->id,
-            );
-        }
-    }
 }
 
 sub waste_auto_confirm_report {

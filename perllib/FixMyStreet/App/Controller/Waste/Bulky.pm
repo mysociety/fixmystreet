@@ -164,6 +164,7 @@ sub index : PathPart('') : Chained('setup') : Args(0) {
 
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Bulky';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Bexley' if $c->cobrand->moniker eq 'bexley';
     $c->forward('item_list');
     $c->forward('form');
 
