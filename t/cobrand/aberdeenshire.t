@@ -15,6 +15,7 @@ use_ok 'FixMyStreet::Cobrand::Aberdeenshire';
 my $aberdeenshire = $mech->create_body_ok(2242, 'Aberdeenshire Council', { cobrand => 'aberdeenshire' });
 my $staff_user = $mech->create_user_ok( 'staff@example.com', name => 'Staff User', from_body => $aberdeenshire );
 $mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Pothole', email => 'potholes@example.org');
+$mech->create_contact_ok(body_id => $aberdeenshire->id, category => 'Surface Issue', email => 'surface_issue@example.org');
 (my $report) = $mech->create_problems_for_body(1, $aberdeenshire->id, 'Pothole', {
             category => 'Pothole', cobrand => 'aberdeenshire',
             latitude => 57.27126, longitude => -2.43012, areas => '2648',
@@ -111,6 +112,34 @@ FixMyStreet::override_config {
             is_deeply($json->{pins}, [
                 [ "57.27126", "-2.43012", "red", $report->id, $report->title, "", 'false' ],
             ], 'Open311 report is initially in Aberdeenshire cobrand');
+        };
+
+        subtest 'Category changes are passed to Open311' => sub {
+            my $cobrand = FixMyStreet::Cobrand::Aberdeenshire->new;
+
+            my $comment = $mech->create_comment_for_problem(
+                $report, $staff_user, 'Staff User', 'Category changed from Pothole to Surface Issue',
+                'f', 'confirmed', 'confirmed',
+                { confirmed => DateTime->now }
+            );
+            $report->update({ category => 'Surface Issue' });
+
+            my $params = {};
+            $cobrand->open311_munge_update_params($params, $comment);
+
+            is $params->{service_code}, 'surface_issue@example.org', 'Service code is set from contact email';
+
+            # Test with comment that doesn't contain "Category changed"
+            my $regular_comment = $mech->create_comment_for_problem(
+                $report, $staff_user, 'Staff User', 'Regular update comment',
+                'f', 'confirmed', 'confirmed',
+                { confirmed => DateTime->now }
+            );
+
+            $params = {};
+            $cobrand->open311_munge_update_params($params, $regular_comment);
+
+            is scalar keys %$params, 0, 'No parameters added for non-category change comments';
         };
 };
 
