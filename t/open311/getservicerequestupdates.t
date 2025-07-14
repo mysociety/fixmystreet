@@ -1845,6 +1845,146 @@ subtest 'check bad fixmystreet_id is handled' => sub {
     $problem->discard_changes;
     is $problem->comments->count, 0, 'no comments after fetching updates';
 };
+
+subtest 'Category change creates comment' => sub {
+    # Create additional category contact for testing
+    my $lighting_contact = FixMyStreet::DB->resultset('Contact')->create({
+        state => 'confirmed',
+        editor => 'Test',
+        whenedited => \'current_timestamp',
+        note => 'Created for test',
+        body_id => $bodies{2482}->id,
+        category => 'Street Lighting',
+        email => 'lighting@example.com',
+    });
+
+    # Reset problem to original category
+    $problem->update({ category => 'Potholes' });
+    $problem->comments->delete;
+
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+<service_requests_updates>
+<request_update>
+<update_id>category_change_1</update_id>
+<service_request_id>@{[ $problem->external_id ]}</service_request_id>
+<status>open</status>
+<description>Status update with category change</description>
+<updated_datetime>$dt</updated_datetime>
+<extras>
+<category>Street Lighting</category>
+</extras>
+</request_update>
+</service_requests_updates>
+};
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+
+    $update->process_body;
+    $problem->discard_changes;
+
+    # Check category was changed
+    is $problem->category, 'Street Lighting', 'Category was updated from Potholes to Street Lighting';
+
+    # Check comment was created
+    is $problem->comments->count, 2, 'Two comments created - one for update, one for category change';
+
+    my $category_comment = $problem->comments->search({ text => { like => '%Category changed%' } })->first;
+    ok $category_comment, 'Category change comment was created';
+    like $category_comment->text, qr/Category changed from.*Potholes.*to.*Street Lighting/, 'Comment has correct category change text';
+    is $category_comment->user_id, $user->id, 'Comment created by system user';
+    is $category_comment->send_state, 'processed', 'Comment send_state is processed';
+};
+
+subtest 'No comment when category unchanged' => sub {
+    # Clear existing comments
+    $problem->comments->delete;
+
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+<service_requests_updates>
+<request_update>
+<update_id>category_same_1</update_id>
+<service_request_id>@{[ $problem->external_id ]}</service_request_id>
+<status>open</status>
+<description>Status update with same category</description>
+<updated_datetime>$dt</updated_datetime>
+<extras>
+<category>Street Lighting</category>
+</extras>
+</request_update>
+</service_requests_updates>
+};
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+
+    $update->process_body;
+    $problem->discard_changes;
+
+    # Check category unchanged
+    is $problem->category, 'Street Lighting', 'Category remains the same';
+
+    # Check only one comment was created (for the update, not category change)
+    is $problem->comments->count, 1, 'Only one comment created for update';
+
+    my $category_comment = $problem->comments->search({ text => { like => '%Category changed%' } })->first;
+    ok !$category_comment, 'No category change comment created when category unchanged';
+};
+
+subtest 'Invalid category does not change category or create comment' => sub {
+    # Clear existing comments and set known category
+    $problem->comments->delete;
+    $problem->update({ category => 'Street Lighting' });
+
+    my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+<service_requests_updates>
+<request_update>
+<update_id>category_invalid_1</update_id>
+<service_request_id>@{[ $problem->external_id ]}</service_request_id>
+<status>open</status>
+<description>Status update with invalid category</description>
+<updated_datetime>$dt</updated_datetime>
+<extras>
+<category>Invalid Category</category>
+</extras>
+</request_update>
+</service_requests_updates>
+};
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2482},
+    );
+
+    $update->process_body;
+    $problem->discard_changes;
+
+    # Check category unchanged
+    is $problem->category, 'Street Lighting', 'Category unchanged with invalid category';
+
+    # Check only one comment was created (for the update, not category change)
+    is $problem->comments->count, 1, 'Only one comment created for update';
+
+    my $category_comment = $problem->comments->search({ text => { like => '%Category changed%' } })->first;
+    ok !$category_comment, 'No category change comment created for invalid category';
+};
+
 done_testing();
 
 sub setup_xml {
