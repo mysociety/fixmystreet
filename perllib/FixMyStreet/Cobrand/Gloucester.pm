@@ -109,6 +109,21 @@ sub categories_restriction {
 
 =back
 
+=head2 post_report_report_problem_link
+
+Overrides the 'post-report' report another problem here button with one linking back to the front page, rather than the report view at the same location.
+
+=cut
+
+sub post_report_report_problem_link {
+    return {
+        uri => '/',
+        label => 'Report a problem',
+        attrs => 'class="report-a-problem-btn"',
+    };
+
+}
+
 =head2 pin_colour
 
 * Yellow if open/confirmed
