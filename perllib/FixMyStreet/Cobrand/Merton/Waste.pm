@@ -336,11 +336,12 @@ sub waste_munge_request_data {
         if $reason;
 
     my ($action_id, $reason_id);
+    my $echo_container_id = $id;
     if ($data->{medical_condition}) { # Filled in the larger form
         $reason = 'change_capacity';
         $action_id = '2::1';
         $reason_id = '3::3';
-        $id = '35::2';
+        $echo_container_id = '35::2';
     } elsif ($reason eq 'damaged') {
         $action_id = 3; # Replace
         $reason_id = 2; # Damaged
@@ -375,7 +376,12 @@ sub waste_munge_request_data {
     }
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
-    $c->set_param('Container_Type', $id);
+    $c->set_param('Container_Type', $echo_container_id);
+
+    if ($data->{payment}) {
+        my $cost = $self->request_cost($id);
+        $c->set_param('payment', $cost || undef); # Want to undefine it if free
+    }
 }
 
 sub garden_due_days { 30 }
