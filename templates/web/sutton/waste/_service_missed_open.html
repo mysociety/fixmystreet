@@ -1,10 +1,9 @@
+A [% unit.service_name FILTER lower %] collection was reported as missed
 [% IF communal_property %]
-    A [% unit.service_name FILTER lower %] collection has been reported as missed by yourself, a neighbour, or your Managing Agent.
-    For updates please check your email or telephone our contact centre on 020 8770 5000.
-[% ELSE %]
-    A [% unit.service_name FILTER lower %] collection was reported as missed on [% date.format(unit.report_open.date, '%A, %-d %B') %].
-    We aim to resolve missed collection reports within 2 working days (Monday to Friday).
+    by yourself, a neighbour, or your Managing Agent
 [% END %]
+on [% date.format(unit.report_open.date, '%A, %-d %B') %].
+We aim to resolve missed collection reports within 2 working days (Monday to Friday).
 
 [% IF unit.escalations.missed AND NOT unit.escalations.missed_open %]
     We’re sorry if this issue has not been resolved to your satisfaction;

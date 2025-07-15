@@ -322,7 +322,7 @@ FixMyStreet::override_config {
             ServiceId => 944,
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection was reported as missed on Saturday, 10 September');
+        $mech->content_like(qr/A mixed recycling \(cans, plastics &amp; glass\) collection was reported as missed\s+on Saturday, 10 September/);
         $mech->content_lacks('Request a mixed recycling (cans, plastics &amp; glass) container');
 
         $e->mock('GetEventsForObject', sub { [ {
@@ -332,7 +332,7 @@ FixMyStreet::override_config {
             ServiceId => 948,
         } ] });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A paper &amp; card collection was reported as missed on Saturday, 10 September');
+        $mech->content_like(qr/A paper &amp; card collection was reported as missed\s+on Saturday, 10 September/);
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
@@ -349,7 +349,7 @@ FixMyStreet::override_config {
             } ]
         });
         $mech->get_ok('/waste/12345');
-        $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) collection was reported as missed on Saturday, 10 September');
+        $mech->content_like(qr/A mixed recycling \(cans, plastics &amp; glass\) collection was reported as missed\s+on Saturday, 10 September/);
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
     subtest 'No requesting if open request of different size' => sub {
