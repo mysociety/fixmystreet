@@ -35,14 +35,7 @@ sub waste_cc_get_redirect_url {
         $fund_code = $payment->config->{bulky_fund_code} || $fund_code;
         $cost_code = $payment->config->{bulky_cost_code} || $cost_code;
     } elsif ($p->category eq 'Request new container') {
-        $cost_code = $payment->config->{request_cost_code};
-        if ($p->cobrand eq 'merton') {
-            my $container = $p->get_extra_field_value('Container_Type');
-            if ($container == 26 || $container == 27) { # Garden
-                $cost_code = $payment->config->{cost_code_admin_fee};
-            }
-        }
-        $cost_code ||= $cost_code;
+        $cost_code = $payment->config->{request_cost_code} || $cost_code;
     }
 
     my $address = $c->stash->{property}{address};
@@ -57,6 +50,7 @@ sub waste_cc_get_redirect_url {
         foreach my $id (@$grouped_ids) {
             my $problem = $c->model('DB::Problem')->find({ id => $id });
             my $amount = $problem->get_extra_field_value('payment');
+            my $ref = $self->waste_cc_payment_reference($problem);
             push @items, {
                 amount => $amount,
                 cost_code => per_item_cost_code($problem, $payment, $cost_code),

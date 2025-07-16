@@ -400,7 +400,8 @@ FixMyStreet::override_config {
         is $sent_params->{items}[0]{reference}, 'LBM-RNC-' . $new_report->id;
         is $sent_params->{items}[0]{amount}, 1800, 'correct amount used';
         is $sent_params->{items}[0]{cost_code}, 'req_code';
-        is $sent_params->{items}[1]{reference}, 'LBM-RNC-' . $new_report->id;
+        my $other_id = $new_report->get_extra_metadata('grouped_ids')->[0];
+        is $sent_params->{items}[1]{reference}, 'LBM-RNC-' . $other_id;
         is $sent_params->{items}[1]{amount}, 1800, 'correct amount used';
         is $sent_params->{items}[1]{cost_code}, 'admin_code';
         check_extra_data_pre_confirm($new_report);
