@@ -70,8 +70,8 @@ sub default_mocks {
         [ {
             SiteServiceID          => 1,
             ServiceItemDescription => 'Non-recyclable waste',
-            ServiceItemName => 'RES-180',
-            ServiceName          => 'Green Wheelie Bin',
+            ServiceItemName => 'PC-180',
+            ServiceName          => 'Blue Wheelie Bin',
             NextCollectionDate   => '2024-02-07T00:00:00',
             SiteServiceValidFrom => '2000-01-01T00:00:00',
             SiteServiceValidTo   => '0001-01-01T00:00:00',
@@ -1767,8 +1767,8 @@ FixMyStreet::override_config {
                         [   {   SiteServiceID          => 1,
                                 ServiceItemDescription =>
                                     'Non-recyclable waste',
-                                ServiceItemName      => 'RES-180',
-                                ServiceName          => 'Green Wheelie Bin',
+                                ServiceItemName      => 'PC-180',
+                                ServiceName          => 'Blue Wheelie Bin',
                                 NextCollectionDate   => '2024-02-07T00:00:00',
                                 SiteServiceValidFrom => '2024-01-01T00:00:00',
                                 SiteServiceValidTo   => '0001-01-01T00:00:00',
@@ -1913,7 +1913,7 @@ FixMyStreet::override_config {
                     [   {   SiteServiceID          => 1,
                             ServiceItemDescription =>
                                 'Non-recyclable waste',
-                            ServiceItemName      => 'RES-180',
+                            ServiceItemName      => 'PC-180',
                             ServiceName          => 'Green Wheelie Bin',
                             NextCollectionDate   => '2024-02-07T00:00:00',
                             SiteServiceValidFrom => '2024-01-01T00:00:00',
@@ -2025,9 +2025,9 @@ FixMyStreet::override_config {
                 my ($self, $uprn) = @_;
                 # Child has its own service
                 return [
-                    {   ServiceItemName      => 'RES-180',
+                    {   ServiceItemName      => 'PC-180',
                         NextCollectionDate   => '2024-02-07T00:00:00',
-                        ServiceName          => 'Green Bin',
+                        ServiceName          => 'Blue Bin',
                         SiteServiceValidFrom => '2000-01-01T00:00:00',
                         SiteServiceValidTo   => '0001-01-01T00:00:00',
                         RoundSchedule        => 'RND-1 Mon'
