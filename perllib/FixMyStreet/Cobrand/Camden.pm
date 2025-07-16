@@ -233,7 +233,7 @@ sub check_report_is_on_cobrand_asset {
         outputformat => 'GML3',
     };
 
-    my $features = $self->_fetch_features($cfg, $x, $y, 1);
+    my $features = $self->_fetch_features($cfg);
 
     if ($$features[0]) {
         return $$features[0]->{'ms:AgreementBoundaries'}->{'ms:RESPBOROUG'};
