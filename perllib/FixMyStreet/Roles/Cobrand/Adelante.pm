@@ -43,9 +43,21 @@ sub waste_cc_get_redirect_url {
 
     my @items = ({
         amount => $amount,
-        cost_code => $cost_code,
+        cost_code => per_item_cost_code($p, $payment, $cost_code),
         reference => $ref,
     });
+    if (my $grouped_ids = $p->get_extra_metadata('grouped_ids')) {
+        foreach my $id (@$grouped_ids) {
+            my $problem = $c->model('DB::Problem')->find({ id => $id });
+            my $amount = $problem->get_extra_field_value('payment');
+            my $ref = $self->waste_cc_payment_reference($problem);
+            push @items, {
+                amount => $amount,
+                cost_code => per_item_cost_code($problem, $payment, $cost_code),
+                reference => $ref,
+            } if $amount;
+        }
+    }
     if ($admin_fee) {
         push @items, {
             amount => $admin_fee,
@@ -135,6 +147,17 @@ sub waste_cc_check_payment_status {
 
     # create sub in echo
     return $id;
+}
+
+sub per_item_cost_code {
+    my ($p, $payment, $cost_code) = @_;
+    if ($p->cobrand eq 'merton') {
+        my $container = $p->get_extra_field_value('Container_Type');
+        if ($container eq 26 || $container eq 27) { # Garden (eq because could be e.g. '35::2')
+            $cost_code = $payment->config->{cost_code_admin_fee};
+        }
+    }
+    return $cost_code;
 }
 
 1;
