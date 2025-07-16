@@ -451,7 +451,7 @@ sub report_new_is_on_he_road {
     };
 
     my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
-    my $features = $ukc->_fetch_features($cfg, $x, $y);
+    my $features = $ukc->_fetch_features($cfg);
     my $nearest = $ukc->_nearest_feature($cfg, $x, $y, $features);
     # National Highways responsible for litter on Motorways and AM roads
     # And doesn't matter if we are not on a NH road
@@ -473,7 +473,7 @@ sub _report_new_is_on_he_road_not_litter {
         filter => "<Filter><DWithin><PropertyName>geom</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point><Distance units='m'>15</Distance></DWithin></Filter>",
     };
     my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
-    my $features = $ukc->_fetch_features($cfg, $x, $y);
+    my $features = $ukc->_fetch_features($cfg);
     # If we've matched then litter is their responsibility, so return reverse of that
     return scalar @$features ? 0 : 1;
 }

@@ -39,7 +39,7 @@ sub lookup_site_code {
         accept_feature => sub { 1 },
     };
 
-    my $features = $self->_fetch_features($cfg, $x, $y);
+    my $features = $self->_fetch_features($cfg);
     return $self->_nearest_feature($cfg, $x, $y, $features);
 }
 

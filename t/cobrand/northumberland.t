@@ -68,12 +68,12 @@ FixMyStreet::override_config {
         sub mock_road {
             my ($name, $litter) = @_;
             $he_mod->mock('_fetch_features', sub {
-                my ($self, $cfg, $x, $y) = @_;
+                my ($self, $cfg) = @_;
                 my $road = {
                     properties => { area_name => 'Area 1', ROA_NUMBER => $name, sect_label => "$name/111" },
                     geometry => {
                         type => 'LineString',
-                        coordinates => [ [ $x-2, $y+2 ], [ $x+2, $y+2 ] ],
+                        coordinates => [ [ -2, +2 ], [ +2, +2 ] ],
                     }
                 };
                 if ($cfg->{typename} eq 'highways_litter_pick') {

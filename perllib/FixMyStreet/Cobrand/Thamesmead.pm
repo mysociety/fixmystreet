@@ -120,7 +120,7 @@ sub area_type_for_point {
         outputformat => "GML3",
     };
 
-    my $features = FixMyStreet::Cobrand::UKCouncils->new->_fetch_features($cfg, $x, $y, 'xml');
+    my $features = FixMyStreet::Cobrand::UKCouncils->new->_fetch_features($cfg);
     # Want the feature in the 'highest' category
     my @sort;
     foreach (@$features) {

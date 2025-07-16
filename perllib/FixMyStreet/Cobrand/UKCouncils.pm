@@ -556,7 +556,7 @@ sub lookup_site_code {
 }
 
 sub _fetch_features {
-    my ($self, $cfg, $x, $y, $xml) = @_;
+    my ($self, $cfg, $x, $y) = @_;
 
     # default to a buffered bounding box around the given point unless
     # a custom filter parameter has been specified.
@@ -568,7 +568,7 @@ sub _fetch_features {
 
     my $uri = $self->_fetch_features_url($cfg);
     my $response = get($uri) or return;
-    if (!$xml) {
+    if (($cfg->{outputformat}||'') ne 'GML3') {
         my $j = JSON->new->utf8->allow_nonref;
         try {
             $j = $j->decode($response);

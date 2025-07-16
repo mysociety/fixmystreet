@@ -61,6 +61,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Flytipping (off-road
 $mech->create_contact_ok(body_id => $body->id, category => 'Barrier problem', email => 'parking@example.org', send_method => 'Email', group => 'Car park issue');
 my $grass_bucks = $mech->create_contact_ok(body_id => $body->id, category => 'Grass cutting', email => 'grass@example.org', send_method => 'Email');
 $mech->create_contact_ok(body_id => $body->id, category => 'Flyposting', email => 'flyposting@example.org', send_method => 'Email');
+$mech->create_contact_ok(body_id => $body->id, category => 'Rights of way', email => 'Cams-ROW');
 
 # Create another Grass cutting category for a parish.
 $contact = $mech->create_contact_ok(body_id => $parish->id, category => 'Grass cutting', email => 'grassparish@example.org', send_method => 'Email');
@@ -903,6 +904,15 @@ EOF
         'longitude' => '-0.773352',
         address => 'AAB/1/1, Footpath, Aston Abbotts',
     };
+};
+
+subtest 'Rights of way server fallback' => sub {
+    my ($report) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+        cobrand => 'buckinghamshire',
+        category => 'Rights of way' });
+    FixMyStreet::Script::Reports::send();
+    $report->discard_changes;
+    is $report->get_extra_field_value('LinkCode'), 'AAB/1/1';
 };
 
 };

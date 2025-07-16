@@ -208,13 +208,30 @@ Alloy server and use that as the parent.
 sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
+    my $dest = $row->contact->email;
+
     # If the report doesn't already have an asset, associate it with the
     # closest feature from the Alloy highways network layer.
     # This may happen because the report was made on the app, without JS,
     # using a screenreader, etc.
-    if (!$row->get_extra_field_value('asset_resource_id')) {
-        if (my $item_id = $self->lookup_site_code($row)) {
+    if ($dest !~ /^(Abavus|Cams)/ && !$row->get_extra_field_value('asset_resource_id')) {
+        if (my $item_id = $self->lookup_site_code($row, 'alloy')) {
             $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
+        }
+    }
+
+    if ($dest =~ /^Cams/ && !$row->get_extra_field_value('LinkCode')) {
+        my $item = $self->lookup_site_code($row, 'InfraWFS');
+        if ($item && $item->{distance} < 10) {
+            $row->update_extra_field({ name => 'AdminArea', value => $item->{'ms:AdminArea'} });
+            $row->update_extra_field({ name => 'LinkCode', value => $item->{'ms:InfraCode'} });
+            $row->update_extra_field({ name => 'LinkType', value => $item->{'ms:LinkType'} });
+        } else {
+            if ($item = $self->lookup_site_code($row, 'RouteWFS')) {
+                $row->update_extra_field({ name => 'AdminArea', value => $item->{'ms:AdminArea'} });
+                $row->update_extra_field({ name => 'LinkCode', value => $item->{'ms:RouteCode'} });
+                $row->update_extra_field({ name => 'LinkType', value => $item->{'ms:LinkType'} });
+            }
         }
     }
 }
@@ -512,32 +529,52 @@ sub categories_restriction {
 }
 
 sub lookup_site_code_config {
+    my ($self, $type) = @_;
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
-    my $suffix = FixMyStreet->config('STAGING_SITE') ? "staging" : "assets";
-    return {
-    buffer => 200, # metres
-    _nearest_uses_latlon => 1,
-    proxy_url => "https://$host/alloy/layer.php",
-    layer => "designs_highwaysNetworkAsset_62d68698e5a3d20155f5831d",
-    url => "https://buckinghamshire.$suffix",
-    property => "itemId",
-    accept_feature => sub {
-        my $feature = shift;
+    if ($type eq 'streets') {
+        return {
+            buffer => 200,
+            url => "https://$host/mapserver/bucks",
+            srsname => "urn:ogc:def:crs:EPSG::27700",
+            typename => "Whole_Street",
+            accept_feature => sub { 1 }
+        };
+    } elsif ($type eq 'alloy') {
+        my $suffix = FixMyStreet->config('STAGING_SITE') ? "staging" : "assets";
+        return {
+            buffer => 200, # metres
+            _nearest_uses_latlon => 1,
+            proxy_url => "https://$host/alloy/layer.php",
+            layer => "designs_highwaysNetworkAsset_62d68698e5a3d20155f5831d",
+            url => "https://buckinghamshire.$suffix",
+            property => "itemId",
+            accept_feature => sub {
+                my $feature = shift;
 
-        # There are only certain features we care about, the rest can be ignored.
-        my @valid_types = ( "2", "3A", "3B", "4A", "4B", "HE", "HWOA", "HWSA", "P" );
-        my %valid_types = map { $_ => 1 } @valid_types;
-        my $type = $feature->{properties}->{feature_ty};
+                # There are only certain features we care about, the rest can be ignored.
+                my @valid_types = ( "2", "3A", "3B", "4A", "4B", "HE", "HWOA", "HWSA", "P" );
+                my %valid_types = map { $_ => 1 } @valid_types;
+                my $type = $feature->{properties}->{feature_ty};
 
-        return $valid_types{$type};
+                return $valid_types{$type};
+            }
+        };
+    } else {
+        return {
+            buffer => 200,
+            url => "https://$host/proxy/bucks_prow/wfs/",
+            srsname => "urn:ogc:def:crs:EPSG::27700",
+            typename => $type,
+            outputformat => 'GML3',
+        };
     }
-} }
+}
 
 sub _fetch_features_url {
     my ($self, $cfg) = @_;
 
-    # For red claims site lookup we're still using the old WFS assets for now
-    if ($cfg->{typename} && $cfg->{typename} eq 'Whole_Street') {
+    # For non-Alloy we don't need to adjust the URL
+    if ($cfg->{typename}) {
         return $self->next::method($cfg);
     }
 
@@ -558,27 +595,56 @@ sub _fetch_features_url {
     return $uri;
 }
 
+sub _nearest_feature {
+    my ($self, $cfg, $x, $y, $features) = @_;
 
-sub _lookup_site_name {
-    my $self = shift;
-    my $row = shift;
+    # The Bucks PROW is XML, not JSON which the default code handles
+    if ($cfg->{url} !~ /bucks_prow/) {
+        return $self->next::method($cfg, $x, $y, $features);
+    }
 
-    my $cfg = {
-        buffer => 200,
-        url => "https://tilma.mysociety.org/mapserver/bucks",
-        srsname => "urn:ogc:def:crs:EPSG::27700",
-        typename => "Whole_Street",
-        accept_feature => sub { 1 }
-    };
-    my ($x, $y) = $row->local_coords;
-    my $features = $self->_fetch_features($cfg, $x, $y);
-    return $self->_nearest_feature($cfg, $x, $y, $features);
+    my $chosen = '';
+    my $nearest;
+
+    for my $feature ( @{$features || []} ) {
+        $feature = $feature->{'ms:RouteWFS'} || $feature->{'ms:InfraWFS'};
+
+        my $geo = $feature->{'ms:msGeometry'};
+        if ($geo->{'gml:Point'}) {
+            # Convert to a one-segment zero-length line
+            my $pt = $geo->{'gml:Point'}{'gml:pos'};
+            $geo = [ { 'gml:posList' => { 'content' => "$pt $pt" } } ];
+        } else {
+            # Might be a "MultiCurve", might be a single "LineString"
+            $geo = $geo->{'gml:MultiCurve'}{'gml:curveMembers'}{'gml:LineString'} || $geo->{'gml:LineString'};
+            if (ref $geo ne 'ARRAY') {
+                $geo = [ $geo ];
+            }
+        }
+        foreach (@$geo) {
+            my $coords = $_->{'gml:posList'}{'content'};
+            my @coords = split / /, $coords;
+            for (my $i=0; $i<@coords-2; $i+=2) {
+                my $distance = $self->_distanceToLine($x, $y,
+                    [ $coords[$i], $coords[$i+1] ],
+                    [ $coords[$i+2], $coords[$i+3] ]
+                );
+                if ( !defined $nearest || $distance < $nearest ) {
+                    $chosen = $feature;
+                    $nearest = $distance;
+                }
+            }
+        }
+    }
+
+    $chosen->{distance} = $nearest if $chosen;
+    return $chosen;
 }
 
 sub claim_location {
     my ($self, $row) = @_;
 
-    my $road = $self->_lookup_site_name($row);
+    my $road = $self->lookup_site_code($row, 'streets');
 
     if (!$road) {
         return "Unknown location";
