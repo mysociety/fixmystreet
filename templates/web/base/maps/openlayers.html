@@ -79,6 +79,19 @@
       <span class="map-link-label">[% loc('Re-centre map') %]</span>
     </a>
   [% END %]
+
+  [% IF c.cobrand.pin_colour_key %]
+    <a class="js-pins-key hidden-nojs" tabindex="0">
+      <span class="map-link-label">
+        [% loc('Pin colours') %]
+      <ul>
+      [% FOR colour IN c.cobrand.pin_colour_key %]
+        <li><img src='/i/pins/[% colour.0 %]/mini.png' alt="[% colour.0 %]:"/> [% colour.1 %]</li>
+      [% END %]
+      </ul>
+      </span>
+    </a>
+  [% END %]
 </div>
 
 [%# May be filled by JS e.g. around filters, or Expand map ~%]
