@@ -310,7 +310,7 @@ sub bin_services_for_address {
     my %frequency_types;
     my @site_services_filtered;
     my %seen_containers;
-    my $whitespace_sacks;
+    my $whitespace_paper_bin;
     for my $service (@$site_services) {
         next if !$service->{NextCollectionDate};
 
@@ -434,8 +434,8 @@ sub bin_services_for_address {
         $property->{above_shop} = 1
             if $filtered_service->{service_id} eq 'MDR-SACK';
 
-        $whitespace_sacks = 1
-            if $filtered_service->{service_id} =~ /^(RES-SACK|MDR-SACK)$/;
+        $whitespace_paper_bin = 1
+            if $filtered_service->{service_id} eq 'PC-180';
 
         # Frequency of collection
         if ( @round_schedules > 1 ) {
@@ -514,7 +514,7 @@ sub bin_services_for_address {
     # or it has sacks
     if (   $property->{is_communal}
         || $property->{has_garden_subscription}
-        || $whitespace_sacks
+        || !$whitespace_paper_bin
     ) {
         $property->{garden_signup_eligible} = 0;
     }

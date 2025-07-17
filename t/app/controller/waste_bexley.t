@@ -378,6 +378,8 @@ FixMyStreet::override_config {
                 uprn => ignore(),
                 garden_waste => 0,
             );
+            my %nolast = %defaults;
+            delete $nolast{last};
             cmp_deeply \@sorted, [
                 {   id             => 8,
                     service_id     => 'PC-55',
@@ -442,6 +444,25 @@ FixMyStreet::override_config {
                     assisted_collection => 0,
                     schedule => 'Fortnightly',
                     %defaults,
+                },
+                {   id             => 7,
+                    delivery_allowed => 1,
+                    parent_name => 'Blue Lidded Wheelie Bin',
+                    removal_allowed => 1,
+                    service_id     => 'PC-180',
+                    service_name   => 'Blue Lidded Wheelie Bin',
+                    service_description => 'Paper and card',
+                    round_schedule => 'N/A',
+                    round          => 'N/A',
+                    report_allowed => 0,
+                    delivery_open  => 0,
+                    removal_open   => 0,
+                    report_open    => 0,
+                    report_locked_out => 0,
+                    report_locked_out_reason => '',
+                    assisted_collection => 0,
+                    schedule => 'Weekly',
+                    %nolast,
                 },
                 {   id             => 6,
                     service_id     => 'RES-CHAM',
@@ -511,7 +532,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Wednesday 1 May 2024');
         $mech->content_contains('White / Silver Recycling Bin');
         $mech->content_contains('Wednesday 1 May 2024');
-        $mech->content_lacks('Blue Lidded Wheelie Bin');
+        $mech->content_contains('Blue Lidded Wheelie Bin');
         $mech->content_contains('Blue Recycling Box');
         $mech->content_contains('Monday 1 April 2024');
         $mech->content_contains('Green Recycling Box');
@@ -1992,7 +2013,7 @@ sub _site_collections {
                 ServiceItemDescription => 'Service 7',
                 ServiceItemName => 'PC-180', # Blue Lidded Wheelie Bin
 
-                NextCollectionDate   => undef,
+                NextCollectionDate   => '2024-05-01T00:00:00',
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '0001-01-01T00:00:00',
 
