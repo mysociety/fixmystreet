@@ -241,6 +241,12 @@ sub pin_colour {
     return 'red';
 }
 
+sub pin_colour_key { [
+    ['red', 'Open'],
+    ['orange', 'In progress/defect'],
+    ['green', 'Fixed/closed'],
+] }
+
 sub lookup_site_code_config {
     my ($self, $property) = @_;
 
