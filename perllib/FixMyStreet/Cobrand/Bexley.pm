@@ -93,14 +93,6 @@ sub geocode_postcode {
     return $self->next::method($s);
 }
 
-=item * Report resending
-
-Report resend button is disabled. But we can resend reports upon category change, unless it will be going to the
-same Symology database, because that will reject saying it already has the
-ID.
-
-=cut
-
 =item * Customised pin colours
 
 Bexley has supplied their own colours for pins #4521
@@ -120,6 +112,14 @@ sub pin_colour {
     return 'bexley/spring' if $p->is_closed;
     return 'yellow';
 }
+
+=item * Report resending
+
+Report resend button is disabled. But we can resend reports upon category change, unless it will be going to the
+same Symology database, because that will reject saying it already has the
+ID.
+
+=cut
 
 sub disable_resend_button { 1 }
 

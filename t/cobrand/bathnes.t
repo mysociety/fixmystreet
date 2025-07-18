@@ -1,4 +1,5 @@
 use Test::MockModule;
+use CGI::Simple;
 use FixMyStreet::TestMech;
 use File::Temp 'tempdir';
 use FixMyStreet::Script::CSVExport;
@@ -360,6 +361,7 @@ FixMyStreet::override_config {
             category => $confirm_contact->category,
         } );
         ($problem) = $mech->create_problems_for_body(1, $body->id, 'Title', {
+            areas => ",2551,",
             category => $email_contact->category, cobrand => 'bathnes', user => $normaluser
         });
 
@@ -378,6 +380,21 @@ FixMyStreet::override_config {
         $updates->send;
         $comment->discard_changes;
         is $comment->send_state, 'skipped', "skipped sending comment";
+    };
+
+    subtest "resending of reports by changing category" => sub {
+        $mech->get_ok('/admin/report_edit/' . $problem->id);
+        $mech->submit_form_ok({ with_fields => { category => $confirm_contact->category } });
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('service_code'), $confirm_contact->email, 'Report resent in new category';
+
+        $mech->submit_form_ok({ with_fields => { category => $email_contact->category } });
+        FixMyStreet::Script::Reports::send();
+        $req = Open311->test_req_used;
+        $c = CGI::Simple->new($req->content);
+        is $c->param('service_code'), $email_contact->email, 'Report resent in new category';
     };
 };
 
