@@ -66,19 +66,20 @@ create_contact(
 
 my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
 my $agile_mock = Test::MockModule->new('Integrations::Agile');
+my $pc180 = {
+    SiteServiceID          => 1,
+    ServiceItemDescription => 'Non-recyclable waste',
+    ServiceItemName => 'PC-180',
+    ServiceName          => 'Blue Wheelie Bin',
+    NextCollectionDate   => '2024-02-07T00:00:00',
+    SiteServiceValidFrom => '2000-01-01T00:00:00',
+    SiteServiceValidTo   => '0001-01-01T00:00:00',
+    RoundSchedule => 'RND-1 Mon',
+};
 sub default_mocks {
     # These are overridden for some tests
     $whitespace_mock->mock('GetSiteCollections', sub {
-        [ {
-            SiteServiceID          => 1,
-            ServiceItemDescription => 'Non-recyclable waste',
-            ServiceItemName => 'PC-180',
-            ServiceName          => 'Blue Wheelie Bin',
-            NextCollectionDate   => '2024-02-07T00:00:00',
-            SiteServiceValidFrom => '2000-01-01T00:00:00',
-            SiteServiceValidTo   => '0001-01-01T00:00:00',
-            RoundSchedule => 'RND-1 Mon',
-        } ];
+        [ $pc180 ];
     });
     $whitespace_mock->mock(
         'GetCollectionByUprnAndDate',
@@ -434,7 +435,8 @@ FixMyStreet::override_config {
                         SiteServiceValidTo   => '0001-01-01T00:00:00',
 
                         RoundSchedule => 'RND-1 Mon',
-                    }
+                    },
+                    $pc180,
                 ];
             }
         );
