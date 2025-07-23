@@ -33,6 +33,10 @@ my $agile_mock = Test::MockModule->new('Integrations::Agile');
 my $agile_response;
 $agile_mock->mock('LastCancelled', sub { return $agile_response });
 
+# Mock APS integration
+my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
+$access_mock->mock( 'call', sub { return {} } );
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => ['bexley'],
     MAPIT_URL => 'http://mapit.uk/',
@@ -120,19 +124,9 @@ FixMyStreet::override_config {
         };
 
         subtest 'handles direct debit cancellation' => sub {
-            my $uprn = '111222333';
+            my $garden_report = _create_active_subscription($uprn);
 
-            # Create an active garden subscription with direct debit
-            my ($garden_report) = $mech->create_problems_for_body(1, $body->id, 'Garden Subscription - New', {
-                category => 'Garden Subscription',
-            });
-            $garden_report->set_extra_metadata('uprn', $uprn);
-            $garden_report->set_extra_metadata('payment_method', 'direct_debit');
-            $garden_report->set_extra_metadata('direct_debit_contract_id', 'PAYER123');
-            $garden_report->update;
-
-            my $dd_integration_mock_obj = Test::MockModule->new('Integrations::Agile');
-            $dd_integration_mock_obj->mock('cancel_plan', sub {
+            $access_mock->mock('cancel_plan', sub {
                 my ($self, $args) = @_;
                 is $args->{report}->id, $garden_report->id, 'Correct report passed';
                 return 1;
@@ -142,7 +136,44 @@ FixMyStreet::override_config {
                 qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
                 "Successfully handles direct debit cancellation";
         };
+
+        subtest 'archive_contract fails' => sub {
+            $mech->delete_problems_for_body( $body->id );
+
+            $access_mock->unmock('cancel_plan');
+            $access_mock->mock(
+                'archive_contract',
+                sub {
+                    { error => 'Archive failed' }
+                }
+            );
+
+            _create_active_subscription($uprn);
+
+            stdout_like { $canceller->cancel_by_uprn($uprn) }
+                qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Failed to send cancellation request.*Archive failed/s,
+                "Fails direct debit cancellation";
+        };
     };
 };
+
+# Create an active garden subscription with direct debit
+sub _create_active_subscription {
+    my ($uprn) = @_;
+
+    my ($garden_report) = $mech->create_problems_for_body(
+        1, $body->id,
+        'Garden Subscription - New',
+        { category => 'Garden Subscription', }
+    );
+    $garden_report->set_extra_fields(
+        { name => 'uprn', value => $uprn },
+        { name => 'payment_method', value => 'direct_debit' },
+    );
+    $garden_report->set_extra_metadata('direct_debit_contract_id', 'PAYER123');
+    $garden_report->update;
+
+    return $garden_report;
+}
 
 done_testing;

@@ -91,15 +91,20 @@ sub _cancel_direct_debit {
     }
 
     $self->_vprint("  Cancelling Direct Debit plan with payer reference $payer_ref");
-    my $update_ref = $i->cancel_plan({
+    my $resp = $i->cancel_plan({
         report => $original_report,
     });
 
-    if ($update_ref) {
-        $self->_vprint("  Successfully sent cancellation request to Direct Debit provider.");
+    if ( ref $resp eq 'HASH' && $resp->{error} ) {
+        $self->_vprint(
+            "  Failed to send cancellation request to Direct Debit provider: $resp->{error}"
+        );
     } else {
-        $self->_vprint("  Failed to send cancellation request to Direct Debit provider.");
+        $self->_vprint(
+            "  Successfully sent cancellation request to Direct Debit provider."
+        );
     }
+
 }
 
 sub _vprint {
