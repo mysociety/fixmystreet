@@ -128,6 +128,8 @@ sub bulky_items : Chained('body') {
     $c->stash->{per_item_pricing_property_types} =
         $cobrand->call_hook('bulky_per_item_pricing_property_types');
 
+    $c->stash->{item_points} = $cobrand->call_hook('bulky_points_per_item_pricing');
+
     if ($c->req->method eq 'POST') {
         $c->forward('/auth/check_csrf_token');
 
@@ -147,6 +149,9 @@ sub bulky_items : Chained('body') {
                 price => $c->get_param("price[$i]"),
                 max => $c->get_param("max[$i]"),
             };
+            if ($c->stash->{item_points}) {
+                $item->{points} = $c->get_param("points[$i]");
+            }
 
             foreach my $property_type (@{$c->{stash}->{per_item_pricing_property_types}}) {
                 my $key = "price_" . $property_type;

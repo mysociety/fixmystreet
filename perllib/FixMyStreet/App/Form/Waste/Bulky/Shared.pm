@@ -42,6 +42,13 @@ has_page location => (
     fields   =>
         [ 'location', 'location_photo', 'location_photo_fileid', 'continue' ],
     next => 'summary',
+    field_ignore_list => sub {
+        my $page = shift;
+        my $c = $page->form->c;
+        if ($c->cobrand->bulky_disabled_location_photo) {
+            return ['location_photo', 'location_photo_fileid'];
+        }
+    },
     update_field_list => sub {
         my ($form) = @_;
         my $fields = {};
@@ -180,7 +187,9 @@ sub _get_dates {
         delete $dates_booked{$existing_date};
     }
 
-    my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+    my $pattern = '%FT%T';
+    $pattern = '%F' if $c->cobrand->moniker eq 'bexley'; # Move more to this over time?
+    my $parser = DateTime::Format::Strptime->new( pattern => $pattern );
     my @dates  = grep {$_} map {
         my $dt = $parser->parse_datetime( $_->{date} );
         my $label = $c->cobrand->moniker eq 'brent' ? '%d %B' : '%A %e %B';
@@ -273,6 +282,12 @@ has_field tandc => (
 <br>&bull; I confirm I have read the information for the <a href="' . $link . '" target="_blank">bulky waste service</a>';
         } elsif ($c->cobrand->moniker eq 'brent') {
             $label = 'I have read and agree to the <a href="' . $link . '" target="_blank">terms and conditions</a> and understand any additional items presented that do not meet the terms and conditions will not be collected';
+        } elsif ($c->cobrand->moniker eq 'bexley') {
+            $label = '&bull; I confirm that the submitted information is current and correct, and any misrepresentations could lead to a cancellation of the arranged service without refund.
+<br>&bull; I understand that collections can take place any time after 6am.
+<br>&bull; I understand that the arranged service cannot be edited or cancelled once payment has been submitted and refunds are not provided.
+<br>&bull; I understand that only the items added to the booking will be taken. Items must be accessible on the collection day and left in a neat and safe manner. Items cannot be left for collection on the public highway.
+<br>&bull; I understand I may be subject to further charges if proof of pension cannot be provided when requested.';
         } else {
             $label = 'I have read the <a href="' . $link . '" target="_blank">bulky waste collection</a> page on the council’s website';
         }
@@ -321,12 +336,18 @@ sub validate {
         }
     }
 
+    my $cobrand = $self->c->cobrand;
     if ($self->current_page->name eq 'add_items') {
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $cobrand->bulky_items_maximum;
         my %given;
+
+        my $points = 0;
+        my %points = map { $_->{name} => $_->{points} } @{ $cobrand->bulky_items_master_list };
+
         for my $num ( 1 .. $max_items ) {
             my $val = $self->field("item_$num")->value or next;
             $given{$val}++;
+            $points += $points{$val} if $points{$val};
         }
         if (!%given) {
             $self->add_form_error("Please select an item");
@@ -337,6 +358,16 @@ sub validate {
                 $self->add_form_error("Too many of item: $_");
             }
         }
+
+        # Points need to check maximum
+        if ($cobrand->bulky_points_per_item_pricing) {
+            my $levels = $cobrand->bulky_pricing_model($self->saved_data);
+            my $total = $cobrand->bulky_points_to_price($points, $levels);
+            if ($total eq 'max') {
+                $self->add_form_error("You have used too many points");
+            }
+        }
+
         if ($self->{c}->cobrand->moniker eq 'brent') {
             my %category_count;
             for my $name (keys %given) {
@@ -360,9 +391,9 @@ sub validate {
     }
 
     if ($self->current_page->name eq 'summary' && $self->c->stash->{amending_booking}) {
-        my $old = $self->c->cobrand->waste_reconstruct_bulky_data($self->c->stash->{amending_booking});
+        my $old = $cobrand->waste_reconstruct_bulky_data($self->c->stash->{amending_booking});
         my $new = $self->saved_data;
-        my $max_items = $self->c->cobrand->bulky_items_maximum;
+        my $max_items = $cobrand->bulky_items_maximum;
         my $same = 1;
         my @fields = qw(chosen_date location location_photo);
         push @fields, map { ("item_$_", "item_photo_$_") } 1 .. $max_items;
