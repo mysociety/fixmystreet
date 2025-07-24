@@ -6,13 +6,14 @@ my $abuse_rs = FixMyStreet::DB->resultset('Abuse');
 $abuse_rs->create({ safe => 0, email => 'unsafe@example.com' });
 $abuse_rs->create({ safe => 1, email => 'example.org' });
 
-# .org fails to lookup; .net is okay; .com is not
+# .org fails to lookup; .net is okay; .com is not; .co.uk is badly formatted
 my $lwp = Test::MockModule->new('LWP::UserAgent');
 $lwp->mock('get', sub {
     my $body;
-    $body = '{ "status": "429" }' if $_[1] =~ /example\.org/;
-    $body = '{ "status": "200", "disposable": false }' if $_[1] =~ /example\.net/;
-    $body = '{ "status": "200", "disposable": true }' if $_[1] =~ /example\.com/;
+    $body = '{ "status": "400" }' if $_[1] =~ /example\.co\.uk$/;
+    $body = '{ "status": "429" }' if $_[1] =~ /example\.org$/;
+    $body = '{ "status": "200", "disposable": false }' if $_[1] =~ /example\.net$/;
+    $body = '{ "status": "200", "disposable": true }' if $_[1] =~ /example\.com$/;
     return HTTP::Response->new(0, undef, undef, $body);
 });
 
@@ -57,6 +58,20 @@ subtest 'check with usercheck' => sub {
         ok !$abuse_rs->check('07700 900000'), 'Mobile phone number';
         is $abuse_rs->count, 4, 'No new entry';
     };
+};
+
+subtest 'check with comma-separated email addresses' => sub {
+    FixMyStreet::override_config {
+        CHECK_USERCHECK => 'api_key',
+    }, sub {
+        $abuse_rs->delete_all;
+        ok !$abuse_rs->check('test@example.net,test@example.co.uk'), 'two email addresses are okay';
+        is $abuse_rs->count, 1, 'one entry in db';
+        is $abuse_rs->find('example.net')->safe, 1, 'new safe entry created';
+        is $abuse_rs->find('example.net,test@example.co.uk'), undef, 'badly formatted domain entry not created';
+        is $abuse_rs->find('bar.com'), undef, 'second domain entry not created';
+    }
+
 };
 
 done_testing();
