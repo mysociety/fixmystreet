@@ -213,7 +213,9 @@ specific Bristol owned properties that don't have a USRN
 =cut
 
 sub lookup_site_code_config {
+    my $self = shift;
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my %ignored = map { $_ => 1 } @{ $self->_ignored_usrns };
     return {
         buffer => 200, # metres
         url => "https://$host/proxy/bristol/wfs/",
@@ -221,7 +223,11 @@ sub lookup_site_code_config {
         property => "USRN",
         version => '2.0.0',
         srsname => "urn:ogc:def:crs:EPSG::27700",
-        accept_feature => sub { 1 },
+        accept_feature => sub {
+            my $feature = shift;
+            my $usrn = $feature->{properties}->{USRN};
+            return $ignored{$usrn} ? 0 : 1;
+        },
         reversed_coordinates => 1,
     };
 }
@@ -234,6 +240,13 @@ sub open311_update_missing_data {
             $row->update_extra_field({ name => 'usrn', value => $usrn });
         }
     };
+}
+
+sub _ignored_usrns {
+    # This is a list of all National Highways USRNs within Bristol that should
+    # be ignored when looking up site codes for Alloy reports. Provided by
+    # Bristol in FD-5607.
+    return FixMyStreet::DB->resultset("Config")->get('bristol_ignored_usrns') || [];
 }
 
 around open311_extra_data_include => sub {
