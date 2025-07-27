@@ -1,15 +1,21 @@
-use FixMyStreet::TestMech;
 use DateTime;
-use Test::Output;
-use Test::MockModule;
+use FixMyStreet::TestMech;
 use JSON::MaybeXS;
+use Test::Deep;
+use Test::MockModule;
+use Test::Output;
 
 use_ok 'FixMyStreet::Script::Bexley::CancelGardenWaste';
 
 my $mech = FixMyStreet::TestMech->new;
+
+my $comment_user = FixMyStreet::DB->resultset('User')
+    ->create( { email => 'comment@example.com', name => 'Comment User' } );
+
 my $area_id = 2494;
 my $body = $mech->create_body_ok($area_id, 'Bexley Council', {
     cobrand => 'bexley',
+    comment_user_id => $comment_user->id,
 });
 
 # Create test contacts
@@ -95,8 +101,8 @@ FixMyStreet::override_config {
             # Mock cancel_by_uprn to track calls
             my $cancel_mock = Test::MockModule->new('FixMyStreet::Script::Bexley::CancelGardenWaste');
             $cancel_mock->mock('cancel_by_uprn', sub {
-                my ($self, $uprn) = @_;
-                push @$cancel_calls, $uprn;
+                my ($self, $contract) = @_;
+                push @$cancel_calls, $contract->{UPRN};
             });
 
             stdout_is { $canceller_test->cancel_from_api(7) }
@@ -115,9 +121,10 @@ FixMyStreet::override_config {
         );
 
         my $uprn = '123456789';
+        my $contract = { UPRN => $uprn, Reason => 'Bins are bad' };
 
         subtest 'no active subscription found' => sub {
-            stdout_is { $canceller->cancel_by_uprn($uprn) }
+            stdout_is { $canceller->cancel_by_uprn($contract) }
                 "Attempting to cancel subscription for UPRN $uprn\n" .
                 "  No active garden subscription found for UPRN $uprn\n",
                 "Handles no active subscription correctly";
@@ -132,9 +139,36 @@ FixMyStreet::override_config {
                 return 1;
             });
 
-            stdout_like { $canceller->cancel_by_uprn($uprn) }
+            stdout_like { $canceller->cancel_by_uprn($contract) }
                 qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
                 "Successfully handles direct debit cancellation";
+
+            my $cancel_report = FixMyStreet::DB->resultset('Problem')->search(
+                { category => 'Cancel Garden Subscription' }
+            )->order_by('-id')->first;
+
+            is $cancel_report->state, 'confirmed';
+            is $cancel_report->send_state, 'sent';
+            is $cancel_report->category, 'Cancel Garden Subscription';
+            is $cancel_report->title, 'Garden Subscription - Cancel';
+            is $cancel_report->detail, "Cancel Garden Subscription\n\n123 Bexley St";
+            is $cancel_report->user_id, $comment_user->id;
+            is $cancel_report->name, $comment_user->name;
+
+            cmp_deeply $cancel_report->get_extra_metadata, {
+                property_address => '123 Bexley St',
+                direct_debit_contract_id => 'PAYER123',
+            }, 'correct metadata set on cancellation report';
+
+            cmp_deeply $cancel_report->get_extra_fields, [
+                { name => 'uprn', value => $uprn },
+                { name => 'property_id', value => $uprn },
+                { name => 'payment_method', value => 'direct_debit' },
+                { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },
+                { name => 'direct_debit_reference', value => 'DD_REF_123' },
+                { name => 'reason', value => 'Cancelled on Agile end: Bins are bad' },
+            ], 'correct extra fields set on cancellation report';
+
         };
 
         subtest 'archive_contract fails' => sub {
@@ -150,7 +184,7 @@ FixMyStreet::override_config {
 
             _create_active_subscription($uprn);
 
-            stdout_like { $canceller->cancel_by_uprn($uprn) }
+            stdout_like { $canceller->cancel_by_uprn($contract) }
                 qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Failed to send cancellation request.*Archive failed/s,
                 "Fails direct debit cancellation";
         };
@@ -168,9 +202,15 @@ sub _create_active_subscription {
     );
     $garden_report->set_extra_fields(
         { name => 'uprn', value => $uprn },
+        { name => 'property_id', value => $uprn },
         { name => 'payment_method', value => 'direct_debit' },
+        { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },
+        { name => 'direct_debit_reference', value => 'DD_REF_123' },
+        { name => 'not_used', value => 'IGNORE' },
     );
+    $garden_report->set_extra_metadata('property_address', '123 Bexley St');
     $garden_report->set_extra_metadata('direct_debit_contract_id', 'PAYER123');
+    $garden_report->set_extra_metadata('not_used', 'IGNORE');
     $garden_report->update;
 
     return $garden_report;
