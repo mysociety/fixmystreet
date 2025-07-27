@@ -41,12 +41,14 @@ sub cancel_from_api {
     $self->_vprint("Found " . scalar(@$contracts) . " cancellations");
 
     foreach my $contract (@$contracts) {
-        $self->cancel_by_uprn($contract->{UPRN});
+        $self->cancel_by_uprn($contract);
     }
 }
 
 sub cancel_by_uprn {
-    my ($self, $uprn) = @_;
+    my ( $self, $contract ) = @_;
+
+    my $uprn = $contract->{UPRN};
 
     $self->_vprint("Attempting to cancel subscription for UPRN $uprn");
 
@@ -64,8 +66,11 @@ sub cancel_by_uprn {
 
     $self->_vprint("  Found active report " . $report->id);
 
-    # TODO: Create a cancellation report (but mark as sent, as it doesn't need to go to Agile)
     # TODO: Check for an existing cancellation for this report before cancelling DD.
+    my $cancellation_report
+        = $self->create_cancellation_report( $report, $contract );
+
+    $self->_vprint("  Created cancellation report " . $cancellation_report->id);
 
     my $payment_method = $report->get_extra_field_value('payment_method') || 'credit_card';
     if ($payment_method eq 'direct_debit') {
@@ -73,6 +78,70 @@ sub cancel_by_uprn {
     } else {
         # Nothing to do for credit card
     }
+}
+
+sub create_cancellation_report {
+    my ( $self, $existing_report, $contract ) = @_;
+
+    my %cancellation_params = (
+        state => 'confirmed',
+        send_state => 'sent',
+        category => 'Cancel Garden Subscription',
+        title => 'Garden Subscription - Cancel',
+        detail => '', # Populated below
+        used_map => 0,
+        user_id => $self->cobrand->body->comment_user_id,
+        name => $self->cobrand->body->comment_user->name,
+    );
+    for (qw/
+        postcode
+        latitude
+        longitude
+        bodies_str
+        areas
+        anonymous
+        cobrand
+        cobrand_data
+        non_public
+    /) {
+        $cancellation_params{$_} = $existing_report->$_;
+    }
+
+    # Initiate report
+    my $cancellation_report = FixMyStreet::DB->resultset('Problem')
+        ->create( \%cancellation_params );
+
+    # Metadata
+    my $existing_meta = $existing_report->get_extra_metadata;
+    my %cancellation_meta
+        = %$existing_meta{qw/property_address direct_debit_contract_id/};
+    $cancellation_report->set_extra_metadata(%cancellation_meta);
+
+    # Set 'detail' using category & property_address
+    $cancellation_report->detail(
+        $cancellation_params{category} . "\n\n" . $cancellation_meta{property_address} );
+
+    # Extra fields
+    my $existing_extra = $existing_report->get_extra_fields;
+    my $match_str = join '|', qw/
+        uprn
+        property_id
+        payment_method
+        customer_external_ref
+        direct_debit_reference
+    /;
+    my @cancellation_extra
+        = grep { $_->{name} =~ /^($match_str)$/ } @$existing_extra;
+    push @cancellation_extra, {
+        name  => 'reason',
+        value => 'Cancelled on Agile end: '
+            . ( $contract->{Reason} || 'No reason provided' )
+    };
+    $cancellation_report->set_extra_fields(@cancellation_extra);
+
+    $cancellation_report->update;
+
+    return $cancellation_report;
 }
 
 sub _cancel_direct_debit {
