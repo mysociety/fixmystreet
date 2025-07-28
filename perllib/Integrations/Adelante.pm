@@ -33,7 +33,7 @@ sub pay {
             Ref2 => $_->{reference},
             #Narrative => $args->{uprn},
             FundCode => $args->{fund_code},
-            Amount => $_->{amount},
+            Amount => $_->{amount} ? $_->{amount} : '0',
         };
     }
 
