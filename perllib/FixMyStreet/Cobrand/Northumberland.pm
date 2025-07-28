@@ -172,6 +172,7 @@ sub dashboard_export_problems_add_columns {
         staff_role => 'Staff Role',
         assigned_to => 'Assigned To',
         response_time => 'Response Time',
+        nearest_address => 'Nearest address',
     );
 
     my $response_time = sub {
@@ -188,9 +189,17 @@ sub dashboard_export_problems_add_columns {
         $csv->csv_extra_data(sub {
             my $report = shift;
             my $hashref = shift;
+
+            my $address = '';
+            if ( $report->{geocode} ) {
+                my $addr = FixMyStreet::Geocode::Address->new($report->{geocode});
+                $address = $addr->summary;
+            }
+
             return {
                 user_name_display => $report->{name},
                 response_time => $response_time->($hashref),
+                nearest_address => $address,
             };
         });
         return; # Rest already covered
@@ -213,12 +222,18 @@ sub dashboard_export_problems_add_columns {
             $staff_role = join(',', @{$userroles->{$by} || []});
         }
 
+        my $address = '';
+        if ( $report->geocode ) {
+            $address = $report->nearest_address;
+        }
+
         return {
             user_name_display => $report->name,
             staff_user => $staff_user,
             staff_role => $staff_role,
             assigned_to => $problems_to_user->{$report->id} || '',
             response_time => $response_time->($hashref),
+            nearest_address => $address,
         };
     });
 }

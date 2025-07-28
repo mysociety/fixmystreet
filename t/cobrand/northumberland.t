@@ -42,7 +42,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok( $staffuser->email );
         $mech->get_ok('/dashboard?export=1');
         $mech->content_contains('Test User', 'name of anonymous user');
-        $mech->content_like(qr{counciluser\@example.com,"Role 1",,"1 day, 3 hours, 37 minutes"$}, 'staff user, role, unassigned, and response time');
+        $mech->content_like(qr{counciluser\@example.com,"Role 1",,"1 day, 3 hours, 37 minutes",$}, 'staff user, role, unassigned, and response time');
         $staffuser->add_to_planned_reports($problem1);
         $staffuser->add_to_planned_reports($problem2);
         $mech->get_ok('/dashboard?export=1');

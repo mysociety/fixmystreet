@@ -203,18 +203,7 @@ sub _process_update {
         $request->{comment_time} = $p->whensent + DateTime::Duration->new( seconds => 1 );
     }
 
-    my $comment = $self->schema->resultset('Comment')->new(
-        {
-            problem => $p,
-            user => $self->system_user,
-            external_id => $request->{update_id},
-            send_state => 'processed',
-            text => $text,
-            confirmed => $request->{comment_time},
-            created => $request->{comment_time},
-            private_email_text => $email_text,
-        }
-    );
+    my $comment = $self->_comment_for_update($p, $text, $email_text, $request->{comment_time}, $request->{update_id});
 
     # Some Open311 services, e.g. Confirm via open311-adapter, provide
     # a more fine-grained status code that we use within FMS for
@@ -388,17 +377,7 @@ sub _handle_category_change {
                 if ($new ne $old) {
                     $p->category($new);
                     my $text = '*' . sprintf(_('Category changed from ‘%s’ to ‘%s’'), $old, $new) . '*';
-                    my $comment = $self->schema->resultset('Comment')->new(
-                        {
-                            problem => $p,
-                            user => $self->system_user,
-                            send_state => 'processed',
-                            text => $text,
-                            confirmed => $request->{comment_time},
-                            created => $request->{comment_time},
-                            private_email_text => $text,
-                        }
-                    );
+                    my $comment = $self->_comment_for_update($p, $text, undef, $request->{comment_time});
 
                     return unless $self->commit;
 
@@ -415,6 +394,21 @@ sub _handle_category_change {
         }
     }
 
+}
+
+sub _comment_for_update {
+    my ($self, $p, $text, $email_text, $time, $external_id) = @_;
+
+    return $self->schema->resultset('Comment')->new({
+        problem => $p,
+        user => $self->system_user,
+        send_state => 'processed',
+        $external_id ? (external_id => $external_id) : (),
+        text => $text,
+        confirmed => $time,
+        created => $time,
+        $email_text ? (private_email_text => $email_text) : (),
+    } );
 }
 
 1;

@@ -13,8 +13,16 @@ $lwp->mock(request => sub {
     my $return = '"Result":"OK",';
     if ($function eq 'PAY3DS') {
         like $req->content, qr/"Ref1":"CC"/;
-        like $req->content, qr/"Ref2":"reference"/;
-        like $req->content, qr/"Amount":1000/;
+        if ($req->content =~ /"zero-cost"/) {
+            like $req->content, qr/"Ref2":"zero-cost"/;
+            like $req->content, qr/"Amount":"0"/, 'zero-cost items have Amount as "0"';
+        } elsif ($req->content =~ /"empty-amount"/) {
+            like $req->content, qr/"Ref2":"empty-amount"/;
+            like $req->content, qr/"Amount":"0"/, 'empty amounts default to "0"';
+        } else {
+            like $req->content, qr/"Ref2":"reference"/;
+            like $req->content, qr/"Amount":1000/;
+        }
         like $req->content, qr/"ReturnURL":"http:\/\/example\.org/;
         $return .= '"UID":"UID", "Link":"https://example.org/"';
     } elsif ($function eq 'GET') {
@@ -84,6 +92,38 @@ subtest "check staff query" => sub {
 subtest 'check echo' => sub {
     my $res = $integration->echo();
     is $res->{Result}, 'OK';
+};
+
+subtest "check zero-cost line items" => sub {
+    my $res = $integration->pay({
+        returnUrl => 'http://example.org/return',
+        fund_code => '32',
+        reference => 'zero-cost',
+        name => 'name',
+        address => 'address',
+        email => 'email',
+        items => [ { cost_code => 'CC', reference => 'zero-cost', amount => 0 } ],
+    });
+
+    ok $res, 'got response for zero-cost item';
+    is $res->{UID}, "UID";
+    is $res->{Link}, "https://example.org/";
+};
+
+subtest "check empty amount line items" => sub {
+    my $res = $integration->pay({
+        returnUrl => 'http://example.org/return',
+        fund_code => '32',
+        reference => 'empty-amount',
+        name => 'name',
+        address => 'address',
+        email => 'email',
+        items => [ { cost_code => 'CC', reference => 'empty-amount', amount => '' } ],
+    });
+
+    ok $res, 'got response for empty amount item';
+    is $res->{UID}, "UID";
+    is $res->{Link}, "https://example.org/";
 };
 
 done_testing;
