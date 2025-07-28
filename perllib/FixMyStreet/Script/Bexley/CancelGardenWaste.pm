@@ -66,7 +66,23 @@ sub cancel_by_uprn {
 
     $self->_vprint("  Found active report " . $report->id);
 
-    # TODO: Check for an existing cancellation for this report before cancelling DD.
+    # See if there is an existing cancellation report for current subscription
+    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
+    my $current_created = $dtf->format_datetime( $report->created );
+    my $cancellation_report = $self->cobrand->problems->search({
+        category => 'Cancel Garden Subscription',
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
+        state => [ FixMyStreet::DB::Result::Problem->open_states ],
+        # Make sure it was created after the current subscription, otherwise
+        # it is a cancellation for a previous subscription
+        created => { '>' => $current_created },
+    })->order_by('-id')->first;
+
+    if ($cancellation_report) {
+        $self->_vprint("  Active cancellation report " . $cancellation_report->id . " already exists");
+        return;
+    }
+
     my $cancellation_report
         = $self->create_cancellation_report( $report, $contract );
 
@@ -163,6 +179,8 @@ sub _cancel_direct_debit {
     my $resp = $i->cancel_plan({
         report => $original_report,
     });
+
+    # TODO Set a flag on report if failure here?
 
     if ( ref $resp eq 'HASH' && $resp->{error} ) {
         $self->_vprint(

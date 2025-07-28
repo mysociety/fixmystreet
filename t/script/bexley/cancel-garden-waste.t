@@ -131,7 +131,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'handles direct debit cancellation' => sub {
-            my $garden_report = _create_active_subscription($uprn);
+            my $garden_report = _create_report( uprn => $uprn );
 
             $access_mock->mock('cancel_plan', sub {
                 my ($self, $args) = @_;
@@ -143,9 +143,7 @@ FixMyStreet::override_config {
                 qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
                 "Successfully handles direct debit cancellation";
 
-            my $cancel_report = FixMyStreet::DB->resultset('Problem')->search(
-                { category => 'Cancel Garden Subscription' }
-            )->order_by('-id')->first;
+            my $cancel_report = _last_cancel_report();
 
             is $cancel_report->state, 'confirmed';
             is $cancel_report->send_state, 'sent';
@@ -171,6 +169,46 @@ FixMyStreet::override_config {
 
         };
 
+        subtest 'Cancellation report exists' => sub {
+            $mech->delete_problems_for_body( $body->id );
+
+            $access_mock->mock( 'cancel_plan', sub {} );
+
+            # Create old and new subscriptions
+            my $created = '2024-07-28 12:00:00';
+            _create_report( uprn => $uprn, created => $created );
+            $created = '2025-07-28 12:00:00';
+            _create_report( uprn => $uprn, created => $created );
+
+            subtest 'For a previous subscription' => sub {
+                $created = '2025-07-28 00:00:00';
+                _create_report(
+                    uprn      => $uprn,
+                    created   => $created,
+                    is_cancel => 1,
+                );
+
+                my $last_cancel_id = _last_cancel_report()->id;
+                stdout_unlike { $canceller->cancel_by_uprn($contract) }
+                    qr/Active cancellation report.*already exists/;
+                my $new_cancel_id = _last_cancel_report()->id;
+                ok $last_cancel_id != $new_cancel_id,
+                    'New cancellation report created';
+            };
+
+            subtest 'For current subscription' => sub {
+                # Newer cancellation report should have been set up in
+                # previous test
+                my $last_cancel_id = _last_cancel_report()->id;
+                stdout_like { $canceller->cancel_by_uprn($contract) }
+                    qr/Active cancellation report.*already exists/;
+                my $new_cancel_id = _last_cancel_report()->id;
+                ok $last_cancel_id == $new_cancel_id,
+                    'New cancellation report not created';
+            };
+
+        };
+
         subtest 'archive_contract fails' => sub {
             $mech->delete_problems_for_body( $body->id );
 
@@ -182,7 +220,7 @@ FixMyStreet::override_config {
                 }
             );
 
-            _create_active_subscription($uprn);
+            _create_report( uprn => $uprn);
 
             stdout_like { $canceller->cancel_by_uprn($contract) }
                 qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Failed to send cancellation request.*Archive failed/s,
@@ -192,17 +230,24 @@ FixMyStreet::override_config {
 };
 
 # Create an active garden subscription with direct debit
-sub _create_active_subscription {
-    my ($uprn) = @_;
+sub _create_report {
+    my %args = @_;
+
+    my $is_cancel = $args{is_cancel};
 
     my ($garden_report) = $mech->create_problems_for_body(
         1, $body->id,
-        'Garden Subscription - New',
-        { category => 'Garden Subscription', }
+        $is_cancel ? 'Garden Subscription - Cancel' : 'Garden Subscription - New',
+        {   category => $is_cancel
+            ? 'Cancel Garden Subscription'
+            : 'Garden Subscription',
+            created => $args{created} || \'current_timestamp',
+        },
+
     );
     $garden_report->set_extra_fields(
-        { name => 'uprn', value => $uprn },
-        { name => 'property_id', value => $uprn },
+        { name => 'uprn', value => $args{uprn} },
+        { name => 'property_id', value => $args{uprn} },
         { name => 'payment_method', value => 'direct_debit' },
         { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },
         { name => 'direct_debit_reference', value => 'DD_REF_123' },
@@ -215,5 +260,13 @@ sub _create_active_subscription {
 
     return $garden_report;
 }
+
+sub _last_cancel_report {
+    return FixMyStreet::DB->resultset('Problem')
+        ->search( { category => 'Cancel Garden Subscription' } )
+        ->order_by('-id')
+        ->first;
+}
+
 
 done_testing;
