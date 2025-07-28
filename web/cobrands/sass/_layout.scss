@@ -9,7 +9,7 @@ $screen-size--xlarge:  90em !default;
 $mappage-notes-width: 15em;
 $mappage-notes-width--medium: 17em;
 $mappage-notes-width--large: 19em;
-$mappage-notes-width--xlarge: 25em;
+$mappage-notes-width--xlarge: 21em;
 
 $mappage-sidebar-width: 20em !default;
 $mappage-sidebar-width--medium:  27em !default;
@@ -19,7 +19,7 @@ $mappage-sidebar-width--xlarge: 30em !default;
 $mappage-actions-width: 15em !default;
 $mappage-actions-width--medium:  18em !default;
 $mappage-actions-width--large:  22em !default;
-$mappage-actions-width--xlarge: 25em !default;
+$mappage-actions-width--xlarge: 23em !default;
 
 $mappage-actions-sidebar-width: $mappage-sidebar-width !default;
 $mappage-actions-sidebar-width--medium: $mappage-sidebar-width--medium !default;
@@ -303,15 +303,15 @@ body.mappage.admin {
     #{$left}: $mappage-actions-sidebar-width + $mappage-actions-width;
 
     @media (min-width: $screen-size--medium) {
-      #{$left}: $mappage-sidebar-width--medium + $mappage-actions-width--medium;
+      #{$left}: $mappage-actions-sidebar-width--medium + $mappage-actions-width--medium;
     }
 
     @media (min-width: $screen-size--large) {
-      #{$left}: $mappage-sidebar-width--large + $mappage-actions-width--large;
+      #{$left}: $mappage-actions-sidebar-width--large + $mappage-actions-width--large;
     }
 
     @media (min-width: $screen-size--xlarge) {
-      #{$left}: $mappage-sidebar-width--xlarge + $mappage-actions-width--xlarge;
+      #{$left}: $mappage-actions-sidebar-width--xlarge + $mappage-actions-width--xlarge;
     }
   }
 }
@@ -370,15 +370,15 @@ body.mappage.admin {
     }
 
     @media (min-width: $screen-size--medium) {
-      width: $mappage-sidebar-width--medium + $mappage-actions-width--medium;
+      width: $mappage-actions-sidebar-width--medium + $mappage-actions-width--medium;
     }
 
     @media (min-width: $screen-size--large) {
-      width: $mappage-sidebar-width--large + $mappage-actions-width--large;
+      width: $mappage-actions-sidebar-width--large + $mappage-actions-width--large;
     }
 
     @media (min-width: $screen-size--xlarge) {
-      width: $mappage-sidebar-width--xlarge + $mappage-actions-width--xlarge;
+      width: $mappage-actions-sidebar-width--xlarge + $mappage-actions-width--xlarge;
     }
   }
 }
@@ -431,15 +431,15 @@ body.mappage.admin {
       width: $mappage-actions-sidebar-width;
 
       @media (min-width: $screen-size--medium) {
-        width: $mappage-sidebar-width--medium;
+        width: $mappage-actions-sidebar-width--medium;
       }
 
       @media (min-width: $screen-size--large) {
-        width: $mappage-sidebar-width--large;
+        width: $mappage-actions-sidebar-width--large;
       }
 
       @media (min-width: $screen-size--xlarge) {
-        width: $mappage-sidebar-width--xlarge;
+        width:$mappage-actions-sidebar-width--xlarge;
       }
     }
   }
