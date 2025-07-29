@@ -10,21 +10,21 @@ describe('National Highways cobrand tests', function() {
         cy.url().should('include', '/around');
     });
     it('does not allow reporting on non-road', function() {
-        cy.get('#map_box').click(280, 249);
+        cy.get('#map_box').click(312, 249);
         cy.wait('@highways-tilma');
         cy.wait('@report-ajax');
         cy.contains('Report a maintenance issue').should('be.visible');
         cy.get('.pre-button-messaging').contains('The selected location is not maintained by us.').should('be.visible');
     });
     it('does not allow reporting on DBFO roads', function() {
-        cy.get('#map_box').click(200, 249);
+        cy.get('#map_box').click(232, 249);
         cy.wait('@highways-tilma');
         cy.wait('@report-ajax');
         cy.contains('Report a maintenance issue').should('be.visible');
         cy.get('.pre-button-messaging').contains('report on roads directly maintained').should('be.visible');
     });
     it('allows reporting on other HE roads', function() {
-        cy.get('#map_box').click(240, 249);
+        cy.get('#map_box').click(272, 249);
         cy.wait('@highways-tilma');
         cy.wait('@report-ajax');
         cy.pickCategory('Fallen sign');
@@ -71,7 +71,7 @@ describe('National Highways litter picking test', function() {
         cy.url().should('include', '/around');
     });
     it('stops litter reporting on roads where HE not responsible', function() {
-        cy.get('#map_box').click(240, 249);
+        cy.get('#map_box').click(272, 249);
         cy.wait('@report-ajax');
         cy.wait('@highways-tilma');
         cy.wait('@highways-tilma-litter');

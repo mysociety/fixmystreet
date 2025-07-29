@@ -53,7 +53,7 @@ it('shows TfL categories inside London on .com', function() {
     cy.visit('http://fixmystreet.localhost:3001/');
     cy.get('[name=pc]').type('TW7 5JN');
     cy.get('[name=pc]').parents('form').submit();
-    cy.get('#map_box').click(290, 307);
+    cy.get('#map_box').click(322, 307);
     cy.wait('@report-ajax');
     cy.pickCategory('Bus Stops and Shelters');
     cy.pickCategory('Potholes');
