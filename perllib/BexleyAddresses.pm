@@ -122,6 +122,7 @@ sub address_for_uprn {
         <<"SQL",
    SELECT postcode,
           has_parent,
+          class,
           $address_fields
      FROM lpi
      JOIN blpu ON lpi.uprn = blpu.uprn
@@ -132,7 +133,8 @@ SQL
         $uprn,
     );
 
-    return $row ? build_address_string($row) : '';
+    $row->{address} = build_address_string($row);
+    return $row;
 }
 
 sub build_address_string {

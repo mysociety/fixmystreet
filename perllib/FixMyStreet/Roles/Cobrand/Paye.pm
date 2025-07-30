@@ -41,7 +41,15 @@ around waste_cc_get_redirect_url => sub {
         $p->set_extra_metadata('redirect_id', $redirect_id);
         $p->update;
 
-        my $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . '';
+        my $backUrl;
+        if ($p->category eq 'Bulky collection') {
+            # Need to pass through property ID as not sure how to work it out once we're back
+            my $id = URI::Escape::uri_escape_utf8($c->stash->{property}{id});
+            $backUrl = $c->uri_for_action('/waste/pay_cancel', [ $p->id, $redirect_id ] ) . '?property_id=' . $id;
+        }
+        $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . ''
+            unless $backUrl;
+
         my $address = $c->stash->{property}{address};
         my @parts = split ',', $address;
 
