@@ -91,9 +91,6 @@ sub find_available_bulky_slots {
         };
     }
 
-    # Make sure there's a Saturday XXX TODO remove
-    push @available_slots, { date => '2025-07-26', id => 'saturday' };
-
     $self->{c}->waste_cache_set($key, \@available_slots) if !$no_cache;
 
     return \@available_slots;
@@ -113,6 +110,20 @@ sub check_bulky_slot_available {
 
     my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
     return $slot ? 1 : 0;
+}
+
+sub bulky_date_label {
+    my ( $self, $dt ) = @_;
+
+    my $format = '%A %e %B';
+    my $label = $dt->strftime($format);
+
+    # Saturdays have higher pricing
+    if ( $dt->day_of_week == 6 ) {
+        $label .= ' (extra charge)';
+    }
+
+    return $label;
 }
 
 # Pricing
