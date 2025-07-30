@@ -155,10 +155,13 @@ $(function() {
 
         } else if (pricing.strategy === 'points') {
             $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
+console.log( $('[name^="item_quantity"]') );
+var quantity = $('[name^="item_quantity"]').val();
+console.log(quantity);
                 var extra = $(this).data('extra');
                 var points = extra ? parseFloat(extra.points) : 0;
                 if (!isNaN(points)) {
-                    total += points;
+                    total += points * quantity;
                 }
             });
             var total_price = 0;

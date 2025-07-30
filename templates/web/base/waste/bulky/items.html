@@ -145,6 +145,8 @@ END; END %]
     [% photo_fileid = photo _ '_fileid' %]
     [% PROCESS form override_fields = [ photo, photo_fileid ] %]
   [% END %]
+    [% item_q = 'item_quantity_' _ num %]
+    [% PROCESS form override_fields = [ item_q ] %]
     <button type="button" class="delete-item btn-secondary govuk-!-margin-bottom-3">Delete item</button>
     <hr>
   </div>
