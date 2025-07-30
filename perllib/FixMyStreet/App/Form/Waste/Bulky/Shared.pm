@@ -195,7 +195,8 @@ sub _get_dates {
         my $label = $c->cobrand->moniker eq 'brent' ? '%d %B' : '%A %e %B';
         $dt
             ? {
-            label => $dt->strftime($label),
+            label => $c->cobrand->call_hook( 'bulky_date_label', $dt )
+                || $dt->strftime($label),
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             disabled => $dates_booked{$_->{date}},
             # The default behaviour in the fields.html template is to mark a radio
