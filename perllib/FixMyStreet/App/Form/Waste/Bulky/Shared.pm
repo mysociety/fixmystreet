@@ -198,10 +198,16 @@ sub _get_dates {
     my $parser = DateTime::Format::Strptime->new( pattern => $pattern );
     my @dates  = grep {$_} map {
         my $dt = $parser->parse_datetime( $_->{date} );
+
+        my $ignore_days = $c->cobrand->feature('waste_features')->{bulky_ignore_days_of_week};
+        $dt = undef
+            if $ignore_days && grep { $_ == $dt->day_of_week } @$ignore_days;
+
         my $label = $c->cobrand->moniker eq 'brent' ? '%d %B' : '%A %e %B';
         $dt
             ? {
-            label => $dt->strftime($label),
+            label => $c->cobrand->call_hook( 'bulky_date_label', $dt )
+                || $dt->strftime($label),
             value => $_->{reference} ? $_->{date} . ";" . $_->{reference} . ";" . $_->{expiry} : $_->{date},
             disabled => $dates_booked{$_->{date}},
             # The default behaviour in the fields.html template is to mark a radio
