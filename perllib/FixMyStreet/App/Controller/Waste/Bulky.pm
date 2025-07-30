@@ -102,6 +102,13 @@ sub item_list : Private {
                 linked_field => "item_photo_$num",
             },
             "item_notes_${num}" => $notes_field,
+            "item_quantity_$num" => {
+                type => 'Integer',
+                label => 'Quantity',
+                id => "item_quantity_$num",
+                # empty_select => 'Please select an amount',
+                default => 1,
+            }
         );
     }
 
@@ -118,7 +125,13 @@ sub item_list : Private {
     $c->stash->{page_list} = [
         add_items => {
             fields => [ 'continue',
-                map { ("item_$_", "item_photo_$_", "item_photo_${_}_fileid", "item_notes_$_") } ( 1 .. $max_items ),
+                map {
+                    (   "item_$_",                "item_photo_$_",
+                        "item_photo_${_}_fileid", "item_notes_$_",
+                        "item_quantity_$_",
+                    )
+                    } ( 1 .. $max_items ),
+
             ],
             template => 'waste/bulky/items.html',
             title => 'Add items for collection',
@@ -140,7 +153,7 @@ sub item_list : Private {
     my $form_class = $c->stash->{form_class};
     my $form = $form_class->new(
         page_list => [ add_items => {
-            fields => [ "continue", "item_999", "item_photo_999", "item_photo_999_fileid", "item_notes_999" ],
+            fields => [ "continue", "item_999", "item_photo_999", "item_photo_999_fileid", "item_notes_999", "item_quantity_999" ],
         } ],
         field_list => [ item_fields(999, $notes_field) ],
         page_name => 'add_items',
