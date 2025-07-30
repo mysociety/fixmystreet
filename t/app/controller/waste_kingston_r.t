@@ -431,6 +431,7 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3145,
+            EventStateId => 0,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             ServiceId => 970,
         } ] });
@@ -440,6 +441,7 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3145,
+            EventStateId => 0,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
             ServiceId => 974,
         } ] });
