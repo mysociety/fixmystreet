@@ -146,7 +146,13 @@ sub pay {
                 'scpbase:cardHolderName' => $args->{name},
                 'scpbase:address' => ixhash(
                     'scpbase:address1' => $args->{address1},
-                    'scpbase:address2' => $args->{address2},
+                    $args->{town} && $args->{address2}
+                        ? ( 'scpbase:address2' => $args->{address2} )
+                        : (),
+                    # Town/city may end up in the address2 field
+                    $args->{town}
+                        ? ( 'scpbase:city' => $args->{town} )
+                        : ( 'scpbase:city' => $args->{address2} ),
                     'scpbase:country' => $args->{country},
                     'scpbase:postcode' => $args->{postcode},
                 ),
