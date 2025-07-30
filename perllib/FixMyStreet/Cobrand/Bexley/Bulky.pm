@@ -112,6 +112,20 @@ sub check_bulky_slot_available {
     return $slot ? 1 : 0;
 }
 
+sub bulky_date_label {
+    my ( $self, $dt ) = @_;
+
+    my $format = '%A %e %B';
+    my $label = $dt->strftime($format);
+
+    # Saturdays have higher pricing
+    if ( $dt->day_of_week == 6 ) {
+        $label .= ' (extra charge)';
+    }
+
+    return $label;
+}
+
 # Pricing
 
 sub bulky_points_per_item_pricing { 1 }
