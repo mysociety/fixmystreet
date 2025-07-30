@@ -147,6 +147,7 @@ sub pay {
                 'scpbase:address' => ixhash(
                     'scpbase:address1' => $args->{address1},
                     'scpbase:address2' => $args->{address2},
+                    'scpbase:city' => $args->{address2}, # Town/city seems to end up in the address2 field
                     'scpbase:country' => $args->{country},
                     'scpbase:postcode' => $args->{postcode},
                 ),
