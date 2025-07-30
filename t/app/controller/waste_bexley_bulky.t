@@ -186,7 +186,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
         $mech->submit_form_ok({ with_fields => { pension => 'No', disability => 'No' } });
         $mech->content_contains('4 July');
-        $mech->content_contains('5 July');
+        $mech->content_contains('5 July (extra charge)');
         $mech->content_lacks('7 July');
         $mech->submit_form_ok({ with_fields => { chosen_date => '2025-07-04;3;' } });
         $mech->submit_form_ok({ form_number => 1, fields => {
