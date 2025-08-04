@@ -153,7 +153,7 @@ sub waste_cc_check_payment_status {
 sub per_item_cost_code {
     my ($p, $payment, $cost_code) = @_;
     if ($p->cobrand eq 'merton') {
-        my $container = $p->get_extra_field_value('Container_Type');
+        my $container = $p->get_extra_field_value('Container_Type') || '';
         if ($container eq 26 || $container eq 27) { # Garden (eq because could be e.g. '35::2')
             $cost_code = $payment->config->{cost_code_admin_fee};
         }
