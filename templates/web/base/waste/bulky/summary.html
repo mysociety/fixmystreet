@@ -246,7 +246,12 @@ SET data = form.saved_data;
               <dt>Location</dt>
               <dd>[% data.location %]</dd>
               <dt>Parking restrictions</dt>
-              <dd>[% data.parking %]</dd>
+              <dd>
+                [% data.parking %]
+                [% IF data.parking_extra_details %]
+                  <br>[% data.parking_extra_details %]
+                [% END %]
+              </dd>
           </dl>
         [% ELSIF data.location %]
           [% data.location %]
