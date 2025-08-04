@@ -28,12 +28,13 @@ sub pay {
 
     my @items;
     foreach (@{$args->{items}}) {
+        next unless $_->{amount};
         push @items, {
             Ref1 => $_->{cost_code},
             Ref2 => $_->{reference},
             #Narrative => $args->{uprn},
             FundCode => $args->{fund_code},
-            Amount => $_->{amount} ? $_->{amount} : '0',
+            Amount => $_->{amount},
         };
     }
 
