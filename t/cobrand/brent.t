@@ -961,6 +961,7 @@ FixMyStreet::override_config {
         }, "submit details");
         my $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         is $report->category, 'Fly-tip Small - Less than one bag (Parks)';
+        is $report->get_extra_metadata('group'), 'Parks and open spaces';
 
         $mech->get_ok('/report/new?latitude=51.563623&longitude=-0.274082');
         $mech->submit_form_ok({
@@ -972,6 +973,7 @@ FixMyStreet::override_config {
         }, "submit details");
         $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         is $report->category, 'Fly-tip Small - Less than one bag (Estates)';
+        is $report->get_extra_metadata('group'), 'Council Estate Grounds';
 
         $mech->get_ok('/report/new?latitude=51.563683&longitude=-0.276120');
         $mech->submit_form_ok({
@@ -983,6 +985,7 @@ FixMyStreet::override_config {
         }, "submit details");
         $report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
         is $report->category, 'Fly-tip Small - Less than one bag';
+        is $report->get_extra_metadata('group'), 'Fly-tipping';
     };
 
     subtest 'Fly-tipping category selection on .com' => sub {

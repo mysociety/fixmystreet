@@ -571,10 +571,13 @@ sub report_new_munge_before_insert {
     my $type = $self->problem_is_within_area_type($report);
     if ($type eq 'ms:Parks_and_Open_Spaces') {
         $report->category("$cat_base (Parks)");
+        $report->set_extra_metadata(group => 'Parks and open spaces');
     } elsif ($type eq 'ms:Housing') {
         $report->category("$cat_base (Estates)");
+        $report->set_extra_metadata(group => 'Council Estate Grounds');
     } else {
         $report->category($cat_base);
+        $report->set_extra_metadata(group => 'Fly-tipping');
     }
 }
 
