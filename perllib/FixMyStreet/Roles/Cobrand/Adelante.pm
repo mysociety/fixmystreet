@@ -41,11 +41,12 @@ sub waste_cc_get_redirect_url {
     my $address = $c->stash->{property}{address};
     my $ref = $self->waste_cc_payment_reference($p);
 
-    my @items = ({
+    my @items;
+    push @items, {
         amount => $amount,
         cost_code => per_item_cost_code($p, $payment, $cost_code),
         reference => $ref,
-    });
+    } if $amount;
     if (my $grouped_ids = $p->get_extra_metadata('grouped_ids')) {
         foreach my $id (@$grouped_ids) {
             my $problem = $c->model('DB::Problem')->find({ id => $id });
