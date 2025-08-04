@@ -1323,19 +1323,19 @@ var ncc_rightsofway_style = new OpenLayers.Style({
 var ncc_rightsofway_rules = [
     create_rule(
         function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Footpath'; },
-        { strokeColor: '#ECA20C', strokeDashstyle: "dash" }
+        { strokeColor: '#FF0000', strokeDashstyle: "dash" }
     ),
     create_rule(
         function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Bridleway'; },
-        { strokeColor: '#70B5E2', strokeDashstyle: "dash" }
+        { strokeColor: '#4CE600', strokeDashstyle: "dash" }
     ),
     create_rule(
         function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Byway Open to All Traffic'; },
-        { strokeColor: '#E05F24' }
+        { strokeColor: '#B7814A' }
     ),
     create_rule(
         function(f) { return f && f.attributes && f.attributes.type && f.attributes.type === 'Restricted Byway'; },
-        { strokeColor: '#6F133C', strokeDashstyle: "dash" }
+        { strokeColor: '#F789D8' }
     )
 ];
 ncc_rightsofway_style.addRules(ncc_rightsofway_rules);
