@@ -64,8 +64,8 @@ has_field location => (
         my $data = $self->form->saved_data;
         my @options = (
             'Front garden or driveway',
-            'Rear of property (only for properties with no frontage)',
-            'Side of property (only for properties with no frontage)',
+            'Rear of property (only if no front access)',
+            'Side of property (only if no front access)',
             'Inside garage (left open)',
             'Inside or alongside communal bin-store (flats only)',
             'In the car park (flats only)',
