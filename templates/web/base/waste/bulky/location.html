@@ -13,3 +13,12 @@
         Items must be out for collection by [% collection_time %] on the collection day.
     </p>
 [% END %]
+[% IF c.cobrand.moniker == 'bexley' %]
+    <p class="govuk-body">
+        <i>
+            Ensure your items are easily accessible at the selected location by <b>[% c.cobrand.bulky_nice_collection_time %]</b> on the day of your booking.
+            <br><br>
+            Ensure that all items to be collected are neatly stacked and kept separate from any other items that are not being collected.
+        </i>
+    </p>
+[% END %]
