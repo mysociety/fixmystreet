@@ -8,7 +8,7 @@ sub _build_title {
     my $cobrand = $self->form->{c}->cobrand->moniker;
     if ($cobrand =~ /^(kingston|sutton)$/) {
         return 'Book bulky items collection';
-    } elsif ($cobrand eq 'merton') {
+    } elsif ( $cobrand eq 'merton' || $cobrand eq 'bexley' ) {
         return 'Book a bulky waste collection';
     } else {
         return 'Book bulky goods collection';
