@@ -39,8 +39,8 @@ my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, {
 });
 my $kingston = $mech->create_body_ok(2480, 'Kingston Council', { %$params, cobrand => 'kingston' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
-my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $kingston->id);
-$staff->user_body_permissions->create({ body => $kingston, permission_type => 'report_edit' });
+my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
+$staff->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 
 sub create_contact {
     my ($params, $group, @extra) = @_;
@@ -934,7 +934,12 @@ FixMyStreet::override_config {
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
-
+    subtest 'CSV export including escalation information' => sub {
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_like(qr/Complaint against time.*LBS-123/);
+        $mech->content_like(qr/Failure to Deliver.*LBS-789/);
+    };
 };
 
 sub get_report_from_redirect {

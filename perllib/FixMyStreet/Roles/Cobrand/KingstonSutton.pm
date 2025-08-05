@@ -203,6 +203,8 @@ sub dashboard_export_problems_add_columns {
         container => 'Subscription container',
         current_bins => 'Bin count declared',
         quantity => 'Subscription quantity',
+        # Escalations
+        $self->moniker eq 'sutton' ? (original_ref => 'Original reference') : (),
     );
 
     $csv->objects_attrs({
@@ -243,6 +245,7 @@ sub dashboard_export_problems_add_columns {
             container => $fields{Paid_Container_Type} || $fields{Subscription_Details_Containers},
             current_bins => $fields{current_containers},
             quantity => $fields{Paid_Container_Quantity} || $fields{Subscription_Details_Quantity},
+            original_ref => $fields{original_ref},
         };
     });
 }
