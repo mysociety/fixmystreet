@@ -165,6 +165,7 @@ sub _process_update {
     my $body = $self->current_body;
 
     $self->_handle_assigned_user($request, $p);
+    $self->_handle_category_change($request, $p);
 
     my $state = $open311->map_state( $request->{status} );
     my $old_state = $p->state;
@@ -202,18 +203,7 @@ sub _process_update {
         $request->{comment_time} = $p->whensent + DateTime::Duration->new( seconds => 1 );
     }
 
-    my $comment = $self->schema->resultset('Comment')->new(
-        {
-            problem => $p,
-            user => $self->system_user,
-            external_id => $request->{update_id},
-            send_state => 'processed',
-            text => $text,
-            confirmed => $request->{comment_time},
-            created => $request->{comment_time},
-            private_email_text => $email_text,
-        }
-    );
+    my $comment = $self->_comment_for_update($p, $text, $email_text, $request->{comment_time}, $request->{update_id});
 
     # Some Open311 services, e.g. Confirm via open311-adapter, provide
     # a more fine-grained status code that we use within FMS for
@@ -364,19 +354,60 @@ sub _handle_assigned_user {
                     $request->{extras}{detailed_information} )
                 : $p->unset_extra_metadata('detailed_information');
         }
+    }
+}
 
-        # Category & group
+=head2 _handle_category_change
+
+If the update includes a change of category handle that here.
+This will add a new comment to the report showing that the category changed.
+
+=cut
+
+sub _handle_category_change {
+    my ($self, $request, $p) = @_;
+    my $body = $self->current_body;
+
+    if ($request->{extras}) {
         # TODO Do we want to check that category and group match?
         if ( my $category = $request->{extras}{category} ) {
-            my $contact
-                = $body->contacts->search( { category => $category } )->first;
-            $p->category($category) if $contact;
+            if (my $contact = $body->contacts->search( { category => $category } )->first) {
+                my $old = $p->category;
+                my $new = $contact->category;
+                if ($new ne $old) {
+                    $p->category($new);
+                    my $text = '*' . sprintf(_('Category changed from ‘%s’ to ‘%s’'), $old, $new) . '*';
+                    my $comment = $self->_comment_for_update($p, $text, undef, $request->{comment_time});
+
+                    return unless $self->commit;
+
+                    $comment->insert();
+                    if ( $self->suppress_alerts ) {
+                        $p->cancel_update_alert($comment->id, $p->user->id);
+                    }
+                }
+            }
         }
 
         if ( my $group = $request->{extras}{group} ) {
             $p->set_extra_metadata( group => $group );
         }
     }
+}
+
+sub _comment_for_update {
+    my ($self, $p, $text, $email_text, $time, $external_id) = @_;
+
+    return $self->schema->resultset('Comment')->new({
+        problem => $p,
+        user => $self->system_user,
+        send_state => 'processed',
+        $external_id ? (external_id => $external_id) : (),
+        text => $text,
+        confirmed => $time,
+        created => $time,
+        $email_text ? (private_email_text => $email_text) : (),
+    } );
 }
 
 1;

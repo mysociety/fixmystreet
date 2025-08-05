@@ -12,7 +12,7 @@
         [% IF unit.escalations.container AND NOT unit.escalations.container_open %]
             <br>
             We’re sorry if this issue has not been resolved to your satisfaction;
-            <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.container.id %]&amp;event_guid=[% unit.escalations.container.guid %]&amp;category=Failure+to+Deliver+Bags%2FContainers"
+            <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.container.id %]:[% unit.escalations.container.guid %]:[% unit.escalations.container.ref %]&amp;category=Failure+to+Deliver+Bags%2FContainers"
                 class="waste-service-link">please report the problem here</a>
         [% END %]
     [% END %]

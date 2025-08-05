@@ -285,6 +285,26 @@ sub categories_restriction {
     ] } );
 }
 
+=item * Report resending
+
+We need to resend reports if they're switched between different Open311
+backends.
+
+=cut
+
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+
+    # Get the Open311 identifiers
+    my $contacts = $self->{c}->stash->{contacts};
+    ($old) = map { $_->email } grep { $_->category eq $old } @$contacts;
+    ($new) = map { $_->email } grep { $_->category eq $new } @$contacts;
+
+    # Okay if we're switching to/from Passthrough
+    return 1 if $old =~ /^(Passthrough)/ xor $new =~ /^(Passthrough)/;
+    return 0;
+}
+
 # Skip updates trying to send to the wrong backend; BANES have all reports
 # going to their own endpoint on top of Confirm anyway, so any category change
 # without resending doesn't need to receive updates

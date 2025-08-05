@@ -39,8 +39,8 @@ my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, {
 });
 my $kingston = $mech->create_body_ok(2480, 'Kingston Council', { %$params, cobrand => 'kingston' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
-my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $kingston->id);
-$staff->user_body_permissions->create({ body => $kingston, permission_type => 'report_edit' });
+my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
+$staff->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 
 sub create_contact {
     my ($params, $group, @extra) = @_;
@@ -65,11 +65,13 @@ create_contact({ category => 'Complaint against time', email => '3134' }, 'Waste
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'original_ref', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Failure to Deliver Bags/Containers', email => '3141' }, 'Waste',
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'original_ref', required => 1, automated => 'hidden_field' },
     { code => 'container_request_guid', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
@@ -79,7 +81,6 @@ create_contact({ category => 'Request new container', email => '3129' }, 'Waste'
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Action', required => 1, automated => 'hidden_field' },
     { code => 'Reason', required => 1, automated => 'hidden_field' },
-    { code => 'LastPayMethod', required => 0, automated => 'hidden_field' },
     { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 0, automated => 'hidden_field' },
     { code => 'payment', required => 0, automated => 'hidden_field' },
@@ -686,6 +687,7 @@ FixMyStreet::override_config {
         subtest 'Open missed collection' => sub {
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
+                ClientReference => 'LBS-123',
                 EventTypeId => 3145, # Missed collection
                 EventStateId => 19240, # Allocated to Crew
                 ServiceId => 940, # Refuse
@@ -714,6 +716,7 @@ FixMyStreet::override_config {
                 is $report->user->email, 'schmoe@example.org', 'User details added to report';
                 is $report->name, 'Joe Schmoe', 'User details added to report';
                 is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
+                is $report->get_extra_field_value('original_ref'), 'LBS-123';
             };
 
             set_fixed_time('2022-09-15T17:00:00Z');
@@ -819,6 +822,7 @@ FixMyStreet::override_config {
 
         my $open_container_request_event = {
             Id => '112112321',
+            ClientReference => 'LBS-789',
             EventTypeId => 3129, # Container request
             EventDate => { DateTime => $request_time },
             Data => { ExtensibleDatum => [
@@ -924,12 +928,18 @@ FixMyStreet::override_config {
             is $report->name, 'Joe Schmoe', 'User name added to report';
             is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
             is $report->get_extra_field_value('container_request_guid'), 'container-request-event-guid';
+            is $report->get_extra_field_value('original_ref'), 'LBS-789';
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
-
+    subtest 'CSV export including escalation information' => sub {
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_like(qr/Complaint against time.*LBS-123/);
+        $mech->content_like(qr/Failure to Deliver.*LBS-789/);
+    };
 };
 
 sub get_report_from_redirect {

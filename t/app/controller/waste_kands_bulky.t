@@ -43,6 +43,7 @@ create_contact($sutton, { category => 'Complaint against time', email => '3134' 
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'original_ref', required => 0, automated => 'hidden_field' },
     { code => 'missed_guid', required => 0, automated => 'hidden_field' },
 );
 
@@ -1063,6 +1064,7 @@ FixMyStreet::override_config {
         subtest 'Open missed collection' => sub {
             $echo->mock('GetEventsForObject', sub { [ {
                 Id => '8004',
+                ClientReference => 'LBS-123',
                 Guid => 'booking-guid',
                 ServiceId => 960, # Bulky
                 EventTypeId => 3130, # Bulky collection
@@ -1072,6 +1074,7 @@ FixMyStreet::override_config {
                 ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
             }, {
                 Id => '315530',
+                ClientReference => 'LBS-456',
                 Guid => 'missed-guid',
                 ServiceId => 960, # Bulky
                 EventTypeId => 3145, # Missed collection
@@ -1100,6 +1103,7 @@ FixMyStreet::override_config {
                 is $escalation->name, 'Joe Schmoe', 'User details added to report';
                 is $escalation->get_extra_field_value('Notes'), 'Originally Echo Event #315530';
                 is $escalation->get_extra_field_value('missed_guid'), 'missed-guid';
+                is $escalation->get_extra_field_value('original_ref'), 'LBS-456';
             };
 
             set_fixed_time('2025-04-12T19:00:00Z');

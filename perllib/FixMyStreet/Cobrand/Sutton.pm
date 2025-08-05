@@ -685,11 +685,17 @@ sub waste_munge_enquiry_data {
     } elsif ($data->{category} eq 'Waste spillage') {
         $detail = "$data->{extra_Notes}\n\n";
     } elsif ($data->{category} eq 'Complaint against time') {
-        $data->{extra_Notes} = 'Originally Echo Event #' . $c->get_param('event_id');
+        my $event_id = $c->get_param('event_id');
+        my ($echo, $ww) = split /:/, $event_id;
+        $data->{extra_Notes} = "Originally Echo Event #$echo";
+        $data->{extra_original_ref} = $ww;
         $data->{extra_missed_guid} = $c->get_param('event_guid');
     } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
-        $data->{extra_Notes} = 'Originally Echo Event #' . $c->get_param('event_id');
-        $data->{extra_container_request_guid} = $c->get_param('event_guid');
+        my $event_id = $c->get_param('event_id');
+        my ($echo, $guid, $ww) = split /:/, $event_id;
+        $data->{extra_Notes} = "Originally Echo Event #$echo";
+        $data->{extra_original_ref} = $ww;
+        $data->{extra_container_request_guid} = $guid;
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;

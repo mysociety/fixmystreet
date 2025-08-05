@@ -45,7 +45,10 @@ sub check {
     my @check;
     my $domain;
     if ($email) {
-        $email = lc $email;
+        # if there are comma-separated emails just check the first. Ideally we'd
+        # check all of them but we should never end up with multiple
+        # user-submitted values here, only from config.
+        ($email) = split(",", lc $email);
         ($domain) = $email =~ m{ @ (.*) \z }x;
         push @check, $email, $domain;
     }

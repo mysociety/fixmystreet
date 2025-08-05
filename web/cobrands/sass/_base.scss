@@ -1011,7 +1011,8 @@ html.mobile.js-nav-open #js-menu-open-modal {
   }
 }
 
-.has-inline-svg {
+.has-inline-svg,
+.btn.has-inline-svg {
   display: flex;
   flex-direction: row;
   gap: 0.25rem;
@@ -3266,11 +3267,32 @@ a#geolocate_link {
   }
 }
 
-.my-account-buttons a {
-  display: inline-block;
-  background: #f6f6f6;
-  padding: 0.5em 1em;
-  border-radius: 0.2em;
+.my-account-preferences-list {
+  margin-left: 0;
+  li {
+    list-style: none;
+    margin-bottom: 1rem;
+  }
+}
+
+.my-account-preferences-list--email,
+.my-account-preferences-list--phone {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.my-account-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.5rem;
+  row-gap: 1rem;
+  margin-bottom: 0;
+
+  .btn + .btn {
+    margin-left: 0;
+  }
 }
 
 // Useful for inserting hidden forms on the page, but still allowing

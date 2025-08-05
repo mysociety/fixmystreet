@@ -41,6 +41,7 @@ sub parse {
         my $event = {
             id => $_->{Id},
             guid => $_->{Guid},
+            ref => $_->{ClientReference},
             type => $type,
             event_type => $event_type || 0,
             service_id => $service_id || 0,

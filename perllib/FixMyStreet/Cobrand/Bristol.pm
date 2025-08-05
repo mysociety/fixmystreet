@@ -213,7 +213,9 @@ specific Bristol owned properties that don't have a USRN
 =cut
 
 sub lookup_site_code_config {
+    my $self = shift;
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+    my %ignored = map { $_ => 1 } @{ $self->_ignored_usrns };
     return {
         buffer => 200, # metres
         url => "https://$host/proxy/bristol/wfs/",
@@ -221,7 +223,11 @@ sub lookup_site_code_config {
         property => "USRN",
         version => '2.0.0',
         srsname => "urn:ogc:def:crs:EPSG::27700",
-        accept_feature => sub { 1 },
+        accept_feature => sub {
+            my $feature = shift;
+            my $usrn = $feature->{properties}->{USRN};
+            return $ignored{$usrn} ? 0 : 1;
+        },
         reversed_coordinates => 1,
     };
 }
@@ -235,6 +241,36 @@ sub open311_update_missing_data {
         }
     };
 }
+
+sub _ignored_usrns {
+    # This is a list of all National Highways USRNs within Bristol that should
+    # be ignored when looking up site codes for Alloy reports. Provided by
+    # Bristol in FD-5607.
+    return FixMyStreet::DB->resultset("Config")->get('bristol_ignored_usrns') || [];
+}
+
+around open311_extra_data_include => sub {
+    my ($orig, $self) = (shift, shift);
+    my $open311_only = $self->$orig(@_);
+
+    my ($row, $h, $contact) = @_;
+
+    # Add contributing user's roles to report title
+    if (my $contributed_by = $row->get_extra_metadata('contributed_by')) {
+        if (my $user = FixMyStreet::DB->resultset('User')->find({ id => $contributed_by })) {
+            my $roles = join(',', map { $_->name } $user->roles->all);
+            my $extra = $user->name;
+            $extra .= " - $roles" if $roles;
+            for (@$open311_only) {
+                if ($_->{name} eq 'title') {
+                    $_->{value} = "$extra\n\n$_->{value}";
+                }
+            }
+        }
+    }
+
+    return $open311_only;
+};
 
 =head2 open311_contact_meta_override
 
