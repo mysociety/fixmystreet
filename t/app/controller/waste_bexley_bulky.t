@@ -204,7 +204,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     location => 'Front garden or driveway',
-                    parking  => 'Yes - Single Yellow Lines',
+                    parking  => 'Yes - single yellow lines',
                     parking_extra_details => 'They turn red at midnight',
                 }
             }
@@ -245,7 +245,7 @@ FixMyStreet::override_config {
             is $new_report->get_extra_field_value('collection_date'), '2025-07-04', 'correct date';
             is $new_report->get_extra_field_value('round_instance_id'), '3', 'correct date';
             is $new_report->get_extra_field_value('bulky_parking'),
-                "Yes - Single Yellow Lines\n\nThey turn red at midnight",
+                "Yes - single yellow lines\n\nThey turn red at midnight",
                 'correct parking info';
             is $new_report->state, 'confirmed', 'report confirmed';
 
