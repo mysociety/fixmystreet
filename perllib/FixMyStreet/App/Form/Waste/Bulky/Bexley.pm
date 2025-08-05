@@ -91,24 +91,24 @@ has_field parking => (
             value     => 'No',
             data_hide => '#form-parking_extra_details-row',
         },
-        {   label => 'Yes – Single Yellow Lines',
-            value => 'Yes - Single Yellow Lines',
+        {   label => 'Yes – single yellow lines',
+            value => 'Yes - single yellow lines',
             data_show => '#form-parking_extra_details-row',
         },
-        {   label     => 'Yes – Double Yellow Lines',
-            value     => 'Yes - Double Yellow Lines',
+        {   label     => 'Yes – double yellow lines',
+            value     => 'Yes - double yellow lines',
             data_hide => '#form-parking_extra_details-row',
         },
-        {   label     => 'Yes – Red Lines',
-            value     => 'Yes - Red Lines',
+        {   label     => 'Yes – red lines',
+            value     => 'Yes - red lines',
             data_hide => '#form-parking_extra_details-row',
         },
-        {   label => 'Yes – Controlled Parking Zone',
-            value => 'Yes - Controlled Parking Zone',
+        {   label => 'Yes – controlled parking zone',
+            value => 'Yes - controlled parking zone',
             data_show => '#form-parking_extra_details-row',
         },
-        {   label => 'Yes – Resident Permit Holders Only',
-            value => 'Yes - Resident Permit Holders Only',
+        {   label => 'Yes – resident permit holders only',
+            value => 'Yes - resident permit holders only',
             data_show => '#form-parking_extra_details-row',
         },
     ],
@@ -122,7 +122,7 @@ has_field parking_extra_details => (
     required_when => {
         parking => sub {
             $_[1]->form->field('parking')->value
-                =~ /^Yes - (Single Yellow Lines|Controlled Parking Zone|Resident Permit Holders Only)$/;
+                =~ /^Yes - (single yellow lines|controlled parking zone|resident permit holders only)$/;
         },
     },
     tags => {
