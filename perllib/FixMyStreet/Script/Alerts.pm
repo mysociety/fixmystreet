@@ -456,7 +456,9 @@ sub _send_aggregated_alert_email {
 
 sub _send_aggregated_alert_phone {
     my %data = @_;
-    my $result = FixMyStreet::SMS->new(cobrand => $data{cobrand})->send(
+    # Use waste config if any of the things being alerted on are waste
+    my $cfg = (grep { $_->{cobrand_data} eq 'waste' } @{ $data{data} } ) ? 'waste' : 'default';
+    my $result = FixMyStreet::SMS->new(cobrand => $data{cobrand}, notify_choice => $cfg)->send(
         to => $data{alert_user}->phone,
         body => sprintf(_("Your report (%d) has had an update; to view: %s\n\nTo stop: %s"), $data{id}, $data{problem_url}, $data{unsubscribe_url}),
     );
