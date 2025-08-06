@@ -178,7 +178,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/10001/bulky');
 
         subtest 'Intro page' => sub {
-            $mech->content_contains('Book bulky goods collection');
+            $mech->content_contains('Book a bulky waste collection');
             $mech->content_contains('Before you start your booking');
             $mech->content_contains('Prices start from £45.50');
             $mech->submit_form_ok;
@@ -240,7 +240,7 @@ FixMyStreet::override_config {
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
             is $new_report->category, 'Bulky collection', 'correct category on report';
-            is $new_report->title, 'Bulky goods collection', 'correct title on report';
+            is $new_report->title, 'Bulky waste collection', 'correct title on report';
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $new_report->get_extra_field_value('collection_date'), '2025-07-04', 'correct date';
             is $new_report->get_extra_field_value('round_instance_id'), '3', 'correct date';
@@ -323,7 +323,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Show upcoming bin days');
             is $report->detail, "Address: 1 Test Street, Bexley, DA1 1AA";
             is $report->category, 'Bulky collection';
-            is $report->title, 'Bulky goods collection';
+            is $report->title, 'Bulky waste collection';
             is $report->get_extra_field_value('uprn'), 10001;
             is $report->get_extra_field_value('collection_date'), '2025-07-04';
             is $report->get_extra_field_value('bulky_items'), '3::85::83';
@@ -455,7 +455,7 @@ FixMyStreet::override_config {
 
         subtest 'Sends refund email' => sub {
             is $email->header('Subject'),
-                'Refund requested for cancelled bulky goods collection ' . $report->id,
+                'Refund requested for cancelled bulky waste collection ' . $report->id,
                 'Correct subject';
             is $email->header('To'),
                 '"London Borough of Bexley" <bulkycontact@example.org>',
@@ -483,7 +483,7 @@ FixMyStreet::override_config {
     };
 
     subtest "Cancel booking when no payment within 30 minutes" => sub {
-        my ( $p ) = $mech->create_problems_for_body(1, $body->id, "Bulky goods collection", {
+        my ( $p ) = $mech->create_problems_for_body(1, $body->id, "Bulky waste collection", {
             category => "Bulky collection",
             state => "confirmed",
             external_id => "123",

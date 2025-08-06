@@ -25,7 +25,7 @@ has_field pension => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
-    label => 'Is anyone at the property in receipt of a state pension?',
+    label => 'Does anyone at the property receive a state pension?',
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
@@ -55,7 +55,7 @@ has_page location => (
 );
 
 has_field location => (
-    label => 'Where can the items be left for collection?',
+    label => 'Where will you leave the items?',
     type => 'Select',
     required => 1,
     widget => 'RadioGroup',
