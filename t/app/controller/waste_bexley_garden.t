@@ -747,6 +747,18 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
 
         subtest 'with active contract elsewhere' => sub {
+            $whitespace_mock->mock('GetSiteCollections', sub {
+                [ {
+                    SiteServiceID          => 1,
+                    ServiceItemDescription => 'Non-recyclable waste',
+                    ServiceItemName => 'PC-180',
+                    ServiceName          => 'Blue Wheelie Bin',
+                    NextCollectionDate   => '2024-02-07T00:00:00',
+                    SiteServiceValidFrom => '2000-01-01T00:00:00',
+                    SiteServiceValidTo   => '0001-01-01T00:00:00',
+                    RoundSchedule => 'RND-1 Mon',
+                } ];
+            });
             $agile_mock->mock( 'CustomerSearch', sub { {
                 Customers => [
                     {
