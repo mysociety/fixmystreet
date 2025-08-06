@@ -483,7 +483,7 @@ FixMyStreet::override_config {
 
         subtest 'Sends refund email' => sub {
             is $email->header('Subject'),
-                'Refund requested for cancelled bulky goods collection ' . $report->id,
+                'Refund requested for cancelled bulky waste collection ' . $report->id,
                 'Correct subject';
             is $email->header('To'),
                 '"London Borough of Bexley" <bulkycontact@example.org>',
