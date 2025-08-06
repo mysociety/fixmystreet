@@ -1103,7 +1103,7 @@ FixMyStreet::override_config {
             check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0, payment_method => 'csc');
 
             $mech->get_ok("/waste/pay_complete/$report_id/$token");
-            check_extra_data_post_confirm($new_report, 1);
+            check_extra_data_post_confirm($new_report);
 
             is $new_report->get_extra_field_value('MPOSID'), 'mposid', 'correct staff extra payment data';
 
@@ -1129,7 +1129,7 @@ FixMyStreet::override_config {
         check_extra_data_pre_confirm($report, type => 'Amend', quantity => 2, payment_method => 'csc');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        check_extra_data_post_confirm($report, 1);
+        check_extra_data_post_confirm($report);
         is $report->name, 'Test McTest', 'non staff user name';
         is $report->user->email, 'test@example.net', 'non staff email';
 
@@ -1346,7 +1346,7 @@ FixMyStreet::override_config {
         check_extra_data_pre_confirm($new_report, bin_type => 27, payment_method => 'csc');
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
-        check_extra_data_post_confirm($new_report, 1);
+        check_extra_data_post_confirm($new_report);
         is $new_report->name, 'Test McTest', 'non staff user name';
         is $new_report->user->email, 'test@example.net', 'non staff email';
 
@@ -1380,7 +1380,6 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset('Problem')->search( { id => $report_id } )->first;
 
         check_extra_data_pre_confirm($report, payment_method => 'cheque', state => 'confirmed');
-        is $report->get_extra_field_value('LastPayMethod'), 4, 'correct echo payment method field';
         is $report->get_extra_metadata('chequeReference'), 'Cheque123', 'cheque reference saved';
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
         $report->delete; # Otherwise next test sees this as latest
@@ -1489,14 +1488,12 @@ sub check_extra_data_pre_confirm {
 }
 
 sub check_extra_data_post_confirm {
-    my ($report, $pay_method) = @_;
-    $pay_method ||= 2;
+    my ($report) = @_;
     ok $report, "report passed to check_extra_data_post_confirm";
     return unless $report;
 
     $report->discard_changes;
     is $report->state, 'confirmed', 'report confirmed';
-    is $report->get_extra_field_value('LastPayMethod'), $pay_method, 'correct echo payment method field';
     is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 }

@@ -202,7 +202,6 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'Container_Request_Notes', required => 0, automated => 'hidden_field' },
     { code => 'Container_Request_Reason', required => 0, automated => 'hidden_field' },
     { code => 'service_id', required => 0, automated => 'hidden_field' },
-    { code => 'LastPayMethod', required => 0, automated => 'hidden_field' },
     { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
@@ -1373,7 +1372,6 @@ FixMyStreet::override_config {
                 # The below does a similar checks to the garden test check_extra_data_post_confirm
                 $report->discard_changes;
                 is $report->state, 'confirmed', 'report confirmed';
-                is $report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
                 is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
                 is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 

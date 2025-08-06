@@ -1,8 +1,8 @@
-[% IF data.payment_method == 'credit_card' OR payment_method == 2 %]Debit or Credit Card
-[%~ ELSIF data.payment_method == 'direct_debit' OR payment_method == 3 %]Direct Debit
-[%~ ELSIF data.payment_method == 'cheque' OR payment_method == 4 %]Cheque
+[% IF data.payment_method == 'credit_card' OR payment_method == 'credit_card' %]Debit or Credit Card
+[%~ ELSIF data.payment_method == 'direct_debit' OR payment_method == 'direct_debit' %]Direct Debit
+[%~ ELSIF data.payment_method == 'cheque' OR payment_method == 'cheque' %]Cheque
     [% IF data.cheque_reference %](reference [% data.cheque_reference %])[% END %]
-[%~ ELSIF data.payment_method == 'waived' OR payment_method == 5 %]Waived
+[%~ ELSIF data.payment_method == 'waived' OR payment_method == 'waived' %]Waived
     [% IF data.payment_explanation %]([% data.payment_explanation %])[% END %]
-[%~ ELSIF payment_method == 1 %]CSC
+[%~ ELSIF payment_method == 'csc' %]CSC
 [%~ END %]

@@ -1600,11 +1600,13 @@ sub waste_confirm_payment {
     foreach my $p (@problems) {
         $db->txn_do(sub {
             $p = $rs->search({ id => $p->id }, { for => \'UPDATE' })->single;
-            $p->update_extra_field( {
-                name => 'LastPayMethod',
-                description => 'LastPayMethod',
-                value => $cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
-            }) if $p->get_extra_field_value('payment_method');
+            if ($p->cobrand eq 'bromley' && $p->get_extra_field_value('payment_method')) {
+                $p->update_extra_field( {
+                    name => 'LastPayMethod',
+                    description => 'LastPayMethod',
+                    value => $cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
+                });
+            }
             $p->update_extra_field( {
                 name => 'PaymentCode',
                 description => 'PaymentCode',
