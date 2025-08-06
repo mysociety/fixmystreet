@@ -240,7 +240,7 @@ FixMyStreet::override_config {
             my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
             is $new_report->category, 'Bulky collection', 'correct category on report';
-            is $new_report->title, 'Bulky goods collection', 'correct title on report';
+            is $new_report->title, 'Bulky waste collection', 'correct title on report';
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $new_report->get_extra_field_value('collection_date'), '2025-07-04', 'correct date';
             is $new_report->get_extra_field_value('round_instance_id'), '3', 'correct date';
@@ -323,7 +323,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Show upcoming bin days');
             is $report->detail, "Address: 1 Test Street, Bexley, DA1 1AA";
             is $report->category, 'Bulky collection';
-            is $report->title, 'Bulky goods collection';
+            is $report->title, 'Bulky waste collection';
             is $report->get_extra_field_value('uprn'), 10001;
             is $report->get_extra_field_value('collection_date'), '2025-07-04';
             is $report->get_extra_field_value('bulky_items'), '3::85::83';
