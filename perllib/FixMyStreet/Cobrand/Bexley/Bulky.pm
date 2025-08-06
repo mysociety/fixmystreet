@@ -189,7 +189,7 @@ sub waste_munge_bulky_data {
 
     my ($date, $ref) = split(";", $data->{chosen_date});
 
-    $data->{title} = "Bulky goods collection";
+    $data->{title} = "Bulky waste collection";
     $data->{detail} = "Address: " . $c->stash->{property}->{address};
     $data->{category} = "Bulky collection";
     $data->{extra_collection_date} = $date;

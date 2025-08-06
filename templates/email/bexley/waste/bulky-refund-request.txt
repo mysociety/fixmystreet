@@ -1,5 +1,5 @@
 [% USE pounds = format('%.2f'); ~%]
-Subject: Refund requested for cancelled bulky goods collection [% wasteworks_id %]
+Subject: Refund requested for cancelled bulky waste collection [% wasteworks_id %]
 
 [% detail %]
 
@@ -7,7 +7,7 @@ Resident's Name: [% resident_name %]
 
 Resident's Email: [% resident_email %]
 
-A bulky goods collection has been cancelled and is entitled to a refund.
+A bulky waste collection has been cancelled and is entitled to a refund.
 
 Payment Date: [% USE date; date.format( payment_date, '%d/%m/%y %H:%M' ) %]
 
