@@ -55,7 +55,7 @@ has_page location => (
 );
 
 has_field location => (
-    label => 'Where can the items be left for collection?',
+    label => 'Where will you leave the items?',
     type => 'Select',
     required => 1,
     widget => 'RadioGroup',
