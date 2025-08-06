@@ -865,4 +865,34 @@ sub _format_address {
 
 sub bin_day_format { '%A, %-d~~~ %B %Y' }
 
+sub _bulky_send_optional_text {
+    my ($self, $report, $url, $params) = @_;
+
+    my %message_data = ();
+    my $title;
+    if ($params->{text_type} eq 'confirmed') {
+        $title = 'Bulky waste booking';
+    } else {
+        $title = 'Bulky waste reminder';
+    }
+    $message_data{to} = $report->phone_waste;
+    my $address = $report->detail;
+    $address =~ s/\s\|.*?$//; # Address may contain ref to Bartec report
+    $message_data{body} =
+    sprintf("%s\n\n
+            Date: %s
+            Items: %d
+            %s
+            Reference: %d
+            Please note the items put out for collection must be the items you specified when you booked.",
+            $title,
+            $self->bulky_nice_collection_date($report->get_extra_field_value('DATE')),
+            scalar grep ({ $_->{name} =~ /^ITEM/ && $_->{value} } @{$report->get_extra_fields}),
+            $address,
+            $report->id);
+    FixMyStreet::SMS->new(cobrand => $self, notify_choice => 'waste')->send(
+        %message_data,
+    );
+}
+
 1;

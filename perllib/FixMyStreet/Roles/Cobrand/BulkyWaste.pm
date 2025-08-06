@@ -620,11 +620,13 @@ sub bulky_reminders {
         if (!$r3 && $now >= $d3 && $now < $d1) {
             $h->{days} = 3;
             $self->_bulky_send_reminder_email($report, $h, $params);
+            $self->_bulky_send_reminder_text($report, $h, $params);
             $report->set_extra_metadata(reminder_3 => 1);
             $report->update;
         } elsif ($now >= $d1 && $now < $dt) {
             $h->{days} = 1;
             $self->_bulky_send_reminder_email($report, $h, $params);
+            $self->_bulky_send_reminder_text($report, $h, $params);
             $report->set_extra_metadata(reminder_1 => 1);
             $report->update;
         }
@@ -653,6 +655,14 @@ sub _bulky_send_reminder_email {
     } else {
         print " ...failed\n" if $params->{verbose};
     }
+}
+
+sub _bulky_send_reminder_text {
+    my ($self, $report, $h, $params) = @_;
+
+    return unless $report->get_extra_field_value('bulky_text_reminders');
+    $h->{url} = $self->base_url_for_report($report) . $report->tokenised_url($report->user);
+    $self->call_hook('_bulky_send_optional_text' => $report, $h->{url}, {text_type => 'reminder'});
 }
 
 sub bulky_send_before_payment { 0 }

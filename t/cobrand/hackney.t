@@ -5,6 +5,7 @@ use File::Temp 'tempdir';
 use JSON::MaybeXS;
 use Test::MockModule;
 use Test::MockTime qw(:all);
+use Crypt::JWT;
 use FixMyStreet::TestMech;
 use Open311;
 use Open311::GetServiceRequests;
@@ -170,10 +171,33 @@ subtest "sends branded alert emails" => sub {
     $mech->create_comment_for_problem($p, $system_user, 'Other User', 'This is some update text', 'f', 'confirmed', undef, { confirmed => $dt });
     $mech->clear_emails_ok;
 
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => ['hackney','fixmystreet'],
+        COBRAND_FEATURES => {
+            do_not_reply_email => { hackney => 'fms-hackney-DO-NOT-REPLY@hackney-example.com' },
+        },
+    }, sub {
+        FixMyStreet::Script::Alerts::send_updates();
+    };
+
+    my $email = $mech->get_email;
+    ok $email, "got an email";
+    my $text = $mech->get_text_body_from_email($email);
+    like $text, qr/Hackney Council/, "emails are branded";
+    like $text, qr/\d\d:\d\d today/, "date is included";
+};
+
+subtest "sends SMS messages on updates" => sub {
     my $mod_lwp = Test::MockModule->new('LWP::UserAgent');
     my $text_content;
+    my $govuk_key;
     $mod_lwp->mock('post', sub {
         my ($self, $url, %args) = @_;
+        my $auth = $args{Authorization};
+        $auth =~ s/Bearer\s+//;
+        my $jwt = Crypt::JWT::decode_jwt(token => $auth, key => 'key-goes-here');
+        $govuk_key = $jwt->{iss};
         my $data = decode_json($args{Content});
         $text_content = $data->{personalisation}{text};
         HTTP::Response->new(200, 'OK', [], '{ "id": 123 }');
@@ -185,19 +209,36 @@ subtest "sends branded alert emails" => sub {
         COBRAND_FEATURES => {
             do_not_reply_email => { hackney => 'fms-hackney-DO-NOT-REPLY@hackney-example.com' },
             sms_authentication => { hackney => 1 },
-            govuk_notify => { hackney => { key => 'test-0123456789abcdefghijklmnopqrstuvwxyz-key-goes-here' } },
+            govuk_notify => { hackney => [
+                { key => 'test-0123456789abcdefghijklmnopqrstuvwxyz-key-goes-here', type => 'default' },
+                { key => 'test-zyxwvutsrqponmlkjihgfedcba9876543210-key-goes-here', type => 'waste' },
+            ] },
         },
     }, sub {
+        my $id = $p->id;
+        $p->comments->delete;
+        $mech->create_comment_for_problem($p, $system_user, 'Other User', 'This is some update text', 'f', 'confirmed', undef, { confirmed => $dt });
+        $mech->clear_emails_ok;
+
         FixMyStreet::Script::Alerts::send_updates();
+
+        like $text_content, qr{Your report \($id\) has had an update; to view: http://hackney.example.org/report/$id\n\nTo stop: http://hackney.example.org/A/[A-Za-z0-9]+};
+        is $govuk_key, '0123456789abcdefghijklmnopqrstuvwxyz', 'correct GOV.UK Notify key used';
+
+        $p->comments->delete;
+        $p->update({ cobrand_data => 'waste' });
+        $mech->create_comment_for_problem($p, $system_user, 'Other User', 'This is some update text', 'f', 'confirmed', undef, { confirmed => $dt });
+        $mech->clear_emails_ok;
+
+        FixMyStreet::Script::Alerts::send_updates();
+
+        like $text_content, qr{Your report \($id\) has had an update; to view: http://hackney.example.org/report/$id\n\nTo stop: http://hackney.example.org/A/[A-Za-z0-9]+};
+        is $govuk_key, 'zyxwvutsrqponmlkjihgfedcba9876543210', 'correct GOV.UK Notify key used for waste report';
+
+        $p->update({ cobrand_data => '' });
+        $p->comments->delete;
     };
 
-    my $id = $p->id;
-    like $text_content, qr{Your report \($id\) has had an update; to view: http://hackney.example.org/report/$id\n\nTo stop: http://hackney.example.org/A/[A-Za-z0-9]+};
-    my $email = $mech->get_email;
-    ok $email, "got an email";
-    my $text = $mech->get_text_body_from_email($email);
-    like $text, qr/Hackney Council/, "emails are branded";
-    like $text, qr/\d\d:\d\d today/, "date is included";
 };
 
 

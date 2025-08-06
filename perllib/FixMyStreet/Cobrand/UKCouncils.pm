@@ -105,6 +105,15 @@ sub problems_on_map_restriction {
     }
 }
 
+sub report_can_have_text_only_notifcations {
+    my ($self, $phone, $text_updates) = @_;
+
+    return unless $phone && $text_updates;
+
+    return 1 if $text_updates->value && FixMyStreet::SMS->parse_username($phone->value)->{may_be_mobile};
+
+}
+
 sub updates_restriction {
     my ($self, $rs) = @_;
     return $rs if FixMyStreet->staging_flag('skip_checks');

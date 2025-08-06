@@ -1,5 +1,6 @@
 package FixMyStreet::App::Form::Waste;
 
+use FixMyStreet::SMS;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Wizard';
 
@@ -58,6 +59,7 @@ sub validate {
     my $email = $self->field('email');
     my $phone = $self->field('phone');
     return 1 unless $email && $phone;
+    my $text_updates = $self->field('extra_bulky_text_reminders');
 
     my $c = $self->c;
     my $cobrand = $c->cobrand->moniker;
@@ -65,10 +67,17 @@ sub validate {
     my $staff_provide_email = (ref $self) =~ /Garden/ && $c->cobrand->call_hook('garden_staff_provide_email');
 
     $email->add_error('Please provide an email address')
-        unless $email->is_inactive || $email->value || ($is_staff_user && !$staff_provide_email);
-
+        unless $email->is_inactive || $email->value || ($is_staff_user && !$staff_provide_email)
+        || $c->cobrand->call_hook('report_can_have_text_only_notifcations' => $phone, $text_updates);
     $email->add_error('Please provide email and/or phone')
         unless $phone->is_inactive || $phone->value || $email->value || !($is_staff_user && !$staff_provide_email) || $cobrand eq 'bromley';
+
+    if ($text_updates && $text_updates->value) {
+        my $parsed = FixMyStreet::SMS->parse_username($phone->value);
+        if (!($phone->value && $parsed->{may_be_mobile} )) {
+            $text_updates->add_error('Please enter a mobile phone number to receive text updates');
+        };
+    }
 }
 
 1;
