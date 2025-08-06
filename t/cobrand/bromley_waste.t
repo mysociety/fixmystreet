@@ -1642,6 +1642,12 @@ subtest 'check direct debit reconcilliation' => sub {
         "no matching service to renew for $hidden_ref\n",
     ], "gets past the first stage if forced renewal";
 
+    $hidden->unset_extra_metadata('dd_date');
+    $hidden->update({ state => 'unconfirmed' });
+    stdout_like {
+        $c->waste_reconcile_direct_debits({ reference => $hidden_ref, force_new => 1, verbose => 1 });
+    } qr/looking at payment $hidden_ref for £10 on 16\/03\/2021.*?Overriding type 1 to new.*?found matching report.*?confirming matching report.*?done looking at payment/s;
+
     stdout_like {
         $c->waste_reconcile_direct_debits({ reference => $renewal_nothing_in_echo_ref, force_when_missing => 1, verbose => 1 });
     } qr/looking at payment $renewal_nothing_in_echo_ref for £10 on 16\/03\/2021.*?category: Garden Subscription \(2\).*?is a renewal.*?looking at potential match @{[$renewal_nothing_in_echo->id]}.*?is a matching new report.*?created new confirmed report.*?done looking at payment/s, "creates a renewal if forced to";
