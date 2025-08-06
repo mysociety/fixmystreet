@@ -511,7 +511,7 @@ FixMyStreet::override_config {
     };
 
     subtest "Cancel booking when no payment within 30 minutes" => sub {
-        my ( $p ) = $mech->create_problems_for_body(1, $body->id, "Bulky goods collection", {
+        my ( $p ) = $mech->create_problems_for_body(1, $body->id, "Bulky waste collection", {
             category => "Bulky collection",
             state => "confirmed",
             external_id => "123",
