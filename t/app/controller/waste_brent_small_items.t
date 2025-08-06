@@ -17,11 +17,11 @@ my $user_phone = $mech->create_user_ok('0123456789');
 my $body = $mech->create_body_ok(2488, 'Brent Council', { cobrand => 'brent' });
 $body->set_extra_metadata(
     wasteworks_config => {
-        items_per_collection_max => 11,
+        small_items_per_collection_max => 11,
         base_price => 0,
         show_location_page => 'users',
         show_individual_notes => 1,
-        item_list => [
+        small_item_list => [
             { bartec_id => '1', name => 'Tied bag of domestic batteries (min 10 - max 100)', max => '1' },
             { bartec_id => '2', name => 'Podback Bag' },
             { bartec_id => '3', name => 'Paint, 1 can, up to 5 litres' },
@@ -72,17 +72,17 @@ FixMyStreet::override_config {
         waste => { brent => 1 },
         waste_features => {
             brent => {
-                bulky_enabled => 1,
-                bulky_missed => 1,
-                bulky_multiple_bookings => 1,
-                bulky_tandc_link => 'tandc_link',
+                small_items_enabled => 1,
+                small_items_missed => 1,
+                small_items_multiple_bookings => 1,
+                small_items_tandc_link => 'tandc_link',
             },
         },
         echo => {
             brent => {
-                bulky_service_id => 274,
-                bulky_service_id_missed => 787,
-                bulky_event_type_id => 2964,
+                small_items_service_id => 274,
+                small_items_service_id_missed => 787,
+                small_items_event_type_id => 2964,
                 url => 'http://example.org',
             },
         },
