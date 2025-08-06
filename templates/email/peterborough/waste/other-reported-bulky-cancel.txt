@@ -6,7 +6,7 @@ Your bulky waste collection has been cancelled.
 
 [% report.detail %]
 
-Please check the bulky waste collection page on the council’s website for information about this service. This includes when and where to put your items out for collection, cancelling the service and obtaining a refund:
+Please check the bulky waste collection page on the council’s website for information about this service. This includes when and where to put your items out for collection, cancelling the service, obtaining a refund and information about data protection.
 
     https://www.peterborough.gov.uk/residents/rubbish-and-recycling/other-waste-collections
 
