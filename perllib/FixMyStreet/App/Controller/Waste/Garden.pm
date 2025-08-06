@@ -113,6 +113,7 @@ sub modify : Chained('setup') : PathPart('garden_modify') : Args(0) {
         };
 
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Modify';
+        $c->stash->{current_payment_method} = $payment_method;
     }
 
     $c->stash->{first_page} = 'intro';
@@ -255,7 +256,7 @@ sub setup_garden_sub_params : Private {
     my $service_id;
     if (my $service = $c->cobrand->garden_current_subscription) {
         $service_id = $service->{service_id};
-    } elsif ($c->cobrand->can('garden_service_id')) { # XXX TODO Does Bexley need its own? Or is this actually Echo only?
+    } elsif ($c->cobrand->can('garden_service_id')) {
         $service_id = $c->cobrand->garden_service_id;
     }
     $c->set_param('email_renewal_reminders_opt_in', $data->{email_renewal_reminders} eq 'Yes' ? 'Y' : 'N') if $data->{email_renewal_reminders};
@@ -279,7 +280,14 @@ sub process_garden_modification : Private {
     my $payment_method;
     # Needs to check current subscription too
     my $service = $c->cobrand->garden_current_subscription;
-    my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+    my $costs = WasteWorks::Costs->new(
+        {   cobrand            => $c->cobrand,
+            discount           => $data->{apply_discount},
+            first_bin_discount => $c->cobrand->call_hook(
+                garden_waste_first_bin_discount_applies => $data
+            ) || 0,
+        }
+    );
     if ($c->stash->{slwp_garden_sacks} && $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{sack}) { # SLWP Sack
         # This must be Kingston
         $data->{bins_wanted} = 1;
@@ -615,6 +623,8 @@ sub direct_debit_modify : Private {
 
     my $i = $c->cobrand->get_dd_integration;
 
+    # TODO Display error messages to user
+
     # if reducing bin count then there won't be an ad-hoc payment
     if ( $ad_hoc ) {
         my $one_off_ref = $i->one_off_payment( {
@@ -633,6 +643,11 @@ sub direct_debit_modify : Private {
         amount => sprintf('%.2f', $total / 100),
         orig_sub => $c->stash->{orig_sub},
     } );
+
+    if ( $c->cobrand->moniker eq 'bexley' ) {
+        $p->confirm;
+        $p->update;
+    }
 }
 
 sub direct_debit_cancel_sub : Private {
@@ -641,8 +656,6 @@ sub direct_debit_cancel_sub : Private {
     my $p = $c->stash->{report};
     my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
     $p->set_extra_metadata(payerReference => $ref);
-    # Bexley can have immediate cancellation
-    $p->confirm if $c->cobrand->moniker eq 'bexley';
     $p->update;
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
@@ -653,6 +666,12 @@ sub direct_debit_cancel_sub : Private {
         payer_reference => $ref,
         report => $p,
     } );
+
+    # Bexley can have immediate cancellation
+    if ( $c->cobrand->moniker eq 'bexley' ) {
+        $p->confirm;
+        $p->update;
+    }
 }
 
 sub populate_dd_details : Private {

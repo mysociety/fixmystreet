@@ -44,6 +44,7 @@ use HTTP::Request::Common;
 use JSON::MaybeXS;
 use URI::Escape;
 use URI;
+use Data::Dumper;
 
 has log_ident => (
     is => 'lazy',
@@ -117,7 +118,7 @@ sub build_request_url {
     my ($self, $method, $path, $data) = @_;
     my $url = $self->endpoint . $self->build_path($path);
 
-    if ($data && ($method eq 'GET' || $method eq 'DELETE')) {
+    if ($data && ($method eq 'GET' || $method eq 'DELETE' || $method eq 'PATCH')) {
         my $query = $self->build_form_data($data);
         $url .= '?' . $query if $query;
     }
@@ -163,8 +164,11 @@ sub parse_response {
         $error_message = $response_content;
     }
 
+    $error_message ||= 'API call failed';
+    $self->log("Error: $error_message");
+
     return {
-        error => $error_message || "API call failed",
+        error => $error_message,
         code => $resp->code,
         content => $response_content,
     };
@@ -246,6 +250,108 @@ sub cancel_plan {
         return $resp;
     } else {
         return 1;
+    }
+}
+
+=item * amend_plan
+
+Amends the payment amount for an existing direct debit plan.
+
+Takes a hashref of parameters:
+- orig_sub - The original subscription report object containing the contract_id in metadata
+- amount - The new amount to be taken (decimal number with max 2 decimal places)
+
+=cut
+
+sub amend_plan {
+    my ($self, $args) = @_;
+
+    my $contract_id = $args->{orig_sub}->get_extra_metadata('direct_debit_contract_id');
+    unless ($contract_id) {
+        die "No direct debit contract ID found in original subscription report metadata";
+    }
+
+    my $path = "contract/" . $contract_id . "/amount";
+    my $data = {
+        amount => $args->{amount},
+        comment => "WasteWorks: Plan amount amended for " . $args->{orig_sub}->id,
+    };
+
+    my $resp = $self->call('PATCH', $path, $data);
+
+    if (ref $resp eq 'HASH' && $resp->{error}) {
+        die "Error amending plan: " . $resp->{error};
+    }
+}
+
+=item * create_payment
+
+Creates a payment for a specified contract.
+
+=cut
+sub create_payment {
+    my ($self, $contract_id, $data) = @_;
+    return $self->call('POST', "contract/$contract_id/payment", $data);
+}
+
+=item * one_off_payment
+
+Adds an AdHoc payment to be taken for a specified contract.
+=cut
+
+sub one_off_payment {
+    my ($self, $args) = @_;
+
+    my $orig_sub = $args->{orig_sub};
+    my $adhoc_contract_id = $orig_sub->get_extra_metadata('direct_debit_adhoc_contract_id');
+
+    unless ($adhoc_contract_id) {
+        # Adhoc contract ID not found, create a new one
+        my $customer_id = $orig_sub->get_extra_metadata('direct_debit_customer_id');
+        unless ($customer_id) {
+            die "No direct debit customer ID found in original subscription report metadata";
+        }
+
+        # Create a new contract for the adhoc payment
+        my $contract_data = {
+            scheduleId => $self->config->{adhoc_schedule_id},
+            start => $args->{date}->strftime('%Y-%m-%dT%H:%M:%S.000'),
+            isGiftAid => 0,
+            terminationType => "Until further notice",
+            atTheEnd => "Switch to further notice",
+        };
+        my $resp = $self->create_contract($customer_id, $contract_data);
+
+        if ( ref $resp eq 'HASH' && $resp->{error} ) {
+            die 'Could not create ad hoc contract: ' . $resp->{error};
+        }
+
+        $adhoc_contract_id = $resp->{Id};
+        # Store the new adhoc contract ID back in metadata for future use
+        $orig_sub->set_extra_metadata('direct_debit_adhoc_contract_id', $adhoc_contract_id);
+        $orig_sub->update;
+    }
+
+    # Create the adhoc payment using the determined contract ID
+    my $resp = $self->create_payment($adhoc_contract_id, {
+        amount => $args->{amount},
+        date => $args->{date}->strftime('%Y-%m-%dT%H:%M:%S.000'),
+        comment => "WasteWorks: AdHoc payment for " . $orig_sub->id,
+    });
+
+    if (ref $resp eq 'HASH' && $resp->{error}) {
+        die 'Could not create ad hoc payment: ' . $resp->{error};
+    } elsif (ref $resp eq 'HASH' && keys %$resp) {
+        # Assuming a successful response might return some data, but 1 indicates success
+        return 1;
+    } elsif (ref $resp eq 'HASH' && !keys %$resp) {
+        # Handle cases where success might be an empty hash {}
+        return 1;
+    } else {
+        # Handle unexpected response format or potential success cases not returning a hash
+        # Log or handle as appropriate, returning 1 for presumed success if no error indicated
+        $self->log('Unexpected response format from AccessPaySuite adhoc payment: ' . Dumper($resp) );
+        return 1; # Assuming success if no error hash
     }
 }
 
