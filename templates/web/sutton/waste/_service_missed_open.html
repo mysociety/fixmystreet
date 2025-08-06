@@ -1,7 +1,14 @@
+A [% unit.service_name FILTER lower %] collection was reported as missed
 [% IF communal_property %]
-    A [% unit.service_name FILTER lower %] collection has been reported as missed by yourself, a neighbour, or your Managing Agent.
-    For updates please check your email or telephone our contact centre on 020 8770 5000.
-[% ELSE %]
-    A [% unit.service_name FILTER lower %] collection has been reported as missed.
-    Please check your email for an update on your request.
+    by yourself, a neighbour, or your Managing Agent
+[% END %]
+on [% date.format(unit.report_open.date, '%A, %-d %B') %].
+We aim to resolve missed collection reports within 2 working days (Monday to Friday).
+
+[% IF unit.escalations.missed AND NOT unit.escalations.missed_open %]
+    <br>
+    We’re sorry if this issue has not been resolved to your satisfaction;
+    <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Complaint+against+time&amp;service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.missed.id %]:[% unit.escalations.missed.ref %][%
+    '&amp;event_guid=' _ unit.escalations.missed.guid IF unit.escalations.missed.guid %]"
+            class="waste-service-link">please report the problem here</a>
 [% END %]
