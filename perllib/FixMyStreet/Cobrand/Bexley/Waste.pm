@@ -2084,4 +2084,21 @@ sub _parent_for_container {
     return $parents->{$id} || $id;
 }
 
+=head2 waste_get_paye_narrative
+
+Return a custom narrative for Bexley to use in paye.net integration
+
+=cut
+
+sub waste_get_paye_narrative {
+    my ($self, $p) = @_;
+    my $id = $p->id;
+    if ($p->category eq 'Bulky collection') {
+        return "Bulky waste - $id";
+    } else {
+        my $uprn = $p->get_extra_field_value('uprn');
+        return "Garden Waste Service Payment - Reference: $id Contract: $uprn";
+    }
+}
+
 1;

@@ -371,7 +371,7 @@ sub _handle_category_change {
     if ($request->{extras}) {
         # TODO Do we want to check that category and group match?
         if ( my $category = $request->{extras}{category} ) {
-            if (my $contact = $body->contacts->search( { category => $category } )->first) {
+            if (my $contact = $body->contacts->not_deleted_admin->search( { category => $category } )->first) {
                 my $old = $p->category;
                 my $new = $contact->category;
                 if ($new ne $old) {
