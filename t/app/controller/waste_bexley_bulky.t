@@ -223,7 +223,7 @@ FixMyStreet::override_config {
             'item_4' => 'Bath',
             'item_5' => 'Bath',
         } });
-        $mech->content_contains('too many points');
+        $mech->content_contains('too many items');
         $mech->submit_form_ok({ with_fields => {
             'item_4' => '',
             'item_5' => '',
@@ -587,7 +587,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { pension => 'Yes', disability => 'No' } });
         $mech->submit_form_ok({ with_fields => { chosen_date => '2025-07-04;3;' } });
         $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath', 'item_4' => 'Bath', 'item_5' => 'Bath' } });
-        $mech->content_lacks('too many points');
+        $mech->content_lacks('too many items');
         $mech->submit_form_ok({ with_fields => { parking => 'No', location => 'Front garden or driveway' } });
         $mech->content_contains('5 items requested for collection');
         $mech->content_contains('£66.00');
@@ -603,7 +603,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('7 July');
         $mech->submit_form_ok({ with_fields => { chosen_date => '2025-07-05;4;' } });
         $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ', 'item_2' => 'Bicycle', 'item_3' => 'Bath', 'item_4' => 'Bath', 'item_5' => 'Bath' } });
-        $mech->content_contains('too many points');
+        $mech->content_contains('too many items');
         $mech->submit_form_ok({ with_fields => { 'item_4' => '', 'item_5' => '' } });
         $mech->submit_form_ok({ with_fields => { parking => 'No', location => 'Front garden or driveway' } });
         $mech->content_contains('3 items requested for collection');

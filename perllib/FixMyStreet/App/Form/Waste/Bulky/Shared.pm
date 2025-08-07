@@ -365,7 +365,9 @@ sub validate {
             my $levels = $cobrand->bulky_pricing_model($self->saved_data);
             my $total = $cobrand->bulky_points_to_price($points, $levels);
             if ($total eq 'max') {
-                $self->add_form_error("You have used too many points");
+                $self->add_form_error(
+                    "You have added too many items. Please remove some items to proceed."
+                );
             }
         }
 
