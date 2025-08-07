@@ -148,11 +148,11 @@ li {
   margin-bottom: 0.5em;
 }
 
-ul li {
+ul > li {
   list-style: square;
 }
 
-ol li {
+ol > li {
   list-style: decimal;
 }
 
