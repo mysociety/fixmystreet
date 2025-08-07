@@ -172,11 +172,11 @@ $(function() {
             });
             if (total_price === 'max') { // Too many points
                 totalId.text('-');
-                totalDetailId.text('(' + total + ' points – you can only order a maximum of ' + (price_level-1) + ' points.)');
-                //$("#continue").prop('disabled', true);
+                totalDetailId.text('(You have added too many items. Please remove some items to proceed.)');
+                $("#continue").prop('disabled', true);
             } else {
                 totalId.text((total_price / 100).toFixed(2));
-                totalDetailId.text('(' + total + ' points)');
+                totalDetailId.text('(' + numberOfItems() + ' items)');
                 $("#continue").prop('disabled', false);
             }
             totalDetailId.show();
