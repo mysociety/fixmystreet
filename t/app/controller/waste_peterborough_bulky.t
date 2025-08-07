@@ -97,6 +97,7 @@ FixMyStreet::override_config {
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'peterborough',
+    PHONE_COUNTRY => 'GB',
     COBRAND_FEATURES => {
         bartec => { peterborough => {
             sample_data => 1,
@@ -362,7 +363,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Aragon Direct Services may contact you to obtain more');
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge' } });
             $mech->content_contains('Please provide an email address');
-            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+            $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '07 111 111 111' }});
         };
 
         subtest 'Choose date page' => sub {
@@ -427,7 +428,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('Show upcoming bin days');
             $mech->content_contains('a href="peterborough-bulky-waste-tandc.com"');
             $mech->content_contains('Bob Marge', 'name shown');
-            $mech->content_contains('44 07 111 111 111', 'phone shown');
+            $mech->content_contains('07 111 111 111', 'phone shown');
         }
         sub test_summary_submission {
             $mech->waste_submit_check({ with_fields => { tandc => 1 } });
@@ -536,7 +537,7 @@ FixMyStreet::override_config {
                 '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
 
             is $report->name, 'Bob Marge', 'correct name on report';
-            is $report->get_extra_metadata('phone'), '44 07 111 111 111',
+            is $report->get_extra_metadata('phone'), '07 111 111 111',
                 'correct phone on report';
             is $report->user->name, 'Normal User',
                 'name on report user unchanged';
@@ -580,7 +581,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Your bulky waste collection');
             $mech->content_contains('Show upcoming bin days');
             $mech->content_contains('Bob Marge', 'name shown');
-            $mech->content_contains('44 07 111 111 111', 'phone shown');
+            $mech->content_contains('07 111 111 111', 'phone shown');
 
             $cfg->{base_price} = 2350;
             $body->set_extra_metadata( wasteworks_config => $cfg );
@@ -676,7 +677,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/PE1%203NA:100090215480/bulky');
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '07 111 111 111' }});
         $mech->content_lacks('5 August');
         $mech->content_lacks('12 August');
         $mech->content_contains('19 August');
@@ -1299,6 +1300,8 @@ FixMyStreet::override_config {
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->content_contains('Please provide a phone number');
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '07111111111' }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1411,7 +1414,7 @@ FixMyStreet::override_config {
         $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '07111111111' }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_like(qr/£<[^>]*>0\.00/);
         $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
@@ -1473,7 +1476,7 @@ FixMyStreet::override_config {
         $mech->follow_link_ok( { text_regex => qr/Book bulky goods collection/i, }, "follow 'Book bulky...' link" );
         $mech->submit_form_ok;
         $mech->submit_form_ok({ with_fields => { resident => 'Yes' } });
-        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '07111111111' }});
         $mech->submit_form_ok({ with_fields => { chosen_date => '2022-08-26T00:00:00' } });
         $mech->content_like(qr/£<[^>]*>23\.50/);
         $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'Amplifiers', 'item_2' => 'High chairs' } });
