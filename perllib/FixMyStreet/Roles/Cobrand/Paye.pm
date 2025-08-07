@@ -38,8 +38,9 @@ around waste_cc_get_redirect_url => sub {
         my $admin_fee = $p->get_extra_field_value('admin_fee');
 
         my $redirect_id = mySociety::AuthToken::random_token();
-        $p->set_extra_metadata('redirect_id', $redirect_id);
-        $p->update;
+        $p->update_extra_metadata(redirect_id => $redirect_id);
+
+        my $customer_ref = $payment->config->{customer_ref};
 
         my $backUrl;
         if ($p->category eq 'Bulky collection') {
@@ -50,12 +51,22 @@ around waste_cc_get_redirect_url => sub {
         $backUrl = $c->uri_for_action("/waste/$back", [ $c->stash->{property}{id} ]) . ''
             unless $backUrl;
 
+        if ($p->category eq 'Bulky collection') {
+            if (my $bulky_customer_ref = $payment->config->{bulky_customer_ref}) {
+                $customer_ref = $bulky_customer_ref;
+            }
+        } elsif ($p->category eq 'Request new container') {
+            if (my $request_customer_ref = $payment->config->{request_customer_ref}) {
+                $customer_ref = $request_customer_ref;
+            }
+        }
+
         my $address = $c->stash->{property}{address};
         my @parts = split ',', $address;
 
         my @items = ({
             amount => $amount,
-            reference => $payment->config->{customer_ref},
+            reference => $customer_ref,
             description => $p->title,
             lineId => $self->waste_cc_payment_line_item_ref($p),
         });

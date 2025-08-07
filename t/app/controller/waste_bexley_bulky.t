@@ -12,6 +12,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $staff_user = $mech->create_user_ok('bromley@example.org', name => 'Council User');
 my $body = $mech->create_body_ok( 2494, 'Bexley Council', { cobrand => 'bexley', comment_user_id => $staff_user->id } );
+$staff_user->update({ from_body => $body->id });
 my $user = $mech->create_user_ok( 'bob@example.org', name => 'Original Name' );
 
 for ($body) {
@@ -110,6 +111,11 @@ FixMyStreet::override_config {
             hmac => '1234',
             hmac_id => '1234',
             scpID => '1234',
+            paye_siteID => 1234,
+            paye_hmac_id => 1234,
+            paye_hmac => 1234,
+            customer_ref => 'customer-ref',
+            bulky_customer_ref => 'bulky-customer-ref',
         } },
     },
 }, sub {
@@ -171,6 +177,27 @@ FixMyStreet::override_config {
                 }
             }
         };
+    });
+
+    my $paye = Test::MockModule->new('Integrations::Paye');
+    $paye->mock(call => sub {
+        my $self = shift;
+        my $method = shift;
+        $call_params = { @_ };
+    });
+    $paye->mock(pay => sub {
+        my $self = shift;
+        $sent_params = shift;
+        $paye->original('pay')->($self, $sent_params);
+        return {
+            transactionState => 'InProgress',
+            apnReference => '4ab5f886-de7d-4f5b-bbd8-42151a5deb82',
+            requestId => '21355',
+            invokeResult => {
+                status => 'Success',
+                redirectUrl => 'http://paye.example.org/faq',
+            }
+        }
     });
 
     my $report;
@@ -249,6 +276,7 @@ FixMyStreet::override_config {
                 'correct parking info';
             is $new_report->state, 'confirmed', 'report confirmed';
 
+            is $sent_params->{items}[0]{reference}, 'bulky-customer-ref';
             is $sent_params->{items}[0]{amount}, 6930, 'correct amount used';
 
             $mech->log_in_ok($new_report->user->email);
@@ -582,6 +610,31 @@ FixMyStreet::override_config {
         $mech->content_contains('£89.50');
     };
 
+    subtest 'Staff bulky collection uses paye.net with custom narrative' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/10001/bulky');
+        $mech->submit_form_ok;
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});
+        $mech->submit_form_ok({ with_fields => { pension => 'No', disability => 'No' } });
+        $mech->submit_form_ok({ with_fields => { chosen_date => '2025-07-04;3;' } });
+        $mech->submit_form_ok({ form_number => 1, fields => { 'item_1' => 'BBQ' } });
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    location => 'Front garden or driveway',
+                    parking  => 'Yes - Single Yellow Lines',
+                    parking_extra_details => 'They turn red at midnight',
+                }
+            }
+        );
+        my $mech2 = $mech->clone;
+        $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+        is $mech2->res->previous->code, 302, 'payments issues a redirect';
+        like $mech2->res->previous->header('Location'), qr/paye.example.org/;
+
+        my ($token, $report, $report_id) = get_report_from_redirect($sent_params->{returnUrl});
+        is $sent_params->{items}[0]{reference}, 'bulky-customer-ref';
+        is $sent_params->{narrative}, "Bulky waste - $report_id";
+    };
 };
 
 done_testing;
