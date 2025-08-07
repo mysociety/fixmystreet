@@ -1,5 +1,6 @@
 use CGI::Simple;
 use FixMyStreet::TestMech;
+use FixMyStreet::Map::OS::Leisure;
 use FixMyStreet::Script::CSVExport;
 use Test::MockModule;
 use File::Temp 'tempdir';
@@ -119,6 +120,9 @@ FixMyStreet::override_config {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'northumberland', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/',
+    COBRAND_FEATURES => {
+        os_maps_leisure => { _fallback => 1 }
+    }
 }, sub {
     my $o = Open311->new( fixmystreet_body => $body );
 
@@ -230,6 +234,22 @@ FixMyStreet::override_config {
                 'correct extra_details attribute';
         };
     }
+
+    subtest 'Correct mapping' => sub {
+        my $map = FixMyStreet::Map::OS::Leisure->new( cobrand => $body->get_cobrand_handler );
+        for my $aerial (0, 1) {
+            for my $zoom (3..11) {
+                my $tiles = $map->map_tiles(
+                    x_tile => 32421, y_tile => 21505, zoom_act => $zoom, aerial => $aerial,
+                );
+                my $layer = $aerial ? 'northumberlandaerial@osmaps' :
+                    $zoom >= 10 ? 'oml@osmaps' :
+                    $zoom == 7 || $zoom == 8 ? 'Leisure_27700' :
+                    'Road_27700';
+                like $tiles->[0], qr/$layer\/$zoom/, "with zoom $zoom and aerial $aerial";
+            }
+        }
+    };
 };
 
 done_testing();

@@ -74,6 +74,8 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub has_aerial_maps { 1 }
+
 # This isn't used
 sub find_closest {
     my ( $self, $problem ) = @_;

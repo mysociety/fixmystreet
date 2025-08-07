@@ -25,10 +25,8 @@
     data-numZoomLevels=[% map.numZoomLevels %]
     data-zoomOffset=[% map.zoomOffset %]
     data-map_type="[% map.map_type %]"
-[% IF include_key -%]
-    data-bing_key='[% c.config.BING_MAPS_API_KEY %]'
-[% END -%]
 [% IF map.os_maps -%]
+    data-aerial_url='[% map.aerial_url %]'
     data-os_key='[% map.os_maps.key %]'
     data-os_layer='[% map.os_maps.layer %]'
     data-os_url='[% map.os_maps.url %]'
@@ -57,8 +55,7 @@
     <img id="loading-indicator" class="hidden" aria-hidden="true" src="/i/loading.svg" alt="Loading...">
 
 <div class="map-links">
-  [% IF map_type_toggle %]
-    [% IF c.config.BING_MAPS_API_KEY OR c.cobrand.moniker == 'zurich' %]
+    [% IF c.cobrand.has_aerial_maps %]
       [% aerial = c.req.params.aerial %]
       [% SET aerial = 1 IF c.cobrand.moniker == 'zurich' AND NOT c.req.params.aerial.defined %]
       [% IF aerial %]
@@ -67,7 +64,6 @@
         <a class="map-layer-toggle aerial" rel="nofollow" href="[% c.uri_with( { aerial => 1 } ) %]"><span class="map-link-label">[% loc('Aerial map') %]</span></a>
       [% END %]
     [% END %]
-  [% END %]
 
   [% IF page == "around" %]
     [% IF c.req.params.no_pins %]
