@@ -19,7 +19,7 @@ sub bulky_allowed_property {
 
 sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59, days_before => 2, working_days => 1 } }
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
-sub bulky_collection_window_days { 56 }
+sub bulky_collection_window_days { 42 } # 6 weeks
 
 sub collection_date {
     my ($self, $p) = @_;
