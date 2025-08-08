@@ -45,20 +45,18 @@ sub send_questionnaires_period {
         $cobrand->set_lang_and_domain($row->lang, 1);
         FixMyStreet::Map::set_map_class($cobrand);
 
-        # Not all cobrands send questionnaires
-        next unless $cobrand->send_questionnaires;
-
-        # If cobrand doesn't allow users to
-        # update don't send questionnaires
-        next if $cobrand->deny_updates_by_user($row);
-
         # Cobrands can also override sending per row if they wish
         my $cobrand_send = $cobrand->call_hook('send_questionnaire', $row) // 1;
+        my $cobrand_deny = $cobrand->deny_updates_by_user($row);
+        my $no_reopen = $cobrand->reopening_disallowed($row);
 
         if (   $row->is_from_abuser
             || !$row->user->email_verified
             || !$row->user->questionnaire_notify
             || !$cobrand_send
+            || $cobrand_deny
+            || !$cobrand->send_questionnaires
+            || ($no_reopen && !$row->is_open)
             || $row->is_closed )
         {
             $row->update( { send_questionnaire => 0 } );
