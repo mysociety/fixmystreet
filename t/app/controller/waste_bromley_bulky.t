@@ -489,7 +489,7 @@ FixMyStreet::override_config {
 
             set_fixed_time($full_refund_time);
             $mech->get_ok('/report/' . $report->id);
-            $mech->content_contains("You can cancel this booking till");
+            $mech->content_contains("You can cancel this booking up to");
             $mech->content_contains("07:00 on 01 July 2023");
             $mech->content_contains('/waste/12345/bulky/cancel/' . $report->id);
             $mech->content_contains('Cancel this booking');
