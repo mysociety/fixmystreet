@@ -346,7 +346,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Our contractor will collect the items you have requested on Friday 04 July 2025.');
             $mech->content_contains('Collections start from 6am.&nbsp;Please have your items ready');
             $mech->content_contains('We have emailed confirmation of your booking to pkg-tappcontrollerwaste_bexley_bulkyt-bob@example.org.');
-            $mech->content_contains('If you need to contact us about your application please use the application reference:&nbsp;' . $report->id);
+            $mech->content_contains('If you need to contact us about your booking please use the reference:&nbsp;' . $report->id);
             $mech->content_contains('Card payment reference: 54321');
             $mech->content_contains('Show upcoming bin days');
             is $report->detail, "Address: 1 Test Street, Bexley, DA1 1AA";

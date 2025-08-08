@@ -509,7 +509,7 @@ FixMyStreet::override_config {
                 $mech->content_lacks('If you cancel you will be refunded £30.00');
                 $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
                 $mech->content_contains('Your booking has been cancelled');
-                $mech->content_lacks('If you need to contact us about your application please use the application reference');
+                $mech->content_lacks('If you need to contact us about your bulky collection cancellation please use the reference');
 
                 my $report_id = $report->id;
                 my $email = $mech->get_email;
@@ -562,7 +562,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
             $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
             $mech->content_contains('Your booking has been cancelled');
-            $mech->content_lacks('If you need to contact us about your application please use the application reference');
+            $mech->content_lacks('If you need to contact us about your bulky collection cancellation please use the reference');
 
             my $report_id = $report->id;
             my @emails = $mech->get_email;
