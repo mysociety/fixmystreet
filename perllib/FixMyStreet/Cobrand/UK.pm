@@ -523,9 +523,7 @@ sub deny_updates_by_user {
     my $cfg = $self->feature('updates_allowed') || '';
     if ($cfg eq 'none' || $cfg eq 'staff') {
         return 1;
-    } elsif ($cfg eq 'reporter-open' && !$row->is_open) {
-        return 1;
-    } elsif ($cfg eq 'open' && !$row->is_open) {
+    } elsif (($cfg =~ /open/ && $cfg ne 'reporter-not-open/staff-open') && !$row->is_open) {
         return 1;
     } else {
         return;
