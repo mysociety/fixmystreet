@@ -560,9 +560,10 @@ sub body_disallows_state_change {
 
 =item reopening_disallowed
 
-Returns a boolean indicating whether reopening of a particular report is
-allowed or not. Default behaviour is allowed unless the report's category
-has its reopening_disallowed flag set.
+Returns a boolean indicating whether reopening of a particular report by
+checkbox is allowed or not by a member of the public (staff get the state
+dropdown). Default behaviour is allowed unless the report's category has
+its reopening_disallowed flag set.
 
 =cut
 
