@@ -182,6 +182,18 @@ for my $test (
         description_string => 'can update',
     },
     {
+        state => 'fixed',
+        send_email => 0,
+        user => 'reporter-open',
+        description_string => 'can not update',
+    },
+    {
+        state => 'fixed',
+        send_email => 0,
+        user => 'reporter/staff-open',
+        description_string => 'can not update',
+    },
+    {
         state => 'confirmed',
         send_email => 1,
         user => 'open',

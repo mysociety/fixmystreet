@@ -399,6 +399,10 @@ for my $test (
         problem_state => 'closed',
     },
     {
+        update_permission => 'reporter/staff-open',
+        problem_state => 'closed',
+    },
+    {
         update_permission => 'open',
         problem_state => 'closed',
     }
