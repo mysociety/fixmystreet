@@ -6,18 +6,14 @@
     [% service_name = "bulky goods" ~%]
 [% END ~%]
 
-[% IF c.cobrand.moniker == 'bexley' %]
-  <h3>Don't use this service to:</h3>
-  <ul>
-    <li>arrange a collection from a business or commercial address</li>
-    <li>request a collection from inside your property</li>
-    <li>request a garage or house clearance</li>
-    <li>request a collection of hazardous or clinical waste</li>
-  </ul>
-[% END %]
+[% IF c.cobrand.moniker == 'bexley';
+    list_type = 'ul';
+ELSE;
+    list_type = 'ol';
+END %]
 
 <h3>Before you start your booking</h3>
-<ol>
+<[% list_type %]>
   [%~
       USE pounds = format('%.2f');
       SET cfg = c.cobrand.wasteworks_config;
@@ -85,4 +81,14 @@
     [% END %]
 
   [% END %] [% # End of not-Bexley %]
-</ol>
+</[% list_type %]>
+
+[% IF c.cobrand.moniker == 'bexley' %]
+  <h3>Don't use this service to:</h3>
+  <ul>
+    <li>arrange a collection from a business or commercial address</li>
+    <li>request a collection from inside your property</li>
+    <li>request a garage or house clearance</li>
+    <li>request a collection of hazardous or clinical waste</li>
+  </ul>
+[% END %]
