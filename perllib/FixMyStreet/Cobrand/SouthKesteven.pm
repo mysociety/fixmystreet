@@ -95,4 +95,30 @@ sub disambiguate_location {
     };
 }
 
+=head2 dashboard_export_problems_add_columns
+
+We have various additional columns for extra report data.
+
+=cut
+
+sub dashboard_export_problems_add_columns {
+    my ($self, $csv) = @_;
+
+    $csv->add_csv_columns(
+        type_of_waste => 'Type of waste',
+        how_much => 'How much waste',
+        location => 'Location',
+    );
+
+    $csv->csv_extra_data(sub {
+        my $report = shift;
+        my $data = {
+            type_of_waste => $csv->_extra_field($report, 'type_of_waste'),
+            how_much => $csv->_extra_field($report, 'how_much'),
+            location => $csv->_extra_field($report, 'location'),
+        };
+        return $data;
+    });
+}
+
 1;
