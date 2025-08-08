@@ -132,7 +132,7 @@ SET data = form.saved_data;
                   <p class="govuk-!-margin-bottom-3">You can cancel and receive a refund up to
                     [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
               [% ELSE %]
-                  <p class="govuk-!-margin-bottom-3">You can cancel this booking till
+                  <p class="govuk-!-margin-bottom-3">You can cancel this booking up to
                     [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
                   [% IF cobrand.moniker == 'bromley' %]
                       <p class="govuk-!-margin-bottom-0">

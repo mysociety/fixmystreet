@@ -448,7 +448,7 @@ FixMyStreet::override_config {
         set_fixed_time($good_date);
         $mech->get_ok('/report/' . $report->id);
         $mech->content_lacks('This collection has been cancelled');
-        $mech->content_contains("You can cancel this booking till");
+        $mech->content_contains("You can cancel this booking up to");
         $mech->content_contains("23:59 on 02 July 2025");
         $mech->content_contains('/waste/10001/bulky/cancel/' . $report->id);
         $mech->content_contains('Cancel this booking');

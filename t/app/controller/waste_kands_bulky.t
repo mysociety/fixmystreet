@@ -739,7 +739,7 @@ FixMyStreet::override_config {
             my $id   = $report->id;
             $mech->get_ok("/report/$id");
             $mech->content_contains('This collection has been cancelled');
-            $mech->content_lacks("You can cancel this booking till");
+            $mech->content_lacks("You can cancel this booking up to");
             $mech->content_lacks('Cancel this booking');
         };
     };
