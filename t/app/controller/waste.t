@@ -119,6 +119,11 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
         $mech->content_contains('find your address in our records');
     };
+    subtest 'Postcode with extra bits' => sub {
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA.' } });
+        $mech->content_contains('Select an address');
+    };
     subtest 'Address lookup' => sub {
         set_fixed_time('2020-05-28T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste');

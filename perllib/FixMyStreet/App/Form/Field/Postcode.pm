@@ -10,7 +10,7 @@ apply(
         {
             transform => sub {
                 my ( $value, $field ) = @_;
-                $value =~ s/[^A-Z0-9]//i;
+                $value =~ s/[^A-Z0-9]//ig;
                 return mySociety::PostcodeUtil::canonicalise_postcode($value);
             }
         },
