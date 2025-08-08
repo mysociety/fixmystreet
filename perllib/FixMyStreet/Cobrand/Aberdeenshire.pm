@@ -110,15 +110,7 @@ sub abuse_reports_only { 1 }
 
 =cut
 
-sub reopening_disallowed {
-    my ($self, $problem) = @_;
-
-    # Only staff can reopen reports.
-    my $c = $self->{c};
-    my $user = $c->user;
-    return 0 if ($c->user_exists && $user->from_body && $user->from_body->cobrand_name eq $self->council_name);
-    return 1;
-}
+sub reopening_disallowed { 1 }
 
 =item * We do not send questionnaires.
 

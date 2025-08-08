@@ -627,12 +627,8 @@ around 'munge_sendreport_params' => sub {
 
 sub reopening_disallowed {
     my ($self, $problem) = @_;
-    my $c = $self->{c};
-    return 1 if $problem->to_body_named("Southwark") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Southwark Council");
-    return 1 if $problem->to_body_named("Merton") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Merton Council");
-    return 1 if $problem->to_body_named("Northumberland") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Northumberland County Council");
-    return 1 if $problem->to_body_named("Gloucestershire") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Gloucestershire County Council");
-    return 1 if $problem->to_body_named("Gloucester") && $c->user_exists && (!$c->user->from_body || $c->user->from_body->get_column('name') ne "Gloucester City Council");
+    my $cobrand = $problem->body_handler;
+    return 1 if $cobrand && $cobrand ne $self && $cobrand->reopening_disallowed($problem);
     return $self->next::method($problem);
 }
 

@@ -69,15 +69,7 @@ sub privacy_policy_url {
 
 =cut
 
-sub reopening_disallowed {
-    my ($self, $problem) = @_;
-
-    # Only staff can reopen reports.
-    my $c = $self->{c};
-    my $user = $c->user;
-    return 0 if ($c->user_exists && $user->from_body && $user->from_body->cobrand_name eq $self->council_name);
-    return 1;
-}
+sub reopening_disallowed { 1 }
 
 =item * Jobs from Confirm that are completed (marked as fixed or closed) are not displayed after 48 hours
 
