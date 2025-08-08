@@ -433,7 +433,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Our contractor will collect the items you have requested on Saturday 08 July 2023.');
             $mech->content_contains('Item collection starts from 6am.&nbsp;Please have your items ready');
             $mech->content_contains('We have emailed confirmation of your booking to pkg-tappcontrollerwaste_merton_bulkyt-bob@example.org.');
-            $mech->content_contains('If you need to contact us about your application please use the application reference:&nbsp;' . $report->id);
+            $mech->content_contains('If you need to contact us about your booking please use the reference:&nbsp;' . $report->id);
             $mech->content_contains('Card payment reference: 54321');
             $mech->content_contains('Show upcoming bin days');
             is $report->detail, "Address: 2 Example Street, Merton, KT1 1AA";
@@ -665,7 +665,7 @@ FixMyStreet::override_config {
             $mech->email_count_is(0);
 
             $mech->content_contains('Bulky collection booking confirmed');
-            $mech->content_contains('please use the application reference:&nbsp;' . $new_report->id);
+            $mech->content_contains('please use the reference:&nbsp;' . $new_report->id);
         };
 
         subtest 'Viewing original report summary after amendment' => sub {
@@ -795,7 +795,7 @@ FixMyStreet::override_config {
             $mech->clear_emails_ok;
 
             $mech->content_contains('Bulky collection booking confirmed');
-            $mech->content_contains('please use the application reference:&nbsp;' . $new_report->id);
+            $mech->content_contains('please use the reference:&nbsp;' . $new_report->id);
         };
 
         subtest 'Viewing original report summary after amendment' => sub {
@@ -929,7 +929,7 @@ FixMyStreet::override_config {
             my $id   = $report->id;
             $mech->get_ok("/report/$id");
             $mech->content_contains('This collection has been cancelled');
-            $mech->content_lacks("You can cancel this booking till");
+            $mech->content_lacks("You can cancel this booking up to");
             $mech->content_lacks('Cancel this booking');
         };
 

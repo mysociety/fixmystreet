@@ -73,6 +73,9 @@ sub validate {
     $email->add_error('Please provide a phone number')
         if $cobrand eq 'peterborough' && (ref $self) =~ /Bulky/ && !$phone->is_inactive && !$phone->value && !$is_staff_user;
 
+    $phone->add_error('Please provide a phone number')
+        if $cobrand eq 'peterborough' && (ref $self) =~ /Bulky/ && !$phone->is_inactive && !$phone->value && !$is_staff_user;
+
     $email->add_error('Please provide email and/or phone')
         unless $phone->is_inactive || $phone->value || $email->value || !($is_staff_user && !$staff_provide_email) || $cobrand eq 'bromley';
 

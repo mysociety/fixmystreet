@@ -373,7 +373,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge' } });
             $mech->content_contains('Please provide an email address');
             $mech->content_lacks('Do you want to receive reminders about this collection by text message?'); # Reminder staff only
-            $mech->submit_form(with_fields => { name => 'Bob Marge', email => '', phone => '44 07 111 111 111' });
+            $mech->submit_form(with_fields => { name => 'Bob Marge', email => '', phone => '07 111 111 111' });
             $mech->content_contains('Please provide an email address', 'Can not proceed without email if text notifications unchecked');
             $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '07 111 111 111' }});
         };

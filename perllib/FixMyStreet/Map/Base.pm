@@ -34,7 +34,7 @@ sub display_map {
         if defined $c->get_param('lon');
     $params{zoomToBounds} = $params{any_zoom} && !defined $c->get_param('zoom');
 
-    $params{aerial} = $c->get_param("aerial") && FixMyStreet->config('BING_MAPS_API_KEY') ? 1 : 0;
+    $params{aerial} = $c->get_param("aerial") && $c->cobrand->call_hook('has_aerial_maps') ? 1 : 0;
 
     my $map = $cls->new({
         # Co-ordinates are in case the layer needs to decide things

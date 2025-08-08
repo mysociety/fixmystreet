@@ -25,9 +25,14 @@ sub map_javascript { [
 
 sub map_tiles {
     my ( $self, %params ) = @_;
-    return FixMyStreet::Map::Bing->map_tiles(%params) if $params{aerial};
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
-    my $tile_url = $self->base_tile_url();
+    my $tile_url;
+    my $aerial_url = $self->cobrand->call_hook('has_aerial_maps');
+    if ($params{aerial} && $aerial_url) {
+        $tile_url = $aerial_url;
+    } else {
+        $tile_url = $self->base_tile_url();
+    }
     return [
         "https://$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",
         "https://$tile_url/$z/$x/" . ($y - 1) . ".png",
@@ -54,6 +59,7 @@ sub generate_map_data {
         ($pin->{px}, $pin->{py}) = $self->latlon_to_px($pin->{latitude}, $pin->{longitude}, $params{x_tile}, $params{y_tile}, $zoom_params->{zoom_act});
     }
 
+    my $aerial_url = $self->cobrand->call_hook('has_aerial_maps');
     return {
         %params,
         %$zoom_params,
@@ -61,6 +67,7 @@ sub generate_map_data {
         map_type => $self->map_type(),
         tiles => $self->map_tiles( %params ),
         copyright => $self->copyright(),
+        $aerial_url ? (aerial_url => "https://$aerial_url") : (),
         compass => $self->compass( $params{x_tile}, $params{y_tile}, $zoom_params->{zoom_act} ),
     };
 }

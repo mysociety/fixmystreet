@@ -32,11 +32,6 @@ describe('Clicking the map', function() {
     });
 
     it('map pins toggle okay', function() {
-        cy.get('.map-layer-toggle').click();
-        cy.get('.map-layer-toggle').should('have.class', 'roads');
-        cy.get('.map-layer-toggle').click();
-        cy.get('.map-layer-toggle').should('have.class', 'aerial');
-
         cy.get('.map-pins-toggle').click();
         cy.get('.map-pins-toggle').should('contain', 'Show pins');
         cy.get('.map-pins-toggle').click();
