@@ -37,20 +37,25 @@ END ~%]
         The second collection may be up to two working days after your chosen date.</p>
       [% END %]
 
-      <p>Item collection starts from [% cobrand.bulky_nice_collection_time %].&nbsp;
-        [%~ IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' ~%]
-        Please have your items ready for collection.
-        [%~ ELSE ~%]
-        Please have your items ready and dismantled if required.
-        [%~ END ~%]
-      </p>
+      [% IF cobrand.moniker == 'bexley' %]
+        <p>Collections start from [% cobrand.bulky_nice_collection_time %].&nbsp;Please have your items ready for collection at the location given and dismantled if required.</p>
+      [% ELSE %]
+        <p>Item collection starts from [% cobrand.bulky_nice_collection_time %].&nbsp;
+          [%~ IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' ~%]
+          Please have your items ready for collection.
+          [%~ ELSE ~%]
+          Please have your items ready and dismantled if required.
+          [%~ END ~%]
+        </p>
+      [% END %]
+
       [% IF report.user.email AND report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
       <p>We have emailed confirmation of your booking to [% report.user.email %].</p>
       [% END %]
       [% IF c.cobrand.moniker == 'bromley' %]
           <p>Your reference number is reference:&nbsp;[% report_id %]</p>
       [% ELSE %]
-          <p>If you need to contact us about your application please use the application reference:&nbsp;[% report_id %]</p>
+          <p>If you need to contact us about your booking please use the reference:&nbsp;[% report_id %]</p>
       [% END %]
       [% IF reference %]
         <p>

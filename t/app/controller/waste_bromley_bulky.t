@@ -489,7 +489,7 @@ FixMyStreet::override_config {
 
             set_fixed_time($full_refund_time);
             $mech->get_ok('/report/' . $report->id);
-            $mech->content_contains("You can cancel this booking till");
+            $mech->content_contains("You can cancel this booking up to");
             $mech->content_contains("07:00 on 01 July 2023");
             $mech->content_contains('/waste/12345/bulky/cancel/' . $report->id);
             $mech->content_contains('Cancel this booking');
@@ -508,7 +508,7 @@ FixMyStreet::override_config {
                 $mech->content_lacks('If you cancel you will be refunded £30.00');
                 $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
                 $mech->content_contains('Your booking has been cancelled');
-                $mech->content_lacks('If you need to contact us about your application please use the application reference');
+                $mech->content_lacks('If you need to contact us about your booking please use the reference');
 
                 my $report_id = $report->id;
                 my $email = $mech->get_email;
@@ -561,7 +561,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345/bulky/cancel/' . $report->id);
             $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
             $mech->content_contains('Your booking has been cancelled');
-            $mech->content_lacks('If you need to contact us about your application please use the application reference');
+            $mech->content_lacks('If you need to contact us about your booking please use the reference');
 
             my $report_id = $report->id;
             my @emails = $mech->get_email;

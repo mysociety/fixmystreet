@@ -78,7 +78,17 @@ sub fetch_whitespace_data {
 
 sub clear_cached_lookups_property {
     my ($self, $uprn) = @_;
+
+    # Need to call this before clearing GUID
+    $self->clear_cached_lookups_bulky_slots($uprn);
+
     $self->{c}->waste_cache_delete($self->council_url . ":whitespace:bin_days_page:$uprn");
+}
+
+sub clear_cached_lookups_bulky_slots {
+    my ( $self, $uprn ) = @_;
+
+    $self->{c}->waste_cache_delete($self->council_url . ":whitespace:available_bulky_slots:$uprn");
 }
 
 sub waste_fetch_events {
@@ -243,6 +253,8 @@ sub look_up_property {
         $upcoming_bank_holiday = 1;
     }
 
+    my $address = BexleyAddresses::address_for_uprn($uprn);
+
     return {
         # 'id' is same as 'uprn' for Bexley, but since the wider wasteworks code
         # (e.g. FixMyStreet/App/Controller/Waste.pm) calls 'id' in some cases
@@ -250,12 +262,11 @@ sub look_up_property {
         id => $site->{AccountSiteUPRN},
         uprn => $site->{AccountSiteUPRN},
         usrn => $usrn,
-        address => FixMyStreet::Template::title(
-            BexleyAddresses::address_for_uprn($uprn) ),
+        address => FixMyStreet::Template::title($address->{address}),
         latitude => $site->{Site}->{SiteLatitude},
         longitude => $site->{Site}->{SiteLongitude},
         upcoming_bank_holiday => $upcoming_bank_holiday,
-
+        show_bulky_waste => $self->bulky_allowed_property($address),
         %parent_property,
     };
 }
@@ -944,6 +955,7 @@ sub image_for_unit {
 
     my $service_id = $unit->{service_id};
 
+    return '/i/waste-containers/bulky-white' if $service_id eq 'bulky';
     return '/i/waste-containers/bexley/' . $images->{$service_id};
 }
 
@@ -2069,6 +2081,23 @@ sub _parent_for_container {
         'PG-240' => 'White Lidded Wheelie Bin',
     };
     return $parents->{$id} || $id;
+}
+
+=head2 waste_get_paye_narrative
+
+Return a custom narrative for Bexley to use in paye.net integration
+
+=cut
+
+sub waste_get_paye_narrative {
+    my ($self, $p) = @_;
+    my $id = $p->id;
+    if ($p->category eq 'Bulky collection') {
+        return "Bulky waste - $id";
+    } else {
+        my $uprn = $p->get_extra_field_value('uprn');
+        return "Garden Waste Service Payment - Reference: $id Contract: $uprn";
+    }
 }
 
 1;

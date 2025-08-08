@@ -132,7 +132,7 @@ SET data = form.saved_data;
                   <p class="govuk-!-margin-bottom-3">You can cancel and receive a refund up to
                     [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
               [% ELSE %]
-                  <p class="govuk-!-margin-bottom-3">You can cancel this booking till
+                  <p class="govuk-!-margin-bottom-3">You can cancel this booking up to
                     [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
                   [% IF cobrand.moniker == 'bromley' %]
                       <p class="govuk-!-margin-bottom-0">
@@ -189,7 +189,7 @@ SET data = form.saved_data;
         <thead>
           <tr>
               <th>Item</th>
-            [% IF c.cobrand.moniker != 'brent' %]
+            [% IF NOT c.cobrand.bulky_disabled_item_photos %]
               <th>
                 <span class="govuk-text__assistive">Item images preview</span>
               </th>
@@ -206,7 +206,7 @@ SET data = form.saved_data;
                 <p class="govuk-!-margin-bottom-0"><i>[% item.notes %]</i></p>
               [% END %]
               </td>
-            [% IF c.cobrand.moniker != 'brent' %]
+            [% IF NOT c.cobrand.bulky_disabled_item_photos %]
               <td>
                   [% IF item.photo %]
                     <img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.[% item.photo %]">
@@ -241,7 +241,19 @@ SET data = form.saved_data;
         [% PROCESS change_answers_button goto='location' %]
       </div>
       <p>
-        [% IF data.location %]
+        [% IF data.parking %]
+          <dl>
+              <dt>Location</dt>
+              <dd>[% data.location %]</dd>
+              <dt>Parking restrictions</dt>
+              <dd>
+                [% data.parking %]
+                [% IF data.parking_extra_details %]
+                  <br>[% data.parking_extra_details %]
+                [% END %]
+              </dd>
+          </dl>
+        [% ELSIF data.location %]
           [% data.location %]
         [% ELSE %]
           No description provided.
@@ -249,6 +261,7 @@ SET data = form.saved_data;
       </p>
       [% IF data.location_photo %]
         <img class="img-preview is--medium" alt="Preview image successfully attached" src="/photo/temp.[% data.location_photo %]">
+      [% ELSIF c.cobrand.bulky_disabled_location_photo %]
       [% ELSIF c.cobrand.moniker != 'kingston' AND c.cobrand.moniker != 'sutton' %]
         <p class="due" style="padding:1em">No image of the location has been attached.</p>
       [% END %]
@@ -310,5 +323,13 @@ SET data = form.saved_data;
     <dd>[% data.email %]</dd>
     <dt>Phone</dt>
     <dd>[% data.phone OR 'Not given' %]</dd>
+
+[% IF c.cobrand.moniker == 'bexley' %]
+    <dt>State pension?</dt>
+    <dd>[% data.pension %]</dd>
+    <dt>Physical disability?</dt>
+    <dd>[% data.disability %]</dd>
+[% END %]
+
   </dl>
 [% END %]

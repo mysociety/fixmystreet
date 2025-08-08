@@ -1,23 +1,47 @@
 [% IF c.cobrand.moniker == 'brent' ~%]
     [% service_name = "small items" ~%]
-[% ELSIF c.cobrand.moniker == 'merton' ~%]
+[% ELSIF c.cobrand.moniker == 'merton' || c.cobrand.moniker == 'bexley' ~%]
     [% service_name = "bulky waste" ~%]
 [% ELSE ~%]
     [% service_name = "bulky goods" ~%]
 [% END ~%]
 
+[% IF c.cobrand.moniker == 'bexley';
+    list_type = 'ul';
+ELSE;
+    list_type = 'ol';
+END %]
+
 <h3>Before you start your booking</h3>
-<ol>
+<[% list_type %]>
+  [%~
+      USE pounds = format('%.2f');
+      SET cfg = c.cobrand.wasteworks_config;
+  ~%]
+
+  [% IF c.cobrand.moniker == 'bexley' %]
+
+    <li>Requesting a [% service_name %] collection usually takes around <strong>10 minutes</strong>.</li>
+    <li>Prices start from £[% pounds(cfg.per_item_min_collection_price / 100) %] and the total cost depends on the number and size of items to be collected. If you receive a pension, you can have more items collected at each price point.</li>
+    <li>Please make sure you have read the <strong><a href="[% c.cobrand.call_hook('bulky_tandc_link') %]" target="_blank">[% service_name %] collection</a></strong> page on our website.</li>
+    <li>Before confirming your booking, you need to check all the information provided is correct.</li>
+    <li>
+      You need to provide the following information:
+      <ul>
+        <li>the full list of items you need to have collected</li>
+        <li>the collection location</li>
+        <li>your name, address and contact information</li>
+      </ul>
+    </li>
+
+  [% ELSE %]
+
   [% IF c.cobrand.moniker != 'brent' %]
     <li>Requesting a [% service_name %] collection usually takes around <strong>10 minutes</strong></li>
   [% END %]
   [% IF c.cobrand.moniker != 'brent' AND c.cobrand.moniker != 'bromley' %]
     <li>You can request up to <strong>[% c.cobrand.bulky_items_maximum | numwords %] items per collection</strong></li>
   [% END %]
-    [%~
-        USE pounds = format('%.2f');
-        SET cfg = c.cobrand.wasteworks_config;
-    ~%]
   [% IF cfg.band1_price %]
     [%
         SET band1_items = cfg.band1_max;
@@ -55,4 +79,16 @@
     [% IF cobrand.moniker == 'kingston' || cobrand.moniker == 'sutton' || cobrand.moniker == 'merton' %]
     <li>Bookings are final and non refundable</li>
     [% END %]
-</ol>
+
+  [% END %] [% # End of not-Bexley %]
+</[% list_type %]>
+
+[% IF c.cobrand.moniker == 'bexley' %]
+  <h3>Don't use this service to:</h3>
+  <ul>
+    <li>arrange a collection from a business or commercial address</li>
+    <li>request a collection from inside your property</li>
+    <li>request a garage or house clearance</li>
+    <li>request a collection of hazardous or clinical waste</li>
+  </ul>
+[% END %]

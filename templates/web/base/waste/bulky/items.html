@@ -23,7 +23,13 @@
   <div class="govuk-warning-text__content">
     <span class="govuk-warning-text__assistive">Information</span>
     <p class="govuk-!-margin-bottom-1"><strong>Note</strong></p>
+  [% IF c.cobrand.moniker == 'bexley' %]
+    <p>We can only collect items that are on the list.</p>
+    <p>If your item is not on the list please check using a different name for the same thing.</p>
+    <p>Only the items selected will be collected.</p>
+  [% ELSE  %]
     <p>If an item is not available for selection on this page, it is not eligible for collection.</p>
+  [% END %]
   [% IF c.cobrand.moniker == 'brent' %]
     <p>To see your options for coffee pod recycling please visit
         <a href="https://www.podback.org/recycle-checker">https://www.podback.org/recycle-checker</a>
@@ -140,7 +146,7 @@ END; END %]
     [% notes = 'item_notes_' _ num %]
     [% PROCESS form override_fields = [ notes ] %]
   [% END %]
-  [% IF c.cobrand.moniker != 'brent' %]
+  [% IF NOT c.cobrand.bulky_disabled_item_photos %]
     [% photo = 'item_photo_' _ num %]
     [% photo_fileid = photo _ '_fileid' %]
     [% PROCESS form override_fields = [ photo, photo_fileid ] %]

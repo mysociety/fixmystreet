@@ -120,6 +120,7 @@ $(function() {
         var pricing = totalId.data('pricing');
         // Update total
         var total = 0;
+        var count;
         if (pricing.strategy === 'per_item') {
             $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
                 var extra = $(this).data('extra');
@@ -144,7 +145,7 @@ $(function() {
             totalId.text((total / 100).toFixed(2));
 
         } else if (pricing.strategy === 'banded') {
-            var count = numberOfItems();
+            count = numberOfItems();
             for (var i=0; i<pricing.bands.length; i++) {
                 if (count <= pricing.bands[i].max) {
                     total = pricing.bands[i].price;
@@ -152,6 +153,36 @@ $(function() {
                 }
             }
             totalId.text((total / 100).toFixed(2));
+
+        } else if (pricing.strategy === 'points') {
+            $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
+                var extra = $(this).data('extra');
+                var points = extra ? parseFloat(extra.points) : 0;
+                if (!isNaN(points)) {
+                    total += points;
+                }
+            });
+            var total_price = 0;
+            var price_level = 0;
+            pricing.points.forEach(function(e) {
+                if (total >= e.min) {
+                    total_price = e.price;
+                    price_level = e.min;
+                }
+            });
+            if (total_price === 'max') { // Too many points
+                totalId.text('-');
+                totalDetailId.text('(You have added too many items. Please remove some items to proceed.)');
+                $("#continue").prop('disabled', true);
+            } else {
+                count = numberOfItems();
+                var items = count == 1 ? 'item' : 'items';
+                totalId.text((total_price / 100).toFixed(2));
+                totalDetailId.text('(' + count + ' ' + items + ')');
+                $("#continue").prop('disabled', false);
+            }
+            totalDetailId.show();
+
         }
     }
     updateTotal();
