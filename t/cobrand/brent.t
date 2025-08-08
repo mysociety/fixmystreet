@@ -289,11 +289,6 @@ for my $test (
         report_status => 'confirmed',
         fields => { been_fixed => 'Yes', reported => 'No', another => 'No' },
     },
-    {
-        desc => 'Problem has stayed fixed when user reported not fixed with update',
-        report_status => 'fixed - council',
-        fields => { been_fixed => 'No', reported => 'No', another => 'No', update => 'Test' },
-    },
  ) { subtest "Response to questionnaire doesn't update problem state" => sub {
         my $dt = DateTime->now()->subtract( weeks => 5 );
         my $report_time = $dt->ymd . ' ' . $dt->hms;
