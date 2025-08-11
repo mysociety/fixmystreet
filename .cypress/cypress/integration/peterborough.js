@@ -53,6 +53,10 @@ describe('new report form', function() {
     cy.wait('@report-ajax');
     cy.pickCategory('Non offensive graffiti');
     cy.get('.pre-button-messaging:visible').should('not.exist');
+    cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.242007&latitude=52.571903');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Abandoned vehicles');
+    cy.get('.pre-button-messaging:visible').should('not.exist');
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
@@ -61,6 +65,10 @@ describe('new report form', function() {
     cy.wait('@report-ajax');
     cy.pickCategory('Non offensive graffiti');
     cy.get('.pre-button-messaging:visible').should('contain', 'For graffiti on private land this would be deemed');
+    cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
+    cy.wait('@report-ajax');
+    cy.pickCategory('Abandoned vehicles');
+    cy.get('.pre-button-messaging:visible').should('contain', 'Unfortunately, as this vehicle is abandoned on private land');
   });
 
   it('correctly changes the asset select message', function() {

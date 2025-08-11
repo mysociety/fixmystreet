@@ -179,7 +179,8 @@ if ($opt->test_fixtures) {
                 { group => 'Trees', category => 'Damaged Tree' },
                 { group => 'Street lighting', category => 'Light Out' },
                 { group => 'Street lighting', category => 'Light Dim' },
-                'General fly tipping', 'Fallen branch', 'Pothole', 'Non offensive graffiti'
+                'General fly tipping', 'Fallen branch', 'Pothole', 'Non offensive graffiti',
+                'Abandoned vehicles'
             ], name => 'Peterborough City Council', cobrand => 'peterborough' },
         { area_id => 2498, categories => [
                 { group => 'Bus Stops and Shelters', category => 'Incorrect timetable' },
