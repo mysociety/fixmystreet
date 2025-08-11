@@ -7,22 +7,26 @@
 // From https://www.southwark.gov.uk/branding
 
 /* COLOURS */
-$gray-1: #000;
+$gray-1: #1E1E1E;
 $gray-2: #666;
 $gray-3: #ccc; // $gray-3 For borders.
 
 $white: #fff;
 $white-2: #e9ecee;
 
-$theme-2: #256f8a;
+$theme-2: #00883B;
 $blue: #0d5c84;
 $blue-l1: #e5eff8;
 $purple: #4c2c92;
 $yellow: #ffbf47;
+$orange: #F9B000;
 
 // Error and Success colours
 $red: #d7471a;
-$green: #5aa614;
+$green-300: #007C90; // Links hover. Example here: https://www.southwark.gov.uk/culture-and-sport/libraries
+$green: #00883B;
+$green-600: #00662C; // Hover primary button
+$green-700: #25463D; // Links default
 
 $primary: $gray-2;
 $primary_b: $gray-1;
@@ -67,10 +71,10 @@ $h3-size-large-view: 24px;
 $h4-size-large-view: 19px;
 
 /* LINKS */
-$primary_link_color: $blue;
-$primary_link_hover_color: $blue;
-$link-color: $blue;
-$link-hover-color: #258faf;
+$primary_link_color: $green-700;
+$primary_link_hover_color: $green-300;
+$link-color: $green-700;
+$link-hover-color: $green-300;
 $link-visited-color: $purple;
 $link-active-color: $primary_b;
 $link-focus-color: $primary_b;
@@ -164,13 +168,13 @@ $primary_button_background_color: $theme-2;
 $primary_button_color: $white;
 $primary_button_border_color: $theme-2;
 
-$primary_button_background_color_hover: #585858;
+$primary_button_background_color_hover: $green-600;
 $primary_button_color_hover: $white;
-$primary_button_border_color_hover: #585858;
+$primary_button_border_color_hover: $green-600;
 
-$primary_button_background_color_focus: $link-focus-background-colour;
+$primary_button_background_color_focus: $orange;
 $primary_button_color_focus: $primary_b;
-$primary_button_border_color_focus: $link-focus-background-colour;
+$primary_button_border_color_focus: $orange;
 
 // * Secondary button
 // Style from the sign in button
