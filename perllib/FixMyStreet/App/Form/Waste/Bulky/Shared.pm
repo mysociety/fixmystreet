@@ -82,7 +82,7 @@ has_page summary => (
         if ($cobrand ne 'sutton' && $cobrand ne 'kingston' && $cobrand ne 'merton') {
             return ['payment_method', 'payment_explanation', 'cheque_reference'];
         }
-        if (!$c->stash->{is_staff}) {
+        if (!$c->stash->{is_staff} || $c->stash->{small_items}) {
             return ['payment_method', 'payment_explanation', 'cheque_reference'];
         }
         if ($cobrand eq 'merton') {
