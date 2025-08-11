@@ -182,7 +182,7 @@ sub estate_feature_for_point {
         filter => "<Filter><Contains><PropertyName>Geometry</PropertyName><gml:Point><gml:coordinates>$x,$y</gml:coordinates></gml:Point></Contains></Filter>",
     };
 
-    my $features = $self->_fetch_features($cfg, $x, $y);
+    my $features = $self->_fetch_features($cfg);
     return $features->[0];
 }
 
