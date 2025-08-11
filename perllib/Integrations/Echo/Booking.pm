@@ -72,6 +72,7 @@ sub find_available_slots {
         $c->session->{first_date_returned} //= $date;
     }
 
+    $c->cobrand->call_hook('filter_booking_dates', \@available_slots);
     $c->waste_cache_set($key, \@available_slots) if !$no_cache;
 
     return \@available_slots;

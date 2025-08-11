@@ -71,7 +71,7 @@ has_page summary => (
         my $page = shift;
         my $c = $page->form->c;
 
-        if (!($c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'kingston') || !$c->stash->{is_staff}) {
+        if (!($c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'kingston') || !$c->stash->{is_staff} || $c->stash->{small_items} ) {
             return ['payment_method', 'cheque_reference']
         }
     },
