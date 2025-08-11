@@ -118,7 +118,9 @@ SET data = form.saved_data;
               [% ELSIF c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston' %]
                   <p class="govuk-!-margin-bottom-3">You can cancel this booking any time before the collection
                      takes place on or before [% cobrand.bulky_nice_collection_date(data.chosen_date) %].
+                     [% IF NOT small_items %]
                      Bookings are not refundable.</p>
+                     [% END %]
               [% ELSIF c.cobrand.moniker == 'peterborough' %]
                   <p class="govuk-!-margin-bottom-3">You can cancel and receive a refund up to
                     [% cobrand.bulky_nice_cancellation_cutoff_date(data.chosen_date) %].</p>
