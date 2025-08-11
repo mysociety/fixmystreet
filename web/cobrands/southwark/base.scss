@@ -94,11 +94,6 @@ a {
   @include cobrand-link;
 }
 
-.my-account-buttons a {
-  background: transparent;
-  @include cobrand-link;
-}
-
 .skiplink:focus {
   background-color: $link-focus-background-colour;
 }
