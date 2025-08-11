@@ -10,16 +10,16 @@ package main;
 
 use FixMyStreet::Test;
 use FixMyStreet::Geocode::Google;
-use Catalyst::Test 'FixMyStreet::App';
+use FixMyStreet::Cobrand;
 use t::Mock::GoogleGeocoder;
 
-my $c = ctx_request('/');
-my $r = FixMyStreet::Geocode::Google->string("one result", $c);
+my $cobrand = FixMyStreet::Cobrand::Default->new;
+my $r = FixMyStreet::Geocode::Google->string("one result", $cobrand);
 ok $r->{latitude};
 ok $r->{longitude};
 
-$c->stash->{cobrand} = FixMyStreet::Cobrand::Tester->new;
-$r = FixMyStreet::Geocode::Google->string("two results", $c);
+$cobrand = FixMyStreet::Cobrand::Tester->new;
+$r = FixMyStreet::Geocode::Google->string("two results", $cobrand);
 is scalar @{$r->{error}}, 2;
 
 done_testing;

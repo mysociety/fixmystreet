@@ -24,9 +24,9 @@ sub setup {
 # an array of matches if there are more than one. The information in the query
 # may be used to disambiguate the location in cobranded versions of the site.
 sub string {
-    my ( $cls, $s, $c ) = @_;
+    my ( $cls, $s, $cobrand ) = @_;
 
-    my $params = $c->cobrand->disambiguate_location($s);
+    my $params = $cobrand->disambiguate_location($s);
     # Allow cobrand to fixup the user input
     $s = $params->{string} if $params->{string};
 
@@ -41,13 +41,13 @@ sub string {
     $url .= '&maxResults=10'; # Match what is said in the front end
     $url .= '&c=' . $params->{bing_culture} if $params->{bing_culture};
 
-    $c->stash->{geocoder_url} = $url;
+    my $out = { geocoder_url => $url };
     my $js = FixMyStreet::Geocode::cache('bing', $url, 'key=' . FixMyStreet->config('BING_MAPS_API_KEY'));
     if (!$js) {
-        return { error => _('Sorry, we could not parse that location. Please try again.') };
+        return { %$out, error => _('Sorry, we could not parse that location. Please try again.') };
     }
     if ($js->{statusCode} ne '200') {
-        return { error => _('Sorry, we could not find that location.') };
+        return { %$out, error => _('Sorry, we could not find that location.') };
     }
 
     my $results = $js->{resourceSets}->[0]->{resources};
@@ -95,8 +95,8 @@ sub string {
         push (@valid_locations, $_);
     }
 
-    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
-    return { error => $error };
+    return { %$out, latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
+    return { %$out, error => $error };
 }
 
 sub reverse_geocode {
