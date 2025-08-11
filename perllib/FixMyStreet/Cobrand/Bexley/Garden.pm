@@ -71,15 +71,17 @@ sub lookup_subscription_for_uprn {
     return unless $customer && $contract;
 
     # XXX should maybe sort by CreatedDate rather than assuming first is OK
-    $sub->{cost} = try {
-        my ($payment) = grep { $_->{PaymentStatus} =~ /(Paid|Pending)/ } @{ $contract->{Payments} };
-        if ($payment && $payment->{PaymentMethod} eq 'Direct debit') {
-            # Got an active contract with a DD payment method, nothing due to renew
-            $self->{c}->stash->{direct_debit_status} = 'active';
-            $sub->{has_been_renewed} = 1;
-        }
-        return $payment->{Amount} // 0;
-    };
+    my ($payment) = grep { $_->{PaymentStatus} =~ /(Paid|Pending)/ } @{ $contract->{Payments} };
+    my $payment_method
+        = $payment && $payment->{PaymentMethod} eq 'Direct debit'
+        ? 'direct_debit'
+        : 'credit_card';
+
+    if ($payment_method eq 'direct_debit') {
+        # Got an active contract with a DD payment method, nothing due to renew
+        $self->{c}->stash->{direct_debit_status} = 'active';
+        $sub->{has_been_renewed} = 1;
+    }
 
     my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
     $sub->{end_date} = $parser->parse_datetime( $contract->{EndDate} );
@@ -90,6 +92,17 @@ sub lookup_subscription_for_uprn {
     $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
+
+    # Agile does not necessarily return the correct cost, so calculate instead
+    my $costs = WasteWorks::Costs->new(
+        {   cobrand => $self,
+            first_bin_discount =>
+                $self->garden_waste_first_bin_discount_applies(
+                    { payment_method => $payment_method }
+                ),
+        },
+    );
+    $sub->{cost} = $costs->bins( $sub->{bins_count} ) / 100;
 
     return $sub;
 }
@@ -214,6 +227,11 @@ sub waste_garden_sub_params {
 
     } elsif ( $data->{title} =~ /Renew/ ) {
         $c->set_param( 'type', 'renew' );
+        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
+        $c->set_param( 'total_containers', $data->{bins_wanted} );
+
+    } elsif ( $data->{title} =~ /Amend/ ) {
+        $c->set_param( 'type', 'amend' );
         $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
         $c->set_param( 'total_containers', $data->{bins_wanted} );
 
@@ -406,5 +424,11 @@ sub waste_get_paye_narrative {
     my $id = $p->id;
     return "Garden Waste Service Payment - Reference: $id Contract: $uprn";
 }
+
+=item * Anyone can modify garden subs
+
+=cut
+
+sub waste_show_garden_modify { 1 }
 
 1;

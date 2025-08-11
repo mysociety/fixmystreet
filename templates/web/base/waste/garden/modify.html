@@ -12,6 +12,8 @@
     [% INCLUDE waste/garden/_bin_quantities.html form_page='modify' %]
   <hr class="fieldset-hr">
   <div class="cost-pa__total js-bin-costs"
+    data-payment_method="[% current_payment_method %]"
+    data-first_bin_discount="[% garden_costs.first_bin_discount_absolute_amount %]"
     data-per_bin_cost="[% garden_costs.per_bin %]"
     data-per_bin_first_cost="[% garden_costs.per_bin_first %]"
     data-per_new_bin_first_cost="[% garden_costs.per_new_bin_first %]"
