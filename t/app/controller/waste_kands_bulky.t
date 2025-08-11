@@ -380,6 +380,7 @@ FixMyStreet::override_config {
             $mech->content_contains('£40.00');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
             $mech->content_contains("on or before Saturday 01 July 2023");
+            $mech->content_contains('Bookings are not refundable');
             $mech->content_contains('Bob Marge', 'name shown');
             $mech->content_contains('44 07 111 111 111', 'phone shown');
         }
