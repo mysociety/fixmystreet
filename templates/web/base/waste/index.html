@@ -25,7 +25,7 @@
                 <li>Order new or additional bins</li>
             [% END %]
             <li>Subscribe to garden waste collection service</li>
-            [% IF c.cobrand.call_hook('bulky_enabled') && (c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston') %]
+            [% IF c.cobrand.call_hook('bulky_enabled') %]
               <li>Book a bulky waste collection</li>
             [% END %]
           </ul>
