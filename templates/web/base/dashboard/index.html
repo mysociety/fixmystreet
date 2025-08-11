@@ -52,8 +52,9 @@
         <label for="category">[% loc('Category:') %]</label>
         <select class="form-control js-multiple" multiple name="category" id="category">
             [% BLOCK category_option %]
-            [% SET category_safe = mark_safe(cat.category) %]
-                <option value='[% cat.category | html %]'[% ' selected' IF display_categories.$category_safe %]>[% cat.category_display | html %]</option>
+            [% SET category_built = cat.category _ '-' _ group.group_id %]
+            [% SET category_safe = mark_safe(category_built) %]
+               <option value='[% cat.category %]-[% group.group_id | html %]'[% ' selected' IF display_categories.$category_safe %]>[% cat.category_display %]</option>
             [% END %]
             [%~ INCLUDE 'report/new/_category_select.html' include_group_option=1 ~%]
         </select>
@@ -155,19 +156,21 @@
     </tr>
   [% SET current_category = '' %]
   [% FOR k IN rows %][% k_safe = mark_safe(k) %]
-    [% IF category_to_group.$k_safe AND category_to_group.$k_safe != current_category %]
-    [% SET current_category = category_to_group.$k_safe %]
+    [% IF category_to_group.$k_safe.group AND category_to_group.$k_safe.group != current_category %]
+    [% SET current_category = category_to_group.$k_safe.group %]
       <tr>
-        [% IF group_by == 'category+state' %]
-        <th colspan="5" scope="colgroup">[% category_to_group.$k_safe %]</th>
+        [% IF group_by == 'category+state' OR group_by == 'category' %]
+        <th colspan="5" scope="colgroup">[% category_to_group.$k_safe.group %]</th>
         [% ELSE %]
-        <th colspan="2" scope="colgroup">[% category_to_group.$k_safe %]</th>
+        <th colspan="2" scope="colgroup">[% $k_safe %]</th>
         [% END %]
       </tr>
     [% END %]
     <tr>
       [% IF group_by == 'state' %]
         <th scope="row">[% prettify_state(k) %]</th>
+      [% ELSIF group_by == 'category' OR group_by == 'category+state' %]
+        <th scope="row">[% category_to_group.$k_safe.display_name %]</th>
       [% ELSE %]
         <th scope="row">[% k %]</th>
       [% END %]
