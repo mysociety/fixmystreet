@@ -20,9 +20,6 @@
   font-size: 0.875rem;
   line-height: 150%;
   padding: flip(0.4em 1.5em 0.4em 0.6em, 0.4em 0.6em 0.4em 1.5em);
-  // Override the min and max inherited from GOVUK
-  min-width: 100px;
-  max-width: 250px;
   @media (min-width: 48em) {
     font-size: 1rem;
   }
