@@ -659,6 +659,10 @@ sub _enquiry_nice_title {
         $category = 'Wheelie bin, box or caddy not returned correctly after collection';
     } elsif ($category eq 'Waste spillage') {
         $category = 'Spillage during collection';
+    } elsif ($category eq 'Complaint against time') {
+        $category = 'Issue with collection';
+    } elsif ($category eq 'Failure to Deliver Bags/Containers') {
+        $category = 'Issue with delivery';
     }
     return $category;
 }

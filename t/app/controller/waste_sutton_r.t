@@ -712,6 +712,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('/waste/12345"');
                 my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
                 is $report->category, 'Complaint against time', "Correct category";
+                is $report->title, 'Issue with collection';
                 is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
                 is $report->user->email, 'schmoe@example.org', 'User details added to report';
                 is $report->name, 'Joe Schmoe', 'User details added to report';
@@ -923,6 +924,7 @@ FixMyStreet::override_config {
             $mech->content_contains('/waste/12345"');
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             is $report->category, 'Failure to Deliver Bags/Containers', "Correct category";
+            is $report->title, 'Issue with delivery';
             is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
             is $report->user->email, 'schmoe@example.org', 'User email added to report';
             is $report->name, 'Joe Schmoe', 'User name added to report';
