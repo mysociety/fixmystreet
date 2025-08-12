@@ -427,6 +427,7 @@ body.mappage.admin {
   // and leave the other column to shrink to the remaining space.
   #side-report {
     flex: 0 0 auto;
+    width: $mappage-sidebar-width;
 
     @media (min-width: $screen-size--medium) {
       width: $mappage-sidebar-width--medium;
