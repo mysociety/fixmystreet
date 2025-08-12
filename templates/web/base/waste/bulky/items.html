@@ -14,7 +14,9 @@
     <p>Select the items that you need us to collect using the drop-down menu below.
       You can book the collection of up to [% c.cobrand.wasteworks_config.items_per_collection_max | numwords %] items.</p>
     <p>You can search for an item in the list by typing the first few letters.</p>
+    [% IF NOT c.cobrand.bulky_item_notes_field_mandatory %]
     <p>You can also add an optional note against each item which can help ensure we pick up the right items.</p>
+    [% END %]
 [% ELSE %]
 <div class="govuk-warning-text due" style="max-width:550px">
   <div class="govuk-warning-text__img">

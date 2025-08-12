@@ -342,6 +342,7 @@ FixMyStreet::override_config {
             $mech->back;
         };
 
+        $mech->content_contains('You can also add an optional note');
         $mech->submit_form_ok(
             {
                 form_number => 1,
@@ -1014,6 +1015,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve2==::reserve5==;2023-06-25T10:10:00' } }
         );
+        $mech->content_lacks('You can also add an optional note');
         $mech->submit_form_ok(
             {
                 form_number => 1,
