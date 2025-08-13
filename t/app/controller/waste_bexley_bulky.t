@@ -648,6 +648,7 @@ FixMyStreet::override_config {
                     'Bulky Items Collected' => { fms_state => 'fixed - council', },
                     'No Access (card left)' => { fms_state => 'unable to fix', },
                     'Nothing Out (card left)' => { fms_state => 'unable to fix', },
+                    'Cancelled' => { fms_state => 'cancelled', },
                 },
                 push_secret => 'mySecret'
             },
@@ -675,11 +676,17 @@ FixMyStreet::override_config {
                         { ServicePropertyID => 67, ServicePropertyValue => 'No Access (card left)', },
                     ] },
                 },
+                2005 => {
+                    Worksheet => { WorksheetStatusName => 'Cancelled' },
+                    WSServiceProperties => { WorksheetServiceProperty => [
+                        { ServicePropertyID => 67, ServicePropertyValue => '', },
+                    ] },
+                },
             }->{$ws_id};
         });
 
         my @reports;
-        for my $id ( 2003..2004 ) {
+        for my $id ( 2003..2005 ) {
             my ($r) = $mech->create_problems_for_body(1, $body->id, 'Bulky collection', {
                 category => 'Bulky collection',
                 external_id => "Whitespace-$id",
@@ -690,6 +697,7 @@ FixMyStreet::override_config {
         for my $details (
             { id => 2003, ref => $reports[0]->id, status => 'Bulky Items Collected' },
             { id => 2004, ref => $reports[1]->id, status => 'No Access (card left)' },
+            { id => 2005, ref => $reports[2]->id, status => 'Cancelled' },
         ) {
             is $mech->post('/waste/whitespace', Content_Type => 'text/xml', Content => '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                 xmlns:web="https://www.jadu.net/hubis/webservices">
@@ -736,6 +744,10 @@ FixMyStreet::override_config {
             external_id => 'Whitespace-2004',
             state => 'unable to fix',
             comments => [ { problem_state => 'unable to fix', text => 'No Access (card left)', }, ],
+        }, {
+            external_id => 'Whitespace-2005',
+            state => 'cancelled',
+            comments => [ { problem_state => 'cancelled', text => 'Cancelled', }, ],
         } ], 'correct reports updated with comments added';
     };
 
