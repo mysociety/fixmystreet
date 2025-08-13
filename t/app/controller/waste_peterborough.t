@@ -122,7 +122,7 @@ FixMyStreet::override_config {
 
         $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1%203NA:100090215480');
-        $mech->content_contains('Please call through to Aragon');
+        $mech->content_contains('Click here to raise re-collection request');
         $mech->log_out_ok();
 
         set_fixed_time('2021-08-06T10:00:00Z');
