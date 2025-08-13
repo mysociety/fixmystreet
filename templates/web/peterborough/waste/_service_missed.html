@@ -19,11 +19,10 @@
         we apologise for any inconvenience.
       [%~ ELSIF unit.report_locked_out.join(', ').match('ON DAY PRE 5PM') %]
         [%~ IF c.user.from_body OR c.user.is_superuser %]
-          Please call through to Aragon to see if they can return to collect, if not
           <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]" style="display: inline">
             <input type="hidden" name="token" value="[% csrf_token %]">
             <input type="hidden" name="service-[% unit.service_id %]" value="1">
-            <input type="submit" value="click here to raise re-collection request" class="fake-link waste-service-link">
+            <input type="submit" value="Click here to raise re-collection request." class="fake-link waste-service-link">
           </form>
         [% ELSE %]
           You can report a missed bin collection online after 5pm on your collection day.
