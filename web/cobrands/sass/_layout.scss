@@ -19,13 +19,13 @@ $mappage-notes-width--medium: 17em !default;
 $mappage-notes-width--large: 19em !default;
 $mappage-notes-width--xlarge: 21em !default;
 
-$mappage-actions-width: 16em !default;
+$mappage-actions-width: 18em !default;
 $mappage-actions-width--medium:  18em !default;
 $mappage-actions-width--large:  25em !default;
 $mappage-actions-width--xlarge: 27em !default;
 
 // These variables are the same as $mappage-sidebar-width, but it controls the width when .with-action is present.
-$mappage-actions-sidebar-width: $mappage-sidebar-width !default;
+$mappage-actions-sidebar-width: 23em !default;
 $mappage-actions-sidebar-width--medium: $mappage-sidebar-width--medium !default;
 $mappage-actions-sidebar-width--large: $mappage-sidebar-width--large !default;
 $mappage-actions-sidebar-width--xlarge: $mappage-sidebar-width--xlarge !default;
