@@ -80,6 +80,7 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                 base_price => 'int',
                 daily_slots => 'int',
                 items_per_collection_max => 'int',
+                small_items_per_collection_max => 'int',
                 band1_price => 'int',
                 band1_max => 'int',
                 free_mode => 'bool',
@@ -94,7 +95,7 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
                 } elsif ($keys{$_} eq 'int') {
                     if ($val && $val ne $val+0) {
                         $c->stash->{errors}->{site_wide} = "Not an integer";
-                    } elsif ($_ eq 'items_per_collection_max' && $val > 200) {
+                    } elsif ($_ =~ /items_per_collection_max/ && $val && $val > 200) {
                         $c->stash->{errors}->{site_wide} = "Maximum items per collection cannot be more than 200";
                     }
                     $new_cfg->{$_} = $val;
@@ -116,13 +117,27 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
     }
 }
 
+sub small_items : Chained('body') {
+    my ( $self, $c ) = @_;
+    $c->stash->{item_list_key} = 'small_item_list';
+    $c->stash->{template} = 'admin/waste/bulky_items.html';
+    $c->forward('booked_items');
+}
+
 sub bulky_items : Chained('body') {
+    my ( $self, $c ) = @_;
+    $c->stash->{item_list_key} = 'item_list';
+    $c->forward('booked_items');
+}
+
+sub booked_items : Private {
     my ( $self, $c ) = @_;
 
     $c->forward('/auth/get_csrf_token');
 
+    my $key = $c->stash->{item_list_key};
     my $cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
-    $c->stash->{item_list} = $cfg->{item_list} || [];
+    $c->stash->{item_list} = $cfg->{$key} || [];
 
     my $cobrand = $c->stash->{body}->get_cobrand_handler;
     $c->stash->{per_item_pricing_property_types} =
@@ -179,12 +194,13 @@ sub bulky_items : Chained('body') {
         }
         unless ($c->stash->{has_errors}) {
             my @sorted = sort { $a->{name} cmp $b->{name} } @items;
-            $cfg->{item_list} = \@sorted;
+            my $cfg = $c->stash->{body}->get_extra_metadata("wasteworks_config", {});
+            $cfg->{$key} = \@sorted;
             $c->stash->{body}->set_extra_metadata("wasteworks_config", $cfg);
             $c->stash->{body}->update;
             $c->flash->{status_message} = _("Updated!");
             $c->res->redirect(
-                $c->uri_for_action( '/admin/waste/bulky_items',
+                $c->uri_for_action( $c->action,
                     [ $c->stash->{body}->id ]
                 )
             );
@@ -220,7 +236,7 @@ sub stash_body_config_json : Private {
     } else {
         $c->stash->{body_config_json} = JSON->new->utf8(1)->pretty->canonical->encode($cfg);
     }
-    foreach (qw(free_mode per_item_costs per_item_min_collection_price base_price daily_slots items_per_collection_max food_bags_disabled show_location_page band1_price band1_max show_individual_notes)) {
+    foreach (qw(free_mode per_item_costs per_item_min_collection_price base_price daily_slots small_items_per_collection_max items_per_collection_max food_bags_disabled show_location_page band1_price band1_max show_individual_notes)) {
         $c->stash->{$_} = $c->get_param($_) || $cfg->{$_};
     }
 }

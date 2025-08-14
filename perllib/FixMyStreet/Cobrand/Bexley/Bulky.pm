@@ -8,8 +8,12 @@ package FixMyStreet::Cobrand::Bexley::Bulky;
 
 use DateTime::Format::Strptime;
 use FixMyStreet::App::Form::Waste::Bulky::Bexley;
+use Integrations::Whitespace::Booking;
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::BulkyWaste';
+
+
+sub booking_class { 'Integrations::Whitespace::Booking' }
 
 sub bulky_allowed_property {
     my ($self, $property) = @_;
@@ -64,52 +68,6 @@ sub bulky_collection_window_start_date {
         $start_date->add( days => 1 );
     }
     return $start_date;
-}
-
-sub find_available_bulky_slots {
-    my ( $self, $property, $last_earlier_date_str, $no_cache ) = @_;
-
-    my $key = $self->council_url . ":whitespace:available_bulky_slots:" . $property->{id};
-    if (!$no_cache) {
-        my $data = $self->{c}->waste_cache_get($key);
-        return $data if $data;
-    }
-
-    my $ws = $self->whitespace;
-    my $window = $self->_bulky_collection_window($last_earlier_date_str);
-    my @available_slots;
-    my $slots = $ws->GetCollectionSlots($property->{uprn}, $window->{date_from}, $window->{date_to});
-    foreach (@$slots) {
-        (my $date = $_->{AdHocRoundInstanceDate}) =~ s/T00:00:00//;
-        $date = $self->_bulky_date_to_dt($date);
-        next if FixMyStreet::Cobrand::UK::is_public_holiday(date => $date);
-        next if $_->{SlotsFree} <= 0;
-        push @available_slots, {
-            date => $date->date,
-            reference => $_->{AdHocRoundInstanceID},
-            expiry => '',
-        };
-    }
-
-    $self->{c}->waste_cache_set($key, \@available_slots) if !$no_cache;
-
-    return \@available_slots;
-}
-
-# Check again at the end
-sub check_bulky_slot_available {
-    my ( $self, $chosen_date_string, %args ) = @_;
-
-    # chosen_date_string is of the form
-    # '2023-08-29;12345;'
-    my ( $collection_date) = $chosen_date_string =~ /[^;]+/g;
-
-    my $property = $self->{c}->stash->{property};
-    my $available_slots = $self->find_available_bulky_slots(
-        $property, undef, 'no_cache' );
-
-    my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
-    return $slot ? 1 : 0;
 }
 
 sub bulky_date_label {

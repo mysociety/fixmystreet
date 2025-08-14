@@ -120,6 +120,12 @@ sub ggw_immediate_start {
     return $bins_on_site;
 }
 
+sub small_items_allowed_property {
+    my ( $self, $property ) = @_;
+
+    return $self->small_items_enabled && $property->{has_small_items_service};
+}
+
 sub waste_munge_bin_services_open_requests {
     my ($self, $open_requests) = @_;
     if ($open_requests->{$CONTAINERS{refuse_140}}) { # Sutton
@@ -139,18 +145,19 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
-around bulky_check_missed_collection => sub {
-    my ($orig, $self, $events, $blocked_codes) = @_;
+around booked_check_missed_collection => sub {
+    my ($orig, $self, $type, $events, $blocked_codes) = @_;
 
-    $self->$orig($events, $blocked_codes);
+    $self->$orig($type, $events, $blocked_codes);
 
     # Now check for any old open missed collections that can be escalated
 
     my $cfg = $self->feature('echo');
-    my $service_id = $cfg->{bulky_service_id};
-    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+    my $service_id = $cfg->{$type . '_service_id'} or return;
+    my $service_id_missed = $cfg->{$type . '_service_id_missed'};
 
-    my $missed = $self->{c}->stash->{bulky_missed};
+    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+    my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
         next unless $missed_event;
@@ -285,6 +292,8 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     if ($service_id eq 'bulky') {
         return "$base/bulky-black";
+    } elsif ($service_id eq 'small_items') {
+        return "$base/electricals-batteries-textiles";
     }
 
     if ($service_id == $SERVICE_IDS{communal_refuse} && $unit->{schedule} =~ /fortnight|every other/i) {
@@ -741,10 +750,44 @@ sub bulky_collection_window_start_date {
 }
 
 sub bulky_location_text_prompt {
-    "Please tell us where you will place the items for collection (the bulky waste collection crews are different to the normal round collection crews and will not know any access codes to your property, so please include access codes here if appropriate)";
+    my $self = shift;
+
+    my $text = $self->{c}->stash->{small_items} ? 'small items' : 'bulky waste';
+
+    "Please tell us where you will place the items for collection (the " . $text . " collection crews are different to the normal round collection crews and will not know any access codes to your property, so please include access codes here if appropriate)";
 }
 
 sub bulky_item_notes_field_mandatory { 1 }
 sub bulky_show_individual_notes { 1 } # As mandatory, must be shown
+
+=head2 filter_booking_dates
+
+For small items, don't offer a date where there is already a small items booking
+and show a maximum of eight dates.
+
+Eight dates check is a fallback as would expect to only receive a maximum of eight dates
+
+=cut
+
+sub filter_booking_dates {
+    my ($self, $dates) = @_;
+
+    return unless $self->{c}->stash->{small_items};
+
+    my $pending = $self->{c}->stash->{collections}{small_items}{pending} || [];
+    for my $report (@$pending) {
+        @$dates = grep { $_->{date} ne $report->get_extra_field_value('Collection_Date_-_Bulky_Items') } @$dates;
+    }
+
+    if (@$dates > 8) {
+        @$dates = @$dates[0..7];
+    };
+};
+
+sub waste_munge_small_items_data {
+    my ($self, $data) = @_;
+
+    $self->waste_munge_bulky_data($data);
+}
 
 1;

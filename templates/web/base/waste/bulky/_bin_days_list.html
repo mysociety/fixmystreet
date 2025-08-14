@@ -1,8 +1,8 @@
-[% IF pending_bulky_collections AND NOT c.user_exists %]
+[% IF collections.$type.pending AND NOT c.user_exists %]
     [% PROCESS waste/_bulky_not_signed_user.html %]
 [% END %]
 
-[% FOR booking IN pending_bulky_collections; booking_guid = booking.external_id %]
+[% FOR booking IN collections.$type.pending; booking_guid = booking.external_id %]
     [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
@@ -29,13 +29,13 @@
           <p>If you would like to make any changes to your booking, call us on 020 8274 4902 at least 2 working days before your collection day.</p>
         [% END %]
         [% IF c.cobrand.bulky_can_cancel_collection(booking) %]
-          [% IF c.cobrand.moniker != 'brent' %]
+          [% IF type == 'bulky' %]
             <a class="btn btn--primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel', [ property.id, booking.id ]) %]">Cancel booking</a>
           [% ELSE %]
             <a class="btn btn--primary govuk-!-margin-bottom-2" href="[% c.uri_for_action('waste/bulky/cancel_small', [ property.id, booking.id ]) %]">Cancel booking</a>
           [% END %]
         [% END %]
-        [% PROCESS 'waste/_service_missed.html' unit=bulky_missed.$booking_guid original_booking=booking.id no_default=1 %]
+        [% PROCESS 'waste/_service_missed.html' unit=booked_missed.$booking_guid original_booking=booking.id no_default=1 %]
     </div>
   [% END %]
 
@@ -50,7 +50,7 @@
     <!-- END #04 -->
   [% END %]
 
-  [% FOR booking IN recent_bulky_collections; booking_guid = booking.external_id; %]
+  [% FOR booking IN collections.$type.recent; booking_guid = booking.external_id; %]
     [% NEXT UNLESS c.cobrand.bulky_can_view_collection(booking) %]
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
@@ -70,19 +70,19 @@
     </dl>
     <div class="waste-services-launch-panel">
         <a class="btn btn--primary govuk-!-margin-bottom-2" href="/report/[% booking.id %]">Check collection details</a>
-        [% PROCESS 'waste/_service_missed.html' unit=bulky_missed.$booking_guid original_booking=booking.id no_default=1 %]
+        [% PROCESS 'waste/_service_missed.html' unit=booked_missed.$booking_guid original_booking=booking.id no_default=1 %]
         [% IF c.cobrand.moniker == 'sutton' %]
-        [% IF bulky_missed.$booking_guid.escalations.missed_open %]
+        [% IF booked_missed.$booking_guid.escalations.missed_open %]
             <span class="waste-service-descriptor">Thank you for reporting an issue with this collection; we are investigating.</span>
         [% END %]
         [% END %]
     </div>
   [% END %]
 
-  [% IF unconfirmed_bulky_collections %]
+  [% IF collections.$type.unconfirmed %]
     <hr>
     <h2>Unconfirmed&nbsp;bookings</h2>
-    [% FOR booking IN unconfirmed_bulky_collections %]
+    [% FOR booking IN collections.$type.unconfirmed %]
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Collection date</dt>
@@ -105,7 +105,7 @@
     [% END %]
   [% END %]
 
-[% IF c.cobrand.moniker != 'brent' %]
+[% IF type == 'bulky' %]
 <dl class="govuk-summary-list govuk-!-margin-bottom-3 govuk-!-padding-bottom-0">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Cost</dt>
@@ -131,13 +131,13 @@
 [% END %]
 
 <div class="waste-services-launch-panel">
-  [% IF NOT c.user_exists AND (pending_bulky_collections OR recent_bulky_collections) %]
+  [% IF NOT c.user_exists AND (collections.$type.pending OR collections.$type.recent) %]
     <!-- #07 Should be displayed when: user HASN'T signed in -->
     <a class="btn btn--primary govuk-!-margin-bottom-2" href="/auth?r=waste/[% property.id %]">View existing bookings</a>
     <!-- END #07 -->
   [% END %]
-  [% IF waste_features.bulky_multiple_bookings OR NOT pending_bulky_collections %]
-    [% IF c.cobrand.moniker != 'brent' %]
+  [% IF (type == 'bulky' AND waste_features.bulky_multiple_bookings) OR (type == 'small_items' AND waste_features.small_items_multiple_bookings) OR NOT collections.$type.pending %]
+    [% IF type == 'bulky' %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">
     [% ELSE %]
     <form method="post" action="[% c.uri_for_action('waste/bulky/index_small', [ property.id ]) %]">
