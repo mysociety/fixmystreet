@@ -24,7 +24,7 @@ Email: [% report.user.email OR 'None provided' %]
 
 Phone: [% report.user.phone OR 'None provided' %]
 
-Category: [% report.category %]
+Category: [% report.category_display %]
 
 Subject: [% report.title %]
 

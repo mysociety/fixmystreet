@@ -19,7 +19,7 @@ Ebost: [% report.user.email OR 'None provided' %]
 
 Ffôn: [% report.user.phone OR 'None provided' %]
 
-Categori: [% report.category %]
+Categori: [% report.category_display %]
 
 Pwnc: [% report.title %]
 
