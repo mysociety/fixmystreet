@@ -4,7 +4,7 @@
          <ul>
            <li><a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar</a></li>
         [% IF c.cobrand.moniker == 'kingston' %]
-            <li><a href="https://kingston-self.achieveservice.com/service/In_my_Area_Results?displaymode=collections&amp;altVal=&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li>
+            <!-- <li><a href="https://kingston-self.achieveservice.com/service/In_my_Area_Results?displaymode=collections&amp;altVal=&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li> -->
         [% ELSIF c.cobrand.moniker == 'sutton' %]
             <li><a href="https://sutton-self.achieveservice.com/service/In_my_Area_Results__Sutton_?displaymode=collections&amp;altVal=LBS&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li>
         [% ELSIF calendar_link OR ggw_calendar_link %]
