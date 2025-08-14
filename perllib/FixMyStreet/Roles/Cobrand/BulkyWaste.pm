@@ -117,7 +117,6 @@ Users of this role must supply the following:
 
 =cut
 
-requires 'bulky_allowed_property';
 requires 'bulky_cancellation_cutoff_time';
 requires 'bulky_collection_time';
 requires 'bulky_collection_window_days';
