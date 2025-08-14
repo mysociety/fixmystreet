@@ -251,7 +251,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Our contractor will collect the items you have requested on Friday 08 August 2025', "Date included on confirmation page");
         $mech->content_contains('Item collection starts from 6am', "Collection time included");
         $mech->content_contains('We have emailed confirmation of your booking to ' . $user->email, "Email address included");
-        $mech->content_contains('If you need to contact us about your application please use the application reference:&nbsp;LBS-' . $report->id, "Reference included");
+        $mech->content_contains('If you need to contact us about your booking please use the reference:&nbsp;LBS-' . $report->id, "Reference included");
     };
 
     subtest 'Report made'  => sub {
