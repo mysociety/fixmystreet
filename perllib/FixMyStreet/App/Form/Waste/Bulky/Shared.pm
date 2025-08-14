@@ -213,7 +213,9 @@ sub _get_dates {
             selected => $existing_date && $existing_date eq $_->{date},
             }
             : undef
-        } @{ $c->stash->{booking_class}->find_available_slots($last_earlier_date) };
+        } $c->cobrand->moniker eq 'bexley'
+         ? @{ $c->stash->{booking_class}->find_available_slots($c->stash->{property}, $last_earlier_date) }
+         : @{ $c->stash->{booking_class}->find_available_slots($last_earlier_date) };
 
     return @dates;
 }
