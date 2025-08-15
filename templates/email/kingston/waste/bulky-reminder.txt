@@ -1,4 +1,6 @@
-Subject: Your bulky waste collection is [%
+Subject: Your [%
+    report.title.lower
+%] is [%
 IF cobrand.moniker == 'kingston'; SET ref_prefix = 'RBK-';
 ELSE; SET ref_prefix = 'LBS-';
 END;
@@ -23,6 +25,11 @@ Your bulky waste is due to be collected tomorrow on [% collection_date %].
 [% END %]
 
 [% report.detail %]
+
+[% IF cobrand.moniker == 'sutton' AND report.title == 'Small items collection' %]
+Items to be collected:
+[% INCLUDE 'waste/_bulky_list.txt' %]
+[% END %]
 
 [% INCLUDE 'waste/_bulky_extra_text.txt' %]
 

@@ -21,7 +21,7 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
 
     [% INCLUDE '_council_reference.html' problem=report %]
 
-  [% IF cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston' %]
+  [% IF (cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston') || report.category == 'Small items collection' %]
     <p style="[% p_style %]">
           Date booking made: [% report_date %]
     </p>
@@ -63,7 +63,7 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   [% INCLUDE 'waste/_bulky_extra_text.html' %]
 [% END %]
 
-[% IF cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston' %]
+[% IF (cobrand.moniker == 'sutton' || cobrand.moniker == 'kingston') && report.category != 'Small items collection' %]
   <p style="[% p_style %]">Check you’ve read the <a href="[% cobrand.feature('waste_features').bulky_tandc_link %]">terms and conditions</a>.</p>
 [% ELSIF report.category == 'Small items collection' AND cobrand.feature('waste_features').small_items_tandc_link %]
   <p style="[% p_style %]">Please check you have read the <a href="[% cobrand.feature('waste_features').small_items_tandc_link %]">terms and conditions</a></p>

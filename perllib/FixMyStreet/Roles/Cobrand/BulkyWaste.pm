@@ -609,10 +609,14 @@ sub bulky_reminders {
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
 
-    # If we haven't had payment, we don't want to send a reminder
+    # If we haven't had payment, we don't want to send a bulky reminder for
+    # some cobrands
     if ($self->bulky_send_before_payment) {
         $collections = $collections->search({
-            extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
+             -or => [
+                extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
+                category => 'Small items collection'
+            ]
         });
     }
 
