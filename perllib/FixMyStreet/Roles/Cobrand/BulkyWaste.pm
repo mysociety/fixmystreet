@@ -50,6 +50,8 @@ sub small_items_enabled {
     return $cfg->{small_items_enabled};
 }
 
+sub small_items_free_collection_available { 0 };
+
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
@@ -603,10 +605,14 @@ sub bulky_reminders {
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
 
-    # If we haven't had payment, we don't want to send a reminder
+    # If we haven't had payment, we don't want to send a bulky reminder for
+    # some cobrands
     if ($self->bulky_send_before_payment) {
         $collections = $collections->search({
-            extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
+             -or => [
+                extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
+                category => 'Small items collection'
+            ]
         });
     }
 

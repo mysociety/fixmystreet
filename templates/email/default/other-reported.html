@@ -1,6 +1,6 @@
 [% IF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' OR report.category == 'Amend Garden Subscription' ~%]
 [% PROCESS 'waste/other-reported-garden.html' ~%]
-[% ELSIF report.category == 'Bulky collection' ~%]
+[% ELSIF report.category == 'Bulky collection' OR report.category == 'Small items collection' ~%]
 [% PROCESS 'waste/other-reported-bulky.html' ~%]
 [% ELSIF report.cobrand_data == 'waste' ~%]
 [% PROCESS 'waste/other-reported.html' ~%]
