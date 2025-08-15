@@ -39,6 +39,14 @@
 
 [% END %]
 
+[% IF admin_type == 'super' AND body.parent AND NOT body.parent.parent # A division %]
+<div class="admin-box">
+  <h2>[% loc('Hierarchical attributes') %]</h2>
+  <p>[% loc('Manage Geschäftsbereich, Objekt, and Kategorie attributes for this body.') %]</p>
+  <a class="btn" href="[% c.uri_for_action('/admin/bodies/attributes', [ body.id ]) %]">[% loc('Manage attributes') %]</a>
+</div>
+[% END %]
+
 <h2>[% loc('Edit body details') %]</h2>
 [% INCLUDE 'admin/bodies/form.html' %]
 

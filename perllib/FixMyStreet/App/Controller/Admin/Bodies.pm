@@ -151,6 +151,49 @@ sub edit : Chained('body') : PathPart('') : Args(0) {
     return 1;
 }
 
+=head2 attributes
+
+Controller for managing hierarchical attributes (Zurich only).
+
+=cut
+
+sub attributes : Chained('body') : PathPart('attributes') : Args(0) {
+    my ($self, $c) = @_;
+
+    # Only for Zurich cobrand
+    unless ($c->cobrand->moniker eq 'zurich') {
+        $c->detach('/page_error_404_not_found', []);
+    }
+
+    unless ($c->user->has_permission_to('category_edit', $c->stash->{body_id})) {
+        $c->forward('check_for_super_user');
+    }
+
+    $c->forward('/auth/get_csrf_token');
+
+    my $body = $c->stash->{body};
+    my $attributes = $body->get_extra_metadata('hierarchical_attributes') || {};
+
+    # Initialize with defaults if empty
+    if (!keys %$attributes) {
+        $attributes = $c->cobrand->get_default_hierarchical_attributes();
+    }
+
+    if ($c->req->method eq 'POST') {
+        $c->forward('/auth/check_csrf_token');
+        $c->forward('update_hierarchical_attributes', [$body, $attributes]);
+    }
+
+    $c->stash->{hierarchical_attributes} = $attributes;
+    $c->stash->{template} = 'admin/bodies/attributes.html';
+
+    if (defined $c->flash->{status_message}) {
+        $c->stash->{updated} = $c->flash->{status_message};
+    }
+
+    return 1;
+}
+
 =head2 add_category
 
 Controller for adding a new category.
@@ -615,6 +658,166 @@ sub update_translations : Private {
                 $col, $lang, $text
             );
         }
+    }
+}
+
+sub update_hierarchical_attributes : Private {
+    my ($self, $c, $body, $attributes) = @_;
+
+    my %errors;
+    my $updated = 0;
+
+    foreach my $level_name (keys %$attributes) {
+        my $level = $attributes->{$level_name};
+        my $name_param = "new_${level_name}_name";
+        my $parent_param = "new_${level_name}_parent";
+
+        if (my $new_name = $c->get_param($name_param)) {
+            $new_name = $self->trim($new_name);
+            if ($new_name) {
+                if (length($new_name) < 1) {
+                    $errors{$name_param} = _('Name cannot be empty');
+                    next;
+                } elsif (length($new_name) > 255) {
+                    $errors{$name_param} = _('Name is too long (maximum 255 characters)');
+                    next;
+                }
+
+                my $duplicate = 0;
+                foreach my $existing_id (keys %{$level->{entries}}) {
+                    my $existing_entry = $level->{entries}->{$existing_id};
+                    if (!$existing_entry->{deleted} && lc($existing_entry->{name}) eq lc($new_name)) {
+                        $errors{$name_param} = _('An entry with this name already exists');
+                        $duplicate = 1;
+                        last;
+                    }
+                }
+                next if $duplicate;
+
+                my $max_id = 0;
+                for my $id (keys %{$level->{entries}}) {
+                    $max_id = $id if $id > $max_id;
+                }
+                my $new_id = $max_id + 1;
+
+                my $new_entry = {
+                    name => $new_name,
+                    deleted => 0,
+                };
+
+                if ($level->{parent}) {
+                    my $parent_id = $c->get_param($parent_param);
+                    if (!$parent_id) {
+                        $errors{$parent_param} = _('Parent is required');
+                        next;
+                    }
+
+                    my $parent_level = $attributes->{$level->{parent}};
+                    my $parent_entry = $parent_level->{entries}->{$parent_id};
+                    if (!$parent_entry || $parent_entry->{deleted}) {
+                        $errors{$parent_param} = _('Invalid parent selected');
+                        next;
+                    }
+
+                    $new_entry->{parent_id} = int($parent_id);
+                }
+
+                $level->{entries}->{$new_id} = $new_entry;
+                $updated = 1;
+            }
+        }
+
+        foreach my $id (keys %{$level->{entries}}) {
+            my $entry = $level->{entries}->{$id};
+            my $name_param = "${level_name}_${id}_name";
+            my $parent_param = "${level_name}_${id}_parent";
+            my $deleted_param = "${level_name}_${id}_deleted";
+
+            if (defined(my $name = $c->get_param($name_param))) {
+                $name = $self->trim($name);
+                if (length($name) < 1) {
+                    $errors{$name_param} = _('Name cannot be empty');
+                    next;
+                } elsif (length($name) > 255) {
+                    $errors{$name_param} = _('Name is too long (maximum 255 characters)');
+                    next;
+                } elsif ($name ne $entry->{name}) {
+                    # Check for duplicates excluding current entry
+                    my $duplicate = 0;
+                    foreach my $other_id (keys %{$level->{entries}}) {
+                        next if $other_id eq $id;
+                        my $other_entry = $level->{entries}->{$other_id};
+                        if (!$other_entry->{deleted} && lc($other_entry->{name}) eq lc($name)) {
+                            $errors{$name_param} = _('An entry with this name already exists');
+                            $duplicate = 1;
+                            last;
+                        }
+                    }
+                    next if $duplicate;
+
+                    $entry->{name} = $name;
+                    $updated = 1;
+                }
+            }
+
+            my $deleted = $c->get_param($deleted_param) ? 1 : 0;
+            if ($deleted != $entry->{deleted}) {
+                # Prevent deletion if entry has active children
+                if ($deleted) {
+                    my $has_children = 0;
+                    foreach my $other_level_name (keys %$attributes) {
+                        my $other_level = $attributes->{$other_level_name};
+                        if ($other_level->{parent} && $other_level->{parent} eq $level_name) {
+                            foreach my $child_entry (values %{$other_level->{entries}}) {
+                                if (!$child_entry->{deleted} && ($child_entry->{parent_id} || 0) == $id) {
+                                    $has_children = 1;
+                                    last;
+                                }
+                            }
+                            last if $has_children;
+                        }
+                    }
+                    if ($has_children) {
+                        $errors{$deleted_param} = _('Cannot delete entry that has active child entries');
+                        next;
+                    }
+                }
+
+                $entry->{deleted} = $deleted;
+                $updated = 1;
+            }
+
+            if ($level->{parent}) {
+                my $parent_id = $c->get_param($parent_param);
+                if ($parent_id && $self->trim($parent_id)) {
+                    $parent_id = int($parent_id);
+                    if (($entry->{parent_id} || 0) != $parent_id) {
+                        if ($parent_id > 0) {
+                            my $parent_level = $attributes->{$level->{parent}};
+                            my $parent_entry = $parent_level->{entries}->{$parent_id};
+                            if (!$parent_entry || $parent_entry->{deleted}) {
+                                $errors{$parent_param} = _('Invalid parent selected');
+                                next;
+                            }
+                        }
+
+                        $entry->{parent_id} = $parent_id;
+                        $updated = 1;
+                    }
+                }
+            }
+        }
+    }
+
+    if (%errors) {
+        $c->stash->{errors} = \%errors;
+        $c->stash->{updated} = _('Please correct the errors below');
+    } elsif ($updated) {
+        $body->set_extra_metadata('hierarchical_attributes', $attributes);
+        $body->update;
+        $c->forward('/admin/log_edit', [$body->id, 'body', 'hierarchical_attributes_edit']);
+        $c->flash->{status_message} = _('Hierarchical attributes updated');
+        $c->res->redirect($c->uri_for_action('/admin/bodies/attributes', [$body->id]));
     }
 }
 
