@@ -220,10 +220,10 @@ sub waste_service_containers {
 
     # Will get garden info later, in garden_container_data_extract
     # (as garden containers held in a totally different place)
-    return if $service_id == $service_ids->{garden};
+    return ([]) if $service_id == $service_ids->{garden};
 
     # FAS cannot request containers - FD-5401
-    return if $self->{c}->stash->{fas_property};
+    return if ($self->moniker eq 'kingston' || $self->moniker eq 'sutton') && $self->{c}->stash->{fas_property};
 
     my $waste_containers_no_request = $self->_waste_containers_no_request;
 
