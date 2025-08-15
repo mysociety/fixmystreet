@@ -1,4 +1,6 @@
-Subject: Your bulky waste collection is [%
+Subject: Your [%
+    report.title.lower
+%] is [%
 IF cobrand.moniker == 'kingston'; SET ref_prefix = 'RBK-';
 ELSE; SET ref_prefix = 'LBS-';
 END;
@@ -16,13 +18,19 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
 
 Dear [% report.name %],
 
+[% SET prefix = report.category == 'Small items collection' ? 'small items are' : 'bulky waste is' ~%]
 [% IF days == 3 %]
-Your bulky waste is due to be collected in 3 days on [% collection_date %].
+Your [% prefix %] due to be collected in 3 days on [% collection_date %].
 [% ELSIF days == 1 %]
-Your bulky waste is due to be collected tomorrow on [% collection_date %].
+Your [% prefix %] due to be collected tomorrow on [% collection_date %].
 [% END %]
 
 [% report.detail %]
+
+[% IF report.category == 'Small items collection' %]
+Items to be collected:
+[% INCLUDE 'waste/_bulky_list.txt' %]
+[% END %]
 
 [% INCLUDE 'waste/_bulky_extra_text.txt' %]
 

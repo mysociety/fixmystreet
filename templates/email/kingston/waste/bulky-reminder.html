@@ -19,14 +19,22 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
   <p style="[% p_style %]">[% email_summary %]</p>
 
   <p style="[% p_style %]">
+    [% SET prefix = report.category == 'Small items collection' ? 'small items are' : 'bulky waste is' %]
     [% IF days == 3 %]
-    Your bulky waste is due to be collected
+    Your [% prefix %] due to be collected
     <strong>in 3 days</strong> on [% collection_date %].
     [% ELSIF days == 1 %]
-    Your bulky waste is due to be collected
+    Your [% prefix %] due to be collected
     <strong>tomorrow</strong> on [% collection_date %].
     [% END %]
   </p>
+
+  [% IF report.category == 'Small items collection' %]
+  <p style="[% p_style %]">
+    Items to be collected:
+    [% INCLUDE 'waste/_bulky_list.html' %]
+  </p>
+  [% END %]
 
   [% INCLUDE 'waste/_bulky_extra_text.html' %]
 
