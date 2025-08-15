@@ -2,6 +2,7 @@ use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use Path::Tiny;
+use FixMyStreet::Script::Reports;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -40,6 +41,7 @@ create_contact(
     { code => 'Exact_Location' },
     { code => 'GUID' },
     { code => 'reservation' },
+    { code => 'CHARGEABLE' },
 );
 
 my $user = $mech->create_user_ok('maryk@example.org', name => 'Test User');
@@ -305,6 +307,11 @@ FixMyStreet::override_config {
             'value' => 'reserve7a==',
             'description' => undef,
             'name' => 'reservation'
+          },
+          {
+            'value' => 'FREE',
+            'description' => undef,
+            'name' => 'CHARGEABLE'
           }
         ];
         is_deeply $report->get_extra_fields, $test_extra, "Data added to report";
@@ -339,8 +346,64 @@ FixMyStreet::override_config {
         'Friday 15 August', 'Saturday 16 August', 'Sunday 17 August') {
             $mech->content_contains($date, 'Date 2-9 included');
         };
-    }
+    };
 
+    my $id = $report->id;
+    my $sutton_id = 'LBS-' . $id;
+    subtest 'Confirmation email' => sub {
+        ok $report->confirmed, "Report has been automatically confirmed";
+        $report->confirmed('2025-08-01T10:00:00');
+        $report->update;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $confirmation_email_txt = $mech->get_text_body_from_email($emails[1]);
+        my $confirmation_email_html = $mech->get_html_body_from_email($emails[1]);
+        like $emails[1]->header('Subject'), qr/Your small items collection - reference $sutton_id/, 'Small items in email subject';
+        for my $email ($confirmation_email_txt, $confirmation_email_html) {
+            like $email, qr/Date booking made: Friday 01 August 2025/, 'Includes booking date';
+            like $email, qr/Reference: (<strong>)?$sutton_id/, 'Includes reference number';
+            like $email, qr/Items to be collected:/, 'Includes header for items';
+            like $email, qr/Batteries \(A bag of batteries\)/, 'Includes item 1 with notes';
+            like $email, qr/Small WEEE \(A toaster\)/, 'Includes item 2 with notes';
+            unlike $email, qr/Total cost/, 'There is no total cost';
+            like $email, qr/Address: 2 Example Street, Sutton, SM2 5HF/, 'Includes collection address';
+            like $email, qr/Collection date: Friday 08 August/, 'Includes collection date';
+            like $email, qr#http://sutton.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link';
+            like $email, qr/tandc_link/, 'Terms and conditions link included';
+        }
+    };
+
+    subtest 'Reminder emails' => sub {
+        $mech->clear_emails_ok;
+        my $cobrand = $sutton->get_cobrand_handler;
+        for my $test (
+            {
+                text => 'in 3 days',
+                date => '2025-08-05T10:00:00Z'
+            },
+            {
+                text => 'tomorrow',
+                date => '2025-08-07T10:00:00Z'
+            },
+        ) {
+            $mech->clear_emails_ok;
+            set_fixed_time($test->{date});
+            my $text = $test->{text};
+            $cobrand->bulky_reminders;
+            my $email = $mech->get_email;
+            like $email->header('Subject'), qr/Your small items collection is $text - $sutton_id/, "Reminder email for correct service and due $text";
+            my $reminder_email_txt = $mech->get_text_body_from_email($email);
+            my $reminder_email_html = $mech->get_html_body_from_email($email);
+            for my $email ($reminder_email_txt, $reminder_email_html) {
+                like $email, qr/Address: 2 Example Street, Sutton, SM2 5HF/, 'Includes collection address';
+                like $email, qr/on Friday 08 August/, 'Includes collection date';
+                like $email, qr/Items to be collected/, 'Includes Items to be collected section';
+                like $email, qr/Batteries \(A bag of batteries\)/, 'Includes item 1 with notes';
+                like $email, qr/Small WEEE \(A toaster\)/, 'Includes item 2 with notes';
+                like $email, qr#http://sutton.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link';
+            };
+        }
+    }
 };
 
 done_testing;

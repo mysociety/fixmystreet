@@ -790,4 +790,6 @@ sub waste_munge_small_items_data {
     $self->waste_munge_bulky_data($data);
 }
 
+sub small_items_free_collection_available { 1 };
+
 1;
