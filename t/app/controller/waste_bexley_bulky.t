@@ -220,7 +220,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1, fields => {
             'item_1' => 'BBQ',
             'item_2' => 'Bicycle',
-            'item_3' => 'Bath',
+            'item_3' => 'Bathroom Cabinet /Shower Screen',
             'item_4' => 'Bath',
             'item_5' => 'Bath',
         } });
@@ -228,6 +228,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             'item_4' => '',
             'item_5' => '',
+        } });
+        $mech->submit_form_ok({ form_number => 1 }); # Change items button
+        $mech->submit_form_ok({ with_fields => {
+            'item_3' => 'Bath',
         } });
         $mech->submit_form_ok(
             {   with_fields => {

@@ -1,3 +1,9 @@
+<form method="post" action="[% INCLUDE 'waste/bulky/_form_action.html' %]">
+    <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+    <input type="hidden" name="goto" value="add_items">
+    <input type="submit" class="govuk-button govuk-button--secondary" value="Change items">
+</form>
+
 [% IF c.cobrand.moniker == 'sutton' || c.cobrand.moniker == 'kingston' || c.cobrand.moniker == 'merton' %]
 [% SET collection_time = c.cobrand.bulky_nice_collection_time %]
     <p class="govuk-body">

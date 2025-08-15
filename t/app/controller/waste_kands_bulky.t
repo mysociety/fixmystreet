@@ -446,7 +446,7 @@ FixMyStreet::override_config {
 
             subtest 'submit items & location again' => sub {
                 $mech->submit_form_ok;
-                $mech->submit_form_ok;
+                $mech->submit_form_ok({ form_number => 2 });
             };
 
             subtest 'date info has changed on summary page' => sub {
