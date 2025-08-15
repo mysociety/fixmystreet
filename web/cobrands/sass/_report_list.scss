@@ -150,34 +150,24 @@ input.bulk-assign {
 
 .govuk-fieldset-wrapper {
   padding: 1rem;
+  $grid-gap: 5%;
 
   .filter-group {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
+    display: grid;
+    // Creates columns at least 180px wide, then all columns must be equally wide
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: $grid-gap;
     margin-bottom: 1rem;
 
-    @media (max-height: 30em) {
-      // To avoid horizontal scrolling when zooming >300%
+    .report-list-filters {
+      display: flex;
       flex-direction: column;
-    }
-  }
+      gap: 0;
+      padding: 0;
 
-  .report-list-filters {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding: 0;
-    flex-basis: 50%;
-  }
-
-  .multi-select-button, .govuk-select {
-    width: 150px;
-  }
-
-  @media (min-width: 48em) {
-    .multi-select-button, .govuk-select {
-      width: 200px;
+      .multi-select-button, .govuk-select {
+        width: 100%;
+      }
     }
   }
 }
