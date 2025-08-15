@@ -118,7 +118,7 @@ END; END %]
   [% IF c.cobrand.bulky_pricing_strategy.strategy == 'banded' %]
   <p id="band-pricing-info"></p>
   [% END %]
-  <button type="button" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item">+
+  <button type="submit" id="add-new-item" class="btn-secondary govuk-!-margin-bottom-3" aria-label="Add item" name="goto-same-page" value="1">
     [% IF c.cobrand.moniker == 'kingston' OR c.cobrand.moniker == 'sutton' ~%]
       Add another item
     [%~ ELSE ~%]

@@ -80,8 +80,10 @@ sub form : Private {
             unless $self->feature eq "claims";
         my @params = $form->get_params($c);
         $form->process(params => @params);
-        if ($form->validated) {
-            $form = $self->load_form($c, $form);
+        if (!$c->stash->{override_no_next_form}) {
+            if ($form->validated) {
+                $form = $self->load_form($c, $form);
+            }
         }
     }
 

@@ -560,16 +560,12 @@ body.bulky {
 
 // Bulky item selection
 
-.delete-item, #add-new-item, .bulky-item-message {
+.delete-item, .bulky-item-message {
   display: none;
 }
 
 html.js {
   #item-selection-form {
-    #add-new-item {
-      display: block;
-    }
-
     .bulky-item-message {
       display: none;
       margin-top: 1em;
