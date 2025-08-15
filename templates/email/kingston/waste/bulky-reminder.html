@@ -28,6 +28,13 @@ cancel_url = cobrand.base_url _ '/waste/' _ property_id_uri _ '/' _ bulky_cancel
     [% END %]
   </p>
 
+  [% IF cobrand.moniker == 'sutton' AND report.title == 'Small items collection' %]
+  <p style="[% p_style %]">
+    Items to be collected:
+    [% INCLUDE 'waste/_bulky_list.html' %]
+  </p>
+  [% END %]
+
   [% INCLUDE 'waste/_bulky_extra_text.html' %]
 
   <p style="[% p_style %]">
