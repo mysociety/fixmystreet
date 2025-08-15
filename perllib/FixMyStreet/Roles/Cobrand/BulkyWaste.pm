@@ -50,6 +50,8 @@ sub small_items_enabled {
     return $cfg->{small_items_enabled};
 }
 
+sub small_items_free_collection_available { 0 };
+
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
@@ -203,7 +205,10 @@ sub bulky_total_cost {
     my ($self, $data) = @_;
     my $c = $self->{c};
 
-    if ($self->bulky_free_collection_available) {
+    if (
+        (!$c->stash->{small_items} && $self->bulky_free_collection_available)
+        || ($c->stash->{small_items} && $self->small_items_free_collection_available)
+    ) {
         $data->{extra_CHARGEABLE} = 'FREE';
         $c->stash->{payment} = 0;
     } else {
@@ -604,9 +609,13 @@ sub bulky_reminders {
     });
 
     # If we haven't had payment, we don't want to send a reminder
+    # But if a service identifies as free we're not waiting for payment
     if ($self->bulky_send_before_payment) {
         $collections = $collections->search({
-            extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
+             -or => [
+                extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
+                extra => { '@>' => '{"_fields":[{"name":"CHARGEABLE","value":"FREE"}]}' }
+            ]
         });
     }
 
