@@ -12,9 +12,9 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $bin_data = decode_json(path(__FILE__)->sibling('waste_4443082.json')->slurp_utf8);
+my $bin_data = decode_json(path(__FILE__)->sibling('waste_merton_4443082.json')->slurp_utf8);
 my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_4471550.json')->slurp_utf8);
-my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_4499005.json')->slurp_utf8);
+my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_merton_4499005.json')->slurp_utf8);
 
 my $params = {
     send_method => 'Open311',
@@ -43,7 +43,7 @@ create_contact({ category => 'Report missed collection', email => 'missed' }, 'W
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
-create_contact({ category => 'Request new container', email => '1635' }, 'Waste',
+create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
     { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
@@ -61,14 +61,14 @@ create_contact({ category => 'Assisted collection remove', email => 'assisted' }
     { code => 'Crew_Notes', description => 'Notes', required => 1, datatype => 'text' },
     { code => 'staff_form', automated => 'hidden_field' },
 );
-create_contact({ category => 'Failure to deliver', email => 'failure' }, 'Waste',
+create_contact({ category => 'Failure to deliver', email => '3141' }, 'Waste',
     { code => 'Notes', description => 'Details', required => 1, datatype => 'text' },
 );
 create_contact({ category => 'Request additional collection', email => 'additional' }, 'Waste',
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
-create_contact({ category => 'Bin not returned', email => '1570' }, 'Waste',
+create_contact({ category => 'Bin not returned', email => '3135' }, 'Waste',
     { code => 'Report_Type', required => 1, datatype => 'singlevaluelist',
     values => [
         { 'name' => 'Bin Position', 'key' => '1'},
@@ -81,7 +81,7 @@ create_contact({ category => 'Bin not returned', email => '1570' }, 'Waste',
     ] },
     { code => 'Notes', description => 'Details', required => 0, datatype => 'text' },
 );
-create_contact({ category => 'Waste spillage', email => '1545' }, 'Waste',
+create_contact({ category => 'Waste spillage', email => '3227' }, 'Waste',
     { code => 'Notes', description => 'Details', required => 0, datatype => 'text' },
 );
 
@@ -105,10 +105,12 @@ FixMyStreet::override_config {
         } },
         waste => { merton => 1 },
         payment_gateway => { merton => {
-            request_cost_1 => 1800,
             request_cost_2 => 1800,
-            request_cost_20 => 1800,
-            request_cost_26 => 1800,
+            request_cost_3 => 1800,
+            request_cost_28 => 1800,
+            request_cost_39 => 1800,
+            ggw_cost => 1901,
+            ggw_new_bin_cost => 234,
             adelante => {
                 cost_code => 'cost_code',
                 cost_code_admin_fee => 'admin_code',
@@ -160,11 +162,7 @@ FixMyStreet::override_config {
         my $dupe = dclone($bin_data);
         # Give the entry schedule 2 tasks
         foreach (@$dupe) {
-            my $tasks = $_->{ServiceTasks}{ServiceTask};
-            $tasks = [ $tasks ] unless ref $tasks eq 'ARRAY';
-            foreach (@$tasks) {
-                $_->{TaskTypeId} = 3571;
-            }
+            $_->{ServiceId} = 1069;
         }
         $e->mock('GetServiceUnitsForObject', sub { $dupe });
         $mech->get_ok('/waste/12345');
@@ -200,23 +198,22 @@ FixMyStreet::override_config {
     };
     subtest 'Request a new bin' => sub {
         $mech->get_ok('/waste/12345/request');
-        # 19 (1), 24 (1), 16 (1), 1 (1)
-        $mech->submit_form_ok({ with_fields => { 'container-19' => 1 }});
+        $mech->submit_form_ok({ with_fields => { 'container-27' => 1 }});
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Damaged";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Damaged\n\n1x Blue lid paper and cardboard bin (240L) to deliver\n\n1x Blue lid paper and cardboard bin (240L) to collect";
         is $report->category, 'Request new container';
         is $report->title, 'Request replacement Blue lid paper and cardboard bin (240L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'KEY';
-        is $cgi->param('attribute[Action]'), '3';
-        is $cgi->param('attribute[Reason]'), '2';
+        is $cgi->param('attribute[Action]'), '2::1';
+        is $cgi->param('attribute[Reason]'), '4::4';
     };
 
     subtest 'Test sending of reports to other endpoint' => sub {
@@ -231,8 +228,8 @@ FixMyStreet::override_config {
             my $req = Open311->test_req_used;
             my $cgi = CGI::Simple->new($req->content);
             is $cgi->param('api_key'), 'api_key';
-            is $cgi->param('attribute[Action]'), '3';
-            is $cgi->param('attribute[Reason]'), '2';
+            is $cgi->param('attribute[Action]'), '2';
+            is $cgi->param('attribute[Reason]'), '4';
             is $cgi->param('attribute[echo_id]'), '1928374';
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             is $report->get_extra_metadata('sent_to_crimson'), 1;
@@ -322,14 +319,14 @@ FixMyStreet::override_config {
     subtest 'Report a new recycling raises a bin delivery request' => sub {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-16' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'container-12' => 1 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'missing' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Missing";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Missing\n\n1x Green recycling box (55L) to deliver";
         is $report->title, 'Request replacement Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
@@ -342,7 +339,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('Other containers', 'Does not contain "other" section if not staff');
         $mech->content_lacks('Blue lid paper and cardboard bin (360L)', 'Container not associated with service not available ');
-        $mech->submit_form_ok({ with_fields => { 'container-1' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'container-3' => 1 } });
         $mech->content_lacks('request_reason_text', 'Staff only field for extra information absent');
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
@@ -362,19 +359,27 @@ FixMyStreet::override_config {
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container";
-        is $report->title, 'Request new Black rubbish bin (140L)';
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\n1x Black rubbish bin (240L) to deliver";
+        is $report->title, 'Request new Black rubbish bin (240L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '1';
-        is $cgi->param('attribute[Reason]'), '4';
+        is $cgi->param('attribute[Reason]'), '6';
     };
 
     subtest 'Request new garden container' => sub {
-        $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '26';
+        my $dupe = dclone($bin_data);
+        $dupe->[3]{ServiceId} = 1082;
+        $dupe->[3]{ServiceTasks}{ServiceTask}{ServiceTaskLines} = { ServiceTaskLine => [ {
+                ScheduledAssetQuantity => 1,
+                AssetTypeId => 1915,
+                StartDate => { DateTime => '2022-03-30T00:00:00Z' },
+                EndDate => { DateTime => '2023-03-30T00:00:00Z' },
+            } ] };
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-26' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'container-39' => 1 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
@@ -385,13 +390,21 @@ FixMyStreet::override_config {
         is $sent_params->{items}[0]{cost_code}, 'admin_code';
         check_extra_data_pre_confirm($new_report);
 
-        $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '1';
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
     subtest 'Request both refuse and garden container' => sub {
-        $bin_data->[0]{ServiceTasks}{ServiceTask}[0]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '26';
+        my $dupe = dclone($bin_data);
+        $dupe->[2]{ServiceId} = 1082;
+        $dupe->[2]{ServiceTasks}{ServiceTask}[0]{ServiceTaskLines} = { ServiceTaskLine => [ {
+                ScheduledAssetQuantity => 1,
+                AssetTypeId => 1915,
+                StartDate => { DateTime => '2022-03-30T00:00:00Z' },
+                EndDate => { DateTime => '2023-03-30T00:00:00Z' },
+            } ] };
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-1' => 1, 'container-26' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'container-3' => 1, 'container-39' => 1 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
@@ -406,7 +419,7 @@ FixMyStreet::override_config {
         is $sent_params->{items}[1]{cost_code}, 'admin_code';
         check_extra_data_pre_confirm($new_report);
 
-        $bin_data->[0]{ServiceTasks}{ServiceTask}[0]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '19';
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
     subtest 'Request new build container as staff' => sub {
@@ -416,7 +429,7 @@ FixMyStreet::override_config {
 
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-1' => 1, 'quantity-1' => 2 } });
+        $mech->submit_form_ok({ with_fields => { 'container-3' => 1, 'quantity-3' => 2 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build', 'request_reason_text' => 'Large household' x 10 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->content_contains('No payment to be taken');
@@ -427,14 +440,14 @@ FixMyStreet::override_config {
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\nAdditional details: " . "Large household" x 10;
-        is $report->title, 'Request new Black rubbish bin (140L)';
+        is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\n1x Black rubbish bin (240L) to deliver\n\nAdditional details: " . "Large household" x 10;
+        is $report->title, 'Request new Black rubbish bin (240L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '1::1';
         is $cgi->param('attribute[Notes]'), 'Large household' x 10;
-        is $cgi->param('attribute[Reason]'), '4::4';
+        is $cgi->param('attribute[Reason]'), '6::6';
         is $cgi->param('attribute[contributed_by]'), $staff_user->email;
         $mech->log_out_ok;
     };
@@ -448,7 +461,7 @@ FixMyStreet::override_config {
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'api_key';
         is $cgi->param('attribute[Action]'), '1';
-        is $cgi->param('attribute[Reason]'), '4';
+        is $cgi->param('attribute[Reason]'), '6';
         is $cgi->param('attribute[echo_id]'), '1928374';
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_metadata('sent_to_crimson'), 1;
@@ -463,7 +476,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Other containers', 'Staff can select from list of containers not associated with a service');
         $mech->content_contains('Blue lid paper and cardboard bin (360L)', 'Domestic service available');
         $mech->content_lacks('Communal Refuse bin (240L)', 'Communal service not available');
-        $mech->submit_form_ok({ with_fields => { 'container-20' => 1, 'quantity-20' => 2 } });
+        $mech->submit_form_ok({ with_fields => { 'container-28' => 1, 'quantity-28' => 2 } });
         $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build', 'request_reason_text' => 'Large household' }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->waste_submit_check({ with_fields => { process => 'summary' } });
@@ -478,18 +491,20 @@ FixMyStreet::override_config {
         check_extra_data_post_confirm($report);
         $mech->content_contains('request has been sent');
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\nAdditional details: Large household";
+        is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\n1x Blue lid paper and cardboard bin (360L) to deliver\n\nAdditional details: Large household";
         is $report->title, 'Request new Blue lid paper and cardboard bin (360L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '1::1';
-        is $cgi->param('attribute[Reason]'), '4::4';
+        is $cgi->param('attribute[Reason]'), '6::6';
         $mech->log_out_ok;
     };
 
     subtest 'Request larger refuse bin' => sub {
-        $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '35';
+        my $dupe = dclone($bin_data);
+        $dupe->[3]{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '2';
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Request a larger refuse container' });
         $mech->submit_form_ok({ with_fields => { medical_condition => 'No' } });
@@ -527,14 +542,14 @@ FixMyStreet::override_config {
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\n1x Black rubbish bin (240L) to deliver\n\n1x Black rubbish bin (180L) to collect";
         is $report->title, 'Request exchange for Black rubbish bin (240L)';
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '2::1';
-        is $cgi->param('attribute[Reason]'), '3::3';
-        $bin_data->[1]{ServiceTasks}{ServiceTask}{Data}{ExtensibleDatum}{ChildData}{ExtensibleDatum}[0]{Value} = '1'; # Reset
+        is $cgi->param('attribute[Reason]'), '9::9';
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
     subtest 'Report missed collection' => sub {
@@ -544,7 +559,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Non-recyclable waste');
         $mech->content_lacks('Paper and card');
 
-        $mech->submit_form_ok({ with_fields => { 'service-2239' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'service-1084' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Thank you for reporting a missed collection');
@@ -560,13 +575,13 @@ FixMyStreet::override_config {
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
-            EventTypeId => 1635,
+            EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
                 {
                     ChildData => { ExtensibleDatum => [
                         { Value => 1, DatatypeName => 'Action' },
-                        { Value => 16, DatatypeName => 'Container Type' },
+                        { Value => 12, DatatypeName => 'Container Type' },
                     ] },
                 },
             ] },
@@ -575,17 +590,17 @@ FixMyStreet::override_config {
         $mech->content_contains('A mixed recycling container request has been made');
         $mech->content_contains('Report a missed mixed recycling collection');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-16" value="1"[^>]+disabled/s); # green
+        $mech->content_like(qr/name="container-12" value="1"[^>]+disabled/s); # green
 
         $e->mock('GetEventsForObject', sub { [ {
             # Request
-            EventTypeId => 1635,
+            EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
                 {
                     ChildData => { ExtensibleDatum => [
                         { Value => 1, DatatypeName => 'Action' },
-                        { Value => 23, DatatypeName => 'Container Type' },
+                        { Value => 44, DatatypeName => 'Container Type' },
                     ] },
                 },
             ] },
@@ -593,28 +608,24 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A food waste container request has been made');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-23" value="1"[^>]+disabled/s); # indoor
-        $mech->content_like(qr/name="container-24" value="1"\s*data-toggle[^ ]*\s*>/s); # outdoor
+        $mech->content_like(qr/name="container-44" value="1"[^>]+disabled/s); # indoor
+        $mech->content_like(qr/name="container-46" value="1"\s*data-toggle[^ ]*\s*>/s); # outdoor
 
         $e->mock('GetEventsForObject', sub { [ {
-            EventTypeId => 1566,
+            EventTypeId => 3145,
+            EventStateId => 0,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
-            ServiceId => 408,
-            Data => { ExtensibleDatum => [
-                { Value => 1, DatatypeName => 'Container Mix' },
-            ] },
+            ServiceId => 1071,
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A missed mixed recycling collection has been reported');
         $mech->content_contains('Request a mixed recycling container');
 
         $e->mock('GetEventsForObject', sub { [ {
-            EventTypeId => 1566,
+            EventTypeId => 3145,
+            EventStateId => 0,
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
-            ServiceId => 408,
-            Data => { ExtensibleDatum => {
-                Value => 1, DatatypeName => 'Paper'
-            } },
+            ServiceId => 1075,
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('only be reported within 2 working days');
@@ -626,20 +637,20 @@ FixMyStreet::override_config {
     $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });
     subtest 'Fortnightly collection can request a blue stripe bag' => sub {
         $mech->get_ok('/waste/12345/request');
-        $mech->submit_form_ok({ with_fields => { 'container-18' => 1 }});
+        $mech->submit_form_ok({ with_fields => { 'container-22' => 1 }});
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('uprn'), 1000000002;
-        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Additional bag required";
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Additional bag required\n\n1x Recycling Blue Stripe Bag to deliver";
         is $report->category, 'Request new container';
         is $report->title, 'Request new Recycling Blue Stripe Bag';
     };
     subtest 'Above-shop address' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345/request');
-        $mech->content_lacks( '"container-18" value="1"',
+        $mech->content_lacks( '"container-22" value="1"',
             'Weekly collection cannot request a blue stripe bag' );
 
         $mech->get_ok('/waste/12345');
@@ -657,13 +668,13 @@ FixMyStreet::override_config {
     subtest 'test failure to deliver' => sub {
         $e->mock('GetEventsForObject', sub { [ {
             # Request
-            EventTypeId => 1635,
+            EventTypeId => 3129,
             Data => { ExtensibleDatum => [
                 { Value => 2, DatatypeName => 'Source' },
                 {
                     ChildData => { ExtensibleDatum => [
                         { Value => 1, DatatypeName => 'Action' },
-                        { Value => 16, DatatypeName => 'Container Type' },
+                        { Value => 12, DatatypeName => 'Container Type' },
                     ] },
                 },
             ] },
@@ -692,7 +703,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Report a problem with a non-recyclable waste collection', 'Can report a problem with non-recyclable waste');
         $mech->content_contains('Report a problem with a food waste collection', 'Can report a problem with food waste');
         my $root = HTML::TreeBuilder->new_from_content($mech->content());
-        my $panel = $root->look_down(id => 'panel-2240');
+        my $panel = $root->look_down(id => 'panel-1075');
         is $panel->as_text =~ /.*Please note that missed collections can only be reported.*/, 1, "Paper and card past reporting deadline";
         $mech->content_lacks('Report a problem with a paper and card collection', 'Can not report a problem with paper and card as past reporting deadline');
         $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
@@ -747,7 +758,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Request an additional food waste collection' });
         $mech->content_contains('Paper and card'); # Normally not there, see missed test above
-        $mech->submit_form_ok({ with_fields => { 'service-2239' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'service-1084' => 1 } });
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('additional collection has been requested');
@@ -774,7 +785,7 @@ FixMyStreet::override_config {
     };
     subtest 'test staff-only form when logged out' => sub {
         $mech->log_out_ok;
-        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=2238');
+        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=1067');
         is $mech->res->previous->code, 302;
     };
     subtest 'test assisted collection display' => sub {
