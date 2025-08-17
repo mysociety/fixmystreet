@@ -204,6 +204,11 @@ sub waste_extra_service_info_all_results {
         $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
     }
 
+    if ($self->moniker eq 'merton' && @$result == 1 && $result->[0]{ServiceId} == $service_ids->{garden}) {
+        # No garden collection possible, if only service is garden
+        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
+    }
+
     if (@$result && $cfg->{bulky_service_id} && grep { $_->{ServiceId} == $cfg->{bulky_service_id} } @$result) {
         $property->{has_bulky_service} = 1;
     }
@@ -215,6 +220,11 @@ sub waste_extra_service_info_all_results {
 sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
     my $service_ids = $SERVICE_IDS{$self->moniker};
+
+    if ($self->moniker eq 'merton') {
+        # Merton lets everyone pick between bins and sacks
+        $self->{c}->stash->{slwp_garden_sacks} = 1;
+    }
 
     foreach (@rows) {
         my $service_id = $_->{ServiceId};
@@ -416,9 +426,10 @@ sub waste_garden_sub_params {
     my $service = $self->garden_current_subscription;
     my $choice = $data->{container_choice} || '';
     my $existing = $service ? $service->{garden_container} : undef;
-    $existing = $data->{transfer_bin_type} if $data->{transfer_bin_type};
     my ($container);
-    if ($choice) {
+    if ($data->{transfer_bin_type}) {
+        $container = $data->{transfer_bin_type};
+    } elsif ($choice) {
         $choice = 'bin240' if $choice eq 'bin';
         $container = $GARDEN_CONTAINER_IDS{$choice};
     } elsif ($existing) {
@@ -494,7 +505,15 @@ sub waste_garden_renew_form_setup {
     my $c = $self->{c};
     if ($c->stash->{slwp_garden_sacks}) {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
-        $c->stash->{first_page} = 'sacks_choice';
+        my $service = $c->cobrand->garden_current_subscription;
+        if ($self->moniker eq 'merton') {
+            if ($service->{garden_container} == $CONTAINERS{garden_sack}) {
+                $c->stash->{first_page} = 'sacks_details';
+            }
+            # Else default to 'intro' from the main code
+        } else {
+            $c->stash->{first_page} = 'sacks_choice';
+        }
     }
 }
 

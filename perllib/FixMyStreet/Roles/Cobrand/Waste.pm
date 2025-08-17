@@ -24,6 +24,7 @@ sub waste_subscription_types {
         New => 1,
         Renew => 2,
         Amend => 3,
+        Transfer => 4,
     };
 }
 
