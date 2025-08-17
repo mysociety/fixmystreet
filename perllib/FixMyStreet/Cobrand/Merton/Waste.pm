@@ -357,6 +357,13 @@ sub waste_munge_request_data {
     } elsif ($reason eq 'more') {
         $action_id = 1; # Deliver
         $reason_id = 9; # Increase capacity
+    } elsif ($reason eq 'collect') {
+        # Triggered from Garden new/renewal with reduction
+        $action_id = 2; # Remove
+        $reason_id = 8; # Remove Containers
+        $quantity = $data->{"removal-$id"};
+        $id_to_remove = $id;
+        $id_to_add = undef;
     } else {
         # No reason, must be a bag
         $action_id = 1; # Deliver
@@ -368,6 +375,8 @@ sub waste_munge_request_data {
         $data->{title} = "Request replacement $container";
     } elsif ($reason eq 'change_capacity') {
         $data->{title} = "Request exchange for $container";
+    } elsif ($reason eq 'collect') {
+        $data->{title} = "Request $container collection";
     } else {
         $data->{title} = "Request new $container";
     }
@@ -475,17 +484,16 @@ sub check_ggw_transfer_applicable {
     my $subscription_enddate = _parse_schedules($servicetask)->{end_date};
     return { error => 'due_soon' } if ($subscription_enddate && $self->waste_sub_due($subscription_enddate));
 
-    my $old_subscription_bin_data = Integrations::Echo::force_arrayref($servicetask->{Data}, 'ExtensibleDatum');
-
+    # Some of garden_container_data_extract from SLWP.pm
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
+    my $old_subscription_bin_data = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskLines}, 'ServiceTaskLine');
     foreach (@$old_subscription_bin_data) {
-        my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-        foreach (@$moredata) {
-            if ($_->{DatatypeName} eq 'Quantity') {
-                $old_garden->{transfer_bin_number} = $_->{Value};
-            } elsif ($_->{DatatypeName} eq 'Container Type') {
-                $old_garden->{transfer_bin_type} = $_->{Value};
-            }
-        }
+        my $start_date = construct_bin_date($_->{StartDate})->strftime("%F");
+        my $end_date = construct_bin_date($_->{EndDate})->strftime("%F");
+        # No start date check as we do want to take the first one we find, even if it is starting in the future
+        next if $end_date lt $today;
+        $old_garden->{transfer_bin_number} = $_->{ScheduledAssetQuantity};
+        $old_garden->{transfer_bin_type} = $_->{AssetTypeId};
     };
     $old_garden->{subscription_enddate} = $subscription_enddate;
     return $old_garden;
