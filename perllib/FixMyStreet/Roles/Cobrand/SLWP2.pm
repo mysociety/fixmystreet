@@ -248,6 +248,15 @@ sub waste_extra_service_info {
         if ($service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed}) {
             $self->{c}->stash->{fas_property} = 1;
         }
+
+        my $schedules = $_->{Schedules};
+        if ($schedules->{next}{schedule}) {
+            my $allocation = $schedules->{next}{schedule}{Allocation};
+            my $type = $allocation->{RoundGroupName} || '';
+            if ($type eq 'NTE') {
+                $self->{c}->stash->{property_time_banded} = 1;
+            }
+        }
     }
 }
 
