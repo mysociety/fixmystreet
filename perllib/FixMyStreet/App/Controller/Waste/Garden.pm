@@ -25,7 +25,7 @@ has index_template => (
 );
 
 my %GARDEN_IDS = (
-    merton => { bin240 => 26, bin140 => 27, sack => 28 },
+    merton => { bin240 => 39, bin140 => 37, sack => 36 },
     kingston => { bin240 => 39, bin140 => 37, sack => 36 },
     sutton => { bin240 => 39, bin140 => 37, sack => 36 },
 );

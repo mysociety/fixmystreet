@@ -5,12 +5,12 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request';
 
 my %CONTAINERS_NO_ADDITIONAL = (
-    2 => 'refuse_240',
-    3 => 'refuse_360',
-    35 => 'refuse_180',
+    2 => 'refuse_180',
+    3 => 'refuse_240',
+    4 => 'refuse_360',
 
-    26 => 'garden_240',
-    27 => 'garden_140',
+    39 => 'garden_240',
+    37 => 'garden_140',
 );
 
 has_page about_you => (
