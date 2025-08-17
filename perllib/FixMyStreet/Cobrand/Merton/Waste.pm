@@ -189,6 +189,19 @@ sub image_for_unit {
 
 sub garden_collection_time { '6:00am' }
 
+=head2 garden_subscription_start_days
+
+Call hook to return the number of days before a new garden
+subscription starts. Merton vary this depending on whether
+there are bins to be delivered.
+
+=cut
+
+sub garden_subscription_start_days {
+    my ($self, $data) = @_;
+    return $data->{new_bins} && $data->{new_bins} > 0 ? 5 : 0;
+}
+
 sub waste_renewal_bins_wanted_disabled { 1 }
 
 =item * SLWP Echo uses End_Date for garden cancellations
