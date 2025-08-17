@@ -3,7 +3,7 @@ package FixMyStreet::Cobrand::Merton::Waste;
 use utf8;
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::Waste',
-     'FixMyStreet::Roles::Cobrand::SLWP',
+     'FixMyStreet::Roles::Cobrand::SLWP2',
      'FixMyStreet::Roles::Cobrand::Adelante';
 
 use Hash::Util qw(lock_hash);
@@ -12,35 +12,58 @@ use FixMyStreet::App::Form::Waste::Report::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton;
 use FixMyStreet::App::Form::Waste::Request::Merton::Larger;
 
-my %TASK_IDS = (
-    domestic_refuse => 2238,
-    domestic_food => 2239,
-    domestic_paper => 2240,
-    domestic_mixed => 2241,
-    domestic_refuse_bag => 2242,
-    communal_refuse => 2243,
-    domestic_mixed_bag => 2246,
-    garden => 2247,
-    communal_food => 2248,
-    communal_paper => 2249,
-    communal_mixed => 2250,
-    domestic_paper_bag => 2632,
-    schedule2_mixed => 3571,
-    schedule2_refuse => 3576,
-    deliver_refuse_bags => 2256,
-    deliver_recycling_bags => 2257,
+my %SERVICE_IDS = (
+    domestic_refuse => 1067, # 4394
+    communal_refuse => 1070, # 4407
+    fas_refuse => 1068, # 4395
+    domestic_mixed => 1071, # 4390
+    communal_mixed => 1074, # 4397
+    fas_mixed => 1072, # 4391
+    domestic_paper => 1075, # 4388
+    communal_paper => 1078, # 4396
+    fas_paper => 1076, # 4402
+    domestic_food => 1084, # 4389
+    communal_food => 1087, # 4403
+    garden => 1082, # 4410
+    schedule2_refuse => 1069, # 4409
+    schedule2_mixed => 1073, # 4398
+    deliver_bags => 1090, # 4427 4432
 );
-lock_hash(%TASK_IDS);
+lock_hash(%SERVICE_IDS);
 
-use constant CONTAINER_RECYCLING_PURPLE_BAG => 17;
+my %CONTAINERS = (
+    refuse_180 => 2,
+    refuse_240 => 3,
+    refuse_360 => 4,
+    refuse_bag => 10,
+    recycling_box => 12,
+    recycling_180 => 14,
+    recycling_240 => 15,
+    recycling_360 => 16,
+    recycling_bag => 22,
+    paper_180 => 26,
+    paper_240 => 27,
+    paper_360 => 28,
+    paper_bag => 34,
+    food_indoor => 44,
+    food_outdoor => 46,
+    food_120 => 49,
+    food_140 => 48,
+    food_240 => 51,
+    garden_240 => 39,
+    garden_140 => 37,
+    garden_sack => 36,
+
+    refuse_660 => 5,
+    refuse_1100 => 8,
+    recycling_660 => 17,
+    recycling_1100 => 20,
+    paper_660 => 29,
+    paper_1100 => 32,
+);
+lock_hash(%CONTAINERS);
 
 =over 4
-
-=item * As Merton shares An Echo, we use NLPG to restrict results to Merton
-
-=cut
-
-has lpi_value => ( is => 'ro', default => 'MERTON' );
 
 =item * Merton has a Saturday 1 July date format
 
@@ -71,20 +94,19 @@ sub service_name_override {
     my ($self, $service) = @_;
 
     my %service_name_override = (
-        $TASK_IDS{domestic_refuse} => 'Non-recyclable waste',
-        $TASK_IDS{domestic_food} => 'Food waste',
-        $TASK_IDS{domestic_paper} => 'Paper and card',
-        $TASK_IDS{domestic_mixed} => 'Mixed recycling',
-        $TASK_IDS{domestic_refuse_bag} => 'Non-recyclable waste',
-        $TASK_IDS{communal_refuse} => 'Non-recyclable waste',
-        $TASK_IDS{domestic_mixed_bag} => 'Mixed recycling',
-        $TASK_IDS{garden} => 'Garden Waste',
-        $TASK_IDS{communal_food} => 'Food waste',
-        $TASK_IDS{communal_paper} => 'Paper and card',
-        $TASK_IDS{communal_mixed} => 'Mixed recycling',
-        $TASK_IDS{domestic_paper_bag} => 'Paper and card',
-        $TASK_IDS{deliver_refuse_bags} => '',
-        $TASK_IDS{deliver_recycling_bags} => '',
+        $SERVICE_IDS{domestic_refuse} => 'Non-recyclable waste',
+        $SERVICE_IDS{domestic_food} => 'Food waste',
+        $SERVICE_IDS{domestic_paper} => 'Paper and card',
+        $SERVICE_IDS{domestic_mixed} => 'Mixed recycling',
+        $SERVICE_IDS{fas_refuse} => 'Non-recyclable waste',
+        $SERVICE_IDS{communal_refuse} => 'Non-recyclable waste',
+        $SERVICE_IDS{fas_mixed} => 'Mixed recycling',
+        $SERVICE_IDS{garden} => 'Garden Waste',
+        $SERVICE_IDS{communal_food} => 'Food waste',
+        $SERVICE_IDS{communal_paper} => 'Paper and card',
+        $SERVICE_IDS{communal_mixed} => 'Mixed recycling',
+        $SERVICE_IDS{fas_paper} => 'Paper and card',
+        $SERVICE_IDS{deliver_bags} => '',
     );
 
     return $service_name_override{$service->{ServiceId}} // '';
@@ -94,49 +116,39 @@ sub waste_password_hidden { 1 }
 
 sub waste_containers {
     return {
-        1 => 'Black rubbish bin (140L)',
-        2 => 'Black rubbish bin (240L)',
-        3 => 'Black rubbish bin (360L)',
-        35 => 'Black rubbish bin (180L)',
+        $CONTAINERS{refuse_180} => 'Black rubbish bin (180L)',
+        $CONTAINERS{refuse_240} => 'Black rubbish bin (240L)',
+        $CONTAINERS{refuse_360} => 'Black rubbish bin (360L)',
+        $CONTAINERS{refuse_bag} => 'Refuse Red Stripe Bag',
 
-        4 => 'Refuse Blue Sack',
-        5 => 'Refuse Black Sack',
-        6 => 'Refuse Red Stripe Bag',
+        $CONTAINERS{recycling_180} => 'Green recycling bin (180L)',
+        $CONTAINERS{recycling_240} => 'Green recycling bin (240L)',
+        $CONTAINERS{recycling_360} => 'Green recycling bin (360L)',
+        $CONTAINERS{recycling_box} => 'Green recycling box (55L)',
+        $CONTAINERS{recycling_bag} => 'Recycling Blue Stripe Bag', # Also purple bag?
 
-        12 => 'Green recycling bin (240L)',
-        13 => 'Green recycling bin (360L)',
-        16 => 'Green recycling box (55L)',
+        $CONTAINERS{paper_240} => 'Blue lid paper and cardboard bin (240L)',
+        $CONTAINERS{paper_360} => 'Blue lid paper and cardboard bin (360L)',
+        $CONTAINERS{paper_180} => 'Blue lid paper and cardboard bin (180L)',
 
-        CONTAINER_RECYCLING_PURPLE_BAG() => 'Recycling Purple Bag',
-        18 => 'Recycling Blue Stripe Bag',
-        29 => 'Recycling Single Use Bag',
+        $CONTAINERS{paper_bag} => 'Paper & Card Reusable Bag',
 
-        19 => 'Blue lid paper and cardboard bin (240L)',
-        20 => 'Blue lid paper and cardboard bin (360L)',
-        36 => 'Blue lid paper and cardboard bin (180L)',
+        $CONTAINERS{food_indoor} => 'Food waste bin (kitchen)',
+        $CONTAINERS{food_outdoor} => 'Food waste bin (outdoor)',
 
-        21 => 'Paper & Card Reusable Bag',
-        22 => 'Paper Sacks',
-        30 => 'Paper Single Use Bag',
-        31 => 'Paper 55L Box',
+        $CONTAINERS{garden_240} => 'Garden waste bin (240L)',
+        $CONTAINERS{garden_140} => 'Garden waste bin (140L)',
+        $CONTAINERS{garden_sack} => 'Garden waste sacks',
 
-        23 => 'Food waste bin (kitchen)',
-        24 => 'Food waste bin (outdoor)',
-
-        26 => 'Garden waste bin (240L)',
-        27 => 'Garden waste bin (140L)',
-        28 => 'Garden waste sacks',
-
-        7 => 'Communal Refuse bin (240L)',
-        8 => 'Communal Refuse bin (360L)',
-        9 => 'Communal Refuse bin (660L)',
-        10 => 'Communal Refuse bin (1100L)',
-        11 => 'Communal Refuse Chamberlain',
-        33 => 'Communal Refuse bin (140L)',
-        34 => 'Communal Refuse bin (1280L)',
-        14 => 'Communal Recycling bin (660L)',
-        15 => 'Communal Recycling bin (1100L)',
-        25 => 'Communal Food bin (240L)',
+        $CONTAINERS{refuse_660} => 'Communal Refuse bin (660L)',
+        $CONTAINERS{refuse_1100} => 'Communal Refuse bin (1100L)',
+        $CONTAINERS{recycling_660} => 'Communal Recycling bin (660L)',
+        $CONTAINERS{recycling_1100} => 'Communal Recycling bin (1100L)',
+        $CONTAINERS{paper_660} => 'Communal paper bin (660L)',
+        $CONTAINERS{paper_1100} => 'Communal paper bin (1100L)',
+        $CONTAINERS{food_120} => 'Communal food bin (120L)',
+        $CONTAINERS{food_140} => 'Communal food bin (140L)',
+        $CONTAINERS{food_240} => 'Communal food bin (240L)',
     };
 }
 
@@ -150,25 +162,24 @@ sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
     my $service_id = $unit->{service_id};
-    my $time_banded = $self->{c}->stash->{property_time_banded};
 
-    return svg_container_sack('normal', '#3B3B3A') if $service_id eq $TASK_IDS{domestic_refuse_bag} && $time_banded;
-    if (my $container = $unit->{request_containers}[0]) {
-        return svg_container_sack('normal', '#BD63D1') if $container == CONTAINER_RECYCLING_PURPLE_BAG;
+    if ($self->{c}->stash->{property_time_banded}) {
+        return svg_container_sack('normal', '#3B3B3A') if $service_id eq $SERVICE_IDS{fas_refuse};
+        return svg_container_sack('normal', '#BD63D1') if $service_id eq $SERVICE_IDS{fas_mixed};
     }
 
     my $images = {
-        $TASK_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),
-        $TASK_IDS{domestic_food} => "$base/caddy-brown-large",
-        $TASK_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
-        $TASK_IDS{domestic_mixed} => "$base/box-green-mix",
-        $TASK_IDS{domestic_refuse_bag} => svg_container_sack('stripe', '#F1506D'),
-        $TASK_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
-        $TASK_IDS{domestic_mixed_bag} => svg_container_sack('stripe', '#3E50FA'),
-        $TASK_IDS{garden} => svg_container_bin('wheelie', '#8B5E3D'),
-        $TASK_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
-        $TASK_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'),
-        $TASK_IDS{domestic_paper_bag} => svg_container_sack('normal', '#D8D8D8'),
+        $SERVICE_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),
+        $SERVICE_IDS{domestic_food} => "$base/caddy-brown-large",
+        $SERVICE_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
+        $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
+        $SERVICE_IDS{fas_refuse} => svg_container_sack('stripe', '#F1506D'),
+        $SERVICE_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
+        $SERVICE_IDS{fas_mixed} => svg_container_sack('stripe', '#3E50FA'),
+        $SERVICE_IDS{garden} => svg_container_bin('wheelie', '#8B5E3D'),
+        $SERVICE_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
+        $SERVICE_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'),
+        $SERVICE_IDS{fas_paper} => svg_container_sack('normal', '#D8D8D8'),
         bulky => "$base/bulky-black",
     };
     return $images->{$service_id};
@@ -206,6 +217,15 @@ sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
 
     return if $self->{c}->stash->{schedule2_property};
+
+    foreach (@$rows) {
+        if ($_->{service_id} eq $SERVICE_IDS{domestic_refuse}) {
+            if ($_->{request_containers}[0] eq $CONTAINERS{refuse_180}) {
+                $self->{c}->stash->{can_request_larger} = 1;
+            }
+        }
+    }
+
     return unless $self->{c}->stash->{is_staff};
 
     my @containers_on_property;
@@ -302,29 +322,41 @@ sub waste_munge_request_data {
     my $nice_reason = $c->stash->{label_for_field}->($form, 'request_reason', $reason)
         if $reason;
 
+    my $service_id;
+    my $services = $c->stash->{services};
+    foreach my $s (keys %$services) {
+        my $containers = $services->{$s}{request_containers};
+        foreach (@$containers) {
+            $service_id = $s if $_ eq $id;
+        }
+    }
+    $c->set_param('service_id', $service_id) if $service_id;
+
     my ($action_id, $reason_id);
-    my $echo_container_id = $id;
+    my $id_to_add = $id;
+    my $id_to_remove;
     if ($data->{medical_condition}) { # Filled in the larger form
         $reason = 'change_capacity';
         $action_id = '2::1';
-        $reason_id = '3::3';
-        $echo_container_id = '35::2';
+        $reason_id = '9::9'; # Increase capacity
+        $id_to_remove = $CONTAINERS{refuse_180};
     } elsif ($reason eq 'damaged') {
-        $action_id = 3; # Replace
-        $reason_id = 2; # Damaged
+        $action_id = '2::1'; # Remove/Deliver
+        $reason_id = '4::4' ; # Damaged
+        $id_to_remove = $id;
     } elsif ($reason eq 'missing') {
         $action_id = 1; # Deliver
         $reason_id = 1; # Missing
     } elsif ($reason eq 'new_build') {
         $action_id = 1; # Deliver
-        $reason_id = 4; # New
+        $reason_id = 6; # New Property
     } elsif ($reason eq 'more') {
         $action_id = 1; # Deliver
-        $reason_id = 3; # Change capacity
+        $reason_id = 9; # Increase capacity
     } else {
         # No reason, must be a bag
         $action_id = 1; # Deliver
-        $reason_id = 3; # Change capacity
+        $reason_id = 9; # Increase capacity
         $nice_reason = "Additional bag required";
     }
 
@@ -337,13 +369,22 @@ sub waste_munge_request_data {
     }
     $data->{detail} = "Quantity: $quantity\n\n$address";
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
+    $data->{detail} .= "\n\n1x $container to deliver" if $id_to_add;
+    if ($id_to_remove) {
+        my $container_removed = $c->stash->{containers}{$id_to_remove};
+        $data->{detail} .= "\n\n" . $quantity . "x $container_removed to collect";
+        if ($id_to_add && $id_to_add != $id_to_remove) {
+            $id_to_add = $id_to_remove . '::' . $id_to_add;
+        }
+    }
     if ($data->{request_reason_text}) {
         $data->{detail} .= "\n\nAdditional details: " . $data->{request_reason_text};
         $c->set_param('Notes', $data->{request_reason_text});
     }
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
-    $c->set_param('Container_Type', $echo_container_id);
+
+    $c->set_param('Container_Type', $id_to_add || $id_to_remove);
 
     if ($data->{payment}) {
         my $cost = $self->request_cost($id);
