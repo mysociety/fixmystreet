@@ -461,7 +461,7 @@ sub waste_garden_sub_params {
 
     if ($type eq $c->cobrand->waste_subscription_types->{New}) {
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-        my $add_days = $self->call_hook('ggw_immediate_start' => $data->{current_bins}) ? 0 : 10;
+        my $add_days = $self->call_hook(garden_subscription_start_days => $data) // 10;
         $c->set_param('Start_Date', $now->add(days => $add_days)->dmy('/'));
         $c->set_param('End_Date', $now->add(years => 1)->subtract(days => 1)->dmy('/'));
     } elsif ($type eq $c->cobrand->waste_subscription_types->{Renew}) {
