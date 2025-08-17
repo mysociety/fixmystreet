@@ -53,12 +53,14 @@ create_contact({ category => 'Request new container', email => '3129' }, 'Waste'
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
 );
-create_contact({ category => 'Assisted collection add', email => 'assisted' }, 'Waste',
-    { code => 'Crew_Notes', description => 'Notes', required => 1, datatype => 'text' },
+create_contact({ category => 'Assisted collection add', email => '3200-add' }, 'Waste',
+    { code => 'Exact_Location', description => 'Notes', required => 0, datatype => 'text' },
+    { code => 'Start_Date', required => 0, automated => 'hidden_field' },
     { code => 'staff_form', automated => 'hidden_field' },
 );
-create_contact({ category => 'Assisted collection remove', email => 'assisted' }, 'Waste',
-    { code => 'Crew_Notes', description => 'Notes', required => 1, datatype => 'text' },
+create_contact({ category => 'Assisted collection remove', email => '3200-remove' }, 'Waste',
+    { code => 'Exact_Location', description => 'Notes', required => 0, datatype => 'text' },
+    { code => 'End_Date', required => 0, automated => 'hidden_field' },
     { code => 'staff_form', automated => 'hidden_field' },
 );
 create_contact({ category => 'Failure to deliver', email => '3141' }, 'Waste',
@@ -69,16 +71,6 @@ create_contact({ category => 'Request additional collection', email => 'addition
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Bin not returned', email => '3135' }, 'Waste',
-    { code => 'Report_Type', required => 1, datatype => 'singlevaluelist',
-    values => [
-        { 'name' => 'Bin Position', 'key' => '1'},
-        { 'name' => 'Lid Not Closed', 'key' => '2'}
-    ] },
-    { code => 'Crew_Required_to_Return?', required => 1, datatype => 'singlevaluelist',
-        values => [
-        { 'name' => 'Yes', 'key' => '1'},
-        { 'name' => 'No', 'key' => '0'}
-    ] },
     { code => 'Notes', description => 'Details', required => 0, datatype => 'text' },
 );
 create_contact({ category => 'Waste spillage', email => '3227' }, 'Waste',
@@ -708,15 +700,15 @@ FixMyStreet::override_config {
         $mech->content_lacks('Report a problem with a paper and card collection', 'Can not report a problem with paper and card as past reporting deadline');
         $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
-        $mech->submit_form_ok( { with_fields => { extra_Report_Type => '1', 'extra_Crew_Required_to_Return?' => '0' } });
+        $mech->submit_form_ok( { with_fields => { extra_Notes => 'Hello' } });
         $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
         $mech->submit_form_ok( { with_fields => { submit => '1' } });
         $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('Notes'), '', "Blank notes field is empty string";
-        is $report->detail, "Bin position\n\nNo request for bin collectors return\n\n2 Example Street, Merton, KT1 1AA", "Details of report contain information about problem";
+        is $report->get_extra_field_value('Notes'), 'Hello';
+        is $report->detail, "Hello\n\n2 Example Street, Merton, KT1 1AA", "Details of report contain information about problem";
         is $report->user->email, 'schmoe@example.org', 'User details added to report';
         is $report->name, 'Joe Schmoe', 'User details added to report';
         is $report->category, 'Bin not returned', "Correct category";
@@ -726,8 +718,7 @@ FixMyStreet::override_config {
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'KEY';
-        is $cgi->param('attribute[Report_Type]'), '1', "Report_Type added to open311 data for Echo";
-        is $cgi->param('attribute[Crew_Required_to_Return?]'), '0', "Crew_Required_to_Return? added to open311 data for Echo";
+        is $cgi->param('attribute[Notes]'), 'Hello';
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Waste spillage' } });
@@ -770,15 +761,15 @@ FixMyStreet::override_config {
 
     subtest 'test staff-only assisted collection form' => sub {
         $mech->log_in_ok($staff_user->email);
-        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=2238');
-        $mech->submit_form_ok({ with_fields => { extra_Crew_Notes => 'Behind the garden gate' } });
+        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=1067');
+        $mech->submit_form_ok({ with_fields => { extra_Exact_Location => 'Behind the garden gate' } });
         $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Your enquiry has been submitted');
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('Crew_Notes'), 'Behind the garden gate';
+        is $report->get_extra_field_value('Exact_Location'), 'Behind the garden gate';
         is $report->detail, "Behind the garden gate\n\n2 Example Street, Merton, KT1 1AA";
         is $report->user->email, 'anne@example.org';
         is $report->name, 'Anne Assist';
