@@ -64,6 +64,23 @@ my %SERVICE_IDS = (
         schedule2_refuse => 968, # 4409
         schedule2_mixed => 972, # 4398
     },
+    merton => {
+        domestic_refuse => 1067, # 4394
+        communal_refuse => 1070, # 4407
+        fas_refuse => 1068, # 4395
+        domestic_mixed => 1071, # 4390
+        communal_mixed => 1074, # 4397
+        fas_mixed => 1072, # 4391
+        domestic_paper => 1075, # 4388
+        communal_paper => 1078, # 4396
+        fas_paper => 1076, # 4402
+        domestic_food => 1084, # 4389
+        communal_food => 1087, # 4403
+        garden => 1082, # 4410
+        bulky => 1089,
+        schedule2_refuse => 1069, # 4409
+        schedule2_mixed => 1073, # 4398
+    },
     sutton => {
         domestic_refuse => 940, # 4394
         communal_refuse => 943, # 4407
@@ -104,7 +121,8 @@ my %CONTAINERS = (
     recycling_blue_bag => 22,
     paper_240 => 27,
     paper_140 => 26,
-    food_indoor => 43,
+    food_indoor_5 => 43,
+    food_indoor_7 => 44,
     food_outdoor => 46,
     garden_240 => 39,
     garden_140 => 37,
@@ -280,10 +298,11 @@ sub waste_service_containers {
         }
     }
 
-    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{food_indoor}}) {
+    my $food_indoor_key = $self->moniker eq 'merton' ? 'food_indoor_7' : 'food_indoor_5';
+    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_key}}) {
         # Can always request a food caddy
-        push @$containers, $CONTAINERS{food_indoor}; # Food waste bin (kitchen)
-        $request_max->{$CONTAINERS{food_indoor}} = 1;
+        push @$containers, $CONTAINERS{$food_indoor_key}; # Food waste bin (kitchen)
+        $request_max->{$CONTAINERS{$food_indoor_key}} = 1;
     }
     if ($self->moniker eq 'kingston' && grep { $_ == $CONTAINERS{recycling_box} } @$containers) {
         # Can request a bin if you have a box
