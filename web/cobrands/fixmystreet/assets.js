@@ -38,7 +38,11 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
           // layers attached with groups that should also apply to categories
           // with the same name
           relevant = (OpenLayers.Util.indexOf(layer.asset_group, group) != -1 || OpenLayers.Util.indexOf(layer.asset_group, category) != -1);
-      } else {
+      }
+      // if not already relevant, check asset_category next. Doing this independently
+      // of asset_group allows config to specific both asset_group and asset_category
+      // and layer will be relevant if either match.
+      if (!relevant && layer.asset_category) {
           relevant = (OpenLayers.Util.indexOf(layer.asset_category, category) != -1);
       }
       return relevant &&
