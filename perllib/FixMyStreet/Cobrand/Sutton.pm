@@ -402,7 +402,7 @@ sub waste_munge_request_form_fields {
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
 
-        my ($cost, $hint) = $self->request_cost($id, 1, $c->stash->{quantities});
+        my ($cost, $hint) = $self->request_cost($id, $c->stash->{quantities});
 
         my $data = {
             value => $id,
@@ -487,6 +487,7 @@ sub waste_munge_request_data {
     $c->set_param('service_id', $service_id) if $service_id;
 
     my ($action_id, $reason_id);
+    my $id_to_add = $id;
     my $id_to_remove;
     if ($reason eq 'damaged') {
         $action_id = '2::1'; # Remove/Deliver
@@ -507,7 +508,7 @@ sub waste_munge_request_data {
         $reason_id = 8; # Remove Containers
         $quantity = $data->{"removal-$id"};
         $id_to_remove = $id;
-        $id = undef;
+        $id_to_add = undef;
     } elsif ($reason eq 'change_capacity') {
         $action_id = '2::1'; # Remove/Deliver
         if ($id == $CONTAINERS{refuse_140}) {
@@ -543,27 +544,33 @@ sub waste_munge_request_data {
     }
     $data->{detail} = $address;
     $data->{detail} .= "\n\nReason: $nice_reason" if $nice_reason;
-    $data->{detail} .= "\n\n1x $container to deliver" if $id;
+    $data->{detail} .= "\n\n1x $container to deliver" if $id_to_add;
     if ($id_to_remove) {
         my $container_removed = $c->stash->{containers}{$id_to_remove};
         $data->{detail} .= "\n\n" . $quantity . "x $container_removed to collect";
-        $id = $id_to_remove . '::' . $id if $id && $id_to_remove != $id;
+        if ($id_to_add && $id_to_add != $id_to_remove) {
+            $id_to_add = $id_to_remove . '::' . $id_to_add;
+        }
     }
 
     $c->set_param('Action', join('::', ($action_id) x $quantity));
     $c->set_param('Reason', join('::', ($reason_id) x $quantity));
-    $c->set_param('Container_Type', $id || $id_to_remove);
+    $c->set_param('Container_Type', $id_to_add || $id_to_remove);
+
+    if ($data->{payment}) {
+        my ($cost) = $self->request_cost($id, $c->stash->{quantities});
+        $c->set_param('payment', $cost || undef);
+    }
 }
 
 =head2 request_cost
 
 Calculate how much, if anything, a request for a container should be.
-Quantity doesn't matter here.
 
 =cut
 
 sub request_cost {
-    my ($self, $id, $quantity, $containers) = @_;
+    my ($self, $id, $containers) = @_;
     my $costs = WasteWorks::Costs->new({ cobrand => $self });
     if (my $cost = $costs->get_cost('request_change_cost')) {
         foreach ($CONTAINERS{refuse_140}, $CONTAINERS{refuse_240}, $CONTAINERS{paper_240}) {

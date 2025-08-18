@@ -1340,6 +1340,11 @@ sub waste_munge_request_data {
         $CONTAINER_IDS{paper_blue_sack} => $SERVICE_IDS{domestic_paper},
     );
     $c->set_param('service_id', $service_id{$id});
+
+    if ($data->{payment}) {
+        my ($cost) = $self->request_cost($id);
+        $c->set_param('payment', $cost || undef);
+    }
 }
 
 sub request_referral {

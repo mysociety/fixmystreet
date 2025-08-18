@@ -714,11 +714,9 @@ sub process_request_data : Private {
     my $payment_method = $data->{payment_method} || 'credit_card';
     foreach (@services) {
         my ($id) = /container-(.*)/;
-        $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
+        $c->cobrand->waste_munge_request_data($id, $data, $form);
         if ($payment) {
-            unless ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'merton') {
-                $c->set_param('payment', $payment);
-            }
+            # "payment" param must be set in the munge function above with the cost for this entry
             $c->set_param('payment_method', $payment_method);
         }
         $c->forward('add_report', [ $data, $unconfirmed || $payment ? 1 : 0 ]) or return;
