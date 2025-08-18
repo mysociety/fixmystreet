@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:ms="http://mapserver.gis.umn.edu/mapserver"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://mapserver.gis.umn.edu/mapserver https://tilma.mysociety.org:80/mapserver/shropshire?SERVICE=WFS&amp;VERSION=1.1.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=Traffic_Signal_Areas&amp;OUTPUTFORMAT=text/xml;%20subtype=gml/3.1.1  http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+      <gml:boundedBy>
+      	<gml:Envelope srsName="EPSG:27700">
+      		<gml:lowerCorner>328905.090541 329651.800129</gml:lowerCorner>
+      		<gml:upperCorner>329174.159979 329842.485917</gml:upperCorner>
+      	</gml:Envelope>
+      </gml:boundedBy>
+    <gml:featureMember>
+      <ms:Traffic_Signal_Areas gml:id="Traffic_Signal_Areas.S1007">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:27700">
+        		<gml:lowerCorner>328905.090541 329828.895845</gml:lowerCorner>
+        		<gml:upperCorner>328916.399878 329842.485917</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:27700">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">328911.961835 329828.895845 328905.090541 329839.700714 328909.749124 329842.485917 328916.399878 329831.712070 328911.961835 329828.895845 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+        <ms:ASSET_ID>01200134</ms:ASSET_ID>
+        <ms:SITE_CODE>S1007</ms:SITE_CODE>
+        <ms:FEATURE_ID>S1007</ms:FEATURE_ID>
+      </ms:Traffic_Signal_Areas>
+    </gml:featureMember>
+    <gml:featureMember>
+      <ms:Traffic_Signal_Areas gml:id="Traffic_Signal_Areas.S1033">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="EPSG:27700">
+        		<gml:lowerCorner>329136.299979 329651.800129</gml:lowerCorner>
+        		<gml:upperCorner>329174.159979 329680.957843</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <ms:msGeometry>
+          <gml:Polygon srsName="EPSG:27700">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">329140.649979 329678.710129 329151.852173 329680.957843 329152.739979 329676.980129 329156.719979 329674.360129 329159.109979 329675.080129 329171.119979 329678.220129 329174.159979 329667.710129 329164.389979 329659.590129 329165.579979 329657.870129 329159.429979 329655.020129 329150.019979 329651.800129 329139.469979 329661.180129 329136.299979 329668.700129 329140.649979 329678.710129 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </ms:msGeometry>
+        <ms:ASSET_ID>01200007</ms:ASSET_ID>
+        <ms:SITE_CODE>S1033</ms:SITE_CODE>
+        <ms:FEATURE_ID>S1033</ms:FEATURE_ID>
+      </ms:Traffic_Signal_Areas>
+    </gml:featureMember>
+</wfs:FeatureCollection>
