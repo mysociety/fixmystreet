@@ -1,5 +1,5 @@
 <div class="govuk-grid-row" id="in-cab-logs">
-  [% IF property.garden_signup_eligible %]
+  [% IF property.garden_signup_eligible && !property.no_garden_subscription_data %]
   <h3 class="govuk-heading-m waste-service-name">
     Brown Wheelie Bin
   </h3>

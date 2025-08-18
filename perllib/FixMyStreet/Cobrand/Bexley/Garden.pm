@@ -121,6 +121,7 @@ sub garden_current_subscription {
         for my $garden_id ( @{ $self->garden_service_ids } ) {
             @$services = grep { $_->{service_id} ne $garden_id } @$services;
         }
+        $property->{no_garden_subscription_data} = 1;
         return undef;
     }
 
