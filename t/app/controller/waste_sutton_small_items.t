@@ -35,8 +35,7 @@ sub create_contact {
 create_contact(
     { category => 'Small items collection', email => '2964@test.com' },
     { code => 'Collection_Date_-_Bulky_Items', required => 0, automated => 'hidden_field' },
-    { code => 'TEM_-_Small_Item_Collection_Description', required => 0, automated => 'hidden_field' },
-    { code => 'TEM_-_Small_Item_Recycling_Item', required => 0, automated => 'hidden_field' },
+    { code => 'Small_Item_Type', required => 0, automated => 'hidden_field' },
     { code => 'Exact_Location' },
     { code => 'GUID' },
     { code => 'reservation' },
@@ -216,9 +215,8 @@ FixMyStreet::override_config {
         $mech->content_contains('option value="Batteries"', "Batteries option");
         $mech->content_contains('option value="Small WEEE"', "Small WEEE option");
         $mech->submit_form_ok( { fields => { 'item_1' => 'Batteries', 'item_2' => 'Batteries' } });
-        $mech->content_contains( 'Item note field is required');
         $mech->content_contains( 'Too many of item: Batteries');
-        $mech->submit_form_ok( { fields => { 'item_1' => 'Batteries', 'item_notes_1' => 'A bag of batteries', 'item_2' => 'Small WEEE', 'item_notes_2' => 'A toaster', 'item_photo_2' => [ $sample_file, undef, Content_Type => 'image/jpeg' ], } });
+        $mech->submit_form_ok( { fields => { 'item_1' => 'Batteries', 'item_2' => 'Small WEEE', 'item_photo_2' => [ $sample_file, undef, Content_Type => 'image/jpeg' ], } });
     };
 
     subtest 'Location page' => sub {
@@ -236,9 +234,7 @@ FixMyStreet::override_config {
         $mech->content_contains('2 Example Street, Sutton, SM2 5HF', "Shows correct address");
         $mech->content_contains('2 items requested for collection', "2 items for collection");
         $mech->content_contains('Batteries', "Batteries added");
-        $mech->content_contains('A bag of batteries', "Batteries note added");
         $mech->content_contains('Small WEEE', "Small WEEE added");
-        $mech->content_contains('A toaster', "Small WEEE note added");
         $mech->content_contains('In the alley', "Location information added");
         $mech->content_contains('<a href="tandc_link" target="_blank">terms and conditions</a>', 'T&C link addeed');
         $mech->submit_form_ok({form_number => 5});
@@ -283,13 +279,8 @@ FixMyStreet::override_config {
             'name' => 'Collection_Date_-_Bulky_Items'
           },
           {
-            'value' => 'A bag of batteries::A toaster',
-            'description' => undef,
-            'name' => 'TEM_-_Small_Item_Collection_Description'
-          },
-          {
             'value' => '1::2',
-            'name' => 'TEM_-_Small_Item_Recycling_Item',
+            'name' => 'Small_Item_Type',
             'description' => undef
           },
           {
@@ -324,9 +315,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Friday 08 August 2025', 'Collection date correct');
         $mech->content_contains('2 items requested for collection', 'Correct number of items');
         $mech->content_contains('Batteries', 'item 1 added');
-        $mech->content_contains('A bag of batteries', 'item 1 notes added');
         $mech->content_contains('Small WEEE', 'item 2 added');
-        $mech->content_contains('A toaster', 'item 2 notes added');
         $mech->content_contains('Preview image successfully attached', 'Preview image added');
         $mech->content_contains('In the alley', 'Location details present');
     };

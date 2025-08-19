@@ -763,8 +763,15 @@ sub bulky_location_text_prompt {
     "Please tell us where you will place the items for collection (the " . $text . " collection crews are different to the normal round collection crews and will not know any access codes to your property, so please include access codes here if appropriate)";
 }
 
-sub bulky_item_notes_field_mandatory { 1 }
-sub bulky_show_individual_notes { 1 } # As mandatory, must be shown
+# Mandatory for bulky, not possible for small items
+sub bulky_item_notes_field_mandatory {
+    my $self = shift;
+    return $self->{c}->stash->{small_items} ? 0 : 1;
+}
+sub bulky_show_individual_notes {
+    my $self = shift;
+    return $self->{c}->stash->{small_items} ? 0 : 1;
+}
 
 =head2 filter_booking_dates
 

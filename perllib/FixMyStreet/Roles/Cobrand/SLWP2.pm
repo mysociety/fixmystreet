@@ -653,8 +653,8 @@ sub waste_munge_bulky_data {
         title => 'Small items collection',
         category => 'Small items collection',
         date_field => 'extra_Collection_Date_-_Bulky_Items', # Only used on FMS side so left as is
-        description_field => 'extra_TEM_-_Small_Item_Collection_Description',
-        ids_field => 'extra_TEM_-_Small_Item_Recycling_Item',
+        description_field => '',
+        ids_field => 'extra_Small_Item_Type',
       }
       :
       {
@@ -697,7 +697,7 @@ sub waste_munge_bulky_data {
             push @photos, $data->{"item_photos_$_"} || '';
         };
     }
-    $data->{ $fields->{description_field} } = join("::", @notes);
+    $data->{ $fields->{description_field} } = join("::", @notes) if $fields->{description_field};
     $data->{ $fields->{ids_field} } = join("::", @ids);
     $data->{extra_Image} = join("::", @photos);
     $self->bulky_total_cost($data);
@@ -715,11 +715,10 @@ sub waste_reconstruct_bulky_data {
     my @fields = split /::/,
         $p->get_extra_field_value('TEM_-_Bulky_Collection_Item')
         || $p->get_extra_field_value('Bulky_Collection_Bulky_Items')
-        || $p->get_extra_field_value('TEM_-_Small_Item_Recycling_Item');
+        || $p->get_extra_field_value('Small_Item_Type');
     my @notes = split /::/,
         $p->get_extra_field_value('TEM_-_Bulky_Collection_Description')
-        || $p->get_extra_field_value('Bulky_Collection_Notes')
-        || $p->get_extra_field_value('TEM_-_Small_Item_Collection_Description');
+        || $p->get_extra_field_value('Bulky_Collection_Notes');
 
     for my $id (1..@fields) {
         $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
