@@ -72,7 +72,8 @@ has_page replacement => (
 
         return 'about_you' if $choice == $CONTAINER_CLEAR_SACK;
         return 'how_long_lived' if $reason eq 'new_build';
-        return 'request_extra_refusal' if $reason eq 'extra' && ($data->{ordered_previously} || $data->{contamination_reports});
+        return 'request_extra_refusal' if $reason eq 'extra' && $data->{ordered_previously};
+        # return 'request_extra_refusal' if $reason eq 'extra' && $data->{contamination_reports} >= 3;
         return 'about_you';
     },
 );
@@ -102,14 +103,33 @@ has_field request_reason => (
         return unless $months;
 
         my $events = $echo->GetEventsForObject(PointAddress => $c->stash->{property}{id}, 2936, $months);
-        $events = $c->cobrand->_parse_events($events, { include_closed_events => 1 });
+        $events = $c->cobrand->_parse_events($events, { include_closed_requests => 1 });
         $saved_data->{ordered_previously} = $events->{request}{$choice} ? 1 : 0;
 
         if ($value eq 'extra' || $value eq 'missing') {
-            my $months = $refusal_contamination_months{$choice};
-            my $events = $echo->GetEventsForObject(PointAddress => $c->stash->{property}{id}, 2923, $months);
-            $events = $c->cobrand->_parse_events($events, { include_closed_events => 1 });
-            $saved_data->{contamination_reports} = $events->{enquiry}{2923} ? 1 : 0;
+            my $services = $c->stash->{service_data};
+            my @tasks;
+            foreach (@$services) {
+                my $container = $_->{request_containers}->[0];
+                push @tasks, $_->{service_task_id} if $container == $choice;
+            }
+
+            # The below is not currently in use, FD-3672
+            # my $months = $refusal_contamination_months{$choice};
+            # my $end = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );
+            # my $start = $end->clone->add(months => -$months);
+
+            # my $result = $echo->GetServiceTaskInstances($start, $end, @tasks);
+
+            # my $num = 0;
+            # foreach (@$result) {
+            #     my $task_id = $_->{ServiceTaskRef}{Value}{anyType};
+            #     my $tasks = Integrations::Echo::force_arrayref($_->{Instances}, 'ScheduledTaskInfo');
+            #     foreach (@$tasks) {
+            #         $num++ if ($_->{Resolution}||0) == 1148;
+            #     }
+            # }
+            # $saved_data->{contamination_reports} = $num;
         }
     },
 );
