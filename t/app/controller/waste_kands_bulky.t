@@ -36,8 +36,16 @@ my $sutton_staff = $mech->create_user_ok('sutton_staff@example.org', from_body =
 
 for ($body, $sutton) {
     add_extra_metadata($_);
-    create_contact($_);
+    create_bulky_contact($_);
 }
+
+create_contact($sutton, { category => 'Complaint against time', email => '3134' },
+    { code => 'Notes', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'original_ref', required => 0, automated => 'hidden_field' },
+    { code => 'missed_guid', required => 0, automated => 'hidden_field' },
+);
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
@@ -342,6 +350,7 @@ FixMyStreet::override_config {
             $mech->back;
         };
 
+        $mech->content_contains('You can also add an optional note');
         $mech->submit_form_ok(
             {
                 form_number => 1,
@@ -437,7 +446,7 @@ FixMyStreet::override_config {
 
             subtest 'submit items & location again' => sub {
                 $mech->submit_form_ok;
-                $mech->submit_form_ok;
+                $mech->submit_form_ok({ form_number => 2 });
             };
 
             subtest 'date info has changed on summary page' => sub {
@@ -799,6 +808,7 @@ FixMyStreet::override_config {
             EventStateId => 12401,
         }, {
             EventTypeId => 3145,
+            EventStateId => 0,
             ServiceId => 986,
             Guid => 'guid',
             EventDate => { DateTime => '2023-07-05T00:00:00Z' },
@@ -852,6 +862,7 @@ FixMyStreet::override_config {
         waste_features => {
             sutton => {
                 bulky_enabled => 1,
+                bulky_missed => 1,
                 bulky_tandc_link => 'tandc_link',
                 echo_update_failure_email => 'fail@example.com',
             },
@@ -1003,6 +1014,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { name => 'Next Day', email => $user->email }});
     };
 
+    my $report;
     subtest 'Sutton staff paye payment sends user confirmation email' => sub {
         FixMyStreet::Script::Alerts::send_updates();
         $mech->clear_emails_ok;
@@ -1014,6 +1026,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve2==::reserve5==;2023-06-25T10:10:00' } }
         );
+        $mech->content_lacks('You can also add an optional note');
         $mech->submit_form_ok(
             {
                 form_number => 1,
@@ -1030,13 +1043,120 @@ FixMyStreet::override_config {
         );
         $mech->submit_form_ok({ with_fields => { location => 'in the middle of the drive' } });
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->get_extra_field_value('payment_method'), 'csc';
         is $report->get_extra_field_value('reservation'), 'reserve2==::reserve5==';
         $mech->submit_form_ok({ with_fields => { payenet_code => '54321' } });
         my $email = $mech->get_email;
         like $email->header('Subject'), qr/Your bulky waste collection - reference LBS/, "Confirmation booking email sent after staff payment process";
-    }
+    };
+
+    subtest 'Escalations of missed collections' => sub {
+        # Update Kingston missed report above to be Sutton
+        my $missed = FixMyStreet::DB->resultset("Problem")->search({ category => 'Report missed collection' })->order_by('-id')->first;
+        $missed->update_extra_field({ name => 'Original_Event_ID', value => 'booking-guid' });
+        $missed->update({ external_id => 'missed-guid', cobrand => 'sutton', bodies_str => $sutton->id });
+
+        # Update the bulky collection to have been done (at right time)
+        $report->update_extra_field({ name => 'Collection_Date_-_Bulky_Items', value => '2025-04-08T00:00:00' });
+        $report->set_extra_metadata(payment_reference => 'payref');
+        $report->update({ external_id => 'booking-guid', state => 'fixed - council' });
+
+        my $escalation;
+        subtest 'Open missed collection' => sub {
+            $echo->mock('GetEventsForObject', sub { [ {
+                Id => '8004',
+                ClientReference => 'LBS-123',
+                Guid => 'booking-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3130, # Bulky collection
+                EventStateId => 19184, # Completed
+                EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+                ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+                ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+            }, {
+                Id => '315530',
+                ClientReference => 'LBS-456',
+                Guid => 'missed-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19240, # Allocated to Crew
+                EventDate => { DateTime => "2025-04-08T17:00:00Z" },
+            } ] });
+
+            set_fixed_time('2025-04-08T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('please report the problem here');;
+
+            set_fixed_time('2025-04-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'please report the problem here' });
+
+            subtest 'actually make the report' => sub {
+                $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } });
+                $mech->submit_form_ok( { with_fields => { submit => '1' } });
+                $mech->content_contains('Your enquiry has been submitted');
+                $mech->content_contains('Return to property details');
+                $mech->content_contains('/waste/12345"');
+                $escalation = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+                is $escalation->category, 'Complaint against time', "Correct category";
+                is $escalation->detail, "2/3 Example Street, Sutton, SM2 5HF", "Details of report contain information about problem";
+                is $escalation->user->email, 'schmoe@example.org', 'User details added to report';
+                is $escalation->name, 'Joe Schmoe', 'User details added to report';
+                is $escalation->get_extra_field_value('Notes'), 'Originally Echo Event #315530';
+                is $escalation->get_extra_field_value('missed_guid'), 'missed-guid';
+                is $escalation->get_extra_field_value('original_ref'), 'LBS-456';
+            };
+
+            set_fixed_time('2025-04-12T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('please report the problem here');
+            set_fixed_time('2025-04-14T17:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('please report the problem here');
+            set_fixed_time('2025-04-14T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('please report the problem here');
+        };
+
+        $escalation->update({ external_id => 'escalation-guid' });
+
+        subtest 'Existing escalation event' => sub {
+            # Now mock there is an existing escalation
+            $echo->mock('GetEventsForObject', sub { [ {
+                Id => '8004',
+                Guid => 'booking-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3130, # Bulky collection
+                EventStateId => 19184, # Completed
+                EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+                ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+                ResolutionCodeId => 232, # Completed on Scheduled Day (dunno if used, doesn't matter)
+            }, {
+                Id => '315530',
+                Guid => 'missed-guid',
+                ServiceId => 960, # Bulky
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19240, # Allocated to Crew
+                EventDate => { DateTime => "2025-04-08T17:00:00Z" },
+            }, {
+                Id => '112112321',
+                Guid => 'escalation-guid',
+                EventTypeId => 3134, # Complaint against time
+                EventStateId => 0,
+                ServiceId => 960, # Bulky
+                EventDate => { DateTime => "2025-04-11T19:00:00Z" },
+            } ] });
+
+            set_fixed_time('2025-04-12T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating.');
+            $mech->content_lacks('please report the problem here');
+        };
+
+        $echo->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
 };
 
 
@@ -1078,23 +1198,10 @@ sub add_extra_metadata {
 $body->update;
 }
 
-sub create_contact {
+sub create_bulky_contact {
     my ($body) = @_;
-    my ($params, @extra) = &_contact_extra_data;
-
-    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
-    $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
-        { code => 'property_id', required => 1, automated => 'hidden_field' },
-        { code => 'service_id', required => 0, automated => 'hidden_field' },
-        @extra,
-    );
-    $contact->update;
-}
-
-sub _contact_extra_data {
-    return (
-        { category => 'Bulky collection', email => '1636@test.com' },
+    my $params = { category => 'Bulky collection', email => '1636@test.com' };
+    my @extra = (
         { code => 'payment' },
         { code => 'payment_method' },
         { code => 'Collection_Date_-_Bulky_Items' },
@@ -1105,4 +1212,18 @@ sub _contact_extra_data {
         { code => 'reservation' },
         { code => 'First_Date_Offered_-_Bulky' },
     );
+    create_contact($body, $params, @extra);
+}
+
+sub create_contact {
+    my ($body, $params, @extra) = @_;
+
+    my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
+    $contact->set_extra_fields(
+        { code => 'uprn', required => 1, automated => 'hidden_field' },
+        { code => 'property_id', required => 1, automated => 'hidden_field' },
+        { code => 'service_id', required => 0, automated => 'hidden_field' },
+        @extra,
+    );
+    $contact->update;
 }

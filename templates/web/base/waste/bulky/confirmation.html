@@ -66,6 +66,12 @@ END ~%]
   </div>
 </div>
 
+<script nonce="[% csp_nonce %]">
+    try {
+        sessionStorage.removeItem('bulky_items');
+    } catch(err) {}
+</script>
+
 [% INCLUDE 'waste/_button_show_upcoming.html' %]
 
 [% INCLUDE footer.html %]

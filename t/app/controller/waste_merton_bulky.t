@@ -332,7 +332,7 @@ FixMyStreet::override_config {
 
             subtest 'submit items & location again' => sub {
                 $mech->submit_form_ok;
-                $mech->submit_form_ok;
+                $mech->submit_form_ok({ form_number => 2 });
             };
 
             subtest 'date info has changed on summary page' => sub {
@@ -577,7 +577,7 @@ FixMyStreet::override_config {
             $mech->content_like(
                 qr/<option value="Bath".*>Bath<\/option>/);
             $mech->submit_form_ok; # Items page
-            $mech->submit_form_ok; # Location page
+            $mech->submit_form_ok({ form_number => 2 }); # Location page
 
             $mech->content_contains('Booking Summary');
             $mech->content_lacks('You will be redirected to the council’s card payments provider.');
@@ -617,7 +617,7 @@ FixMyStreet::override_config {
                     'item_3' => '',
                 },
             });
-            $mech->submit_form_ok; # Location page
+            $mech->submit_form_ok({ form_number => 2 }); # Location page
 
             $mech->content_contains('Booking Summary');
             $mech->content_lacks('You will be redirected to the council’s card payments provider.');
@@ -730,7 +730,7 @@ FixMyStreet::override_config {
                     'item_4' => 'Bath',
                 },
             });
-            $mech->submit_form_ok; # Location page
+            $mech->submit_form_ok({ form_number => 2 }); # Location page
 
             $mech->content_contains('Booking Summary');
             $mech->content_lacks('You will be redirected to the council’s card payments provider.');

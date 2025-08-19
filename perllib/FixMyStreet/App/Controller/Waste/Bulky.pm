@@ -21,6 +21,15 @@ has index_template => (
     default => 'waste/form.html'
 );
 
+sub pre_form : Private {
+    my ($self, $c) = @_;
+
+    # Special button to go back to existing (as form wraps whole page)
+    if ($c->get_param('goto-same-page')) {
+        $c->stash->{override_no_next_form} = 1;
+    }
+}
+
 sub setup : Chained('/waste/property') : PathPart('bulky') : CaptureArgs(0) {
     my ($self, $c) = @_;
 

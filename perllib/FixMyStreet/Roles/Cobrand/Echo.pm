@@ -13,6 +13,7 @@ use FixMyStreet::DateRange;
 use FixMyStreet::DB;
 use FixMyStreet::WorkingDays;
 use Open311::GetServiceRequestUpdates;
+use Integrations::Echo::Events;
 
 with 'FixMyStreet::Roles::EnforcePhotoSizeOpen311PreSend';
 
@@ -157,11 +158,10 @@ sub bin_services_for_address {
     return [] unless @$result;
 
     my $events = $self->_parse_events($self->{api_events});
-    $self->{c}->stash->{open_service_requests} = $events->{enquiry};
 
     # If there is an open Garden subscription event, assume
     # that means a bin is being delivered and so a pending subscription
-    if ($events->{enquiry}{$self->garden_subscription_event_id}) {
+    if ($events->filter({ event_type => $self->garden_subscription_event_id, closed => 0 })) {
         $self->{c}->stash->{pending_subscription} = { title => 'Garden Subscription - New' };
         $self->{c}->stash->{open_garden_event} = 1;
     }
@@ -220,7 +220,7 @@ sub bin_services_for_address {
             $request_max ||= $service_to_containers{$service_id}{max};
         }
 
-        my $open_requests = { map { $_ => $events->{request}->{$_} } grep { $events->{request}->{$_} } @$containers };
+        my $open_requests = { map { $_->{container} => $_ } $events->filter({ type => 'request', containers => $containers })->list };
         $self->call_hook(waste_munge_bin_services_open_requests => $open_requests);
 
         my $garden = 0;
@@ -285,19 +285,22 @@ sub bin_services_for_address {
 
             $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
 
+            if ($self->moniker eq 'sutton') {
+                # Sutton needs to know about events from before the last collection in case there
+                # have been missed container escalations that are still relevant
+                $row->{all_events} = $events->filter({ service => $service_id });
+            }
+
             my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
-            my $missed_events = [
-                @{$events->{missed}->{$service_id} || []},
-                @{$events_unit->{missed}->{$service_id} || []},
-            ];
-            my $recent_events = $self->_events_since_date($row->{last}{date}, $missed_events);
-            $row->{report_open} = $recent_events->{open} || $recent_events->{closed};
+            $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
+            my $recent_events = $row->{events}->filter({ type => 'missed' });
+            $row->{report_open} = ($recent_events->list)[0];
         }
         push @out, $row;
     }
 
     $self->waste_task_resolutions($calls->{GetTasks}, \%task_ref_to_row);
-    $self->call_hook('staff_override_request_options' => \@out);
+    $self->call_hook(munge_bin_services_for_address => \@out);
 
     return \@out;
 
@@ -326,16 +329,14 @@ sub waste_relevant_serviceunits {
 
 Given a DateTime object and a number, return true if today is less than or
 equal to that number of working days (excluding weekends and bank holidays)
-after the date. Sutton includes Saturdays as working days.
+after the date. Sutton includes Bank Holidays as working days.
 
 =cut
 
 sub within_working_days {
     my ($self, $dt, $days, $future) = @_;
-    my $wd = FixMyStreet::WorkingDays->new(
-        public_holidays => FixMyStreet::Cobrand::UK::public_holidays(),
-        $self->council_url eq 'sutton' ? (saturdays => 1) : (),
-    );
+    my $holidays = $self->council_url eq 'sutton' ? [] : FixMyStreet::Cobrand::UK::public_holidays();
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => $holidays);
     $dt = $wd->add_days($dt, $days)->ymd;
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
     if ( $future ) {
@@ -394,84 +395,14 @@ sub _get_current_service_task {
 
 sub missed_event_types {}
 
-sub _closed_event {
-    my ($self, $event) = @_;
-    return 1 if $event->{ResolvedDate};
-    return 0;
-}
-
 sub _parse_events {
     my ($self, $events_data, $params) = @_;
-    my $events = {};
-    my $missed_event_types = $self->missed_event_types;
-    foreach (@$events_data) {
-        my $event_type = $_->{EventTypeId};
-        my $service_id = $_->{ServiceId};
-        my $type = $missed_event_types->{$event_type} || 'enquiry';
-
-        # Only care about open requests/enquiries
-        my $closed = $self->_closed_event($_);
-        next if $type eq 'request' && $closed && !$params->{include_closed_requests};
-        next if $type eq 'enquiry' && $closed;
-
-        if ($type eq 'request') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            my $data = Integrations::Echo::force_arrayref($_->{Data}, 'ExtensibleDatum');
-            foreach (@$data) {
-                my $moredata = Integrations::Echo::force_arrayref($_->{ChildData}, 'ExtensibleDatum');
-                foreach (@$moredata) {
-                    if ($_->{DatatypeName} eq 'Container Type') {
-                        my $container = $_->{Value};
-                        $events->{request}->{$container} = $report ? { report => $report } : 1;
-                    }
-                }
-            }
-        } elsif ($type eq 'missed') {
-            $self->parse_event_missed($_, $closed, $events);
-        } elsif ($type eq 'bulky') {
-            my $report = $self->problems->search({ external_id => $_->{Guid} })->first;
-            if ($report) {
-                my $row = {
-                    report => $report,
-                    resolution => $_->{ResolutionCodeId},
-                };
-                if ($closed) {
-                    $row->{date} = construct_bin_date($_->{ResolvedDate});
-                    $row->{state} = $_->{EventStateId};
-                } else {
-                    $row->{date} = $self->collection_date($report);
-                    $row->{state} = 'open';
-                }
-                $events->{enquiry}{$event_type}{$_->{Guid}} = $row;
-            }
-        } else { # General enquiry of some sort
-            $events->{enquiry}{$event_type}{$service_id} = 1;
-        }
-    }
+    my $events = Integrations::Echo::Events->new({
+        cobrand => $self,
+        event_types => $self->missed_event_types,
+        include_closed_requests => $params->{include_closed_requests},
+    })->parse($events_data);
     return $events;
-}
-
-sub parse_event_missed {
-    my ($self, $event, $closed, $events) = @_;
-    my $report = $self->problems->search({ external_id => $event->{Guid} })->first;
-    my $service_id = $event->{ServiceId};
-    my $data = {
-        closed => $closed,
-        date => construct_bin_date($event->{EventDate}),
-    };
-    $data->{report} = $report if $report;
-    push @{$events->{missed}->{$service_id}}, $data;
-}
-
-sub _events_since_date {
-    my ($self, $last_date, $events) = @_;
-    my @since_events = grep { $_->{date} >= $last_date } @$events;
-    my @closed = grep { $_->{closed} } @since_events;
-    my @open = grep { !$_->{closed} } @since_events;
-    return {
-        @open ? (open => $open[0]) : (),
-        @closed ? (closed => $closed[0]) : (),
-    };
 }
 
 sub _schedule_object {
@@ -1025,12 +956,12 @@ sub bulky_check_missed_collection {
     my $service_id = $cfg->{bulky_service_id} or return;
     my $service_id_missed = $cfg->{bulky_service_id_missed};
     my $event_type_id = $cfg->{bulky_event_type_id} or return;
-    my $bulky_events = $events->{enquiry}{$event_type_id};
+    my $bulky_events = $events->filter({ event_type => $event_type_id });
     return unless $bulky_events;
-    my $missed_events = $events->{missed}->{$service_id} || [];
+    my $missed_events = $events->filter({ type => 'missed', service => $service_id });
 
-    foreach my $guid (keys %$bulky_events) {
-        my $event = $bulky_events->{$guid};
+    foreach my $event ($bulky_events->list) {
+        my $guid = $event->{guid};
         my $row = {
             service_name => 'Bulky waste',
             service_id => $service_id_missed || $service_id,
@@ -1052,11 +983,11 @@ sub bulky_check_missed_collection {
         $row->{report_allowed} = $in_time && !$row->{report_locked_out};
 
         # Loop through the missed events and see if any of them is for this bulky event
-        foreach (@$missed_events) {
+        foreach ($missed_events->list) {
             next unless $_->{report};
             my $reported_guid = $_->{report}->get_extra_field_value('Original_Event_ID');
             next unless $reported_guid;
-            $row->{report_open} = 1 if $reported_guid eq $guid;
+            $row->{report_open} = $_ if $reported_guid eq $guid;
         }
 
         $self->{c}->stash->{bulky_missed}{$guid} = $row;

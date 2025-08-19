@@ -179,13 +179,6 @@ sub image_for_unit {
     return $images->{$service_id};
 }
 
-sub _closed_event {
-    my ($self, $event) = @_;
-    return 1 if $event->{ResolvedDate};
-    return 1 if $event->{ResolutionCodeId} && $event->{ResolutionCodeId} != 584; # Out of Stock
-    return 0;
-}
-
 sub garden_collection_time { '6:00am' }
 
 sub waste_renewal_bins_wanted_disabled { 1 }
@@ -206,7 +199,7 @@ sub alternative_backend_field_names {
 
 sub waste_garden_maximum { 3 }
 
-=item staff_override_request_options
+=item munge_bin_services_for_address
 
 Merton want staff to be able to request any domestic container
 for a property and also to not be restricted to only ordering
@@ -215,7 +208,7 @@ options.
 
 =cut
 
-sub staff_override_request_options {
+sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
 
     return if $self->{c}->stash->{schedule2_property};
@@ -245,6 +238,7 @@ sub staff_override_request_options {
 
     foreach my $row (@$rows) {
         next if $row->{orange_bag}; # Ignore batteries
+        next unless $row->{request_containers};
         push @containers_on_property, @{$row->{request_containers}};
         $row->{request_allowed} = 1;
         $row->{request_max} = 3;

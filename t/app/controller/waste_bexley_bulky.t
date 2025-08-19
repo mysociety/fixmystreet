@@ -1,3 +1,4 @@
+use Test::Deep;
 use Test::MockModule;
 use Test::MockObject;
 use Test::MockTime qw(:all);
@@ -219,7 +220,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 1, fields => {
             'item_1' => 'BBQ',
             'item_2' => 'Bicycle',
-            'item_3' => 'Bath',
+            'item_3' => 'Bathroom Cabinet /Shower Screen',
             'item_4' => 'Bath',
             'item_5' => 'Bath',
         } });
@@ -227,6 +228,10 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => {
             'item_4' => '',
             'item_5' => '',
+        } });
+        $mech->submit_form_ok({ form_number => 1 }); # Change items button
+        $mech->submit_form_ok({ with_fields => {
+            'item_3' => 'Bath',
         } });
         $mech->submit_form_ok(
             {   with_fields => {
@@ -635,6 +640,121 @@ FixMyStreet::override_config {
         is $sent_params->{items}[0]{reference}, 'bulky-customer-ref';
         is $sent_params->{narrative}, "Bulky waste - $report_id";
     };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bexley',
+    COBRAND_FEATURES => {
+        whitespace => {
+            bexley => {
+                url => 'http://example.org/',
+                bulky_collection_state_mapping => {
+                    'Bulky Items Collected' => { fms_state => 'fixed - council', },
+                    'No Access (card left)' => { fms_state => 'unable to fix', },
+                    'Nothing Out (card left)' => { fms_state => 'unable to fix', },
+                    'Cancelled' => { fms_state => 'cancelled', },
+                },
+                push_secret => 'mySecret'
+            },
+        },
+        waste => { bexley => 1 },
+    },
+}, sub {
+    subtest 'Updates for missed collection reports via endpoint' => sub {
+        $whitespace_mock->mock( 'GetFullWorksheetDetails', sub {
+            my ( $self, $ws_id ) = @_;
+            return {
+                2002 => {
+                    WSServiceProperties => { WorksheetServiceProperty => [
+                        { ServicePropertyID => 1, },
+                    ] },
+                },
+                2003 => {
+                    WSServiceProperties => { WorksheetServiceProperty => [
+                        { ServicePropertyID => 1, },
+                        { ServicePropertyID => 67, ServicePropertyValue => 'Bulky Items Collected', },
+                    ] },
+                },
+                2004 => {
+                    WSServiceProperties => { WorksheetServiceProperty => [
+                        { ServicePropertyID => 67, ServicePropertyValue => 'No Access (card left)', },
+                    ] },
+                },
+                2005 => {
+                    Worksheet => { WorksheetStatusName => 'Cancelled' },
+                    WSServiceProperties => { WorksheetServiceProperty => [
+                        { ServicePropertyID => 67, ServicePropertyValue => '', },
+                    ] },
+                },
+            }->{$ws_id};
+        });
+
+        my @reports;
+        for my $id ( 2003..2005 ) {
+            my ($r) = $mech->create_problems_for_body(1, $body->id, 'Bulky collection', {
+                category => 'Bulky collection',
+                external_id => "Whitespace-$id",
+            });
+            push @reports, $r;
+        }
+
+        for my $details (
+            { id => 2003, ref => $reports[0]->id, status => 'Bulky Items Collected' },
+            { id => 2004, ref => $reports[1]->id, status => 'No Access (card left)' },
+            { id => 2005, ref => $reports[2]->id, status => 'Cancelled' },
+        ) {
+            is $mech->post('/waste/whitespace', Content_Type => 'text/xml', Content => '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                xmlns:web="https://www.jadu.net/hubis/webservices">
+                <soapenv:Header />
+                <soapenv:Body>
+                    <web:WorksheetPoke>
+                        <secret>mySecret</secret>
+                        <worksheetId>' . $details->{id} . '</worksheetId>
+                        <worksheetReference>' . $details->{ref} . '</worksheetReference>
+                        <status>' . $details->{status} . '</status>
+                        <completedDate>2024-10-02T06:46:12</completedDate>
+                    </web:WorksheetPoke>
+                </soapenv:Body>
+            </soapenv:Envelope>')->code, 200;
+        };
+
+        my @got;
+        for my $r (@reports) {
+            $r->discard_changes;
+
+            my @comments;
+            for my $c (
+                sort { $a->problem_state cmp $b->problem_state }
+                $r->comments->all
+            ) {
+                push @comments, {
+                    problem_state => $c->problem_state,
+                    text => $c->text,
+                };
+            }
+
+            push @got, {
+                external_id => $r->external_id,
+                state => $r->state,
+                comments => \@comments,
+            };
+        }
+
+        cmp_deeply \@got, [ {
+            external_id => 'Whitespace-2003',
+            state => 'fixed - council',
+            comments => [ { problem_state => 'fixed - council', text => 'Bulky Items Collected', }, ],
+        }, {
+            external_id => 'Whitespace-2004',
+            state => 'unable to fix',
+            comments => [ { problem_state => 'unable to fix', text => 'No Access (card left)', }, ],
+        }, {
+            external_id => 'Whitespace-2005',
+            state => 'cancelled',
+            comments => [ { problem_state => 'cancelled', text => 'Cancelled', }, ],
+        } ], 'correct reports updated with comments added';
+    };
+
 };
 
 done_testing;

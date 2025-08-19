@@ -139,6 +139,139 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
+around bulky_check_missed_collection => sub {
+    my ($orig, $self, $events, $blocked_codes) = @_;
+
+    $self->$orig($events, $blocked_codes);
+
+    # Now check for any old open missed collections that can be escalated
+
+    my $cfg = $self->feature('echo');
+    my $service_id = $cfg->{bulky_service_id};
+    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+
+    my $missed = $self->{c}->stash->{bulky_missed};
+    foreach my $guid (keys %$missed) {
+        my $missed_event = $missed->{$guid}{report_open};
+        next unless $missed_event;
+
+        my $open_escalation = 0;
+        foreach ($escalations->list) {
+            next unless $_->{report};
+            my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
+            next unless $missed_guid;
+            if ($missed_guid eq $missed_event->{guid}) {
+                $missed->{$guid}{escalations}{missed_open} = $_;
+                $open_escalation = 1;
+            }
+        }
+
+        if (
+            # And report is closed completed, or open
+            (!$missed_event->{closed} || $missed_event->{completed})
+            # And no existing escalation since last collection
+            && !$open_escalation
+        ) {
+            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+            # And two working days (from 6pm) have passed
+            my $wd = FixMyStreet::WorkingDays->new();
+            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
+            my $end = $wd->add_days($start, 2);
+            if ($now >= $start && $now < $end) {
+                $missed->{$guid}{escalations}{missed} = $missed_event;
+            }
+        }
+    }
+};
+
+sub munge_bin_services_for_address {
+    my ($self, $rows) = @_;
+
+    # Escalations
+    foreach (@$rows) {
+        $self->_setup_missed_collection_escalations_for_service($_);
+        $self->_setup_container_request_escalations_for_service($_);
+    }
+}
+
+sub _setup_missed_collection_escalations_for_service {
+    my ($self, $row) = @_;
+    my $events = $row->{events} or return;
+
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+
+    my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
+    my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
+    if (
+        # If there's a missed bin report
+        $missed_event
+        # And report is closed completed, or open
+        && (!$missed_event->{closed} || $missed_event->{completed})
+        # And the event source is the same as the current property (for communal)
+        && ($missed_event->{source} || 0) == $property->{id}
+        # And no existing escalation since last collection
+        && !$escalation_event
+    ) {
+        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+        # And two working days (from 6pm) have passed
+        my $wd = FixMyStreet::WorkingDays->new();
+        my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
+        # And window is one day (weekly) two WDs (fortnightly)
+        my $window = $row->{schedule} =~ /fortnight|every other/ ? 2 : 1;
+        my $end = $wd->add_days($start, $window);
+        if ($now >= $start && $now < $end) {
+            $row->{escalations}{missed} = $missed_event;
+        }
+    } elsif ($escalation_event) {
+        $row->{escalations}{missed_open} = $escalation_event;
+    }
+}
+
+sub _setup_container_request_escalations_for_service {
+    my ($self, $row) = @_;
+    my $open_requests = $row->{requests_open};
+
+    # If there are no open container requests, there's nothing for us to do
+    return unless scalar keys %$open_requests;
+
+    # We're only expecting one open container request per service
+    my $open_request_event = (values %$open_requests)[0];
+    my $escalation_events = $row->{all_events}->filter({ event_type => 3141 });
+    my $wd = FixMyStreet::WorkingDays->new();
+
+    foreach my $escalation_event ($escalation_events->list) {
+        my $escalation_event_report = $escalation_event->{report};
+        next unless $escalation_event_report;
+
+        if ($escalation_event_report->get_extra_field_value('container_request_guid') eq $open_request_event->{guid}) {
+            $row->{escalations}{container_open} = $escalation_event;
+            # We've marked that there is already an escalation event for the container
+            # request, so there's nothing left to do
+            return;
+        }
+    }
+
+    # There's an open container request with no matching escalation so
+    # we check now to see if it's within the window for an escalation to be raised
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+
+    my $start_days = 21; # Window starts on the 21st working day after the request was made
+    my $window_days = 10; # Window ends a further 10 working days after the start date
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
+        # For staging site testing (but not automated testing) use quicker/smaller windows
+        $start_days = 1;
+        $window_days = 2;
+    }
+
+    my $start = $wd->add_days($open_request_event->{date}, $start_days)->set_hour(0);
+    my $end = $wd->add_days($start, $window_days + 1); # Before this
+
+    if ($now >= $start && $now < $end) {
+        $row->{escalations}{container} = $open_request_event;
+    }
+}
+
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
@@ -526,25 +659,47 @@ sub _enquiry_nice_title {
         $category = 'Wheelie bin, box or caddy not returned correctly after collection';
     } elsif ($category eq 'Waste spillage') {
         $category = 'Spillage during collection';
+    } elsif ($category eq 'Complaint against time') {
+        $category = 'Issue with collection';
+    } elsif ($category eq 'Failure to Deliver Bags/Containers') {
+        $category = 'Issue with delivery';
     }
     return $category;
 }
 
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
-    my $address = $self->{c}->stash->{property}->{address};
+    my $c = $self->{c};
+
+    # Escalations have no notes
+    $data->{category} = $c->get_param('category') unless $data->{category};
+    $data->{service_id} = $c->get_param('service_id') unless $data->{service_id};
+
+    my $address = $c->stash->{property}->{address};
 
     $data->{title} = _enquiry_nice_title($data->{category});
 
     my $detail = "";
     if ($data->{category} eq 'Bin not returned') {
-        my $assisted = $self->{c}->stash->{assisted_collection};
+        my $assisted = $c->stash->{assisted_collection};
         my $returned = $data->{now_returned} || '';
         if ($assisted && $returned eq 'No') {
            $data->{extra_Notes} = '*** Property is on assisted list ***';
         }
     } elsif ($data->{category} eq 'Waste spillage') {
         $detail = "$data->{extra_Notes}\n\n";
+    } elsif ($data->{category} eq 'Complaint against time') {
+        my $event_id = $c->get_param('event_id');
+        my ($echo, $ww) = split /:/, $event_id;
+        $data->{extra_Notes} = "Originally Echo Event #$echo";
+        $data->{extra_original_ref} = $ww;
+        $data->{extra_missed_guid} = $c->get_param('event_guid');
+    } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
+        my $event_id = $c->get_param('event_id');
+        my ($echo, $guid, $ww) = split /:/, $event_id;
+        $data->{extra_Notes} = "Originally Echo Event #$echo";
+        $data->{extra_original_ref} = $ww;
+        $data->{extra_container_request_guid} = $guid;
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;

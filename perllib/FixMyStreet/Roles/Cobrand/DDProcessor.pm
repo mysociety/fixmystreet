@@ -331,6 +331,7 @@ sub _duplicate_waste_report {
         state => 'unconfirmed',
         non_public => 1,
         cobrand_data => 'waste',
+        send_questionnaire => 0,
     });
 
     my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;

@@ -145,7 +145,7 @@ subtest 'only Merton staff can reopen closed reports on Merton cobrand' => sub {
 
 subtest 'only Merton staff can reopen closed reports in Merton on fixmystreet.com' => sub {
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        ALLOWED_COBRANDS => [ 'fixmystreet', 'merton' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         test_reopen_problem($normaluser, $problem1);

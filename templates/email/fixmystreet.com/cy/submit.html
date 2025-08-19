@@ -47,7 +47,7 @@ am broblem leol credant y gallai fod angen eich sylw.
 </th>
 [% WRAPPER '_email_sidebar.html' object = report html_id='report' %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
-    <p style="[% secondary_p_style %]"><strong>Categori:</strong> [% report.category | html %]</p>
+    <p style="[% secondary_p_style %]"><strong>Categori:</strong> [% report.category_display %]</p>
     [% report.detail | html_para_email(secondary_p_style) %]
   [% IF report.get_extra_fields %]
     <p style="[% secondary_p_style %]">

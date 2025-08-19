@@ -177,9 +177,21 @@ for my $test (
     },
     {
         state => 'fixed',
-        send_email => 1,
+        send_email => 0,
         user => 'reporter',
-        description_string => 'can update',
+        description_string => 'can not update',
+    },
+    {
+        state => 'fixed',
+        send_email => 0,
+        user => 'reporter-open',
+        description_string => 'can not update',
+    },
+    {
+        state => 'fixed',
+        send_email => 0,
+        user => 'reporter/staff-open',
+        description_string => 'can not update',
     },
     {
         state => 'confirmed',

@@ -49,7 +49,7 @@ of a local problem that they believe might require your attention.</p>
 
     <p style="[% secondary_p_style %]"><strong>Report ID:</strong> [% report.id %]</p>
 
-    <p style="[% secondary_p_style %]"><strong>Category:</strong> [% report.category %]</p>
+    <p style="[% secondary_p_style %]"><strong>Category:</strong> [% report.category_display %]</p>
 
     [% report.detail | html_para_email(secondary_p_style) %]
   [% IF report.get_extra_fields %]

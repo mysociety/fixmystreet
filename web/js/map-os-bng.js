@@ -5,13 +5,15 @@ fixmystreet.maps.config = function() {
 fixmystreet.maps.tile_base = 'https://{S}tilma.mysociety.org/mapcache/gmaps/oml@osmaps';
 
 OpenLayers.Layer.BNG = OpenLayers.Class(OpenLayers.Layer.XYZ, {
-    initialize: function(name, url, options) {
+    initialize: function(name, max_zoom, url, options) {
+        var resolutions = [896, 448, 224, 112, 56, 28, 14, 7, 7/2, 7/4, 7/8, 7/16, 7/32, 7/64];
+        resolutions = resolutions.slice(0, max_zoom);
         options = OpenLayers.Util.extend({
             units: "m",
             projection: new OpenLayers.Projection("EPSG:27700"),
             tileOrigin: new OpenLayers.LonLat(-238375, 1376256),
             maxExtent: new OpenLayers.Bounds(-3276800, -3276800, 3276800, 3276800),
-            resolutions: [896, 448, 224, 112, 56, 28, 14, 7, 7/2, 7/4, 7/8, 7/16, 7/32, 7/64].slice(fixmystreet.zoomOffset || 0).slice(0, fixmystreet.numZoomLevels),
+            resolutions: resolutions.slice(fixmystreet.zoomOffset || 0).slice(0, fixmystreet.numZoomLevels),
         }, options);
         OpenLayers.Layer.XYZ.prototype.initialize.call(this, name, url, options);
     },
@@ -35,7 +37,7 @@ OpenLayers.Layer.OSMapsBNG = OpenLayers.Class(OpenLayers.Layer.BNG, {
         attribution += '</div>';
         this.attribution = logo + attribution;
 
-        OpenLayers.Layer.BNG.prototype.initialize.call(this, name, url, options);
+        OpenLayers.Layer.BNG.prototype.initialize.call(this, name, 14, url, options);
     },
 
     tile_prefix: [ '', 'a-', 'b-', 'c-' ],
@@ -79,7 +81,7 @@ OpenLayers.Layer.Aerial = OpenLayers.Class(OpenLayers.Layer.BNG, {
         var url = fixmystreet.aerial_url + "/${z}/${x}/${y}.png";
         var attribution = '<div class="os-api-branding copyright">&copy; Bluesky International Ltd and Getmapping Ltd 1999-2020<br>&copy; Bluesky International Limited 2021 and onwards</div>';
         this.attribution = attribution;
-        OpenLayers.Layer.BNG.prototype.initialize.call(this, name, url, options);
+        OpenLayers.Layer.BNG.prototype.initialize.call(this, name, 12, url, options);
     },
     getURL: function (bounds) {
         var xyz = this.getXYZ(bounds);

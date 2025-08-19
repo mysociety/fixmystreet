@@ -276,6 +276,19 @@ $(function() {
             display_band_pricing();
         });
 
+        $('#item-selection-form').on('submit', function(){
+            var items = [];
+            $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
+                var v = $(this).val();
+                if (v) {
+                    items.push(v);
+                }
+            });
+            try {
+                sessionStorage.setItem('bulky_items', JSON.stringify(items));
+            } catch(err) {}
+        });
+
         if (fixmystreet.cobrand == 'brent') {
             var update_small_items_other_notes = function() {
                 var $this = $(this);
@@ -293,24 +306,40 @@ $(function() {
     });
 
     window.addEventListener("pageshow", function(e){
-        // If page reloads reveals any wrapper with an item already selected.
-        $( '.bulky-item-wrapper' ).each(function() {
-            var $wrapper = $(this),
-                select = $wrapper.find('select'),
-                value = select.val();
-            if (value) {
-                // If we do it immediately, it remains blank in Safari, I think
-                // some interaction with the 100ms polling in the autocomplete
-                // to spot changes to the value
-                setTimeout(function() {
-                    $wrapper.find('.autocomplete__wrapper input').val(value);
-                }, 110);
+        if (!template) { return; } // Only bulky items page
+
+        var items, i;
+        // If on page load we have some stored items to re-show, as browser does not
+        try {
+            items = JSON.parse(sessionStorage.getItem('bulky_items'));
+        } catch(err) {}
+        if (!items) { return; }
+        var numItemsVisible = $('.bulky-item-wrapper:visible').length;
+        if (items.length && items.length >= numItemsVisible) {
+            for (i=0; i<items.length - numItemsVisible; i++) {
+                $("#add-new-item").click();
+            }
+        }
+        for (i=0; i<items.length; i++) {
+            if (items[i]) {
+                var select = $('#item_' + (i+1) + '-select');
+                select.val(items[i]);
+                ac_timeout('#item_' + (i+1), items[i]);
                 update_extra_message(select);
             }
-        });
-
+        }
         updateTotal();
         display_band_pricing();
         disableAddItemButton();
     });
+
+    function ac_timeout(k, v) {
+        // If we do it immediately, it remains blank in Safari, I think
+        // some interaction with the 100ms polling in the autocomplete
+        // to spot changes to the value
+        setTimeout(function() {
+            var ac = $(k);
+            ac.val(v);
+        }, 110);
+    }
 })();

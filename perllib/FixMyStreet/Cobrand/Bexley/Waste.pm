@@ -54,6 +54,7 @@ C<0001-01-01T00:00:00> represents an undefined date in Whitespace.
 =cut
 
 use constant WHITESPACE_UNDEF_DATE => '0001-01-01T00:00:00';
+use constant BULKY_COLLECTION_SERVICE_PROPERTY_ID => 67;
 use constant MISSED_COLLECTION_SERVICE_PROPERTY_ID => 68;
 use constant REQUEST_SERVICE_PROPERTY_ID => 69;
 
@@ -139,10 +140,16 @@ sub construct_waste_open311_update {
 
     $worksheet = $self->whitespace->GetFullWorksheetDetails($worksheet->{id});
 
-    my ($service_id, $config_key);
+    my ($service_id, $config_key, $worksheet_status);
     if ($report->category eq 'Report missed collection') {
         $service_id = MISSED_COLLECTION_SERVICE_PROPERTY_ID;
         $config_key = 'missed_collection_state_mapping';
+    } elsif ($report->category eq 'Bulky collection') {
+        $service_id = BULKY_COLLECTION_SERVICE_PROPERTY_ID;
+        $config_key = 'bulky_collection_state_mapping';
+        # Cancellation has nothing stored in the relevant service property value
+        $worksheet_status = $worksheet->{Worksheet}{WorksheetStatusName} || '';
+        $worksheet_status = '' unless $worksheet_status eq 'Cancelled';
     } else {
         $service_id = REQUEST_SERVICE_PROPERTY_ID;
         if ($report->category eq 'Request new container') {
@@ -163,7 +170,7 @@ sub construct_waste_open311_update {
         $properties = $service_properties;
     }
 
-    my $whitespace_state_string = $properties->{ServicePropertyValue} || '';
+    my $whitespace_state_string = $properties->{ServicePropertyValue} || $worksheet_status || '';
 
     my $config = $self->feature('whitespace');
     my $new_state = $config->{$config_key}{$whitespace_state_string};
@@ -173,7 +180,7 @@ sub construct_waste_open311_update {
     }
 
     my $request = {
-        description => $new_state->{text},
+        description => $new_state->{text} || $whitespace_state_string,
         status => $new_state->{fms_state},
         update_id => 'waste',
         external_status_code => $whitespace_state_string,

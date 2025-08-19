@@ -309,7 +309,7 @@ sub find_pending_bulky_collections {
         state => [ FixMyStreet::DB::Result::Problem->open_states ],
     })->order_by('-id');
 
-    return wantarray ? $self->_since_last_week($rs) : $rs;
+    return wantarray ? $self->_recently($rs) : $rs;
 }
 
 sub find_recent_bulky_collections {
@@ -322,10 +322,10 @@ sub find_recent_bulky_collections {
         state => [ @closed, FixMyStreet::DB::Result::Problem->fixed_states ],
     })->order_by('-id');
 
-    return wantarray ? $self->_since_last_week($rs) : $rs;
+    return wantarray ? $self->_recently($rs) : $rs;
 }
 
-sub _since_last_week {
+sub _recently {
     my ($self, $rs) = @_;
 
     # If we've already sent it, and we want a full list for display, we don't
@@ -336,7 +336,7 @@ sub _since_last_week {
         });
     }
 
-    my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( weeks => 1 );
+    my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( days => 10 );
     my @all = $rs->all;
     @all = grep { my $date = $self->collection_date($_); $date >= $dt } @all;
     return @all;

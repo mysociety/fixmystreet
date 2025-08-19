@@ -1,20 +1,14 @@
 [%
 SET first = body_id.keys.first; # Might be more than one, but showing one will do
-SET soon = 0 %]
+SET url = bodies.$first.external_url;
+%]
 <div class="box-warning">
-    <h1>Important message</h1>
+    <h1>[% bodies.$first.name %]</h1>
     <p>
-        <span class="unresponsive-council">[% bodies.$first.name %]</span> doesn’t currently accept
-      [% IF soon %]
-        FixMyStreet reports – though it will do so soon.
-      [% ELSE %]
-      [% IF category %]
-        <span class="refused-category">[% category | html %]</span>
-      [% END %]
-        reports from third party reporting sites such as FixMyStreet.
-      [% END %]
+        To make a report to <span class="unresponsive-council">[% bodies.$first.name %]</span>,
+        please visit their website
+        [%~ IF url %]
+        at <a href="[% url %]">[% url %]</a>
+        [%~ END %].
     </p>
-    <p>We can make your report public, but [% 'at the moment' IF soon %] we can’t send it to
-    [% IF bodies.size > 1 %] that [% ELSE %] the [% END %] council.</p>
-    <a href="https://www.fixmystreet.com/unresponsive?body=[% first %][% IF category %];category=[% category | uri %][% END %]" class="btn">[% soon ? 'Find out more' : 'What can I do instead?' %]</a>
 </div>
