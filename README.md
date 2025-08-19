@@ -47,5 +47,4 @@ web-based cross-browser testing tools for this project.
 
 * <https://www.fixmystreet.com/>
 * <http://www.fiksgatami.no/>
-* <http://fixmystreet.ie/>
 * <https://www.zueriwieneu.ch/>
