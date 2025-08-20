@@ -501,18 +501,21 @@ sub property : Chained('property_id') : PathPart('') : CaptureArgs(0) {
         $c->detach( '/page_error_404_not_found', [] );
     }
 
+    $c->stash->{latitude} = Utils::truncate_coordinate( $property->{latitude} );
+    $c->stash->{longitude} = Utils::truncate_coordinate( $property->{longitude} );
+
+    $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $property) || [];
+    $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
+
+    my $calendar = $c->action eq 'waste/calendar_ics';
+    return if $calendar; # Calendar doesn't need to look up collections
+
     if ($c->cobrand->can('find_booked_collections')) {
         my $cfg = $c->cobrand->feature('waste_features');
         my $retry = $cfg->{bulky_retry_bookings} && $c->stash->{is_staff};
         my $collections = $c->cobrand->find_booked_collections($property->{uprn}, 'recent', $retry);
         $c->stash->{collections} = $collections;
     }
-
-    $c->stash->{latitude} = Utils::truncate_coordinate( $property->{latitude} );
-    $c->stash->{longitude} = Utils::truncate_coordinate( $property->{longitude} );
-
-    $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $property) || [];
-    $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
 
     $c->forward('get_pending_subscription');
 }

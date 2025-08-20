@@ -118,22 +118,36 @@ sub _allow_async_echo_lookup {
     return 1;
 }
 
+sub _need_events_echo_lookup {
+    my $self = shift;
+    my $action = $self->{c}->action;
+    return 0 if $action eq 'waste/calendar_ics';
+    return 1;
+}
+
 sub look_up_property {
     my ($self, $id) = @_;
 
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
     my $background = $self->_allow_async_echo_lookup;
-    my $calls = $echo->call_api($self->{c}, $self->moniker,
-        "look_up_property:$id",
-        $background,
-        GetPointAddress => [ $id ],
+    my @lookups = (
         GetServiceUnitsForObject => [ $id ],
-        GetEventsForObject => [ 'PointAddress', $id ],
     );
+    my $events = $self->_need_events_echo_lookup;
+    if ($events) {
+        push @lookups,
+            GetPointAddress => [ $id ],
+            GetEventsForObject => [ 'PointAddress', $id ];
+    }
+    my $calls = $echo->call_api($self->{c}, $self->moniker,
+        "look_up_property:$id:$events", $background, @lookups);
 
     $self->{api_serviceunits} = $calls->{"GetServiceUnitsForObject $id"};
     $self->{api_events} = $calls->{"GetEventsForObject PointAddress $id"};
+    if (!$events) {
+        return { id => $id };
+    }
     my $result = $calls->{"GetPointAddress $id"};
     return {
         id => $result->{Id},
@@ -202,9 +216,11 @@ sub bin_services_for_address {
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
     my $background = $self->_allow_async_echo_lookup;
+
     my $calls = $echo->call_api($self->{c}, $self->moniker,
         'bin_services_for_address:' . $property->{id},
-        $background, @to_fetch);
+        $background, @to_fetch)
+        if $self->_need_events_echo_lookup;
 
     if ($self->can('bulky_allowed_property')) {
         $property->{show_bulky_waste} = $self->bulky_allowed_property($property);
