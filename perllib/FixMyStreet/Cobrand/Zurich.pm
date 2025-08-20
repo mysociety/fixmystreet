@@ -613,6 +613,23 @@ sub admin_report_edit {
 
     }
 
+    # Fetch hierarchical attributes for the current division (for all user types)
+    my $division = (values %{ $problem->bodies })[0];
+    my $parent = $division->parent;
+    if ($parent && $parent->parent) { # $body is an SDM
+        $division = $parent;
+    }
+    if ($division) {
+        my $hierarchical_attributes = $division->get_extra_metadata('hierarchical_attributes') || {};
+        if (!keys %$hierarchical_attributes) {
+            $hierarchical_attributes = $c->cobrand->get_default_hierarchical_attributes();
+        }
+        $c->stash->{hierarchical_attributes} = hierarchical_entry_sort($hierarchical_attributes);
+
+        my $selected_attributes = $problem->get_extra_metadata('hierarchical_attributes') || {};
+        $c->stash->{selected_hierarchical_attributes} = $selected_attributes;
+    }
+
     # If super or dm check that the token is correct before proceeding
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
@@ -640,6 +657,26 @@ sub admin_report_edit {
 
     # Problem updates upon submission
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
+
+        # Validate hierarchical attributes if problem state is not 'submitted'
+        my %hierarchical_errors;
+        if ($problem->state ne 'submitted') {
+            my %values;
+            foreach (keys %{$c->stash->{hierarchical_attributes}}) {
+                $values{$_} = $c->get_param("hierarchical_$_");
+                if (!$values{$_} || !$c->stash->{hierarchical_attributes}{$_}{entries}{$values{$_}}) {
+                    $hierarchical_errors{$_} = _("Please select a value");
+                }
+            }
+
+            if (%hierarchical_errors) {
+                $c->stash->{hierarchical_errors} = \%hierarchical_errors;
+                $c->stash->{status_message} = '<p class="message-error">' . _('Please select all hierarchical attributes before saving') . '</p>';
+                return $self->admin_report_edit_done;
+            }
+
+            $problem->set_extra_metadata('hierarchical_attributes', \%values);
+        }
 
         my @keys = grep { /^publish_photo/ } keys %{ $c->req->params };
         my %publish_photo;
@@ -704,6 +741,12 @@ sub admin_report_edit {
             $problem->bodies_str( $cat->body_id );
             $problem->resend;
             $problem->set_extra_metadata(changed_category => 1);
+
+            # Clear hierarchical attributes if reassigned to different body
+            if ($cat->body_id ne $body->id) {
+                $problem->unset_extra_metadata('hierarchical_attributes');
+            }
+
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
             $redirect = 1 if $cat->body_id ne $body->id;
@@ -728,6 +771,12 @@ sub admin_report_edit {
             $self->set_problem_state($c, $problem, 'in progress');
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
+
+            # Clear hierarchical attributes if reassigned to different body
+            if ($subdiv ne $body->id) {
+                $problem->unset_extra_metadata('hierarchical_attributes');
+            }
+
             $problem->resend;
             $redirect = 1;
         } else {
@@ -855,6 +904,10 @@ sub admin_report_edit {
         # do not display correctly (reloads problem from database, including
         # fields modified by the database when saving)
         $problem->discard_changes;
+
+        # Update stash with the newly saved hierarchical attributes so they display correctly
+        my $updated_selected_attributes = $problem->get_extra_metadata('hierarchical_attributes') || {};
+        $c->stash->{selected_hierarchical_attributes} = $updated_selected_attributes;
 
         # Create an internal note if required
         if ($internal_note_text) {
@@ -1464,6 +1517,15 @@ sub get_default_hierarchical_attributes {
             "entries" => {}
         }
     };
+}
+
+sub hierarchical_entry_sort {
+    my $attributes = shift;
+    foreach my $key (keys %$attributes) {
+        my $entries = $attributes->{$key}{entries};
+        $attributes->{$key}{sorted_entries} = [ sort { $entries->{$a}{name} cmp $entries->{$b}{name} } keys %$entries ];
+    }
+    return $attributes;
 }
 
 1;
