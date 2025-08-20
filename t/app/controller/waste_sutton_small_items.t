@@ -3,6 +3,7 @@ use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use Path::Tiny;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Alerts;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -57,6 +58,9 @@ create_contact(
 );
 
 my $user = $mech->create_user_ok('maryk@example.org', name => 'Test User');
+my $staff = $mech->create_user_ok('staff@example.org', name => 'Staff User', from_body => $sutton->id);
+$staff->user_body_permissions->create({ body => $sutton, permission_type => 'report_edit' });
+$sutton->update( { comment_user_id => $staff->id } );
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
@@ -403,6 +407,66 @@ FixMyStreet::override_config {
                 like $email, qr/Small WEEE/, 'Includes item 2';
                 like $email, qr#http://sutton.example.org/waste/12345/small_items/cancel/$id#, 'Includes cancellation link';
             };
+        }
+    };
+
+    subtest 'Cancellation' => sub {
+        $report->external_id('Echo-123');
+        $report->update;
+        my $base_path = '/waste/12345';
+        $mech->log_out_ok;
+
+        set_fixed_time('2025-08-08T04:00:00');
+        $mech->get_ok($base_path);
+        $mech->content_lacks('Cancel booking', 'Logged out user not offered cancellation');
+        $mech->get_ok("$base_path/small_items/cancel/" . $report->id);
+        $mech->content_contains('Sign in ::', 'Entering cancel link leads to authorisation page');
+
+        set_fixed_time('2025-08-08T07:00:00');
+        $mech->log_in_ok($report->user->email);
+        $mech->content_lacks('Cancel booking', 'No cancellation after collections started');
+
+        set_fixed_time('2025-08-08T04:00:00');
+        for my $email ($report->user->email, $staff->email) {
+            $mech->log_in_ok($email);
+            $mech->get_ok($base_path);
+            $mech->content_contains('Cancel booking', 'Logged in staff/user offered cancellation');
+            $mech->get_ok("$base_path/small_items/cancel/" . $report->id);
+            $mech->content_lacks('I acknowledge that the collection fee is non-refundable', 'No charge for small items');
+            $mech->content_contains('I confirm I wish to cancel my small items collection', 'Must confirm cancellation');
+            $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+            $mech->content_contains('Your booking has been cancelled');
+            $mech->follow_link_ok( { text => 'Return to property details' } );
+            is $mech->uri->path, $base_path, 'Returned to bin days';
+            $mech->content_lacks('Cancel booking');
+
+            $report->discard_changes;
+            is $report->state, 'cancelled', 'Original report cancelled';
+            like $report->detail, qr/Cancelled at user request/, 'Original report detail field updated';
+            my $comment = FixMyStreet::DB->resultset('Comment')->find( { problem_id => $report->id } );
+            is $comment->text, 'Booking cancelled by customer', 'Comment added';
+
+            subtest 'Viewing original report summary after cancellation' => sub {
+                my $id   = $report->id;
+                $mech->log_in_ok($report->user->email);
+                $mech->get_ok("/report/$id");
+                $mech->content_contains('This collection has been cancelled');
+                $mech->content_lacks("You can cancel this booking up to");
+                $mech->content_lacks('Cancel this booking');
+            };
+
+            subtest 'Email received by user' => sub {
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                like $mech->get_text_body_from_email, qr/Booking cancelled by customer/, 'Booking cancellation email sent';
+            };
+            # Set report active again
+            $report->state('confirmed');
+            my $detail = $report->detail;
+            $detail =~ s/ \| Cancelled at user request//;
+            $report->detail($detail);
+            $report->update;
+            $comment->delete;
         }
     };
 
