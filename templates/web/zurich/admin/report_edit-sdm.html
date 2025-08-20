@@ -79,6 +79,24 @@
      </dd>
   [% END %]
 
+    [% IF problem.state != 'submitted' AND hierarchical_attributes AND selected_hierarchical_attributes %]
+        [% SET selected = selected_hierarchical_attributes %]
+        [% IF selected.geschaftsbereich OR selected.objekt OR selected.kategorie %]
+            <dt><span class="mock-label">[% loc('Hierarchical Attributes:') %]</span></dt>
+            <dd>
+                [% IF selected.geschaftsbereich AND hierarchical_attributes.Geschäftsbereich.entries.${selected.geschaftsbereich} %]
+                    <strong>[% loc('Geschäftsbereich:') %]</strong> [% hierarchical_attributes.Geschäftsbereich.entries.${selected.geschaftsbereich}.name %]<br>
+                [% END %]
+                [% IF selected.objekt AND hierarchical_attributes.Objekt.entries.${selected.objekt} %]
+                    <strong>[% loc('Objekt:') %]</strong> [% hierarchical_attributes.Objekt.entries.${selected.objekt}.name %]<br>
+                [% END %]
+                [% IF selected.kategorie AND hierarchical_attributes.Kategorie.entries.${selected.kategorie} %]
+                    <strong>[% loc('Kategorie:') %]</strong> [% hierarchical_attributes.Kategorie.entries.${selected.kategorie}.name %]<br>
+                [% END %]
+            </dd>
+        [% END %]
+    [% END %]
+
 </dl>
 
 </div>

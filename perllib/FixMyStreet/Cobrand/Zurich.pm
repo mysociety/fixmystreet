@@ -613,6 +613,19 @@ sub admin_report_edit {
 
     }
 
+    # Fetch hierarchical attributes for the current body (for all user types)
+    my $current_body = $c->model('DB::Body')->find($problem->bodies_str);
+    if ($current_body) {
+        my $hierarchical_attributes = $current_body->get_extra_metadata('hierarchical_attributes') || {};
+        if (!keys %$hierarchical_attributes) {
+            $hierarchical_attributes = $c->cobrand->get_default_hierarchical_attributes();
+        }
+        $c->stash->{hierarchical_attributes} = $hierarchical_attributes;
+
+        my $selected_attributes = $problem->get_extra_metadata('hierarchical_attributes') || {};
+        $c->stash->{selected_hierarchical_attributes} = $selected_attributes;
+    }
+
     # If super or dm check that the token is correct before proceeding
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
@@ -640,6 +653,36 @@ sub admin_report_edit {
 
     # Problem updates upon submission
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
+
+        # Validate hierarchical attributes if problem state is not 'submitted'
+        my %hierarchical_errors;
+        if ($problem->state ne 'submitted') {
+            my $geschaftsbereich = $c->get_param('hierarchical_geschaftsbereich');
+            my $objekt = $c->get_param('hierarchical_objekt');
+            my $kategorie = $c->get_param('hierarchical_kategorie');
+
+            if (!$geschaftsbereich) {
+                $hierarchical_errors{hierarchical_geschaftsbereich} = _('Please select a Geschäftsbereich');
+            }
+            if (!$objekt) {
+                $hierarchical_errors{hierarchical_objekt} = _('Please select an Objekt');
+            }
+            if (!$kategorie) {
+                $hierarchical_errors{hierarchical_kategorie} = _('Please select a Kategorie');
+            }
+
+            if (%hierarchical_errors) {
+                $c->stash->{hierarchical_errors} = \%hierarchical_errors;
+                $c->stash->{status_message} = '<p class="message-error">' . _('Please select all hierarchical attributes before saving') . '</p>';
+                return $self->admin_report_edit_done;
+            }
+
+            $problem->set_extra_metadata('hierarchical_attributes', {
+                geschaftsbereich => $geschaftsbereich,
+                objekt => $objekt,
+                kategorie => $kategorie,
+            });
+        }
 
         my @keys = grep { /^publish_photo/ } keys %{ $c->req->params };
         my %publish_photo;
@@ -704,6 +747,12 @@ sub admin_report_edit {
             $problem->bodies_str( $cat->body_id );
             $problem->resend;
             $problem->set_extra_metadata(changed_category => 1);
+
+            # Clear hierarchical attributes if reassigned to different body
+            if ($cat->body_id ne $body->id) {
+                $problem->unset_extra_metadata('hierarchical_attributes');
+            }
+
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
             $redirect = 1 if $cat->body_id ne $body->id;
@@ -728,6 +777,12 @@ sub admin_report_edit {
             $self->set_problem_state($c, $problem, 'in progress');
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
+
+            # Clear hierarchical attributes if reassigned to different body
+            if ($subdiv ne $body->id) {
+                $problem->unset_extra_metadata('hierarchical_attributes');
+            }
+
             $problem->resend;
             $redirect = 1;
         } else {
@@ -855,6 +910,10 @@ sub admin_report_edit {
         # do not display correctly (reloads problem from database, including
         # fields modified by the database when saving)
         $problem->discard_changes;
+
+        # Update stash with the newly saved hierarchical attributes so they display correctly
+        my $updated_selected_attributes = $problem->get_extra_metadata('hierarchical_attributes') || {};
+        $c->stash->{selected_hierarchical_attributes} = $updated_selected_attributes;
 
         # Create an internal note if required
         if ($internal_note_text) {
