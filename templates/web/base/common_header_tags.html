@@ -18,7 +18,7 @@
 [% INCLUDE 'header/css.html' %]
 
 [% IF c.req.uri.path.match('^/waste') %]
-    <link rel="manifest" href="/.well-known/manifest-waste.webmanifest">
+    <link rel="manifest" href="/.well-known/manifest-waste.webmanifest[% IF property_id %]?p=[% property_id %][% END %]">
 [% ELSE %]
     <link rel="manifest" href="/.well-known/manifest-fms.webmanifest">
 [% END %]
