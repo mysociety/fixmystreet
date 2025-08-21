@@ -502,10 +502,15 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a small items collection as missed', 'In time, normal completion');
         $mech->submit_form_ok({ with_fields => { 'service-787' => 1 } });
-        $mech->content_contains('Small items collection');
-        $mech->submit_form_ok({ with_fields => { 'service-787' => 1 } });
+        $mech->content_contains('About you');
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Submit missed small items collection');
+
+        $mech->submit_form_ok( { form_number => 1 }, 'Go back to first page' );
+        $mech->content_contains('About you');
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+
+        $mech->submit_form_ok( { form_number => 3 }, 'Submit summary' );
         $mech->content_contains('Thank you for reporting a missed collection');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->category, 'Report missed collection';

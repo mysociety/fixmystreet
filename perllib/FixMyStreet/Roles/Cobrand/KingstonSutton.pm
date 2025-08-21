@@ -116,6 +116,17 @@ sub waste_munge_report_form_fields {
     $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Report::SLWP';
 }
 
+=head2 waste_report_form_first_bulky
+
+When reporting a missed bulky or small items collection, the first page is
+'notes' (additional information).
+
+=cut
+
+sub waste_report_form_first_bulky {
+    return 'notes';
+}
+
 =head2 waste_cc_payment_line_item_ref
 
 This is used by the SCP role (all Kingston, Sutton requests) to provide the

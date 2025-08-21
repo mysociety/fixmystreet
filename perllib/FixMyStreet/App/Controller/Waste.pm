@@ -881,14 +881,15 @@ sub report : Chained('property') : Args(0) {
     my $field_list = construct_bin_report_form($c);
 
     if ( $c->stash->{original_booking_report} ) {
-        $c->stash->{first_page} = 'notes';
+        $c->stash->{first_page}
+            = $c->cobrand->call_hook('waste_report_form_first_bulky')
+            || 'about_you';
         $c->stash->{field_list} = $field_list;
 
     } else {
         $c->stash->{first_page} = 'report';
         my $next = 'about_you';
 
-        $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Report';
         $c->stash->{page_list} = [
             report => {
                 fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
@@ -901,6 +902,7 @@ sub report : Chained('property') : Args(0) {
 
     }
 
+    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Report';
     $c->forward('form');
 }
 
