@@ -807,63 +807,61 @@ sub construct_bin_report_form {
 
     my $field_list = [];
 
-    my $show_all_services = $c->stash->{is_staff} && $c->get_param('additional');
-    foreach (@{$c->stash->{service_data}}) {
-        unless (
-            ( $_->{last}
-            && $_->{report_allowed}
-            && !$_->{report_open} )
-            || $_->{report_only}
-            || $show_all_services )
-        {
-            next;
+    if ( my $original_report = $c->stash->{original_booking_report} ) {
+        # Either bulky or small items
+
+        my $allow_report;
+        for my $guid ( keys %{ $c->stash->{booked_missed} || {} } ) {
+            next unless $guid eq $original_report->external_id;
+
+            my $bm = $c->stash->{booked_missed}{$guid};
+            if ( $bm->{report_allowed} && !$bm->{report_open} ) {
+                # We skip the selection page and have single service
+                # as hidden field
+
+                push @$field_list, "service-$bm->{service_id}" => {
+                    type => 'Hidden',
+                    default => 1,
+                };
+
+                last;
+            }
         }
-        next if $_->{orange_bag}; # Merton special entries
 
-        my $id = $_->{service_id};
-        my $name = $_->{service_name};
-        my $description = $_->{service_description};
-        my $contains_html = $_->{service_description_contains_html};
-        push @$field_list, "service-$id" => {
-            type => 'Checkbox',
-            label => $name,
+    } else {
+        my $show_all_services = $c->stash->{is_staff} && $c->get_param('additional');
+        foreach (@{$c->stash->{service_data}}) {
+            unless (
+                ( $_->{last}
+                && $_->{report_allowed}
+                && !$_->{report_open} )
+                || $_->{report_only}
+                || $show_all_services )
+            {
+                next;
+            }
+            next if $_->{orange_bag}; # Merton special entries
 
-            build_option_label_method => sub {
-                return $name
-                    unless $description;
-
-                return $description
-                    unless $contains_html;
-
-                return FixMyStreet::Template::SafeString->new($description);
-            },
-        };
-    }
-
-    # XXX Should we refactor bulky & small items into the general service
-    # data (above)?
-    # Plus side, gets the report missed stuff built in; minus side it
-    # doesn't have any next/last collection stuff which is assumed.
-    my $allow_report_bulky = 0;
-    my $allow_report_small_items = 0;
-
-    foreach ( values %{ $c->stash->{booked_missed} || {} } ) {
-        if ( $_->{report_allowed} && !$_->{report_open} ) {
-            $_->{service_name} eq 'Small items'
-                ? $allow_report_small_items = $_
-                : $allow_report_bulky = $_;
-        }
-    }
-    for ( $allow_report_bulky, $allow_report_small_items ) {
-        if ($_) {
-            my $service_id = $_->{service_id};
-            my $service_name = $_->{service_name};
-            push @$field_list, "service-$service_id" => {
+            my $id = $_->{service_id};
+            my $name = $_->{service_name};
+            my $description = $_->{service_description};
+            my $contains_html = $_->{service_description_contains_html};
+            push @$field_list, "service-$id" => {
                 type => 'Checkbox',
-                label => "$service_name collection",
-                option_label => "$service_name collection",
+                label => $name,
+
+                build_option_label_method => sub {
+                    return $name
+                        unless $description;
+
+                    return $description
+                        unless $contains_html;
+
+                    return FixMyStreet::Template::SafeString->new($description);
+                },
             };
         }
+
     }
 
     $c->cobrand->call_hook("waste_munge_report_form_fields", $field_list);
@@ -874,6 +872,7 @@ sub construct_bin_report_form {
 sub report : Chained('property') : Args(0) {
     my ($self, $c) = @_;
 
+    # Bulky or small items
     $c->stash->{original_booking_report}
         = FixMyStreet::DB->resultset("Problem")
         ->find( { id => $c->get_param('original_booking_id') } )
@@ -881,19 +880,27 @@ sub report : Chained('property') : Args(0) {
 
     my $field_list = construct_bin_report_form($c);
 
-    $c->stash->{first_page} = 'report';
-    my $next = $c->cobrand->call_hook('waste_report_form_first_next') || 'about_you';
+    if ( $c->stash->{original_booking_report} ) {
+        $c->stash->{first_page} = 'notes';
+        $c->stash->{field_list} = $field_list;
 
-    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Report';
-    $c->stash->{page_list} = [
-        report => {
-            fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
-            title => 'Select your missed collection',
-            next => $next,
-        },
-    ];
-    $c->cobrand->call_hook("waste_munge_report_form_pages", $c->stash->{page_list}, $field_list);
-    $c->stash->{field_list} = $field_list;
+    } else {
+        $c->stash->{first_page} = 'report';
+        my $next = 'about_you';
+
+        $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Report';
+        $c->stash->{page_list} = [
+            report => {
+                fields => [ grep { ! ref $_ } @$field_list, 'submit' ],
+                title => 'Select your missed collection',
+                next => $next,
+            },
+        ];
+        $c->cobrand->call_hook("waste_munge_report_form_pages", $c->stash->{page_list}, $field_list);
+        $c->stash->{field_list} = $field_list;
+
+    }
+
     $c->forward('form');
 }
 
