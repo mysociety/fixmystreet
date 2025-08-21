@@ -93,6 +93,7 @@ my %EVENT_TYPE_IDS = (
     garden_add => 3159,
     garden_amend => 3163,
     bulky => 3130,
+    small_items => 3144,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -305,6 +306,7 @@ sub missed_event_types { return {
     $EVENT_TYPE_IDS{missed} => 'missed',
     $EVENT_TYPE_IDS{missed_assisted} => 'missed',
     $EVENT_TYPE_IDS{bulky} => 'bulky',
+    $EVENT_TYPE_IDS{small_items} => 'small_items',
 } }
 
 sub waste_munge_report_data {
@@ -312,15 +314,18 @@ sub waste_munge_report_data {
 
     my $c = $self->{c};
 
-    my $booking_report;
-    if ($c->get_param('original_booking_id')) {
-        $booking_report = FixMyStreet::DB->resultset("Problem")->find({ id => $c->get_param('original_booking_id') });
-    };
     my $address = $c->stash->{property}->{address};
     my $cfg = $self->feature('echo');
     my $service = $c->stash->{services}{$id}{service_name};
-    if ($id == $cfg->{bulky_service_id}) {
+    if (   $cfg->{bulky_service_id}
+        && $id == $cfg->{bulky_service_id} )
+    {
         $service = 'bulky collection';
+    }
+    if (   $cfg->{small_items_service_id}
+        && $id == $cfg->{small_items_service_id} )
+    {
+        $service = 'small items collection';
     }
     if ($c->get_param('additional') && $c->stash->{is_staff}) {
         $data->{category} = 'Request additional collection';
@@ -338,7 +343,7 @@ sub waste_munge_report_data {
         $data->{title} = "Report missed $service";
     }
     $data->{detail} = "$data->{title}\n\n$address";
-    if ($booking_report) {
+    if ( my $booking_report = $c->stash->{original_booking_report} ) {
         $c->set_param('Exact_Location', $booking_report->get_extra_field_value('Exact_Location'));
         $c->set_param('Original_Event_ID', $booking_report->external_id);
     }
@@ -720,7 +725,8 @@ sub waste_reconstruct_bulky_data {
         || $p->get_extra_field_value('Small_Item_Type');
     my @notes = split /::/,
         $p->get_extra_field_value('TEM_-_Bulky_Collection_Description')
-        || $p->get_extra_field_value('Bulky_Collection_Notes');
+        || $p->get_extra_field_value('Bulky_Collection_Notes')
+        || '';
 
     for my $id (1..@fields) {
         $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
