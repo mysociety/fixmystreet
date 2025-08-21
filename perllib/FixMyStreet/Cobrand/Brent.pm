@@ -1191,11 +1191,8 @@ sub waste_munge_report_data {
     $data->{title} = "Report missed $service";
     $data->{detail} = "$data->{title}\n\n$address";
 
-    if ($c->get_param('original_booking_id')) {
-        if (my $booking_report = FixMyStreet::DB->resultset("Problem")->find({ id => $c->get_param('original_booking_id') })) {
-            $c->set_param('Original_Event_ID', $booking_report->external_id);
-        }
-    }
+    $c->set_param('Original_Event_ID', $c->stash->{original_booking_report}->external_id )
+        if $c->stash->{original_booking_report};
 
     $c->set_param('service_id', $id);
 }

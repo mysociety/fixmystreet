@@ -42,6 +42,20 @@ create_contact(
     { code => 'reservation' },
 );
 
+# Missed collection contacts
+create_contact(
+    { category => 'Report missed collection', email => '3145' },
+    { code => 'Exact_Location' },
+    { code => 'Original_Event_ID' },
+    { code => 'Notes' },
+);
+create_contact(
+    { category => 'Report missed assisted collection', email => '3146' },
+    { code => 'Exact_Location' },
+    { code => 'Original_Event_ID' },
+    { code => 'Notes' },
+);
+
 my $user = $mech->create_user_ok('maryk@example.org', name => 'Test User');
 my $staff = $mech->create_user_ok('staff@example.org', name => 'Staff User', from_body => $sutton->id);
 $staff->user_body_permissions->create({ body => $sutton, permission_type => 'report_edit' });
@@ -55,6 +69,7 @@ FixMyStreet::override_config {
         waste_features => {
             sutton => {
                 small_items_enabled => 1,
+                small_items_missed => 1,
                 small_items_tandc_link => 'tandc_link',
                 small_items_multiple_bookings => 1,
             },
@@ -63,6 +78,7 @@ FixMyStreet::override_config {
             sutton => {
                 small_items_service_id => 952,
                 small_items_event_type_id => 3144,
+                bulky_service_id => 960,
                 bulky_address_types => [ 1, 7 ],
                 url => 'http://example.org',
             },
@@ -393,6 +409,93 @@ FixMyStreet::override_config {
             $report->update;
             $comment->delete;
         }
+    };
+
+    subtest 'Reporting a missed collection' => sub {
+
+        # Monday after collection was due
+        set_fixed_time('2025-08-11T12:00:00Z');
+
+        # Event claims it was completed
+        $echo->mock(
+            'GetEventsForObject',
+            sub {
+                [   {   Guid        => '4ea70923-7151-11f0-aeea-cd51f3977c8c',
+                        EventTypeId => 3144,
+                        ResolvedDate =>
+                            { DateTime => '2025-08-08T12:00:00Z' },
+                        EventDate => { DateTime => '2025-08-08T12:00:00Z' },
+                        ResolutionCodeId => 232,
+                        EventStateId     => 12400,
+                    }
+                ]
+            }
+        );
+
+        $report->update(
+            {   state       => 'fixed - council',
+                external_id => '4ea70923-7151-11f0-aeea-cd51f3977c8c'
+            }
+        );
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Report a small items collection as missed');
+        $mech->submit_form_ok( { form_number => 1 },
+            "Follow link for reporting a missed collection" );
+        $mech->content_contains('Select your missed collection');
+        $mech->submit_form_ok( { with_fields => { 'service-952' => 1 } } );
+        $mech->content_contains('Please supply any additional information');
+        $mech->submit_form_ok(
+            { with_fields => { extra_detail => 'You left a sock' } } );
+        $mech->content_contains('About you');
+        $mech->submit_form_ok(
+            { with_fields => { name => 'Mary Kay', email => $user->email } }
+        );
+        $mech->content_contains('Submit missed small items collection');
+        $mech->submit_form_ok( { form_number => 3 } );
+        $mech->content_contains(
+            'Thank you for reporting a missed collection');
+
+        my $missed
+            = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        is $missed->get_extra_field_value('Exact_Location'), 'In the alley';
+        is $missed->title, 'Report missed small items collection';
+        is $missed->get_extra_field_value('Original_Event_ID'),
+            '4ea70923-7151-11f0-aeea-cd51f3977c8c';
+        is $missed->get_extra_field_value('Notes'), 'You left a sock';
+
+        $missed->update(
+            { external_id => '8d222528-4308-44c3-9981-ea6131a6b00f' } );
+        $echo->mock(
+            'GetEventsForObject',
+            sub {
+                [
+                    # Event for original report
+                    {   Guid        => '4ea70923-7151-11f0-aeea-cd51f3977c8c',
+                        EventTypeId => 3144,
+                        ResolvedDate =>
+                            { DateTime => '2025-08-08T12:00:00Z' },
+                        EventDate => { DateTime => '2025-08-08T12:00:00Z' },
+                        ResolutionCodeId => 232,
+                        EventStateId     => 12400,
+                    },
+                    # Event for missed collection
+                    {   Guid        => '8d222528-4308-44c3-9981-ea6131a6b00f',
+                        EventTypeId => 3145,
+                        EventStateId => 0,
+                        ServiceId    => 952,
+                        EventDate => { DateTime => '2025-08-11T12:00:00Z' },
+                    },
+                ]
+            }
+        );
+
+        $mech->get_ok('/waste/12345');
+        $mech->text_contains(
+            'A small items collection was reported as missed on Monday, 11 August'
+        );
+
+        # subtest 'Assisted collection' => sub {};
     };
 
 };
