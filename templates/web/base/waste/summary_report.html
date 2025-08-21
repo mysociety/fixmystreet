@@ -1,5 +1,9 @@
 [%
-title = c.req.params.original_booking_id ? 'Submit missed bulky collection' : 'Submit missed bin report';
+title = original_booking_report.category == 'Bulky collection'
+  ? 'Submit missed bulky collection'
+  : original_booking_report.category == 'Small items collection'
+  ? 'Submit missed small items collection'
+  : 'Submit missed bin report';
 thing = 'missed collection';
 summary_title = 'Missed collection';
 step1 = 'report';

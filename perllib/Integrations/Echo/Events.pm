@@ -68,7 +68,7 @@ sub parse {
             }
         } elsif ($type eq 'missed') {
             $self->cobrand->call_hook('parse_event_missed', $_, $event, $events);
-        } elsif ($type eq 'bulky') {
+        } elsif ($type eq 'bulky' || $type eq 'small_items') {
             if ($report) {
                 $event->{resolution} = $_->{ResolutionCodeId};
                 if ($closed) {
