@@ -2,9 +2,9 @@
 
 <h1>[% c.cobrand.council_name %] reporting app</h1>
 
-<p>The [% c.cobrand.council_name %] reporting service is powered by FixMyStreet Pro, which is a progressive web app (PWA). This means that you can save this website to your mobile’s home screen and use it just like an app. See below for instructions on how to do this on both iOS and Android devices.</p>
+<p>The [% c.cobrand.council_name %] reporting service is powered by [% IF wasteworks %]WasteWorks[% ELSE %]FixMyStreet Pro[% END %], which is a progressive web app (PWA). This means that you can save this website to your mobile’s home screen and use it just like an app. See below for instructions on how to do this on both iOS and Android devices.</p>
 
-<p>We chose to develop a PWA instead of a dedicated app because it gives you the choice to use this service on whatever device you want, and ensures that you always benefit from the same user experience, including having access to offline reporting functionality. It also means that we can introduce new features and updates more quickly, while also keeping maintenance costs low due to only having to support one codebase.</p>
+<p>We chose to develop a PWA instead of a dedicated app because it gives you the choice to use this service on whatever device you want, and ensures that you always benefit from the same user experience[% UNLESS wasteworks %], including having access to offline reporting functionality[% END %]. It also means that we can introduce new features and updates more quickly, while also keeping maintenance costs low due to only having to support one codebase.</p>
 
 <h2>How to install [% site_name %] as an app</h2>
 
@@ -31,7 +31,7 @@
 <h3>iOS (Apple iPhones/iPads)</h3>
 <img alt="" class="web-app-install__scrshot" srcset="/cobrands/fixmystreet-uk-councils/web-app/small/iphone-[% c.cobrand.moniker %]_framed.png, /cobrands/fixmystreet-uk-councils/web-app/large/iphone-[% c.cobrand.moniker %]_framed.png 2x" src="/cobrands/fixmystreet-uk-councils/web-app/large/iphone-[% c.cobrand.moniker %]_framed.png">
 <ol>
-    <li>Load [% c.uri_for('/') %] on your mobile browser (if you have iOS version 16.3 or less, the installation will only work via Safari)</li>
+    <li>Load [% IF wasteworks %]your property's bin days page[% ELSE %][% c.uri_for('/') %][% END %] on your mobile browser</li>
     <li>
         Hit the save/share button
         <img alt="" class="web-app-install__step" src="/cobrands/fixmystreet-uk-councils/web-app/iphone-share.jpeg">
