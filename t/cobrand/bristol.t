@@ -11,7 +11,7 @@ use FixMyStreet::Script::CSVExport;
 use DateTime;
 
 my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 # Create test data
 my $comment_user = $mech->create_user_ok('bristol@example.net');

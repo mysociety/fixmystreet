@@ -6,7 +6,7 @@ use File::Temp 'tempdir';
 
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.staging.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 my $mech = FixMyStreet::TestMech->new;
 

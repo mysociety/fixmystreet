@@ -11,7 +11,7 @@ my $mech = FixMyStreet::TestMech->new;
 # Mock tilma so TfL's report_new_is_on_tlrn method doesn't make a live API call.
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 use constant CAMDEN_MAPIT_ID => 2505;
 use constant BARNET_MAPIT_ID => 2489;

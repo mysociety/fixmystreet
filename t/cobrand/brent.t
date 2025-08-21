@@ -15,8 +15,7 @@ FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
 my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.staging.mysociety.org');
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 my $gc = Test::MockModule->new('FixMyStreet::Geocode');
 
