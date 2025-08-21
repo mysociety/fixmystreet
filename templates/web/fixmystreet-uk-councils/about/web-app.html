@@ -31,9 +31,11 @@
 <h3>iOS (Apple iPhones/iPads)</h3>
 <img alt="" class="web-app-install__scrshot" srcset="/cobrands/fixmystreet-uk-councils/web-app/small/iphone-[% c.cobrand.moniker %]_framed.png, /cobrands/fixmystreet-uk-councils/web-app/large/iphone-[% c.cobrand.moniker %]_framed.png 2x" src="/cobrands/fixmystreet-uk-councils/web-app/large/iphone-[% c.cobrand.moniker %]_framed.png">
 <ol>
-    <li>Load [% IF wasteworks %]your property's bin days page[% ELSE %][% c.uri_for('/') %][% END %] on your mobile browser</li>
+    [% UNLESS wasteworks AND property_id %]
+        <li>Load [% IF wasteworks %]your property’s bin days page[% ELSE %][% c.uri_for('/') %][% END %] on your mobile browser</li>
+    [% END %]
     <li>
-        Hit the save/share button
+        Hit the save/share button[% IF wasteworks AND property_id %] on this page or your property’s bin days page[% END %]
         <img alt="" class="web-app-install__step" src="/cobrands/fixmystreet-uk-councils/web-app/iphone-share.jpeg">
     </li>
     <li>Select ‘add to home screen’
@@ -50,8 +52,10 @@
 <h3>Android</h3>
 <img alt="" class="web-app-install__scrshot" srcset="/cobrands/fixmystreet-uk-councils/web-app/small/android-[% c.cobrand.moniker %]_framed.png, /cobrands/fixmystreet-uk-councils/web-app/large/android-[% c.cobrand.moniker %]_framed.png 2x" src="/cobrands/fixmystreet-uk-councils/web-app/large/android-[% c.cobrand.moniker %]_framed.png">
 <ol>
-    <li>Load [% c.uri_for('/') %] on your mobile browser</li>
-    <li>Press the ‘three dots’ icon to open the browser menu
+    [% UNLESS wasteworks AND property_id %]
+        <li>Load [% IF wasteworks %]your property’s bin days page[% ELSE %][% c.uri_for('/') %][% END %] on your mobile browser</li>
+    [% END %]
+    <li>Press the ‘three dots’ icon to open the browser menu[% IF wasteworks AND property_id %] on this page or your property’s bin days page[% END %]
         <img alt="" class="web-app-install__step" src="/cobrands/fixmystreet-uk-councils/web-app/android-dots.jpeg">
     </li>
     <li>Select ‘Install app’ or similar

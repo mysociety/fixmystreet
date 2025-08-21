@@ -3,6 +3,7 @@
          <h3>Download your collection schedule</h3>
          <ul>
            <li><a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar</a></li>
+           <li><a href="/about/waste-web-app?p=[% property.id %]">Add to your home screen</a></li>
         [% IF c.cobrand.moniker == 'kingston' %]
             <!-- <li><a href="https://kingston-self.achieveservice.com/service/In_my_Area_Results?displaymode=collections&amp;altVal=&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li> -->
         [% ELSIF c.cobrand.moniker == 'sutton' %]
