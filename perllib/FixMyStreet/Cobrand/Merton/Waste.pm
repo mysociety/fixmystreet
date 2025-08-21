@@ -374,6 +374,9 @@ sub waste_munge_request_data {
 
     if ($data->{payment}) {
         my $cost = $self->request_cost($id);
+        if ($cost) {
+            $cost *= $quantity;
+        }
         $c->set_param('payment', $cost || undef); # Want to undefine it if free
     }
 }

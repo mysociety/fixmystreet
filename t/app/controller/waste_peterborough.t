@@ -726,6 +726,7 @@ FixMyStreet::override_config {
         waste_features => {
             peterborough => {
                 admin_config_enabled => 1,
+                bulky_enabled => 1,
             }
         }
     },
@@ -816,7 +817,12 @@ FixMyStreet::override_config {
                 daily_slots => 50,
                 free_mode => 0, # not checked
                 food_bags_disabled => '', # not checked
-                base_price => 1234, per_item_costs => 1, per_item_min_collection_price => '', items_per_collection_max => 7 };
+                base_price => 1234,
+                per_item_costs => 1,
+                per_item_min_collection_price => '',
+                items_per_collection_max => 7,
+                small_items_per_collection_max => undef,
+            };
         };
     };
 };

@@ -44,14 +44,27 @@ sub bulky_enabled_staff_only {
     return $cfg->{bulky_enabled} && $cfg->{bulky_enabled} eq 'staff';
 }
 
+sub small_items_enabled {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return $cfg->{small_items_enabled};
+}
+
 sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
-sub bulky_items_maximum { $_[0]->wasteworks_config->{items_per_collection_max} || 5 }
+sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
+
 sub bulky_tandc_link {
     my $self = shift;
     my $cfg = $self->feature('waste_features') || {};
     return FixMyStreet::Template::SafeString->new($cfg->{bulky_tandc_link});
 }
+sub small_items_tandc_link {
+    my $self = shift;
+    my $cfg = $self->feature('waste_features') || {};
+    return FixMyStreet::Template::SafeString->new($cfg->{small_items_tandc_link});
+}
+
 sub bulky_show_location_page {
     my ($self) = @_;
 
@@ -85,7 +98,7 @@ sub bulky_pricing_strategy {
         my $min_collection_price = $self->wasteworks_config->{per_item_min_collection_price} || 0;
         return encode_json({ strategy => 'per_item', min => $min_collection_price });
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
-        my $max = $self->bulky_items_maximum;
+        my $max = $self->{c}->stash->{booking_maximum};
         return encode_json({ strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] });
     } else {
         return encode_json({ strategy => 'single' });
@@ -104,7 +117,6 @@ Users of this role must supply the following:
 
 =cut
 
-requires 'bulky_allowed_property';
 requires 'bulky_cancellation_cutoff_time';
 requires 'bulky_collection_time';
 requires 'bulky_collection_window_days';
@@ -123,6 +135,18 @@ sub bulky_is_cancelled {
     }
 }
 
+sub small_items_extra {
+    my ($self) = @_;
+
+    my $json = JSON::MaybeXS->new;
+    my %hash;
+    for my $item ( @{ $self->small_items_master_list } ) {
+        $hash{ $item->{name} }{message} = $item->{message} if $item->{message};
+        $hash{ $item->{name} }{max} = $item->{max} if $item->{max};
+        $hash{ $item->{name} }{json} = $json->encode($hash{$item->{name}}) if $hash{$item->{name}};
+    }
+    return \%hash;
+}
 sub bulky_items_extra {
     my ($self, %args) = @_;
 
@@ -199,7 +223,7 @@ sub bulky_total_cost {
             my $price_key = $self->bulky_per_item_price_key;
             my %prices = map { $_->{name} => $_->{$price_key} } @{ $self->bulky_items_master_list };
             my $total = 0;
-            my $max = $self->bulky_items_maximum;
+            my $max = $c->stash->{booking_maximum};
             for (1..$max) {
                 my $item = $data->{"item_$_"} or next;
                 $total += $prices{$item};
@@ -212,7 +236,7 @@ sub bulky_total_cost {
             }
         } elsif ($cfg->{band1_price}) {
             my $count = 0;
-            my $max = $self->bulky_items_maximum;
+            my $max = $c->stash->{booking_maximum};
             for (1..$max) {
                 my $item = $data->{"item_$_"} or next;
                 $count++;
@@ -290,56 +314,35 @@ sub get_all_payments {
     return $refs;
 }
 
-sub find_unconfirmed_bulky_collections {
-    my ( $self, $uprn ) = @_;
+sub find_booked_collections {
+    my ( $self, $uprn, $recent, $retry ) = @_;
 
-    return $self->problems->search({
-        category => 'Bulky collection',
-        extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
-        state => 'unconfirmed',
-    })->order_by('-id');
-}
+    my %recent_states = map { $_ => 1 } grep { $_ ne 'cancelled' } FixMyStreet::DB::Result::Problem->closed_states, FixMyStreet::DB::Result::Problem->fixed_states;
+    my %pending_states = map { $_ => 1 } FixMyStreet::DB::Result::Problem->open_states;
 
-sub find_pending_bulky_collections {
-    my ( $self, $uprn ) = @_;
-
-    my $rs = $self->problems->search({
+    my @reports = $self->problems->search({
         category => ['Bulky collection', 'Small items collection'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
-        state => [ FixMyStreet::DB::Result::Problem->open_states ],
-    })->order_by('-id');
-
-    return wantarray ? $self->_recently($rs) : $rs;
-}
-
-sub find_recent_bulky_collections {
-    my ( $self, $uprn ) = @_;
-
-    my @closed = grep { $_ ne 'cancelled' } FixMyStreet::DB::Result::Problem->closed_states;
-    my $rs = $self->problems->search({
-        category => ['Bulky collection', 'Small items collection'],
-        extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
-        state => [ @closed, FixMyStreet::DB::Result::Problem->fixed_states ],
-    })->order_by('-id');
-
-    return wantarray ? $self->_recently($rs) : $rs;
-}
-
-sub _recently {
-    my ($self, $rs) = @_;
-
-    # If we've already sent it, and we want a full list for display, we don't
-    # want to show ones without a reference
-    if ($self->bulky_send_before_payment) {
-        $rs = $rs->search({
-            extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
-        });
-    }
+    })->order_by('-id')->all;
 
     my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( days => 10 );
-    my @all = $rs->all;
-    @all = grep { my $date = $self->collection_date($_); $date >= $dt } @all;
-    return @all;
+    my $out;
+    foreach (@reports) {
+        my $key = $_->category eq 'Small items collection' ? 'small_items' : 'bulky';
+
+        my $date = $self->collection_date($_);
+        next if $recent && $date < $dt;
+
+        # If we've already sent it, and we want a full list for display, we don't
+        # want to show ones without a reference
+        next if $recent && $key eq 'bulky' && $self->bulky_send_before_payment && !$_->get_extra_metadata('payment_reference') && !$_->get_extra_metadata('chequeReference');
+
+        push @{$out->{$key}{unconfirmed}}, $_ if $retry && $_->state eq 'unconfirmed';
+        push @{$out->{$key}{pending}}, $_ if $pending_states{$_->state};
+        push @{$out->{$key}{recent}}, $_ if $recent_states{$_->state};
+    }
+
+    return $out;
 }
 
 sub _bulky_collection_window {

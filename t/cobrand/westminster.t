@@ -5,7 +5,7 @@ use FixMyStreet::Script::Reports;
 
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');

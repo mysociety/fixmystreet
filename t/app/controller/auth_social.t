@@ -66,8 +66,7 @@ my $resolver = Test::MockModule->new('Email::Valid');
 my $social = Test::MockModule->new('FixMyStreet::App::Controller::Auth::Social');
 $social->mock('generate_nonce', sub { 'MyAwesomeRandomValue' });
 my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.staging.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 for my $test (&tst_config) {
 

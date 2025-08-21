@@ -22,7 +22,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 use t::Mock::Tilma;
 my $tilma = t::Mock::Tilma->new;
-LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => 'tilma.mysociety.org');
+LWP::Protocol::PSGI->register($tilma->to_psgi_app, host => qr/tilma/);
 
 my $user = $mech->create_user_ok( 'eh@example.com' );
 my $body = $mech->create_body_ok( 2342, 'East Hertfordshire Council', { cobrand => 'eastherts' });

@@ -48,9 +48,13 @@ sub lookup_subscription_for_uprn {
     my ( $customer, $contract );
 
     my $results = $self->agile->CustomerSearch($uprn);
-    # 'error' will usually be 404, maybe 400; we can't guarantee there aren't
-    # other possible values
-    return if $results->{error};
+    if ($results->{error}) {
+        # Unexpected error - API problem
+        return {
+            error => $results->{error},
+            error_message => $results->{error_message},
+        };
+    }
 
     # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
     my $customers = $results->{Customers} || [];
@@ -68,7 +72,7 @@ sub lookup_subscription_for_uprn {
         }
     }
 
-    return unless $customer && $contract;
+    return { subscription => undef } unless $customer && $contract;
 
     # XXX should maybe sort by CreatedDate rather than assuming first is OK
     my ($payment) = grep { $_->{PaymentStatus} =~ /(Paid|Pending)/ } @{ $contract->{Payments} };
@@ -104,7 +108,14 @@ sub lookup_subscription_for_uprn {
     );
     $sub->{cost} = $costs->bins( $sub->{bins_count} ) / 100;
 
-    return $sub;
+    return { subscription => $sub };
+}
+
+sub _remove_garden_services {
+    my ($self, $services) = @_;
+    for my $garden_id ( @{ $self->garden_service_ids } ) {
+        @$services = grep { $_->{service_id} ne $garden_id } @$services;
+    }
 }
 
 =head2 garden_current_subscription
@@ -128,12 +139,20 @@ sub garden_current_subscription {
     my $uprn = $property->{uprn};
     return undef unless $uprn;
 
-    my $sub = $self->lookup_subscription_for_uprn($uprn);
+    my $lookup_result = $self->lookup_subscription_for_uprn($uprn);
+
+    if ($lookup_result->{error}) {
+        $property->{garden_api_error} = 1;
+        $property->{garden_api_error_code} = $lookup_result->{error};
+        $property->{garden_api_error_message} = $lookup_result->{error_message} || $lookup_result->{error};
+        $self->_remove_garden_services($services);
+        return undef;
+    }
+
+    my $sub = $lookup_result->{subscription};
     unless ($sub) {
         # No Agile data, so remove Whitespace service
-        for my $garden_id ( @{ $self->garden_service_ids } ) {
-            @$services = grep { $_->{service_id} ne $garden_id } @$services;
-        }
+        $self->_remove_garden_services($services);
         return undef;
     }
 

@@ -519,9 +519,11 @@ sub bin_services_for_address {
     # unless it's got a parent property AND no services of its own (communal),
     # or it already has a subscription in Agile
     # or it has sacks
+    # or there's an API error
     if (   $property->{is_communal}
         || $property->{has_garden_subscription}
         || !$whitespace_paper_bin
+        || $property->{garden_api_error}
     ) {
         $property->{garden_signup_eligible} = 0;
     }

@@ -229,6 +229,32 @@ FixMyStreet::override_config {
         $mech->content_contains('Subscribe to garden waste collection service', 'Subscribe link present if expired');
     };
 
+    subtest 'check Agile API error handling' => sub {
+        # Test that various API error responses show the same error handling behavior
+        my %error_codes = (
+            '503' => 'Service Unavailable',
+            '404' => 'Not Found',
+            '400' => 'Bad Request'
+        );
+
+        foreach my $error_code (keys %error_codes) {
+            subtest "Error code $error_code" => sub {
+                $agile_mock->mock( 'CustomerSearch', sub { {
+                    error => $error_code,
+                    error_message => $error_codes{$error_code}
+                } } );
+
+                $mech->get_ok('/waste/10001');
+                $mech->content_lacks('Sign up for a garden waste collection', "Sign-up button not shown for $error_code");
+                $mech->content_lacks('Subscribe to garden waste collection service', "Subscribe link not shown for $error_code");
+                $mech->content_contains("We're currently unable to check your garden waste subscription status", "API error message shown for $error_code");
+                $mech->content_contains('Please try again later. If the problem persists, contact us directly', "API error help text shown for $error_code");
+            };
+        }
+
+        default_mocks();
+    };
+
     subtest 'check new sub bin limits' => sub {
         $mech->get_ok('/waste/10001/garden');
         $mech->submit_form_ok({ form_number => 1 });

@@ -51,7 +51,10 @@ sub call {
     if ( $res->is_success ) {
         return decode_json( $res->content );
     } else {
-        return { error => $res->code };
+        return {
+            error => $res->code,
+            error_message => $res->content
+        };
     }
 }
 

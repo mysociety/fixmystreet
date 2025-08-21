@@ -501,25 +501,21 @@ sub property : Chained('property_id') : PathPart('') : CaptureArgs(0) {
         $c->detach( '/page_error_404_not_found', [] );
     }
 
-    if ($c->cobrand->can('bulky_enabled')) {
-        my @pending = $c->cobrand->find_pending_bulky_collections($property->{uprn});
-        $c->stash->{pending_bulky_collections} = @pending ? \@pending : undef;
-
-        my @recent = $c->cobrand->find_recent_bulky_collections($property->{uprn});
-        $c->stash->{recent_bulky_collections} = @recent ? \@recent : undef;
-
-        my $cfg = $c->cobrand->feature('waste_features');
-        if ($cfg->{bulky_retry_bookings} && $c->stash->{is_staff}) {
-            my @unconfirmed = $c->cobrand->find_unconfirmed_bulky_collections($property->{uprn})->all;
-            $c->stash->{unconfirmed_bulky_collections} = @unconfirmed ? \@unconfirmed : undef;
-        }
-    }
-
     $c->stash->{latitude} = Utils::truncate_coordinate( $property->{latitude} );
     $c->stash->{longitude} = Utils::truncate_coordinate( $property->{longitude} );
 
     $c->stash->{service_data} = $c->cobrand->call_hook(bin_services_for_address => $property) || [];
     $c->stash->{services} = { map { $_->{service_id} => $_ } @{$c->stash->{service_data}} };
+
+    my $calendar = $c->action eq 'waste/calendar_ics';
+    return if $calendar; # Calendar doesn't need to look up collections
+
+    if ($c->cobrand->can('find_booked_collections')) {
+        my $cfg = $c->cobrand->feature('waste_features');
+        my $retry = $cfg->{bulky_retry_bookings} && $c->stash->{is_staff};
+        my $collections = $c->cobrand->find_booked_collections($property->{uprn}, 'recent', $retry);
+        $c->stash->{collections} = $collections;
+    }
 
     $c->forward('get_pending_subscription');
 }
@@ -714,11 +710,9 @@ sub process_request_data : Private {
     my $payment_method = $data->{payment_method} || 'credit_card';
     foreach (@services) {
         my ($id) = /container-(.*)/;
-        $c->cobrand->call_hook("waste_munge_request_data", $id, $data, $form);
+        $c->cobrand->waste_munge_request_data($id, $data, $form);
         if ($payment) {
-            unless ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'merton') {
-                $c->set_param('payment', $payment);
-            }
+            # "payment" param must be set in the munge function above with the cost for this entry
             $c->set_param('payment_method', $payment_method);
         }
         $c->forward('add_report', [ $data, $unconfirmed || $payment ? 1 : 0 ]) or return;
@@ -853,7 +847,7 @@ sub construct_bin_report_form {
     # Plus side, gets the report missed stuff built in; minus side it
     # doesn't have any next/last collection stuff which is assumed
     my $allow_report_bulky = 0;
-    foreach (values %{ $c->stash->{bulky_missed} || {} }) {
+    foreach (values %{ $c->stash->{booked_missed} || {} }) {
         $allow_report_bulky = $_ if $_->{report_allowed} && !$_->{report_open};
     }
     if ($allow_report_bulky) {
@@ -1163,7 +1157,11 @@ sub add_report : Private {
 
     $c->cobrand->call_hook(
         clear_cached_lookups_property => $c->stash->{property}{id},
-        'skip_echo', # We do not want to remove/cancel anything in Echo just before payment
+    );
+    $c->cobrand->call_hook(
+        clear_cached_lookups_bulky_slots => $c->stash->{property}{id},
+        skip_echo => 1, # We do not want to remove/cancel anything in Echo just before payment
+        delete_guid => 1, # We don't need the cached GUID any more
     );
 
     return 1;

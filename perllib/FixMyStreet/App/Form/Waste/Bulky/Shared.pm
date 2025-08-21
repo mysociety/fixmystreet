@@ -14,6 +14,8 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste';
 use FixMyStreet::Template::SafeString;
 
+has small_items => ( is => 'ro', default => 0 );
+
 has_page choose_date_earlier => (
     fields => [ 'continue', 'chosen_date', 'show_later_dates' ],
     title => 'Choose date for collection',
@@ -93,7 +95,7 @@ has_page summary => (
     update_field_list => sub {
         my ($form) = @_;
         my $data = $form->saved_data;
-        my $new = _renumber_items($data, $form->c->cobrand->bulky_items_maximum);
+        my $new = _renumber_items($data, $form->c->stash->{booking_maximum});
         %$data = %$new;
         return {};
     },
@@ -109,9 +111,9 @@ has_page summary => (
         }
 
         # Some cobrands may set a new chosen_date on the form
-        my $slot_still_available = $c->cobrand->call_hook(
-            check_bulky_slot_available => $form->saved_data->{chosen_date},
-            form                       => $form,
+        my $slot_still_available = $c->stash->{booking_class}->check_slot_available(
+            $form->saved_data->{chosen_date},
+            form => $form,
         );
 
         return 1 if $slot_still_available;
@@ -125,6 +127,9 @@ has_page summary => (
         return 0;
     },
     finished => sub {
+        if ($_[0]->small_items) {
+            return $_[0]->wizard_finished('process_small_items_data');
+        }
         if ($_[0]->c->stash->{amending_booking}) {
             return $_[0]->wizard_finished('process_bulky_amend');
         } else {
@@ -176,7 +181,7 @@ sub _get_dates {
     my ( $c, $last_earlier_date ) = @_;
 
     my %dates_booked;
-    foreach (@{$c->stash->{pending_bulky_collections} || []}) {
+    foreach (@{$c->stash->{collections}{bulky}{pending} || []}) {
         my $date = $c->cobrand->collection_date($_);
         $dates_booked{$date} = 1;
     }
@@ -208,12 +213,7 @@ sub _get_dates {
             selected => $existing_date && $existing_date eq $_->{date},
             }
             : undef
-        } @{
-        $c->cobrand->call_hook(
-            'find_available_bulky_slots', $c->stash->{property},
-            $last_earlier_date,
-        )
-        };
+        } @{ $c->stash->{booking_class}->find_available_slots($last_earlier_date) };
 
     return @dates;
 }
@@ -272,7 +272,8 @@ has_field tandc => (
     build_option_label_method => sub {
         my $form = $_[0]->form;
         my $c = $form->c;
-        my $link = $c->cobrand->call_hook('bulky_tandc_link');
+        my $link = $c->stash->{small_items} ? 'small_items_tandc_link' : 'bulky_tandc_link';
+        $link = $c->cobrand->call_hook($link);
         my $label;
         if ($c->cobrand->moniker eq 'sutton') {
             $label = 'I have read the <a href="' . $link . '" target="_blank">terms and conditions</a> of the service on the council’s website and agree to them.';
@@ -345,7 +346,7 @@ sub validate {
 
     my $cobrand = $self->c->cobrand;
     if ($self->current_page->name eq 'add_items') {
-        my $max_items = $cobrand->bulky_items_maximum;
+        my $max_items = $self->c->stash->{booking_maximum};
         my %given;
 
         my $points = 0;
@@ -402,7 +403,7 @@ sub validate {
     if ($self->current_page->name eq 'summary' && $self->c->stash->{amending_booking}) {
         my $old = $cobrand->waste_reconstruct_bulky_data($self->c->stash->{amending_booking});
         my $new = $self->saved_data;
-        my $max_items = $cobrand->bulky_items_maximum;
+        my $max_items = $self->c->stash->{booking_maximum};
         my $same = 1;
         my @fields = qw(chosen_date location location_photo);
         push @fields, map { ("item_$_", "item_photo_$_") } 1 .. $max_items;

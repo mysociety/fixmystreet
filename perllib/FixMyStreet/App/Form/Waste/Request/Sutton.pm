@@ -15,7 +15,7 @@ has_page about_you => (
         my $c = $form->c;
         if ($data) {
             my $choice = $data->{'container-choice'};
-            my ($cost, $hint) = $c->cobrand->request_cost($choice, 1, $c->stash->{quantities});
+            my ($cost, $hint) = $c->cobrand->request_cost($choice, $c->stash->{quantities});
             $data->{payment} = $cost if $cost;
         }
     },

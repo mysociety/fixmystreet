@@ -102,9 +102,9 @@ END; END %]
 [% END %]
 
 <form id="item-selection-form" class="waste" method="post" enctype="multipart/form-data"
-    data-maximum="[% c.cobrand.bulky_items_maximum %]"
+    data-maximum="[% c.stash.booking_maximum %]"
     >
-  [% FOR num IN [ 1 .. c.cobrand.bulky_items_maximum ] %]
+  [% FOR num IN [ 1 .. c.stash.booking_maximum ] %]
     [% IF NOT first_empty OR form.field('item_' _ num).value %]
       [% INCLUDE item_fields %]
       [% IF NOT form.field('item_' _ num).value %][% SET first_empty = 1 %][% END %]
@@ -126,7 +126,7 @@ END; END %]
     [%~ END ~%]
   </button>
 
-    [% IF c.cobrand.moniker != 'brent' %]
+    [% IF NOT small_items %]
     <p>
         Total cost: £<span data-pricing="[% c.cobrand.bulky_pricing_strategy %]" id="js-bulky-total">[% pounds(total) %]</span>
     </p>

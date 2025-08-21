@@ -1134,16 +1134,6 @@ sub missed_event_types { return {
     $EVENT_TYPE_IDS{bulky} => 'bulky',
 } }
 
-around bulky_check_missed_collection => sub {
-    my ($orig, $self) = (shift, shift);
-    $orig->($self, @_);
-    if ($self->{c}->stash->{bulky_missed}) {
-        foreach (values %{$self->{c}->stash->{bulky_missed}}) {
-            $_->{service_name} = 'Small items';
-        }
-    }
-};
-
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $service_id = $unit->{service_id};
@@ -1160,7 +1150,7 @@ sub image_for_unit {
         $SERVICE_IDS{fas_refuse} => svg_container_sack("normal", '#333333'),
         $SERVICE_IDS{fas_mixed} => svg_container_sack("normal", '#d8d8d8'),
         $SERVICE_IDS{domestic_paper} => "$base/bag-blue",
-        bulky => "$base/electricals-batteries-textiles",
+        small_items => "$base/electricals-batteries-textiles",
     };
     return $images->{$service_id};
 }
@@ -1193,7 +1183,7 @@ sub waste_munge_report_data {
     my $service = $c->stash->{services}{$id}{service_name};
 
     my $cfg = $self->feature('echo');
-    my $service_id_missed = $cfg->{bulky_service_id_missed};
+    my $service_id_missed = $cfg->{small_items_service_id_missed};
     if (!$service && $id == $service_id_missed) {
         $service = 'small items / clinical';
     }
@@ -1340,6 +1330,11 @@ sub waste_munge_request_data {
         $CONTAINER_IDS{paper_blue_sack} => $SERVICE_IDS{domestic_paper},
     );
     $c->set_param('service_id', $service_id{$id});
+
+    if ($data->{payment}) {
+        my ($cost) = $self->request_cost($id);
+        $c->set_param('payment', $cost || undef);
+    }
 }
 
 sub request_referral {
@@ -1504,9 +1499,9 @@ sub bulky_free_collection_available { 0 }
 sub bulky_hide_later_dates { 1 }
 sub bulky_disabled_item_photos { 1 }
 
-sub bulky_allowed_property {
+sub small_items_allowed_property {
     my ( $self, $property ) = @_;
-    return $self->bulky_enabled;
+    return $self->small_items_enabled;
 }
 
 sub collection_date {
@@ -1514,13 +1509,13 @@ sub collection_date {
     return $self->_bulky_date_to_dt($p->get_extra_field_value('Collection_Date'));
 }
 
-sub waste_munge_bulky_data {
+sub waste_munge_small_items_data {
     my ($self, $data) = @_;
 
     my $c = $self->{c};
     my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
 
-    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
+    my $guid_key = $c->stash->{booking_class}->guid_key;
     $data->{extra_GUID} = $self->{c}->waste_cache_get($guid_key);
     $data->{extra_reservation} = $ref;
 
@@ -1531,7 +1526,7 @@ sub waste_munge_bulky_data {
     $data->{extra_Exact_Location} = $data->{location};
 
     my (%types);
-    my $max = $self->bulky_items_maximum;
+    my $max = $c->stash->{booking_maximum};
     my $other_item = 'Small electricals: Other item under 30x30x30 cm';
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
@@ -1608,7 +1603,7 @@ sub bulky_location_text_prompt {
 
 sub bulky_location_photo_prompt {
     my $self = shift;
-    return 'Please check the <a href="' . $self->bulky_tandc_link . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
+    return 'Please check the <a href="' . $self->small_items_tandc_link . '" target="_blank">Terms & Conditions</a> for information about when and where to leave your items for collection.' . "\n\n\n"
         . 'Help us by attaching a photo of where the items will be left for collection (optional).';
 }
 

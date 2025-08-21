@@ -1153,7 +1153,7 @@ sub waste_munge_bulky_data {
     my $c = $self->{c};
     my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
 
-    my $guid_key = $self->council_url . ":echo:bulky_event_guid:" . $c->stash->{property}->{id};
+    my $guid_key = $c->stash->{booking_class}->guid_key;
     $data->{extra_GUID} = $self->{c}->waste_cache_get($guid_key);
     $data->{extra_reservation} = $ref;
 
@@ -1179,7 +1179,7 @@ sub waste_munge_bulky_data {
     my $cfg = $self->feature('waste_features');
     my $quantity_1_code = $cfg->{bulky_quantity_1_code};
 
-    my $max = $self->bulky_items_maximum;
+    my $max = $c->stash->{booking_maximum};
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
             push @item_names, $item;

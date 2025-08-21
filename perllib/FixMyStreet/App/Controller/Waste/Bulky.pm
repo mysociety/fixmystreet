@@ -32,20 +32,31 @@ sub pre_form : Private {
 
 sub setup : Chained('/waste/property') : PathPart('bulky') : CaptureArgs(0) {
     my ($self, $c) = @_;
-
-    $c->detach('/waste/property_redirect') if $c->cobrand->moniker eq 'brent';
     if ( !$c->stash->{property}{show_bulky_waste} ) {
         $c->detach('/waste/property_redirect');
     }
+
+    $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{items_per_collection_max} || 5;
+    $c->stash->{booking_class} = $c->cobrand->booking_class->new(
+        cobrand => $c->cobrand,
+        property => $c->stash->{property},
+        type => 'bulky',
+    );
 }
 
 sub setup_small : Chained('/waste/property') : PathPart('small_items') : CaptureArgs(0) {
     my ($self, $c) = @_;
-
-    $c->detach('/waste/property_redirect') if $c->cobrand->moniker ne 'brent';
-    if ( !$c->stash->{property}{show_bulky_waste} ) {
+    if ( !$c->stash->{property}{show_small_items} ) {
         $c->detach('/waste/property_redirect');
     }
+
+    $c->stash->{small_items} = 1;
+    $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
+    $c->stash->{booking_class} = Integrations::Echo::Booking->new(
+        cobrand => $c->cobrand,
+        property => $c->stash->{property},
+        type => 'small_items',
+    );
 }
 
 sub bulky_item_options_method {
@@ -66,7 +77,7 @@ sub bulky_item_options_method {
 sub item_list : Private {
     my ($self, $c) = @_;
 
-    my $max_items = $c->cobrand->bulky_items_maximum;
+    my $max_items = $c->stash->{booking_maximum};
     my $field_list = [];
 
     my $notes_field = {
@@ -165,28 +176,39 @@ sub item_list : Private {
 
 sub index : PathPart('') : Chained('setup') : Args(0) {
     my ($self, $c) = @_;
-
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky';
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Bexley' if $c->cobrand->moniker eq 'bexley';
     my $cfg = $c->cobrand->feature('waste_features');
-    if ($c->stash->{pending_bulky_collections} && !$cfg->{bulky_multiple_bookings}) {
+    if ($c->stash->{collections}{bulky}{pending} && !$cfg->{bulky_multiple_bookings}) {
         $c->detach('/waste/property_redirect');
     }
-
-    $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Bulky';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Bexley' if $c->cobrand->moniker eq 'bexley';
-    $c->forward('item_list');
-    $c->forward('form');
-
-    if ( $c->stash->{form}->current_page->name eq 'intro' ) {
-        $c->cobrand->call_hook(
-            clear_cached_lookups_bulky_slots => $c->stash->{property}{id} );
-    }
+    $c->detach('index_booking');
 }
 
 sub index_small : PathPart('') : Chained('setup_small') : Args(0) {
     my ($self, $c) = @_;
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems';
-    $c->detach('index');
+
+    my $cfg = $c->cobrand->feature('waste_features');
+    if ($c->stash->{collections}{small_items}{pending} && !$cfg->{small_items_multiple_bookings}) {
+        $c->detach('/waste/property_redirect');
+    }
+    $c->detach('index_booking');
+}
+
+sub index_booking : Private {
+    my ($self, $c) = @_;
+
+    $c->stash->{first_page} = 'intro';
+    $c->forward('item_list');
+    $c->forward('form');
+
+    if ( $c->stash->{form}->current_page->name eq 'intro' ) {
+        $c->cobrand->call_hook(
+            clear_cached_lookups_bulky_slots => $c->stash->{property}{id},
+            delete_guid => 1,
+        );
+    }
 }
 
 sub amend : Chained('setup') : Args(1) {
@@ -195,7 +217,8 @@ sub amend : Chained('setup') : Args(1) {
     $c->stash->{first_page} = 'intro';
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Amend';
 
-    my $collection = $c->cobrand->find_pending_bulky_collections($c->stash->{property}{uprn})->find($id);
+    my $collections = $c->cobrand->find_booked_collections($c->stash->{property}{uprn});
+    my $collection = (grep { $_->id == $id } @{$collections->{bulky}{pending}})[0];
     $c->detach('/waste/property_redirect')
         if !$c->cobrand->call_hook('bulky_can_amend_collection', $collection);
 
@@ -213,7 +236,9 @@ sub amend : Chained('setup') : Args(1) {
 
     if ( $c->stash->{form}->current_page->name eq 'intro' ) {
         $c->cobrand->call_hook(
-            clear_cached_lookups_bulky_slots => $c->stash->{property}{id} );
+            clear_cached_lookups_bulky_slots => $c->stash->{property}{id},
+            delete_guid => 1,
+        );
     }
 }
 
@@ -229,13 +254,24 @@ sub view : Private {
         address => $p->get_extra_metadata('property_address'),
     };
 
+    my $items_extra;
+    if ($p->category eq 'Small items collection') {
+        $c->stash->{small_items} = 1;
+        $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{small_items_per_collection_max} || 5;
+        $items_extra = $c->cobrand->call_hook('small_items_extra');
+    } else {
+        $c->stash->{small_items} = 0;
+        $c->stash->{booking_maximum} = $c->cobrand->wasteworks_config->{items_per_collection_max} || 5;
+        $items_extra = $c->cobrand->call_hook('bulky_items_extra', exclude_pricing => 1);
+    }
+
     $c->stash->{template} = 'waste/bulky/summary.html';
 
     $c->forward('/report/load_updates');
 
     my $saved_data = $c->cobrand->waste_reconstruct_bulky_data($p);
     $c->stash->{form} = {
-        items_extra => $c->cobrand->call_hook('bulky_items_extra', exclude_pricing => 1),
+        items_extra => $items_extra,
         saved_data  => $saved_data,
     };
 }
@@ -245,7 +281,9 @@ sub cancel : Chained('setup') : Args(1) {
 
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
-    my $collection = $c->cobrand->find_pending_bulky_collections($c->stash->{property}{uprn})->find($id);
+    my $collections = $c->cobrand->find_booked_collections($c->stash->{property}{uprn});
+    my $type = $c->stash->{small_items} ? 'small_items' : 'bulky';
+    my $collection = (grep { $_->id == $id } @{$collections->{$type}{pending}})[0];
     $c->detach('/waste/property_redirect')
         if !$c->cobrand->call_hook('bulky_can_cancel_collection', $collection);
 
@@ -324,6 +362,22 @@ sub process_bulky_data : Private {
     return 1;
 }
 
+sub process_small_items_data : Private {
+    my ($self, $c, $form) = @_;
+    my $data = $form->saved_data;
+
+    $c->cobrand->call_hook("waste_munge_small_items_data", $data);
+
+    # Read extra details in loop
+    foreach (grep { /^extra_/ } keys %$data) {
+        my ($id) = /^extra_(.*)/;
+        $c->set_param($id, $data->{$_});
+    }
+
+    $c->forward('/waste/add_report', [ $data ]) or return;
+    return 1;
+}
+
 sub process_bulky_amend : Private {
     my ($self, $c, $form) = @_;
     my $data = $form->saved_data;
@@ -391,7 +445,7 @@ sub amend_extra_data {
         $p->unset_extra_metadata('location_photo');
     }
 
-    my $max = $c->cobrand->bulky_items_maximum;
+    my $max = $c->stash->{booking_maximum};
     for (1..$max) {
         if ($data->{"item_photo_$_"}) {
             $p->set_extra_metadata("item_photo_$_" => $data->{"item_photo_$_"})
