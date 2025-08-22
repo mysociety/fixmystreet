@@ -85,7 +85,7 @@ SET data = form.saved_data;
         [% END %]
       [% END %]
 
-      [% IF c.action != 'waste/bulky/amend' AND user_details_main_column %]
+      [% IF (c.action != 'waste/bulky/amend' AND c.action != 'waste/bulky/amend_small') AND user_details_main_column %]
         [% INCLUDE your_details %]
         <hr>
       [% END %]
@@ -274,7 +274,7 @@ SET data = form.saved_data;
       <hr>
     </div>
 
-  [% IF c.action != 'waste/bulky/amend' AND NOT user_details_main_column %]
+  [% IF (c.action != 'waste/bulky/amend' AND c.action != 'waste/bulky/amend_small') AND NOT user_details_main_column %]
     <div class="govuk-grid-column-one-third">
       [% INCLUDE your_details %]
     </div>
@@ -284,7 +284,13 @@ SET data = form.saved_data;
   [% IF problem %]
     [% IF cobrand.bulky_can_amend_collection(problem) %]
       <p>
-        <a class="govuk-button govuk-button--secondary" href="[% c.uri_for_action( 'waste/bulky/amend', [ property.id, problem.id ] ) %]">Amend this booking</a>
+        <a class="govuk-button govuk-button--secondary" href="[%
+          IF problem.category == 'Small items collection';
+              c.uri_for_action( 'waste/bulky/amend_small', [ property.id, problem.id ]);
+          ELSE;
+              c.uri_for_action( 'waste/bulky/amend', [ property.id, problem.id ]);
+          END;
+        %]">Amend this booking</a>;
       </p>
     [% ELSIF cobrand.moniker == 'merton' %]
       <p>

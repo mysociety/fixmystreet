@@ -10,6 +10,7 @@ use FixMyStreet::App::Form::Waste::Bulky::Amend;
 use FixMyStreet::App::Form::Waste::Bulky::Cancel;
 use FixMyStreet::App::Form::Waste::SmallItems;
 use FixMyStreet::App::Form::Waste::SmallItems::Cancel;
+use FixMyStreet::App::Form::Waste::SmallItems::Amend;
 
 has feature => (
     is => 'ro',
@@ -223,11 +224,15 @@ sub index_booking : Private {
 sub amend : Chained('setup') : Args(1) {
     my ($self, $c, $id) = @_;
 
+    my $small = $c->stash->{small_items};
     $c->stash->{first_page} = 'intro';
-    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Bulky::Amend';
+    $c->stash->{form_class} ||= 'FixMyStreet::App::Form::Waste::Bulky::Amend';
 
     my $collections = $c->cobrand->find_booked_collections($c->stash->{property}{uprn});
-    my $collection = (grep { $_->id == $id } @{$collections->{bulky}{pending}})[0];
+    my $collection = $small
+        ? (grep { $_->id == $id } @{$collections->{small_items}{pending}})[0]
+        : (grep { $_->id == $id } @{$collections->{bulky}{pending}})[0];
+
     $c->detach('/waste/property_redirect')
         if !$c->cobrand->call_hook('bulky_can_amend_collection', $collection);
 
@@ -307,6 +312,12 @@ sub cancel_small : PathPart('cancel') : Chained('setup_small') : Args(1) {
     my ( $self, $c, $id ) = @_;
     $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems::Cancel';
     $c->detach('cancel');
+}
+
+sub amend_small : PathPart('amend') : Chained('setup_small') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::SmallItems::Amend';
+    $c->detach('amend');
 }
 
 sub process_bulky_data : Private {

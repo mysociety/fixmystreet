@@ -58,8 +58,9 @@ create_contact(
 );
 
 my $user = $mech->create_user_ok('maryk@example.org', name => 'Test User');
-my $staff = $mech->create_user_ok('staff@example.org', name => 'Staff User', from_body => $sutton->id);
-$staff->user_body_permissions->create({ body => $sutton, permission_type => 'report_edit' });
+my $staff = $mech->create_user_ok('staff@example.org', name => 'Staff User', email_verified => 1, from_body => $sutton->id);
+$staff->user_body_permissions->create({ body => $sutton, permission_type => 'report_inspect' });
+$staff->update;
 $sutton->update( { comment_user_id => $staff->id } );
 
 FixMyStreet::override_config {
@@ -73,6 +74,7 @@ FixMyStreet::override_config {
                 small_items_missed => 1,
                 small_items_tandc_link => 'tandc_link',
                 small_items_multiple_bookings => 1,
+                bulky_amend_enabled => 'staff',
             },
         },
         echo => {
@@ -89,6 +91,7 @@ FixMyStreet::override_config {
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('call', sub { die; });
     $echo->mock( 'GetEventsForObject',       sub { [] } );
+    $echo->mock( 'CancelReservedSlotsForEvent', sub {} );
     $echo->mock( 'ReserveAvailableSlotsForEvent', sub { return [
             {
                 StartDate => { DateTime => '2025-08-08T00:00:00Z' },
@@ -468,6 +471,87 @@ FixMyStreet::override_config {
             $report->update;
             $comment->delete;
         }
+    };
+
+    subtest 'Amending the date' => sub {
+        set_fixed_time('2025-08-07T01:00:00');
+        my $base_path = '/waste/12345';
+
+        subtest 'Before request sent' => sub {
+            $report->external_id(undef);
+            $report->update;
+            $mech->log_in_ok( $staff->email );
+            $mech->get_ok($base_path);
+            $mech->content_lacks('Amend booking');
+            $mech->get_ok("$base_path/small_items/amend/" . $report->id);
+            is $mech->uri->path, $base_path, 'Amend link redirects to bin days';
+        };
+
+        subtest 'After request sent, normal user cannot amend' => sub {
+            $report->external_id('Echo-123');
+            $report->update;
+            $mech->log_in_ok($report->user->email);
+            $mech->get_ok($base_path);
+            $mech->content_lacks('Amend booking');
+            $mech->get_ok("$base_path/small_items/amend/" . $report->id);
+            is $mech->uri->path, $base_path;
+        };
+
+        subtest 'User logged out' => sub {
+            $mech->log_out_ok;
+            $mech->get_ok($base_path);
+            $mech->content_lacks('Amend booking');
+            $mech->get_ok("$base_path/small_items/amend/" . $report->id);
+            is $mech->uri->path, $base_path;
+        };
+
+        subtest 'Staff user logged in' => sub {
+            $mech->log_in_ok( $staff->email );
+            $mech->get_ok($base_path);
+            $mech->content_contains('href="http://localhost/waste/12345/small_items/amend/' . $report->id . '">Amend booking');
+            $mech->get_ok("/report/" . $report->id);
+            $mech->content_contains("$base_path/small_items/cancel");
+            $mech->content_contains('Cancel this booking');
+            $mech->content_contains("$base_path/small_items/amend");
+            $mech->content_contains('Amend this booking');
+            $mech->get_ok("$base_path/small_items/amend/" . $report->id);
+            $mech->content_contains('Amend small items collection');
+            $mech->content_contains('Amending your booking');
+            is $mech->uri->path, "$base_path/small_items/amend/" . $report->id;
+            $mech->submit_form_ok;
+            $mech->content_contains('Choose date for collection', "On 'Available dates' page");
+            $mech->submit_form_ok( { with_fields => { chosen_date => '2025-08-12T00:00:00;reserve7d==;2025-08-25T10:20:00'}});
+            $mech->content_contains('Add items for collection', "On items page");
+            $mech->submit_form_ok();
+            $mech->content_contains('Location details', "Location page included");
+            $mech->submit_form_ok( {form_number  => 2 });
+            $mech->content_contains('Booking Summary', "On booking confirmation page");
+            $mech->content_contains('action="http://localhost/waste/12345/small_items/amend/' . $report->id);
+            $mech->submit_form_ok({form_number => 5, with_fields => { tandc => 1} });
+        };
+    };
+
+    subtest 'Viewing original report summary after amendment' => sub {
+        my $path = "/report/" . $report->id;
+        $mech->get_ok($path);
+        $mech->content_contains('This collection has been cancelled');
+        $mech->content_contains('Booking cancelled due to amendment');
+        $report->discard_changes;
+        is $report->state, 'cancelled';
+    };
+
+    $report = FixMyStreet::DB->resultset("Problem")->search({ title => 'Small items collection' })->order_by('-id')->first;
+    subtest 'New report details' => sub {
+        like $report->detail, qr/Previously submitted as/, 'Original report detail field updated';
+        is $report->category, 'Small items collection';
+        is $report->title, 'Small items collection';
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2025-08-12T00:00:00';
+        is $report->get_extra_field_value('Small_Item_Type'), '1::2';
+        is $report->get_extra_field_value('property_id'), '12345';
+        is $report->get_extra_field_value('GUID'), '4ea70923-7151-11f0-aeea-cd51f3977c8c';
+        is $report->get_extra_field_value('reservation'), 'reserve7d==';
+        is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
     };
 
     subtest 'Reporting a missed collection' => sub {
