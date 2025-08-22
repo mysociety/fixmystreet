@@ -74,6 +74,9 @@ a#geolocate_link,
         background-color: $button-primary-focus-bg-bottom !important;
     }
 }
+.item-list__item .btn--primary {
+  margin-bottom: 3px;
+}
 
 .my-account-buttons a,
 .btn-secondary, .govuk-button--secondary {
