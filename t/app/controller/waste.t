@@ -337,6 +337,7 @@ FixMyStreet::override_config {
         $mech->follow_link_ok({ text => 'Add to your calendar' });
         $mech->follow_link_ok({ text_regex => qr/this link/ });
         $mech->content_contains('BEGIN:VCALENDAR');
+        $mech->content_contains('UID:ca2d6deb87598d3929d9a22bd8e8b99c1a26e7bd@bromley.fixmystreet.com');
         my @events = split /BEGIN:VEVENT/, $mech->encoded_content;
         shift @events; # Header
         my $i = 0;

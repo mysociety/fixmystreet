@@ -519,13 +519,13 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_contains('Containers typically arrive within two weeks');
+        $mech->content_contains('Bins typically arrive within two weeks');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         # Someone double-clicked
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         check_extra_data_post_confirm($new_report);
-        $mech->content_contains('Containers typically arrive within two weeks');
+        $mech->content_contains('Bins typically arrive within two weeks');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         FixMyStreet::Script::Reports::send();
@@ -867,7 +867,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_contains('Containers typically arrive within two weeks');
+        $mech->content_contains('Bins typically arrive within two weeks');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;
@@ -919,7 +919,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_contains('Containers typically arrive within two weeks');
+        $mech->content_contains('Bins typically arrive within two weeks');
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;

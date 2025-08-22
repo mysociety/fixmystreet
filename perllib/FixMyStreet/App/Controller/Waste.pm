@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'FixMyStreet::App::Controller::Form' }
 
 use utf8;
+use Digest::SHA qw(sha1_hex);
 use Lingua::EN::Inflect qw( NUMWORDS );
 use List::Util qw(any);
 use FixMyStreet::App::Form::Field::JSON;
@@ -578,7 +579,6 @@ sub calendar_ics : Chained('property') : PathPart('calendar.ics') : Args(0) {
     my $calendar = Data::ICal::RFC7986->new(
         calname => 'Bin calendar',
         rfc_strict => 1,
-        auto_uid => 1,
     );
     $calendar->add_properties(
         prodid => '//FixMyStreet//Bin Collection Calendars//EN',
@@ -595,12 +595,14 @@ sub calendar_ics : Chained('property') : PathPart('calendar.ics') : Args(0) {
     my $stamp = DateTime->now->strftime('%Y%m%dT%H%M%SZ');
     foreach (@$events) {
         my $event = Data::ICal::Entry::Event->new;
+        my $date = $_->{date}->ymd('');
         $event->add_properties(
             summary => $_->{summary},
             description => $_->{desc},
             dtstamp => $stamp,
-            dtstart => [ $_->{date}->ymd(''), { value => 'DATE' } ],
+            dtstart => [ $date, { value => 'DATE' } ],
             dtend => [ $_->{date}->clone->add(days=>1)->ymd(''), { value => 'DATE' } ],
+            uid => sha1_hex($date . $_->{summary}) . '@' . $c->req->uri->host,
         );
         $calendar->add_entry($event);
     }
@@ -821,7 +823,6 @@ sub construct_bin_report_form {
         {
             next;
         }
-        next if $_->{orange_bag}; # Merton special entries
 
         my $id = $_->{service_id};
         my $name = $_->{service_name};

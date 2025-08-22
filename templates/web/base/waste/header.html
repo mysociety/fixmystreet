@@ -1,7 +1,7 @@
 [%
 IF NOT ajax_loading;
     SET bodyclass = 'waste';
-    IF c.cobrand.call_hook('bulky_enabled');
+    IF c.cobrand.bulky_enabled OR c.cobrand.small_items_enabled;
       SET bodyclass = 'waste govuk bulky';
     END;
     extra_js = [

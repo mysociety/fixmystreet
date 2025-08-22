@@ -1,6 +1,7 @@
 [%
 PROCESS 'waste/header.html', title = 'Add your waste collection days to your online calendar';
 SET ics_link = c.uri_for_action('waste/calendar_ics', [ property_id ]);
+webcal_link = ics_link | replace('https?', 'webcal');
 %]
 
 <script type="module" src="[% version('/vendor/clipboard-copy-element.js') %]"></script>
@@ -12,33 +13,38 @@ clipboard-copy:defined .ics-loading { display: none; }
 .os-mac .mac-only { display: initial; }
 .os-pc .phone-only, .os-mac .phone-only { display: none; }
 .os-phone .computer-only { display: none; }
+:target { background-color: #ffffcc; }
 </style>
 
 <h1>Add your waste collection days to your online calendar</h1>
 
 <p>Subscribe using your smartphone or computer, and your online calendar will always show your next collection days.</p>
 
-<h2>Step 1: copy the link to the calendar</h2>
+<p>If you use one of the following, use the following links to add to your calendar:
 
+<ul>
+    <li><a href="[% webcal_link %]">Apple</a></li>
+    <li><a href="https://www.google.com/calendar/render?cid=[% webcal_link | uri %]">Google Calendar</a> (on a computer; see <a href="#gcal-mobile">below for mobile</a>)
+    <li><a href="https://outlook.office.com/calendar/addfromweb?url=[% webcal_link %]&amp;name=Bin+day+calendar">Office 365</a></li>
+    <li><a href="[% webcal_link %]">Outlook</a></li>
+</ul>
+
+<p id="gcal-mobile">Google Calendar on mobile: To add a calendar to Google Calendar on your phone, you'll
+first need to add it via the Google Calendar website on a computer, then sync
+it to your phone. You can't directly add an iCal link through the Google
+Calendar app on your phone.</p>
+
+<p>If you use a different calendar, or the links above do not work,
+click the Copy button below to copy the calendar link to your clipboard,
+and paste it into the “add calendar” / “subscribe from web” section of your calendar program:
 <div aria-live="polite" id="ics-announce"></div>
-<p>Click the Copy button below to copy the calendar link to your clipboard:
 <p><clipboard-copy id="ics-copy" value="[% ics_link %]" class="btn">
     <span class="ics-loading">Loading...</span>
     <span class="ics-loaded">Copy</span>
 </clipboard-copy>
 </p>
 
-<p class="phone-only">Or press and hold <a href="[% ics_link %]">this link</a> until a menu appears, then tap “Copy Link” or “Copy Link Address”.</p>
-<p class="computer-only">Or right-click <span class="mac-only">/ Ctrl-click</span> <a href="[% ics_link %]">this link</a>, then click “Copy Link” or “Copy Link Address”.</p>
-
-<h2>Step 2: subscribe to the calendar</h2>
-<p>Follow these instructions and paste in the link you just copied when it asks you for the calendar’s address or URL.</p>
-<ul>
-<li><a href="https://support.google.com/calendar/answer/37100?hl=en&amp;co=GENIE.Platform%3DDesktop#:~:text=Use%20a%20link%20to%20add%20a%20public%20calendar">Google Calendar</a></li>
-<li><a href="https://support.apple.com/en-gb/guide/iphone/iph3d1110d4/ios">iPhone</a></li>
-<li><a href="https://support.apple.com/en-gb/guide/ipad/ipad1b02bf5b/ipados">iPad</a></li>
-<li><a href="https://support.apple.com/en-gb/102301">Mac</a></li>
-<li><a href="https://support.office.com/en-us/article/import-or-subscribe-to-a-calendar-in-outlook-com-cff1429c-5af6-41ec-a5b4-74f2c278e98c">Outlook</a></li>
-</ul>
+<p class="phone-only">(Or press and hold <a href="[% ics_link %]">this link</a> until a menu appears, then tap “Copy Link” or “Copy Link Address”.)</p>
+<p class="computer-only">(Or right-click <span class="mac-only">/ Ctrl-click</span> <a href="[% ics_link %]">this link</a>, then click “Copy Link” or “Copy Link Address”.)</p>
 
 [% INCLUDE footer.html %]

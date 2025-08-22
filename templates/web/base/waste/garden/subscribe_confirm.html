@@ -26,10 +26,18 @@ We have sent a confirmation email (you may also receive a payment receipt separa
   <p>For new subscribers, and existing subscribers who did not renew before the deadline (31st March), it may take up to 14 working days for your first collection to take place.</p>
 [%- END -%]
 <p>
+    [%
+    IF c.cobrand.moniker == 'bexley';
+        SET arrival_time = 'Bins typically arrive within 10 days.';
+    ELSE;
+        SET arrival_time = 'Bins typically arrive within two weeks, but this may vary due to demand.';
+    END
+    %]
   [% IF action == 'new_subscription' %]
-    Your garden waste subscription won't show on your check your <a href="/waste/[% property_id %]">collection day lookup page</a> until your containers have been delivered. Containers typically arrive within two weeks, but this may vary due to demand.
+    Your garden waste subscription won't show on your check your <a href="/waste/[% property_id %]">collection day lookup page</a> until your containers have been delivered.
+    [% arrival_time %]
   [% ELSIF action == 'add_containers' %]
-    Bins typically arrive within two weeks, but this may vary due to demand.
+    [% arrival_time %]
   [% ELSE %]
     [%- IF c.cobrand.moniker == 'brent' -%]
     Changes to your subscription will show up within 24 hours.

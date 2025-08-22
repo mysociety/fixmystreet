@@ -222,6 +222,7 @@ FixMyStreet::override_config {
     };
     subtest 'Future collection calendar' => sub {
         $mech->get_ok('/waste/PE1 3NA:100090215480/calendar.ics');
+        $mech->content_contains('78b3d28896d1de36b74ee41caed62aa8f6269b09@localhost');
         $mech->content_contains('DTSTART;VALUE=DATE:20210808');
         $mech->content_contains('DTSTART;VALUE=DATE:20210819');
         is $mech->response->header('Cache-Control'), 'max-age=86400', 'Cache-Control header set';
