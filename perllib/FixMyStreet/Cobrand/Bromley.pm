@@ -24,6 +24,7 @@ sub council_area_id { return [2482]; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
+sub admin_user_domain { 'bromley.gov.uk' }
 
 use constant REFERRED_TO_BROMLEY => 'Environmental Services';
 use constant REFERRED_TO_VEOLIA => 'Street Services';
