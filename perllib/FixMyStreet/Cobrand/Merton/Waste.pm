@@ -160,11 +160,6 @@ sub image_for_unit {
     my $images = {
         $TASK_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),
         $TASK_IDS{domestic_food} => "$base/caddy-brown-large",
-        '2239-batteries' => {
-            alt => 'These should be presented in an untied carrier bag.',
-            type => 'png1',
-            src => "$base/merton/bag-untied-orange",
-        },
         $TASK_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
         $TASK_IDS{domestic_mixed} => "$base/box-green-mix",
         $TASK_IDS{domestic_refuse_bag} => svg_container_sack('stripe', '#F1506D'),
@@ -203,8 +198,7 @@ sub waste_garden_maximum { 3 }
 
 Merton want staff to be able to request any domestic container
 for a property and also to not be restricted to only ordering
-one container. And they want to show special battery
-options.
+one container.
 
 =cut
 
@@ -212,32 +206,11 @@ sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
 
     return if $self->{c}->stash->{schedule2_property};
-
-    foreach (@$rows) {
-        if ($_->{service_id} eq $TASK_IDS{domestic_food}) {
-            # Add battery options at the bottom
-            my $new_row = {
-                %$_,
-                report_allowed => 0,
-                report_locked_out => 0,
-                report_open => 0,
-                request_allowed => 0,
-                requests_open => {},
-                request_containers => [], # request_allowed not enough
-                orange_bag => 1,
-                service_id => '2239-batteries',
-                service_name => 'Batteries',
-            };
-            push @$rows, $new_row;
-        }
-    }
-
     return unless $self->{c}->stash->{is_staff};
 
     my @containers_on_property;
 
     foreach my $row (@$rows) {
-        next if $row->{orange_bag}; # Ignore batteries
         next unless $row->{request_containers};
         push @containers_on_property, @{$row->{request_containers}};
         $row->{request_allowed} = 1;

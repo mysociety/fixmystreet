@@ -1,10 +1,4 @@
-[% IF unit.service_id == '2239-textiles' %]
-<p>Put in one <strong>tied</strong> plastic carrier bag beside or on top of your other bins or boxes. You need to use your own bag.
-<p><a href="https://www.merton.gov.uk/rubbish-and-recycling/report-a-missed-collection/textiles-batteries">What to do if we didn’t collect your textiles or shoes</a>
-[% ELSIF unit.service_id == '2239-batteries' %]
-<p>Put in one <strong>untied</strong> plastic carrier bag beside or on top of your other bins or boxes. You need to use your own bag.
-<p><a href="https://www.merton.gov.uk/rubbish-and-recycling/report-a-missed-collection/textiles-batteries">What to do if we didn’t collect your batteries</a>
-[% ELSIF NOT unit.report_allowed AND NOT unit.report_locked_out AND NOT (unit.next AND unit.next.state == 'In progress') AND NOT no_default %]
+[% IF NOT unit.report_allowed AND NOT unit.report_locked_out AND NOT (unit.next AND unit.next.state == 'In progress') AND NOT no_default %]
   <span class="waste-service-descriptor" style="margin-top: 1.5em;">
       [% PROCESS 'waste/_service_missed_fallback.html' %]
   </span>

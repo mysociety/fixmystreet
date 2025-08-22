@@ -823,7 +823,6 @@ sub construct_bin_report_form {
         {
             next;
         }
-        next if $_->{orange_bag}; # Merton special entries
 
         my $id = $_->{service_id};
         my $name = $_->{service_name};
