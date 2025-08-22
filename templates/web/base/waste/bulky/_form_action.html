@@ -1,5 +1,7 @@
 [%
-IF c.action == 'waste/bulky/amend';
+IF c.action == 'waste/bulky/amend_small';
+    c.uri_for_action('waste/bulky/amend_small', [ property.id, amending_booking.id ]);
+ELSIF c.action == 'waste/bulky/amend';
     c.uri_for_action('waste/bulky/amend', [ property.id, amending_booking.id ]);
 ELSE;
     IF small_items;
