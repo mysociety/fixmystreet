@@ -418,7 +418,7 @@ sub _is_out_of_hours {
     return 1 if $time->hour < 8;
     return 1 if $time->wday == 1 || $time->wday == 7;
     return 1 if FixMyStreet::Cobrand::UK::is_public_holiday();
-    return 1 if DateTime->now->ymd eq '2024-12-27';
+    return 1 if DateTime->now->ymd eq '2025-12-24';
     return 0;
 }
 
