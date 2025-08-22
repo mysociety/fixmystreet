@@ -8,22 +8,6 @@ title: Sites running on the FixMyStreet platform
 FixMyStreet works everywhere! Take a look at how FixmyStreet is being
 used in cities and countries across the world.
 
-<h2>Americas</h2>
-<h3>Uruguay</h3>
-Site: <a href="http://www.pormibarrio.uy/">PorMiBarrio</a>
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://www.datauy.org/">DATA</a>
-
-<h2>Australasia</h2>
-<h3>Australia</h3>
-Site: <a href="http://www.fixmystreet.org.au/">FixMyStreet.org.au</a>
-<br>
-Launched: 2013
-<br>
-Run by: <a href="http://www.openlocal.org.au/">Open Local</a>
-
 <h2>Europe</h2>
 
 <h3>Croatia</h3>
@@ -38,21 +22,14 @@ Site: <a href="https://ndreqe.com">ndreqe.</a>
 <br>
 Launched: 2017
 <br>
-Run by: <a href="http://dplus-ks.org">Democracy Plus</a>
-
-<h3>Norway</h3>
-Site: <a href="http://www.fiksgatami.no/">FiksGataMi</a>
-<br>
-Launched: 2011
-<br>
-Run by: <a href="http://www.nuug.no/">NUUG</a>
+Run by: Democracy Plus
 
 <h3>Sweden</h3>
-Site: <a href="http://www.fixamingata.se/">FixaMinGata</a>
+Site: <a href="https://www.fixamingata.se/">FixaMinGata</a>
 <br>
 Launched: 2013
 <br>
-Run by: <a href="http://sambruk.se/">Sambruk</a>
+Run by: <a href="https://sambruk.se/">Sambruk</a>
 
 <h3>Switzerland</h3>
 Site: <a href="https://www.zueriwieneu.ch/">ZueriWieNeu</a> in Zurich
@@ -69,6 +46,13 @@ Launched: 2007
 <br>
 Run by: <a href="https://www.mysociety.org/">mySociety</a>
 
+<h2>Australasia</h2>
+<h3>Australia</h3>
+Site: <a href="https://www.fixmystreet.org.au/">FixMyStreet.org.au</a>
+<br>
+Launched: 2013
+<br>
+Run by: <a href="https://www.openlocal.org.au/">Open Local</a>
 
 <h2>And you?</h2>
 
@@ -79,74 +63,20 @@ FixMyStreet. <a href="/overview/">Find out more here</a>.
 
 <p>Sites powered by FixMyStreet, but sadly no longer running.</p>
 
-<h3>India</h3>
-Site: <b>ZeroTB</b> in Delhi. A
+<ul>
+<li>Norway: <a href="https://www.fiksgatami.no/">FiksGataMi</a>, launched 2011, run by <a href="https://www.nuug.no/">NUUG</a>
+<li>India: ZeroTB in Delhi. A
 project to report medicine shortages in the city's clinics, based on a
 modified version of the FixMyStreet platform.
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://www.article-25.org/">Article 25</a>
-
-<h3>Chile</h3>
-Site: <b>Bellavista En Ación</b>
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://www.ciudadviva.cl/">Ciudad Viva</a>
-
-<h3>Uganda</h3>
-Site: <a href="http://fixmycommunity.ug/">FixMyCommunity</a>
-<br>
-Launched: 2015
-<br>
-Run by: <a href="http://cewit.or.ug">CEW-IT</a>
-
-<h3>Dominican Republic</h3>
-Site: <a href="https://www.cuidomiciudad.do/">CuidoMiCiudad</a>
-<br>
-Launched: 2017
-<br>
-Run by: <a href="http://www.adn.gob.do/">Ayuntamiento del Distrito Nacional (ADN)</a>
-
-<h3>Malaysia</h3>
-Site: <a href="http://aduanku.my/">Aduanku</a>
-<br>
-Launched: 2014
-<br>
-Run by: <a href="http://sinarproject.org/">Sinar project</a>
-
-<h3>Kosovo</h3>
-Site: <a href="https://lokalizo.org">Lokalizo</a>
-<br>
-Launched: 2017
-<br>
-Run by: <a href="http://pi-ks.org/">Prosperity Initiative in Kosovo (PIKS)</a>
-
-<h3>Alcantarilla, Spain</h3>
-Site: <a href="http://arreglamibarrio.org/">Arregla Mi Barrio</a>
-<br>
-Launched: 2015
-<br>
-Run by: <a href="http://ocm.ocmalcantarilla.es/">Observatorio Ciudadano Municipal de Alcantarilla</a>
-
-<h3>Alcalá de Henares, Spain</h3>
-Site: <a href="http://cuida.alcala.org/">Cuida Alcalá</a>
-<br>
-Launched: 2015
-<br>
-Run by: <a href="http://www.kyopol.net">La Asociación KYOPOL</a>
-
-<h3>France</h3>
-Site: <a href="http://www.fixmystreet.fr/">FixMyStreet.fr</a>
-<br>
-Launched: 2015
-<br>
-Run by: <a href="http://www.fixmystreet-france.fr/">FixMyStreet-France</a>
-
-<h3>Ireland</h3>
-Site: <a href="http://fixmystreet.ie/">FixMyStreet.ie</a>
-<br>
-Launched: 2012
-<br>
-Run by: <a href="http://mygov.ie/">mygov.ie</a>
+Launched: 2014, run by <a href="https://www.article-25.org/">Article 25</a>
+<li>Chile: Bellavista En Ación, launched 2014, run by Ciudad Viva
+<li>Uganda: FixMyCommunity, launched 2015, run by CEW-IT
+<li>Dominican Republic: CuidoMiCiudad, launched 2017, run by Ayuntamiento del Distrito Nacional (ADN)
+<li>Malaysia: Aduanku, launched 2014, run by <a href="https://sinarproject.org/">Sinar project</a>
+<li>Kosovo: Lokalizo, launched 2017, run by Prosperity Initiative in Kosovo (PIKS)
+<li>Alcantarilla, Spain: Arregla Mi Barrio, launched 2015, run by Observatorio Ciudadano Municipal de Alcantarilla
+<li>Alcalá de Henares, Spain: Cuida Alcalá, launched 2015, run by La Asociación KYOPOL
+<li>France: FixMyStreet.fr, launched 2015, run by FixMyStreet-France
+<li>Ireland: FixMyStreet.ie, launched 2012, run by mygov.ie
+<li>Uruguay: PorMiBarrio, launched 2014, run by <a href="https://www.datauy.org/">DATA</a>
+</ul>
