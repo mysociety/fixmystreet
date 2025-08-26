@@ -891,7 +891,8 @@ sub clear_cached_lookups_property {
     my ( $self, $id ) = @_;
 
     foreach my $key (
-        $self->council_url . ":echo:look_up_property:$id",
+        $self->council_url . ":echo:look_up_property:$id:0",
+        $self->council_url . ":echo:look_up_property:$id:1",
         $self->council_url . ":echo:bin_services_for_address:$id",
     ) {
         $self->{c}->waste_cache_delete($key);
