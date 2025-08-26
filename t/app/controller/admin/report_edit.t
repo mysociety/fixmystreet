@@ -13,6 +13,8 @@ my $user3 = $mech->create_user_ok('body_user@example.com', name => 'Body User', 
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com', extra => { group => 'Road' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Yellow lines', email => 'yellow@example.com', extra => { group => 'Road' } );
+$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Refuse', email => 'refuse@example.com', extra => { display_name => 'Bins' } );
+$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Vegetation', email => 'vegetation@example.com', extra => { display_name => 'Greenery' } );
 
 
 my $oxford = $mech->create_body_ok(2421, 'Oxford City Council');
@@ -472,6 +474,14 @@ subtest 'change report category' => sub {
     $ox_report->discard_changes;
     is $ox_report->category, 'Graffiti';
     is $ox_report->whensent, undef;
+
+    $mech->submit_form_ok( { with_fields => { category => 'Refuse' } }, 'form_submitted' );
+    $ox_report->discard_changes;
+    is $ox_report->comments->order_by('-id')->first->text, "*Category changed from ‘Graffiti’ to ‘Bins’*";
+
+    $mech->submit_form_ok( { with_fields => { category => 'Vegetation' } }, 'form_submitted' );
+    $ox_report->discard_changes;
+    is $ox_report->comments->order_by('-id')->first->text, "*Category changed from ‘Bins’ to ‘Greenery’*";
 };
 
 };
