@@ -141,7 +141,7 @@ has_field task => (
         my $form = $self->form;
         my $c = $form->c;
         my @options;
-        if ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'brent') {
+        if ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'brent' || $c->cobrand->moniker eq 'merton') {
             push @options, { value => 'modify', label => 'Increase the number of bins in your subscription' };
         } else {
             push @options, { value => 'modify', label => 'Increase or reduce the number of bins in your subscription' };
@@ -206,7 +206,7 @@ sub validate {
     my $self = shift;
     my $cobrand = $self->{c}->cobrand->moniker;
 
-    if ($cobrand eq 'kingston' || $cobrand eq 'sutton' || $cobrand eq 'brent') {
+    if ($cobrand eq 'kingston' || $cobrand eq 'sutton' || $cobrand eq 'brent' || $cobrand eq 'merton') {
         unless ( $self->field('current_bins')->is_inactive ) {
             my $total = $self->field('bins_wanted')->value;
             my $current = $self->field('current_bins')->value;

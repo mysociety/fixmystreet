@@ -64,6 +64,23 @@ my %SERVICE_IDS = (
         schedule2_refuse => 968, # 4409
         schedule2_mixed => 972, # 4398
     },
+    merton => {
+        domestic_refuse => 1067, # 4394
+        communal_refuse => 1070, # 4407
+        fas_refuse => 1068, # 4395
+        domestic_mixed => 1071, # 4390
+        communal_mixed => 1074, # 4397
+        fas_mixed => 1072, # 4391
+        domestic_paper => 1075, # 4388
+        communal_paper => 1078, # 4396
+        fas_paper => 1076, # 4402
+        domestic_food => 1084, # 4389
+        communal_food => 1087, # 4403
+        garden => 1082, # 4410
+        bulky => 1089,
+        schedule2_refuse => 1069, # 4409
+        schedule2_mixed => 1073, # 4398
+    },
     sutton => {
         domestic_refuse => 940, # 4394
         communal_refuse => 943, # 4407
@@ -104,7 +121,8 @@ my %CONTAINERS = (
     recycling_blue_bag => 22,
     paper_240 => 27,
     paper_140 => 26,
-    food_indoor => 43,
+    food_indoor_5 => 43,
+    food_indoor_7 => 44,
     food_outdoor => 46,
     garden_240 => 39,
     garden_140 => 37,
@@ -186,6 +204,11 @@ sub waste_extra_service_info_all_results {
         $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
     }
 
+    if ($self->moniker eq 'merton' && @$result == 1 && $result->[0]{ServiceId} == $service_ids->{garden}) {
+        # No garden collection possible, if only service is garden
+        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
+    }
+
     if (@$result && $cfg->{bulky_service_id} && grep { $_->{ServiceId} == $cfg->{bulky_service_id} } @$result) {
         $property->{has_bulky_service} = 1;
     }
@@ -198,6 +221,11 @@ sub waste_extra_service_info {
     my ($self, $property, @rows) = @_;
     my $service_ids = $SERVICE_IDS{$self->moniker};
 
+    if ($self->moniker eq 'merton') {
+        # Merton lets everyone pick between bins and sacks
+        $self->{c}->stash->{slwp_garden_sacks} = 1;
+    }
+
     foreach (@rows) {
         my $service_id = $_->{ServiceId};
         if ($service_id == $service_ids->{fas_refuse}) {
@@ -209,6 +237,15 @@ sub waste_extra_service_info {
 
         if ($service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed}) {
             $self->{c}->stash->{fas_property} = 1;
+        }
+
+        my $schedules = $_->{Schedules};
+        if ($schedules->{next}{schedule}) {
+            my $allocation = $schedules->{next}{schedule}{Allocation};
+            my $type = $allocation->{RoundGroupName} || '';
+            if ($type eq 'NTE') {
+                $self->{c}->stash->{property_time_banded} = 1;
+            }
         }
     }
 }
@@ -280,10 +317,11 @@ sub waste_service_containers {
         }
     }
 
-    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{food_indoor}}) {
+    my $food_indoor_key = $self->moniker eq 'merton' ? 'food_indoor_7' : 'food_indoor_5';
+    if ($service_name =~ /Food/ && !$self->{c}->stash->{quantities}->{$CONTAINERS{$food_indoor_key}}) {
         # Can always request a food caddy
-        push @$containers, $CONTAINERS{food_indoor}; # Food waste bin (kitchen)
-        $request_max->{$CONTAINERS{food_indoor}} = 1;
+        push @$containers, $CONTAINERS{$food_indoor_key}; # Food waste bin (kitchen)
+        $request_max->{$CONTAINERS{$food_indoor_key}} = 1;
     }
     if ($self->moniker eq 'kingston' && grep { $_ == $CONTAINERS{recycling_box} } @$containers) {
         # Can request a bin if you have a box
@@ -397,9 +435,10 @@ sub waste_garden_sub_params {
     my $service = $self->garden_current_subscription;
     my $choice = $data->{container_choice} || '';
     my $existing = $service ? $service->{garden_container} : undef;
-    $existing = $data->{transfer_bin_type} if $data->{transfer_bin_type};
     my ($container);
-    if ($choice) {
+    if ($data->{transfer_bin_type}) {
+        $container = $data->{transfer_bin_type};
+    } elsif ($choice) {
         $choice = 'bin240' if $choice eq 'bin';
         $container = $GARDEN_CONTAINER_IDS{$choice};
     } elsif ($existing) {
@@ -431,7 +470,7 @@ sub waste_garden_sub_params {
 
     if ($type eq $c->cobrand->waste_subscription_types->{New}) {
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-        my $add_days = $self->call_hook('ggw_immediate_start' => $data->{current_bins}) ? 0 : 10;
+        my $add_days = $self->call_hook(garden_subscription_start_days => $data) // 10;
         $c->set_param('Start_Date', $now->add(days => $add_days)->dmy('/'));
         $c->set_param('End_Date', $now->add(years => 1)->subtract(days => 1)->dmy('/'));
     } elsif ($type eq $c->cobrand->waste_subscription_types->{Renew}) {
@@ -475,7 +514,15 @@ sub waste_garden_renew_form_setup {
     my $c = $self->{c};
     if ($c->stash->{slwp_garden_sacks}) {
         $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Sacks::Renew';
-        $c->stash->{first_page} = 'sacks_choice';
+        my $service = $c->cobrand->garden_current_subscription;
+        if ($self->moniker eq 'merton') {
+            if ($service->{garden_container} == $CONTAINERS{garden_sack}) {
+                $c->stash->{first_page} = 'sacks_details';
+            }
+            # Else default to 'intro' from the main code
+        } else {
+            $c->stash->{first_page} = 'sacks_choice';
+        }
     }
 }
 

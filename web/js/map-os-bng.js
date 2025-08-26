@@ -81,7 +81,7 @@ OpenLayers.Layer.Aerial = OpenLayers.Class(OpenLayers.Layer.BNG, {
         var url = fixmystreet.aerial_url + "/${z}/${x}/${y}.png";
         var attribution = '<div class="os-api-branding copyright">&copy; Bluesky International Ltd and Getmapping Ltd 1999-2020<br>&copy; Bluesky International Limited 2021 and onwards</div>';
         this.attribution = attribution;
-        OpenLayers.Layer.BNG.prototype.initialize.call(this, name, 12, url, options);
+        OpenLayers.Layer.BNG.prototype.initialize.call(this, name, 14, url, options);
     },
     getURL: function (bounds) {
         var xyz = this.getXYZ(bounds);

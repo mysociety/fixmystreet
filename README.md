@@ -46,6 +46,5 @@ web-based cross-browser testing tools for this project.
 ## Examples
 
 * <https://www.fixmystreet.com/>
-* <http://www.fiksgatami.no/>
-* <http://fixmystreet.ie/>
+* <https://www.fixamingata.se/>
 * <https://www.zueriwieneu.ch/>
