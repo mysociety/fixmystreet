@@ -87,19 +87,6 @@ sub bulky_date_label {
 # Pricing
 
 sub bulky_points_per_item_pricing { 1 }
-sub bulky_items_maximum { 104 } # XXX for oap, 52 for non
-
-sub bulky_item_points_total {
-    my ($self, $data) = @_;
-    my %points = map { $_->{name} => $_->{points} } @{ $self->bulky_items_master_list };
-    my $points = 0;
-    my $max = $self->bulky_items_maximum;
-    for (1..$max) {
-        my $item = $data->{"item_$_"} or next;
-        $points += $points{$item};
-    }
-    return $points;
-}
 
 sub bulky_points_to_price {
     my ($self, $points, $levels) = @_;
@@ -164,7 +151,7 @@ sub waste_munge_bulky_data {
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
 
     my @ids;
-    my $max = $self->bulky_items_maximum;
+    my $max = $c->stash->{booking_maximum};
     for (1..$max) {
         if (my $item = $data->{"item_$_"}) {
             push @ids, $items{$item};
