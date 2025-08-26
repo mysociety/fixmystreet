@@ -381,46 +381,6 @@ body.mappage.admin {
   text-align: center;
 }
 
-.map-alternatives {
-  display: block;
-  color: inherit;
-  //margin: 0 -15px;
-  padding: 16px;
-  font-size: 18px;
-  line-height: 20px;
-  border-bottom: 1px solid #E7E1C0;
-  background: #FDF4C5;
-
-  a {
-    display: block;
-    width: fit-content;
-    margin-top: 0.5rem;
-  }
-
-  em {
-    font-style: normal;
-    text-decoration: underline;
-    color: #0BA7D1;
-  }
-
-  &:hover {
-    text-decoration: none;
-  }
-
-  html.js & {
-    // If javascript is enabled, hide the skip link off-screen,
-    // but keep it visible for screen readers.
-    position: absolute;
-    top: -999px;
-
-    &:focus,
-    &:focus-within {
-      // And show it again if it receives focus (eg: via tab key)
-      position: static;
-    }
-  }
-}
-
 // Only want to capture footers that are inside .content
 // (like the one in base)
 .content {
