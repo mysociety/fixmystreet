@@ -27,35 +27,8 @@ This module provides the specific functionality for the Zurich FMS cobrand.
 
 =head1 DEVELOPMENT NOTES
 
-The admin for Zurich is different to the other cobrands. To access it you need
-to be logged in as a user associated with an appropriate body.
-
-You can create the bodies needed to develop by running the 't/cobrand/zurich.t'
-test script with the three C<$mech->delete...> lines at the end commented out.
-This should leave you with the bodies and users correctly set up.
-
-The entries will be something like this (but with different ids).
-
-    Bodies:
-         id |     name      | parent |         endpoint
-        ----+---------------+--------+---------------------------
-          1 | Zurich        |        |
-          2 | Division 1    |      1 | division@example.org
-          3 | Subdivision A |      2 | subdivision@example.org
-          4 | External Body |        | external_body@example.org
-
-    Users:
-         id |      email       | from_body
-        ----+------------------+-----------
-          1 | super@example.org|         1
-          2 | dm1@example.org  |         2
-          3 | sdm1@example.org |         3
-
-The passwords for the users is 'secret'.
-
-Note: the password hashes are salted with the user's id so cannot be easily
-changed. High ids have been used so that it should not conflict with anything
-you already have, and the countres set so that they shouldn't in future.
+Run `bin/zurich/fixture --commit` to set up the cobrand locally, with
+example admin users (all with a password of 'password').
 
 =cut
 
@@ -1337,6 +1310,7 @@ sub export_as_csv {
                     'latitude', 'longitude',
                     'cobrand',  'category',
                     'state',    'user_id',
+                    'bodies_str',
                     'external_body',
                     'title', 'detail',
                     'photo',
@@ -1355,7 +1329,7 @@ sub export_as_csv {
             'External Body', 'Time Spent', 'Title', 'Detail',
             'Media URL', 'Interface Used', 'Council Response',
             'Strasse', 'Mast-Nr.', 'Haus-Nr.', 'Hydranten-Nr.',
-            'Interne meldung',
+            'Interne meldung', 'Geschäftsbereich', 'Objekt', 'Kategorie',
         ],
         csv_columns => [
             'id', 'created', 'whensent', 'lastupdate', 'local_coords_x',
@@ -1364,14 +1338,32 @@ sub export_as_csv {
             'body_name', 'sum_time_spent', 'title', 'detail',
             'media_url', 'service', 'public_response',
             'strasse', 'mast_nr',' haus_nr', 'hydranten_nr',
-            'interne_meldung',
+            'interne_meldung', 'geschaftsbereich', 'objekt', 'kategorie',
         ],
         csv_extra_data => sub {
             my $report = shift;
 
             my $body_name = "";
-            if ( my $external_body = $report->body ) {
+            if ( my $external_body_id = $report->external_body ) {
+                my $cache = $report->result_source->schema->cache;
+                my $external_body = $cache->{bodies}{$external_body_id} //= FixMyStreet::DB->resultset('Body')->find({ id => $external_body_id });
                 $body_name = $external_body->name || '[Unknown body]';
+            }
+
+            # Get division for its attributes
+            my $attributes;
+            my $body = (values %{ $report->bodies })[0];
+            if ($body) {
+                my $parent = $body->parent;
+                if ($parent && $parent->parent) { # $body is an SDM
+                    $body = $parent;
+                }
+                my $body_attributes = $body->get_extra_metadata('hierarchical_attributes') || {};
+                my $report_attributes = $report->get_extra_metadata('hierarchical_attributes') || {};
+                foreach (qw(Geschäftsbereich Objekt Kategorie)) {
+                    my $value = $report_attributes->{$_} or next;
+                    $attributes->{$_} = $body_attributes->{$_}{entries}{$value}{name};
+                }
             }
 
             my $detail = $report->detail;
@@ -1411,6 +1403,9 @@ sub export_as_csv {
                 haus_nr => $extras{'haus_nr'} || '',
                 hydranten_nr => $extras{'hydranten_nr'} || '',
                 interne_meldung => $report->non_public,
+                geschaftsbereich => $attributes->{Geschäftsbereich} || '',
+                objekt => $attributes->{Objekt} || '',
+                kategorie => $attributes->{Kategorie} || '',
             };
         },
         filename => 'stats',

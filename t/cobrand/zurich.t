@@ -1118,9 +1118,12 @@ subtest "test stats" => sub {
 
     $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 3');
     $mech->content_contains('Innerhalb von fünf Arbeitstagen abgeschlossen: 3');
-    # my @data = $mech->content =~ /(?:moderiert|abgeschlossen): \d+/g;
-    # diag Dumper(\@data); use Data::Dumper;
 
+    $report->set_extra_metadata(hierarchical_attributes => {
+        Geschäftsbereich => 1,
+        Objekt => 2,
+        Kategorie => 3,
+    });
     $report->update({ non_public => 1 });
 
     my $export_count = get_export_rows_count($mech);
@@ -1129,6 +1132,8 @@ subtest "test stats" => sub {
         $mech->content_contains('fixed - council');
     }
 
+    $mech->content_contains('Geschäftsbereich,Objekt,Kategorie');
+    $mech->content_like(qr/,G1,O2,K3$/m);
     $mech->content_contains('Hydranten-Nr.,"Interne meldung"');
     $mech->content_contains('"This is the public response to your report. Freundliche Gruesse.",,,,,1', "Internal report is marked as such");
     $report->update({ non_public => 0 });
