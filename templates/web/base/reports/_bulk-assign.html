@@ -5,10 +5,12 @@
 %]
 <form id='bulk-assign-form' name='bulk-assign-form' method='post' action='/my/planned/bulk_assign' class="govuk-fieldset-wrapper">
     <label for='inspector'>[% loc('Assign to') %]</label>
-    <input type="hidden" name="token" value="[% csrf_token %]">
-    <select class="govuk-select" name="inspector" id="inspector">
-        [% INCLUDE 'report/inspect/_assignment-options.html' %]
-    </select>
-    <button id='bulk-assign-btn' class='btn' type='submit' name='bulk-assign-btn' value='bulk-assign'>[% loc('Assign') %]</button>
+    <div class="filter-group">
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        <select class="govuk-select" name="inspector" id="inspector">
+            [% INCLUDE 'report/inspect/_assignment-options.html' %]
+        </select>
+        <button id='bulk-assign-btn' class='btn' type='submit' name='bulk-assign-btn' value='bulk-assign'>[% loc('Assign') %]</button>
+    </div>
 </form>
 [% END %]
