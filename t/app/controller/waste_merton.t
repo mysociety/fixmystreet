@@ -45,6 +45,7 @@ create_contact({ category => 'Report missed collection', email => 'missed' }, 'W
 );
 create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
     { code => 'uprn', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Action', required => 1, automated => 'hidden_field' },
@@ -483,6 +484,7 @@ FixMyStreet::override_config {
         check_extra_data_post_confirm($report);
         $mech->content_contains('request has been sent');
         is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->get_extra_field_value('service_id'), 1075;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\n1x Blue lid paper and cardboard bin (360L) to deliver\n\nAdditional details: Large household";
         is $report->title, 'Request new Blue lid paper and cardboard bin (360L)';
         FixMyStreet::Script::Reports::send();
