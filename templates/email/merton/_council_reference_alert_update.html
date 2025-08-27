@@ -1,4 +1,7 @@
 [% IF problem.cobrand_data == 'waste' %]
     [% SET property_id = problem.waste_property_id %]
-<a href="https://recycling-services.merton.gov.uk/waste[% IF property_id %]/[% property_id %][% END %]">Check your bin collections day</a>
+<a href="https://fixmystreet.merton.gov.uk/waste[% IF property_id %]/[% property_id %][% END %]">Check your bin collections day</a>
+[% ELSE %]
+<p style="[% p_style %]">The report's reference number is <strong>[% problem.id %]</strong>.
+  Please quote this if you need to contact the council about this report.</p>
 [% END %]
