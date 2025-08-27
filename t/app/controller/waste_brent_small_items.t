@@ -510,7 +510,7 @@ FixMyStreet::override_config {
         $mech->content_contains('About you');
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
 
-        $mech->submit_form_ok( { form_number => 3 }, 'Submit summary' );
+        $mech->submit_form_ok( { form_number => 2 }, 'Submit summary' );
         $mech->content_contains('Thank you for reporting a missed collection');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->category, 'Report missed collection';

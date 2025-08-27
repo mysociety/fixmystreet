@@ -988,7 +988,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { form_number => 1 }, 'Go back to first page' );
         $mech->content_contains('About you');
         $mech->submit_form_ok({ form_number => 1 });
-        $mech->submit_form_ok( { form_number => 3 }, 'Submit summary' );
+        $mech->submit_form_ok( { form_number => 2 }, 'Submit summary' );
 
 
         my $missed = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
