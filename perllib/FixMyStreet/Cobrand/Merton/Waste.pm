@@ -35,12 +35,14 @@ my %CONTAINERS = (
     refuse_180 => 2,
     refuse_240 => 3,
     refuse_360 => 4,
-    refuse_bag => 10,
+    refuse_red_stripe_bag => 10,
+    refuse_black_bag => 11,
     recycling_box => 12,
     recycling_180 => 14,
     recycling_240 => 15,
     recycling_360 => 16,
-    recycling_bag => 22,
+    recycling_blue_stripe_bag => 22,
+    recycling_purple_bag => 23,
     paper_180 => 26,
     paper_240 => 27,
     paper_360 => 28,
@@ -119,13 +121,15 @@ sub waste_containers {
         $CONTAINERS{refuse_180} => 'Black rubbish bin (180L)',
         $CONTAINERS{refuse_240} => 'Black rubbish bin (240L)',
         $CONTAINERS{refuse_360} => 'Black rubbish bin (360L)',
-        $CONTAINERS{refuse_bag} => 'Refuse Red Stripe Bag',
+        $CONTAINERS{refuse_red_stripe_bag} => 'Refuse Red Stripe Bag',
+        $CONTAINERS{refuse_black_bag} => 'Refuse Black Sack',
 
         $CONTAINERS{recycling_180} => 'Green recycling bin (180L)',
         $CONTAINERS{recycling_240} => 'Green recycling bin (240L)',
         $CONTAINERS{recycling_360} => 'Green recycling bin (360L)',
         $CONTAINERS{recycling_box} => 'Green recycling box (55L)',
-        $CONTAINERS{recycling_bag} => 'Recycling Blue Stripe Bag', # Also purple bag?
+        $CONTAINERS{recycling_blue_stripe_bag} => 'Recycling Blue Stripe Bag',
+        $CONTAINERS{recycling_purple_bag} => 'Recycling Purple Bag',
 
         $CONTAINERS{paper_240} => 'Blue lid paper and cardboard bin (240L)',
         $CONTAINERS{paper_360} => 'Blue lid paper and cardboard bin (360L)',
@@ -162,27 +166,27 @@ sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
     my $service_id = $unit->{service_id};
-
-    if ($self->{c}->stash->{property_time_banded}) {
-        return svg_container_sack('normal', '#3B3B3A') if $service_id eq $SERVICE_IDS{fas_refuse};
-        return svg_container_sack('normal', '#BD63D1') if $service_id eq $SERVICE_IDS{fas_mixed};
-    }
+    my $container = $unit->{request_containers}[0] || 0;
 
     my $images = {
+        $CONTAINERS{refuse_black_bag} => svg_container_sack('normal', '#3B3B3A'),
+        $CONTAINERS{recycling_purple_bag} => svg_container_sack('normal', '#BD63D1'),
+        $CONTAINERS{recycling_blue_stripe_bag} => svg_container_sack('stripe', '#3E50FA'),
+        $CONTAINERS{refuse_red_stripe_bag} => svg_container_sack('stripe', '#F1506D'),
+        $CONTAINERS{paper_bag} => svg_container_sack('normal', '#D8D8D8'),
+
+        # Fallback to the service if no container match
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),
         $SERVICE_IDS{domestic_food} => "$base/caddy-brown-large",
         $SERVICE_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
         $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
-        $SERVICE_IDS{fas_refuse} => svg_container_sack('stripe', '#F1506D'),
         $SERVICE_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
-        $SERVICE_IDS{fas_mixed} => svg_container_sack('stripe', '#3E50FA'),
         $SERVICE_IDS{garden} => svg_container_bin('wheelie', '#8B5E3D'),
         $SERVICE_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
         $SERVICE_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'),
-        $SERVICE_IDS{fas_paper} => svg_container_sack('normal', '#D8D8D8'),
         bulky => "$base/bulky-black",
     };
-    return $images->{$service_id};
+    return $images->{$container} || $images->{$service_id};
 }
 
 sub garden_collection_time { '6:00am' }
