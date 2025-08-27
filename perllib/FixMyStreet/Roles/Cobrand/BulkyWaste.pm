@@ -211,7 +211,13 @@ sub bulky_total_cost {
 
         my $cfg = $self->wasteworks_config;
         if ($self->bulky_points_per_item_pricing) {
-            my $points = $self->bulky_item_points_total($data);
+            my %points = map { $_->{name} => $_->{points} } @{ $self->bulky_items_master_list };
+            my $points = 0;
+            my $max = $c->stash->{booking_maximum};
+            for (1..$max) {
+                my $item = $data->{"item_$_"} or next;
+                $points += $points{$item};
+            }
             my $levels = $self->bulky_pricing_model($data);
             my $total = $self->bulky_points_to_price($points, $levels);
             if ($total eq 'max') {
