@@ -93,6 +93,8 @@ sub get_export_rows_count {
     is $mech->res->code, 200, 'csv retrieved ok';
     is $mech->content_type, 'text/csv', 'content_type correct' and do {
         my @lines = split /\n/, $mech->content;
+        like $lines[0], qr/Geschäftsbereich.*Objekt.*Kategorie/,
+            'CSV has hierarchical attribute columns';
         return @lines - 1;
     };
     return;
@@ -1029,8 +1031,6 @@ subtest "test stats" => sub {
 
     $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 3');
     $mech->content_contains('Innerhalb von fünf Arbeitstagen abgeschlossen: 3');
-    # my @data = $mech->content =~ /(?:moderiert|abgeschlossen): \d+/g;
-    # diag Dumper(\@data); use Data::Dumper;
 
     $report->update({ non_public => 1 });
 
