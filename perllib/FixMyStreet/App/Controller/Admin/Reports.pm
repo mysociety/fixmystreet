@@ -391,15 +391,19 @@ sub edit_category : Private {
     my ($self, $c, $problem, $no_comment, $contact) = @_;
 
     my $category;
+    my $category_display;
     if ($contact) {
         $category = $contact->category;
         return 0 if $contact->id == $problem->contact->id;
+        $category_display = $contact->category_display;
     } else {
         $category = $c->get_param('category');
         return 0 if $category eq $problem->category;
+        $category_display = $contact;
     }
 
     my $category_old = $problem->category;
+    my $category_old_display = $problem->category_display;
     $problem->category($category);
 
     my @contacts;
@@ -414,7 +418,7 @@ sub edit_category : Private {
     my @new_body_ids = map { $_->body_id } @contacts;
     $problem->bodies_str(join( ',', @new_body_ids ));
 
-    my $update_text = '*' . sprintf(_('Category changed from ‘%s’ to ‘%s’'), $category_old, $category) . '*';
+    my $update_text = '*' . sprintf(_('Category changed from ‘%s’ to ‘%s’'), $category_old_display, $category_display) . '*';
     if ($no_comment) {
         $c->stash->{update_text} = $update_text;
     } else {

@@ -13,6 +13,8 @@ my $user3 = $mech->create_user_ok('body_user@example.com', name => 'Body User', 
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com', extra => { group => 'Road' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Yellow lines', email => 'yellow@example.com', extra => { group => 'Road' } );
+$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Refuse', email => 'refuse@example.com', extra => { display_name => 'Bins' } );
+$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Vegetation', email => 'vegetation@example.com', extra => { display_name => 'Greenery' } );
 
 
 my $oxford = $mech->create_body_ok(2421, 'Oxford City Council');
@@ -354,6 +356,50 @@ foreach my $test (
         expect_comment => 1,
         expected_text => '*Category changed from ‘Other’ to ‘Potholes’*',
         changes   => { state => 'in progress', category => 'Potholes' },
+        log_entries => [
+            qw/edit state_change category_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+        ],
+        resend => 0,
+    },
+    {
+        description => 'change state to in progess and change category as body superuser',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'investigating',
+            name       => 'Edited User',
+            username   => $user2->email,
+            anonymous  => 1,
+            flagged    => 'on',
+            non_public => 'on',
+            closed_updates => undef,
+            send_state => '',
+        },
+        expect_comment => 1,
+        expected_text => '*Category changed from ‘Potholes’ to ‘Bins’*',
+        changes   => { state => 'in progress', category => 'Refuse' },
+        log_entries => [
+            qw/edit state_change category_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+        ],
+        resend => 0,
+    },
+    {
+        description => 'change state to in progess and change category as body superuser',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'investigating',
+            name       => 'Edited User',
+            username   => $user2->email,
+            anonymous  => 1,
+            flagged    => 'on',
+            non_public => 'on',
+            closed_updates => undef,
+            send_state => '',
+        },
+        expect_comment => 1,
+        expected_text => '*Category changed from ‘Bins’ to ‘Greenery’*',
+        changes   => { state => 'in progress', category => 'Vegetation' },
         log_entries => [
             qw/edit state_change category_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
