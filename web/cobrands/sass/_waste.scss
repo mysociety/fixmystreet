@@ -579,13 +579,16 @@ html.js {
 
     .bulky-item-wrapper {
         .delete-item {
-          margin-top: 1em;
           display: inline-block;
         }
 
         .dropzone {
           max-width: 380px;
         }
+    }
+
+    hr {
+      margin: 1.2em 0;
     }
   }
 }
