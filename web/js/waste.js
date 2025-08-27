@@ -225,6 +225,19 @@ $(function() {
         $('#band-pricing-info').text(message);
     }
 
+    function store_bulky_items() {
+        var items = [];
+        $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
+            var v = $(this).val();
+            if (v) {
+                items.push(v);
+            }
+        });
+        try {
+            sessionStorage.setItem('bulky_items', JSON.stringify(items));
+        } catch(err) {}
+    }
+
     var template = document.getElementById('bulky-item-template');
 
     $(function() {
@@ -237,6 +250,7 @@ $(function() {
             update_extra_message($this);
             updateTotal();
             display_band_pricing();
+            store_bulky_items();
         });
 
         // Add items
@@ -274,20 +288,10 @@ $(function() {
             disableAddItemButton();
             updateTotal();
             display_band_pricing();
+            store_bulky_items();
         });
 
-        $('#item-selection-form').on('submit', function(){
-            var items = [];
-            $('.govuk-select[name^="item_"] option:selected').each(function(i, e) {
-                var v = $(this).val();
-                if (v) {
-                    items.push(v);
-                }
-            });
-            try {
-                sessionStorage.setItem('bulky_items', JSON.stringify(items));
-            } catch(err) {}
-        });
+        $('#item-selection-form').on('submit', store_bulky_items);
 
         if (fixmystreet.cobrand == 'brent') {
             var update_small_items_other_notes = function() {
@@ -313,21 +317,24 @@ $(function() {
         try {
             items = JSON.parse(sessionStorage.getItem('bulky_items'));
         } catch(err) {}
-        if (!items) { return; }
-        var numItemsVisible = $('.bulky-item-wrapper:visible').length;
-        if (items.length && items.length >= numItemsVisible) {
-            for (i=0; i<items.length - numItemsVisible; i++) {
-                $("#add-new-item").click();
+
+        if (items) {
+            var numItemsVisible = $('.bulky-item-wrapper:visible').length;
+            if (items.length && items.length >= numItemsVisible) {
+                for (i=0; i<items.length - numItemsVisible; i++) {
+                    $("#add-new-item").click();
+                }
+            }
+            for (i=0; i<items.length; i++) {
+                if (items[i]) {
+                    var select = $('#item_' + (i+1) + '-select');
+                    select.val(items[i]);
+                    ac_timeout('#item_' + (i+1), items[i]);
+                    update_extra_message(select);
+                }
             }
         }
-        for (i=0; i<items.length; i++) {
-            if (items[i]) {
-                var select = $('#item_' + (i+1) + '-select');
-                select.val(items[i]);
-                ac_timeout('#item_' + (i+1), items[i]);
-                update_extra_message(select);
-            }
-        }
+
         updateTotal();
         display_band_pricing();
         disableAddItemButton();
