@@ -65,6 +65,46 @@ my %CONTAINERS = (
 );
 lock_hash(%CONTAINERS);
 
+# Merton staff can order any container, and if they do we need a way to map
+# the chosen container to a service to send to Echo (for normal users, the
+# container will be within the relevant service).
+my %container_to_service = (
+    $CONTAINERS{refuse_180} => $SERVICE_IDS{domestic_refuse},
+    $CONTAINERS{refuse_240} => $SERVICE_IDS{domestic_refuse},
+    $CONTAINERS{refuse_360} => $SERVICE_IDS{domestic_refuse},
+    $CONTAINERS{refuse_red_stripe_bag} => $SERVICE_IDS{domestic_refuse},
+    $CONTAINERS{refuse_black_bag} => $SERVICE_IDS{fas_refuse},
+
+    $CONTAINERS{recycling_180} => $SERVICE_IDS{domestic_mixed},
+    $CONTAINERS{recycling_240} => $SERVICE_IDS{domestic_mixed},
+    $CONTAINERS{recycling_360} => $SERVICE_IDS{domestic_mixed},
+    $CONTAINERS{recycling_box} => $SERVICE_IDS{domestic_mixed},
+    $CONTAINERS{recycling_blue_stripe_bag} => $SERVICE_IDS{domestic_mixed},
+    $CONTAINERS{recycling_purple_bag} => $SERVICE_IDS{fas_mixed},
+
+    $CONTAINERS{paper_240} => $SERVICE_IDS{domestic_paper},
+    $CONTAINERS{paper_360} => $SERVICE_IDS{domestic_paper},
+    $CONTAINERS{paper_180} => $SERVICE_IDS{domestic_paper},
+    $CONTAINERS{paper_bag} => $SERVICE_IDS{domestic_paper},
+
+    $CONTAINERS{food_indoor} => $SERVICE_IDS{domestic_food},
+    $CONTAINERS{food_outdoor} => $SERVICE_IDS{domestic_food},
+
+    $CONTAINERS{garden_240} => $SERVICE_IDS{garden},
+    $CONTAINERS{garden_140} => $SERVICE_IDS{garden},
+    $CONTAINERS{garden_sack} => $SERVICE_IDS{garden},
+
+    $CONTAINERS{refuse_660} => $SERVICE_IDS{communal_refuse},
+    $CONTAINERS{refuse_1100} => $SERVICE_IDS{communal_refuse},
+    $CONTAINERS{recycling_660} => $SERVICE_IDS{communal_mixed},
+    $CONTAINERS{recycling_1100} => $SERVICE_IDS{communal_mixed},
+    $CONTAINERS{paper_660} => $SERVICE_IDS{communal_paper},
+    $CONTAINERS{paper_1100} => $SERVICE_IDS{communal_paper},
+    $CONTAINERS{food_120} => $SERVICE_IDS{communal_food},
+    $CONTAINERS{food_140} => $SERVICE_IDS{communal_food},
+    $CONTAINERS{food_240} => $SERVICE_IDS{communal_food},
+);
+
 =over 4
 
 =item * Merton has a Saturday 1 July date format
@@ -342,7 +382,13 @@ sub waste_munge_request_data {
     foreach my $s (keys %$services) {
         my $containers = $services->{$s}{request_containers};
         foreach (@$containers) {
-            $service_id = $s if $_ eq $id;
+            if ($_ eq $id) {
+                if ($s eq 'other_containers') {
+                    $service_id = $container_to_service{$id};
+                } else {
+                    $service_id = $s;
+                }
+            }
         }
     }
     $c->set_param('service_id', $service_id) if $service_id;
