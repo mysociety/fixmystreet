@@ -77,12 +77,13 @@ has_page summary => (
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
+        my $data = $page->form->saved_data;
 
         my $cobrand = $c->cobrand->moniker;
         if ($cobrand ne 'sutton' && $cobrand ne 'kingston' && $cobrand ne 'merton') {
             return ['payment_method', 'payment_explanation', 'cheque_reference'];
         }
-        if (!$c->stash->{is_staff}) {
+        if (!$c->stash->{is_staff} || !$data->{payment}) {
             return ['payment_method', 'payment_explanation', 'cheque_reference'];
         }
         if ($cobrand eq 'merton') {
