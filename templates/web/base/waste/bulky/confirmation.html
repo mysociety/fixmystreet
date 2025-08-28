@@ -67,6 +67,7 @@ END ~%]
 </div>
 
 <script nonce="[% csp_nonce %]">
+    // Finished a bulky flow, forget any stored bulky items
     try {
         sessionStorage.removeItem('bulky_items');
     } catch(err) {}

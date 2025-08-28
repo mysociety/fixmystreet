@@ -81,3 +81,10 @@ END %]
     <li>request a collection of hazardous or clinical waste</li>
   </ul>
 [% END %]
+
+<script nonce="[% csp_nonce %]">
+    // Starting a new flow in this tab, forget any stored bulky items
+    try {
+        sessionStorage.removeItem('bulky_items');
+    } catch(err) {}
+</script>
