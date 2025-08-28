@@ -40,6 +40,7 @@ sub options_payment_method {
         push @options, { label => 'Cheque payment', value => 'cheque', data_show => '#form-cheque_reference-row', data_hide => '#form-payment_explanation-row' };
     }
     if ($cobrand eq 'merton') {
+        push @options, { label => 'Cash payment', value => 'cash', data_show => '#form-payment_explanation-row', data_hide => '#form-cheque_reference-row' };
         push @options, { label => 'No payment to be taken', value => 'waived', data_show => '#form-payment_explanation-row', data_hide => '#form-cheque_reference-row' };
     }
 
@@ -55,7 +56,7 @@ has_field cheque_reference => (
 has_field payment_explanation => (
     label => 'Explanation',
     type => 'Text',
-    required_when => { payment_method => 'waived' },
+    required_when => { payment_method => ['waived', 'cash'] },
 );
 
 1;
