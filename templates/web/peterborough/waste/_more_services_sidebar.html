@@ -27,7 +27,8 @@
   [% IF open_service_requests.428 %]
     <li>Food bags order pending</li>
   [% END %]
-  [% IF any_report_allowed AND NOT on_day_pre_5pm %]
+  [%# Hide the "Report missed food bin collection" link (requested in FD-5919) %]
+  [% IF 0 AND any_report_allowed AND NOT on_day_pre_5pm %]
     <li>
         <form method="post" action="[% c.uri_for_action('waste/report', [ property.id ]) %]">
             <input type="hidden" name="token" value="[% csrf_token %]">
