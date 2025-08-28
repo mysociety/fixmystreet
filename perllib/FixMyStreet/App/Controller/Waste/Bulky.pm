@@ -152,6 +152,15 @@ sub item_list : Private {
                 $c->stash->{total} = ($c->stash->{payment} || 0) / 100;
                 return $fields;
             },
+            post_process => sub {
+                my $form = shift;
+                my $data = $form->saved_data;
+                my $c = $form->c;
+
+                # Calculate total cost
+                $c->cobrand->bulky_total_cost($data);
+                $data->{payment} = $c->stash->{payment};
+            },
         },
     ];
     $c->stash->{field_list} = $field_list;
