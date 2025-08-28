@@ -21,14 +21,14 @@ ELSIF bodyclass.match('alertpage');
     scripts.push(
         version('/js/geolocation.js'),
         version('/js/validation_rules.js'),
-        version('/vendor/jquery-3.6.0.min.js'),
+        version('/vendor/jquery-3.7.1.min.js'),
         version('/vendor/jquery.validate.min.js'),
         version('/cobrands/fixmystreet/fixmystreet.js'),
     );
 ELSIF bodyclass.match('offlinepage');
     scripts.push(
         version('/js/geolocation.js'),
-        version('/vendor/jquery-3.6.0.min.js'),
+        version('/vendor/jquery-3.7.1.min.js'),
         version('/vendor/idb-keyval-iife.min.js'),
         version('/vendor/dropzone.min.js'),
         version('/cobrands/fixmystreet/offline_report.js'),
@@ -36,7 +36,7 @@ ELSIF bodyclass.match('offlinepage');
 ELSE;
     scripts.push(
         version('/js/validation_rules.js'),
-        version('/vendor/jquery-3.6.0.min.js'),
+        version('/vendor/jquery-3.7.1.min.js'),
         version('/vendor/jquery.multi-select.min.js'),
         version('/vendor/jquery.validate.min.js'),
         version('/vendor/jquery.validate.additional-methods.require-from-group.min.js'),
@@ -54,7 +54,7 @@ END;
 IF c.user_exists AND (c.user.from_body OR c.user.is_superuser);
     scripts.push(
         version('/js/geolocation.js'),
-        version('/vendor/jquery-3.6.0.min.js'),
+        version('/vendor/jquery-3.7.1.min.js'),
         version('/cobrands/fixmystreet/staff.js')
     );
     IF bodyclass.match('mappage') AND c.cobrand.suggest_duplicates AND NOT login_success AND NOT oauth_need_email;
