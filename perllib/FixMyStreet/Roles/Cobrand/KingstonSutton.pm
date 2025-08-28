@@ -231,12 +231,12 @@ sub dashboard_export_problems_add_columns {
             uprn => $fields{uprn},
             $csv->dbi ? (
                 user_name_display => $report->{name},
-                payment_reference => $fields{PaymentCode} || $report->{extra}{chequeReference} || '',
+                payment_reference => $report->{extra}{payment_reference} || $report->{extra}{chequeReference} || '',
             ) : (
                 user_name_display => $report->name,
                 user_email => $report->user->email || '',
                 user_phone => $report->user->phone || '',
-                payment_reference => $fields{PaymentCode} || $report->get_extra_metadata('chequeReference') || '',
+                payment_reference => $report->get_extra_metadata('payment_reference') || $report->get_extra_metadata('chequeReference') || '',
             ),
             payment_method => $fields{payment_method} || '',
             payment => $fields{payment},

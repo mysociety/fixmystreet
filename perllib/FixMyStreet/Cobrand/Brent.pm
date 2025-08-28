@@ -766,6 +766,12 @@ We use {closest_address}->summary as this is geocoder-agnostic.
         push @$open311_only, { name => 'description', value => $row->detail };
     }
 
+    if ( $row->category eq 'Garden Subscription' ) {
+        my $ref = $row->get_extra_metadata('payment_reference');
+        push @$open311_only, { name => 'PaymentCode', value => $ref } if $ref;
+
+    }
+
     return $open311_only;
 }
 

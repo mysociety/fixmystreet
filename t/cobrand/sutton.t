@@ -125,7 +125,7 @@ FixMyStreet::override_config {
 
     subtest 'correct payment data sent across' => sub {
         $report->category('Garden Subscription');
-        $report->update_extra_field({ name => 'PaymentCode', value => 'Code4321' });
+        $report->set_extra_metadata(payment_reference => 'Code4321');
         $report->update_extra_field({ name => 'payment', value => '8300' });
         $report->state('confirmed');
         $report->update;
