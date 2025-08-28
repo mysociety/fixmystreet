@@ -1627,12 +1627,7 @@ sub bulky_add_payment_confirmation_update {
 
     my $payment = $self->get_extra_field_value('payment') || 0;
     $payment = sprintf( '%.2f', $payment / 100 );
-    my $reference_text = 'reference ';
-    if (!$reference) {
-        $reference_text .= $self->get_extra_metadata('chequeReference') . ' (phone/cheque)';
-    } else {
-        $reference_text .= $reference;
-    }
+    my $reference_text = "reference $reference";
     my $payments = $cobrand->get_all_payments($self);
     $payments = join('|', map { "$_->{ref}|$_->{amount}" } @$payments);
     my $comment = $self->add_to_comments({

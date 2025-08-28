@@ -222,11 +222,12 @@ sub pay_skip : Private {
     }
 
     $c->stash->{action} = 'new_subscription';
-    my $p = $c->stash->{report};
-    $p->set_extra_metadata('chequeReference', $cheque) if $cheque;
-    $p->set_extra_metadata('payment_explanation', $waived) if $waived;
-    $p->update;
-    $c->forward('confirm_subscription', [ undef ] );
+    if ($waived) {
+        my $p = $c->stash->{report};
+        $p->set_extra_metadata('payment_explanation', $waived);
+        $p->update;
+    }
+    $c->forward('confirm_subscription', [ $cheque ] );
 }
 
 sub pay : Path('pay') : Args(0) {
