@@ -1112,7 +1112,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset('Problem')->search( { id => $report_id } )->first;
 
         check_extra_data_pre_confirm($report, payment_method => 'cheque', state => 'confirmed');
-        is $report->get_extra_metadata('chequeReference'), 'Cheque123', 'cheque reference saved';
+        is $report->get_extra_metadata('payment_reference'), 'Cheque123', 'cheque reference saved';
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
         $report->delete; # Otherwise next test sees this as latest
     };
