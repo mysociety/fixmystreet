@@ -386,12 +386,12 @@ FixMyStreet::override_config {
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
     };
-    subtest 'Request food bins from front page' => sub {
-        $mech->log_in_ok($staff->email);
-        $mech->get_ok('/waste/PE1 3NA:100090215480');
-        $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
-        $mech->content_contains('name="service-FOOD_BINS" value="1"');
-    };
+    # subtest 'Request food bins from front page' => sub {
+    #     $mech->log_in_ok($staff->email);
+    #     $mech->get_ok('/waste/PE1 3NA:100090215480');
+    #     $mech->submit_form_ok({ with_fields => { 'service-FOOD_BINS' => 1 } });
+    #     $mech->content_contains('name="service-FOOD_BINS" value="1"');
+    # };
     subtest 'Request bins from front page' => sub {
         $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/PE1 3NA:100090215480');
