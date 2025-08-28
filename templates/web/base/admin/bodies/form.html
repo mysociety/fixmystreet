@@ -1,4 +1,4 @@
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <div class="fms-admin-info">
         [% loc(
           "Add a <strong>body</strong> for each administrative body, such as a council or department
@@ -147,9 +147,24 @@
         <input type="checkbox" id="can_be_devolved" name="can_be_devolved"[% ' checked' IF body.can_be_devolved %]>
         <label for="can_be_devolved" class="inline">Send method or endpoints can be devolved to contacts (i.e, can be different from the body's)</label>
     </p>
-
+    <p>[% PROCESS photo %]</p>
     <p>
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" class="btn" value="[% body ? loc('Update body') : loc('Add body') %]">
     </p>
 </form>
+
+[% BLOCK photo %]
+  <label for="logo">
+    You may provide a logo to use on your 'all reports' page
+  </label>
+  [% IF body_errors.logo %]
+    <div class="fms-admin-warning">
+      [% body_errors.logo %]
+    </div>
+  [% END %]
+  <input type="file" id="logo" name="logo">
+  [% IF body.get_extra_metadata('logo') %]
+    <img src="/photo/temp.[% body.get_extra_metadata('logo') %]" alt="">
+  [% END %]
+[% END %]
