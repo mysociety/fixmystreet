@@ -726,7 +726,7 @@ sub process_request_data : Private {
     if ($payment) {
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
             $c->forward('/waste/pay_skip', []);
-        } elsif ($payment_method eq 'waived') {
+        } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
             $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
         } else {
             if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {

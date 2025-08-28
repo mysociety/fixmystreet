@@ -371,7 +371,7 @@ sub process_bulky_data : Private {
             $c->forward('/waste/pay_skip', []);
         } elsif ($payment_method eq 'cheque') {
             $c->forward('/waste/pay_skip', [ $data->{cheque_reference}, undef ]);
-        } elsif ($payment_method eq 'waived') {
+        } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
             $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
         } else {
             if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
