@@ -949,6 +949,12 @@ html.mobile.js-nav-open #js-menu-open-modal {
   }
 }
 
+// Optional body logo, in /reports/<body> sidebar
+.reports-logo {
+  max-width: 12em;
+  margin-bottom: 1em;
+}
+
 .shadow-wrap {
   margin: 0 -1em;
 }
