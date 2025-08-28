@@ -583,10 +583,8 @@ FixMyStreet::override_config {
 
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a small items collection as missed');
-        $mech->submit_form_ok( { form_number => 1 },
+        $mech->submit_form_ok( { with_fields => { 'service-952' => 1 } },
             "Follow link for reporting a missed collection" );
-        $mech->content_contains('Select your missed collection');
-        $mech->submit_form_ok( { with_fields => { 'service-952' => 1 } } );
         $mech->content_contains('Please supply any additional information');
         $mech->submit_form_ok(
             { with_fields => { extra_detail => 'You left a sock' } } );

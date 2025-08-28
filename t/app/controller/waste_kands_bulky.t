@@ -774,8 +774,6 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a bulky waste collection as missed', 'In time, normal completion');
         $mech->submit_form_ok({ form_number => 1 }, "Follow link for reporting a missed bulky collection");
-        $mech->content_contains('Bulky waste collection');
-        $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { extra_detail => "They left the mattress" } });
         $mech->submit_form_ok({ form_number => 1 });
         $mech->content_contains('Submit missed bulky collection');

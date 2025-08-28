@@ -977,12 +977,19 @@ FixMyStreet::override_config {
         } ] } );
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a missed bulky waste collection', 'In time, normal completion');
-        $mech->submit_form_ok({ form_number => 1 }, "Follow link for reporting a missed bulky collection");
-        $mech->content_contains('Bulky waste collection');
+        $mech->submit_form_ok(
+            { with_fields => { 'service-413' => 1 } },
+            "Follow link for reporting a missed bulky collection"
+        );
+        $mech->content_contains('About you');
         $mech->submit_form_ok({ form_number => 1 });
+        $mech->content_contains('Submit missed bin report');
         #$mech->submit_form_ok({ with_fields => { extra_detail => "They left the mattress" } });
+        $mech->submit_form_ok( { form_number => 1 }, 'Go back to first page' );
+        $mech->content_contains('About you');
         $mech->submit_form_ok({ form_number => 1 });
-        $mech->submit_form_ok({ form_number => 3 });
+        $mech->submit_form_ok( { form_number => 2 }, 'Submit summary' );
+
 
         my $missed = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $missed->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
