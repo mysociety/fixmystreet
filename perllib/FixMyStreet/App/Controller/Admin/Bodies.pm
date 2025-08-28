@@ -528,6 +528,22 @@ sub body_params : Private {
     %defaults = map { $_ => '' } @extras;
     my %extras = map { $_ => $c->get_param("extra[$_]") || $defaults{$_} } @extras;
     $c->forward('check_body_extras', [ \%extras ]);
+
+    if ( $c->get_param('logo') ) {
+        my $logo = $c->req->upload('logo');
+
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+            c => $c,
+            data_items => [$logo],
+        });
+
+        if ( $photoset->data ) {
+            $extras{logo} = $photoset->data;
+        } else {
+            $c->stash->{body_errors}{logo} = 'Upload must be an image';
+        }
+    }
+
     return { params => \%params, extras => \%extras };
 }
 
