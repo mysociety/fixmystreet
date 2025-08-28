@@ -275,6 +275,11 @@ sub open311_extra_data_include {
         { name => 'private_comments', description => 'Private comments',
           value => $row->get_extra_metadata('private_comments') || '' };
 
+    if ( $contact->category eq 'Garden Subscription' ) {
+        my $ref = $row->get_extra_metadata('payment_reference');
+        push @$open311_only, { name => 'PaymentCode', value => $ref } if $ref;
+    }
+
     return $open311_only;
 }
 

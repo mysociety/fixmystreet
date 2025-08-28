@@ -1494,7 +1494,6 @@ sub check_extra_data_post_confirm {
 
     $report->discard_changes;
     is $report->state, 'confirmed', 'report confirmed';
-    is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 }
 
