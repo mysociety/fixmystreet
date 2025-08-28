@@ -11,7 +11,10 @@ sub anonymous_account { { email => 'anoncategory@example.org', name => 'Anonymou
 
 package main;
 
+use File::Temp 'tempdir';
 use FixMyStreet::TestMech;
+use Path::Tiny;
+use Test::Output;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -149,8 +152,6 @@ subtest 'check contact renaming' => sub {
     is $report->category, 'testing category';
     $mech->submit_form_ok( { with_fields => { category => 'test category' } } );
 };
-
-
 
 subtest 'check contact updating' => sub {
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
@@ -722,6 +723,72 @@ subtest 'check editing a contact when category groups disabled does not remove e
         } } );
         my $contact = $body->contacts->find({ category => 'group editing test category' });
         is_deeply $contact->get_extra_metadata('group'), ['group 1', 'group 2'], "groups not removed after edit";
+    };
+};
+
+subtest 'check uploading body logo' => sub {
+
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        MAPIT_TYPES => [ 'UTA' ],
+        PHOTO_STORAGE_OPTIONS => {
+            UPLOAD_DIR => $UPLOAD_DIR,
+        },
+    }, sub {
+        subtest 'upload initial' => sub {
+            subtest 'not an image' => sub {
+                my $sample_file
+                    = path(__FILE__)->parent->parent->child("sample.txt");
+
+                $mech->get_ok( '/admin/body/' . $body->id );
+
+                $mech->content_lacks( 'img src="/photo/temp',
+                    'No image initially' );
+
+                stderr_like {
+                    $mech->submit_form_ok(
+                        { with_fields => { logo => $sample_file } } );
+                }
+                qr/Bad photo/, 'Error logged';
+                $mech->content_contains( 'Upload must be an image',
+                    'Error message shown' );
+                $mech->content_lacks( 'img src="/photo/temp',
+                    'File not uploaded' );
+            };
+
+            subtest 'is an image' => sub {
+                my $sample_file
+                    = path(__FILE__)->parent->parent->child("sample.jpg");
+
+                $mech->get_ok( '/admin/body/' . $body->id );
+
+                $mech->content_lacks( 'img src="/photo/temp',
+                    'No image initially' );
+
+                $mech->submit_form_ok(
+                    { with_fields => { logo => $sample_file } } );
+
+                $mech->content_contains( 'img src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg"',
+                    'Image uploaded successfully' );
+            };
+        };
+
+        subtest 'replace existing' => sub {
+            my $sample_file
+                = path(__FILE__)->parent->parent->child("sample2.jpg");
+
+            $mech->get_ok( '/admin/body/' . $body->id );
+
+            $mech->submit_form_ok(
+                { with_fields => { logo => $sample_file } } );
+
+            $mech->content_lacks( 'Upload must be an image',
+                'No error message' );
+            $mech->content_contains( 'img src="/photo/temp.685286eab13ad917f614937170661171b488f280.jpeg"',
+                'Image uploaded successfully' );
+        };
     };
 };
 
