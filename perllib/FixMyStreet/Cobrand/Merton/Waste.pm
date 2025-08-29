@@ -332,7 +332,7 @@ sub waste_request_form_first_next {
     my $self = shift;
     return sub {
         my $data = shift;
-        return 'about_you' if $data->{"container-18"} || $data->{"container-30"};
+        return 'about_you' if $data->{"container-$CONTAINERS{recycling_blue_stripe_bag}"} || $data->{"container-$CONTAINERS{paper_bag}"} || $data->{"container-$CONTAINERS{recycling_purple_bag}"} || $data->{"container-$CONTAINERS{refuse_red_stripe_bag}"};
         return 'replacement';
     };
 }

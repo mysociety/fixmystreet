@@ -14,7 +14,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $bin_data = decode_json(path(__FILE__)->sibling('waste_merton_4443082.json')->slurp_utf8);
 my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_4471550.json')->slurp_utf8);
-my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_4499005.json')->slurp_utf8);
+my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_merton_4499005.json')->slurp_utf8);
 
 my $params = {
     send_method => 'Open311',
@@ -628,36 +628,36 @@ FixMyStreet::override_config {
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 
-    # $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });
-    # subtest 'Fortnightly collection can request a blue stripe bag' => sub {
-    #     $mech->get_ok('/waste/12345/request');
-    #     $mech->submit_form_ok({ with_fields => { 'container-22' => 1 }});
-    #     $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
-    #     $mech->submit_form_ok({ with_fields => { process => 'summary' } });
-    #     $mech->content_contains('request has been sent');
-    #     my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-    #     is $report->get_extra_field_value('uprn'), 1000000002;
-    #     is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Additional bag required";
-    #     is $report->category, 'Request new container';
-    #     is $report->title, 'Request new Recycling Blue Stripe Bag';
-    # };
-    # subtest 'Above-shop address' => sub {
-    #     $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
-    #     $mech->get_ok('/waste/12345/request');
-    #     $mech->content_lacks( '"container-22" value="1"',
-    #         'Weekly collection cannot request a blue stripe bag' );
+    $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });
+    subtest 'Fortnightly collection can request a blue stripe bag' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->submit_form_ok({ with_fields => { 'container-22' => 1 }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('request has been sent');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Additional bag required\n\n1x Recycling Blue Stripe Bag to deliver";
+        is $report->category, 'Request new container';
+        is $report->title, 'Request new Recycling Blue Stripe Bag';
+    };
+    subtest 'Above-shop address' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_lacks( '"container-22" value="1"',
+            'Weekly collection cannot request a blue stripe bag' );
 
-    #     $mech->get_ok('/waste/12345');
+        $mech->get_ok('/waste/12345');
 
-    #     $mech->content_contains( 'Put your bags out between 6pm and 8pm',
-    #         'Property has time-banded message' );
-    #     $mech->content_contains( 'color: #BD63D1', 'Property has purple sack' );
-    #     $mech->content_contains( 'color: #3B3B3A', 'Property has black sack' );
-    #     $mech->content_contains( 'You need to buy your own black sacks',
-    #         'Property has black sack message' );
+        $mech->content_contains( 'Put your bags out between 6pm and 8pm',
+            'Property has time-banded message' );
+        $mech->content_contains( 'color: #BD63D1', 'Property has purple sack' );
+        $mech->content_contains( 'color: #3B3B3A', 'Property has black sack' );
+        $mech->content_contains( 'You need to buy your own black sacks',
+            'Property has black sack message' );
 
-    #     $e->mock('GetServiceUnitsForObject', sub { $bin_data });
-    # };
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
 
     subtest 'test failure to deliver' => sub {
         $e->mock('GetEventsForObject', sub { [ {

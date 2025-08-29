@@ -1,5 +1,16 @@
 [
     {
+      "Data": {
+        "ExtensibleDatum": {
+          "ChildData": {
+            "ExtensibleDatum": [
+              { "DatatypeName": "Container Type", "Value": "10" },
+              { "Value": "1", "DatatypeName": "Container Quantity" }
+            ]
+          },
+          "DatatypeName": "Refuse Containers"
+        }
+      },
       "ServiceTasks": {
         "ServiceTask": {
           "Id": "2001",
@@ -24,43 +35,31 @@
               "ScheduleDescription": "Monday every other week"
             }
           },
-          "Data": {
-            "ExtensibleDatum": {
-              "ChildData": {
-                "ExtensibleDatum": [
-                  { "DatatypeName": "Container Type", "Value": "6" },
-                  { "Value": "1", "DatatypeName": "Quantity" }
-                ]
-              },
-              "DatatypeName": "Refuse Containers"
-            }
-          },
           "ScheduleDescription": "Every Monday fortnightly"
         }
       },
       "ServiceName": "Domestic Refuse Collection",
-      "ServiceId": "405",
+      "ServiceId": "1067",
       "Id": "1001"
     },
     {
+        "Data": {
+          "ExtensibleDatum": {
+            "DatatypeName": "Recycling Containers",
+            "ChildData": {
+              "ExtensibleDatum": [
+                { "Value": "34", "DatatypeName": "Container Type" },
+                { "Value": "1", "DatatypeName": "Container Quantity" }
+              ]
+            }
+          }
+        },
       "ServiceTasks": {
-        "ServiceTask": [
-          {
+        "ServiceTask": {
             "Id": "2002",
             "ScheduleDescription": "Every Monday fortnightly",
             "TaskTypeId": "2632",
             "TaskTypeName": "Collect Domestic Paper Bag",
-            "Data": {
-              "ExtensibleDatum": {
-                "DatatypeName": "Recycling Containers",
-                "ChildData": {
-                  "ExtensibleDatum": [
-                    { "Value": "30", "DatatypeName": "Container" },
-                    { "Value": "1", "DatatypeName": "Quantity" }
-                  ]
-                }
-              }
-            },
             "ServiceTaskSchedules": {
               "ServiceTaskSchedule": {
                 "ScheduleDescription": "Monday every other week",
@@ -80,33 +79,31 @@
             },
             "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
             "StartDate": { "DateTime": "2017-01-01T00:00:00Z" }
-          },
-          {
+          }
+      },
+      "ServiceName": "Domestic Paper Collection",
+      "ServiceId": "1075",
+      "Id": "1002"
+    },
+    {
+        "Data": {
+          "ExtensibleDatum": [
+            {
+              "ChildData": {
+                "ExtensibleDatum": [
+                  { "DatatypeName": "Container Type", "Value": "22" },
+                  { "Value": "1", "DatatypeName": "Container Quantity" }
+                ]
+              },
+              "DatatypeName": "Recycling Containers"
+            }
+          ]
+        },
+      "ServiceTasks": {
+        "ServiceTask": {
             "ScheduleDescription": "Every Monday fortnightly",
             "TaskTypeId": "2246",
             "TaskTypeName": "Collect Domestic Recycling Bag",
-            "Data": {
-              "ExtensibleDatum": [
-                {
-                  "ChildData": {
-                    "ExtensibleDatum": [
-                      { "DatatypeName": "Container Type", "Value": "18" },
-                      { "Value": "1", "DatatypeName": "Quantity" }
-                    ]
-                  },
-                  "DatatypeName": "Recycling Containers"
-                },
-                {
-                  "DatatypeName": "Recycling Containers",
-                  "ChildData": {
-                    "ExtensibleDatum": [
-                      { "DatatypeName": "Container Type", "Value": "21" },
-                      { "Value": "1", "DatatypeName": "Quantity" }
-                    ]
-                  }
-                }
-              ]
-            },
             "ServiceTaskSchedules": {
               "ServiceTaskSchedule": {
                 "NextInstance": {
@@ -127,8 +124,27 @@
             "Id": "2003",
             "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
             "StartDate": { "DateTime": "2017-01-01T00:00:00Z" }
-          },
-          {
+          }
+      },
+      "ServiceName": "Domestic Mixed Collection",
+      "ServiceId": "1071",
+      "Id": "1003"
+    },
+    {
+        "Data": {
+          "ExtensibleDatum": {
+            "ChildData": {
+              "ExtensibleDatum": [
+                { "Value": "1", "DatatypeName": "Container Quantity" },
+                { "DatatypeName": "Container Type", "Value": "46" }
+              ]
+            },
+            "DatatypeName": "Food Containers",
+            "Value": "Food Caddy 23L"
+          }
+        },
+      "ServiceTasks": {
+        "ServiceTask": {
             "ServiceTaskSchedules": {
               "ServiceTaskSchedule": [
                 {
@@ -165,24 +181,11 @@
               "Ref": { "Value": { "anyType": [ "22281556", "8318" ] } }
             },
             "TaskTypeId": "2239",
-            "TaskTypeName": "Collect Domestic Food",
-            "Data": {
-              "ExtensibleDatum": {
-                "ChildData": {
-                  "ExtensibleDatum": [
-                    { "Value": "1", "DatatypeName": "Quantity" },
-                    { "DatatypeName": "Container Type", "Value": "24" }
-                  ]
-                },
-                "DatatypeName": "Food Containers",
-                "Value": "Food Caddy 23L"
-              }
-            }
+            "TaskTypeName": "Collect Domestic Food"
           }
-        ]
       },
-      "ServiceName": "Domestic Recycling Collection",
-      "ServiceId": "408",
-      "Id": "1002"
+      "ServiceName": "Domestic Food Collection",
+      "ServiceId": "1084",
+      "Id": "1004"
     }
 ]
