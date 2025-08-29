@@ -11,7 +11,7 @@ category: user-guide
 Before we can fully explore FixMyStreet Pro’s tools for council staff, it’s important to understand
 the report-making process from the citizen’s point of view.
 
-Here’s a brief look at how a citizen’s experience when reporting an issue located within the
+Here’s a brief look at the user experience for members of the public when reporting an issue located within the
 boundaries of a council using FixMyStreet Pro.
 
 ## Making a report
@@ -19,27 +19,28 @@ boundaries of a council using FixMyStreet Pro.
 ### Where to report
 When a citizen sees a problem and wishes to report it, they can do so in one of three places:
 
-<img alt="Make a report on a council website, fixmystreet.com, or via the FixMyStreet app" src="/assets/img/pro-user-guide/all-the-sites.png" />
-
-- Through the council website, on the council’s branded FixMyStreet instance
+- Through the council website, on the council’s branded FixMyStreet Pro instance
 - On [FixMyStreet.com](https://www.fixmystreet.com), the UK-wide site
 - Via the FixMyStreet app
+
+<img alt="Make a report on a council website, fixmystreet.com, or via the FixMyStreet app" src="/assets/img/pro-user-guide/all-the-sites.png" />
 
 No matter which of these channels they use, the report will be visible in all three places. All
 FixMyStreet instances draw from the same database of reports.
 
 The FixMyStreet website, and the council’s branded version, can also be
 installed as a ‘web app’ – providing a logo on their homescreen that users can
-treat like a native app without the hassle of app stores. If that’s something
-that would be of interest for your installation, please get in touch.
+treat like a native app without the hassle of app stores. Instructions for how to do this are provided by us as standard and can be found from the 'Help' page of your FixMyStreet Pro site, or by adding about/web-app to the end of your unique FixMyStreet Pro URL.
 
 <div class="boxout" markdown="1">
 
 <h4 class="boxout__title">What if a user makes a report on the council site, but it’s the responsibility of a different authority?</h4>
 
-That’s fine: FixMyStreet will simply channel it to the correct authority. If it’s within your council boundaries (so, if you are within a two- or three-tier area, and the report category is handled by a different council) the report will still show on the map, but it won’t go into your workflow.
+That’s fine: FixMyStreet Pro will simply divert it to the correct authority. If it’s within your council boundaries (so, if you are within a two- or three-tier area, and the report category is handled by a different council) the report will still show on the map, but it won’t go into your workflow.
 
-If a user attempts to make a report in a location outside your council boundaries, they’re guided to the main FixMyStreet website.
+In some cases, depending on the type of plan you have opted for and the data available, users may be able to report problems that are within your boundary but are the responsibility of a highways authority or housing association directly via your branded version of FixMyStreet Pro. These reports will not enter your workflow, and the user will be made aware of where their report has been sent.
+
+In all other instances where a user is attempting to report a problem in a location that falls outside of your remit, they're guided to the main FixMyStreet website.
 
 </div>
 
@@ -47,14 +48,13 @@ If a user attempts to make a report in a location outside your council boundarie
 
 <img alt="The start page invites the resident to search for the location of their issue" src="/assets/img/pro-user-guide/home.png" class="admin-screenshot" />
 
-FixMyStreet’s start page invites the resident to search for the location of their issue, by entering any part of an address, for example a street name or postcode. Alternatively they can allow the site to identify their location automatically.
+FixMyStreet’s start page invites the user to search for the location of their issue, by entering any part of an address, for example a street name or postcode. Alternatively they can allow the site to identify their location automatically via GPS.
 
-They’re then taken to a map, centred on this location. The user can pan and zoom the map until they find the exact position of the issue they are reporting. Councils on the ‘Avenue’ price tier may
-choose to include GIS data showing assets such as streetlights or trees which may enable further accuracy.
+They’re then taken to a map, centred on this location. The user can pan and zoom the map until they find the exact position of the issue they are reporting. Councils on the Premium plan may choose to include GIS data showing assets such as streetlights or trees which enable further accuracy.
 
 <img alt="Existing reports are visible to reduce the chance of duplicates" src="/assets/img/pro-user-guide/making-report-duplicates.png"  class="admin-screenshot"/>
 
-All reports are published online, so at this stage, citizens can see if their issue has already been reported. If they find an existing report they may choose to add an update instead of making their own report.
+All reports are published online, so at this stage, citizens can see if their issue has already been reported. FixMyStreet Pro suggests potential duplicates to users based on the location and category of the report. If a report already exists for the same problem, the user can choose to subscribe to the report, which enables them to automatically receive updates on its progress at not extra work for you, the responsible authority.
 
 If not, they place a pin on the map and make their report.
 
@@ -75,14 +75,26 @@ Note that although it is obligatory to include a name and contact details, the u
 name not to be shown on the public report page. Of course, their other contact details are only
 sent to the council and are never made public.
 
+### Making a report while offline
+
+As a progressive web app, users can access FixMyStreet and your branded FixMyStreet Pro service even while offline. This is particularly beneficial for remote communities or frontline contractors who need to access services even in low-connectivity environments.
+
+If a user loads FixMyStreet while offline they will see the "You are currently offline" page. From here, the user will be able to start a report, save it as a draft (including being able to upload a photo and store the location of the problem) and come back to submit later when back online. Users can start and save multiple draft reports if needed.
+
+<strong>Draft reports are not submitted automatically when internet connection is restored</strong>. Once reconnected to the internet, users can find all of their draft reports from the homepage, and from here they must manually continue with each draft report and submit accordingly. 
+
 ## Receiving a response
 
 <img alt="Reponses from the council via email and published on the report page" src="/assets/img/pro-user-guide/report-response.png" class="admin-screenshot" />
 
 Responses from the council come directly back to the user, via the email address they used to
-make the report. Where councils have opted for full integration with FixMyStreet Pro, responses
+make the report. 
+
+Where councils have opted for full integration with FixMyStreet Pro, responses
 may also be posted as automatic updates on the report. Responses may take the form of a request
 for further information or an update on the status of the issue.
+
+If an integration with Notify has been established, users may also receive responses via text message. 
 
 ### Updates from other users
 
