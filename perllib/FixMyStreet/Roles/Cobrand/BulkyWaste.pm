@@ -309,7 +309,7 @@ sub get_all_payments {
 
     my $payment = $p->get_extra_field_value('payment') || 0;
     $payment = sprintf( '%.2f', $payment / 100 );
-    my $ref = $p->get_extra_metadata('chequeReference') || $p->get_extra_metadata('payment_reference') || '';
+    my $ref = $p->get_extra_metadata('payment_reference') || '';
     push @$refs, { ref => $ref, amount => $payment };
 
     if (my $previous_id = $p->get_extra_metadata('previous_booking_id')) {
@@ -341,7 +341,7 @@ sub find_booked_collections {
 
         # If we've already sent it, and we want a full list for display, we don't
         # want to show ones without a reference
-        next if $recent && $key eq 'bulky' && $self->bulky_send_before_payment && !$_->get_extra_metadata('payment_reference') && !$_->get_extra_metadata('chequeReference');
+        next if $recent && $key eq 'bulky' && $self->bulky_send_before_payment && !$_->get_extra_metadata('payment_reference');
 
         push @{$out->{$key}{unconfirmed}}, $_ if $retry && $_->state eq 'unconfirmed';
         push @{$out->{$key}{pending}}, $_ if $pending_states{$_->state};
@@ -612,7 +612,7 @@ sub bulky_reminders {
     # If we haven't had payment, we don't want to send a reminder
     if ($self->bulky_send_before_payment) {
         $collections = $collections->search({
-            extra => { '\?' => [ 'payment_reference', 'chequeReference' ] },
+            extra => { '\?' => 'payment_reference' },
         });
     }
 

@@ -81,7 +81,6 @@ create_contact({ category => 'Request new container', email => '3129' }, 'Waste'
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Action', required => 1, automated => 'hidden_field' },
     { code => 'Reason', required => 1, automated => 'hidden_field' },
-    { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 0, automated => 'hidden_field' },
     { code => 'payment', required => 0, automated => 'hidden_field' },
 );

@@ -301,13 +301,11 @@ sub _duplicate_waste_report {
         $self->garden_subscription_type_field => $self->waste_subscription_types->{Renew},
         uprn => $uprn,
         Subscription_Details_Quantity => $quantity,
-        PaymentCode => $payment->payer,
         payment_method => 'direct_debit',
         $self->garden_subscription_container_field => $report->get_extra_field_value($self->garden_subscription_container_field),
         service_id => $report->get_extra_field_value('service_id'),
         property_id => $report->waste_property_id,
     };
-    $extra->{LastPayMethod} = $self->bin_payment_types->{direct_debit} if $report->cobrand eq 'bromley';
 
     # Refetch containing areas as it's possible they've changed since this
     # subscription was initially created.
@@ -337,6 +335,7 @@ sub _duplicate_waste_report {
     my @extra = map { { name => $_, value => $extra->{$_} } } keys %$extra;
     $renew->set_extra_fields(@extra);
     $renew->set_extra_metadata('payerReference', $payment->payer);
+    $renew->set_extra_metadata('payment_reference', $payment->payer);
     $renew->set_extra_metadata('dd_date', $payment->date);
     $renew->confirm;
     $renew->insert unless $dry_run;
@@ -361,18 +360,7 @@ sub _confirm_dd_report {
         }
     }
     $cur->set_extra_metadata('dd_date', $payment->date);
-    $cur->update_extra_field( {
-        name => 'PaymentCode',
-        description => 'PaymentCode',
-        value => $payment->payer,
-    } );
-    if ($cur->cobrand eq 'bromley') {
-        $cur->update_extra_field( {
-            name => 'LastPayMethod',
-            description => 'LastPayMethod',
-            value => $self->bin_payment_types->{direct_debit},
-        } );
-    }
+    $cur->set_extra_metadata(payment_reference => $payment->payer);
     $self->add_new_sub_metadata($cur, $payment);
     $cur->confirm;
     $cur->update unless $dry_run;
