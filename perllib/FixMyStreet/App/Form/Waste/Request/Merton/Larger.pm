@@ -4,7 +4,7 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Request::Merton';
 
-use constant CONTAINER_REFUSE_240 => 2;
+use constant CONTAINER_REFUSE_240 => 3;
 
 has_page medical_condition => (
     fields => ['medical_condition', 'continue'],

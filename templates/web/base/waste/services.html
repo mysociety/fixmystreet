@@ -25,7 +25,7 @@
     [% END %]
 
   [% IF c.cobrand.moniker == 'merton' %]
-        [% IF NOT (property_time_banded AND unit.service_id == 2242) %]
+        [% IF NOT (property_time_banded AND unit.service_id == 1068) %]
             <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Failure+to+deliver&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a failure to deliver a [% unit.service_name FILTER lower %] container</a>
         [% END %]
     [% END %]
@@ -38,7 +38,7 @@
 [% END %]
 
 [% IF c.cobrand.moniker == 'merton' %]
-    [% IF property_time_banded AND unit.service_id == 2242 %]
+    [% IF property_time_banded AND unit.service_id == 1068 %]
     <span class="waste-service-descriptor">
         You need to buy your own black sacks from a supermarket or other shop. If you have some blue general rubbish bags with a Merton Council logo, you can continue to use these until they run out, but we no longer provide new ones.
     </span>
