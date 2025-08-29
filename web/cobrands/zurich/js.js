@@ -16,7 +16,7 @@ $(function() {
         $(this).toggleClass("active");
     }).on('click', function(){
         window.location = this.getElementsByTagName('a')[0];
-    }).find('td').last().hide();
+    }).find('td:last-child').hide();
 
     $('th.edit').hide();
 
