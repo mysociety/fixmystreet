@@ -8,201 +8,75 @@ categories: user-guide
 
 # FixMyStreet Pro staff user accounts
 
-Now you know how FixMyStreet works from the residents’ point of view, it’s time to look at how
-staff can access and use the admin tools.
+This section of the manual is designed to help you understand how staff accounts work on FixMyStreet Pro.
+
+## Important notice
+
+This guide provides a **general overview** of each of FixMyStreet Pro's standard features. There may be small differences in how the software functions for different authorities, depending on how you use the service, the integration(s) you have selected, and the individual processes reflected in your workflow.
+
+Please speak to your Administrator if you have questions about functionality not covered specifically in the below guidance. If you are the Administrator and you need extra help, please open a ticket on Freshdesk.
+
+***
 
 ## Logging in
 
-Council staff accounts are managed by Administrator-level users.
+Staff accounts are managed by Administrator-level users.
 
-Contact your Administrator/s if you encounter any problems logging in, or any other aspect of
-account management.
+Contact your Administrator/s if you encounter any problems logging in, or any other aspect of account management.
 
 ### How to log in
 
-Go to your council’s FixMyStreet installation, click on ‘sign in’, and enter your council email
-address.
+Go to your authority's FixMyStreet Pro website, click on ‘Sign in’ (usually located in the top navigation bar) and enter your email address.
 
-You’ll be invited to enter your password if you already have one (i.e, if you have an existing
-FixMyStreet account associated with this email address). If not, go to ‘No, let me sign in by email’.
+<img alt="Logging in" src="/assets/img/pro-user-guide/signing-in-link.png" class="admin-screenshot" />
 
-Decide on a password and enter it in the password box, then click ‘sign in’. A confirmation email
-will be sent to the email address you provided.
+You’ll be invited to enter your password if you already have one. If not, select the option to receive a link to sign in via email.
+
+Decide on a password and enter it in the password box, then click ‘Sign in’. A confirmation email will be sent to the email address you provided.
+
+If you have an integration into a Single Sign-on system, you will be able to choose this as a method of logging in.
+
+<img alt="Single sign on" src="/assets/img/pro-user-guide/signing-in-sso.jpeg" class="admin-screenshot" />
 
 ### Password security
 
-Your password must contain 8 or more characters, and must not be one of the most commonly
-used combinations (such as ‘Password’ or ‘123456’). Your council may also have password policies
-which you are expected to abide by.
+Your password must contain 8 or more characters, and must not be one of the most commonly used combinations (such as ‘Password’ or ‘123456’).
+
+**Please note:** Your organisation may also have password policies which you are expected to abide by.
 
 ### Two-factor authentication
 
 Any staff user can choose to set up two-factor authentication on their account.
-To do this, they will need an app on their phone that can generate time-based
-authentication keys, such as Google Authenticator or a password manager. Then.
-they can visit their account page on the site and select ‘Activate two-factor
-authentication’ to receive a QR code to scan with the app.
 
-If you wish your organisation to have mandated two-factor authentication,
-please get in touch.
+To do this, they will need an app on their phone that can generate time-based authentication keys, such as Google Authenticator or a password manager.
+
+From the 'Your account' page, select 'Security'.
+
+<img alt="Security settings" src="/assets/img/ww-user-guide/WasteWorks%20security%20settings.png" class="admin-screenshot" />
+
+From here choose ‘Activate two-factor authentication’ to receive a QR code to scan with the app.
+
+**Please note:** If you wish your organisation to have mandated two-factor authentication, please get in touch via the helpdesk.
 
 ### How to log out
 
 Click on ‘Your account’ in the top menu, then click ‘Sign out’.
-If you are using a device or computer that is shared with others, we advise always logging out at
-the end of your session.
+
+<img alt="Sign out" src="/assets/img/ww-user-guide/WasteWorks%20sign%20out.png" class="admin-screenshot" />
+
+If you are using a device or computer that is shared with others, we advise always logging out at the end of your session.
 
 ## Changing your password
 
-You can change your password at any time by clicking on ‘Your account’ in the top menu bar.
+You can change your password at any time by clicking on ‘Your account’ in the top menu bar and selecting the 'Change password' option.
 
+<img alt="Change password" src="/assets/img/ww-user-guide/WasteWorks%20change%20password.png" class="admin-screenshot" />
 
 ## Permissions and Roles
 
-Staff accounts can be assigned a variety of permissions or roles, depending on
-each team member’s needs or responsibilities. Permissions can be combined in
-any way, grouped into custom roles, or applied individually.
+Staff accounts can be assigned a variety of permissions or roles, depending on each team member’s needs or responsibilities.
 
-Some common staff roles and the appropriate permissions are shown in the table below, but you
-can tailor your permissions and roles to best reflect your team’s operations.
+Roles and permissions can differ vastly between installations of FixMyStreet Pro because different authorities use the solution in different ways.
 
+Permissions can be combined in any way, grouped into custom roles, or applied individually. You can tailor your permissions and roles to best reflect your team’s operations. See the <a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#adminstrating-staff-accounts"> Administrating staff accounts section</a>.
 
-<table class="table table--responsive">
-<thead>
-    <tr>
-        <th></th>
-        <th scope="col">Customer Services</th>
-        <th scope="col">Inspectors</th>
-        <th scope="col">Internal maintenance teams</th>
-        <th scope="col">Administrators</th>
-    </tr>
-</thead>
-<tbody>
-    <tr>
-        <th scope="row">View all reports across the council area</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">View a single report</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Acknowledge a report</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Provide an update on a report</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Create reports on another user’s behalf</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Prioritise a report</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Moderate a report</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Hide a report</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Update a report’s status</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Ask for more information</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Use template responses</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Create template responses</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Make a shortlist</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">View reports offline</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Manage staff accounts</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Set categories</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Access dashboard: summary, timeline, stats</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-    <tr>
-        <th scope="row">Set priority parameters</th>
-        <td data-label="Customer Services"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Inspectors"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Internal maintenance teams"><i class="boolean-icon boolean-icon--no">No</i></td>
-        <td data-label="Administrators"><i class="boolean-icon boolean-icon--yes">Yes</i></td>
-    </tr>
-</tbody>
-</table>

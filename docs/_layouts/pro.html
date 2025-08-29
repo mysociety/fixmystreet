@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-pro.css" | absolute_url }}">
     <link rel="stylesheet" href="{{ "/assets/css/fixmystreet-pro-print.css" | absolute_url }}" media="print">
     <link rel="stylesheet" href="https://www.societyworks.org/wp-content/themes/fixmystreet-pro/assets/css/main.css" />
+    <link rel="stylesheet" href="{{ "/assets/vendor/lite-youtube-embed/lite-yt-embed.css" | relative_url }}">
     <link href="{{ "/atom.xml" | absolute_url }}" rel="alternate" title="FixMyStreet Platform" type="application/atom+xml">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -18,6 +19,7 @@
     <script type="text/javascript" src="{{ "/assets/vendor/jquery-migrate.min.js" | absolute_url }}"></script>
     <script type="text/javascript" src="https://www.societyworks.org/wp-content/themes/fixmystreet-pro/assets/javascript/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://www.societyworks.org/wp-content/themes/fixmystreet-pro/assets/javascript/main.js"></script>
+    <script src="/assets/vendor/lite-youtube-embed/lite-yt-embed.min.js" type="module"></script>
   </head>
   <body{% if page.bodyclass %} class="{{ page.bodyclass }}"{% endif %}>
 
@@ -56,10 +58,10 @@
           <nav class="sidebar">
                 <ul>
                   <li><a href="/pro-manual/">What is FixMyStreet Pro?</a></li>
-                  <li><a href="/pro-manual/citizens-experience/">The Citizen’s Experience</a></li>
+                  <li><a href="/pro-manual/citizens-experience/">The citizen’s experience</a></li>
                   <li><a href="/pro-manual/deep-linking/">Deep linking from your site</a></li>
-                  <li><a href="/pro-manual/staff-user-accounts/">Staff User Accounts</a></li>
-                  <li><a href="/pro-manual/admin-tasks/">Administrator Tasks</a>
+                  <li><a href="/pro-manual/staff-user-accounts/">Staff user accounts</a></li>
+                  <li><a href="/pro-manual/admin-tasks/">Administrator tasks</a>
                     <ul>
                       <li><a href="/pro-manual/admin-tasks/#navigating-as-pro-staff">Navigating FixMyStreet Pro as a staff user</a></li>
                       <li><a href="/pro-manual/admin-tasks/#viewing-reports-your-area">Viewing all reports in your area</a></li>
@@ -68,9 +70,11 @@
                       <li><a href="/pro-manual/admin-tasks/#filtering-sorting-reports">Filtering and sorting reports</a></li>
                       <li><a href="/pro-manual/admin-tasks/#view-single-report">Viewing a single report</a></li>
                       <li><a href="/pro-manual/admin-tasks/#search-report">Searching for a report</a></li>
-                      <li><a href="/pro-manual/admin-tasks/#search-user">User search/edit</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#search-user">Searching for a user</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#administering-user-accounts">Administering user accounts</a></li>
                       <li><a href="/pro-manual/admin-tasks/#view-reports-non-staff-user">Viewing reports as a non-staff user</a></li>
-                      <li><a href="/pro-manual/admin-tasks/#create-reports-behalf-user">Creating reports on behalf of another user</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#create-reports-behalf-user">Creating reports and updates on behalf of another user</a></li>
+                      <li><a href="/pro-manual/admin-tasks/#creatingviewing-private-reports">Creating and viewing private reports</li>
                       <li><a href="/pro-manual/admin-tasks/#deal-undesirable-content">Dealing with undesirable content</a></li>
                       <li><a href="/pro-manual/admin-tasks/#correct-reporter-errors">Correcting reporter errors</a></li>
                       <li><a href="/pro-manual/admin-tasks/#keep-report-maker-informed">Keeping the report-maker informed</a></li>
