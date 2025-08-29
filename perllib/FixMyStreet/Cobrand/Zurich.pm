@@ -1449,4 +1449,21 @@ sub munge_around_filter_category_list {
     $c->stash->{prefill_description} = $c->get_param('prefill_description') if $c->get_param('prefill_description');
 }
 
+sub get_default_hierarchical_attributes {
+    my $self = shift;
+    return {
+        "Geschäftsbereich" => {
+            "entries" => {}
+        },
+        "Objekt" => {
+            "parent" => "Geschäftsbereich",
+            "entries" => {}
+        },
+        "Kategorie" => {
+            "parent" => "Geschäftsbereich",
+            "entries" => {}
+        }
+    };
+}
+
 1;
