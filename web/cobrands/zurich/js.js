@@ -94,11 +94,54 @@ $(function() {
 
     }).trigger('change');
 
+    /*
+     * Hierarchical Attributes functionality
+     */
+
+    var $geschaftsbereichSelect = $('#hierarchical_geschaftsbereich');
+    var $objektSelect = $('#hierarchical_objekt');
+    var $kategorieSelect = $('#hierarchical_kategorie');
+
+    // Form validation for hierarchical attributes
+    function validateHierarchicalAttributes() {
+        var isValid = true;
+        var errorMessages = [];
+
+        if (!$geschaftsbereichSelect.val()) {
+            errorMessages.push('Please select a Geschäftsbereich');
+            isValid = false;
+        }
+
+        if (!$objektSelect.val()) {
+            errorMessages.push('Please select an Objekt');
+            isValid = false;
+        }
+
+        if (!$kategorieSelect.val()) {
+            errorMessages.push('Please select a Kategorie');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            alert(errorMessages.join('\n'));
+        }
+
+        return isValid;
+    }
+
     $("form#report_edit input[type=submit]").on('click', function() {
         $("form#report_edit").data("clicked_button", $(this).attr("name"));
     });
 
-    $("form#report_edit").on('submit', function() {
+    $("form#report_edit").on('submit', function(e) {
+        // Validate hierarchical attributes when visible
+        if ($geschaftsbereichSelect && $geschaftsbereichSelect.length && $geschaftsbereichSelect.is(':visible')) {
+            if (!validateHierarchicalAttributes()) {
+                e.preventDefault();
+                return false;
+            }
+        }
+
         // Make sure the external body field has a value if it's visible
         // and the form is submitted as a 'save' action (i.e. not a rotate
         // photo).
@@ -125,4 +168,69 @@ $(function() {
     $("form#report_edit").find("input, select, textarea").on('change', function() {
         form_fields_changed = true;
     });
+
+    if ($geschaftsbereichSelect.length && $objektSelect.length && $kategorieSelect.length) {
+
+        // Initially disable the second and third dropdowns
+        $objektSelect.prop('disabled', true);
+        $kategorieSelect.prop('disabled', true);
+
+        // Filter options by parent ID
+        var filterOptions = function($selectElement, parentId) {
+            var $options = $selectElement.find('option[data-parent]');
+            var hasVisibleOptions = false;
+
+            $options.each(function() {
+                var $option = $(this);
+                var optionParentId = $option.data('parent').toString();
+
+                if (parentId === '' || optionParentId === parentId) {
+                    $option.show();
+                    hasVisibleOptions = true;
+                } else {
+                    $option.hide();
+                    if ($option.prop('selected')) {
+                        $option.prop('selected', false);
+                    }
+                }
+            });
+
+            return hasVisibleOptions;
+        };
+
+        // Reset and disable dependent dropdowns when Geschäftsbereich changes
+        var resetDependentDropdowns = function($selectElement) {
+            $selectElement.val('').prop('disabled', true);
+            $selectElement.find('option[data-parent]').hide();
+        };
+
+        // Handle Geschäftsbereich selection
+        $geschaftsbereichSelect.on('change', function() {
+            var selectedId = $(this).val();
+
+            resetDependentDropdowns($objektSelect);
+            resetDependentDropdowns($kategorieSelect);
+
+            if (selectedId) {
+                if (filterOptions($objektSelect, selectedId)) {
+                    $objektSelect.prop('disabled', false);
+                }
+
+                if (filterOptions($kategorieSelect, selectedId)) {
+                    $kategorieSelect.prop('disabled', false);
+                }
+            }
+        });
+
+        // Initialize dropdowns based on current selections
+        var selectedGeschaftsbereich = $geschaftsbereichSelect.val();
+        if (selectedGeschaftsbereich) {
+            if (filterOptions($objektSelect, selectedGeschaftsbereich)) {
+                $objektSelect.prop('disabled', false);
+            }
+            if (filterOptions($kategorieSelect, selectedGeschaftsbereich)) {
+                $kategorieSelect.prop('disabled', false);
+            }
+        }
+    }
 });
