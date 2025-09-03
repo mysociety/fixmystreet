@@ -230,7 +230,7 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
 @import "mysoc_footer";
 
 html.lazyload .js-lazyload {
-  background-image: none;
+  background-image: none !important;
 }
 
 .mysoc-footer {
