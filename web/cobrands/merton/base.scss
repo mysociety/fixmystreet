@@ -375,9 +375,12 @@ body.waste h1.govuk-heading-xl:not(:empty) {
     border-width: 1px;
 }
 
-.waste-services-launch-panel input[type="submit"] {
+.waste-services-launch-panel .waste-service-link {
     text-decoration: underline;
     font-weight: bold;
+}
+.waste-services-launch-panel .waste-service-staff {
+    font-weight: normal;
 }
 
 .govuk-grid-column-one-third > .aside {
