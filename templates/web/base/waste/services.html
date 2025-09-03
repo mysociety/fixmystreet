@@ -44,7 +44,7 @@
     </span>
     [% END %]
     [% IF is_staff %]
-        <a href="[% c.uri_for_action('waste/report', [ property.id ]) %]?additional=1&amp;service-[% unit.service_id %]=1" class="waste-service-link waste-service-descriptor">Request an additional [% unit.service_name FILTER lower %] collection</a>
+        <a href="[% c.uri_for_action('waste/report', [ property.id ]) %]?additional=1&amp;service-[% unit.service_id %]=1" class="waste-service-link waste-service-descriptor waste-service-staff">Request an additional [% unit.service_name FILTER lower %] collection</a>
     [% END %]
     [% IF unit.report_allowed %]
         <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
