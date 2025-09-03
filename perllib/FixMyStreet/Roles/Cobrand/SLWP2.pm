@@ -186,6 +186,16 @@ sub waste_relevant_serviceunits {
         }
 
     }
+
+    # Merton have asked for a specific ordering
+    if ($self->moniker eq 'merton') {
+        my @order = qw(garden domestic_food communal_food domestic_mixed communal_mixed fas_mixed
+            domestic_paper communal_paper fas_paper domestic_refuse communal_refuse fas_refuse);
+        my $c = 0;
+        my %order = map { $service_ids->{$_} => $c++ } @order;
+        @rows = sort { $order{$a->{ServiceId}} <=> $order{$b->{ServiceId}} } @rows;
+    }
+
     return @rows;
 }
 
