@@ -101,15 +101,6 @@ fixmystreet.roadworks.display_message = function(feature) {
         $div.html($msg);
         fixmystreet.pageController.addNextPage('roadworks', $div);
     }
-    var oxford_roadworks_page = $(".js-reporting-page.js-roadworks-oxf-page");
-    var oxford_messages;
-    if (oxford_roadworks_page.length) {
-        oxford_messages = $(".js-oxf-roadworks-message");
-    }
-    if (oxford_messages) {
-        oxford_roadworks_page.remove();
-        $(".js-roadworks-message").after(oxford_messages);
-    }
 };
 
 fixmystreet.roadworks.filter = function(feature) {
