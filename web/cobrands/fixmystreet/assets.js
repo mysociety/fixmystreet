@@ -37,12 +37,14 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
           // Check both group and category because e.g. Isle of Wight has
           // layers attached with groups that should also apply to categories
           // with the same name
-          relevant = (OpenLayers.Util.indexOf(layer.asset_group, group) != -1 || OpenLayers.Util.indexOf(layer.asset_group, category) != -1);
-      }
-      // if not already relevant, check asset_category next. Doing this independently
-      // of asset_group allows config to specific both asset_group and asset_category
-      // and layer will be relevant if either match.
-      if (!relevant && layer.asset_category) {
+          relevant = (
+              (OpenLayers.Util.indexOf(layer.asset_group, group) != -1 &&
+                  (!layer.asset_group_except_category ||
+                      category && OpenLayers.Util.indexOf(layer.asset_group_except_category, category) == -1)
+              ) ||
+              OpenLayers.Util.indexOf(layer.asset_group, category) != -1
+          );
+      } else {
           relevant = (OpenLayers.Util.indexOf(layer.asset_category, category) != -1);
       }
       return relevant &&
@@ -962,6 +964,10 @@ relevant - a function, which if present is called with the current category and
     group and returns whether the layer is relevant or not
 asset_group - a string or array of strings containing groups relevant to the
     layer
+asset_group_except_category - an array of strings containing categories within
+    the group/groups in asset_group to ignore.
+    If present, group selection will no longer be enough for relevant to apply
+    - a category must be selected first.
 asset_category - a string or array of strings containing categories relevant to
     the layer
 body - if present, as well as the above, this string must match one of the

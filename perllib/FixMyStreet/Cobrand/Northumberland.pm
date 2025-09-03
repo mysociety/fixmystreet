@@ -166,6 +166,28 @@ sub dashboard_export_problems_add_columns {
         nearest_address => 'Nearest address',
     );
 
+    # Insert Old ward column immediately after the Ward column
+    $csv->splice_csv_column('local_coords_x', 'old_ward', 'Old ward');
+
+    # MapIt children lookups:
+    #  - area_children()   -> current generation only (new wards)
+    #  - area_children(1)  -> all generations (old + new wards)
+    # We use these to split the CSV 'Ward' (current only) and 'Old ward'.
+    my $current_children = $csv->body ? $csv->body->area_children() : {};
+    my $all_children = $csv->body ? $csv->body->area_children(1) : {};
+
+    # Helper to compute Ward (current) and Old ward (historic) from a CSV areas string
+    my $compute_wards = sub {
+        my ($areas) = @_;
+        $areas ||= '';
+        my @ids = split ',', $areas;
+        my @current_ids = grep { $current_children->{$_} } @ids;
+        my @old_ids = grep { $all_children->{$_} && !$current_children->{$_} } @ids;
+        my $wards = join ', ', map { $current_children->{$_}->{name} } @current_ids;
+        my $old_ward = join ', ', map { $all_children->{$_}->{name} } @old_ids;
+        return ($wards, $old_ward);
+    };
+
     my $response_time = sub {
         my $hashref = shift;
         if (my $response = ($hashref->{fixed} || $hashref->{closed}) ) {
@@ -187,8 +209,12 @@ sub dashboard_export_problems_add_columns {
                 $address = $addr->summary;
             }
 
+            my ($wards, $old_ward) = $compute_wards->($hashref->{areas});
+
             return {
                 user_name_display => $report->{name},
+                wards => $wards,
+                old_ward => $old_ward,
                 response_time => $response_time->($hashref),
                 nearest_address => $address,
             };
@@ -218,11 +244,15 @@ sub dashboard_export_problems_add_columns {
             $address = $report->nearest_address;
         }
 
+        my ($wards, $old_ward) = $compute_wards->($hashref->{areas});
+
         return {
             user_name_display => $report->name,
             staff_user => $staff_user,
             staff_role => $staff_role,
             assigned_to => $problems_to_user->{$report->id} || '',
+            wards => $wards,
+            old_ward => $old_ward,
             response_time => $response_time->($hashref),
             nearest_address => $address,
         };

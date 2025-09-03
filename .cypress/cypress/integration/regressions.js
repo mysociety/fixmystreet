@@ -16,12 +16,12 @@ describe('Regression tests', function() {
     });
     it('Does not fade on new pin hover', function() {
         cy.visit('/around?pc=' + Cypress.env('postcode') + '&js=1');
-        cy.get('#map_box').click(200, 200);
+        cy.get('#map_box').click(232, 200);
         cy.get('#map_box image').last().trigger('mousemove').should('have.css', 'opacity', '1');
     });
     it('Does not hide the new report pin even if you click really quick', function() {
         cy.visit('/around?pc=' + Cypress.env('postcode') + '&js=1');
-        cy.get('#map_box').click(200, 200);
+        cy.get('#map_box').click(232, 200);
         cy.get('#loading-indicator').should('be.hidden');
         cy.get('#map_box image').should('be.visible');
     });
@@ -66,7 +66,7 @@ describe('Regression tests', function() {
       cy.pickCategory('Graffiti');
       cy.contains(/These will be sent to West Northamptonshire Council and also/);
 
-      cy.get('#map_box').click(200, 200);
+      cy.get('#map_box').click(232, 200);
       cy.wait('@report-ajax');
       cy.contains(/These will be sent to West Northamptonshire Council and also/);
     });

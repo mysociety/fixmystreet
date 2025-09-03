@@ -189,7 +189,12 @@ if ($opt->test_fixtures) {
             ], name => 'TfL', cobrand => 'tfl' },
         { area_id => 2237, categories => [ 'Flytipping', 'Roads', 'Parks', 'Lamp Out of Light' ], name => 'Oxfordshire County Council', cobrand => 'oxfordshire' },
         { area_id => 2551, categories => [ 'Abandoned vehicles', 'Dog fouling', 'Blocked drain' ], name => 'Bath and North East Somerset Council', cobrand => 'bathnes' },
-        { area_id => 2238, categories => [ 'Flytipping', 'Roads', 'Parks' ], name => 'Shropshire Council', cobrand => 'shropshire' },
+        { area_id => 2238, categories => [
+                { group => 'Traffic lights', category => 'Red light broken' },
+                { group => 'Traffic lights', category => 'Green light broken' },
+                { group => 'Traffic lights', category => 'Temporary traffic lights' },
+                'Flytipping', 'Roads', 'Parks'
+            ], name => 'Shropshire Council', cobrand => 'shropshire' },
         { area_id => 2500, categories => [ 'Abandoned vehicles', 'Flytipping', 'Flyposting', 'Parks' ], name => 'Merton Council', cobrand => 'merton' },
         { area_id => 2488, categories => [ 'Grass verges / shrub beds - littering' , 'Pavement damage', 'Fly-tipping', 'Dog fouling'], name => 'Brent Council', cobrand => 'brent' },
         { area_id => 2535, categories => [ 'Abandoned vehicles', 'Graffiti', 'Street lights'], name => 'Sandwell Borough Council' },

@@ -15,7 +15,7 @@ describe('buckinghamshire cobrand', function() {
   });
 
   it('sets the site_code correctly', function() {
-    cy.get('#map_box').click(290, 307);
+    cy.get('#map_box').click(322, 307);
     cy.wait('@report-ajax');
     cy.pickCategory('Roads & Pavements');
     cy.wait('@roads-layer');
@@ -27,7 +27,7 @@ describe('buckinghamshire cobrand', function() {
   });
 
   it('uses the label "Full name" for the name field', function() {
-    cy.get('#map_box').click(290, 307);
+    cy.get('#map_box').click(322, 307);
     cy.wait('@report-ajax');
     cy.pickCategory('Flytipping');
     cy.wait('@around-ajax');
@@ -43,7 +43,7 @@ describe('buckinghamshire cobrand', function() {
   });
 
   it('shows gritting message', function() {
-    cy.get('#map_box').click(290, 307);
+    cy.get('#map_box').click(322, 307);
     cy.wait('@report-ajax');
     cy.pickCategory('Roads & Pavements');
     cy.wait('@roads-layer');
@@ -74,7 +74,7 @@ describe("Parish grass cutting category speed limit question", function() {
     cy.get('[name=pc]').type('SL9 0NX');
     cy.get('[name=pc]').parents('form').submit();
     cy.wait('@update-results');
-    cy.get('#map_box').click(290, 307);
+    cy.get('#map_box').click(322, 307);
     cy.wait('@report-ajax');
     cy.pickCategory('Grass, hedges and weeds');
     cy.nextPageReporting();
@@ -125,7 +125,7 @@ describe("Correct body showing depending on category", function() {
     cy.get('[name=pc]').type('SL9 0NX');
     cy.get('[name=pc]').parents('form').submit();
     cy.wait('@update-results');
-    cy.get('#map_box').click(290, 307);
+    cy.get('#map_box').click(322, 307);
     cy.wait('@report-ajax');
   });
 

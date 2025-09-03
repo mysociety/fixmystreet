@@ -471,6 +471,13 @@ shropshire:
     actions:
       found: 'fixmystreet.assets.shropshire.street_found'
       not_found: 'fixmystreet.assets.shropshire.street_not_found'
+  - wfs_feature: "Traffic_Signal_Areas"
+    asset_id_field: 'ASSET_ID'
+    attributes:
+      central_asset_id: 'ASSET_ID'
+    asset_group: 'Traffic lights'
+    asset_group_except_category: ['Temporary traffic lights']
+    asset_item: 'traffic signal'
 surrey:
   - asset_type: 'spot'
     max_resolution: 4.777314267158508

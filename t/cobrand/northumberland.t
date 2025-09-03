@@ -2,6 +2,7 @@ use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Map::OS::Leisure;
 use FixMyStreet::Script::CSVExport;
+use Text::CSV;
 use Test::MockModule;
 use File::Temp 'tempdir';
 
@@ -57,6 +58,58 @@ FixMyStreet::override_config {
         $mech->content_contains('Test User', 'name of anonymous user');
         $mech->content_like(qr{/report/$id1,.*?,"Role 1","Council User"}, 'staff user, role, and assigned to');
         $mech->content_like(qr{/report/$id2,.*?,"Role 1","Council User","1 day, 3 hours, 37 minutes"}, 'staff user, role, assigned to, and response time');
+    };
+
+    subtest 'Ward vs Old ward columns' => sub {
+        # Give problem1 both a current and an old area ID according to the MapIt mock
+        # Current children: 60705 ("Trowbridge"); All generations adds 58805 ("Bishops Cannings")
+        my $id1 = $problem1->id;
+        $problem1->update({ areas => ',60705,58805,' });
+
+        my $extract_ward_values = sub {
+            my ($content, $id, $suffix) = @_;
+            my @lines = split /\n/, $content;
+            my $csv = Text::CSV->new({ binary => 1 });
+
+            ok $csv->parse($lines[0]), "parsed header line$suffix";
+            my @headers = $csv->fields;
+
+            # Build a header -> index lookup
+            my %idx_for;
+            for (my $i = 0; $i < @headers; $i++) {
+                $idx_for{$headers[$i]} = $i;
+            }
+
+            my $idx_id   = 0; # first column is the identifier used in tests
+            my $idx_ward = $idx_for{'Ward'};
+            my $idx_old  = $idx_for{'Old ward'};
+
+            ok defined $idx_ward, "found Ward column$suffix";
+            ok defined $idx_old,  "found Old ward column$suffix";
+
+            # Find the row for the requested id and return both values
+            for my $line (@lines[1 .. $#lines]) {
+                next unless $csv->parse($line);
+                my @f = $csv->fields;
+                next unless $f[$idx_id] && $f[$idx_id] eq "$id";
+                return ($f[$idx_ward], $f[$idx_old]);
+            }
+
+            return (undef, undef);
+        };
+
+        $mech->log_in_ok( $staffuser->email );
+        $mech->get_ok('/dashboard?export=1');
+        my ($ward_val, $old_val) = $extract_ward_values->($mech->content, $id1, '');
+        is $ward_val, 'Trowbridge', 'Ward shows only current ward';
+        is $old_val, 'Bishops Cannings', 'Old ward shows historic ward';
+
+        # Now check the premade export path
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        ($ward_val, $old_val) = $extract_ward_values->($mech->content, $id1, ' (dbi)');
+        is $ward_val, 'Trowbridge', 'Ward (dbi) shows only current ward';
+        is $old_val, 'Bishops Cannings', 'Old ward (dbi) shows historic ward';
     };
 
     subtest 'Staff OOH shown on National Highways roads' => sub {
