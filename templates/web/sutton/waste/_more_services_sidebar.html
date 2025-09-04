@@ -21,6 +21,11 @@
           <a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Book bulky goods collection</a>
       </li>
     [% END %]
+    [% IF property.show_small_items %]
+      <li>
+          <a href="[% c.uri_for_action('waste/bulky/index_small', [ property.id ]) %]">Book small items collection</a>
+      </li>
+    [% END %]
   </ul>
 [% END %]
 
