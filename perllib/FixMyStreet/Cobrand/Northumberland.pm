@@ -162,17 +162,13 @@ sub dashboard_export_problems_add_columns {
 
     # Replace 'wards' column with 'current_ward' and add 'old_ward'
     # so the default wards code isn't executed.
-    my @cols = @{ $csv->csv_columns };
-    my @heads = @{ $csv->csv_headers };
-    for (my $i = 0; $i < @cols; $i++) {
-        if ($cols[$i] eq 'wards') {
-            splice @cols, $i, 1, ('current_ward', 'old_ward');
-            splice @heads, $i, 1, ('Current ward', 'Old ward');
+    for (my $i = 0; $i < @{$csv->csv_columns}; $i++) {
+        if ($csv->csv_columns->[$i] eq 'wards') {
+            splice @{$csv->csv_columns}, $i, 1, ('current_ward', 'old_ward');
+            splice @{$csv->csv_headers}, $i, 1, ('Current ward', 'Old ward');
             last;
         }
     }
-    $csv->_set_csv_columns(\@cols);
-    $csv->_set_csv_headers(\@heads);
 
     # MapIt children lookups:
     #  - area_children()   -> current generation only (new wards)
