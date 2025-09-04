@@ -675,7 +675,7 @@ sub waste_munge_bulky_data {
     my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
 
     my $guid_key = $c->stash->{booking_class}->guid_key;
-    $data->{extra_GUID} = $self->{c}->waste_cache_get($guid_key);
+    $data->{extra_GUID} = $c->waste_cache_get($guid_key);
     $data->{extra_reservation} = $ref;
 
     $data->{title} = $fields->{title};
@@ -684,7 +684,7 @@ sub waste_munge_bulky_data {
     $data->{ $fields->{date_field} } = $date;
     $data->{extra_Exact_Location} = $data->{location};
 
-    my $first_date = $self->{c}->session->{first_date_returned};
+    my $first_date = $c->session->{first_date_returned};
     $first_date = DateTime::Format::W3CDTF->parse_datetime($first_date);
     my $dt = DateTime::Format::W3CDTF->parse_datetime($date);
     $data->{'extra_First_Date_Offered_-_Bulky'} = $first_date->strftime("%d/%m/%Y");
