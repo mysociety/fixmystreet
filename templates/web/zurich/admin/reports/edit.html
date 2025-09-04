@@ -159,61 +159,26 @@
         <dd class="screen-only hierarchical-attributes">
             [% SET selected = selected_hierarchical_attributes || {} %]
 
+            [% FOR field IN [ 'Geschäftsbereich', 'Objekt', 'Kategorie' ] %]
             <div class="hierarchical-field">
-                <label for="hierarchical_geschaftsbereich">[% loc('Geschäftsbereich:') %]</label>
-                <select class="form-control" name="hierarchical_geschaftsbereich" id="hierarchical_geschaftsbereich"
-                        [% IF hierarchical_errors.hierarchical_geschaftsbereich %]style="border-color: red;"[% END %]>
-                    <option value="">-- [% loc('Select Geschäftsbereich') %] --</option>
-                    [% FOREACH id IN hierarchical_attributes.Geschäftsbereich.entries.keys.sort %]
-                        [% entry = hierarchical_attributes.Geschäftsbereich.entries.$id %]
-                        [% NEXT IF entry.deleted %]
-                        <option value="[% id %]" [% ' selected' IF selected.geschaftsbereich == id %]>
-                            [% entry.name %]
-                        </option>
-                    [% END %]
-                </select>
-                [% IF hierarchical_errors.hierarchical_geschaftsbereich %]
-                    <div class="error-msg">[% hierarchical_errors.hierarchical_geschaftsbereich %]</div>
-                [% END %]
-            </div>
-
-            <div class="hierarchical-field">
-                <label for="hierarchical_objekt">[% loc('Objekt:') %]</label>
-                <select class="form-control" name="hierarchical_objekt" id="hierarchical_objekt"
-                        [% IF hierarchical_errors.hierarchical_objekt %]style="border-color: red;"[% END %]>
-                    <option value="">-- [% loc('Select Objekt') %] --</option>
-                    [% FOREACH id IN hierarchical_attributes.Objekt.entries.keys.sort %]
-                        [% entry = hierarchical_attributes.Objekt.entries.$id %]
+                <label for="hierarchical_[% field %]">[% field %]:</label>
+                <select class="form-control" name="hierarchical_[% field %]" id="hierarchical_[% field %]"
+                        [% IF hierarchical_errors.$field %]style="border-color: red;"[% END %]>
+                    <option value="">--</option>
+                    [% FOREACH id IN hierarchical_attributes.$field.sorted_entries %]
+                        [% entry = hierarchical_attributes.$field.entries.$id %]
                         [% NEXT IF entry.deleted %]
                         [% parent_id = entry.parent_id || 0 %]
-                        <option value="[% id %]" data-parent="[% parent_id %]" [% ' selected' IF selected.objekt == id %]>
+                        <option value="[% id %]" data-parent="[% parent_id %]" [% ' selected' IF selected.$field == id %]>
                             [% entry.name %]
                         </option>
                     [% END %]
                 </select>
-                [% IF hierarchical_errors.hierarchical_objekt %]
-                    <div class="error-msg">[% hierarchical_errors.hierarchical_objekt %]</div>
+                [% IF hierarchical_errors.$field %]
+                    <div class="error-msg">[% hierarchical_errors.$field %]</div>
                 [% END %]
             </div>
-
-            <div class="hierarchical-field">
-                <label for="hierarchical_kategorie">[% loc('Kategorie:') %]</label>
-                <select class="form-control" name="hierarchical_kategorie" id="hierarchical_kategorie"
-                        [% IF hierarchical_errors.hierarchical_kategorie %]style="border-color: red;"[% END %]>
-                    <option value="">-- [% loc('Select Kategorie') %] --</option>
-                    [% FOREACH id IN hierarchical_attributes.Kategorie.entries.keys.sort %]
-                        [% entry = hierarchical_attributes.Kategorie.entries.$id %]
-                        [% NEXT IF entry.deleted %]
-                        [% parent_id = entry.parent_id || 0 %]
-                        <option value="[% id %]" data-parent="[% parent_id %]" [% ' selected' IF selected.kategorie == id %]>
-                            [% entry.name %]
-                        </option>
-                    [% END %]
-                </select>
-                [% IF hierarchical_errors.hierarchical_kategorie %]
-                    <div class="error-msg">[% hierarchical_errors.hierarchical_kategorie %]</div>
-                [% END %]
-            </div>
+            [% END %]
         </dd>
     [% END %]
 

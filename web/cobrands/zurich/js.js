@@ -130,9 +130,9 @@ $(function() {
      * Hierarchical Attributes functionality
      */
 
-    var $geschaftsbereichSelect = $('#hierarchical_geschaftsbereich');
-    var $objektSelect = $('#hierarchical_objekt');
-    var $kategorieSelect = $('#hierarchical_kategorie');
+    var $geschaftsbereichSelect = $('#hierarchical_Geschäftsbereich');
+    var $objektSelect = $('#hierarchical_Objekt');
+    var $kategorieSelect = $('#hierarchical_Kategorie');
 
     if ($geschaftsbereichSelect.length && $objektSelect.length && $kategorieSelect.length) {
 

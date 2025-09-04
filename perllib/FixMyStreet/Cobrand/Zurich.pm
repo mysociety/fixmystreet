@@ -620,7 +620,7 @@ sub admin_report_edit {
         if (!keys %$hierarchical_attributes) {
             $hierarchical_attributes = $c->cobrand->get_default_hierarchical_attributes();
         }
-        $c->stash->{hierarchical_attributes} = $hierarchical_attributes;
+        $c->stash->{hierarchical_attributes} = hierarchical_entry_sort($hierarchical_attributes);
 
         my $selected_attributes = $problem->get_extra_metadata('hierarchical_attributes') || {};
         $c->stash->{selected_hierarchical_attributes} = $selected_attributes;
@@ -657,18 +657,12 @@ sub admin_report_edit {
         # Validate hierarchical attributes if problem state is not 'submitted'
         my %hierarchical_errors;
         if ($problem->state ne 'submitted') {
-            my $geschaftsbereich = $c->get_param('hierarchical_geschaftsbereich');
-            my $objekt = $c->get_param('hierarchical_objekt');
-            my $kategorie = $c->get_param('hierarchical_kategorie');
-
-            if (!$geschaftsbereich) {
-                $hierarchical_errors{hierarchical_geschaftsbereich} = _('Please select a Geschäftsbereich');
-            }
-            if (!$objekt) {
-                $hierarchical_errors{hierarchical_objekt} = _('Please select an Objekt');
-            }
-            if (!$kategorie) {
-                $hierarchical_errors{hierarchical_kategorie} = _('Please select a Kategorie');
+            my %values;
+            foreach (keys %{$c->stash->{hierarchical_attributes}}) {
+                $values{$_} = $c->get_param("hierarchical_$_");
+                if (!$values{$_} || !$c->stash->{hierarchical_attributes}{$_}{entries}{$values{$_}}) {
+                    $hierarchical_errors{$_} = _("Please select a value");
+                }
             }
 
             if (%hierarchical_errors) {
@@ -677,11 +671,7 @@ sub admin_report_edit {
                 return $self->admin_report_edit_done;
             }
 
-            $problem->set_extra_metadata('hierarchical_attributes', {
-                geschaftsbereich => $geschaftsbereich,
-                objekt => $objekt,
-                kategorie => $kategorie,
-            });
+            $problem->set_extra_metadata('hierarchical_attributes', \%values);
         }
 
         my @keys = grep { /^publish_photo/ } keys %{ $c->req->params };
@@ -1523,6 +1513,15 @@ sub get_default_hierarchical_attributes {
             "entries" => {}
         }
     };
+}
+
+sub hierarchical_entry_sort {
+    my $attributes = shift;
+    foreach my $key (keys %$attributes) {
+        my $entries = $attributes->{$key}{entries};
+        $attributes->{$key}{sorted_entries} = [ sort { $entries->{$a}{name} cmp $entries->{$b}{name} } keys %$entries ];
+    }
+    return $attributes;
 }
 
 1;

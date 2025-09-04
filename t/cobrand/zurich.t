@@ -1,6 +1,7 @@
 # TODO
 # Overdue alerts
 
+use utf8;
 use Test::Output;
 use DateTime;
 use Email::MIME;
@@ -278,9 +279,9 @@ subtest "changing of categories" => sub {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->submit_form_ok( { with_fields => {
         category => 'Cat2',
-        hierarchical_geschaftsbereich => '1',
-        hierarchical_objekt => '1',
-        hierarchical_kategorie => '1'
+        hierarchical_Geschäftsbereich => '1',
+        hierarchical_Objekt => '1',
+        hierarchical_Kategorie => '1'
     } } );
 
     # check changes correctly saved
@@ -494,9 +495,9 @@ subtest "report_edit" => sub {
     $mech->submit_form_ok( {
         button => 'publish_response',
         with_fields => {
-            hierarchical_geschaftsbereich => '1',
-            hierarchical_objekt => '1',
-            hierarchical_kategorie => '1'
+            hierarchical_Geschäftsbereich => '1',
+            hierarchical_Objekt => '1',
+            hierarchical_Kategorie => '1'
         }
     } );
     $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -525,9 +526,9 @@ subtest "report_edit" => sub {
     $mech->submit_form_ok( {
         button => 'publish_response',
         with_fields => {
-            hierarchical_geschaftsbereich => '1',
-            hierarchical_objekt => '1',
-            hierarchical_kategorie => '1'
+            hierarchical_Geschäftsbereich => '1',
+            hierarchical_Objekt => '1',
+            hierarchical_Kategorie => '1'
         }
     } );
 
@@ -683,17 +684,17 @@ subtest 'Test publishing of final update by DM' => sub {
     $mech->content_lacks( 'Unbestätigt' ); # Confirmed email
     $mech->submit_form_ok( { with_fields => {
         status_update => 'FINAL UPDATE',
-        hierarchical_geschaftsbereich => '1',
-        hierarchical_objekt => '1',
-        hierarchical_kategorie => '1'
+        hierarchical_Geschäftsbereich => '1',
+        hierarchical_Objekt => '1',
+        hierarchical_Kategorie => '1'
     } } );
     $mech->form_with_fields( 'status_update' );
     $mech->submit_form_ok( {
         button => 'publish_response',
         with_fields => {
-            hierarchical_geschaftsbereich => '1',
-            hierarchical_objekt => '1',
-            hierarchical_kategorie => '1'
+            hierarchical_Geschäftsbereich => '1',
+            hierarchical_Objekt => '1',
+            hierarchical_Kategorie => '1'
         }
     } );
 
@@ -723,9 +724,9 @@ subtest "Assign feedback pending (via confirmed), don't confirm email, no email 
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->submit_form_ok( { with_fields => {
         state => 'feedback pending',
-        hierarchical_geschaftsbereich => '1',
-        hierarchical_objekt => '1',
-        hierarchical_kategorie => '1'
+        hierarchical_Geschäftsbereich => '1',
+        hierarchical_Objekt => '1',
+        hierarchical_Kategorie => '1'
     } } );
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('In Bearbeitung');
@@ -738,9 +739,9 @@ subtest "Assign feedback pending (via confirmed), don't confirm email, no email 
         button => 'publish_response',
         with_fields => {
             status_update => 'FINAL UPDATE',
-            hierarchical_geschaftsbereich => '1',
-            hierarchical_objekt => '1',
-            hierarchical_kategorie => '1'
+            hierarchical_Geschäftsbereich => '1',
+            hierarchical_Objekt => '1',
+            hierarchical_Kategorie => '1'
         }
     } );
 
@@ -795,9 +796,9 @@ subtest "external report triggers email" => sub {
         with_fields => {
             body_external => $external_body->id,
             external_message => $EXTERNAL_MESSAGE,
-            hierarchical_geschaftsbereich => '1',
-            hierarchical_objekt => '1',
-            hierarchical_kategorie => '1'
+            hierarchical_Geschäftsbereich => '1',
+            hierarchical_Objekt => '1',
+            hierarchical_Kategorie => '1'
         } });
     $report->discard_changes;
     $mech->get_ok( '/report/' . $report->id );
@@ -823,9 +824,9 @@ subtest "external report triggers email" => sub {
             button => 'publish_response',
             with_fields => {
                 external_message => $EXTERNAL_MESSAGE,
-                hierarchical_geschaftsbereich => '1',
-                hierarchical_objekt => '1',
-                hierarchical_kategorie => '1'
+                hierarchical_Geschäftsbereich => '1',
+                hierarchical_Objekt => '1',
+                hierarchical_Kategorie => '1'
             } });
     };
 
@@ -846,9 +847,9 @@ subtest "external report triggers email" => sub {
             with_fields => {
                 body_external => $external_body->id,
                 third_personal => 1,
-                hierarchical_geschaftsbereich => '1',
-                hierarchical_objekt => '1',
-                hierarchical_kategorie => '1'
+                hierarchical_Geschäftsbereich => '1',
+                hierarchical_Objekt => '1',
+                hierarchical_Kategorie => '1'
             } });
         $mech->get_ok( '/report/' . $report->id );
         $mech->content_contains('Beantwortet');
@@ -879,9 +880,9 @@ subtest "external report triggers email" => sub {
             with_fields => {
                 body_external => $external_body->id,
                 external_message => $EXTERNAL_MESSAGE,
-                hierarchical_geschaftsbereich => '1',
-                hierarchical_objekt => '1',
-                hierarchical_kategorie => '1'
+                hierarchical_Geschäftsbereich => '1',
+                hierarchical_Objekt => '1',
+                hierarchical_Kategorie => '1'
             } });
         # Wishes publicly viewable
         $mech->get_ok( '/report/' . $report->id );
@@ -916,9 +917,9 @@ subtest "external report triggers email" => sub {
                 body_external => $external_body->id,
                 external_message => $EXTERNAL_MESSAGE,
                 status_update => $PUBLIC_RESPONSE,
-                hierarchical_geschaftsbereich => '1',
-                hierarchical_objekt => '1',
-                hierarchical_kategorie => '1'
+                hierarchical_Geschäftsbereich => '1',
+                hierarchical_Objekt => '1',
+                hierarchical_Kategorie => '1'
             } });
 
         $email = $mech->get_email;
@@ -988,9 +989,9 @@ subtest 'test no email sent if closed' => sub {
         form_number => 2,
         button => 'publish_response',
         with_fields => {
-            hierarchical_geschaftsbereich => '1',
-            hierarchical_objekt => '1',
-            hierarchical_kategorie => '1'
+            hierarchical_Geschäftsbereich => '1',
+            hierarchical_Objekt => '1',
+            hierarchical_Kategorie => '1'
         }
     } );
 

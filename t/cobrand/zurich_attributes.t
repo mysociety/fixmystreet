@@ -1,4 +1,6 @@
+use utf8;
 use FixMyStreet::TestMech;
+use t::Mock::MapItZurich;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -6,7 +8,10 @@ use_ok 'FixMyStreet::App', 'FixMyStreet::Cobrand::Zurich';
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'zurich',
-    MAPIT_URL => 'http://mapit.uk/',
+    MAPIT_URL => 'http://mapit.zurich/',
+    MAPIT_TYPES => [ 'O08' ],
+    MAPIT_ID_WHITELIST => [ 423017 ],
+    MAP_TYPE => 'Zurich,OSM',
 }, sub {
     my $zurich = $mech->create_body_ok(1, 'Zurich');
     my $division = $mech->create_body_ok( 423017, 'Division 1', {
@@ -232,14 +237,14 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({
             with_fields => {
                 'new_Objekt_name' => 'Test Objekt',
-                'new_Objekt_parent' => '1',
+                'new_Objekt_parent' => '2',
             }
         });
 
         $mech->submit_form_ok({
             with_fields => {
                 'new_Kategorie_name' => 'Test Kategorie',
-                'new_Kategorie_parent' => '1',
+                'new_Kategorie_parent' => '2',
             }
         });
 
@@ -248,9 +253,9 @@ FixMyStreet::override_config {
 
         $mech->get_ok("/admin/report_edit/" . $problem->id);
         $mech->content_contains('Hierarchical Attributes');
-        $mech->content_contains('hierarchical_geschaftsbereich');
-        $mech->content_contains('hierarchical_objekt');
-        $mech->content_contains('hierarchical_kategorie');
+        $mech->content_contains('hierarchical_Geschäftsbereich');
+        $mech->content_contains('hierarchical_Objekt');
+        $mech->content_contains('hierarchical_Kategorie');
         $mech->content_contains('Test Geschäftsbereich');
 
         $mech->submit_form_ok({
@@ -264,9 +269,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({
             with_fields => {
                 'submit' => '1',
-                'hierarchical_geschaftsbereich' => '1',
-                'hierarchical_objekt' => '1',
-                'hierarchical_kategorie' => '1',
+                'hierarchical_Geschäftsbereich' => '1',
+                'hierarchical_Objekt' => '1',
+                'hierarchical_Kategorie' => '1',
                 'new_internal_note' => 'Test note with attributes',
             }
         });
@@ -275,9 +280,9 @@ FixMyStreet::override_config {
         $problem->discard_changes;
         my $saved_attributes = $problem->get_extra_metadata('hierarchical_attributes');
         ok($saved_attributes, 'Hierarchical attributes were saved');
-        is($saved_attributes->{geschaftsbereich}, '1', 'Geschäftsbereich saved correctly');
-        is($saved_attributes->{objekt}, '1', 'Objekt saved correctly');
-        is($saved_attributes->{kategorie}, '1', 'Kategorie saved correctly');
+        is($saved_attributes->{Geschäftsbereich}, '1', 'Geschäftsbereich saved correctly');
+        is($saved_attributes->{Objekt}, '1', 'Objekt saved correctly');
+        is($saved_attributes->{Kategorie}, '1', 'Kategorie saved correctly');
 
         my $external_body = $mech->create_body_ok(999, 'External Body');
         my $external_contact = $mech->create_contact_ok(
@@ -292,9 +297,9 @@ FixMyStreet::override_config {
                 'submit' => '1',
                 'state' => 'confirmed',
                 'category' => 'External Category',
-                'hierarchical_geschaftsbereich' => '1',
-                'hierarchical_objekt' => '1',
-                'hierarchical_kategorie' => '1',
+                'hierarchical_Geschäftsbereich' => '1',
+                'hierarchical_Objekt' => '1',
+                'hierarchical_Kategorie' => '1',
             }
         });
 
@@ -310,9 +315,9 @@ FixMyStreet::override_config {
         my ($problem) = $mech->create_problems_for_body(1, $division->id, 'SDM Test Problem');
         $problem->update({ state => 'in progress' });
         $problem->set_extra_metadata('hierarchical_attributes', {
-            geschaftsbereich => '1',
-            objekt => '1',
-            kategorie => '1',
+            Geschäftsbereich => '1',
+            Objekt => '1',
+            Kategorie => '1',
         });
         $problem->update;
 
@@ -324,7 +329,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Test Category');
 
         # Should not contain editable dropdowns
-        $mech->content_lacks('hierarchical_geschaftsbereich');
+        $mech->content_lacks('hierarchical_Geschäftsbereich');
         $mech->content_lacks('Select Geschäftsbereich');
     };
 
