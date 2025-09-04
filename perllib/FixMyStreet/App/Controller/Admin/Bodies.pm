@@ -661,6 +661,58 @@ sub update_translations : Private {
     }
 }
 
+sub check_hierarchical_parent {
+    my ($attributes, $level, $id, $parent_id) = @_;
+    my $entry = $id ? $level->{entries}->{$id} : undef;
+    if ($level->{parent} && (!$entry || $entry->{parent_id} != $parent_id)) {
+        if (!$parent_id) {
+            return _('Parent is required');
+        }
+
+        my $parent_level = $attributes->{$level->{parent}};
+        my $parent_entry = $parent_level->{entries}->{$parent_id};
+        if (!$parent_entry || $parent_entry->{deleted}) {
+            return _('Invalid parent selected');
+        }
+    }
+}
+
+sub check_hierarchical_name {
+    my ($level, $id, $parent_id, $name) = @_;
+    my $entry = $id ? $level->{entries}->{$id} : undef;
+    if (length($name) < 1) {
+        return _('Name cannot be empty');
+    } elsif (length($name) > 255) {
+        return _('Name is too long (maximum 255 characters)');
+    } elsif (!$entry || $name ne $entry->{name}) {
+        # Check for duplicates excluding current entry
+        foreach my $other_id (keys %{$level->{entries}}) {
+            next if $id && $other_id eq $id;
+            my $other_entry = $level->{entries}->{$other_id};
+            my $same_name = lc($other_entry->{name}) eq lc($name);
+            my $same_parent = ($other_entry->{parent_id} || 0) == $parent_id;
+            if (!$other_entry->{deleted} && $same_name && $same_parent) {
+                return _('An entry with this name already exists');
+            }
+        }
+    }
+}
+
+sub check_hierarchical_deleted {
+    my ($attributes, $level_name, $id) = @_;
+    # Prevent deletion if entry has active children
+    foreach my $other_level_name (keys %$attributes) {
+        my $other_level = $attributes->{$other_level_name};
+        if ($other_level->{parent} && $other_level->{parent} eq $level_name) {
+            foreach my $child_entry (values %{$other_level->{entries}}) {
+                if (!$child_entry->{deleted} && ($child_entry->{parent_id} || 0) == $id) {
+                    return _('Cannot delete entry that has active child entries');
+                }
+            }
+        }
+    }
+}
+
 sub update_hierarchical_attributes : Private {
     my ($self, $c, $body, $attributes) = @_;
 
@@ -669,63 +721,6 @@ sub update_hierarchical_attributes : Private {
 
     foreach my $level_name (keys %$attributes) {
         my $level = $attributes->{$level_name};
-        my $name_param = "new_${level_name}_name";
-        my $parent_param = "new_${level_name}_parent";
-
-        if (my $new_name = $c->get_param($name_param)) {
-            $new_name = $self->trim($new_name);
-            if ($new_name) {
-                if (length($new_name) < 1) {
-                    $errors{$name_param} = _('Name cannot be empty');
-                    next;
-                } elsif (length($new_name) > 255) {
-                    $errors{$name_param} = _('Name is too long (maximum 255 characters)');
-                    next;
-                }
-
-                my $duplicate = 0;
-                foreach my $existing_id (keys %{$level->{entries}}) {
-                    my $existing_entry = $level->{entries}->{$existing_id};
-                    if (!$existing_entry->{deleted} && lc($existing_entry->{name}) eq lc($new_name)) {
-                        $errors{$name_param} = _('An entry with this name already exists');
-                        $duplicate = 1;
-                        last;
-                    }
-                }
-                next if $duplicate;
-
-                my $max_id = 0;
-                for my $id (keys %{$level->{entries}}) {
-                    $max_id = $id if $id > $max_id;
-                }
-                my $new_id = $max_id + 1;
-
-                my $new_entry = {
-                    name => $new_name,
-                    deleted => 0,
-                };
-
-                if ($level->{parent}) {
-                    my $parent_id = $c->get_param($parent_param);
-                    if (!$parent_id) {
-                        $errors{$parent_param} = _('Parent is required');
-                        next;
-                    }
-
-                    my $parent_level = $attributes->{$level->{parent}};
-                    my $parent_entry = $parent_level->{entries}->{$parent_id};
-                    if (!$parent_entry || $parent_entry->{deleted}) {
-                        $errors{$parent_param} = _('Invalid parent selected');
-                        next;
-                    }
-
-                    $new_entry->{parent_id} = int($parent_id);
-                }
-
-                $level->{entries}->{$new_id} = $new_entry;
-                $updated = 1;
-            }
-        }
 
         foreach my $id (keys %{$level->{entries}}) {
             my $entry = $level->{entries}->{$id};
@@ -733,79 +728,74 @@ sub update_hierarchical_attributes : Private {
             my $parent_param = "${level_name}_${id}_parent";
             my $deleted_param = "${level_name}_${id}_deleted";
 
-            if (defined(my $name = $c->get_param($name_param))) {
-                $name = $self->trim($name);
-                if (length($name) < 1) {
-                    $errors{$name_param} = _('Name cannot be empty');
-                    next;
-                } elsif (length($name) > 255) {
-                    $errors{$name_param} = _('Name is too long (maximum 255 characters)');
-                    next;
-                } elsif ($name ne $entry->{name}) {
-                    # Check for duplicates excluding current entry
-                    my $duplicate = 0;
-                    foreach my $other_id (keys %{$level->{entries}}) {
-                        next if $other_id eq $id;
-                        my $other_entry = $level->{entries}->{$other_id};
-                        if (!$other_entry->{deleted} && lc($other_entry->{name}) eq lc($name)) {
-                            $errors{$name_param} = _('An entry with this name already exists');
-                            $duplicate = 1;
-                            last;
-                        }
-                    }
-                    next if $duplicate;
+            my $parent_id = int($c->get_param($parent_param) || 0);
+            if (my $err = check_hierarchical_parent($attributes, $level, $id, $parent_id)) {
+                $errors{$parent_param} = $err;
+                next;
+            }
+            if ($level->{parent} && $entry->{parent_id} != $parent_id) {
+                $entry->{parent_id} = $parent_id;
+                $updated = 1;
+            }
 
-                    $entry->{name} = $name;
-                    $updated = 1;
-                }
+            my $name = $c->get_param($name_param) || '';
+            $name = $self->trim($name);
+            if (my $err = check_hierarchical_name($level, $id, $parent_id, $name)) {
+                $errors{$name_param} = $err;
+                next;
+            }
+            if ($name ne $entry->{name}) {
+                $entry->{name} = $name;
+                $updated = 1;
             }
 
             my $deleted = $c->get_param($deleted_param) ? 1 : 0;
             if ($deleted != $entry->{deleted}) {
-                # Prevent deletion if entry has active children
                 if ($deleted) {
-                    my $has_children = 0;
-                    foreach my $other_level_name (keys %$attributes) {
-                        my $other_level = $attributes->{$other_level_name};
-                        if ($other_level->{parent} && $other_level->{parent} eq $level_name) {
-                            foreach my $child_entry (values %{$other_level->{entries}}) {
-                                if (!$child_entry->{deleted} && ($child_entry->{parent_id} || 0) == $id) {
-                                    $has_children = 1;
-                                    last;
-                                }
-                            }
-                            last if $has_children;
-                        }
-                    }
-                    if ($has_children) {
-                        $errors{$deleted_param} = _('Cannot delete entry that has active child entries');
+                    if (my $err = check_hierarchical_deleted($attributes, $level_name, $id)) {
+                        $errors{$deleted_param} = $err;
                         next;
                     }
                 }
-
                 $entry->{deleted} = $deleted;
                 $updated = 1;
             }
+        }
+
+        my $name_param = "new_${level_name}_name";
+        my $parent_param = "new_${level_name}_parent";
+
+        if (my $new_name = $c->get_param($name_param)) {
+            $new_name = $self->trim($new_name);
+
+            my $parent_id = int($c->get_param($parent_param) || 0);
+            if (my $err = check_hierarchical_parent($attributes, $level, undef, $parent_id)) {
+                $errors{$parent_param} = $err;
+                next;
+            }
+
+            if (my $err = check_hierarchical_name($level, undef, $parent_id, $new_name)) {
+                $errors{$name_param} = $err;
+                next;
+            }
+
+            my $max_id = 0;
+            for my $id (keys %{$level->{entries}}) {
+                $max_id = $id if $id > $max_id;
+            }
+            my $new_id = $max_id + 1;
+
+            my $new_entry = {
+                name => $new_name,
+                deleted => 0,
+            };
 
             if ($level->{parent}) {
-                my $parent_id = $c->get_param($parent_param);
-                if ($parent_id && $self->trim($parent_id)) {
-                    $parent_id = int($parent_id);
-                    if (($entry->{parent_id} || 0) != $parent_id) {
-                        if ($parent_id > 0) {
-                            my $parent_level = $attributes->{$level->{parent}};
-                            my $parent_entry = $parent_level->{entries}->{$parent_id};
-                            if (!$parent_entry || $parent_entry->{deleted}) {
-                                $errors{$parent_param} = _('Invalid parent selected');
-                                next;
-                            }
-                        }
-
-                        $entry->{parent_id} = $parent_id;
-                        $updated = 1;
-                    }
-                }
+                $new_entry->{parent_id} = $parent_id;
             }
+
+            $level->{entries}->{$new_id} = $new_entry;
+            $updated = 1;
         }
     }
 

@@ -63,7 +63,7 @@
                                                 [% parent_level = hierarchical_attributes.${level.parent} %]
                                                 [% FOREACH parent_id IN parent_level.entries.keys.sort %]
                                                     [% parent_entry = parent_level.entries.$parent_id %]
-                                                    [% NEXT IF parent_entry.deleted %]
+                                                    [% NEXT IF parent_entry.deleted AND entry.parent_id != parent_id %]
                                                     <option value="[% parent_id %]"
                                                         [% ' selected' IF entry.parent_id == parent_id %]>
                                                         [% parent_entry.name | html %]

@@ -40,6 +40,11 @@ FixMyStreet::override_config {
             }
         });
         $mech->content_contains('Hierarchical attributes updated');
+        $mech->submit_form_ok({
+            with_fields => {
+                'new_Geschäftsbereich_name' => 'Second Business Area',
+            }
+        });
 
         $mech->get_ok("/admin/body/$division_id/attributes");
         $mech->content_contains('Test Business Area');
@@ -92,6 +97,22 @@ FixMyStreet::override_config {
             }
         });
         $mech->content_contains('An entry with this name already exists');
+
+        $mech->submit_form_ok({
+            with_fields => {
+                'new_Objekt_name' => 'Test Object',
+                'new_Objekt_parent' => '1', # First entry has ID 1
+            }
+        });
+        $mech->content_contains('An entry with this name already exists');
+
+        $mech->submit_form_ok({
+            with_fields => {
+                'new_Objekt_name' => 'Test Object',
+                'new_Objekt_parent' => '2',
+            }
+        });
+        $mech->content_contains('Hierarchical attributes updated');
     };
 
     subtest 'Editing existing entry names' => sub {
