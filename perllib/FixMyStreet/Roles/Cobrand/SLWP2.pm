@@ -695,6 +695,7 @@ sub waste_munge_bulky_data {
     my @notes;
     my @ids;
     my @photos;
+    my %types;
 
     my $max = $c->stash->{booking_maximum};
     for (1..$max) {
@@ -702,11 +703,17 @@ sub waste_munge_bulky_data {
             push @notes, $data->{"item_notes_$_"} || '';
             push @ids, $items{$item};
             push @photos, $data->{"item_photos_$_"} || '';
+            $types{$item}++;
         };
     }
     $data->{ $fields->{description_field} } = join("::", @notes) if $fields->{description_field};
     $data->{ $fields->{ids_field} } = join("::", @ids);
     $data->{extra_Image} = join("::", @photos);
+
+    if ($c->stash->{small_items}) {
+        $data->{extra_Notes} = join("\n", map { "$types{$_} x $_" } sort keys %types);
+    }
+
     $self->bulky_total_cost($data);
 }
 
