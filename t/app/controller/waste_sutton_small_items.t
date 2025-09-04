@@ -39,6 +39,7 @@ create_contact(
     { code => 'Collection_Date_-_Bulky_Items', required => 0, automated => 'hidden_field' },
     { code => 'Small_Item_Type', required => 0, automated => 'hidden_field' },
     { code => 'Exact_Location' },
+    { code => 'Notes' },
     { code => 'GUID' },
     { code => 'reservation' },
 );
@@ -311,6 +312,11 @@ FixMyStreet::override_config {
             'value' => 'In the alley',
             'description' => undef,
             'name' => 'Exact_Location'
+          },
+          {
+            'value' => "1 x Batteries\n1 x Small WEEE",
+            'description' => undef,
+            'name' => 'Notes'
           },
           {
             'name' => 'GUID',
