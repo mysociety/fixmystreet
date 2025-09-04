@@ -166,8 +166,15 @@ sub dashboard_export_problems_add_columns {
         nearest_address => 'Nearest address',
     );
 
-    # Insert Old ward column immediately after the Ward column
-    $csv->splice_csv_column('local_coords_x', 'old_ward', 'Old ward');
+    # Replace 'wards' column with 'current_ward' and add 'old_ward'
+    # so the default wards code isn't executed.
+    for (my $i = 0; $i < @{$csv->csv_columns}; $i++) {
+        if ($csv->csv_columns->[$i] eq 'wards') {
+            splice @{$csv->csv_columns}, $i, 1, ('current_ward', 'old_ward');
+            splice @{$csv->csv_headers}, $i, 1, ('Current ward', 'Old ward');
+            last;
+        }
+    }
 
     # MapIt children lookups:
     #  - area_children()   -> current generation only (new wards)
@@ -181,11 +188,16 @@ sub dashboard_export_problems_add_columns {
         my ($areas) = @_;
         $areas ||= '';
         my @ids = split ',', $areas;
-        my @current_ids = grep { $current_children->{$_} } @ids;
-        my @old_ids = grep { $all_children->{$_} && !$current_children->{$_} } @ids;
-        my $wards = join ', ', map { $current_children->{$_}->{name} } @current_ids;
-        my $old_ward = join ', ', map { $all_children->{$_}->{name} } @old_ids;
-        return ($wards, $old_ward);
+        my ($current_ward, $old_ward) = ('', '');
+        for my $id (@ids) {
+            if (!$current_ward && $current_children->{$id}) {
+                $current_ward = $current_children->{$id}->{name};
+            } elsif (!$old_ward && !$current_children->{$id} && $all_children->{$id}) {
+                $old_ward = $all_children->{$id}->{name};
+            }
+            last if $current_ward && $old_ward;
+        }
+        return ($current_ward, $old_ward);
     };
 
     my $response_time = sub {
@@ -209,11 +221,11 @@ sub dashboard_export_problems_add_columns {
                 $address = $addr->summary;
             }
 
-            my ($wards, $old_ward) = $compute_wards->($hashref->{areas});
+            my ($current_ward, $old_ward) = $compute_wards->($hashref->{areas});
 
             return {
                 user_name_display => $report->{name},
-                wards => $wards,
+                current_ward => $current_ward,
                 old_ward => $old_ward,
                 response_time => $response_time->($hashref),
                 nearest_address => $address,
@@ -244,14 +256,14 @@ sub dashboard_export_problems_add_columns {
             $address = $report->nearest_address;
         }
 
-        my ($wards, $old_ward) = $compute_wards->($hashref->{areas});
+        my ($current_ward, $old_ward) = $compute_wards->($hashref->{areas});
 
         return {
             user_name_display => $report->name,
             staff_user => $staff_user,
             staff_role => $staff_role,
             assigned_to => $problems_to_user->{$report->id} || '',
-            wards => $wards,
+            current_ward => $current_ward,
             old_ward => $old_ward,
             response_time => $response_time->($hashref),
             nearest_address => $address,

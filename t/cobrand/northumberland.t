@@ -81,10 +81,10 @@ FixMyStreet::override_config {
             }
 
             my $idx_id   = 0; # first column is the identifier used in tests
-            my $idx_ward = $idx_for{'Ward'};
+            my $idx_ward = $idx_for{'Current ward'};
             my $idx_old  = $idx_for{'Old ward'};
 
-            ok defined $idx_ward, "found Ward column$suffix";
+            ok defined $idx_ward, "found Current ward column$suffix";
             ok defined $idx_old,  "found Old ward column$suffix";
 
             # Find the row for the requested id and return both values
@@ -101,14 +101,14 @@ FixMyStreet::override_config {
         $mech->log_in_ok( $staffuser->email );
         $mech->get_ok('/dashboard?export=1');
         my ($ward_val, $old_val) = $extract_ward_values->($mech->content, $id1, '');
-        is $ward_val, 'Trowbridge', 'Ward shows only current ward';
+        is $ward_val, 'Trowbridge', 'Current ward shows only current ward';
         is $old_val, 'Bishops Cannings', 'Old ward shows historic ward';
 
         # Now check the premade export path
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
         $mech->get_ok('/dashboard?export=1');
         ($ward_val, $old_val) = $extract_ward_values->($mech->content, $id1, ' (dbi)');
-        is $ward_val, 'Trowbridge', 'Ward (dbi) shows only current ward';
+        is $ward_val, 'Trowbridge', 'Current ward (dbi) shows only current ward';
         is $old_val, 'Bishops Cannings', 'Old ward (dbi) shows historic ward';
     };
 
