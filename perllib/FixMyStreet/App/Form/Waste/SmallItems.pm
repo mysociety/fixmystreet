@@ -28,16 +28,18 @@ has_field submit => (
     order => 999,
 );
 
-=head2 _build_items_master_list
+=head2 items_sort_key
 
-We sort the items by ID so that we can manually set the ordering in the admin.
+Brent sorts the items by ID so that we can manually set the ordering in the admin.
 
 =cut
 
-sub _build_items_master_list {
-    [ sort { $a->{bartec_id} <=> $b->{bartec_id} }
-            @{ $_[0]->c->cobrand->call_hook('small_items_master_list') } ];
+sub _build_items_sort_key {
+    return 'bartec_id' if $_[0]->c->cobrand->moniker eq 'brent';
+    return 'name';
 }
+
+has items_master_list_hook => ( is => 'ro', default => 'small_items_master_list' );
 
 sub _build_items_extra {
     shift->c->cobrand->small_items_extra;
