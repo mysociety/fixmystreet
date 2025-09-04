@@ -14,6 +14,8 @@ sub council_name { 'Merton Council' }
 sub council_url { 'merton' }
 sub send_questionnaires { 0 }
 
+sub on_map_default_status { 'open' }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
