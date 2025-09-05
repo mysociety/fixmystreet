@@ -112,7 +112,7 @@ sub bulky_refund_collection {
             payment_method =>
                 $collection_report->get_extra_field_value('payment_method'),
             payment_code =>
-                $collection_report->get_extra_field_value('PaymentCode'),
+                $collection_report->get_extra_metadata('payment_reference'),
             auth_code =>
                 $collection_report->get_extra_metadata('authCode'),
             continuous_audit_number =>
