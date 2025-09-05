@@ -1257,6 +1257,7 @@ sub export_as_csv {
                     'latitude', 'longitude',
                     'cobrand',  'category',
                     'state',    'user_id',
+                    'bodies_str',
                     'external_body',
                     'title', 'detail',
                     'photo',
@@ -1290,15 +1291,28 @@ sub export_as_csv {
             my $report = shift;
 
             my $body_name = "";
-            if ( my $external_body = $report->body ) {
+            if ( my $external_body_id = $report->external_body ) {
+                my $cache = $report->result_source->schema->cache;
+                my $external_body = $cache->{bodies}{$external_body_id} //= FixMyStreet::DB->resultset('Body')->find({ id => $external_body_id });
                 $body_name = $external_body->name || '[Unknown body]';
+            }
+
+            # Get division for its attributes
+            my $body = (values %{ $report->bodies })[0];
+            my $parent = $body->parent;
+            if ($parent && $parent->parent) { # $body is an SDM
+                $body = $parent;
+            }
+            my $body_attributes = $body->get_extra_metadata('hierarchical_attributes') || {};
+            my $report_attributes = $report->get_extra_metadata('hierarchical_attributes') || {};
+            my $attributes;
+            foreach (qw(Geschäftsbereich Objekt Kategorie)) {
+                my $value = $report_attributes->{$_} or next;
+                $attributes->{$_} = $body_attributes->{$_}{entries}{$value}{name};
             }
 
             my $detail = $report->detail;
             my $public_response = $report->get_extra_metadata('public_response') || '';
-            my $hierarchical_attributes
-                = $report->get_extra_metadata('hierarchical_attributes')
-                || {};
             my $metas = $report->get_extra_fields();
             my %extras;
             foreach my $field (@$metas) {
@@ -1334,9 +1348,9 @@ sub export_as_csv {
                 haus_nr => $extras{'haus_nr'} || '',
                 hydranten_nr => $extras{'hydranten_nr'} || '',
                 interne_meldung => $report->non_public,
-                geschaftsbereich => $hierarchical_attributes->{Geschäftsbereich} || '',
-                objekt => $hierarchical_attributes->{Objekt} || '',
-                kategorie => $hierarchical_attributes->{Kategorie} || '',
+                geschaftsbereich => $attributes->{Geschäftsbereich} || '',
+                objekt => $attributes->{Objekt} || '',
+                kategorie => $attributes->{Kategorie} || '',
             };
         },
         filename => 'stats',

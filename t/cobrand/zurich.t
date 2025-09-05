@@ -76,7 +76,28 @@ $mech->content_like( qr/zurich/i );
 # Set up bodies
 my $zurich = $mech->create_body_ok( 1, 'Zurich' );
 my $division = $mech->create_body_ok( 423017, 'Division 1', {
-    parent => $zurich->id, send_method => 'Zurich', endpoint => 'division@example.org' } );
+    parent => $zurich->id, send_method => 'Zurich', endpoint => 'division@example.org' },
+    { hierarchical_attributes => {
+        "Geschäftsbereich" => {
+            "entries" => { 1 => { name => 'G1' }, 2 => { name => 'G2' } }
+        },
+        "Objekt" => {
+            "parent" => "Geschäftsbereich",
+            "entries" => {
+                1 => { name => 'O1', parent_id => 1 },
+                2 => { name => 'O2', parent_id => 1 },
+                3 => { name => 'O3', parent_id => 2 },
+            }
+        },
+        "Kategorie" => {
+            "parent" => "Geschäftsbereich",
+            "entries" => {
+                1 => { name => 'K1', parent_id => 1 },
+                2 => { name => 'K2', parent_id => 2 },
+                3 => { name => 'K3', parent_id => 2 },
+            }
+        },
+    } } );
 my $division2 = $mech->create_body_ok( 423017, 'Division 2', {
     parent => $zurich->id, send_method => 'Zurich', endpoint => 'division2@example.org' } );
 my $subdivision = $mech->create_body_ok( 3, 'Subdivision A',
@@ -93,8 +114,6 @@ sub get_export_rows_count {
     is $mech->res->code, 200, 'csv retrieved ok';
     is $mech->content_type, 'text/csv', 'content_type correct' and do {
         my @lines = split /\n/, $mech->content;
-        like $lines[0], qr/Geschäftsbereich.*Objekt.*Kategorie/,
-            'CSV has hierarchical attribute columns';
         return @lines - 1;
     };
     return;
@@ -1032,6 +1051,11 @@ subtest "test stats" => sub {
     $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 3');
     $mech->content_contains('Innerhalb von fünf Arbeitstagen abgeschlossen: 3');
 
+    $report->set_extra_metadata(hierarchical_attributes => {
+        Geschäftsbereich => 1,
+        Objekt => 2,
+        Kategorie => 3,
+    });
     $report->update({ non_public => 1 });
 
     my $export_count = get_export_rows_count($mech);
@@ -1040,6 +1064,8 @@ subtest "test stats" => sub {
         $mech->content_contains('fixed - council');
     }
 
+    $mech->content_contains('Geschäftsbereich,Objekt,Kategorie');
+    $mech->content_like(qr/,G1,O2,K3$/m);
     $mech->content_contains('Hydranten-Nr.,"Interne meldung"');
     $mech->content_contains('"This is the public response to your report. Freundliche Gruesse.",,,,,1', "Internal report is marked as such");
     $report->update({ non_public => 0 });
