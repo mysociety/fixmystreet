@@ -331,6 +331,14 @@ FixMyStreet::override_config {
         # Should not contain editable dropdowns
         $mech->content_lacks('hierarchical_Geschäftsbereich');
         $mech->content_lacks('Select Geschäftsbereich');
+
+        $problem->update({ bodies_str => $subdivision->id });
+
+        $mech->get_ok("/admin/report_edit/" . $problem->id);
+        $mech->content_contains('Hierarchical Attributes');
+        $mech->content_contains('Updated Name');
+        $mech->content_contains('Test Object');
+        $mech->content_contains('Test Category');
     };
 
 };

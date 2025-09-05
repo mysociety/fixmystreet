@@ -613,10 +613,14 @@ sub admin_report_edit {
 
     }
 
-    # Fetch hierarchical attributes for the current body (for all user types)
-    my $current_body = $c->model('DB::Body')->find($problem->bodies_str);
-    if ($current_body) {
-        my $hierarchical_attributes = $current_body->get_extra_metadata('hierarchical_attributes') || {};
+    # Fetch hierarchical attributes for the current division (for all user types)
+    my $division = (values %{ $problem->bodies })[0];
+    my $parent = $division->parent;
+    if ($parent && $parent->parent) { # $body is an SDM
+        $division = $parent;
+    }
+    if ($division) {
+        my $hierarchical_attributes = $division->get_extra_metadata('hierarchical_attributes') || {};
         if (!keys %$hierarchical_attributes) {
             $hierarchical_attributes = $c->cobrand->get_default_hierarchical_attributes();
         }
