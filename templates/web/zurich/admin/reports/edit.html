@@ -152,6 +152,36 @@
         </select>
     </dd>
 
+    [% IF problem.state != 'submitted' AND hierarchical_attributes %]
+        <dt class="screen-only">
+            <span class="mock-label">[% loc('Hierarchical Attributes:') %]</span>
+        </dt>
+        <dd class="screen-only hierarchical-attributes">
+            [% SET selected = selected_hierarchical_attributes || {} %]
+
+            [% FOR field IN [ 'Geschäftsbereich', 'Objekt', 'Kategorie' ] %]
+            <div class="hierarchical-field">
+                <label for="hierarchical_[% field %]">[% field %]:</label>
+                <select class="form-control" name="hierarchical_[% field %]" id="hierarchical_[% field %]"
+                        [% IF hierarchical_errors.$field %]style="border-color: red;"[% END %]>
+                    <option value="">--</option>
+                    [% FOREACH id IN hierarchical_attributes.$field.sorted_entries %]
+                        [% entry = hierarchical_attributes.$field.entries.$id %]
+                        [% NEXT IF entry.deleted %]
+                        [% parent_id = entry.parent_id || 0 %]
+                        <option value="[% id %]" data-parent="[% parent_id %]" [% ' selected' IF selected.$field == id %]>
+                            [% entry.name %]
+                        </option>
+                    [% END %]
+                </select>
+                [% IF hierarchical_errors.$field %]
+                    <div class="error-msg">[% hierarchical_errors.$field %]</div>
+                [% END %]
+            </div>
+            [% END %]
+        </dd>
+    [% END %]
+
 </dl>
 
 <ul class="no-bullets screen-only">
