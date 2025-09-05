@@ -211,8 +211,9 @@ sub open311_munge_update_params {
         $params->{'attribute[northing]'} = $n;
         my $details = $comment->user->email . ' ';
         if (my $traffic = $p->get_extra_metadata('defect_traffic_management_agreed')) {
-            $details .= 'TM1 ' if $traffic eq 'Signs and Cones';
             $details .= 'TM2 ' if $traffic eq 'Stop and Go Boards';
+            $details .= 'TM6 ' if $traffic eq 'Give and Take';
+            $details .= 'TM13 ' if $traffic eq 'Temporary Traffic Signals Two-way';
         }
         (my $type = $p->get_extra_metadata('defect_item_type')) =~ s/ .*//;
         $details .= $type eq 'Sweep' ? 'S&F' : $type;

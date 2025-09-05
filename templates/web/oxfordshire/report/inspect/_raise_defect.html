@@ -108,7 +108,6 @@ END;
                 <option>0-0.5m&sup2;</option>
                 <option>0.5-1m&sup2;</option>
                 <option>1-2m&sup2;</option>
-                <option>&gt;2m&sup2;</option>
             </optgroup>
             <optgroup class="defect-kerb-options defect-non-minor-carriageway-options defect-non-drainage-options" label="Kerbing">
                 <option>1 kerb unit or I liner length</option>
@@ -122,9 +121,9 @@ END;
         <label for="defect_traffic_management_agreed">[% loc('Traffic management required?') %]</label>
         [% tma = problem.get_extra_metadata('defect_traffic_management_agreed') %]
         <select id="defect_traffic_management_agreed" name="defect_traffic_management_agreed" class="form-control">
-            <option value=""[% ' selected' IF NOT tma %]>&nbsp;</option>
-            [% FOREACH option IN ['Signs and Cones', 'Stop and Go Boards'] %]
-                <option value='[% option %]'[% ' selected' IF tma == option %]>[% option %]</option>
+            <option value="">&nbsp;</option>
+            [% FOREACH option IN ['Give and Take', 'Stop and Go Boards', 'Temporary Traffic Signals Two-way'] %]
+                <option value='[% option %]'[% ' selected' IF tma == option OR (NOT tma AND option == 'Give and Take') %]>[% option %]</option>
             [% END %]
         </select>
 
