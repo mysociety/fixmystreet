@@ -90,6 +90,12 @@
     </p>
     <input type="text" class="form-control" id="detail-hint" aria-describedby="detail-hint-hint" name="detail_hint" size="30" value="[% contact.get_extra_metadata('detail_hint') %]">
 
+    <label for="closure-timespan">[% loc('Update closure timespan') %]</label>
+    <p class="form-hint" id="closure-timespan-hint">
+        [% loc('Reports will be automatically closed to user updates some time after they are marked as fixed/closed. Set a specific timespan for reports in this category here. Examples: 6m (six months), 30d (thirty days).') %]
+    </p>
+    <input type="text" class="form-control" id="closure-timespan" aria-describedby="closure-timespan-hint" name="closure_timespan" size="10" value="[% contact.get_extra_metadata('closure_timespan') %]">
+
     <p class="form-check">
         <input type="checkbox" name="non_public" value="1" id="non_public" [% ' checked' IF contact.non_public %]>
         <label for="non_public">[% loc('Hide reports made in this category') %]</label>
