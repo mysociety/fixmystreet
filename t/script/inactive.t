@@ -185,4 +185,102 @@ subtest 'Test state/category/days deletion' => sub {
     }
 };
 
+subtest 'Test closing updates per category with closure_timespan' => sub {
+    my $contact1 = $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Pothole',
+        email => 'pothole@testbody1.gov.uk',
+        extra => {
+            closure_timespan => '2m'
+        }
+    );
+    my $contact2 = $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Streetlight',
+        email => 'streetlight@testbody1.gov.uk',
+        extra => {
+            closure_timespan => '3m'
+        }
+    );
+    my $contact3 = $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Graffiti',
+        email => 'graffiti@testbody2.gov.uk',
+        extra => {
+            closure_timespan => '1m'
+        }
+    );
+    my $contact4 = $mech->create_contact_ok(
+        body_id => $body->id,
+        category => 'Litter',
+        email => 'litter@testbody1.gov.uk'
+    );
+
+    my $now = DateTime->now;
+
+    # Problems that should be closed (older than their category's closure_timespan)
+    my ($old_pothole) = $mech->create_problems_for_body(1, $body->id, 'Old Pothole', {
+        dt => $now->clone->subtract(months => 3),
+        lastupdate => $now->clone->subtract(months => 3),
+        state => 'fixed - user',
+        category => 'Pothole',
+        bodies_str => $body->id,
+    });
+    my ($old_streetlight) = $mech->create_problems_for_body(1, $body->id, 'Old Streetlight', {
+        dt => $now->clone->subtract(months => 4),
+        lastupdate => $now->clone->subtract(months => 4),
+        state => 'fixed - council',
+        category => 'Streetlight',
+        bodies_str => $body->id,
+    });
+    my ($old_graffiti) = $mech->create_problems_for_body(1, $body->id, 'Old Graffiti', {
+        dt => $now->clone->subtract(months => 2),
+        lastupdate => $now->clone->subtract(months => 2),
+        state => 'fixed - user',
+        category => 'Graffiti',
+        bodies_str => $body->id,
+    });
+
+    # Problems that should NOT be closed (newer than their category's closure_timespan)
+    my ($new_pothole) = $mech->create_problems_for_body(1, $body->id, 'New Pothole', {
+        dt => $now->clone->subtract(days => 10),
+        lastupdate => $now->clone->subtract(days => 10),
+        state => 'fixed - user',
+        category => 'Pothole',
+        bodies_str => $body->id,
+    });
+    my ($new_streetlight) = $mech->create_problems_for_body(1, $body->id, 'New Streetlight', {
+        dt => $now->clone->subtract(months => 2),
+        lastupdate => $now->clone->subtract(months => 2),
+        state => 'fixed - council',
+        category => 'Streetlight',
+        bodies_str => $body->id,
+    });
+
+    # Problem with category that has no closure_timespan (should be ignored)
+    my ($litter_problem) = $mech->create_problems_for_body(1, $body->id, 'Old Litter', {
+        dt => $now->clone->subtract(months => 6),
+        lastupdate => $now->clone->subtract(months => 6),
+        state => 'fixed - user',
+        category => 'Litter',
+        bodies_str => $body->id,
+    });
+
+    my $in = FixMyStreet::Script::Inactive->new(close_per_category => 1);
+    $in->reports;
+
+    $old_pothole->discard_changes;
+    is $old_pothole->get_extra_metadata('closed_updates'), 1, 'Old pothole closed to updates (older than 2m)';
+    $old_streetlight->discard_changes;
+    is $old_streetlight->get_extra_metadata('closed_updates'), 1, 'Old streetlight closed to updates (older than 3m)';
+    $old_graffiti->discard_changes;
+    is $old_graffiti->get_extra_metadata('closed_updates'), 1, 'Old graffiti closed to updates (older than 1m)';
+    $new_pothole->discard_changes;
+    is $new_pothole->get_extra_metadata('closed_updates'), undef, 'New pothole not closed to updates (newer than 2m)';
+    $new_streetlight->discard_changes;
+    is $new_streetlight->get_extra_metadata('closed_updates'), undef, 'New streetlight not closed to updates (newer than 3m)';
+    $litter_problem->discard_changes;
+    is $litter_problem->get_extra_metadata('closed_updates'), undef, 'Litter problem not closed (no closure_timespan set)';
+};
+
 done_testing;
