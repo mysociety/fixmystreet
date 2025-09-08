@@ -10,6 +10,10 @@ $dropzone-background-color: transparentize($dropzone-button-background, 0.85) !d
 $dropzone-background-color--awakened: mix($dropzone-button-background, $dropzone-background-color, 10%) !default;
 $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-background-color, 10%) !default;
 
+$dropzone-background-color-frontpage: transparentize(#fff, 0.85) !default;
+$dropzone-background-color-frontpage--awakened: mix($dropzone-button-background, $dropzone-background-color-frontpage, 10%) !default;
+$dropzone-background-color-frontpage--full: mix($dropzone-border-color--full, $dropzone-background-color-frontpage, 10%) !default;
+
 // To prevent a horizontal scrollbar in RTL
 .dz-hidden-input {
   right: 0;
@@ -19,7 +23,7 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   //@extend .form-control;
   @include clearfix;
   background-color: $dropzone-background-color;
-  padding: 1.5em;
+  padding: 1.75em;
   margin-bottom: 0.5em;
   text-align: center;
   border-color: $dropzone-border-colour;
@@ -29,6 +33,10 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
 
 .dz-clickable {
   cursor: pointer;
+  transition: 
+    background-color 0.3s cubic-bezier(.17,.67,.83,.67),
+    color 0.3s cubic-bezier(.17,.67,.83,.67),
+    border-color 0.3s cubic-bezier(.17,.67,.83,.67);
 
   * {
     cursor: auto;
@@ -40,6 +48,12 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   .dz-cancel {
     cursor: pointer;
     font-weight: 600;
+
+    small {
+      font-weight: 400;
+      text-align: left;
+      font-style: normal;
+    }
   }
 
   .dz-message u {
