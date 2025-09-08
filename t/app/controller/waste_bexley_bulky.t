@@ -264,13 +264,8 @@ FixMyStreet::override_config {
             is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
         }
 
-        subtest 'Summary page' => \&test_summary;
-        subtest 'Summary submission' => \&test_summary_submission;
-
-        my $catch_email;
-        subtest 'Payment page' => sub {
-            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-
+        sub test_created_report {
+            my ($new_report, $sent_params) = @_;
             is $new_report->category, 'Bulky collection', 'correct category on report';
             is $new_report->title, 'Bulky waste collection', 'correct title on report';
             is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
@@ -296,6 +291,26 @@ FixMyStreet::override_config {
             my @email = $mech->get_email;
             $mech->email_count_is(1); # Only email is 'email' to council
             $mech->clear_emails_ok;
+
+        }
+
+        subtest 'Summary page' => \&test_summary;
+        subtest 'Summary submission' => \&test_summary_submission;
+
+        subtest 'Cancel payment' => sub {
+            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+            subtest 'New report details' => sub { test_created_report($new_report, $sent_params); };
+            $mech->get_ok("/waste/pay_cancel/$report_id/$token?property_id=10001");
+        };
+
+        subtest 'Summary submission again' => \&test_summary_submission;
+
+        my $catch_email;
+        subtest 'Successful payment' => sub {
+            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+            subtest 'New report details' => sub { test_created_report($new_report, $sent_params); };
+
             $mech->get_ok("/waste/pay_complete/$report_id/$token");
             is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
             FixMyStreet::Script::Reports::send();

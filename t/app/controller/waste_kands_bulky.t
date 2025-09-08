@@ -500,14 +500,38 @@ FixMyStreet::override_config {
             $mech->waste_submit_check({ with_fields => { tandc => 1 } });
         };
 
-        my $catch_email;
-        subtest 'Payment page' => sub {
-            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+        sub test_created_report {
+            my ($report) = @_;
+            is $report->category, 'Bulky collection', 'correct category on report';
+            is $report->title, 'Bulky goods collection', 'correct title on report';
+            is $report->detail, "Address: 2 Example Street, Kingston, KT1 1AA";
+            is $report->state, 'confirmed', 'report confirmed';
+            is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+            is $report->get_extra_field_value('reservation'), 'reserve8a==::reserve8b==';
+            like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
+            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '3::85::83';
+            is $report->get_extra_field_value('property_id'), '12345';
+            is $report->get_extra_field_value('First_Date_Offered_-_Bulky'), '08/07/2023';
+            like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
+            is $report->get_extra_field_value('reservation'), 'reserve8a==::reserve8b==';
+            is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
 
-            is $new_report->category, 'Bulky collection', 'correct category on report';
-            is $new_report->title, 'Bulky goods collection', 'correct title on report';
-            is $new_report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
-            is $new_report->state, 'confirmed', 'report confirmed';
+            is $report->name, 'Bob Marge', 'correct name on report';
+            is $report->get_extra_metadata('phone'), '44 07 111 111 111',
+                'correct phone on report';
+            is $report->user->name, 'Original Name',
+                'name on report user unchanged';
+            is $report->user->phone, undef, 'no phone on report user';
+            is $report->user->email, $user->email,
+                'correct email on report user';
+        }
+
+        sub test_created_report_and_email {
+            my ($new_report, $sent_params) = @_;
+
+            test_created_report($new_report);
 
             is $sent_params->{items}[0]{amount}, 4000, 'correct amount used';
             is $sent_params->{items}[0]{reference}, 'customer-ref-bulky';
@@ -524,6 +548,21 @@ FixMyStreet::override_config {
             FixMyStreet::Script::Reports::send();
             $mech->email_count_is(1); # Only email is 'email' to council
             $mech->clear_emails_ok;
+        }
+
+        subtest 'Cancel payment' => sub {
+            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+            test_created_report_and_email($new_report, $sent_params);
+            $mech->get_ok("/waste/pay_cancel/$report_id/$token?property_id=12345");
+        };
+
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
+
+        my $catch_email;
+        subtest 'Payment page' => sub {
+            my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+            subtest 'New report details' => sub { test_created_report_and_email($new_report, $sent_params); };
             $mech->get_ok("/waste/pay_complete/$report_id/$token");
             is $sent_params->{scpReference}, 12345, 'correct scpReference sent';
             FixMyStreet::Script::Reports::send();
@@ -579,26 +618,7 @@ FixMyStreet::override_config {
             $mech->content_contains('If you need to contact us about your booking please use the reference:&nbsp;RBK-' . $report->id);
             $mech->content_contains('Card payment reference: 54321');
             $mech->content_contains('Return to property details');
-            is $report->detail, "Address: 2 Example Street, Kingston, KT1 1AA";
-            is $report->category, 'Bulky collection';
-            is $report->title, 'Bulky goods collection';
-            is $report->get_extra_field_value('uprn'), 1000000002;
-            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
-            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '3::85::83';
-            is $report->get_extra_field_value('property_id'), '12345';
-            is $report->get_extra_field_value('First_Date_Offered_-_Bulky'), '08/07/2023';
-            like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
-            is $report->get_extra_field_value('reservation'), 'reserve8a==::reserve8b==';
-            is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
-
-            is $report->name, 'Bob Marge', 'correct name on report';
-            is $report->get_extra_metadata('phone'), '44 07 111 111 111',
-                'correct phone on report';
-            is $report->user->name, 'Original Name',
-                'name on report user unchanged';
-            is $report->user->phone, undef, 'no phone on report user';
-            is $report->user->email, $user->email,
-                'correct email on report user';
+            test_created_report($report);
         };
     };
 

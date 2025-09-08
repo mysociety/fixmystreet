@@ -204,8 +204,10 @@ sub bulky_nice_item_list {
 sub waste_reconstruct_bulky_data {
     my ($self, $p) = @_;
 
+    my $date = $p->get_extra_field_value('collection_date');
+    my $ref = $p->get_extra_field_value('round_instance_id');
     my $saved_data = {
-        "chosen_date" => $p->get_extra_field_value('collection_date'),
+        "chosen_date" => "$date;$ref;",
         "location" => $p->get_extra_field_value('bulky_location'),
         "parking" => $p->get_extra_field_value('bulky_parking'),
         "pension" => $p->get_extra_field_value('pension'),
