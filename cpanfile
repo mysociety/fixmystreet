@@ -15,6 +15,9 @@ requires 'HTTP::Tiny', '0.090';
 requires 'Net::Server', '2.009';
 requires 'XML::LibXML', '2.0210';
 requires 'PkgConfig'; # If you don't have pkg-config installed, XML::LibXML won't install
+requires 'CryptX', '0.087';
+requires 'JSON::XS', '4.04';
+requires 'Cpanel::JSON::XS', '4.40';
 # For perl 5.20/5.22 support
   requires 'Guard', '1.023';
   requires 'PadWalker', '2.2';
@@ -46,6 +49,7 @@ requires 'Catalyst::Devel';
 requires 'Catalyst::DispatchType::Regex', '5.90035';
 requires 'Catalyst::Model::Adaptor';
 requires 'Catalyst::Plugin::Authentication';
+requires 'Catalyst::Plugin::Session', '0.44';
 requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Plugin::Session::Store::DBIC';
 requires 'Catalyst::Plugin::SmartURI', '0.041';
@@ -55,7 +59,7 @@ requires 'URI::SmartURI';
 
 # Modules used by FixMyStreet
 requires 'Auth::GoogleAuth';
-requires 'Authen::SASL';
+requires 'Authen::SASL', '2.19';
 requires 'Cache::Memcached';
 requires 'Carp';
 requires 'Crypt::Eksblowfish::Bcrypt';
@@ -73,7 +77,7 @@ requires 'DateTime::TimeZone', '2.35';
 requires 'DBD::Pg', '3.8.0';
 requires 'DBI';
 requires 'DBIx::Class', '0.082841';
-requires 'DBIx::Class::EncodedColumn', '0.00015';
+requires 'DBIx::Class::EncodedColumn', '0.00032';
 requires 'DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt';
 requires 'DBIx::Class::Factory';
 requires 'DBIx::Class::FilterColumn';
@@ -164,7 +168,7 @@ requires 'Algorithm::Diff';
 requires 'CSS::Sass';
 requires 'File::ChangeNotify', '0.31';
 requires 'Path::Tiny', '0.144';
-requires 'File::Find::Rule';
+requires 'File::Find::Rule', '0.35';
 
 # Modules used for development
 requires 'Plack', '1.0047';

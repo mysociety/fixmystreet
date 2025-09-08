@@ -180,27 +180,27 @@ DISTRIBUTIONS
       perl 5.008
       strict 0
       warnings 0
-  Authen-SASL-2.16
-    pathname: G/GB/GBARR/Authen-SASL-2.16.tar.gz
+  Authen-SASL-2.1900
+    pathname: E/EH/EHUELS/Authen-SASL-2.1900.tar.gz
     provides:
-      Authen::SASL 2.16
-      Authen::SASL::CRAM_MD5 2.14
-      Authen::SASL::EXTERNAL 2.14
-      Authen::SASL::Perl 2.14
-      Authen::SASL::Perl::ANONYMOUS 2.14
-      Authen::SASL::Perl::CRAM_MD5 2.14
-      Authen::SASL::Perl::DIGEST_MD5 2.14
-      Authen::SASL::Perl::EXTERNAL 2.14
-      Authen::SASL::Perl::GSSAPI 0.05
-      Authen::SASL::Perl::LOGIN 2.14
-      Authen::SASL::Perl::Layer 2.14
-      Authen::SASL::Perl::PLAIN 2.14
+      Authen::SASL 2.1900
+      Authen::SASL::CRAM_MD5 2.1900
+      Authen::SASL::EXTERNAL 2.1900
+      Authen::SASL::Perl 2.1900
+      Authen::SASL::Perl::ANONYMOUS 2.1900
+      Authen::SASL::Perl::CRAM_MD5 2.1900
+      Authen::SASL::Perl::DIGEST_MD5 2.1900
+      Authen::SASL::Perl::EXTERNAL 2.1900
+      Authen::SASL::Perl::GSSAPI 2.1900
+      Authen::SASL::Perl::LOGIN 2.1900
+      Authen::SASL::Perl::OAUTHBEARER 2.1900
+      Authen::SASL::Perl::PLAIN 2.1900
+      Authen::SASL::Perl::XOAUTH2 2.1900
     requirements:
+      Crypt::URandom 0
       Digest::HMAC_MD5 0
-      Digest::MD5 0
-      ExtUtils::MakeMaker 6.42
-      Test::More 0
-      perl 5.005
+      ExtUtils::MakeMaker 0
+      perl 5.014000
   B-Hooks-EndOfScope-0.12
     pathname: B/BO/BOBTFISH/B-Hooks-EndOfScope-0.12.tar.gz
     provides:
@@ -572,29 +572,27 @@ DISTRIBUTIONS
       MRO::Compat 0.09
       Test::More 0
       perl 5.008
-  Catalyst-Plugin-Session-0.37
-    pathname: B/BO/BOBTFISH/Catalyst-Plugin-Session-0.37.tar.gz
+  Catalyst-Plugin-Session-0.44
+    pathname: H/HA/HAARG/Catalyst-Plugin-Session-0.44.tar.gz
     provides:
-      Catalyst::Plugin::Session 0.37
-      Catalyst::Plugin::Session::State undef
-      Catalyst::Plugin::Session::Store undef
-      Catalyst::Plugin::Session::Store::Dummy undef
-      Catalyst::Plugin::Session::Test::Store 123
+      Catalyst::Plugin::Session 0.44
+      Catalyst::Plugin::Session::State 0.44
+      Catalyst::Plugin::Session::Store 0.44
+      Catalyst::Plugin::Session::Store::Dummy 0.44
+      Catalyst::Plugin::Session::Test::Store 0.44
     requirements:
       Catalyst::Runtime 5.71001
-      Digest 0
-      ExtUtils::MakeMaker 6.59
+      Crypt::SysRandom 0.007
+      ExtUtils::MakeMaker 0
       File::Spec 0
       File::Temp 0
+      HTML::Entities 0
+      List::Util 0
       MRO::Compat 0
       Moose 0.76
       MooseX::Emulate::Class::Accessor::Fast 0.00801
       Object::Signature 0
-      Test::Deep 0
-      Test::Exception 0
       Test::More 0.88
-      Test::WWW::Mechanize::PSGI 0
-      Tie::RefHash 1.34
       namespace::clean 0.10
       perl 5.008
   Catalyst-Plugin-Session-State-Cookie-0.17
@@ -1076,14 +1074,22 @@ DISTRIBUTIONS
       Module::Build::Tiny 0.035
       URI::Escape 0
       perl 5.008001
-  Cpanel-JSON-XS-3.0210
-    pathname: R/RU/RURBAN/Cpanel-JSON-XS-3.0210.tar.gz
+  Cpanel-JSON-XS-4.40
+    pathname: R/RU/RURBAN/Cpanel-JSON-XS-4.40.tar.gz
     provides:
-      Cpanel::JSON::XS 3.0210
+      Cpanel::JSON::XS 4.40
+      Cpanel::JSON::XS::Type undef
     requirements:
+      Carp 0
+      Config 0
+      Encode 1.9801
+      Exporter 0
       ExtUtils::MakeMaker 0
       Pod::Text 2.08
-      Pod::Usage 1.33
+      XSLoader 0
+      overload 0
+      strict 0
+      warnings 0
   Crypt-Blowfish-2.14
     pathname: D/DP/DPARIS/Crypt-Blowfish-2.14.tar.gz
     provides:
@@ -1191,120 +1197,151 @@ DISTRIBUTIONS
       perl 5.008
       strict 0
       warnings 0
-  CryptX-0.069
-    pathname: M/MI/MIK/CryptX-0.069.tar.gz
+  Crypt-SysRandom-0.007
+    pathname: L/LE/LEONT/Crypt-SysRandom-0.007.tar.gz
     provides:
-      Crypt::AuthEnc 0.069
-      Crypt::AuthEnc::CCM 0.069
-      Crypt::AuthEnc::ChaCha20Poly1305 0.069
-      Crypt::AuthEnc::EAX 0.069
-      Crypt::AuthEnc::GCM 0.069
-      Crypt::AuthEnc::OCB 0.069
-      Crypt::Checksum 0.069
-      Crypt::Checksum::Adler32 0.069
-      Crypt::Checksum::CRC32 0.069
-      Crypt::Cipher 0.069
-      Crypt::Cipher::AES 0.069
-      Crypt::Cipher::Anubis 0.069
-      Crypt::Cipher::Blowfish 0.069
-      Crypt::Cipher::CAST5 0.069
-      Crypt::Cipher::Camellia 0.069
-      Crypt::Cipher::DES 0.069
-      Crypt::Cipher::DES_EDE 0.069
-      Crypt::Cipher::IDEA 0.069
-      Crypt::Cipher::KASUMI 0.069
-      Crypt::Cipher::Khazad 0.069
-      Crypt::Cipher::MULTI2 0.069
-      Crypt::Cipher::Noekeon 0.069
-      Crypt::Cipher::RC2 0.069
-      Crypt::Cipher::RC5 0.069
-      Crypt::Cipher::RC6 0.069
-      Crypt::Cipher::SAFERP 0.069
-      Crypt::Cipher::SAFER_K128 0.069
-      Crypt::Cipher::SAFER_K64 0.069
-      Crypt::Cipher::SAFER_SK128 0.069
-      Crypt::Cipher::SAFER_SK64 0.069
-      Crypt::Cipher::SEED 0.069
-      Crypt::Cipher::Serpent 0.069
-      Crypt::Cipher::Skipjack 0.069
-      Crypt::Cipher::Twofish 0.069
-      Crypt::Cipher::XTEA 0.069
-      Crypt::Digest 0.069
-      Crypt::Digest::BLAKE2b_160 0.069
-      Crypt::Digest::BLAKE2b_256 0.069
-      Crypt::Digest::BLAKE2b_384 0.069
-      Crypt::Digest::BLAKE2b_512 0.069
-      Crypt::Digest::BLAKE2s_128 0.069
-      Crypt::Digest::BLAKE2s_160 0.069
-      Crypt::Digest::BLAKE2s_224 0.069
-      Crypt::Digest::BLAKE2s_256 0.069
-      Crypt::Digest::CHAES 0.069
-      Crypt::Digest::Keccak224 0.069
-      Crypt::Digest::Keccak256 0.069
-      Crypt::Digest::Keccak384 0.069
-      Crypt::Digest::Keccak512 0.069
-      Crypt::Digest::MD2 0.069
-      Crypt::Digest::MD4 0.069
-      Crypt::Digest::MD5 0.069
-      Crypt::Digest::RIPEMD128 0.069
-      Crypt::Digest::RIPEMD160 0.069
-      Crypt::Digest::RIPEMD256 0.069
-      Crypt::Digest::RIPEMD320 0.069
-      Crypt::Digest::SHA1 0.069
-      Crypt::Digest::SHA224 0.069
-      Crypt::Digest::SHA256 0.069
-      Crypt::Digest::SHA384 0.069
-      Crypt::Digest::SHA3_224 0.069
-      Crypt::Digest::SHA3_256 0.069
-      Crypt::Digest::SHA3_384 0.069
-      Crypt::Digest::SHA3_512 0.069
-      Crypt::Digest::SHA512 0.069
-      Crypt::Digest::SHA512_224 0.069
-      Crypt::Digest::SHA512_256 0.069
-      Crypt::Digest::SHAKE 0.069
-      Crypt::Digest::Tiger192 0.069
-      Crypt::Digest::Whirlpool 0.069
-      Crypt::KeyDerivation 0.069
-      Crypt::Mac 0.069
-      Crypt::Mac::BLAKE2b 0.069
-      Crypt::Mac::BLAKE2s 0.069
-      Crypt::Mac::F9 0.069
-      Crypt::Mac::HMAC 0.069
-      Crypt::Mac::OMAC 0.069
-      Crypt::Mac::PMAC 0.069
-      Crypt::Mac::Pelican 0.069
-      Crypt::Mac::Poly1305 0.069
-      Crypt::Mac::XCBC 0.069
-      Crypt::Misc 0.069
-      Crypt::Mode 0.069
-      Crypt::Mode::CBC 0.069
-      Crypt::Mode::CFB 0.069
-      Crypt::Mode::CTR 0.069
-      Crypt::Mode::ECB 0.069
-      Crypt::Mode::OFB 0.069
-      Crypt::PK 0.069
-      Crypt::PK::DH 0.069
-      Crypt::PK::DSA 0.069
-      Crypt::PK::ECC 0.069
-      Crypt::PK::Ed25519 0.069
-      Crypt::PK::RSA 0.069
-      Crypt::PK::X25519 0.069
-      Crypt::PRNG 0.069
-      Crypt::PRNG::ChaCha20 0.069
-      Crypt::PRNG::Fortuna 0.069
-      Crypt::PRNG::RC4 0.069
-      Crypt::PRNG::Sober128 0.069
-      Crypt::PRNG::Yarrow 0.069
-      Crypt::Stream::ChaCha 0.069
-      Crypt::Stream::RC4 0.069
-      Crypt::Stream::Rabbit 0.069
-      Crypt::Stream::Salsa20 0.069
-      Crypt::Stream::Sober128 0.069
-      Crypt::Stream::Sosemanuk 0.069
-      CryptX 0.069
-      Math::BigInt::LTM 0.069
+      Crypt::SysRandom 0.007
+    requirements:
+      Carp 0
+      Exporter 0
+      ExtUtils::MakeMaker 0
+      perl 5.006
+      strict 0
+      warnings 0
+  Crypt-URandom-0.54
+    pathname: D/DD/DDICK/Crypt-URandom-0.54.tar.gz
+    provides:
+      Crypt::URandom 0.54
+    requirements:
+      Carp 1.26
+      English 0
+      Exporter 0
+      ExtUtils::MakeMaker 0
+      FileHandle 0
+      constant 0
+      perl 5.006
+  Crypt-URandom-Token-0.005
+    pathname: S/ST/STIGTSP/Crypt-URandom-Token-0.005.tar.gz
+    provides:
+      Crypt::URandom::Token 0.005
+    requirements:
+      Crypt::URandom 0.40
+      ExtUtils::MakeMaker 0
+  CryptX-0.087
+    pathname: M/MI/MIK/CryptX-0.087.tar.gz
+    provides:
+      Crypt::AuthEnc 0.087
+      Crypt::AuthEnc::CCM 0.087
+      Crypt::AuthEnc::ChaCha20Poly1305 0.087
+      Crypt::AuthEnc::EAX 0.087
+      Crypt::AuthEnc::GCM 0.087
+      Crypt::AuthEnc::OCB 0.087
+      Crypt::Checksum 0.087
+      Crypt::Checksum::Adler32 0.087
+      Crypt::Checksum::CRC32 0.087
+      Crypt::Cipher 0.087
+      Crypt::Cipher::AES 0.087
+      Crypt::Cipher::Anubis 0.087
+      Crypt::Cipher::Blowfish 0.087
+      Crypt::Cipher::CAST5 0.087
+      Crypt::Cipher::Camellia 0.087
+      Crypt::Cipher::DES 0.087
+      Crypt::Cipher::DES_EDE 0.087
+      Crypt::Cipher::IDEA 0.087
+      Crypt::Cipher::KASUMI 0.087
+      Crypt::Cipher::Khazad 0.087
+      Crypt::Cipher::MULTI2 0.087
+      Crypt::Cipher::Noekeon 0.087
+      Crypt::Cipher::RC2 0.087
+      Crypt::Cipher::RC5 0.087
+      Crypt::Cipher::RC6 0.087
+      Crypt::Cipher::SAFERP 0.087
+      Crypt::Cipher::SAFER_K128 0.087
+      Crypt::Cipher::SAFER_K64 0.087
+      Crypt::Cipher::SAFER_SK128 0.087
+      Crypt::Cipher::SAFER_SK64 0.087
+      Crypt::Cipher::SEED 0.087
+      Crypt::Cipher::Serpent 0.087
+      Crypt::Cipher::Skipjack 0.087
+      Crypt::Cipher::Twofish 0.087
+      Crypt::Cipher::XTEA 0.087
+      Crypt::Digest 0.087
+      Crypt::Digest::BLAKE2b_160 0.087
+      Crypt::Digest::BLAKE2b_256 0.087
+      Crypt::Digest::BLAKE2b_384 0.087
+      Crypt::Digest::BLAKE2b_512 0.087
+      Crypt::Digest::BLAKE2s_128 0.087
+      Crypt::Digest::BLAKE2s_160 0.087
+      Crypt::Digest::BLAKE2s_224 0.087
+      Crypt::Digest::BLAKE2s_256 0.087
+      Crypt::Digest::CHAES 0.087
+      Crypt::Digest::Keccak224 0.087
+      Crypt::Digest::Keccak256 0.087
+      Crypt::Digest::Keccak384 0.087
+      Crypt::Digest::Keccak512 0.087
+      Crypt::Digest::MD2 0.087
+      Crypt::Digest::MD4 0.087
+      Crypt::Digest::MD5 0.087
+      Crypt::Digest::RIPEMD128 0.087
+      Crypt::Digest::RIPEMD160 0.087
+      Crypt::Digest::RIPEMD256 0.087
+      Crypt::Digest::RIPEMD320 0.087
+      Crypt::Digest::SHA1 0.087
+      Crypt::Digest::SHA224 0.087
+      Crypt::Digest::SHA256 0.087
+      Crypt::Digest::SHA384 0.087
+      Crypt::Digest::SHA3_224 0.087
+      Crypt::Digest::SHA3_256 0.087
+      Crypt::Digest::SHA3_384 0.087
+      Crypt::Digest::SHA3_512 0.087
+      Crypt::Digest::SHA512 0.087
+      Crypt::Digest::SHA512_224 0.087
+      Crypt::Digest::SHA512_256 0.087
+      Crypt::Digest::SHAKE 0.087
+      Crypt::Digest::Tiger192 0.087
+      Crypt::Digest::Whirlpool 0.087
+      Crypt::KeyDerivation 0.087
+      Crypt::Mac 0.087
+      Crypt::Mac::BLAKE2b 0.087
+      Crypt::Mac::BLAKE2s 0.087
+      Crypt::Mac::F9 0.087
+      Crypt::Mac::HMAC 0.087
+      Crypt::Mac::OMAC 0.087
+      Crypt::Mac::PMAC 0.087
+      Crypt::Mac::Pelican 0.087
+      Crypt::Mac::Poly1305 0.087
+      Crypt::Mac::XCBC 0.087
+      Crypt::Misc 0.087
+      Crypt::Mode 0.087
+      Crypt::Mode::CBC 0.087
+      Crypt::Mode::CFB 0.087
+      Crypt::Mode::CTR 0.087
+      Crypt::Mode::ECB 0.087
+      Crypt::Mode::OFB 0.087
+      Crypt::PK 0.087
+      Crypt::PK::DH 0.087
+      Crypt::PK::DSA 0.087
+      Crypt::PK::ECC 0.087
+      Crypt::PK::Ed25519 0.087
+      Crypt::PK::RSA 0.087
+      Crypt::PK::X25519 0.087
+      Crypt::PRNG 0.087
+      Crypt::PRNG::ChaCha20 0.087
+      Crypt::PRNG::Fortuna 0.087
+      Crypt::PRNG::RC4 0.087
+      Crypt::PRNG::Sober128 0.087
+      Crypt::PRNG::Yarrow 0.087
+      Crypt::Stream::ChaCha 0.087
+      Crypt::Stream::RC4 0.087
+      Crypt::Stream::Rabbit 0.087
+      Crypt::Stream::Salsa20 0.087
+      Crypt::Stream::Sober128 0.087
+      Crypt::Stream::Sosemanuk 0.087
+      CryptX 0.087
+      Math::BigInt::LTM 0.087
     requirements:
       ExtUtils::MakeMaker 0
+      Math::BigInt 0
       perl 5.006
   DBD-Pg-3.8.0
     pathname: T/TU/TURNSTEP/DBD-Pg-3.8.0.tar.gz
@@ -1549,24 +1586,21 @@ DISTRIBUTIONS
       Try::Tiny 0.07
       namespace::clean 0.24
       perl 5.008001
-  DBIx-Class-EncodedColumn-0.00015
-    pathname: W/WR/WREIS/DBIx-Class-EncodedColumn-0.00015.tar.gz
+  DBIx-Class-EncodedColumn-0.11
+    pathname: W/WR/WREIS/DBIx-Class-EncodedColumn-0.11.tar.gz
     provides:
-      DBIx::Class::EncodedColumn 0.00015
-      DBIx::Class::EncodedColumn::Crypt 0.01
-      DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt 0.00001
-      DBIx::Class::EncodedColumn::Crypt::OpenPGP 0.01
-      DBIx::Class::EncodedColumn::Digest 0.00001
+      DBIx::Class::EncodedColumn 0.11
+      DBIx::Class::EncodedColumn::Crypt 0.11
+      DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt 0.11
+      DBIx::Class::EncodedColumn::Crypt::OpenPGP 0.11
+      DBIx::Class::EncodedColumn::Digest 0.11
     requirements:
-      DBD::SQLite 0
+      Crypt::URandom 0
+      Crypt::URandom::Token 0
       DBIx::Class 0.06002
-      Dir::Self 0
       Encode 0
-      ExtUtils::MakeMaker 6.36
-      File::Spec 0
-      File::Temp 0
+      Module::Build::Tiny 0.034
       Sub::Name 0.04
-      Test::More 0
   DBIx-Class-Factory-0.04
     pathname: P/PU/PUSHTAEV/DBIx-Class-Factory-0.04.tar.gz
     provides:
@@ -3134,10 +3168,10 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       File::Copy 0
       File::Spec 0
-  File-Find-Rule-0.33
-    pathname: R/RC/RCLAMP/File-Find-Rule-0.33.tar.gz
+  File-Find-Rule-0.35
+    pathname: R/RC/RCLAMP/File-Find-Rule-0.35.tar.gz
     provides:
-      File::Find::Rule 0.33
+      File::Find::Rule 0.35
       File::Find::Rule::Test::ATeam undef
     requirements:
       ExtUtils::MakeMaker 0
@@ -3956,10 +3990,10 @@ DISTRIBUTIONS
       Module::Runtime 0
       parent 0
       perl 5.008001
-  JSON-XS-4.02
-    pathname: M/ML/MLEHMANN/JSON-XS-4.02.tar.gz
+  JSON-XS-4.04
+    pathname: M/ML/MLEHMANN/JSON-XS-4.04.tar.gz
     provides:
-      JSON::XS 4.02
+      JSON::XS 4.04
     requirements:
       Canary::Stability 0
       ExtUtils::MakeMaker 6.52
