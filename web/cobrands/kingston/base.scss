@@ -398,8 +398,9 @@ p.form-error {
         display: block;
         width: 6.25em;
         height: 7.25em;
-        background-image: url("https://www.kingston.gov.uk/site/dist/images/site-logo-white.svg");
+        background-image: url("/cobrands/kingston/images/logo-white.svg");
         background-size: contain;
+        background-repeat: no-repeat;
         margin-bottom: 0.75em;
     }
 }
