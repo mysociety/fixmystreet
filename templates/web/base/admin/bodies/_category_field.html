@@ -1,8 +1,20 @@
 [% IF cobrand.contact_extra_fields.0 == 'display_name' %]
 
     [% IF contact.in_storage %]
+        [% IF c.user.is_superuser %]
+        <label for="category">[% loc('Category') %]</label>
+        <p class="form-hint" id="category-hint">
+            This cobrand uses display names. The display name is shown to users and the category name is used internally and in URLs.
+        </p>
+        <input type="text" class="form-control" id="category" name="category"
+          aria-describedby="category-hint"
+          size="30" value="[% contact.category %]"
+          [% contact.category_uneditable ? 'readonly' : 'required' %]>
+        <input type="hidden" name="current_category" value="[% current_contact.category | html %]" >
+        [% ELSE %]
         <h1>[% contact.category | html %]</h1>
         <input type="hidden" name="category" value="[% contact.category | html %]" >
+        [% END %]
 
         <label for="display_name">Display name</label>
         <p class="form-hint" id="display_name-hint">

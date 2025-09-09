@@ -93,7 +93,7 @@ subtest 'cobrand displays council name' => sub {
 subtest 'check override contact display name' => sub {
     $mech->log_in_ok( $superuser->email );
     $mech->get_ok("/admin/body/" . $body->id . '/Litter');
-    $mech->content_contains('<h1>Litter</h1>');
+    $mech->content_like(qr/<input[^>]*name="category"[^>]*value="Litter"/s);
     $mech->content_contains('extra[display_name]');
     $mech->submit_form_ok({ with_fields => {
         'extra[display_name]' => 'Wittering'
