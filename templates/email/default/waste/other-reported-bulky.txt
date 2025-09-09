@@ -1,8 +1,10 @@
 Subject: [%
-IF report.category == 'Small items collection';
+IF report.category == 'Small items collection' && cobrand.moniker != 'sutton';
     " Small items collection service - reference " _ report.id;
 ELSIF cobrand.moniker == 'kingston';
     "Your bulky waste collection - reference RBK-" _ report.id;
+ELSIF cobrand.moniker == 'sutton' && report.category == 'Small items collection';
+    "Your small items collection - reference LBS-" _ report.id;
 ELSIF cobrand.moniker == 'sutton';
     "Your bulky waste collection - reference LBS-" _ report.id;
 ELSE;
@@ -22,7 +24,7 @@ Dear [% report.name %],
 
 [% report.detail %]
 
-[% IF cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston' ~%]
+[% IF (cobrand.moniker != 'sutton' && cobrand.moniker != 'kingston') || report.category == 'Small items collection' ~%]
 Date booking made: [% report_date %]
 
 [% END ~%]

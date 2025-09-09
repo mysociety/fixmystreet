@@ -119,20 +119,24 @@ sub waste_munge_report_form_fields {
 =head2 waste_report_form_first_next
 
 After picking a service, we jump straight to the about you page unless it's
-bulky, where we ask for more information.
+bulky or small items, where we ask for more information.
 
 =cut
 
 sub waste_report_form_first_next {
     my $self = shift;
     my $cfg = $self->feature('echo');
-    my $bulky_service_id = $cfg->{bulky_service_id};
+    my $bulky_service_id       = $cfg->{bulky_service_id};
+    my $small_items_service_id = $cfg->{small_items_service_id};
     return sub {
         my $data = shift;
-        return 'notes' if $data->{"service-$bulky_service_id"};
+        return 'notes'
+            if ( $bulky_service_id && $data->{"service-$bulky_service_id"} )
+            || ( $small_items_service_id && $data->{"service-$small_items_service_id"} );
         return 'about_you';
     };
 }
+
 
 =head2 waste_cc_payment_line_item_ref
 
