@@ -386,6 +386,31 @@ FixMyStreet::override_config {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bromley',
+    COBRAND_FEATURES => {
+        echo => { bromley => { sample_data => 1 } },
+        waste => { bromley => 1 }
+    },
+}, sub {
+    subtest 'Property not excluded from making requests when not in exclude list' => sub {
+        $body->set_extra_metadata( wasteworks_config => { exclude_property_from_requests => ['34567', '1234', '123456'] } );
+        $body->update;
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('Request a new mixed recycling (cans, plastics &amp; glass) container');
+        $mech->content_contains('Request a new food waste container');
+        $mech->content_contains('Request a new container');
+    };
+    subtest 'Property excluded from making requests when in exclude list' => sub {
+        $body->set_extra_metadata( wasteworks_config => { exclude_property_from_requests => ['34567', '1234', '12345'] } );
+        $body->update;
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Request a new mixed recycling (cans, plastics &amp; glass) container');
+        $mech->content_lacks('Request a new food waste container');
+        $mech->content_lacks('Request a new container');
+    };
+};
+
 subtest 'Checking correct renewal prices' => sub {
     my $echo = Test::MockModule->new('Integrations::Echo');
     $echo->mock('GetServiceUnitsForObject', sub {

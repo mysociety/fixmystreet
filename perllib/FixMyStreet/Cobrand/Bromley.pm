@@ -963,6 +963,26 @@ sub waste_munge_enquiry_data {
     $self->_set_user_source;
 }
 
+
+=head2 Allow specific selection of addresses unsuitable for requests
+
+Bromley would like to have option to prevent specific properties
+making requests for new containers
+
+=cut
+
+sub munge_bin_services_for_address {
+    my ($self, $rows) = @_;
+
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
+    foreach my $row (@$rows) {
+        if (grep { $property->{id} == $_ } @{$_[0]->wasteworks_config->{exclude_property_from_requests}}) {
+            $row->{request_allowed} = 0;
+        }
+    }
+}
+
 sub waste_payment_ref_council_code { "LBB" }
 
 sub waste_cc_payment_line_item_ref {
