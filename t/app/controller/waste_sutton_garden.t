@@ -730,6 +730,7 @@ FixMyStreet::override_config {
     subtest 'cancel credit card sub' => sub {
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
@@ -895,6 +896,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
@@ -949,6 +951,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
@@ -1035,6 +1038,7 @@ FixMyStreet::override_config {
     subtest 'cancel staff sub' => sub {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
@@ -1150,6 +1154,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(

@@ -1231,8 +1231,18 @@ FixMyStreet::override_config {
                 {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Other',
                         reason_further_details => 'Burnt all my leaves',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
@@ -1293,7 +1303,17 @@ FixMyStreet::override_config {
                 {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Price',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
@@ -1375,7 +1395,17 @@ FixMyStreet::override_config {
                 {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Price',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
@@ -1500,8 +1530,18 @@ FixMyStreet::override_config {
             {   with_fields => {
                     name => 'Name McName',
                     email => 'test@example.org',
+                },
+            }
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
                     reason  => 'Other',
                     reason_further_details => 'No longer needed',
+                },
+            }
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
                     confirm => 1,
                 },
             }

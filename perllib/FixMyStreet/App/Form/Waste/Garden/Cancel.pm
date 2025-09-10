@@ -7,7 +7,7 @@ extends 'FixMyStreet::App::Form::Waste';
 has_page intro => (
     title => 'Cancel your garden waste subscription',
     template => 'waste/garden/cancel.html',
-    fields => ['name', 'phone', 'email', 'confirm', 'submit'],
+    fields => ['name', 'phone', 'email', 'continue'],
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
@@ -16,6 +16,12 @@ has_page intro => (
         return ['name', 'phone', 'email'] unless $staff && $ask_staff;
         return [];
     },
+    next => 'confirm',
+);
+
+has_page confirm => (
+    title => 'Confirm cancellation',
+    fields => ['confirm', 'submit'],
     finished => sub {
         return $_[0]->wizard_finished('process_garden_cancellation');
     },
@@ -27,6 +33,13 @@ with 'FixMyStreet::App::Form::Waste::AboutYou';
 has_page done => (
     title => 'Subscription cancelled',
     template => 'waste/garden/cancel_confirmation.html',
+);
+
+has_field continue => (
+    type => 'Submit',
+    value => 'Continue',
+    element_attr => { class => 'govuk-button' },
+    order => 999,
 );
 
 has_field confirm => (

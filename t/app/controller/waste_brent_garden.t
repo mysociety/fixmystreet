@@ -583,6 +583,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z');
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(

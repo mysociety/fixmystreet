@@ -1508,6 +1508,7 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/auth', 'have to be logged in to cancel subscription';
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
@@ -1823,6 +1824,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
@@ -1838,7 +1840,7 @@ FixMyStreet::override_config {
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
 
-    for my $test ( 
+    for my $test (
         {
             return => {
                 transactionState => 'INVALID_REFERENCE',
@@ -2140,6 +2142,7 @@ FixMyStreet::override_config {
         $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
@@ -2654,6 +2657,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_cancel');
+        $mech->submit_form_ok({ with_fields => { continue => 1 } });
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
