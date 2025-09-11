@@ -144,6 +144,7 @@ sub cancel : Chained('setup') : PathPart('garden_cancel') : Args(0) {
     $c->stash->{form_class}
         = $c->cobrand->call_hook('waste_cancel_form_class')
         || 'FixMyStreet::App::Form::Waste::Garden::Cancel';
+    $c->cobrand->call_hook('waste_garden_cancel_form_setup');
     $c->forward('form');
 }
 

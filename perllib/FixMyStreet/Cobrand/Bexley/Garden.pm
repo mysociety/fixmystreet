@@ -422,6 +422,17 @@ sub waste_garden_renew_form_setup {
         = 'FixMyStreet::App::Form::Waste::Garden::Renew::Bexley';
 }
 
+sub waste_garden_cancel_form_setup {
+    my ($self) = @_;
+
+    my $c = $self->{c};
+
+    # Use a custom form class that includes about_you & reason pages
+    $c->stash->{first_page} = 'about_you';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
+}
+
 =head2 * garden_waste_first_bin_discount_applies
 
 The cost of the first garden waste bin is discounted if the payment method
