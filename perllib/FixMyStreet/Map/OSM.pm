@@ -19,8 +19,8 @@ has map_template => ( is => 'ro', default => 'osm' );
 sub map_javascript { [
     '/vendor/OpenLayers/OpenLayers.wfs.js',
     '/js/map-OpenLayers.js',
-    FixMyStreet->config('BING_MAPS_API_KEY') ? ('/js/map-bing-ol.js') : (),
     '/js/map-OpenStreetMap.js',
+    '/js/map-osm-aerial.js',
 ] }
 
 sub map_tiles {
@@ -29,6 +29,8 @@ sub map_tiles {
     my $tile_url;
     my $aerial_url = $self->cobrand->call_hook('has_aerial_maps');
     if ($params{aerial} && $aerial_url) {
+        my $grid = $_[0]->map_type =~ /Layer\.OS(Leisure|Maps)/ ? 'osmaps' : 'GoogleMapsCompatible';
+        $aerial_url =~ s/{grid}/$grid/;
         $tile_url = $aerial_url;
     } else {
         $tile_url = $self->base_tile_url();
@@ -59,7 +61,9 @@ sub generate_map_data {
         ($pin->{px}, $pin->{py}) = $self->latlon_to_px($pin->{latitude}, $pin->{longitude}, $params{x_tile}, $params{y_tile}, $zoom_params->{zoom_act});
     }
 
-    my $aerial_url = $self->cobrand->call_hook('has_aerial_maps');
+    my $aerial_url = $self->cobrand->call_hook('has_aerial_maps') || '';
+    my $grid = $_[0]->map_type =~ /Layer\.OS(Leisure|Maps)/ ? 'osmaps' : 'GoogleMapsCompatible';
+    $aerial_url =~ s/{grid}/$grid/;
     return {
         %params,
         %$zoom_params,

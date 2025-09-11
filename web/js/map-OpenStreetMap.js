@@ -1,11 +1,5 @@
 fixmystreet.maps.config = function() {
     fixmystreet.maps.controls.unshift( new OpenLayers.Control.AttributionFMS() );
-    if (OpenLayers.Layer.BingAerial) {
-        fixmystreet.layer_options = [
-          { map_type: fixmystreet.map_type },
-          { map_type: OpenLayers.Layer.BingAerial }
-        ];
-    }
 };
 
 // http://www.openstreetmap.org/openlayers/OpenStreetMap.js (added maxResolution)
