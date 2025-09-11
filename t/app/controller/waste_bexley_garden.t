@@ -1546,14 +1546,24 @@ FixMyStreet::override_config {
             like $mech->text, qr/Next collectionPending/;
 
             $mech->get_ok('/waste/10001/garden_cancel');
-            like $mech->text, qr/Cancel your garden waste subscription/;
-
             $mech->submit_form_ok(
                 {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Other',
                         reason_further_details => 'Burnt all my leaves',
+                    },
+                }
+            );
+
+            like $mech->text, qr/Cancel your garden waste subscription/;
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
@@ -1608,13 +1618,23 @@ FixMyStreet::override_config {
             like $mech->content, qr/waste-service-subtitle.*Garden waste/s;
 
             $mech->get_ok('/waste/10001/garden_cancel');
-            like $mech->text, qr/Cancel your garden waste subscription/;
-
             $mech->submit_form_ok(
                 {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Price',
+                    },
+                }
+            );
+
+            like $mech->text, qr/Cancel your garden waste subscription/;
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
@@ -1696,7 +1716,17 @@ FixMyStreet::override_config {
                 {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Price',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
@@ -1814,15 +1844,25 @@ FixMyStreet::override_config {
         # Navigate to the cancellation page
         $mech->get_ok('/waste/10001/garden_cancel');
 
-        like $mech->text, qr/Cancel your garden waste subscription/, 'On cancellation page';
-
         # Submit the cancellation form
         $mech->submit_form_ok(
             {   with_fields => {
                     name => 'Name McName',
                     email => 'test@example.org',
+                },
+            }
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
                     reason  => 'Other',
                     reason_further_details => 'No longer needed',
+                },
+            }
+        );
+
+        like $mech->text, qr/Cancel your garden waste subscription/, 'On cancellation page';
+        $mech->submit_form_ok(
+            {   with_fields => {
                     confirm => 1,
                 },
             }
