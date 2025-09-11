@@ -503,7 +503,7 @@ sub process_garden_transfer : Private {
     # Create a report for it for the new address
     my $new = { %$base };
     $new->{category} = 'Garden Subscription';
-    $new->{title} = 'Garden Subscription - New';
+    $new->{title} = 'Garden Subscription - Transfer';
     $new->{bins_wanted} = $data->{transfer_old_ggw_sub}->{transfer_bin_number};
     $new->{transfer_bin_type} = $data->{transfer_old_ggw_sub}->{transfer_bin_type};
 
