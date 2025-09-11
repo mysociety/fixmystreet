@@ -616,6 +616,8 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        # Name prefilled
+        $mech->submit_form_ok();
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains('2 bins');
         $mech->content_contains($two_cost_human);
@@ -655,6 +657,8 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        # Name prefilled
+        $mech->submit_form_ok();
         $mech->submit_form_ok({ with_fields => { current_bins => 2, bins_wanted => 1 } });
         $mech->content_contains($cost_human);
         $mech->content_lacks('Continue to payment');
@@ -997,9 +1001,11 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->content_lacks('<span id="pro_rata_cost">' . $cost_human);
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        # Name prefilled
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest' } });
         $mech->content_contains('current_bins');
         $mech->content_contains('bins_wanted');
-        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2, name => 'Test McTest' } });
+        $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
         is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
         is $sent_params->{items}[1]{amount}, $delivery, 'correct amount used';
@@ -1156,10 +1162,11 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => {
+            name => 'Test McTest',
+            email => 'test@example.net',
+        } });        $mech->submit_form_ok({ with_fields => {
             current_bins => 1,
             bins_wanted => 2,
-            name => 'Test McTest',
-            email => 'test@example.net'
         } });
         $mech->content_contains($two_cost_human);
         $mech->content_contains($total_human);
@@ -1183,10 +1190,12 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
         $mech->submit_form_ok({ with_fields => {
-            current_bins => 2,
-            bins_wanted => 1,
             name => 'A user',
             email => 'test@example.net',
+        } });
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 2,
+            bins_wanted => 1,
         } });
         $mech->content_contains($cost_human);
         $mech->content_lacks('Continue to payment');
@@ -1450,6 +1459,8 @@ FixMyStreet::override_config {
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+        # Name prefilled
+        $mech->submit_form_ok();
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->content_contains($two_cost_human);
         $mech->content_contains($total_human);

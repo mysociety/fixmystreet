@@ -118,7 +118,7 @@ sub modify : Chained('setup') : PathPart('garden_modify') : Args(0) {
     $c->stash->{first_page} = 'intro';
     my $allowed = $c->cobrand->call_hook('waste_garden_allow_cancellation') || 'all';
     if ($allowed eq 'staff' && !$c->stash->{is_staff}) {
-        $c->stash->{first_page} = 'alter';
+        $c->stash->{first_page} = 'about_you';
     }
 
     $c->forward('garden_form');

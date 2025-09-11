@@ -668,10 +668,12 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345/garden_modify');
             $mech->submit_form_ok({ with_fields => { task => 'modify' }}, 'Choose modify');
             $mech->submit_form_ok({ with_fields => {
-                bins_wanted => $test->{bins_wanted},
                 name => $user->name,
-                email => $user->email
-                } }, 'Request '. $test->{bins_wanted} . ' bins when currently have 2');
+                email => $user->email,
+            } });
+            $mech->submit_form_ok({ with_fields => {
+                bins_wanted => $test->{bins_wanted},
+            } }, 'Request '. $test->{bins_wanted} . ' bins when currently have 2');
             $mech->submit_form_ok({ with_fields => { tandc => 1 }}, 'Submit request');
 
             my $report = FixMyStreet::DB->resultset('Problem')->find({category => 'Amend Garden Subscription'});
@@ -694,8 +696,13 @@ FixMyStreet::override_config {
     };
 
     subtest 'check cannot modify to lower' => sub {
+        $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/garden_modify');
         $mech->submit_form_ok({ with_fields => { task => 'modify' }}, 'Choose modify');
+        $mech->submit_form_ok({ with_fields => {
+            name => $user->name,
+            email => $user->email,
+        } });
         $mech->submit_form_ok({ with_fields => { bins_wanted => 1 } });
         $mech->content_contains('only increase');
     };
