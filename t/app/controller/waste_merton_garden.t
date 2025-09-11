@@ -982,6 +982,9 @@ FixMyStreet::override_config {
         is $new_report->category, 'Cancel Garden Subscription', 'correct category on report';
         is $new_report->get_extra_field_value('End_Date'), '09/03/2021', 'cancel date set to current date';
         is $new_report->state, 'confirmed', 'report confirmed';
+
+        FixMyStreet::Script::Reports::send();
+        $mech->clear_emails_ok;
     };
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
@@ -1151,7 +1154,7 @@ FixMyStreet::override_config {
         my ($new_report, $cancel_report) = $recent_reports->all;
         is $new_report->user->name, $p->user->name, 'User name on report';
         is $new_report->user->email, $p->user->email, 'User email on report';
-        is $new_report->title, 'Garden Subscription - New', 'New report title correct';
+        is $new_report->title, 'Garden Subscription - Transfer', 'New report title correct';
         is $new_report->detail, "Garden Subscription\n\n2 Example Street, Merton,", 'New report detail correct';
         is $new_report->get_extra_field_value('uprn'), '1000000002', 'Correct uprn on new report';
         is $new_report->get_extra_field_value('property_id'), '12345', 'Correct property id on new report';
@@ -1166,6 +1169,18 @@ FixMyStreet::override_config {
         is $cancel_report->get_extra_field_value('property_id'), '11345', 'Correct property id on cancelled report';
         is $cancel_report->get_extra_field_value('transferred_to'), '1000000002';
         is $cancel_report->get_extra_field_value('End_Date'), '09/02/2021', 'Subscription ends today on cancelled report';
+
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body1 = $mech->get_text_body_from_email($emails[1]);
+        my $body2 = $mech->get_text_body_from_email($emails[3]);
+        if ($body2 =~ /You have cancelled/) {
+            ($body1, $body2) = ($body2, $body1);
+        }
+        like $body1, qr/You have cancelled/;
+        like $body1, qr/1 Example Street/;
+        like $body2, qr/You have transferred your garden waste service to 2 Example Street/;
+        like $body2, qr{The subscription expiry date remains 30/03/2021};
     };
 
     subtest 'cancel staff sub' => sub {

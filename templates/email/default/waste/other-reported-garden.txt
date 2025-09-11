@@ -30,7 +30,7 @@ Dear [% report.name %],
 
 [% email_summary %]
 
-[% IF type != 'cancel' ~%]
+[% IF type != 'cancel' AND type != 'transfer' ~%]
 You have signed up for:
 [% END %]
 
@@ -74,6 +74,8 @@ Your subscription will last until the end of March [% renew_year_end %] and star
 
 [% IF type == 'new' ~%]
 Your subscription will last for 12 months and starts after your first collection date.
+[% ELSIF type == 'transfer' ~%]
+The subscription expiry date remains [% report.get_extra_field_value('End_Date') %].
 [% END %]
 
 [% END %]
