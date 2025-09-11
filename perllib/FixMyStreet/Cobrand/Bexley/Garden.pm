@@ -9,9 +9,11 @@ package FixMyStreet::Cobrand::Bexley::Garden;
 use DateTime::Format::Strptime;
 use Integrations::Agile;
 use FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley;
+use FixMyStreet::App::Form::Waste::Garden::Modify::Bexley;
 use FixMyStreet::App::Form::Waste::Garden::Renew::Bexley;
 use Try::Tiny;
 use JSON::MaybeXS;
+use Utils;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SCP',
@@ -93,7 +95,11 @@ sub lookup_subscription_for_uprn {
         $sub->{has_been_renewed} = 1;
     }
 
-    $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
+    $sub->{customer_external_ref} = Utils::trim_text( $customer->{CustomerExternalReference} );
+    $sub->{customer_first_name}   = Utils::trim_text( $customer->{Firstname} );
+    $sub->{customer_last_name}    = Utils::trim_text( $customer->{Surname} );
+    $sub->{customer_email}        = Utils::trim_text( $customer->{Email} );
+    $sub->{customer_phone} = Utils::trim_text( $customer->{Mobile} // $customer->{TelNumber} );
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
 
@@ -165,6 +171,10 @@ sub garden_current_subscription {
     for ( @{ $self->garden_service_ids } ) {
         if ( my $srv = $service_ids->{$_} ) {
             $srv->{customer_external_ref} = $sub->{customer_external_ref};
+            $srv->{customer_first_name} = $sub->{customer_first_name};
+            $srv->{customer_last_name} = $sub->{customer_last_name};
+            $srv->{customer_email} = $sub->{customer_email};
+            $srv->{customer_phone} = $sub->{customer_phone};
             $srv->{end_date} = $sub->{end_date};
             $srv->{garden_bins} = $sub->{bins_count};
             $srv->{garden_cost} = $sub->{cost};
@@ -181,6 +191,10 @@ sub garden_current_subscription {
     my $service = {
         agile_only => 1,
         customer_external_ref => $sub->{customer_external_ref},
+        customer_first_name => $sub->{customer_first_name},
+        customer_last_name => $sub->{customer_last_name},
+        customer_email => $sub->{customer_email},
+        customer_phone => $sub->{customer_phone},
         end_date => $sub->{end_date},
         garden_bins => $sub->{bins_count},
         garden_cost => $sub->{cost},
@@ -246,8 +260,9 @@ sub waste_garden_sub_params {
 
     } elsif ( $data->{title} =~ /Renew/ ) {
         $c->set_param( 'type', 'renew' );
-        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
         $c->set_param( 'total_containers', $data->{bins_wanted} );
+        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} )
+            unless $data->{blank_customer_external_ref};
 
     } elsif ( $data->{title} =~ /Amend/ ) {
         $c->set_param( 'type', 'amend' );
@@ -402,7 +417,7 @@ sub waste_setup_direct_debit {
 sub waste_garden_subscribe_form_setup {
     my ($self) = @_;
 
-    # If this property isn't allow to sign up bounce the user back
+    # If this property isn't allowed to sign up bounce the user back
     # (templates shouldn't contain links in this case, but just to be sure...)
     $self->{c}->detach('/waste/property_redirect') unless $self->{c}->stash->{property}->{garden_signup_eligible};
 
@@ -413,8 +428,35 @@ sub waste_garden_subscribe_form_setup {
 sub waste_garden_renew_form_setup {
     my ($self) = @_;
 
-    # Use a custom form class that includes fields for bank details
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew::Bexley';
+    my $c = $self->{c};
+
+    # Use a custom form class that includes about_you page &
+    # fields for bank details
+    $c->stash->{first_page} = 'customer_reference';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Garden::Renew::Bexley';
+}
+
+sub waste_garden_cancel_form_setup {
+    my ($self) = @_;
+
+    my $c = $self->{c};
+
+    # Use a custom form class that includes about_you & reason pages
+    $c->stash->{first_page} = 'customer_reference';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
+}
+
+sub waste_garden_modify_form_setup {
+    my ($self) = @_;
+
+    my $c = $self->{c};
+
+    # Use a custom form class that includes about_you page.
+    $c->stash->{next_page} = 'customer_reference';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Garden::Modify::Bexley';
 }
 
 =head2 * garden_waste_first_bin_discount_applies
