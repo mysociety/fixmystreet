@@ -9,7 +9,7 @@ has_page intro => (
     title => 'Change your garden waste subscription',
     template => 'waste/garden/modify_pick.html',
     fields => ['task', 'apply_discount', 'continue'],
-    next => 'alter',
+    next => 'about_you',
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
@@ -19,15 +19,23 @@ has_page intro => (
     },
 );
 
-has_page alter => (
-    title => 'Change your garden waste subscription',
-    template => 'waste/garden/modify.html',
-    fields => ['current_bins', 'bins_wanted', 'name', 'phone', 'email', 'continue_review'],
+has_page about_you => (
+    fields => ['name', 'email', 'phone', 'continue'],
+    title => 'About you',
     field_ignore_list => sub {
         my $page = shift;
         return ['phone', 'email'] unless $page->form->c->stash->{is_staff};
         return [];
     },
+    next => 'alter',
+);
+
+with 'FixMyStreet::App::Form::Waste::AboutYou';
+
+has_page alter => (
+    title => 'Change your garden waste subscription',
+    template => 'waste/garden/modify.html',
+    fields => ['current_bins', 'bins_wanted', 'continue_review'],
     update_field_list => sub {
         my $form = shift;
         my $c = $form->c;
@@ -61,8 +69,6 @@ has_page alter => (
     },
     next => 'summary',
 );
-
-with 'FixMyStreet::App::Form::Waste::AboutYou';
 
 has_page summary => (
     fields => ['tandc', 'submit'],
