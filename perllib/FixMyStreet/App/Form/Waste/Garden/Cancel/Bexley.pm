@@ -4,6 +4,34 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Garden::Cancel';
 
+has_page about_you => (
+    fields => ['name', 'phone', 'email', 'continue'],
+    title => 'About you',
+    next => 'reason',
+);
+
+has_page reason => (
+    title => 'Reason for cancellation',
+    fields => [ 'reason', 'reason_further_details', 'continue' ],
+    next => 'confirm',
+);
+
+sub confirm {
+    my %defaults = FixMyStreet::App::Form::Waste::Garden::Cancel::intro();
+    my @fields = grep { $_ !~ /^(name|phone|email)$/ } @{ $defaults{fields} };
+    $defaults{fields} = \@fields;
+    return %defaults;
+}
+
+has_page confirm => ( confirm() );
+
+has_field continue => (
+    type => 'Submit',
+    value => 'Continue',
+    element_attr => { class => 'govuk-button' },
+    order => 999,
+);
+
 has_field reason => (
     type => 'Select',
     widget => 'RadioGroup',
