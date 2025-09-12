@@ -61,6 +61,8 @@ sub bulky_nice_item_list {
     my @items = sort { $a <=> $b } @item_nums;
 
     my @fields;
+    my %count;
+    my $any_multiple = 0;
     for my $item (@items) {
         if (my $value = $report->get_extra_metadata("item_$item")) {
             my $display = $value;
@@ -68,8 +70,24 @@ sub bulky_nice_item_list {
                 $display .= " ($note)";
             }
             push @fields, { item => $value, display => $display };
+            $any_multiple = 1 if $count{$display};
+            $count{$display}++;
         }
     }
+
+    if ($any_multiple) {
+        my @out;
+        my %seen;
+        foreach (@fields) {
+            my $d = $_->{display};
+            next if $seen{$d};
+            $seen{$d} = 1;
+            $_->{display} = "$count{$d} x $d";
+            push @out, $_;
+        }
+        @fields = @out;
+    }
+
     my $items_extra = $report->category eq 'Small items collection' ? $self->small_items_extra() : $self->bulky_items_extra(exclude_pricing => 1);
 
     return [
