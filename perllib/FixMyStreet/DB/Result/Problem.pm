@@ -1600,18 +1600,6 @@ sub waste_confirm_payment {
     foreach my $p (@problems) {
         $db->txn_do(sub {
             $p = $rs->search({ id => $p->id }, { for => \'UPDATE' })->single;
-            if ($p->cobrand eq 'bromley' && $p->get_extra_field_value('payment_method')) {
-                $p->update_extra_field( {
-                    name => 'LastPayMethod',
-                    description => 'LastPayMethod',
-                    value => $cobrand->bin_payment_types->{$p->get_extra_field_value('payment_method')}
-                });
-            }
-            $p->update_extra_field( {
-                name => 'PaymentCode',
-                description => 'PaymentCode',
-                value => $reference
-            }) if $reference;
             $p->set_extra_metadata('payment_reference', $reference) if $reference;
             $p->confirm;
             $p->create_related_things($no_reporter_alert);
@@ -1639,12 +1627,7 @@ sub bulky_add_payment_confirmation_update {
 
     my $payment = $self->get_extra_field_value('payment') || 0;
     $payment = sprintf( '%.2f', $payment / 100 );
-    my $reference_text = 'reference ';
-    if (!$reference) {
-        $reference_text .= $self->get_extra_metadata('chequeReference') . ' (phone/cheque)';
-    } else {
-        $reference_text .= $reference;
-    }
+    my $reference_text = "reference $reference";
     my $payments = $cobrand->get_all_payments($self);
     $payments = join('|', map { "$_->{ref}|$_->{amount}" } @$payments);
     my $comment = $self->add_to_comments({

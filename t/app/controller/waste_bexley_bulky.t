@@ -580,7 +580,6 @@ FixMyStreet::override_config {
             is $p->get_extra_metadata('continuousAuditNumber'), 123;
             is $p->get_extra_metadata('authCode'), 112233;
             is $p->get_extra_metadata('payment_reference'), 54321;
-            is $p->get_extra_field_value('PaymentCode'), 54321;
             is $p->comments->first->text, "Payment confirmed, reference 54321, amount £69.30";
             is $p->get_extra_field_value('uprn'), 'UPRN';
         };

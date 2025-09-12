@@ -71,8 +71,6 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
         { code => 'Container_Instruction_Quantity', required => 1, automated => 'hidden_field' },
         { code => 'Container_Instruction_Action', required => 1, automated => 'hidden_field' },
         { code => 'Container_Instruction_Container_Type', required => 1, automated => 'hidden_field' },
-        { code => 'LastPayMethod', required => 0, automated => 'hidden_field' },
-        { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
         { code => 'current_containers', required => 1, automated => 'hidden_field' },
         { code => 'new_containers', required => 1, automated => 'hidden_field' },
         { code => 'payment_method', required => 1, automated => 'hidden_field' },
@@ -1136,8 +1134,6 @@ FixMyStreet::override_config {
 
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
-        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
@@ -1183,8 +1179,6 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
-        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
         $new_report->delete;
     };
 
@@ -1227,8 +1221,6 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
-        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
         $new_report->delete;
     };
 
@@ -1581,8 +1573,6 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
-        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
@@ -1683,8 +1673,6 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
-        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     };
 
     subtest 'renew credit card sub with one less bin' => sub {
@@ -1728,8 +1716,6 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
-        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
     };
 
     remove_test_subs( $p->id );
@@ -1776,8 +1762,6 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct last pay method';
-        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct payment code';
     };
 
     remove_test_subs( $p->id );
@@ -2016,8 +2000,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
         is $report->title, 'Garden Subscription - Renew', 'correct title on report';
         is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct last pay method';
-        is $report->get_extra_field_value('PaymentCode'), 54321, 'correct payment code';
+        is $report->get_extra_metadata('payment_reference'), 54321, 'correct payment code';
         is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
         is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
@@ -2049,8 +2032,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
         is $report->title, 'Garden Subscription - Renew', 'correct title on report';
         is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct last pay method';
-        is $report->get_extra_field_value('PaymentCode'), 54321, 'correct payment code';
+        is $report->get_extra_metadata('payment_reference'), 54321, 'correct payment code';
         is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
         is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';
@@ -2195,8 +2177,6 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $report->state, 'confirmed', 'report confirmed';
         is $report->state, 'confirmed', 'report confirmed';
-        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
-        is $report->get_extra_field_value('PaymentCode'), '64321', 'correct echo payment reference field';
         is $report->get_extra_field_value('Source'), '3', 'correct echo source for staff';
         is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
         is $report->user->email, 'test@example.net';
@@ -2284,8 +2264,6 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('Container_Instruction_Quantity'), 1, 'correct container request count';
         is $report->state, 'confirmed', 'report confirmed';
         is $report->state, 'confirmed', 'report confirmed';
-        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct echo payment method field';
-        is $report->get_extra_field_value('PaymentCode'), '64321', 'correct echo payment reference field';
         is $report->get_extra_metadata('payment_reference'), '64321', 'correct payment reference on report';
         is $report->get_extra_metadata('contributed_by'), $staff_user->id;
         is $report->get_extra_metadata('contributed_as'), 'anonymous_user';
@@ -2378,8 +2356,6 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo payment method field';
-        is $new_report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
         $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
     };
 
@@ -2467,8 +2443,6 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo last pay method';
-        is $new_report->get_extra_field_value('PaymentCode'), 54321, 'correct echo payment code';
     };
 
     remove_test_subs( 0 );
@@ -2549,8 +2523,6 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        is $new_report->get_extra_field_value('LastPayMethod'), 2, 'correct echo last pay method';
-        is $new_report->get_extra_field_value('PaymentCode'), 54321, 'correct echo payment code';
 
         # need to do this to get changes so update marks as dirty
         $nameless_user->discard_changes;
@@ -2695,8 +2667,7 @@ FixMyStreet::override_config {
         my $report = FixMyStreet::DB->resultset("Problem")->find({ id => $id });
         is $report->title, 'Garden Subscription - Renew', 'correct title on report';
         is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
-        is $report->get_extra_field_value('LastPayMethod'), 1, 'correct last pay method';
-        is $report->get_extra_field_value('PaymentCode'), 54321, 'correct payment code';
+        is $report->get_extra_metadata('payment_reference'), 54321, 'correct payment code';
         is $report->get_extra_field_value('Subscription_Details_Quantity'), 1, 'correct bin count';
         is $report->get_extra_field_value('Container_Instruction_Action'), '', 'no container request action';
         is $report->get_extra_field_value('Container_Instruction_Quantity'), '', 'no container request count';

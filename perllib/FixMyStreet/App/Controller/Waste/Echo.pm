@@ -104,8 +104,7 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
             # send alerts on any updates that come in
             if ($p->category eq 'Bulky collection'
                 && $c->cobrand->bulky_send_before_payment
-                && !$p->get_extra_metadata('payment_reference')
-                && !$p->get_extra_metadata('chequeReference')) {
+                && !$p->get_extra_metadata('payment_reference')) {
                 $updates->suppress_alerts(1);
             }
 

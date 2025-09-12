@@ -47,6 +47,15 @@ my $missed = $mech->create_contact_ok(
     extra => { type => 'waste' },
     group => ['Waste'],
 );
+$mech->create_contact_ok(
+    body => $body,
+    category => 'Garden Subscription',
+    email => '2106',
+    send_method => 'Open311',
+    endpoint => 'waste-endpoint',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+);
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     latitude => 51.402096,
@@ -110,7 +119,9 @@ subtest 'test waste duplicate' => sub {
 
 subtest 'test DD taking so long it expires' => sub {
     my $title = $report->title;
-    $report->update({ title => "Garden Subscription - Renew" });
+    $report->set_extra_metadata( payment_reference => 'reference' );
+    $report->update_extra_field({ name => 'payment_method', value => 'credit_card' });
+    $report->update({ title => "Garden Subscription - Renew", category => 'Garden Subscription' });
     my $sender = FixMyStreet::SendReport::Open311->new(
         bodies => [ $body ], body_config => { $body->id => $body },
     );
@@ -124,6 +135,13 @@ subtest 'test DD taking so long it expires' => sub {
             url => 'http://example.org/',
         });
     };
+    my $req = Open311->test_req_used;
+    foreach ($req->parts) {
+        my $cd = $_->header('Content-Disposition');
+        is $_->content, '2' if $cd =~ /attribute\[LastPayMethod\]/;
+        is $_->content, 'reference' if $cd =~ /attribute\[PaymentCode\]/;
+    }
+
     is $report->get_extra_field_value("Subscription_Type"), 1, 'Type updated';
     is $report->title, "Garden Subscription - New";
     $report->update({ title => $title });
@@ -1521,16 +1539,16 @@ subtest 'check direct debit reconcilliation' => sub {
     $new_sub->discard_changes;
     is $new_sub->state, 'confirmed', "New report confirmed";
     is $new_sub->get_extra_metadata('payerReference'), "LBB-" . $new_sub->id . "-654321", "payer reference set";
-    is $new_sub->get_extra_field_value('PaymentCode'), "LBB-" . $new_sub->id . "-654321", 'correct echo payment code field';
-    is $new_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+    is $new_sub->get_extra_metadata('payment_reference'), "LBB-" . $new_sub->id . "-654321", 'correct echo payment code field';
+    is $new_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method field';
 
     $renewal_from_cc_sub->discard_changes;
     is $renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
-    is $renewal_from_cc_sub->get_extra_field_value('PaymentCode'), $renewal_from_cc_sub_ref, 'correct echo payment code field';
+    is $renewal_from_cc_sub->get_extra_metadata('payment_reference'), $renewal_from_cc_sub_ref, 'correct echo payment code field';
     is $renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'From CC Renewal has correct type';
     is $renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'From CC Renewal has correct container type';
     is $renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Renewal has correct service id';
-    is $renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+    is $renewal_from_cc_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method field';
 
     my $subsequent_renewal_from_cc_sub = FixMyStreet::DB->resultset('Problem')->search({
             extra => { '@>' => encode_json({ _fields => [ { name => "uprn", value => "3654321" } ] }) },
@@ -1539,11 +1557,10 @@ subtest 'check direct debit reconcilliation' => sub {
     is $subsequent_renewal_from_cc_sub->count, 2, "two record for subsequent renewal property";
     $subsequent_renewal_from_cc_sub = $subsequent_renewal_from_cc_sub->first;
     is $subsequent_renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
-    is $subsequent_renewal_from_cc_sub->get_extra_field_value('PaymentCode'), $sub_for_subsequent_renewal_from_cc_sub_ref, 'correct echo payment code field';
+    is $subsequent_renewal_from_cc_sub->get_extra_metadata('payment_reference'), $sub_for_subsequent_renewal_from_cc_sub_ref, 'correct echo payment code field';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Type'), 2, 'Subsequent Renewal has correct type';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'Subsequent Renewal has correct container type';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Subsequent Renewal has correct service id';
-    is $subsequent_renewal_from_cc_sub->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
     is $subsequent_renewal_from_cc_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correctly marked as direct debit';
 
     $ad_hoc_orig->discard_changes;
@@ -1552,8 +1569,8 @@ subtest 'check direct debit reconcilliation' => sub {
     $ad_hoc->discard_changes;
     is $ad_hoc->state, 'confirmed', "ad hoc report confirmed";
     is $ad_hoc->get_extra_metadata('dd_date'), "16/03/2021", "dd date set for ad hoc";
-    is $ad_hoc->get_extra_field_value('PaymentCode'), "LBB-" . $ad_hoc->id . "-654325", 'correct echo payment code field';
-    is $ad_hoc->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+    is $ad_hoc->get_extra_metadata('payment_reference'), "LBB-" . $ad_hoc->id . "-654325", 'correct echo payment code field';
+    is $ad_hoc->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method field';
 
     $ad_hoc_skipped->discard_changes;
     is $ad_hoc_skipped->state, 'unconfirmed', "ad hoc report not confirmed";
@@ -1581,7 +1598,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $p->get_extra_field_value('Subscription_Details_Container_Type'), 44, 'renewal has correct container type';
     is $p->get_extra_field_value('service_id'), 545, 'renewal has correct service id';
     is $p->get_extra_field_value('property_id'), '54321';
-    is $p->get_extra_field_value('LastPayMethod'), 3, 'correct echo payment method field';
+    is $p->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method field';
     is $p->get_extra_metadata('dd_date'), '16/03/2021';
     is $p->get_extra_metadata('payerReference'), 'GGW654322';
     is $p->cobrand_data, 'waste';
