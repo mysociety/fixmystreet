@@ -1461,9 +1461,6 @@ $.extend(fixmystreet.set_up, {
     $('.js-key-tool-report-updates').each(function() {
         $(this).small_drawer('report-updates-data');
     });
-    $('.js-key-tool-report-share').each(function() {
-        $(this).small_drawer('report-share');
-    });
   },
 
   ward_select_multiple: function() {

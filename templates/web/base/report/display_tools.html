@@ -14,9 +14,6 @@
         [% IF c.cobrand.moniker != 'zurich' %]
         <li><a rel="nofollow" class="has-inline-svg js-key-tool-report-updates" aria-expanded="false" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %][% INCLUDE 'icons/rss.html' width='1.5em' height='1.5em' %]</a></li>
         [% END %]
-        [% IF c.cobrand.moniker == 'fixmystreet' %]
-        <li><a rel="nofollow" class="has-inline-svg js-key-tool-report-share" href="#report-share" aria-expanded="false">[% loc('Share') %][% INCLUDE 'icons/share.html' width='1.5em' height='1.5em' %]</a></li>
-        [% END %]
       [% END %]
       [% IF c.cobrand.moniker == 'zurich' %]
         <li><a class="has-inline-svg" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems on the map' ) %][% INCLUDE 'icons/chevron-right.html' width='1.5em' height='1.5em' %]</a></li>
@@ -24,21 +21,6 @@
         <li><a class="has-inline-svg" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems nearby' ) %][% INCLUDE 'icons/chevron-right.html' width='1.5em' height='1.5em' %]</a></li>
       [% END %]
     </ul>
-
-[% IF c.cobrand.moniker == 'fixmystreet' %]
-  <div id="report-share" class="hidden-js" align="center" role="dialog" aria-modal="true" aria-labelledby="report-share-title">
-    <p id="report-share-title" class="screen-reader-only">Share this report on Twitter or Facebook</p>
-    <a class="btn btn--social btn--twitter" href="https://twitter.com/intent/tweet?text=I%20just%20viewed%20this%20report:%20&lsquo;[% problem.title_safe | uri %]&rsquo;&amp;url=[% c.cobrand.base_url | uri %][% c.req.uri.path | uri %]&amp;via=fixmystreet&amp;related=mySociety">
-      <img alt="" src="/i/twitter-icon-32.png" width="17" height="32">
-      Tweet
-    </a>
-    <a class="btn btn--social btn--facebook" href="https://www.facebook.com/sharer/sharer.php?u=[% c.cobrand.base_url %][% c.req.uri.path %]">
-      <img alt="" src="/i/facebook-icon-32.png" width="17" height="32">
-      Share
-    </a>
-    <button type="button" class="close-drawer screen-reader-only">&#10005; Close</button>
-  </div>
-[% END %]
 
 <div id="report-updates-data" class="hidden-js" role="dialog" aria-modal="true" aria-labelledby="report-updates-data-title">
     [% INCLUDE 'alert/_updates.html' %]

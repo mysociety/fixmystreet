@@ -67,7 +67,14 @@ sub check_slot_available {
         $property, undef, 'no_cache' );
 
     my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
-    return $slot ? 1 : 0;
+    if ($slot) {
+        # We don't need new references like Echo, so no need to update chosen_date. If we did,
+        # it'd be something like this:
+        # $args{form}->saved_data->{chosen_date} = $slot->{date} . ';' . $slot->{reference} . ';';
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 1;

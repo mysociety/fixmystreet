@@ -869,7 +869,7 @@ body.authpage {
 }
 
 // If JS is disabled, these are still CSS positioned, so don't want behind shining through.
-#report-share, #report-updates-data {
+#report-updates-data {
     background-color: #fff;
     box-shadow: 0px -10px 5px -1px rgba(0,0,0,0.15);
 }

@@ -67,7 +67,9 @@ sub send_manifest: Private {
     my $short_name = $theme->{short_name};
 
     if ($app eq 'ww') {
-        $start_url = '/waste?pwa';
+        my $p = $c->get_param('p') || '';
+        $p =~ s/[^A-Za-z0-9\:]//g; # sanitise property ID
+        $start_url = $p ? "/waste/$p?pwa" : '/waste?pwa';
         $name = $theme->{wasteworks_name} if $theme->{wasteworks_name};
         $short_name = $theme->{wasteworks_short_name} if $theme->{wasteworks_short_name};
     }

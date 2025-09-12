@@ -93,7 +93,7 @@ sub check_slot_available {
     my $now_dt = DateTime->now;
 
     # Note: Both $slot_expiry_dt and $now_dt are UTC
-    if ( $slot_expiry_dt <= $now_dt ) {
+    if ( !$slot_expiry_date || $slot_expiry_dt <= $now_dt ) {
         # Cancel the expired slots and call ReserveAvailableSlots again, try to
         # get the same collection date
         my $property = $self->cobrand->{c}->stash->{property};
