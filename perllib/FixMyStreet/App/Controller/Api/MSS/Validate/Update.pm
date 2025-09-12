@@ -50,4 +50,4 @@ around BUILDARGS => sub {
     return $class->$orig($args);
 };
 
-return 1;
+1;
