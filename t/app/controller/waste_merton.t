@@ -653,6 +653,7 @@ FixMyStreet::override_config {
             'Property has time-banded message' );
         $mech->content_contains( 'color: #BD63D1', 'Property has purple sack' );
         $mech->content_contains( 'color: #3B3B3A', 'Property has black sack' );
+        $mech->content_lacks('Request a non-recyclable waste container');
         $mech->content_contains( 'You need to buy your own black sacks',
             'Property has black sack message' );
 
