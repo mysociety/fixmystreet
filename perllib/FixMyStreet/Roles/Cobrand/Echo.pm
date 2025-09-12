@@ -1040,33 +1040,6 @@ sub save_item_names_to_report {
     }
 }
 
-sub bulky_nice_item_list {
-    my ($self, $report) = @_;
-
-    my @item_nums = map { /^item_(\d+)/ } grep { /^item_\d/ } keys %{$report->get_extra_metadata};
-    my @items = sort { $a <=> $b } @item_nums;
-
-    my @fields;
-    for my $item (@items) {
-        if (my $value = $report->get_extra_metadata("item_$item")) {
-            my $display = $value;
-            if (my $note = $report->get_extra_metadata("item_notes_$item")) {
-                $display .= " ($note)";
-            }
-            push @fields, { item => $value, display => $display };
-        }
-    }
-    my $items_extra = $report->category eq 'Small items collection' ? $self->small_items_extra() : $self->bulky_items_extra(exclude_pricing => 1);
-
-    return [
-        map {
-            value => $_->{display},
-            message => $items_extra->{$_->{item}}{message},
-        },
-        @fields,
-    ];
-}
-
 sub send_bulky_payment_echo_update_failed {
     my ( $self, $params ) = @_;
 
