@@ -81,6 +81,13 @@ sub bulky_nice_item_list {
     ];
 }
 
+sub bulky_item_list_size {
+    my ($self, $report) = @_;
+    my $extra = $report->get_extra_metadata;
+    my @items = grep { $_ } map { $extra->{$_} } grep { /^item_\d/ } keys %$extra;
+    return scalar @items;
+}
+
 sub bulky_tandc_link {
     my $self = shift;
     my $cfg = $self->feature('waste_features') || {};
