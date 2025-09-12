@@ -241,7 +241,8 @@ FixMyStreet::override_config {
         $mech->content_contains('option value="Small WEEE"', "Small WEEE option");
         $mech->submit_form_ok( { fields => { 'item_1' => 'Batteries', 'item_2' => 'Batteries' } });
         $mech->content_contains( 'Too many of item: Batteries');
-        $mech->submit_form_ok( { fields => { 'item_1' => 'Batteries', 'item_2' => 'Small WEEE', 'item_photo_2' => [ $sample_file, undef, Content_Type => 'image/jpeg' ], } });
+        $mech->submit_form_ok( { fields => { 'item_1' => 'Batteries', 'item_2' => 'Small WEEE', 'item_photo_2' => [ $sample_file, undef, Content_Type => 'image/jpeg' ],
+            item_3 => 'Small WEEE', } });
     };
 
     subtest 'Location page' => sub {
@@ -257,7 +258,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Booking Summary', "On booking confirmation page");
         $mech->content_lacks('Bookings are not refundable', "Small items service is free so no mention of refunds");
         $mech->content_contains('2 Example Street, Sutton, SM2 5HF', "Shows correct address");
-        $mech->content_contains('2 items requested for collection', "2 items for collection");
+        $mech->content_contains('3 items requested for collection', "3 items for collection");
         $mech->content_contains('Batteries', "Batteries added");
         $mech->content_contains('Small WEEE', "Small WEEE added");
         $mech->content_contains('In the alley', "Location information added");
@@ -304,7 +305,7 @@ FixMyStreet::override_config {
             'name' => 'Collection_Date_-_Bulky_Items'
           },
           {
-            'value' => '1::2',
+            'value' => '1::2::2',
             'name' => 'Small_Item_Type',
             'description' => undef
           },
@@ -314,7 +315,7 @@ FixMyStreet::override_config {
             'name' => 'Exact_Location'
           },
           {
-            'value' => "1 x Batteries\n1 x Small WEEE",
+            'value' => "1 x Batteries\n2 x Small WEEE",
             'description' => undef,
             'name' => 'Notes'
           },
@@ -343,7 +344,7 @@ FixMyStreet::override_config {
         $mech->content_contains($user->email, 'Correct email address');
         $mech->content_contains('Example Street, Sutton, SM2 5HF', 'Correct property address');
         $mech->content_contains('Friday 08 August 2025', 'Collection date correct');
-        $mech->content_contains('2 items requested for collection', 'Correct number of items');
+        $mech->content_contains('3 items requested for collection', 'Correct number of items');
         $mech->content_contains('Batteries', 'item 1 added');
         $mech->content_contains('Small WEEE', 'item 2 added');
         $mech->content_contains('Preview image successfully attached', 'Preview image added');
@@ -376,8 +377,8 @@ FixMyStreet::override_config {
             like $email, qr/Date booking made: Friday 01 August 2025/, 'Includes booking date';
             like $email, qr/Reference: (<strong>)?$sutton_id/, 'Includes reference number';
             like $email, qr/Items to be collected:/, 'Includes header for items';
-            like $email, qr/Batteries/, 'Includes item 1';
-            like $email, qr/Small WEEE/, 'Includes item 2';
+            like $email, qr/1 x Batteries/, 'Includes item 1';
+            like $email, qr/2 x Small WEEE/, 'Includes item 2 and 3';
             unlike $email, qr/Total cost/, 'There is no total cost';
             like $email, qr/Address: 2 Example Street, Sutton, SM2 5HF/, 'Includes collection address';
             like $email, qr/Collection date: Friday 08 August/, 'Includes collection date';
@@ -552,7 +553,7 @@ FixMyStreet::override_config {
         is $report->title, 'Small items collection';
         is $report->get_extra_field_value('uprn'), 1000000002;
         is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2025-08-12T00:00:00';
-        is $report->get_extra_field_value('Small_Item_Type'), '1::2';
+        is $report->get_extra_field_value('Small_Item_Type'), '1::2::2';
         is $report->get_extra_field_value('property_id'), '12345';
         is $report->get_extra_field_value('GUID'), '4ea70923-7151-11f0-aeea-cd51f3977c8c';
         is $report->get_extra_field_value('reservation'), 'reserve7d==';
