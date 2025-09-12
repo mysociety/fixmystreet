@@ -214,11 +214,6 @@ sub waste_extra_service_info_all_results {
         $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
     }
 
-    if ($self->moniker eq 'merton' && @$result == 1 && $result->[0]{ServiceId} == $service_ids->{garden}) {
-        # No garden collection possible, if only service is garden
-        $self->{c}->stash->{waste_features}->{garden_disabled} = 1;
-    }
-
     if (@$result && $cfg->{bulky_service_id} && grep { $_->{ServiceId} == $cfg->{bulky_service_id} } @$result) {
         $property->{has_bulky_service} = 1;
     }
