@@ -18,7 +18,7 @@ sub booking_class { 'Integrations::Whitespace::Booking' }
 sub bulky_allowed_property {
     my ($self, $property) = @_;
     my $class = $property->{class} || '';
-    return $self->bulky_enabled && $class =~ /^RD/ ? 1 : 0;
+    return $self->bulky_enabled && $class =~ /^(RD|RH)/ ? 1 : 0;
 }
 
 sub bulky_cancellation_cutoff_time { { hours => 23, minutes => 59, days_before => 2, working_days => 1 } }
