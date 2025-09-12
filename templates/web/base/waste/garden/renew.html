@@ -37,7 +37,9 @@
   </dl>
   [% END %]
 
+  [% IF form.current_page.fields.grep('name').size %]
   [% PROCESS form override_fields=['name', 'email', 'phone'] %]
+  [% END %]
 
   [% IF c.cobrand.garden_subscription_email_renew_reminder_opt_in %]
   [% PROCESS form override_fields=['email_renewal_reminders'] %]

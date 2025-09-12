@@ -395,8 +395,24 @@ sub waste_garden_subscribe_form_setup {
 sub waste_garden_renew_form_setup {
     my ($self) = @_;
 
-    # Use a custom form class that includes fields for bank details
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew::Bexley';
+    my $c = $self->{c};
+
+    # Use a custom form class that includes about_you page &
+    # fields for bank details
+    $c->stash->{first_page} = 'about_you';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Garden::Renew::Bexley';
+}
+
+sub waste_garden_cancel_form_setup {
+    my ($self) = @_;
+
+    my $c = $self->{c};
+
+    # Use a custom form class that includes about_you & reason pages
+    $c->stash->{first_page} = 'about_you';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
 }
 
 =head2 * garden_waste_first_bin_discount_applies

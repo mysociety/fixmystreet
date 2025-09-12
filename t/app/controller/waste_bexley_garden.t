@@ -575,6 +575,14 @@ FixMyStreet::override_config {
                     'Details are not pending because we have Whitespace data';
 
                 $mech->get_ok("/waste/$uprn/garden_renew");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            name => 'Trevor Trouble',
+                            email => 'trevor@trouble.com',
+                            phone => '+4407111111111',
+                        },
+                    }
+                );
                 like $mech->content, qr/name="current_bins.*value="2"/s,
                     'Current bins pre-populated';
                 like $mech->content, qr/name="bins_wanted.*value="2"/s,
@@ -585,9 +593,6 @@ FixMyStreet::override_config {
                         {   with_fields => {
                                 bins_wanted => 3,
                                 payment_method => 'credit_card',
-                                name => 'Trevor Trouble',
-                                email => 'trevor@trouble.com',
-                                phone => '+4407111111111',
                             },
                         }
                     );
@@ -636,18 +641,23 @@ FixMyStreet::override_config {
                 subtest 'requesting fewer bins' => sub {
                     $mech->get_ok("/waste/$uprn/garden_renew");
 
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                name => 'Trevor Trouble',
+                                email => 'trevor@trouble.com',
+                                phone => '+4407111111111',
+                            },
+                        }
+                    );
+
                     like $mech->content, qr/name="current_bins.*value="2"/s,
                         'Current bins pre-populated';
                     like $mech->content, qr/name="bins_wanted.*value="2"/s,
                         'Wanted bins pre-populated';
-
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 bins_wanted => 1,
                                 payment_method => 'credit_card',
-                                name => 'Trevor Trouble',
-                                email => 'trevor@trouble.com',
-                                phone => '+4407111111111',
                             },
                         }
                     );
@@ -754,18 +764,23 @@ FixMyStreet::override_config {
                     'Renewal link available';
 
                 $mech->get_ok("/waste/$uprn/garden_renew");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            name => 'Trevor Trouble',
+                            email => 'trevor@trouble.com',
+                            phone => '+4407111111111',
+                        },
+                    }
+                );
+
                 like $mech->content, qr/name="current_bins.*value="2"/s,
                     'Current bins pre-populated';
                 like $mech->content, qr/name="bins_wanted.*value="2"/s,
                     'Wanted bins pre-populated';
-
                 $mech->submit_form_ok(
                     {   with_fields => {
                             bins_wanted => 1,
                             payment_method => 'credit_card',
-                            name => 'Trevor Trouble',
-                            email => 'trevor@trouble.com',
-                            phone => '+4407111111111',
                         },
                     }
                 );
@@ -1225,14 +1240,24 @@ FixMyStreet::override_config {
             like $mech->text, qr/Next collectionPending/;
 
             $mech->get_ok('/waste/10001/garden_cancel');
-            like $mech->text, qr/Cancel your garden waste subscription/;
-
             $mech->submit_form_ok(
                 {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Other',
                         reason_further_details => 'Burnt all my leaves',
+                    },
+                }
+            );
+
+            like $mech->text, qr/Cancel your garden waste subscription/;
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
@@ -1287,13 +1312,23 @@ FixMyStreet::override_config {
             like $mech->content, qr/waste-service-subtitle.*Garden waste/s;
 
             $mech->get_ok('/waste/10001/garden_cancel');
-            like $mech->text, qr/Cancel your garden waste subscription/;
-
             $mech->submit_form_ok(
                 {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Price',
+                    },
+                }
+            );
+
+            like $mech->text, qr/Cancel your garden waste subscription/;
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
@@ -1375,7 +1410,17 @@ FixMyStreet::override_config {
                 {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Price',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
@@ -1493,15 +1538,25 @@ FixMyStreet::override_config {
         # Navigate to the cancellation page
         $mech->get_ok('/waste/10001/garden_cancel');
 
-        like $mech->text, qr/Cancel your garden waste subscription/, 'On cancellation page';
-
         # Submit the cancellation form
         $mech->submit_form_ok(
             {   with_fields => {
                     name => 'Name McName',
                     email => 'test@example.org',
+                },
+            }
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
                     reason  => 'Other',
                     reason_further_details => 'No longer needed',
+                },
+            }
+        );
+
+        like $mech->text, qr/Cancel your garden waste subscription/, 'On cancellation page';
+        $mech->submit_form_ok(
+            {   with_fields => {
                     confirm => 1,
                 },
             }
@@ -1618,6 +1673,15 @@ FixMyStreet::override_config {
             '"Due soon" message shown';
 
         $mech->get_ok("/waste/$uprn/garden_renew");
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    name => 'Test McTest',
+                    email => 'test@example.net',
+                    phone => '+4407111111111',
+                },
+            }
+        );
+
         like $mech->content, qr/name="current_bins.*value="2"/s,
             'Current bins pre-populated';
 
@@ -1626,9 +1690,6 @@ FixMyStreet::override_config {
             {   with_fields => {
                     bins_wanted => 2, # Keep same number of bins
                     payment_method => 'direct_debit', # Switch to direct debit
-                    name => 'Test McTest',
-                    email => 'test@example.net',
-                    phone => '+4407111111111',
                 },
             }
         );
