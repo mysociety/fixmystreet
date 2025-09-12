@@ -362,7 +362,7 @@ never been used to report anything.
 sub categories_restriction {
     my ($self, $rs) = @_;
 
-    return $rs->search( { 'me.category' => [ '-and' => { '-not_like' => 'River Piers%' }, { '-not_like' => 'Bus Station%' }, { '-not_like' => '%(Response Desk Buses to Action)' } ] } );
+    return $rs->search( { 'me.category' => [ '-and' => { '-not_like' => 'River %' }, { '-not_like' => 'Bus Station%' }, { '-not_like' => '%(Response Desk Buses to Action)' } ] } );
 }
 
 =head2 social_auth_enabled, user_from_oidc, and oidc_config
