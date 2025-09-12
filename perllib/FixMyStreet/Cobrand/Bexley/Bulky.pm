@@ -178,29 +178,6 @@ sub suppress_report_sent_email {
     return 0;
 }
 
-sub bulky_nice_item_list {
-    my ($self, $report) = @_;
-
-    my @item_nums = map { /^item_(\d+)/ } grep { /^item_\d/ } keys %{$report->get_extra_metadata};
-    my @items = sort { $a <=> $b } @item_nums;
-
-    my @fields;
-    for my $item (@items) {
-        if (my $value = $report->get_extra_metadata("item_$item")) {
-            push @fields, { item => $value, display => $value };
-        }
-    }
-    my $items_extra = $self->bulky_items_extra(exclude_pricing => 1);
-
-    return [
-        map {
-            value => $_->{display},
-            message => $items_extra->{$_->{item}}{message},
-        },
-        @fields,
-    ];
-}
-
 sub waste_reconstruct_bulky_data {
     my ($self, $p) = @_;
 
