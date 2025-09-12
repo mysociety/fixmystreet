@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::App::Form::Page::Wizard
+
+=head1 SYNOPSIS
+
+A subclass of the Simple page to provide per-page custom title and template,
+whether a page requires signing in, and tags (used by claims form for whether
+to show/hide things on the summary page).
+
+=cut
+
 package FixMyStreet::App::Form::Page::Wizard;
 use Moose;
 extends 'FixMyStreet::App::Form::Page::Simple';
