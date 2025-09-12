@@ -316,11 +316,12 @@ FixMyStreet::override_config {
     subtest "special send handling" => sub {
         my $cbr = Test::MockModule->new('FixMyStreet::Cobrand::Hackney');
         my $p = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        my ($x, $y) = $p->local_coords;
         $contact2->update({ email => 'park:parks@example;estate:estates@example;other:OTHER', send_method => '' });
 
         subtest 'in a park' => sub {
             $cbr->mock('_fetch_features', sub {
-                my ($self, $cfg, $x, $y) = @_;
+                my ($self, $cfg) = @_;
                 return [{
                     properties => { park_id => 'park' },
                     geometry => {
@@ -340,7 +341,7 @@ FixMyStreet::override_config {
 
         subtest 'in an estate' => sub {
             $cbr->mock('_fetch_features', sub {
-                my ($self, $cfg, $x, $y) = @_;
+                my ($self, $cfg) = @_;
                 return [{
                     properties => { id => 'estate' },
                     geometry => {

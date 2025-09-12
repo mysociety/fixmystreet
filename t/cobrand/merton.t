@@ -282,9 +282,15 @@ FixMyStreet::override_config {
     };
 
     subtest 'ensure USRN is added to report when sending over open311' => sub {
+        my ($report) = $mech->create_problems_for_body(1, $merton->id, 'Test report', {
+            category => 'Litter', cobrand => 'merton',
+            latitude => 51.400975, longitude => -0.19655, areas => '2500',
+        });
+        my ($x, $y) = $report->local_coords;
+
         my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::Merton');
         $ukc->mock('_fetch_features', sub {
-            my ($self, $cfg, $x, $y) = @_;
+            my ($self, $cfg) = @_;
             return [
                 {
                     properties => { usrn => 'USRN1234' },
@@ -294,11 +300,6 @@ FixMyStreet::override_config {
                     }
                 },
             ];
-        });
-
-        my ($report) = $mech->create_problems_for_body(1, $merton->id, 'Test report', {
-            category => 'Litter', cobrand => 'merton',
-            latitude => 51.400975, longitude => -0.19655, areas => '2500',
         });
 
         FixMyStreet::Script::Reports::send();
