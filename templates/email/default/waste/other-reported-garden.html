@@ -38,7 +38,7 @@ INCLUDE '_email_top.html';
 
     [% INCLUDE '_council_reference.html' problem=report %]
 
-[% IF type != 'cancel' ~%]
+[% IF type != 'cancel' AND type != 'transfer' ~%]
   <p style="[% p_style %]">
     You have signed up for:
   </p>
@@ -92,6 +92,10 @@ INCLUDE '_email_top.html';
     [% IF type == 'new' ~%]
       <p style="[% p_style %]">
         Your subscription will last for 12 months and starts after your first collection date.
+      </p>
+    [% ELSIF type == 'transfer' ~%]
+      <p style="[% p_style %]">
+        The subscription expiry date remains [% report.get_extra_field_value('End_Date') %].
       </p>
     [% END %]
 [% END %]
