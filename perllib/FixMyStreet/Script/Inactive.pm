@@ -16,9 +16,11 @@ has delete => ( is => 'ro' );
 has email => ( is => 'ro' );
 has verbose => ( is => 'ro' );
 has dry_run => ( is => 'ro' );
-has category => ( is => 'ro' );
+has category => ( is => 'rw' );
+has body => ( is => 'rw' );
 has state => ( is => 'ro' );
 has created => ( is => 'ro' );
+has close_per_category => ( is => 'ro' );
 
 has cobrand => (
     is => 'ro',
@@ -66,12 +68,56 @@ sub reports {
     $self->anonymize_reports if $self->anonymize;
     $self->delete_reports if $self->delete;
     $self->close_updates if $self->close;
+    $self->close_updates_per_category if $self->close_per_category;
 }
 
 sub close_updates {
     my $self = shift;
 
     my $problems = $self->_relevant_reports($self->close, 0);
+    $self->_close_updates_on_problems($problems);
+}
+
+sub close_updates_per_category {
+    my $self = shift;
+
+    my $contacts = FixMyStreet::DB->resultset("Contact")->search({
+        'me.extra' => { '\?' => 'closure_timespan' }
+    }, {
+        prefetch => 'body'
+    });
+
+    my %bodies = ();
+    while (my $contact = $contacts->next) {
+        my $body_id = $contact->body_id;
+        my $time = $contact->get_extra_metadata('closure_timespan');
+
+        # double check value is in expected format
+        # (should have been validated by front end, but...)
+        next unless $time =~ /^\d+(m|d)?$/;
+
+        push @{$bodies{$body_id}}, {
+            category => $contact->category,
+            time => $time,
+            body => $contact->body
+        };
+    }
+
+    for my $body_id (keys %bodies) {
+        my $categories = $bodies{$body_id};
+        my $body = $categories->[0]->{body};
+        $self->body($body);
+        for my $cat (@$categories) {
+            $self->category($cat->{category});
+            my $problems = $self->_relevant_reports($cat->{time}, 0);
+            $self->_close_updates_on_problems($problems);
+        }
+    }
+}
+
+sub _close_updates_on_problems {
+    my ($self, $problems) = @_;
+
     $problems = $problems->search({
         -or => [
             extra => undef,
@@ -101,7 +147,11 @@ sub _relevant_reports {
         push @states, FixMyStreet::DB::Result::Problem->hidden_states()
             if $include_hidden;
     }
-    my $problems = FixMyStreet::DB->resultset("Problem")->search({
+    my $rs = FixMyStreet::DB->resultset("Problem");
+    if ($self->body) {
+        $rs = $rs->to_body($self->body);
+    }
+    my $problems = $rs->search({
         $field => { '<', interval($time) },
         @states ? (state => \@states) : (),
         $self->category ? (category => $self->category) : (),
