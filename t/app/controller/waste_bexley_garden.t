@@ -487,6 +487,12 @@ FixMyStreet::override_config {
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        name => 'A Name',
+                    },
+                },
+            );
             like $mech->text, qr/Change your garden waste subscription/, 'modification permitted';
         };
 
@@ -497,6 +503,19 @@ FixMyStreet::override_config {
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        task => 'modify',
+                    },
+                }, 'initial option page',
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        name  => 'Trevor Trouble',
+                        email => 'trevor@trouble.com'
+                    },
+                }, 'user details page',
+            );
             like $mech->text, qr/Change your garden waste subscription/, 'modification permitted';
         };
 
@@ -529,6 +548,12 @@ FixMyStreet::override_config {
                 like $mech->content, qr/Change your brown wheelie bin subscription/;
 
                 $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            name        => 'Trevor Trouble',
+                        },
+                    }
+                );
                 like $mech->text, qr/Change your garden waste subscription/, 'modification permitted';
                 like $mech->content, qr/current_bins.*value="2"/s, 'correct number of current bins prefilled';
 
@@ -536,7 +561,6 @@ FixMyStreet::override_config {
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 bins_wanted => 4,
-                                name        => 'Trevor Trouble',
                             },
                         }
                     );
@@ -585,12 +609,16 @@ FixMyStreet::override_config {
 
                 subtest 'remove bins' => sub {
                     $mech->get_ok("/waste/$uprn/garden_modify");
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                name        => 'Trevor Trouble',
+                            },
+                        }
+                    );
                     like $mech->content, qr/current_bins.*value="2"/s, 'correct number of current bins prefilled'; # No change in Agile
-
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 bins_wanted => 1,
-                                name        => 'Trevor Trouble',
                             },
                         }
                     );
@@ -694,6 +722,13 @@ FixMyStreet::override_config {
 
                 $mech->log_in_ok( $user->email );
                 $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            name        => 'DD Modifier',
+                        },
+                    },
+                );
+
                 like $mech->content, qr/current_bins.*value="2"/s, 'correct number of current bins prefilled';
                 my $old_annual_cost_pence
                     = $ggw_cost_first - $ggw_first_bin_discount + $ggw_cost;
@@ -706,7 +741,6 @@ FixMyStreet::override_config {
                 $mech->submit_form_ok(
                     {   with_fields => {
                             bins_wanted => 3,
-                            name        => 'DD Modifier',
                         },
                     },
                     "Modify"

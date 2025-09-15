@@ -9,7 +9,10 @@ has_page intro => (
     title => 'Change your garden waste subscription',
     template => 'waste/garden/modify_pick.html',
     fields => ['task', 'apply_discount', 'continue'],
-    next => 'alter',
+    next => sub {
+        my $form = $_[2];
+        return $form->c->stash->{next_page} || 'alter';
+    },
     field_ignore_list => sub {
         my $page = shift;
         my $c = $page->form->c;
@@ -19,52 +22,56 @@ has_page intro => (
     },
 );
 
-has_page alter => (
-    title => 'Change your garden waste subscription',
-    template => 'waste/garden/modify.html',
-    fields => ['current_bins', 'bins_wanted', 'name', 'phone', 'email', 'continue_review'],
-    field_ignore_list => sub {
-        my $page = shift;
-        return ['phone', 'email'] unless $page->form->c->stash->{is_staff};
-        return [];
-    },
-    update_field_list => sub {
-        my $form = shift;
-        my $c = $form->c;
-        my $data = $c->stash->{garden_form_data};
-        my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $data->{bins};
-        my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins};
-        my $new_bins = $bins_wanted - $current_bins;
+sub alter {
+    return (
+        title => 'Change your garden waste subscription',
+        template => 'waste/garden/modify.html',
+        fields => ['current_bins', 'bins_wanted', 'name', 'phone', 'email', 'continue_review'],
+        field_ignore_list => sub {
+            my $page = shift;
+            return ['phone', 'email'] unless $page->form->c->stash->{is_staff};
+            return [];
+        },
+        update_field_list => sub {
+            my $form = shift;
+            my $c = $form->c;
+            my $data = $c->stash->{garden_form_data};
+            my $current_bins = $c->get_param('current_bins') || $form->saved_data->{current_bins} || $data->{bins};
+            my $bins_wanted = $c->get_param('bins_wanted') || $form->saved_data->{bins_wanted} || $data->{bins};
+            my $new_bins = $bins_wanted - $current_bins;
 
-        my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
-        my $costs = WasteWorks::Costs->new({
-            cobrand => $c->cobrand,
-            discount => $form->saved_data->{apply_discount},
-            first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
-        });
-        my $cost_pa = $costs->bins($bins_wanted);
-        my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
-        $c->stash->{cost_pa} = $cost_pa / 100;
-        $c->stash->{cost_now_admin} = $cost_now_admin / 100;
+            my $edit_current_allowed = $c->cobrand->call_hook('waste_allow_current_bins_edit');
+            my $costs = WasteWorks::Costs->new({
+                cobrand => $c->cobrand,
+                discount => $form->saved_data->{apply_discount},
+                first_bin_discount => $c->cobrand->call_hook(garden_waste_first_bin_discount_applies => $data) || 0,
+            });
+            my $cost_pa = $costs->bins($bins_wanted);
+            my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
+            $c->stash->{cost_pa} = $cost_pa / 100;
+            $c->stash->{cost_now_admin} = $cost_now_admin / 100;
 
-        $c->stash->{new_bin_count} = 0;
-        $c->stash->{pro_rata} = 0;
-        if ($new_bins > 0) {
-            $c->stash->{new_bin_count} = $new_bins;
-            my $cost_pro_rata = $costs->pro_rata_cost($new_bins);
-            $c->stash->{pro_rata} = ($cost_now_admin + $cost_pro_rata) / 100;
-        }
+            $c->stash->{new_bin_count} = 0;
+            $c->stash->{pro_rata} = 0;
+            if ($new_bins > 0) {
+                $c->stash->{new_bin_count} = $new_bins;
+                my $cost_pro_rata = $costs->pro_rata_cost($new_bins);
+                $c->stash->{pro_rata} = ($cost_now_admin + $cost_pro_rata) / 100;
+            }
 
-        my $max_bins = $data->{max_bins};
-        my %bin_params = ( default => $data->{bins}, range_end => $max_bins );
-        return {
-            name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
-            current_bins => { %bin_params, $edit_current_allowed ? (disabled=>0) : () },
-            bins_wanted => { %bin_params },
-        };
-    },
-    next => 'summary',
-);
+            my $max_bins = $data->{max_bins};
+            my %bin_params = ( default => $data->{bins}, range_end => $max_bins );
+            return {
+                name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
+                current_bins => { %bin_params, $edit_current_allowed ? (disabled=>0) : () },
+                bins_wanted => { %bin_params },
+            };
+        },
+        next => 'summary',
+    );
+}
+
+has_page alter => ( alter() );
 
 with 'FixMyStreet::App::Form::Waste::AboutYou';
 
