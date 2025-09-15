@@ -273,6 +273,8 @@ sub create_problems {
                 whensubscribed => $created_time,
             })->confirm;
         }
+
+        $cobrand->call_hook('open311_report_fetched', $problem, $request) if $cobrand;
     }
 
     return 1;
