@@ -432,6 +432,12 @@ FixMyStreet::override_config {
             $mech->get_ok("/waste/$uprn/garden_modify");
             $mech->submit_form_ok(
                 {   with_fields => {
+                        has_reference => 'No',
+                    },
+                },
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         name => 'A Name',
                     },
                 },
@@ -451,6 +457,13 @@ FixMyStreet::override_config {
                         task => 'modify',
                     },
                 }, 'initial option page',
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => '123456',
+                    },
+                },
             );
             $mech->submit_form_ok(
                 {   with_fields => {
@@ -491,6 +504,13 @@ FixMyStreet::override_config {
                 like $mech->content, qr/Change your brown wheelie bin subscription/;
 
                 $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            has_reference => 'Yes',
+                            customer_reference => '123456',
+                        },
+                    },
+                );
                 $mech->submit_form_ok(
                     {   with_fields => {
                             name        => 'Trevor Trouble',
@@ -552,6 +572,13 @@ FixMyStreet::override_config {
 
                 subtest 'remove bins' => sub {
                     $mech->get_ok("/waste/$uprn/garden_modify");
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                has_reference => 'Yes',
+                                customer_reference => '123456',
+                            },
+                        },
+                    );
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 name        => 'Trevor Trouble',
@@ -665,6 +692,13 @@ FixMyStreet::override_config {
 
                 $mech->log_in_ok( $user->email );
                 $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            has_reference => 'Yes',
+                            customer_reference => '123456',
+                        },
+                    },
+                );
                 $mech->submit_form_ok(
                     {   with_fields => {
                             name        => 'DD Modifier',
@@ -917,6 +951,13 @@ FixMyStreet::override_config {
                 $mech->get_ok("/waste/$uprn/garden_renew");
                 $mech->submit_form_ok(
                     {   with_fields => {
+                            has_reference => 'Yes',
+                            customer_reference => '123456',
+                        },
+                    },
+                );
+                $mech->submit_form_ok(
+                    {   with_fields => {
                             name => 'Trevor Trouble',
                             email => 'trevor@trouble.com',
                             phone => '+4407111111111',
@@ -981,6 +1022,13 @@ FixMyStreet::override_config {
                 subtest 'requesting fewer bins' => sub {
                     $mech->get_ok("/waste/$uprn/garden_renew");
 
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                has_reference => 'Yes',
+                                customer_reference => '123456',
+                            },
+                        },
+                    );
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 name => 'Trevor Trouble',
@@ -1104,6 +1152,13 @@ FixMyStreet::override_config {
                     'Renewal link available';
 
                 $mech->get_ok("/waste/$uprn/garden_renew");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            has_reference => 'Yes',
+                            customer_reference => '123456',
+                        },
+                    },
+                );
                 $mech->submit_form_ok(
                     {   with_fields => {
                             name => 'Trevor Trouble',
@@ -1582,6 +1637,13 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/10001/garden_cancel');
             $mech->submit_form_ok(
                 {   with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => '123456',
+                    },
+                },
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         name => 'Name McName',
                         email => 'test@example.org',
                     },
@@ -1652,6 +1714,13 @@ FixMyStreet::override_config {
             like $mech->content, qr/waste-service-subtitle.*Garden waste/s;
 
             $mech->get_ok('/waste/10001/garden_cancel');
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => '123456',
+                    },
+                },
+            );
             $mech->submit_form_ok(
                 {   with_fields => {
                         name => 'Name McName',
@@ -1746,6 +1815,13 @@ FixMyStreet::override_config {
             FixMyStreet::Script::Reports::send();
 
             $mech->get_ok('/waste/10001/garden_cancel');
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => '123456',
+                    },
+                },
+            );
             $mech->submit_form_ok(
                 {   with_fields => {
                         name => 'Name McName',
@@ -1881,6 +1957,13 @@ FixMyStreet::override_config {
         # Submit the cancellation form
         $mech->submit_form_ok(
             {   with_fields => {
+                    has_reference => 'Yes',
+                    customer_reference => '123456',
+                },
+            },
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
                     name => 'Name McName',
                     email => 'test@example.org',
                 },
@@ -2013,6 +2096,13 @@ FixMyStreet::override_config {
             '"Due soon" message shown';
 
         $mech->get_ok("/waste/$uprn/garden_renew");
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    has_reference => 'Yes',
+                    customer_reference => '123456',
+                },
+            },
+        );
         $mech->submit_form_ok(
             {   with_fields => {
                     name => 'Test McTest',
