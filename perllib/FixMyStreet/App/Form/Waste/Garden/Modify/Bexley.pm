@@ -5,19 +5,12 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Garden::Modify';
 
-has_page about_you => (
-    fields => ['name', 'phone', 'email', 'continue'],
-    title => 'About you',
-    next => 'alter',
-);
+with 'FixMyStreet::App::Form::Waste::Garden::AboutYou::Bexley';
 
-sub alter_override {
-    my %defaults = FixMyStreet::App::Form::Waste::Garden::Modify::alter();
-    my @fields = grep { $_ !~ /^(name|phone|email)$/ } @{ $defaults{fields} };
-    $defaults{fields} = \@fields;
-    return %defaults;
-}
+has_page about_you =>
+    ( about_you( continue_field => 'continue', next_page => 'alter' ) );
 
-has_page alter => ( alter_override() );
+has_page alter => remove_about_you_fields(
+    FixMyStreet::App::Form::Waste::Garden::Modify::alter() );
 
 1;

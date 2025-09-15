@@ -4,11 +4,10 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Garden::Cancel';
 
-has_page about_you => (
-    fields => ['name', 'phone', 'email', 'continue'],
-    title => 'About you',
-    next => 'reason',
-);
+with 'FixMyStreet::App::Form::Waste::Garden::AboutYou::Bexley';
+
+has_page about_you =>
+    ( about_you( continue_field => 'continue', next_page => 'reason' ) );
 
 has_page reason => (
     title => 'Reason for cancellation',
@@ -16,14 +15,8 @@ has_page reason => (
     next => 'confirm',
 );
 
-sub confirm {
-    my %defaults = FixMyStreet::App::Form::Waste::Garden::Cancel::intro();
-    my @fields = grep { $_ !~ /^(name|phone|email)$/ } @{ $defaults{fields} };
-    $defaults{fields} = \@fields;
-    return %defaults;
-}
-
-has_page confirm => ( confirm() );
+has_page confirm => remove_about_you_fields(
+    FixMyStreet::App::Form::Waste::Garden::Cancel::intro() );
 
 has_field continue => (
     type => 'Submit',
