@@ -222,11 +222,12 @@ sub pay_skip : Private {
     }
 
     $c->stash->{action} = 'new_subscription';
-    my $p = $c->stash->{report};
-    $p->set_extra_metadata('chequeReference', $cheque) if $cheque;
-    $p->set_extra_metadata('payment_explanation', $waived) if $waived;
-    $p->update;
-    $c->forward('confirm_subscription', [ undef ] );
+    if ($waived) {
+        my $p = $c->stash->{report};
+        $p->set_extra_metadata('payment_explanation', $waived);
+        $p->update;
+    }
+    $c->forward('confirm_subscription', [ $cheque ] );
 }
 
 sub pay : Path('pay') : Args(0) {
@@ -725,7 +726,7 @@ sub process_request_data : Private {
     if ($payment) {
         if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
             $c->forward('/waste/pay_skip', []);
-        } elsif ($payment_method eq 'waived') {
+        } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
             $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
         } else {
             if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {

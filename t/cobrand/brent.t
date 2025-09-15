@@ -201,7 +201,6 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'Container_Request_Notes', required => 0, automated => 'hidden_field' },
     { code => 'Container_Request_Reason', required => 0, automated => 'hidden_field' },
     { code => 'service_id', required => 0, automated => 'hidden_field' },
-    { code => 'PaymentCode', required => 0, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'request_referral', required => 0, automated => 'hidden_field' },
@@ -212,6 +211,8 @@ create_contact({ category => 'Request new container', email => 'request@example.
 create_contact({ category => 'Assisted collection add', email => 'assisted' },
     { code => 'Notes', description => 'Additional notes', required => 0, datatype => 'text' },
     { code => 'staff_form', automated => 'hidden_field' },
+);
+create_contact({ category => 'Garden Subscription', email => 'garden' },
 );
 
 create_contact({ category => 'Staff general enquiry', email => 'general@brent.gov.uk' },
@@ -226,55 +227,58 @@ create_contact({ category => 'Additional collection', email => 'general@brent.go
     { code => 'service_id', required => 1, automated => 'hidden_field' },
 );
 
-subtest "title is labelled 'location of problem' in open311 extended description" => sub {
-    my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
-        category => 'Graffiti' ,
-        areas => '2488',
-        cobrand => 'brent',
-    });
-
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'brent',
-        MAPIT_URL => 'http://mapit.uk/',
-        STAGING_FLAGS => { send_reports => 1 },
-        COBRAND_FEATURES => {
-            anonymous_account => {
-                brent => 'anonymous'
-            },
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'brent',
+    MAPIT_URL => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1 },
+    COBRAND_FEATURES => {
+        anonymous_account => {
+            brent => 'anonymous'
         },
-    }, sub {
+    },
+}, sub {
+    subtest "title is labelled 'location of problem' in open311 extended description" => sub {
+        my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
+            category => 'Graffiti' ,
+            areas => '2488',
+            cobrand => 'brent',
+        });
+
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         like $c->param('description'), qr/location of problem: title/, "title labeled correctly";
+        $problem->delete;
     };
 
-    $problem->delete;
-};
+    subtest "ATAK reports go straight to investigating after being sent" => sub {
+        my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
+            category => 'ATAK' ,
+            areas => '2488',
+            cobrand => 'brent',
+        });
 
-subtest "ATAK reports go straight to investigating after being sent" => sub {
-    my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
-        category => 'ATAK' ,
-        areas => '2488',
-        cobrand => 'brent',
-    });
-
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'brent',
-        MAPIT_URL => 'http://mapit.uk/',
-        STAGING_FLAGS => { send_reports => 1 },
-        COBRAND_FEATURES => {
-            anonymous_account => {
-                brent => 'anonymous'
-            },
-        },
-    }, sub {
         FixMyStreet::Script::Reports::send();
+
+        $problem = FixMyStreet::DB->resultset('Problem')->find( { id => $problem->id } );
+        is $problem->state, "investigating", "ATAK problem is in investigating after being sent";
+        $problem->delete;
     };
 
-    $problem = FixMyStreet::DB->resultset('Problem')->find( { id => $problem->id } );
-    is $problem->state, "investigating", "ATAK problem is in investigating after being sent";
-    $problem->delete;
+    subtest "garden report includes right payment information in open311" => sub {
+        my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'title', {
+            category => 'Garden Subscription',
+            areas => '2488',
+            extra => { payment_reference => 'reference' },
+        });
+
+        FixMyStreet::Script::Reports::send();
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('attribute[PaymentCode]'), 'reference';
+        $problem->delete;
+    };
+
 };
 
 for my $test (
@@ -1366,7 +1370,6 @@ FixMyStreet::override_config {
                 # The below does a similar checks to the garden test check_extra_data_post_confirm
                 $report->discard_changes;
                 is $report->state, 'confirmed', 'report confirmed';
-                is $report->get_extra_field_value('PaymentCode'), '54321', 'correct echo payment reference field';
                 is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
                 $mech->content_contains('Your container request has been sent');

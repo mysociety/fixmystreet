@@ -63,6 +63,7 @@ $mech->create_contact_ok(body_id => $body->id, category => 'Street cleaning and 
 $mech->create_contact_ok(body_id => $body->id, category => 'Something dangerous', email => "DANG", group => 'Danger things');
 $mech->create_contact_ok(body_id => $body->id, category => 'Carriageway', email => "CARRIAGEWAY", group => 'Flytipping');
 $mech->create_contact_ok(body_id => $body->id, category => 'Obstructions on pavements and roads', email => "OBSTR");
+$mech->create_contact_ok(body_id => $body->id, category => 'Garden Subscription', email => "garden");
 
 $da->set_extra_fields({
     code => 'message',
@@ -318,6 +319,26 @@ FixMyStreet::override_config {
             'http://bexley.example.org/photo/' . $report->id . '.0.full.jpeg?74e33622',
             'http://bexley.example.org/photo/' . $report->id . '.1.full.jpeg?74e33622',
         ], 'Request had multiple photos';
+    };
+
+    subtest 'testing special garden waste Open311 behaviour', sub {
+        my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
+            category => 'Garden Subscription', cobrand => 'bexley',
+            latitude => 51.408484, longitude => 0.074653, areas => '2494',
+        });
+        my $report = $reports[0];
+        $report->set_extra_metadata(payment_reference => 'reference');
+        $report->update;
+
+        FixMyStreet::Script::Reports::send();
+        $report->discard_changes;
+        ok $report->whensent, 'Report marked as sent';
+        is $report->send_method_used, 'Open311', 'Report sent via Open311';
+        is $report->external_id, 248, 'Report has right external ID';
+
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('attribute[PaymentCode]'), 'reference';
     };
 
     subtest 'testing sending P1 emails even if Symology down', sub {

@@ -309,6 +309,12 @@ sub open311_extra_data_include {
         if ( $row->get_extra_metadata('contributed_as') && $row->get_extra_metadata('contributed_as') eq 'anonymous_user' ) {
             push @$open311_only, { name => 'contributed_as', value => 'anonymous_user' };
         }
+
+        my $ref = $row->get_extra_metadata('payment_reference');
+        push @$open311_only, { name => 'PaymentCode', value => $ref } if $ref;
+
+        my $method = $row->get_extra_field_value('payment_method');
+        push @$open311_only, { name => 'LastPayMethod', value => $self->bin_payment_types->{$method} } if $method;
     }
 
     # make sure we have last_name attribute present in row's extra, so
@@ -1123,7 +1129,7 @@ sub bulky_refund_collection {
             payment_method =>
                 $collection_report->get_extra_field_value('payment_method'),
             payment_code =>
-                $collection_report->get_extra_field_value('PaymentCode'),
+                $collection_report->get_extra_metadata('payment_reference'),
             auth_code =>
                 $collection_report->get_extra_metadata('authCode'),
             continuous_audit_number =>

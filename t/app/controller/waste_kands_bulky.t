@@ -869,7 +869,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { tandc => 1, payment_method => 'cheque', cheque_reference => '12345' } });
         $mech->content_contains('Bulky collection booking confirmed');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_metadata('chequeReference'), 12345;
+        is $report->get_extra_metadata('payment_reference'), 12345;
         is $report->get_extra_field_value('payment_method'), 'cheque';
     }
 };

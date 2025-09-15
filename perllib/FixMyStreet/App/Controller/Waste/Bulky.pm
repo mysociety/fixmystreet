@@ -152,6 +152,15 @@ sub item_list : Private {
                 $c->stash->{total} = ($c->stash->{payment} || 0) / 100;
                 return $fields;
             },
+            post_process => sub {
+                my $form = shift;
+                my $data = $form->saved_data;
+                my $c = $form->c;
+
+                # Calculate total cost
+                $c->cobrand->bulky_total_cost($data);
+                $data->{payment} = $c->stash->{payment};
+            },
         },
     ];
     $c->stash->{field_list} = $field_list;
@@ -347,7 +356,7 @@ sub process_bulky_data : Private {
             $c->forward('/waste/pay_skip', []);
         } elsif ($payment_method eq 'cheque') {
             $c->forward('/waste/pay_skip', [ $data->{cheque_reference}, undef ]);
-        } elsif ($payment_method eq 'waived') {
+        } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
             $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
         } else {
             if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
@@ -397,7 +406,7 @@ sub process_bulky_amend : Private {
         $c->forward('cancel_collection', [ $p, 'amendment' ]);
         my $new = $c->stash->{report};
         $new->set_extra_metadata(previous_booking_id => $p->id);
-        foreach (qw(payment_reference chequeReference)) {
+        foreach (qw(payment_reference)) {
             $new->set_extra_metadata($_ => $p->get_extra_metadata($_)) if $p->get_extra_metadata($_);
         }
         $new->detail($new->detail . " | Previously submitted as " . $p->external_id);

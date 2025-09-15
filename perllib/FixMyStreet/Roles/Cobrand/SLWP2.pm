@@ -547,7 +547,7 @@ sub open311_extra_data_include {
             push @$open311_only, { name => 'contributed_as', value => 'anonymous_user' };
         }
 
-        my $ref = $row->get_extra_field_value('PaymentCode') || $row->get_extra_metadata('chequeReference');
+        my $ref = $row->get_extra_metadata('payment_reference');
         push @$open311_only, { name => 'Transaction_Number', value => $ref } if $ref;
 
         my $payment = $row->get_extra_field_value('pro_rata') || $row->get_extra_field_value('payment');
