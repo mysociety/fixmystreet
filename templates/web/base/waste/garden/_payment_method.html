@@ -4,5 +4,7 @@
     [% IF data.cheque_reference %](reference [% data.cheque_reference %])[% END %]
 [%~ ELSIF payment_method == 'waived' %]Waived
     [% IF data.payment_explanation %]([% data.payment_explanation %])[% END %]
+[%~ ELSIF payment_method == 'cash' %]Cash
+    [% IF data.payment_explanation %]([% data.payment_explanation %])[% END %]
 [%~ ELSIF payment_method == 'csc' %]CSC
 [%~ END %]

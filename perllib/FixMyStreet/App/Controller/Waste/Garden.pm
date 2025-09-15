@@ -400,7 +400,7 @@ sub process_garden_new_or_renew : Private {
         $c->forward('/waste/pay_skip', []);
     } elsif ($c->cobrand->waste_cheque_payments && $payment_method eq 'cheque') {
         $c->forward('/waste/pay_skip', [ $data->{cheque_reference}, undef ]);
-    } elsif ($payment_method eq 'waived') {
+    } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
         $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
     } else {
         if ($dd_flow) {
