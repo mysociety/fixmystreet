@@ -418,7 +418,7 @@ sub waste_garden_renew_form_setup {
 
     # Use a custom form class that includes about_you page &
     # fields for bank details
-    $c->stash->{first_page} = 'about_you';
+    $c->stash->{first_page} = 'customer_reference';
     $c->stash->{form_class}
         = 'FixMyStreet::App::Form::Waste::Garden::Renew::Bexley';
 }
@@ -429,7 +429,7 @@ sub waste_garden_cancel_form_setup {
     my $c = $self->{c};
 
     # Use a custom form class that includes about_you & reason pages
-    $c->stash->{first_page} = 'about_you';
+    $c->stash->{first_page} = 'customer_reference';
     $c->stash->{form_class}
         = 'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
 }
@@ -440,7 +440,7 @@ sub waste_garden_modify_form_setup {
     my $c = $self->{c};
 
     # Use a custom form class that includes about_you page.
-    $c->stash->{next_page} = 'about_you';
+    $c->stash->{next_page} = 'customer_reference';
     $c->stash->{form_class}
         = 'FixMyStreet::App::Form::Waste::Garden::Modify::Bexley';
 }
