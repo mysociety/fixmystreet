@@ -136,32 +136,19 @@ function change_header(header) {
     }
 }
 
-})();
-
-
-OpenLayers.Layer.Highways = OpenLayers.Class(OpenLayers.Layer.XYZ, {
+// Adjust based upon which base layer is being used
+var grid = OpenLayers.Layer.BNG ? 'osmaps' : 'GoogleMapsCompatible';
+var base = 'tilma.mysociety.org/mapcache/gmaps/highways@' + grid + '/${z}/${x}/${y}.png';
+var parent_class = OpenLayers.Layer.BNG || OpenLayers.Layer.XYZ;
+OpenLayers.Layer.Highways = OpenLayers.Class(parent_class, {
     name: 'Highways',
-    url: [
-        "//tilma.mysociety.org/mapcache/gmaps/highways@osmaps/${z}/${x}/${y}.png",
-        "//a.tilma.mysociety.org/mapcache/gmaps/highways@osmaps/${z}/${x}/${y}.png",
-        "//b.tilma.mysociety.org/mapcache/gmaps/highways@osmaps/${z}/${x}/${y}.png",
-        "//c.tilma.mysociety.org/mapcache/gmaps/highways@osmaps/${z}/${x}/${y}.png"
-    ],
+    url: [ "//" + base, "//a." + base, "//b." + base, "//c." + base ],
     isBaseLayer: false,
-
-    initialize: function(name, options) {
-        options = OpenLayers.Util.extend({
-            units: "m",
-            projection: new OpenLayers.Projection("EPSG:27700"),
-            tileOrigin: new OpenLayers.LonLat(-238375, 1376256),
-            maxExtent: new OpenLayers.Bounds(-3276800, -3276800, 3276800, 3276800),
-            resolutions: [896, 448, 224, 112, 56, 28, 14, 7, 7/2, 7/4, 7/8, 7/16, 7/32, 7/64].slice(fixmystreet.zoomOffset || 0).slice(0, fixmystreet.numZoomLevels),
-        }, options);
-        OpenLayers.Layer.XYZ.prototype.initialize.call(this, name, '', options);
-    },
-
+    sphericalMercator: OpenLayers.Layer.BNG ? false : true,
     CLASS_NAME: "OpenLayers.Layer.Highways"
 });
+
+})();
 
 $(function() {
     if (!fixmystreet.map) {
@@ -171,7 +158,7 @@ $(function() {
     // Can't use vector layer on reports, too big, use tiles instead
     var layer;
     if (fixmystreet.page === 'reports') {
-        layer = new OpenLayers.Layer.Highways(null, null, { className: 'olLayerHighways' });
+        layer = new OpenLayers.Layer.Highways();
         fixmystreet.map.addLayer(layer);
         layer.setVisibility(true);
 

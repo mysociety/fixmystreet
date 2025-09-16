@@ -1,3 +1,16 @@
+=head1 NAME
+
+FixMyStreet::App::Controller::Form
+
+=head1 SYNOPSIS
+
+The main controller for wizard multi-page forms. To use (see e.g. Claims or
+Waste), you extend this controller, give it a feature attribute, and then
+forward to C<form> once you've done any set up necessary in your own
+controller.
+
+=cut
+
 package FixMyStreet::App::Controller::Form;
 use Moose;
 use namespace::autoclean;
@@ -5,6 +18,15 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller' }
 
 use mySociety::AuthToken;
+
+=head2 auto
+
+By default, this checks that the controller's feature is turned on in the
+cobrand features, and sets up a unique ID for the form. A subclass will need to
+call its C<SUPER::auto> as that will not happen automatically (unlike when a
+controller is a subpath of another controller).
+
+=cut
 
 sub auto : Private {
     my ( $self, $c ) = @_;
@@ -20,6 +42,23 @@ sub index : Path : Args(0) {
     $c->forward('/auth/get_csrf_token');
     $c->forward('form');
 }
+
+=head2 load_form
+
+This loads a page of the form (either in order to proess it, or to load the
+next page if just processed). You can provide various options in the stash:
+
+=over 4
+
+=item * form_class - the form class to use (defaults to the controller's form_class if not set);
+
+=item * page_list - any additional dynamic pages you want to include in the form;
+
+=item * field_list - any additional dynamic fields you want to include in the form;
+
+=back
+
+=cut
 
 sub load_form {
     my ($self, $c, $previous_form) = @_;
@@ -61,6 +100,22 @@ sub requires_sign_in : Private {
     return 1;
 }
 
+=head2 form
+
+The main controller. This will load a form, process the form for validation,
+load the next page if it passes, and put the form on the stash.
+
+Your subclass controller can set pre_form to do anything in advance. It can
+set override_no_process in the stash to avoid processing (eg in claims, if
+they've just clicked the map), override_no_next_form to not go to the next page
+(eg in bulky, if they've clicked Add item).
+
+It picks a template to use as the first of the stash's override_template, the
+form's template, or the controller's index_template (unless we've just sent a
+confirmation email).
+
+=cut
+
 sub form : Private {
     my ($self, $c) = @_;
 
@@ -101,6 +156,12 @@ sub form : Private {
     $c->stash->{form} = $form;
 }
 
+=head2 label_for_field
+
+This is used in order to reconstruct nice labels from the given option, in e.g. summary page.
+
+=cut
+
 sub label_for_field {
     my ($form, $field, $key) = @_;
     my $fn = 'options_' . $field;
@@ -114,6 +175,16 @@ sub label_for_field {
 sub pre_form : Private {
     return 1;
 }
+
+=head2 get_page
+
+The page to fetch when a form is submitted. We use a goto parameter if we want
+to go to a particular page (and not process it) - for e.g. Change answer
+buttons on a summary page, and a process parameter if we want to process a
+particular page (this field is generally automatically shown/handled by the
+form). By default, the first page used is the C<first_page> stash, or C<intro>.
+
+=cut
 
 sub get_page : Private {
     my ($self, $c) = @_;

@@ -879,7 +879,16 @@ body.authpage {
 }
 
 .floating-button-wrapper {
-    width: $mappage-sidebar-width;
+  width: $mappage-sidebar-width;
+  @media (min-width: $screen-size--medium) {
+    width: $mappage-sidebar-width--medium;
+  }
+  @media (min-width: $screen-size--large) {
+    width: $mappage-sidebar-width--large;
+  }
+  @media (min-width: $screen-size--xlarge) {
+    width: $mappage-sidebar-width--xlarge;
+  }
 }
 
 #loading-indicator {

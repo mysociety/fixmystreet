@@ -16,7 +16,7 @@ sub set {
     if ($v) {
         $v->update({ value => $value });
     } else {
-        $v = $rs->create({ name => $key, value => $value });
+        $v = $rs->create({ key => $key, value => $value });
     }
     return $v->value;
 }

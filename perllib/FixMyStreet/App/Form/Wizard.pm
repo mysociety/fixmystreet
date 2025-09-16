@@ -1,5 +1,15 @@
+=head1 NAME
+
+FixMyStreet::App::Form::Wizard
+
+=head1 SYNOPSIS
+
+A multi-page form, based on HTML::FormHandler::Wizard, but using pages by name,
+not numbered, with the ability for each page to decide where it goes next.
+
+=cut
+
 package FixMyStreet::App::Form::Wizard;
-# ABSTRACT: create a multi-page form, based on HTML::FormHandler::Wizard, but not numbered
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';
@@ -7,17 +17,49 @@ with ('HTML::FormHandler::BuildPages', 'HTML::FormHandler::Pages' );
 
 sub is_wizard { 1 } # So build_active is called
 
+=pod
+
+We create our own namespace to put our own Page and Field classes in.
+
+=cut
+
 sub build_page_name_space { 'FixMyStreet::App::Form::Page' }
 has '+field_name_space' => ( default => 'FixMyStreet::App::Form::Field' );
 
-# Internal attributes and fields to handle multi-page forms
+=head2 Attributes
+
+=over 4
+
+=item * page_name - the name of the current page we're on
+
+=item * current_page - the current page we're on
+
+=cut
+
 has page_name => ( is => 'ro', isa => 'Str' );
 has current_page => ( is => 'ro', lazy => 1,
     default => sub { $_[0]->page($_[0]->page_name) },
     predicate => 'has_current_page',
 );
 
+=item * c - the Catalyst App, so we cna get anything we need out of it
+
+=cut
+
 has c => ( is => 'ro', weak_ref => 1 );
+
+=item * saved_data - this stores the data from previous steps so we don't have
+to keep it in the session or anywhere else.
+
+=item * previous_form - contains the previous step, should that be needed (e.g.
+ticking things on the very first page)
+
+=item * already_submitted_error - a flag set if a form is submitted at the end
+but that has already happened, due to a unique ID mismatch.
+
+=back
+
+=cut
 
 has saved_data_encoded => ( is => 'ro', isa => 'Maybe[Str]' );
 has saved_data => ( is => 'rw', lazy => 1, isa => 'HashRef', default => sub {
@@ -27,6 +69,23 @@ has previous_form => ( is => 'ro', isa => 'Maybe[HTML::FormHandler]', weak_ref =
 has csrf_token => ( is => 'ro', isa => 'Str' );
 
 has already_submitted_error => ( is => 'rw', isa => 'Bool', default => 0 );
+
+=head2 Form fields
+
+=over 4
+
+=item * saved_data - this is a base64 encoded copy of the JSON of the saved_data.
+
+=item * token - the CSRF token
+
+=item * process - the current form name, so we know what step to be processed
+
+=item * unique_id - a field stored in both the form and the session, so we can
+try and spot duplicate submission
+
+=back
+
+=cut
 
 has_field saved_data => ( type => 'JSON' );
 has_field token => ( type => 'Hidden', required => 1 );
@@ -48,6 +107,14 @@ sub get_params {
     return $c->req->body_params;
 }
 
+=head2 next
+
+This is called by the form controller to know where to go next.
+It looks at the current page's C<next> - either a string, or a
+code reference which should return the page to go to.
+
+=cut
+
 sub next {
     my $self = shift;
     my $next = $self->current_page->next;
@@ -60,7 +127,14 @@ sub next {
     return $next;
 }
 
-# Override HFH default and set current page only to active
+=head2 build_active
+
+This overrides the default and makes all fields mentioned by pages inactive
+apart from those on the current page. Note this means if a field is defined
+but not assigned to a page, it will appear on all pages.
+
+=cut
+
 sub build_active {
     my $self = shift;
 
@@ -77,7 +151,14 @@ sub build_active {
     }
 }
 
-# Stuff to set up as soon as we have a form
+=head2 after_build
+
+The behind the curtain that does the plumbing of setting the saved data and
+related information, calls a page's C<update_field_list> (which can then return
+any required changes to the field list), and updates any photo fields.
+
+=cut
+
 sub after_build {
     my $self = shift;
     my $page = $self->current_page;
@@ -108,12 +189,26 @@ sub after_build {
     }
 }
 
-# After a form has been processed, run any post process functions
+=head2 after process
+
+A page can define a C<post_process> function which is called after that page's
+processing.
+
+=cut
+
 after 'process' => sub {
     my $self = shift;
     my $page = $self->current_page;
     $page->post_process->($self) if $page->post_process;
 };
+
+=head2 after validate_form
+
+This checks the unique ID for mismatch, updates saved_data for the next page,
+and calls C<pre_finished> and C<finished> if defined on the page (these are
+explained more in the Page::Simple class).
+
+=cut
 
 after 'validate_form' => sub {
     my $self = shift;
@@ -155,6 +250,13 @@ after 'validate_form' => sub {
         }
     }
 };
+
+=head2 process_photo
+
+Photo upload is mostly handled for you automatically if you use the right
+fields. These functions deal with the plumbing involved.
+
+=cut
 
 sub process_photo {
     my ($form, $field) = @_;
