@@ -211,6 +211,32 @@ sub pay_retry : Path('pay_retry') : Args(0) {
     $c->forward('pay', [ 'bin_days' ]);
 }
 
+sub pay_process : Private {
+    my ($self, $c, $type, $payment_method, $data, $dd_flow) = @_;
+    $payment_method ||= '';
+
+    if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
+        $c->forward('pay_skip', []);
+    } elsif ($payment_method eq 'cheque') {
+        $c->forward('pay_skip', [ $data->{cheque_reference}, undef ]);
+    } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
+        $c->forward('pay_skip', [ undef, $data->{payment_explanation} ]);
+    } else {
+        if ($dd_flow) { # Garden only
+            if ($c->cobrand->direct_debit_collection_method eq 'internal') {
+                $c->stash->{form_data} = $data;
+                $c->forward('/waste/garden/direct_debit_internal');
+            } else {
+                $c->forward('/waste/garden/direct_debit');
+            }
+        } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
+            $c->forward('csc_code');
+        } else {
+            $c->forward('pay', [ $type ]);
+        }
+    }
+}
+
 sub pay_skip : Private {
     my ($self, $c, $cheque, $waived) = @_;
 
@@ -731,17 +757,7 @@ sub process_request_data : Private {
     group_reports($c, @reports);
 
     if ($payment) {
-        if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
-            $c->forward('/waste/pay_skip', []);
-        } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
-            $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
-        } else {
-            if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
-                $c->forward('csc_code');
-            } else {
-                $c->forward('pay', [ 'request' ]);
-            }
-        }
+        $c->forward('/waste/pay_process', [ 'request', $payment_method, $data ]);
     }
 
     return 1;

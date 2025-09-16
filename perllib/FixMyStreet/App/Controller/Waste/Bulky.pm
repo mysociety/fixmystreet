@@ -366,20 +366,7 @@ sub process_bulky_data : Private {
             $p->detail($p->detail . " | Previously submitted as " . $amending->external_id);
             $p->update;
         }
-
-        if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
-            $c->forward('/waste/pay_skip', []);
-        } elsif ($payment_method eq 'cheque') {
-            $c->forward('/waste/pay_skip', [ $data->{cheque_reference}, undef ]);
-        } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
-            $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
-        } else {
-            if ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
-                $c->forward('/waste/csc_code');
-            } else {
-                $c->forward('/waste/pay', [ 'bulky' ]);
-            }
-        }
+        $c->forward('/waste/pay_process', [ 'bulky', $payment_method, $data ]);
     } else {
         $c->forward('/waste/add_report', [ $data ]) or return;
     }
