@@ -1585,18 +1585,33 @@ sub waste_confirm_payment {
     my $db = $self->result_source->storage;
     my $no_reporter_alert = ($self->get_extra_metadata('contributed_as') || '') eq 'anonymous_user';
 
+    if ($cobrand->suppress_report_sent_email($self)) {
+        # Send bulky confirmation email after report confirmation (see
+        # the suppress_report_sent_email for SLWP)
+        $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
+    }
+
+    if (my $amendment = $self->get_extra_metadata('amendment_update')) {
+        $amendment = FixMyStreet::DB->resultset("Comment")->find($amendment);
+        my $data = $amendment->get_extra_metadata('fms_extra_amend');
+        my $max_key = $self->category eq 'Small items collection' ? 'small_items_per_collection_max' : 'items_per_collection_max';
+        my $max = $cobrand->wasteworks_config->{$max_key} || 5;
+        $self->waste_amend_extra_data($cobrand, $max, $data);
+        $cobrand->waste_amend_amendment_update($self, $amendment);
+        $amendment->unset_extra_metadata('fms_extra_amend');
+        $amendment->confirm;
+        $amendment->update;
+        $self->set_extra_metadata('payment_reference', $reference) if $reference;
+        $self->update;
+        return;
+    }
+
     my @problems = ($self);
     if (my $grouped_ids = $self->get_extra_metadata('grouped_ids')) {
         foreach my $id (@$grouped_ids) {
             my $problem = $rs->find({ id => $id }) or next;
             push @problems, $problem;
         }
-    }
-
-    if ($cobrand->suppress_report_sent_email($self)) {
-        # Send bulky confirmation email after report confirmation (see
-        # the suppress_report_sent_email for SLWP)
-        $self->send_logged_email({ report => $self, cobrand => $cobrand }, 0, $cobrand);
     }
 
     foreach my $p (@problems) {

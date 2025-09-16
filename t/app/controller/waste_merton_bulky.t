@@ -576,7 +576,7 @@ FixMyStreet::override_config {
             $mech->content_contains('You have not changed anything');
         };
 
-        subtest 'Amend the date and items, not above the lower limit' => sub {
+        subtest 'Amend the items, same date' => sub {
             $mech->get_ok("$base_path/bulky/amend/" . $report->id);
             $mech->content_contains("Before you amend your booking");
             $mech->submit_form_ok;
@@ -586,7 +586,7 @@ FixMyStreet::override_config {
             $mech->content_contains('1 July');
             $mech->content_contains('15 July');
             $mech->submit_form_ok(
-                { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
+                { with_fields => { chosen_date => '2023-07-08T00:00:00;reserve2==;2023-06-25T10:10:00' } }
             );
             $mech->content_contains('Add items for collection');
             $mech->content_like(
@@ -609,6 +609,91 @@ FixMyStreet::override_config {
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bookcase, Shelving Unit/s);
             $mech->content_contains('2 items requested for collection');
             $mech->content_contains('£0.00 (£37.00 already paid)');
+            $mech->content_contains("<dd>Saturday 08 July 2023</dd>");
+            $mech->content_lacks('Cancel this booking');
+            $mech->content_lacks('Show upcoming bin days');
+        };
+
+        subtest 'Confirm amendment' => sub {
+            my $count = FixMyStreet::DB->resultset("Problem")->count;
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+            is +FixMyStreet::DB->resultset("Problem")->count, $count, 'no new report';
+            is $report->comments->count, 2; # Confirmation and then amendment
+
+            my $email = $mech->get_email;
+            is $email->header('Subject'), 'Bulky waste collection service - reference ' . $report->id;
+            $mech->clear_emails_ok;
+
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(0); # No cancellation update on original
+
+            $report->discard_changes;
+            is $report->category, 'Bulky collection', 'correct category on report';
+            is $report->title, 'Bulky goods collection', 'correct title on report';
+            is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
+            is $report->state, 'confirmed', 'report confirmed';
+            is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6', 'updated items';
+
+            my $comment = $report->comments->order_by('-id')->first;
+            is $comment->text, 'Booking amended';
+            is $comment->get_extra_metadata('fms_extra_amend_items'), '83::6';
+            is $comment->get_extra_metadata('fms_extra_amend_notes'), '::';
+            is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
+
+            $mech->content_contains('Bulky collection booking confirmed');
+            $mech->content_contains('please use the reference:&nbsp;' . $report->id);
+        };
+
+        subtest 'Viewing original report summary after amendment' => sub {
+            my $path = "/report/" . $report->id;
+            $mech->get_ok($path);
+            $mech->content_lacks('Bicycle');
+            $mech->content_contains('Bookcase');
+            $mech->content_contains('Updates');
+            $mech->content_lacks('This collection has been cancelled');
+            $mech->content_lacks('Booking cancelled due to amendment');
+            $mech->content_contains('Booking amended');
+            $report->discard_changes;
+            is $report->state, 'confirmed';
+        };
+
+        subtest 'Amend the date and items, not above the lower limit' => sub {
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            $mech->content_contains("Before you amend your booking");
+            $mech->submit_form_ok;
+            $mech->content_contains('Choose date for collection');
+            $mech->content_contains('Available dates');
+            $mech->content_contains('8 July'); # Existing date should always be there
+            $mech->content_contains('1 July');
+            $mech->content_contains('15 July');
+            $mech->submit_form_ok(
+                { with_fields => { chosen_date => '2023-07-01T00:00:00;reserve1==;2023-06-25T10:10:00' } }
+            );
+            $mech->content_contains('Add items for collection');
+            $mech->content_like(
+                qr/<option value="Bath".*>Bath<\/option>/);
+            $mech->submit_form_ok({
+                with_fields => {
+                    'item_1' => 'Bath',
+                    'item_photo_1_fileid' => '', # Photo removed
+                    'item_2' => 'Bookcase, Shelving Unit',
+                    'item_3' => 'Bathroom Cabinet /Shower Screen',
+                },
+            });
+            $mech->submit_form_ok({ form_number => 2 }); # Location page
+
+            $mech->content_contains('Booking Summary');
+            $mech->content_lacks('You will be redirected to the council’s card payments provider.');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
+            $mech->content_lacks('<img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
+            $mech->content_lacks('BBQ');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bookcase, Shelving Unit/s);
+            $mech->content_contains('3 items requested for collection');
+            $mech->content_contains('£0.00 (£37.00 already paid)');
             $mech->content_contains("<dd>Saturday 01 July 2023</dd>");
             $mech->content_lacks('Cancel this booking');
             $mech->content_lacks('Show upcoming bin days');
@@ -618,7 +703,7 @@ FixMyStreet::override_config {
         subtest 'Confirm amendment' => sub {
             $mech->submit_form_ok({ with_fields => { tandc => 1 } });
 
-            is $report->comments->count, 2; # Confirmation and then cancellation
+            is $report->comments->count, 3; # Confirmation, amendment, and then cancellation
             $new_report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
 
             my $email = $mech->get_email;
@@ -667,7 +752,7 @@ FixMyStreet::override_config {
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
             is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-01T00:00:00';
-            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6::84';
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('First_Date_Offered_-_Bulky'), '01/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
@@ -811,6 +896,129 @@ FixMyStreet::override_config {
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('Booking cancelled by customer');
             $mech->content_contains('£23.75 (£37.00 already paid)');
+        };
+
+        $echo->mock( 'ReserveAvailableSlotsForEvent', sub { [
+            {
+                StartDate => { DateTime => '2023-07-01T00:00:00Z' },
+                EndDate => { DateTime => '2023-07-02T00:00:00Z' },
+                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                Reference => 'reserveA==',
+            }, {
+                StartDate => { DateTime => '2023-07-15T00:00:00Z' },
+                EndDate => { DateTime => '2023-07-16T00:00:00Z' },
+                Expiry => { DateTime => '2023-06-25T10:10:00Z' },
+                Reference => 'reserveB==',
+            },
+        ] } );
+
+        $report->set_extra_metadata('payment_reference' => '6789'); # So will be changed
+        $report->update_extra_field({ name => 'payment', value => 0 });
+        $report->update({ external_id => 'Echo-123' }); # So can be amended
+
+        subtest 'Amend the items above the lower limit, same date, no slot left' => sub {
+            $mech->get_ok("$base_path/bulky/amend/" . $report->id);
+            $mech->content_contains("Before you amend your booking");
+            $mech->submit_form_ok;
+            $mech->content_contains('Choose date for collection');
+            $mech->content_contains('Available dates');
+            $mech->content_contains('1 July');
+            $mech->content_contains('8 July'); # Existing date should always be there
+            $mech->content_contains('15 July');
+            $mech->submit_form_ok(
+                { with_fields => { chosen_date => '2023-07-08T00:00:00' } }
+            );
+            $mech->content_contains('Add items for collection');
+            $mech->content_like(
+                qr/<option value="Bath".*>Bath<\/option>/);
+            $mech->submit_form_ok({
+                form_number => 1,
+                fields => {
+                    'item_1' => 'Bath',
+                    'item_photo_1_fileid' => '', # Photo removed
+                    'item_2' => 'Bookcase, Shelving Unit',
+                    'item_3' => 'Bathroom Cabinet /Shower Screen',
+                    'item_4' => 'Bath',
+                },
+            });
+            $mech->submit_form_ok({ form_number => 2 }); # Location page
+
+            $mech->content_contains('Booking Summary');
+            $mech->content_lacks('You will be redirected to the council’s card payments provider.');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
+            $mech->content_lacks('<img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
+            $mech->content_lacks('BBQ');
+            $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bookcase, Shelving Unit/s);
+            $mech->content_contains('4 items requested for collection');
+            $mech->content_contains('£23.75 (£37.00 already paid)');
+            $mech->content_contains("<dd>Saturday 08 July 2023</dd>");
+            $mech->content_lacks('Cancel this booking');
+            $mech->content_lacks('Show upcoming bin days');
+        };
+
+        subtest 'Pay and confirm amendment' => sub {
+            my $count = FixMyStreet::DB->resultset("Problem")->count;
+            my $mech2 = $mech->clone;
+            $mech2->submit_form_ok({ with_fields => { tandc => 1 } });
+            is $mech2->res->previous->code, 302, 'payments issues a redirect';
+            is $mech2->res->previous->header('Location'), "http://example.org/faq", "redirects to payment gateway";
+
+            is +FixMyStreet::DB->resultset("Problem")->count, $count, 'no new report';
+
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(0); # No cancellation update, not been confirmed yet
+
+            $report->discard_changes;
+            is $report->state, 'confirmed';
+
+            my ($token, $report_id);
+            ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+            is $report->category, 'Bulky collection', 'correct category on report';
+            is $report->title, 'Bulky goods collection', 'correct title on report';
+            is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
+            is $report->state, 'confirmed', 'report confirmed';
+            is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
+            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6::83::83', 'Not changed yet';
+
+            is $sent_params->{items}[0]{amount}, 2375, 'correct amount used';
+            is $sent_params->{items}[0]{cost_code}, '20180282880000000000000';
+            is $sent_params->{items}[0]{reference}, 'LBM-BWC-' . $report->id;
+
+            $mech->get_ok("/waste/pay_complete/$report_id/$token");
+            is $sent_params->{reference}, 12345, 'correct scpReference sent';
+
+            my $email = $mech->get_email;
+            is $email->header('Subject'), 'Bulky waste collection service - reference ' . $report->id;
+            $mech->clear_emails_ok;
+
+            $report->discard_changes;
+            is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6::84::83', 'Now changed';
+
+            is $report->comments->count, 2; # Confirmation and then amendment
+            my $update = $report->comments->order_by('-id')->first;
+            is $update->state, 'confirmed';
+            is $update->text, 'Booking amended';
+            is $update->get_extra_metadata('fms_extra_amend_items'), '83::6::84::83', 'Correct items';
+            is $update->get_extra_metadata('fms_extra_amend_notes'), '::::::';
+            is $update->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
+
+            $mech->content_contains('Bulky collection booking confirmed');
+            $mech->content_contains('please use the reference:&nbsp;' . $report->id);
+        };
+
+        subtest 'Viewing original report summary after amendment' => sub {
+            my $path = "/report/" . $report->id;
+            $mech->get_ok($path);
+            $mech->content_contains('Updates');
+            $mech->content_lacks('This collection has been cancelled');
+            $mech->content_lacks('Booking cancelled due to amendment');
+            $mech->content_contains('£23.75 (£37.00 already paid)');
+            $mech->content_contains('Booking amended');
         };
     };
 

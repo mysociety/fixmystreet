@@ -546,6 +546,12 @@ sub waste_garden_renew_form_setup {
     }
 }
 
+sub open311_config_updates {
+    my ($self, $params) = @_;
+    $params->{multi_photos} = 1;
+    $params->{upload_files_for_updates} = 1;
+}
+
 =item * When a garden subscription is sent to Echo, we include payment details
 
 =cut
@@ -683,9 +689,48 @@ sub waste_bulky_missed_blocked_codes {
 
 sub bulky_collection_window_days { 56 }
 
+sub bulky_backend_can_amend_same_date { 1 }
 sub bulky_cancel_by_update { 1 }
 sub bulky_send_before_payment { 1 }
 sub bulky_show_location_field_mandatory { 1 }
+
+sub waste_munge_bulky_amend {
+    my ($self, $p, $data) = @_;
+
+    my (@items_list, $max_key);
+    if ($p->category eq 'Small items collection') {
+        @items_list = @{ $self->small_items_master_list };
+        $max_key = 'small_items_per_collection_max';
+    } else {
+        @items_list = @{ $self->bulky_items_master_list };
+        $max_key = 'items_per_collection_max';
+    }
+    my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
+    my @notes;
+    my @ids;
+    my $max = $p->get_cobrand_logged->wasteworks_config->{$max_key} || 5;
+    for (1..$max) {
+        if (my $item = $data->{"item_$_"}) {
+            push @notes, $data->{"item_notes_$_"} || '';
+            push @ids, $items{$item};
+            $p->set_extra_metadata("item_$_" => $item);
+        };
+    }
+
+    $p->update_extra_field({ name => 'TEM_-_Bulky_Collection_Description', value => join("::", @notes) });
+    $p->update_extra_field({ name => 'TEM_-_Bulky_Collection_Item', value => join("::", @ids) });
+    $p->update_extra_field({ name => 'Exact_Location', value => $data->{location} });
+}
+
+sub waste_amend_amendment_update {
+    my ($self, $p, $update) = @_;
+    $update->set_extra_metadata(
+        fms_extra_amend_items => $p->get_extra_field_value('TEM_-_Bulky_Collection_Item'),
+        fms_extra_amend_notes => $p->get_extra_field_value('TEM_-_Bulky_Collection_Description'),
+        fms_extra_amend_location => $p->get_extra_field_value('Exact_Location'),
+    );
+    $update->photo($p->photo);
+}
 
 sub bulky_can_refund { 0 }
 
