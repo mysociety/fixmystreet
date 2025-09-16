@@ -398,30 +398,65 @@ sub process_bulky_amend : Private {
     my $p = $c->stash->{amending_booking};
 
     if ($c->cobrand->bulky_cancel_by_update) {
-        # In this case we want to update the event to mark it as cancelled,
-        # then create a new event with the amended booking data from the form
-        my $update = add_cancellation_update($c, $p, 'delayed');
 
-        if ($c->stash->{small_items}) {
-            $c->forward('process_small_items_data', [ $form ]) or return;
+        my $current_date = $c->cobrand->collection_date($p);
+        my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
+        if ($c->cobrand->bulky_backend_can_amend_same_date && $current_date eq $date) {
+            # For the same date, we add an amendment update
+            $p->create_related( moderation_original_data => {
+                title => $p->title,
+                detail => $p->detail,
+                photo => $p->photo,
+                anonymous => $p->anonymous,
+                category => $p->category,
+                extra => $p->extra,
+            });
+            $c->stash->{report} = $p;
+            $c->cobrand->bulky_total_cost($data);
+            if ($c->stash->{payment}) {
+                my $update = add_amendment_update($c, $p, $data, 'delayed');
+                $p->unset_extra_metadata('payment_reference');
+                $p->set_extra_metadata(amendment_update => $update->id);
+                $p->update_extra_field({ name => 'payment', value => $c->stash->{payment} });
+                # XXX Store old payment reference and payment somewhere else?!
+                $p->update;
+                $c->forward('/waste/pay_process', [ 'bulky', $data->{payment_method}, $data ]);
+            } else {
+                my $update = add_amendment_update($c, $p, $data, 'immediate');
+                $p->waste_amend_extra_data($c->cobrand, $c->stash->{booking_maximum}, $data);
+                $c->cobrand->waste_amend_amendment_update($p, $update);
+                $update->update;
+                $p->update;
+                if ($c->cobrand->suppress_report_sent_email($p)) {
+                    $p->send_logged_email({ report => $p, cobrand => $c->cobrand }, 0, $c->cobrand);
+                }
+            }
         } else {
-            $c->forward('process_bulky_data', [ $form ]) or return;
-        }
+            # In this case we want to update the event to mark it as cancelled,
+            # then create a new event with the amended booking data from the form
+            my $update = add_cancellation_update($c, $p, 'delayed');
 
-        # If there wasn't payment, we reach here and can set the things
-        $c->forward('cancel_collection', [ $p, 'amendment' ]);
-        my $new = $c->stash->{report};
-        $new->set_extra_metadata(previous_booking_id => $p->id);
-        foreach (qw(payment_reference)) {
-            $new->set_extra_metadata($_ => $p->get_extra_metadata($_)) if $p->get_extra_metadata($_);
-        }
-        $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
-        $new->update;
-        $update->confirm;
-        $update->update;
-        $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference')) if $p->get_extra_metadata('payment_reference');
-        if ($c->cobrand->suppress_report_sent_email($new)) {
-            $new->send_logged_email({ report => $new, cobrand => $c->cobrand }, 0, $c->cobrand);
+            if ($c->stash->{small_items}) {
+                $c->forward('process_small_items_data', [ $form ]) or return;
+            } else {
+                $c->forward('process_bulky_data', [ $form ]) or return;
+            }
+
+            # If there wasn't payment, we reach here and can set the things
+            $c->forward('cancel_collection', [ $p, 'amendment' ]);
+            my $new = $c->stash->{report};
+            $new->set_extra_metadata(previous_booking_id => $p->id);
+            foreach (qw(payment_reference)) {
+                $new->set_extra_metadata($_ => $p->get_extra_metadata($_)) if $p->get_extra_metadata($_);
+            }
+            $new->detail($new->detail . " | Previously submitted as " . $p->external_id);
+            $new->update;
+            $update->confirm;
+            $update->update;
+            $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference')) if $p->get_extra_metadata('payment_reference');
+            if ($c->cobrand->suppress_report_sent_email($new)) {
+                $new->send_logged_email({ report => $new, cobrand => $c->cobrand }, 0, $c->cobrand);
+            }
         }
     } else {
         $p->create_related( moderation_original_data => {
@@ -447,6 +482,27 @@ sub process_bulky_amend : Private {
     }
 
     return 1;
+}
+
+sub add_amendment_update {
+    my ($c, $p, $data, $type) = @_;
+
+    my $update = $p->add_to_comments({
+        text => "Booking amended",
+        user => $c->cobrand->body->comment_user || $p->user,
+        extra => { bulky_amendment => 1 },
+        $type eq 'immediate' ? (
+            state => 'confirmed',
+        ) : (
+            state => 'unconfirmed',
+            extra => {
+                fms_extra_amend => $data,
+            },
+        ),
+    });
+    # We don't want to send an update if amending, they'll get a new report logged email
+    $p->cancel_update_alert($update->id);
+    return $update;
 }
 
 # bulky_cancel_by_update is false if this is called
