@@ -352,7 +352,7 @@ sub process_bulky_data : Private {
         $c->set_param('payment', $c->stash->{payment});
         if ($data->{continue_id}) {
             $c->stash->{report} = $c->cobrand->problems->find($data->{continue_id});
-            amend_extra_data($c, $c->stash->{report}, $data);
+            $c->stash->{report}->waste_amend_extra_data($c->cobrand, $c->stash->{booking_maximum}, $data);
             $c->stash->{report}->update;
         } else {
             my $no_confirm = !$c->cobrand->bulky_send_before_payment;
@@ -435,7 +435,7 @@ sub process_bulky_amend : Private {
 
         $p->detail($p->detail . " | Previously submitted as " . $p->external_id);
 
-        amend_extra_data($c, $p, $data);
+        $p->waste_amend_extra_data($c->cobrand, $c->stash->{booking_maximum}, $data);
         $c->forward('add_cancellation_report');
 
         $p->resend;
@@ -447,34 +447,6 @@ sub process_bulky_amend : Private {
     }
 
     return 1;
-}
-
-sub amend_extra_data {
-    my ($c, $p, $data) = @_;
-
-    $c->cobrand->waste_munge_bulky_amend($p, $data);
-
-    if ($data->{location_photo}) {
-        $p->set_extra_metadata(location_photo => $data->{location_photo})
-    } else {
-        $p->unset_extra_metadata('location_photo');
-    }
-
-    my $max = $c->stash->{booking_maximum};
-    for (1..$max) {
-        if ($data->{"item_photo_$_"}) {
-            $p->set_extra_metadata("item_photo_$_" => $data->{"item_photo_$_"})
-        } else {
-            $p->unset_extra_metadata("item_photo_$_");
-        }
-    }
-
-    my @bulky_photo_data;
-    push @bulky_photo_data, $data->{location_photo} if $data->{location_photo};
-    for (grep { /^item_photo_\d+$/ } sort keys %$data) {
-        push @bulky_photo_data, $data->{$_} if $data->{$_};
-    }
-    $p->photo( join(',', @bulky_photo_data) );
 }
 
 # bulky_cancel_by_update is false if this is called
