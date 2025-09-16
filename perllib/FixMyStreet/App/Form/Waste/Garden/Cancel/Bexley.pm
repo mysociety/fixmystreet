@@ -4,7 +4,10 @@ use utf8;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Waste::Garden::Cancel';
 
-with 'FixMyStreet::App::Form::Waste::Garden::AboutYou::Bexley';
+with 'FixMyStreet::App::Form::Waste::Garden::Verify::Bexley';
+
+has_page customer_reference =>
+    ( customer_reference( continue_field => 'continue' ) );
 
 has_page about_you =>
     ( about_you( continue_field => 'continue', next_page => 'reason' ) );
