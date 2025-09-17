@@ -419,6 +419,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+            like $mech->content, qr/Cancel your brown wheelie bin subscription/, 'cancel link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
             like $mech->text, qr/Sign in or create an account/, 'modify link goes to login page';
@@ -431,8 +432,15 @@ FixMyStreet::override_config {
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+            like $mech->content, qr/Cancel your brown wheelie bin subscription/, 'cancel link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        task => 'modify',
+                    },
+                }, 'initial option page',
+            );
             $mech->submit_form_ok(
                 {   with_fields => {
                         has_reference => 'Yes',
@@ -483,6 +491,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+            like $mech->content, qr/Cancel your brown wheelie bin subscription/, 'cancel link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
             $mech->submit_form_ok(
@@ -541,6 +550,10 @@ FixMyStreet::override_config {
                         qr/Change your brown wheelie bin subscription/,
                         'No modification link';
                     like $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'Has cancel link';
+
+                    like $mech->content,
                         qr/Renew your brown wheelie bin subscription/,
                         'Renewal link instead';
 
@@ -552,8 +565,15 @@ FixMyStreet::override_config {
                 set_fixed_time('2024-02-01T00:00:00');
                 $mech->get_ok("/waste/$uprn");
                 like $mech->content, qr/Change your brown wheelie bin subscription/;
+                like $mech->content, qr/Cancel your brown wheelie bin subscription/;
 
                 $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            task => 'modify',
+                        },
+                    }, 'initial option page',
+                );
                 $mech->submit_form_ok(
                     {   with_fields => {
                             has_reference => 'Yes',
@@ -621,6 +641,12 @@ FixMyStreet::override_config {
 
                 subtest 'remove bins' => sub {
                     $mech->get_ok("/waste/$uprn/garden_modify");
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                task => 'modify',
+                            },
+                        }, 'initial option page',
+                    );
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 has_reference => 'Yes',
@@ -733,6 +759,12 @@ FixMyStreet::override_config {
 
                 $mech->log_in_ok( $user->email );
                 $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            task => 'modify',
+                        },
+                    }, 'initial option page',
+                );
                 $mech->submit_form_ok(
                     {   with_fields => {
                             has_reference => 'Yes',
@@ -1750,11 +1782,12 @@ FixMyStreet::override_config {
         # as it sees the direct debit set up above and tries to cancel the DD
         $mech->delete_problems_for_body($body->id);
 
-        $mech->log_in_ok( $user->email );
-        subtest 'staff only' => sub {
+        subtest 'standard user' => sub {
+            $mech->log_in_ok( $user->email );
             $mech->get_ok('/waste/10001/garden_cancel');
-            is $mech->uri->path, "/waste/10001";
+            like $mech->text, qr/customer reference number/, 'On customer ref page';
         };
+
         $mech->log_in_ok( $staff_user->email );
 
         subtest 'with Agile data only' => sub {
