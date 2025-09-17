@@ -559,6 +559,8 @@ FixMyStreet::override_config {
             state => 'confirmed'
         });
 
+        is $cobrand->pin_colour($fetched_report), 'red';
+
         my $request = {
             extras => {
                 priority => 'DPM'
@@ -569,6 +571,8 @@ FixMyStreet::override_config {
 
         $fetched_report->discard_changes;
         is $fetched_report->get_extra_metadata('confirmPriorityCode'), 'DPM';
+
+        is $cobrand->pin_colour($fetched_report), 'grey';
     };
 };
 
