@@ -115,6 +115,7 @@ sub create_problems {
         }
         my $request_id = $request->{service_request_id};
         my $is_confirm_job = $request_id =~ /^JOB_/;
+        my $is_confirm_defect = $request_id =~ /^DEFECT_/;
 
         my ($latitude, $longitude) = ( $request->{lat}, $request->{long} );
 
@@ -170,10 +171,11 @@ sub create_problems {
         # Skip if this problem already exists (e.g. it may have originated from FMS and is being mirrored back!)
         next if $self->schema->resultset('Problem')->to_body($body)->search( $criteria )->count;
 
-        # Skip this date check for Confirm jobs, otherwise we are likely to
-        # skip a bunch of valid jobs if calling the fetch script using
+        # Skip this date check for Confirm jobs/defects, otherwise we are likely to
+        # skip a bunch of valid entries if calling the fetch script using
         # explicit start and end values
         if (   !$is_confirm_job
+            && !$is_confirm_defect
             && $args->{start_date}
             && $args->{end_date}
             && (   $updated lt $args->{start_date}
