@@ -156,6 +156,13 @@ sub waste_relevant_serviceunits {
             Service => $_,
             Schedules => _parse_schedules($servicetask, 'task'),
         };
+
+        # FD-5992 override
+        if ($self->moniker eq 'sutton') {
+            $rows[-1]{Schedules}{description} =~ s/^Every [^ ]*$/Weekly/;
+            $rows[-1]{Schedules}{description} =~ s/^Every [^ ]* fortnightly/Fortnightly/i;
+        }
+
     }
     return @rows;
 }
@@ -242,7 +249,7 @@ sub waste_service_containers {
             $quantity = $_->{Value} if $_->{DatatypeName} eq 'Container Quantity';
         }
 
-        next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/; # Blue stripe bag on a weekly collection
+        next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/i; # Blue stripe bag on a weekly collection
 
         if ($container && $quantity) {
             push @$containers, $container;
