@@ -489,6 +489,12 @@ FixMyStreet::override_config {
             $mech->get_ok("/waste/$uprn/garden_modify");
             $mech->submit_form_ok(
                 {   with_fields => {
+                        task => 'modify',
+                    },
+                }, 'initial option page',
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         has_reference => 'No',
                     },
                 },
@@ -563,6 +569,12 @@ FixMyStreet::override_config {
                 $mech->get_ok("/waste/$uprn/garden_modify");
                 $mech->submit_form_ok(
                     {   with_fields => {
+                            task => 'modify',
+                        },
+                    }, 'initial option page',
+                );
+                $mech->submit_form_ok(
+                    {   with_fields => {
                             has_reference => 'Yes',
                             customer_reference => '123456',
                         },
@@ -629,6 +641,12 @@ FixMyStreet::override_config {
 
                 subtest 'remove bins' => sub {
                     $mech->get_ok("/waste/$uprn/garden_modify");
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                task => 'modify',
+                            },
+                        }, 'initial option page',
+                    );
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 has_reference => 'Yes',
@@ -749,6 +767,12 @@ FixMyStreet::override_config {
 
                 $mech->log_in_ok( $user->email );
                 $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            task => 'modify',
+                        },
+                    }, 'initial option page',
+                );
                 $mech->submit_form_ok(
                     {   with_fields => {
                             has_reference => 'Yes',
@@ -1678,11 +1702,12 @@ FixMyStreet::override_config {
         # as it sees the direct debit set up above and tries to cancel the DD
         $mech->delete_problems_for_body($body->id);
 
-        $mech->log_in_ok( $user->email );
-        subtest 'staff only' => sub {
+        subtest 'standard user' => sub {
+            $mech->log_in_ok( $user->email );
             $mech->get_ok('/waste/10001/garden_cancel');
-            is $mech->uri->path, "/waste/10001";
+            like $mech->text, qr/customer reference number/, 'On customer ref page';
         };
+
         $mech->log_in_ok( $staff_user->email );
 
         subtest 'with Agile data only' => sub {
