@@ -80,6 +80,12 @@ The subscription expiry date remains [% report.get_extra_field_value('End_Date')
 
 [% END %]
 
+[% IF type == 'cancel' ~%]
+[% IF cobrand.moniker == 'merton' %]
+To re-subscribe, please visit
+https://www.merton.gov.uk/rubbish-and-recycling/garden-waste/signup
+[% END %]
+[% ELSE %]
 You can check your collection day online:
 [% cobrand.feature('waste_features').garden_check_bin_day_link %]
 
@@ -95,6 +101,7 @@ You don't need to be at home for the delivery - we'll leave them outside your ad
 Your garden waste needs to be at the boundary of your property by [% cobrand.garden_collection_time %] on the
 day of collection. Find out what you can put in your garden waste:
 [% cobrand.feature('waste_features').garden_what_can_be_collected_link %]
+[% END %]
 
 [% signature %]
 
