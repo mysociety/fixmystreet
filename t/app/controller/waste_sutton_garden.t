@@ -1265,7 +1265,7 @@ sub check_extra_data_pre_confirm {
     }
     if ($params{new_bins}) {
         is $report->get_extra_field_value('Container_Type'), $params{bin_type}, 'correct container request bin type';
-        is $report->get_extra_field_value('Quantity'), $params{new_bins}, 'correct container request count - one more';
+        is $report->get_extra_field_value('Quantity'), $params{new_bins}, 'correct container request count';
     }
     is $report->state, $params{state}, 'report state correct';
 }
@@ -1291,7 +1291,7 @@ sub check_amend_extra_data_pre_confirm {
     is $report->get_extra_field_value('Additional_Collection_Container_Type'), $params{bin_type}, 'correct bin type';
     if ($params{new_bins}) {
         is $report->get_extra_field_value('Container_Ordered_Type'), $params{bin_type}, 'correct container request bin type';
-        is $report->get_extra_field_value('Container_Ordered_Quantity'), $params{new_bins}, 'correct container request count - one more';
+        is $report->get_extra_field_value('Container_Ordered_Quantity'), $params{new_bins}, 'correct container request count';
     }
     is $report->state, $params{state}, 'report state correct';
 }

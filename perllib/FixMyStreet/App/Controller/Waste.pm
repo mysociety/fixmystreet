@@ -1041,7 +1041,7 @@ sub get_original_sub : Private {
 
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
-        title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
+        title => ['Garden Subscription - New', 'Garden Subscription - Renew', 'Garden Subscription - Transfer'],
         extra => $extra,
         state => { '!=' => 'hidden' },
     })->order_by('-id')->to_body($c->cobrand->body);

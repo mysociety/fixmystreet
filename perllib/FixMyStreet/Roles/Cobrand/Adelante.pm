@@ -1,11 +1,18 @@
 package FixMyStreet::Roles::Cobrand::Adelante;
 
 use Moo::Role;
+use Hash::Util qw(lock_hash);
 use Try::Tiny;
 use URI::Escape;
 use Integrations::Adelante;
 
 requires 'waste_cc_payment_reference';
+
+my %CONTAINERS = (
+    garden_240 => 39,
+    garden_140 => 37,
+);
+lock_hash(%CONTAINERS);
 
 sub waste_cc_has_redirect { 1 }
 
@@ -154,7 +161,7 @@ sub per_item_cost_code {
     my ($p, $payment, $cost_code) = @_;
     if ($p->cobrand eq 'merton') {
         my $container = $p->get_extra_field_value('Container_Type') || '';
-        if ($container eq 26 || $container eq 27) { # Garden (eq because could be e.g. '35::2')
+        if ($container eq $CONTAINERS{garden_240} || $container eq $CONTAINERS{garden_140}) { # Garden (eq because could be e.g. '35::2')
             $cost_code = $payment->config->{cost_code_admin_fee};
         }
     }
