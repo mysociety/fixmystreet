@@ -95,9 +95,15 @@ sub alter {
             my $max_bins = $data->{max_bins};
             my %bin_params = ( default => $data->{bins}, range_end => $max_bins );
             return {
-                name => { default => $c->stash->{is_staff} ? '' : $c->user->name },
                 current_bins => { %bin_params, $edit_current_allowed ? (disabled=>0) : () },
                 bins_wanted => { %bin_params },
+                $form->field('name') ? (
+                    name => {
+                        default => $c->stash->{is_staff}
+                        ? ''
+                        : $c->user->name
+                    }
+                ) : (),
             };
         },
         next => 'summary',
@@ -199,6 +205,7 @@ has_field continue => (
     type => 'Submit',
     value => 'Continue',
     element_attr => { class => 'govuk-button' },
+    order => 999,
 );
 
 has_field continue_review => (

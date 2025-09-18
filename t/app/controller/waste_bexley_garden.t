@@ -498,7 +498,8 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        name => 'A Name',
+                        first_name => 'A',
+                        last_name  => 'Name',
                     },
                 },
             );
@@ -527,7 +528,8 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        name  => 'Trevor Trouble',
+                        first_name => 'Trevor',
+                        last_name => 'Trouble',
                         email => 'trevor@trouble.com'
                     },
                 }, 'user details page',
@@ -579,7 +581,8 @@ FixMyStreet::override_config {
                 );
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            name        => 'Trevor Trouble',
+                            first_name => 'Trevor',
+                            last_name => 'Trouble',
                         },
                     }
                 );
@@ -653,7 +656,8 @@ FixMyStreet::override_config {
                     );
                     $mech->submit_form_ok(
                         {   with_fields => {
-                                name        => 'Trevor Trouble',
+                                first_name => 'Trevor',
+                                last_name => 'Trouble',
                             },
                         }
                     );
@@ -779,7 +783,8 @@ FixMyStreet::override_config {
                 );
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            name        => 'DD Modifier',
+                            first_name => 'DD',
+                            last_name => 'Modifier',
                         },
                     },
                 );
@@ -1036,7 +1041,8 @@ FixMyStreet::override_config {
                 );
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            name => 'Trevor Trouble',
+                            first_name => 'Trevor',
+                            last_name => 'Trouble',
                             email => 'trevor@trouble.com',
                             phone => '+4407111111111',
                         },
@@ -1109,7 +1115,8 @@ FixMyStreet::override_config {
                     );
                     $mech->submit_form_ok(
                         {   with_fields => {
-                                name => 'Trevor Trouble',
+                                first_name => 'Trevor',
+                                last_name => 'Trouble',
                                 email => 'trevor@trouble.com',
                                 phone => '+4407111111111',
                             },
@@ -1239,7 +1246,8 @@ FixMyStreet::override_config {
                 );
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            name => 'Trevor Trouble',
+                            first_name => 'Trevor',
+                            last_name => 'Trouble',
                             email => 'trevor@trouble.com',
                             phone => '+4407111111111',
                         },
@@ -1723,7 +1731,8 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        name => 'Name McName',
+                        first_name => 'Name',
+                        last_name => 'McName',
                         email => 'test@example.org',
                     },
                 }
@@ -1802,7 +1811,8 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        name => 'Name McName',
+                        first_name => 'Name',
+                        last_name => 'McName',
                         email => 'test@example.org',
                     },
                 }
@@ -1903,7 +1913,8 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        name => 'Name McName',
+                        first_name => 'Name',
+                        last_name => 'McName',
                         email => 'test@example.org',
                     },
                 }
@@ -2043,7 +2054,8 @@ FixMyStreet::override_config {
         );
         $mech->submit_form_ok(
             {   with_fields => {
-                    name => 'Name McName',
+                    first_name => 'Name',
+                    last_name => 'McName',
                     email => 'test@example.org',
                 },
             }
@@ -2184,7 +2196,8 @@ FixMyStreet::override_config {
         );
         $mech->submit_form_ok(
             {   with_fields => {
-                    name => 'Test McTest',
+                    first_name => 'Test',
+                    last_name => 'McTest',
                     email => 'test@example.net',
                     phone => '+4407111111111',
                 },
