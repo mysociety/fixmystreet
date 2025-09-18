@@ -100,6 +100,14 @@ INCLUDE '_email_top.html';
     [% END %]
 [% END %]
 
+[% IF type == 'cancel' ~%]
+    [% IF cobrand.moniker == 'merton' %]
+      <p style="[% p_style %]">
+        To re-subscribe, please visit
+        <a href="https://www.merton.gov.uk/rubbish-and-recycling/garden-waste/signup">Sign up for garden waste collections</a>
+      </p>
+    [% END %]
+[% ELSE %]
   <p style="[% p_style %]">
     You can <a href="[% cobrand.feature('waste_features').garden_check_bin_day_link %]">check your collection day online</a>.
   </p>
@@ -120,6 +128,7 @@ INCLUDE '_email_top.html';
     [% cobrand.garden_collection_time %] on the day of collection.
     <a href="[% cobrand.feature('waste_features').garden_what_can_be_collected_link %]">Find out what you can put in your garden waste</a>.
   </p>
+[% END %]
 
   <p style="[% p_style %]">
     [% INCLUDE 'waste/signature.html' %]
