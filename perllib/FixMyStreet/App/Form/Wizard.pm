@@ -55,6 +55,7 @@ sub next {
         $next = $next->(
             $self->saved_data,
             $self->c->req->params,
+            $self, # TODO This should probably be the first arg
         );
     }
     return $next;

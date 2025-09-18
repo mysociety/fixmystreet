@@ -116,10 +116,12 @@ sub modify : Chained('setup') : PathPart('garden_modify') : Args(0) {
         $c->stash->{current_payment_method} = $payment_method;
     }
 
+    $c->cobrand->call_hook('waste_garden_modify_form_setup');
+
     $c->stash->{first_page} = 'intro';
     my $allowed = $c->cobrand->call_hook('waste_garden_allow_cancellation') || 'all';
     if ($allowed eq 'staff' && !$c->stash->{is_staff}) {
-        $c->stash->{first_page} = 'alter';
+        $c->stash->{first_page} = $c->stash->{next_page} || 'alter';
     }
 
     $c->forward('garden_form');
@@ -144,6 +146,7 @@ sub cancel : Chained('setup') : PathPart('garden_cancel') : Args(0) {
     $c->stash->{form_class}
         = $c->cobrand->call_hook('waste_cancel_form_class')
         || 'FixMyStreet::App::Form::Waste::Garden::Cancel';
+    $c->cobrand->call_hook('waste_garden_cancel_form_setup');
     $c->forward('form');
 }
 

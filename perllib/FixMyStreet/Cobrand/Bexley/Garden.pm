@@ -9,6 +9,7 @@ package FixMyStreet::Cobrand::Bexley::Garden;
 use DateTime::Format::Strptime;
 use Integrations::Agile;
 use FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley;
+use FixMyStreet::App::Form::Waste::Garden::Modify::Bexley;
 use FixMyStreet::App::Form::Waste::Garden::Renew::Bexley;
 use Try::Tiny;
 use JSON::MaybeXS;
@@ -94,6 +95,8 @@ sub lookup_subscription_for_uprn {
     }
 
     $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
+    $sub->{customer_first_name} = $customer->{Firstname};
+    $sub->{customer_last_name} = $customer->{Surname};
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
 
@@ -204,9 +207,6 @@ sub garden_current_subscription {
 sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 
 sub waste_cancel_asks_staff_for_user_details { 1 }
-
-# TODO Needs to check 14-day window after subscription started
-sub waste_garden_allow_cancellation { 'staff' }
 
 sub waste_cancel_form_class {
     'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
@@ -413,8 +413,35 @@ sub waste_garden_subscribe_form_setup {
 sub waste_garden_renew_form_setup {
     my ($self) = @_;
 
-    # Use a custom form class that includes fields for bank details
-    $self->{c}->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Garden::Renew::Bexley';
+    my $c = $self->{c};
+
+    # Use a custom form class that includes about_you page &
+    # fields for bank details
+    $c->stash->{first_page} = 'customer_reference';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Garden::Renew::Bexley';
+}
+
+sub waste_garden_cancel_form_setup {
+    my ($self) = @_;
+
+    my $c = $self->{c};
+
+    # Use a custom form class that includes about_you & reason pages
+    $c->stash->{first_page} = 'customer_reference';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Garden::Cancel::Bexley';
+}
+
+sub waste_garden_modify_form_setup {
+    my ($self) = @_;
+
+    my $c = $self->{c};
+
+    # Use a custom form class that includes about_you page.
+    $c->stash->{next_page} = 'customer_reference';
+    $c->stash->{form_class}
+        = 'FixMyStreet::App::Form::Waste::Garden::Modify::Bexley';
 }
 
 =head2 * garden_waste_first_bin_discount_applies
