@@ -95,6 +95,8 @@ sub lookup_subscription_for_uprn {
     }
 
     $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
+    $sub->{customer_first_name} = $customer->{Firstname};
+    $sub->{customer_last_name} = $customer->{Surname};
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
 

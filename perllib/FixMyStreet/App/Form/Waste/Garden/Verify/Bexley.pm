@@ -9,9 +9,38 @@ sub customer_reference {
         fields =>
             [ 'has_reference', 'customer_reference', $args{continue_field} ],
         title => 'Please enter your customer reference number',
-# TODO If correct customer reference provided, skip about_you and store
-# user details behind the scenes?
-        next => 'about_you',
+        next => sub {
+            my $form = $_[2];
+
+            if ( $form->field('has_reference')->value eq 'No' ) {
+                return 'about_you';
+
+            } else {
+                # If correct customer reference provided, skip about_you and
+                # store user details behind the scenes
+
+                # TODO Email & phone?
+
+                my $ref = $form->field('customer_reference')->value;
+                my $current_subscription
+                    = $form->c->cobrand->garden_current_subscription;
+
+                if ( $ref eq $current_subscription->{customer_external_ref} ) {
+                    $form->saved_data->{name}
+                        = $current_subscription->{customer_first_name} . ' '
+                        . $current_subscription->{customer_last_name};
+
+                    return 'alter'; # TODO Handle for the other forms
+
+                } else {
+                    # TODO Message saying customer ref does not match
+                    return 'about_you';
+
+                }
+
+            }
+
+        },
     );
 }
 
@@ -76,5 +105,11 @@ has_field last_name => (
 );
 
 with 'FixMyStreet::App::Form::Waste::AboutYou::Shared';
+
+# sub validate_customer_reference {
+#     my ( $form, $field ) = @_;
+
+#     return 1 if $form->
+# }
 
 1;
