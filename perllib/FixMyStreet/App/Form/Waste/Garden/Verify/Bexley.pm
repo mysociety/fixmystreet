@@ -47,12 +47,4 @@ sub about_you {
     );
 }
 
-# Remove name, phone, email from a given page setup
-sub remove_about_you_fields {
-    my %defaults = @_;
-    my @fields = grep { $_ !~ /^(name|phone|email)$/ } @{ $defaults{fields} };
-    $defaults{fields} = \@fields;
-    return %defaults;
-}
-
 1;
