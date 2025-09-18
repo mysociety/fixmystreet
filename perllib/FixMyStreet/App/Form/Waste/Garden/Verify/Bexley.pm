@@ -34,17 +34,47 @@ has_field customer_reference => (
     order => 2,
 );
 
-with 'FixMyStreet::App::Form::Waste::AboutYou';
-
 # Create a dedicated page for entering personal details
 sub about_you {
     my %args = @_;
 
     return (
-        fields => [ 'name', 'phone', 'email', $args{continue_field} ],
+        fields => [
+            'first_name', 'last_name',
+            'phone',      'email',
+            $args{continue_field}
+        ],
         title => 'About you',
         next => $args{next_page},
+        pre_finished => sub {
+            my $form = shift;
+            $form->saved_data->{name}
+                = $form->field('first_name')->value . ' '
+                . $form->field('last_name')->value;
+        },
     );
 }
+
+has_field first_name => (
+    type => 'Text',
+    label => 'First name',
+    required => 1,
+    messages => {
+        required => 'Your first name is required',
+    },
+    order => 1,
+);
+
+has_field last_name => (
+    type => 'Text',
+    label => 'Last name',
+    required => 1,
+    messages => {
+        required => 'Your last name is required',
+    },
+    order => 2,
+);
+
+with 'FixMyStreet::App::Form::Waste::AboutYou::Shared';
 
 1;
