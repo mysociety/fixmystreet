@@ -3,6 +3,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 use FixMyStreet::Script::Reports;
 use Open311::PopulateServiceList;
+use Open311::PostServiceRequestUpdates;
 use Test::MockModule;
 use t::Mock::Tilma;
 use CGI::Simple;
@@ -21,6 +22,7 @@ my $bristol = $mech->create_body_ok( 2561, 'Bristol City Council', {
     endpoint => 'endpoint',
     jurisdiction => 'bristol',
     can_be_devolved => 1,
+    send_extended_statuses => 1,
     comment_user => $comment_user,
     cobrand => 'bristol',
 });
@@ -624,6 +626,22 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { category => $open311_contact->category } });
         $report->discard_changes;
         is $report->send_state, 'unprocessed', "Changed from Alloy category to Confirm category, set to resend";
+    };
+
+    subtest 'using correct state in Open311 call' => sub {
+        my ($report) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $open311_contact->category,
+            areas => ',2561,',
+            external_id => 'SENT',
+            send_method_used => 'Open311',
+        });
+        my $o = Open311::PostServiceRequestUpdates->new;
+        my $comment = $mech->create_comment_for_problem($report, $comment_user, 'Name', 'Text', 0, 'confirmed', 'investigating');
+        $comment->discard_changes; # Pick up formatted timestamp, defaults, etc
+        $o->process_update($bristol, $comment);
+        my $req = Open311->test_req_used;
+        like $req->content, qr/status=OPEN/;
     };
 };
 

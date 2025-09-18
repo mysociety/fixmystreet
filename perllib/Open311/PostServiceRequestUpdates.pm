@@ -96,11 +96,16 @@ sub open311_params {
         $conf = $sender->{config};
     }
 
+    my $extended_statuses = $body->send_extended_statuses;
+    if ($comment && $comment->problem->to_body_named('Bristol') && $comment->problem->external_id !~ /^Alloy/) {
+        $extended_statuses = 0;
+    }
+
     my %open311_conf = (
         endpoint => $conf->endpoint,
         jurisdiction => $conf->jurisdiction,
         api_key => $conf->api_key,
-        extended_statuses => $body->send_extended_statuses,
+        extended_statuses => $extended_statuses,
         fixmystreet_body => $body,
     );
 
