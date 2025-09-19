@@ -99,6 +99,7 @@ FixMyStreet::override_config {
         ok $report, "Found the report";
 
         $mech->content_contains('Your issue has been sent.');
+        $mech->content_contains('FixMyStreet report number:<br><strong>' . $report->id);
 
         is_deeply $mech->page_errors, [], "check there were no errors";
 
