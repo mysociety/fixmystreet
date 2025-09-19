@@ -168,23 +168,6 @@ sub open311_munge_update_params {
 }
 
 
-=head2 open311_get_update_munging
-
-The incoming update might be for a defect which has superseded an existing one,
-so if that's the case we need to identify and close it.
-
-=cut
-
-sub open311_get_update_munging {
-    my ($self, $comment, $state, $request) = @_;
-
-    my $supersedes = $request->{extras}{supersedes};
-    return unless $supersedes && $supersedes =~ /^DEFECT_/;
-
-    $self->_supersede_report($comment->problem, $supersedes);
-}
-
-
 =head2 open311_report_fetched
 
 Similarly to above, fetched report might be a defect which has superseded an
@@ -336,6 +319,9 @@ This value, if present, is passed back from open311-adapter in the
 in its text, it gets replaced with the value from Confirm. If there is no value
 then 'TBC' is used.
 
+Also, the incoming update might be for a defect which has superseded an
+existing one, so if that's the case we need to identify and close it.
+
 =cut
 
 sub open311_get_update_munging {
@@ -354,6 +340,11 @@ sub open311_get_update_munging {
         $text =~ s/\{\{targetDate}}/$targetDate/;
         $comment->text($text);
     }
+
+    my $supersedes = $request->{extras}{supersedes};
+    return unless $supersedes && $supersedes =~ /^DEFECT_/;
+
+    $self->_supersede_report($comment->problem, $supersedes);
 }
 
 =head2 problems_restriction/problems_sql_restriction/problems_on_map_restriction
