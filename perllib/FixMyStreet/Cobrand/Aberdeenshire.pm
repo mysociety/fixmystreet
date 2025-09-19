@@ -168,6 +168,83 @@ sub open311_munge_update_params {
 }
 
 
+=head2 open311_get_update_munging
+
+The incoming update might be for a defect which has superseded an existing one,
+so if that's the case we need to identify and close it.
+
+=cut
+
+sub open311_get_update_munging {
+    my ($self, $comment, $state, $request) = @_;
+
+    my $supersedes = $request->{extras}{supersedes};
+    return unless $supersedes && $supersedes =~ /^DEFECT_/;
+
+    $self->_supersede_report($comment->problem, $supersedes);
+}
+
+
+=head2 open311_report_fetched
+
+Similarly to above, fetched report might be a defect which has superseded an
+existing one, so if that's the case we need to identify and close it.
+
+=cut
+
+sub open311_report_fetched {
+    my ($self, $problem, $request) = @_;
+
+    my $supersedes = $request->{extras}{supersedes};
+    return unless $supersedes && $supersedes =~ /^DEFECT_/;
+
+    $self->_supersede_report($problem, $supersedes);
+}
+
+
+=head2 _supersede_report
+
+Handles the superseding of one report by another. Finds the report with the given
+external_id, marks it as hidden, and transfers any active alerts to the new report.
+
+=cut
+
+sub _supersede_report {
+    my ($self, $new_problem, $external_id) = @_;
+
+    my $superseded = $new_problem->result_source->schema->resultset('Problem')->to_body($self->body)->search({
+        external_id => $external_id,
+        state => { '!=' => 'hidden' }
+    })->first;
+
+    return unless $superseded;
+
+    $superseded->update({ state => 'hidden' });
+
+    # Migrate any alerts on the old report the new
+    my $alerts = $superseded->result_source->schema->resultset('Alert')->search({
+        alert_type => 'new_updates',
+        parameter => $superseded->id,
+        whendisabled => undef,
+        confirmed => { '!=', undef },
+    });
+
+    while (my $alert = $alerts->next) {
+        $alert->disable;
+
+        # Create a new alert for the new problem
+        $alert->result_source->schema->resultset('Alert')->create({
+            alert_type => 'new_updates',
+            parameter => $new_problem->id,
+            user_id => $alert->user_id,
+            lang => $alert->lang,
+            cobrand => $alert->cobrand,
+            cobrand_data => $alert->cobrand_data,
+        })->confirm;
+    }
+}
+
+
 =head2 open311_config
 
 Send multiple photos as files to Open311
