@@ -261,6 +261,7 @@ sub dashboard_export_problems_add_columns {
         }
         return {
             staff_role => $staff_role,
+            user_id => $report->user_id
         };
     });
 }
