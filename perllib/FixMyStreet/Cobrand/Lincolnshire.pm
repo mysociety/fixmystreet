@@ -243,6 +243,7 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         staff_role => 'Staff Role',
+        user_id => 'User Id',
     );
 
     return if $csv->dbi; # All covered already
