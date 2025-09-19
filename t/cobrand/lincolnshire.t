@@ -2,6 +2,8 @@ use FixMyStreet::TestMech;
 use Open311::GetServiceRequests;
 use FixMyStreet::DB;
 use Open311;
+use FixMyStreet::Script::CSVExport;
+use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -109,8 +111,16 @@ FixMyStreet::override_config {
 
         $p->delete;
     };
+};
 
-    subtest "Dashboard CSV export includes extra staff columns" => sub {
+subtest 'Dashboard CSV export includes extra staff columns' => sub {
+    my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'lincolnshire',
+        MAPIT_URL => 'http://mapit.uk/',
+        STAGING_SITE => 0,
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+    }, sub {
         my $csv_staff = $mech->create_user_ok(
             'csvstaff@lincolnshire.gov.uk',
             name => 'CSV Staff',
@@ -128,12 +138,28 @@ FixMyStreet::override_config {
             user => $csv_staff,
             extra => { contributed_by => $csv_staff->id },
         });
+        my $report = $csv_problems[0];
+        my $user_id = $csv_staff->id;
+
+        $report->discard_changes;
 
         $mech->log_in_ok($csv_staff->email);
         $mech->get_ok('/dashboard?export=1');
 
-        $mech->content_contains('"Staff Role"');
-        $mech->content_like(qr/CSV Role/, "CSV export includes staff role");
+        $mech->content_contains('"Staff Role"', "Staff Role column header before export");
+        $mech->content_like(qr/CSV Role/, "CSV export includes staff role before export");
+        $mech->content_contains('"User Id"', "User Id column header before export");
+        $mech->content_like(qr/,$user_id$/, "User Id data before export");
+
+        $report->confirmed(DateTime->now->subtract( days => 5 ));
+        $report->update;
+
+        FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Staff Role"', "Staff Role column header after export");
+        $mech->content_like(qr/CSV Role/, "CSV export includes staff role after export");
+        $mech->content_contains('"User Id"', "User Id column header after export");
+        $mech->content_like(qr/,$user_id$/, "User Id data after export");
     };
 };
 
