@@ -95,6 +95,10 @@ sub lookup_subscription_for_uprn {
     }
 
     $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
+    $sub->{customer_first_name}   = $customer->{Firstname};
+    $sub->{customer_last_name}    = $customer->{Surname};
+    $sub->{customer_email}        = $customer->{Email};
+    $sub->{customer_phone} = $customer->{Mobile} // $customer->{TelNumber};
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
 
@@ -166,6 +170,10 @@ sub garden_current_subscription {
     for ( @{ $self->garden_service_ids } ) {
         if ( my $srv = $service_ids->{$_} ) {
             $srv->{customer_external_ref} = $sub->{customer_external_ref};
+            $srv->{customer_first_name} = $sub->{customer_first_name};
+            $srv->{customer_last_name} = $sub->{customer_last_name};
+            $srv->{customer_email} = $sub->{customer_email};
+            $srv->{customer_phone} = $sub->{customer_phone};
             $srv->{end_date} = $sub->{end_date};
             $srv->{garden_bins} = $sub->{bins_count};
             $srv->{garden_cost} = $sub->{cost};
@@ -182,6 +190,10 @@ sub garden_current_subscription {
     my $service = {
         agile_only => 1,
         customer_external_ref => $sub->{customer_external_ref},
+        customer_first_name => $sub->{customer_first_name},
+        customer_last_name => $sub->{customer_last_name},
+        customer_email => $sub->{customer_email},
+        customer_phone => $sub->{customer_phone},
         end_date => $sub->{end_date},
         garden_bins => $sub->{bins_count},
         garden_cost => $sub->{cost},

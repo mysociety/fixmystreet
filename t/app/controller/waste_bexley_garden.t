@@ -434,6 +434,8 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
+                    Firstname => 'Verity',
+                    Surname => 'Wright',
                     CustomertStatus => 'ACTIVATED',
                     ServiceContracts => [
                         {
@@ -495,18 +497,23 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        has_reference => 'No',
+                        has_reference => 'Yes',
+                        customer_reference => 'CUSTOMER_BAD',
                     },
                 },
             );
-            $mech->submit_form_ok(
-                {   with_fields => {
-                        first_name => 'A',
-                        last_name  => 'Name',
+
+            subtest 'goes to verification failed page if wrong name provided' => sub {
+                # TODO Show customer ref error msg
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            first_name => 'A',
+                            last_name  => 'Name',
+                        },
                     },
-                },
-            );
-            like $mech->text, qr/Change your garden waste subscription/, 'modification permitted';
+                );
+                like $mech->text, qr/Verification failed/;
+            };
         };
 
         subtest 'staff logged in' => sub {
@@ -525,17 +532,20 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         has_reference => 'Yes',
-                        customer_reference => '123456',
+                        customer_reference => 'CUSTOMER_BAD',
                     },
                 },
             );
+            # TODO Show msg
+            like $mech->text, qr/First name/,
+                'Bad reference takes user to name input';
+            $mech->back;
             $mech->submit_form_ok(
                 {   with_fields => {
-                        first_name => 'Trevor',
-                        last_name => 'Trouble',
-                        email => 'trevor@trouble.com'
+                        has_reference => 'Yes',
+                        customer_reference => 'CUSTOMER_123',
                     },
-                }, 'user details page',
+                },
             );
             like $mech->text, qr/Change your garden waste subscription/, 'modification permitted';
         };
@@ -577,15 +587,14 @@ FixMyStreet::override_config {
                 );
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            has_reference => 'Yes',
-                            customer_reference => '123456',
+                            has_reference => 'No',
                         },
                     },
                 );
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            first_name => 'Trevor',
-                            last_name => 'Trouble',
+                            first_name => 'Verity',
+                            last_name => 'Wright',
                         },
                     }
                 );
@@ -603,7 +612,7 @@ FixMyStreet::override_config {
                     like $mech->text, qr/Garden waste collection4 bins/, 'correct bin total in summary';
                     like $mech->text, qr/Total.240\.00/, 'correct payment total in summary';
                     like $mech->text, qr/Total to pay today.110\.00/, 'correct today-payment in summary';
-                    like $mech->text, qr/Your nameTrevor Trouble/, 'correct name in summary';
+                    like $mech->text, qr/Your nameVerity Wright/, 'correct name in summary';
                     my $email = $user->email;
                     like $mech->text, qr/$email/, 'correct email in summary';
 
@@ -653,16 +662,9 @@ FixMyStreet::override_config {
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 has_reference => 'Yes',
-                                customer_reference => '123456',
+                                customer_reference => 'CUSTOMER_123',
                             },
                         },
-                    );
-                    $mech->submit_form_ok(
-                        {   with_fields => {
-                                first_name => 'Trevor',
-                                last_name => 'Trouble',
-                            },
-                        }
                     );
                     like $mech->content, qr/current_bins.*value="2"/s, 'correct number of current bins prefilled'; # No change in Agile
                     $mech->submit_form_ok(
@@ -675,7 +677,7 @@ FixMyStreet::override_config {
                     like $mech->text, qr/Garden waste collection1 bin/, 'correct bin total in summary';
                     like $mech->text, qr/Total.75\.00/, 'correct payment total in summary';
                     like $mech->text, qr/Total to pay today.0\.00/, 'correct today-payment in summary';
-                    like $mech->text, qr/Your nameTrevor Trouble/, 'correct name in summary';
+                    like $mech->text, qr/Your nameVerity Wright/, 'correct name in summary';
                     my $email = $user->email;
                     like $mech->text, qr/$email/, 'correct email in summary';
 
@@ -780,14 +782,7 @@ FixMyStreet::override_config {
                 $mech->submit_form_ok(
                     {   with_fields => {
                             has_reference => 'Yes',
-                            customer_reference => '123456',
-                        },
-                    },
-                );
-                $mech->submit_form_ok(
-                    {   with_fields => {
-                            first_name => 'DD',
-                            last_name => 'Modifier',
+                            customer_reference => 'CUSTOMER_123',
                         },
                     },
                 );
@@ -818,7 +813,7 @@ FixMyStreet::override_config {
                     'correct new annual payment total in summary';
                 like $mech->text, qr/Total to pay today.55\.00/,
                     'correct today-payment in summary';
-                like $mech->text, qr/Your nameDD Modifier/,
+                like $mech->text, qr/Your nameVerity Wright/,
                     'correct name in summary';
                 my $email = $user->email;
                 like $mech->text, qr/$email/, 'correct email in summary';
@@ -1006,6 +1001,8 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            Firstname => 'Verity',
+                            Surname => 'Wright',
                             CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
@@ -1033,6 +1030,31 @@ FixMyStreet::override_config {
                 like $mech->text, qr/Frequency.*Wednesday 7 February 2024/,
                     'Details are not pending because we have Whitespace data';
 
+                subtest 'verification failed' => sub {
+                    $mech->get_ok("/waste/$uprn/garden_renew");
+
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                has_reference => 'Yes',
+                                customer_reference => 'CUSTOMER_BAD',
+                            },
+                        },
+                    );
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                first_name => 'Ferrety',
+                                last_name => 'Wright',
+                                email => 'ferrety@wright.com',
+                            },
+                        },
+                    );
+
+                    like $mech->text,
+                        qr/Renew your garden waste subscription/,
+                        'Can still renew';
+
+                };
+
                 $mech->get_ok("/waste/$uprn/garden_renew");
                 $mech->submit_form_ok(
                     {   with_fields => {
@@ -1041,11 +1063,12 @@ FixMyStreet::override_config {
                         },
                     },
                 );
+                # TODO Show error msg
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            first_name => 'Trevor',
-                            last_name => 'Trouble',
-                            email => 'trevor@trouble.com',
+                            first_name => 'Verity',
+                            last_name => 'Wright',
+                            email => 'verity@wright.com',
                             phone => '+4407111111111',
                         },
                     }
@@ -1111,18 +1134,9 @@ FixMyStreet::override_config {
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 has_reference => 'Yes',
-                                customer_reference => '123456',
+                                customer_reference => 'CUSTOMER_123',
                             },
                         },
-                    );
-                    $mech->submit_form_ok(
-                        {   with_fields => {
-                                first_name => 'Trevor',
-                                last_name => 'Trouble',
-                                email => 'trevor@trouble.com',
-                                phone => '+4407111111111',
-                            },
-                        }
                     );
 
                     like $mech->content, qr/name="current_bins.*value="2"/s,
@@ -1213,6 +1227,8 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            Firstname => 'Verity',
+                            Surname => 'Wright',
                             CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
@@ -1238,22 +1254,38 @@ FixMyStreet::override_config {
                     qr/Renew your brown wheelie bin subscription/,
                     'Renewal link available';
 
+                subtest 'verification failed' => sub {
+                    $mech->get_ok("/waste/$uprn/garden_renew");
+
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                has_reference => 'Yes',
+                                customer_reference => 'CUSTOMER_BAD',
+                            },
+                        },
+                    );
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                first_name => 'Ferrety',
+                                last_name => 'Wright',
+                                email => 'ferrety@wright.com',
+                            },
+                        },
+                    );
+
+                    like $mech->text,
+                        qr/Renew your garden waste subscription/,
+                        'Can still renew';
+
+                };
+
                 $mech->get_ok("/waste/$uprn/garden_renew");
                 $mech->submit_form_ok(
                     {   with_fields => {
                             has_reference => 'Yes',
-                            customer_reference => '123456',
+                            customer_reference => 'CUSTOMER_123',
                         },
                     },
-                );
-                $mech->submit_form_ok(
-                    {   with_fields => {
-                            first_name => 'Trevor',
-                            last_name => 'Trouble',
-                            email => 'trevor@trouble.com',
-                            phone => '+4407111111111',
-                        },
-                    }
                 );
 
                 like $mech->content, qr/name="current_bins.*value="2"/s,
@@ -1692,6 +1724,9 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
+                    Firstname => 'Verity',
+                    Surname => 'Wright',
+                    Email => 'verity@wright.com',
                     CustomertStatus => 'ACTIVATED',
                     ServiceContracts => [
                         {
@@ -1727,14 +1762,14 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         has_reference => 'Yes',
-                        customer_reference => '123456',
+                        customer_reference => 'CUSTOMER_BAD',
                     },
                 },
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        first_name => 'Name',
-                        last_name => 'McName',
+                        first_name => 'Verity',
+                        last_name => 'Wright',
                         email => 'test@example.org',
                     },
                 }
@@ -1809,17 +1844,9 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         has_reference => 'Yes',
-                        customer_reference => '123456',
+                        customer_reference => 'CUSTOMER_123',
                     },
                 },
-            );
-            $mech->submit_form_ok(
-                {   with_fields => {
-                        first_name => 'Name',
-                        last_name => 'McName',
-                        email => 'test@example.org',
-                    },
-                }
             );
             $mech->submit_form_ok(
                 {   with_fields => {
@@ -1863,6 +1890,26 @@ FixMyStreet::override_config {
 
         };
 
+        subtest 'verification failed' => sub {
+            $mech->get_ok('/waste/10001/garden_cancel');
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => 'CUSTOMER_BAD',
+                    },
+                },
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        first_name => 'Verity',
+                        last_name => 'Wrong',
+                        email => 'test@example.org',
+                    },
+                }
+            );
+            like $mech->text, qr/Verification failed/, 'verification failed page';
+        };
+
         subtest 'Original sub paid via direct debit' => sub {
             $mech->delete_problems_for_body($body->id);
 
@@ -1876,6 +1923,8 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        Firstname => 'Verity',
+                        Surname => 'Wright',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -1911,14 +1960,14 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         has_reference => 'Yes',
-                        customer_reference => '123456',
+                        customer_reference => 'CUSTOMER_BAD',
                     },
                 },
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        first_name => 'Name',
-                        last_name => 'McName',
+                        first_name => 'Verity',
+                        last_name => 'Wright',
                         email => 'test@example.org',
                     },
                 }
@@ -2013,6 +2062,8 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        Firstname => 'Verity',
+                        Surname => 'Wright',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -2052,17 +2103,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     has_reference => 'Yes',
-                    customer_reference => '123456',
+                    customer_reference => 'CUSTOMER_123',
                 },
             },
-        );
-        $mech->submit_form_ok(
-            {   with_fields => {
-                    first_name => 'Name',
-                    last_name => 'McName',
-                    email => 'test@example.org',
-                },
-            }
         );
         $mech->submit_form_ok(
             {   with_fields => {
@@ -2131,6 +2174,8 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
+                    Firstname => 'Verity',
+                    Surname => 'Wright',
                     CustomertStatus => 'ACTIVATED',
                     ServiceContracts => [
                         {
@@ -2194,18 +2239,9 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     has_reference => 'Yes',
-                    customer_reference => '123456',
+                    customer_reference => 'CUSTOMER_123',
                 },
             },
-        );
-        $mech->submit_form_ok(
-            {   with_fields => {
-                    first_name => 'Test',
-                    last_name => 'McTest',
-                    email => 'test@example.net',
-                    phone => '+4407111111111',
-                },
-            }
         );
 
         like $mech->content, qr/name="current_bins.*value="2"/s,
@@ -2241,7 +2277,7 @@ FixMyStreet::override_config {
 
         # Check summary page
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
-        $mech->content_contains('Test McTest');
+        $mech->content_contains('Verity Wright');
         my $discount_human = sprintf('%.2f', ($ggw_cost_first + $ggw_cost - $ggw_first_bin_discount) / 100);
         $mech->content_contains('£' . $discount_human);
         # Submit the form
