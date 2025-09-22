@@ -49,27 +49,40 @@ $report->result_source->schema->cobrand($cobrand);
 my $mock_email   = Test::MockModule->new('FixMyStreet::SendReport::Email');
 my $mock_open311 = Test::MockModule->new('FixMyStreet::SendReport::Open311');
 
+sub mock_success {
+    my $hits_ref = shift;
+    return sub {
+        my ($self, $row, $h) = @_;
+        $$hits_ref++;
+        $row->discard_changes;
+        $self->success(1);
+        return 0;
+    };
+}
+
+sub mock_fail {
+    my ($hits_ref, $error_msg) = @_;
+    return sub {
+        my ($self, $row, $h) = @_;
+        $$hits_ref++;
+        $row->discard_changes;
+        $self->error($error_msg);
+        return -1;
+    };
+}
+
+sub mock_email_success { mock_success(@_) }
+sub mock_email_fail { mock_fail($_[0], 'Email fail') }
+sub mock_open311_success { mock_success(@_) }
+sub mock_open311_fail { mock_fail($_[0], 'Open311 fail') }
+
 subtest '1st attempt - email and Open311 both fail' => sub {
     is $report->duration_string, undef,
         'duration string is undef before any sending attempt';
 
     my ( $hits_email, $hits_open311 );
-    $mock_email->mock(
-        'send',
-        sub {
-            $hits_email++;
-            shift->error('Email fail');
-            return -1;
-        }
-    );
-    $mock_open311->mock(
-        'send',
-        sub {
-            $hits_open311++;
-            shift->error('Open311 fail');
-            return -1;
-        }
-    );
+    $mock_email->mock('send', mock_email_fail(\$hits_email));
+    $mock_open311->mock('send', mock_open311_fail(\$hits_open311));
     test_send();
     $report->discard_changes;
 
@@ -93,22 +106,8 @@ subtest '1st attempt - email and Open311 both fail' => sub {
 
 subtest '2nd attempt - email and Open311 both fail again' => sub {
     my ( $hits_email, $hits_open311 );
-    $mock_email->mock(
-        'send',
-        sub {
-            $hits_email++;
-            shift->error('Email fail');
-            return -1;
-        }
-    );
-    $mock_open311->mock(
-        'send',
-        sub {
-            $hits_open311++;
-            shift->error('Open311 fail');
-            return -1;
-        }
-    );
+    $mock_email->mock('send', mock_email_fail(\$hits_email));
+    $mock_open311->mock('send', mock_open311_fail(\$hits_open311));
     test_send();
     $report->discard_changes;
 
@@ -131,22 +130,8 @@ subtest '2nd attempt - email and Open311 both fail again' => sub {
 
 subtest '3rd attempt - email succeeds, Open311 fails' => sub {
     my ( $hits_email, $hits_open311 );
-    $mock_email->mock(
-        'send',
-        sub {
-            $hits_email++;
-            shift->success(1);
-            return 0;
-        }
-    );
-    $mock_open311->mock(
-        'send',
-        sub {
-            $hits_open311++;
-            shift->error('Open311 fail');
-            return -1;
-        }
-    );
+    $mock_email->mock('send', mock_email_success(\$hits_email));
+    $mock_open311->mock('send', mock_open311_fail(\$hits_open311));
     test_send();
     $report->discard_changes;
 
@@ -171,22 +156,8 @@ subtest '3rd attempt - email succeeds, Open311 fails' => sub {
 subtest '4th attempt - Open311 fails, email set to fail again' => sub {
     # Since email was successful before, it should not be attempted again
     my ( $hits_email, $hits_open311 );
-    $mock_email->mock(
-        'send',
-        sub {
-            $hits_email++;
-            shift->error('Email fail');
-            return -1;
-        }
-    );
-    $mock_open311->mock(
-        'send',
-        sub {
-            $hits_open311++;
-            shift->error('Open311 fail');
-            return -1;
-        }
-    );
+    $mock_email->mock('send', mock_email_fail(\$hits_email));
+    $mock_open311->mock('send', mock_open311_fail(\$hits_open311));
     test_send();
     $report->discard_changes;
 
@@ -209,22 +180,8 @@ subtest '4th attempt - Open311 fails, email set to fail again' => sub {
 
 subtest '5th attempt - both methods set to succeed' => sub {
     my ( $hits_email, $hits_open311 );
-    $mock_email->mock(
-        'send',
-        sub {
-            $hits_email++;
-            shift->success(1);
-            return 0;
-        }
-    );
-    $mock_open311->mock(
-        'send',
-        sub {
-            $hits_open311++;
-            shift->success(1);
-            return 0;
-        }
-    );
+    $mock_email->mock('send', mock_email_success(\$hits_email));
+    $mock_open311->mock('send', mock_open311_success(\$hits_open311));
     test_send();
     $report->discard_changes;
 
@@ -262,22 +219,8 @@ subtest 'Test resend' => sub {
         'Both bodies for duration_string';
 
     my ( $hits_email, $hits_open311 );
-    $mock_email->mock(
-        'send',
-        sub {
-            $hits_email++;
-            shift->success(1);
-            return 0;
-        }
-    );
-    $mock_open311->mock(
-        'send',
-        sub {
-            $hits_open311++;
-            shift->success(1);
-            return 0;
-        }
-    );
+    $mock_email->mock('send', mock_email_success(\$hits_email));
+    $mock_open311->mock('send', mock_open311_success(\$hits_open311));
     test_send();
     $report->discard_changes;
 
@@ -312,14 +255,7 @@ subtest 'Test staging send' => sub {
             return 0;
         },
     );
-    $mock_open311->mock(
-        'send',
-        sub {
-            $hits_open311++;
-            shift->error('Open311 fail');
-            return -1;
-        }
-    );
+    $mock_open311->mock('send', mock_open311_fail(\$hits_open311));
 
     my ($report_for_staging) = $mech->create_problems_for_body(
         1,
