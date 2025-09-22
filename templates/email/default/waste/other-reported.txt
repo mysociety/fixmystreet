@@ -63,6 +63,11 @@ crew to remove it. We aim for this to be the same day as we deliver your new bin
 [% IF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
 [% IF cobrand.moniker == 'brent' %]
 We will arrange another collection as soon as possible over the next two days. Please note that collections may also be attempted on a public holiday/weekend.
+[% ELSIF cobrand.moniker == 'merton' %]
+We will arrange another collection as soon as possible over the next 2 working days.
+
+Did you know...?
+Our crews carry out over 150,000 collections every week from houses and flats. In 2024/25, 99% of missed collections were successfully collected within 2 days after being reported.
 [% ELSE %]
 We will arrange another collection as soon as possible over the next 2 working days.
 [% END %]

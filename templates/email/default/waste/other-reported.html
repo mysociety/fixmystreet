@@ -85,6 +85,9 @@ INCLUDE '_email_top.html';
     [% IF report.category == 'Report missed collection' OR report.category == 'Report missed assisted collection' %]
       [% IF cobrand.moniker == 'brent' %]
         <p style="[% p_style %]">We will arrange another collection as soon as possible over the next two days. Please note that collections may also be attempted on a public holiday/weekend.</p>
+      [% ELSIF cobrand.moniker == 'merton' %]
+        <p style="[% p_style %]">We will arrange another collection as soon as possible over the next 2 working days.</p>
+        <p style="[% p_style %]">Did you know...?<br>Our crews carry out over 150,000 collections every week from houses and flats. In 2024/25, 99% of missed collections were successfully collected within 2 days after being reported.</p>
       [% ELSE %]
         <p style="[% p_style %]">We will arrange another collection as soon as possible over the next 2 working days.</p>
       [% END %]

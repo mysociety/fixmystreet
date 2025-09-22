@@ -6,7 +6,7 @@
            <li><a href="/about/waste-web-app?p=[% property.id %]">Add to your home screen</a></li>
         [% IF c.cobrand.moniker == 'kingston' %]
             <!-- <li><a href="https://kingston-self.achieveservice.com/service/In_my_Area_Results?displaymode=collections&amp;altVal=&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li> -->
-        [% ELSIF c.cobrand.moniker == 'sutton' && c.config.BASE_URL == "https://staging.societyworks.org" %]
+        [% ELSIF c.cobrand.moniker == 'sutton' %]
             <li><a href="https://sutton-self.achieveservice.com/service/In_my_Area_Results__Sutton_?displaymode=collections&amp;altVal=LBS&amp;uprn=[% property.uprn %]">Download PDF waste calendar</a></li>
         [% ELSIF calendar_link OR ggw_calendar_link %]
             [%- FOR link IN calendar_link -%]
