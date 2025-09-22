@@ -1055,6 +1055,12 @@ textarea.form-error {
   }
 }
 
+.frontpage {
+  .content {
+    container-type: inline-size;
+  }
+}
+
 #front-howto {
   border-#{$right}: 1em solid transparent;
 }
