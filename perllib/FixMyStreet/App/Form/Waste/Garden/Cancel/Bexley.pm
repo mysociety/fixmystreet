@@ -7,8 +7,12 @@ extends 'FixMyStreet::App::Form::Waste::Garden::Cancel::Shared';
 
 with 'FixMyStreet::App::Form::Waste::Garden::Verify::Bexley';
 
-has_page customer_reference =>
-    ( customer_reference( continue_field => 'continue' ) );
+has_page customer_reference => (
+    customer_reference(
+        continue_field        => 'continue',
+        next_page_if_verified => 'reason',
+    )
+);
 
 has_page about_you =>
     ( about_you( continue_field => 'continue', next_page => 'reason' ) );
@@ -36,6 +40,8 @@ has_field reason_further_details => (
     maxlength => 250,
     messages => { required => 'Please provide further details' },
 );
+
+has_page verify_failed => ( verify_failed() );
 
 has_page confirm =>
     FixMyStreet::App::Form::Waste::Garden::Cancel::Shared::intro();
