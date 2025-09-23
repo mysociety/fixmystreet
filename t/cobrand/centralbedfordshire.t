@@ -235,6 +235,7 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->log_in_ok( $staffuser->email );
     $report->update_extra_field({ name => 'Type', value => ['Furniture', 'Bin bags'] });
     $report->update_extra_field({ name => 'Issue', value => 'Cobwebs' });
+    $report->update_extra_field({ name => 'Location', value => 'Internal' });
     $report->update;
     my ($cleaning) = $mech->create_problems_for_body(1, $body->id, 'Cleaning Test Report', {
         category => 'Cleaning Contract Reports', cobrand => 'centralbedfordshire',
@@ -248,14 +249,14 @@ subtest 'Dashboard CSV extra columns' => sub {
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Site Used","Reported As",CRNo,"Fly-tipping types","Cleaning types"');
-        $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',"Bin bags;Furniture"');
-        $mech->content_contains(',centralbedfordshire,,,,Cobwebs');
+        $mech->content_contains('"Site Used","Reported As",CRNo,"Fly-tipping location","Fly-tipping types","Cleaning types"');
+        $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',Internal,"Bin bags;Furniture"');
+        $mech->content_contains(',centralbedfordshire,,,,,Cobwebs');
         FixMyStreet::Script::CSVExport::process(dbh => FixMyStreet::DB->schema->storage->dbh);
         $mech->get_ok('/dashboard?export=1');
-        $mech->content_contains('"Site Used","Reported As",CRNo,"Fly-tipping types","Cleaning types"');
-        $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',"Bin bags;Furniture"');
-        $mech->content_contains(',centralbedfordshire,,,,Cobwebs');
+        $mech->content_contains('"Site Used","Reported As",CRNo,"Fly-tipping location","Fly-tipping types","Cleaning types"');
+        $mech->content_contains('centralbedfordshire,,' . $report->external_id . ',Internal,"Bin bags;Furniture"');
+        $mech->content_contains(',centralbedfordshire,,,,,Cobwebs');
     }
 };
 
