@@ -122,12 +122,6 @@ sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
 sub admin_user_domain { 'brent.gov.uk' }
 
-=item * Allows anonymous reporting
-
-=cut
-
-sub allow_anonymous_reports { 'button' }
-
 =item * Has a default map zoom of 5
 
 =cut
