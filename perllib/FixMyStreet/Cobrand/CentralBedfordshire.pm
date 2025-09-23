@@ -283,6 +283,7 @@ sub dashboard_export_problems_add_columns {
 
     $csv->add_csv_columns(
         external_id => 'CRNo',
+        flytipping_location => 'Fly-tipping location',
         flytipping_types => 'Fly-tipping types',
         cleaning_type => 'Cleaning types',
     );
@@ -290,6 +291,7 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
+        my $location = $csv->_extra_field($report, 'Location') || $csv->_extra_field($report, 'land_type');
         my $types = $csv->_extra_field($report, 'Type') || $csv->_extra_field($report, 'type_of_waste') || [];
         $types = [$types] unless ref $types;
         $types = join(';', sort @$types);
@@ -304,6 +306,7 @@ sub dashboard_export_problems_add_columns {
 
         my $data = {
             flytipping_types => $types,
+            flytipping_location => $location,
             cleaning_type => $issues,
         };
 
