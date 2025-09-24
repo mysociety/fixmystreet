@@ -495,7 +495,7 @@ sub waste_munge_enquiry_data {
     $data->{title} = $data->{category};
 
     my $detail;
-    if ($data->{category} eq 'Bin not returned') {
+    if ($data->{category} eq 'Bin not returned' || $data->{category} eq 'Lid not closed') {
         $detail .= ($data->{'extra_Notes'} ? $data->{'extra_Notes'} : '') . "\n\n";
     } else {
         foreach (sort grep { /^extra_/ } keys %$data) {
