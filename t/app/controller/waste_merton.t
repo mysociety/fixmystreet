@@ -64,6 +64,10 @@ create_contact({ category => 'Assisted collection remove', email => '3200-remove
     { code => 'End_Date', required => 0, automated => 'hidden_field' },
     { code => 'staff_form', automated => 'hidden_field' },
 );
+create_contact({ category => 'Assisted collection change', email => 'assisted' }, 'Waste',
+    { code => 'Replace_Crew_Notes', description => 'Replace Crew Notes', required => 1, datatype => 'text' },
+    { code => 'staff_form', automated => 'hidden_field' },
+);
 create_contact({ category => 'Failure to deliver', email => '3141' }, 'Waste',
     { code => 'Notes', description => 'Details', required => 1, datatype => 'text' },
 );
@@ -762,7 +766,7 @@ FixMyStreet::override_config {
         is $report->title, 'Request additional Food waste collection';
     };
 
-    subtest 'test staff-only assisted collection form' => sub {
+    subtest 'test staff-only assisted collection add form' => sub {
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=1067');
         $mech->submit_form_ok({ with_fields => { extra_Exact_Location => 'Behind the garden gate' } });
@@ -773,6 +777,21 @@ FixMyStreet::override_config {
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
         is $report->get_extra_field_value('Exact_Location'), 'Behind the garden gate';
+        is $report->detail, "Behind the garden gate\n\n2 Example Street, Merton, KT1 1AA";
+        is $report->user->email, 'anne@example.org';
+        is $report->name, 'Anne Assist';
+    };
+    subtest 'test staff-only assisted collection change form' => sub {
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+change&service_id=1067');
+        $mech->submit_form_ok({ with_fields => { extra_Replace_Crew_Notes => 'Behind the garden gate' } });
+        $mech->submit_form_ok({ with_fields => { name => "Anne Assist", email => 'anne@example.org' } });
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('Show upcoming bin days');
+        $mech->content_contains('/waste/12345"');
+        my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+        is $report->get_extra_field_value('Replace_Crew_Notes'), 'Behind the garden gate';
         is $report->detail, "Behind the garden gate\n\n2 Example Street, Merton, KT1 1AA";
         is $report->user->email, 'anne@example.org';
         is $report->name, 'Anne Assist';

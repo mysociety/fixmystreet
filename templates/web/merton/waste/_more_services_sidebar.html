@@ -40,7 +40,7 @@
     [% IF assisted_collection %]
         <li>This property is set up for assisted collections.</li>
         <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+remove&amp;service_id=1067">Remove assisted collection</a></li>
-        <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+add&amp;service_id=1067">Update assisted collection</a></li>
+        <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+change&amp;service_id=1067">Update assisted collection</a></li>
     [% ELSE %]
         <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+add&amp;service_id=1067">Set up for assisted collection</a></li>
     [% END %]
