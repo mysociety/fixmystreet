@@ -17,7 +17,7 @@ sub customer_reference {
 
             } else {
                 # If correct customer reference provided, skip about_you and
-                # store user details behind the scenes
+                # store Agile user details behind the scenes
                 my $ref = $form->field('customer_reference')->value;
                 my $current_subscription
                     = $form->c->cobrand->garden_current_subscription;
@@ -35,7 +35,7 @@ sub customer_reference {
                     return $args{next_page_if_verified};
 
                 } else {
-# TODO Message saying customer ref does not match
+                    $form->c->stash->{error_customer_external_ref} = 1;
                     return 'about_you';
 
                 }
@@ -70,6 +70,7 @@ sub about_you {
     my %args = @_;
 
     return (
+        intro => 'garden/verify/about_you.html',
         fields => [
             'first_name', 'last_name',
             'phone',      'email',
@@ -88,17 +89,24 @@ sub about_you {
             my $current_subscription
                 = $form->c->cobrand->garden_current_subscription;
 
-            if ( $form->isa('FixMyStreet::App::Form::Waste::Garden::Renew::Bexley')
-                || ( $first_name eq
-                        $current_subscription->{customer_first_name}
-                    && $last_name eq
-                        $current_subscription->{customer_last_name} )
-            ) {
-                # Set name in saved data
+            my $name_verified
+                = $first_name eq $current_subscription->{customer_first_name}
+                && $last_name eq $current_subscription->{customer_last_name};
+
+            if ($name_verified) {
                 $form->saved_data->{name} = $first_name . ' ' . $last_name;
                 return $args{next_page};
+
+            } elsif ( $form->isa('FixMyStreet::App::Form::Waste::Garden::Renew::Bexley') ) {
+                # Can continue to renew, but because not verified, do not use
+                # current subscription details
+                $form->saved_data->{name} = $first_name . ' ' . $last_name;
+                $form->saved_data->{blank_customer_external_ref} = 1;
+                return $args{next_page};
+
             } else {
                 return 'verify_failed';
+
             }
 
         },

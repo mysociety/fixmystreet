@@ -256,8 +256,9 @@ sub waste_garden_sub_params {
 
     } elsif ( $data->{title} =~ /Renew/ ) {
         $c->set_param( 'type', 'renew' );
-        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
         $c->set_param( 'total_containers', $data->{bins_wanted} );
+        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} )
+            unless $data->{blank_customer_external_ref};
 
     } elsif ( $data->{title} =~ /Amend/ ) {
         $c->set_param( 'type', 'amend' );
@@ -412,7 +413,7 @@ sub waste_setup_direct_debit {
 sub waste_garden_subscribe_form_setup {
     my ($self) = @_;
 
-    # If this property isn't allow to sign up bounce the user back
+    # If this property isn't allowed to sign up bounce the user back
     # (templates shouldn't contain links in this case, but just to be sure...)
     $self->{c}->detach('/waste/property_redirect') unless $self->{c}->stash->{property}->{garden_signup_eligible};
 
