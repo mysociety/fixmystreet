@@ -346,15 +346,9 @@ FixMyStreet::override_config {
             my $log = Test::MockObject->new;
             $log->mock( info => sub {} );
             $cobrand->{c}->mock( log => sub { $log } );
-
-            $cobrand->{c}->mock( stash => sub { {
-                whitespace_data => {
-                    'GetSiteCollections 10001' => _site_collections()->{10001},
-                    'GetSiteInfo 10001' => _site_info()->{10001},
-                },
-            } } );
-
+            $cobrand->{c}->mock( stash => sub { {} } );
             $cobrand->{c}->mock( cobrand => sub { $cobrand });
+            $cobrand->{c}->mock( action => sub { "" } );
 
             my @sorted = $cobrand->service_sort(
                 @{  $cobrand->bin_services_for_address(
