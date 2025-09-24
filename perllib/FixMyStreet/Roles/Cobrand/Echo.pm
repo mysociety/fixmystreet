@@ -938,8 +938,14 @@ sub bulky_refetch_slots {
     my $cfg = $self->feature('echo');
     my $echo = Integrations::Echo->new(%$cfg);
 
-    my $service_id = $cfg->{bulky_service_id};
-    my $event_type_id = $cfg->{bulky_event_type_id};
+    my ($service_id, $event_type_id);
+    if ($row->category eq 'Small items collection') {
+        $service_id = $cfg->{small_items_service_id};
+        $event_type_id = $cfg->{small_items_event_type_id};
+    } else {
+        $service_id = $cfg->{bulky_service_id};
+        $event_type_id = $cfg->{bulky_event_type_id};
+    }
 
     if ($row->whensent || !$guid) {
         if ($row->whensent) {
