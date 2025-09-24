@@ -1,0 +1,49 @@
+#!/usr/bin/env perl
+#
+# Imports pre-existing bus/coach station reports from a CSV provided by TfL
+
+use strict;
+use warnings;
+use v5.14;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use Getopt::Long::Descriptive;
+use Term::ANSIColor;
+use FixMyStreet::DB;
+use FixMyStreet::Script::TfL::BusImport;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['file|f=s', 'file containing updates' , { required => 1 }],
+    ['commit|c', 'actually commit changes to the database'],
+    ['verbose|v', 'more verbose output'],
+    ['help|h', "print usage message and exit" ],
+);
+$usage->die if $opts->help;
+
+my $db;
+END {
+    if ($db) {
+        $opts->commit ? $db->txn_commit : $db->txn_rollback;
+    }
+}
+
+$db = FixMyStreet::DB->schema->storage;
+$db->txn_begin;
+if (!$opts->commit) {
+    say colored("NOT COMMITTING TO DATABASE", 'cyan');
+}
+
+my %params = (
+    verbose => $opts->verbose,
+    file => $opts->file,
+);
+
+my $p = FixMyStreet::Script::TfL::BusImport->new( %params );
+$p->process;
