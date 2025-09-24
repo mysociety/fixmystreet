@@ -380,6 +380,8 @@ FixMyStreet::override_config {
                     CustomerExternalReference => 'CUSTOMER_123',
                     Firstname => 'Verity',
                     Surname => 'Wright',
+                    Email => 'verity@wright.com',
+                    Mobile => '+4407222222222',
                     CustomertStatus => 'ACTIVATED',
                     ServiceContracts => [
                         {
@@ -422,7 +424,6 @@ FixMyStreet::override_config {
             like $mech->text, qr/Sign in or create an account/, 'modify link goes to login page';
         };
 
-
         subtest 'other user logged in' => sub {
             my $other_user = $mech->create_user_ok('other@example.net', name => 'Other User');
 
@@ -445,9 +446,10 @@ FixMyStreet::override_config {
                     },
                 },
             );
+            like $mech->text, qr/Incorrect customer reference/,
+                'error message shown on next page if bad reference';
 
             subtest 'goes to verification failed page if wrong name provided' => sub {
-                # TODO Show customer ref error msg
                 $mech->submit_form_ok(
                     {   with_fields => {
                             first_name => 'A',
@@ -456,6 +458,18 @@ FixMyStreet::override_config {
                     },
                 );
                 like $mech->text, qr/Verification failed/;
+            };
+
+            subtest 'can continue to modify if correct name provided' => sub {
+                $mech->back;
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            first_name => 'Verity',
+                            last_name  => 'Wright',
+                        },
+                    },
+                );
+                like $mech->text, qr/Change your garden waste subscription/;
             };
         };
 
@@ -479,7 +493,6 @@ FixMyStreet::override_config {
                     },
                 },
             );
-            # TODO Show msg
             like $mech->text, qr/First name/,
                 'Bad reference takes user to name input';
             $mech->back;
@@ -491,6 +504,20 @@ FixMyStreet::override_config {
                 },
             );
             like $mech->text, qr/Change your garden waste subscription/, 'modification permitted';
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        bins_wanted => 4,
+                    },
+                }
+            );
+            like $mech->text, qr/Your nameVerity Wright/,
+                'correct name in summary (from Agile data)';
+            my $email = $user->email;
+            like $mech->text, qr/verity\@wright.com/,
+                'correct email in summary (from Agile data)';
+            like $mech->text, qr/4407222222222/,
+                'correct phone in summary (from Agile data)';
         };
 
         subtest 'original user logged in' => sub {
@@ -557,7 +584,7 @@ FixMyStreet::override_config {
                     like $mech->text, qr/Total to pay today.110\.00/, 'correct today-payment in summary';
                     like $mech->text, qr/Your nameVerity Wright/, 'correct name in summary';
                     my $email = $user->email;
-                    like $mech->text, qr/$email/, 'correct email in summary';
+                    like $mech->text, qr/$email/, 'User email in summary';
 
                     $mech->waste_submit_check({ with_fields => { tandc => 1 } });
 
@@ -570,12 +597,10 @@ FixMyStreet::override_config {
                         current_bins => 2,
                         new_bins     => 2,
                         bins_wanted  => 4,
+                        customer_external_ref => 'CUSTOMER_123',
                     );
                     is $modify_report->get_extra_field_value('type'), 'amend',
                         'correct report type';
-                    is $modify_report->get_extra_field_value(
-                        'customer_external_ref'), 'CUSTOMER_123',
-                        'correct customer_external_ref';
                     is $modify_report->get_extra_field_value(
                         'total_containers'), 4,
                         'correct total_containers';
@@ -638,12 +663,10 @@ FixMyStreet::override_config {
                         new_bins     => -1,
                         bins_wanted  => 1,
                         state => 'confirmed',
+                        customer_external_ref => 'CUSTOMER_123',
                     );
                     is $modify_report->get_extra_field_value('type'), 'amend',
                         'correct report type';
-                    is $modify_report->get_extra_field_value(
-                        'customer_external_ref'), 'CUSTOMER_123',
-                        'correct customer_external_ref';
                     is $modify_report->get_extra_field_value(
                         'total_containers'), 1,
                         'correct total_containers';
@@ -984,6 +1007,8 @@ FixMyStreet::override_config {
                             },
                         },
                     );
+                    like $mech->text, qr/Incorrect customer reference/,
+                        'error message shown on next page if bad reference';
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 first_name => 'Ferrety',
@@ -996,6 +1021,32 @@ FixMyStreet::override_config {
                     like $mech->text,
                         qr/Renew your garden waste subscription/,
                         'Can still renew';
+                    like $mech->content, qr/name="current_bins.*value="2"/s,
+                        'Current bins pre-populated';
+                    like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                        'Wanted bins pre-populated';
+
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                bins_wanted => 2,
+                                payment_method => 'credit_card',
+                            },
+                        }
+                    );
+                    $mech->waste_submit_check(
+                        { with_fields => { tandc => 1 } } );
+
+                    my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+                    # Should be blank customer_external_reference
+                    check_extra_data_pre_confirm(
+                        $renew_report,
+                        type         => 'Renew',
+                        current_bins => 2,
+                        new_bins     => 0,
+                        bins_wanted  => 2,
+                        customer_external_ref => '',
+                    );
 
                 };
 
@@ -1007,7 +1058,6 @@ FixMyStreet::override_config {
                         },
                     },
                 );
-                # TODO Show error msg
                 $mech->submit_form_ok(
                     {   with_fields => {
                             first_name => 'Verity',
@@ -1046,12 +1096,11 @@ FixMyStreet::override_config {
                         current_bins => 2,
                         new_bins     => 1,
                         bins_wanted  => 3,
+                        customer_external_ref => 'CUSTOMER_123',
                     );
                     is $renew_report->get_extra_field_value('uprn'), $uprn;
                     is $renew_report->get_extra_field_value('payment'), $ggw_cost_first + 2 * $ggw_cost;
                     is $renew_report->get_extra_field_value('type'), 'renew';
-                    is $renew_report->get_extra_field_value(
-                        'customer_external_ref'), 'CUSTOMER_123';
 
                     $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
                     check_extra_data_post_confirm($renew_report);
@@ -1107,12 +1156,11 @@ FixMyStreet::override_config {
                         current_bins => 2,
                         new_bins     => -1,
                         bins_wanted  => 1,
+                        customer_external_ref => 'CUSTOMER_123',
                     );
                     is $renew_report->get_extra_field_value('uprn'), $uprn;
                     is $renew_report->get_extra_field_value('payment'), $ggw_cost_first;
                     is $renew_report->get_extra_field_value('type'), 'renew';
-                    is $renew_report->get_extra_field_value(
-                        'customer_external_ref'), 'CUSTOMER_123';
 
                     $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
                     check_extra_data_post_confirm($renew_report);
@@ -1220,6 +1268,32 @@ FixMyStreet::override_config {
                     like $mech->text,
                         qr/Renew your garden waste subscription/,
                         'Can still renew';
+                    like $mech->content, qr/name="current_bins.*value="2"/s,
+                        'Current bins pre-populated';
+                    like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                        'Wanted bins pre-populated';
+
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                bins_wanted => 2,
+                                payment_method => 'credit_card',
+                            },
+                        }
+                    );
+                    $mech->waste_submit_check(
+                        { with_fields => { tandc => 1 } } );
+
+                    my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+                    # Should be blank customer_external_reference
+                    check_extra_data_pre_confirm(
+                        $renew_report,
+                        type         => 'Renew',
+                        current_bins => 2,
+                        new_bins     => 0,
+                        bins_wanted  => 2,
+                        customer_external_ref => '',
+                    );
 
                 };
 
@@ -1256,12 +1330,11 @@ FixMyStreet::override_config {
                     current_bins => 2,
                     new_bins     => -1,
                     bins_wanted  => 1,
+                    customer_external_ref => 'CUSTOMER_123',
                 );
                 is $renew_report->get_extra_field_value('uprn'), $uprn;
                 is $renew_report->get_extra_field_value('payment'), $ggw_cost_first;
                 is $renew_report->get_extra_field_value('type'), 'renew';
-                is $renew_report->get_extra_field_value(
-                    'customer_external_ref'), 'CUSTOMER_123';
 
                 $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
                 check_extra_data_post_confirm($renew_report);
@@ -1710,6 +1783,8 @@ FixMyStreet::override_config {
                     },
                 },
             );
+            like $mech->text, qr/Incorrect customer reference/,
+                'error message shown on next page if bad reference';
             $mech->submit_form_ok(
                 {   with_fields => {
                         first_name => 'Verity',
@@ -2704,6 +2779,7 @@ sub check_extra_data_pre_confirm {
         ref_type => 'scp',
         state => 'unconfirmed',
         type => 'New',
+        customer_external_ref => '',
 
         # Quantities
         current_bins => 0,
@@ -2721,6 +2797,7 @@ sub check_extra_data_pre_confirm {
     is $report->get_extra_field_value('current_containers'), $params{current_bins}, 'correct current_containers';
     is $report->get_extra_field_value('new_containers'), $params{new_bins}, 'correct new_containers';
     is $report->get_extra_field_value('total_containers'), $params{bins_wanted}, 'correct total_containers';
+    is $report->get_extra_field_value('customer_external_ref'), $params{customer_external_ref}, 'correct customer ref';
 
     is $report->state, $params{state}, 'report state correct';
     if ($params{state} eq 'unconfirmed') {
