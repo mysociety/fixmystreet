@@ -6,6 +6,7 @@ use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Questionnaires;
 use File::Temp 'tempdir';
 use Test::MockModule;
+use Capture::Tiny 'capture';
 
 # disable info logs for this test run
 FixMyStreet::App->log->disable('info');
@@ -38,6 +39,8 @@ FixMyStreet::DB->resultset('BodyArea')->find_or_create({
 });
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $body, password => 'password');
+my $systemuser = $mech->create_user_ok('systemuser@example.com', name => 'System User', from_body => $body, password => 'password');
+$body->update({ comment_user_id => $systemuser->id });
 
 $staffuser->user_body_permissions->create({
     body => $body,
@@ -1506,6 +1509,90 @@ FixMyStreet::override_config {
         $mech->content_lacks('Brownswood'); # 2508
         $mech->content_contains('data-area="2482,2483,2504,2508"'); # No 2457
     };
+};
+
+subtest 'TfL bus import script processes mixed valid and invalid data' => sub {
+    my $csv_content = qq{Title,Description,Category,Building Name,Building ID,Sub-Category
+Test Bus Stop Issue,Bus stop pole is damaged,Transport,Victoria Coach Station,12345,Bus stops
+Another Issue,Platform needs repair,Transport,Bus Terminal,67890,Traffic lights
+Invalid Issue,This should fail,Transport,Invalid Station,88888,Invalid Category
+Empty Row,,,,,
+Third Valid Issue,Working streetlight,Transport,Good Station,55555,Bus stops};
+
+    my $temp_dir = tempdir( CLEANUP => 1 );
+    my $temp_file = "$temp_dir/test_bus_import.csv";
+    open my $fh, '>', $temp_file or die "Cannot create test CSV: $!";
+    print $fh $csv_content;
+    close $fh;
+
+    require FixMyStreet::Script::TfL::BusImport;
+    my $importer = FixMyStreet::Script::TfL::BusImport->new(
+        file => $temp_file,
+        verbose => 0
+    );
+    ok $importer, "BusImport object created successfully";
+    is $importer->file, $temp_file, "File path set correctly";
+    ok $importer->body, "TfL body found";
+    is $importer->body->name, 'TfL', "Correct body name";
+
+    my $mock_importer = Test::MockModule->new('FixMyStreet::Script::TfL::BusImport');
+    $mock_importer->mock('find_location', sub {
+        my ($self, $building_id) = @_;
+        return (51.4021, 0.01578) if $building_id eq '12345';
+        return (51.4025, 0.01580) if $building_id eq '67890';
+        return (51.4030, 0.01585) if $building_id eq '55555';
+        return (51.4035, 0.01590) if $building_id eq '88888';
+        return;
+    });
+
+    my $mock_mapit = Test::MockModule->new('FixMyStreet::MapIt');
+    $mock_mapit->mock('call', sub {
+        return { 2482 => { name => 'Bromley' } };
+    });
+
+    FixMyStreet::DB->resultset("Comment")->delete_all;
+    FixMyStreet::DB->resultset("Problem")->delete_all;
+
+    my ($stdout, $stderr) = capture {
+        $importer->process;
+    };
+    like $stdout, qr/Reports created: 3/;
+    like $stdout, qr/Reports failed: 1/;
+    like $stderr, qr/Failed to process row/;
+
+    my $count = FixMyStreet::DB->resultset('Problem')->count;
+    is $count, 3, "Three valid reports created from CSV";
+
+
+
+    my ($report1, $report2, $report3) = FixMyStreet::DB->resultset('Problem')->all;
+    ok $report1, "First report created";
+    is $report1->category, 'Bus stops', "Correct category";
+    is $report1->detail, 'Bus stop pole is damaged', "Correct description";
+    is $report1->state, 'in progress', "Report is in progress";
+    is $report1->cobrand, 'tfl', "Correct cobrand";
+    is $report1->non_public, 1, "Report is marked as private";
+    is $report1->get_extra_field_value('SITE_NAME'), 'Victoria Coach Station', "Site name stored correctly";
+    is $report1->get_extra_field_value('SITE_ID'), '12345', "Site ID stored correctly";
+
+    ok $report2, "Second report created";
+    is $report2->category, 'Traffic lights', "Correct category";
+    is $report2->detail, 'Platform needs repair', "Correct description";
+    is $report2->state, 'in progress', "Report is in progress";
+    is $report2->get_extra_field_value('SITE_ID'), '67890', "Site ID stored correctly";
+
+    ok $report3, "Third report created";
+    is $report3->category, 'Bus stops', "Correct category";
+    is $report3->state, 'in progress', "Report is in progress";
+    is $report3->get_extra_field_value('SITE_ID'), '55555', "Site ID stored correctly";
+
+    my $invalid_report = FixMyStreet::DB->resultset('Problem')->find({ title => 'Migrated from SW: Invalid Issue' });
+    ok !$invalid_report, "Invalid report was not created";
+
+    my $empty_report = FixMyStreet::DB->resultset('Problem')->find({ title => 'Migrated from SW: Empty Row' });
+    ok !$empty_report, "Empty row was skipped";
+
+    FixMyStreet::DB->resultset("Problem")->delete_all;
 };
 
 done_testing();
