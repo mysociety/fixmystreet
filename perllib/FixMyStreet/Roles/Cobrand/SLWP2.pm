@@ -176,7 +176,7 @@ sub waste_relevant_serviceunits {
         };
 
         # FD-5992 override
-        if ($self->moniker eq 'sutton') {
+        if ($self->moniker eq 'sutton' && $rows[-1]{Schedules}{description}) {
             $rows[-1]{Schedules}{description} =~ s/^Every [^ ]*$/Weekly/;
             $rows[-1]{Schedules}{description} =~ s/^Every [^ ]* fortnightly/Fortnightly/i;
         }
