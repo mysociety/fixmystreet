@@ -136,7 +136,8 @@ sub dashboard_export_problems_add_columns {
     $csv->add_csv_columns(
         (
             staff_role => 'Staff Role',
-            SizeOfIssue => 'Flytipping size'
+            SizeOfIssue => 'Flytipping size',
+            external_id => 'External ID',
         )
     );
 
@@ -154,6 +155,7 @@ sub dashboard_export_problems_add_columns {
             $staff_role = join(',', @{$userroles->{$by} || []});
         }
         return {
+            external_id => $report->external_id,
             staff_role => $staff_role,
             SizeOfIssue => $csv->_extra_field($report, 'SizeOfIssue'),
         };
