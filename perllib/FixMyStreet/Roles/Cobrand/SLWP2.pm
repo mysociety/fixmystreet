@@ -161,6 +161,10 @@ sub waste_relevant_serviceunits {
         if ($self->moniker eq 'sutton' && $rows[-1]{Schedules}{description}) {
             $rows[-1]{Schedules}{description} =~ s/^Every [^ ]*$/Weekly/;
             $rows[-1]{Schedules}{description} =~ s/^Every [^ ]* fortnightly/Fortnightly/i;
+            # FD-6045 override
+            if ($_->{ServiceId} == $service_ids->{domestic_food}) {
+                $rows[-1]{Schedules}{description} = 'Weekly';
+            }
         }
 
     }
