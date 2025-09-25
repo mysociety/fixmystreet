@@ -358,6 +358,18 @@ subtest 'check categories with same name are only shown once in filters' => sub 
     my $contact3 = $mech->create_contact_ok( category => "Pothole (alternative)", body_id => $district->id, email => 'pothole-alternative@district-example.org' );
     $contact3->set_extra_metadata(display_name => "Pothole");
     $contact3->update;
+    my $road_pothole_large = $mech->create_contact_ok( category => "Pothole (A Road)", body_id => $district->id, email => 'pothole-roads@district-example.org', group => 'Roads' );
+    my $road_pothole_small = $mech->create_contact_ok( category => "Pothole (B Road)", body_id => $district->id, email => 'pothole-roads@district-example.org', group => 'Roads' );
+    my $pavement_pothole_large = $mech->create_contact_ok( category => "Pothole (A Pavement)", body_id => $district->id, email => 'pothole-pavement@district-example.org', group => 'Pavements' );
+    my $pavement_pothole_small = $mech->create_contact_ok( category => "Pothole (B Pavement)", body_id => $district->id, email => 'pothole-pavement@district-example.org', group => 'Pavements' );
+    my $pavement_litter = $mech->create_contact_ok( category => "Litter", body_id => $district->id, email => 'litter-pavement@district-example.org', group => 'Pavements' );
+    for my $contact ($road_pothole_large, $road_pothole_small, $pavement_pothole_large, $pavement_pothole_small) {
+        $contact->set_extra_metadata(display_name => "Pothole");
+        $contact->update;
+    };
+    $pavement_litter->set_extra_metadata(display_name => "Pavement litter");
+    $pavement_litter->update;
+
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'fixmystreet',
@@ -366,8 +378,13 @@ subtest 'check categories with same name are only shown once in filters' => sub 
     }, sub {
         $mech->get_ok( '/around?bbox=' . $bbox );
         $mech->content_contains('<option value="Pothole">');
-        $mech->content_unlike(qr{Pothole</option>.*<option value="Pothole">\s*Pothole</option>}s, "Pothole category only appears once");
+        $mech->content_unlike(qr{Pothole</option>.*<option value="Pothole">\s*Pothole</option>}s, "Pothole category only appears once in ungrouped section");
         $mech->content_lacks('<option value="Pothole (alternative)">');
+        $mech->content_contains('<option value="Litter">', "Unique display name appears in category with duplicate display names");
+        $mech->content_contains('<option value="Pothole (A Pavement)">', "Pothole Category appears in group");
+        $mech->content_lacks('<option value="Pothole (B Pavement)">', "Pothole Category with duplicate display name in group does not appear");
+        $mech->content_contains('<option value="Pothole (A Road)">', "Pothole Category appears in group");
+        $mech->content_lacks('<option value="Pothole (B Road)">', "Pothole Category with duplicate display name in group does not appear");
     };
 };
 
