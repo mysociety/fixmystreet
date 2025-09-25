@@ -88,15 +88,10 @@ sub process {
                 die "Could not find location for Building ID '$building_id'";
             }
 
-            # Create report
-            my %extra_metadata;
-            $extra_metadata{SITE_NAME} = $building_name if $building_name;
-            $extra_metadata{SITE_ID} = $building_id if $building_id;
-            $extra_metadata{SUB_CATEGORY} = $sub_category if $sub_category;
-
             my ($lat, $lon) = map { Utils::truncate_coordinate($_) } $latitude, $longitude;
             my $areas = FixMyStreet::MapIt::call('point', "4326/" . $lon . "," . $lat);
 
+            # Create report
             my $report = FixMyStreet::DB->resultset('Problem')->create({
                 title => $title,
                 detail => $description,
@@ -121,8 +116,11 @@ sub process {
                 non_public => 1,
                 postcode => '',
                 send_state => 'processed',
-                extra => \%extra_metadata,
+                $category ? (extra => { group => $category }) : (),
             });
+            $report->update_extra_field({ name => 'SITE_NAME', value => $building_name }) if $building_name;
+            $report->update_extra_field({ name => 'SITE_ID', value => $building_id }) if $building_id;
+            $report->update;
 
             if ($self->verbose) {
                 say "Created report ID " . $report->id . " for '$title'";
