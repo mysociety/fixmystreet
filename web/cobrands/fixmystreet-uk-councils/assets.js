@@ -370,6 +370,11 @@ fixmystreet.assets.buckinghamshire.prow_selected = function(asset) {
     return 'You have selected ' + type + ' <b>' + id + '</b>';
 };
 
+fixmystreet.assets.buckinghamshire.prow_route_selected = function(asset) {
+    var id = asset.attributes.RouteCode;
+    return 'You have selected route <b>' + id + '</b>';
+};
+
 fixmystreet.assets.buckinghamshire.streetlight_stylemap = new OpenLayers.StyleMap({
   'default': fixmystreet.assets.style_default,
   'hover': fixmystreet.assets.style_default_hover,
