@@ -31,7 +31,7 @@ jobs:
         env:
           PERL5LIB: /home/runner/perl5/lib/perl5
       - name: Deploy to GitHub Pages
-        uses: cpina/github-action-push-to-another-repository@main
+        uses: mysociety/github-action-push-to-another-repository@main
         env:
           SSH_DEPLOY_KEY: ${{ secrets.POD_DEPLOY_KEY }}
         with:

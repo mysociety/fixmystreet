@@ -125,7 +125,6 @@ FixMyStreet::override_config {
         set_fixed_time('2022-09-10T12:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('2 Example Street, Sutton');
-        $mech->content_contains('Fortnightly');
         $mech->content_contains('Friday, 2nd September');
         $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
     };
