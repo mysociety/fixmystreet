@@ -43,7 +43,7 @@
         You need to buy your own black sacks from a supermarket or other shop. If you have some blue general rubbish bags with a Merton Council logo, you can continue to use these until they run out, but we no longer provide new ones.
     </span>
     [% END %]
-    [% IF is_staff %]
+    [% IF is_staff AND NOT unit.additional_open %]
         <a href="[% c.uri_for_action('waste/report', [ property.id ]) %]?additional=1&amp;service-[% unit.service_id %]=1" class="waste-service-link waste-service-descriptor waste-service-staff">Request an additional [% unit.service_name FILTER lower %] collection</a>
     [% END %]
     [% IF unit.report_allowed %]

@@ -766,6 +766,21 @@ FixMyStreet::override_config {
         is $report->title, 'Request additional Food waste collection';
     };
 
+    subtest 'test staff-only additional collection when there is already one' => sub {
+        $e->mock('GetEventsForObject', sub { [ {
+            # Request
+            EventTypeId => 3160,
+            EventStateId => 0,
+            EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+            ServiceId => 1084,
+        } ] });
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Request an additional food waste collection');
+        $mech->get_ok('/waste/12345/report?additional=1');
+        $mech->content_lacks('Food waste');
+        $e->mock('GetEventsForObject', sub { [] });
+    };
+
     subtest 'test staff-only assisted collection add form' => sub {
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345/enquiry?category=Assisted+collection+add&service_id=1067');
