@@ -33,10 +33,12 @@
     </span>
   </div>
 
-    [% IF staff_payments_allowed %]
-    [% PROCESS form override_fields=['name', 'email', 'phone'] %]
-    [% ELSE %]
-    [% PROCESS form override_fields=['name'] %]
+    [% IF form.current_page.fields.grep('name').size %]
+      [% IF staff_payments_allowed %]
+      [% PROCESS form override_fields=['name', 'email', 'phone'] %]
+      [% ELSE %]
+      [% PROCESS form override_fields=['name'] %]
+      [% END %]
     [% END %]
     [% PROCESS form override_fields=['saved_data', 'token', 'process', 'unique_id'] %]
     [% PROCESS form override_fields=['continue_review'] %]
