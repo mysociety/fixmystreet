@@ -23,6 +23,9 @@ sub customer_reference {
                     = $form->c->cobrand->garden_current_subscription;
 
                 if ( $ref eq $current_subscription->{customer_external_ref} ) {
+                    $form->saved_data->{customer_external_ref}
+                        = $current_subscription->{customer_external_ref};
+
                     $form->saved_data->{name}
                         = $current_subscription->{customer_first_name} . ' '
                         . $current_subscription->{customer_last_name};
