@@ -65,6 +65,11 @@ my %CONTAINERS = (
 );
 lock_hash(%CONTAINERS);
 
+my %EVENT_TYPE_IDS = (
+    additional_collection => 3160,
+);
+lock_hash(%EVENT_TYPE_IDS);
+
 # Merton staff can order any container, and if they do we need a way to map
 # the chosen container to a service to send to Echo (for normal users, the
 # container will be within the relevant service).
@@ -286,6 +291,11 @@ sub munge_bin_services_for_address {
     my @containers_on_property;
 
     foreach my $row (@$rows) {
+
+        if ($row->{events} && $row->{events}->filter({ event_type => $EVENT_TYPE_IDS{additional_collection}, closed => 0 })) {
+            $row->{additional_open} = 1;
+        }
+
         next unless $row->{request_containers};
         push @containers_on_property, @{$row->{request_containers}};
         $row->{request_allowed} = 1;
@@ -299,6 +309,7 @@ sub munge_bin_services_for_address {
         request_only => 1,
         request_allowed => 1,
         request_max => 3,
+        additional_open => 1, # Do not want to allow this, no service
     );
 
     my %all_containers = reverse %{$self->waste_containers};
