@@ -95,10 +95,13 @@ sub about_you {
                 return $args{next_page};
 
             } elsif ( $form->isa('FixMyStreet::App::Form::Waste::Garden::Renew::Bexley') ) {
-                # Can continue to renew, but because not verified, do not use
-                # current subscription details
+                # Can continue renewal flow, but because not verified, do not
+                # use current subscription details; instead set renewal up as
+                # new subscription
                 $form->saved_data->{name} = $first_name . ' ' . $last_name;
-                $form->saved_data->{blank_customer_external_ref} = 1;
+
+                $form->saved_data->{renew_as_new_subscription} = 1;
+
                 return $args{next_page};
 
             } else {
