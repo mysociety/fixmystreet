@@ -270,6 +270,8 @@ sub waste_garden_sub_params {
 
     } elsif ( $data->{category} eq 'Garden Subscription' ) {
         $c->set_param( 'total_containers', $data->{bins_wanted} );
+        $c->set_param( 'renew_as_new_subscription',
+            $data->{renew_as_new_subscription} );
 
     }
 }
