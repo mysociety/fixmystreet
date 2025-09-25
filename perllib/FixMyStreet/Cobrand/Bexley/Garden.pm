@@ -270,11 +270,41 @@ sub waste_garden_sub_params {
         $c->set_param( 'total_containers', $data->{bins_wanted} );
         $c->set_param( 'renew_as_new_subscription',
             $data->{renew_as_new_subscription} );
+        $c->set_param( 'customer_external_ref',
+            $data->{customer_external_ref} )
+            if $data->{customer_external_ref};
 
     }
 }
 
 sub garden_due_days { 42 }
+
+=head2 garden_renew_as_new_days
+
+A garden waste renewal request for a subscription that has been expired for
+longer than this number of days, is treated as a new signup
+
+=cut
+
+sub garden_renew_as_new_days { 14 }
+
+=head2 garden_renew_as_new
+
+Determines whether a renewal request should be processed as a new signup
+
+=cut
+
+sub garden_renew_as_new {
+    my ( $self, $date ) = @_;
+
+    my $now = DateTime->now->set_time_zone( FixMyStreet->local_time_zone )
+        ->truncate( to => 'day' );
+    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date)
+        ->truncate( to => 'day' );
+    my $cutoff = $sub_end->add( days => $self->garden_renew_as_new_days );
+
+    return $now > $cutoff;
+}
 
 =head2 waste_sub_due
 
