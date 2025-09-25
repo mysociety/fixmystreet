@@ -1061,7 +1061,7 @@ FixMyStreet::override_config {
                     # Should be blank customer_external_reference
                     check_extra_data_pre_confirm(
                         $renew_report,
-                        type         => 'Renew',
+                        type         => 'New',
                         current_bins => 2,
                         new_bins     => 0,
                         bins_wanted  => 2,
@@ -1308,7 +1308,7 @@ FixMyStreet::override_config {
                     # Should be blank customer_external_reference
                     check_extra_data_pre_confirm(
                         $renew_report,
-                        type         => 'Renew',
+                        type         => 'New',
                         current_bins => 2,
                         new_bins     => 0,
                         bins_wanted  => 2,
