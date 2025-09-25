@@ -353,7 +353,12 @@ sub process_garden_renew : Private {
     my $service = $c->cobrand->garden_current_subscription;
     # If there is a service at all in Bexley, we want to renew, regardless of end date
     my $bexley = $c->cobrand->moniker eq 'bexley';
-    my $new = !$service || (!$bexley && $c->cobrand->waste_sub_overdue($service->{end_date}));
+    my $new
+        = !$service
+        || ( !$bexley
+            && $c->cobrand->waste_sub_overdue( $service->{end_date} ) )
+        || $data->{renew_as_new_subscription};
+
     my $type = $new ? $c->cobrand->waste_subscription_types->{New} : $c->cobrand->waste_subscription_types->{Renew};
 
     # Get the payment method from the form data or the existing subscription
