@@ -353,6 +353,8 @@ sub process_garden_renew : Private {
     my $service = $c->cobrand->garden_current_subscription;
     # If there is a service at all in Bexley, we want to renew, regardless of end date
     my $bexley = $c->cobrand->moniker eq 'bexley';
+    $data->{renew_as_new_subscription}
+        ||= $c->stash->{property}{garden_renew_as_new};
     my $new
         = !$service
         || ( !$bexley
