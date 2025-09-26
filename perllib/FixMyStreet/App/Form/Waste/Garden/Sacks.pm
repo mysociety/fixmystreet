@@ -13,8 +13,10 @@ use WasteWorks::Costs;
 
 sub with_sacks_choice { 1 }
 sub with_bins_wanted {
-    my $cobrand = $_[0]->c->cobrand->moniker;
-    return $cobrand eq 'merton';
+    return 0;
+    # Merton used to allow multiple sack subscriptions
+    #my $cobrand = $_[0]->c->cobrand->moniker;
+    #return $cobrand eq 'merton';
 }
 
 has_page choice => (
