@@ -66,6 +66,8 @@ create_contact({ category => 'Request new container', email => '3129@example.com
     { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+    { code => 'payment', required => 1, automated => 'hidden_field' },
+    { code => 'payment_method', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
     { code => 'Action', required => 1, automated => 'hidden_field' },
     { code => 'Reason', required => 1, automated => 'hidden_field' },
@@ -546,6 +548,7 @@ FixMyStreet::override_config {
 
         my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
+        is @{$sent_params->{items}}, 1, 'only the one line item';
         is $sent_params->{items}[0]{amount}, $cost, 'correct amount used';
         check_extra_data_pre_confirm($new_report, bin_type => 1914, new_bins => 0);
 
