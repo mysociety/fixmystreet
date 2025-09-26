@@ -169,6 +169,10 @@ sub generate : Private {
         prefix => 'georss',
         uri    => 'http://www.georss.org/georss'
     );
+    $c->stash->{rss}->add_module(
+        prefix => 'atom',
+        uri    => 'http://www.w3.org/2005/Atom'
+    );
 
     my $problems = $c->stash->{problems};
     if ( $problems->can('fetchrow_hashref') ) {
@@ -184,10 +188,6 @@ sub generate : Private {
     $c->forward( 'add_parameters' );
 
     my $out = $c->stash->{rss}->as_string;
-    my $uri = $c->uri_for( '/' . $c->req->path );
-    $uri .= '?type=' . $c->stash->{ward_code} if $c->stash->{ward_code} && $c->stash->{ward};
-    $out =~ s{(<link>.*?</link>)}{$1<uri>$uri</uri>};
-
     $c->response->header('Content-Type' => 'application/xml; charset=utf-8');
     $c->response->header('Access-Control-Allow-Origin' => '*');
     $c->response->body( $out );
@@ -321,11 +321,19 @@ sub add_parameters : Private {
     (my $link = $alert_type->head_link) =~ s/\{\{(.*?)}}/$row->{$1}/g;
     (my $desc = _($alert_type->head_description)) =~ s/\{\{(.*?)}}/$row->{$1}/g;
 
+    my $uri = $c->uri_for( '/' . $c->req->path );
+    $uri .= '?type=' . $c->stash->{ward_code} if $c->stash->{ward_code} && $c->stash->{ward};
+
     $c->stash->{rss}->channel(
         title       => encode_entities($title),
         link        => $c->uri_for($link) . ($c->stash->{qs} || ''),
         description => encode_entities($desc),
         language    => 'en-gb',
+        atom => { link => {
+            href => $uri,
+            rel => 'self',
+            type => 'application/rss+xml',
+        } },
     );
 }
 

@@ -3,10 +3,10 @@ email_footer = site_name;
 -%]
 [% FILTER collapse %][% PROCESS '_email_settings.html' %][% END ~%]
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:atom="http://www.w3.org/2005/Atom">
     <xsl:output method="html" />
     <xsl:variable name="title" select="/rss/channel/title"/>
-    <xsl:variable name="uri" select="/rss/channel/uri"/>
+    <xsl:variable name="uri" select="/rss/channel/atom:link/@href"/>
     <xsl:template match="/">
         [% PROCESS '_email_top.html' for_rss=1 rss_title='<xsl:value-of select="$title"/> XML Feed' %]
 

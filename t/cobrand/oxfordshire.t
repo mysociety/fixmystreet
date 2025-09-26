@@ -543,7 +543,7 @@ FixMyStreet::override_config {
     subtest 'rss updates "ward" text to "parish" for Adwell parish' => sub {
         $mech->get_ok('/rss/reports/Oxfordshire/Adwell?type=CPC');
         $mech->content_contains('within Adwell parish', 'Text updated from ward to parish on rss page');
-        $mech->content_contains('<uri>http://oxfordshire.fixmystreet.com/rss/reports/Oxfordshire/Adwell?type=CPC</uri>', 'url to copy contains parish type information');
+        $mech->content_like(qr{<atom:link[^>]*href="http://oxfordshire.fixmystreet.com/rss/reports/Oxfordshire/Adwell\?type=CPC"}, 'url to copy contains parish type information');
     };
 };
 

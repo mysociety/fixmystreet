@@ -268,6 +268,9 @@ sub _send {
         my @body_ids = map { $_->id } @{ $sender->bodies };
         if ($sender->success) {
             $report->add_send_method($sender_name);
+            # Persist send_method_used immediately so later discard_changes() calls
+            # within other sender implementations cannot wipe previous values.
+            $report->update;
             push @remove_send_fail_body_ids, @body_ids;
         } else {
             push @add_send_fail_body_ids, @body_ids;
