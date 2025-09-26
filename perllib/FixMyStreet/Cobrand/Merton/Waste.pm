@@ -292,7 +292,7 @@ sub munge_bin_services_for_address {
 
     foreach my $row (@$rows) {
 
-        if ($row->{events}->filter({ event_type => $EVENT_TYPE_IDS{additional_collection}, closed => 0 })) {
+        if ($row->{events} && $row->{events}->filter({ event_type => $EVENT_TYPE_IDS{additional_collection}, closed => 0 })) {
             $row->{additional_open} = 1;
         }
 
