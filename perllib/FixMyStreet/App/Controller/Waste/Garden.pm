@@ -387,6 +387,9 @@ sub process_garden_new_or_renew : Private {
             category => 'Request new container',
         };
 
+        # Make sure we don't charge for the collection
+        $c->set_param('payment', undef);
+
         # Set up a fake form to pass to process_request_data
         my $cls = ucfirst $c->cobrand->council_url;
         my $form_class = "FixMyStreet::App::Form::Waste::Request::$cls";
