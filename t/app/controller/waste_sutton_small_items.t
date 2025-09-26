@@ -411,6 +411,7 @@ FixMyStreet::override_config {
             for my $email ($reminder_email_txt, $reminder_email_html) {
                 like $email, qr/Address: 2 Example Street, Sutton, SM2 5HF/, 'Includes collection address';
                 like $email, qr/on Friday 08 August/, 'Includes collection date';
+                like $email, qr/Your small items are due/, 'Includes timing line';
                 like $email, qr/Items to be collected/, 'Includes Items to be collected section';
                 like $email, qr/Batteries/, 'Includes item 1';
                 like $email, qr/Small WEEE/, 'Includes item 2';
