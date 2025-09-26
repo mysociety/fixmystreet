@@ -29,6 +29,7 @@ END;
 
 IF cobrand.moniker == 'sutton'; SET sack_quant = 1;
 ELSIF cobrand.moniker == 'kingston'; SET sack_quant = 1;
+ELSIF cobrand.moniker == 'merton'; SET sack_quant = 1;
 ELSE; SET sack_quant = quantity; END;
 
 SET pro_rata = report.get_extra_field_value('pro_rata');
@@ -45,6 +46,7 @@ IF report.title == 'Garden Subscription - Renew'; SET type = 'renew';
 ELSIF report.title == 'Garden Subscription - New'; SET type = 'new';
 ELSIF report.title == 'Garden Subscription - Amend'; SET type = 'amend';
 ELSIF report.title == 'Garden Subscription - Cancel'; SET type = 'cancel';
+ELSIF report.title == 'Garden Subscription - Transfer'; SET type = 'transfer';
 END;
 
 IF type == 'renew';
@@ -54,6 +56,8 @@ ELSIF type == 'cancel';
     SET email_summary = "You have cancelled your garden waste collection service.";
 ELSIF type == 'amend';
     SET email_summary = "You have amended your garden waste collection service.";
+ELSIF type == 'transfer';
+    SET email_summary = "You have transferred your garden waste service to " _ report.get_extra_metadata('property_address');
 ELSE;
     SET email_summary = "Welcome to " _ cobrand.council_area _ "’s garden waste collection service.";
 END;

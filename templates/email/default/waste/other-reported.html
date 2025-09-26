@@ -75,7 +75,7 @@ INCLUDE '_email_top.html';
     to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
   </p>
 
-[% ELSIF cobrand.moniker == 'merton' AND (report.category == 'Waste spillage' OR report.category == 'Bin not returned') %]
+[% ELSIF cobrand.moniker == 'merton' AND (report.category == 'Waste spillage' OR report.category == 'Bin not returned' OR report.category == 'Lid not closed') %]
   <p style="[% p_style %]">
   Your report over the problem with your bin collection has been made to the council.
   </p>

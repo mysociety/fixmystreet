@@ -4,7 +4,7 @@ use v5.14;
 use warnings;
 use DateTime;
 use DateTime::Format::Strptime;
-use List::Util qw(min);
+use List::Util qw(min sum);
 use Moo::Role;
 use Path::Tiny;
 use POSIX qw(floor);
@@ -260,7 +260,7 @@ sub bin_services_for_address {
             $garden = 1;
             $garden_due = $self->waste_sub_due($schedules->{end_date});
             $garden_overdue = $schedules if $_->{expired};
-            if ($self->moniker eq 'sutton' || $self->moniker eq 'kingston') {
+            if ($self->moniker eq 'sutton' || $self->moniker eq 'kingston' || $self->moniker eq 'merton') {
                 my $data = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskLines}, 'ServiceTaskLine');
                 ($garden_bins, $garden_sacks, $garden_cost, $garden_container, $garden_container_end_date) = $self->garden_container_data_extract($data, $containers, $quantities, $schedules);
             } else {
@@ -277,7 +277,8 @@ sub bin_services_for_address {
             }
         }
 
-        my $request_allowed = ($request_allowed{$service_id} || !%service_to_containers) && $request_max && $schedules->{next};
+        my $any_request_max = ref $request_max ? sum(values %$request_max) : $request_max;
+        my $request_allowed = ($request_allowed{$service_id} || !%service_to_containers) && $any_request_max && $schedules->{next};
         my $row = {
             id => $_->{Id},
             service_id => $service_id,

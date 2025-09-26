@@ -25,7 +25,7 @@ has index_template => (
 );
 
 my %GARDEN_IDS = (
-    merton => { bin240 => 26, bin140 => 27, sack => 28 },
+    merton => { bin240 => 39, bin140 => 37, sack => 36 },
     kingston => { bin240 => 39, bin140 => 37, sack => 36 },
     sutton => { bin240 => 39, bin140 => 37, sack => 36 },
 );
@@ -372,20 +372,27 @@ sub process_garden_new_or_renew : Private {
         my $service = $c->cobrand->garden_current_subscription;
         my $id = $service ? $service->{garden_container} : $GARDEN_IDS{$c->cobrand->moniker}{bin240};
         my $data = {
-            # Sutton request form needs container-choice and request_reason
-            'container-choice' => $id,
-            request_reason => 'collect',
-            # Kingston needs container- (and removal- to convert into N requests)
-            "container-$id" => 1,
-            # Both use removal-, Kingston in core and Sutton specficially for this
-            "removal-$id" => abs($data->{new_bins}),
-
             # From the garden data
             email => $data->{email},
             name => $data->{name},
             phone => $data->{phone},
             category => 'Request new container',
+
+            # All use removal-, Kingston in core and Sutton/Merton specficially for this
+            "removal-$id" => abs($data->{new_bins}),
         };
+        if ($c->cobrand->moniker eq 'sutton') {
+            $data->{'container-choice'} = $id;
+            $data->{request_reason} = 'collect';
+        } elsif ($c->cobrand->moniker eq 'kingston') {
+            $data->{"container-$id"} = 1;
+        } elsif ($c->cobrand->moniker eq 'merton') {
+            $data->{request_reason} = 'collect';
+            $data->{"container-$id"} = 1;
+        }
+
+        # Make sure we don't charge for the collection
+        $c->set_param('payment', undef);
 
         # Set up a fake form to pass to process_request_data
         my $cls = ucfirst $c->cobrand->council_url;
@@ -476,7 +483,7 @@ sub process_garden_transfer : Private {
     $cancel->{address} = $data->{previous_ggw_address}->{label};
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
     my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
-    $c->set_param($end_date_field, $now->ymd);
+    $c->set_param($end_date_field, $now->dmy('/'));
     $c->set_param('property_id', $old_property_id);
     $c->set_param('uprn', $data->{transfer_old_ggw_sub}{transfer_uprn});
     $c->set_param('transferred_to', $c->stash->{property}->{uprn});
@@ -488,17 +495,18 @@ sub process_garden_transfer : Private {
     # Create a report for it for the new address
     my $new = { %$base };
     $new->{category} = 'Garden Subscription';
-    $new->{title} = 'Garden Subscription - New';
+    $new->{title} = 'Garden Subscription - Transfer';
     $new->{bins_wanted} = $data->{transfer_old_ggw_sub}->{transfer_bin_number};
     $new->{transfer_bin_type} = $data->{transfer_old_ggw_sub}->{transfer_bin_type};
 
     my $expiry = $data->{transfer_old_ggw_sub}->{subscription_enddate};
     $expiry = DateTime::Format::W3CDTF->parse_datetime($expiry);
-    $c->set_param($end_date_field, $expiry->ymd);
+    $c->set_param('Start_Date', $now->dmy('/'));
+    $c->set_param($end_date_field, $expiry->dmy('/'));
     $c->set_param('property_id', '');
     $c->set_param('uprn', '');
     $c->set_param('transferred_from', $data->{transfer_old_ggw_sub}{transfer_uprn});
-    $c->forward('setup_garden_sub_params', [ $new, $c->cobrand->waste_subscription_types->{New} ]);
+    $c->forward('setup_garden_sub_params', [ $new, $c->cobrand->waste_subscription_types->{Transfer} ]);
     $c->forward('/waste/add_report', [ $new ]) or return;
     $c->stash->{report}->confirm;
     $c->stash->{report}->update;
