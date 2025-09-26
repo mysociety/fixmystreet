@@ -1,8 +1,28 @@
-[% PROCESS waste/enquiry.html
+[%
+
+f = [];
+service_id = c.req.params.service_id;
+service = services.$service_id;
+
+SET field = { value = 'Bin not returned', label = 'Bin not returned correctly' };
+IF service.events.filter(event_type = 3135);
+    field.disabled = 1;
+END;
+f.push(field);
+
+SET field = { value = 'Lid not closed', label = 'Lid not closed' };
+IF service.events.filter(event_type = 3142);
+    field.disabled = 1;
+END;
+f.push(field);
+
+SET field = { value = 'Waste spillage', label = 'Waste spillage' };
+IF service.events.filter(event_type = 3227);
+    field.disabled = 1;
+END;
+f.push(field);
+
+PROCESS waste/enquiry.html
     title = 'Report a problem'
-    field_options = [
-        { value = 'Bin not returned', label = 'Bin not returned correctly' },
-        { value = 'Lid not closed', label = 'Lid not closed' },
-        { value = 'Waste spillage', label = 'Waste spillage' },
-    ]
+    field_options = f;
 %]
