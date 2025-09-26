@@ -9,6 +9,10 @@
         [% PROCESS 'waste/garden/_sack_quantity.html' form_page='subscribe' cost=garden_costs.per_sack %]
     [% END %]
 
+    [% IF c.cobrand.moniker == 'merton' %]
+    <p>If you run out of bags during the year, please call the contact centre on 020 8274 4901 to order more.</p>
+    [% END %]
+
     <hr class="fieldset-hr">
 
     <div class="cost-pa__total js-bin-costs"
