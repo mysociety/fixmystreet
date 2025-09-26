@@ -751,6 +751,19 @@ FixMyStreet::override_config {
         is $cgi->param('attribute[Notes]'), 'Rubbish left on driveway', "Notes added to open311 data for Echo";
     };
 
+    subtest 'test report a problem with already open event' => sub {
+        $e->mock('GetEventsForObject', sub { [ {
+            EventTypeId => 3135, # Bin not returned
+            EventStateId => 0,
+            EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+            ServiceId => 1067,
+        } ] });
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable waste collection' });
+        $mech->content_like(qr/value="Bin not returned"\s+disabled/s);
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
     subtest 'test staff-only additional collection' => sub {
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/12345');
