@@ -75,7 +75,7 @@ sub about_you {
     return (
         intro => 'garden/verify/about_you.html',
         fields => [
-            'first_name', 'last_name',
+            'verifications_first_name', 'verifications_last_name',
             'phone',      'email',
             $args{continue_field}
         ],
@@ -83,8 +83,8 @@ sub about_you {
         next => sub {
             my $form = $_[2];
 
-            my $first_name = $form->field('first_name')->value;
-            my $last_name = $form->field('last_name')->value;
+            my $first_name = $form->field('verifications_first_name')->value;
+            my $last_name = $form->field('verifications_last_name')->value;
 
             my $current_subscription
                 = $form->c->cobrand->garden_current_subscription;
@@ -116,7 +116,10 @@ sub about_you {
     );
 }
 
-has_field first_name => (
+# Specify as 'verifications_*' so form doesn't confuse with e.g.
+# first_name field in FixMyStreet/App/Form/Waste/AccessPaySuiteBankDetails.pm
+
+has_field verifications_first_name => (
     type => 'Text',
     label => 'First name',
     required => 1,
@@ -126,7 +129,7 @@ has_field first_name => (
     order => 1,
 );
 
-has_field last_name => (
+has_field verifications_last_name => (
     type => 'Text',
     label => 'Last name',
     required => 1,
