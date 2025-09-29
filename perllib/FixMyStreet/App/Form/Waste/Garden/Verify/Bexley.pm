@@ -83,9 +83,6 @@ sub about_you {
         next => sub {
             my $form = $_[2];
 
-# TODO Chomp names
-# Does Formhandler chomp by default?
-
             my $first_name = $form->field('first_name')->value;
             my $last_name = $form->field('last_name')->value;
 
