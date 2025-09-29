@@ -112,11 +112,11 @@ sub lookup_subscription_for_uprn {
         $sub->{has_been_renewed} = 1;
     }
 
-    $sub->{customer_external_ref} = $customer->{CustomerExternalReference};
-    $sub->{customer_first_name}   = $customer->{Firstname};
-    $sub->{customer_last_name}    = $customer->{Surname};
-    $sub->{customer_email}        = $customer->{Email};
-    $sub->{customer_phone} = $customer->{Mobile} // $customer->{TelNumber};
+    $sub->{customer_external_ref} = _trim( $customer->{CustomerExternalReference} );
+    $sub->{customer_first_name}   = _trim( $customer->{Firstname} );
+    $sub->{customer_last_name}    = _trim( $customer->{Surname} );
+    $sub->{customer_email}        = _trim( $customer->{Email} );
+    $sub->{customer_phone} = _trim( $customer->{Mobile} // $customer->{TelNumber} );
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
 
@@ -140,6 +140,8 @@ sub _remove_garden_services {
         @$services = grep { $_->{service_id} ne $garden_id } @$services;
     }
 }
+
+sub _trim { ( $_[0] // '' ) =~ s/^\s+|\s+$//gr }
 
 =head2 garden_current_subscription
 
