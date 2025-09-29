@@ -433,8 +433,8 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
-                    Firstname => 'Verity',
-                    Surname => 'Wright',
+                    Firstname => '  Verity  ',
+                    Surname => '  Wright  ',
                     Email => 'verity@wright.com',
                     Mobile => '+4407222222222',
                     CustomertStatus => 'ACTIVATED',
@@ -519,8 +519,8 @@ FixMyStreet::override_config {
                 $mech->back;
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            first_name => 'Verity',
-                            last_name  => 'Wright',
+                            first_name => ' Verity ',
+                            last_name  => ' Wright ',
                         },
                     },
                 );
