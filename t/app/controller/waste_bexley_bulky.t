@@ -208,7 +208,7 @@ FixMyStreet::override_config {
         subtest 'Intro page' => sub {
             $mech->content_contains('Book a bulky waste collection');
             $mech->content_contains('Before you start your booking');
-            $mech->content_contains('Prices start from £45.50');
+            $mech->content_like(qr/Prices start from\s+£45\.50/);
             $mech->submit_form_ok;
         };
         $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email, phone => '44 07 111 111 111' }});

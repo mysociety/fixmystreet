@@ -370,7 +370,7 @@ sub validate {
 
         # Points need to check maximum
         if ($cobrand->bulky_points_per_item_pricing) {
-            my $levels = $cobrand->bulky_pricing_model($self->saved_data);
+            my ($levels, $sat) = $cobrand->bulky_pricing_model($self->saved_data);
             my $total = $cobrand->bulky_points_to_price($points, $levels);
             if ($total eq 'max') {
                 $self->add_form_error(

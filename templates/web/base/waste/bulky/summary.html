@@ -165,6 +165,18 @@ SET data = form.saved_data;
         <dd>£[% pounds(payment / 100) %] [% IF already_paid ~%]
                 (£[% pounds(already_paid / 100) %] already paid)
             [%~ END %]
+
+    [% IF NOT problem AND c.cobrand.moniker == 'bexley' AND c.cobrand.bulky_pricing_strategy.saturday %]
+        <div class="govuk-warning-text due" style="padding:1em">
+          <div class="govuk-warning-text__img">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          </div>
+          <div class="govuk-warning-text__content" style="display:flex; align-items:center;">
+              <p class="govuk-!-margin-bottom-0">Extra charge for Saturday collection</p>
+          </div>
+        </div>
+    [% END %]
+
         </dd>
       </dl>
       [% END %]

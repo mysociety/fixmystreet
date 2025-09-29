@@ -110,7 +110,7 @@ sub bulky_pricing_model {
     my $pension = lc $data->{pension};
 
     my $points = $cfg->{points}{$saturday}{$pension};
-    return $points;
+    return ($points, $dt->day_of_week == 6 ? 1 : 0);
 }
 
 # Submission
