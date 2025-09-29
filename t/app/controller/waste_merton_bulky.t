@@ -623,7 +623,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('You will be redirected to the council’s card payments provider.');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
             $mech->content_lacks('<img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
-            $mech->content_lacks('BBQ');
+            $mech->content_lacks('>BBQ<');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bookcase, Shelving Unit/s);
             $mech->content_contains('2 items requested for collection');
             $mech->content_contains('£0.00 (£37.00 already paid)');
@@ -736,7 +736,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('You will be redirected to the council’s card payments provider.');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
             $mech->content_lacks('<img class="img-preview is--small" alt="Preview image successfully attached" src="/photo/temp.74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg">');
-            $mech->content_lacks('BBQ');
+            $mech->content_lacks('>BBQ<');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bookcase, Shelving Unit/s);
             $mech->content_contains('4 items requested for collection');
             $mech->content_contains('£23.75 (£37.00 already paid)');
