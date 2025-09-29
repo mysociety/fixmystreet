@@ -57,15 +57,34 @@ sub lookup_subscription_for_uprn {
         };
     }
 
-    # find the first 'ACTIVATED' Customer with an 'ACTIVE'/'PRECONTRACT' contract
     my $customers = $results->{Customers} || [];
+
+    my $cutoff_date
+        = DateTime->now->set_time_zone( FixMyStreet->local_time_zone )
+        ->truncate( to => 'day' )->subtract( months => 3 );
+    my $agile_date_parser
+        = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
+
     OUTER: for ( @$customers ) {
-        next unless ( $_->{CustomertStatus} // '' ) eq 'ACTIVATED'; # CustomertStatus (sic) options seem to be ACTIVATED/INACTIVE
         my $contracts = $_->{ServiceContracts} || [];
         next unless $contracts;
+
+        # Order contracts by latest to earliest. Skip if end date more than
+        # 3 months in the past.
+        @$contracts
+            = sort { $b->{EndDateParsed} <=> $a->{EndDateParsed} }
+                grep {
+                    $_->{EndDateParsed} = $agile_date_parser->parse_datetime( $_->{EndDate} );
+                    $_->{EndDateParsed} >= $cutoff_date;
+                } @$contracts;
+
         $customer = $_;
         for ( @$contracts ) {
-            next unless $_->{ServiceContractStatus} =~ /^(ACTIVE|PRECONTRACT|RENEWALDUE)$/; # Options seem to be ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE
+            # NB Options for ServiceContractStatus seem to be
+            # ACTIVE/NOACTIVE/PRECONTRACT/RENEWALDUE.
+            # We don't do a check for ServiceContractStatus as we want to
+            # consider contracts that were cancelled or expired in the past
+            # 3 months.
             next unless $_->{UPRN} == $uprn;
             $contract = $_;
             # use the first matching customer/contract
@@ -88,8 +107,7 @@ sub lookup_subscription_for_uprn {
         $sub->{has_been_renewed} = 1;
     }
 
-    my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %H:%M' );
-    $sub->{end_date} = $parser->parse_datetime( $contract->{EndDate} );
+    $sub->{end_date} = $contract->{EndDateParsed};
     if ($contract->{ServiceContractStatus} eq 'RENEWALDUE') {
         $sub->{has_been_renewed} = 1;
     }
