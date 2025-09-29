@@ -90,19 +90,22 @@ sub bulky_pricing_strategy {
     my $self = shift;
     my $base_price = $self->wasteworks_config->{base_price};
     my $band1_max = $self->wasteworks_config->{band1_max};
+    my $out;
     if ($self->bulky_points_per_item_pricing) {
         my $data = $self->{c}->stash->{form}->saved_data;
-        my $points = $self->bulky_pricing_model($data);
-        return encode_json({ strategy => 'points', points => $points });
+        my ($points, $sat) = $self->bulky_pricing_model($data);
+        $out = { strategy => 'points', points => $points, saturday => $sat };
     } elsif ($self->bulky_per_item_costs) {
         my $min_collection_price = $self->wasteworks_config->{per_item_min_collection_price} || 0;
-        return encode_json({ strategy => 'per_item', min => $min_collection_price });
+        $out = { strategy => 'per_item', min => $min_collection_price };
     } elsif (my $band1_price = $self->wasteworks_config->{band1_price}) {
         my $max = $self->{c}->stash->{booking_maximum};
-        return encode_json({ strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] });
+        $out = { strategy => 'banded', bands => [ { max => $band1_max, price => $band1_price }, { max => $max, price => $base_price } ] };
     } else {
-        return encode_json({ strategy => 'single' });
+        $out = { strategy => 'single' };
     }
+    my $json = encode_json($out);
+    return { %$out, json => $json };
 }
 
 =head2 Requirements
@@ -218,7 +221,7 @@ sub bulky_total_cost {
                 my $item = $data->{"item_$_"} or next;
                 $points += $points{$item};
             }
-            my $levels = $self->bulky_pricing_model($data);
+            my ($levels, $sat) = $self->bulky_pricing_model($data);
             my $total = $self->bulky_points_to_price($points, $levels);
             if ($total eq 'max') {
                 # Shouldn't ever reach here! Set stupid price

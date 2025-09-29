@@ -128,11 +128,24 @@ END; END %]
 
     [% IF NOT small_items %]
     <p>
-        Total cost: £<span data-pricing="[% c.cobrand.bulky_pricing_strategy %]" id="js-bulky-total">[% pounds(total) %]</span>
+        Total cost: £<span data-pricing="[% c.cobrand.bulky_pricing_strategy.json %]" id="js-bulky-total">[% pounds(total) %]</span>
     </p>
     <p>
         <span hidden id="js-bulky-total-detail"></span>
     </p>
+    [% END %]
+
+    [% IF c.cobrand.moniker == 'bexley' AND c.cobrand.bulky_pricing_strategy.saturday %]
+    <div class="govuk-warning-text due" style="max-width:550px">
+      <div class="govuk-warning-text__img">
+        <span class="govuk-warning-text__icon" aria-hidden="true">i</span>
+      </div>
+      <div class="govuk-warning-text__content">
+        <span class="govuk-warning-text__assistive">Information</span>
+        <p class="govuk-!-margin-bottom-1"><strong>Note</strong></p>
+        <p>Extra charge for Saturday collection</p>
+      </div>
+    </div>
     [% END %]
 
   [% PROCESS form override_fields = [ 'continue', 'saved_data', 'token', 'process', 'unique_id' ] %]
