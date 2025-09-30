@@ -13,6 +13,7 @@ use FixMyStreet::App::Form::Waste::Garden::Modify::Bexley;
 use FixMyStreet::App::Form::Waste::Garden::Renew::Bexley;
 use Try::Tiny;
 use JSON::MaybeXS;
+use Utils;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SCP',
@@ -112,11 +113,11 @@ sub lookup_subscription_for_uprn {
         $sub->{has_been_renewed} = 1;
     }
 
-    $sub->{customer_external_ref} = _trim( $customer->{CustomerExternalReference} );
-    $sub->{customer_first_name}   = _trim( $customer->{Firstname} );
-    $sub->{customer_last_name}    = _trim( $customer->{Surname} );
-    $sub->{customer_email}        = _trim( $customer->{Email} );
-    $sub->{customer_phone} = _trim( $customer->{Mobile} // $customer->{TelNumber} );
+    $sub->{customer_external_ref} = Utils::trim_text( $customer->{CustomerExternalReference} );
+    $sub->{customer_first_name}   = Utils::trim_text( $customer->{Firstname} );
+    $sub->{customer_last_name}    = Utils::trim_text( $customer->{Surname} );
+    $sub->{customer_email}        = Utils::trim_text( $customer->{Email} );
+    $sub->{customer_phone} = Utils::trim_text( $customer->{Mobile} // $customer->{TelNumber} );
 
     $sub->{bins_count} = $contract->{WasteContainerQuantity};
 
@@ -140,8 +141,6 @@ sub _remove_garden_services {
         @$services = grep { $_->{service_id} ne $garden_id } @$services;
     }
 }
-
-sub _trim { ( $_[0] // '' ) =~ s/^\s+|\s+$//gr }
 
 =head2 garden_current_subscription
 
