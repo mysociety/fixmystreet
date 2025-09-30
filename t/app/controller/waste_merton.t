@@ -721,7 +721,7 @@ FixMyStreet::override_config {
         is $report->category, 'Bin not returned', "Correct category";
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_email;
-        is $mech->get_text_body_from_email($email) =~ /Your report over the problem with your bin collection has been made to the council/, 1, 'Other problem text included in email';
+        is $mech->get_text_body_from_email($email) =~ /Your report about the problem with your bin collection has been made to the council/, 1, 'Other problem text included in email';
         my $req = Open311->test_req_used;
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'KEY';
@@ -744,7 +744,7 @@ FixMyStreet::override_config {
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
         $email = $mech->get_email;
-        is $mech->get_text_body_from_email($email) =~ /Your report over the problem with your bin collection has been made to the council/, 1, 'Other problem text included in email';
+        is $mech->get_text_body_from_email($email) =~ /Your report about the problem with your bin collection has been made to the council/, 1, 'Other problem text included in email';
         $req = Open311->test_req_used;
         $cgi = CGI::Simple->new($req->content);
         is $cgi->param('api_key'), 'KEY';
