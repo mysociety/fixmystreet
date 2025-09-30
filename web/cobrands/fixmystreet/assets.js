@@ -694,7 +694,8 @@ function construct_layer_class(options) {
 }
 
 function update_floating_button_messaging(layer, messaging) {
-    var id = 'js-responsibility-message-' + layer.id;
+    var uid = ( layer.controls[0] || {}).id || layer.id;
+    var id = 'js-responsibility-message-' + uid;
     var message = messaging.zoom || (layer.fixmystreet.asset_message_when_disabled ? messaging.asset : messaging.responsibility || messaging.asset);
     var obj = $('#' + id);
     if (message) {

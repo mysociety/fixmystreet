@@ -39,23 +39,18 @@ sub process {
     die "TfL body does not exist\n" unless $self->body;
     die "CSV file does not exist\n" unless -f $self->file;
 
-    # Parse CSV file
     my $csv = Text::CSV->new({ binary => 1, auto_diag => 1 });
     open my $fh, '<:encoding(utf8)', $self->file or die "Can't open file: $!";
 
-    # Read header row
     my @headers = $csv->header($fh);
 
     # Validate required fields exist (NB converted to lowercase by above line)
     my @required_fields = ('title', 'description', 'category', 'building name', 'building id', 'sub-category');
-
     my %headers = map { $_ => 1 } @headers;
-
     for my $field (@required_fields) {
         die "Missing required field '$field' in CSV header\n" unless $headers{$field};
     }
 
-    # Get available categories for validation
     my %valid_categories = map { $_->category => 1 } $self->body->contacts->all;
 
     my $comment_user = $self->body->comment_user;
@@ -64,25 +59,21 @@ sub process {
     my $reports_created = 0;
     my $reports_failed = 0;
 
-    # Process each row
     while (my $row = $csv->getline_hr($fh)) {
         eval {
-            my $title = Utils::trim_text($row->{title});
+            my $title = "Migrated from SW: " . Utils::trim_text($row->{title});
             my $description = Utils::trim_text($row->{description});
             my $category = Utils::trim_text($row->{category});
             my $building_name = Utils::trim_text($row->{'building name'});
             my $building_id = Utils::trim_text($row->{'building id'});
             my $sub_category = Utils::trim_text($row->{'sub-category'});
 
-            # Skip empty rows
             next unless $title && $description && $building_id && $sub_category;
 
-            # Validate category exists
             unless ($valid_categories{$sub_category}) {
                 die "Category '$sub_category' does not exist for TfL body";
             }
 
-            # Get location if Building ID provided
             my ($latitude, $longitude) = $self->find_location($building_id);
             unless ($latitude && $longitude) {
                 die "Could not find location for Building ID '$building_id'";
@@ -91,7 +82,6 @@ sub process {
             my ($lat, $lon) = map { Utils::truncate_coordinate($_) } $latitude, $longitude;
             my $areas = FixMyStreet::MapIt::call('point', "4326/" . $lon . "," . $lat);
 
-            # Create report
             my $report = FixMyStreet::DB->resultset('Problem')->create({
                 title => $title,
                 detail => $description,
@@ -101,7 +91,7 @@ sub process {
                 user_id => $comment_user->id,
                 name => $comment_user->name || 'TfL Import',
                 anonymous => 0,
-                state => 'confirmed',
+                state => 'in progress',
                 confirmed => \'current_timestamp',
                 created => \'current_timestamp',
                 whensent => \'current_timestamp',
