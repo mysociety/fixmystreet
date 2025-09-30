@@ -1,16 +1,16 @@
 use utf8;
 
-use FixMyStreet::Cobrand::Bexley;
-use FixMyStreet::TestMech;
 use Test::Deep;
 use Test::MockModule;
 use Test::MockObject;
 use Test::MockTime 'set_fixed_time';
+use FixMyStreet::Cobrand::Bexley;
+use FixMyStreet::TestMech;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
+set_fixed_time('2024-03-31T01:00:00Z'); # March 31st, 02:00 BST
 
 my $addr_mock = Test::MockModule->new('BexleyAddresses');
 # We don't actually read from the file, so just put anything that is a valid path
