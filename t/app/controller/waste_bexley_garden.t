@@ -507,8 +507,8 @@ FixMyStreet::override_config {
             subtest 'goes to verification failed page if wrong name provided' => sub {
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            first_name => 'A',
-                            last_name  => 'Name',
+                            verifications_first_name => 'A',
+                            verifications_last_name  => 'Name',
                         },
                     },
                 );
@@ -519,8 +519,8 @@ FixMyStreet::override_config {
                 $mech->back;
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            first_name => ' Verity ',
-                            last_name  => ' Wright ',
+                            verifications_first_name => ' Verity ',
+                            verifications_last_name  => ' Wright ',
                         },
                     },
                 );
@@ -618,8 +618,8 @@ FixMyStreet::override_config {
                 );
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            first_name => 'Verity',
-                            last_name => 'Wright',
+                            verifications_first_name => 'Verity',
+                            verifications_last_name => 'Wright',
                         },
                     }
                 );
@@ -1057,8 +1057,8 @@ FixMyStreet::override_config {
                         'error message shown on next page if bad reference';
                     $mech->submit_form_ok(
                         {   with_fields => {
-                                first_name => 'Ferrety',
-                                last_name => 'Wright',
+                                verifications_first_name => 'Ferrety',
+                                verifications_last_name => 'Wright',
                                 email => 'ferrety@wright.com',
                             },
                         },
@@ -1107,8 +1107,8 @@ FixMyStreet::override_config {
                 );
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            first_name => 'Verity',
-                            last_name => 'Wright',
+                            verifications_first_name => 'Verity',
+                            verifications_last_name => 'Wright',
                             email => 'verity@wright.com',
                             phone => '+4407111111111',
                         },
@@ -1366,8 +1366,8 @@ FixMyStreet::override_config {
                         );
                         $mech->submit_form_ok(
                             {   with_fields => {
-                                    first_name => 'Ferrety',
-                                    last_name => 'Wright',
+                                    verifications_first_name => 'Ferrety',
+                                    verifications_last_name => 'Wright',
                                     email => 'ferrety@wright.com',
                                 },
                             },
@@ -2030,8 +2030,8 @@ FixMyStreet::override_config {
                 'error message shown on next page if bad reference';
             $mech->submit_form_ok(
                 {   with_fields => {
-                        first_name => 'Verity',
-                        last_name => 'Wright',
+                        verifications_first_name => 'Verity',
+                        verifications_last_name => 'Wright',
                         email => 'test@example.org',
                     },
                 }
@@ -2161,8 +2161,8 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        first_name => 'Verity',
-                        last_name => 'Wrong',
+                        verifications_first_name => 'Verity',
+                        verifications_last_name => 'Wrong',
                         email => 'test@example.org',
                     },
                 }
@@ -2226,8 +2226,8 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        first_name => 'Verity',
-                        last_name => 'Wright',
+                        verifications_first_name => 'Verity',
+                        verifications_last_name => 'Wright',
                         email => 'test@example.org',
                     },
                 }
