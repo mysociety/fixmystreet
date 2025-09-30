@@ -1,11 +1,3 @@
-[% # Ensure hidden fields (token, process, etc.) are included while forcing visible order %]
-[% SET __desired = ['first_name','last_name','phone','email','continue_choice'] %]
-[% SET __others = [] %]
-[% FOREACH __f IN form.sorted_fields %]
-  [% NEXT IF __desired.grep(__f.name).size %]
-  [% __others.push(__f.name) %]
-[% END %]
-[% SET override_fields = __desired.merge(__others) %]
 [% IF c.stash.error_customer_external_ref %]
   <div class="govuk-error-summary">
     Incorrect customer reference. Please provide your name instead.
