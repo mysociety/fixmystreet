@@ -172,6 +172,7 @@ if ($opt->test_fixtures) {
                 { group => 'A pothole in road', category => 'A pothole in road' },
             ],
             name => 'Gloucestershire County Council', cobrand => 'gloucestershire' },
+        { area_id => 2325, categories => [ { category => 'Broken glass' } ], name => 'Gloucester City Council', cobrand => 'gloucester' },
         { area_id => 2326, categories => ['Flyposting', 'Graffiti'],
             name => 'Cheltenham Borough Council' },
         { area_id => 2566, categories => [
