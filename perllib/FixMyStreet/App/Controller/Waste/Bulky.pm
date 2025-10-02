@@ -402,8 +402,11 @@ sub process_bulky_amend : Private {
         # then create a new event with the amended booking data from the form
         my $update = add_cancellation_update($c, $p, 'delayed');
 
-        $c->forward('process_bulky_data', [ $form ]) or return;
-
+        if ($c->stash->{small_items}) {
+            $c->forward('process_small_items_data', [ $form ]) or return;
+        } else {
+            $c->forward('process_bulky_data', [ $form ]) or return;
+        }
         # If there wasn't payment, we reach here and can set the things
         $c->forward('cancel_collection', [ $p, 'amendment' ]);
         my $new = $c->stash->{report};
@@ -415,7 +418,7 @@ sub process_bulky_amend : Private {
         $new->update;
         $update->confirm;
         $update->update;
-        $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference'));
+        $new->bulky_add_payment_confirmation_update($p->get_extra_metadata('payment_reference')) unless $c->stash->{small_items};
         if ($c->cobrand->suppress_report_sent_email($new)) {
             $new->send_logged_email({ report => $new, cobrand => $c->cobrand }, 0, $c->cobrand);
         }
