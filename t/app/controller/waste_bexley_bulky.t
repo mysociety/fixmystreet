@@ -49,6 +49,13 @@ $dbi_mock->mock( 'connect', sub {
 } );
 
 my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
+my $slots_default = [
+    { AdHocRoundInstanceID => 1, AdHocRoundInstanceDate => '2025-06-27T00:00:00', SlotsFree => 20 },
+    { AdHocRoundInstanceID => 2, AdHocRoundInstanceDate => '2025-06-30T00:00:00', SlotsFree => 20 },
+    { AdHocRoundInstanceID => 3, AdHocRoundInstanceDate => '2025-07-04T00:00:00', SlotsFree => 20 },
+    { AdHocRoundInstanceID => 4, AdHocRoundInstanceDate => '2025-07-05T00:00:00', SlotsFree => 20 }, # Saturday
+    { AdHocRoundInstanceID => 5, AdHocRoundInstanceDate => '2025-07-07T00:00:00', SlotsFree => 0 }, # Ignore
+];
 sub default_mocks {
     $whitespace_mock->mock('GetSiteCollections', sub {
         [ {
@@ -81,13 +88,7 @@ sub default_mocks {
         },
     } });
     $whitespace_mock->mock( 'GetSiteWorksheets', sub {});
-    $whitespace_mock->mock( 'GetCollectionSlots', sub { [
-        { AdHocRoundInstanceID => 1, AdHocRoundInstanceDate => '2025-06-27T00:00:00', SlotsFree => 20 },
-        { AdHocRoundInstanceID => 2, AdHocRoundInstanceDate => '2025-06-30T00:00:00', SlotsFree => 20 },
-        { AdHocRoundInstanceID => 3, AdHocRoundInstanceDate => '2025-07-04T00:00:00', SlotsFree => 20 },
-        { AdHocRoundInstanceID => 4, AdHocRoundInstanceDate => '2025-07-05T00:00:00', SlotsFree => 20 }, # Saturday
-        { AdHocRoundInstanceID => 5, AdHocRoundInstanceDate => '2025-07-07T00:00:00', SlotsFree => 0 }, # Ignore
-    ] });
+    $whitespace_mock->mock( 'GetCollectionSlots', sub { $slots_default });
 };
 
 default_mocks();
@@ -295,6 +296,18 @@ FixMyStreet::override_config {
         }
 
         subtest 'Summary page' => \&test_summary;
+
+        subtest 'Last slot now not available' => sub {
+            $whitespace_mock->mock('GetCollectionSlots', sub { [
+                { AdHocRoundInstanceID => 2, AdHocRoundInstanceDate => '2025-06-30T00:00:00', SlotsFree => 20 },
+                { AdHocRoundInstanceID => 3, AdHocRoundInstanceDate => '2025-07-04T00:00:00', SlotsFree => 0 },
+            ] });
+            $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+            $mech->content_contains('has become fully booked');
+            $mech->back;
+            $whitespace_mock->mock('GetCollectionSlots', sub { $slots_default });
+        };
+
         subtest 'Summary submission' => \&test_summary_submission;
 
         subtest 'Cancel payment' => sub {
