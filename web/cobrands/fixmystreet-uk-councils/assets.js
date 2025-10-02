@@ -801,9 +801,20 @@ fixmystreet.assets.gloucester.watercourses_filter = function(feature) {
 };
 
 fixmystreet.assets.gloucester.street_or_plot_found = function(layer, asset) {
-    var selected_usrn = layer.selected_feature.attributes.itemId;
-    $('input[name="asset_resource_id"]').val(selected_usrn);
-    fixmystreet.assets.cobranduk.combined_road_found(layer, asset);
+    if (asset.attributes.owner && asset.attributes.owner[0] === '64a8227cebabca0376c5c0dd') {
+        var combined = layer.fixmystreet.combined;
+        var key_layer = fixmystreet.map.getLayersByName(combined[0])[0];
+        var original_no_asset_message = key_layer.fixmystreet.no_asset_message;
+        var no_asset_message = "The land is owned by <strong>Gloucester City Homes</strong>. You will need to contact them directly regarding this matter. You can contact them via their <a href=https://www.gch.co.uk>website</a>";
+
+        key_layer.fixmystreet.no_asset_message = no_asset_message;
+        fixmystreet.message_controller.road_not_found(key_layer, function() { return true; } );
+        key_layer.fixmystreet.no_asset_message = original_no_asset_message;
+    } else {
+        var selected_usrn = layer.selected_feature.attributes.itemId;
+        $('input[name="asset_resource_id"]').val(selected_usrn);
+        fixmystreet.assets.cobranduk.combined_road_found(layer, asset);
+    }
 };
 
 fixmystreet.assets.gloucester.street_or_plot_not_found = function(layer) {

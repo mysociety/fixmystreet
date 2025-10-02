@@ -677,4 +677,46 @@ westminster:
     asset_item: 'street nameplate'
     http_options:
       url: https://tilma.mysociety.org/resource-proxy/proxy.php?https://westminster.staging/46/query?
+gloucester:
+  - - name: alloy
+      http_options:
+        url: "https://tilma.staging.mysociety.org/alloy/layer.php"
+        params:
+          url: "https://gloucester.assets"
+      format_class: OpenLayers.Format.GeoJSON
+      srsName: "EPSG:4326"
+      body: "Gloucester City Council"
+      nearest_radius: 2
+  - name: adopted_streets_with_plots
+    template: alloy
+    stylemap: fixmystreet.assets.stylemap_invisible
+    asset_category:
+      - Broken glass
+    asset_item: "road or path"
+    road: true
+    non_interactive: true
+    nearest_radius: 8
+    no_asset_message: "The location you've selected appears to be privately owned. Reports in this category must be made on publicly owned land or roads. You can relocate your map pin by clicking and dragging."
+    combined: ['adopted_streets_with_plots', 'plots_with_adopted_streets']
+    actions:
+      found: fixmystreet.assets.gloucester.street_or_plot_found
+      not_found: fixmystreet.assets.gloucester.street_or_plot_not_found
+    http_options:
+      params:
+        layer: adopted_streets
+  - name: plots_with_adopted_streets
+    template: alloy
+    stylemap: fixmystreet.assets.bromley.parks_stylemap
+    asset_category:
+      - Broken glass
+    asset_item: 'plot'
+    road: true
+    non_interactive: true
+    combined: ['adopted_streets_with_plots', 'plots_with_adopted_streets']
+    actions:
+      found: fixmystreet.assets.gloucester.street_or_plot_found
+      not_found: fixmystreet.assets.gloucester.street_or_plot_not_found
+    http_options:
+      params:
+        layer: all_plots
 
