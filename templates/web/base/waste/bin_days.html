@@ -244,9 +244,13 @@
 [% IF property.show_small_items;
     SET image = c.cobrand.image_for_unit({ service_id => 'small_items' });
 %]
-  <h3 id="small-items-waste" class="govuk-heading-m waste-service-name">Small items
-      [% IF c.cobrand.moniker == 'sutton' %](coming soon)[% END %]
-  </h3>
+  <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Small items</h3>
+    [% IF c.cobrand.moniker == 'sutton' %]
+      <p>
+          Get small electrical items, batteries and textiles collected from your address for free.
+          Please make sure you’ve read the <a href="https://www.sutton.gov.uk/w/small-items-collections-terms-and-conditions">small items collection page</a> before making a booking.
+      </p>
+    [% END %]
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-quarter text-centered">
       <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
