@@ -339,6 +339,9 @@ FixMyStreet::override_config {
 
             my %session_hash;
             $cobrand->{c}->mock( session => sub { \%session_hash } );
+            $cobrand->{c}->mock( waste_cache_get => sub {
+                Catalyst::Plugin::FixMyStreet::Session::WasteCache::waste_cache_get(@_);
+            });
             $cobrand->{c}->mock( waste_cache_set => sub {
                 Catalyst::Plugin::FixMyStreet::Session::WasteCache::waste_cache_set(@_);
             });

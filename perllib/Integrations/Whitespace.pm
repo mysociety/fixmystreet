@@ -14,6 +14,7 @@ use strict;
 use warnings;
 use Moo;
 use Data::Dumper;
+use Time::HiRes;
 
 with 'Integrations::Roles::SOAP';
 with 'Integrations::Roles::ParallelAPI';
@@ -91,12 +92,16 @@ sub call {
     SOAP::Lite->soapversion(1.1);
 
     @params = make_soap_structure(@params);
+    my $start = Time::HiRes::time();
     my $som = $self->endpoint->call(
         $method => @params,
         $self->security
     );
 
     SOAP::Lite->soapversion(1.2);
+
+    my $time = Time::HiRes::time() - $start;
+    $self->log("$method call took $time seconds");
 
     # TODO: Better error handling
     die $som->faultstring if ($som->fault);
@@ -232,6 +237,7 @@ sub GetFullWorksheetDetails {
 
 sub GetCollectionSlots {
     my ( $self, $uprn, $from, $to ) = @_;
+    $self->log("GetCollectionSlots for $uprn $from $to");
     my $res = $self->call( 'GetCollectionSlots',
         collectionSlotsInputInput => ixhash(
             Uprn => $uprn,
@@ -240,6 +246,7 @@ sub GetCollectionSlots {
             NextCollectionToDate => $to,
         )
     );
+    $self->log($res);
     return force_arrayref($res->{ApiAdHocRoundInstances}, 'ApiAdHocRoundInstance');;
 }
 
