@@ -841,21 +841,30 @@ sub construct_bin_report_form {
         };
     }
 
-    # XXX Should we refactor bulky into the general service data (above)?
+    # XXX Should we refactor bulky & small items into the general service
+    # data (above)?
     # Plus side, gets the report missed stuff built in; minus side it
-    # doesn't have any next/last collection stuff which is assumed
+    # doesn't have any next/last collection stuff which is assumed.
     my $allow_report_bulky = 0;
-    foreach (values %{ $c->stash->{booked_missed} || {} }) {
-        $allow_report_bulky = $_ if $_->{report_allowed} && !$_->{report_open};
+    my $allow_report_small_items = 0;
+
+    foreach ( values %{ $c->stash->{booked_missed} || {} } ) {
+        if ( $_->{report_allowed} && !$_->{report_open} ) {
+            $_->{service_name} eq 'Small items'
+                ? $allow_report_small_items = $_
+                : $allow_report_bulky = $_;
+        }
     }
-    if ($allow_report_bulky) {
-        my $service_id = $allow_report_bulky->{service_id};
-        my $service_name = $allow_report_bulky->{service_name};
-        push @$field_list, "service-$service_id" => {
-            type => 'Checkbox',
-            label => "$service_name collection",
-            option_label => "$service_name collection",
-        };
+    for ( $allow_report_bulky, $allow_report_small_items ) {
+        if ($_) {
+            my $service_id = $_->{service_id};
+            my $service_name = $_->{service_name};
+            push @$field_list, "service-$service_id" => {
+                type => 'Checkbox',
+                label => "$service_name collection",
+                option_label => "$service_name collection",
+            };
+        }
     }
 
     $c->cobrand->call_hook("waste_munge_report_form_fields", $field_list);
@@ -865,6 +874,11 @@ sub construct_bin_report_form {
 
 sub report : Chained('property') : Args(0) {
     my ($self, $c) = @_;
+
+    $c->stash->{original_booking_report}
+        = FixMyStreet::DB->resultset("Problem")
+        ->find( { id => $c->get_param('original_booking_id') } )
+        if $c->get_param('original_booking_id');
 
     my $field_list = construct_bin_report_form($c);
 

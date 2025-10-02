@@ -61,6 +61,7 @@ my %SERVICE_IDS = (
         communal_food => 983, # 4403
         garden => 979, # 4410
         bulky => 986, # 4536
+        small_items => 978,
         schedule2_refuse => 968, # 4409
         schedule2_mixed => 972, # 4398
     },
@@ -95,6 +96,7 @@ my %SERVICE_IDS = (
         communal_food => 957, # 4403
         garden => 953, # 4410
         bulky => 960, # 4536
+        small_items => 952,
         schedule2_refuse => 942, # 4409
         schedule2_mixed => 946, # 4398
     }
@@ -108,6 +110,7 @@ my %EVENT_TYPE_IDS = (
     garden_add => 3159,
     garden_amend => 3163,
     bulky => 3130,
+    small_items => 3144,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -223,6 +226,10 @@ sub waste_extra_service_info_all_results {
 
     if (@$result && $cfg->{bulky_service_id} && grep { $_->{ServiceId} == $cfg->{bulky_service_id} } @$result) {
         $property->{has_bulky_service} = 1;
+    }
+
+    if (@$result && grep { $_->{ServiceId} == $service_ids->{small_items} } @$result) {
+        $property->{has_small_items_service} = 1;
     }
 
     $property->{has_no_services} = scalar @$result == 0;
@@ -349,6 +356,7 @@ sub missed_event_types { return {
     $EVENT_TYPE_IDS{missed} => 'missed',
     $EVENT_TYPE_IDS{missed_assisted} => 'missed',
     $EVENT_TYPE_IDS{bulky} => 'bulky',
+    $EVENT_TYPE_IDS{small_items} => 'small_items',
 } }
 
 sub waste_munge_report_data {
@@ -356,15 +364,18 @@ sub waste_munge_report_data {
 
     my $c = $self->{c};
 
-    my $booking_report;
-    if ($c->get_param('original_booking_id')) {
-        $booking_report = FixMyStreet::DB->resultset("Problem")->find({ id => $c->get_param('original_booking_id') });
-    };
     my $address = $c->stash->{property}->{address};
     my $cfg = $self->feature('echo');
     my $service = $c->stash->{services}{$id}{service_name};
-    if ($id == $cfg->{bulky_service_id}) {
+    if (   $cfg->{bulky_service_id}
+        && $id == $cfg->{bulky_service_id} )
+    {
         $service = 'bulky collection';
+    }
+    if (   $cfg->{small_items_service_id}
+        && $id == $cfg->{small_items_service_id} )
+    {
+        $service = 'small items collection';
     }
     if ($c->get_param('additional') && $c->stash->{is_staff}) {
         $data->{category} = 'Request additional collection';
@@ -382,7 +393,7 @@ sub waste_munge_report_data {
         $data->{title} = "Report missed $service";
     }
     $data->{detail} = "$data->{title}\n\n$address";
-    if ($booking_report) {
+    if ( my $booking_report = $c->stash->{original_booking_report} ) {
         $c->set_param('Exact_Location', $booking_report->get_extra_field_value('Exact_Location'));
         $c->set_param('Original_Event_ID', $booking_report->external_id);
     }
@@ -702,29 +713,48 @@ sub waste_munge_bulky_data {
     my ($self, $data) = @_;
 
     my $c = $self->{c};
+
+    my $fields = $c->stash->{small_items} ?
+      {
+        title => 'Small items collection',
+        category => 'Small items collection',
+        date_field => 'extra_Collection_Date_-_Bulky_Items', # Only used on FMS side so left as is
+        description_field => '',
+        ids_field => 'extra_Small_Item_Type',
+      }
+      :
+      {
+        title => 'Bulky goods collection',
+        category => 'Bulky collection',
+        date_field => 'extra_Collection_Date_-_Bulky_Items',
+        description_field => 'extra_TEM_-_Bulky_Collection_Description',
+        ids_field => 'extra_TEM_-_Bulky_Collection_Item',
+      };
+
     my ($date, $ref, $expiry) = split(";", $data->{chosen_date});
 
     my $guid_key = $c->stash->{booking_class}->guid_key;
-    $data->{extra_GUID} = $self->{c}->waste_cache_get($guid_key);
+    $data->{extra_GUID} = $c->waste_cache_get($guid_key);
     $data->{extra_reservation} = $ref;
 
-    $data->{title} = "Bulky goods collection";
+    $data->{title} = $fields->{title};
     $data->{detail} = "Address: " . $c->stash->{property}->{address};
-    $data->{category} = "Bulky collection";
-    $data->{'extra_Collection_Date_-_Bulky_Items'} = $date;
+    $data->{category} = $fields->{category};
+    $data->{ $fields->{date_field} } = $date;
     $data->{extra_Exact_Location} = $data->{location};
 
-    my $first_date = $self->{c}->session->{first_date_returned};
+    my $first_date = $c->session->{first_date_returned};
     $first_date = DateTime::Format::W3CDTF->parse_datetime($first_date);
     my $dt = DateTime::Format::W3CDTF->parse_datetime($date);
     $data->{'extra_First_Date_Offered_-_Bulky'} = $first_date->strftime("%d/%m/%Y");
 
-    my @items_list = @{ $self->bulky_items_master_list };
+    my @items_list = $c->stash->{small_items} ? @{ $self->small_items_master_list } : @{ $self->bulky_items_master_list };
     my %items = map { $_->{name} => $_->{bartec_id} } @items_list;
 
     my @notes;
     my @ids;
     my @photos;
+    my %types;
 
     my $max = $c->stash->{booking_maximum};
     for (1..$max) {
@@ -732,11 +762,17 @@ sub waste_munge_bulky_data {
             push @notes, $data->{"item_notes_$_"} || '';
             push @ids, $items{$item};
             push @photos, $data->{"item_photos_$_"} || '';
+            $types{$item}++;
         };
     }
-    $data->{'extra_TEM_-_Bulky_Collection_Description'} = join("::", @notes);
-    $data->{'extra_TEM_-_Bulky_Collection_Item'} = join("::", @ids);
+    $data->{ $fields->{description_field} } = join("::", @notes) if $fields->{description_field};
+    $data->{ $fields->{ids_field} } = join("::", @ids);
     $data->{extra_Image} = join("::", @photos);
+
+    if ($c->stash->{small_items}) {
+        $data->{extra_Notes} = join("\n", map { "$types{$_} x $_" } sort keys %types);
+    }
+
     $self->bulky_total_cost($data);
 }
 
@@ -749,8 +785,15 @@ sub waste_reconstruct_bulky_data {
         "location_photo" => $p->get_extra_metadata("location_photo"),
     };
 
-    my @fields = split /::/, $p->get_extra_field_value('TEM_-_Bulky_Collection_Item') || $p->get_extra_field_value('Bulky_Collection_Bulky_Items');
-    my @notes = split /::/, $p->get_extra_field_value('TEM_-_Bulky_Collection_Description') || $p->get_extra_field_value('Bulky_Collection_Notes');
+    my @fields = split /::/,
+        $p->get_extra_field_value('TEM_-_Bulky_Collection_Item')
+        || $p->get_extra_field_value('Bulky_Collection_Bulky_Items')
+        || $p->get_extra_field_value('Small_Item_Type');
+    my @notes = split /::/,
+        $p->get_extra_field_value('TEM_-_Bulky_Collection_Description')
+        || $p->get_extra_field_value('Bulky_Collection_Notes')
+        || '';
+
     for my $id (1..@fields) {
         $saved_data->{"item_$id"} = $p->get_extra_metadata("item_$id");
         $saved_data->{"item_notes_$id"} = $notes[$id-1];

@@ -54,6 +54,58 @@ sub bulky_items_master_list { $_[0]->wasteworks_config->{item_list} || [] }
 sub small_items_master_list { $_[0]->wasteworks_config->{small_item_list} || [] }
 sub bulky_per_item_costs { $_[0]->wasteworks_config->{per_item_costs} }
 
+sub bulky_nice_item_list {
+    my ($self, $report) = @_;
+
+    my @item_nums = map { /^item_(\d+)/ } grep { /^item_\d/ } keys %{$report->get_extra_metadata};
+    my @items = sort { $a <=> $b } @item_nums;
+
+    my @fields;
+    my %count;
+    my $any_multiple = 0;
+    for my $item (@items) {
+        if (my $value = $report->get_extra_metadata("item_$item")) {
+            my $display = $value;
+            if (my $note = $report->get_extra_metadata("item_notes_$item")) {
+                $display .= " ($note)";
+            }
+            push @fields, { item => $value, display => $display };
+            $any_multiple = 1 if $count{$display};
+            $count{$display}++;
+        }
+    }
+
+    if ($any_multiple) {
+        my @out;
+        my %seen;
+        foreach (@fields) {
+            my $d = $_->{display};
+            next if $seen{$d};
+            $seen{$d} = 1;
+            $_->{display} = "$count{$d} x $d";
+            push @out, $_;
+        }
+        @fields = @out;
+    }
+
+    my $items_extra = $report->category eq 'Small items collection' ? $self->small_items_extra() : $self->bulky_items_extra(exclude_pricing => 1);
+
+    return [
+        map {
+            value => $_->{display},
+            message => $items_extra->{$_->{item}}{message},
+        },
+        @fields,
+    ];
+}
+
+sub bulky_item_list_size {
+    my ($self, $report) = @_;
+    my $extra = $report->get_extra_metadata;
+    my @items = grep { $_ } map { $extra->{$_} } grep { /^item_\d/ } keys %$extra;
+    return scalar @items;
+}
+
 sub bulky_tandc_link {
     my $self = shift;
     my $cfg = $self->feature('waste_features') || {};
@@ -612,10 +664,14 @@ sub bulky_reminders {
         state => [ FixMyStreet::DB::Result::Problem->open_states ], # XXX?
     });
 
-    # If we haven't had payment, we don't want to send a reminder
+    # If we haven't had payment, we don't want to send a bulky reminder for
+    # some cobrands
     if ($self->bulky_send_before_payment) {
         $collections = $collections->search({
-            extra => { '\?' => 'payment_reference' },
+             -or => [
+                extra => { '\?' => 'payment_reference' },
+                category => 'Small items collection'
+            ]
         });
     }
 

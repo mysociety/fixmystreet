@@ -305,17 +305,18 @@ sub bin_services_for_address {
             end_date => $schedules->{end_date},
             $self->moniker eq 'brent' ? (timeband => $_->{timeband}) : (),
         };
+
+        if ($self->moniker eq 'sutton') {
+            # Sutton needs to know about events from before the last collection in case
+            # there have been missed container escalations that are still relevant
+            $row->{all_events} = $events->filter({ service => $service_id });
+        }
+
         if ($row->{last}) {
             my $ref = join(',', @{$row->{last}{ref}});
             $task_ref_to_row{$ref} = $row;
 
             $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
-
-            if ($self->moniker eq 'sutton') {
-                # Sutton needs to know about events from before the last collection in case there
-                # have been missed container escalations that are still relevant
-                $row->{all_events} = $events->filter({ service => $service_id });
-            }
 
             my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
             $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
@@ -1038,33 +1039,6 @@ sub save_item_names_to_report {
     foreach (grep { /^item_(notes_)?\d/ } keys %$data) {
         $report->set_extra_metadata($_ => $data->{$_}) if $data->{$_};
     }
-}
-
-sub bulky_nice_item_list {
-    my ($self, $report) = @_;
-
-    my @item_nums = map { /^item_(\d+)/ } grep { /^item_\d/ } keys %{$report->get_extra_metadata};
-    my @items = sort { $a <=> $b } @item_nums;
-
-    my @fields;
-    for my $item (@items) {
-        if (my $value = $report->get_extra_metadata("item_$item")) {
-            my $display = $value;
-            if (my $note = $report->get_extra_metadata("item_notes_$item")) {
-                $display .= " ($note)";
-            }
-            push @fields, { item => $value, display => $display };
-        }
-    }
-    my $items_extra = $report->category eq 'Small items collection' ? $self->small_items_extra() : $self->bulky_items_extra(exclude_pricing => 1);
-
-    return [
-        map {
-            value => $_->{display},
-            message => $items_extra->{$_->{item}}{message},
-        },
-        @fields,
-    ];
 }
 
 sub send_bulky_payment_echo_update_failed {

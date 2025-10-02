@@ -62,9 +62,7 @@ sub check_slot_available {
     # '2023-08-29;12345;'
     my ( $collection_date) = $chosen_date_string =~ /[^;]+/g;
 
-    my $property = $c->stash->{property};
-    my $available_slots = $self->find_available_slots(
-        $property, undef, 'no_cache' );
+    my $available_slots = $self->find_available_slots(undef, 'no_cache');
 
     my ($slot) = grep { $_->{date} eq $collection_date } @$available_slots;
     if ($slot) {

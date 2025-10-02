@@ -128,8 +128,13 @@ has_page summary => (
         return 0;
     },
     finished => sub {
+
         if ($_[0]->small_items) {
-            return $_[0]->wizard_finished('process_small_items_data');
+            if ($_[0]->c->stash->{amending_booking}) {
+                return $_[0]->wizard_finished('process_bulky_amend');
+            } else {
+                return $_[0]->wizard_finished('process_small_items_data');
+            }
         }
         if ($_[0]->c->stash->{amending_booking}) {
             return $_[0]->wizard_finished('process_bulky_amend');
@@ -250,9 +255,15 @@ has items_master_list => (
 );
 
 sub _build_items_master_list {
-    [ sort { lc $a->{name} cmp lc $b->{name} }
-            @{ $_[0]->c->cobrand->call_hook('bulky_items_master_list') } ];
+    my $key = $_[0]->items_sort_key;
+    my $hook = $_[0]->items_master_list_hook;
+    [ sort { lc $a->{$key} cmp lc $b->{$key} } @{ $_[0]->c->cobrand->call_hook($hook) } ];
 }
+
+has items_sort_key => ( is => 'ro', lazy => 1, builder => '_build_items_sort_key' );
+sub _build_items_sort_key { 'name' }
+
+has items_master_list_hook => ( is => 'ro', default => 'bulky_items_master_list' );
 
 # Hash of item names mapped to extra text
 has items_extra => (

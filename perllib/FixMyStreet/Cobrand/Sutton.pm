@@ -61,6 +61,8 @@ my %CONTAINERS = (
 );
 lock_hash(%CONTAINERS);
 
+sub skip_alert_state_changed_to { 1 }
+
 =head2 waste_on_the_day_criteria
 
 If it's before 6pm on the day of collection, treat an Outstanding/Allocated
@@ -113,6 +115,12 @@ there are bins already on site.
 sub garden_subscription_start_days {
     my ($self, $data) = @_;
     return $data->{current_bins} ? 0 : 10;
+}
+
+sub small_items_allowed_property {
+    my ( $self, $property ) = @_;
+
+    return $self->small_items_enabled && $property->{has_small_items_service};
 }
 
 sub waste_munge_bin_services_open_requests {
@@ -280,6 +288,8 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     if ($service_id eq 'bulky') {
         return "$base/bulky-black";
+    } elsif ($service_id eq 'small_items') {
+        return "$base/electricals-batteries-textiles";
     }
 
     if ($service_id == $SERVICE_IDS{communal_refuse} && $unit->{schedule} =~ /fortnight|every other/i) {
@@ -743,10 +753,51 @@ sub bulky_collection_window_start_date {
 }
 
 sub bulky_location_text_prompt {
-    "Please tell us where you will place the items for collection (the bulky waste collection crews are different to the normal round collection crews and will not know any access codes to your property, so please include access codes here if appropriate)";
+    my $self = shift;
+
+    my $text = $self->{c}->stash->{small_items} ? 'small items' : 'bulky waste';
+
+    "Please tell us where you will place the items for collection (the " . $text . " collection crews are different to the normal round collection crews and will not know any access codes to your property, so please include access codes here if appropriate)";
 }
 
-sub bulky_item_notes_field_mandatory { 1 }
-sub bulky_show_individual_notes { 1 } # As mandatory, must be shown
+# Mandatory for bulky, not possible for small items
+sub bulky_item_notes_field_mandatory {
+    my $self = shift;
+    return $self->{c}->stash->{small_items} ? 0 : 1;
+}
+sub bulky_show_individual_notes {
+    my $self = shift;
+    return $self->{c}->stash->{small_items} ? 0 : 1;
+}
+
+=head2 filter_booking_dates
+
+For small items, don't offer a date where there is already a small items booking
+and show a maximum of eight dates.
+
+Eight dates check is a fallback as would expect to only receive a maximum of eight dates
+
+=cut
+
+sub filter_booking_dates {
+    my ($self, $dates) = @_;
+
+    return unless $self->{c}->stash->{small_items};
+
+    my $pending = $self->{c}->stash->{collections}{small_items}{pending} || [];
+    for my $report (@$pending) {
+        @$dates = grep { $_->{date} ne $report->get_extra_field_value('Collection_Date_-_Bulky_Items') } @$dates;
+    }
+
+    if (@$dates > 8) {
+        @$dates = @$dates[0..7];
+    };
+};
+
+sub waste_munge_small_items_data {
+    my ($self, $data) = @_;
+
+    $self->waste_munge_bulky_data($data);
+}
 
 1;

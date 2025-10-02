@@ -28,6 +28,9 @@
             [% IF c.cobrand.call_hook('bulky_enabled') %]
               <li>Book a bulky waste collection</li>
             [% END %]
+            [% IF c.cobrand.call_hook('small_items_enabled') %]
+              <li>Book a small items collection</li>
+            [% END %]
           </ul>
       </form>
       </div>
