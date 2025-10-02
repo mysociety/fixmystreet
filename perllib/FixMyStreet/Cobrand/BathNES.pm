@@ -14,6 +14,8 @@ use warnings;
 use utf8;
 
 use Moo;
+with 'FixMyStreet::Roles::ConfirmValidation';
+with 'FixMyStreet::Roles::ConfirmOpen311';
 with 'FixMyStreet::Roles::Open311Multi';
 
 =head2 Defaults
@@ -21,10 +23,6 @@ with 'FixMyStreet::Roles::Open311Multi';
 =over 4
 
 =cut
-
-use Moo;
-with 'FixMyStreet::Roles::ConfirmValidation';
-with 'FixMyStreet::Roles::ConfirmOpen311';
 
 use LWP::Simple;
 use URI;
@@ -317,15 +315,6 @@ sub should_skip_sending_update {
     return 1 if $code =~ /^Passthrough/ && $external_id !~ /^Passthrough/;
     return 1 if $code !~ /^Passthrough/ && $external_id =~ /^Passthrough/;
     return 0;
-}
-
-=head2 open311_munge_update_params
-
-Stub needs to exist for FixMyStreet::Roles::Open311Multi
-
-=cut
-
-sub open311_munge_update_params {
 }
 
 =head2 open311_post_send
