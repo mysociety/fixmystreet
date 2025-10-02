@@ -85,6 +85,7 @@ sub clear_cached_lookups_property {
     $self->clear_cached_lookups_bulky_slots($uprn);
 
     $self->{c}->waste_cache_delete($self->council_url . ":whitespace:bin_days_page:$uprn");
+    $self->{c}->waste_cache_delete($self->council_url . ":whitespace:worksheets:$uprn");
 }
 
 sub clear_cached_lookups_bulky_slots {
@@ -579,8 +580,14 @@ sub _open_reports {
 
     my %open_reports;
 
+    my $c = $self->{c};
     foreach my $uprn (@uprns) {
-        my $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
+        my $key = "bexley:whitespace:worksheets:$uprn";
+        my $worksheets = $c->waste_cache_get($key);
+        if (!$worksheets) {
+            $worksheets = $self->whitespace->GetSiteWorksheets($uprn);
+            $c->waste_cache_set($key, $worksheets);
+        }
 
         for my $ws (@$worksheets) {
             next

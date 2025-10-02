@@ -149,8 +149,10 @@ sub item_list : Private {
                 my $fields = {};
                 my $data = $form->saved_data;
                 my $c = $form->{c};
-                $c->cobrand->bulky_total_cost($data);
-                $c->stash->{total} = ($c->stash->{payment} || 0) / 100;
+                if (!$form->small_items) {
+                    $c->cobrand->bulky_total_cost($data);
+                    $c->stash->{total} = ($c->stash->{payment} || 0) / 100;
+                }
                 return $fields;
             },
             post_process => sub {
@@ -159,8 +161,10 @@ sub item_list : Private {
                 my $c = $form->c;
 
                 # Calculate total cost
-                $c->cobrand->bulky_total_cost($data);
-                $data->{payment} = $c->stash->{payment};
+                if (!$form->small_items) {
+                    $c->cobrand->bulky_total_cost($data);
+                    $data->{payment} = $c->stash->{payment};
+                }
             },
         },
     ];

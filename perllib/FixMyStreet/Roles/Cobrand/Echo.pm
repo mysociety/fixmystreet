@@ -199,11 +199,12 @@ sub bin_services_for_address {
     # service unit and we only want to call GetEventsForObject once with each
     # service unit
     my %seen_service_units;
+    my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
     foreach (@rows) {
         my $schedules = $_->{Schedules};
         $_->{expired} = 1 if $self->waste_sub_overdue( $schedules->{end_date}, weeks => 4 );
 
-        next unless $schedules->{next} or $schedules->{last};
+        next unless $schedules->{end_date} ge $today; # Ignore schedules that have ended
         $_->{active} = 1;
         push @to_fetch, GetEventsForObject => [ ServiceUnit => $_->{Id} ]
             unless $seen_service_units{$_->{Id}}++;
