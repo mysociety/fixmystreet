@@ -96,6 +96,19 @@ FixMyStreet::override_config {
     my ($e) = shared_echo_mocks();
     my ($scp) = shared_scp_mocks();
 
+    subtest 'Missing address lookup' => sub {
+        $e->mock('FindPoints', sub { [
+            { Description => '1 Example Street, Kingston, KT1 1AA', Id => '11345', SharedRef => { Value => { anyType => 1000000001 } } },
+            { Description => '2 Example Street, Kingston, KT1 1AA', Id => '12345', SharedRef => { Value => { anyType => 1000000002 } } },
+            { Description => '3 Example Street, Kingston, KT1 1AA', Id => '14345', SharedRef => { Value => { anyType => 1000000004 } } },
+        ] });
+        $mech->get_ok('/waste');
+        $mech->submit_form_ok({ with_fields => { postcode => 'KT1 1AA' } });
+        $mech->content_contains('12345');
+        $mech->submit_form_ok({ with_fields => { address => 'missing-KT11AA' } });
+        $mech->content_contains('postcode=KT11AA');
+    };
+
     subtest 'Address lookup' => sub {
         set_fixed_time('2022-09-10T12:00:00Z');
         $mech->get_ok('/waste/12345');
