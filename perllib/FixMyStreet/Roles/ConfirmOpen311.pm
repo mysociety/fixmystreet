@@ -42,4 +42,24 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
+=head2 open311_munge_update_params
+
+We pass any category change to Confirm, if enabled by cobrand.
+
+=cut
+
+sub open311_munge_update_params {
+    my ( $self, $params, $comment ) = @_;
+
+    return unless $self->call_hook('open311_send_category_change');
+
+    my $p = $comment->problem;
+
+    if ( $comment->text =~ /Category changed/ ) {
+        if ( my $service_code = $p->get_extra_field_value('_wrapped_service_code')  || $p->contact->email ) {
+            $params->{service_code} = $service_code;
+        }
+    }
+}
+
 1;
