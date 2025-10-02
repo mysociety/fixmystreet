@@ -158,7 +158,8 @@ sub open311_munge_update_params {
 
 =head2 should_skip_sending_update
 
-Do not try and send updates to the Jadu backend.
+Do not try and send updates to the Jadu backend, or if
+we fail a couple of times to send to Symology.
 
 =cut
 
@@ -167,6 +168,7 @@ sub should_skip_sending_update {
 
     my $code = $update->problem->contact->email;
     return 1 if $code =~ /^Jadu/;
+    return 1 if $update->send_fail_count >= 2 && $update->send_fail_reason =~ /Username required for notification/;
     return 0;
 }
 
