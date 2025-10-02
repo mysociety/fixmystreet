@@ -84,6 +84,12 @@ sub open311_contact_meta_override {
     );
 }
 
+# Update sending currently unavailable
+sub should_skip_sending_update {
+    my ($self, $update) = @_;
+    return 1;
+}
+
 =item * We try and restrict geocoding to the bounding box of Rutland.
 
 =cut
