@@ -61,6 +61,8 @@ my %CONTAINERS = (
 );
 lock_hash(%CONTAINERS);
 
+sub skip_alert_state_changed_to { 1 }
+
 =head2 waste_on_the_day_criteria
 
 If it's before 6pm on the day of collection, treat an Outstanding/Allocated
