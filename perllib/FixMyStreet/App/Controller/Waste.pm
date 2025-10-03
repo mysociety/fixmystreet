@@ -815,13 +815,9 @@ sub construct_bin_report_form {
 
     my $show_all_services = $c->stash->{is_staff} && $c->get_param('additional');
     foreach (@{$c->stash->{service_data}}) {
-        unless (
-            ( $_->{last}
-            && $_->{report_allowed}
-            && !$_->{report_open} )
-            || $_->{report_only}
-            || $show_all_services )
-        {
+        my $report_allowed = !$show_all_services && $_->{last} && $_->{report_allowed} && !$_->{report_open};
+        my $additional_allowed = $show_all_services && !$_->{additional_open};
+        unless ( $report_allowed || $_->{report_only} || $additional_allowed ) {
             next;
         }
 
@@ -1055,7 +1051,7 @@ sub get_original_sub : Private {
 
     my $p = $c->model('DB::Problem')->search({
         category => 'Garden Subscription',
-        title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
+        title => ['Garden Subscription - New', 'Garden Subscription - Renew', 'Garden Subscription - Transfer'],
         extra => $extra,
         state => { '!=' => 'hidden' },
     })->order_by('-id')->to_body($c->cobrand->body);

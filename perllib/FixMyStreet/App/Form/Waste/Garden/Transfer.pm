@@ -14,7 +14,7 @@ has original_subscriber => (
 
         my $p = $c->cobrand->problems->search({
         category => 'Garden Subscription',
-        title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
+        title => ['Garden Subscription - New', 'Garden Subscription - Renew', 'Garden Subscription - Transfer'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => ($self->saved_data->{previous_ggw_address}->{value}) } ] }) },
         state => [ FixMyStreet::DB::Result::Problem->open_states ]
         })->order_by('-id')->to_body($c->cobrand->body)->first;

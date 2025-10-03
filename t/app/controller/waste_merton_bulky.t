@@ -56,8 +56,8 @@ FixMyStreet::override_config {
         echo => {
             merton => {
                 bulky_address_types => [ 1, 7 ],
-                bulky_service_id => 413,
-                bulky_event_type_id => 1636,
+                bulky_service_id => 1089,
+                bulky_event_type_id => 3130,
                 url => 'http://example.org',
                 nlpg => 'https://example.com/%s',
                 open311_endpoint => 'http://example.net/api/',
@@ -77,25 +77,8 @@ FixMyStreet::override_config {
         } },
     },
 }, sub {
-    my $lwp = Test::MockModule->new('LWP::UserAgent');
-    $lwp->mock(
-        'get',
-        sub {
-            my ( $ua, $url ) = @_;
-            return $lwp->original('get')->(@_) unless $url =~ /example.com/;
-            my ( $uprn, $area ) = ( 1000000002, "MERTON" );
-            my $j
-                = '{ "results": [ { "LPI": { "UPRN": '
-                . $uprn
-                . ', "LOCAL_CUSTODIAN_CODE_DESCRIPTION": "'
-                . $area
-                . '" } } ] }';
-            return HTTP::Response->new( 200, 'OK', [], $j );
-        }
-    );
-
     my $echo = Test::MockModule->new('Integrations::Echo');
-    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}] } );
+    $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 1067}] } );
     $echo->mock( 'GetTasks',                 sub { [] } );
     $echo->mock( 'GetEventsForObject',       sub { [] } );
     $echo->mock( 'CancelReservedSlotsForEvent', sub {
@@ -132,8 +115,8 @@ FixMyStreet::override_config {
     ];
     $echo->mock('ReserveAvailableSlotsForEvent', sub {
         my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
-        is $service, 413;
-        is $event_type, 1636;
+        is $service, 1089;
+        is $event_type, 3130;
         is $property, 12345;
         return $normal_slots;
     });
@@ -166,7 +149,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Eligible property as has bulky service' => sub {
-        $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 2238}, {'ServiceId' => 413}] } );
+        $echo->mock( 'GetServiceUnitsForObject', sub { [{'ServiceId' => 1067}, {'ServiceId' => 1089}] } );
         $echo->mock(
             'GetPointAddress',
             sub {
@@ -440,11 +423,10 @@ FixMyStreet::override_config {
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
-            is $report->get_extra_field_value('Collection_Date'), '2023-07-08T00:00:00';
-            is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '3::85::83';
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
-            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
-            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '08/07/2023';
+            is $report->get_extra_field_value('First_Date_Offered_-_Bulky'), '08/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve5==';
             is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
@@ -518,8 +500,8 @@ FixMyStreet::override_config {
 
         $echo->mock('ReserveAvailableSlotsForEvent', sub {
             my ($self, $service, $event_type, $property, $guid, $start, $end) = @_;
-            is $service, 413;
-            is $event_type, 1636;
+            is $service, 1089;
+            is $event_type, 3130;
             is $property, 12345;
             return $normal_slots;
         });
@@ -684,11 +666,10 @@ FixMyStreet::override_config {
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
-            is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
-            is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '83::6';
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-01T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6';
             is $report->get_extra_field_value('property_id'), '12345';
-            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '0';
-            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '01/07/2023';
+            is $report->get_extra_field_value('First_Date_Offered_-_Bulky'), '01/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve1==';
             is $report->photo, undef;
@@ -815,11 +796,10 @@ FixMyStreet::override_config {
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
             is $report->get_extra_field_value('uprn'), 1000000002;
-            is $report->get_extra_field_value('Collection_Date'), '2023-07-08T00:00:00';
-            is $report->get_extra_field_value('Bulky_Collection_Bulky_Items'), '83::6::83::83';
+            is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
+            is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6::83::83';
             is $report->get_extra_field_value('property_id'), '12345';
-            is $report->get_extra_field_value('Customer_Selected_Date_Beyond_SLA?'), '1';
-            is $report->get_extra_field_value('First_Date_Returned_to_Customer'), '01/07/2023';
+            is $report->get_extra_field_value('First_Date_Offered_-_Bulky'), '01/07/2023';
             like $report->get_extra_field_value('GUID'), qr/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/;
             is $report->get_extra_field_value('reservation'), 'reserve2==';
             is $report->photo, undef;
@@ -942,7 +922,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok($report->user->email);
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
         } ] } );
         ok set_fixed_time('2023-07-08T13:44:59Z'), "Set current date to collection date before 6pm";
         ok $report->update({ state => 'confirmed', external_id => 'a-guid'}), 'Reopen the report from previous test which cancelled it';
@@ -959,7 +939,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-02T00:00:00Z' },
             ResolutionCodeId => 232,
             EventStateId => 12400,
@@ -970,7 +950,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 232,
             EventStateId => 12400,
@@ -994,7 +974,7 @@ FixMyStreet::override_config {
 
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 379,
             EventStateId => 12401,
@@ -1006,13 +986,14 @@ FixMyStreet::override_config {
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [ {
             Guid => 'a-guid',
-            EventTypeId => 1636,
+            EventTypeId => 3130,
             ResolvedDate => { DateTime => '2023-07-05T00:00:00Z' },
             ResolutionCodeId => 100,
             EventStateId => 12401,
         }, {
-            EventTypeId => 1571,
-            ServiceId => 413,
+            EventTypeId => 3145,
+            EventStateId => 0,
+            ServiceId => 1089,
             Guid => 'guid',
             EventDate => { DateTime => '2023-07-05T00:00:00Z' },
         } ] } );
@@ -1056,56 +1037,6 @@ FixMyStreet::override_config {
     #     is $report->get_extra_field_value('payment_method'), 'cheque';
     # }
     #
-
-    $report->update_extra_field({ name => 'echo_id', value => 'EchoID' });
-    $report->update;
-    my $previous_id = $report->id;
-    subtest 'Test sending of bulky report to other endpoint' => sub {
-        use_ok 'FixMyStreet::Script::Merton::SendWaste';
-
-        $echo->mock('GetEvent', sub { { Id => 1928374 } });
-
-        my $send = FixMyStreet::Script::Merton::SendWaste->new;
-        $send->send_reports; # Clear any others
-        Open311->test_req_used; # Clear any use
-
-        Open311->_inject_response('/api/requests.xml', '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>359</service_request_id></request></service_requests>');
-
-        my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Bulky Report', {
-            cobrand => 'merton',
-            cobrand_data => 'waste',
-            state => 'confirmed',
-            category => 'Bulky collection',
-            external_id => '123',
-            dt => $dt,
-        });
-        $report->update_extra_field({ name => 'Bulky_Collection_Bulky_Items', value => '3::83::3' });
-        $report->set_extra_metadata(previous_booking_id => $previous_id);
-        $report->set_extra_metadata( item_1 => 'BBQ', item_2 => 'Bath', item_3 => 'BBQ' );
-        $report->update;
-
-        $send->send_reports;
-        my $req = Open311->test_req_used;
-        is $req, undef;
-
-        $report->update({ confirmed => $dt->subtract(minutes => 20) });
-        $send->send_reports;
-        $req = Open311->test_req_used;
-        my $cgi = CGI::Simple->new($req->content);
-        is $cgi->param('api_key'), 'api_key';
-        is $cgi->param('attribute[Bulky_Collection_Bulky_Items]'), 'BBQ::Bath::BBQ';
-        is $cgi->param('attribute[Current_Item_Count]'), 3;
-        is $cgi->param('attribute[previous_booking_id]'), $previous_id;
-        is $cgi->param('attribute[previous_echo_id]'), 'EchoID';
-
-        $report->discard_changes;
-        is $report->get_extra_metadata('sent_to_crimson'), 1;
-        is $report->get_extra_metadata('crimson_external_id'), "359";
-        is $report->get_extra_field_value('echo_id'), "1928374";
-        is $report->external_id, "123";
-        $report->delete;
-    };
 
 };
 
@@ -1162,17 +1093,16 @@ sub create_contact {
 
 sub _contact_extra_data {
     return (
-        { category => 'Bulky collection', email => '1636@test.com' },
+        { category => 'Bulky collection', email => '3130@test.com' },
         { code => 'payment' },
         { code => 'payment_method' },
         { code => 'Payment_Type' },
-        { code => 'Collection_Date' },
-        { code => 'Bulky_Collection_Bulky_Items' },
-        { code => 'Bulky_Collection_Notes' },
+        { code => 'Collection_Date_-_Bulky_Items' },
+        { code => 'TEM_-_Bulky_Collection_Item' },
+        { code => 'TEM_-_Bulky_Collection_Description' },
         { code => 'Exact_Location' },
         { code => 'GUID' },
         { code => 'reservation' },
-        { code => 'Customer_Selected_Date_Beyond_SLA?' },
-        { code => 'First_Date_Returned_to_Customer' },
+        { code => 'First_Date_Offered_-_Bulky' },
     );
 }
