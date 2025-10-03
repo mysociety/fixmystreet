@@ -14,6 +14,7 @@ use strict;
 use warnings;
 use Moo;
 use Data::Dumper;
+use Time::HiRes;
 
 with 'Integrations::Roles::SOAP';
 with 'Integrations::Roles::ParallelAPI';
@@ -74,7 +75,7 @@ has security => (
 has backend_type => ( is => 'ro', default => 'whitespace' );
 
 sub call {
-    my ($self, $method, @params) = @_;
+    my ($self, $method, $log_info, @params) = @_;
 
     require SOAP::Lite;
 
@@ -91,12 +92,16 @@ sub call {
     SOAP::Lite->soapversion(1.1);
 
     @params = make_soap_structure(@params);
+    my $start = Time::HiRes::time();
     my $som = $self->endpoint->call(
         $method => @params,
         $self->security
     );
 
     SOAP::Lite->soapversion(1.2);
+
+    my $time = Time::HiRes::time() - $start;
+    $self->log("$method $log_info call took $time seconds");
 
     # TODO: Better error handling
     die $som->faultstring if ($som->fault);
@@ -107,7 +112,7 @@ sub call {
 sub GetSiteCollections {
     my ($self, $uprn) = @_;
 
-    my $res = $self->call('GetSiteCollections', siteserviceInput => ixhash( Uprn => $uprn ));
+    my $res = $self->call('GetSiteCollections', $uprn, siteserviceInput => ixhash( Uprn => $uprn ));
 
     my $site_services = force_arrayref($res->{SiteServices}, 'SiteService');
 
@@ -117,7 +122,7 @@ sub GetSiteCollections {
 sub GetSiteInfo {
     my ( $self, $uprn ) = @_;
 
-    my $res = $self->call( 'GetSiteInfo',
+    my $res = $self->call( 'GetSiteInfo', $uprn,
         siteInfoInput => ixhash( Uprn => $uprn ) );
 
     my $site = $res->{Site};
@@ -130,7 +135,7 @@ sub GetSiteInfo {
 sub GetAccountSiteID {
     my ( $self, $site_id ) = @_;
 
-    my $res = $self->call( 'GetAccountSiteId',
+    my $res = $self->call( 'GetAccountSiteId', $site_id,
         siteInput => ixhash( SiteId => $site_id ) );
 
     return $res;
@@ -139,7 +144,8 @@ sub GetAccountSiteID {
 sub GetSiteServiceItemRoundSchedules {
     my ($self, $site_service_id) = @_;
 
-    my $res = $self->call('GetSiteServiceItemRoundSchedules', siteServiceItemRoundScheduleInput => ixhash( SiteServiceId => $site_service_id ));
+    my $res = $self->call('GetSiteServiceItemRoundSchedules', $site_service_id,
+        siteServiceItemRoundScheduleInput => ixhash( SiteServiceId => $site_service_id ));
 
     return $res->{RRASSContractRounds}->{RRASSContractRound};
 }
@@ -147,7 +153,7 @@ sub GetSiteServiceItemRoundSchedules {
 sub GetSiteWorksheets {
     my ( $self, $uprn ) = @_;
 
-    my $res = $self->call( 'GetSiteWorksheets',
+    my $res = $self->call( 'GetSiteWorksheets', $uprn,
         worksheetInput => ixhash( Uprn => $uprn ) );
 
     my $worksheets = force_arrayref( $res->{Worksheets}, 'Worksheet' );
@@ -159,7 +165,7 @@ sub GetSiteWorksheets {
 sub GetWorksheetDetailServiceItems {
     my ( $self, $worksheet_id ) = @_;
 
-    my $res = $self->call( 'GetWorksheetDetailServiceItems',
+    my $res = $self->call( 'GetWorksheetDetailServiceItems', $worksheet_id,
         worksheetDetailServiceItemsInput =>
             ixhash( WorksheetId => $worksheet_id ) );
 
@@ -173,7 +179,7 @@ sub GetCollectionByUprnAndDate {
     my ( $self, $uprn, $date_from ) = @_;
 
     my $res = $self->call(
-        'GetCollectionByUprnAndDate',
+        'GetCollectionByUprnAndDate', "$uprn $date_from",
         getCollectionByUprnAndDateInput => ixhash(
             Uprn                   => $uprn,
             NextCollectionFromDate => $date_from,
@@ -186,7 +192,8 @@ sub GetCollectionByUprnAndDate {
 sub GetInCabLogsByUsrn {
     my ($self, $usrn, $log_from_date) = @_;
 
-    my $res = $self->call('GetInCabLogs', inCabLogInput => ixhash( Usrn => $usrn, LogFromDate => $log_from_date, LogTypeID => [] ));
+    my $res = $self->call('GetInCabLogs', "$usrn $log_from_date",
+        inCabLogInput => ixhash( Usrn => $usrn, LogFromDate => $log_from_date, LogTypeID => [] ));
 
     my $logs = force_arrayref( $res->{InCabLogs}, 'InCabLogs' );
 
@@ -196,7 +203,8 @@ sub GetInCabLogsByUsrn {
 sub GetInCabLogsByUprn {
     my ($self, $uprn, $log_from_date) = @_;
 
-    my $res = $self->call('GetInCabLogs', inCabLogInput => ixhash( Uprn => $uprn, LogFromDate => $log_from_date, LogTypeID => [] ));
+    my $res = $self->call('GetInCabLogs', "$uprn $log_from_date",
+        inCabLogInput => ixhash( Uprn => $uprn, LogFromDate => $log_from_date, LogTypeID => [] ));
 
     my $logs = force_arrayref( $res->{InCabLogs}, 'InCabLogs' );
 
@@ -206,7 +214,8 @@ sub GetInCabLogsByUprn {
 sub GetStreets {
     my ($self, $postcode) = @_;
 
-    my $res = $self->call('GetStreets', getStreetInput => ixhash( streetName => '', townName => '', postcode => $postcode ));
+    my $res = $self->call('GetStreets', $postcode,
+        getStreetInput => ixhash( streetName => '', townName => '', postcode => $postcode ));
 
     my $streets = force_arrayref($res->{StreetArray}, 'Street');
 
@@ -216,7 +225,8 @@ sub GetStreets {
 sub GetSiteIncidents {
     my ($self, $uprn) = @_;
 
-    my $res = $self->call('GetSiteIncidents', roundIncidentInput => ixhash( Uprn => $uprn ));
+    my $res = $self->call('GetSiteIncidents', $uprn,
+        roundIncidentInput => ixhash( Uprn => $uprn ));
 
     return $res->{RoundIncidents}->{RoundIncidents};
 }
@@ -224,7 +234,7 @@ sub GetSiteIncidents {
 sub GetFullWorksheetDetails {
     my ( $self, $ws_id ) = @_;
 
-    my $res = $self->call( 'GetFullWorksheetDetails',
+    my $res = $self->call( 'GetFullWorksheetDetails', $ws_id,
         fullworksheetDetailsInput => ixhash( WorksheetId => $ws_id ) );
 
     return $res->{FullWSDetails};
@@ -232,7 +242,7 @@ sub GetFullWorksheetDetails {
 
 sub GetCollectionSlots {
     my ( $self, $uprn, $from, $to ) = @_;
-    my $res = $self->call( 'GetCollectionSlots',
+    my $res = $self->call( 'GetCollectionSlots', "$uprn $from $to",
         collectionSlotsInputInput => ixhash(
             Uprn => $uprn,
             ServiceId => 78,
@@ -240,6 +250,7 @@ sub GetCollectionSlots {
             NextCollectionToDate => $to,
         )
     );
+    $self->log($res);
     return force_arrayref($res->{ApiAdHocRoundInstances}, 'ApiAdHocRoundInstance');;
 }
 

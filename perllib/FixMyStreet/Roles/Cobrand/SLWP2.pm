@@ -79,6 +79,7 @@ my %SERVICE_IDS = (
         communal_food => 1087, # 4403
         garden => 1082, # 4410
         bulky => 1089,
+        small_items => 1080,
         schedule2_refuse => 1069, # 4409
         schedule2_mixed => 1073, # 4398
     },

@@ -61,7 +61,11 @@ my %CONTAINERS = (
 );
 lock_hash(%CONTAINERS);
 
-sub skip_alert_state_changed_to { 1 }
+sub skip_alert_state_changed_to {
+    my ( $self, $report ) = @_;
+
+    return $report->category eq 'Small items collection';
+}
 
 =head2 waste_on_the_day_criteria
 
