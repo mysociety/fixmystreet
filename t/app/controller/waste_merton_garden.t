@@ -516,9 +516,9 @@ FixMyStreet::override_config {
         $new_report->update({ created => \"current_timestamp - '30 minutes'::interval" });
 
         # Someone never made it to the complete page, test fallback
-        use_ok 'FixMyStreet::Script::Merton::SendWaste';
-        my $send = FixMyStreet::Script::Merton::SendWaste->new;
-        $send->check_payments;
+        use_ok 'FixMyStreet::Script::Waste::CheckPayments';
+        my $check = FixMyStreet::Script::Waste::CheckPayments->new(cobrand => $body->get_cobrand_handler);
+        $check->check_payments;
 
         check_extra_data_post_confirm($new_report);
 
