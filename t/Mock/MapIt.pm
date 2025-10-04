@@ -124,6 +124,7 @@ my @PLACES = (
     [ '?', 52.956196, -1.151204, 2412, 'Gedling Borough Council', 'DIS', 2236, 'Nottinghamshire County Council', 'CTY' ],
     [ 'KT11 1LZ', 51.293415, -0.441269, 2242, 'Surrey County Council', 'DIS'],
     [ '?', 51.86506, -2.2458, 2325, 'Gloucester City Council', 'DIS' ],
+    [ '?', 51.865329, -2.243133, 2325, 'Gloucester City Council', 'DIS' ],
     [ 'AB51 5JQ', 57.27126, -2.43012, 2648, 'Aberdeenshire Council', 'UTA' ],
 );
 
