@@ -389,6 +389,10 @@ sub waste_munge_request_data {
         if $reason;
 
     my $service_id;
+
+    # Larger container request doesn't have a service attached
+    $service_id = $container_to_service{$id} if $data->{medical_condition};
+
     my $services = $c->stash->{services};
     foreach my $s (keys %$services) {
         my $containers = $services->{$s}{request_containers};

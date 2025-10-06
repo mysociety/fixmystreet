@@ -425,6 +425,7 @@ FixMyStreet::override_config {
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '2::1';
         is $cgi->param('attribute[Reason]'), '9::9';
+        is $cgi->param('attribute[service_id]'), 1067;
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
