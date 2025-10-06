@@ -105,9 +105,9 @@ sub default_mocks {
         }
     );
     $whitespace_mock->mock(
-        'GetCollectionByUprnAndDate',
+        'GetCollectionByUprnAndDatePlus',
         sub {
-            my ( $self, $property_id, $from_date ) = @_;
+            my ( $self, $property_id, $from_date, $to_date ) = @_;
 
             return _collection_by_uprn_date()->{$from_date} // [];
         }
@@ -882,7 +882,7 @@ FixMyStreet::override_config {
             }
         );
         $whitespace_mock->mock(
-            'GetCollectionByUprnAndDate',
+            'GetCollectionByUprnAndDatePlus',
             sub {
                 [   {   Date     => '01/04/2024 00:00:00', # Mon
                         Round    => 'RND-1',
@@ -2122,7 +2122,7 @@ sub _site_collections {
 sub _collection_by_uprn_date {
     return {
         # For bin_future_collections
-        '2024-4-01T00:00:00' => [
+        '2024-03-31T00:00:00' => [
             {   Date     => '01/04/2024 00:00:00',
                 Round    => 'RND-8-9',
                 Schedule => 'Mon',
@@ -2176,20 +2176,6 @@ sub _collection_by_uprn_date {
                 Service  => 'Service 6 Collection',
             },
 
-            # Dupes of May collections below
-            {   Date     => '01/05/2024 00:00:00',
-                Round    => 'RND-6',
-                Schedule => 'Wed Wk 2',
-                Service  => 'Service 6 Collection',
-            },
-
-            {   Date     => '06/05/2024 00:00:00',
-                Round    => 'RND-8-9',
-                Schedule => 'Mon',
-                Service  => 'Services 8 & 9 Collection',
-            },
-        ],
-        '2024-5-01T00:00:00' => [
             {   Date     => '01/05/2024 00:00:00',
                 Round    => 'RND-6',
                 Schedule => 'Wed Wk 2',
