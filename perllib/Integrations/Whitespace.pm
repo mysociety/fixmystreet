@@ -175,14 +175,15 @@ sub GetWorksheetDetailServiceItems {
     return $items;
 }
 
-sub GetCollectionByUprnAndDate {
-    my ( $self, $uprn, $date_from ) = @_;
+sub GetCollectionByUprnAndDatePlus {
+    my ( $self, $uprn, $date_from, $date_to ) = @_;
 
     my $res = $self->call(
-        'GetCollectionByUprnAndDate', "$uprn $date_from",
-        getCollectionByUprnAndDateInput => ixhash(
+        'GetCollectionByUprnAndDatePlus', "$uprn $date_from $date_to",
+        getCollectionByUprnAndDatePlusInput => ixhash(
             Uprn                   => $uprn,
             NextCollectionFromDate => $date_from,
+            NextCollectionToDate => $date_to,
         ),
     );
 

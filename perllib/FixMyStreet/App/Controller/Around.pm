@@ -277,13 +277,34 @@ sub check_and_stash_category : Private {
     my @categories = $rs->search(
         $where,
         {
-            columns => [ 'category', 'extra' ],
+            columns => [ 'id', 'category', 'extra' ],
             distinct => 1
         }
     )->all_sorted;
     # Ensure only uniquely named categories are shown
     my %seen;
-    @categories = grep { !$seen{$_->category_display}++ } @categories;
+    my %filter_id;
+    my $group;
+    for my $category (@categories) {
+        next unless $category->category_display;
+        if ($category->extra->{group}) {
+            $group = $category->extra->{group};
+            if (ref $group ne 'ARRAY') {
+                $group = [$group];
+            }
+        } else {
+            $group = ['no_group'];
+        }
+        for my $group_name (@$group) {
+            $seen{$group_name}->{$category->category_display}++;
+            if ($seen{$group_name}{$category->category_display} > 1) {
+                my $id = $category->id;
+                $filter_id{$id} = 1
+            }
+        }
+    };
+
+    @categories = grep { !$filter_id{$_->id} } @categories;
     $c->stash->{filter_categories} = \@categories;
     my %categories_mapped = map { $_->category => 1 } @categories;
     $c->forward('/report/stash_category_groups', [ \@categories ]);

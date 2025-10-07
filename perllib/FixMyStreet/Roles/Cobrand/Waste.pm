@@ -16,6 +16,7 @@ sub bin_payment_types {
         'direct_debit' => 3,
         'cheque' => 4,
         'waived' => 5,
+        'cash' => 6,
     };
 }
 
@@ -24,6 +25,7 @@ sub waste_subscription_types {
         New => 1,
         Renew => 2,
         Amend => 3,
+        Transfer => 4,
     };
 }
 

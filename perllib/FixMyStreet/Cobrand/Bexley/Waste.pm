@@ -647,12 +647,9 @@ sub _recent_collections {
     my $dt_today = DateTime->today( time_zone => FixMyStreet->local_time_zone );
     my $dt_from = $dt_today->clone->subtract( days => 29 );
 
-    # TODO GetCollectionByUprnAndDatePlus would be preferable as it supports
-    # an end date, but Bexley's live API does not seem to support it. So we
-    # have to filter out future dates below.
-    my $collections = $self->whitespace->GetCollectionByUprnAndDate(
+    my $collections = $self->whitespace->GetCollectionByUprnAndDatePlus(
         $property->{uprn},
-        $dt_from->stringify,
+        $dt_from->stringify, $dt_today->stringify
     );
 
     # Collection dates are in 'dd/mm/yyyy hh:mm:ss' format.
@@ -852,36 +849,21 @@ sub bin_future_collections {
         }
     }
 
-    # TODO GetCollectionByUprnAndDatePlus would be preferable as it supports
-    # an end date, so we could just do a single search for the whole year. But
-    # Bexley's live API does not seem to support it. So we have to use
-    # several calls to GetCollectionByUprnAndDate instead, which only returns
-    # a month's worth of data.
-    my $year = 1900 + (localtime)[5];
-    my @rounds;
-    for my $month ( 1 .. 12 ) {
-        push @rounds, @{ $self->whitespace->GetCollectionByUprnAndDate(
-            $self->{c}->stash->{property}{uprn},
-            "$year-$month-01T00:00:00",
-        ) };
-    }
+    # Get collections for the next year
+    my $dt_from = DateTime->today( time_zone => FixMyStreet->local_time_zone );
+    my $dt_to = $dt_from->clone->add( days => 365 );
+    my @rounds = @{ $self->whitespace->GetCollectionByUprnAndDatePlus(
+        $self->{c}->stash->{property}{uprn},
+        $dt_from->stringify, $dt_to->stringify,
+    ) };
     return [] unless @rounds;
 
     # Dates need to be converted from 'dd/mm/yyyy hh:mm:ss' format
     my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y %T' );
 
-    my %seen_rnd_schedule_date;
     my @events;
     for my $rnd ( @rounds ) {
-        # There is a possibility that in our multiple calls to
-        # GetCollectionByUprnAndDate we have picked up duplicate data (e.g.
-        # the search from June 1st may have returned data from the beginning
-        # of July too). So we need to dedupe.
         my $rnd_schedule = $rnd->{Round} . ' ' . $rnd->{Schedule};
-        my $rnd_schedule_date = $rnd_schedule . ' ' . $rnd->{Date};
-
-        next if $seen_rnd_schedule_date{$rnd_schedule_date};
-
         # Try to match Round-Schedule against services
         my $srv = $srv_for_round{$rnd_schedule};
         next unless $srv;
@@ -899,8 +881,6 @@ sub bin_future_collections {
                 summary => $summary,
             };
         }
-
-        $seen_rnd_schedule_date{$rnd_schedule_date} = 1;
     }
 
     return \@events;

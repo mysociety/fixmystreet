@@ -79,7 +79,7 @@ sub default_mocks {
         } ];
     });
     $whitespace_mock->mock(
-        'GetCollectionByUprnAndDate',
+        'GetCollectionByUprnAndDatePlus',
         sub {
             my ( $self, $property_id, $from_date ) = @_;
             return [];

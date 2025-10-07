@@ -719,7 +719,7 @@ FixMyStreet::override_config {
         }
     );
     $whitespace_mock->mock( 'GetSiteWorksheets', sub{ [] } );
-    $whitespace_mock->mock( 'GetCollectionByUprnAndDate', sub{ [] } );
+    $whitespace_mock->mock( 'GetCollectionByUprnAndDatePlus', sub{ [] } );
     $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
     $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
 

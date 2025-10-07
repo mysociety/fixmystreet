@@ -2027,6 +2027,18 @@ fixmystreet.assets.tfl.a13_found = function(layer) {
     }
 };
 
+fixmystreet.assets.tfl.construct_bus_station_selected_asset_message = function(asset) {
+    var name = asset.attributes.STOP_NAME || asset.attributes.SITE_NAME || '';
+
+    if (!name) {
+        return;
+    }
+
+    var message = ['You have selected', this.fixmystreet.asset_item, '<b>' + name + '</b>'];
+    return message.join(' ');
+};
+
+
 /* Thamesmead */
 
 fixmystreet.assets.thamesmead = {};
