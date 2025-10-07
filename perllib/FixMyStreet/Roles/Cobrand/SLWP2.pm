@@ -299,7 +299,6 @@ sub waste_service_containers {
             $quantity = $_->{Value} if $_->{DatatypeName} eq 'Container Quantity';
         }
 
-        next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/i; # Blue stripe bag on a weekly collection
 
         if ($container && $quantity) {
             push @$containers, $container;
@@ -307,6 +306,9 @@ sub waste_service_containers {
             $self->{c}->stash->{quantities}->{$container} = $quantity;
 
             if ($waste_containers_no_request->{$container}) {
+                $request_max->{$container} = 0; # Cannot request these
+            } elsif ($container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/i) {
+                # Blue stripe bag on a weekly collection
                 $request_max->{$container} = 0; # Cannot request these
             } elsif ($self->moniker eq 'kingston') {
                 if ($container == $CONTAINERS{food_outdoor} || $container == $CONTAINERS{paper_240} || $container == $CONTAINERS{recycling_240}) {
