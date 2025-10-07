@@ -19,6 +19,8 @@ $sutton->set_extra_metadata(wasteworks_config => {
     small_items_per_collection_max => '6',
     small_item_list => [{bartec_id => 1, max => 1, message => '', name => 'Batteries', price => ''}, {bartec_id => 2, max => 6, message => '', name => 'Small WEEE', price => ''}],
     show_location_page => "users",
+    band1_price => '3750',
+    band1_max => 4,
    });
 $sutton->update;
 
@@ -559,6 +561,7 @@ FixMyStreet::override_config {
         is $report->get_extra_field_value('GUID'), '4ea70923-7151-11f0-aeea-cd51f3977c8c';
         is $report->get_extra_field_value('reservation'), 'reserve7d==';
         is $report->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+        is $report->comments->search(), 0, 'No payment comment added';
     };
 
     subtest 'Reporting a missed collection' => sub {

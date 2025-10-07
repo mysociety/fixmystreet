@@ -29,4 +29,146 @@ sub alter {
 
 with 'FixMyStreet::App::Form::Waste::AboutYou';
 
+has_page summary => (
+    fields => ['tandc', 'submit'],
+    title => 'Change your garden waste subscription',
+    template => 'waste/garden/modify_summary.html',
+    update_field_list => sub {
+        my $form = shift;
+        my $c = $form->{c};
+        my $data = $form->saved_data;
+        my $current_bins = $data->{current_bins};
+        my $bin_count = $data->{bins_wanted};
+        my $new_bins = $bin_count - $current_bins;
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, discount => $data->{apply_discount} });
+        my $pro_rata = $costs->pro_rata_cost($new_bins);
+        my $cost_pa = $costs->bins($bin_count);
+        my $cost_now_admin = $costs->new_bin_admin_fee($new_bins);
+        my $total = $cost_pa;
+        $pro_rata += $cost_now_admin;
+
+        $data->{payment_method} = $c->stash->{garden_form_data}->{payment_method};
+        $data->{cost_now_admin} = $cost_now_admin / 100;
+        $data->{display_pro_rata} = $pro_rata < 0 ? 0 : $pro_rata / 100;
+        $data->{display_total} = $total / 100;
+
+        unless ( $c->stash->{is_staff} ) {
+            $data->{name} ||= $c->user->name;
+            $data->{email} = $c->user->email;
+            $data->{phone} ||= $c->user->phone;
+        }
+        my $button_text = 'Continue to payment';
+        my $features = $form->{c}->cobrand->feature('waste_features');
+        if ( $data->{payment_method} eq 'credit_card' || $data->{payment_method} eq 'csc' ) {
+            if ( $new_bins <= 0 ) {
+                $button_text = 'Confirm changes';
+            }
+        } elsif ( $data->{payment_method} eq 'direct_debit' ) {
+            $button_text = 'Amend Direct Debit';
+        }
+        if ($c->stash->{is_staff} && $features->{text_for_waste_payment}) {
+            $button_text =  $features->{text_for_waste_payment};
+        }
+        return {
+            submit => { default => $button_text },
+        };
+    },
+    finished => sub {
+        return $_[0]->wizard_finished('process_garden_modification');
+    },
+    next => 'done',
+);
+
+has_page done => (
+    title => 'Subscription amended',
+    template => 'waste/garden/amended.html',
+);
+
+has_field task => (
+    type => 'Select',
+    label => 'What do you want to do?',
+    required => 1,
+    widget => 'RadioGroup',
+    options_method => sub {
+        my $self = shift;
+        my $form = $self->form;
+        my $c = $form->c;
+        my @options;
+        if ($c->cobrand->moniker eq 'kingston' || $c->cobrand->moniker eq 'sutton' || $c->cobrand->moniker eq 'brent' || $c->cobrand->moniker eq 'merton') {
+            push @options, { value => 'modify', label => 'Increase the number of bins in your subscription' };
+        } else {
+            push @options, { value => 'modify', label => 'Increase or reduce the number of bins in your subscription' };
+        }
+        push @options, { value => 'cancel', label => 'Cancel your garden waste subscription' };
+        return \@options;
+    },
+);
+
+has_field current_bins => (
+    type => 'Integer',
+    label => 'Number of bins currently on site',
+    tags => { number => 1 },
+    required => 1,
+    disabled => 1,
+    range_start => 1,
+);
+
+has_field bins_wanted => (
+    type => 'Integer',
+    label => 'How many bins to be emptied (including bins already on site)',
+    tags => { number => 1 },
+    required => 1,
+    range_start => 1,
+    tags => {
+        hint => 'We will deliver, or remove, bins if this is different from the number of bins already on the property',
+    }
+);
+
+has_field apply_discount => (
+    type => 'Checkbox',
+    build_label_method => sub {
+        my $self = shift;
+        my $percent = $self->parent->{c}->stash->{waste_features}->{ggw_discount_as_percent};
+        return "$percent" . '% Customer discount';
+    },
+    option_label => 'Check box if customer is entitled to a discount',
+);
+
+with 'FixMyStreet::App::Form::Waste::GardenTandC';
+
+has_field continue => (
+    type => 'Submit',
+    value => 'Continue',
+    element_attr => { class => 'govuk-button' },
+);
+
+has_field continue_review => (
+    type => 'Submit',
+    value => 'Review subscription',
+    element_attr => { class => 'govuk-button' },
+);
+
+has_field submit => (
+    type => 'Submit',
+    value => 'Continue to payment',
+    element_attr => { class => 'govuk-button' },
+    order => 999,
+);
+
+sub validate {
+    my $self = shift;
+    my $cobrand = $self->{c}->cobrand->moniker;
+
+    if ($cobrand eq 'kingston' || $cobrand eq 'sutton' || $cobrand eq 'brent' || $cobrand eq 'merton') {
+        unless ( $self->field('current_bins')->is_inactive ) {
+            my $total = $self->field('bins_wanted')->value;
+            my $current = $self->field('current_bins')->value;
+            $self->add_form_error('You can only increase the number of bins')
+                if $total <= $current;
+        }
+    }
+
+    $self->next::method();
+}
+
 1;

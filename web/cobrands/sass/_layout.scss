@@ -1071,15 +1071,7 @@ textarea.form-error {
   padding-top:1em;
   big {
     color: $layout_front_stats_color;
-    font-size: 2em;
-    @media (min-width: 54em) {
-      // 54em roughly halfway between 48em and 62em
-      font-size: 2.5em;
-    }
-    @media (min-width: 62em) {
-      // container max-width 60em + 2em side padding
-      font-size: 3em;
-    }
+    font-size: clamp(1em, 3.5vw, 2.5em);
   }
 }
 
