@@ -55,8 +55,8 @@ has_field has_reference => (
     label    => 'Do you have a customer reference number?',
     required => 1,
     options  => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No',  value => 'No' },
+        { label => 'No',  value => 'No', data_hide => '#form-customer_reference-row' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-customer_reference-row' },
     ],
     order => 1,
 );
@@ -65,6 +65,7 @@ has_field customer_reference => (
     type => 'Text',
     label => 'Customer reference number',
     required_when => { has_reference => 'Yes' },
+    tags    => { initial_hidden => 1 },
     order => 2,
 );
 
