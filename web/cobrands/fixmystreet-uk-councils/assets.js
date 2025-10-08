@@ -800,7 +800,7 @@ fixmystreet.assets.gloucester.street_or_plot_found = function(layer, asset) {
         var combined = layer.fixmystreet.combined;
         var key_layer = fixmystreet.map.getLayersByName(combined[0])[0];
         var original_no_asset_message = key_layer.fixmystreet.no_asset_message;
-        var no_asset_message = "The land is owned by <strong>Gloucester City Homes</strong>. You will need to contact them directly regarding this matter. You can contact them via their <a href=https://www.gch.co.uk>website</a>";
+        var no_asset_message = "This land is not owned by Gloucester city council.";
 
         key_layer.fixmystreet.no_asset_message = no_asset_message;
         fixmystreet.message_controller.road_not_found(key_layer, function() { return true; } );
