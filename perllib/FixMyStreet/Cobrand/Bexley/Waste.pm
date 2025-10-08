@@ -303,12 +303,11 @@ sub bin_services_for_address {
         = $self->_open_reports($property);
     $property->{recent_collections} = $self->_recent_collections($property);
 
-    my ( $property_logs, $street_logs, $completed_or_attempted_collections )
+    my ( $property_logs, $completed_or_attempted_collections )
         = $self->_in_cab_logs($property);
     $property->{completed_or_attempted_collections}
         = $completed_or_attempted_collections;
     $property->{red_tags} = $property_logs;
-    $property->{service_updates} = $street_logs;
 
     # Set certain things outside of services loop
     my $containers = $self->_containers($property);
@@ -704,11 +703,10 @@ sub _in_cab_logs {
     }
 
     my @property_logs;
-    my @street_logs;
     my %completed_or_attempted_collections;
     my %seen_logs;
 
-    return ( \@property_logs, \@street_logs, \%completed_or_attempted_collections )
+    return ( \@property_logs, \%completed_or_attempted_collections )
         unless $cab_logs;
 
     for (@$cab_logs) {
@@ -743,8 +741,7 @@ sub _in_cab_logs {
         }
     }
 
-    return ( \@property_logs, \@street_logs,
-        \%completed_or_attempted_collections );
+    return ( \@property_logs, \%completed_or_attempted_collections );
 }
 
 sub can_report_missed {
@@ -752,9 +749,6 @@ sub can_report_missed {
 
     # Cannot make a report if there is already an open one for this service
     return 0 if $property->{open_reports}{missed}{ $service->{service_id} };
-
-    # Prevent reporting if there are service updates
-    return 0 if @{ $property->{service_updates} // [] };
 
     # Prevent reporting if there are red tags on the service
     # Red tags are matched to services based on prefix
@@ -772,7 +766,7 @@ sub can_report_missed {
     if ($last_expected_collection_dt) {
         # TODO We can probably get successful collections directly off the
         # property rather than query _in_cab_logs again
-        my ( undef, undef, $completed_or_attempted_collections )
+        my ( undef, $completed_or_attempted_collections )
             = $self->_in_cab_logs($property);
 
         my $logged_time_for_round;
