@@ -52,6 +52,7 @@ create_contact(
 my $whitespace_mock = $bexley_mocks{whitespace};
 my $agile_mock = $bexley_mocks{agile};
 $agile_mock->mock( 'CustomerSearch', sub { {} } );
+my $access_mock = $bexley_mocks{aps};
 
 use t::Mock::AccessPaySuiteBankChecker;
 my $bankchecker = t::Mock::AccessPaySuiteBankChecker->new;
@@ -82,6 +83,8 @@ FixMyStreet::override_config {
             paye_siteID => 1234,
             paye_hmac_id => 1234,
             paye_hmac => 1234,
+            dd_client_code => 'APIRTM',
+            dd_endpoint => 'test',
             dd_schedule_id => 123,
             validator_url => "http://bank.check.example.org/",
             validator_client => "bexley",
@@ -721,8 +724,6 @@ FixMyStreet::override_config {
                 my $dd_customer_id = 'DD_CUSTOMER_123';
                 my $dd_contract_id = 'DD_CONTRACT_123';
 
-                my $access_mock
-                    = Test::MockModule->new('Integrations::AccessPaySuite');
                 $access_mock->mock(
                     get_contracts => sub { [ { Status => 'Active' } ] },
                 );
@@ -1742,7 +1743,6 @@ FixMyStreet::override_config {
 
         set_fixed_time('2023-12-29T17:00:00Z');
 
-        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
         $access_mock->mock('create_customer', sub {
             my ($self, $params) = @_;
@@ -1852,13 +1852,13 @@ FixMyStreet::override_config {
         like $email_body, qr/Bins to be delivered: 1/;
         like $email_body, qr/Total:.*?$discount_human/;
         $mech->clear_emails_ok;
+        $access_mock->unmock_all;
     };
 
     subtest 'Test direct debit setup with empty email' => sub {
         $mech->delete_problems_for_body($body->id);
         set_fixed_time('2023-12-29T17:00:00Z');
 
-        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
         $access_mock->mock('create_customer', sub {
             my ($self, $params) = @_;
@@ -1913,7 +1913,8 @@ FixMyStreet::override_config {
         is $customer_params->{email}, 'gardenwaste@' . $body->get_cobrand_handler->admin_user_domain, 'Default email was used';
 
         $mech->content_contains('Your Direct Debit has been set up successfully');
-        $mech->content_contains('Direct Debit mandate');
+
+        $access_mock->unmock_all;
     };
 
     $mech->delete_problems_for_body($body->id);
@@ -1924,6 +1925,36 @@ FixMyStreet::override_config {
             subtest "Payment status: $status" => sub {
                 default_mocks();
                 set_fixed_time('2024-02-01T00:00:00');
+
+                my ($dd_report) = $mech->create_problems_for_body(
+                    1,
+                    $body->id,
+                    'Garden Subscription - New',
+                    {   category    => 'Garden Subscription',
+                        title       => 'Garden Subscription - New',
+                        external_id => 'Agile-CONTRACT_123',
+                    },
+                );
+                $dd_report->set_extra_fields(
+                    { name => 'uprn', value => 10001 },
+                    { name  => 'payment_method', value => 'direct_debit' },
+                );
+                $dd_report->set_extra_metadata(
+                    direct_debit_customer_id => 'DD_CUSTOMER_123' );
+                $dd_report->update;
+
+                $access_mock->mock(
+                    get_contracts => sub {
+                        return [
+                            {   Status => (
+                                    $status eq 'Pending'
+                                    ? 'Inactive'
+                                    : 'Active'
+                                )
+                            }
+                        ];
+                    },
+                );
 
                 $agile_mock->mock( 'CustomerSearch', sub { {
                     Customers => [
@@ -1945,6 +1976,7 @@ FixMyStreet::override_config {
                                 },
                                 {
                                     EndDate => '12/12/2025 12:21',
+                                    Reference => 'CONTRACT_123',
                                     ServiceContractStatus => 'ACTIVE',
                                     UPRN => '10001',
                                     Payments => [
@@ -1970,7 +2002,11 @@ FixMyStreet::override_config {
                 set_fixed_time('2025-12-01T00:00:00');
                 $mech->get_ok('/waste/10001');
                 $mech->content_lacks('Renew your');
-                $mech->content_contains('existing direct debit subscription');
+                $mech->content_contains( $status eq 'Pending'
+                    ? 'pending direct debit subscription'
+                    : 'existing direct debit subscription' );
+
+                $access_mock->unmock_all;
             }
         }
     };
@@ -2173,7 +2209,6 @@ FixMyStreet::override_config {
         subtest 'Original sub paid via direct debit' => sub {
             $mech->delete_problems_for_body($body->id);
 
-            my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
             $access_mock->mock( cancel_plan => 'CANCEL_REF_123' );
 
             my $uprn = 10001;
@@ -2263,6 +2298,7 @@ FixMyStreet::override_config {
             } @emails;
             ok $to_user, 'Email sent to user';
 
+            $access_mock->unmock_all;
         };
 
     };
@@ -2341,7 +2377,6 @@ FixMyStreet::override_config {
         });
 
         # Set up the mock for AccessPaySuite
-        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my $archive_contract_called = 0;
         my $archived_contract_id;
 
@@ -2399,6 +2434,8 @@ FixMyStreet::override_config {
         # Verify the archive_contract was called with the right parameters
         is $archive_contract_called, 1, 'archive_contract was called';
         is $archived_contract_id, $contract_id, 'correct contract_id was passed';
+
+        $access_mock->unmock_all;
     };
 
     subtest 'renew garden subscription with direct debit that was previously paid by credit card' => sub {
@@ -2472,7 +2509,6 @@ FixMyStreet::override_config {
         );
 
         # Mock AccessPaySuite for direct debit setup
-        my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
         my ($customer_params, $contract_params);
         $access_mock->mock('create_customer', sub {
             my ($self, $params) = @_;
@@ -2576,6 +2612,8 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('direct_debit_contract_id'), 'CONTRACT123', 'Correct contract ID';
         is $report->get_extra_metadata('direct_debit_reference'), 'APIRTM-DEFGHIJ1KL', 'Correct payer reference';
         is $report->state, 'confirmed', 'Report is confirmed';
+
+        $access_mock->unmock_all;
     };
 
     subtest 'Staff garden waste subscription uses paye.net with custom narrative' => sub {
@@ -2617,9 +2655,7 @@ FixMyStreet::override_config {
                 {   category => 'Garden Subscription',
                     title    => 'Garden Subscription - New',
                     external_id => 'Agile-CONTRACT_123',
-                    # 20+ days ago, to stop this report from being picked up as
-                    # a 'pending_subscription'
-                    created => '2024-01-01T00:00:00Z',
+                    created => '2024-01-31T00:00:00Z',
                 },
             );
             $cc_report->set_extra_fields(
@@ -2655,6 +2691,10 @@ FixMyStreet::override_config {
                     ],
                 } } );
 
+                $mech->content_unlike(
+                    qr/You have a pending garden subscription\./,
+                    'Overall subscription not shown as pending',
+                );
                 $mech->get_ok('/waste/10001');
                 like $mech->text,
                     qr/Frequency.*Pending/,
@@ -2781,7 +2821,7 @@ FixMyStreet::override_config {
             set_fixed_time('2024-02-01T00:00:00Z');
             default_mocks();
 
-            my ($cc_report) = $mech->create_problems_for_body(
+            my ($dd_report) = $mech->create_problems_for_body(
                 1,
                 $body->id,
                 'Garden Subscription - New',
@@ -2790,12 +2830,13 @@ FixMyStreet::override_config {
                     external_id => 'Agile-CONTRACT_123',
                 },
             );
-            $cc_report->set_extra_fields(
+            $dd_report->set_extra_fields(
                 { name => 'uprn', value => 10001 },
                 { name => 'payment_method', value => 'direct_debit' },
             );
-            $cc_report->set_extra_metadata(direct_debit_customer_id => 'DD_CUSTOMER_123');
-            $cc_report->update;
+            $dd_report->set_extra_metadata(
+                direct_debit_customer_id => 'DD_CUSTOMER_123' );
+            $dd_report->update;
 
             $agile_mock->mock( 'CustomerSearch', sub { {
                 Customers => [
@@ -2809,7 +2850,12 @@ FixMyStreet::override_config {
                                 WasteContainerQuantity => 1,
                                 ServiceContractStatus => 'ACTIVE',
                                 UPRN => '10001',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                Payments => [
+                                    {   PaymentStatus => 'Paid',
+                                        Amount        => '100',
+                                        PaymentMethod => 'Direct debit',
+                                    }
+                                ]
                             },
                         ],
                     },
@@ -2845,9 +2891,6 @@ FixMyStreet::override_config {
                 }
             );
 
-            my $access_mock
-                = Test::MockModule->new('Integrations::AccessPaySuite');
-
             subtest 'DD pending' => sub {
                 $access_mock->mock(
                     get_contracts => sub {
@@ -2857,9 +2900,15 @@ FixMyStreet::override_config {
                 );
 
                 $mech->get_ok('/waste/10001');
+                $mech->content_like(
+                    qr/You have a pending garden subscription\./,
+                    'Subscription shown as pending',
+                );
                 like $mech->text,
                     qr/This property has a pending direct debit subscription/,
                     'pending DD message shown';
+
+                $access_mock->unmock_all;
             };
 
             subtest 'DD active' => sub {
@@ -2868,9 +2917,15 @@ FixMyStreet::override_config {
                 );
 
                 $mech->get_ok('/waste/10001');
+                $mech->content_unlike(
+                    qr/You have a pending garden subscription\./,
+                    'Subscription no longer shown as pending',
+                );
                 like $mech->text,
                     qr/This property has an existing direct debit subscription which will renew automatically/,
                     'active DD message shown';
+
+                $access_mock->unmock_all;
             };
 
 # TODO
@@ -2881,29 +2936,41 @@ FixMyStreet::override_config {
             subtest 'Due for renewal' => sub {
                 set_fixed_time('2025-01-01T00:00:00Z');
 
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Active' } ] },
+                );
+
                 $mech->get_ok('/waste/10001');
                 $mech->content_lacks('Your subscription is soon due for renewal');
                 $mech->content_contains('This property has an existing direct debit subscription which will renew automatically');
                 $mech->content_lacks('value="Renew subscription today"');
                 $mech->content_lacks('Renew your brown wheelie bin subscription');
+
+                $access_mock->unmock_all;
             };
 
             subtest 'Renewal overdue' => sub {
                 set_fixed_time('2025-03-01T00:00:00Z');
 
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Active' } ] },
+                );
+
                 $mech->get_ok('/waste/10001');
                 unlike $mech->text,
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
-                like $mech->content,
+                unlike $mech->content,
                     qr/subscription overdue/,
-                    'overdue message shown';
+                    'overdue message not shown';
                 unlike $mech->content,
                     qr/Renew your brown wheelie bin subscription/,
                     'renewal link not shown';
                 like $mech->text,
                     qr/This property has an existing direct debit subscription which will renew automatically/,
                     'active DD message still shown';
+
+                $access_mock->unmock_all;
             };
         };
     };

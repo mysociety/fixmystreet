@@ -14,6 +14,8 @@ our @EXPORT = qw(%bexley_mocks default_mocks $slots_default);
 
 our %bexley_mocks;
 
+$bexley_mocks{aps} = Test::MockModule->new('Integrations::AccessPaySuite');
+
 $bexley_mocks{addresses} = Test::MockModule->new('BexleyAddresses');
 # We don't actually read from the file, so just put anything that is a valid path
 $bexley_mocks{addresses}->mock( 'database_file', '/' );
