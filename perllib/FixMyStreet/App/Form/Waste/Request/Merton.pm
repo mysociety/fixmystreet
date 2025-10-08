@@ -8,7 +8,12 @@ my %CONTAINERS_NO_ADDITIONAL = (
     2 => 'refuse_180',
     3 => 'refuse_240',
     4 => 'refuse_360',
-
+    14 => 'recycling_180',
+    15 => 'recycling_240',
+    16 => 'recycling_360',
+    26 => 'paper_180',
+    27 => 'paper_240',
+    28 => 'paper_360',
     39 => 'garden_240',
     37 => 'garden_140',
 );
@@ -73,19 +78,19 @@ sub options_request_reason {
         { value => 'missing', label => 'Missing' },
     );
     my $data = $form->saved_data;
-    my $only_refuse_or_garden = 1;
+    my $only_wheelie_bins = 1;
     my @services = grep { /^container-\d/ && $data->{$_} } sort keys %$data;
     foreach (@services) {
         my ($id) = /container-(.*)/;
         if (!$CONTAINERS_NO_ADDITIONAL{$id}) {
-            $only_refuse_or_garden = 0;
+            $only_wheelie_bins = 0;
             last;
         }
     }
 
     push @options,
         { value => 'more', label => 'I need an additional container/bin' }
-        unless $only_refuse_or_garden;
+        unless $only_wheelie_bins;
 
     return @options;
 }
