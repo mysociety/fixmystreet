@@ -150,22 +150,13 @@ sub open311_update_missing_data {
     }
 }
 
-=head2 open311_munge_update_params
+=head2 open311_send_category_change
 
-We pass any category change.
+We pass any category change to Confirm.
 
 =cut
 
-sub open311_munge_update_params {
-    my ( $self, $params, $comment ) = @_;
-
-    my $p = $comment->problem;
-
-    if ( $comment->text =~ /Category changed/ ) {
-        my $service_code = $p->contact->email;
-        $params->{service_code} = $service_code;
-    }
-}
+sub open311_send_category_change { 1 }
 
 
 =head2 open311_report_fetched
