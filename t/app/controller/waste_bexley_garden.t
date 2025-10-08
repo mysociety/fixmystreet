@@ -1925,6 +1925,39 @@ FixMyStreet::override_config {
                 default_mocks();
                 set_fixed_time('2024-02-01T00:00:00');
 
+                my ($dd_report) = $mech->create_problems_for_body(
+                    1,
+                    $body->id,
+                    'Garden Subscription - New',
+                    {   category    => 'Garden Subscription',
+                        title       => 'Garden Subscription - New',
+                        external_id => 'Agile-CONTRACT_123',
+                    },
+                );
+                $dd_report->set_extra_fields(
+                    { name => 'uprn', value => 10001 },
+                    { name  => 'payment_method', value => 'direct_debit' },
+                );
+                $dd_report->set_extra_metadata(
+                    direct_debit_customer_id => 'DD_CUSTOMER_123' );
+                $dd_report->update;
+
+                my $access_mock
+                    = Test::MockModule->new('Integrations::AccessPaySuite');
+
+                $access_mock->mock(
+                    get_contracts => sub {
+                        return [
+                            {   Status => (
+                                    $status eq 'Pending'
+                                    ? 'Inactive'
+                                    : 'Active'
+                                )
+                            }
+                        ];
+                    },
+                );
+
                 $agile_mock->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
@@ -1945,6 +1978,7 @@ FixMyStreet::override_config {
                                 },
                                 {
                                     EndDate => '12/12/2025 12:21',
+                                    Reference => 'CONTRACT_123',
                                     ServiceContractStatus => 'ACTIVE',
                                     UPRN => '10001',
                                     Payments => [
@@ -1970,7 +2004,9 @@ FixMyStreet::override_config {
                 set_fixed_time('2025-12-01T00:00:00');
                 $mech->get_ok('/waste/10001');
                 $mech->content_lacks('Renew your');
-                $mech->content_contains('existing direct debit subscription');
+                $mech->content_contains( $status eq 'Pending'
+                    ? 'pending direct debit subscription'
+                    : 'existing direct debit subscription' );
             }
         }
     };
@@ -2617,9 +2653,7 @@ FixMyStreet::override_config {
                 {   category => 'Garden Subscription',
                     title    => 'Garden Subscription - New',
                     external_id => 'Agile-CONTRACT_123',
-                    # 20+ days ago, to stop this report from being picked up as
-                    # a 'pending_subscription'
-                    created => '2024-01-01T00:00:00Z',
+                    created => '2024-01-31T00:00:00Z',
                 },
             );
             $cc_report->set_extra_fields(
@@ -2655,6 +2689,10 @@ FixMyStreet::override_config {
                     ],
                 } } );
 
+                $mech->content_unlike(
+                    qr/You have a pending garden subscription\./,
+                    'Overall subscription not shown as pending',
+                );
                 $mech->get_ok('/waste/10001');
                 like $mech->text,
                     qr/Frequency.*Pending/,
@@ -2781,7 +2819,7 @@ FixMyStreet::override_config {
             set_fixed_time('2024-02-01T00:00:00Z');
             default_mocks();
 
-            my ($cc_report) = $mech->create_problems_for_body(
+            my ($dd_report) = $mech->create_problems_for_body(
                 1,
                 $body->id,
                 'Garden Subscription - New',
@@ -2790,12 +2828,13 @@ FixMyStreet::override_config {
                     external_id => 'Agile-CONTRACT_123',
                 },
             );
-            $cc_report->set_extra_fields(
+            $dd_report->set_extra_fields(
                 { name => 'uprn', value => 10001 },
                 { name => 'payment_method', value => 'direct_debit' },
             );
-            $cc_report->set_extra_metadata(direct_debit_customer_id => 'DD_CUSTOMER_123');
-            $cc_report->update;
+            $dd_report->set_extra_metadata(
+                direct_debit_customer_id => 'DD_CUSTOMER_123' );
+            $dd_report->update;
 
             $agile_mock->mock( 'CustomerSearch', sub { {
                 Customers => [
@@ -2809,7 +2848,12 @@ FixMyStreet::override_config {
                                 WasteContainerQuantity => 1,
                                 ServiceContractStatus => 'ACTIVE',
                                 UPRN => '10001',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                Payments => [
+                                    {   PaymentStatus => 'Paid',
+                                        Amount        => '100',
+                                        PaymentMethod => 'Direct debit',
+                                    }
+                                ]
                             },
                         ],
                     },
@@ -2857,6 +2901,10 @@ FixMyStreet::override_config {
                 );
 
                 $mech->get_ok('/waste/10001');
+                $mech->content_like(
+                    qr/You have a pending garden subscription\./,
+                    'Subscription shown as pending',
+                );
                 like $mech->text,
                     qr/This property has a pending direct debit subscription/,
                     'pending DD message shown';
@@ -2868,6 +2916,10 @@ FixMyStreet::override_config {
                 );
 
                 $mech->get_ok('/waste/10001');
+                $mech->content_unlike(
+                    qr/You have a pending garden subscription\./,
+                    'Subscription no longer shown as pending',
+                );
                 like $mech->text,
                     qr/This property has an existing direct debit subscription which will renew automatically/,
                     'active DD message shown';
@@ -2895,9 +2947,9 @@ FixMyStreet::override_config {
                 unlike $mech->text,
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
-                like $mech->content,
+                unlike $mech->content,
                     qr/subscription overdue/,
-                    'overdue message shown';
+                    'overdue message not shown';
                 unlike $mech->content,
                     qr/Renew your brown wheelie bin subscription/,
                     'renewal link not shown';

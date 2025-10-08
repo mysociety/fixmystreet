@@ -167,34 +167,60 @@ sub check_payment_redirect_id : Private {
 # we might not hear about them for days (though preferably, we can query
 # the DD system involved).
 # For Bexley, DD reports are confirmed immediately, and cancellations
-# might not be instant, so look for any open reports, not just DD
+# might not be instant.
 sub get_pending_subscription : Private {
     my ($self, $c) = @_;
 
     my $uprn = $c->stash->{property}{uprn};
-    my $state = 'unconfirmed';
-    $state = 'confirmed' if $c->cobrand->moniker eq 'bexley';
-    my $subs = $c->model('DB::Problem')->search({
-        state => $state,
-        created => { '>=' => \"current_timestamp-'20 days'::interval" },
-        category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
-        title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New', 'Garden Subscription - Cancel'] },
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) }
-    })->to_body($c->cobrand->body);
+    my ( $new, $cancel );
 
-    my ($new, $cancel);
-    while (my $sub = $subs->next) {
-        my $payment_method = $sub->get_extra_field_value('payment_method') || '';
-        if ( $c->cobrand->moniker eq 'bexley' || $payment_method eq 'direct_debit' ) {
-            if ( $sub->title eq 'Garden Subscription - New' ||
-                 $sub->title eq 'Garden Subscription - Renew' ) {
-                $new = $sub;
-            } elsif ( $sub->title eq 'Garden Subscription - Cancel' ) {
+    if ( $c->cobrand->moniker eq 'bexley' ) {
+        # This calls waste_check_existing_dd, so we can be sure that
+        # direct_debit_status is set for check below
+        $c->forward('get_original_sub', ['any']);
+
+        my $subs = $c->model('DB::Problem')->search({
+            # Bexley confirms garden reports immediately
+            state => 'confirmed',
+            created => { '>=' => \"current_timestamp-'20 days'::interval" },
+            category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
+            title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New', 'Garden Subscription - Cancel'] },
+            extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) }
+        })->to_body($c->cobrand->body);
+
+        while (my $sub = $subs->next) {
+            # TODO Better way to handle pending cancellations (any payment type)
+            if ( $sub->title eq 'Garden Subscription - Cancel' ) {
                 $cancel = $sub;
+            } elsif (
+                ( $c->stash->{direct_debit_status} || '' ) eq 'pending'
+            ) {
+                $new = $sub;
             }
         }
 
+    } else {
+        my $subs = $c->model('DB::Problem')->search({
+            state => 'unconfirmed',
+            created => { '>=' => \"current_timestamp-'20 days'::interval" },
+            category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
+            title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New', 'Garden Subscription - Cancel'] },
+            extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) }
+        })->to_body($c->cobrand->body);
+
+        while (my $sub = $subs->next) {
+            my $payment_method = $sub->get_extra_field_value('payment_method') || '';
+            if ( $payment_method eq 'direct_debit' ) {
+                if ( $sub->title eq 'Garden Subscription - New' ||
+                    $sub->title eq 'Garden Subscription - Renew' ) {
+                    $new = $sub;
+                } elsif ( $sub->title eq 'Garden Subscription - Cancel' ) {
+                    $cancel = $sub;
+                }
+            }
+        }
     }
+
     $c->stash->{pending_subscription} ||= $new;
     $c->stash->{pending_cancellation} = $cancel;
 }
