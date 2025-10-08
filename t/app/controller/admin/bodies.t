@@ -364,6 +364,59 @@ subtest 'set HE litter category' => sub {
     is $contact->get_extra_metadata('litter_category_for_he'), 1, 'Litter category set for Highways England filtering';
 };
 
+subtest 'closure timespan setting' => sub {
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+
+    # Test setting valid closure timespan with 'm' suffix
+    $mech->submit_form_ok( { with_fields => {
+        closure_timespan => '3m',
+        note => 'Setting closure timespan to 3 months',
+    } } );
+    $mech->content_contains('Values updated');
+    my $contact = $body->contacts->find({ category => 'test category' });
+    is $contact->get_extra_metadata('closure_timespan'), '3m', 'Closure timespan with m suffix set correctly';
+
+    # Test setting valid closure timespan with 'd' suffix
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        closure_timespan => '90d',
+        note => 'Setting closure timespan to 90 days',
+    } } );
+    $mech->content_contains('Values updated');
+    $contact->discard_changes;
+    is $contact->get_extra_metadata('closure_timespan'), '90d', 'Closure timespan with d suffix set correctly';
+
+    # Test setting valid closure timespan without suffix (defaults to months)
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        closure_timespan => '6',
+        note => 'Setting closure timespan to 6 months',
+    } } );
+    $mech->content_contains('Values updated');
+    $contact->discard_changes;
+    is $contact->get_extra_metadata('closure_timespan'), '6', 'Closure timespan without suffix set correctly';
+
+    # Test invalid format shows error
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        closure_timespan => 'invalid',
+        note => 'Invalid timespan format',
+    } } );
+    $mech->content_contains('Timespan not in correct format - must use m suffix for months or d for days');
+    $contact->discard_changes;
+    is $contact->get_extra_metadata('closure_timespan'), '6', 'Closure timespan unchanged after invalid input';
+
+    # Test clearing closure timespan
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
+    $mech->submit_form_ok( { with_fields => {
+        closure_timespan => '',
+        note => 'Clearing closure timespan',
+    } } );
+    $mech->content_contains('Values updated');
+    $contact->discard_changes;
+    is $contact->get_extra_metadata('closure_timespan'), undef, 'Closure timespan cleared correctly';
+};
+
 subtest 'allow anonymous reporting' => sub {
     $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->content_lacks('Allow anonymous reports');

@@ -338,6 +338,17 @@ sub update_contact : Private {
         }
     }
 
+    if (my $closure_timespan = $c->get_param('closure_timespan')) {
+        $closure_timespan = $self->trim($closure_timespan);
+        if ($closure_timespan =~ /^\d+(m|d)?$/) {
+            $contact->set_extra_metadata(closure_timespan => $closure_timespan);
+        } else {
+            $errors{closure_timespan} = _('Timespan not in correct format - must use m suffix for months or d for days');
+        }
+    } else {
+        $contact->unset_extra_metadata('closure_timespan');
+    }
+
     foreach (qw(title_hint detail_label detail_hint)) {
         my $value = $c->get_param($_) || '';
         $value = $self->trim($value);

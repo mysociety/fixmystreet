@@ -425,6 +425,7 @@ FixMyStreet::override_config {
         my $cgi = CGI::Simple->new($req->content);
         is $cgi->param('attribute[Action]'), '2::1';
         is $cgi->param('attribute[Reason]'), '9::9';
+        is $cgi->param('attribute[service_id]'), 1067;
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
@@ -523,14 +524,16 @@ FixMyStreet::override_config {
         is $report->category, 'Request new container';
         is $report->title, 'Request new Recycling Blue Stripe Bag';
     };
+    subtest 'Weekly collection cannot request a blue stripe bag' => sub {
+        my $dupe = dclone($kerbside_bag_data);
+        $dupe->[2]{ServiceTasks}{ServiceTask}{ScheduleDescription} = 'Every Monday';
+        $e->mock('GetServiceUnitsForObject', sub { $dupe });
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_lacks('container-22');
+    };
     subtest 'Above-shop address' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
-        $mech->get_ok('/waste/12345/request');
-        $mech->content_lacks( '"container-22" value="1"',
-            'Weekly collection cannot request a blue stripe bag' );
-
         $mech->get_ok('/waste/12345');
-
         $mech->content_contains( 'Put your bags out between 6pm and 8pm',
             'Property has time-banded message' );
         $mech->content_contains( 'color: #BD63D1', 'Property has purple sack' );
