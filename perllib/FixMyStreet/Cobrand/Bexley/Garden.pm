@@ -112,7 +112,6 @@ sub lookup_subscription_for_uprn {
 
     if ($payment_method eq 'direct_debit') {
         # Got an active contract with a DD payment method, nothing due to renew
-        $self->{c}->stash->{direct_debit_status} = 'active';
         $sub->{has_been_renewed} = 1;
     }
 
