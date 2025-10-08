@@ -154,6 +154,23 @@ sub reopening_disallowed { 1 }
 
 sub contact_extra_fields { [ 'display_name' ] }
 
+=item * Auto re-send reports when changing from Atak to Echo
+
+=cut
+
+sub category_change_force_resend {
+    my ($self, $old, $new) = @_;
+
+    # Get the Open311 identifiers
+    my $contacts = $self->{c}->stash->{contacts};
+    ($old) = map { $_->email } grep { $_->category eq $old } @$contacts;
+    ($new) = map { $_->email } grep { $_->category eq $new } @$contacts;
+
+    # Okay if we're switching from Atak to Echo
+    return 1 if $old =~ /^ATAK/ && $new =~ /^Echo/;
+    return 0;
+}
+
 =item * Uses slightly different text on the geocode form.
 
 =cut
