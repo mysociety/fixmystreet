@@ -26,7 +26,7 @@ describe('Gloucester cobrand', function(){
             cy.wait('@gloucester_plots');
             cy.wait('@gloucester_streets');
             cy.get('.pre-button-messaging').contains("The location you've selected appears to be privately owned").should('not.exist');
-            cy.get('.pre-button-messaging').contains("The land is owned by");
+            cy.get('.pre-button-messaging').contains("This land is not owned by");
             cy.get('.js-reporting-page--next:visible').should('be.disabled');
         });
 
@@ -41,7 +41,7 @@ describe('Gloucester cobrand', function(){
             cy.wait('@gloucester_plots');
             cy.wait('@gloucester_streets');
             cy.get('.pre-button-messaging').contains("The location you've selected appears to be privately owned").should('not.exist');
-            cy.get('.pre-button-messaging').contains("The land is owned by").should('not.exist');
+            cy.get('.pre-button-messaging').contains("This land is not owned by").should('not.exist');
             cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
             cy.nextPageReporting();
             cy.nextPageReporting();
@@ -59,7 +59,7 @@ describe('Gloucester cobrand', function(){
             cy.wait('@gloucester_plots');
             cy.wait('@gloucester_streets');
             cy.get('.pre-button-messaging').contains("The location you've selected appears to be privately owned").should('not.exist');
-            cy.get('.pre-button-messaging').contains("The land is owned by").should('not.exist');
+            cy.get('.pre-button-messaging').contains("This land is not owned by").should('not.exist');
             cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
             cy.nextPageReporting();
             cy.nextPageReporting();
@@ -77,21 +77,21 @@ describe('Gloucester cobrand', function(){
             cy.wait('@gloucester_plots');
             cy.wait('@gloucester_streets');
             cy.get('.pre-button-messaging').contains("The location you've selected appears to be privately owned");
-            cy.get('.pre-button-messaging').contains("The land is owned by").should('not.exist');
+            cy.get('.pre-button-messaging').contains("This land not is owned by").should('not.exist');
 
             cy.visit('http://gloucester.localhost:3001/report/new?longitude=-2.243133&latitude=51.865329');
             cy.wait('@report-ajax');
             cy.wait('@gloucester_plots');
             cy.wait('@gloucester_streets');
             cy.get('.pre-button-messaging').contains("The location you've selected appears to be privately owned").should('not.exist');
-            cy.get('.pre-button-messaging').contains("The land is owned by");
+            cy.get('.pre-button-messaging').contains("This land is not owned by");
 
             cy.visit('http://gloucester.localhost:3001/report/new?longitude=-2.2458&latitude=51.86506');
             cy.wait('@report-ajax');
             cy.wait('@gloucester_plots');
             cy.wait('@gloucester_streets');
             cy.get('.pre-button-messaging').contains("The location you've selected appears to be privately owned");
-            cy.get('.pre-button-messaging').contains("The land is owned by").should('not.exist');
+            cy.get('.pre-button-messaging').contains("This land is not owned by").should('not.exist');
 
             cy.route('**gloucester.assets*all_plots*', 'fixture:gloucester_empty.json').as('gloucester_plots');
             cy.route('**gloucester.assets*adopted_streets*', 'fixture:gloucester_streets.json').as('gloucester_streets');
@@ -100,7 +100,7 @@ describe('Gloucester cobrand', function(){
             cy.wait('@gloucester_plots');
             cy.wait('@gloucester_streets');
             cy.get('.pre-button-messaging').contains("The location you've selected appears to be privately owned").should('not.exist');
-            cy.get('.pre-button-messaging').contains("The land is owned by").should('not.exist');
+            cy.get('.pre-button-messaging').contains("This land is not owned by").should('not.exist');
             cy.get('.js-reporting-page--next:visible').should('not.be.disabled');
             cy.nextPageReporting();
             cy.nextPageReporting();
