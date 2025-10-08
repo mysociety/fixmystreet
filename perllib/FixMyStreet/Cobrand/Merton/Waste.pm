@@ -217,6 +217,7 @@ sub image_for_unit {
         $CONTAINERS{recycling_blue_stripe_bag} => svg_container_sack('stripe', '#3E50FA'),
         $CONTAINERS{refuse_red_stripe_bag} => svg_container_sack('stripe', '#F1506D'),
         $CONTAINERS{paper_bag} => svg_container_sack('normal', '#D8D8D8'),
+        $CONTAINERS{garden_sack} => svg_container_sack('normal', '#A2845D'),
 
         # Fallback to the service if no container match
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),

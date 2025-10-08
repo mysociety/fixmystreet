@@ -965,6 +965,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-01-09T17:00:00Z');
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345');
+        $mech->content_contains('#A2845D'); # Sack colour
         $mech->content_lacks('Change your garden waste subscription');
         $mech->content_lacks('Order more garden sacks');
         $mech->get_ok('/waste/12345/garden_modify');
