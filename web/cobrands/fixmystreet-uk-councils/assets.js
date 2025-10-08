@@ -1346,6 +1346,16 @@ fixmystreet.assets.northumberland.rightsofway_stylemap = new OpenLayers.StyleMap
     'hover': fixmystreet.assets.style_default_hover
 });
 
+fixmystreet.assets.northumberland.toilets_construct_selected_asset_message = function(asset) {
+    var out = 'You have selected ' + this.fixmystreet.asset_item;
+    out += " <b>" + asset.attributes.title + '</b>';
+    if (asset.attributes.OpeningTimes) {
+        out += ", opening times " + asset.attributes.OpeningTimes;
+    }
+    out += '.';
+    return out;
+};
+
 /* Oxfordshire */
 
 fixmystreet.assets.oxfordshire = {};
