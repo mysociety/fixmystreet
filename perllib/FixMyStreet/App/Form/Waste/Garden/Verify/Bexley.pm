@@ -63,9 +63,12 @@ has_field has_reference => (
 
 has_field customer_reference => (
     type => 'Text',
-    label => 'Customer reference number, e.g. GWIT-CUST-FEB0-00000000000000',
+    label => 'Customer reference number',
     required_when => { has_reference => 'Yes' },
-    tags    => { initial_hidden => 1 },
+    tags    => {
+        initial_hidden => 1,
+        hint => 'E.g. GWIT-CUST-FEB0-00000000000000',
+    },
     order => 2,
 );
 
