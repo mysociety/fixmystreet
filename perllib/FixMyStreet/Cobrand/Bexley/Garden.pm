@@ -520,6 +520,10 @@ sub garden_waste_first_bin_discount_applies {
 
 sub waste_staff_choose_payment_method { 1 }
 
+=item * Anyone can modify garden subs
+
+=cut
+
 sub waste_show_garden_modify { 1 }
 
 1;

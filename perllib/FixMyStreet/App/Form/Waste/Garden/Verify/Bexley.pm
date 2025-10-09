@@ -18,7 +18,7 @@ sub customer_reference {
             } else {
                 # If correct customer reference provided, skip about_you and
                 # store Agile user details behind the scenes
-                my $ref = $form->field('customer_reference')->value;
+                my $ref = uc $form->field('customer_reference')->value;
                 my $current_subscription
                     = $form->c->cobrand->garden_current_subscription;
 
@@ -55,8 +55,8 @@ has_field has_reference => (
     label    => 'Do you have a customer reference number?',
     required => 1,
     options  => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No',  value => 'No' },
+        { label => 'No',  value => 'No', data_hide => '#form-customer_reference-row' },
+        { label => 'Yes', value => 'Yes', data_show => '#form-customer_reference-row' },
     ],
     order => 1,
 );
@@ -65,6 +65,10 @@ has_field customer_reference => (
     type => 'Text',
     label => 'Customer reference number',
     required_when => { has_reference => 'Yes' },
+    tags    => {
+        initial_hidden => 1,
+        hint => 'E.g. GWIT-CUST-FEB0-00000000000000',
+    },
     order => 2,
 );
 
@@ -90,8 +94,9 @@ sub about_you {
                 = $form->c->cobrand->garden_current_subscription;
 
             my $name_verified
-                = $first_name eq $current_subscription->{customer_first_name}
-                && $last_name eq $current_subscription->{customer_last_name};
+                = uc($first_name) eq uc( $current_subscription->{customer_first_name} )
+                && uc($last_name) eq uc( $current_subscription->{customer_last_name} );
+
 
             if ($name_verified) {
                 $form->saved_data->{name} = $first_name . ' ' . $last_name;
