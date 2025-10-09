@@ -713,6 +713,7 @@ sub waste_munge_bulky_amend {
         if (my $item = $data->{"item_$_"}) {
             push @notes, $data->{"item_notes_$_"} || '';
             push @ids, $items{$item};
+            $p->set_extra_metadata("item_$_" => $item);
         };
     }
 

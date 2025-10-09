@@ -652,6 +652,8 @@ FixMyStreet::override_config {
         subtest 'Viewing original report summary after amendment' => sub {
             my $path = "/report/" . $report->id;
             $mech->get_ok($path);
+            $mech->content_lacks('Bicycle');
+            $mech->content_contains('Bookcase');
             $mech->content_contains('Updates');
             $mech->content_lacks('This collection has been cancelled');
             $mech->content_lacks('Booking cancelled due to amendment');
