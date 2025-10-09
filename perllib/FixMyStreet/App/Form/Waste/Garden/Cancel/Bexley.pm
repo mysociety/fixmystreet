@@ -39,6 +39,7 @@ has_field reason_further_details => (
     required_when => { reason => 'Other' },
     maxlength => 250,
     messages => { required => 'Please provide further details' },
+    tags    => { initial_hidden => 1 },
 );
 
 has_page verify_failed => ( verify_failed() );
@@ -62,7 +63,16 @@ sub options_reason {
         'Moving out of borough',
         'Other',
     );
-    return map { { label => $_, value => $_ } } @options;
+
+    return map {
+        {   label => $_,
+            value => $_,
+            (   $_ eq 'Other'
+                ? ( data_show => '#form-reason_further_details-row' )
+                : ( data_hide => '#form-reason_further_details-row' )
+            ),
+        }
+    } @options;
 }
 
 1;

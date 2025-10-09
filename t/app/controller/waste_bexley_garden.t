@@ -554,7 +554,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         has_reference => 'Yes',
-                        customer_reference => 'CUSTOMER_123',
+                        customer_reference => 'customer_123',
                     },
                 },
             );
@@ -1107,8 +1107,8 @@ FixMyStreet::override_config {
                 );
                 $mech->submit_form_ok(
                     {   with_fields => {
-                            verifications_first_name => 'Verity',
-                            verifications_last_name => 'Wright',
+                            verifications_first_name => 'verity',
+                            verifications_last_name => 'WRIGHT',
                             email => 'verity@wright.com',
                             phone => '+4407111111111',
                         },
@@ -1984,8 +1984,8 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
-                    Firstname => 'Verity',
-                    Surname => 'Wright',
+                    Firstname => 'VERITY',
+                    Surname => 'wright',
                     Email => 'verity@wright.com',
                     CustomertStatus => 'ACTIVATED',
                     ServiceContracts => [
