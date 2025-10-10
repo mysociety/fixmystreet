@@ -2198,6 +2198,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'with Whitespace data' => sub {
+            $mech->delete_problems_for_body($body->id);
             $whitespace_mock->mock(
                 'GetSiteCollections',
                 sub {
@@ -2385,6 +2386,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Test direct debit cancellation' => sub {
+        $mech->delete_problems_for_body($body->id);
         $mech->clear_emails_ok;
 
         # Log in as a staff user
@@ -3342,6 +3344,102 @@ FixMyStreet::override_config {
         like $req->header('User-Agent'), qr/WasteWorks by SocietyWorks/, 'User-Agent is correct';
         is $req->header('ApiKey'), 'test-api-key', 'ApiKey is correct';
         is $req->header('Accept'), 'application/json', 'Accept is correct';
+    };
+
+    subtest 'Cancel - prevents duplicate cancellations' => sub {
+        default_mocks();
+        set_fixed_time('2024-02-01T12:00:00');
+        $mech->delete_problems_for_body($body->id);
+
+        # Mock active garden subscription
+        $whitespace_mock->mock('GetSiteCollections', sub {
+            [{
+                SiteServiceID => 1,
+                ServiceItemDescription => 'Garden waste',
+                ServiceItemName => 'GA-140',
+                NextCollectionDate => '2024-02-07T00:00:00',
+                SiteServiceValidFrom => '2024-01-01T00:00:00',
+                SiteServiceValidTo => '0001-01-01T00:00:00',
+                RoundSchedule => 'RND-1 Mon',
+            }]
+        });
+        $agile_mock->mock('CustomerSearch', sub {{
+            Customers => [{
+                CustomerExternalReference => 'CUSTOMER_123',
+                CustomerReference => 'GWIT-123',
+                Firstname => 'Test',
+                Surname => 'User',
+                Email => 'test@example.org',
+                ServiceContracts => [{
+                    EndDate => '12/12/2025 12:21',
+                    ServiceContractStatus => 'ACTIVE',
+                    UPRN => '10001',
+                    Payments => [{ PaymentStatus => 'Paid', Amount => '50', PaymentMethod => 'Credit/Debit Card' }]
+                }],
+            }],
+        }});
+
+        $mech->log_in_ok($staff_user->email);
+
+        # Create first cancellation directly in database
+        my ($first_cancel) = $mech->create_problems_for_body(1, $body->id, 'Cancel',
+            {
+                category => 'Cancel Garden Subscription',
+                state => 'confirmed',
+                user => $user,
+            },
+        );
+        $first_cancel->set_extra_fields(
+            { name => 'uprn', value => '10001' },
+            { name => 'reason', value => 'Price' },
+            { name => 'payment_method', value => 'credit_card' },
+        );
+        $first_cancel->update;
+        my $first_id = $first_cancel->id;
+
+        # Create a cancellation for a different UPRN to verify UPRN filtering works
+        my ($other_uprn_cancel) = $mech->create_problems_for_body(1, $body->id, 'Cancel',
+            {
+                category => 'Cancel Garden Subscription',
+                state => 'confirmed',
+                user => $user,
+            },
+        );
+        $other_uprn_cancel->set_extra_fields(
+            { name => 'uprn', value => '10002' },
+            { name => 'reason', value => 'Moving' },
+            { name => 'payment_method', value => 'direct_debit' },
+        );
+        $other_uprn_cancel->update;
+
+        # Attempt second cancellation via web form
+        # Page 1: Customer reference
+        $mech->get_ok('/waste/10001/garden_cancel');
+        $mech->submit_form_ok({ with_fields => {
+            has_reference => 'Yes',
+            customer_reference => 'GWIT-123',
+        }});
+
+        # Page 2: Reason (skips verification because customer ref matched)
+        $mech->submit_form_ok({ with_fields => { reason => 'Price' }});
+
+        # Page 3: Confirm - this triggers process_garden_cancellation which detects duplicate
+        # When duplicate is detected, it shows confirmation page and detaches, so no new report is created
+        $mech->submit_form_ok({ with_fields => { confirm => 1 }});
+
+        # Verify duplicate prevention worked
+        my @all_cancels = FixMyStreet::DB->resultset('Problem')->search({
+            category => 'Cancel Garden Subscription',
+            state => 'confirmed',
+        })->all;
+        is scalar(@all_cancels), 2, 'Two cancellations total - one for each UPRN';
+
+        my @uprn_10001_cancels = grep { ($_->get_extra_field_value('uprn') || '') eq '10001' } @all_cancels;
+        my @uprn_10002_cancels = grep { ($_->get_extra_field_value('uprn') || '') eq '10002' } @all_cancels;
+
+        is scalar(@uprn_10001_cancels), 1, 'Only one cancellation for UPRN 10001 - duplicate prevented';
+        is scalar(@uprn_10002_cancels), 1, 'One cancellation for UPRN 10002 - unaffected';
+        is $uprn_10001_cancels[0]->id, $first_id, 'UPRN 10001 cancellation is original - not a new report';
     };
 };
 
