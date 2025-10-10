@@ -7,6 +7,8 @@ use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
 
+use_ok 'FixMyStreet::Cobrand::Lincolnshire';
+
 my $params = {
     send_method => 'Open311',
     send_comments => 1,
@@ -17,6 +19,8 @@ my $params = {
     cobrand => 'lincolnshire',
 };
 my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params);
+$mech->create_contact_ok(body_id => $body->id, category => 'Pothole', email => 'potholes@example.org');
+$mech->create_contact_ok(body_id => $body->id, category => 'Surface Issue', email => 'surface_issue@example.org');
 my $lincs_user = $mech->create_user_ok('lincs@example.org', name => 'Lincolnshire User', from_body => $body);
 my $superuser = $mech->create_user_ok('super@example.org', name => 'Super User', is_superuser => 1, email_verified => 1);
 my $superuser_email = $superuser->email;
@@ -111,6 +115,55 @@ FixMyStreet::override_config {
 
         $p->delete;
     };
+
+    subtest 'Category changes are passed to Open311' => sub {
+        (my $report) = $mech->create_problems_for_body(1, $body->id, 'Pothole', {
+            category => 'Pothole', cobrand => 'lincolnshire',
+            latitude => 52.656144, longitude => -0.502566, areas => '2232',
+            external_id => '9876543'
+        });
+
+        my $cobrand = FixMyStreet::Cobrand::Lincolnshire->new;
+
+        my $comment = $mech->create_comment_for_problem(
+            $report, $lincs_user, 'Staff User', 'Category changed from Pothole to Surface Issue',
+            'f', 'confirmed', 'confirmed',
+            { confirmed => DateTime->now }
+        );
+
+        my $params = {};
+
+        subtest 'Regular category change' => sub {
+            $report->update({ category => 'Surface Issue' });
+            $cobrand->open311_munge_update_params($params, $comment);
+            is $params->{service_code}, 'surface_issue@example.org', 'Service code is set from contact email';
+        };
+
+        subtest 'Wrapped service category change' => sub {
+            $report->update_extra_field({ name => '_wrapped_service_code', value => 'ABC_DEF' });
+            $report->update;
+            $comment->discard_changes;
+            %$params = ();
+            $cobrand->open311_munge_update_params($params, $comment);
+            is $params->{service_code}, 'ABC_DEF', 'Service code is set from field value';
+        };
+
+        subtest "Comment that doesn't change category" => sub {
+            my $regular_comment = $mech->create_comment_for_problem(
+                $report, $lincs_user, 'Staff User', 'Regular update comment',
+                'f', 'confirmed', 'confirmed',
+                { confirmed => DateTime->now }
+            );
+            $params = {};
+            $cobrand->open311_munge_update_params($params, $regular_comment);
+            is scalar keys %$params, 0, 'No parameters added for non-category change comments';
+        };
+
+        $report->comments->delete;
+        $report->delete;
+    };
+
+
 };
 
 subtest 'Dashboard CSV export includes extra staff columns' => sub {
