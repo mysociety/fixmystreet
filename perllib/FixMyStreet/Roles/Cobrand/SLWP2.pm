@@ -138,6 +138,7 @@ my %GARDEN_CONTAINER_IDS = (
     bin240 => 1915,
     bin140 => 1914,
     sack => 1928,
+    bag => 1910, # Also used in Merton Echo
 );
 lock_hash(%GARDEN_CONTAINER_IDS);
 
@@ -299,7 +300,6 @@ sub waste_service_containers {
             $quantity = $_->{Value} if $_->{DatatypeName} eq 'Container Quantity';
         }
 
-        next if $container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/i; # Blue stripe bag on a weekly collection
 
         if ($container && $quantity) {
             push @$containers, $container;
@@ -307,6 +307,9 @@ sub waste_service_containers {
             $self->{c}->stash->{quantities}->{$container} = $quantity;
 
             if ($waste_containers_no_request->{$container}) {
+                $request_max->{$container} = 0; # Cannot request these
+            } elsif ($container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/i) {
+                # Blue stripe bag on a weekly collection
                 $request_max->{$container} = 0; # Cannot request these
             } elsif ($self->moniker eq 'kingston') {
                 if ($container == $CONTAINERS{food_outdoor} || $container == $CONTAINERS{paper_240} || $container == $CONTAINERS{recycling_240}) {
@@ -422,7 +425,7 @@ sub garden_container_data_extract {
         next if $end_date lt $today;
         $container_end_date = $end_date if $end_date lt $schedules->{end_date};
         my $asset_id = $_->{AssetTypeId};
-        if ($asset_id == $GARDEN_CONTAINER_IDS{sack}) {
+        if ($asset_id == $GARDEN_CONTAINER_IDS{sack} || $asset_id == $GARDEN_CONTAINER_IDS{bag}) {
             $garden_sacks = 1;
             $garden_bins = undef;
             $garden_cost += $costs->sacks_renewal(1, $schedules->{end_date}) / 100;

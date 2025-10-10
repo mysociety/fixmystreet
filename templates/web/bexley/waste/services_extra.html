@@ -132,21 +132,6 @@
     [% ELSE %]
     <p>No red tags</p>
     [% END %]
-    <h2>Service updates</h2>
-    [% IF property.service_updates && property.service_updates.size %]
-    [% FOREACH update IN property.service_updates %]
-    <h3>[% update.reason %]</h3>
-    <dl>
-      <dt>Date</dt>
-      <dd>[% date.format(update.date, '%A, %-d~~~ %B %Y at %l:%M%p') | replace('~~~', update.ordinal) %]</dd>
-
-      <dt>Round</dt>
-      <dd>[% update.round %]</dd>
-      [% END %]
-    </dl>
-    [% ELSE %]
-    <p>No service updates</p>
-    [% END %]
   </details>
   [% END %]
 </div>

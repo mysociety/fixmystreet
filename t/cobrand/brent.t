@@ -193,7 +193,7 @@ $contact->set_extra_fields(
 );
 $contact->update;
 
-create_contact({ category => 'Report missed collection', email => 'missed' });
+create_contact({ category => 'Report missed collection', email => 'Echo-missed' });
 create_contact({ category => 'Request new container', email => 'request@example.org' },
     { code => 'Container_Request_Quantity', required => 1, automated => 'hidden_field' },
     { code => 'Container_Request_Container_Type', required => 1, automated => 'hidden_field' },
@@ -208,11 +208,11 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'request_ordered_previously', required => 0, automated => 'hidden_field' },
     { code => 'request_contamination_reports', required => 0, automated => 'hidden_field' },
 );
-create_contact({ category => 'Assisted collection add', email => 'assisted' },
+create_contact({ category => 'Assisted collection add', email => 'Echo-assisted' },
     { code => 'Notes', description => 'Additional notes', required => 0, datatype => 'text' },
     { code => 'staff_form', automated => 'hidden_field' },
 );
-create_contact({ category => 'Garden Subscription', email => 'garden' },
+create_contact({ category => 'Garden Subscription', email => 'Echo-garden' },
 );
 
 create_contact({ category => 'Staff general enquiry', email => 'general@brent.gov.uk' },
@@ -372,6 +372,23 @@ for my $test (
         $template->update;
         $mech->log_out_ok;
         };
+    };
+};
+
+subtest 'Brent templates provide external_status_code for non-waste reports' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'brent',
+    }, sub {
+        my ($problem) = $mech->create_problems_for_body(1, $brent->id, 'Title', {
+        areas => ",2488,", category => 'Overgrown grass', send_state => 'sent' });
+        $mech->log_in_ok($super_user->email);
+        $mech->get_ok('/admin/report_edit/' . $problem->id);
+        $mech->submit_form_ok({ with_fields => { category => 'Report missed collection' } });
+        $problem->discard_changes;
+        is $problem->send_state, 'unprocessed', "Marked for resending";
+        $problem->comments->delete;
+        $problem->delete;
+        $mech->log_out_ok;
     };
 };
 

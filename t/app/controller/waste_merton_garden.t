@@ -318,6 +318,28 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/waste/12345', 'redirect as subscription';
     };
 
+    subtest 'No requesting if open request' => sub {
+        $echo->mock('GetEventsForObject', sub { [ {
+            # Request
+            EventTypeId => 3129,
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 39, DatatypeName => 'Container Type' },
+                    ] },
+                },
+            ] },
+        } ] });
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('A garden waste container request has been made');
+        $mech->content_lacks('Request a replacement garden waste container');
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_like(qr/name="container-39" value="1"[^>]+disabled/s); # green
+        $echo->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
     subtest 'check subscription link present' => sub {
         set_fixed_time('2021-03-09T17:00:00Z');
         $mech->get_ok('/waste/12345');
@@ -965,6 +987,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-01-09T17:00:00Z');
         $mech->log_in_ok($user->email);
         $mech->get_ok('/waste/12345');
+        $mech->content_contains('#A2845D'); # Sack colour
         $mech->content_lacks('Change your garden waste subscription');
         $mech->content_lacks('Order more garden sacks');
         $mech->get_ok('/waste/12345/garden_modify');

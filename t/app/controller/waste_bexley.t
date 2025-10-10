@@ -318,7 +318,7 @@ FixMyStreet::override_config {
             'Correct address string displayed',
         );
         $mech->content_contains(
-            'Your collection schedule is Week 1',
+            'Your collection schedule is Week 2',
             'Correct rotation schedule displayed',
         );
 
@@ -430,7 +430,7 @@ FixMyStreet::override_config {
                     service_id     => 'FO-140',
                     service_name   => 'Communal Food Bin',
                     service_description => 'Food waste',
-                    round_schedule => 'RND-1 Tue Wk 1',
+                    round_schedule => 'RND-1 Tue Wk 2',
                     round          => 'RND-1',
                     report_allowed => 0,
                     delivery_open  => 0,
@@ -1954,7 +1954,7 @@ sub _site_collections {
                 SiteServiceValidFrom => '2024-03-31T00:59:59',
                 SiteServiceValidTo   => '2024-03-31T03:00:00',
 
-                RoundSchedule => 'RND-1 Tue Wk 1',
+                RoundSchedule => 'RND-1 Tue Wk 2',
             },
             {   SiteServiceID          => 2,
                 ServiceItemDescription => 'Service 2',
@@ -2130,7 +2130,7 @@ sub _collection_by_uprn_date {
             },
             {   Date     => '02/04/2024 00:00:00',
                 Round    => 'RND-1',
-                Schedule => 'Tue Wk 1',
+                Schedule => 'Tue Wk 2',
                 Service  => 'Service 1 Collection',
             },
             {   Date     => '03/04/2024 00:00:00',
@@ -2162,7 +2162,7 @@ sub _collection_by_uprn_date {
             },
             {   Date     => '16/04/2024 00:00:00',
                 Round    => 'RND-1',
-                Schedule => 'Tue Wk 1',
+                Schedule => 'Tue Wk 2',
                 Service  => 'Service 1 Collection',
             },
             {   Date     => '17/04/2024 00:00:00',
@@ -2199,7 +2199,7 @@ sub _collection_by_uprn_date {
         '2024-03-02T00:00:00' => [
             {   Date     => '24/03/2024 00:00:00',
                 Round    => 'RND-1',
-                Schedule => 'Tue Wk 1',
+                Schedule => 'Tue Wk 2',
                 Service  => 'Service 1 Collection',
             },
             # 3 working days before Sun 31st March = Wed 27th March
@@ -2220,7 +2220,7 @@ sub _collection_by_uprn_date {
             },
             {   Date     => '31/03/2024 00:00:00',
                 Round    => 'RND-1',
-                Schedule => 'Tue Wk 1',
+                Schedule => 'Tue Wk 2',
                 Service  => 'Service 1 Collection',
             },
         ],

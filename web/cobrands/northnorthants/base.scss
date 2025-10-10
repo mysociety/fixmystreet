@@ -18,7 +18,7 @@
     color: $primary;
 
     &:focus {
-      background: $focus-bg-top;
+      background-color: $focus-bg-top;
       color: $focus-text;
       outline: none;
     }
@@ -85,7 +85,7 @@
         background: $primary_link_hover_color;
     }
     &:focus {
-      background: $focus-bg-top;
+      background-color: $focus-bg-top;
       color: $focus-text;
     }
   }
@@ -141,7 +141,7 @@ a#geolocate_link,
 a,
 .fake-link {
   &:focus {
-    background: $focus-bg-top;
+    background-color: $focus-bg-top;
     text-decoration: none;
     outline: 2px solid $primary_b;
     color: $primary_b;
@@ -164,7 +164,7 @@ a,
   }
 
   a:focus {
-      background: $focus-bg-top;
+      background-color: $focus-bg-top;
       color: $focus-text;
       outline: 2px solid $primary_b;
 

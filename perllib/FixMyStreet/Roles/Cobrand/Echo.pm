@@ -246,9 +246,6 @@ sub bin_services_for_address {
             $request_max ||= $service_to_containers{$service_id}{max};
         }
 
-        my $open_requests = { map { $_->{container} => $_ } $events->filter({ type => 'request', containers => $containers })->list };
-        $self->call_hook(waste_munge_bin_services_open_requests => $open_requests);
-
         my $garden = 0;
         my $garden_bins;
         my $garden_sacks;
@@ -277,6 +274,10 @@ sub bin_services_for_address {
                 $garden = 0;
             }
         }
+
+        # $containers should contain them all now (garden may only have been added just above here)
+        my $open_requests = { map { $_->{container} => $_ } $events->filter({ type => 'request', containers => $containers })->list };
+        $self->call_hook(waste_munge_bin_services_open_requests => $open_requests);
 
         my $any_request_max = ref $request_max ? sum(values %$request_max) : $request_max;
         my $request_allowed = ($request_allowed{$service_id} || !%service_to_containers) && $any_request_max && $schedules->{next};

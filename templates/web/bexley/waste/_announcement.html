@@ -9,19 +9,9 @@
 [% END %]
 
 [% USE date(format = c.cobrand.bin_day_format) %]
-[% IF (property.red_tags && property.red_tags.size) || (property.service_updates && property.service_updates.size) %]
+[% IF (property.red_tags && property.red_tags.size) %]
   <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Service status</h2>
 
-  [% IF property.service_updates && property.service_updates.size %]
-    <div class="govuk-inset-text">
-      <h3 class="govuk-heading-m">Service updates</h3>
-      <ul class="govuk-list">
-        [% FOREACH update IN property.service_updates %]
-          <li>[% date.format(update.date, '%A, %-d~~~ %B %Y at %l:%M%p') | replace('~~~', update.ordinal) %]: [% update.reason %]</li>
-        [% END %]
-      </ul>
-    </div>
-  [% END %]
   [% IF property.red_tags && property.red_tags.size %]
   <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
     <h2 class="govuk-error-summary__title" id="error-summary-title">

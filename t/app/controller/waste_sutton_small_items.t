@@ -237,6 +237,7 @@ FixMyStreet::override_config {
 
     subtest 'List items' => sub {
         $mech->content_contains('Add items for collection', "On items page");
+        $mech->content_contains('You can book the collection of up to six items.');
         # Why not?
         #$mech->content_contains('2 Example Street, Sutton, SM2 5HF', "Shows correct address");
         $mech->content_contains('option value="Batteries"', "Batteries option");
