@@ -372,7 +372,7 @@ subtest "flytipping/graffiti on non PCC land is emailed" => sub {
         is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
         is $p->state, 'closed', 'report closed having sent email';
         is $p->comments->count, 1, 'comment added';
-        like $p->comments->first->text, qr/You can report cases.*?clear the waste\.\n\n/, 'correct comment text';
+        like $p->comments->first->text, qr/The area selected is not owned or maintained by Peterborough City Council/, 'correct comment text';
         ok !Open311->test_req_used, 'no open311 sent';
 
         $mech->email_count_is(1);

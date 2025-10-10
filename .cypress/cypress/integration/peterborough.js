@@ -37,7 +37,7 @@ describe('new report form', function() {
 
   it('flytipping/graffiti categories handle land types correctly', function() {
     cy.pickCategory('General fly tipping');
-    cy.get('.pre-button-messaging:visible').should('contain', 'You can report cases of fly-tipping on private land');
+    cy.get('.pre-button-messaging:visible').should('contain', 'The area selected is not owned or maintained by Peterborough City Council');
     cy.nextPageReporting();
     cy.get('#form_hazardous').select('yes');
     cy.get('.pre-button-messaging:visible').should('contain', 'Please phone customer services to report this problem');
@@ -60,7 +60,7 @@ describe('new report form', function() {
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
-    cy.get('.pre-button-messaging:visible').should('contain', 'You can report cases of fly-tipping on private land');
+    cy.get('.pre-button-messaging:visible').should('contain', 'The area selected is not owned or maintained by Peterborough City Council');
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('Non offensive graffiti');
@@ -108,7 +108,7 @@ describe('Roadworks', function() {
 });
 
 describe('National site tests', function() {
-  it.only('flytipping/graffiti categories handle land types correctly on .com', function() {
+  it('flytipping/graffiti categories handle land types correctly on .com', function() {
     cy.server();
     cy.route('/report/new/ajax*').as('report-ajax');
     cy.route("**/peterborough.assets/4/*", 'fixture:peterborough_pcc.json').as('pcc');
@@ -119,7 +119,7 @@ describe('National site tests', function() {
     cy.get('#map_box').click();
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
-    cy.get('.pre-button-messaging:visible').should('contain', 'You can report cases of fly-tipping on private land');
+    cy.get('.pre-button-messaging:visible').should('contain', 'The area selected is not owned or maintained by Peterborough City Council');
     cy.nextPageReporting();
     cy.get('#form_hazardous').select('yes');
     cy.get('.pre-button-messaging:visible').should('contain', 'Please phone customer services to report this problem');
@@ -138,7 +138,7 @@ describe('National site tests', function() {
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('General fly tipping');
-    cy.get('.pre-button-messaging:visible').should('contain', 'You can report cases of fly-tipping on private land');
+    cy.get('.pre-button-messaging:visible').should('contain', 'The area selected is not owned or maintained by Peterborough City Council');
     cy.visit('http://fixmystreet.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('Non offensive graffiti');
