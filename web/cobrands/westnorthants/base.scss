@@ -37,7 +37,7 @@
         background: $primary_link_hover_color;
     }
     &:focus {
-      background: $focus-bg-top;
+      background-color: $focus-bg-top;
       color: $focus-text;
     }
   }
@@ -58,7 +58,7 @@ h1 {
 a,
 .fake-link {
   &:focus {
-    background: $focus-bg-top;
+    background-color: $focus-bg-top;
     text-decoration: none;
     outline: 2px solid $primary_b;
     color: $primary_b;
@@ -72,7 +72,7 @@ a,
   }
 
   a:focus {
-      background: $focus-bg-top;
+      background-color: $focus-bg-top;
       color: $focus-text;
       outline: none;
   }
