@@ -1266,6 +1266,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'with Whitespace data' => sub {
+            $mech->delete_problems_for_body($body->id);
             $whitespace_mock->mock(
                 'GetSiteCollections',
                 sub {
@@ -1404,6 +1405,7 @@ FixMyStreet::override_config {
     };
 
     subtest 'Test direct debit cancellation' => sub {
+        $mech->delete_problems_for_body($body->id);
         $mech->clear_emails_ok;
 
         # Log in as a staff user
@@ -2116,6 +2118,68 @@ FixMyStreet::override_config {
         like $req->header('User-Agent'), qr/WasteWorks by SocietyWorks/, 'User-Agent is correct';
         is $req->header('ApiKey'), 'test-api-key', 'ApiKey is correct';
         is $req->header('Accept'), 'application/json', 'Accept is correct';
+    };
+
+    subtest 'cancel - prevents duplicate cancellations within 1 hour' => sub {
+        default_mocks();
+        set_fixed_time('2024-02-01T12:00:00');
+        $mech->delete_problems_for_body($body->id);
+
+        # Set up Agile mock with active subscription
+        $agile_mock->mock( 'CustomerSearch', sub { {
+            Customers => [{
+                CustomerExternalReference => 'CUSTOMER_123',
+                CustomertStatus => 'ACTIVATED',
+                ServiceContracts => [{
+                    EndDate => '12/12/2025 12:21',
+                    ServiceContractStatus => 'ACTIVE',
+                    UPRN => '10001',
+                    WasteContainerQuantity => 1,
+                    Payments => [{ PaymentStatus => 'Paid', Amount => '50', PaymentMethod => 'Credit/Debit Card' }]
+                }],
+            }],
+        } } );
+
+        $mech->log_in_ok($staff_user->email);
+
+        # Submit first cancellation
+        $mech->get_ok('/waste/10001/garden_cancel');
+        $mech->submit_form_ok({ with_fields => {
+            name => 'First Cancel',
+            email => 'first@example.org',
+            reason => 'Price',
+            confirm => 1,
+        }});
+        like $mech->text, qr/Your subscription has been cancelled/, 'First cancellation succeeded';
+
+        # Get the first cancellation report
+        my $first_cancel = FixMyStreet::DB->resultset('Problem')->search({
+            category => 'Cancel Garden Subscription',
+            state => 'confirmed',
+        })->first;
+        ok $first_cancel, 'First cancellation report created';
+        my $first_id = $first_cancel->id;
+        is $first_cancel->get_extra_field_value('uprn'), '10001', 'First cancellation has correct UPRN';
+
+        # Try to cancel again immediately - should reuse existing cancellation
+        $mech->get_ok('/waste/10001/garden_cancel');
+        $mech->submit_form_ok({ with_fields => {
+            name => 'Second Cancel',
+            email => 'second@example.org',
+            reason => 'Service issues',
+            confirm => 1,
+        }});
+        like $mech->text, qr/Your subscription has been cancelled/, 'Shows confirmation for second attempt';
+
+        # Verify no duplicate was created
+        my @all_cancellations = FixMyStreet::DB->resultset('Problem')->search({
+            category => 'Cancel Garden Subscription',
+            state => 'confirmed',
+        })->all;
+        # Filter to only those with UPRN 10001
+        @all_cancellations = grep { ($_->get_extra_field_value('uprn') || '') eq '10001' } @all_cancellations;
+        is scalar(@all_cancellations), 1, 'Only one cancellation exists';
+        is $all_cancellations[0]->id, $first_id, 'Reused the first cancellation report, did not create duplicate';
     };
 };
 
