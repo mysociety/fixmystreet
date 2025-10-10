@@ -56,8 +56,9 @@ sub open311_munge_update_params {
     my $p = $comment->problem;
 
     if ( $comment->text =~ /Category changed/ ) {
-        my $service_code = $p->contact->email;
-        $params->{service_code} = $service_code;
+        if ( my $service_code = $p->get_extra_field_value('_wrapped_service_code')  || $p->contact->email ) {
+            $params->{service_code} = $service_code;
+        }
     }
 }
 

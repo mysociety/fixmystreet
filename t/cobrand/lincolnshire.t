@@ -130,24 +130,34 @@ FixMyStreet::override_config {
             'f', 'confirmed', 'confirmed',
             { confirmed => DateTime->now }
         );
-        $report->update({ category => 'Surface Issue' });
 
         my $params = {};
-        $cobrand->open311_munge_update_params($params, $comment);
 
-        is $params->{service_code}, 'surface_issue@example.org', 'Service code is set from contact email';
+        subtest 'Regular category change' => sub {
+            $report->update({ category => 'Surface Issue' });
+            $cobrand->open311_munge_update_params($params, $comment);
+            is $params->{service_code}, 'surface_issue@example.org', 'Service code is set from contact email';
+        };
 
-        # Test with comment that doesn't contain "Category changed"
-        my $regular_comment = $mech->create_comment_for_problem(
-            $report, $lincs_user, 'Staff User', 'Regular update comment',
-            'f', 'confirmed', 'confirmed',
-            { confirmed => DateTime->now }
-        );
+        subtest 'Wrapped service category change' => sub {
+            $report->update_extra_field({ name => '_wrapped_service_code', value => 'ABC_DEF' });
+            $report->update;
+            $comment->discard_changes;
+            %$params = ();
+            $cobrand->open311_munge_update_params($params, $comment);
+            is $params->{service_code}, 'ABC_DEF', 'Service code is set from field value';
+        };
 
-        $params = {};
-        $cobrand->open311_munge_update_params($params, $regular_comment);
-
-        is scalar keys %$params, 0, 'No parameters added for non-category change comments';
+        subtest "Comment that doesn't change category" => sub {
+            my $regular_comment = $mech->create_comment_for_problem(
+                $report, $lincs_user, 'Staff User', 'Regular update comment',
+                'f', 'confirmed', 'confirmed',
+                { confirmed => DateTime->now }
+            );
+            $params = {};
+            $cobrand->open311_munge_update_params($params, $regular_comment);
+            is scalar keys %$params, 0, 'No parameters added for non-category change comments';
+        };
 
         $report->comments->delete;
         $report->delete;
