@@ -55,8 +55,11 @@ sub check {
     if ($phone) {
         push @check, $phone;
     }
-    my $existing = $rs->search( { email => \@check } )->first;
-    return !$existing->safe if $existing;
+    my @existing = $rs->search( { email => \@check } )->all;
+    foreach (@existing) {
+        return 1 if !$_->safe;
+    }
+    return 0 if @existing; # There were some, and they were all okay
 
     return 0 unless $domain;
 
