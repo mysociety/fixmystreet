@@ -1645,26 +1645,41 @@ fixmystreet.assets.peterborough.bin_asset_details = function() {
 // at all, show the message if we're not on a road.
 
 fixmystreet.assets.peterborough.pcc_found = function(layer) {
-    delete layer.map_messaging.asset;
+    pboro_correct_messaging_off(layer);
 };
 fixmystreet.assets.peterborough.pcc_not_found = function(layer) {
     for ( var i = 0; i < fixmystreet.assets.layers.length; i++ ) {
         var l = fixmystreet.assets.layers[i];
         if ( l.fixmystreet.name == 'Adopted Highways' && l.selected_feature ) {
-            delete layer.map_messaging.asset;
+            pboro_correct_messaging_off(layer);
             return;
         }
     }
-    var msg = $(layer.fixmystreet.message_template).html();
-    layer.map_messaging.asset = msg;
+    pboro_correct_messaging_on(layer);
 };
 fixmystreet.assets.peterborough.leased_found = function(layer) {
-    var msg = $(layer.fixmystreet.message_template).html();
-    layer.map_messaging.asset = msg;
+    pboro_correct_messaging_on(layer);
 };
 fixmystreet.assets.peterborough.leased_not_found = function(layer) {
-    delete layer.map_messaging.asset;
+    pboro_correct_messaging_off(layer);
 };
+
+function pboro_correct_messaging_on(layer) {
+    if (layer.fixmystreet.no_asset_msg_id) {
+        fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+    } else {
+        var msg = $(layer.fixmystreet.message_template).html();
+        layer.map_messaging.asset = msg;
+    }
+}
+
+function pboro_correct_messaging_off(layer) {
+    if (layer.fixmystreet.no_asset_msg_id) {
+        fixmystreet.message_controller.road_found(layer);
+    } else {
+        delete layer.map_messaging.asset;
+    }
+}
 
 /* Shropshire */
 
