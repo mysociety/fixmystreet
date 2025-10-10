@@ -138,6 +138,7 @@ my %GARDEN_CONTAINER_IDS = (
     bin240 => 1915,
     bin140 => 1914,
     sack => 1928,
+    bag => 1910, # Also used in Merton Echo
 );
 lock_hash(%GARDEN_CONTAINER_IDS);
 
@@ -424,7 +425,7 @@ sub garden_container_data_extract {
         next if $end_date lt $today;
         $container_end_date = $end_date if $end_date lt $schedules->{end_date};
         my $asset_id = $_->{AssetTypeId};
-        if ($asset_id == $GARDEN_CONTAINER_IDS{sack}) {
+        if ($asset_id == $GARDEN_CONTAINER_IDS{sack} || $asset_id == $GARDEN_CONTAINER_IDS{bag}) {
             $garden_sacks = 1;
             $garden_bins = undef;
             $garden_cost += $costs->sacks_renewal(1, $schedules->{end_date}) / 100;

@@ -299,26 +299,13 @@ sub bin_services_for_address {
         $property->{is_communal} = 1;
     }
 
-    # TODO Call these in parallel
-    $property->{open_reports}
-        = $self->_open_reports($property);
-    $property->{recent_collections} = $self->_recent_collections($property);
-
-    my ( $property_logs, $street_logs, $completed_or_attempted_collections )
-        = $self->_in_cab_logs($property);
-    $property->{completed_or_attempted_collections}
-        = $completed_or_attempted_collections;
-    $property->{red_tags} = $property_logs;
-    $property->{service_updates} = $street_logs;
-
     # Set certain things outside of services loop
     my $containers = $self->_containers($property);
     my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
 
-    my %frequency_types;
+    # Filter out out-of-date rows first, or those without a container
     my @site_services_filtered;
     my %seen_containers;
-    my $whitespace_paper_bin;
     for my $service (@$site_services) {
         next if !$service->{NextCollectionDate};
 
@@ -365,12 +352,52 @@ sub bin_services_for_address {
             next if $now_dt > $to_dt;
         }
 
+        my $filtered_service = {
+            id => $service->{SiteServiceID},
+            service_id => $service->{ServiceItemName},
+            service_name => $container->{name},
+            service_description => $container->{description},
+            service_description_contains_html =>
+                $container->{description_contains_html},
+            round_schedule => $service->{RoundSchedule},
+            next => $service->{NextCollectionDate},
+            next_dt => $next_dt,
+            assisted_collection => $assisted_collection,
+            uprn => $uprn,
+            garden_waste => $container->{description} eq 'Garden waste' ? 1 : 0,
+        };
+
+        push @site_services_filtered, $filtered_service;
+        $seen_containers{ $container->{name} } = 1;
+    }
+
+    @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
+
+    # If fetching the calendar page, we can shortcircuit with just what we need
+    return \@site_services_filtered if $self->{c}->action eq 'waste/calendar_ics';
+
+    # TODO Call these in parallel
+    $property->{open_reports} = $self->_open_reports($property);
+    $property->{recent_collections} = $self->_recent_collections($property);
+
+    my ( $property_logs, $completed_or_attempted_collections )
+        = $self->_in_cab_logs($property);
+    $property->{completed_or_attempted_collections}
+        = $completed_or_attempted_collections;
+    $property->{red_tags} = $property_logs;
+
+    # Now augment the filtered services with extra information
+    my %frequency_types;
+    my $whitespace_paper_bin;
+    for my $service (@site_services_filtered) {
+        my $next_dt = delete $service->{next_dt};
+
         # Get the last collection date from recent collections.
         #
         # Some services may have two collections a week; these are concatenated
         # together in $service->{RoundSchedule}. We need to split them so we
         # can look them up individually in $property->{recent_collections}.
-        my @round_schedules = split /, /, $service->{RoundSchedule};
+        my @round_schedules = split /, /, $service->{round_schedule};
 
         my $last_dt;
         for (@round_schedules) {
@@ -386,7 +413,7 @@ sub bin_services_for_address {
             }
         }
 
-        my ($round) = split / /, $service->{RoundSchedule};
+        my ($round) = split / /, $service->{round_schedule};
 
         # 'Next collection date' could be today; successful collection logs
         # will tell us if the collection has already been made
@@ -406,29 +433,17 @@ sub bin_services_for_address {
             $collected_today = 0;
         }
 
-        my $filtered_service = {
-            id             => $service->{SiteServiceID},
-            service_id     => $service->{ServiceItemName},
-            service_name        => $container->{name},
-            service_description => $container->{description},
-            service_description_contains_html =>
-                $container->{description_contains_html},
-            round_schedule => $service->{RoundSchedule},
-            round          => $round,
-            next => {
-                date              => $service->{NextCollectionDate},
-                ordinal           => ordinal( $next_dt->day ),
-                changed           => 0,
-                is_today          => $scheduled_for_today,
-                already_collected => $collected_today,
-            },
-            assisted_collection => $assisted_collection,
-            uprn => $uprn,
-            garden_waste => $container->{description} eq 'Garden waste' ? 1 : 0,
+        $service->{round} = $round;
+        $service->{next} = {
+            date              => $service->{next},
+            ordinal           => ordinal( $next_dt->day ),
+            changed           => 0,
+            is_today          => $scheduled_for_today,
+            already_collected => $collected_today,
         };
 
         if ($last_dt) {
-            $filtered_service->{last} = {
+            $service->{last} = {
                 date    => $last_dt,
                 ordinal => ordinal( $last_dt->day ),
             };
@@ -438,22 +453,22 @@ sub bin_services_for_address {
         # collection location options
         $property->{has_assisted} = 1
             if !$property->{has_assisted}
-            && $filtered_service->{assisted_collection};
+            && $service->{assisted_collection};
         $property->{above_shop} = 1
-            if $filtered_service->{service_id} eq 'MDR-SACK';
+            if $service->{service_id} eq 'MDR-SACK';
 
         $whitespace_paper_bin = 1
-            if $filtered_service->{service_id} eq 'PC-180';
+            if $service->{service_id} eq 'PC-180';
 
         # Frequency of collection
         if ( @round_schedules > 1 ) {
-            $filtered_service->{schedule} = 'Twice Weekly';
+            $service->{schedule} = 'Twice Weekly';
         } elsif ( $round_schedules[0] =~ /Wk (\d+)$/ ) {
             $frequency_types{fortnightly} //= $1;
-            $filtered_service->{schedule} = 'Fortnightly';
+            $service->{schedule} = 'Fortnightly';
         } else {
             $frequency_types{weekly} //= 1;
-            $filtered_service->{schedule} = 'Weekly';
+            $service->{schedule} = 'Weekly';
         }
 
         foreach (
@@ -461,34 +476,31 @@ sub bin_services_for_address {
             { type => 'delivery', open => 'delivery_open', details => 'delivery_details' },
             { type => 'removal', open => 'removal_open', details => 'removal_details' },
         ) {
-            my $container_id = _parent_for_container($filtered_service->{service_id});
+            my $container_id = _parent_for_container($service->{service_id});
             my $details = $property->{open_reports}{$_->{type}}{$container_id};
 
             if ($details) {
-                $filtered_service->{$_->{details}} = $details;
-                $filtered_service->{$_->{open}} = $details->{open};
+                $service->{$_->{details}} = $details;
+                $service->{$_->{open}} = $details->{open};
             } else {
-                $filtered_service->{$_->{open}} = 0;
+                $service->{$_->{open}} = 0;
             }
         }
 
-        $filtered_service->{report_locked_out} = 0;
-        $filtered_service->{report_locked_out_reason} = '';
-        my $log_reason_prefix = $self->get_in_cab_logs_reason_prefix($filtered_service->{service_id});
+        $service->{report_locked_out} = 0;
+        $service->{report_locked_out_reason} = '';
+        my $log_reason_prefix = $self->get_in_cab_logs_reason_prefix($service->{service_id});
         if ($log_reason_prefix) {
-            my @relevant_logs = grep { $_->{reason} =~ /^$log_reason_prefix/ && $_->{round} =~ /\Q$filtered_service->{round}\E/ } @$property_logs;
+            my @relevant_logs = grep { $_->{reason} =~ /^$log_reason_prefix/ && $_->{round} =~ /\Q$service->{round}\E/ } @$property_logs;
             if (@relevant_logs) {
-                $filtered_service->{report_locked_out} = 1;
-                $filtered_service->{report_locked_out_reason} = $relevant_logs[0]->{reason};
+                $service->{report_locked_out} = 1;
+                $service->{report_locked_out_reason} = $relevant_logs[0]->{reason};
             }
 
         }
 
-        $filtered_service->{report_allowed}
-            = $self->can_report_missed( $property, $filtered_service );
-
-        push @site_services_filtered, $filtered_service;
-        $seen_containers{ $container->{name} } = 1;
+        $service->{report_allowed}
+            = $self->can_report_missed( $property, $service );
     }
 
     $property->{frequency_types} = \%frequency_types;
@@ -503,8 +515,6 @@ sub bin_services_for_address {
             }
         ];
     }
-
-    @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
 
     @site_services_filtered = $self->service_sort(@site_services_filtered);
 
@@ -710,11 +720,10 @@ sub _in_cab_logs {
     }
 
     my @property_logs;
-    my @street_logs;
     my %completed_or_attempted_collections;
     my %seen_logs;
 
-    return ( \@property_logs, \@street_logs, \%completed_or_attempted_collections )
+    return ( \@property_logs, \%completed_or_attempted_collections )
         unless $cab_logs;
 
     for (@$cab_logs) {
@@ -749,8 +758,7 @@ sub _in_cab_logs {
         }
     }
 
-    return ( \@property_logs, \@street_logs,
-        \%completed_or_attempted_collections );
+    return ( \@property_logs, \%completed_or_attempted_collections );
 }
 
 sub can_report_missed {
@@ -758,9 +766,6 @@ sub can_report_missed {
 
     # Cannot make a report if there is already an open one for this service
     return 0 if $property->{open_reports}{missed}{ $service->{service_id} };
-
-    # Prevent reporting if there are service updates
-    return 0 if @{ $property->{service_updates} // [] };
 
     # Prevent reporting if there are red tags on the service
     # Red tags are matched to services based on prefix
@@ -778,7 +783,7 @@ sub can_report_missed {
     if ($last_expected_collection_dt) {
         # TODO We can probably get successful collections directly off the
         # property rather than query _in_cab_logs again
-        my ( undef, undef, $completed_or_attempted_collections )
+        my ( undef, $completed_or_attempted_collections )
             = $self->_in_cab_logs($property);
 
         my $logged_time_for_round;
