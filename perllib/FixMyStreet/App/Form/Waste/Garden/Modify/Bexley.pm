@@ -27,4 +27,19 @@ has_page verify_failed => ( verify_failed() );
 has_page alter =>
     FixMyStreet::App::Form::Waste::Garden::Modify::Shared::alter();
 
+sub validate {
+    my $self = shift;
+
+    unless ( $self->field('current_bins')->is_inactive ) {
+        my $current = $self->field('current_bins')->value;
+        my $wanted  = $self->field('bins_wanted')->value;
+        $self->add_form_error(
+            'You need to change the number of bins.')
+            if $wanted == $current;
+    }
+
+    $self->next::method();
+}
+
+
 1;
