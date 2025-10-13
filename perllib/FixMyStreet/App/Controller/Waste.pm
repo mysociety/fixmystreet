@@ -575,6 +575,13 @@ sub calendar_ics : Chained('property') : PathPart('calendar.ics') : Args(0) {
     my ($self, $c) = @_;
     $c->res->header(Content_Type => 'text/calendar');
     $c->res->header(Cache_Control => 'max-age=86400');
+
+    # Remove session cookie (created by caching of property data) so this
+    # response can be cached. This deletes the session data but would still set
+    # an immediately-expire cookie, so delete the cookie directly as well.
+    $c->delete_session;
+    delete $c->response->cookies->{$c->_session_plugin_config->{cookie_name}};
+
     require Data::ICal::RFC7986;
     require Data::ICal::Entry::Event;
     my $calendar = Data::ICal::RFC7986->new(
