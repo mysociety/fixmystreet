@@ -4,11 +4,7 @@
 
 <img alt="When you're logged in as an administrator the 'admin' button is in the navigation menu" src="/assets/img/pro-user-guide/navigating-as-pro-staff.png" class="admin-screenshot" />
 
-If your Administrator has already given you staff permissions, you may see
-additional admin button on the top menu when you’re logged in. If not, your
-access may be only in the frontend (e.g. moderation does not require any
-backend admin access), or your Administrator can add these permissions at any
-time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
+If your Administrator has already given you staff permissions, you will see an additional admin button on the top menu when you’re logged in. If not, your access may be only in the frontend (e.g. moderation does not require any backend admin access), or your Administrator can add these permissions at any time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
 </div>
 
 <div class="admin-task" markdown="1" id="viewing-reports-your-area">
@@ -17,18 +13,13 @@ time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
 
 <span class="admin-task__permissions">Permissions required: none</span>
 
-If you want to view everything that’s been reported within the council area, here’s the quickest
-way.
-
-Click on ‘all reports’ in the top menu. You’ll see the boundaries of your
-council area on the map, and a list of all reports listed, with the most
-recently updated reports at the top, in the left hand panel.
+If you want to view everything that’s been reported within your authority's boundary, click on ‘All reports’ in the top menu. You’ll see the boundaries of your authority area on the map, and a list of all reports, with the most recently updated reports at the top, in the left hand panel.
 
 <img alt="Click all reports in the top menu to view all reports in an area" src="/assets/img/pro-user-guide/viewing-reports-your-area.png" class="admin-screenshot" />
 
-Note that staff members can be allocated one or more category (e.g. potholes, streetlights, etc) by
-the Administrator — see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’ for more details. When logged in, these staff
-members will only see reports within those categories by default.
+<strong>Note:</strong> staff members can be allocated one or more category (eg potholes, streetlights, etc) by
+an Administrator — see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’ for more details. When logged in, these staff
+members will <strong>only</strong> see reports within those categories by default.
 
 </div>
 
@@ -38,23 +29,17 @@ members will only see reports within those categories by default.
 
 <span class="admin-task__permissions">Permissions required: none</span>
 
-If required, you can also use the controls to the right of the screen to zoom
-in or out, or pan across the map. As you’ll see, the list of reports and URL
-(web address) always reflect the area you are viewing on the map, so this is
-another way of refining your view.
+If required, you can use the controls to the right of the screen to zoom in or out, or pan across the map. As you’ll see, the list of reports and URL (web address) always reflect the area you are viewing on the map, so this is another way of refining your view.
 
-Once you've found a satisfactory view, and if you are likely to want to revisit
-it, you can bookmark or otherwise take a copy of the URL displayed in your
-browser, so you don't have to define the location again in the future.
+Once you've found a satisfactory view, and if you are likely to want to revisit it, you can bookmark or otherwise take a copy of the URL displayed in your browser, so you don't have to define the location again in the future.
 
 </div>
 
 <div class="admin-task" markdown="1" id="view-report-specific-area">
 
-### Viewing a report in a specific area
+### Viewing reports in a specific area
 
-If you already know the street name or postcode of the location you’d like to view, you may find it
-quicker to use the search form on the front page.
+If you already know the street name or postcode of the location you’d like to view, you may find it quicker to use the search form on the front page. This will load the map at that location, along with a list of reports made there.
 
 </div>
 
@@ -64,11 +49,20 @@ quicker to use the search form on the front page.
 
 <span class="admin-task__permissions">Permissions required: none</span>
 
-<img alt="The drop-downs at the top of the report list allow you to filter which reports you see" src="/assets/img/pro-user-guide/filtering-sorting-reports.png" class="admin-screenshot" />
+From the 'All reports' page, or after narrowing down on a specific area, you have the ability to filter reports using the drop-downs at the top of the left panel. 
 
-The drop-downs at the top of the report list allow you to filter which reports you see, by state (e.g.
-‘Fixed’ or ‘In progress’) and category (e.g. Potholes or Graffiti). You may also sort them by date
+<img alt="Use the drop-down menus to filter reports" src="/assets/img/pro-user-guide/Filtering reports.png" class="admin-screenshot" />
+
+You can filter by state (eg ‘Fixed’ or ‘In progress’) and category (eg Potholes or Graffiti). You may also sort them by date
 created, how recently they have been updated, or number of updates.
+
+All categories, or all subcategories within a parent category, can be viewed via a toggle, making it easier and quicker to navigate to the reports in which you are interested.
+
+Let’s say, for example, you want to view on the map all reports relating to parks maintenance issues, such as full litter bins, fly-tipping and path cleaning. Instead of having to manually select the relevant categories, you can instead select the parent category ‘Parks maintenance’ and all associated categories will be toggled. Once you’re done, click the parent category again to deselect all associated categories. 
+
+Equally, if you want to view reports from all available categories, you can click ‘Everything’ at the top of the list to select all categories, and click again to deselect them all.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/uQVwAhuYgDk?si=jX8g1aTjlTUJWxmJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 </div>
 
