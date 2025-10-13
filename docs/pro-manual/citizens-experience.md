@@ -60,34 +60,49 @@ In all other instances where a user is attempting to report a problem in a locat
 
 FixMyStreet’s start page invites the user to search for the location of their issue, by entering any part of an address, for example a street name or postcode. Alternatively they can allow the site to identify their location automatically via GPS.
 
-They’re then taken to a map, centred on this location. The user can pan and zoom the map until they find the exact position of the issue they are reporting. Councils on the Premium plan may choose to include GIS data showing assets such as streetlights or trees which enable further accuracy.
+They’re then taken to a map, centred on this location. The user can pan and zoom the map until they find the exact position of the issue they are reporting. Should the user pan too far, they can re-centre the map using the arrow button.
+
+<img alt="Clicking the arrow button re-centres the map" src="/assets/img/pro-user-guide/re-centre-the-map.png" class="admin-screenshot" />
+
+Depending on your FixMyStreet Pro plan, you may choose to include GIS data showing assets such as streetlights or trees which enable further accuracy.
+
+### Avoiding duplicates
+
+All reports are published online, so at this stage, users can see if their issue has already been reported. FixMyStreet Pro suggests potential duplicates based on the location and category of the report.
 
 <img alt="Existing reports are visible to reduce the chance of duplicates" src="/assets/img/pro-user-guide/making-report-duplicates.png"  class="admin-screenshot"/>
 
-All reports are published online, so at this stage, citizens can see if their issue has already been reported. FixMyStreet Pro suggests potential duplicates to users based on the location and category of the report.
+If a report already exists for the same problem, the user can choose to subscribe to the report, which enables them to automatically receive updates on its progress at not extra work for you, the responsible authority.
 
 <img alt="Potential duplicates are actively suggested" src="/assets/img/pro-user-guide/Duplicate-reports.png"  class="admin-screenshot"/>
-
-If a report already exists for the same problem, the user can choose to subscribe to the report, which enables them to automatically receive updates on its progress at not extra work for you, the responsible authority.
 
 If not, they place a pin on the map and make their report.
 
 <img alt="When a report is made the details are added via a web form" src="/assets/img/pro-user-guide/making-report.png" class="admin-screenshot" />
 
-They are asked for:
+### Choosing a category
 
-- A category, selected from those provided by the council
-- A title
-- A description
+Users are asked to select a category for thier report, either by typing in the search bar or choosing from the list of all available categories and subcategories (these are managed by you, the authority, and reflect the issues you can deal with).
+
+<img alt="Choosing a category" src="/assets/img/pro-user-guide/choosing-a-category.png" class="admin-screenshot" />
+
+### Providing necessary information
+
+Users are also asked to provide:
+- A title for their report
+- A description of the problem
 - Their contact details (if they have previously registered, these do not need to be
     re-entered)
 - Any other information that the council has stipulated as a requirement, eg for potholes
-    you may add a field which asks for the dimensions.
+    you may add a field which asks for the dimensions, or for drains you may want to qualify whether the blockage is within or on top of the drain.
+
+<img alt="Answering extra questions" src="/assets/img/pro-user-guide/extra-questions-example.png" class="admin-screenshot" />
+
+### Confirming a report
 
 If the user is not registered or logged in, they may confirm their report by email.
-Note that although it is obligatory to include a name and contact details, the user may opt for their
-name not to be shown on the public report page. Of course, their other contact details are only
-sent to the council and are never made public.
+
+Note that unless you have enabled anonymous reporting on a category, it is obligatory for users to include a name and contact details with their report. The user may opt for their name not to be shown on the public report page. Of course, their other contact details are only sent to the council and are never made public.
 
 ### Making a report while offline
 
@@ -106,7 +121,7 @@ If a user loads FixMyStreet while offline they will see the "You are currently o
 Responses from the council come directly back to the user, via the email address they used to
 make the report.
 
-Where councils have opted for full integration with FixMyStreet Pro, responses
+If you have opted for full integration with FixMyStreet Pro, responses
 may also be posted as automatic updates on the report. Responses may take the form of a request
 for further information or an update on the status of the issue.
 
