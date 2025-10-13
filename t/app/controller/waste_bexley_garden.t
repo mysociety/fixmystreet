@@ -889,6 +889,8 @@ FixMyStreet::override_config {
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
+        $mech->log_in_ok( $user->email );
+
         subtest 'with active contract elsewhere' => sub {
             $whitespace_mock->mock('GetSiteCollections', sub {
                 [ {
@@ -941,7 +943,7 @@ FixMyStreet::override_config {
                                 WasteContainerQuantity => 2,
                                 ServiceContractStatus => 'ACTIVE',
                                 UPRN => '10001',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                             },
                         ],
                     },
@@ -1000,6 +1002,9 @@ FixMyStreet::override_config {
                 } } );
 
                 $mech->get_ok("/waste/$uprn");
+                like $mech->content,
+                    qr/Change your brown wheelie bin subscription/,
+                    'can amend subscription';
                 unlike $mech->content, qr/Renew subscription today/,
                     '"Renew today" notification box not shown';
                 unlike $mech->content, qr/14 March 2024, soon due for renewal/,
@@ -1033,6 +1038,9 @@ FixMyStreet::override_config {
                 } } );
 
                 $mech->get_ok("/waste/$uprn");
+                unlike $mech->content,
+                    qr/Change your brown wheelie bin subscription/,
+                    'cannot amend subscription';
                 like $mech->content, qr/Renew subscription today/,
                     '"Renew today" notification box shown';
                 like $mech->content, qr/14 March 2024, soon due for renewal/,
@@ -1095,6 +1103,7 @@ FixMyStreet::override_config {
                         renew_as_new_subscription => 1,
                     );
 
+                    $renew_report->delete;
                 };
 
                 $mech->get_ok("/waste/$uprn/garden_renew");
@@ -1166,6 +1175,8 @@ FixMyStreet::override_config {
                     like $email_body, qr/Bins to be delivered: 1/;
                     unlike $email_body, qr/Bins to be removed/;
                     like $email_body, qr/Total:.*?185.00/;
+
+                    $renew_report->delete;
                 };
 
                 subtest 'requesting fewer bins' => sub {
@@ -1226,11 +1237,14 @@ FixMyStreet::override_config {
                     unlike $email_body, qr/Bins to be delivered/;
                     like $email_body, qr/Bins to be removed: 1/;
                     like $email_body, qr/Total:.*?$ggw_cost_first_human/;
+
+                    $renew_report->delete;
                 };
 
             };
 
-            $mech->delete_problems_for_body($body->id);
+            is +FixMyStreet::DB->resultset('Problem')->count, 1,
+                'only original subscription in DB';
 
             subtest 'too early' => sub {
                 $agile_mock->mock( 'CustomerSearch', sub { {
@@ -1254,6 +1268,9 @@ FixMyStreet::override_config {
                 } } );
 
                 $mech->get_ok("/waste/$uprn");
+                like $mech->content,
+                    qr/Change your brown wheelie bin subscription/,
+                    'can amend subscription';
                 like $mech->content, qr/Renewal.*15 March 2024/s,
                     'Renewal date shown';
                 unlike $mech->content,
@@ -1286,6 +1303,9 @@ FixMyStreet::override_config {
                     } } );
 
                     $mech->get_ok("/waste/$uprn");
+                    unlike $mech->content,
+                        qr/Change your brown wheelie bin subscription/,
+                        'cannot amend subscription';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
                     like $mech->content, qr/18 January 2024, subscription overdue/,
@@ -1407,150 +1427,41 @@ FixMyStreet::override_config {
                         $renew_report->delete;
 
                     };
-
-                    subtest 'Ended more than 14 days but less than 3 months ago - renewal becomes a new signup' => sub {
-                        $agile_mock->mock( 'CustomerSearch', sub { {
-                            Customers => [
-                                {
-                                    CustomerExternalReference => 'CUSTOMER_123',
-                                    Firstname => 'Verity',
-                                    Surname => 'Wright',
-                                    CustomertStatus => 'INACTIVE',
-                                    ServiceContracts => [
-                                        {
-                                            # Just over 3 months ago - should get ignored
-                                            EndDate => '31/10/2023 12:00',
-                                            Reference => 'CONTRACT_OLD',
-                                            WasteContainerQuantity => 2,
-                                            ServiceContractStatus => 'NOACTIVE',
-                                            UPRN => '10001',
-                                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                        },
-                                        {
-                                            # Just under 3 months ago
-                                            EndDate => '01/11/2023 11:00',
-                                            Reference => 'CONTRACT_234',
-                                            WasteContainerQuantity => 1,
-                                            ServiceContractStatus => 'NOACTIVE',
-                                            UPRN => '10001',
-                                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                        },
-                                        {
-                                            # Just under 3 months ago
-                                            EndDate => '01/11/2023 12:00',
-                                            Reference => $contract_id,
-                                            WasteContainerQuantity => 2,
-                                            ServiceContractStatus => 'NOACTIVE',
-                                            UPRN => '10001',
-                                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                        },
-                                    ],
-                                },
-                            ],
-                        } } );
-
-                        $mech->get_ok("/waste/$uprn");
-                        unlike $mech->content, qr/Renew subscription today/,
-                            '"Renew today" notification box not shown';
-                        like $mech->content, qr/1 November 2023, subscription overdue/,
-                            '"Overdue" message shown';
-                        like $mech->content,
-                            qr/Renew your brown wheelie bin subscription/,
-                            'Renewal link available';
-
-                        $mech->get_ok("/waste/$uprn/garden_renew");
-
-                        $mech->submit_form_ok(
-                            {   with_fields => {
-                                    has_reference => 'Yes',
-                                    customer_reference => 'CUSTOMER_123',
-                                },
-                            },
-                        );
-
-                        like $mech->content, qr/name="current_bins.*value="2"/s,
-                            'Current bins pre-populated';
-                        like $mech->content, qr/name="bins_wanted.*value="2"/s,
-                            'Wanted bins pre-populated';
-
-                        $mech->submit_form_ok(
-                            {   with_fields => {
-                                    bins_wanted => 2,
-                                    payment_method => 'credit_card',
-                                },
-                            }
-                        );
-                        $mech->waste_submit_check(
-                            { with_fields => { tandc => 1 } } );
-
-                        my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-
-                        # Should be new signup with customer ref
-                        check_extra_data_pre_confirm(
-                            $renew_report,
-                            type         => 'New',
-                            current_bins => 2,
-                            new_bins     => 0,
-                            bins_wanted  => 2,
-                            customer_external_ref => 'CUSTOMER_123',
-                            renew_as_new_subscription => 1,
-                        );
-
-                        $renew_report->delete;
-
-                    };
-
-                    subtest 'Ended more than 3 months ago - no renewal option' => sub {
-                        $agile_mock->mock( 'CustomerSearch', sub { {
-                            Customers => [
-                                {
-                                    CustomerExternalReference => 'CUSTOMER_123',
-                                    Firstname => 'Verity',
-                                    Surname => 'Wright',
-                                    CustomertStatus => 'INACTIVE',
-                                    ServiceContracts => [
-                                        {
-                                            # Just over 3 months ago
-                                            EndDate => '31/10/2023 12:00',
-                                            Reference => 'CONTRACT_OLD',
-                                            WasteContainerQuantity => 2,
-                                            ServiceContractStatus => 'NOACTIVE',
-                                            UPRN => '10001',
-                                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
-                                        },
-                                    ],
-                                },
-                            ],
-                        } } );
-
-                        $mech->get_ok("/waste/$uprn");
-                        unlike $mech->content, qr/Renew subscription today/,
-                            '"Renew today" notification box not shown';
-                        unlike $mech->content, qr/subscription overdue/,
-                            '"Overdue" message not shown';
-                        unlike $mech->content,
-                            qr/Renew your brown wheelie bin subscription/,
-                            'Renewal link not available';
-
-                    };
-
                 };
 
-                subtest 'More than 14 days after expiry - is a new subscription' => sub {
+                subtest 'Ended more than 14 days but less than 3 months ago - renewal becomes a new signup' => sub {
                     $agile_mock->mock( 'CustomerSearch', sub { {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
                                 Firstname => 'Verity',
                                 Surname => 'Wright',
-                                CustomertStatus => 'ACTIVATED',
+                                CustomertStatus => 'INACTIVE',
                                 ServiceContracts => [
                                     {
-                                        # 15 days ago
-                                        EndDate => '17/01/2024 12:00',
+                                        # Just over 3 months ago - should get ignored
+                                        EndDate => '31/10/2023 12:00',
+                                        Reference => 'CONTRACT_OLD',
+                                        WasteContainerQuantity => 2,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                    },
+                                    {
+                                        # Just under 3 months ago
+                                        EndDate => '01/11/2023 11:00',
+                                        Reference => 'CONTRACT_234',
+                                        WasteContainerQuantity => 1,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                    },
+                                    {
+                                        # Just under 3 months ago
+                                        EndDate => '01/11/2023 12:00',
                                         Reference => $contract_id,
                                         WasteContainerQuantity => 2,
-                                        ServiceContractStatus => 'ACTIVE',
+                                        ServiceContractStatus => 'NOACTIVE',
                                         UPRN => '10001',
                                         Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                                     },
@@ -1559,7 +1470,20 @@ FixMyStreet::override_config {
                         ],
                     } } );
 
+                    $mech->get_ok("/waste/$uprn");
+                    unlike $mech->content,
+                        qr/Change your brown wheelie bin subscription/,
+                        'cannot amend subscription';
+                    unlike $mech->content, qr/Renew subscription today/,
+                        '"Renew today" notification box not shown';
+                    like $mech->content, qr/1 November 2023, subscription overdue/,
+                        '"Overdue" message shown';
+                    like $mech->content,
+                        qr/Renew your brown wheelie bin subscription/,
+                        'Renewal link available';
+
                     $mech->get_ok("/waste/$uprn/garden_renew");
+
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 has_reference => 'Yes',
@@ -1567,9 +1491,15 @@ FixMyStreet::override_config {
                             },
                         },
                     );
+
+                    like $mech->content, qr/name="current_bins.*value="2"/s,
+                        'Current bins pre-populated';
+                    like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                        'Wanted bins pre-populated';
+
                     $mech->submit_form_ok(
                         {   with_fields => {
-                                bins_wanted => 1,
+                                bins_wanted => 2,
                                 payment_method => 'credit_card',
                             },
                         }
@@ -1578,24 +1508,98 @@ FixMyStreet::override_config {
                         { with_fields => { tandc => 1 } } );
 
                     my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+                    # Should be new signup with customer ref
                     check_extra_data_pre_confirm(
                         $renew_report,
                         type         => 'New',
                         current_bins => 2,
-                        new_bins     => -1,
-                        bins_wanted  => 1,
+                        new_bins     => 0,
+                        bins_wanted  => 2,
                         customer_external_ref => 'CUSTOMER_123',
                         renew_as_new_subscription => 1,
                     );
-                    is $renew_report->get_extra_field_value('uprn'), $uprn;
-                    is $renew_report->get_extra_field_value('payment'), $ggw_cost_first;
-                    is $renew_report->get_extra_field_value('type'), '';
 
-                    $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
-                    check_extra_data_post_confirm($renew_report);
+                    $renew_report->delete;
 
                 };
 
+                subtest 'Ended more than 3 months ago - no renewal option' => sub {
+                    $agile_mock->mock( 'CustomerSearch', sub { {
+                        Customers => [
+                            {
+                                CustomerExternalReference => 'CUSTOMER_123',
+                                Firstname => 'Verity',
+                                Surname => 'Wright',
+                                CustomertStatus => 'INACTIVE',
+                                ServiceContracts => [
+                                    {
+                                        # Just over 3 months ago
+                                        EndDate => '31/10/2023 12:00',
+                                        Reference => 'CONTRACT_OLD',
+                                        WasteContainerQuantity => 2,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                    },
+                                ],
+                            },
+                        ],
+                    } } );
+
+                    $mech->get_ok("/waste/$uprn");
+                    unlike $mech->content,
+                        qr/Change your brown wheelie bin subscription/,
+                        'cannot amend subscription';
+                    unlike $mech->content, qr/Renew subscription today/,
+                        '"Renew today" notification box not shown';
+                    unlike $mech->content, qr/subscription overdue/,
+                        '"Overdue" message not shown';
+                    unlike $mech->content,
+                        qr/Renew your brown wheelie bin subscription/,
+                        'Renewal link not available';
+                };
+
+                subtest 'Inactive DD subscription' => sub {
+                    $new_sub_report->set_extra_fields(
+                        { name => 'uprn', value => $uprn } ,
+                        { name => 'direct_debit_reference', value => 'APIRTM-DEFGHIJ1KL' },
+                    );
+                    $new_sub_report->set_extra_metadata(
+                        direct_debit_customer_id => 'DD_CUSTOMER_123',
+                        direct_debit_contract_id => 'DD_CONTRACT_123',
+                        direct_debit_reference => 'APIRTM-DEFGHIJ1KL',
+                    );
+                    $new_sub_report->update;
+
+                    $agile_mock->mock( 'CustomerSearch', sub { {
+                        Customers => [
+                            {
+                                CustomerExternalReference => 'CUSTOMER_123',
+                                Firstname => 'Verity',
+                                Surname => 'Wright',
+                                CustomertStatus => 'INACTIVE',
+                                ServiceContracts => [
+                                    {
+                                        # 14 days ago
+                                        EndDate => '18/01/2024 12:00',
+                                        Reference => $contract_id,
+                                        WasteContainerQuantity => 2,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Direct debit' } ]
+                                    },
+                                ],
+                            },
+                        ],
+                    } } );
+
+                    $mech->get_ok("/waste/$uprn");
+                    unlike $mech->content,
+                        qr/Change your brown wheelie bin subscription/,
+                        'cannot amend subscription';
+
+                };
             };
         };
     };
