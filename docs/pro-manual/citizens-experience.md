@@ -79,7 +79,7 @@ Depending on your FixMyStreet Pro plan and the availability of GIS data, users m
 <img alt="Selecting the satellite icon toggles to an aerial map view" src="/assets/img/pro-user-guide/Toggling to aerial map view.png" class="admin-screenshot" />
 
 When selected, the map will switch to the aerial view, displaying the map layers available from your server.
-<img alt="Selecting the satellite icon toggles to an aerial map view" src="/assets/img/pro-user-guide/Aerial map view.png" class="admin-screenshot" />
+<img alt="The aerial map view" src="/assets/img/pro-user-guide/Aerial map view.png" class="admin-screenshot" />
 
 ### Avoiding duplicates
 
@@ -97,7 +97,7 @@ If not, they place a pin on the map and make their report.
 
 ### Choosing a category
 
-Users are asked to select an appropriate category for thier report, either by typing in the search bar or choosing from the list of all available categories and subcategories (these are managed by you, the authority, and reflect the issues you can deal with).
+Users are asked to select an appropriate category for their report, either by typing in the search bar or choosing from the list of all available categories and subcategories (these are managed by you, the authority, and reflect the issues you can deal with).
 
 <img alt="Choosing a category" src="/assets/img/pro-user-guide/choosing-a-category.png" class="admin-screenshot" />
 
