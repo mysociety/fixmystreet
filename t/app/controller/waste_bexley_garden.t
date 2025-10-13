@@ -629,6 +629,16 @@ FixMyStreet::override_config {
                 subtest 'add bins' => sub {
                     $mech->submit_form_ok(
                         {   with_fields => {
+                                bins_wanted => 2,
+                            },
+                        }
+                    );
+                    like $mech->text,
+                        qr/You need to change the number of bins/,
+                        'error message if bin count not changed';
+
+                    $mech->submit_form_ok(
+                        {   with_fields => {
                                 bins_wanted => 4,
                             },
                         }
