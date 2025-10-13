@@ -18,7 +18,7 @@
             Press Retry below to retry your payment confirmation
         </div>
   [% ELSE %]
-    <form method="POST" action="[% c.uri_for_action('waste/pay_retry') %]">
+    <form method="POST" action="[% c.uri_for_action('waste/pay_retry') %]" class="waste">
         <input type="hidden" name="id" value="[% report.id %]">
         <input type="hidden" name="token" value="[% report.get_extra_metadata('redirect_id') %]">
         <div class="govuk-form-group">
