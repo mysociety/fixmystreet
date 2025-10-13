@@ -12,7 +12,7 @@ This section of the manual is designed to help you understand how staff accounts
 
 ## Important notice
 
-This guide provides a **general overview** of each of FixMyStreet Pro's standard features. There may be small differences in how the software functions for different councils, depending on how you use the service, the integration(s) you have selected, and the individual processes reflected in your workflow.
+This guide provides a **general overview** of each of FixMyStreet Pro's standard features. There may be small differences in how the software functions for different authorities, depending on how you use the service, the integration(s) you have selected, and the individual processes reflected in your workflow.
 
 Please speak to your Administrator if you have questions about functionality not covered specifically in the below guidance. If you are the Administrator and you need extra help, please open a ticket on Freshdesk.
 
@@ -20,14 +20,13 @@ Please speak to your Administrator if you have questions about functionality not
 
 ## Logging in
 
-Council staff accounts are managed by Administrator-level users.
+Staff accounts are managed by Administrator-level users.
 
-Contact your Administrator/s if you encounter any problems logging in, or any other aspect of
-account management.
+Contact your Administrator/s if you encounter any problems logging in, or any other aspect of account management.
 
 ### How to log in
 
-Go to your council’s FixMyStreet Pro website, click on ‘Sign in’ (usually located in the top navigation bar) and enter your council email address.
+Go to your authority's FixMyStreet Pro website, click on ‘Sign in’ (usually located in the top navigation bar) and enter your council email address.
 
 <img alt="Logging in" src="/assets/img/pro-user-guide/signing-in-link.png" class="admin-screenshot" />
 
@@ -43,7 +42,7 @@ If you have an integration into a Single Sign-on system, you will be able to cho
 
 Your password must contain 8 or more characters, and must not be one of the most commonly used combinations (such as ‘Password’ or ‘123456’).
 
-**Please note:** Your council may also have password policies which you are expected to abide by.
+**Please note:** Your organisation may also have password policies which you are expected to abide by.
 
 ### Two-factor authentication
 
