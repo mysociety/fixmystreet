@@ -179,6 +179,7 @@ requires 'collection_date';
 requires 'bulky_free_collection_available';
 
 sub bulky_cancel_by_update { 0 }
+sub bulky_backend_can_amend_same_date { 0 }
 
 sub bulky_is_cancelled {
     my ($self, $p, $state) = @_;

@@ -108,7 +108,8 @@ has_page summary => (
 
         if ($c->stash->{amending_booking}) {
             my $current_date = $c->cobrand->collection_date($c->stash->{amending_booking});
-            return 1 if $current_date eq $form->saved_data->{chosen_date};
+            my ($date, $ref, $expiry) = split(";", $form->saved_data->{chosen_date});
+            return 1 if $current_date eq $date;
         }
 
         # Some cobrands may set a new chosen_date on the form
@@ -201,6 +202,10 @@ sub _get_dates {
     my $pattern = '%FT%T';
     $pattern = '%F' if $c->cobrand->moniker eq 'bexley'; # Move more to this over time?
     my $parser = DateTime::Format::Strptime->new( pattern => $pattern );
+    my $slots = $c->stash->{booking_class}->find_available_slots($last_earlier_date);
+    if ($existing_date) {
+        unshift @$slots, { date => $existing_date };
+    }
     my @dates  = grep {$_} map {
         my $dt = $parser->parse_datetime( $_->{date} );
         my $label = $c->cobrand->moniker eq 'brent' ? '%d %B' : '%A %e %B';
@@ -219,7 +224,7 @@ sub _get_dates {
             selected => $existing_date && $existing_date eq $_->{date},
             }
             : undef
-        } @{ $c->stash->{booking_class}->find_available_slots($last_earlier_date) };
+        } @$slots;
 
     return @dates;
 }
