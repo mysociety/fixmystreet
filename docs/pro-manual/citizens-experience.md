@@ -57,7 +57,7 @@ In all other instances where a user is attempting to report a problem in a locat
 
 Users can sign in to their account by selecting 'Sign in' from the main site menu, or via the app. If a user already has an account on fixmystreet.com, they can use the same details on your FixMyStreet Pro site.
 
-Depending on your FixMyStreet Pro plan and the integrations you have selected, existing single sign-on accounts can be synced up, meaning users who are residents within your area can use their existing credientials to sign in to your FixMyStreet Pro service.
+Depending on your FixMyStreet Pro plan and the integrations you have selected, existing single sign-on accounts can be synced up, meaning users who are residents within your area can use their existing credentials to sign in to your FixMyStreet Pro service.
 
 <img alt="The start page invites the resident to search for the location of their issue" src="/assets/img/signing-in-sso.jpeg
 " class="admin-screenshot" />
@@ -145,11 +145,13 @@ If a user loads FixMyStreet while offline they will see the "You are currently o
 
 <img alt="Reponses from the council via email and published on the report page" src="/assets/img/pro-user-guide/report-response.png" class="admin-screenshot" />
 
-Responses from you, the authority, come directly back to the user via the email address they used to make the report.
-
-If you have opted for full integration with FixMyStreet Pro, responses may also be posted as automatic updates on the report. Responses may take the form of a request for further information or an update on the status of the issue.
+Responses from you, the authority, come directly back to the user via the email address they used to make the report. 
 
 If an integration with Notify has been established, users may also receive responses via text message.
+
+If required, and depending on how you manage responses, you can ask the user to specify their preference for how they would like to receive updates.
+
+If you have opted for full integration with FixMyStreet Pro, responses may also be posted as automatic updates on the report. Responses may take the form of a request for further information or an update on the status of the issue.
 
 ### Updates from other users
 
