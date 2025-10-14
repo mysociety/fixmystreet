@@ -1542,6 +1542,49 @@ sub waste_request_fields {
     }
 }
 
+sub waste_post_report_creation {
+    my ($self, $report, $data) = @_;
+
+    if ($report->title =~ /Request new General rubbish bin \(grey bin\)/) {
+        $report->send_state('skipped');
+        $report->state('hidden');
+
+        my $result = calculate_refuse_application_criteria($data);
+
+        if ($result) {
+            my $to = $self->feature('waste_request_refuse_container_email');
+            my %extra = map { $_ => $self->waste_request_fields($_, $data->{$_}, 'values') || $data->{$_} } grep { $_ =~ /^request_/ } keys %$data;
+            # 'name' seems to be overridden in the template by something else so needs renaming, but renaming
+            # everything for consistency
+            for my $field ('email', 'name', 'phone') {
+                $extra{"request_$field"} = $data->{$field} || '';
+            };
+            $extra{request_address} = $self->{c}->stash->{property}->{address};
+            $self->{c}->send_email( 'waste/container_request.txt', { to => $to, %extra });
+            $report->detail('Request forwarded to Brent Council by email');
+        } else {
+            $self->{c}->stash->{brent_request_automatic} = 1;
+            $report->detail('Request automatically calculated');
+        }
+        $report->update;
+    }
+};
+
+sub calculate_refuse_application_criteria {
+    my ($data) = @_;
+
+    my @input = ($data->{request_property_type}, $data->{request_property_people}, $data->{request_property_nappies},
+    $data->{request_reason_refuse}, $data->{request_reason_refuse_number}, $data->{request_reason_refuse_size});
+
+    if ($data->{request_property_type} eq '1') {
+        return;
+    } elsif ($data->{request_property_type} eq '2') {
+        return 1;
+    } else {
+        die;
+    }
+}
+
 =item * Uses custom text for the title field for new reports.
 
 =cut
