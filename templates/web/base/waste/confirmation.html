@@ -20,10 +20,16 @@ END ~%]
     </h1>
     <div class="govuk-panel__body">
         [% IF report.category == 'Request new container' && c.cobrand.moniker == 'brent' %]
+            [% IF NOT brent_request_automatic %]
             <p class="govuk-body">Your application has been sent to Brent Council who will
             contact you to let you know if your request has been approved. If it has, they will need
             to take payment before any bins can be delivered.
             </p>
+            [% ELSE %]
+            <p class="govuk-body">
+                Your property meets current general waste bin capacity requirements.
+            </p>
+            [% END %]
         [% ELSE %]
         <p>
             [% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]

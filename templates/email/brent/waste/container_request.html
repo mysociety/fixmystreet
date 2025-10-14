@@ -1,0 +1,40 @@
+[%
+
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+  <p style="[% p_style %]">
+    A request has been made for a new/replacement refuse bin:
+  </p>
+  <p style="[% p_style %]">
+    <ul [% ul_attrs | safe %]>
+        <li>Address: [% request_address %]</li>
+        <li>Name: [% request_name %]</li>
+        <li>Email: [% request_email %]</li>
+        [% IF request_phone %]
+            <li>Phone: [% request_phone %]</li>
+        [% END %]
+    </ul>
+  </p>
+  <p style="[% p_style %]">
+    <ul [% ul_attrs | safe %]>
+        [% FOR field IN ['request_property_type', 'request_property_people', 'request_property_nappies',
+        'request_reason_refuse', 'request_reason_refuse_number', 'request_reason_refuse_size'] %]
+        <li>[% c.cobrand.waste_request_fields(field, 'label') %]: [% $field %]</li>
+        [% END %]
+    </ul>
+  </p>
+  <p style="[% p_style %]">
+    This email was sent automatically, from an unmonitored email account - so
+    please do not reply to it. Reply directly to the applicant.
+  </p>
+  [% end_padded_box | safe %]
+</th>
+
+[% INCLUDE '_email_bottom.html' %]
