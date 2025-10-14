@@ -1100,7 +1100,10 @@ FixMyStreet::override_config {
         my $base_path = '/waste/12345';
         set_fixed_time('2023-07-07T06:00:00');
         $mech->get_ok($base_path);
-        $mech->content_lacks('Cancel booking', "Can't cancel day before collection due");
+        $mech->content_contains('Cancel booking', "Can cancel day before collection due, early enough");
+        set_fixed_time('2023-07-07T14:00:00');
+        $mech->get_ok($base_path);
+        $mech->content_lacks('Cancel booking', "Can't cancel after 2pm day before collection due");
         set_fixed_time($good_date);
         $mech->get_ok($base_path);
         $mech->content_contains('Cancel booking');

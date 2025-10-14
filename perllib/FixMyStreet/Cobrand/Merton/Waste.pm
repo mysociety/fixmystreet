@@ -574,13 +574,13 @@ sub check_ggw_transfer_applicable {
 
 =head2 Bulky waste collection
 
-Merton has a 6am collection and cut-off for cancellation time.
+Merton has a 6am collection time, and 2pm cut-off for cancellation.
 Everything else is configured in SLWP/Echo.
 
 =cut
 
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
-sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0 } }
+sub bulky_cancellation_cutoff_time { { hours => 14, minutes => 0 } }
 sub bulky_allowed_property {
     my ( $self, $property ) = @_;
     return 1 if $self->bulky_enabled && $property->{has_bulky_service};
