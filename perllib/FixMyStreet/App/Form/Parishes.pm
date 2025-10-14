@@ -78,7 +78,7 @@ has_page categories => (
 has_page summary => (
     fields => ['payment'],
     tags => { hide => 1 },
-    title => 'Review',
+    title => 'Review your answers',
     template => 'parishes/summary.html',
     finished => sub {
         my $form = shift;
@@ -120,8 +120,11 @@ has_field parish => (
     type => 'Select',
     required => 1,
     empty_select => 'Please pick your town/parish council',
-    label => 'Please enter and pick your town/parish council from the list',
-    tags => { autocomplete => 1 },
+    label => 'Please select your town/parish council from the list',
+    tags => {
+        autocomplete => 1,
+        hint => 'You can type in the box to search or scroll through the list',
+    },
     validate_method => sub {
         my $self = shift;
         my $v = $self->value;
@@ -152,6 +155,7 @@ has_field logo => (
     type => 'Photo',
     tags => {
         max_photos => 1,
+        hint => 'If you don’t have a logo, you can skip this step',
     },
     label => 'Please provide a logo to use on your all reports page',
 );
