@@ -516,10 +516,21 @@ FixMyStreet::override_config {
                     },
                 );
                 like $mech->text, qr/Verification failed/;
+
+                subtest 'can go back to customer reference input' => sub {
+                    $mech->submit_form_ok(
+                        { with_fields => { goto => 'customer_reference' } } );
+                };
             };
 
             subtest 'can continue to modify if correct name provided' => sub {
-                $mech->back;
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            has_reference => 'Yes',
+                            customer_reference => 'CUSTOMER_BAD',
+                        },
+                    },
+                );
                 $mech->submit_form_ok(
                     {   with_fields => {
                             verifications_first_name => ' Verity ',
