@@ -424,27 +424,9 @@ sub process_garden_new_or_renew : Private {
         $c->forward('/waste/process_request_data', [ $form, [ $c->stash->{report} ], 1 ]);
     }
 
-    my $payment_method = $data->{payment_method} || '';
-    if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
-        $c->forward('/waste/pay_skip', []);
-    } elsif ($c->cobrand->waste_cheque_payments && $payment_method eq 'cheque') {
-        $c->forward('/waste/pay_skip', [ $data->{cheque_reference}, undef ]);
-    } elsif ($payment_method eq 'waived' || $payment_method eq 'cash') {
-        $c->forward('/waste/pay_skip', [ undef, $data->{payment_explanation} ]);
-    } else {
-        if ($dd_flow) {
-            if ($c->cobrand->direct_debit_collection_method eq 'internal') {
-                $c->stash->{form_data} = $data;
-                $c->forward('direct_debit_internal');
-            } else {
-                $c->forward('direct_debit');
-            }
-        } elsif ( $c->stash->{staff_payments_allowed} eq 'paye' ) {
-            $c->forward('/waste/csc_code');
-        } else {
-            $c->forward('/waste/pay', [ $calc_type eq 'renew' ? 'garden/renew' : 'garden/subscribe' ]);
-        }
-    }
+    $c->forward('/waste/pay_process', [
+        $calc_type eq 'renew' ? 'garden/renew' : 'garden/subscribe',
+        $data->{payment_method}, $data, $dd_flow ]);
 
     return 1;
 }

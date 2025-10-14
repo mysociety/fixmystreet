@@ -1621,6 +1621,33 @@ sub waste_confirm_payment {
     }
 }
 
+sub waste_amend_extra_data {
+    my ($self, $cobrand, $max, $data) = @_;
+
+    $cobrand->waste_munge_bulky_amend($self, $data);
+
+    if ($data->{location_photo}) {
+        $self->set_extra_metadata(location_photo => $data->{location_photo})
+    } else {
+        $self->unset_extra_metadata('location_photo');
+    }
+
+    for (1..$max) {
+        if ($data->{"item_photo_$_"}) {
+            $self->set_extra_metadata("item_photo_$_" => $data->{"item_photo_$_"})
+        } else {
+            $self->unset_extra_metadata("item_photo_$_");
+        }
+    }
+
+    my @bulky_photo_data;
+    push @bulky_photo_data, $data->{location_photo} if $data->{location_photo};
+    for (grep { /^item_photo_\d+$/ } sort keys %$data) {
+        push @bulky_photo_data, $data->{$_} if $data->{$_};
+    }
+    $self->photo( join(',', @bulky_photo_data) );
+}
+
 sub bulky_add_payment_confirmation_update {
     my ($self, $reference) = @_;
     my $cobrand = $self->get_cobrand_logged;

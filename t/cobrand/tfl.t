@@ -1586,7 +1586,7 @@ Third Valid Issue,Working streetlight,Transport,Good Station,55555,Bus stops};
 
 
 
-    my ($report1, $report2, $report3) = FixMyStreet::DB->resultset('Problem')->all;
+    my ($report1, $report2, $report3) = FixMyStreet::DB->resultset('Problem')->order_by('id')->all;
     ok $report1, "First report created";
     is $report1->category, 'Bus stops', "Correct category";
     is $report1->detail, 'Bus stop pole is damaged', "Correct description";
