@@ -56,7 +56,12 @@ has_page refuse_request_intro => (
     intro => 'refuse_call_us.html',
     title => 'Request additional container',
     fields => ['continue_request_container'],
-    next => 'request_refuse_container',
+    next => sub {
+        my $data = shift;
+        return $data->{outcome}
+            ? 'request_extra_refusal'
+            : 'request_refuse_container'
+    },
 );
 
 has_page request_extra_refusal => (
