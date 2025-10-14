@@ -2,7 +2,7 @@
 
 ### Navigating FixMyStreet Pro as a staff user
 
-<img alt="When you're logged in as an administrator the 'admin' button is in the navigation menu" src="/assets/img/pro-user-guide/navigating-as-pro-staff.png" class="admin-screenshot" />
+<img alt="When you're logged in as an administrator the 'Admin' button is in the navigation menu" src="/assets/img/pro-user-guide/navigating-as-pro-staff.png" class="admin-screenshot" />
 
 If your Administrator has already given you staff permissions, you will see an additional admin button on the top menu when you’re logged in. If not, your access may be only in the frontend (e.g. moderation does not require any backend admin access), or your Administrator can add these permissions at any time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
 </div>
@@ -73,7 +73,10 @@ Equally, if you want to view reports from all available categories, you can clic
 <span class="admin-task__permissions">Permissions required: none</span>
 
 Click on one of the issues in the list, or on a map pin, to view the full report.
-See '[Dealing with undesirable content](#deal-undesirable-content)‘ below for how to moderate or hide a report.
+
+<img alt="Clicking on a report from the list or from the map will open it and display all available details" src="/assets/img/pro-user-guide/Viewing a single report.png" class="admin-screenshot" />
+
+<strong>Note:</strong>See '[Dealing with undesirable content](#deal-undesirable-content)‘ below for how to moderate or hide a report.
 
 </div>
 
@@ -85,20 +88,25 @@ See '[Dealing with undesirable content](#deal-undesirable-content)‘ below for 
 as staff; “Edit reports” or “Edit users' details/search for their reports” must
 be ticked</span>
 
+Click on ‘Admin’ in the top menu bar. 
 
-Click on ‘admin’ in the top menu bar.
+<img alt="There are a number of different options for using the Search Reports box" src="/assets/img/pro-user-guide/Locating the admin button.png" class="-screenshot" />
 
-There are a number of different options for using the Search Reports box:
+You'll be taken to an admin summary page for your FixMyStreet Pro instance, from which you can search for reports. 
+
+<img alt="There are a number of different options for using the Search Reports box" src="/assets/img/pro-user-guide/Search reports box.png" class="-screenshot" />
+
+Using the 'Search Reports' box, you can:
 
 - Enter any word contained in the required report’s title or body
 - Search by the report-maker’s name (or part of the name), their email address or phone
     number (where given).
 - Search by the report’s ID number if it’s known. Putting ‘id:’ directly before this number in
     the search box will speed up the return of results.
-
-<img alt="There are a number of different options for using the Search Reports box" src="/assets/img/pro-user-guide/search-report.png" class="admin-screenshot" />
+- Search by an ID number used within an integrated backend system. Prefix your search with "ref:" followed by the external ID. Note: this may depend on the system/set up of the integration.
 
 The search will return a list of all reports that fulfil your parameters.
+
 Depending upon the staff user’s permissions, you can then either click on the
 report’s ID number to open the report in a new browser window and access the
 moderation/ editing/ inspection facilities there; or click on the word ‘Edit’
@@ -108,16 +116,33 @@ to access the full report admin editing page.
 
 <div class="admin-task" markdown="1" id="search-user">
 
-### User admin
+### Searching for a user
 
 <span class="admin-task__permissions">Permissions required: User must be marked
 as staff; “Edit users' details/search for their reports” must be ticked</span>
 
-In the admin, enter any part of the user’s name or email address in the ‘Search
-users’ box. You may click on ‘Edit’ beside any user to view or change their
-account details, click the user’s email address to view a list of all reports
-and updates made by that user, or click ‘Timeline’ to see a timeline of that
-user’s activities on the site.
+Click on ‘Admin’ in the top menu bar. 
+
+<img alt="There are a number of different options for using the Search Reports box" src="/assets/img/pro-user-guide/Locating the admin button.png" class="-screenshot" />
+
+You'll be taken to an admin summary page for your FixMyStreet Pro instance, from which you can search for users. 
+
+<img alt="There are a number of different options for using the Search Users box" src="/assets/img/pro-user-guide/User search box.png" class="-screenshot" />
+
+Using the 'Search users' box, enter any part of the user’s name. email address or phone number (where given).
+
+The search will return a list of all reports that fulfil your parameters.
+
+### Administering user accounts
+
+<span class="admin-task__permissions">Permissions required: User must be marked
+as staff; “Edit users' details/search for their reports” must be ticked</span>
+
+You may click on ‘Edit’ beside any user to view or change their account details. 
+
+<img alt="Clicking the edit button allows you to edit a user's details" src="/assets/img/pro-user-guide/Edit user button.png" class="-screenshot" />
+
+Click the user’s email address to view a list of all reports and updates made by that user, or click ‘Timeline’ to see a timeline of that user’s activities on the site.
 
 </div>
 
@@ -131,8 +156,7 @@ options:
 
 - Log out of FixMyStreet, or
 - Start a [private browsing session](https://www.howtogeek.com/269265/how-to-enable-private-browsing-on-any-web-browser/), or
-- View the page in a different browser (e.g. Chrome rather than Internet Explorer), in which you are
-not logged in to FixMyStreet.
+- View the page in a different browser to the one you are currently using, in which you are not logged in to FixMyStreet.
 
 Any of these courses of action will allow you to view the site as an anonymous visitor, with no
 recognition of your staff role.
@@ -141,23 +165,25 @@ recognition of your staff role.
 
 <div class="admin-task" markdown="1" id="create-reports-behalf-user">
 
-### Creating reports/ updates on behalf of another user/ the council
+### Creating reports and updates on behalf of another user/the authority
 
 <span class="admin-task__permissions">Permissions required: User must be marked
 as staff; optionally, one or more of ‘Create reports/updates on a user's
 behalf’, ‘Create reports/updates as anonymous user’ and ‘Create reports/updates
 as the council’ can be ticked.</span>
 
-If a resident makes a report or update by phone or in person, staff members
+If a member of the public makes a report or update by phone or in person, staff members
 with the appropriate permissions can add it to FixMyStreet on their behalf. The
 report will be anonymous on the site, but the resident’s name will still be
 available in the admin interface. Reports can also be made as if from the
-council.
+council or authority using FixMyStreet Pro.
 
 Staff should make a new report just as a member of the public would — see ‘[The
 citizen’s experience](/pro-manual/citizens-experience/)'. Those with the appropriate permissions will see a dropdown box in
 the report-making interface, labeled ‘Report As’. Select either the council, ‘yourself’, ‘anonymous’ or
 ‘another user’.
+
+<img alt="Staff users can select to report as another user" src="/assets/img/pro-user-guide/Reporting as another user.png" class="-screenshot" />
 
 In order to reduce confusion for customer service staff, the email,
 name and phone number fields in the reporting and update pages are
@@ -165,7 +191,6 @@ disabled for staff users. This avoids accidental overwriting of their
 own details with those of e.g. citizens making reports over the
 telephone in case staff forget to switch the ‘Report As’ control to
 ‘another user’.
-
 
 If a user has the ‘Default to creating reports/update as the council’
 permission then the dropdown will default to reporting as the council.
@@ -180,15 +205,13 @@ report or update, but other staff and the public will not.
 
 </div>
 
-
 <div class="admin-task" markdown="1" id="deal-undesirable-content">
 
 ### Dealing with undesirable content
 
 Fortunately, abuse of FixMyStreet is fairly rare: undesirable content represents a tiny fraction of
 the reports made each year. But of course, you need the tools to deal with it, and there are other
-reasons you may wish to edit a report, too. We estimate that somewhere in the region of three in
-every thousand reports will require moderation, based on figures from other councils.
+reasons you may wish to edit a report, too. 
 
 #### Reasons for moderation
 
@@ -197,14 +220,13 @@ body.
 - **Potentially libelous content** ​such as complaints about illegal or anti-social behaviour
 which implicate an identifiable individual.
 - **Abusive content** ​such as profanity or unsuitable images.
-- **Council staff** ​ may have added an update which they now wish to alter, eg because of a
+- **Corrections** ​ - for example, a staff member may have added an update which they now wish to alter because of a
 spelling mistake (if the report’s status has changed or a factual error was made, we
 recommend a new update rather than editing an existing one).
 
 We recommend a ‘light touch’ approach to editing, in which any content from a user, other than
 those types listed above, is left intact. For example, there is no need to correct a report-maker’s
 spelling or grammar unless they request that you do so.
-
 
 #### Moderating reports
 
@@ -231,7 +253,7 @@ When moderating, each photo has an associated “Redact” option. Selecting thi
 opens up the full size photo, on which you can draw black rectangles if you
 need to hide a section of a photo without removing the entire photo.
 
-<img alt="" src="/assets/img/pro-user-guide/photo-redaction.jpeg" class="admin-screenshot">
+<img alt="Photos can be redacted to hide a section" src="/assets/img/pro-user-guide/photo-redaction.jpeg" class="admin-screenshot">
 
 #### Hiding reports
 
@@ -273,27 +295,33 @@ were made during the period when the user was banned — these remain unsent.
 
 <div class="admin-task" markdown="1" id="create-reports-private">
 
-### Creating/Viewing private reports
+### Creating/viewing private reports
 
 <span class="admin-task__permissions">Permissions required: User must be marked
 as staff; one or more of ‘View/Mark private reports’ and ‘Markup problem
 details’ must be ticked.</span>
 
 If a you are creating a report that has to contain information that should
-not be make public, e.g. Names and addresses, then you can create a
-Private report. This will still be visible to staff members with the
-relevant permissions and will be sent as normal but will not be visible
-to members of the public.
-
-You can also mark an existing report as private by visiting the report
-page while logged in, checking "Private" and clicking "Save Changes".
+not be made public, such as names and addresses, then you can create a
+Private report. 
 
 In such cases, staff should make a new report just as a member of the public would — see ‘[The
 citizen’s experience](/pro-manual/citizens-experience/)'. Those with the appropriate permissions
 will see a "Private" checkbox underneath the user details which they should select.
 
+<img alt="Checking the box marks a new report as private" src="/assets/img/pro-user-guide/Marking areport as private.png" class="admin-screenshot" />
+
+You can also mark an existing report as private by visiting the report
+page while logged in. Check the "Private" box in the top right of the blue admin panel and remember to click 'Save changes'.
+
+<img alt="Checking the box marks an existing report as private" src="/assets/img/pro-user-guide/Marking an existing report as private.png" class="admin-screenshot" />
+
 On the reports page you can select "Private only" from the status filter
 to display only the reports that have been marked private.
+
+<strong>Note:</strong> Private reports are still visible to staff members with the
+relevant permissions and will be sent as normal but will <strong>not</strong> be visible
+to members of the public.
 
 </div>
 
@@ -576,8 +604,7 @@ permissions.
 
 #### Removing accounts
 
-To remove an account, the Administrator-level member of staff should make contact with
-mySociety.
+To remove an account, the Administrator-level member of staff should make contact with SocietyWorks.
 
 #### Two-factor authentication
 
