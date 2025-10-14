@@ -1349,7 +1349,21 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'refuse_request_intro' if $choice == $CONTAINER_IDS{rubbish_grey_bin};
+        if ($choice == $CONTAINER_IDS{rubbish_grey_bin}) {
+            my $date = DateTime->now()->subtract( weeks => 2 );
+            my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d');
+            my $c = $self->{c};
+            $data->{outcome} = $c->cobrand->problems->search(
+                {
+                    category => 'Request new container',
+                    title => ['Request new General rubbish bin (grey bin)'],
+                    confirmed => { '>=', $parser->format_datetime($date) },
+                    extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
+                    state => [ 'hidden' ]
+                }
+            )->first ? 1 : 0;
+            return 'refuse_request_intro';
+        };
         return 'replacement';
     };
 }
