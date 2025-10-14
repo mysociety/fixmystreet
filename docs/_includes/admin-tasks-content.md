@@ -4,7 +4,7 @@
 
 <img alt="When you're logged in as an administrator the 'Admin' button is in the navigation menu" src="/assets/img/pro-user-guide/navigating-as-pro-staff.png" class="admin-screenshot" />
 
-If your Administrator has already given you staff permissions, you will see an additional admin button on the top menu when you’re logged in. If not, your access may be only in the frontend (e.g. moderation does not require any backend admin access), or your Administrator can add these permissions at any time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
+If your Administrator has already given you staff permissions, you will see an additional 'Admin' button on the top menu when you’re logged in. If not, your access may be only in the frontend (e.g. moderation does not require any backend admin access), or your Administrator can add these permissions at any time: see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’.
 </div>
 
 <div class="admin-task" markdown="1" id="viewing-reports-your-area">
@@ -72,11 +72,11 @@ Equally, if you want to view reports from all available categories, you can clic
 
 <span class="admin-task__permissions">Permissions required: none</span>
 
-Click on one of the issues in the list, or on a map pin, to view the full report.
+To view an individual report, click on one of the issues in the list, or on a map pin, to view the full report.
 
 <img alt="Clicking on a report from the list or from the map will open it and display all available details" src="/assets/img/pro-user-guide/Viewing a single report.png" class="admin-screenshot" />
 
-<strong>Note:</strong>See '[Dealing with undesirable content](#deal-undesirable-content)‘ below for how to moderate or hide a report.
+<strong>Note:</strong> if you need to moderate or hide a report, see '[Dealing with undesirable content](#deal-undesirable-content)‘ below.
 
 </div>
 
@@ -309,7 +309,7 @@ In such cases, staff should make a new report just as a member of the public wou
 citizen’s experience](/pro-manual/citizens-experience/)'. Those with the appropriate permissions
 will see a "Private" checkbox underneath the user details which they should select.
 
-<img alt="Checking the box marks a new report as private" src="/assets/img/pro-user-guide/Marking areport as private.png" class="admin-screenshot" />
+<img alt="Checking the box marks a new report as private" src="/assets/img/pro-user-guide/Marking a report as private.png" class="admin-screenshot" />
 
 You can also mark an existing report as private by visiting the report
 page while logged in. Check the "Private" box in the top right of the blue admin panel and remember to click 'Save changes'.
@@ -339,10 +339,10 @@ If the user has chosen the wrong category for their report, when logged in, staf
 
 If changing the category of the report results in it becoming the responsibility of another authority,
 the report will be re-sent to that authority. Do not mark it as closed, even though you have now
-dealt with it as far as your council is concerned; from the other authority's point of view, and for
+dealt with it as far as your authority is concerned; from the other authority's point of view, and for
 the person who made the report, the status is still open.
 
-However, if the report remains your council’s responsibility, the category change does not re-send
+However, if the report remains your authority’s responsibility, the category change does not re-send
 the report unless the send method has changed (e.g. in the case of councils where some reports are sent via the Open311 protocol and others by email).
 
 #### Changing the location
@@ -362,13 +362,16 @@ priority’ must be ticked</span>
 ### Keeping the report-maker informed
 
 Updates can be left on a report in order to keep the creator of the report, and
-the wider public viewing the site, informed on what is happening with the
-report. Staff members can update the state of the report if necessary,
+the wider public viewing the site, informed on what is happening. 
+
+<strong>Note:</strong> If you have an integration into a CRM, CM or asset management system, updates to users may be automated and not managed in the below way. This depends on how the integration is set up and how your organisation chooses to manage responses to reports.
+
+Staff members can manually update the state of the report as and when necessary,
 including states such as ‘in progress’ or ‘no further action’, plus leave a
 textual update to explain in more detail.
 
 Many issues require identical or very similar responses. Rather than type your reply out each time,
-staff can choose from a number of pre-written (but still editable) template responses, such as
+staff can choose from a number of pre-written (but editable) template responses, such as
 ‘Thank you for your report, we’ll be back in touch with an update soon’, ‘Repairs are now
 underway’ and ‘This issue is now closed’.
 
@@ -398,6 +401,9 @@ Staff with appropriate permissions can also attach an image to the update, which
 displayed publicly alongside the text update.
 
 This option is also available via the general 'Update' box under the main report.
+
+<img alt="Updating the user via the report itself" src="/assets/img/pro-user-guide/Provide an update on a report.png
+" class="admin-screenshot" />
 
 #### Requests for more information
 
