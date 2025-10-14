@@ -273,6 +273,29 @@ has_field submit => (
     order => 999,
 );
 
+sub validate {
+    my ($form) = @_;
+
+    if ($form->current_page->title eq 'Household details') {
+        my $container_count;
+        my $container_size;
+        for my $field_name ( @{ $form->current_page->fields } ) {
+            my $field = $form->field($field_name);
+            if ($field_name eq 'request_reason_refuse_number') {
+                $container_count = $field->value;
+            } elsif ($field_name eq 'request_reason_refuse_size') {
+                $container_size = $field->value;
+            };
+        };
+        if ($container_count > 0 && $container_size !~ /1|2/) {
+            $form->field('request_reason_refuse_size')->add_error('Please select container size when there are bins at the property');
+        } elsif ($container_count == 0 && $container_size =~ /1|2/) {
+            $form->field('request_reason_refuse_number')->add_error('Please add number of waste bins when bin size is selected');
+        }
+    };
+
+};
+
 sub create_label {
     my ($self, $field_name) = @_;
     return $self->{c}->cobrand->waste_request_fields($field_name, 'label');
