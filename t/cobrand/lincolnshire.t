@@ -1,5 +1,6 @@
 use FixMyStreet::TestMech;
 use Open311::GetServiceRequests;
+use Open311::GetServiceRequestUpdates;
 use FixMyStreet::DB;
 use Open311;
 use FixMyStreet::Script::CSVExport;
@@ -20,7 +21,8 @@ my $params = {
 };
 my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params);
 $mech->create_contact_ok(body_id => $body->id, category => 'Pothole', email => 'potholes@example.org');
-$mech->create_contact_ok(body_id => $body->id, category => 'Surface Issue', email => 'surface_issue@example.org');
+$mech->create_contact_ok(body_id => $body->id, category => 'Surface Issue', email => 'surface_issue@example.org',
+    extra => { _fields => [ { code => '_wrapped_service_code', variable => 'true', datatype => 'string' } ] });
 my $lincs_user = $mech->create_user_ok('lincs@example.org', name => 'Lincolnshire User', from_body => $body);
 my $superuser = $mech->create_user_ok('super@example.org', name => 'Super User', is_superuser => 1, email_verified => 1);
 my $superuser_email = $superuser->email;
@@ -163,6 +165,80 @@ FixMyStreet::override_config {
         $report->delete;
     };
 
+    subtest 'Category changes from Open311 updates store original_service_code' => sub {
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Pothole', {
+            category => 'Pothole', cobrand => 'lincolnshire',
+            latitude => 52.656144, longitude => -0.502566, areas => '2232',
+            external_id => 'lincs-update-123',
+        });
+        $report->whensent(DateTime->now->subtract(days => 1));
+        $report->update;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
+        my $updates_updater = Open311::GetServiceRequestUpdates->new(
+            system_user => $lincs_user,
+            current_open311 => $o,
+            current_body => $body,
+        );
+
+        subtest 'Update with original_service_code when report has _wrapped_service_code category' => sub {
+            # First change the category to Surface Issue (which has _wrapped_service_code)
+            $report->update({ category => 'Surface Issue' });
+            $report->comments->delete;
+
+            # Now send an update with original_service_code
+            my $update_xml = category_change_update_xml('update1', 'lincs-update-123', 'Regular update',
+                original_service_code => 'ORIGINAL_CODE_123');
+            Open311->_inject_response('/servicerequestupdates.xml', $update_xml);
+
+            $updates_updater->process_body;
+            $report->discard_changes;
+
+            is $report->category, 'Surface Issue', 'Category didn\'t change';
+            is $report->get_extra_field_value('_wrapped_service_code'), 'ORIGINAL_CODE_123',
+                '_wrapped_service_code field set from original_service_code';
+        };
+
+        subtest 'Update without original_service_code does not change field' => sub {
+            $report->update({ category => 'Surface Issue' });
+            $report->update_extra_field({ name => '_wrapped_service_code', value => 'TEST' });
+            $report->update;
+            $report->comments->delete;
+
+            my $update_xml = category_change_update_xml('update2', 'lincs-update-123', 'Regular update without code');
+            Open311->_inject_response('/servicerequestupdates.xml', $update_xml);
+
+            $updates_updater->process_body;
+            $report->discard_changes;
+
+            is $report->category, 'Surface Issue', 'Category is Surface Issue';
+            is $report->get_extra_field_value('_wrapped_service_code'), 'TEST',
+                '_wrapped_service_code not changed when original_service_code not provided';
+        };
+
+        subtest 'Update with original_service_code when contact has no _wrapped_service_code field' => sub {
+            $report->update({ category => 'Pothole' });
+            $report->update_extra_field({ name => '_wrapped_service_code', value => '' });
+            $report->update;
+            $report->comments->delete;
+
+            # Send an update (not a category change) with original_service_code
+            # Pothole contact doesn't have _wrapped_service_code field, so it shouldn't be set
+            my $update_xml = category_change_update_xml('update3', 'lincs-update-123', 'Regular update',
+                original_service_code => 'SHOULD_NOT_BE_SET');
+            Open311->_inject_response('/servicerequestupdates.xml', $update_xml);
+
+            $updates_updater->process_body;
+            $report->discard_changes;
+
+            is $report->category, 'Pothole', 'Category remains Pothole';
+            is $report->get_extra_field_value('_wrapped_service_code'), '',
+                '_wrapped_service_code not set when contact lacks the field';
+        };
+
+        $report->comments->delete;
+        $report->delete;
+    };
 
 };
 
@@ -301,6 +377,29 @@ sub xml_report {
         <long>-0.502566</long>
     </request>
     };
+}
+
+sub category_change_update_xml {
+    my ($id, $external_id, $text, %extra) = @_;
+    my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new)->add( minutes => -5 );
+    my $xml = qq{<?xml version="1.0" encoding="UTF-8"?>
+<service_requests_updates>
+<request_update>
+<update_id>$id</update_id>
+<service_request_id>$external_id</service_request_id>
+<status>open</status>
+<description>$text</description>
+<updated_datetime>$dt</updated_datetime>};
+    if ($extra{category} || $extra{original_service_code}) {
+        $xml .= "<extras>";
+        $xml .= "<category>$extra{category}</category>" if $extra{category};
+        $xml .= "<original_service_code>$extra{original_service_code}</original_service_code>" if $extra{original_service_code};
+        $xml .= "</extras>";
+    }
+    $xml .= qq{
+</request_update>
+</service_requests_updates>};
+    return $xml;
 }
 
 done_testing();
