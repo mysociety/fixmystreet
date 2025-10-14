@@ -110,11 +110,18 @@ Upon selecting certain categories, users may be shown a message from you to prov
 Users are also asked to provide:
 - A title for their report
 - A description of the problem
-- Their contact details (if they have previously registered, these do not need to be
-    re-entered)
+- Their contact details (if they are logged in, these do not need to be
+    re-entered) except in instances where you have enabled anonymous reporting
 - Any other information that you have stipulated as a requirement, eg for potholes you may add a field which asks for the dimensions, or for drains you may want to qualify whether the blockage is within or on top of the drain.
 
 <img alt="Answering extra questions" src="/assets/img/pro-user-guide/extra-questions-example.png" class="admin-screenshot" />
+
+<strong>Note:</strong> Unless you have enabled anonymous reporting on a category, it is obligatory for users to include a name and contact details with their report. 
+
+By default, names are not shown on the public report. The user may opt for their name to be shown on the public report page if they wish. Of course, their other contact details are only sent to the authority and are never made public.
+
+<img alt="Checking the box will display the reporter name publicly" src="/assets/img/pro-user-guide/Option to show name publicly.png
+" class="admin-screenshot" />
 
 ### Submitting and confirming a report
 
@@ -123,8 +130,6 @@ Users are informed of which authority their report will be sent to, and have the
 If the user is not registered or logged in, they may confirm their report by email. If they are logged in, they won't need to do this.
 
 Once a report is confirmed and submitted to the authority, a confirmation email is sent to the report-maker and that report will be published on the map for others to see.
-
-<strong>Note:</strong> Unless you have enabled anonymous reporting on a category, it is obligatory for users to include a name and contact details with their report. The user may opt for their name not to be shown on the public report page. Of course, their other contact details are only sent to the authority and are never made public.
 
 ### Making a report while offline
 
