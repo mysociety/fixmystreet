@@ -52,11 +52,6 @@ has_page about_you => (
     next => 'summary',
 );
 
-has_page request_refuse_call_us => (
-    fields => [],
-    template => 'waste/refuse_call_us.html',
-);
-
 has_page request_extra_refusal => (
     fields => [],
     template => 'waste/refuse_extra_container.html',
@@ -70,6 +65,10 @@ has_page replacement => (
         my $choice = $data->{"container-choice"};
         my $reason = $data->{request_reason};
 
+        if ($choice == $CONTAINER_GREY_BIN && $reason eq 'extra') {
+            return 'request_extra_refusal' if $data->{refuse_outcome};
+            return 'request_refuse_container';
+        }
         return 'about_you' if $choice == $CONTAINER_CLEAR_SACK;
         return 'how_long_lived' if $reason eq 'new_build';
         return 'request_extra_refusal' if $reason eq 'extra' && $data->{ordered_previously};
@@ -146,7 +145,7 @@ sub options_request_reason {
         push @options, { value => 'damaged', label => 'My container is damaged' };
         push @options, { value => 'missing', label => 'My container is missing' };
     } else {
-        push @options, { value => 'new_build', label => 'I am a new resident without a container' };
+        push @options, { value => 'new_build', label => 'I am a new resident without a container' } unless $choice == $CONTAINER_GREY_BIN;
         push @options, { value => 'damaged', label => 'My container is damaged' };
         push @options, { value => 'missing', label => 'My container is missing' };
         push @options, { value => 'extra', label => 'I would like an extra container' };
@@ -168,6 +167,33 @@ has_field how_long_lived => (
     options => [
         { value => 'less3', label => 'Less than 3 months' },
         { value => '3more', label => '3 months or more' },
+    ],
+);
+
+has_page request_refuse_container => (
+    title => 'Household details',
+    intro => 'refuse_call_us.html',
+    fields => [ 'property_people', 'property_children', 'continue'],
+    next => 'about_you',
+);
+
+has_field property_people =>(
+    required => 1,
+    type => 'Select',
+    label => 'How many people live at your property?',
+    options => [
+        { value => '1', label => 'Up to 5' },
+        { value => '6', label => '6 or more' }
+    ],
+);
+
+has_field property_children =>(
+    required => 1,
+    type => 'Select',
+    label => 'Do any children live at the property?',
+    options => [
+        { value => 'No', label => 'No' },
+        { value => 'Yes', label => 'Yes' }
     ],
 );
 
