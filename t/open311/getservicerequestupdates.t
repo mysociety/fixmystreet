@@ -34,6 +34,13 @@ my %bodies = (
         blank_updates_permitted => 1,
         cobrand => 'bromley',
     }),
+    2648 => FixMyStreet::DB->resultset("Body")->create({
+        name => 'Aberdeenshire',
+        send_method => 'Open311',
+        endpoint => 'endpoint',
+        comment_user_id => $user->id,
+        cobrand => 'aberdeenshire',
+    }),
     2651 => FixMyStreet::DB->resultset("Body")->create({ name => 'Edinburgh' }),
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
@@ -501,6 +508,47 @@ subtest 'Check template placeholders' => sub {
     is $c->state, 'confirmed', 'comment state correct';
     is $problem->state, 'action scheduled', 'correct problem state';
     $problem->comments->delete;
+};
+
+subtest 'Check Aberdeenshire template interpolation' => sub {
+    my $tpl = $bodies{2648}->response_templates->create({
+        title => "a placeholder in progress template",
+        text => "Target date: {{targetDate}}\nCategory: {{featureCCAT}}\nSpeed limit: {{featureSPD}}",
+        auto_response => 1,
+        state => "in progress"
+    });
+
+    my $aber_problem = create_problem($bodies{2648}->id);
+    my $local_requests_xml = setup_xml($aber_problem->external_id, $aber_problem->id, 'IN_PROGRESS', '',
+        '<targetDate>2025-12-31T10:30:00</targetDate><featureCCAT>3A</featureCCAT><featureSPD>60mph</featureSPD>');
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+    $aber_problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $aber_problem->state( 'confirmed' );
+    $aber_problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $bodies{2648},
+    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'aberdeenshire',
+    }, sub {
+        $update->process_body;
+    };
+
+    $aber_problem->discard_changes;
+    is $aber_problem->comments->count, 1, 'comment count';
+
+    my $c = $aber_problem->comments->first;
+    ok $c, 'comment exists';
+    is $c->text, "Target date: 31/12/2025\nCategory: 3A\nSpeed limit: 60mph", 'template correctly interpolated';
+    $aber_problem->comments->delete;
+    $aber_problem->delete;
+    $tpl->delete;
 };
 
 my $problemB = create_problem($bodies{2237}->id);
@@ -1951,7 +1999,7 @@ subtest 'Category changes' => sub {
 done_testing();
 
 sub setup_xml {
-    my ($id, $id_ext, $status, $description) = @_;
+    my ($id, $id_ext, $status, $description, $extras) = @_;
     my $xml = $requests_xml;
     my $updated_datetime = sprintf( '<updated_datetime>%s</updated_datetime>', $dt );
     $xml =~ s/UPDATED_DATETIME/$updated_datetime/;
@@ -1959,6 +2007,7 @@ sub setup_xml {
     $xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>$id_ext</service_request_id_ext>#;
     $xml =~ s#<status>\w+</status>#<status>$status</status># if $status;
     $xml =~ s#<description>.+</description>#<description>$description</description># if defined $description;
+    $xml =~ s#</request_update>#<extras>$extras</extras></request_update># if defined $extras;
     return $xml;
 }
 
