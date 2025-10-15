@@ -507,21 +507,19 @@ separate tab in your browser, and plot a route on Google maps from your current 
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff and ‘manage shortlist’ must be ticked.</span>
 
-Sometimes it’s useful to be able to see and update reports even when you’re offline — perhaps in
-areas with low mobile connectivity, or because you want to save data. FixMyStreet Pro will let you
-do this, and then it syncs everything up when you’re back online.
+In the same way that members of the public can use FixMyStreet while offline to start reports, staff users can also access reports without internet connection - useful for on-the-ground inspectors operating in areas of poor connectivity.
 
 Visit your shortlist page before you go out and about: you’ll see a message that the list is being
 cached for use offline. That means that whenever you are viewing the page without an internet
 connection, you’ll be able to see the reports — make sure you have the shortlist page bookmarked
 so that you can find it when you need it.
 
-While offline, you can view reports, create and edit updates. The changes will all go live once you
-go online to sync.
+While offline, you can:
+- view or edit reports
+- create new reports
+- create or edit updates to reports.
 
-#### Syncing
-
-To synchronise your records once you're back online, just visit any page on FixMyStreet and click the prompt to submit your changes.
+<strong>Note:</strong> To synchronise your records once you're back online, just visit any page on FixMyStreet and click the prompt to submit your changes.
 
 </div>
 
@@ -535,7 +533,7 @@ To synchronise your records once you're back online, just visit any page on FixM
 
 <img alt="From the user admin page you can administer staff accounts" src="/assets/img/pro-user-guide/user-admin-page.png" class="admin-screenshot" />
 
-Go to the ‘Users’ tab in the admin menu.
+Click on ‘Admin’ in the top menu bar and go to the ‘Users’ tab in the admin menu (left side of the page).
 
 You’ll see a table of existing users. Below this is the ‘add user’ interface.
 
@@ -553,13 +551,43 @@ The new staff user can then log in via the normal method.
 
 Go to the ‘Roles’ tab in the admin menu.
 
-Here you can create a group of permissions, called a ‘role’. See [Staff user
-accounts](../staff-user-accounts/) for some possible examples, but you can use
-whatever makes sense to your own organisation.
+Here you can create a group of permissions, called a ‘role’. You should choose role titles and definitions that make sense to your own organisation.
 
-Once you have created a role, you can then assign a user to one or more roles
-to give that user access to all the permissions of those roles, without having
-to assign permissions individually for each user.
+Roles enable you to more easily assign permissions to different staff users. For example, you can give all customer services staff the same permsissions by assigning them the same role, without having to assign permissions individually for each user.
+
+Once you’ve created a role, use the tick boxes to assign its permissions.
+
+FixMyStreet Pro permissions include:
+
+| Permission | Description |
+| ----------- | ----------- |
+| Add/edit problem categories | Allow the user to add or edit categories within which reports can be made through your FixMyStreet Pro service (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#creating-editing-categories">go to the Creating and editing categories section</a>) |
+| Add/edit site message | Allow the user to add or edit messages to be displayed on the homepage or other pages of the website (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#displaying-a-site-message">go to the Displaying a site message section</a>) |
+| Add/edit response priorities | Allow the user to assign and edit response priorities (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#creating-editing-priorities">go to the Creating and editing priorities section</a>) |
+| Add/edit response templates | Allow the user to add and edit the response templates attached to your report categories and states (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#creating-editing-response-templates">go to the Creating and editing response templates section</a>) |
+| Assign problem reports to users | Allow the user to assign reports to other users (<a href="https://www.fixmystreet.com/pro-manual/working-with-shortlists/#assigning-reports">go to the Working with shortlists section</a>) |
+| Assign users to areas in [Council/Authority] | Allow the user to assign certain report categories to specific users or to user roles so that those users only see reports within the assigned categories (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#administering-staff-accounts">go to the Administering staff account section</a>) |
+| Automatically populate report subject/detail | By default, reports created by this staff user will have the report subject and details automatically populated to save time according to the selected category |
+| Create reports/updates as anonymous user | Allow the user to create reports anonymously (<a href="https://www.fixmystreet.com/pro-manual/creating-reports/#anonymous-reports">go to the Creating reports section</a>) |
+| Create reports/updates on a user's behalf | Allow the user to create and update reports on behalf of other users, e.g. contact centre staff making reports on behalf of someone who cannot access digital services (<a href="https://www.fixmystreet.com/pro-manual/creating-reports/#on-behalf">go to the Creating reports section</a>) |
+| Create reports/updates as [Council/Authority] | Allow the user to create reports or submit updates as the council/authority (<a href="https://www.fixmystreet.com/pro-manual/creating-reports/#as-council">go to the Creating reports section</a>) |
+| Default to creating reports/updates as [Council/Authority] | By default, all reports and updates created by this user will be made as the council/authority (<a href="https://www.fixmystreet.com/pro-manual/creating-reports/#as-council">go to the Creating reports section</a>) |
+| Edit reports | Allow the user to edit any information within any report from the administration dashboard (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#correcting-user-error">go to the Correcting user error section</a>) |
+| Edit report category | Allow the user to edit a report’s category (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#correcting-user-error">go to the Correcting user error section</a>) |
+| Edit report priority | Allow the user to edit a report’s priority (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#creating-editing-priorities">go to the Creating and editing priorities section</a>) |
+| Edit users' details/search for their reports | Allow the user to edit other users’ details and search for their reports (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#user-search">go to the User search section</a>) |
+| Edit other users' permissions | Allow the user to edit the permissions of other users (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#administering-staff-accounts">go to the Administering staff account section</a>) |
+| Grant access to the admin | Allow the user to give other staff admin access (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#administering-staff-accounts">go to the Administering staff account section</a>) |
+| Instruct contractors to fix problems | **Note:** This permission only applies where an authority chooses to set up 'Super users'. Allows the user to provide extra information to a report and direct it straight to a contractor. |
+| Manage shortlist | Allow the user to make, view and edit a report shortlist (<a href="https://www.fixmystreet.com/pro-manual/working-with-shortlists/">go to the Working with shortlists section</a>) |
+| Markup problem details | Allow the user to view and edit the details of a report, including marking reports as private, setting the priority of a report and providing updates, from the front-end inspector form which appears when a report is selected by a staff user with this permission (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#correcting-user-error">go to the Correcting user error section</a>) |
+| Moderate report details | Allow the user to moderate details within a report, such as removing accidental user-generated PII or redacting images (<a href="https://www.fixmystreet.com/pro-manual/admin-tasks/#undesirable-content">go to the Dealing with undesirable content section</a>) |
+| See user detail for reports created as [Council/Authority] | Allow the user to see the user details for reports made by members of staff on behalf of the council/authority (<a href="https://www.fixmystreet.com/pro-manual/creating-reports/#as-council">go to the Creating reports section</a>) |
+| View/Mark private reports | Allow the user to view private reports and mark reports as private (<a href="https://www.fixmystreet.com/pro-manual/creating-reports/#private-reports">go to the Creating and viewing private reports section</a>) |
+
+By not assigning a permission to a role or to an indivudal user, they will not be able to complete the associated admin task. Users cannot edit their own permissions.
+
+Once you have created some roles, you can then assign a user to one or more roles to give that user access to all the permissions of those roles.
 
 #### Assigning roles and permissions
 
@@ -567,12 +595,9 @@ to assign permissions individually for each user.
 
 <img alt="You can assign permissions to users on this screen" src="/assets/img/pro-user-guide/user-admin-permissions.png" class="admin-screenshot" />
 
-Once you have created the basic staff user account, you’ll be taken to a page where you can assign
-roles and permissions.
+Once you have created the basic staff user account, you’ll be taken to a page where you can assign roles and permissions.
 
-You can also always edit any user from the table at the top of the Users page by clicking ‘edit’.
-Select the roles or permissions you wish that user to have, and click ‘submit changes’.
-
+You can also always edit any user from the table at the top of the 'Users' page by clicking ‘edit’. Select the roles or permissions you wish that user to have, and click ‘submit changes’.
 
 #### Setting categories to users and roles
 
@@ -596,17 +621,19 @@ boxes. By default, users will then be shown a filtered list of categories releva
 
 #### Removing staff status from accounts
 
-To remove the staff status from an account visit the user page and
-uncheck the ‘staff’ checkbox. To prevent a user from logging in uncheck
-the ‘email verified’ checkbox.
+To remove the staff status from an account visit the 'Users' page, select the user in question and uncheck the ‘staff’ checkbox. 
 
-You can do this in bulk on the Users screen by selecting the checkbox
-next to the user's name on the users page, selecting the ‘Remove staff
-permission’ checkbox and clicking submit.
+<img alt="Staff tick box" src="/assets/img/ww-user-guide/WasteWorks%20staff%20user%20tick%20box.png" />
 
-Note that if a user has access to the email address associated with an
-account they can re-enable their account, but will not have staff
-permissions.
+To prevent a user from logging in uncheck the ‘email verified’ checkbox.
+
+<img alt="Email verified tick box" src="/assets/img/ww-user-guide/WasteWorks%20email%20verified%20tick%20box.png" />
+
+You can do this in bulk on the 'Users' screen by selecting the checkbox next to the user’s name on the 'Users' page, selecting the ‘Remove staff permission’ checkbox and clicking submit.
+
+<img alt="Bulk user removal" src="/assets/img/ww-user-guide/WasteWorks%20bulk%20user%20removal.png" />
+
+**Please note:** If a user has access to the email address associated with an account they can re-enable their account, but will not have staff permissions.
 
 #### Removing accounts
 
@@ -615,13 +642,10 @@ To remove an account, the Administrator-level member of staff should make contac
 #### Two-factor authentication
 
 Any staff user can choose to set up two-factor authentication on their account.
-To do this, they will need an app on their phone that can generate time-based
-authentication keys, such as Google Authenticator or a password manager. Then.
-they can visit their account page on the site and select ‘Activate two-factor
-authentication’ to receive a QR code to scan with the app.
 
-If you wish your organisation to have mandated two-factor authentication,
-please get in touch.
+To do this, they will need an app on their phone that can generate time-based authentication keys, such as Google Authenticator or a password manager. Then they can visit their account page on the site and select ‘Activate two-factor authentication’ to receive a QR code to scan with the app.
+
+If you wish your organisation to have mandated two-factor authentication, please get in touch.
 
 </div>
 
@@ -644,33 +668,44 @@ disabling can still be used on top of an integration.
 <span class="admin-task__permissions">Permissions required: User must be marked as staff; “Add/edit problem categories” must be
 ticked.</span>
 
-<img alt="Control the categories the site displays when a report is made here" src="/assets/img/pro-user-guide/category-admin-page.png" class="admin-screenshot" />
-
-#### Creating a category
-
-Those with the appropriate permissions can dictate which categories the site displays when a
+Staff users with the appropriate permissions can dictate which categories the site displays when a
 report is being made.
 
 These categories also become one of the criteria by which all users — both members of the public
 and staff users — can filter reports when viewing them on the site.
 
-From the Admin menu, click on ‘Categories’. You’ll see a table of existing categories, and below
-that, a form by which you can create new ones.
+<img alt="Control the categories the site displays when a report is made here" src="/assets/img/pro-user-guide/category-admin-page.png" class="admin-screenshot" />
+
+#### Creating a category
+
+From the 'Admin' menu, click on ‘Categories’. 
+
+<img alt="Categories are managed from the categories tab" src="/assets/img/pro-user-guide/Navigating to the categories tab" class="admin-screenshot" />
+
+You’ll see a table of existing categories, and below
+that, a form by which you can create new ones (if you have lots of categories you'll need to scroll down the page to find the 'Add new category' form).
 
 Input a title for the category, and the email address to which reports in that category should be
-forwarded. When creating a category, these are the only fields required.
+forwarded. 
 
-You can also choose a variety of options – whether to automatically hide any
-reports made in this category, whether to prevent form submission when this
-category is selected, whether updates are allowed on reports in this category,
-whether members of the public can reopen fixed/closed reports in this category,
-or what parent category or categories a particular category is in. See below
-for information on <a
-href="#creating-editing-notices">creating/editing extra notices and
-questions</a> for a category.
+You can also choose to assign a category to one or more parent category/ies. For example, you may group a 'Fallen tree' category under a parent caregory of 'Parks maintenance' and also under 'Public right of way', but note that the report will go to the email address provided, so if certain instances of problems need to go certain addresses, then create a seperate category. 
+
+<img alt="Categories can be grouped under parent categories" src="/assets/img/pro-user-guide/Adding a new category" class="admin-screenshot" />
+
+##### Applying optional category settings
+
+Once you have set the category title and provided an email address to which reports in that category should be sent, you can then apply a variety of other optional settings and specifications to your category. 
+
+For example, you can edit the default text included in the hints and labels for reports in this category. 
+
+<img alt="You can edit categories using the edit category interface" src="/assets/img/pro-user-guide/edit-category-page.png" class="admin-screenshot" />
+
+You can also apply a different display name so that the public sees a different category title to the one you'd like to use behind the scenes (useful if you want to have reports of the same type of issue in different places/parent categories go to different email addresses/integrated system areas eg. the parent categories “Grass/verge issue” and “Hedge/vegetation issue” could each have their own “Blocking visibility on road/junction” subcategory, but they both display to the user as “Blocking visibility on road/junction”.
+
+You may also choose to automatically hide any reports made in this category, prevent form submission when this category is selected, or restrict updates on reports in this category. See below for information on <a href="#creating-editing-notices">creating/editing extra notices and questions</a> for a category.
 
 You may also be able to configure categories to allow anonymous
-reporting if you have this option available. If this is not available then
+reporting if you have this option available. If this is not available but you would like it to be, then
 contact us to discuss it.
 
 Categories can be made ‘staff only’, where they are only available to logged-in
@@ -681,6 +716,8 @@ phoned in.
 Categories can be marked as a litter category for when the council is responsible
 for litter on parts of a Highways England road. This will mean the category
 will be included in the Highways England categories for any relevant stretch of road.
+
+##### Best practice
 
 You can set up as many or as few categories as you like, and each category can have its own email
 address attached to it, so for example, reports about potholes may go to one council email
@@ -705,11 +742,8 @@ staff can forward them to the most suitable destination.
 <span class="admin-task__permissions">Permissions required: User must be marked as staff; “Add/edit problem categories” must be
 ticked.</span>
 
-<img alt="You can edit categories using the edit category interface" src="/assets/img/pro-user-guide/edit-category-page.png" class="admin-screenshot" />
-
-
-You can edit categories at any time by clicking on their title within the table at the top of the
-Categories page.
+You can edit categories at any time by clicking on the category title within the table at the top of the
+'Categories' page.
 
 From here, you can change the email address that the reports in this category are routed to,
 or any of the other options for the category, such as the hint text shown to the user for
@@ -727,7 +761,7 @@ whether updates should be disabled on reports in this category.
 #### Note
 
 If your FixMyStreet Pro installation has been integrated with a CRM system, some of this
-section may not apply, e.g. extra questions may be pulled directly from the backend.
+section may not apply, eg. extra questions may be pulled directly from the backend.
 
 </div>
 
