@@ -157,7 +157,7 @@ has_field logo => (
         max_photos => 1,
         hint => 'If you don’t have a logo, you can skip this step',
     },
-    label => 'Please provide a logo to use on your all reports page',
+    label => 'Please provide a logo to use on your public council reports page',
 );
 
 # TODO Need to make sure there's at least one?
@@ -224,9 +224,7 @@ var rep_html = $html_str;
     var esc_rep_id = data_rep_id.replace(/[.]/g, '\\\\.');
     // append new element in the 'controls' div of the repeatable
     var rep_controls = document.querySelector('#form-' + esc_rep_id + '-row');
-    var d = document.createElement('div');
-    d.innerHTML = html;
-    rep_controls.append(d);
+    rep_controls.insertAdjacentHTML("beforeend", html);
     // increment index of repeatable fields
     index++;
     rep_index[data_rep_id] = index;
