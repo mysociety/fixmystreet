@@ -699,11 +699,13 @@ Once you have set the category title and provided an email address to which repo
 
 For example, you can edit the default text included in the hints and labels for reports in this category. 
 
-<img alt="You can edit categories using the edit category interface" src="/assets/img/pro-user-guide/edit-category-page.png" class="admin-screenshot" />
+<img alt="You can edit the default text included in the hints and labels for reports" src="/assets/img/pro-user-guide/Editing the hint text.png" class="admin-screenshot" />
 
-You can also apply a different display name so that the public sees a different category title to the one you'd like to use behind the scenes (useful if you want to have reports of the same type of issue in different places/parent categories go to different email addresses/integrated system areas eg. the parent categories “Grass/verge issue” and “Hedge/vegetation issue” could each have their own “Blocking visibility on road/junction” subcategory, but they both display to the user as “Blocking visibility on road/junction”.
+You can also apply a different display name so that the public sees a different category title to the one you'd like to use behind the scenes (useful if you want to have reports of the same type of issue in different places/parent categories go to different email addresses/integrated system areas eg. the parent categories “Grass/verge issue” and “Hedge/vegetation issue” could each have their own “Blocking visibility on road/junction” subcategory, but they both display to the user as “Blocking visibility on road/junction”.)
 
-You may also choose to automatically hide any reports made in this category, prevent form submission when this category is selected, or restrict updates on reports in this category. See below for information on <a href="#creating-editing-notices">creating/editing extra notices and questions</a> for a category.
+You may also choose to automatically hide any reports made in this category, show a notice to prevent form submission when this category is selected, or restrict updates on reports in this category. See below for information on <a href="#creating-editing-notices">creating/editing extra notices and questions</a> for a category.
+
+<img alt="You can choose to apply varioius settings" src="/assets/img/pro-user-guide/Applying category settings.png" class="admin-screenshot" />
 
 You may also be able to configure categories to allow anonymous
 reporting if you have this option available. If this is not available but you would like it to be, then
