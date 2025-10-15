@@ -1004,7 +1004,7 @@ sub munge_bin_services_for_address {
     my $c = $self->{c};
     my $property = $c->stash->{property};
     foreach my $row (@$rows) {
-        if (grep { $property->{id} == $_ } @{$_[0]->wasteworks_config->{exclude_property_from_requests}}) {
+        if (grep { $property->{id} eq $_ } @{$_[0]->wasteworks_config->{exclude_property_from_requests}}) {
             $row->{request_allowed} = 0;
         }
     }
