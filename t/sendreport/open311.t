@@ -16,6 +16,14 @@ $ukc->mock('lookup_site_code', sub {
     return "Road ID";
 });
 
+# Greenwich uses OpenUSRN for 'lookup_site_code' so the above mock doesn't work.
+my $greenwich_mock = Test::MockModule->new('FixMyStreet::Cobrand::Greenwich');
+$greenwich_mock->mock('lookup_site_code', sub {
+    my ($self, $row, $buffer) = @_;
+    is $row->latitude, 100, 'Correct latitude';
+    return "Road ID"
+});
+
 package main;
 sub test_overrides; # defined below
 
@@ -144,8 +152,10 @@ test_overrides greenwich =>
         })),
         problem_extra => bag(
             { name => 'external_id', value => re('[0-9]+') },
+            { name => 'usrn', value => 'Road ID' },
         ),
-    });
+    }),
+    [ { name => 'usrn', value => 'Road ID' } ];
 
 test_overrides hackney =>
     {
