@@ -101,8 +101,8 @@ FixMyStreet::override_config {
             # Mock cancel_by_uprn to track calls
             my $cancel_mock = Test::MockModule->new('FixMyStreet::Script::Bexley::CancelGardenWaste');
             $cancel_mock->mock('cancel_by_uprn', sub {
-                my ($self, $contract) = @_;
-                push @$cancel_calls, $contract->{UPRN};
+                my ($self, $uprn) = @_;
+                push @$cancel_calls, $uprn;
             });
 
             stdout_is { $canceller_test->cancel_from_api(7) }
@@ -121,10 +121,9 @@ FixMyStreet::override_config {
         );
 
         my $uprn = '123456789';
-        my $contract = { UPRN => $uprn, Reason => 'Bins are bad' };
 
         subtest 'no active subscription found' => sub {
-            stdout_is { $canceller->cancel_by_uprn($contract) }
+            stdout_is { $canceller->cancel_by_uprn($uprn) }
                 "Attempting to cancel subscription for UPRN $uprn\n" .
                 "  No active garden subscription found for UPRN $uprn\n",
                 "Handles no active subscription correctly";
@@ -139,7 +138,7 @@ FixMyStreet::override_config {
                 return 1;
             });
 
-            stdout_like { $canceller->cancel_by_uprn($contract) }
+            stdout_like { $canceller->cancel_by_uprn($uprn) }
                 qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
                 "Successfully handles direct debit cancellation";
 
@@ -164,7 +163,7 @@ FixMyStreet::override_config {
                 { name => 'payment_method', value => 'direct_debit' },
                 { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },
                 { name => 'direct_debit_reference', value => 'DD_REF_123' },
-                { name => 'reason', value => 'Cancelled on Agile end: Bins are bad' },
+                { name => 'reason', value => 'Cancelled on Agile end: No reason provided' },
             ], 'correct extra fields set on cancellation report';
 
         };
@@ -189,7 +188,7 @@ FixMyStreet::override_config {
                 );
 
                 my $last_cancel_id = _last_cancel_report()->id;
-                stdout_unlike { $canceller->cancel_by_uprn($contract) }
+                stdout_unlike { $canceller->cancel_by_uprn($uprn) }
                     qr/Active cancellation report.*already exists/;
                 my $new_cancel_id = _last_cancel_report()->id;
                 ok $last_cancel_id != $new_cancel_id,
@@ -200,7 +199,7 @@ FixMyStreet::override_config {
                 # Newer cancellation report should have been set up in
                 # previous test
                 my $last_cancel_id = _last_cancel_report()->id;
-                stdout_like { $canceller->cancel_by_uprn($contract) }
+                stdout_like { $canceller->cancel_by_uprn($uprn) }
                     qr/Active cancellation report.*already exists/;
                 my $new_cancel_id = _last_cancel_report()->id;
                 ok $last_cancel_id == $new_cancel_id,
@@ -222,7 +221,7 @@ FixMyStreet::override_config {
 
             _create_report( uprn => $uprn);
 
-            stdout_like { $canceller->cancel_by_uprn($contract) }
+            stdout_like { $canceller->cancel_by_uprn($uprn) }
                 qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Failed to send cancellation request.*Archive failed/s,
                 "Fails direct debit cancellation";
         };

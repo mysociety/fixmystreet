@@ -41,14 +41,12 @@ sub cancel_from_api {
     $self->_vprint("Found " . scalar(@$contracts) . " cancellations");
 
     foreach my $contract (@$contracts) {
-        $self->cancel_by_uprn($contract);
+        $self->cancel_by_uprn( $contract->{UPRN}, $contract->{Reason} );
     }
 }
 
 sub cancel_by_uprn {
-    my ( $self, $contract ) = @_;
-
-    my $uprn = $contract->{UPRN};
+    my ( $self, $uprn, $reason ) = @_;
 
     $self->_vprint("Attempting to cancel subscription for UPRN $uprn");
 
@@ -83,8 +81,8 @@ sub cancel_by_uprn {
         return;
     }
 
-    my $cancellation_report
-        = $self->create_cancellation_report( $report, $contract );
+    $cancellation_report
+        = $self->create_cancellation_report( $report, $reason );
 
     $self->_vprint("  Created cancellation report " . $cancellation_report->id);
 
@@ -97,7 +95,7 @@ sub cancel_by_uprn {
 }
 
 sub create_cancellation_report {
-    my ( $self, $existing_report, $contract ) = @_;
+    my ( $self, $existing_report, $reason ) = @_;
 
     my %cancellation_params = (
         state => 'confirmed',
@@ -151,7 +149,7 @@ sub create_cancellation_report {
     push @cancellation_extra, {
         name  => 'reason',
         value => 'Cancelled on Agile end: '
-            . ( $contract->{Reason} || 'No reason provided' )
+            . ( $reason || 'No reason provided' )
     };
     $cancellation_report->set_extra_fields(@cancellation_extra);
 
