@@ -5,9 +5,7 @@ use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::Alerts;
-
-FixMyStreet::App->log->disable('info');
-END { FixMyStreet::App->log->enable('info'); }
+use t::Mock::Bexley;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -21,77 +19,7 @@ for ($body) {
     create_contact($_);
 }
 
-my $addr_mock = Test::MockModule->new('BexleyAddresses');
-# We don't actually read from the file, so just put anything that is a valid path
-$addr_mock->mock( 'database_file', '/' );
-my $dbi_mock = Test::MockModule->new('DBI');
-$dbi_mock->mock( 'connect', sub {
-    my $dbh = Test::MockObject->new;
-    $dbh->mock( 'selectall_arrayref', sub { [
-        {   uprn              => 10001,
-            pao_start_number  => 1,
-            street_descriptor => 'THE AVENUE',
-        },
-        {   uprn              => 10002,
-            pao_start_number  => 2,
-            street_descriptor => 'THE AVENUE',
-        },
-    ] } );
-    $dbh->mock( 'selectrow_hashref', sub { {
-        postcode => 'DA1 1AA',
-        has_parent => 0,
-        class => $_[3] == 10001 ? 'RD04' : 'C',
-        pao_start_number => 1,
-        street_descriptor => 'Test Street',
-        town_name => 'Bexley',
-    } } );
-    return $dbh;
-} );
-
-my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
-my $slots_default = [
-    { AdHocRoundInstanceID => 1, AdHocRoundInstanceDate => '2025-06-27T00:00:00', SlotsFree => 20 },
-    { AdHocRoundInstanceID => 2, AdHocRoundInstanceDate => '2025-06-30T00:00:00', SlotsFree => 20 },
-    { AdHocRoundInstanceID => 3, AdHocRoundInstanceDate => '2025-07-04T00:00:00', SlotsFree => 20 },
-    { AdHocRoundInstanceID => 4, AdHocRoundInstanceDate => '2025-07-05T00:00:00', SlotsFree => 20 }, # Saturday
-    { AdHocRoundInstanceID => 5, AdHocRoundInstanceDate => '2025-07-07T00:00:00', SlotsFree => 0 }, # Ignore
-];
-sub default_mocks {
-    $whitespace_mock->mock('GetSiteCollections', sub {
-        [ {
-            SiteServiceID          => 1,
-            ServiceItemDescription => 'Non-recyclable waste',
-            ServiceItemName => 'RES-180',
-            ServiceName          => 'Green Wheelie Bin',
-            NextCollectionDate   => '2024-02-07T00:00:00',
-            SiteServiceValidFrom => '2000-01-01T00:00:00',
-            SiteServiceValidTo   => '0001-01-01T00:00:00',
-            RoundSchedule => 'RND-1 Mon',
-        } ];
-    });
-    $whitespace_mock->mock(
-        'GetCollectionByUprnAndDatePlus',
-        sub {
-            my ( $self, $property_id, $from_date ) = @_;
-            return [];
-        }
-    );
-    $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { });
-    $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { });
-    $whitespace_mock->mock( 'GetSiteInfo', sub { {
-        AccountSiteID   => 1,
-        AccountSiteUPRN => 10001,
-        Site            => {
-            SiteShortAddress => ', 1, THE AVENUE, DA1 3NP',
-            SiteLatitude     => 51.466707,
-            SiteLongitude    => 0.181108,
-        },
-    } });
-    $whitespace_mock->mock( 'GetSiteWorksheets', sub {});
-    $whitespace_mock->mock( 'GetCollectionSlots', sub { $slots_default });
-};
-
-default_mocks();
+my $whitespace_mock = $bexley_mocks{whitespace};
 
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
@@ -123,18 +51,18 @@ FixMyStreet::override_config {
 }, sub {
     subtest 'Ineligible property as no bulky service' => sub {
         $mech->get_ok('/waste');
-        $mech->submit_form_ok( { with_fields => { postcode => 'DA1 1AA' } } );
+        $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
         $mech->submit_form_ok( { with_fields => { address => '10002' } } );
         $mech->content_lacks('Bulky waste');
     };
 
     subtest 'Eligible property as has bulky service' => sub {
         $mech->get_ok('/waste');
-        $mech->submit_form_ok( { with_fields => { postcode => 'DA1 1AA' } } );
+        $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3LD' } } );
         $mech->submit_form_ok( { with_fields => { address => '10001' } } );
 
         $mech->content_contains('Bulky waste');
-        $mech->submit_form_ok({ form_number => 3 });
+        $mech->submit_form_ok({ form_number => 5 });
         $mech->content_contains( 'Before you start your booking',
             'Should be able to access the booking form' );
     };
@@ -357,7 +285,7 @@ FixMyStreet::override_config {
             like $confirmation_email_txt, qr/- Bicycle/, 'Includes item 2';
             like $confirmation_email_txt, qr/- Bath/, 'Includes item 3';
             like $confirmation_email_txt, qr/Total cost: £69.30/, 'Includes price';
-            like $confirmation_email_txt, qr/Address: 1 Test Street, Bexley, DA1 1AA/, 'Includes collection address';
+            like $confirmation_email_txt, qr/Address: Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP/, 'Includes collection address';
             like $confirmation_email_txt, qr/Collection date: Friday 04 July 2025/, 'Includes collection date';
             like $confirmation_email_txt, qr#http://bexley.example.org/waste/10001/bulky/cancel#, 'Includes cancellation link';
             like $confirmation_email_txt, qr/Please check you have read the terms and conditions tandc_link/, 'Includes terms and conditions';
@@ -367,7 +295,7 @@ FixMyStreet::override_config {
             like $confirmation_email_html, qr/Bicycle/, 'Includes item 2 (html mail)';
             like $confirmation_email_html, qr/Bath/, 'Includes item 3 (html mail)';
             like $confirmation_email_html, qr/Total cost: £69.30/, 'Includes price (html mail)';
-            like $confirmation_email_html, qr/Address: 1 Test Street, Bexley, DA1 1AA/, 'Includes collection address (html mail)';
+            like $confirmation_email_html, qr/Address: Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP/, 'Includes collection address (html mail)';
             like $confirmation_email_html, qr/Collection date: Friday 04 July 2025/, 'Includes collection date (html mail)';
             like $confirmation_email_html, qr#http://bexley.example.org/waste/10001/bulky/cancel#, 'Includes cancellation link (html mail)';
             like $confirmation_email_html, qr/a href="tandc_link"/, 'Includes terms and conditions (html mail)';
@@ -382,7 +310,7 @@ FixMyStreet::override_config {
             $mech->content_contains('If you need to contact us about your booking please use the reference:&nbsp;' . $report->id);
             $mech->content_contains('Card payment reference: 54321');
             $mech->content_contains('Show upcoming bin days');
-            is $report->detail, "Address: 1 Test Street, Bexley, DA1 1AA";
+            is $report->detail, "Address: Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky waste collection';
             is $report->get_extra_field_value('uprn'), 10001;
@@ -408,7 +336,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/report/' . $report->id);
 
             $mech->content_contains('Booking Summary');
-            $mech->content_contains('1 Test Street, Bexley, DA1 1AA');
+            $mech->content_contains('Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP');
             $mech->content_lacks('Please read carefully all the details');
             $mech->content_lacks('You will be redirected to the council’s card payments provider.');
             $mech->content_like(qr/<p class="govuk-!-margin-bottom-0">.*Bath/s);
@@ -467,11 +395,11 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         my $reminder_email_txt = $mech->get_text_body_from_email($email);
         my $reminder_email_html = $mech->get_html_body_from_email($email);
-        like $reminder_email_txt, qr/Address: 1 Test Street, Bexley, DA1 1AA/, 'Includes collection address';
+        like $reminder_email_txt, qr/Address: Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP/, 'Includes collection address';
         like $reminder_email_txt, qr/Friday 04 July 2025/, 'Includes collection date';
         unlike $reminder_email_txt, qr#http://bexley.example.org/waste/10001/bulky/cancel#, 'No cancellation link';
         like $reminder_email_html, qr/Thank you for booking a bulky waste collection with London Borough of Bexley/, 'Includes Bexley greeting (html mail)';
-        like $reminder_email_html, qr/Address: 1 Test Street, Bexley, DA1 1AA/, 'Includes collection address (html mail)';
+        like $reminder_email_html, qr/Address: Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP/, 'Includes collection address (html mail)';
         like $reminder_email_html, qr/Friday 04 July 2025/, 'Includes collection date (html mail)';
         unlike $reminder_email_html, qr#http://bexley.example.org/waste/10001/bulky/cancel#, 'No cancellation link (html mail)';
         $mech->clear_emails_ok;
@@ -524,7 +452,7 @@ FixMyStreet::override_config {
 
             my $text = $email->as_string;
 
-            like $text, qr/Address: 1 Test Street, Bexley, DA1 1AA/, "Includes resident's address";
+            like $text, qr/Address: Flat, 98a-99b The Court, 1a-2b The Avenue/, "Includes resident's address";
             my $name = $report->name;
             like $text, qr/Resident's Name: ${name}/, "Includes resident's name";
             my $user_email = $report->user->email;

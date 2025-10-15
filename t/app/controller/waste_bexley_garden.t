@@ -4,25 +4,10 @@ use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use List::MoreUtils qw(firstidx);
+use t::Mock::Bexley;
 
 FixMyStreet::App->log->disable('info', 'error');
 END { FixMyStreet::App->log->enable('info', 'error'); }
-
-my $addr_mock = Test::MockModule->new('BexleyAddresses');
-# We don't actually read from the file, so just put anything that is a valid path
-$addr_mock->mock( 'database_file', '/' );
-my $dbi_mock = Test::MockModule->new('DBI');
-$dbi_mock->mock( 'connect', sub {
-    my $dbh = Test::MockObject->new;
-    $dbh->mock( 'selectrow_hashref', sub { {
-        postcode => 'DA1 1AA',
-        has_parent => 0,
-        pao_start_number => 1,
-        street_descriptor => 'Test Street',
-        town_name => 'Bexley',
-    } } );
-    return $dbh;
-} );
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -62,48 +47,9 @@ create_contact(
     { code => 'fixmystreet_id', required => 1, automated => 'server' },
 );
 
-my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
-my $agile_mock = Test::MockModule->new('Integrations::Agile');
-sub default_mocks {
-    # These are overridden for some tests
-    $whitespace_mock->mock('GetSiteCollections', sub {
-        [ {
-            SiteServiceID          => 1,
-            ServiceItemDescription => 'Non-recyclable waste',
-            ServiceItemName => 'PC-180',
-            ServiceName          => 'Blue Wheelie Bin',
-            NextCollectionDate   => '2024-02-07T00:00:00',
-            SiteServiceValidFrom => '2000-01-01T00:00:00',
-            SiteServiceValidTo   => '0001-01-01T00:00:00',
-            RoundSchedule => 'RND-1 Mon',
-        } ];
-    });
-    $whitespace_mock->mock(
-        'GetCollectionByUprnAndDatePlus',
-        sub {
-            my ( $self, $property_id, $from_date ) = @_;
-            return [];
-        }
-    );
-    $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { });
-    $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { });
-    $whitespace_mock->mock( 'GetSiteInfo', sub { {
-        AccountSiteID   => 1,
-        AccountSiteUPRN => 10001,
-        Site            => {
-            SiteShortAddress => ', 1, THE AVENUE, DA1 3NP',
-            SiteLatitude     => 51.466707,
-            SiteLongitude    => 0.181108,
-        },
-    } });
-    $whitespace_mock->mock( 'GetAccountSiteID', sub {});
-    $whitespace_mock->mock( 'GetSiteWorksheets', sub {});
-    $whitespace_mock->mock( 'GetWorksheetDetailServiceItems', sub { });
-
-    $agile_mock->mock( 'CustomerSearch', sub { {} } );
-};
-
-default_mocks();
+my $whitespace_mock = $bexley_mocks{whitespace};
+my $agile_mock = $bexley_mocks{agile};
+$agile_mock->mock( 'CustomerSearch', sub { {} } );
 
 use t::Mock::AccessPaySuiteBankChecker;
 my $bankchecker = t::Mock::AccessPaySuiteBankChecker->new;
@@ -812,7 +758,7 @@ FixMyStreet::override_config {
 
     subtest 'Test bank details form validation' => sub {
         default_mocks();
-        $mech->get_ok('/waste/12345/garden');
+        $mech->get_ok('/waste/10001/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->submit_form_ok({ with_fields => {
@@ -824,8 +770,8 @@ FixMyStreet::override_config {
         }});
 
         $mech->content_like(qr/name="first_name"[^>]*value="Test"/);
-        $mech->content_like(qr/name="address1"[^>]*value="1 Test Street"/);
-        $mech->content_like(qr/name="post_code"[^>]*value="DA1 1AA"/);
+        $mech->content_like(qr/name="address2"[^>]*value="98a-99b The Court"/);
+        $mech->content_like(qr/name="post_code"[^>]*value="DA1 3NP"/);
 
         my %valid_fields = (
             name_title => 'Mr',
@@ -833,7 +779,7 @@ FixMyStreet::override_config {
             surname => 'McTest',
             address1 => '1 Test Street',
             address2 => 'Test Area',
-            post_code => 'DA1 1AA',
+            post_code => 'DA1 3NP',
             account_holder => 'Test McTest',
             account_number => '12345678',
             sort_code => '12-34-56'
@@ -968,7 +914,7 @@ FixMyStreet::override_config {
             return undef;
         });
 
-        $mech->get_ok('/waste/12345/garden');
+        $mech->get_ok('/waste/10001/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
@@ -1017,8 +963,8 @@ FixMyStreet::override_config {
             accountHolderName => 'Test McTest',
             line1 => '1 Test Street',
             line2 => 'Test Area',
-            line3 => undef,
-            line4 => undef,
+            line3 => '1a-2b The Avenue',
+            line4 => 'Little Bexlington',
         }, 'Customer parameters are correct';
 
         # Check contract creation parameters
@@ -1087,7 +1033,7 @@ FixMyStreet::override_config {
         # Log in as staff user, as they are allowed to submit the form with an empty email
         $mech->log_in_ok($staff_user->email);
 
-        $mech->get_ok('/waste/12345/garden');
+        $mech->get_ok('/waste/10001/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
