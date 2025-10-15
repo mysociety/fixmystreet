@@ -7,7 +7,11 @@ user-guide: true
 
 # Administrator tasks
 
-This section of the manual is designed to help you navigate the many different features and functionality available to staff users of FixMyStreet Pro. There's a lot to cover here, so take your time to read through. 
+This section of the manual is designed to help you navigate the many different features and functionality, referred to here as tasks, available to staff users of FixMyStreet Pro. There's a lot to cover here, so take your time to read through. 
+
+Accompanying each task covered in this document you will see ‘permissions required’, listing the permissions an Administrator must give you (either individually or via a role) for you to be able to perform this task.
+
+If you find that you cannot perform any of the tasks detailed below when logged into your FixMyStreet account, it is likely that your account has not been given the relevant permissions or role. Contact your organisation's account Administrator(s) for FixMyStreet Pro to request these permissions. 
 
 ## Important notice
 
