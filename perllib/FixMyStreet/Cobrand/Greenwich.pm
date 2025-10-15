@@ -161,7 +161,8 @@ sub should_skip_sending_update {
 
 =head2 open311_update_missing_data
 
-Lookup and include the USRN when sending reports.
+Lookup and include the USRN when sending reports, and also the UPRN
+if we already have it from the nearest address.
 
 =cut
 
@@ -170,6 +171,11 @@ sub open311_update_missing_data {
     if (!$row->get_extra_field_value('usrn')) {
         if (my $usrn = $self->lookup_site_code($row, 'usrn')) {
             $row->update_extra_field({ name => 'usrn', value => $usrn });
+        }
+    }
+    if (!$row->get_extra_field_value('uprn')) {
+        if (my $uprn = $row->nearest_address_parts->{uprn}) {
+            $row->update_extra_field({ name => 'uprn', value => $uprn });
         }
     }
 }
