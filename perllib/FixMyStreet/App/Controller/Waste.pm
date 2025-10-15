@@ -1066,7 +1066,12 @@ sub get_current_payment_method : Private {
 sub get_original_sub : Private {
     my ($self, $c, $type) = @_;
 
-    my $extra = { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) };
+    # Explicitly use the property ID variable in a string when looking it up.
+    # This is in case the variable been used in a numeric context somewhere, giving the SV a cached numeric value
+    # which encode_json defaults to using.
+    my $id = $c->stash->{property}{id};
+    my $extra = { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => "$id" } ] }) };
+
     if ($c->cobrand->moniker eq 'bexley') {
         # Bexley doesn't store property_id
         $extra = { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) };
