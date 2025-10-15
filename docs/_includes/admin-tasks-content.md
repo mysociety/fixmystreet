@@ -470,7 +470,6 @@ You can continue to add more reports by returning to the ‘all reports’ page.
 
 <img alt="View your shortlist from the link in the navigation bar" src="/assets/img/pro-user-guide/your-shortlist.png" class="admin-screenshot" />
 
-
 If you wish to remove a report from your list, click on the green star again. This can be done on the
 individual report’s page, from the ‘all reports’ page, or from within your shortlist.
 
@@ -508,6 +507,8 @@ separate tab in your browser, and plot a route on Google maps from your current 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff and ‘manage shortlist’ must be ticked.</span>
 
 In the same way that members of the public can use FixMyStreet while offline to start reports, staff users can also access reports without internet connection - useful for on-the-ground inspectors operating in areas of poor connectivity.
+
+<img alt="Shortlists can be accessed while offline" src="/assets/img/pro-user-guide/Offline report shortlist" class="admin-screenshot" />
 
 Visit your shortlist page before you go out and about: you’ll see a message that the list is being
 cached for use offline. That means that whenever you are viewing the page without an internet
