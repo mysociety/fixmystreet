@@ -1010,6 +1010,14 @@ quirks of email clients' rendering of HTML message.
 Refer to the section ["HTML Content in notices"](#html-content-in-notices) above for details of
 what tags and attributes are allowed.
 
+#### Sending responses via text (via Notify)
+
+Depending on the plan you have chosen, you may be able to set up an integration with GOV.UK Notify to allow users to opt to receive updates from FixMyStreet Pro via SMS.
+
+This requires a fair amount of work at your end first, including setting up a new service in your GOV.UK Notify account, and giving us access to it so that we can set it up to be able to send text messages as either a test or a trial so it can be tested on staging.
+
+If you are interested in setting this up, you should first talk to whoever is responsible for your Notify service if used elsewhere in the authority, then open a ticket on Freshdesk to discuss next steps.
+
 </div>
 
 <div class="admin-task" markdown="1" id="view-statistics">
