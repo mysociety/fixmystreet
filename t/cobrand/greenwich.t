@@ -2,6 +2,7 @@ use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Open311::PopulateServiceList;
+use Test::MockModule;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -106,11 +107,18 @@ subtest 'check services override' => sub {
 };
 
 subtest 'testing special Open311 behaviour', sub {
+    my $cobrand_mock = Test::MockModule->new('FixMyStreet::Cobrand::Greenwich');
+    $cobrand_mock->mock('lookup_site_code', sub { return "TESTUSRN" });
+
+    my $reports_mock = Test::MockModule->new('FixMyStreet::DB::Result::Problem');
+    $reports_mock->mock('nearest_address_parts', sub { return { uprn => "TESTUPRN" }});
+
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'greenwich' ],
         MAPIT_URL => 'http://mapit.uk/',
     }, sub {
+
         FixMyStreet::Script::Reports::send();
     };
     $report->discard_changes;
@@ -123,6 +131,11 @@ subtest 'testing special Open311 behaviour', sub {
     is $c->param('attribute[external_id]'), $report->id, 'Request had correct ID';
     is $c->param('attribute[easting]'), 529025, 'Request had correct easting';
     is $c->param('attribute[closest_address]'), 'Constitution Hill, London', 'Request had correct closest address';
+    is $c->param('attribute[usrn]'), 'TESTUSRN', 'Request had correct USRN';
+    is $c->param('attribute[uprn]'), 'TESTUPRN', 'Request had correct UPRN';
+
+    $cobrand_mock->unmock('lookup_site_code');
+    $reports_mock->unmock('nearest_address_parts');
 };
 
 subtest 'Old server cutoff' => sub {

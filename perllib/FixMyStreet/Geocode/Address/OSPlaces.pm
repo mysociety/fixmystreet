@@ -28,6 +28,7 @@ sub parts {
         number => join(', ', $_[0]->addressable_objects(1)),
         street => $_[0]->street_description,
         postcode => $address->{POSTCODE_LOCATOR} || '',
+        uprn => $address->{UPRN},
     };
 }
 
