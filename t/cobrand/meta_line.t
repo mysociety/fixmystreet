@@ -37,7 +37,7 @@ subtest 'Default cobrand hides "Other" category in meta_line' => sub {
 
         my $meta = $problem->meta_line;
 
-        unlike $meta, qr/"Other"/i, 'Meta line does not mention "Other" category';
+        unlike $meta, qr/Other/i, 'Meta line does not mention Other category';
         like $meta, qr/Reported by Test User at/, 'Meta line shows reporter and time';
     };
 };
@@ -58,8 +58,8 @@ subtest 'Cobrand with flag set shows "Other" category in meta_line' => sub {
 
         my $meta = $problem->meta_line;
 
-        like $meta, qr/"Other"/i, 'Meta line mentions "Other" category';
-        like $meta, qr/Reported in the "Other" category by Test User at/, 'Meta line shows category, reporter and time';
+        like $meta, qr/Other/i, 'Meta line mentions Other category';
+        like $meta, qr/Reported in the Other category by Test User at/, 'Meta line shows category, reporter and time';
     };
 };
 
@@ -79,7 +79,7 @@ subtest 'Anonymous reports with "Other" category' => sub {
 
         my $meta = $problem->meta_line;
 
-        unlike $meta, qr/"Other"/i, 'Anonymous meta line does not mention "Other" category';
+        unlike $meta, qr/Other/i, 'Anonymous meta line does not mention Other category';
         like $meta, qr/Reported anonymously at/, 'Anonymous meta line shows anonymous';
     };
 
@@ -99,8 +99,8 @@ subtest 'Anonymous reports with "Other" category' => sub {
 
         my $meta = $problem->meta_line;
 
-        like $meta, qr/"Other"/i, 'Anonymous meta line with flag set mentions "Other" category';
-        like $meta, qr/Reported in the "Other" category anonymously at/, 'Anonymous meta line shows category';
+        like $meta, qr/Other/i, 'Anonymous meta line with flag set mentions Other category';
+        like $meta, qr/Reported in the Other category anonymously at/, 'Anonymous meta line shows category';
     };
 };
 
@@ -121,7 +121,7 @@ subtest 'Reports with service_display and "Other" category' => sub {
 
         my $meta = $problem->meta_line;
 
-        unlike $meta, qr/"Other"/i, 'Meta line with service does not mention "Other" category';
+        unlike $meta, qr/Other/i, 'Meta line with service does not mention Other category';
         like $meta, qr/Reported via iOS by Test User at/, 'Meta line shows service but not category';
     };
 
@@ -142,8 +142,8 @@ subtest 'Reports with service_display and "Other" category' => sub {
 
         my $meta = $problem->meta_line;
 
-        like $meta, qr/"Other"/i, 'Meta line with service and flag set mentions "Other" category';
-        like $meta, qr/Reported via iOS in the "Other" category by Test User at/, 'Meta line shows service and category';
+        like $meta, qr/Other/i, 'Meta line with service and flag set mentions Other category';
+        like $meta, qr/Reported via iOS in the Other category by Test User at/, 'Meta line shows service and category';
     };
 };
 
