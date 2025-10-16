@@ -418,7 +418,7 @@ sub validate {
         my $max_items = $self->c->stash->{booking_maximum};
         my $same = 1;
         my @fields = qw(chosen_date location location_photo);
-        push @fields, map { ("item_$_", "item_photo_$_") } 1 .. $max_items;
+        push @fields, map { ("item_$_", "item_photo_$_", "item_notes_$_") } 1 .. $max_items;
         foreach (@fields) {
             my $new = $new->{$_} || '';
             if ($_ eq 'chosen_date') {
