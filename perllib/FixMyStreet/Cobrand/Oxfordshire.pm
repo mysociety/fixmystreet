@@ -61,6 +61,8 @@ sub default_map_zoom { 5 }
 # let staff hide OCC reports
 sub users_can_hide { return 1; }
 
+sub show_other_category_in_summary { return 1; }
+
 sub lookup_by_ref_regex {
     return qr/^\s*((?:ENQ)?\d+)\s*$/;
 }
