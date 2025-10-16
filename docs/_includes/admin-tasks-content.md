@@ -703,7 +703,7 @@ For example, you can edit the default text included in the hints and labels for 
 
 You can also apply a different display name so that the public sees a different category title to the one you'd like to use behind the scenes (useful if you want to have reports of the same type of issue in different places/parent categories go to different email addresses/integrated system areas eg. the parent categories “Grass/verge issue” and “Hedge/vegetation issue” could each have their own “Blocking visibility on road/junction” subcategory, but they both display to the user as “Blocking visibility on road/junction”.)
 
-You may also choose to automatically hide any reports made in this category, show a notice to prevent form submission when this category is selected, or restrict updates on reports in this category. See below for information on <a href="#creating-editing-notices">creating/editing extra notices and questions</a> for a category.
+Using the checkboxes, you may also choose to apply settings such as to automatically hide any reports made in this category, show a notice to prevent form submission when this category is selected, or restrict updates on reports in this category. See below for information on <a href="#creating-editing-notices">creating/editing extra notices and questions</a> for a category.
 
 <img alt="You can choose to apply varioius settings" src="/assets/img/pro-user-guide/Applying category settings.png" class="admin-screenshot" />
 
@@ -753,6 +753,10 @@ or any of the other options for the category, such as the hint text shown to the
 this category, whether reporting should be disabled when this category is selected, or
 whether updates should be disabled on reports in this category.
 
+Whenever you make a change to a category, it's a good idea to summarise these changes to help other members of staff at your organisation understand what and why. A decision log is stored at the bottom of the page under the 'History' heading. 
+
+<img alt="Summarising changes to categories helps build shared knowledge among your team members" src="/assets/img/pro-user-guide/Summarising changes to categories.png" class="admin-screenshot" />
+
 </div>
 
 <div class="admin-task" markdown="1" id="creating-editing-notices">
@@ -776,15 +780,40 @@ You can add as many as necessary (though we do recommend as few as possible, to 
 being put off from filling in your form), reorder them, and update them. No extra data answers
 are shown in public by default.
 
+To get started, click the 'Add field' button under the 'Extra data' heading.
+
+<img alt="Selecting 'Add field' enables you to begin creating notices and questions for your category" src="/assets/img/pro-user-guide/Adding extra data to your category.png" class="admin-screenshot" />
+
+You'll then be shown a variety of inputs to choose from. 
+
 <img alt="Control the extra notices and questions the site displays when a report is made in this category"
     src="/assets/img/pro-user-guide/edit-category-notice.png" class="admin-screenshot" />
+
+#### Extra questions
+
+Extra questions enable you to ask the user to provide some specific additional information
+that you require in order to treat the problem appropriately. Answers can either be provided via a free-text field, or a
+drop-down, where you can specify the options to be picked from.
+
+You can selectively disable the form submission process based upon a
+drop-down question answer - for example, if you had a question asking if the
+situation was dangerous, you could disable the form if the reporter answered
+Yes and display a message asking the user to call an emergency number instead.
+
+<img alt="Asking questions can help you to triage and divert emergencies" src="/assets/img/pro-user-guide/Emergency report diversion.png" class="admin-screenshot" />
+
+Extra questions can also be used to enable the user to self-serve othern relevant information associated with their report - for example, to ask whether the report-maker requires sandbags when they are reporting a flood risk.
+
+<img alt="Questions can help to gather additional information to improve responses" src="/assets/img/pro-user-guide/Extra questions.png" class="admin-screenshot" />
 
 #### Notices
 
 A notice is some text that is displayed to the user when the category is
-selected. This can be used to provide extra information about the category,
-point specific cases elsewhere (e.g. a phone number for urgent enquiries), or
+selected. This can be used to provide extra information about the category (eg. seasonal maintenance schedules),
+point specific cases elsewhere (eg. a phone number for urgent enquiries), or
 anything else you think the reporter may find useful.
+
+<img alt="Notices help to manage expectations and provide useful information" src="/assets/img/pro-user-guide/Notices on reports.png" class="admin-screenshot" />
 
 ##### HTML content in notices
 
@@ -830,23 +859,10 @@ The following HTML tags are allowed for use:
 Any other tags or attributes not allowed by the above list will be stripped out
 when you save your changes on the form.
 
-#### Questions
-
-A question can ask the user to provide some specific additional information
-that you require in order to treat the problem appropriately, such as what
-specific type of issue is being reported, or some additional details you
-require to take the report forward. It can either be a free-text field, or a
-drop-down, where you can specify the options to be picked from.
-
-You can also selectively disable the form submission process based upon a
-drop-down question answer - for example, if you had a question asking if the
-situation was dangerous, you could disable the form if the reporter answered
-Yes and display a message asking the user to ring a number instead.
-
 #### Hidden/internal data fields
 
 As well as questions and notices, you can set up hidden and internal data
-fields.  A hidden data field will be output in the reporting form HTML (so e.g.
+fields.  A hidden data field will be output in the reporting form HTML (so eg.
 clicking on a map asset could fill this field with the asset’s ID), whereas an
 internal data field is not output in the HTML (this is for special fields that
 your server knows to accept, e.g. different co-ordinate systems, special
