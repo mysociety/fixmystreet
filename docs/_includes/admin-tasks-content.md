@@ -699,9 +699,17 @@ Once you have set the category title and provided an email address to which repo
 
 For example, you can edit the default text included in the hints and labels for reports in this category. 
 
-<img alt="You can edit the default text included in the hints and labels for reports" src="/assets/img/pro-user-guide/Editing the hint text.png" class="admin-screenshot" />
+<img alt="You can edit the default text included in the hints and labels for reports" src="/assets/img/pro-user-guide/Editing hint and label text.png" class="admin-screenshot" />
 
-You can also apply a different display name so that the public sees a different category title to the one you'd like to use behind the scenes (useful if you want to have reports of the same type of issue in different places/parent categories go to different email addresses/integrated system areas eg. the parent categories “Grass/verge issue” and “Hedge/vegetation issue” could each have their own “Blocking visibility on road/junction” subcategory, but they both display to the user as “Blocking visibility on road/junction”.)
+You'll also see an option to set a timeframe within which reports in this category should be closed to updates. 
+
+<img alt="You can close reports to updates within specific  timeframes" src="/assets/img/pro-user-guide/Setting a timeframe to close reports to updates.png" class="admin-screenshot" />
+
+The purpose of this is to prevent users providing updates on old reports to alert to a new occurrence of the same issue, which could impede resolutions and may impact your report data when analysed. For example, if a problem is something you know is likely to reoccur in the same area, such as fly-tipping in a known hotspot, you may want to set a shorter timeframe within which updates can be applied to an existing report. That way, when a new instance of the issue occurs, you can help to ensure a new report is made instead of a user updating an existing report because they haven’t realised it’s not the same problem. 
+
+If no individual timeframe is applied to a subcategory, reports will be closed to updates within the default timeframe of six months, unless you have requested an alternative default timeframe to be applied to your instance of FixMyStreet Pro.
+
+Some FixMyStreet Pro instances may request to have the option to set a different display name so that the public sees a different category title to the one you'd like to use behind the scenes (useful if you want to have reports of the same type of issue in different places/parent categories go to different email addresses/integrated system areas eg. the parent categories “Grass/verge issue” and “Hedge/vegetation issue” could each have their own “Blocking visibility on road/junction” subcategory, but they both display to the user as “Blocking visibility on road/junction”.) If you can't see this option and you would like to use it, please contact us.
 
 Using the checkboxes, you may also choose to apply settings such as to automatically hide any reports made in this category, show a notice to prevent form submission when this category is selected, or restrict updates on reports in this category. See below for information on <a href="#creating-editing-notices">creating/editing extra notices and questions</a> for a category.
 
@@ -868,6 +876,18 @@ internal data field is not output in the HTML (this is for special fields that
 your server knows to accept, e.g. different co-ordinate systems, special
 handling of textual input, and so on).
 
+#### Setting a duplicate report radius
+
+FixMyStreet Pro can suggest potential duplicate reports to users when it looks as though a report is being made in the same category and location as an existing report. If the problem that’s about to be reported is indeed a duplicate, FixMyStreet Pro encourages the user to subscribe to the existing report instead of creating a new one, saving time for the would-be report-maker and creating no extra work for the authority.
+
+<img alt="You can customise the duplicate report suggestion radius per category" src="/assets/img/pro-user-guide/Duplicate reports are suggested to users.jpg" class="admin-screenshot" />
+
+By default FixMyStreet scans for open reports, but you can customise this to also include internal, closed, fixed or even related sub-category reports.
+
+The radius within which reports are suggested to users can be also customised on a per-category basis. For example, a larger radius can be useful for reports about issues that are likely to cover a large area, where users may drop a pin in a number of places to report the same issue. Meanwhile, a smaller radius can be more helpful for categories of problems in areas where there may be lots of reports of similar, but not identical problems.
+
+If you could like to apply or change the duplicate report suggestion radius for a category, please open a ticket on Freshdesk as this needs to be done by one of our developers. 
+
 </div>
 
 <div class="admin-task" markdown="1" id="creating-editing-priorities">
@@ -940,22 +960,29 @@ report maker to understand the status of their issue?
 - What title should you give the template so that it can be easily identified from a drop-down
 list when it is being applied by staff users?
 
+<img alt="You can input different text to be displayed on the public report and the email sent to the report-maker" src="/assets/img/pro-user-guide/Setting the text for your response templates.png" class="admin-screenshot"/>
+
 Input a title and some text for your template, then set which categories it should apply to. You may
 create different templates for each category, or use the same templates across multiple
 categories.
 
-You can also set a State so that the template response is automatically used when that state is
-applied to a report.
+If you optionally enter text in the ‘Text for email alert field’, the template text will update
+the report on the website and the email text will be sent to the user if they have
+opted in to alerts. Otherwise the email text will be the same as the template text
+that has updated the report.
 
-For example, you can set it so that when a staff user changes a report’s state to ‘No further action’,
-the ‘Resolved’ status update text is automatically applied. While this functionality can be a
-time-saver, we advise using it with caution to ensure that the template text is applicable to every
-situation in which is will be automatically applied.
+##### Attaching states and external status codes
+
+Depending on whether or not your FixMyStreet Pro is integrated with one of your existing systems (such as a CRM or asset management system) you can either select to attatch a 'State' to this response template (eg. 'Open', 'In progress', 'Fixed'), so that the template response is automatically used when that state is applied to a report, <strong>OR</strong> you can attach an External status code, which will tell FixMyStreet Pro to use this response template when a report's status changes within your integrated system (eg. Confirm). 
+
+<img alt="States or external status codes tell FixMyStreet when to send this response" src="/assets/img/pro-user-guide/States and external status codes.png" class="admin-screenshot"/>
+
+We strongly advise making sure that the template text is applicable to every situation in which is will be automatically applied.
 
 If you have an Open311 connection, you can click ‘auto-response’ so that a
 template will be applied when the state is updated by the automated Open311
 process. In this instance, if your Open311 server returns extra text as part of
-the update, you may put the placeholder `{% raw %}{{description}}{% endraw %}` in the template here,
+the update, you may put the placeholder `{% raw %}{{description}}{% endraw %}` in the template text above,
 and that placeholder will be replaced by the text from the Open311 server.
 
 If you don’t have an Open311 connection, or your Open311 connection does not
@@ -963,21 +990,13 @@ provide an immediate initial update, there is a special case where if a
 template is assigned to the Open state, and marked as ‘auto-response’, then it
 will automatically be added as a first update to any new report created that
 matches the template (ie. in the relevant category if assigned). This lets
-you give e.g. estimated timescales or other useful information up front.
-
-If you enter text in the ‘Text for email alert field’, the template text will update
-the report on the website and the email text will be sent to the user if they have
-opted into alerts. Otherwise the email text will be the same as the template text
-that has updated the report.
-
-
+you give eg. estimated timescales or other useful information up front.
 
 #### Editing or deleting a template
 
 Click on ‘Templates’ in the admin menu. You will see a table of existing templates. Click on ‘Edit’
 beside the status you wish to change. You may alter any of the fields as described in the section
 above, ‘Creating a template’. Additionally you can delete the template from this page.
-
 
 #### HTML content in templates
 
@@ -999,7 +1018,7 @@ what tags and attributes are allowed.
 
 <span class="admin-task__permissions">Permissions required: User must be marked as staff</span>
 
-When you log in to the Admin area and click Stats in the admin navigation,
+When you log in to the 'Admin' area and click 'Stats' in the admin navigation,
 you’ll see some top-level statistics, including the number of reports published
 on the site, the number of updates, and the number of alerts set up. This can
 be useful for a quick snapshot of activity.
@@ -1007,6 +1026,8 @@ be useful for a quick snapshot of activity.
 For a more detailed breakdown, visit the stats dashboard. This can be accessed
 by going to "Summary statistics" from the admin stats page, or by typing
 ‘/dashboard’ on the end of your FixMyStreet url.
+
+<img alt="Navigating to the 'Summary statistics' page will give you a more detailed view" src="/assets/img/pro-user-guide/Viewing statistics.png" class="admin-screenshot"/>
 
 From here, you can access statistics on:
 
@@ -1026,8 +1047,22 @@ You can also group the results by:
 - Device (this allows you to see how many people access your site via the website, via an
 Android device or via an iOS device).
 
-These statistics can be downloaded as a CSV document, suitable for use in a spreadsheet program
+When grouping by category, you may select to group them by their parent category (you'll see an option to select 'All [category]' at the top of the checkbox list under each parent category) or by selecting multiple categories at once via their individual checkboxes. 
+
+<img alt="Use the category dropdown to filter stats by category" src="/assets/img/pro-user-guide/Grouping stats by category.png" class="admin-screenshot"/>
+
+#### Exporting data
+
+Report statistics can be downloaded as a CSV document, suitable for use in a spreadsheet program
 such as Excel or your own reporting tools.
+
+You may refine the data included in an export using the fields at the top of the "Summary statistics" page, and then selecting "Export as CSV", choosing to export either the Reports themselves or their Updates. 
+
+<img alt="Data can be downloaded as a CSV document" src="/assets/img/pro-user-guide/Exporting statistics.png" class="admin-screenshot"/>
+
+In order to be performant, data is pre-generated overnight ready for export, so it’s worth noting the CSV export won’t include information from the current day.
+
+Exports can also be customised according to the requirements of individual clients - please contact us to discuss any non standard export requirements.
 
 #### Importing dashboard data automatically
 
@@ -1089,3 +1124,5 @@ plus Christmas Eve, you would set it up as the following screenshot:
     src="/assets/img/pro-user-guide/site-message-time-periods.png" class="admin-screenshot">
 
 </div>
+
+
