@@ -129,6 +129,8 @@ FixMyStreet::override_config {
             ggw_first_bin_discount => $ggw_first_bin_discount,
             ggw_cost_first => $ggw_cost_first,
             ggw_cost => $ggw_cost,
+            pro_rata_minimum => 0,
+            pro_rata_weekly => 106,
             cc_url => 'http://example.org/cc_submit',
             scpID => 1234,
             hmac_id => 1234,
@@ -657,7 +659,7 @@ FixMyStreet::override_config {
 
                     like $mech->text, qr/Garden waste collection4 bins/, 'correct bin total in summary';
                     like $mech->text, qr/Total.240\.00/, 'correct payment total in summary';
-                    like $mech->text, qr/Total to pay today.110\.00/, 'correct today-payment in summary';
+                    like $mech->text, qr/Total to pay today.108\.12/, 'correct today-payment in summary';
                     like $mech->text, qr/Your nameVerity Wright/, 'correct name in summary';
                     my $email = $user->email;
                     like $mech->text, qr/$email/, 'User email in summary';
@@ -666,7 +668,7 @@ FixMyStreet::override_config {
 
                     my ( $token, $modify_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-                    is $sent_params->{items}[0]{amount}, 11000, 'correct amount used';
+                    is $sent_params->{items}[0]{amount}, 10812, 'correct amount used';
                     check_extra_data_pre_confirm(
                         $modify_report,
                         type         => 'Amend',
@@ -692,7 +694,7 @@ FixMyStreet::override_config {
                         qr/You have amended your garden waste collection service/;
                     like $email_body, qr/Number of bin subscriptions: 4/;
                     like $email_body, qr/Bins to be delivered: 2/;
-                    like $email_body, qr/Total:.*?110\.00/;
+                    like $email_body, qr/Total:.*?108\.12/;
                 };
 
                 subtest 'remove bins' => sub {
@@ -853,7 +855,7 @@ FixMyStreet::override_config {
                     'correct bin total in summary';
                 like $mech->text, qr/Total£$new_annual_cost_human/,
                     'correct new annual payment total in summary';
-                like $mech->text, qr/Total to pay today.55\.00/,
+                like $mech->text, qr/Total to pay today.54\.06/,
                     'correct today-payment in summary';
                 like $mech->text, qr/Your nameVerity Wright/,
                     'correct name in summary';
@@ -886,6 +888,197 @@ FixMyStreet::override_config {
                 $access_mock->unmock_all;
             };
 
+        };
+    };
+
+    subtest 'mid-year pro-rata calculation' => sub {
+        set_fixed_time('2024-08-01T00:00:00'); # 6 months after start
+        $mech->delete_problems_for_body($body->id);
+
+        my $uprn = 10001;
+        my $contract_id = 'CONTRACT_456';
+
+        my ($new_sub_report) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'Garden Subscription - New',
+            {   category    => 'Garden Subscription',
+                external_id => "Agile-$contract_id",
+                user => $user,
+            },
+        );
+        $new_sub_report->set_extra_fields(
+            { name => 'uprn', value => $uprn } );
+        $new_sub_report->update;
+        FixMyStreet::Script::Reports::send();
+
+        $agile_mock->mock( 'CustomerSearch', sub { {
+            Customers => [
+                {
+                    CustomerExternalReference => 'CUSTOMER_456',
+                    Firstname => 'Test',
+                    Surname => 'User',
+                    Email => 'test@example.com',
+                    Mobile => '+4407111111111',
+                    CustomertStatus => 'ACTIVATED',
+                    ServiceContracts => [
+                        {
+                            EndDate => '01/02/2025 12:00', # 6 months remaining
+                            Reference => $contract_id,
+                            WasteContainerQuantity => 2,
+                            ServiceContractStatus => 'ACTIVE',
+                            UPRN => '10001',
+                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
+                        },
+                    ],
+                },
+            ],
+        } } );
+
+        $whitespace_mock->mock(
+            'GetSiteCollections',
+            sub {
+                [   {   SiteServiceID          => 1,
+                        ServiceItemDescription => 'Garden waste',
+                        ServiceItemName => 'GA-140',
+                        ServiceName          => 'Brown Wheelie Bin',
+                        NextCollectionDate   => '2024-08-07T00:00:00',
+                        SiteServiceValidFrom => '2024-02-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule => 'RND-1 Mon',
+                    }
+                ];
+            }
+        );
+
+        $mech->log_in_ok( $user->email );
+
+        # Expected pro-rata cost per bin: 25 weeks * 106 pence per week = 2650 pence
+        my $cost_per_bin = 25 * 106;
+
+        subtest 'credit card payment' => sub {
+            for my $test ({ bins => 1, total => 3 }, { bins => 2, total => 4 }) {
+                subtest "adding $test->{bins} bin(s)" => sub {
+                    $mech->get_ok("/waste/$uprn/garden_modify");
+                    $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+                    $mech->submit_form_ok({ with_fields => { has_reference => 'No' } });
+                    $mech->submit_form_ok({
+                        with_fields => {
+                            verifications_first_name => 'Test',
+                            verifications_last_name => 'User',
+                        }
+                    });
+
+                    $mech->submit_form_ok({ with_fields => { bins_wanted => $test->{total} } });
+
+                    my $expected = $cost_per_bin * $test->{bins};
+                    my $expected_human = sprintf('%.2f', $expected / 100);
+
+                    like $mech->text, qr/Garden waste collection$test->{total} bins/, 'correct bin total';
+                    like $mech->text, qr/Total to pay today.$expected_human/, 'correct pro-rata payment';
+
+                    $mech->waste_submit_check({ with_fields => { tandc => 1 } });
+                    is $sent_params->{items}[0]{amount}, $expected, 'correct payment amount';
+                };
+            }
+        };
+
+        subtest 'direct debit payment' => sub {
+            $mech->delete_problems_for_body($body->id);
+
+            my $dd_customer_id = 'DD_CUSTOMER_456';
+            my $dd_contract_id = 'DD_CONTRACT_456';
+
+            my ($dd_sub_report) = $mech->create_problems_for_body(
+                1,
+                $body->id,
+                'Garden Subscription - New',
+                {
+                    category    => 'Garden Subscription',
+                    title => 'Garden Subscription - New',
+                    external_id => "Agile-$dd_contract_id",
+                    user => $user,
+                },
+            );
+            $dd_sub_report->set_extra_fields(
+                { name => 'payment_method', value => 'direct_debit' },
+                { name => 'uprn', value => $uprn },
+            );
+            $dd_sub_report->set_extra_metadata(
+                direct_debit_customer_id => $dd_customer_id,
+                direct_debit_contract_id => $dd_contract_id,
+                payerReference => 'DD_PAYER_REF_456',
+            );
+            $dd_sub_report->update;
+            FixMyStreet::Script::Reports::send();
+
+            my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
+            $access_mock->mock(
+                get_contracts => sub { [ { Status => 'Active' } ] },
+            );
+
+            my ($one_off_args, $amend_plan_args);
+            $access_mock->mock(
+                one_off_payment => sub {
+                    my ( $self, $args ) = @_;
+                    $one_off_args = $args;
+                    return 'ONE_OFF_REF_123';
+                }
+            );
+            $access_mock->mock(
+                amend_plan => sub {
+                    my ( $self, $args ) = @_;
+                    $amend_plan_args = $args;
+                    return 1;
+                }
+            );
+
+            for my $test ({ bins => 1, total => 3 }, { bins => 2, total => 4 }) {
+                subtest "adding $test->{bins} bin(s)" => sub {
+                    $mech->get_ok("/waste/$uprn/garden_modify");
+                    $mech->submit_form_ok({ with_fields => { task => 'modify' } });
+                    $mech->submit_form_ok({ with_fields => { has_reference => 'No' } });
+                    $mech->submit_form_ok({
+                        with_fields => {
+                            verifications_first_name => 'Test',
+                            verifications_last_name => 'User',
+                        }
+                    });
+
+                    $mech->submit_form_ok({ with_fields => { bins_wanted => $test->{total} } });
+
+                    my $expected_pro_rata = $cost_per_bin * $test->{bins};
+                    my $expected_pro_rata_human = sprintf('%.2f', $expected_pro_rata / 100);
+
+                    like $mech->text, qr/Garden waste collection$test->{total} bins/, 'correct bin total';
+                    like $mech->text, qr/Total to pay today.$expected_pro_rata_human/, 'correct pro-rata payment';
+
+                    $mech->submit_form_ok({ with_fields => { tandc => 1 } });
+
+                    ok $one_off_args, 'one_off_payment was called';
+                    is $one_off_args->{payer_reference}, 'DD_PAYER_REF_456', 'correct payer reference';
+                    is $one_off_args->{amount}, $expected_pro_rata_human, 'correct ad-hoc payment amount';
+                    isa_ok $one_off_args->{orig_sub}, 'FixMyStreet::DB::Result::Problem', 'one_off_payment received original sub';
+                    is $one_off_args->{orig_sub}->id, $dd_sub_report->id, 'one_off_payment received correct original sub';
+
+                    ok $amend_plan_args, 'amend_plan was called';
+                    is $amend_plan_args->{payer_reference}, 'DD_PAYER_REF_456', 'amend_plan: correct payer reference';
+
+                    my $modify_report = FixMyStreet::DB->resultset('Problem')
+                        ->search({ title => 'Garden Subscription - Amend' })
+                        ->order_by('-id')->first;
+
+                    ok $modify_report, "Found the amend report";
+                    is $modify_report->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method';
+                    is $modify_report->get_extra_field_value('pro_rata'), $expected_pro_rata, 'correct pro_rata field';
+                    is $modify_report->state, 'confirmed', 'report confirmed';
+
+                    undef $one_off_args;
+                    undef $amend_plan_args;
+                };
+            }
+
+            $access_mock->unmock_all;
         };
     };
 
