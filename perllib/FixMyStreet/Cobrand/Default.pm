@@ -1116,6 +1116,15 @@ sub default_map_zoom { undef };
 
 sub users_can_hide { return 0; }
 
+=item show_other_category_in_summary
+
+Returns true if the "Other" category should be shown in report summary meta lines.
+Default is false (the "Other" category is hidden).
+
+=cut
+
+sub show_other_category_in_summary { return 0; }
+
 =item default_show_name
 
 Returns true if the show name checkbox should be ticked by default.
