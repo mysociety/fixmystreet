@@ -389,4 +389,25 @@ FixMyStreet::override_config {
     };
 };
 
+subtest 'Dashboard CSV export includes bulky items' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'sutton',
+        MAPIT_URL => 'http://mapit.uk/',
+    }, sub {
+        my $staff_user = $mech->create_user_ok('staff@sutton.gov.uk', name => 'Staff User', from_body => $body);
+
+        my ($report) = $mech->create_problems_for_body(1, $body->id, 'Bulky collection', {
+            areas => "2498", category => 'Bulky collection', cobrand => 'sutton',
+            user => $user, state => 'confirmed', cobrand_data => 'waste'
+        });
+        $report->set_extra_metadata('item_1' => 'Sofa', 'item_2' => 'Wardrobe', 'item_3' => 'Table');
+        $report->update;
+
+        $mech->log_in_ok( $staff_user->email );
+        $mech->get_ok('/dashboard?export=1');
+        $mech->content_contains('"Bulky Item 1","Bulky Item 2","Bulky Item 3","Bulky Item 4","Bulky Item 5"', "Bulky item columns added");
+        $mech->content_like(qr/Bulky collection.*?Sofa,Wardrobe,Table,,/, "Bulky items exported") or diag $mech->content;
+    };
+};
+
 done_testing();
