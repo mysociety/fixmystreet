@@ -11,8 +11,12 @@ Greenwich use their own Open311 endpoint, backing on to MS Dynamics.
 package FixMyStreet::Cobrand::Greenwich;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
+use Moo;
+
 use strict;
 use warnings;
+
+with 'FixMyStreet::Roles::Cobrand::OpenUSRN';
 
 =head2 Defaults
 
@@ -153,6 +157,27 @@ sub should_skip_sending_update {
     my $endpoint = $contact->endpoint || return 0;
     return 1 if $endpoint eq 'https://open311.royalgreenwich.gov.uk/';
     return 0;
+}
+
+=head2 open311_update_missing_data
+
+Lookup and include the USRN when sending reports, and also the UPRN
+if we already have it from the nearest address.
+
+=cut
+
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+    if (!$row->get_extra_field_value('usrn')) {
+        if (my $usrn = $self->lookup_site_code($row, 'usrn')) {
+            $row->update_extra_field({ name => 'usrn', value => $usrn });
+        }
+    }
+    if (!$row->get_extra_field_value('uprn')) {
+        if (my $uprn = $row->nearest_address_parts->{uprn}) {
+            $row->update_extra_field({ name => 'uprn', value => $uprn });
+        }
+    }
 }
 
 1;
