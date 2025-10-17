@@ -5,25 +5,10 @@ use FixMyStreet::Script::Reports;
 use FixMyStreet::TestMech;
 use JSON::MaybeXS;
 use List::MoreUtils qw(firstidx);
+use t::Mock::Bexley;
 
 FixMyStreet::App->log->disable('info', 'error');
 END { FixMyStreet::App->log->enable('info', 'error'); }
-
-my $addr_mock = Test::MockModule->new('BexleyAddresses');
-# We don't actually read from the file, so just put anything that is a valid path
-$addr_mock->mock( 'database_file', '/' );
-my $dbi_mock = Test::MockModule->new('DBI');
-$dbi_mock->mock( 'connect', sub {
-    my $dbh = Test::MockObject->new;
-    $dbh->mock( 'selectrow_hashref', sub { {
-        postcode => 'DA1 1AA',
-        has_parent => 0,
-        pao_start_number => 1,
-        street_descriptor => 'Test Street',
-        town_name => 'Bexley',
-    } } );
-    return $dbh;
-} );
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -65,8 +50,6 @@ create_contact(
     { code => 'fixmystreet_id', required => 1, automated => 'server' },
 );
 
-my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
-my $agile_mock = Test::MockModule->new('Integrations::Agile');
 my $pc180 = {
     SiteServiceID          => 1,
     ServiceItemDescription => 'Non-recyclable waste',
@@ -77,37 +60,6 @@ my $pc180 = {
     SiteServiceValidTo   => '0001-01-01T00:00:00',
     RoundSchedule => 'RND-1 Mon',
 };
-sub default_mocks {
-    # These are overridden for some tests
-    $whitespace_mock->mock('GetSiteCollections', sub {
-        [ $pc180 ];
-    });
-    $whitespace_mock->mock(
-        'GetCollectionByUprnAndDatePlus',
-        sub {
-            my ( $self, $property_id, $from_date ) = @_;
-            return [];
-        }
-    );
-    $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { });
-    $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { });
-    $whitespace_mock->mock( 'GetSiteInfo', sub { {
-        AccountSiteID   => 1,
-        AccountSiteUPRN => 10001,
-        Site            => {
-            SiteShortAddress => ', 1, THE AVENUE, DA1 3NP',
-            SiteLatitude     => 51.466707,
-            SiteLongitude    => 0.181108,
-        },
-    } });
-    $whitespace_mock->mock( 'GetAccountSiteID', sub {});
-    $whitespace_mock->mock( 'GetSiteWorksheets', sub {});
-    $whitespace_mock->mock( 'GetWorksheetDetailServiceItems', sub { });
-
-    $agile_mock->mock( 'CustomerSearch', sub { {} } );
-};
-
-default_mocks();
 
 use t::Mock::AccessPaySuiteBankChecker;
 my $bankchecker = t::Mock::AccessPaySuiteBankChecker->new;
@@ -242,7 +194,7 @@ FixMyStreet::override_config {
 
         foreach my $error_code (keys %error_codes) {
             subtest "Error code $error_code" => sub {
-                $agile_mock->mock( 'CustomerSearch', sub { {
+                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                     error => $error_code,
                     error_message => $error_codes{$error_code}
                 } } );
@@ -433,7 +385,7 @@ FixMyStreet::override_config {
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
-        $agile_mock->mock( 'CustomerSearch', sub { {
+        $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
@@ -456,7 +408,7 @@ FixMyStreet::override_config {
             ],
         } } );
 
-        $whitespace_mock->mock(
+        $bexley_mocks{whitespace}->mock(
             'GetSiteCollections',
             sub {
                 [   {   SiteServiceID          => 1,
@@ -915,7 +867,7 @@ FixMyStreet::override_config {
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
-        $agile_mock->mock( 'CustomerSearch', sub { {
+        $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_456',
@@ -938,7 +890,7 @@ FixMyStreet::override_config {
             ],
         } } );
 
-        $whitespace_mock->mock(
+        $bexley_mocks{whitespace}->mock(
             'GetSiteCollections',
             sub {
                 [   {   SiteServiceID          => 1,
@@ -1109,7 +1061,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok( $user->email );
 
         subtest 'with active contract elsewhere' => sub {
-            $whitespace_mock->mock('GetSiteCollections', sub {
+            $bexley_mocks{whitespace}->mock('GetSiteCollections', sub {
                 [ {
                     SiteServiceID          => 1,
                     ServiceItemDescription => 'Non-recyclable waste',
@@ -1121,7 +1073,7 @@ FixMyStreet::override_config {
                     RoundSchedule => 'RND-1 Mon',
                 } ];
             });
-            $agile_mock->mock( 'CustomerSearch', sub { {
+            $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
@@ -1146,8 +1098,8 @@ FixMyStreet::override_config {
         };
 
         subtest 'with no garden container in Whitespace' => sub {
-            $whitespace_mock->mock( 'GetSiteCollections', sub { [] } );
-            $agile_mock->mock( 'CustomerSearch', sub { {
+            $bexley_mocks{whitespace}->mock( 'GetSiteCollections', sub { [] } );
+            $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
@@ -1180,7 +1132,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'with garden container in Whitespace' => sub {
-            $whitespace_mock->mock(
+            $bexley_mocks{whitespace}->mock(
                 'GetSiteCollections',
                 sub {
                     [   {   SiteServiceID          => 1,
@@ -1198,7 +1150,7 @@ FixMyStreet::override_config {
             );
 
             subtest 'already renewed' => sub {
-                $agile_mock->mock( 'CustomerSearch', sub { {
+                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
@@ -1232,7 +1184,7 @@ FixMyStreet::override_config {
             };
 
             subtest 'within renewal window' => sub {
-                $agile_mock->mock( 'CustomerSearch', sub { {
+                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
@@ -1464,7 +1416,7 @@ FixMyStreet::override_config {
                 'only original subscription in DB';
 
             subtest 'too early' => sub {
-                $agile_mock->mock( 'CustomerSearch', sub { {
+                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
@@ -1497,7 +1449,7 @@ FixMyStreet::override_config {
 
             subtest 'subscription expired' => sub {
                 subtest 'within 14 days after expiry - is a renewal' => sub {
-                    $agile_mock->mock( 'CustomerSearch', sub { {
+                    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
@@ -1647,7 +1599,7 @@ FixMyStreet::override_config {
                 };
 
                 subtest 'Ended more than 14 days but less than 3 months ago - renewal becomes a new signup' => sub {
-                    $agile_mock->mock( 'CustomerSearch', sub { {
+                    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
@@ -1742,7 +1694,7 @@ FixMyStreet::override_config {
                 };
 
                 subtest 'Ended more than 3 months ago - no renewal option' => sub {
-                    $agile_mock->mock( 'CustomerSearch', sub { {
+                    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
@@ -1789,7 +1741,7 @@ FixMyStreet::override_config {
                     );
                     $new_sub_report->update;
 
-                    $agile_mock->mock( 'CustomerSearch', sub { {
+                    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
@@ -1823,7 +1775,7 @@ FixMyStreet::override_config {
 
     subtest 'Test bank details form validation' => sub {
         default_mocks();
-        $mech->get_ok('/waste/12345/garden');
+        $mech->get_ok('/waste/10001/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->submit_form_ok({ with_fields => {
@@ -1835,8 +1787,8 @@ FixMyStreet::override_config {
         }});
 
         $mech->content_like(qr/name="first_name"[^>]*value="Test"/);
-        $mech->content_like(qr/name="address1"[^>]*value="1 Test Street"/);
-        $mech->content_like(qr/name="post_code"[^>]*value="DA1 1AA"/);
+        $mech->content_like(qr/name="address2"[^>]*value="98a-99b The Court"/);
+        $mech->content_like(qr/name="post_code"[^>]*value="DA1 3NP"/);
 
         my %valid_fields = (
             name_title => 'Mr',
@@ -1844,7 +1796,7 @@ FixMyStreet::override_config {
             surname => 'McTest',
             address1 => '1 Test Street',
             address2 => 'Test Area',
-            post_code => 'DA1 1AA',
+            post_code => 'DA1 3NP',
             account_holder => 'Test McTest',
             account_number => '12345678',
             sort_code => '12-34-56'
@@ -1979,7 +1931,7 @@ FixMyStreet::override_config {
             return undef;
         });
 
-        $mech->get_ok('/waste/12345/garden');
+        $mech->get_ok('/waste/10001/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
@@ -2028,8 +1980,8 @@ FixMyStreet::override_config {
             accountHolderName => 'Test McTest',
             line1 => '1 Test Street',
             line2 => 'Test Area',
-            line3 => undef,
-            line4 => undef,
+            line3 => '1a-2b The Avenue',
+            line4 => 'Little Bexlington',
         }, 'Customer parameters are correct';
 
         # Check contract creation parameters
@@ -2098,7 +2050,7 @@ FixMyStreet::override_config {
         # Log in as staff user, as they are allowed to submit the form with an empty email
         $mech->log_in_ok($staff_user->email);
 
-        $mech->get_ok('/waste/12345/garden');
+        $mech->get_ok('/waste/10001/garden');
         $mech->submit_form_ok({ form_number => 1 });
         $mech->submit_form_ok({ with_fields => { existing => 'no' } });
         $mech->content_like(qr#Total to pay now: £<span[^>]*>0.00#, "initial cost set to zero");
@@ -2179,7 +2131,7 @@ FixMyStreet::override_config {
                     },
                 );
 
-                $agile_mock->mock( 'CustomerSearch', sub { {
+                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
@@ -2237,7 +2189,7 @@ FixMyStreet::override_config {
         set_fixed_time('2024-02-01T00:00:00');
         my $tomorrow = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' )->format_datetime( DateTime->now->add(days => 1) );
 
-        $agile_mock->mock( 'CustomerSearch', sub { {
+        $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
@@ -2339,7 +2291,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'with Whitespace data' => sub {
-            $whitespace_mock->mock(
+            $bexley_mocks{whitespace}->mock(
                 'GetSiteCollections',
                 sub {
                     [   {   SiteServiceID          => 1,
@@ -2438,7 +2390,7 @@ FixMyStreet::override_config {
             my $uprn = 10001;
             my $contract_id = 'CONTRACT_123';
 
-            $agile_mock->mock( 'CustomerSearch', sub { {
+            $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
@@ -2555,7 +2507,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
 
         # Set up the mock for Whitespace to return garden waste service
-        $whitespace_mock->mock(
+        $bexley_mocks{whitespace}->mock(
             'GetSiteCollections',
             sub {
                 [   {   SiteServiceID          => 1,
@@ -2572,7 +2524,7 @@ FixMyStreet::override_config {
         );
 
         # Set up the mock for Agile to return customer data
-        $agile_mock->mock( 'CustomerSearch', sub {
+        $bexley_mocks{agile}->mock( 'CustomerSearch', sub {
             my ($self, $uprn) = @_;
             # Make sure the UPRN is what's expected, otherwise return empty
             return {} unless $uprn eq '10001';
@@ -2689,7 +2641,7 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
 
         # Mock Agile data to show it's due for renewal
-        $agile_mock->mock( 'CustomerSearch', sub { {
+        $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
@@ -2712,7 +2664,7 @@ FixMyStreet::override_config {
         } } );
 
         # Set up Whitespace data for the garden waste service
-        $whitespace_mock->mock(
+        $bexley_mocks{whitespace}->mock(
             'GetSiteCollections',
             sub {
                 [
@@ -2893,7 +2845,7 @@ FixMyStreet::override_config {
             };
 
             subtest 'Agile data, but no Whitespace data' => sub {
-                $agile_mock->mock( 'CustomerSearch', sub { {
+                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
@@ -2934,7 +2886,7 @@ FixMyStreet::override_config {
             subtest 'Whitespace data, but no Agile data' => sub {
                 default_mocks();
 
-                $whitespace_mock->mock(
+                $bexley_mocks{whitespace}->mock(
                     'GetSiteCollections',
                     sub {
                         [   {   SiteServiceID          => 1,
@@ -2973,7 +2925,7 @@ FixMyStreet::override_config {
             };
 
             subtest 'Agile and Whitespace data' => sub {
-                $agile_mock->mock( 'CustomerSearch', sub { {
+                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
@@ -3062,7 +3014,7 @@ FixMyStreet::override_config {
                 direct_debit_customer_id => 'DD_CUSTOMER_123' );
             $dd_report->update;
 
-            $agile_mock->mock( 'CustomerSearch', sub { {
+            $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
@@ -3086,7 +3038,7 @@ FixMyStreet::override_config {
                 ],
             } } );
 
-            $whitespace_mock->mock(
+            $bexley_mocks{whitespace}->mock(
                 'GetSiteCollections',
                 sub {
                     [   {   SiteServiceID          => 1,
@@ -3195,7 +3147,7 @@ FixMyStreet::override_config {
         my $parent_site_id = 999;
 
         default_mocks();
-        $whitespace_mock->mock( 'GetSiteInfo', sub {
+        $bexley_mocks{whitespace}->mock( 'GetSiteInfo', sub {
             my ($self, $uprn) = @_;
             return {
                 AccountSiteUPRN => $child_uprn,
@@ -3203,7 +3155,7 @@ FixMyStreet::override_config {
             } if $uprn == $child_uprn;
             return { AccountSiteUPRN => $parent_uprn, Site => {} }; # Parent has no parent
         });
-        $whitespace_mock->mock( 'GetAccountSiteID', sub {
+        $bexley_mocks{whitespace}->mock( 'GetAccountSiteID', sub {
             my ($self, $site_id) = @_;
             return { AccountSiteUprn => $parent_uprn } if $site_id == $parent_site_id;
             return {};
@@ -3211,7 +3163,7 @@ FixMyStreet::override_config {
 
         # Scenario 1: Parent property exists, but child has its own services (kerbside)
         subtest 'Kerbside with parent UPRN' => sub {
-            $whitespace_mock->mock( 'GetSiteCollections', sub {
+            $bexley_mocks{whitespace}->mock( 'GetSiteCollections', sub {
                 my ($self, $uprn) = @_;
                 # Child has its own service
                 return [
@@ -3239,7 +3191,7 @@ FixMyStreet::override_config {
 
         # Scenario 2: Parent property exists, child has NO services (communal)
         subtest 'Communal with parent UPRN' => sub {
-            $whitespace_mock->mock( 'GetSiteCollections', sub {
+            $bexley_mocks{whitespace}->mock( 'GetSiteCollections', sub {
                 my ($self, $uprn) = @_;
                 return [] if $uprn == $child_uprn; # Child has no services
                 # Parent has services
@@ -3278,7 +3230,7 @@ $accesspaysuite_mock->mock('archive_contract' => sub
         $archived_contract_id = $contract_id;
         cancel_plan => 'CANCEL_REF_123'
     });
-$agile_mock->mock( 'CustomerSearch', sub { {
+$bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
     Customers => [
         {
             CustomerExternalReference => 'DD_CUSTOMER_123',

@@ -6,25 +6,12 @@ use Test::MockObject;
 use Test::MockTime 'set_fixed_time';
 use FixMyStreet::Cobrand::Bexley;
 use FixMyStreet::TestMech;
-
-FixMyStreet::App->log->disable('info');
-END { FixMyStreet::App->log->enable('info'); }
+use t::Mock::Bexley;
 
 set_fixed_time('2024-03-31T01:00:00Z'); # March 31st, 02:00 BST
 
-my $addr_mock = Test::MockModule->new('BexleyAddresses');
-# We don't actually read from the file, so just put anything that is a valid path
-$addr_mock->mock( 'database_file', '/' );
-my $dbi_mock = Test::MockModule->new('DBI');
-$dbi_mock->mock( 'connect', sub {
-    my $dbh = Test::MockObject->new;
-    $dbh->mock( 'selectrow_hashref', sub { {} } );
-    return $dbh;
-} );
-
-my $agile_mock = Test::MockModule->new('Integrations::Agile');
 sub agile_mock_populated {
-    $agile_mock->mock( 'CustomerSearch', sub { {
+    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
         Customers => [
             {
                 CustomerExternalReference => 'CUSTOMER_123',
@@ -44,7 +31,7 @@ sub agile_mock_populated {
     } } );
 }
 sub agile_mock_empty {
-    $agile_mock->mock( 'CustomerSearch', sub { {} } );
+    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {} } );
 }
 agile_mock_empty();
 
@@ -703,14 +690,7 @@ FixMyStreet::override_config {
         agile => { bexley => { url => 'test' } },
     },
 }, sub {
-    my $whitespace_mock = Test::MockModule->new('Integrations::Whitespace');
-    $whitespace_mock->mock(
-        'GetSiteInfo',
-        sub {
-            my ( $self, $uprn ) = @_;
-            return _site_info()->{$uprn};
-        }
-    );
+    my $whitespace_mock = $bexley_mocks{whitespace};
     $whitespace_mock->mock(
         'GetSiteCollections',
         sub {
@@ -718,10 +698,6 @@ FixMyStreet::override_config {
             return _site_collections()->{$uprn};
         }
     );
-    $whitespace_mock->mock( 'GetSiteWorksheets', sub{ [] } );
-    $whitespace_mock->mock( 'GetCollectionByUprnAndDatePlus', sub{ [] } );
-    $whitespace_mock->mock( 'GetInCabLogsByUsrn', sub { [] } );
-    $whitespace_mock->mock( 'GetInCabLogsByUprn', sub { [] } );
 
     my $new_string = 'Request a new or replacement';
     my $removal_string = 'Request removal of a';
@@ -1228,32 +1204,6 @@ FixMyStreet::override_config {
         };
     };
 };
-
-sub _site_info {
-    return {
-        10001 => {
-            AccountSiteUPRN => 10001,
-            Site            => {
-                SiteLatitude     => 51.466707,
-                SiteLongitude    => 0.181108,
-            },
-        },
-        10002 => {
-            AccountSiteUPRN => 10002,
-            Site            => {
-                SiteLatitude     => 51.466707,
-                SiteLongitude    => 0.181108,
-            },
-        },
-        10003 => {
-            AccountSiteUPRN => 10003,
-            Site            => {
-                SiteLatitude     => 51.466707,
-                SiteLongitude    => 0.181108,
-            },
-        },
-    };
-}
 
 sub _site_collections {
     my %defaults = (

@@ -67,7 +67,7 @@ has_field customer_reference => (
     required_when => { has_reference => 'Yes' },
     tags    => {
         initial_hidden => 1,
-        hint => 'E.g. GWIT-CUST-FEB0-00000000000000',
+        hint => 'For example, GWIT-CUST-FEB0-00000000000000',
     },
     order => 2,
 );
