@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use FixMyStreet::Script::Reports;
 use t::Mock::Bexley;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -137,6 +138,46 @@ FixMyStreet::override_config {
         is $report->detail, "Behind the blue gate\n\nPermanent\n\nPhysical impairment/Elderly resident\n\nFlat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP";
     };
 
+    subtest 'Request assisted collection emails' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+
+        my @emails = $mech->get_email;
+        my ($customer_email) = grep { $_->header('to') eq 'gg@example.com' } @emails;
+        is $customer_email->header('subject'), 'Thank you for your request for an assisted collection', "Correct customer email subject";
+        my ($bexley_email) = grep { $_->header('to') eq '"London Borough of Bexley" <assisted@example.org>' } @emails;
+        is $bexley_email->header('subject'), 'New Request assisted collection - Reference number: ' . $report->id, , "Correct council email subject";
+        my $customer_text = $mech->get_text_body_from_email($customer_email);
+        my $customer_html = $mech->get_html_body_from_email($customer_email);
+        my $council_text  = $mech->get_text_body_from_email($bexley_email);
+        my $council_html  = $mech->get_html_body_from_email($bexley_email);
+        subtest 'Both council and public emails contain request data' => sub {
+            for my $email ($customer_text, $customer_html, $council_text, $council_html) {
+                like $email, qr#Why do you need an extra collection\?: Physical impairment/Elderly resident#, "Question and answer present";
+                like $email, qr/Where are the bins located\?: Behind the blue gate/, "Question and answer present";
+                like $email, qr/Is this request for permanent or temporary help\?: Permanent/, "Question and answer present";
+                like $email, qr/Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP/, "Address present";
+            };
+        };
+        subtest 'Customer emails have correct data' => sub {
+            for my $email ($customer_text, $customer_html) {
+                like $email, qr/Thank you for your request for an assisted collection/;
+                like $email, qr/Your request has been sent to the Environmental Services Team for approval/;
+                like $email, qr/If you need to contact us about this enquiry, please quote your reference number/;
+                unlike $email, qr/Staff notes/, "Staff notes field not included";
+            }
+        };
+        subtest 'Council emails contain reporters information' => sub {
+            for my $email ($council_text, $council_html) {
+                    like $email, qr/Gary Green/, 'Name included';
+                    like $email, qr/gg\@example.com/, 'Email address included';
+                    like $email, qr#Staff notes: N/A - public request#, 'Staff notes populated for a public made request';
+                }
+        };
+        like $council_html, qr/for back office only/, "Back office notice included in council email";
+    };
+
     subtest 'Request assisted collection staff field' => sub {
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/10006/enquiry?category=Request+assisted+collection');
@@ -159,6 +200,19 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ form_number => 3 });
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         unlike $report->detail, qr/Stairs down to pavement/, "Staff Notes data not added to report";
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my ($customer_email) = grep { $_->header('to') eq 'gg@example.com' } @emails;
+        my ($bexley_email) = grep { $_->header('to') eq '"London Borough of Bexley" <assisted@example.org>' } @emails;
+        for my $email ($mech->get_html_body_from_email($customer_email), $mech->get_text_body_from_email($customer_email)) {
+            unlike $email, qr/Staff Notes/, "Customer email has no Staff Notes field";
+            unlike $email, qr/Stairs down to pavement/, "Customer email has no Staff Notes data";
+        };
+        for my $email ($mech->get_html_body_from_email($bexley_email), $mech->get_text_body_from_email($bexley_email)) {
+            like $email, qr/Staff notes/, "Council email has Staff Notes field";
+            like $email, qr/Stairs down to pavement/, "Council email has Staff Notes data";;
+        };
     };
 
     subtest 'Remove assisted collection flow, logged out' => sub {
