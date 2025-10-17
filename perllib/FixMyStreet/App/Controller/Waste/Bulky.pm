@@ -87,6 +87,7 @@ sub item_list : Private {
         maxlength => 100,
         tags => { hint => 'Describe the item to help our crew pick up the right thing' },
     };
+    $notes_field->{maxlength} = 255 if $c->cobrand->moniker eq 'merton';
     if (!$c->cobrand->bulky_item_notes_field_mandatory) {
         $notes_field->{label} .= ' (optional)';
     }
