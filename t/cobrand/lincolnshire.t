@@ -2,7 +2,10 @@ use FixMyStreet::TestMech;
 use Open311::GetServiceRequests;
 use FixMyStreet::DB;
 use Open311;
+use Open311::PostServiceRequestUpdates;
 use FixMyStreet::Script::CSVExport;
+use FixMyStreet::Script::Reports;
+use CGI::Simple;
 use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
@@ -17,6 +20,7 @@ my $params = {
     cobrand => 'lincolnshire',
 };
 my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params);
+$mech->create_contact_ok(body => $body, category => 'Other', email => 'Other');
 my $lincs_user = $mech->create_user_ok('lincs@example.org', name => 'Lincolnshire User', from_body => $body);
 my $superuser = $mech->create_user_ok('super@example.org', name => 'Super User', is_superuser => 1, email_verified => 1);
 my $superuser_email = $superuser->email;
@@ -166,6 +170,7 @@ subtest 'Dashboard CSV export includes extra staff columns' => sub {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'lincolnshire',
     MAPIT_URL => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1 },
     STAGING_SITE => 1,
 }, sub {
     subtest "fetching problems from Open311 on staging doesn't include private user information" => sub {
@@ -220,6 +225,48 @@ FixMyStreet::override_config {
         is $p->user->name, "Super User", "Super user's name not changed";
         is $p->user->email, $superuser_email, 'correct email associated with problem';
     };
+
+    subtest "a staff report includes extra text" => sub {
+        FixMyStreet::Script::Reports::send(); # Sends the CSV one created above
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('attribute[title]'), '[LCC Update by CSV Staff] CSV Export Test Issue Test 1 for ' . $body->id;
+    };
+
+    subtest "a staff update includes the extra info" => sub {
+        my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>';
+
+        my $o = Open311->new(
+            fixmystreet_body => $body,
+        );
+        Open311->_inject_response('servicerequestupdates.xml', $test_res);
+
+        my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title', { external_id => 1 });
+        my $c = FixMyStreet::DB->resultset('Comment')->create({
+            problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
+            problem_state => 'fixed - council', state => 'confirmed', mark_fixed => 0,
+            confirmed => DateTime->now(),
+        });
+
+        my $id = $o->post_service_request_update($c);
+        is $id, 248, 'correct update ID returned';
+        my $cgi = CGI::Simple->new($o->test_req_used->content);
+        unlike $cgi->param('description'), qr/LCC Update/;
+
+        $c = FixMyStreet::DB->resultset('Comment')->create({
+            problem => $p, user => $lincs_user, anonymous => 'f', text => 'Update text',
+            problem_state => 'fixed - user', state => 'confirmed', confirmed => DateTime->now(),
+        });
+        $c->discard_changes;
+
+        Open311->_inject_response('servicerequestupdates.xml', $test_res);
+        $id = $o->post_service_request_update($c);
+        is $id, 248, 'correct update ID returned';
+        $cgi = CGI::Simple->new($o->test_req_used->content);
+        like $cgi->param('description'), qr/^\[LCC Update by Lincolnshire User\] /;
+        $p->comments->delete;
+        $p->delete;
+    };
 };
 
 sub xml_reports {
@@ -239,6 +286,7 @@ sub xml_report {
         <contact_name>$data->{name}</contact_name>
         <contact_email>$data->{email}</contact_email>
         <status>open</status>
+        <service_code>CODE</service_code>
         <service_name>Street light not working</service_name>
         <description>Street light not working</description>
         <requested_datetime>DATETIME</requested_datetime>
