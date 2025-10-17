@@ -1229,13 +1229,15 @@ sub waste_munge_report_form_fields {
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
 
-    my $property = $self->{c}->stash->{property};
+    my $c = $self->{c};
+    my $property = $c->stash->{property};
     my $address = $property->{address};
     $data->{title} = $data->{category};
 
     my $detail;
     foreach (sort grep { /^extra_/ } keys %$data) {
         my $extra = $data->{$_};
+        next if $_ eq 'extra_assisted_staff_notes';
         if (ref $extra eq 'ARRAY') {
             my $value = join('; ', @$extra);
             $detail .= "$value\n\n";
@@ -1245,6 +1247,10 @@ sub waste_munge_enquiry_data {
     }
     $detail .= $address;
     $data->{detail} = $detail;
+
+    if (!$c->stash->{is_staff} && $data->{category} eq 'Request assisted collection') {
+        $data->{extra_assisted_staff_notes} = 'N/A - public request';
+    }
 
     $data->{extra_complaint_type} = $property->{is_communal} ? 'WFEE' : 'WRBDEL';
 }
