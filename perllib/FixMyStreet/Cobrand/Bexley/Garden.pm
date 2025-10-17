@@ -534,4 +534,15 @@ sub waste_staff_choose_payment_method { 1 }
 
 sub waste_show_garden_modify { 1 }
 
+sub waste_display_payment_method {
+    my ($self, $method) = @_;
+
+    my $display = {
+        direct_debit => _('Direct Debit'),
+        credit_card => _('Credit Card'),
+    };
+
+    return $display->{$method};
+}
+
 1;
