@@ -184,6 +184,23 @@ sub waste_munge_enquiry_form_pages {
     }
 }
 
+sub waste_format_assistance_results {
+    my ($self, $report, $template_name) = @_;
+
+    my @question_names = ('reason_for_collection', 'bin_location', 'permanent_or_temporary_help');
+    if ($template_name =~ /^submit\.(txt|html)$/) {
+        push (@question_names, 'assisted_staff_notes');
+    };
+    my $answers = '';
+    for my $field (@{$report->get_extra_fields}) {
+        if (grep { $_ eq $field->{name} } @question_names) {
+            $answers = $answers . $field->{description} . ': ' . ($field->{value} || 'No notes left') . "\n\n";
+        };
+    };
+
+    return $answers;
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
