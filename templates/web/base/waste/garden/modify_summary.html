@@ -16,7 +16,7 @@ step1 = 'alter';
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Payment method</dt>
-        <dd class="govuk-summary-list__value">[% c.cobrand.waste_display_payment_method(data.payment_method) %]</dd>
+        <dd class="govuk-summary-list__value">[% PROCESS 'waste/garden/_payment_method.html' payment_method=data.payment_method %]</dd>
     </div>
   [% IF data.cost_now_admin %]
     <div class="govuk-summary-list__row">
