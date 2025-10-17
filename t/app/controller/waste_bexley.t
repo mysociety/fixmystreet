@@ -36,6 +36,8 @@ my $contact = $mech->create_contact_ok(
     extra => { type => 'waste' },
     group => ['Waste'],
 );
+my $staff = $mech->create_user_ok('staff@example.com', name => 'Test User', email_verified => 1, from_body => $body);
+
 $contact->set_extra_fields(
     {
         code => "uprn",
@@ -1293,15 +1295,26 @@ FixMyStreet::override_config {
                 )
             ],
         },
+        {
+            code => "assisted_staff_notes",
+            required => "false",
+            datatype => "textarea",
+            description => "Staff notes",
+        },
     );
     $assisted_collection->update;
 
     subtest 'Request assisted collection form' => sub {
-        my @fields = ('reason_for_collection', 'bin_location', 'permanent_or_temporary_help');
+        my @fields = ('reason_for_collection', 'bin_location', 'permanent_or_temporary_help', 'assisted_staff_notes');
         $mech->get_ok('/waste/10006');
         $mech->content_contains('enquiry?category=Request+assisted+collection', "Page contains link to assisted collection form");
         $mech->content_contains('Get help with putting your bins out', "Page contains label for link to assisted collection form");
         $mech->get_ok('/waste/10006/enquiry?category=Request+assisted+collection');
+        my $staff_field = pop(@fields);
+        for my $field (@fields) {
+            $mech->content_contains($field, "$field is present");
+        }
+        $mech->content_lacks($staff_field, "$staff_field is not present");
         $mech->submit_form_ok( {
             with_fields => {
                 extra_reason_for_collection => 'Physical impairment/Elderly resident',
@@ -1319,9 +1332,45 @@ FixMyStreet::override_config {
             $mech->content_contains('Permanent Or Temporary Help');
             $mech->content_contains('Reason For Collection');
             $mech->content_contains('Bin Location');
+            $mech->content_lacks('Assisted Staff Notes');
+        };
+
         $mech->submit_form_ok({form_number => 3});
     };
-};
+
+    subtest 'Request assisted collection report' => sub {
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        my $id = $report->id;
+        $mech->content_contains('Your enquiry has been submitted');
+        $mech->content_contains('A copy has been sent to your email address, gg@example.com.');
+        $mech->content_contains("Your reference number is <strong>$id</strong>.");
+        is $report->title, 'Request assisted collection';
+        is $report->detail, "Behind the blue gate\n\nPermanent\n\nPhysical impairment/Elderly resident\n\nFlat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP";
+    };
+
+    subtest 'Request assisted collection staff field' => sub {
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/waste/10006/enquiry?category=Request+assisted+collection');
+        $mech->submit_form_ok( {
+            with_fields => {
+                extra_reason_for_collection => 'Physical impairment/Elderly resident',
+                extra_bin_location => "Behind the blue gate",
+                extra_permanent_or_temporary_help => "Permanent",
+                extra_assisted_staff_notes => "Stairs down to pavement"
+            }
+        });
+        $mech->submit_form_ok( {
+            with_fields => {
+                name => 'Glenda Green',
+                email => 'gg@example.com',
+            }
+        });
+        $mech->content_contains('Assisted Staff Notes', "Summary data has Staff Notes key");
+        $mech->content_contains('Stairs down to pavement', "Summary data has Staff Notes contents");
+        $mech->submit_form_ok({ form_number => 3 });
+        my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        unlike $report->detail, qr/Stairs down to pavement/, "Staff Notes data not added to report";
+    };
 };
 
 # Create a response template for missed collection contact
