@@ -1,0 +1,24 @@
+[% PROCESS 'waste/header.html' %]
+
+<h1 class="govuk-panel__title">
+  Verification failed
+</h1>
+
+<p>
+  Please ensure that the details you have entered match those associated with your existing Garden Waste subscription and try again.
+</p>
+
+<form method="post">
+  <input type="hidden" name="goto" value="customer_reference">
+  <input type="submit" class="govuk-button" value="Try again">
+</form>
+
+<p>
+  If you are still having trouble, please contact us by <a href="https://www.bexley.gov.uk/services/rubbish-and-recycling/rubbish-recycling-enquiry-form">making a rubbish and recycling enquiry</a>.
+  <br>
+  <br>
+</p>
+
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
+
+[% INCLUDE footer.html %]

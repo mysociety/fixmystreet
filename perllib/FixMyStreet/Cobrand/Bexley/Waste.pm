@@ -521,8 +521,13 @@ sub bin_services_for_address {
     # This call removes Whitespace service if there is no contract in Agile.
     $property->{garden_current_subscription}
         = $self->garden_current_subscription(\@site_services_filtered);
-    $property->{has_garden_subscription} = 1
-        if $property->{garden_current_subscription};
+
+    if ( $property->{garden_current_subscription} ) {
+        $property->{has_garden_subscription} = 1;
+
+        $property->{garden_renew_as_new} = $self->garden_renew_as_new(
+            $property->{garden_current_subscription}{end_date} );
+    }
 
     # To begin with we assume the property is eligible to sign up to GGW...
     $property->{garden_signup_eligible} = 1;

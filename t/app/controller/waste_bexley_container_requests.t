@@ -1,14 +1,14 @@
 use utf8;
 
-use FixMyStreet::Cobrand::Bexley;
-use FixMyStreet::TestMech;
 use Test::Deep;
 use Test::MockModule;
 use Test::MockObject;
 use Test::MockTime 'set_fixed_time';
+use FixMyStreet::Cobrand::Bexley;
+use FixMyStreet::TestMech;
 use t::Mock::Bexley;
 
-set_fixed_time('2024-03-31T01:00:00'); # March 31st, 02:00 BST
+set_fixed_time('2024-03-31T01:00:00Z'); # March 31st, 02:00 BST
 
 sub agile_mock_populated {
     $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
