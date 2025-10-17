@@ -17,6 +17,7 @@ use strict;
 use warnings;
 use Time::Piece;
 use DateTime;
+use List::MoreUtils qw(firstidx);
 use Moo;
 with 'FixMyStreet::Roles::Open311Multi',
      'FixMyStreet::Cobrand::Bexley::Garden',
@@ -167,6 +168,19 @@ sub munge_report_new_category_list {
                 }
             }
         }
+    }
+}
+
+sub waste_munge_enquiry_form_pages {
+    my ($self, $pages, $fields) = @_;
+    my $c = $self->{c};
+    my $category = $c->get_param('category');
+
+    if ($category eq 'Request assisted collection' && !$c->stash->{is_staff}) {
+        my $splice = firstidx { $_ eq 'extra_assisted_staff_notes' } @$fields;
+        splice(@$fields, $splice, 2);
+        $splice = firstidx { $_ eq 'extra_assisted_staff_notes' } @{$pages->[1]{fields}};
+        splice(@{$pages->[1]{fields}}, $splice, 1);
     }
 }
 
