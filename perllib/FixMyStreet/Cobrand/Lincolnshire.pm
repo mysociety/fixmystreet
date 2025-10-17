@@ -253,6 +253,27 @@ sub open311_get_user {
     return $user;
 }
 
+=head2 open311_munge_update_params
+
+We want to include staff information in the description
+when the update is made by a staff member.
+
+=cut
+
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    my $contributed_by = $comment->get_extra_metadata('contributed_by');
+    my $is_body_user = $comment->get_extra_metadata('is_body_user');
+    my $user_id = $comment->user_id;
+    my $staff = $contributed_by || ($is_body_user ? $user_id : undef);
+    if ($staff) {
+        my $user = FixMyStreet::DB->resultset("User")->find($staff);
+        my $name = $user->name;
+        $params->{description} = "[LCC Update by $name] " . $params->{description};
+    }
+}
+
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 

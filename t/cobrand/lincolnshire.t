@@ -3,7 +3,9 @@ use Open311::GetServiceRequests;
 use Open311::GetServiceRequestUpdates;
 use FixMyStreet::DB;
 use Open311;
+use Open311::PostServiceRequestUpdates;
 use FixMyStreet::Script::CSVExport;
+use CGI::Simple;
 use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
@@ -348,6 +350,41 @@ FixMyStreet::override_config {
         is $p->name, "Super User", "Existing user's name set on problem";
         is $p->user->name, "Super User", "Super user's name not changed";
         is $p->user->email, $superuser_email, 'correct email associated with problem';
+    };
+
+    subtest "a staff update includes the extra info" => sub {
+        my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>';
+
+        my $o = Open311->new(
+            fixmystreet_body => $body,
+        );
+        Open311->_inject_response('servicerequestupdates.xml', $test_res);
+
+        my ($p) = $mech->create_problems_for_body(1, $body->id, 'Title', { external_id => 1 });
+        my $c = FixMyStreet::DB->resultset('Comment')->create({
+            problem => $p, user => $p->user, anonymous => 't', text => 'Update text',
+            problem_state => 'fixed - council', state => 'confirmed', mark_fixed => 0,
+            confirmed => DateTime->now(),
+        });
+
+        my $id = $o->post_service_request_update($c);
+        is $id, 248, 'correct update ID returned';
+        my $cgi = CGI::Simple->new($o->test_req_used->content);
+        unlike $cgi->param('description'), qr/LCC Update/;
+
+        $c = FixMyStreet::DB->resultset('Comment')->create({
+            problem => $p, user => $lincs_user, anonymous => 'f', text => 'Update text',
+            problem_state => 'fixed - user', state => 'confirmed', confirmed => DateTime->now(),
+        });
+        $c->discard_changes;
+
+        Open311->_inject_response('servicerequestupdates.xml', $test_res);
+        $id = $o->post_service_request_update($c);
+        is $id, 248, 'correct update ID returned';
+        $cgi = CGI::Simple->new($o->test_req_used->content);
+        like $cgi->param('description'), qr/^\[LCC Update by Lincolnshire User\] /;
+        $p->comments->delete;
+        $p->delete;
     };
 };
 
