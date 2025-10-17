@@ -297,9 +297,7 @@ sub bin_services_for_address {
             requests_open => $open_requests,
             request_containers => $containers,
             request_max => $request_max,
-            service_task_id => $servicetask->{Id},
-            service_task_name => $servicetask->{TaskTypeName},
-            service_task_type_id => $servicetask->{TaskTypeId},
+            service_task_ids => $servicetask->{ids},
             # FD-3942 - comment this out so Frequency not shown in front end
             $self->moniker eq 'bromley' ? () : (schedule => $schedules->{description}),
             last => $schedules->{last},
@@ -407,7 +405,7 @@ sub _get_current_service_task {
 
     my $service_name = $self->service_name_override($service);
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my ($current, $last_date);
+    my ($current, $last_date, @schedules, %taskids);
     foreach my $task ( @$servicetasks ) {
         my $schedules = Integrations::Echo::force_arrayref($task->{ServiceTaskSchedules}, 'ServiceTaskSchedule');
         foreach my $schedule ( @$schedules ) {
@@ -416,8 +414,21 @@ sub _get_current_service_task {
             next if $last_date && $end && $end < $last_date;
             next if $end && $end < $today && $service_name !~ /Garden Waste/i;
             $last_date = $end;
+            push @schedules, $schedule;
+            $taskids{$task->{Id}} = 1;
             $current = $task;
         }
+    }
+    if ($current) {
+        # It is possible for properties to have multiple service tasks with
+        # valid schedules in them. We need all the task IDs to look up future
+        # collections for the calendar, and we need all the schedules that
+        # passed the checks in the above loop, but otherwise we assume the task
+        # we found is good to use and we add the other schedules/IDs to that.
+        if (scalar keys %taskids > 1) {
+            $current->{ServiceTaskSchedules} = { ServiceTaskSchedule => \@schedules };
+        }
+        $current->{ids} = [ sort keys %taskids ];
     }
     return $current;
 }
@@ -580,9 +591,11 @@ sub bin_future_collections {
 
     my $services = $self->{c}->stash->{service_data};
     my %names;
-    foreach (@$services) {
-        next unless $_->{service_task_id};
-        push @{$names{$_->{service_task_id}}}, $_->{service_name};
+    foreach my $service (@$services) {
+        next unless $service->{service_task_ids};
+        foreach (@{$service->{service_task_ids}}) {
+            push @{$names{$_}}, $service->{service_name};
+        }
     }
 
     my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );

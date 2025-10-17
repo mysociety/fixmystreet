@@ -15,6 +15,7 @@ my $mech = FixMyStreet::TestMech->new;
 my $bin_data = decode_json(path(__FILE__)->sibling('waste_kingston_4443082.json')->slurp_utf8);
 my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_kingston_4471550.json')->slurp_utf8);
 my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_4499005.json')->slurp_utf8);
+my $communal_multi_task_data = decode_json(path(__FILE__)->sibling('waste_kingston_2666182.json')->slurp_utf8);
 
 my $params = {
     send_method => 'Open311',
@@ -460,6 +461,26 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('"container-22" value="1"');
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+    };
+
+    subtest 'Okay with a property with multiple one-schedule service tasks' => sub {
+        $e->mock('GetServiceUnitsForObject', sub { $communal_multi_task_data });
+        $e->mock('GetServiceTaskInstances', sub {
+            # Check both task IDs are passed in to get them all
+            is $_[3], '22988289';
+            is $_[4], '24130503';
+            return [];
+        });
+        set_fixed_time('2025-10-16T16:46:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_like(qr/Next collection<\/dt>\s*<dd[^>]*>\s*Friday, 17th October/);
+        $mech->content_like(qr/Last collection<\/dt>\s*<dd[^>]*>\s*Friday, 10th October/);
+        set_fixed_time('2025-10-08T16:46:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_like(qr/Next collection<\/dt>\s*<dd[^>]*>\s*Friday, 10th October/);
+        $mech->content_like(qr/Last collection<\/dt>\s*<dd[^>]*>\s*Friday, 3rd October/);
+        $mech->get_ok('/waste/12345/calendar.ics');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 

@@ -46,7 +46,6 @@ my $example_properties = {
             request_containers => [ 6001, 6002 ],
             request_max => 2,
             enquiry_open_events => { },
-            service_task_id => 4001,
             schedule => 'every Monday', # TODO!
             last => {
                 date => DateTime->now->subtract(days=>2), # TODO!
@@ -69,7 +68,6 @@ my $example_properties = {
             request_containers => [ 6003 ],
             request_max => 2,
             enquiry_open_events => { },
-            service_task_id => 4002,
             schedule => 'every Wednesday', # TODO!
             last => {
                 date => DateTime->now->subtract(days=>2), # TODO!
