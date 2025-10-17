@@ -470,6 +470,11 @@ sub body_disallows_state_change {
     my ($problem) = @_;
     my $c = $self->{c};
 
+
+    if ($problem->to_body_named('Bristol')) {
+        return !($c->user_exists && $c->user->id == $problem->user->id);
+    }
+
     my ($disallowed, $body) = $self->per_body_config('update_states_disallowed', $problem);
     $disallowed //= 0;
     return $disallowed;

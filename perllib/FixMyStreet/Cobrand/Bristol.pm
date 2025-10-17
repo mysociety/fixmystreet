@@ -97,6 +97,18 @@ sub pin_colour {
 
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
 
+=head2 body_disallows_state_change
+
+Determines whether state of a report can be updated, based on user and current
+report state. Original reporter only.
+
+=cut
+
+sub body_disallows_state_change {
+    my ( $self, $problem ) = @_;
+    return !($self->{c}->user_exists && $self->{c}->user->id == $problem->user->id);
+}
+
 =head2 category_change_force_resend
 
 If a report was sent to a backend, when the category
