@@ -12,10 +12,16 @@
     detail = report.title.remove('Request removal of ');
   ELSIF is_request_enquiry;
     key = 'Bins requested';
+  ELSIF is_assisted_request;
+    key = 'Request for an assisted collection';
   END;
 %]
 <h2 style="[% h2_style %]">[% key %]:</h2>
-[% detail | html_para_email(secondary_p_style) %]
+[% IF is_assisted_request %]
+  [% cobrand.waste_format_assistance_results(report, template.name) | html_para_email(secondary_p_style) %]
+[% ELSE %]
+  [% detail | html_para_email(secondary_p_style) %]
+[% END %]
 <br>
 <h2 style="[% h2_style %]">Address:</h2>
 [% address | html_para_email(secondary_p_style) %]
