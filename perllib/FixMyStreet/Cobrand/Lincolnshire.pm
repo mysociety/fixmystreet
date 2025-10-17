@@ -260,8 +260,10 @@ when the update is made by a staff member.
 
 =cut
 
-sub open311_munge_update_params {
-    my ($self, $params, $comment, $body) = @_;
+around open311_munge_update_params => sub {
+    my ($orig, $self, $params, $comment, $body) = @_;
+
+    $self->$orig($params, $comment, $body);
 
     my $contributed_by = $comment->get_extra_metadata('contributed_by');
     my $is_body_user = $comment->get_extra_metadata('is_body_user');
@@ -272,7 +274,7 @@ sub open311_munge_update_params {
         my $name = $user->name;
         $params->{description} = "[LCC Update by $name] " . $params->{description};
     }
-}
+};
 
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
