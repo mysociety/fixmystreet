@@ -1241,6 +1241,87 @@ FixMyStreet::override_config {
             like $email_submit, qr{<td><p>UPRN</p></td> <td><p>$_->{id}</p></td>}
         };
     }
+
+    my $assisted_collection = $mech->create_contact_ok(
+    body => $body,
+    category => 'Request assisted collection',
+    email => 'assisted@example.org',
+    extra => { type => 'waste' },
+    group => ['Waste'],
+    );
+
+    $assisted_collection->set_extra_fields(
+        {
+            code => "uprn",
+            required => "false",
+            automated => "hidden_field",
+            description => "UPRN reference",
+        },
+        {
+            code => "fixmystreet_id",
+            required => "true",
+            automated => "server_set",
+            description => "external system ID",
+        },
+        {
+            code => "reason_for_collection",
+            required => "true",
+            datatype => "singlevaluelist",
+            description => "Why do you need an extra collection?",
+            values => [
+                map { { key => $_, name => $_ } } (
+                    "Property is unsuitable for collections from the front boundary",
+                    "Physical impairment/Elderly resident"
+                )
+            ],
+        },
+        {
+            code => "bin_location",
+            required => "true",
+            datatype => "text",
+            description => "Where are the bins located?",
+        },
+        {
+            code => "permanent_or_temporary_help",
+            required => "true",
+            datatype => "singlevaluelist",
+            description => "Is this request for permanent or temporary help?",
+            values => [
+                map { { key => $_, name => $_ } } (
+                    'Permanent',
+                    'Temporary'
+                )
+            ],
+        },
+    );
+    $assisted_collection->update;
+
+    subtest 'Request assisted collection form' => sub {
+        my @fields = ('reason_for_collection', 'bin_location', 'permanent_or_temporary_help');
+        $mech->get_ok('/waste/10006');
+        $mech->content_contains('enquiry?category=Request+assisted+collection', "Page contains link to assisted collection form");
+        $mech->content_contains('Get help with putting your bins out', "Page contains label for link to assisted collection form");
+        $mech->get_ok('/waste/10006/enquiry?category=Request+assisted+collection');
+        $mech->submit_form_ok( {
+            with_fields => {
+                extra_reason_for_collection => 'Physical impairment/Elderly resident',
+                extra_bin_location => "Behind the blue gate",
+                extra_permanent_or_temporary_help => "Permanent",
+            }
+        }, 'Submit request details page');
+        $mech->submit_form_ok( {
+            with_fields => {
+                name => 'Gary Green',
+                email => 'gg@example.com',
+            }
+        }, 'Submit about you page');
+        subtest 'Summary page contains questions but not Staff Notes field' => sub {
+            $mech->content_contains('Permanent Or Temporary Help');
+            $mech->content_contains('Reason For Collection');
+            $mech->content_contains('Bin Location');
+        $mech->submit_form_ok({form_number => 3});
+    };
+};
 };
 
 # Create a response template for missed collection contact
