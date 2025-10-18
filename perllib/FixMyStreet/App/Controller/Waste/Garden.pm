@@ -225,6 +225,33 @@ sub process_garden_cancellation : Private {
     }
     $c->forward('setup_garden_sub_params', [ $data, undef ]);
 
+    # Check for existing recent cancellation to prevent duplicates from concurrent requests
+    # This is Bexley-specific as Bexley auto-confirms cancellations
+    if ($c->cobrand->moniker eq 'bexley') {
+        my $uprn = $c->stash->{property}{uprn};
+        my @recent_cancels = $c->cobrand->problems->search({
+            category => 'Cancel Garden Subscription',
+            state => 'confirmed',  # Bexley auto-confirms cancellations
+            created => { '>=' => \"current_timestamp-'1 hour'::interval" },
+        })->all;
+
+        my $existing_cancel;
+        for my $cancel (@recent_cancels) {
+            if (($cancel->get_extra_field_value('uprn') || '') eq $uprn) {
+                $existing_cancel = $cancel;
+                last;
+            }
+        }
+
+        if ($existing_cancel) {
+            # Already cancelled recently - show confirmation without creating duplicate
+            $c->stash->{report} = $existing_cancel;
+            $c->stash->{template} = 'waste/garden/cancel_confirmation.html';
+            $c->stash->{property_id} = $c->stash->{property}{id};
+            $c->detach;
+        }
+    }
+
     $c->forward('/waste/add_report', [ $data, 1 ]) or return;
 
     if ( FixMyStreet->staging_flag('skip_waste_payment') ) {
