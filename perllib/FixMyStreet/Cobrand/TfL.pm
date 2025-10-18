@@ -412,6 +412,7 @@ sub dashboard_export_problems_add_columns {
         closure_email_at => "Closure email at",
         reassigned_at => "Reassigned at",
         reassigned_by => "Reassigned by",
+        photo => "Photo",
     );
     $csv->splice_csv_column('fixed', action_scheduled => 'Action scheduled');
 
@@ -447,6 +448,7 @@ sub dashboard_export_problems_add_columns {
                 delivered_to => join(',', @$delivered_to),
                 closure_email_at => $closure_email_at,
                 bike_number => $bike_number,
+                photo => $report->{photo} ? 1 : 0,
             };
             foreach (@{$csv->_extra_field($report)}) {
                 next if $_->{name} eq 'safety_critical';
@@ -494,6 +496,7 @@ sub dashboard_export_problems_add_columns {
             reassigned_at => $reassigned_at,
             reassigned_by => $reassigned_by,
             bike_number => $bike_number,
+            photo => $report->photo ? 1 : 0,
         };
         foreach (@{$csv->_extra_field($report)}) {
             next if $_->{name} eq 'safety_critical';
