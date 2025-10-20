@@ -332,6 +332,7 @@ sub process_garden_modification : Private {
                 $report->update_extra_field({ name => 'payment_method', value => 'csc' });
                 $report->update;
             }
+            $c->stash->{title} = 'Subscription changes complete';
             $c->forward('/waste/confirm_subscription', [ undef ]);
         }
     }
