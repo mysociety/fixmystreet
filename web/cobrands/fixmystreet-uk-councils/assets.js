@@ -153,15 +153,7 @@ fixmystreet.assets.banes.curo_found = function(layer) {
         fixmystreet.message_controller.road_found(layer);
         return;
     }
-
     fixmystreet.message_controller.road_not_found(layer);
-
-    var domain = 'curo-group.co.uk';
-    var email = 'estates@' + domain;
-    var email_string = $(layer.fixmystreet.no_asset_msg_id).find('.js-roads-asset');
-    if (email_string) {
-        email_string.html('<a href="mailto:' + email + '">' + email + '</a>');
-    }
 };
 fixmystreet.assets.banes.curo_not_found = function(layer) {
     fixmystreet.message_controller.road_found(layer);
