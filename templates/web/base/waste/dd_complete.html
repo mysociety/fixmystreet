@@ -1,7 +1,5 @@
 [% INCLUDE header.html %]
 
-<h1 class="govuk-heading-xl">Pay</h1>
-
 <div class="govuk-panel govuk-panel--confirmation">
 [% IF error %]
     <h1 class="govuk-panel__title">
@@ -17,21 +15,24 @@
         [% title %]
     </h1>
     <div class="govuk-panel__body">
-        <p>[% message %]
-          [% IF report.user.email %]
-            a copy has been sent to your email address, [% report.user.email %].
-          [% END %]
-        </p>
-
-        <p>
-        We’ll send you confirmation details once your Direct Debit has been successfully set up and the first payment taken, after which we’ll start your Garden Waste Subscription.
-        </p>
-
         <p>
           [% INCLUDE 'waste/_report_ids.html' %]
         </p>
     </div>
 [% END %]
 </div>
+
+<p>
+    [% message %]
+  [% IF report.user.email %]
+    A copy has been sent to your email address, [% report.user.email %].
+  [% END %]
+</p>
+
+<p>
+    We’ll send you confirmation details once your Direct Debit has been successfully set up and the first payment taken, after which we’ll start your Garden Waste Subscription.
+</p>
+
+<p><a class="govuk-button" href="/waste/[% property_id %]">Show upcoming bin days</a></p>
 
 [% INCLUDE footer.html %]
