@@ -17,4 +17,5 @@ $(function() {
         }
     };
     $('#subscribe_details input[name="payment_method"]').on('change', window.garden_waste_bin_cost_new);
+    $('#renew input[name="payment_method"]').on('change', window.garden_waste_bin_cost_new);
 });
