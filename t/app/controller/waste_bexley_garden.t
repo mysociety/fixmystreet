@@ -1796,7 +1796,7 @@ FixMyStreet::override_config {
         }, 'Contract parameters are correct';
 
         $mech->content_contains('Your Direct Debit has been set up successfully');
-        $mech->content_contains('Direct Debit mandate');
+        $mech->content_contains('Direct Debit Mandate');
 
         $mech->back;
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1884,7 +1884,7 @@ FixMyStreet::override_config {
         is $customer_params->{email}, 'gardenwaste@' . $body->get_cobrand_handler->admin_user_domain, 'Default email was used';
 
         $mech->content_contains('Your Direct Debit has been set up successfully');
-        $mech->content_contains('Direct Debit mandate');
+        $mech->content_contains('Direct Debit Mandate');
     };
 
     $mech->delete_problems_for_body($body->id);
@@ -2552,7 +2552,7 @@ FixMyStreet::override_config {
 
         # Check that we got a successful setup page
         $mech->content_contains('Your Direct Debit has been set up successfully');
-        $mech->content_contains('Direct Debit mandate');
+        $mech->content_contains('Direct Debit Mandate');
 
         # Check customer params
         is $customer_params->{accountHolderName}, 'Test McTest', 'Correct account holder name';

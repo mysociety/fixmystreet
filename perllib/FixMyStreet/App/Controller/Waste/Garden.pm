@@ -546,7 +546,7 @@ sub direct_debit_internal : Private {
 
     $c->forward('populate_dd_details');
     $c->cobrand->call_hook('waste_setup_direct_debit');
-    $c->stash->{title} = "Direct Debit mandate";
+    $c->stash->{title} = "Direct Debit Mandate successful";
     $c->stash->{message} = "Your Direct Debit has been set up successfully.";
     $c->stash->{template} = 'waste/dd_complete.html';
 
