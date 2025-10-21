@@ -1,9 +1,33 @@
 [% INCLUDE waste/header.html %]
 
-<h1 class="govuk-heading-xl">Subscription cancelled</h1>
+<div class="govuk-panel govuk-panel--confirmation">
+    <h1 class="govuk-panel__title">
+        Garden subscription cancelled successfully
+    </h1>
+    <div class="govuk-panel__body">
+        <p>
+          [% INCLUDE 'waste/_report_ids.html' %]
+        </p>
+    </div>
+</div>
 
 <p>
-Your subscription has been cancelled. We will attempt to remove your Garden Waste bins within the next 2 weeks.
+Your garden waste collection service subscription has been cancelled, and
+[% IF cobrand.moniker == 'bexley' %]
+your bin/s will be removed within the next 10 working days.
+[% ELSE %]
+we will attempt to remove your garden waste bins within the next 2 weeks.
+[% END %]
+</p>
+
+[% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
+<p>
+Confirmation has been sent to your email address, [% report.user.email %].
+</p>
+[% END %]
+
+<p>
+Please ensure that any bins are empty and at the front edge of your property, ready for removal.
 </p>
 
 [% IF payment_method == 'direct_debit' %]
@@ -12,6 +36,6 @@ It may take a few days for your bank to confirm the cancellation of your direct 
 </p>
 [% END %]
 
-<p><a class="govuk-button" href="/waste/[% property.id %]">Show upcoming bin days</a></p>
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
 
 [% INCLUDE footer.html %]
