@@ -10,6 +10,7 @@ package FixMyStreet::Roles::Cobrand::KingstonSutton;
 
 use Moo::Role;
 use Hash::Util qw(lock_hash);
+use List::Util qw(max);
 
 use FixMyStreet::App::Form::Waste::Garden::Sacks;
 use FixMyStreet::App::Form::Waste::Garden::Sacks::Renew;
@@ -195,6 +196,13 @@ sub dashboard_export_problems_add_columns {
 
     $csv->modify_csv_header( Detail => 'Address' );
 
+    my $config = $self->wasteworks_config || {};
+    my $max_items = max(
+        $config->{small_items_per_collection_max} || 0,
+        $config->{items_per_collection_max} || 0,
+        5
+    );
+
     $csv->add_csv_columns(
         uprn => 'UPRN',
         user_email => 'User Email',
@@ -209,6 +217,7 @@ sub dashboard_export_problems_add_columns {
         quantity => 'Subscription quantity',
         # Escalations
         $self->moniker eq 'sutton' ? (original_ref => 'Original reference') : (),
+        map { "item_" . $_ => "Item $_" } (1..$max_items),
     );
 
     $csv->objects_attrs({
@@ -230,7 +239,7 @@ sub dashboard_export_problems_add_columns {
         my $detail = $csv->dbi ? $report->{detail} : $report->detail;
         $detail =~ s/^.*?\n\n//; # Remove waste category
 
-        return {
+        my $data = {
             detail => $detail,
             uprn => $fields{uprn},
             $csv->dbi ? (
@@ -251,6 +260,11 @@ sub dashboard_export_problems_add_columns {
             quantity => $fields{Paid_Container_Quantity} || $fields{Subscription_Details_Quantity},
             original_ref => $fields{original_ref},
         };
+
+        my $extra = $csv->_extra_metadata($report);
+        %$data = (%$data, map {$_ => $extra->{$_} || ''} grep { $_ =~ /^(item_\d+)$/ } keys %$extra);
+
+        return $data;
     });
 }
 

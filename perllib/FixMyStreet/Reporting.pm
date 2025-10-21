@@ -492,7 +492,7 @@ sub filter_premade_csv {
     my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
     open my $fh, "<:encoding(utf8)", $self->premade_csv_filename;
     my $arr = $csv->getline($fh);
-    $csv->print($handle, [ @$arr[2..@$arr-$last_column-1] ]);
+    $csv->print($handle, [ @$arr[$first_column..@$arr-$last_column-1] ]);
     my $row = {};
     $csv->bind_columns(\@{$row}{@$arr});
     while ($csv->getline($fh)) {

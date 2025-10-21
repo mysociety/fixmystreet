@@ -670,6 +670,7 @@ FixMyStreet::override_config {
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_lacks('Request an additional food waste collection');
+        $mech->content_contains('An additional collection request has been made');
         $mech->get_ok('/waste/12345/report?additional=1');
         $mech->content_lacks('Food waste');
         $e->mock('GetEventsForObject', sub { [] });

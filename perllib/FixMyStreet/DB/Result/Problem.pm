@@ -776,15 +776,17 @@ sub meta_line {
     # Call a hook on the cobrand to check if the problem should be treated as anonymous
     my $anonymous = $cobrand->call_hook('is_problem_anonymous');
 
+    my $show_category = $category ne _('Other') || $cobrand->show_other_category_in_summary;
+
     if ( $problem->anonymous || $anonymous ) {
-        if ( $problem->service_display && $category && $category ne _('Other') ) {
+        if ( $problem->service_display && $category && $show_category) {
             $meta =
             sprintf( _('Reported via %s in the %s category anonymously at %s'),
                 $problem->service_display, $category, $date_time );
         } elsif ( $problem->service_display ) {
             $meta = sprintf( _('Reported via %s anonymously at %s'),
                 $problem->service_display, $date_time );
-        } elsif ( $category and $category ne _('Other') ) {
+        } elsif ( $category and $show_category) {
             $meta = sprintf( _('Reported in the %s category anonymously at %s'),
                 $category, $date_time );
         } else {
@@ -799,7 +801,7 @@ sub meta_line {
             $problem_name = sprintf('%s (%s)', $problem->name, $problem->user->name );
         }
 
-        if ( $problem->service_display && $category && $category ne _('Other') ) {
+        if ( $problem->service_display && $category && $show_category) {
             $meta = sprintf(
                 _('Reported via %s in the %s category by %s at %s'),
                 $problem->service_display, $category,
@@ -808,7 +810,7 @@ sub meta_line {
         } elsif ( $problem->service_display ) {
             $meta = sprintf( _('Reported via %s by %s at %s'),
                 $problem->service_display, $problem_name, $date_time );
-        } elsif ( $category and $category ne _('Other') ) {
+        } elsif ( $category and $show_category) {
             $meta = sprintf( _('Reported in the %s category by %s at %s'),
                 $category, $problem_name, $date_time );
         } else {
