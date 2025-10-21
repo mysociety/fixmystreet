@@ -1062,7 +1062,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_cancel');
         $mech->submit_form_ok({ with_fields => { confirm => 1 } });
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Return to property details#, "contains link to bin page");
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->order_by('-id')->first;
 
