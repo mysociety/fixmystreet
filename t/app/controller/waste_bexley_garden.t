@@ -2088,8 +2088,7 @@ FixMyStreet::override_config {
                     },
                 }
             );
-            like $mech->text, qr/Your subscription has been cancelled/,
-                'form submitted OK';
+            $mech->content_contains('subscription has been cancelled');
 
             my $report
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
@@ -2159,8 +2158,7 @@ FixMyStreet::override_config {
                     },
                 }
             );
-            like $mech->text, qr/Your subscription has been cancelled/,
-                'form submitted OK';
+            $mech->content_contains('subscription has been cancelled');
 
             my $report
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
@@ -2280,8 +2278,7 @@ FixMyStreet::override_config {
                     },
                 }
             );
-            like $mech->text, qr/Your subscription has been cancelled/,
-                'form submitted OK';
+            $mech->content_contains('subscription has been cancelled');
 
             my $report
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
@@ -2420,7 +2417,7 @@ FixMyStreet::override_config {
         );
 
         # Verify success message
-        like $mech->text, qr/Your subscription has been cancelled/, 'Cancellation success message shown';
+        $mech->content_contains('subscription has been cancelled');
 
         # Get the cancellation report
         my $cancel_report = FixMyStreet::DB->resultset('Problem')->search(
