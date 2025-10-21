@@ -643,7 +643,6 @@ FixMyStreet::override_config {
             is $comment->get_extra_metadata('fms_extra_amend_items'), '83::6';
             is $comment->get_extra_metadata('fms_extra_amend_notes'), '::';
             is $comment->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
-            is $comment->get_extra_metadata('fms_extra_amend_images'), '';
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);
@@ -1007,7 +1006,6 @@ FixMyStreet::override_config {
             is $update->get_extra_metadata('fms_extra_amend_items'), '83::6::84::83', 'Correct items';
             is $update->get_extra_metadata('fms_extra_amend_notes'), '::::::';
             is $update->get_extra_metadata('fms_extra_amend_location'), 'in the middle of the drive';
-            is $update->get_extra_metadata('fms_extra_amend_images'), '';
 
             $mech->content_contains('Bulky collection booking confirmed');
             $mech->content_contains('please use the reference:&nbsp;' . $report->id);

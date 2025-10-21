@@ -553,6 +553,12 @@ sub waste_garden_renew_form_setup {
     }
 }
 
+sub open311_config_updates {
+    my ($self, $params) = @_;
+    $params->{multi_photos} = 1;
+    $params->{upload_files_for_updates} = 1;
+}
+
 =item * When a garden subscription is sent to Echo, we include payment details
 
 =cut
@@ -729,8 +735,8 @@ sub waste_amend_amendment_update {
         fms_extra_amend_items => $p->get_extra_field_value('TEM_-_Bulky_Collection_Item'),
         fms_extra_amend_notes => $p->get_extra_field_value('TEM_-_Bulky_Collection_Description'),
         fms_extra_amend_location => $p->get_extra_field_value('Exact_Location'),
-        fms_extra_amend_images => $p->photo,
     );
+    $update->photo($p->photo);
 }
 
 sub bulky_can_refund { 0 }
