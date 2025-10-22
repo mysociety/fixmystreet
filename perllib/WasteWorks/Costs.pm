@@ -36,10 +36,7 @@ sub _build_renewal_type {
     return 'current';
 }
 
-sub _build_has_pro_rata_modify {
-    my ($self) = @_;
-    return $self->cobrand->moniker eq 'bromley' || $self->cobrand->moniker eq 'bexley';
-}
+sub _build_has_pro_rata_modify { $_[0]->cobrand->moniker eq 'bromley' }
 
 # Now the code that uses the data to work out costs
 
