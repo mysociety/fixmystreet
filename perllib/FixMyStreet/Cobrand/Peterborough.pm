@@ -239,24 +239,12 @@ sub get_body_sender {
         # neither of those so just send email for records
         my $emails = $self->feature('open311_email');
         if ( $emails->{flytipping} ) {
-            my $contact = $self->SUPER::get_body_sender($body, $problem)->{contact};
-            $problem->set_extra_metadata('flytipping_email' => $emails->{flytipping});
             $self->{cache_flytipping_email} = 1; # This is available in post_report_sent
-            return { method => 'Email', contact => $contact};
+            return { method => 'Blackhole' };
         }
     }
 
     return $self->SUPER::get_body_sender($body, $problem);
-}
-
-sub munge_sendreport_params {
-    my ($self, $row, $h, $params) = @_;
-
-    if ( $row->get_extra_metadata('flytipping_email') ) {
-        $params->{To} = [ [
-            $row->get_extra_metadata('flytipping_email'), $self->council_name
-        ] ];
-    }
 }
 
 sub _witnessed_general_flytipping {
