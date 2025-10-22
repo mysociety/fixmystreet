@@ -394,6 +394,7 @@ FixMyStreet::override_config {
 
 
     $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });
+    set_fixed_time('2022-10-12T19:00:00Z');
     subtest 'No requesting a red stripe bag' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('#E83651');
@@ -454,6 +455,7 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
+    set_fixed_time('2022-09-09T19:00:00Z');
     subtest 'Assisted collection display for staff' => sub {
         $mech->log_in_ok($staff->email);
         $mech->get_ok('/waste/12345');

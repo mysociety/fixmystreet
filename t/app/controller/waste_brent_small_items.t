@@ -97,7 +97,6 @@ FixMyStreet::override_config {
         ServiceTasks => { ServiceTask => {
             Id => 402,
             ServiceTaskSchedules => { ServiceTaskSchedule => {
-                ScheduleDescription => 'every other Wednesday',
                 Allocation => {
                     RoundName => 'Friday ',
                     RoundGroupName => 'Delta 04 Week 2',

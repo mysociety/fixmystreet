@@ -95,7 +95,6 @@ sub garden_waste_no_bins {
             Id => 400,
             TaskTypeId => 4389,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
@@ -149,7 +148,6 @@ sub garden_waste_only_refuse_sacks {
             Id => 400,
             TaskTypeId => 4395,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
@@ -207,7 +205,6 @@ sub _garden_waste_service_units {
                 EndDate => { DateTime => '2021-03-30T00:00:00Z' },
             } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-03-30T00:00:00Z' },
                 EndDate => { DateTime => '2021-03-30T00:00:00Z' },
                 NextInstance => {
