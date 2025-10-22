@@ -221,7 +221,6 @@ sub GetServiceUnitsForObject {
         ServiceTasks => { ServiceTask => {
             Id => '401',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
-                ScheduleDescription => 'every Wednesday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
@@ -242,7 +241,6 @@ sub GetServiceUnitsForObject {
         ServiceTasks => { ServiceTask => {
             Id => '402',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
-                ScheduleDescription => 'every other Wednesday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
@@ -263,7 +261,6 @@ sub GetServiceUnitsForObject {
         ServiceTasks => { ServiceTask => {
             Id => '403',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
-                ScheduleDescription => 'every other Wednesday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
@@ -284,7 +281,6 @@ sub GetServiceUnitsForObject {
         ServiceTasks => { ServiceTask => {
             Id => '404',
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                 LastInstance => {
@@ -292,7 +288,6 @@ sub GetServiceUnitsForObject {
                     CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                 },
             }, {
-                ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
@@ -306,7 +301,6 @@ sub GetServiceUnitsForObject {
                 },
             }, {
                 # Some bad data, future schedule, with past last instance
-                ScheduleDescription => 'every other Tuesday',
                 StartDate => { DateTime => '2050-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2051-01-01T00:00:00Z' },
                 LastInstance => {
@@ -340,7 +334,6 @@ sub GetServiceUnitsForObject {
                     CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                 },
             }, {
-                ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2021-03-30T00:00:00Z' },
                 NextInstance => {

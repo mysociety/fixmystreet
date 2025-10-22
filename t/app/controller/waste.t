@@ -454,7 +454,6 @@ FixMyStreet::override_config {
                     ServiceTasks => { ServiceTask => {
                         Id => 403,
                         ServiceTaskSchedules => { ServiceTaskSchedule => {
-                            ScheduleDescription => 'every other Wednesday',
                             StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                             EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                             NextInstance => {
@@ -475,7 +474,6 @@ FixMyStreet::override_config {
                     ServiceTasks => { ServiceTask => {
                         Id => 404,
                         ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                            ScheduleDescription => 'every other Monday',
                             StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                             EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                             LastInstance => {
@@ -483,7 +481,6 @@ FixMyStreet::override_config {
                                 CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                             },
                         }, {
-                            ScheduleDescription => 'every other Monday',
                             StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                             EndDate => { DateTime => '2020-05-01T00:00:00Z' },
                             NextInstance => {
@@ -521,7 +518,6 @@ FixMyStreet::override_config {
                                 CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                             },
                         }, {
-                            ScheduleDescription => 'every other Monday',
                             StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                             EndDate => { DateTime => '2020-05-21T00:00:00Z' },
                             NextInstance => {
@@ -559,7 +555,6 @@ FixMyStreet::override_config {
                     ServiceTasks => { ServiceTask => {
                         Id => 403,
                         ServiceTaskSchedules => { ServiceTaskSchedule => {
-                            ScheduleDescription => 'every other Wednesday',
                             StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                             EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                             NextInstance => {
@@ -580,7 +575,6 @@ FixMyStreet::override_config {
                     ServiceTasks => { ServiceTask => {
                         Id => 404,
                         ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                            ScheduleDescription => 'every other Monday',
                             StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                             EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                             LastInstance => {
@@ -588,7 +582,6 @@ FixMyStreet::override_config {
                                 CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                             },
                         }, {
-                            ScheduleDescription => 'every other Monday',
                             StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                             EndDate => { DateTime => '2020-05-01T00:00:00Z' },
                             NextInstance => {
@@ -619,7 +612,6 @@ FixMyStreet::override_config {
                             } ] },
                         } ] },
                         ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                            ScheduleDescription => 'every other Monday',
                             StartDate => { DateTime => '2021-06-14T23:00:00Z' },
                             EndDate => { DateTime => '2021-07-14T23:00:00Z' },
                             NextInstance => {
@@ -692,7 +684,6 @@ my $REFUSE_SERVICE = {
     ServiceName => 'Refuse collection',
     ServiceTasks => { ServiceTask => {
         Id => 401,
-        ScheduleDescription => 'every Wednesday',
         ServiceTaskSchedules => { ServiceTaskSchedule => {
             StartDate => { DateTime => '2020-01-01T00:00:00Z' },
             EndDate => { DateTime => '2050-01-01T00:00:00Z' },
@@ -717,7 +708,6 @@ sub garden_waste_no_bins {
         ServiceTasks => { ServiceTask => {
             Id => 404,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2019-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2020-01-01T00:00:00Z' },
                 LastInstance => {
@@ -725,7 +715,6 @@ sub garden_waste_no_bins {
                     CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                 },
             }, {
-                ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
@@ -777,7 +766,6 @@ sub _garden_waste_service_units {
                     CurrentScheduledDate => { DateTime => '2019-12-31T00:00:00Z' },
                 },
             }, {
-                ScheduleDescription => 'every other Monday',
                 StartDate => { DateTime => '2020-03-30T00:00:00Z' },
                 EndDate => { DateTime => '2021-03-30T00:00:00Z' },
                 NextInstance => {
@@ -877,7 +865,6 @@ FixMyStreet::override_config {
                 ServiceName => 'Garden waste collection',
                 ServiceTasks => { ServiceTask => [ {
                     Id => 405,
-                    ScheduleDescription => 'every other Monday',
                     Data => { ExtensibleDatum => [ {
                         DatatypeName => 'LBB - GW Container',
                         ChildData => { ExtensibleDatum => {
@@ -908,7 +895,6 @@ FixMyStreet::override_config {
                 },
                 {
                     Id => 405,
-                    ScheduleDescription => 'every other Monday',
                     Data => { ExtensibleDatum => [ {
                         DatatypeName => 'LBB - GW Container',
                         ChildData => { ExtensibleDatum => {
@@ -967,7 +953,6 @@ FixMyStreet::override_config {
                 ServiceTasks => { ServiceTask => {
                     Id => 402,
                     ServiceTaskSchedules => { ServiceTaskSchedule => {
-                        ScheduleDescription => 'every other Wednesday',
                         StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                         EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                         NextInstance => {
