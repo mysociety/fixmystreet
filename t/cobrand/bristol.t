@@ -380,6 +380,38 @@ FixMyStreet::override_config {
         $p->discard_changes;
         is $p->get_extra_field_value('usrn'), '9876543', 'Valid USRN added to extra field, ignored USRN skipped';
     };
+
+    subtest "stored ignored USRN is replaced with valid USRN" => sub {
+        FixMyStreet::DB->resultset("Config")->find_or_create({
+            key => 'bristol_ignored_usrns',
+            value => ['7654321']
+        });
+
+        my $mock = Test::MockModule->new('FixMyStreet::Cobrand::UKCouncils');
+        $mock->mock('_fetch_features', sub {
+            return [] if $_[1]->{typename} eq 'flytippingparks';
+            [
+                {
+                    "type" => "Feature",
+                    "geometry" => {"type" => "MultiLineString", "coordinates" => [[[1,1],[2,2]]]},
+                    "properties" => {USRN => "9876543"}
+                }
+            ]
+        });
+
+        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $graffiti->category,
+            extra => { _fields => [
+                { name => 'usrn', value => '7654321' },
+            ] },
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        is $p->get_extra_field_value('usrn'), '9876543', 'Stored ignored USRN replaced with valid USRN';
+    };
 };
 
 FixMyStreet::override_config {
