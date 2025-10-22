@@ -196,7 +196,7 @@ with 'FixMyStreet::App::Form::Waste::GardenTandC';
 
 has_page done => (
     title => 'Subscription amended',
-    template => 'waste/garden/amended.html',
+    template => 'waste/garden/subscribe_confirm.html',
 );
 
 # Buttons
