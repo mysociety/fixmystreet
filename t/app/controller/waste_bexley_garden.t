@@ -270,6 +270,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
+        $mech->content_lacks('Your payment reference');
         $mech->content_like(qr#/waste/10001"[^>]*>Show upcoming#, "contains link to bin page");
 
         FixMyStreet::Script::Reports::send();
