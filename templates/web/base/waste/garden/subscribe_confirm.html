@@ -27,10 +27,12 @@ INCLUDE "waste/header.html";
         <p>
           [% INCLUDE 'waste/_report_ids.html' %]
         </p>
+        [% IF c.cobrand.moniker != 'bexley' # Bexley do not want payment reference shown %]
         [% IF reference %]
         <p>
           Your payment reference is [% reference %].
         </p>
+        [% END %]
         [% END %]
     </div>
 </div>
