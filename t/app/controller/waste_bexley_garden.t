@@ -270,7 +270,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_like(qr#/waste/10001">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/10001"[^>]*>Show upcoming#, "contains link to bin page");
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -311,6 +311,8 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
 
+        $mech->content_contains('Number of bin subscriptions: 1');
+
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -347,6 +349,9 @@ FixMyStreet::override_config {
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
+
+        $mech->content_contains('Number of bin subscriptions: 1');
+        $mech->content_contains('Bins to be removed: 1');
 
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
@@ -641,6 +646,9 @@ FixMyStreet::override_config {
 
                     $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
                     check_extra_data_post_confirm($modify_report);
+
+                    $mech->content_contains('Number of bin subscriptions: 4');
+                    $mech->content_contains('Bins to be delivered: 2');
 
                     $mech->clear_emails_ok;
                     FixMyStreet::Script::Reports::send();
