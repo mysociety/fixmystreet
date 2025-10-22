@@ -1,4 +1,23 @@
-[% INCLUDE waste/header.html %]
+[%
+
+SET quantity = report.get_extra_field_value('total_containers');
+SET new_bins = report.get_extra_field_value('new_containers') || 0;
+
+IF report.title == 'Garden Subscription - Renew'; SET type = 'renew';
+ELSIF report.title == 'Garden Subscription - New'; SET type = 'new';
+ELSIF report.title == 'Garden Subscription - Amend'; SET type = 'amend';
+END;
+
+IF type == 'amend';
+    SET title = "Garden subscription amended successfully";
+    SET message = 'Your garden waste collection service subscription has been amended successfully';
+ELSE;
+    SET title = 'Payment successful';
+END;
+
+INCLUDE "waste/header.html";
+
+%]
 
 <div class="govuk-panel govuk-panel--confirmation">
     <h1 class="govuk-panel__title">
@@ -8,10 +27,12 @@
         <p>
           [% INCLUDE 'waste/_report_ids.html' %]
         </p>
+        [% IF c.cobrand.moniker != 'bexley' # Bexley do not want payment reference shown %]
         [% IF reference %]
         <p>
           Your payment reference is [% reference %].
         </p>
+        [% END %]
         [% END %]
     </div>
 </div>
@@ -19,24 +40,41 @@
 <p>
 [% message %]
 [% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
-We have sent a confirmation email (you may also receive a payment receipt separately) to [% report.user.email %].
+We have sent a confirmation email
+[% IF reference %](you may also receive a payment receipt separately)[% END %]
+to [% report.user.email %].
 [% END %]
 </p>
+
 [%- IF c.cobrand.moniker == 'brent' -%]
   <p>For new subscribers, and existing subscribers who did not renew before the deadline (31st March), it may take up to 14 working days for your first collection to take place.</p>
 [%- END -%]
+
+[% IF quantity %]
+<p>You have signed up for:</p>
+<ul>
+    <li>Number of bin subscriptions: [% quantity %]
+  [% IF new_bins > 0 %]
+    <li>Bins to be delivered: [% new_bins %]
+  [% ELSIF new_bins < 0 %]
+    <li>Bins to be removed: [% 0 - new_bins %]
+  [% END %]
+</ul>
+[% END %]
+
 <p>
     [%
     IF c.cobrand.moniker == 'bexley';
-        SET arrival_time = 'Bins typically arrive within 10 days.';
+        SET bins_word = new_bins > 1 ? 'bins' : 'bin';
+        SET arrival_time = 'We will aim to deliver your new ' _ bins_word _ ' within 10 working days. You don’t need to be at home for the delivery – we’ll leave them outside your address.';
     ELSE;
         SET arrival_time = 'Bins typically arrive within two weeks, but this may vary due to demand.';
     END
     %]
-  [% IF action == 'new_subscription' %]
-    Your garden waste subscription won't show on your check your <a href="/waste/[% property_id %]">collection day lookup page</a> until your containers have been delivered.
+  [% IF type == 'new' %]
+    Your garden waste subscription won’t show on your check your <a href="/waste/[% property_id %]">collection day lookup page</a> until your containers have been delivered.
     [% arrival_time %]
-  [% ELSIF action == 'add_containers' %]
+  [% ELSIF new_bins > 0 %]
     [% arrival_time %]
   [% ELSE %]
     [%- IF c.cobrand.moniker == 'brent' -%]
@@ -55,6 +93,6 @@ We have sent a confirmation email (you may also receive a payment receipt separa
 <p>Your first garden waste collection will be [% next_waste %].</p>
 [% END %]
 
-<p><a class="govuk-button" href="/waste/[% property_id %]">Show upcoming bin days</a></p>
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
 
 [% INCLUDE footer.html %]

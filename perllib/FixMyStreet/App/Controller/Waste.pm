@@ -352,7 +352,6 @@ sub pay_complete : Path('pay_complete') : Args(2) {
     if ( $ref ) {
         $c->stash->{title} = 'Payment successful';
         $c->stash->{reference} = $ref;
-        $c->stash->{action} = $p->title eq 'Garden Subscription - Amend' ? 'add_containers' : 'new_subscription';
         $c->forward( 'confirm_subscription', [ $ref, $already_paid ] );
     } else {
         $c->stash->{template} = 'waste/pay_error.html';

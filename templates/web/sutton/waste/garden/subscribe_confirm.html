@@ -1,4 +1,13 @@
-[% INCLUDE waste/header.html %]
+[%
+
+INCLUDE waste/header.html;
+
+IF report.title == 'Garden Subscription - Renew'; SET type = 'renew';
+ELSIF report.title == 'Garden Subscription - New'; SET type = 'new';
+ELSIF report.title == 'Garden Subscription - Amend'; SET type = 'amend';
+END;
+
+%]
 
 <div class="govuk-panel govuk-panel--confirmation">
     <h1 class="govuk-panel__title">
@@ -43,7 +52,7 @@ You have signed up for the garden waste collection at [% ADDRESS %].
 [% END %]
 
 <p>
-[% IF action == 'new_subscription' %]
+[% IF type != 'amend' %]
   [% IF new_bins > 0 %]
     We will aim to deliver your garden waste [% container_str %] within 10 working days.
     Your subscription will start on the next garden waste collection date for your
@@ -53,7 +62,7 @@ You have signed up for the garden waste collection at [% ADDRESS %].
     For new customers, your subscription starts from your first collection.
     If you are a returning customer, your service will continue from your last subscription end date.
     [% END %]
-[% ELSIF action == 'add_containers' %]
+[% ELSIF new_bins > 0 %]
     We will aim to deliver your garden waste [% container_str %] within 10 working days.
 [% ELSE %]
     Changes to your subscription will show up on your bin calendar shortly.
