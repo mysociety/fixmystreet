@@ -1121,7 +1121,7 @@ FixMyStreet::override_config {
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
 
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
         $new_report->delete;
     };
 
@@ -1315,7 +1315,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
         $new_report->delete;
     };
 
@@ -1336,7 +1336,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Continue to payment');
         $mech->content_contains('Confirm changes');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { user_id => $user->id },
@@ -1558,7 +1558,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
     };
 
     subtest 'renew credit card sub with direct debit' => sub {
@@ -2059,7 +2059,7 @@ FixMyStreet::override_config {
         is $report->name, 'Test McTest', 'non staff user name';
         is $report->user->email, 'test@example.net', 'non staff email';
 
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
         $report->delete; # Otherwise next test sees this as latest
     };
 
@@ -2080,7 +2080,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Continue to payment');
         $mech->content_contains('Confirm changes');
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         $mech->content_lacks($staff_user->email);
         $mech->content_lacks('sent to your email address');
@@ -2341,7 +2341,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
     };
 
     # remove all reports
@@ -2555,7 +2555,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
     };
 
     remove_test_subs( 0 );
@@ -2602,7 +2602,7 @@ FixMyStreet::override_config {
         $new_report->discard_changes;
         is $new_report->state, 'confirmed', 'report confirmed';
         is $new_report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
     };
 
     remove_test_subs( 0 );
