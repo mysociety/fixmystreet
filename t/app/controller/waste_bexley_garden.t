@@ -679,6 +679,9 @@ FixMyStreet::override_config {
                     like $mech->text, qr/Your nameVerity Wright/, 'correct name in summary';
                     my $email = $user->email;
                     like $mech->text, qr/$email/, 'correct email in summary';
+                    unlike $mech->text,
+                        qr/the total cost of an additional bin will be added to your existing Garden Waste Service Direct Debit Mandate/,
+                        'DD notice not shown';
 
                     # No payment/redirect
                     $mech->submit_form_ok(
@@ -812,6 +815,9 @@ FixMyStreet::override_config {
                     'correct today-payment in summary';
                 like $mech->text, qr/Your nameVerity Wright/,
                     'correct name in summary';
+                like $mech->text,
+                    qr/the total cost of an additional bin will be added to your existing Garden Waste Service Direct Debit Mandate/,
+                    'DD notice shown';
                 my $email = $user->email;
                 like $mech->text, qr/$email/, 'correct email in summary';
 
@@ -1764,6 +1770,9 @@ FixMyStreet::override_config {
         }});
 
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
+        unlike $mech->text,
+            qr/the total cost of an additional bin will be added to your existing Garden Waste Service Direct Debit Mandate/,
+            'DD amendment notice not shown';
 
         $mech->content_contains('Test McTest');
         my $discount_human = sprintf('%.2f', ($ggw_cost_first - $ggw_first_bin_discount) / 100);

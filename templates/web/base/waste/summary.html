@@ -78,7 +78,7 @@
 
 </dl>
 
-[% IF c.cobrand.moniker == 'bexley' && data.payment_method == 'direct_debit' %]
+[% IF c.cobrand.moniker == 'bexley' && type == 'amend' && data.payment_method == 'direct_debit' %]
   <div class="govuk-form-group">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
