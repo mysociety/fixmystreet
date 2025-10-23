@@ -24,9 +24,6 @@ sub contract_updates : Path('/waste/access_paysuite/contract_updates') : Args(0)
 
         my $data = {};
         $data->{name} = $report->user->name;
-        $data->{email} = $report->user->email;
-        $data->{phone} = $report->user->phone;
-        $data->{reason} = "Cancelled in Access PaySuite: $content->{ReportMessage}";
         for my $field (qw(longitude latitude)) {
             $c->stash->{$field} = $report->$field;
         };
@@ -35,9 +32,7 @@ sub contract_updates : Path('/waste/access_paysuite/contract_updates') : Args(0)
             category => 'Cancel Garden Subscription'
         }) ];
         $c->stash->{orig_sub} = $report;
-        $c->stash->{property} = $c->cobrand->call_hook(
-            look_up_property => $report->get_extra_field_value('uprn') );
-
+        $c->stash->{property}{uprn} = $report->get_extra_field_value('uprn');
         $c->set_param('token', $c->forward('/auth/get_csrf_token'));
         $c->forward('/waste/garden/process_garden_cancellation', [$data]);
     }

@@ -12,10 +12,7 @@ END { FixMyStreet::App->log->enable('info', 'error'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $comment_user = $mech->create_user_ok('comment');
-my $body = $mech->create_body_ok( 2494, 'Bexley',
-    { cobrand => 'bexley', comment_user => $comment_user } );
-
+my $body = $mech->create_body_ok(2494, 'Bexley', { cobrand => 'bexley' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 my $staff_user = $mech->create_user_ok('staff@example.org', from_body => $body, name => 'Staff User');
 $staff_user->user_body_permissions->create({ body => $body, permission_type => 'contribute_as_anonymous_user' });
@@ -3142,101 +3139,6 @@ FixMyStreet::override_config {
         is $cancel->get_extra_field_value('customer_external_ref'), 'DD_CUSTOMER_123';
         my @emails = $mech->get_email;
         is @emails, 2, "Notice sent to user for cancellation and to Bexley";
-    };
-
-    subtest 'AccessPaySuite webhook for cancelling DD' => sub {
-        $mech->delete_problems_for_body($body->id);
-        set_fixed_time('2025-01-01T00:00:00Z');
-
-        my $archive_contract_called;
-        my $archived_contract_id;
-        my $accesspaysuite_mock = Test::MockModule->new('Integrations::AccessPaySuite');
-        $accesspaysuite_mock->mock('archive_contract' => sub {
-            my ($self, $contract_id) = @_;
-            $archive_contract_called = 1;
-            $archived_contract_id = $contract_id;
-            cancel_plan => 'CANCEL_REF_123';
-        });
-        $agile_mock->mock('CustomerSearch', sub {
-            {
-                Customers => [
-                    {
-                        CustomerExternalReference => 'DD_CUSTOMER_123',
-                        CustomertStatus => 'ACTIVATED',
-                        ServiceContracts => [
-                            {
-                                EndDate => '01/08/2025 00:00',
-                                Reference => 'CONTRACT_123',
-                                WasteContainerQuantity => 1,
-                                ServiceContractStatus => 'ACTIVE',
-                                UPRN => '10001',
-                                Payments => [ {
-                                    PaymentMethod => 'Direct debit',
-                                    PaymentStatus => 'Paid',
-                                    Amount => '100',
-                                } ],
-                            },
-                        ],
-                    },
-                ],
-            }
-        });
-
-        $user->discard_changes;
-        my ($dd_report) = $mech->create_problems_for_body(
-            1,
-            $body->id,
-            'Garden Subscription - New',
-            {   category => 'Garden Subscription',
-                title    => 'Garden Subscription - New',
-                external_id => 'Agile-CONTRACT_123',
-                user => $user,
-            },
-        );
-        $dd_report->set_extra_fields(
-            { name => 'uprn', value => 10001 },
-            { name => 'payment_method', value => 'direct_debit' },
-        );
-        $dd_report->set_extra_metadata(
-            direct_debit_contract_id => 'DD_CONTRACT_123',
-            direct_debit_customer_id => 'DD_CUSTOMER_123',
-            direct_debit_reference   => 'APIRTM_123',
-        );
-        $dd_report->update;
-
-        subtest 'contract cancelled by webhook' => sub {
-            FixMyStreet::Script::Reports::send();
-            $mech->clear_emails_ok;
-
-            is $mech->post(
-                '/waste/access_paysuite/contract_updates',
-                Content_Type => 'application/json',
-                Content      => encode_json(
-                    {
-                        Entity     => 'contract',
-                        Id         => 'DD_CONTRACT_123',
-                        NewStatus  => 'Cancelled',
-                        ReportMessage =>
-                            'Contract Cancelled because of ADDACS code 1 (Instruction Cancelled)',
-                    }
-                ),
-            )->code, 200, 'successful';
-            is $archive_contract_called, 1, 'archive_contract was called';
-            is $archived_contract_id, 'DD_CONTRACT_123', 'correct contract_id was passed';
-            FixMyStreet::Script::Reports::send();
-            my $cancel =  FixMyStreet::DB->resultset('Problem')->find({ category => 'Cancel Garden Subscription' });
-            is $cancel->title, 'Garden Subscription - Cancel', 'Correct title for cancellation report';
-            is $cancel->name, $user->name, 'User name on cancellation report';
-            is $cancel->user->email, $user->email, 'Correct email linked';
-            is $cancel->send_state, 'sent', 'Cancellation report has been created and sent';
-            is $cancel->get_extra_metadata('direct_debit_contract_id'), 'DD_CONTRACT_123';
-            is $cancel->get_extra_field_value('customer_external_ref'), 'DD_CUSTOMER_123';
-            is $cancel->get_extra_field_value('reason'),
-                'Cancelled in Access PaySuite: Contract Cancelled because of ADDACS code 1 (Instruction Cancelled)';
-            my @emails = $mech->get_email;
-            is @emails, 2, "Notice sent to user for cancellation and to Bexley";
-        };
-
     };
 };
 

@@ -213,10 +213,9 @@ sub process_garden_cancellation : Private {
         $data = $form->saved_data;
     }
     unless ( $c->stash->{is_staff} ) {
-        my $user = $c->user;
-        $data->{name} ||= $user->name || 'Unknown name';
-        $data->{email} ||= $user->email;
-        $data->{phone} ||= $user->phone;
+        $data->{name} = $c->user->name || 'Unknown name';
+        $data->{email} = $c->user->email;
+        $data->{phone} = $c->user->phone;
     }
     $data->{category} = 'Cancel Garden Subscription';
     $data->{title} = 'Garden Subscription - Cancel';
