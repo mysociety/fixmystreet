@@ -150,7 +150,7 @@ FixMyStreet::override_config {
         set_fixed_time('2022-09-10T12:00:00Z');
         $mech->get_ok('/waste/12345');
         $mech->content_contains('2 Example Street, Merton');
-        $mech->content_contains('Every Friday fortnightly');
+        $mech->content_contains('Every other Friday');
         $mech->content_contains('Friday 2 September');
         $mech->content_contains('Report a missed mixed recycling collection');
     };
@@ -512,6 +512,7 @@ FixMyStreet::override_config {
     };
 
     $e->mock('GetServiceUnitsForObject', sub { $kerbside_bag_data });
+    set_fixed_time('2022-10-13T19:00:00Z');
     subtest 'Fortnightly collection can request a blue stripe bag' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-22' => 1 }});
@@ -526,7 +527,8 @@ FixMyStreet::override_config {
     };
     subtest 'Weekly collection cannot request a blue stripe bag' => sub {
         my $dupe = dclone($kerbside_bag_data);
-        $dupe->[2]{ServiceTasks}{ServiceTask}{ScheduleDescription} = 'Every Monday';
+        # Make it a weekly collection by changing original date
+        $dupe->[2]{ServiceTasks}{ServiceTask}{ServiceTaskSchedules}{ServiceTaskSchedule}{LastInstance}{OriginalScheduledDate}{DateTime} = '2022-10-09T23:00:00Z';
         $e->mock('GetServiceUnitsForObject', sub { $dupe });
         $mech->get_ok('/waste/12345/request');
         $mech->content_lacks('container-22');
@@ -545,6 +547,7 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
+    set_fixed_time('2022-09-13T19:00:00Z');
     subtest 'test failure to deliver' => sub {
         $e->mock('GetEventsForObject', sub { [ {
             # Request

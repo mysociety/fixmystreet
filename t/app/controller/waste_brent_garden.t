@@ -81,7 +81,6 @@ sub food_waste_collection {
             Id => 400,
             TaskTypeId => 1688,
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                ScheduleDescription => 'every other Monday',
                 Allocation => {
                     RoundName => 'Monday ',
                     RoundGroupName => 'Delta 04 Week 2',
@@ -156,7 +155,6 @@ sub _garden_waste_service_units {
                 Value => $bin_type_id,
             } ] },
             ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                ScheduleDescription => 'every other Monday',
                 Allocation => {
                     RoundName => 'Monday ',
                     RoundGroupName => 'Delta 04 Week 2',

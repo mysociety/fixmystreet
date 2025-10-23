@@ -461,15 +461,11 @@ sub _schedule_object {
 
 sub _parse_schedules {
     my $servicetask = shift;
-    my $desc_to_use = shift || 'schedule';
     my $schedules = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskSchedules}, 'ServiceTaskSchedule');
 
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
-    my ($min_next, $max_last, $description, $max_end_date);
-
-    if ($desc_to_use eq 'task') {
-        $description = $servicetask->{ScheduleDescription};
-    }
+    my ($min_next, $max_last, $max_end_date);
+    my ($next_orig, $last_orig);
 
     foreach my $schedule (@$schedules) {
         my $start_date = construct_bin_date($schedule->{StartDate})->strftime("%F");
@@ -483,7 +479,7 @@ sub _parse_schedules {
         if ($d && (!$min_next || $d < $min_next->{date})) {
             $min_next = _schedule_object($next, $d);
             $min_next->{schedule} = $schedule;
-            $description = $schedule->{ScheduleDescription} if $desc_to_use eq 'schedule';
+            $next_orig = construct_bin_date($next->{OriginalScheduledDate});
         }
 
         next if $start_date gt $today; # Shouldn't have a LastInstance in this case, but some bad data
@@ -495,9 +491,24 @@ sub _parse_schedules {
         if ($d && $d->strftime("%F") gt $today && (!$min_next || $d < $min_next->{date})) {
             $min_next = _schedule_object($last, $d);
             $min_next->{schedule} = $schedule;
-            $description = $schedule->{ScheduleDescription} if $desc_to_use eq 'schedule';
+            $next_orig = construct_bin_date($last->{OriginalScheduledDate});
         } elsif ($d && (!$max_last || $d > $max_last->{date})) {
             $max_last = _schedule_object($last, $d);
+            $last_orig = construct_bin_date($last->{OriginalScheduledDate});
+        }
+    }
+
+    my $description = '';
+    if ($next_orig && $last_orig) {
+        my $days = $next_orig->delta_days($last_orig);
+        my $weeks = int($days->in_units('days')/7+0.5);
+        $weeks = 1 if $weeks == 0;
+        if ($weeks == 1) {
+            $description = "Every " . $next_orig->day_name;
+        } elsif ($weeks == 2) {
+            $description = "Every other " . $next_orig->day_name;
+        } else {
+            $description = $next_orig->day_name . " every $weeks weeks";
         }
     }
 

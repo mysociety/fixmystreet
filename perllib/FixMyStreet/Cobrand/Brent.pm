@@ -1105,7 +1105,7 @@ sub waste_extra_service_info {
         $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == $SERVICE_IDS{domestic_food} || $_->{ServiceId} == $SERVICE_IDS{communal_refuse};
 
         # Check calendar allocation
-        if (($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{garden} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper}) && ($schedules->{description} =~ /every other/ || $schedules->{description} =~ /every \d+(th|st|nd|rd) week/) && $schedules->{next}{schedule}) {
+        if (($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{garden} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper}) && ($schedules->{description} =~ /every other/i || $schedules->{description} =~ /every \d+ week/i) && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};
             my $day = lc $allocation->{RoundName};
             $day =~ s/\s+//g;

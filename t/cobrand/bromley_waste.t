@@ -450,7 +450,6 @@ subtest 'Checking correct renewal prices' => sub {
                         } ] },
                     } ] },
                     ServiceTaskSchedules => { ServiceTaskSchedule => [ {
-                        ScheduleDescription => 'every other Monday',
                         StartDate => { DateTime => '2021-06-14T23:00:00Z' },
                         EndDate => { DateTime => '2021-07-14T23:00:00Z' },
                         NextInstance => {
@@ -889,7 +888,6 @@ subtest 'check direct debit reconcilliation' => sub {
                 ServiceName => 'Garden waste collection',
                 ServiceTasks => { ServiceTask => {
                     Id => 405,
-                    ScheduleDescription => 'every other Monday',
                     Data => { ExtensibleDatum => [ {
                         DatatypeName => 'LBB - GW Container',
                         ChildData => { ExtensibleDatum => {
@@ -925,7 +923,6 @@ subtest 'check direct debit reconcilliation' => sub {
                 ServiceName => 'Garden waste collection',
                 ServiceTasks => { ServiceTask => {
                     Id => 405,
-                    ScheduleDescription => 'every other Monday',
                     Data => { ExtensibleDatum => [ {
                         DatatypeName => 'LBB - GW Container',
                         ChildData => { ExtensibleDatum => {
