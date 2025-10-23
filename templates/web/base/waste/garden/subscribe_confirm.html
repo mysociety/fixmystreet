@@ -1,21 +1,7 @@
 [%
 
-SET quantity = report.get_extra_field_value('total_containers');
-SET new_bins = report.get_extra_field_value('new_containers') || 0;
-
-IF report.title == 'Garden Subscription - Renew'; SET type = 'renew';
-ELSIF report.title == 'Garden Subscription - New'; SET type = 'new';
-ELSIF report.title == 'Garden Subscription - Amend'; SET type = 'amend';
-END;
-
-IF type == 'amend';
-    SET title = "Garden subscription amended successfully";
-    SET message = 'Your garden waste collection service subscription has been amended successfully';
-ELSE;
-    SET title = 'Payment successful';
-END;
-
-INCLUDE "waste/header.html";
+PROCESS waste/garden/_data.html;
+INCLUDE waste/header.html;
 
 %]
 
@@ -66,7 +52,8 @@ to [% report.user.email %].
     [%
     IF c.cobrand.moniker == 'bexley';
         SET bins_word = new_bins > 1 ? 'bins' : 'bin';
-        SET arrival_time = 'We will aim to deliver your new ' _ bins_word _ ' within 10 working days. You don’t need to be at home for the delivery – we’ll leave them outside your address.';
+        SET bins_pronoun = new_bins > 1 ? 'them' : 'it';
+        SET arrival_time = 'We will aim to deliver your new ' _ bins_word _ ' within 10 working days. You don’t need to be at home for the delivery – we’ll leave ' _ bins_pronoun _ ' outside your address.';
     ELSE;
         SET arrival_time = 'Bins typically arrive within two weeks, but this may vary due to demand.';
     END
