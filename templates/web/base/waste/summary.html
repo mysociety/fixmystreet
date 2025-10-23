@@ -78,6 +78,18 @@
 
 </dl>
 
+[% IF c.cobrand.moniker == 'bexley' && data.payment_method == 'direct_debit' %]
+  <div class="govuk-form-group">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h2 class="govuk-fieldset__heading">
+            For Direct Debit customers - the total cost of an additional bin will be added to your existing Garden Waste Service Direct Debit Mandate and will be debited from your account.
+        </h2>
+      </legend>
+    </fieldset>
+  </div>
+[% END %]
+
 <form class="waste" method="post">
     [% PROCESS form %]
 </form>

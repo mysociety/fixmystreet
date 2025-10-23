@@ -33,6 +33,16 @@
     </span>
   </div>
 
+  [% IF c.cobrand.moniker == 'bexley' && current_payment_method == 'direct_debit' %]
+    <div class="fieldset-container">
+      <div class="fieldset-item">
+        <label>
+        The total cost of an additional bin will be added to your existing Garden Waste Service Direct Debit Mandate and will be debited from your account.
+        </label>
+      </div>
+    </div>
+  [% END %]
+
     [% IF form.current_page.fields.grep('name').size %]
       [% IF staff_payments_allowed %]
       [% PROCESS form override_fields=['name', 'email', 'phone'] %]

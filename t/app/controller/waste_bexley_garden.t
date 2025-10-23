@@ -808,7 +808,7 @@ FixMyStreet::override_config {
                     'correct bin total in summary';
                 like $mech->text, qr/Total£$new_annual_cost_human/,
                     'correct new annual payment total in summary';
-                like $mech->text, qr/Total to pay today.55\.00/,
+                like $mech->text, qr/One-off Direct Debit payment.55\.00/,
                     'correct today-payment in summary';
                 like $mech->text, qr/Your nameVerity Wright/,
                     'correct name in summary';
