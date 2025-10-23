@@ -206,12 +206,18 @@ sub process_garden_cancellation : Private {
     my ($self, $c, $form) = @_;
 
     my $payment_method = $c->forward('/waste/get_current_payment_method');
-    my $data = $form->saved_data;
+    my $data;
+    if (ref $form eq 'HASH') {
+        $data = $form;
+    } else {
+        $data = $form->saved_data;
+    }
 
     unless ( $c->stash->{is_staff} ) {
-        $data->{name} = $c->user->name || 'Unknown name';
-        $data->{email} = $c->user->email;
-        $data->{phone} = $c->user->phone;
+        my $user = $c->user;
+        $data->{name} ||= $user->name || 'Unknown name';
+        $data->{email} ||= $user->email;
+        $data->{phone} ||= $user->phone;
     }
     $data->{category} = 'Cancel Garden Subscription';
     $data->{title} = 'Garden Subscription - Cancel';
