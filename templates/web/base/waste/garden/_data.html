@@ -1,0 +1,18 @@
+[%
+
+IF report.title == 'Garden Subscription - Renew'; SET type = 'renew';
+ELSIF report.title == 'Garden Subscription - New'; SET type = 'new';
+ELSIF report.title == 'Garden Subscription - Amend'; SET type = 'amend';
+END;
+
+SET quantity = report.get_extra_field_value('total_containers');
+SET new_bins = report.get_extra_field_value('new_containers') || 0;
+
+IF type == 'amend';
+    SET title = "Garden subscription amended successfully";
+    SET message = 'Your garden waste collection service subscription has been amended successfully.';
+ELSE;
+    SET title = 'Payment successful';
+END;
+
+%]

@@ -1,12 +1,6 @@
 [%
-
+PROCESS waste/garden/_data.html;
 INCLUDE waste/header.html;
-
-IF report.title == 'Garden Subscription - Renew'; SET type = 'renew';
-ELSIF report.title == 'Garden Subscription - New'; SET type = 'new';
-ELSIF report.title == 'Garden Subscription - Amend'; SET type = 'amend';
-END;
-
 %]
 
 <div class="govuk-panel govuk-panel--confirmation">
