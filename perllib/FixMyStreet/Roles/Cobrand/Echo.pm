@@ -49,7 +49,7 @@ sub waste_check_downtime {
 
     my $result = $self->waste_check_downtime_file;
     if ($result->{state} eq 'down') {
-        $c->stash->{title} = 'Planned maintenance';
+        $c->stash->{title} = $result->{unplanned} ? 'Temporarily unavailable' : 'Planned maintenance';
         $c->stash->{header_class} = 'blank';
         $c->response->header('X-Custom-Error-Provided' => 'yes');
         $c->detach('/page_error', [ $result->{message}, 503 ]);
@@ -74,8 +74,10 @@ sub waste_check_downtime_file {
         my $start_hour = $start->strftime('%l%P');
         my $end_hour = $end->strftime('%l%P');
 
+        my $unplanned = 0;
         if ($message && $message eq '1') {
             $message = "Our waste service system is temporarily unavailable. This also affects our Contact Centre, as they are unable to access or update information at this time. Please refrain from calling until the system is restored. We apologise for any inconvenience and appreciate your patience.";
+            $unplanned = 1;
         } elsif (!$message) {
             $message = "Due to planned maintenance, this waste service will be unavailable from $start_hour until $end_hour.";
             $end->add( minutes => 15 ); # Add a buffer, sometimes they go past their end time
@@ -83,7 +85,7 @@ sub waste_check_downtime_file {
 
         if ($now >= $start && $now < $end) {
             $message .= " Please accept our apologies for the disruption and try again later.";
-            return { state => 'down', message => $message };
+            return { state => 'down', message => $message, unplanned => $unplanned };
         }
 
         my $start_warning = $start->clone->subtract( hours => 2 );
