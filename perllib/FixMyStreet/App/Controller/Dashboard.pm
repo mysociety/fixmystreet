@@ -294,7 +294,7 @@ sub generate_grouped_data : Private {
             my $bm = $map{$b} // $map{$state_map->{$b}};
             $am <=> $bm;
         } @rows;
-    } elsif ($group_by eq 'category+state' || $group_by eq 'category') {
+    } elsif ($c->stash->{category_groups} && ($group_by eq 'category+state' || $group_by eq 'category')) {
         @rows = ();
         my @sorting_categories;
         my %category_to_group;
