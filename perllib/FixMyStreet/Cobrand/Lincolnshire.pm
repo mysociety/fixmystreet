@@ -205,6 +205,14 @@ around 'open311_config' => sub {
     $self->$orig($row, $h, $params, $contact);
 };
 
+=head2 open311_send_category_change
+
+We pass any category change to Confirm.
+
+=cut
+
+sub open311_send_category_change { 1 }
+
 # Find or create a user to associate with externally created Open311 reports.
 sub open311_get_user {
     my ($self, $request) = @_;
