@@ -1,5 +1,8 @@
 window.garden_waste_first_bin_discount_applies = function() {
-    return $('input[name="payment_method"]:checked').val() === 'direct_debit';
+    var costs = $('.js-bin-costs'),
+        payment_method = costs.data('payment_method');
+
+    return payment_method === 'direct_debit' || $('input[name="payment_method"]:checked').val() === 'direct_debit';
 };
 
 $(function() {
@@ -14,4 +17,5 @@ $(function() {
         }
     };
     $('#subscribe_details input[name="payment_method"]').on('change', window.garden_waste_bin_cost_new);
+    $('#renew input[name="payment_method"]').on('change', window.garden_waste_bin_cost_new);
 });

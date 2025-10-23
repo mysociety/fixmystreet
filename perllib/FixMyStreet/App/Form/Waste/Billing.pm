@@ -25,8 +25,17 @@ sub options_payment_method {
     my $cobrand = $c->cobrand->moniker;
     my $garden_form = $form =~ /Garden/;
 
+    my $dd_hint = 'Set up your payment details once, and we’ll renew your subscription automatically each year. You can update or cancel anytime.';
+    if ($cobrand eq 'bexley') {
+        # Can definitely set first_bin_discount, as we want the DD cost
+        my $costs = WasteWorks::Costs->new({ cobrand => $c->cobrand, first_bin_discount => 1 });
+        my $cost = sprintf('%.2f', $costs->bins(1) / 100);
+        my $extra = sprintf('%.2f', $costs->per_bin / 100);
+        my $max = $c->cobrand->waste_garden_maximum;
+        $dd_hint = "Sign up to Direct Debit and we’ll drop the cost of your first bin to £$cost. Extra bins cost £$extra each (up to $max in total). $dd_hint";
+    }
     my @options = (
-        { value => 'direct_debit', label => 'Direct Debit', hint => 'Set up your payment details once, and we’ll automatically renew your subscription each year, until you tell us to stop. You can cancel or amend at any time.', data_hide => '#form-cheque_reference-row,#form-payment_explanation-row' },
+        { value => 'direct_debit', label => 'Direct Debit', hint => $dd_hint, data_hide => '#form-cheque_reference-row,#form-payment_explanation-row' },
         { value => 'credit_card', label => 'Debit or Credit Card', data_hide => '#form-cheque_reference-row,#form-payment_explanation-row' },
     );
     if (!$garden_form || $c->stash->{waste_features}->{dd_disabled}) {

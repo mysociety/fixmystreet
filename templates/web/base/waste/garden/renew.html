@@ -9,6 +9,7 @@
     [% INCLUDE waste/garden/_bin_quantities.html form_page='renew' %]
   <hr class="fieldset-hr">
   <div class="cost-pa__total js-bin-costs"
+        data-first_bin_discount="[% garden_costs.first_bin_discount_absolute_amount %]"
         data-per_bin_cost="[% garden_costs.per_bin_renewal %]"
         data-per_bin_first_cost="[% garden_costs.per_bin_renewal_first %]"
         data-per_new_bin_first_cost="[% garden_costs.per_new_bin_first %]"
@@ -37,7 +38,9 @@
   </dl>
   [% END %]
 
+  [% IF form.current_page.fields.grep('name').size %]
   [% PROCESS form override_fields=['name', 'email', 'phone'] %]
+  [% END %]
 
   [% IF c.cobrand.garden_subscription_email_renew_reminder_opt_in %]
   [% PROCESS form override_fields=['email_renewal_reminders'] %]

@@ -37,6 +37,8 @@ create_contact({ category => 'Garden Subscription', email => 'garden@example.com
     { code => 'type', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 1, automated => 'hidden_field' },
+    { code => 'pro_rata', required => 1, automated => 'hidden_field' },
+    { code => 'renew_as_new_subscription', required => 1, automated => 'hidden_field' },
 );
 create_contact(
     { category => 'Cancel Garden Subscription', email => 'garden_cancel@example.com' },
@@ -265,7 +267,8 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($new_report);
 
-        $mech->content_like(qr#/waste/10001">Show upcoming#, "contains link to bin page");
+        $mech->content_lacks('Your payment reference');
+        $mech->content_like(qr#/waste/10001"[^>]*>Show upcoming#, "contains link to bin page");
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -306,6 +309,8 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
 
+        $mech->content_contains('Number of bin subscriptions: 1');
+
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -343,6 +348,9 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
         check_extra_data_post_confirm($new_report);
 
+        $mech->content_contains('Number of bin subscriptions: 1');
+        $mech->content_contains('Bins to be removed: 1');
+
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -352,9 +360,500 @@ FixMyStreet::override_config {
         like $email_body, qr/Total:.*?$ggw_cost_first_human/;
     };
 
+    subtest 'modify garden subscription' => sub {
+        set_fixed_time('2024-02-01T00:00:00');
+        $mech->delete_problems_for_body($body->id);
+
+        my $uprn = 10001;
+        my $contract_id = 'CONTRACT_123';
+
+        my ($new_sub_report) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'Garden Subscription - New',
+            {   category    => 'Garden Subscription',
+                external_id => "Agile-$contract_id",
+                user => $user,
+            },
+        );
+        $new_sub_report->set_extra_fields(
+            { name => 'uprn', value => $uprn } );
+        $new_sub_report->update;
+        FixMyStreet::Script::Reports::send();
+
+        $agile_mock->mock( 'CustomerSearch', sub { {
+            Customers => [
+                {
+                    CustomerExternalReference => 'CUSTOMER_123',
+                    Firstname => '  Verity  ',
+                    Surname => '  Wright  ',
+                    Email => 'verity@wright.com',
+                    Mobile => '+4407222222222',
+                    CustomertStatus => 'ACTIVATED',
+                    ServiceContracts => [
+                        {
+                            EndDate => '01/02/2025 12:00',
+                            Reference => $contract_id,
+                            WasteContainerQuantity => 2,
+                            ServiceContractStatus => 'ACTIVE',
+                            UPRN => '10001',
+                            Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
+                        },
+                    ],
+                },
+            ],
+        } } );
+
+        $whitespace_mock->mock(
+            'GetSiteCollections',
+            sub {
+                [   {   SiteServiceID          => 1,
+                        ServiceItemDescription => 'Garden waste',
+                        ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                        ServiceName          => 'Brown Wheelie Bin',
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        SiteServiceValidFrom => '2024-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+
+                        RoundSchedule => 'RND-1 Mon',
+                    }
+                ];
+            }
+        );
+
+        subtest 'nobody logged in' => sub {
+            $mech->log_out_ok;
+
+            $mech->get_ok("/waste/$uprn");
+            like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+
+            $mech->get_ok("/waste/$uprn/garden_modify");
+            like $mech->text, qr/Sign in or create an account/, 'modify link goes to login page';
+        };
+
+        subtest 'other user logged in' => sub {
+            my $other_user = $mech->create_user_ok('other@example.net', name => 'Other User');
+
+            $mech->log_in_ok( $other_user->email );
+
+            $mech->get_ok("/waste/$uprn");
+            like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+
+            $mech->get_ok("/waste/$uprn/garden_modify");
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        task => 'modify',
+                    },
+                }, 'initial option page',
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => 'CUSTOMER_BAD',
+                    },
+                },
+            );
+            like $mech->text, qr/Incorrect customer reference/,
+                'error message shown on next page if bad reference';
+
+            subtest 'goes to verification failed page if wrong name provided' => sub {
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            verifications_first_name => 'A',
+                            verifications_last_name  => 'Name',
+                        },
+                    },
+                );
+                like $mech->text, qr/Verification failed/;
+
+                subtest 'can go back to customer reference input' => sub {
+                    $mech->submit_form_ok(
+                        { with_fields => { goto => 'customer_reference' } } );
+                };
+            };
+
+            subtest 'can continue to modify if correct name provided' => sub {
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            has_reference => 'Yes',
+                            customer_reference => 'CUSTOMER_BAD',
+                        },
+                    },
+                );
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            verifications_first_name => ' Verity ',
+                            verifications_last_name  => ' Wright ',
+                        },
+                    },
+                );
+                like $mech->text, qr/Change your garden waste subscription/;
+            };
+        };
+
+        subtest 'staff logged in' => sub {
+            $mech->log_in_ok( $staff_user->email );
+
+            $mech->get_ok("/waste/$uprn");
+            like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+
+            $mech->get_ok("/waste/$uprn/garden_modify");
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        task => 'modify',
+                    },
+                }, 'initial option page',
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => 'CUSTOMER_BAD',
+                    },
+                },
+            );
+            like $mech->text, qr/First name/,
+                'Bad reference takes user to name input';
+            $mech->back;
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => 'customer_123',
+                    },
+                },
+            );
+            like $mech->text, qr/Change your garden waste subscription/, 'modification permitted';
+
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        bins_wanted => 4,
+                    },
+                }
+            );
+            like $mech->text, qr/Your nameVerity Wright/,
+                'correct name in summary (from Agile data)';
+            my $email = $user->email;
+            like $mech->text, qr/verity\@wright.com/,
+                'correct email in summary (from Agile data)';
+            like $mech->text, qr/4407222222222/,
+                'correct phone in summary (from Agile data)';
+        };
+
+        subtest 'original user logged in' => sub {
+            $mech->log_in_ok( $user->email );
+
+            subtest 'original payment method of credit card' => sub {
+                $new_sub_report->update_extra_field(
+                    { name => 'payment_method', value => 'credit_card' } );
+                $new_sub_report->update;
+
+                subtest 'cannot modify during last 42 days of subscription' => sub {
+                    set_fixed_time('2024-12-21T12:00:00');
+
+                    $mech->get_ok("/waste/$uprn");
+                    unlike $mech->content,
+                        qr/Change your brown wheelie bin subscription/,
+                        'No modification link';
+                    like $mech->content,
+                        qr/Renew your brown wheelie bin subscription/,
+                        'Renewal link instead';
+
+                    $mech->get_ok("/waste/$uprn/garden_modify");
+                    like $mech->text, qr/Your bin days/,
+                        'garden_modify redirects to bin days';
+                };
+
+                set_fixed_time('2024-02-01T00:00:00');
+                $mech->get_ok("/waste/$uprn");
+                like $mech->content, qr/Change your brown wheelie bin subscription/;
+
+                $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            task => 'modify',
+                        },
+                    }, 'initial option page',
+                );
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            has_reference => 'No',
+                        },
+                    },
+                );
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            verifications_first_name => 'Verity',
+                            verifications_last_name => 'Wright',
+                        },
+                    }
+                );
+                like $mech->text, qr/Change your garden waste subscription/, 'modification permitted';
+                like $mech->content, qr/current_bins.*value="2"/s, 'correct number of current bins prefilled';
+
+                subtest 'add bins' => sub {
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                bins_wanted => 2,
+                            },
+                        }
+                    );
+                    like $mech->text,
+                        qr/You need to change the number of bins/,
+                        'error message if bin count not changed';
+
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                bins_wanted => 4,
+                            },
+                        }
+                    );
+
+                    like $mech->text, qr/Garden waste collection4 bins/, 'correct bin total in summary';
+                    like $mech->text, qr/Total.240\.00/, 'correct payment total in summary';
+                    like $mech->text, qr/Total to pay today.110\.00/, 'correct today-payment in summary';
+                    like $mech->text, qr/Your nameVerity Wright/, 'correct name in summary';
+                    my $email = $user->email;
+                    like $mech->text, qr/$email/, 'User email in summary';
+
+                    $mech->waste_submit_check({ with_fields => { tandc => 1 } });
+
+                    my ( $token, $modify_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+                    is $sent_params->{items}[0]{amount}, 11000, 'correct amount used';
+                    check_extra_data_pre_confirm(
+                        $modify_report,
+                        type         => 'Amend',
+                        current_bins => 2,
+                        new_bins     => 2,
+                        bins_wanted  => 4,
+                        customer_external_ref => 'CUSTOMER_123',
+                    );
+                    is $modify_report->get_extra_field_value('type'), 'amend',
+                        'correct report type';
+                    is $modify_report->get_extra_field_value(
+                        'total_containers'), 4,
+                        'correct total_containers';
+
+                    $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
+                    check_extra_data_post_confirm($modify_report);
+
+                    $mech->content_contains('Number of bin subscriptions: 4');
+                    $mech->content_contains('Bins to be delivered: 2');
+
+                    $mech->clear_emails_ok;
+                    FixMyStreet::Script::Reports::send();
+                    my @emails = $mech->get_email;
+                    my $email_body = $mech->get_text_body_from_email($emails[1]);
+                    like $email_body,
+                        qr/You have amended your garden waste collection service/;
+                    like $email_body, qr/Number of bin subscriptions: 4/;
+                    like $email_body, qr/Bins to be delivered: 2/;
+                    like $email_body, qr/Total:.*?110\.00/;
+                };
+
+                subtest 'remove bins' => sub {
+                    $mech->get_ok("/waste/$uprn/garden_modify");
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                task => 'modify',
+                            },
+                        }, 'initial option page',
+                    );
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                has_reference => 'Yes',
+                                customer_reference => 'CUSTOMER_123',
+                            },
+                        },
+                    );
+                    like $mech->content, qr/current_bins.*value="2"/s, 'correct number of current bins prefilled'; # No change in Agile
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                bins_wanted => 1,
+                            },
+                        }
+                    );
+
+                    like $mech->text, qr/Garden waste collection1 bin/, 'correct bin total in summary';
+                    like $mech->text, qr/Total.75\.00/, 'correct payment total in summary';
+                    like $mech->text, qr/Total to pay today.0\.00/, 'correct today-payment in summary';
+                    like $mech->text, qr/Your nameVerity Wright/, 'correct name in summary';
+                    my $email = $user->email;
+                    like $mech->text, qr/$email/, 'correct email in summary';
+                    unlike $mech->text,
+                        qr/the total cost of an additional bin will be added to your existing Garden Waste Service Direct Debit Mandate/,
+                        'DD notice not shown';
+
+                    # No payment/redirect
+                    $mech->submit_form_ok(
+                        { with_fields => { tandc => 1 } } );
+
+                    my $modify_report = FixMyStreet::DB->resultset('Problem')
+                        ->order_by('-id')->first;
+
+                    check_extra_data_pre_confirm(
+                        $modify_report,
+                        type         => 'Amend',
+                        current_bins => 2,
+                        new_bins     => -1,
+                        bins_wanted  => 1,
+                        state => 'confirmed',
+                        customer_external_ref => 'CUSTOMER_123',
+                    );
+                    is $modify_report->get_extra_field_value('type'), 'amend',
+                        'correct report type';
+                    is $modify_report->get_extra_field_value(
+                        'total_containers'), 1,
+                        'correct total_containers';
+
+                    $mech->clear_emails_ok;
+                    FixMyStreet::Script::Reports::send();
+                    my @emails = $mech->get_email;
+                    my $email_body = $mech->get_text_body_from_email($emails[1]);
+                    like $email_body,
+                        qr/You have amended your garden waste collection service/;
+                    like $email_body, qr/Number of bin subscriptions: 1/;
+                    like $email_body, qr/Bins to be removed: 1/;
+                    unlike $email_body, qr/Total:/;
+
+                };
+
+            };
+
+            subtest 'original payment method of direct debit' => sub {
+                $mech->delete_problems_for_body($body->id);
+                my $dd_customer_id = 'DD_CUSTOMER_123';
+                my $dd_contract_id = 'DD_CONTRACT_123';
+
+                my $access_mock
+                    = Test::MockModule->new('Integrations::AccessPaySuite');
+                $access_mock->mock(
+                    get_contracts => sub { [ { Status => 'Active' } ] },
+                );
+                $access_mock->mock(
+                    create_contract => sub {
+                        {   Id             => 'CONTRACT_123',
+                            DirectDebitRef => 'APIRTM-DEFGHIJ1KL'
+                        };
+                    }
+                );
+                $access_mock->mock(
+                    create_payment => sub { {} } # Empty hash implies success
+                );
+
+                my $amend_plan_args;
+                $access_mock->mock(
+                    amend_plan => sub {
+                        my ( $self, $args ) = @_;
+                        $amend_plan_args = $args;
+                        return 1;
+                    }
+                );
+
+                my ($orig_dd_sub_report) = $mech->create_problems_for_body(
+                    1,
+                    $body->id,
+                    'Title which is overwritten below because we don\'t want the junk that is appended by default',
+                    {
+                        category    => 'Garden Subscription',
+                        title => 'Garden Subscription - New',
+                        external_id => "Agile-$dd_contract_id",
+                        user => $user,
+                    },
+                );
+                $orig_dd_sub_report->set_extra_fields(
+                    { name => 'payment_method', value => 'direct_debit' },
+                    { name => 'uprn', value => $uprn },
+                );
+                $orig_dd_sub_report->set_extra_metadata(
+                    direct_debit_customer_id => $dd_customer_id,
+                    direct_debit_contract_id => $dd_contract_id,
+                );
+                $orig_dd_sub_report->update;
+                FixMyStreet::Script::Reports::send();
+
+                $mech->log_in_ok( $user->email );
+                $mech->get_ok("/waste/$uprn/garden_modify");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            task => 'modify',
+                        },
+                    }, 'initial option page',
+                );
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            has_reference => 'Yes',
+                            customer_reference => 'CUSTOMER_123',
+                        },
+                    },
+                );
+
+                like $mech->content, qr/current_bins.*value="2"/s, 'correct number of current bins prefilled';
+                my $old_annual_cost_pence
+                    = $ggw_cost_first - $ggw_first_bin_discount + $ggw_cost;
+                my $old_annual_cost_human
+                    = sprintf( '%.2f', $old_annual_cost_pence / 100 );
+                like $mech->text,
+                    qr/Total per year.*£$old_annual_cost_human/,
+                    'correct original cost displayed';
+
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            bins_wanted => 3,
+                        },
+                    },
+                    "Modify"
+                );
+
+                my $new_annual_cost_pence = $old_annual_cost_pence + $ggw_cost;
+                my $new_annual_cost_human = sprintf('%.2f', $new_annual_cost_pence / 100);
+
+                like $mech->text, qr/Garden waste collection3 bins/,
+                    'correct bin total in summary';
+                like $mech->text, qr/Total£$new_annual_cost_human/,
+                    'correct new annual payment total in summary';
+                like $mech->text, qr/One-off Direct Debit payment.55\.00/,
+                    'correct today-payment in summary';
+                like $mech->text, qr/Your nameVerity Wright/,
+                    'correct name in summary';
+                like $mech->text,
+                    qr/the total cost of an additional bin will be added to your existing Garden Waste Service Direct Debit Mandate/,
+                    'DD notice shown';
+                my $email = $user->email;
+                like $mech->text, qr/$email/, 'correct email in summary';
+
+                $mech->submit_form_ok( { with_fields => { tandc => 1 } }, "Confirm" );
+
+                ok $amend_plan_args, 'Integrations::AccessPaySuite->amend_plan was called';
+                isa_ok $amend_plan_args->{orig_sub}, 'FixMyStreet::DB::Result::Problem', 'amend_plan received report object for original sub';
+                is $amend_plan_args->{orig_sub}->id, $orig_dd_sub_report->id, 'amend_plan received correct original report object';
+                is $amend_plan_args->{amount}, $new_annual_cost_human, 'amend_plan called with correct new annual amount';
+
+                my $modify_report = FixMyStreet::DB->resultset('Problem')
+                    ->search({ title => 'Garden Subscription - Amend' })
+                    ->order_by('-id')->first;
+
+                ok $modify_report, "Found the amend report";
+                is $modify_report->category, 'Garden Subscription', 'Amend report: correct category';
+                is $modify_report->title, "Garden Subscription - Amend", 'Amend report: correct title';
+                is $modify_report->get_extra_field_value('payment_method'), 'direct_debit', 'Amend report: correct payment method';
+                is $modify_report->get_extra_field_value('current_containers'), 2, 'Amend report: correct current_containers';
+                is $modify_report->get_extra_field_value('new_containers'), 1, 'Amend report: correct new_containers';
+                is $modify_report->get_extra_field_value('total_containers'), 3, 'Amend report: correct total_containers';
+                is $modify_report->get_extra_field_value('type'), 'amend', 'Amend report: correct type';
+                is $modify_report->get_extra_field_value('customer_external_ref'), 'CUSTOMER_123', 'Amend report: correct customer_external_ref';
+                is $modify_report->state, 'confirmed',
+                    'Amend report: state correct (confirmed for DD amend)';
+
+                $access_mock->unmock_all;
+            };
+
+        };
+    };
+
     subtest 'renew garden subscription' => sub {
         set_fixed_time('2024-02-01T00:00:00');
         $mech->delete_problems_for_body($body->id);
+        default_mocks();
 
         my $uprn = 10001;
         my $contract_id = 'CONTRACT_123';
@@ -372,22 +871,27 @@ FixMyStreet::override_config {
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
+        $mech->log_in_ok( $user->email );
+
         subtest 'with active contract elsewhere' => sub {
+            $whitespace_mock->mock('GetSiteCollections', sub {
+                [ {
+                    SiteServiceID          => 1,
+                    ServiceItemDescription => 'Non-recyclable waste',
+                    ServiceItemName => 'PC-180',
+                    ServiceName          => 'Blue Wheelie Bin',
+                    NextCollectionDate   => '2024-02-07T00:00:00',
+                    SiteServiceValidFrom => '2000-01-01T00:00:00',
+                    SiteServiceValidTo   => '0001-01-01T00:00:00',
+                    RoundSchedule => 'RND-1 Mon',
+                } ];
+            });
             $agile_mock->mock( 'CustomerSearch', sub { {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
-                            {
-                                # 42 days away
-                                EndDate => '14/03/2024 12:00',
-                                Reference => $contract_id,
-                                WasteContainerQuantity => 2,
-                                ServiceContractStatus => 'INACTIVE',
-                                UPRN => '10001',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
-                            },
                             {
                                 # 42 days away
                                 EndDate => '14/03/2024 12:00',
@@ -407,6 +911,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'with no garden container in Whitespace' => sub {
+            $whitespace_mock->mock( 'GetSiteCollections', sub { [] } );
             $agile_mock->mock( 'CustomerSearch', sub { {
                 Customers => [
                     {
@@ -420,7 +925,7 @@ FixMyStreet::override_config {
                                 WasteContainerQuantity => 2,
                                 ServiceContractStatus => 'ACTIVE',
                                 UPRN => '10001',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => '' } ]
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
                             },
                         ],
                     },
@@ -479,6 +984,9 @@ FixMyStreet::override_config {
                 } } );
 
                 $mech->get_ok("/waste/$uprn");
+                like $mech->content,
+                    qr/Change your brown wheelie bin subscription/,
+                    'can amend subscription';
                 unlike $mech->content, qr/Renew subscription today/,
                     '"Renew today" notification box not shown';
                 unlike $mech->content, qr/14 March 2024, soon due for renewal/,
@@ -493,6 +1001,8 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            Firstname => 'Verity',
+                            Surname => 'Wright',
                             CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
@@ -510,6 +1020,9 @@ FixMyStreet::override_config {
                 } } );
 
                 $mech->get_ok("/waste/$uprn");
+                unlike $mech->content,
+                    qr/Change your brown wheelie bin subscription/,
+                    'cannot amend subscription';
                 like $mech->content, qr/Renew subscription today/,
                     '"Renew today" notification box shown';
                 like $mech->content, qr/14 March 2024, soon due for renewal/,
@@ -520,7 +1033,78 @@ FixMyStreet::override_config {
                 like $mech->text, qr/Frequency.*Wednesday 7 February 2024/,
                     'Details are not pending because we have Whitespace data';
 
+                subtest 'verification failed' => sub {
+                    $mech->get_ok("/waste/$uprn/garden_renew");
+
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                has_reference => 'Yes',
+                                customer_reference => 'CUSTOMER_BAD',
+                            },
+                        },
+                    );
+                    like $mech->text, qr/Incorrect customer reference/,
+                        'error message shown on next page if bad reference';
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                verifications_first_name => 'Ferrety',
+                                verifications_last_name => 'Wright',
+                                email => 'ferrety@wright.com',
+                            },
+                        },
+                    );
+
+                    like $mech->text,
+                        qr/Renew your garden waste subscription/,
+                        'Can still renew';
+                    like $mech->content, qr/name="current_bins.*value="2"/s,
+                        'Current bins pre-populated';
+                    like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                        'Wanted bins pre-populated';
+
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                bins_wanted => 2,
+                                payment_method => 'credit_card',
+                            },
+                        }
+                    );
+                    $mech->waste_submit_check(
+                        { with_fields => { tandc => 1 } } );
+
+                    my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+                    # Should be blank customer_external_reference
+                    check_extra_data_pre_confirm(
+                        $renew_report,
+                        type         => 'New',
+                        current_bins => 2,
+                        new_bins     => 0,
+                        bins_wanted  => 2,
+                        customer_external_ref => '',
+                        renew_as_new_subscription => 1,
+                    );
+
+                    $renew_report->delete;
+                };
+
                 $mech->get_ok("/waste/$uprn/garden_renew");
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            has_reference => 'Yes',
+                            customer_reference => '123456',
+                        },
+                    },
+                );
+                $mech->submit_form_ok(
+                    {   with_fields => {
+                            verifications_first_name => 'verity',
+                            verifications_last_name => 'WRIGHT',
+                            email => 'verity@wright.com',
+                            phone => '+4407111111111',
+                        },
+                    }
+                );
                 like $mech->content, qr/name="current_bins.*value="2"/s,
                     'Current bins pre-populated';
                 like $mech->content, qr/name="bins_wanted.*value="2"/s,
@@ -531,9 +1115,6 @@ FixMyStreet::override_config {
                         {   with_fields => {
                                 bins_wanted => 3,
                                 payment_method => 'credit_card',
-                                name => 'Trevor Trouble',
-                                email => 'trevor@trouble.com',
-                                phone => '+4407111111111',
                             },
                         }
                     );
@@ -553,12 +1134,11 @@ FixMyStreet::override_config {
                         current_bins => 2,
                         new_bins     => 1,
                         bins_wanted  => 3,
+                        customer_external_ref => 'CUSTOMER_123',
                     );
                     is $renew_report->get_extra_field_value('uprn'), $uprn;
                     is $renew_report->get_extra_field_value('payment'), $ggw_cost_first + 2 * $ggw_cost;
                     is $renew_report->get_extra_field_value('type'), 'renew';
-                    is $renew_report->get_extra_field_value(
-                        'customer_external_ref'), 'CUSTOMER_123';
 
                     $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
                     check_extra_data_post_confirm($renew_report);
@@ -577,23 +1157,29 @@ FixMyStreet::override_config {
                     like $email_body, qr/Bins to be delivered: 1/;
                     unlike $email_body, qr/Bins to be removed/;
                     like $email_body, qr/Total:.*?185.00/;
+
+                    $renew_report->delete;
                 };
 
                 subtest 'requesting fewer bins' => sub {
                     $mech->get_ok("/waste/$uprn/garden_renew");
 
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                has_reference => 'Yes',
+                                customer_reference => 'CUSTOMER_123',
+                            },
+                        },
+                    );
+
                     like $mech->content, qr/name="current_bins.*value="2"/s,
                         'Current bins pre-populated';
                     like $mech->content, qr/name="bins_wanted.*value="2"/s,
                         'Wanted bins pre-populated';
-
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 bins_wanted => 1,
                                 payment_method => 'credit_card',
-                                name => 'Trevor Trouble',
-                                email => 'trevor@trouble.com',
-                                phone => '+4407111111111',
                             },
                         }
                     );
@@ -610,12 +1196,11 @@ FixMyStreet::override_config {
                         current_bins => 2,
                         new_bins     => -1,
                         bins_wanted  => 1,
+                        customer_external_ref => 'CUSTOMER_123',
                     );
                     is $renew_report->get_extra_field_value('uprn'), $uprn;
                     is $renew_report->get_extra_field_value('payment'), $ggw_cost_first;
                     is $renew_report->get_extra_field_value('type'), 'renew';
-                    is $renew_report->get_extra_field_value(
-                        'customer_external_ref'), 'CUSTOMER_123';
 
                     $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
                     check_extra_data_post_confirm($renew_report);
@@ -634,11 +1219,14 @@ FixMyStreet::override_config {
                     unlike $email_body, qr/Bins to be delivered/;
                     like $email_body, qr/Bins to be removed: 1/;
                     like $email_body, qr/Total:.*?$ggw_cost_first_human/;
+
+                    $renew_report->delete;
                 };
 
             };
 
-            $mech->delete_problems_for_body($body->id);
+            is +FixMyStreet::DB->resultset('Problem')->count, 1,
+                'only original subscription in DB';
 
             subtest 'too early' => sub {
                 $agile_mock->mock( 'CustomerSearch', sub { {
@@ -662,6 +1250,9 @@ FixMyStreet::override_config {
                 } } );
 
                 $mech->get_ok("/waste/$uprn");
+                like $mech->content,
+                    qr/Change your brown wheelie bin subscription/,
+                    'can amend subscription';
                 like $mech->content, qr/Renewal.*15 March 2024/s,
                     'Renewal date shown';
                 unlike $mech->content,
@@ -669,89 +1260,328 @@ FixMyStreet::override_config {
                     'Renewal link unavailable';
             };
 
-            subtest 'subscription expired -  renewal treated as new sub' => sub {
-                $agile_mock->mock( 'CustomerSearch', sub { {
-                    Customers => [
-                        {
-                            CustomerExternalReference => 'CUSTOMER_123',
-                            CustomertStatus => 'ACTIVATED',
-                            ServiceContracts => [
-                                {
-                                    # Yesterday
-                                    EndDate => '31/01/2024 12:00',
-                                    Reference => $contract_id,
-                                    WasteContainerQuantity => 2,
-                                    ServiceContractStatus => 'ACTIVE',
-                                    UPRN => '10001',
-                                    Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+            subtest 'subscription expired' => sub {
+                subtest 'within 14 days after expiry - is a renewal' => sub {
+                    $agile_mock->mock( 'CustomerSearch', sub { {
+                        Customers => [
+                            {
+                                CustomerExternalReference => 'CUSTOMER_123',
+                                Firstname => 'Verity',
+                                Surname => 'Wright',
+                                CustomertStatus => 'ACTIVATED',
+                                ServiceContracts => [
+                                    {
+                                        # 14 days ago
+                                        EndDate => '18/01/2024 12:00',
+                                        Reference => $contract_id,
+                                        WasteContainerQuantity => 2,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                    },
+                                ],
+                            },
+                        ],
+                    } } );
+
+                    $mech->get_ok("/waste/$uprn");
+                    unlike $mech->content,
+                        qr/Change your brown wheelie bin subscription/,
+                        'cannot amend subscription';
+                    unlike $mech->content, qr/Renew subscription today/,
+                        '"Renew today" notification box not shown';
+                    like $mech->content, qr/18 January 2024, subscription overdue/,
+                        '"Overdue" message shown';
+                    like $mech->content,
+                        qr/Renew your brown wheelie bin subscription/,
+                        'Renewal link available';
+
+                    $mech->get_ok("/waste/$uprn/garden_renew");
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                has_reference => 'Yes',
+                                customer_reference => 'CUSTOMER_123',
+                            },
+                        },
+                    );
+
+                    like $mech->content, qr/name="current_bins.*value="2"/s,
+                        'Current bins pre-populated';
+                    like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                        'Wanted bins pre-populated';
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                bins_wanted => 1,
+                                payment_method => 'credit_card',
+                            },
+                        }
+                    );
+
+                    like $mech->text,
+                        qr/Total£$ggw_cost_first_human/, 'correct cost';
+                    $mech->waste_submit_check(
+                        { with_fields => { tandc => 1 } } );
+
+                    my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+                    check_extra_data_pre_confirm(
+                        $renew_report,
+                        type         => 'Renew',
+                        current_bins => 2,
+                        new_bins     => -1,
+                        bins_wanted  => 1,
+                        customer_external_ref => 'CUSTOMER_123',
+                        renew_as_new_subscription => '',
+                    );
+                    is $renew_report->get_extra_field_value('uprn'), $uprn;
+                    is $renew_report->get_extra_field_value('payment'), $ggw_cost_first;
+                    is $renew_report->get_extra_field_value('type'), 'renew';
+
+                    $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
+                    check_extra_data_post_confirm($renew_report);
+
+                    $mech->clear_emails_ok;
+                    FixMyStreet::Script::Reports::send();
+
+                    my @emails = $mech->get_email;
+                    my ($to_user) = grep {
+                        $mech->get_text_body_from_email($_)
+                            =~ /Thank you for renewing your subscription/
+                    } @emails;
+                    ok $to_user, 'Email sent to user';
+                    my $email_body = $mech->get_text_body_from_email($to_user);
+                    like $email_body, qr/Number of bin subscriptions: 1/;
+                    unlike $email_body, qr/Bins to be delivered/;
+                    like $email_body, qr/Bins to be removed: 1/;
+                    like $email_body, qr/Total:.*?$ggw_cost_first_human/;
+
+                    $renew_report->delete;
+
+                    subtest 'verification failed - is a new subscription' => sub {
+                        $mech->get_ok("/waste/$uprn/garden_renew");
+
+                        $mech->submit_form_ok(
+                            {   with_fields => {
+                                    has_reference => 'Yes',
+                                    customer_reference => 'CUSTOMER_BAD',
                                 },
-                            ],
+                            },
+                        );
+                        $mech->submit_form_ok(
+                            {   with_fields => {
+                                    verifications_first_name => 'Ferrety',
+                                    verifications_last_name => 'Wright',
+                                    email => 'ferrety@wright.com',
+                                },
+                            },
+                        );
+
+                        like $mech->text,
+                            qr/Renew your garden waste subscription/,
+                            'Can still renew';
+                        like $mech->content, qr/name="current_bins.*value="2"/s,
+                            'Current bins pre-populated';
+                        like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                            'Wanted bins pre-populated';
+
+                        $mech->submit_form_ok(
+                            {   with_fields => {
+                                    bins_wanted => 2,
+                                    payment_method => 'credit_card',
+                                },
+                            }
+                        );
+                        $mech->waste_submit_check(
+                            { with_fields => { tandc => 1 } } );
+
+                        my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+                        # Should be blank customer_external_reference
+                        check_extra_data_pre_confirm(
+                            $renew_report,
+                            type         => 'New',
+                            current_bins => 2,
+                            new_bins     => 0,
+                            bins_wanted  => 2,
+                            customer_external_ref => '',
+                            renew_as_new_subscription => 1,
+                        );
+
+                        $renew_report->delete;
+
+                    };
+                };
+
+                subtest 'Ended more than 14 days but less than 3 months ago - renewal becomes a new signup' => sub {
+                    $agile_mock->mock( 'CustomerSearch', sub { {
+                        Customers => [
+                            {
+                                CustomerExternalReference => 'CUSTOMER_123',
+                                Firstname => 'Verity',
+                                Surname => 'Wright',
+                                CustomertStatus => 'INACTIVE',
+                                ServiceContracts => [
+                                    {
+                                        # Just over 3 months ago - should get ignored
+                                        EndDate => '31/10/2023 12:00',
+                                        Reference => 'CONTRACT_OLD',
+                                        WasteContainerQuantity => 2,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                    },
+                                    {
+                                        # Just under 3 months ago
+                                        EndDate => '01/11/2023 11:00',
+                                        Reference => 'CONTRACT_234',
+                                        WasteContainerQuantity => 1,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                    },
+                                    {
+                                        # Just under 3 months ago
+                                        EndDate => '01/11/2023 12:00',
+                                        Reference => $contract_id,
+                                        WasteContainerQuantity => 2,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                    },
+                                ],
+                            },
+                        ],
+                    } } );
+
+                    $mech->get_ok("/waste/$uprn");
+                    unlike $mech->content,
+                        qr/Change your brown wheelie bin subscription/,
+                        'cannot amend subscription';
+                    unlike $mech->content, qr/Renew subscription today/,
+                        '"Renew today" notification box not shown';
+                    like $mech->content, qr/1 November 2023, subscription overdue/,
+                        '"Overdue" message shown';
+                    like $mech->content,
+                        qr/Renew your brown wheelie bin subscription/,
+                        'Renewal link available';
+
+                    $mech->get_ok("/waste/$uprn/garden_renew");
+
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                has_reference => 'Yes',
+                                customer_reference => 'CUSTOMER_123',
+                            },
                         },
-                    ],
-                } } );
+                    );
 
-                $mech->get_ok("/waste/$uprn");
-                unlike $mech->content, qr/Renew subscription today/,
-                    '"Renew today" notification box not shown';
-                like $mech->content, qr/31 January 2024, subscription overdue/,
-                    '"Overdue" message shown';
-                like $mech->content,
-                    qr/Renew your brown wheelie bin subscription/,
-                    'Renewal link available';
+                    like $mech->content, qr/name="current_bins.*value="2"/s,
+                        'Current bins pre-populated';
+                    like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                        'Wanted bins pre-populated';
 
-                $mech->get_ok("/waste/$uprn/garden_renew");
-                like $mech->content, qr/name="current_bins.*value="2"/s,
-                    'Current bins pre-populated';
-                like $mech->content, qr/name="bins_wanted.*value="2"/s,
-                    'Wanted bins pre-populated';
+                    $mech->submit_form_ok(
+                        {   with_fields => {
+                                bins_wanted => 2,
+                                payment_method => 'credit_card',
+                            },
+                        }
+                    );
+                    $mech->waste_submit_check(
+                        { with_fields => { tandc => 1 } } );
 
-                $mech->submit_form_ok(
-                    {   with_fields => {
-                            bins_wanted => 1,
-                            payment_method => 'credit_card',
-                            name => 'Trevor Trouble',
-                            email => 'trevor@trouble.com',
-                            phone => '+4407111111111',
-                        },
-                    }
-                );
+                    my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
 
-                like $mech->text,
-                    qr/Total£$ggw_cost_first_human/, 'correct cost';
-                $mech->waste_submit_check(
-                    { with_fields => { tandc => 1 } } );
+                    # Should be new signup with customer ref
+                    check_extra_data_pre_confirm(
+                        $renew_report,
+                        type         => 'New',
+                        current_bins => 2,
+                        new_bins     => 0,
+                        bins_wanted  => 2,
+                        customer_external_ref => 'CUSTOMER_123',
+                        renew_as_new_subscription => 1,
+                    );
 
-                my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
-                check_extra_data_pre_confirm(
-                    $renew_report,
-                    type         => 'Renew',
-                    current_bins => 2,
-                    new_bins     => -1,
-                    bins_wanted  => 1,
-                );
-                is $renew_report->get_extra_field_value('uprn'), $uprn;
-                is $renew_report->get_extra_field_value('payment'), $ggw_cost_first;
-                is $renew_report->get_extra_field_value('type'), 'renew';
-                is $renew_report->get_extra_field_value(
-                    'customer_external_ref'), 'CUSTOMER_123';
+                    $renew_report->delete;
 
-                $mech->get_ok("/waste/pay_complete/$report_id/$token?STATUS=9&PAYID=54321");
-                check_extra_data_post_confirm($renew_report);
+                };
 
-                $mech->clear_emails_ok;
-                FixMyStreet::Script::Reports::send();
+                subtest 'Ended more than 3 months ago - no renewal option' => sub {
+                    $agile_mock->mock( 'CustomerSearch', sub { {
+                        Customers => [
+                            {
+                                CustomerExternalReference => 'CUSTOMER_123',
+                                Firstname => 'Verity',
+                                Surname => 'Wright',
+                                CustomertStatus => 'INACTIVE',
+                                ServiceContracts => [
+                                    {
+                                        # Just over 3 months ago
+                                        EndDate => '31/10/2023 12:00',
+                                        Reference => 'CONTRACT_OLD',
+                                        WasteContainerQuantity => 2,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                    },
+                                ],
+                            },
+                        ],
+                    } } );
 
-                my @emails = $mech->get_email;
-                my ($to_user) = grep {
-                    $mech->get_text_body_from_email($_)
-                        =~ /Thank you for renewing your subscription/
-                } @emails;
-                ok $to_user, 'Email sent to user';
-                my $email_body = $mech->get_text_body_from_email($to_user);
-                like $email_body, qr/Number of bin subscriptions: 1/;
-                unlike $email_body, qr/Bins to be delivered/;
-                like $email_body, qr/Bins to be removed: 1/;
-                like $email_body, qr/Total:.*?$ggw_cost_first_human/;
+                    $mech->get_ok("/waste/$uprn");
+                    unlike $mech->content,
+                        qr/Change your brown wheelie bin subscription/,
+                        'cannot amend subscription';
+                    unlike $mech->content, qr/Renew subscription today/,
+                        '"Renew today" notification box not shown';
+                    unlike $mech->content, qr/subscription overdue/,
+                        '"Overdue" message not shown';
+                    unlike $mech->content,
+                        qr/Renew your brown wheelie bin subscription/,
+                        'Renewal link not available';
+                };
+
+                subtest 'Inactive DD subscription' => sub {
+                    $new_sub_report->set_extra_fields(
+                        { name => 'uprn', value => $uprn } ,
+                        { name => 'direct_debit_reference', value => 'APIRTM-DEFGHIJ1KL' },
+                    );
+                    $new_sub_report->set_extra_metadata(
+                        direct_debit_customer_id => 'DD_CUSTOMER_123',
+                        direct_debit_contract_id => 'DD_CONTRACT_123',
+                        direct_debit_reference => 'APIRTM-DEFGHIJ1KL',
+                    );
+                    $new_sub_report->update;
+
+                    $agile_mock->mock( 'CustomerSearch', sub { {
+                        Customers => [
+                            {
+                                CustomerExternalReference => 'CUSTOMER_123',
+                                Firstname => 'Verity',
+                                Surname => 'Wright',
+                                CustomertStatus => 'INACTIVE',
+                                ServiceContracts => [
+                                    {
+                                        # 14 days ago
+                                        EndDate => '18/01/2024 12:00',
+                                        Reference => $contract_id,
+                                        WasteContainerQuantity => 2,
+                                        ServiceContractStatus => 'NOACTIVE',
+                                        UPRN => '10001',
+                                        Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Direct debit' } ]
+                                    },
+                                ],
+                            },
+                        ],
+                    } } );
+
+                    $mech->get_ok("/waste/$uprn");
+                    unlike $mech->content,
+                        qr/Change your brown wheelie bin subscription/,
+                        'cannot amend subscription';
+
+                };
             };
         };
     };
@@ -940,6 +1770,9 @@ FixMyStreet::override_config {
         }});
 
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
+        unlike $mech->text,
+            qr/the total cost of an additional bin will be added to your existing Garden Waste Service Direct Debit Mandate/,
+            'DD amendment notice not shown';
 
         $mech->content_contains('Test McTest');
         my $discount_human = sprintf('%.2f', ($ggw_cost_first - $ggw_first_bin_discount) / 100);
@@ -981,7 +1814,7 @@ FixMyStreet::override_config {
         }, 'Contract parameters are correct';
 
         $mech->content_contains('Your Direct Debit has been set up successfully');
-        $mech->content_contains('Direct Debit mandate');
+        $mech->content_contains('Direct Debit Mandate');
 
         $mech->back;
         $mech->submit_form_ok({ with_fields => { tandc => 1 } });
@@ -1069,7 +1902,7 @@ FixMyStreet::override_config {
         is $customer_params->{email}, 'gardenwaste@' . $body->get_cobrand_handler->admin_user_domain, 'Default email was used';
 
         $mech->content_contains('Your Direct Debit has been set up successfully');
-        $mech->content_contains('Direct Debit mandate');
+        $mech->content_contains('Direct Debit Mandate');
     };
 
     $mech->delete_problems_for_body($body->id);
@@ -1080,6 +1913,39 @@ FixMyStreet::override_config {
             subtest "Payment status: $status" => sub {
                 default_mocks();
                 set_fixed_time('2024-02-01T00:00:00');
+
+                my ($dd_report) = $mech->create_problems_for_body(
+                    1,
+                    $body->id,
+                    'Garden Subscription - New',
+                    {   category    => 'Garden Subscription',
+                        title       => 'Garden Subscription - New',
+                        external_id => 'Agile-CONTRACT_123',
+                    },
+                );
+                $dd_report->set_extra_fields(
+                    { name => 'uprn', value => 10001 },
+                    { name  => 'payment_method', value => 'direct_debit' },
+                );
+                $dd_report->set_extra_metadata(
+                    direct_debit_customer_id => 'DD_CUSTOMER_123' );
+                $dd_report->update;
+
+                my $access_mock
+                    = Test::MockModule->new('Integrations::AccessPaySuite');
+
+                $access_mock->mock(
+                    get_contracts => sub {
+                        return [
+                            {   Status => (
+                                    $status eq 'Pending'
+                                    ? 'Inactive'
+                                    : 'Active'
+                                )
+                            }
+                        ];
+                    },
+                );
 
                 $agile_mock->mock( 'CustomerSearch', sub { {
                     Customers => [
@@ -1101,6 +1967,7 @@ FixMyStreet::override_config {
                                 },
                                 {
                                     EndDate => '12/12/2025 12:21',
+                                    Reference => 'CONTRACT_123',
                                     ServiceContractStatus => 'ACTIVE',
                                     UPRN => '10001',
                                     Payments => [
@@ -1126,7 +1993,9 @@ FixMyStreet::override_config {
                 set_fixed_time('2025-12-01T00:00:00');
                 $mech->get_ok('/waste/10001');
                 $mech->content_lacks('Renew your');
-                $mech->content_contains('existing direct debit subscription');
+                $mech->content_contains( $status eq 'Pending'
+                    ? 'pending direct debit subscription'
+                    : 'existing direct debit subscription' );
             }
         }
     };
@@ -1140,6 +2009,9 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
+                    Firstname => 'VERITY',
+                    Surname => 'wright',
+                    Email => 'verity@wright.com',
                     CustomertStatus => 'ACTIVATED',
                     ServiceContracts => [
                         {
@@ -1158,11 +2030,12 @@ FixMyStreet::override_config {
         # as it sees the direct debit set up above and tries to cancel the DD
         $mech->delete_problems_for_body($body->id);
 
-        $mech->log_in_ok( $user->email );
-        subtest 'staff only' => sub {
+        subtest 'standard user' => sub {
+            $mech->log_in_ok( $user->email );
             $mech->get_ok('/waste/10001/garden_cancel');
-            is $mech->uri->path, "/waste/10001";
+            like $mech->text, qr/customer reference number/, 'On customer ref page';
         };
+
         $mech->log_in_ok( $staff_user->email );
 
         subtest 'with Agile data only' => sub {
@@ -1171,20 +2044,39 @@ FixMyStreet::override_config {
             like $mech->text, qr/Next collectionPending/;
 
             $mech->get_ok('/waste/10001/garden_cancel');
-            like $mech->text, qr/Cancel your garden waste subscription/;
-
             $mech->submit_form_ok(
                 {   with_fields => {
-                        name => 'Name McName',
+                        has_reference => 'Yes',
+                        customer_reference => 'CUSTOMER_BAD',
+                    },
+                },
+            );
+            like $mech->text, qr/Incorrect customer reference/,
+                'error message shown on next page if bad reference';
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        verifications_first_name => 'Verity',
+                        verifications_last_name => 'Wright',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Other',
                         reason_further_details => 'Burnt all my leaves',
+                    },
+                }
+            );
+
+            like $mech->text, qr/Cancel your garden waste subscription/;
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
             );
-            like $mech->text, qr/Your subscription has been cancelled/,
-                'form submitted OK';
+            $mech->content_contains('subscription has been cancelled');
 
             my $report
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
@@ -1233,19 +2125,28 @@ FixMyStreet::override_config {
             like $mech->content, qr/waste-service-subtitle.*Garden waste/s;
 
             $mech->get_ok('/waste/10001/garden_cancel');
-            like $mech->text, qr/Cancel your garden waste subscription/;
-
             $mech->submit_form_ok(
                 {   with_fields => {
-                        name => 'Name McName',
-                        email => 'test@example.org',
+                        has_reference => 'Yes',
+                        customer_reference => 'CUSTOMER_123',
+                    },
+                },
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Price',
+                    },
+                }
+            );
+
+            like $mech->text, qr/Cancel your garden waste subscription/;
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
             );
-            like $mech->text, qr/Your subscription has been cancelled/,
-                'form submitted OK';
+            $mech->content_contains('subscription has been cancelled');
 
             my $report
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
@@ -1272,6 +2173,26 @@ FixMyStreet::override_config {
 
         };
 
+        subtest 'verification failed' => sub {
+            $mech->get_ok('/waste/10001/garden_cancel');
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        has_reference => 'Yes',
+                        customer_reference => 'CUSTOMER_BAD',
+                    },
+                },
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        verifications_first_name => 'Verity',
+                        verifications_last_name => 'Wrong',
+                        email => 'test@example.org',
+                    },
+                }
+            );
+            like $mech->text, qr/Verification failed/, 'verification failed page';
+        };
+
         subtest 'Original sub paid via direct debit' => sub {
             $mech->delete_problems_for_body($body->id);
 
@@ -1285,6 +2206,8 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        Firstname => 'Verity',
+                        Surname => 'Wright',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -1319,15 +2242,32 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/10001/garden_cancel');
             $mech->submit_form_ok(
                 {   with_fields => {
-                        name => 'Name McName',
+                        has_reference => 'Yes',
+                        customer_reference => 'CUSTOMER_BAD',
+                    },
+                },
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
+                        verifications_first_name => 'Verity',
+                        verifications_last_name => 'Wright',
                         email => 'test@example.org',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         reason  => 'Price',
+                    },
+                }
+            );
+            $mech->submit_form_ok(
+                {   with_fields => {
                         confirm => 1,
                     },
                 }
             );
-            like $mech->text, qr/Your subscription has been cancelled/,
-                'form submitted OK';
+            $mech->content_contains('subscription has been cancelled');
 
             my $report
                 = FixMyStreet::DB->resultset('Problem')->order_by('-id')
@@ -1404,6 +2344,8 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        Firstname => 'Verity',
+                        Surname => 'Wright',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -1439,22 +2381,32 @@ FixMyStreet::override_config {
         # Navigate to the cancellation page
         $mech->get_ok('/waste/10001/garden_cancel');
 
-        like $mech->text, qr/Cancel your garden waste subscription/, 'On cancellation page';
-
         # Submit the cancellation form
         $mech->submit_form_ok(
             {   with_fields => {
-                    name => 'Name McName',
-                    email => 'test@example.org',
+                    has_reference => 'Yes',
+                    customer_reference => 'CUSTOMER_123',
+                },
+            },
+        );
+        $mech->submit_form_ok(
+            {   with_fields => {
                     reason  => 'Other',
                     reason_further_details => 'No longer needed',
+                },
+            }
+        );
+
+        like $mech->text, qr/Cancel your garden waste subscription/, 'On cancellation page';
+        $mech->submit_form_ok(
+            {   with_fields => {
                     confirm => 1,
                 },
             }
         );
 
         # Verify success message
-        like $mech->text, qr/Your subscription has been cancelled/, 'Cancellation success message shown';
+        $mech->content_contains('subscription has been cancelled');
 
         # Get the cancellation report
         my $cancel_report = FixMyStreet::DB->resultset('Problem')->search(
@@ -1504,6 +2456,8 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
+                    Firstname => 'Verity',
+                    Surname => 'Wright',
                     CustomertStatus => 'ACTIVATED',
                     ServiceContracts => [
                         {
@@ -1564,6 +2518,14 @@ FixMyStreet::override_config {
             '"Due soon" message shown';
 
         $mech->get_ok("/waste/$uprn/garden_renew");
+        $mech->submit_form_ok(
+            {   with_fields => {
+                    has_reference => 'Yes',
+                    customer_reference => 'CUSTOMER_123',
+                },
+            },
+        );
+
         like $mech->content, qr/name="current_bins.*value="2"/s,
             'Current bins pre-populated';
 
@@ -1572,9 +2534,6 @@ FixMyStreet::override_config {
             {   with_fields => {
                     bins_wanted => 2, # Keep same number of bins
                     payment_method => 'direct_debit', # Switch to direct debit
-                    name => 'Test McTest',
-                    email => 'test@example.net',
-                    phone => '+4407111111111',
                 },
             }
         );
@@ -1600,7 +2559,7 @@ FixMyStreet::override_config {
 
         # Check summary page
         $mech->content_contains('Please review the information you’ve provided before you submit your garden subscription');
-        $mech->content_contains('Test McTest');
+        $mech->content_contains('Verity Wright');
         my $discount_human = sprintf('%.2f', ($ggw_cost_first + $ggw_cost - $ggw_first_bin_discount) / 100);
         $mech->content_contains('£' . $discount_human);
         # Submit the form
@@ -1608,7 +2567,7 @@ FixMyStreet::override_config {
 
         # Check that we got a successful setup page
         $mech->content_contains('Your Direct Debit has been set up successfully');
-        $mech->content_contains('Direct Debit mandate');
+        $mech->content_contains('Direct Debit Mandate');
 
         # Check customer params
         is $customer_params->{accountHolderName}, 'Test McTest', 'Correct account holder name';
@@ -1680,9 +2639,7 @@ FixMyStreet::override_config {
                 {   category => 'Garden Subscription',
                     title    => 'Garden Subscription - New',
                     external_id => 'Agile-CONTRACT_123',
-                    # 20+ days ago, to stop this report from being picked up as
-                    # a 'pending_subscription'
-                    created => '2024-01-01T00:00:00Z',
+                    created => '2024-01-31T00:00:00Z',
                 },
             );
             $cc_report->set_extra_fields(
@@ -1718,13 +2675,17 @@ FixMyStreet::override_config {
                     ],
                 } } );
 
+                $mech->content_unlike(
+                    qr/You have a pending garden subscription\./,
+                    'Overall subscription not shown as pending',
+                );
                 $mech->get_ok('/waste/10001');
                 like $mech->text,
                     qr/Frequency.*Pending/,
                     'garden waste shown with pending Whitespace values';
                 like $mech->text,
-                    qr/100\.00 per year \(1 bin\)/,
-                    'garden waste shown with Agile values';
+                    qr/75\.00 per year \(1 bin\)/,
+                    'garden waste shown with calculated cost';
                 like $mech->text,
                     qr/Manage garden waste bins/,
                     'management link shown';
@@ -1796,8 +2757,8 @@ FixMyStreet::override_config {
                     qr/Frequency.*Weekly/,
                     'garden waste shown with Whitespace values';
                 like $mech->text,
-                    qr/100\.00 per year \(1 bin\)/,
-                    'garden waste shown with Agile values';
+                    qr/75\.00 per year \(1 bin\)/,
+                    'garden waste shown with calculated cost';
                 unlike $mech->text,
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
@@ -1844,7 +2805,7 @@ FixMyStreet::override_config {
             set_fixed_time('2024-02-01T00:00:00Z');
             default_mocks();
 
-            my ($cc_report) = $mech->create_problems_for_body(
+            my ($dd_report) = $mech->create_problems_for_body(
                 1,
                 $body->id,
                 'Garden Subscription - New',
@@ -1853,12 +2814,13 @@ FixMyStreet::override_config {
                     external_id => 'Agile-CONTRACT_123',
                 },
             );
-            $cc_report->set_extra_fields(
+            $dd_report->set_extra_fields(
                 { name => 'uprn', value => 10001 },
                 { name => 'payment_method', value => 'direct_debit' },
             );
-            $cc_report->set_extra_metadata(direct_debit_customer_id => 'DD_CUSTOMER_123');
-            $cc_report->update;
+            $dd_report->set_extra_metadata(
+                direct_debit_customer_id => 'DD_CUSTOMER_123' );
+            $dd_report->update;
 
             $agile_mock->mock( 'CustomerSearch', sub { {
                 Customers => [
@@ -1872,7 +2834,12 @@ FixMyStreet::override_config {
                                 WasteContainerQuantity => 1,
                                 ServiceContractStatus => 'ACTIVE',
                                 UPRN => '10001',
-                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Credit/Debit Card' } ]
+                                Payments => [
+                                    {   PaymentStatus => 'Paid',
+                                        Amount        => '100',
+                                        PaymentMethod => 'Direct debit',
+                                    }
+                                ]
                             },
                         ],
                     },
@@ -1920,6 +2887,10 @@ FixMyStreet::override_config {
                 );
 
                 $mech->get_ok('/waste/10001');
+                $mech->content_like(
+                    qr/You have a pending garden subscription\./,
+                    'Subscription shown as pending',
+                );
                 like $mech->text,
                     qr/This property has a pending direct debit subscription/,
                     'pending DD message shown';
@@ -1931,6 +2902,10 @@ FixMyStreet::override_config {
                 );
 
                 $mech->get_ok('/waste/10001');
+                $mech->content_unlike(
+                    qr/You have a pending garden subscription\./,
+                    'Subscription no longer shown as pending',
+                );
                 like $mech->text,
                     qr/This property has an existing direct debit subscription which will renew automatically/,
                     'active DD message shown';
@@ -1958,9 +2933,9 @@ FixMyStreet::override_config {
                 unlike $mech->text,
                     qr/Your subscription is soon due for renewal/,
                     'renewal warning not shown';
-                like $mech->content,
+                unlike $mech->content,
                     qr/subscription overdue/,
-                    'overdue message shown';
+                    'overdue message not shown';
                 unlike $mech->content,
                     qr/Renew your brown wheelie bin subscription/,
                     'renewal link not shown';
@@ -2085,6 +3060,8 @@ sub check_extra_data_pre_confirm {
         ref_type => 'scp',
         state => 'unconfirmed',
         type => 'New',
+        customer_external_ref => '',
+        renew_as_new_subscription => '',
 
         # Quantities
         current_bins => 0,
@@ -2102,6 +3079,8 @@ sub check_extra_data_pre_confirm {
     is $report->get_extra_field_value('current_containers'), $params{current_bins}, 'correct current_containers';
     is $report->get_extra_field_value('new_containers'), $params{new_bins}, 'correct new_containers';
     is $report->get_extra_field_value('total_containers'), $params{bins_wanted}, 'correct total_containers';
+    is $report->get_extra_field_value('customer_external_ref'), $params{customer_external_ref}, 'correct customer ref';
+    is $report->get_extra_field_value('renew_as_new_subscription'), $params{renew_as_new_subscription}, 'correct renew_as_new_subscription flag';
 
     is $report->state, $params{state}, 'report state correct';
     if ($params{state} eq 'unconfirmed') {

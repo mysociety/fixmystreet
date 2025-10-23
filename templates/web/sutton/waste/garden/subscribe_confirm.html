@@ -1,4 +1,7 @@
-[% INCLUDE waste/header.html %]
+[%
+PROCESS waste/garden/_data.html;
+INCLUDE waste/header.html;
+%]
 
 <div class="govuk-panel govuk-panel--confirmation">
     <h1 class="govuk-panel__title">
@@ -43,7 +46,7 @@ You have signed up for the garden waste collection at [% ADDRESS %].
 [% END %]
 
 <p>
-[% IF action == 'new_subscription' %]
+[% IF type != 'amend' %]
   [% IF new_bins > 0 %]
     We will aim to deliver your garden waste [% container_str %] within 10 working days.
     Your subscription will start on the next garden waste collection date for your
@@ -53,7 +56,7 @@ You have signed up for the garden waste collection at [% ADDRESS %].
     For new customers, your subscription starts from your first collection.
     If you are a returning customer, your service will continue from your last subscription end date.
     [% END %]
-[% ELSIF action == 'add_containers' %]
+[% ELSIF new_bins > 0 %]
     We will aim to deliver your garden waste [% container_str %] within 10 working days.
 [% ELSE %]
     Changes to your subscription will show up on your bin calendar shortly.

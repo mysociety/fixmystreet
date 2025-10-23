@@ -499,13 +499,12 @@ FixMyStreet::override_config {
         check_extra_data_post_confirm($new_report);
 
         $mech->content_contains('Bins typically arrive within two weeks');
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         # Someone double-clicked
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         check_extra_data_post_confirm($new_report);
         $mech->content_contains('Bins typically arrive within two weeks');
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -607,7 +606,7 @@ FixMyStreet::override_config {
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         check_extra_data_post_confirm($new_report);
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
@@ -653,7 +652,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
 
         check_extra_data_post_confirm($new_report);
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
@@ -802,7 +801,7 @@ FixMyStreet::override_config {
         check_extra_data_post_confirm($new_report);
 
         $mech->content_contains('Bins typically arrive within two weeks');
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
@@ -854,7 +853,7 @@ FixMyStreet::override_config {
         check_extra_data_post_confirm($new_report);
 
         $mech->content_contains('Bins typically arrive within two weeks');
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         $mech->clear_emails_ok;
         FixMyStreet::Script::Reports::send();
@@ -900,7 +899,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
 
         check_extra_data_post_confirm($new_report);
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -973,7 +972,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
 
         check_extra_data_post_confirm($new_report);
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         FixMyStreet::Script::Reports::send();
         my @emails = $mech->get_email;
@@ -1065,7 +1064,7 @@ FixMyStreet::override_config {
         is $report->name, 'Test McTest', 'non staff user name';
         is $report->user->email, 'test@example.net', 'non staff email';
 
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
         $report->delete; # Otherwise next test sees this as latest
     };
 
@@ -1214,7 +1213,7 @@ FixMyStreet::override_config {
         set_fixed_time('2021-03-09T17:00:00Z'); # After sample data collection
         $mech->get_ok('/waste/12345/garden_cancel');
         $mech->submit_form_ok({ with_fields => { name => 'Test McTest', email => 'test@example.org', confirm => 1 } });
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
 
         my $new_report = FixMyStreet::DB->resultset('Problem')->search(
             { },
@@ -1258,7 +1257,7 @@ FixMyStreet::override_config {
         is $new_report->name, 'Test McTest', 'non staff user name';
         is $new_report->user->email, 'test@example.net', 'non staff email';
 
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
         is $new_report->user->email, 'test@example.net';
         is $new_report->get_extra_metadata('contributed_by'), $staff_user->id;
         $new_report->delete; # Otherwise next test sees this as latest
@@ -1289,7 +1288,7 @@ FixMyStreet::override_config {
 
         check_extra_data_pre_confirm($report, payment_method => 'cheque', state => 'confirmed');
         is $report->get_extra_metadata('payment_reference'), 'Cheque123', 'cheque reference saved';
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
         $report->delete; # Otherwise next test sees this as latest
     };
 
@@ -1319,7 +1318,7 @@ FixMyStreet::override_config {
 
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         check_extra_data_post_confirm($new_report);
-        $mech->content_like(qr#/waste/12345">Show upcoming#, "contains link to bin page");
+        $mech->content_like(qr#/waste/12345"[^>]*>Show upcoming#, "contains link to bin page");
     };
 
     remove_test_subs( 0 );

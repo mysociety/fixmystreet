@@ -878,17 +878,6 @@ sub waste_sub_overdue {
 
 # Garden waste
 
-sub waste_display_payment_method {
-    my ($self, $method) = @_;
-
-    my $display = {
-        direct_debit => _('Direct Debit'),
-        credit_card => _('Credit Card'),
-    };
-
-    return $display->{$method};
-}
-
 sub garden_current_subscription { $_[0]->{c}->stash->{services}{$_[0]->garden_service_id} }
 sub get_current_garden_bins { shift->garden_current_subscription->{garden_bins} }
 
