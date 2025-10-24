@@ -28,5 +28,5 @@
   [% IF property.show_bulky_waste %]
     <li><a href="[% c.uri_for_action('waste/bulky/index', [ property.id ]) %]">Arrange a bulky waste collection</a></li>
   [% END %]
-  <li><a [% external_new_tab | safe %] href="https://www.bexley.gov.uk/services/rubbish-and-recycling/assisted-collections/help-putting-bins-out">Get help with putting your bins out</a></li>
+  <li><a [% external_new_tab | safe %] href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Request+assisted+collection">Get help with putting your bins out</a></li>
 </ul>

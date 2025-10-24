@@ -17,6 +17,8 @@ INCLUDE '_email_top.html';
     <h1 style="[% h1_style %]">Thank you for requesting replacement bins</h1>
   [% ELSIF is_no_collections_missed_enquiry OR is_request_enquiry %]
     <h1 style="[% h1_style %]">Thank you for your [% report.category | lower %]</h1>
+  [% ELSIF is_assisted_request %]
+      <h1 style="[% h1_style %]">Thank you for your request for an assisted collection</h1>
   [% ELSE %]
     <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
   [% END %]
@@ -44,6 +46,12 @@ INCLUDE '_email_top.html';
   [% ELSIF is_no_collections_missed_enquiry OR is_request_enquiry %]
     <p style="[% p_style %]">
       We will look into your enquiry and get back to you as soon as possible.
+      <br><br>
+      If you need to contact us about this enquiry, please quote your reference number.
+    </p>
+  [% ELSIF is_assisted_request %]
+    <p style="[% p_style %]">
+      We will look into your request and get back to you as soon as possible.
       <br><br>
       If you need to contact us about this enquiry, please quote your reference number.
     </p>
