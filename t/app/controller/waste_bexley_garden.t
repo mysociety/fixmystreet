@@ -356,7 +356,7 @@ FixMyStreet::override_config {
         set_fixed_time('2024-02-01T00:00:00');
         $mech->delete_problems_for_body($body->id);
 
-        my $uprn = 10001;
+        my $uprn = '10001';
         my $contract_id = 'CONTRACT_123';
 
         my ($new_sub_report) = $mech->create_problems_for_body(
@@ -1278,7 +1278,7 @@ FixMyStreet::override_config {
             my $access_mock = Test::MockModule->new('Integrations::AccessPaySuite');
             $access_mock->mock( cancel_plan => 'CANCEL_REF_123' );
 
-            my $uprn = 10001;
+            my $uprn = '10001';
             my $contract_id = 'CONTRACT_123';
 
             $agile_mock->mock( 'CustomerSearch', sub { {
@@ -1370,7 +1370,7 @@ FixMyStreet::override_config {
 
         $new_sub_report->set_extra_metadata(direct_debit_contract_id => $contract_id);
         $new_sub_report->set_extra_fields(
-            { name => 'uprn', value => 10001 },
+            { name => 'uprn', value => '10001' },
             { name => 'payment_method', value => 'direct_debit' },
         );
         $new_sub_report->update;
@@ -1477,7 +1477,7 @@ FixMyStreet::override_config {
         default_mocks();
         set_fixed_time('2024-02-01T00:00:00Z');
 
-        my $uprn = 10001;
+        my $uprn = '10001';
         my $contract_id = 'CARD_CONTRACT_123';
 
         # Create a report representing a subscription that was previously paid by credit card
@@ -1686,7 +1686,7 @@ FixMyStreet::override_config {
                 },
             );
             $cc_report->set_extra_fields(
-                { name => 'uprn', value => 10001 },
+                { name => 'uprn', value => '10001' },
                 { name => 'payment_method', value => 'credit_card' },
             );
             $cc_report->update;
@@ -1854,7 +1854,7 @@ FixMyStreet::override_config {
                 },
             );
             $cc_report->set_extra_fields(
-                { name => 'uprn', value => 10001 },
+                { name => 'uprn', value => '10001' },
                 { name => 'payment_method', value => 'direct_debit' },
             );
             $cc_report->set_extra_metadata(direct_debit_customer_id => 'DD_CUSTOMER_123');
@@ -1972,8 +1972,8 @@ FixMyStreet::override_config {
     };
 
     subtest 'Parent property scenarios' => sub {
-        my $child_uprn = 10002;
-        my $parent_uprn = 10001;
+        my $child_uprn = '10002';
+        my $parent_uprn = '10001';
         my $parent_site_id = 999;
 
         default_mocks();
