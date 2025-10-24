@@ -147,7 +147,7 @@ sub _site_info {
     return {
         10001 => {
             AccountSiteID   => 1,
-            AccountSiteUPRN => 10001,
+            AccountSiteUPRN => '10001',
             Site            => {
                 SiteShortAddress => ', 1, THE AVENUE, DA1 3NP',
                 SiteLatitude     => 51.466707,
@@ -156,7 +156,7 @@ sub _site_info {
         },
         10002 => {
             AccountSiteID   => 2,
-            AccountSiteUPRN => 10002,
+            AccountSiteUPRN => '10002',
             Site            => {
                 SiteShortAddress => ', 2, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
@@ -166,7 +166,7 @@ sub _site_info {
         },
         10003 => {
             AccountSiteID   => 3,
-            AccountSiteUPRN => 10003,
+            AccountSiteUPRN => '10003',
             Site            => {
                 SiteShortAddress => ', 3, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
@@ -176,7 +176,7 @@ sub _site_info {
         },
         10004 => {
             AccountSiteID   => 4,
-            AccountSiteUPRN => 10004,
+            AccountSiteUPRN => '10004',
             Site            => {
                 SiteShortAddress => ', 4, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
@@ -186,7 +186,7 @@ sub _site_info {
         },
         10005 => {
             AccountSiteID   => 5,
-            AccountSiteUPRN => 10005,
+            AccountSiteUPRN => '10005',
             Site            => {
                 SiteShortAddress => ', 5, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
@@ -195,7 +195,7 @@ sub _site_info {
         },
         10006 => {
             AccountSiteID   => 6,
-            AccountSiteUPRN => 10006,
+            AccountSiteUPRN => '10006',
             Site            => {
                 SiteShortAddress => ', 6, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
@@ -207,7 +207,7 @@ sub _site_info {
 
 sub _account_site_id {
     return {
-        AccountSiteUprn => 10001,
+        AccountSiteUprn => '10001',
     };
 }
 
