@@ -402,12 +402,107 @@ subtest 'check protected categories do not have name/group overwritten' => sub {
     is $contact->non_public, 1, 'contact marked as non_public';
 };
 
+subtest 'check contacts with send_method do not have name/group overwritten' => sub {
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+
+    $contact->update({
+        email => '100',
+        category => 'Original category name',
+        send_method => 'Email',
+    });
+    $contact->set_extra_metadata('group', [ 'original_group' ]);
+    $contact->update;
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>100</service_code>
+        <service_name>New category name</service_name>
+        <description>Updated service description</description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>private</keywords>
+        <group>new_group</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'tester' ],
+        COBRAND_FEATURES => {
+           category_groups => { tester => 1 },
+        }
+    }, sub {
+        my $processor = Open311::PopulateServiceList->new();
+        $processor->_current_body( $body );
+        $processor->process_services( $service_list );
+    };
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    $contact->discard_changes;
+    is $contact->email, '100', 'email correct';
+    is $contact->category, 'Original category name', 'category unchanged when send_method set';
+    is_deeply $contact->groups, ['original_group'], 'group unchanged when send_method set';
+    is $contact->send_method, 'Email', 'send_method preserved';
+    is $contact->non_public, 1, 'contact marked as non_public (unprotected field updated)';
+};
+
+
+subtest 'check contacts with send_method do not have email overwritten' => sub {
+    my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
+
+    $contact->update({
+        email => 'foo@example.org',
+    });
+
+    my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
+    <services>
+      <service>
+        <service_code>100</service_code>
+        <service_name>Original category name</service_name>
+        <description>Updated service description</description>
+        <metadata>false</metadata>
+        <type>realtime</type>
+        <keywords>private</keywords>
+        <group>original_group</group>
+      </service>
+    </services>
+        ';
+
+    my $service_list = get_xml_simple_object( $services_xml );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'tester' ],
+        COBRAND_FEATURES => {
+           category_groups => { tester => 1 },
+        }
+    }, sub {
+        my $processor = Open311::PopulateServiceList->new();
+        $processor->_current_body( $body );
+        $processor->process_services( $service_list );
+    };
+
+    my $contact_count = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->count();
+    is $contact_count, 1, 'correct number of contacts';
+
+    $contact->discard_changes;
+    is $contact->email, 'foo@example.org', 'email correct';
+    is $contact->send_method, 'Email', 'send_method preserved';
+};
 
 subtest 'check existing category marked non_public' => sub {
     my $contact = FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->first;
     $contact->update({
-        non_public => 0
+        non_public => 0,
+        email => '100',
+        category => 'Cans left out 24x7',
     });
+    $contact->set_extra_metadata('group', [ 'sanitation' ]);
+    $contact->update;
     is $contact->non_public, 0, 'contact not marked as non_public';
 
     my $services_xml = '<?xml version="1.0" encoding="utf-8"?>

@@ -143,7 +143,7 @@ sub _handle_existing_contact {
     my ( $self, $contact ) = @_;
 
     my $service_name = $self->_normalize_service_name;
-    my $protected = $contact->get_extra_metadata("open311_protect");
+    my $protected = $contact->get_extra_metadata("open311_protect") || $contact->send_method;
 
     return if $self->_current_body_cobrand && $self->_current_body_cobrand->call_hook(open311_skip_existing_contact => $contact);
 
@@ -152,13 +152,13 @@ sub _handle_existing_contact {
     my @actions;
     if ( $contact->state eq 'deleted' ) {
         $contact->category($service_name) unless $protected;
-        $contact->email($self->_current_service->{service_code});
+        $contact->email($self->_current_service->{service_code}) unless $protected;
         $contact->send_method(undef); # Let us assume we want to remove any devolved send method in this case
         $contact->state('confirmed');
         push @actions, "undeleted";
     } elsif ( $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
         $contact->category($service_name) unless $protected;
-        $contact->email($self->_current_service->{service_code});
+        $contact->email($self->_current_service->{service_code}) unless $protected;
         push @actions, "updated";
     }
 
