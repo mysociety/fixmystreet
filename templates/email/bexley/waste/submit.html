@@ -24,6 +24,11 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">
     The enquiry reference number is <strong>[% report.id %]</strong>.
   </p>
+  [% IF report.category == 'Request assisted collection' %]
+  <p style="[% p_style %]">
+    You can respond to this request with this <a href="[% cobrand.base_url _ '/waste/' _ report.waste_property_id _ '/assisted/' _ report.id %]">form</a>
+  </p>
+  [% END %]
 
   [% IF is_no_collections_missed_enquiry %]
     <p>The below details have been submitted via WasteWorks for your attention because no collections were found at the property.</p>
