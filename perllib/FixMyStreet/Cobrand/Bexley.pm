@@ -19,6 +19,8 @@ use Time::Piece;
 use DateTime;
 use List::MoreUtils qw(firstidx);
 use Moo;
+use JSON;
+
 with 'FixMyStreet::Roles::Open311Multi',
      'FixMyStreet::Cobrand::Bexley::Garden',
      'FixMyStreet::Cobrand::Bexley::Bulky',
@@ -182,6 +184,14 @@ sub waste_munge_enquiry_form_pages {
         $splice = firstidx { $_ eq 'extra_assisted_staff_notes' } @{$pages->[1]{fields}};
         splice(@{$pages->[1]{fields}}, $splice, 1);
     }
+}
+
+sub waste_post_report_creation {
+    my ($self, $report) = @_;
+
+    if ($report->category eq 'Request assisted collection approve') {
+        $self->_add_update_to_assisted_request('approve');
+    };
 }
 
 sub waste_format_assistance_results {
@@ -523,6 +533,50 @@ sub skip_alert_state_changed_to {
 
     return $report->category eq 'Request new container'
         || $report->category eq 'Request container removal';
+}
+
+sub _add_update_to_assisted_request {
+    my ($self, $response) = @_;
+
+    my $text;
+    my $status;
+
+    if ($response eq 'approve') {
+        $text = 'Your request for an assisted collection has been approved';
+        $status = 'fixed - council';
+    } elsif ($response eq 'deny') {
+        $text = 'Your request for an assisted collection has been denied';
+        $status = 'closed';
+    } else {
+        return;
+    };
+
+    my $uprn = $self->{c}->stash->{property}{uprn};
+
+    my $request_report = FixMyStreet::DB->resultset('Problem')->search({
+        category => 'Request assisted collection',
+        state => 'confirmed',
+        extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) }
+    })->first;
+
+    my $c = FixMyStreet::DB->resultset('Comment')->new(
+            {
+                problem => $request_report,
+                text => $text,
+                state => 'confirmed',
+                problem_state => $status,
+                user => $self->body->comment_user,
+                confirmed => \'current_timestamp'
+            }
+        );
+    $c->insert;
+
+    $request_report->update(
+        {
+            state => $status,
+            lastupdate => \'current_timestamp',
+        }
+    );
 }
 
 1;
