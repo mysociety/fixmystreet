@@ -14,7 +14,7 @@ please visit the following link:
 [% ELSE %]
 A user of [% site_name %] has submitted a request for an assisted collection.
 
-The details are below and you can see the location at [% url %]
+The details are below and you can respond to the request: [% cobrand.base_url _ '/waste/' _ report.waste_property_id _ '/assisted/' _ report.id %]
 
 [% END %]
 ----------
