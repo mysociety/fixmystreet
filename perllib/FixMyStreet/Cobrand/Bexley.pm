@@ -19,6 +19,8 @@ use Time::Piece;
 use DateTime;
 use List::MoreUtils qw(firstidx);
 use Moo;
+use JSON;
+
 with 'FixMyStreet::Roles::Open311Multi',
      'FixMyStreet::Cobrand::Bexley::Garden',
      'FixMyStreet::Cobrand::Bexley::Bulky',
