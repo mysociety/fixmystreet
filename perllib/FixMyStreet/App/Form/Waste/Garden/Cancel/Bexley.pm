@@ -44,17 +44,10 @@ has_field reason_further_details => (
 
 has_page verify_failed => ( verify_failed() );
 
-has_page confirm => (
-    intro => 'garden/cancel_tandc.html',
-    title => 'Cancel your garden waste subscription',
-    fields => ['confirm_tandc', 'submit'],
-    finished => sub {
-        return $_[0]->wizard_finished('process_garden_cancellation');
-    },
-    next => 'done',
-);
+has_page confirm =>
+    FixMyStreet::App::Form::Waste::Garden::Cancel::Shared::intro();
 
-has_field confirm_tandc => (
+has_field confirm => (
     type => 'Checkbox',
     option_label => 'I agree to the terms and conditions',
     required => 1,
