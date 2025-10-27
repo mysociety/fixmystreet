@@ -211,6 +211,30 @@ for my $test (
 }
 $body->update({ can_be_devolved => 0 });
 
+subtest 'check devolved contacts not updated during service list processing' => sub {
+    FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
+
+    my $contact = FixMyStreet::DB->resultset('Contact')->create({
+        body_id => $body->id,
+        email => 'devolved@example.org',
+        category => 'Cans left out 24x7',
+        state => 'confirmed',
+        send_method => 'Email',
+        editor => $0,
+        whenedited => \'current_timestamp',
+        note => 'devolved contact',
+    });
+
+    my $service_list = get_xml_simple_object( get_standard_xml() );
+    my $processor = Open311::PopulateServiceList->new();
+    $processor->_current_body( $body );
+    $processor->process_services( $service_list );
+
+    $contact->discard_changes;
+    is $contact->email, 'devolved@example.org', 'email unchanged for devolved contact';
+    is $contact->send_method, 'Email', 'send_method unchanged';
+};
+
 subtest 'check email changed if matching category' => sub {
     FixMyStreet::DB->resultset('Contact')->search( { body_id => $body->id } )->delete();
 

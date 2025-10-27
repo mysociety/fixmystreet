@@ -142,6 +142,8 @@ sub _action_params {
 sub _handle_existing_contact {
     my ( $self, $contact ) = @_;
 
+    return if $contact->send_method; # don't clobber devolved contacts
+
     my $service_name = $self->_normalize_service_name;
     my $protected = $contact->get_extra_metadata("open311_protect");
 
