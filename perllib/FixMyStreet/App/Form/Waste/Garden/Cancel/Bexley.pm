@@ -47,6 +47,14 @@ has_page verify_failed => ( verify_failed() );
 has_page confirm =>
     FixMyStreet::App::Form::Waste::Garden::Cancel::Shared::intro();
 
+has_field confirm => (
+    type => 'Checkbox',
+    option_label => 'I agree to the terms and conditions',
+    required => 1,
+    label => '',
+    order => 998,
+);
+
 has_field continue => (
     type => 'Submit',
     value => 'Continue',
