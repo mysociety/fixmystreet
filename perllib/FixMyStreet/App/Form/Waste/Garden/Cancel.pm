@@ -28,6 +28,14 @@ sub intro {
     return %defaults;
 }
 
+has_field confirm => (
+    type => 'Checkbox',
+    option_label => 'I confirm I wish to cancel my subscription',
+    required => 1,
+    label => "Confirm",
+    order => 998,
+);
+
 with 'FixMyStreet::App::Form::Waste::AboutYou';
 
 1;
