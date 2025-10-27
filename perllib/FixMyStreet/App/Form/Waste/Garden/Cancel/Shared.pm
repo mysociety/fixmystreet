@@ -24,14 +24,6 @@ has_page done => (
     template => 'waste/garden/cancel_confirmation.html',
 );
 
-has_field confirm => (
-    type => 'Checkbox',
-    option_label => 'I confirm I wish to cancel my subscription',
-    required => 1,
-    label => "Confirm",
-    order => 998,
-);
-
 has_field submit => (
     type => 'Submit',
     value => 'Cancel subscription',
