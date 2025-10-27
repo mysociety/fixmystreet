@@ -20,8 +20,8 @@
               "ServiceTaskSchedule": {
                 "ScheduleDescription": "Friday every other week",
                 "NextInstance": {
-                  "CurrentScheduledDate": { "DateTime": "2022-09-15T23:00:00Z" },
-                  "OriginalScheduledDate": { "DateTime": "2022-09-15T23:00:00Z" }
+                  "CurrentScheduledDate": { "DateTime": "2022-09-15T23:00:00Z", "OffsetMinutes": 60 },
+                  "OriginalScheduledDate": { "DateTime": "2022-09-15T23:00:00Z", "OffsetMinutes": 60 }
                 },
                 "LastInstance": {
                   "CurrentScheduledDate": { "DateTime": "2022-09-02T05:00:00Z" },

@@ -75,6 +75,7 @@ subtest 'Echo downtime' => sub {
             $mech->content_contains('Due to planned maintenance');
             $mech->content_contains('from  8pm until 11pm');
             $mech->content_contains('Please accept our apologies');
+            $mech->content_contains('Planned maintenance');
             is $cobrand->waste_check_downtime_file->{state}, 'down';
         };
         subtest 'end of closure period, in buffer' => sub {
@@ -103,7 +104,9 @@ subtest 'Echo downtime' => sub {
             $mech->get('/waste');
             is $mech->res->code, 503;
             $mech->content_contains('Please refrain from calling');
+            $mech->content_contains('Temporarily unavailable');
             is $cobrand->waste_check_downtime_file->{state}, 'down';
+            is $cobrand->waste_check_downtime_file->{unplanned}, 1;
         };
 
         $now = DateTime->new( year => 2025, month => 4, day => 8, time_zone => FixMyStreet->local_time_zone );

@@ -255,9 +255,15 @@ sub lookup_site_code_config {
 sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
-    if ($contact->email =~ /^Alloy-/ && !$row->get_extra_field_value('usrn')) {
-        if (my $usrn = $self->lookup_site_code($row)) {
-            $row->update_extra_field({ name => 'usrn', value => $usrn });
+    if ($contact->email =~ /^Alloy-/) {
+        my $stored_usrn = $row->get_extra_field_value('usrn');
+        my %ignored = map { $_ => 1 } @{ $self->_ignored_usrns };
+
+        # Look up USRN if it's empty or if it's in the ignored list
+        if (!$stored_usrn || $ignored{$stored_usrn}) {
+            if (my $usrn = $self->lookup_site_code($row)) {
+                $row->update_extra_field({ name => 'usrn', value => $usrn });
+            }
         }
     };
 }

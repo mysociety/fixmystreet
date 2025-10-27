@@ -221,12 +221,12 @@ for my $test (
     {
         lat => 52.5608,
         desc => 'leased council land - send by email',
-        method => 'Email',
+        method => 'Blackhole',
     },
     {
         lat => 52.5508,
         desc => 'non council land - send by email',
-        method => 'Email',
+        method => 'Blackhole',
     },
     {
         lat => 52.5408,
@@ -335,7 +335,7 @@ subtest "flytipping on PCC land witnessed is only sent by email" => sub {
     };
 };
 
-subtest "flytipping/graffiti on non PCC land is emailed" => sub {
+subtest "flytipping/graffiti on non PCC land is not sent anywhere" => sub {
     FixMyStreet::override_config {
         STAGING_FLAGS => { send_reports => 1 },
         MAPIT_URL => 'http://mapit.uk/',
@@ -369,16 +369,13 @@ subtest "flytipping/graffiti on non PCC land is emailed" => sub {
         $p->discard_changes;
         is $p->send_state, 'sent', 'Report marked as sent';
         is $p->get_extra_metadata('flytipping_email'), undef, 'flytipping_email extra metadata unset';
-        is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
+        is $p->get_extra_metadata('sent_to'), undef, 'sent_to extra metadata not set';
         is $p->state, 'closed', 'report closed having sent email';
         is $p->comments->count, 1, 'comment added';
         like $p->comments->first->text, qr/The area selected is not owned or maintained by Peterborough City Council/, 'correct comment text';
         ok !Open311->test_req_used, 'no open311 sent';
 
-        $mech->email_count_is(1);
-        my $email = $mech->get_email;
-        ok $email, "got an email";
-        $mech->clear_emails_ok;
+        $mech->email_count_is(0);
 
         ($p) = $mech->create_problems_for_body(1, $peterborough->id, 'Title', {
             category => 'Non offensive graffiti',
@@ -392,16 +389,13 @@ subtest "flytipping/graffiti on non PCC land is emailed" => sub {
         $p->discard_changes;
         is $p->send_state, 'sent', 'Report marked as sent';
         is $p->get_extra_metadata('flytipping_email'), undef, 'flytipping_email extra metadata unset';
-        is $p->get_extra_metadata('sent_to')->[0], 'flytipping@example.org', 'sent_to extra metadata set';
+        is $p->get_extra_metadata('sent_to'), undef, 'sent_to extra metadata not set';
         is $p->state, 'closed', 'report closed having sent email';
         is $p->comments->count, 1, 'comment added';
         like $p->comments->first->text, qr/For graffiti on private land/, 'correct comment text';
         ok !Open311->test_req_used, 'no open311 sent';
 
-        my @email = $mech->get_email;
-        $mech->email_count_is(1);
-        $email = $mech->get_email;
-        ok $email, "got an email";
+        $mech->email_count_is(0);
     };
 };
 

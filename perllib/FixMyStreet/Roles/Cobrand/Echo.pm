@@ -49,7 +49,7 @@ sub waste_check_downtime {
 
     my $result = $self->waste_check_downtime_file;
     if ($result->{state} eq 'down') {
-        $c->stash->{title} = 'Planned maintenance';
+        $c->stash->{title} = $result->{unplanned} ? 'Temporarily unavailable' : 'Planned maintenance';
         $c->stash->{header_class} = 'blank';
         $c->response->header('X-Custom-Error-Provided' => 'yes');
         $c->detach('/page_error', [ $result->{message}, 503 ]);
@@ -74,8 +74,10 @@ sub waste_check_downtime_file {
         my $start_hour = $start->strftime('%l%P');
         my $end_hour = $end->strftime('%l%P');
 
+        my $unplanned = 0;
         if ($message && $message eq '1') {
             $message = "Our waste service system is temporarily unavailable. This also affects our Contact Centre, as they are unable to access or update information at this time. Please refrain from calling until the system is restored. We apologise for any inconvenience and appreciate your patience.";
+            $unplanned = 1;
         } elsif (!$message) {
             $message = "Due to planned maintenance, this waste service will be unavailable from $start_hour until $end_hour.";
             $end->add( minutes => 15 ); # Add a buffer, sometimes they go past their end time
@@ -83,7 +85,7 @@ sub waste_check_downtime_file {
 
         if ($now >= $start && $now < $end) {
             $message .= " Please accept our apologies for the disruption and try again later.";
-            return { state => 'down', message => $message };
+            return { state => 'down', message => $message, unplanned => $unplanned };
         }
 
         my $start_warning = $start->clone->subtract( hours => 2 );
@@ -297,9 +299,7 @@ sub bin_services_for_address {
             requests_open => $open_requests,
             request_containers => $containers,
             request_max => $request_max,
-            service_task_id => $servicetask->{Id},
-            service_task_name => $servicetask->{TaskTypeName},
-            service_task_type_id => $servicetask->{TaskTypeId},
+            service_task_ids => $servicetask->{ids},
             # FD-3942 - comment this out so Frequency not shown in front end
             $self->moniker eq 'bromley' ? () : (schedule => $schedules->{description}),
             last => $schedules->{last},
@@ -407,7 +407,7 @@ sub _get_current_service_task {
 
     my $service_name = $self->service_name_override($service);
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my ($current, $last_date);
+    my ($current, $last_date, @schedules, %taskids);
     foreach my $task ( @$servicetasks ) {
         my $schedules = Integrations::Echo::force_arrayref($task->{ServiceTaskSchedules}, 'ServiceTaskSchedule');
         foreach my $schedule ( @$schedules ) {
@@ -416,8 +416,21 @@ sub _get_current_service_task {
             next if $last_date && $end && $end < $last_date;
             next if $end && $end < $today && $service_name !~ /Garden Waste/i;
             $last_date = $end;
+            push @schedules, $schedule;
+            $taskids{$task->{Id}} = 1;
             $current = $task;
         }
+    }
+    if ($current) {
+        # It is possible for properties to have multiple service tasks with
+        # valid schedules in them. We need all the task IDs to look up future
+        # collections for the calendar, and we need all the schedules that
+        # passed the checks in the above loop, but otherwise we assume the task
+        # we found is good to use and we add the other schedules/IDs to that.
+        if (scalar keys %taskids > 1) {
+            $current->{ServiceTaskSchedules} = { ServiceTaskSchedule => \@schedules };
+        }
+        $current->{ids} = [ sort keys %taskids ];
     }
     return $current;
 }
@@ -448,15 +461,11 @@ sub _schedule_object {
 
 sub _parse_schedules {
     my $servicetask = shift;
-    my $desc_to_use = shift || 'schedule';
     my $schedules = Integrations::Echo::force_arrayref($servicetask->{ServiceTaskSchedules}, 'ServiceTaskSchedule');
 
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->strftime("%F");
-    my ($min_next, $max_last, $description, $max_end_date);
-
-    if ($desc_to_use eq 'task') {
-        $description = $servicetask->{ScheduleDescription};
-    }
+    my ($min_next, $max_last, $max_end_date);
+    my ($next_orig, $last_orig);
 
     foreach my $schedule (@$schedules) {
         my $start_date = construct_bin_date($schedule->{StartDate})->strftime("%F");
@@ -470,7 +479,7 @@ sub _parse_schedules {
         if ($d && (!$min_next || $d < $min_next->{date})) {
             $min_next = _schedule_object($next, $d);
             $min_next->{schedule} = $schedule;
-            $description = $schedule->{ScheduleDescription} if $desc_to_use eq 'schedule';
+            $next_orig = construct_bin_date($next->{OriginalScheduledDate});
         }
 
         next if $start_date gt $today; # Shouldn't have a LastInstance in this case, but some bad data
@@ -482,9 +491,24 @@ sub _parse_schedules {
         if ($d && $d->strftime("%F") gt $today && (!$min_next || $d < $min_next->{date})) {
             $min_next = _schedule_object($last, $d);
             $min_next->{schedule} = $schedule;
-            $description = $schedule->{ScheduleDescription} if $desc_to_use eq 'schedule';
+            $next_orig = construct_bin_date($last->{OriginalScheduledDate});
         } elsif ($d && (!$max_last || $d > $max_last->{date})) {
             $max_last = _schedule_object($last, $d);
+            $last_orig = construct_bin_date($last->{OriginalScheduledDate});
+        }
+    }
+
+    my $description = '';
+    if ($next_orig && $last_orig) {
+        my $days = $next_orig->delta_days($last_orig);
+        my $weeks = int($days->in_units('days')/7+0.5);
+        $weeks = 1 if $weeks == 0;
+        if ($weeks == 1) {
+            $description = "Every " . $next_orig->day_name;
+        } elsif ($weeks == 2) {
+            $description = "Every other " . $next_orig->day_name;
+        } else {
+            $description = $next_orig->day_name . " every $weeks weeks";
         }
     }
 
@@ -580,9 +604,11 @@ sub bin_future_collections {
 
     my $services = $self->{c}->stash->{service_data};
     my %names;
-    foreach (@$services) {
-        next unless $_->{service_task_id};
-        push @{$names{$_->{service_task_id}}}, $_->{service_name};
+    foreach my $service (@$services) {
+        next unless $service->{service_task_ids};
+        foreach (@{$service->{service_task_ids}}) {
+            push @{$names{$_}}, $service->{service_name};
+        }
     }
 
     my $start = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->truncate( to => 'day' );

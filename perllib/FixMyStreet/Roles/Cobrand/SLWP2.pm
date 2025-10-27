@@ -177,15 +177,8 @@ sub waste_relevant_serviceunits {
             ServiceId => $_->{ServiceId},
             ServiceTask => $servicetask,
             Service => $_,
-            Schedules => _parse_schedules($servicetask, 'task'),
+            Schedules => _parse_schedules($servicetask),
         };
-
-        # FD-5992 override
-        if ($self->moniker eq 'sutton' && $rows[-1]{Schedules}{description}) {
-            $rows[-1]{Schedules}{description} =~ s/^Every [^ ]*$/Weekly/;
-            $rows[-1]{Schedules}{description} =~ s/^Every [^ ]* fortnightly/Fortnightly/i;
-        }
-
     }
 
     # Merton have asked for a specific ordering
@@ -308,7 +301,7 @@ sub waste_service_containers {
 
             if ($waste_containers_no_request->{$container}) {
                 $request_max->{$container} = 0; # Cannot request these
-            } elsif ($container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /fortnight|every other/i) {
+            } elsif ($container == $CONTAINERS{recycling_blue_bag} && $schedules->{description} !~ /every other/i) {
                 # Blue stripe bag on a weekly collection
                 $request_max->{$container} = 0; # Cannot request these
             } elsif ($self->moniker eq 'kingston') {

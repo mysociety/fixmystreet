@@ -49,6 +49,11 @@ FixMyStreet::override_config {
 }, sub {
     ok $mech->host('www.fixmystreet.com');
 
+    $mech->create_problems_for_body(105, $body->id, 'Titlē', {
+        detail => "this report\nis split across\nseveral lines",
+        areas => ",2514,",
+    });
+
     subtest 'check marketing dashboard access' => sub {
         # Not logged in, redirected
         $mech->get_ok('/reports/Birmingham/summary');
@@ -70,15 +75,11 @@ FixMyStreet::override_config {
         is $mech->uri->path, '/reports/Birmingham/summary';
         $mech->content_contains('Where we send Birmingham');
         $mech->content_contains('lights@example.com');
+        $mech->content_like(qr{<th scope="row">Other</th>\s*<td>105</td>});
     };
 
     subtest 'check marketing dashboard csv' => sub {
         $mech->log_in_ok('someone@birmingham.gov.uk');
-        $mech->create_problems_for_body(105, $body->id, 'Titlē', {
-            detail => "this report\nis split across\nseveral lines",
-            areas => ",2514,",
-        });
-
         $mech->get_ok('/reports/Birmingham/summary?csv=1');
         my @rows = $mech->content_as_csv;
         is scalar @rows, 101, '1 (header) + 100 (reports) = 101 lines';

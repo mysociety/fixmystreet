@@ -158,6 +158,58 @@ We pass any category change to Confirm.
 
 sub open311_send_category_change { 1 }
 
+=head2 open311_get_update_munging
+
+Aberdeenshire want certain defect fields shown in updates on FMS.
+
+These values, if present, are passed back from open311-adapter in the
+<extras> element. If the template being used for this update has placeholders
+like '{{targetDate}}', '{{featureSPD}}', or '{{featureCCAT}}' in its text,
+they get replaced with the value from Confirm. If there is no value then 'TBC'
+is used for targetDate, or an empty string for featureSPD and featureCCAT.
+
+Additionally, the incoming update might be for a defect which has superseded an
+existing one, so if that's the case we need to identify and close it.
+
+=cut
+
+sub open311_get_update_munging {
+    my ($self, $comment, $state, $request) = @_;
+
+    my $text = $comment->text;
+
+    # Handle targetDate with date parsing
+    if ($text =~ /\{\{targetDate}}/) {
+        my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+        my $targetDate = 'TBC';
+        if ($request->{extras} && $request->{extras}->{targetDate}) {
+            try {
+                my $date = $parser->parse_datetime($request->{extras}->{targetDate});
+                $targetDate = $date->strftime("%d/%m/%Y");
+            };
+        }
+        $text =~ s/\{\{targetDate}}/$targetDate/;
+    }
+
+    # Handle other fields as-is
+    for my $field (qw(featureSPD featureCCAT)) {
+        if ($text =~ /\{\{$field}}/) {
+            my $value = '';
+            if ($request->{extras} && $request->{extras}->{$field}) {
+                $value = $request->{extras}->{$field};
+            }
+            $text =~ s/\{\{$field}}/$value/;
+        }
+    }
+
+    $comment->text($text);
+
+    my $supersedes = $request->{extras}{supersedes};
+    return unless $supersedes && $supersedes =~ /^DEFECT_/;
+
+    $self->_supersede_report($comment->problem, $supersedes);
+
+}
 
 =head2 open311_report_fetched
 
@@ -204,17 +256,8 @@ sub _supersede_report {
     });
 
     while (my $alert = $alerts->next) {
-        $alert->disable;
-
-        # Create a new alert for the new problem
-        $alert->result_source->schema->resultset('Alert')->create({
-            alert_type => 'new_updates',
-            parameter => $new_problem->id,
-            user_id => $alert->user_id,
-            lang => $alert->lang,
-            cobrand => $alert->cobrand,
-            cobrand_data => $alert->cobrand_data,
-        })->confirm;
+        # Update the alert to point at the new problem
+        $alert->update({ parameter => $new_problem->id });
     }
 }
 
@@ -299,57 +342,6 @@ sub lookup_site_code_config {
         property => "siteCode",
         accept_feature => sub { 1 }
     };
-}
-
-=head2 open311_get_update_munging
-
-Aberdeenshire want certain defect fields shown in updates on FMS.
-
-These values, if present, are passed back from open311-adapter in the
-<extras> element. If the template being used for this update has placeholders
-like '{{targetDate}}', '{{featureSPD}}', or '{{featureCCAT}}' in its text,
-they get replaced with the value from Confirm. If there is no value then 'TBC'
-is used for targetDate, or an empty string for featureSPD and featureCCAT.
-
-Also, the incoming update might be for a defect which has superseded an
-existing one, so if that's the case we need to identify and close it.
-
-=cut
-
-sub open311_get_update_munging {
-    my ($self, $comment, $state, $request) = @_;
-
-    my $text = $comment->text;
-
-    # Handle targetDate with date parsing
-    if ($text =~ /\{\{targetDate}}/) {
-        my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
-        my $targetDate = 'TBC';
-        if ($request->{extras} && $request->{extras}->{targetDate}) {
-            try {
-                my $date = $parser->parse_datetime($request->{extras}->{targetDate});
-                $targetDate = $date->strftime("%d/%m/%Y");
-            };
-        }
-        $text =~ s/\{\{targetDate}}/$targetDate/;
-    }
-
-    # Handle other fields as-is
-    for my $field (qw(featureSPD featureCCAT)) {
-        if ($text =~ /\{\{$field}}/) {
-            my $value = '';
-            if ($request->{extras} && $request->{extras}->{$field}) {
-                $value = $request->{extras}->{$field};
-            }
-            $text =~ s/\{\{$field}}/$value/;
-        }
-    }
-    $comment->text($text);
-
-    my $supersedes = $request->{extras}{supersedes};
-    return unless $supersedes && $supersedes =~ /^DEFECT_/;
-
-    $self->_supersede_report($comment->problem, $supersedes);
 }
 
 =head2 problems_restriction/problems_sql_restriction/problems_on_map_restriction

@@ -68,7 +68,7 @@ describe('new report form', function() {
     cy.visit('http://peterborough.localhost:3001/report/new?longitude=-0.241841&latitude=52.570792');
     cy.wait('@report-ajax');
     cy.pickCategory('Abandoned vehicles');
-    cy.get('.pre-button-messaging:visible').should('contain', 'Unfortunately, as this vehicle is abandoned on private land');
+    cy.get('.pre-button-messaging:visible').should('contain', 'Unfortunately, as this car is on private land');
   });
 
   it('correctly changes the asset select message', function() {

@@ -1,0 +1,496 @@
+[
+    {
+      "ServiceUnitTypeId": "116",
+      "StartDate": {
+        "DateTime": "2025-01-01T00:00:00Z",
+        "OffsetMinutes": "0"
+      },
+      "ServiceTasks": {
+        "ServiceTask": [
+          {
+            "EndDate": {
+              "OffsetMinutes": "0",
+              "DateTime": "2050-01-01T00:00:00Z"
+            },
+            "TaskTypeId": "4407",
+            "Id": "22988289",
+            "ServiceTaskSchedules": {
+              "ServiceTaskSchedule": {
+                "TimeBand": null,
+                "Id": "45472864",
+                "EndDate": {
+                  "OffsetMinutes": "0",
+                  "DateTime": "2050-01-01T00:00:00Z"
+                },
+                "StartDate": {
+                  "DateTime": "2025-01-01T00:00:00Z",
+                  "OffsetMinutes": "0"
+                },
+                "ScheduleId": "336",
+                "LastInstance": {
+                  "State": {
+                    "Name": "Completed",
+                    "CoreState": "Closed",
+                    "Source": "Task",
+                    "Ref": {
+                      "Key": "Id",
+                      "Value": {
+                        "anyType": "20746"
+                      },
+                      "Type": "TaskState"
+                    }
+                  },
+                  "Resolution": {
+                    "Ref": {
+                      "Value": {
+                        "anyType": "326"
+                      },
+                      "Key": "Id",
+                      "Type": "ResolutionCode"
+                    },
+                    "Name": "",
+                    "Source": "Task"
+                  },
+                  "CompletedDate": {
+                    "OffsetMinutes": "60",
+                    "DateTime": "2025-10-03T08:31:20Z"
+                  },
+                  "Ref": {
+                    "Value": {
+                      "anyType": [
+                        "45472864",
+                        "9407"
+                      ]
+                    },
+                    "Key": "Handle",
+                    "Type": "Task"
+                  },
+                  "CurrentScheduledDate": {
+                    "DateTime": "2025-10-03T05:00:00Z",
+                    "OffsetMinutes": "60"
+                  },
+                  "OriginalScheduledDate": {
+                    "DateTime": "2025-10-02T23:00:00Z",
+                    "OffsetMinutes": "60"
+                  }
+                },
+                "NextInstance": {
+                  "CurrentScheduledDate": {
+                    "DateTime": "2025-10-17T05:00:00Z",
+                    "OffsetMinutes": "60"
+                  },
+                  "OriginalScheduledDate": {
+                    "OffsetMinutes": "60",
+                    "DateTime": "2025-10-16T23:00:00Z"
+                  },
+                  "Ref": {
+                    "Value": {
+                      "anyType": [
+                        "45472864",
+                        "9421"
+                      ]
+                    },
+                    "Key": "Handle",
+                    "Type": "Task"
+                  },
+                  "CompletedDate": null,
+                  "Resolution": null,
+                  "State": {
+                    "Name": "Allocated",
+                    "Source": "Task",
+                    "CoreState": "Pending",
+                    "Ref": {
+                      "Type": "TaskState",
+                      "Key": "Id",
+                      "Value": {
+                        "anyType": "20745"
+                      }
+                    }
+                  }
+                },
+                "ScheduleDescription": "Friday every other week",
+                "Allocation": {
+                  "RoundId": "58057",
+                  "Type": "RoundLeg",
+                  "RoundLegId": "1739659",
+                  "RoundName": "Friday",
+                  "RoundGroupName": "KKREF4A",
+                  "RoundLegName": "EWELL ROAD KT6",
+                  "RoundGroupId": "9747"
+                },
+                "HasOwnSchedule": "false",
+                "Guid": "4b1e7a59-568a-4c37-9601-a0f266da7177"
+              }
+            },
+            "ServiceTaskLines": {
+              "ServiceTaskLine": {
+                "IsSerialised": "true",
+                "AssetTypeName": "Euro 1100L",
+                "CoreTaskLineType": "Service",
+                "Guid": "2ae928ba-c2e8-4f37-bfaf-e59bfea03869",
+                "Data": "",
+                "ProductName": "Refuse",
+                "ProductId": "609",
+                "StartDate": {
+                  "DateTime": "2025-01-01T00:00:00Z",
+                  "OffsetMinutes": "0"
+                },
+                "AssetTypeId": "1912",
+                "TaskLineTypeName": "TEM - Collect Communal Refuse",
+                "ProductDimension": "Weight",
+                "TaskLineTypeId": "238",
+                "EndDate": {
+                  "DateTime": "2050-01-01T00:00:00Z",
+                  "OffsetMinutes": "0"
+                },
+                "Id": "5624320",
+                "ScheduledProductQuantity": null,
+                "ScheduledAssetQuantity": "1"
+              }
+            },
+            "ScheduleDescription": "Every Friday fortnightly",
+            "NextInstance": {
+              "Resolution": null,
+              "State": {
+                "Source": "Task",
+                "CoreState": "Pending",
+                "Name": "Allocated",
+                "Ref": {
+                  "Value": {
+                    "anyType": "20745"
+                  },
+                  "Key": "Id",
+                  "Type": "TaskState"
+                }
+              },
+              "CurrentScheduledDate": {
+                "OffsetMinutes": "60",
+                "DateTime": "2025-10-17T05:00:00Z"
+              },
+              "OriginalScheduledDate": {
+                "OffsetMinutes": "60",
+                "DateTime": "2025-10-16T23:00:00Z"
+              },
+              "Ref": {
+                "Key": "Handle",
+                "Value": {
+                  "anyType": [
+                    "45472864",
+                    "9421"
+                  ]
+                },
+                "Type": "Task"
+              },
+              "CompletedDate": null
+            },
+            "Data": "",
+            "Guid": "b9ee5d67-a6a2-40f1-8221-4eab423beb7e",
+            "Notes": null,
+            "TaskTypeName": "Collect Communal Refuse",
+            "LastInstance": {
+              "Resolution": {
+                "Source": "Task",
+                "Name": "",
+                "Ref": {
+                  "Type": "ResolutionCode",
+                  "Key": "Id",
+                  "Value": {
+                    "anyType": "326"
+                  }
+                }
+              },
+              "State": {
+                "CoreState": "Closed",
+                "Source": "Task",
+                "Name": "Completed",
+                "Ref": {
+                  "Value": {
+                    "anyType": "20746"
+                  },
+                  "Key": "Id",
+                  "Type": "TaskState"
+                }
+              },
+              "Ref": {
+                "Type": "Task",
+                "Key": "Handle",
+                "Value": {
+                  "anyType": [
+                    "45472864",
+                    "9407"
+                  ]
+                }
+              },
+              "CompletedDate": {
+                "OffsetMinutes": "60",
+                "DateTime": "2025-10-03T08:31:20Z"
+              },
+              "OriginalScheduledDate": {
+                "OffsetMinutes": "60",
+                "DateTime": "2025-10-02T23:00:00Z"
+              },
+              "CurrentScheduledDate": {
+                "OffsetMinutes": "60",
+                "DateTime": "2025-10-03T05:00:00Z"
+              }
+            },
+            "TaskIndicatorId": null,
+            "StartDate": {
+              "DateTime": "2025-01-01T00:00:00Z",
+              "OffsetMinutes": "0"
+            }
+          },
+          {
+            "ServiceTaskLines": {
+              "ServiceTaskLine": {
+                "ScheduledProductQuantity": "1",
+                "ScheduledAssetQuantity": "1",
+                "ProductDimension": "Weight",
+                "TaskLineTypeName": "TEM - Collect Communal Refuse",
+                "Id": "5862985",
+                "EndDate": {
+                  "OffsetMinutes": "0",
+                  "DateTime": "2050-01-01T00:00:00Z"
+                },
+                "TaskLineTypeId": "238",
+                "ProductId": "609",
+                "AssetTypeId": "1912",
+                "StartDate": {
+                  "DateTime": "2025-07-04T00:00:00Z",
+                  "OffsetMinutes": "0"
+                },
+                "CoreTaskLineType": "Service",
+                "AssetTypeName": "Euro 1100L",
+                "IsSerialised": "true",
+                "ProductName": "Refuse",
+                "Data": "",
+                "Guid": "a9c998b9-8645-4625-ac54-733bc659aee9"
+              }
+            },
+            "ServiceTaskSchedules": {
+              "ServiceTaskSchedule": {
+                "StartDate": {
+                  "DateTime": "2025-07-03T23:00:00Z",
+                  "OffsetMinutes": "60"
+                },
+                "LastInstance": {
+                  "CompletedDate": {
+                    "DateTime": "2025-10-10T08:55:16Z",
+                    "OffsetMinutes": "60"
+                  },
+                  "Ref": {
+                    "Type": "Task",
+                    "Value": {
+                      "anyType": [
+                        "46990774",
+                        "9414"
+                      ]
+                    },
+                    "Key": "Handle"
+                  },
+                  "OriginalScheduledDate": {
+                    "OffsetMinutes": "60",
+                    "DateTime": "2025-10-09T23:00:00Z"
+                  },
+                  "CurrentScheduledDate": {
+                    "OffsetMinutes": "60",
+                    "DateTime": "2025-10-10T05:00:00Z"
+                  },
+                  "Resolution": {
+                    "Ref": {
+                      "Key": "Id",
+                      "Value": {
+                        "anyType": "326"
+                      },
+                      "Type": "ResolutionCode"
+                    },
+                    "Source": "Task",
+                    "Name": ""
+                  },
+                  "State": {
+                    "Ref": {
+                      "Value": {
+                        "anyType": "20746"
+                      },
+                      "Key": "Id",
+                      "Type": "TaskState"
+                    },
+                    "Name": "Completed",
+                    "Source": "Task",
+                    "CoreState": "Closed"
+                  }
+                },
+                "ScheduleId": "333",
+                "NextInstance": {
+                  "CompletedDate": null,
+                  "Ref": {
+                    "Value": {
+                      "anyType": [
+                        "46990774",
+                        "9428"
+                      ]
+                    },
+                    "Key": "Handle",
+                    "Type": "Task"
+                  },
+                  "OriginalScheduledDate": {
+                    "DateTime": "2025-10-23T23:00:00Z",
+                    "OffsetMinutes": "60"
+                  },
+                  "CurrentScheduledDate": {
+                    "DateTime": "2025-10-23T23:00:00Z",
+                    "OffsetMinutes": "60"
+                  },
+                  "State": null,
+                  "Resolution": null
+                },
+                "ScheduleDescription": "Friday every other week",
+                "Allocation": {
+                  "RoundGroupName": "KFREF7B",
+                  "RoundLegName": "EWELL ROAD KT6",
+                  "RoundGroupId": "9736",
+                  "RoundId": "58014",
+                  "RoundName": "Friday",
+                  "RoundLegId": "1743847",
+                  "Type": "RoundLeg"
+                },
+                "HasOwnSchedule": "false",
+                "Guid": "06467c65-9f33-422e-941f-4c678cc4a31c",
+                "TimeBand": null,
+                "Id": "46990774",
+                "EndDate": {
+                  "DateTime": "2050-01-01T00:00:00Z",
+                  "OffsetMinutes": "0"
+                }
+              }
+            },
+            "EndDate": {
+              "DateTime": "2050-01-01T00:00:00Z",
+              "OffsetMinutes": "0"
+            },
+            "TaskTypeId": "4407",
+            "Id": "24130503",
+            "LastInstance": {
+              "Resolution": {
+                "Ref": {
+                  "Value": {
+                    "anyType": "326"
+                  },
+                  "Key": "Id",
+                  "Type": "ResolutionCode"
+                },
+                "Source": "Task",
+                "Name": ""
+              },
+              "State": {
+                "Ref": {
+                  "Key": "Id",
+                  "Value": {
+                    "anyType": "20746"
+                  },
+                  "Type": "TaskState"
+                },
+                "CoreState": "Closed",
+                "Source": "Task",
+                "Name": "Completed"
+              },
+              "CompletedDate": {
+                "DateTime": "2025-10-10T08:55:16Z",
+                "OffsetMinutes": "60"
+              },
+              "Ref": {
+                "Value": {
+                  "anyType": [
+                    "46990774",
+                    "9414"
+                  ]
+                },
+                "Key": "Handle",
+                "Type": "Task"
+              },
+              "CurrentScheduledDate": {
+                "OffsetMinutes": "60",
+                "DateTime": "2025-10-10T05:00:00Z"
+              },
+              "OriginalScheduledDate": {
+                "DateTime": "2025-10-09T23:00:00Z",
+                "OffsetMinutes": "60"
+              }
+            },
+            "TaskIndicatorId": null,
+            "StartDate": {
+              "OffsetMinutes": "60",
+              "DateTime": "2025-07-03T23:00:00Z"
+            },
+            "Notes": "",
+            "TaskTypeName": "Collect Communal Refuse",
+            "Data": "",
+            "Guid": "a4436108-698b-4600-95c5-ce441d8684d7",
+            "ScheduleDescription": "Every Friday fortnightly",
+            "NextInstance": {
+              "State": null,
+              "Resolution": null,
+              "Ref": {
+                "Type": "Task",
+                "Value": {
+                  "anyType": [
+                    "46990774",
+                    "9428"
+                  ]
+                },
+                "Key": "Handle"
+              },
+              "CompletedDate": null,
+              "CurrentScheduledDate": {
+                "DateTime": "2025-10-23T23:00:00Z",
+                "OffsetMinutes": "60"
+              },
+              "OriginalScheduledDate": {
+                "OffsetMinutes": "60",
+                "DateTime": "2025-10-23T23:00:00Z"
+              }
+            }
+          }
+        ]
+      },
+      "Name": "FLATS 1-8, 126-130 EWELL ROAD, SURBITON, KT6 6HA (8)",
+      "ClientReference": null,
+      "Guid": "4311ebda-719f-4a50-bd68-be247132faed",
+      "Data": {
+        "ExtensibleDatum": {
+          "ChildData": {
+            "ExtensibleDatum": [
+              {
+                "DatatypeId": "1593",
+                "Guid": "2e68703b-8110-4752-8646-3c7034cd4aec",
+                "Id": "40173003",
+                "ChildData": "",
+                "Value": "8",
+                "DatatypeName": "Container Type"
+              },
+              {
+                "Guid": "a4301f77-1af8-4bef-9ca1-52b7b8e4e7f4",
+                "Id": "40244829",
+                "DatatypeId": "1594",
+                "DatatypeName": "Container Quantity",
+                "ChildData": "",
+                "Value": "1"
+              }
+            ]
+          },
+          "Value": "Euro 1100L/Refuse/1",
+          "DatatypeName": "Container Details",
+          "DatatypeId": "1592",
+          "Guid": "99f96fb9-8370-43ca-a91b-479ace092810",
+          "Id": "40209056"
+        }
+      },
+      "ServiceName": "Communal Refuse Collection",
+      "EndDate": {
+        "OffsetMinutes": "0",
+        "DateTime": "2050-01-01T00:00:00Z"
+      },
+      "Id": "39499593",
+      "ServiceId": "969"
+    }
+]

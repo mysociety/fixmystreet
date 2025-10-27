@@ -225,7 +225,7 @@ sub _setup_missed_collection_escalations_for_service {
         my $wd = FixMyStreet::WorkingDays->new();
         my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
         # And window is one day (weekly) two WDs (fortnightly)
-        my $window = $row->{schedule} =~ /fortnight|every other/i ? 2 : 1;
+        my $window = $row->{schedule} =~ /every other/i ? 2 : 1;
         my $end = $wd->add_days($start, $window);
         if ($now >= $start && $now < $end) {
             $row->{escalations}{missed} = $missed_event;
@@ -296,7 +296,7 @@ sub image_for_unit {
         return "$base/electricals-batteries-textiles";
     }
 
-    if ($service_id == $SERVICE_IDS{communal_refuse} && $unit->{schedule} =~ /fortnight|every other/i) {
+    if ($service_id == $SERVICE_IDS{communal_refuse} && $unit->{schedule} =~ /every other/i) {
         # Communal fortnightly is a wheelie bin, not a large bin
         return svg_container_bin('wheelie', '#8B5E3D');
     }

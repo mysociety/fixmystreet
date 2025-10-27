@@ -230,16 +230,20 @@ FixMyStreet::override_config {
             });
 
             # Create a comment/update for the superseding report that indicates superseding
-            my $superseding_comment = $mech->create_comment_for_problem(
-                $superseding_report, $staff_user, 'System', 'This defect supersedes DEFECT_12345',
-                'f', 'confirmed', 'confirmed',
-                { confirmed => DateTime->now, external_id => 'UPDATE_001' }
-            );
+            my $superseding_comment = FixMyStreet::DB->resultset('Comment')->new({
+                problem_id => $superseding_report->id,
+                user_id => $staff_user->id,
+                name => 'System',
+                text => 'This defect supersedes DEFECT_12345',
+                anonymous => 'f',
+                problem_state => 'confirmed',
+                state => 'confirmed',
+                confirmed => DateTime->now,
+                external_id => 'UPDATE_001',
+            });
 
             # Verify initial state - superseded report should be confirmed, alerts should be active
             is $superseded_report->state, 'confirmed', 'Superseded report is initially confirmed';
-            is $alert1->whendisabled, undef, 'First alert is initially active';
-            is $alert2->whendisabled, undef, 'Second alert is initially active';
 
             # Test the method with a proper superseding request
             my $request = {
@@ -258,22 +262,10 @@ FixMyStreet::override_config {
             # Verify the superseded report is now hidden
             is $superseded_report->state, 'hidden', 'Superseded report is now hidden';
 
-            # Verify old alerts are disabled
-            isnt $alert1->whendisabled, undef, 'First alert has been disabled';
-            isnt $alert2->whendisabled, undef, 'Second alert has been disabled';
+            # Verify alerts were updated to point at new report
+            is $alert1->parameter, $superseding_report->id, 'First alert has been updated';
+            is $alert2->parameter, $superseding_report->id, 'Second alert has been updated';
 
-            # Verify new alerts have been created for the superseding report
-            my $new_alerts = FixMyStreet::DB->resultset('Alert')->search({
-                alert_type => 'new_updates',
-                parameter => $superseding_report->id,
-                whendisabled => undef
-            });
-
-            is $new_alerts->count, 2, 'Two new alerts created for superseding report';
-
-            my @new_alert_users = sort map { $_->user->email } $new_alerts->all;
-            is_deeply \@new_alert_users, [$alert_user1->email, $alert_user2->email],
-                'New alerts created for the same users';
         };
 
         subtest 'open311_get_update_munging ignores non-defect superseding' => sub {
@@ -460,8 +452,6 @@ FixMyStreet::override_config {
 
             # Verify initial state
             is $superseded_report->state, 'confirmed', 'Superseded report is initially confirmed';
-            is $alert1->whendisabled, undef, 'First alert is initially active';
-            is $alert2->whendisabled, undef, 'Second alert is initially active';
 
             # Test the method with a fetched report that supersedes another
             my $request = {
@@ -480,22 +470,10 @@ FixMyStreet::override_config {
             # Verify the superseded report is now hidden
             is $superseded_report->state, 'hidden', 'Superseded report is now hidden';
 
-            # Verify old alerts are disabled
-            isnt $alert1->whendisabled, undef, 'First alert has been disabled';
-            isnt $alert2->whendisabled, undef, 'Second alert has been disabled';
+            # Verify alerts were updated to point at new report
+            is $alert1->parameter, $fetched_report->id, 'First alert has been updated';
+            is $alert2->parameter, $fetched_report->id, 'Second alert has been updated';
 
-            # Verify new alerts have been created for the fetched report
-            my $new_alerts = FixMyStreet::DB->resultset('Alert')->search({
-                alert_type => 'new_updates',
-                parameter => $fetched_report->id,
-                whendisabled => undef
-            });
-
-            is $new_alerts->count, 2, 'Two new alerts created for fetched report';
-
-            my @new_alert_users = sort map { $_->user->email } $new_alerts->all;
-            is_deeply \@new_alert_users, [$alert_user1->email, $alert_user2->email],
-                'New alerts created for the same users';
         };
 
         subtest 'open311_report_fetched ignores non-defect superseding' => sub {
@@ -566,47 +544,6 @@ FixMyStreet::override_config {
             $test_report->discard_changes;
 
             is $test_report->state, $initial_state, 'Report state unchanged when superseded report not found in fetched report';
-        };
-
-        subtest 'open311_report_fetched ignores already hidden reports' => sub {
-            my $cobrand = FixMyStreet::Cobrand::Aberdeenshire->new;
-
-            # Create a superseded report that's already hidden
-            my ($hidden_report) = $mech->create_problems_for_body(1, $aberdeenshire->id, 'Hidden Fetched Report', {
-                category => 'Pothole',
-                cobrand => 'aberdeenshire',
-                external_id => 'DEFECT_FETCH_HIDDEN',
-                state => 'hidden'
-            });
-
-            my ($fetched_report) = $mech->create_problems_for_body(1, $aberdeenshire->id, 'New Fetched Report', {
-                category => 'Pothole',
-                cobrand => 'aberdeenshire',
-                external_id => 'DEFECT_FETCH_NEW_2',
-                state => 'confirmed'
-            });
-
-            # Test with supersedes pointing to already hidden report
-            my $request = {
-                extras => {
-                    supersedes => 'DEFECT_FETCH_HIDDEN'
-                }
-            };
-
-            # Should not create any alerts since no hidden report processing should occur
-            my $initial_alert_count = FixMyStreet::DB->resultset('Alert')->search({
-                alert_type => 'new_updates',
-                parameter => $fetched_report->id
-            })->count;
-
-            $cobrand->open311_report_fetched($fetched_report, $request);
-
-            my $final_alert_count = FixMyStreet::DB->resultset('Alert')->search({
-                alert_type => 'new_updates',
-                parameter => $fetched_report->id
-            })->count;
-
-            is $final_alert_count, $initial_alert_count, 'No new alerts created when superseding already hidden report in fetched report';
         };
 };
 

@@ -76,7 +76,6 @@ sub domestic_waste_service_units {
         ServiceTasks => { ServiceTask => {
             Id => '401',
             ServiceTaskSchedules => { ServiceTaskSchedule => {
-                ScheduleDescription => 'every Wednesday',
                 StartDate => { DateTime => '2020-01-01T00:00:00Z' },
                 EndDate => { DateTime => '2050-01-01T00:00:00Z' },
                 NextInstance => {
