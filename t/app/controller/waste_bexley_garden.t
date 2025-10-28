@@ -2084,7 +2084,7 @@ FixMyStreet::override_config {
             like $mech->text, qr/Cancel your garden waste subscription/;
             $mech->submit_form_ok(
                 {   with_fields => {
-                        confirm_tandc => 1,
+                        confirm => 1,
                     },
                 }
             );
@@ -2156,7 +2156,7 @@ FixMyStreet::override_config {
             like $mech->text, qr/Cancel your garden waste subscription/;
             $mech->submit_form_ok(
                 {   with_fields => {
-                        confirm_tandc => 1,
+                        confirm => 1,
                     },
                 }
             );
@@ -2277,7 +2277,7 @@ FixMyStreet::override_config {
             );
             $mech->submit_form_ok(
                 {   with_fields => {
-                        confirm_tandc => 1,
+                        confirm => 1,
                     },
                 }
             );
@@ -2414,7 +2414,7 @@ FixMyStreet::override_config {
         like $mech->text, qr/Cancel your garden waste subscription/, 'On cancellation page';
         $mech->submit_form_ok(
             {   with_fields => {
-                    confirm_tandc => 1,
+                    confirm => 1,
                 },
             }
         );
