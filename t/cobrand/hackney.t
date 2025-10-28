@@ -6,6 +6,7 @@ use JSON::MaybeXS;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
+use FixMyStreet::Cobrand::Hackney;
 use Open311;
 use Open311::GetServiceRequests;
 use Open311::GetServiceRequestUpdates;
@@ -555,6 +556,217 @@ subtest 'Dashboard CSV extra columns' => sub {
         $mech->get_ok('/dashboard?export=1&ward=144387');
         $mech->content_lacks('Brownswood');
     };
+};
+
+# Test tree routing for Hackney based on asset owner attribute
+
+# Create tree categories with 'Trees' group using split email format
+# Format: housing:email1;highways:email2;parks:email3;other:email4
+# Or simplified: housing:email1;other:email2 (where 'other' catches highways/parks/unknown)
+# The 'owner' extra field is populated automatically from the tree asset layer
+my $tree_contact = $mech->create_contact_ok(
+    body_id => $hackney->id,
+    category => 'Tree issue',
+    email => 'housing:estategardeners@example.com;housing individual:individual-trees@example.com;other:streettrees@example.com',
+    send_method => 'Email',
+    group => 'Trees',
+    extra => { _fields => [
+        { code => 'owner', description => 'Tree owner', required => 'false', automated => 'hidden_field' },
+        { code => 'tree_code', description => 'Tree code', required => 'false', automated => 'hidden_field' },
+    ] },
+);
+
+my $dangerous_tree_contact = $mech->create_contact_ok(
+    body_id => $hackney->id,
+    category => 'Dangerous tree',
+    email => 'housing:estategardeners@example.com;highways:highways-streettrees@example.com;parks:parks-streettrees@example.com;other:default-trees@example.com',
+    send_method => 'Email',
+    group => 'Trees',
+    extra => { _fields => [
+        { code => 'owner', description => 'Tree owner', required => 'false', automated => 'hidden_field' },
+        { code => 'tree_code', description => 'Tree code', required => 'false', automated => 'hidden_field' },
+    ] },
+);
+
+# Create a non-tree category for comparison
+my $grass_contact = $mech->create_contact_ok(
+    body_id => $hackney->id,
+    category => 'Grass and Hedges',
+    email => 'grass@example.com',
+    send_method => 'Email',
+);
+
+my $cobrand = FixMyStreet::Cobrand::Hackney->new;
+
+sub create_tree_problem {
+    my ($category, $owner, $title) = @_;
+    $title ||= 'Tree problem';
+    my ($p) = $mech->create_problems_for_body(1, $hackney->id, $title, {
+        category => $category,
+        latitude => 51.552267,
+        longitude => -0.063316,
+        cobrand => 'hackney',
+        user => $user,
+    });
+    if (defined $owner) {
+        $p->push_extra_fields({ name => 'owner', value => $owner });
+        $p->update;
+    }
+    return $p;
+}
+
+my @routing_cases = (
+    {
+        name => 'Housing tree routes to estategardeners@example.com',
+        params => [ 'Tree issue', 'Housing', 'Housing tree problem' ],
+        expected_contact_id => $tree_contact->id,
+        expected_email => 'estategardeners@example.com',
+    },
+    {
+        name => 'Housing Individual tree routes to individual-trees@example.com',
+        params => [ 'Tree issue', 'Housing Individual', 'Housing Individual tree problem' ],
+        expected_contact_id => $tree_contact->id,
+        expected_email => 'individual-trees@example.com',
+    },
+    {
+        name => 'Highways tree routes to highways-streettrees@example.com',
+        params => [ 'Dangerous tree', 'Highways', 'Highways tree problem' ],
+        expected_contact_id => $dangerous_tree_contact->id,
+        expected_email => 'highways-streettrees@example.com',
+    },
+    {
+        name => 'Parks tree routes to parks-streettrees@example.com',
+        params => [ 'Dangerous tree', 'Parks', 'Parks tree problem' ],
+        expected_contact_id => $dangerous_tree_contact->id,
+        expected_email => 'parks-streettrees@example.com',
+    },
+    {
+        name => 'Dangerous tree with unknown owner routes to default-trees@example.com',
+        params => [ 'Dangerous tree', 'Unknown Department', 'Unknown owner dangerous tree' ],
+        expected_contact_id => $dangerous_tree_contact->id,
+        expected_email => 'default-trees@example.com',
+    },
+);
+
+for my $case (@routing_cases) {
+    subtest $case->{name} => sub {
+        my $p = create_tree_problem(@{ $case->{params} });
+
+        my $sender = $cobrand->get_body_sender($hackney, $p);
+        is $sender->{method}, 'Email', 'Send method is Email';
+        is $sender->{contact}->id, $case->{expected_contact_id}, 'Contact as expected';
+
+        my $split_match = $p->get_extra_metadata('split_match');
+        my $split_key = $sender->{contact}->email;
+        is $split_match->{$split_key}, $case->{expected_email}, $case->{name};
+
+        $p->delete;
+    };
+}
+
+subtest 'Owner matching is case-insensitive' => sub {
+    my @cases = ('housing', 'Housing', 'HOUSING', 'HoUsInG');
+    for my $case (@cases) {
+        my $p = create_tree_problem('Tree issue', $case);
+        my $sender = $cobrand->get_body_sender($hackney, $p);
+        my $split_match = $p->get_extra_metadata('split_match');
+        my $split_key = $sender->{contact}->email;
+        is $split_match->{$split_key}, 'estategardeners@example.com', qq{"$case" routes to correct email};
+        $p->delete;
+    }
+};
+
+subtest 'Tree category without asset selected falls back to "other" email' => sub {
+    my $p = create_tree_problem('Tree issue', undef, 'Tree problem no asset');
+
+    my $sender = $cobrand->get_body_sender($hackney, $p);
+    is $sender->{method}, 'Email', 'Send method is Email';
+    is $sender->{contact}->id, $tree_contact->id, 'Contact is tree_contact';
+
+    # Should use 'other' email from split format when no owner is present
+    my $split_match = $p->get_extra_metadata('split_match');
+    my $split_key = $sender->{contact}->email;
+    is $split_match->{$split_key}, 'streettrees@example.com', 'Falls back to "other" email without asset selection';
+
+    $p->delete;
+};
+
+subtest 'Tree with unrecognized owner falls back to "other" email' => sub {
+    my $p = create_tree_problem('Tree issue', 'Unknown Department', 'Unknown owner tree');
+
+    my $sender = $cobrand->get_body_sender($hackney, $p);
+    is $sender->{method}, 'Email', 'Send method is Email';
+    is $sender->{contact}->id, $tree_contact->id, 'Contact is tree_contact';
+
+    # Should use 'other' email from split format
+    my $split_match = $p->get_extra_metadata('split_match');
+    my $split_key = $sender->{contact}->email;
+    is $split_match->{$split_key}, 'streettrees@example.com', 'Unrecognized owner falls back to "other" email';
+
+    $p->delete;
+};
+
+subtest 'Non-tree category unaffected by tree routing' => sub {
+    my $p = create_tree_problem('Grass and Hedges', 'Housing', 'Grass cutting problem');
+
+    my $sender = $cobrand->get_body_sender($hackney, $p);
+    is $sender->{method}, 'Email', 'Send method is Email';
+    is $sender->{contact}->id, $grass_contact->id, 'Contact is grass_contact';
+
+    # Should not route based on tree logic
+    my $split_match = $p->get_extra_metadata('split_match');
+    is $split_match, undef, 'Non-tree category not affected by tree routing';
+
+    $p->delete;
+};
+
+subtest '_parse_split_emails helper method' => sub {
+    my $emails = $cobrand->_parse_split_emails('housing:email1@example.com;other:email2@example.com');
+    is_deeply $emails, { housing => 'email1@example.com', other => 'email2@example.com' },
+        'Basic two-part split works';
+
+    $emails = $cobrand->_parse_split_emails('housing:a@test.com;highways:b@test.com;parks:c@test.com;other:d@test.com');
+    is_deeply $emails, {
+        housing => 'a@test.com',
+        highways => 'b@test.com',
+        parks => 'c@test.com',
+        other => 'd@test.com'
+    }, 'Four-part split works';
+
+    # Test park/estate/other format (existing format)
+    $emails = $cobrand->_parse_split_emails('park:park@test.com;estate:estate@test.com;other:other@test.com');
+    is_deeply $emails, {
+        park => 'park@test.com',
+        estate => 'estate@test.com',
+        other => 'other@test.com'
+    }, 'Park/estate/other format also works';
+
+    # Test case insensitivity (keys are lowercased)
+    $emails = $cobrand->_parse_split_emails('Housing:email1@test.com;HIGHWAYS:email2@test.com');
+    is_deeply $emails, { housing => 'email1@test.com', highways => 'email2@test.com' },
+        'Keys are lowercased for case-insensitive matching';
+
+    $emails = $cobrand->_parse_split_emails(' housing : email1@test.com ; other : email2@test.com ');
+    is_deeply $emails, { housing => 'email1@test.com', other => 'email2@test.com' },
+        'Whitespace is trimmed';
+
+    $emails = $cobrand->_parse_split_emails('simple@test.com');
+    is $emails, undef, 'Non-split email returns undef';
+
+    $emails = $cobrand->_parse_split_emails('');
+    is $emails, undef, 'Empty string returns undef';
+};
+
+subtest 'existing _split_emails still works for park/estate/other' => sub {
+    my @emails = $cobrand->_split_emails('park:park@test.com;estate:estate@test.com;other:other@test.com');
+    is_deeply \@emails, ['park@test.com', 'estate@test.com', 'other@test.com'],
+        'Returns list in park/estate/other order';
+
+    @emails = $cobrand->_split_emails('housing:a@test.com;other:b@test.com');
+    is_deeply \@emails, [], 'Returns empty list for non-park/estate/other format';
+
+    @emails = $cobrand->_split_emails('simple@test.com');
+    is_deeply \@emails, [], 'Returns empty list for simple email';
 };
 
 done_testing();
