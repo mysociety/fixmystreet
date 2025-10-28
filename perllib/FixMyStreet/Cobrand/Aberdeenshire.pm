@@ -173,9 +173,9 @@ Aberdeenshire want certain defect fields shown in updates on FMS.
 
 These values, if present, are passed back from open311-adapter in the
 <extras> element. If the template being used for this update has placeholders
-like '{{targetDate}}', '{{featureSPD}}', or '{{featureCCAT}}' in its text,
+like '{{targetDate}}', '{{jobStartDate}}', '{{featureSPD}}', or '{{featureCCAT}}' in its text,
 they get replaced with the value from Confirm. If there is no value then 'TBC'
-is used for targetDate, or an empty string for featureSPD and featureCCAT.
+is used for targetDate and jobStartDate, or an empty string for featureSPD and featureCCAT.
 
 Additionally, the incoming update might be for a defect which has superseded an
 existing one, so if that's the case we need to identify and close it.
@@ -187,17 +187,19 @@ sub open311_get_update_munging {
 
     my $text = $comment->text;
 
-    # Handle targetDate with date parsing
-    if ($text =~ /\{\{targetDate}}/) {
-        my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
-        my $targetDate = 'TBC';
-        if ($request->{extras} && $request->{extras}->{targetDate}) {
-            try {
-                my $date = $parser->parse_datetime($request->{extras}->{targetDate});
-                $targetDate = $date->strftime("%d/%m/%Y");
-            };
+    # Handle targetDate and jobStartDate with date parsing
+    for my $date_field (qw(targetDate jobStartDate)) {
+        if ($text =~ /\{\{$date_field}}/) {
+            my $parser = DateTime::Format::Strptime->new( pattern => '%FT%T' );
+            my $date_value = 'TBC';
+            if ($request->{extras} && $request->{extras}->{$date_field}) {
+                try {
+                    my $date = $parser->parse_datetime($request->{extras}->{$date_field});
+                    $date_value = $date->strftime("%d/%m/%Y");
+                };
+            }
+            $text =~ s/\{\{$date_field}}/$date_value/;
         }
-        $text =~ s/\{\{targetDate}}/$targetDate/;
     }
 
     # Handle other fields as-is
