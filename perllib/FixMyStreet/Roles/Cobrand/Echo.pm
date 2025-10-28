@@ -300,8 +300,7 @@ sub bin_services_for_address {
             request_containers => $containers,
             request_max => $request_max,
             service_task_ids => $servicetask->{ids},
-            # FD-3942 - comment this out so Frequency not shown in front end
-            $self->moniker eq 'bromley' ? () : (schedule => $schedules->{description}),
+            schedule => $schedules->{description},
             last => $schedules->{last},
             next => $schedules->{next},
             end_date => $schedules->{end_date},
@@ -502,13 +501,16 @@ sub _parse_schedules {
     if ($next_orig && $last_orig) {
         my $days = $next_orig->delta_days($last_orig);
         my $weeks = int($days->in_units('days')/7+0.5);
-        $weeks = 1 if $weeks == 0;
-        if ($weeks == 1) {
-            $description = "Every " . $next_orig->day_name;
+        my $halfweeks = int($days->in_units('days')/3.5+0.5);
+        if ($weeks > 2) {
+            $description = $next_orig->day_name . " every $weeks weeks";
         } elsif ($weeks == 2) {
             $description = "Every other " . $next_orig->day_name;
-        } else {
-            $description = $next_orig->day_name . " every $weeks weeks";
+        } elsif ($halfweeks >= 2) {
+            $description = "Every " . $next_orig->day_name;
+        } elsif ($halfweeks == 1) {
+            my @days = reverse sort ($last_orig->day_name, $next_orig->day_name);
+            $description = "Every " . join(" and ", @days);
         }
     }
 

@@ -490,14 +490,17 @@ FixMyStreet::override_config {
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
 
+    set_fixed_time('2022-10-13T19:00:00Z');
     subtest 'Time banded property display' => sub {
         $e->mock('GetServiceUnitsForObject', sub { $above_shop_data });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Put your bags out between 6pm and 8pm');
+        $mech->content_contains('Every Wednesday and Saturday');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
+    set_fixed_time('2022-09-09T19:00:00Z');
 
-   subtest 'test report a problem - bin not returned, not assisted' => sub {
+    subtest 'test report a problem - bin not returned, not assisted' => sub {
         FixMyStreet::Script::Reports::send();
         $mech->clear_emails_ok;
         $mech->get_ok('/waste/12345');
