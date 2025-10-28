@@ -547,6 +547,34 @@ subtest 'Check Aberdeenshire template interpolation' => sub {
     ok $c, 'comment exists';
     is $c->text, "Target date: 31/12/2025\nCategory: 3A\nSpeed limit: 60mph", 'template correctly interpolated';
     $aber_problem->comments->delete;
+
+    # Also test jobStartDate interpolation
+    $tpl->update({
+        text => "Job start date: {{jobStartDate}}\nTarget date: {{targetDate}}",
+        state => "action scheduled"
+    });
+
+    $local_requests_xml = setup_xml($aber_problem->external_id, $aber_problem->id, 'ACTION_SCHEDULED', '',
+        '<jobStartDate>2025-11-15T09:00:00</jobStartDate><targetDate>2025-12-31T10:30:00</targetDate>');
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+    $aber_problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $aber_problem->state( 'confirmed' );
+    $aber_problem->update;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'aberdeenshire',
+    }, sub {
+        $update->process_body;
+    };
+
+    $aber_problem->discard_changes;
+    is $aber_problem->comments->count, 1, 'comment count';
+    $c = $aber_problem->comments->first;
+    ok $c, 'comment exists';
+    is $c->text, "Job start date: 15/11/2025\nTarget date: 31/12/2025", 'template correctly interpolated with jobStartDate';
+
+    $aber_problem->comments->delete;
     $aber_problem->delete;
     $tpl->delete;
 };
