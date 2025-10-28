@@ -82,5 +82,11 @@ sub reports_per_page { return 20; }
 
 sub privacy_policy_url { 'https://www.hart.gov.uk/privacy/corporate-services-privacy' }
 
+=item * We have aerial maps
+
+=cut
+
+sub has_aerial_maps { 'tilma.mysociety.org/mapcache/gmaps/hartaerial@{grid}' }
+
 1;
 
