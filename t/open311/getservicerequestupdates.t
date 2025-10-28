@@ -511,6 +511,14 @@ subtest 'Check template placeholders' => sub {
 };
 
 subtest 'Check Aberdeenshire template interpolation' => sub {
+    # Set up Config for allowed template vars
+    FixMyStreet::DB->resultset("Config")->find_or_create({
+        key => 'response_template_variables',
+        value => {
+            aberdeenshire => ['featureSPD', 'featureCCAT']
+        }
+    });
+
     my $tpl = $bodies{2648}->response_templates->create({
         title => "a placeholder in progress template",
         text => "Target date: {{targetDate}}\nCategory: {{featureCCAT}}\nSpeed limit: {{featureSPD}}",
