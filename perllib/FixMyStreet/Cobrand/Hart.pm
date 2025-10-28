@@ -88,5 +88,16 @@ sub privacy_policy_url { 'https://www.hart.gov.uk/privacy/corporate-services-pri
 
 sub has_aerial_maps { 'tilma.mysociety.org/mapcache/gmaps/hartaerial@{grid}' }
 
+=item * Green ticks for fixed reports
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey' if $context ne 'reports' && !$self->owns_problem($p);
+    return 'green-tick' if $p->is_fixed;
+    return $self->next::method($p, $context);
+}
+
 1;
 
