@@ -157,6 +157,11 @@ FixMyStreet::override_config {
         agile => { bexley => { url => 'test' } },
         waste => { bexley => 1 },
         waste_calendar_links => { bexley =>  { 'Wk-1' => 'PDF 1', 'Wk-2' => 'PDF 2'} },
+        payment_gateway => {
+            bexley => {
+                ggw_first_bin_discount => 500,
+            },
+        },
     },
 }, sub {
     subtest 'Postcode search page is shown' => sub {
