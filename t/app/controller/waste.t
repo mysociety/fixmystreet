@@ -129,7 +129,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { address => '12345' } });
         $mech->content_contains('2 Example Street');
         $mech->content_contains('Food Waste');
-        # $mech->content_contains('every other Monday');
+        $mech->content_contains('Every other Monday');
     };
     subtest 'Thing already requested' => sub {
         $mech->content_contains('A food waste collection has been reported as missed');
