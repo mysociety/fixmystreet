@@ -142,7 +142,7 @@
       <hr>
       <dl class="govuk-summary-list govuk-!-margin-bottom-0">
      [% END %]
-        [% IF unit.schedule AND c.cobrand.moniker != 'sutton' %]
+        [% IF unit.schedule %][% IF c.cobrand.moniker != 'sutton' %]
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Frequency</dt>
             <dd class="govuk-summary-list__value">
@@ -152,7 +152,7 @@
               [% END %]
             </dd>
           </div>
-        [% END %]
+        [% ELSE %]<!-- [% unit.schedule %] -->[% END %][% END %]
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Next collection</dt>
           <dd class="govuk-summary-list__value">
