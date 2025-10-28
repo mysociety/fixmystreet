@@ -300,8 +300,7 @@ sub bin_services_for_address {
             request_containers => $containers,
             request_max => $request_max,
             service_task_ids => $servicetask->{ids},
-            # FD-3942 - comment this out so Frequency not shown in front end
-            $self->moniker eq 'bromley' ? () : (schedule => $schedules->{description}),
+            schedule => $schedules->{description},
             last => $schedules->{last},
             next => $schedules->{next},
             end_date => $schedules->{end_date},
