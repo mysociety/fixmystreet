@@ -164,9 +164,10 @@ Aberdeenshire want certain defect fields shown in updates on FMS.
 
 These values, if present, are passed back from open311-adapter in the
 <extras> element. If the template being used for this update has placeholders
-like '{{targetDate}}', '{{jobStartDate}}', '{{featureSPD}}', or '{{featureCCAT}}' in its text,
-they get replaced with the value from Confirm. If there is no value then 'TBC'
-is used for targetDate and jobStartDate, or an empty string for featureSPD and featureCCAT.
+like '{{targetDate}}', '{{jobStartDate}}', or any fields configured in the
+'response_template_variables' Config entry, they get replaced with the value
+from Confirm. If there is no value then 'TBC' is used for date fields, or an
+empty string for other fields.
 
 Additionally, the incoming update might be for a defect which has superseded an
 existing one, so if that's the case we need to identify and close it.
@@ -193,8 +194,13 @@ sub open311_get_update_munging {
         }
     }
 
-    # Handle other fields as-is
-    for my $field (qw(featureSPD featureCCAT)) {
+    # Get a list of plain text variables from DB
+    my $vars = FixMyStreet::DB->resultset("Config")->get('response_template_variables');
+    my @fields = ();
+    if ($vars && $vars->{$self->moniker}) {
+        @fields = @{ $vars->{$self->moniker} };
+    }
+    for my $field (@fields) {
         if ($text =~ /\{\{$field}}/) {
             my $value = '';
             if ($request->{extras} && $request->{extras}->{$field}) {
@@ -210,7 +216,6 @@ sub open311_get_update_munging {
     return unless $supersedes && $supersedes =~ /^DEFECT_/;
 
     $self->_supersede_report($comment->problem, $supersedes);
-
 }
 
 =head2 open311_report_fetched
