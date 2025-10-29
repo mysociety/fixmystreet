@@ -45,7 +45,7 @@ If a user attempts to make a report in a location outside your council boundarie
 
 ### Identifying the report location 
 
-<img alt="The start page invites the resident to search for the location of their issue" src="/assets/img/pro-user-guide/home.png" class="admin-screenshot" />
+<img alt="The start page invites the resident to search for the location of their issue" src="/assets/img/pro-user-guide/home.jpeg" class="admin-screenshot">
 
 FixMyStreet’s start page invites the resident to search for the location of their issue, by entering any part of an address, for example a street name or postcode. Alternatively they can allow the site to identify their location automatically.
 

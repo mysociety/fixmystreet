@@ -24,7 +24,7 @@ Click on ‘all reports’ in the top menu. You’ll see the boundaries of your
 council area on the map, and a list of all reports listed, with the most
 recently updated reports at the top, in the left hand panel.
 
-<img alt="Click all reports in the top menu to view all reports in an area" src="/assets/img/pro-user-guide/viewing-reports-your-area.png" class="admin-screenshot" />
+<img alt="Click all reports in the top menu to view all reports in an area" src="/assets/img/pro-user-guide/viewing-reports-your-area.jpeg" class="admin-screenshot">
 
 Note that staff members can be allocated one or more category (e.g. potholes, streetlights, etc) by
 the Administrator — see ‘[Creating a Staff Account](#adminstrating-staff-accounts)’ for more details. When logged in, these staff
@@ -729,7 +729,7 @@ in the notices shown to users. You could, for example, include photos that
 illustrate the sorts of issues users should report in a particular category.
 
 <img alt="Screenshot illustrating how the notice can include guidance for the user as well as a comparison photo."
-    src="/assets/img/pro-user-guide/blocked-drains-guidance.png" class="admin-screenshot" />
+    src="/assets/img/pro-user-guide/blocked-drains-guidance.jpeg" class="admin-screenshot">
 
 The **Notice text** field allows you to include HTML tags to apply text
 formatting, add links, or include images in the notice shown to the user. The
@@ -1006,6 +1006,6 @@ if your out of hours were 6pm to 8am Monday to Friday, all day weekends and Bank
 plus Christmas Eve, you would set it up as the following screenshot:
 
 <img alt="Saturday, Sunday, Bank Holidays, and a special Christmas Eve, 00:00-24:00; Monday to Friday 00:00-08:00 and 18:00-24:00."
-    src="/assets/img/pro-user-guide/site-message-time-periods.png" class="admin-screenshot">
+    src="/assets/img/pro-user-guide/site-message-time-periods.jpeg" class="admin-screenshot">
 
 </div>
