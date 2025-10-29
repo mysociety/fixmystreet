@@ -399,7 +399,7 @@ FixMyStreet::override_config {
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
-        $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
+        $agile_mock->mock( 'CustomerSearch', sub { {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
@@ -422,7 +422,7 @@ FixMyStreet::override_config {
             ],
         } } );
 
-        $bexley_mocks{whitespace}->mock(
+        $whitespace_mock->mock(
             'GetSiteCollections',
             sub {
                 [   {   SiteServiceID          => 1,
@@ -445,6 +445,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+            like $mech->content, qr/Cancel your brown wheelie bin subscription/, 'cancel link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
             like $mech->text, qr/Sign in or create an account/, 'modify link goes to login page';
@@ -457,6 +458,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+            like $mech->content, qr/Cancel your brown wheelie bin subscription/, 'cancel link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
             $mech->submit_form_ok(
@@ -515,6 +517,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+            like $mech->content, qr/Cancel your brown wheelie bin subscription/, 'cancel link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
             $mech->submit_form_ok(
@@ -573,6 +576,10 @@ FixMyStreet::override_config {
                         qr/Change your brown wheelie bin subscription/,
                         'No modification link';
                     like $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'Has cancel link';
+
+                    like $mech->content,
                         qr/Renew your brown wheelie bin subscription/,
                         'Renewal link instead';
 
@@ -584,6 +591,7 @@ FixMyStreet::override_config {
                 set_fixed_time('2024-02-01T00:00:00');
                 $mech->get_ok("/waste/$uprn");
                 like $mech->content, qr/Change your brown wheelie bin subscription/;
+                like $mech->content, qr/Cancel your brown wheelie bin subscription/;
 
                 $mech->get_ok("/waste/$uprn/garden_modify");
                 $mech->submit_form_ok(
@@ -891,7 +899,7 @@ FixMyStreet::override_config {
         $mech->log_in_ok( $user->email );
 
         subtest 'with active contract elsewhere' => sub {
-            $bexley_mocks{whitespace}->mock('GetSiteCollections', sub {
+            $whitespace_mock->mock('GetSiteCollections', sub {
                 [ {
                     SiteServiceID          => 1,
                     ServiceItemDescription => 'Non-recyclable waste',
@@ -903,7 +911,7 @@ FixMyStreet::override_config {
                     RoundSchedule => 'RND-1 Mon',
                 } ];
             });
-            $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
+            $agile_mock->mock( 'CustomerSearch', sub { {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
@@ -928,8 +936,8 @@ FixMyStreet::override_config {
         };
 
         subtest 'with no garden container in Whitespace' => sub {
-            $bexley_mocks{whitespace}->mock( 'GetSiteCollections', sub { [] } );
-            $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
+            $whitespace_mock->mock( 'GetSiteCollections', sub { [] } );
+            $agile_mock->mock( 'CustomerSearch', sub { {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
@@ -1004,6 +1012,9 @@ FixMyStreet::override_config {
                 like $mech->content,
                     qr/Change your brown wheelie bin subscription/,
                     'can amend subscription';
+                like $mech->content,
+                    qr/Cancel your brown wheelie bin subscription/,
+                    'can cancel';
                 unlike $mech->content, qr/Renew subscription today/,
                     '"Renew today" notification box not shown';
                 unlike $mech->content, qr/14 March 2024, soon due for renewal/,
@@ -1040,6 +1051,9 @@ FixMyStreet::override_config {
                 unlike $mech->content,
                     qr/Change your brown wheelie bin subscription/,
                     'cannot amend subscription';
+                like $mech->content,
+                    qr/Cancel your brown wheelie bin subscription/,
+                    'can cancel';
                 like $mech->content, qr/Renew subscription today/,
                     '"Renew today" notification box shown';
                 like $mech->content, qr/14 March 2024, soon due for renewal/,
@@ -1270,6 +1284,9 @@ FixMyStreet::override_config {
                 like $mech->content,
                     qr/Change your brown wheelie bin subscription/,
                     'can amend subscription';
+                like $mech->content,
+                    qr/Cancel your brown wheelie bin subscription/,
+                    'can cancel';
                 like $mech->content, qr/Renewal.*15 March 2024/s,
                     'Renewal date shown';
                 unlike $mech->content,
@@ -1279,7 +1296,7 @@ FixMyStreet::override_config {
 
             subtest 'subscription expired' => sub {
                 subtest 'within 14 days after expiry - is a renewal' => sub {
-                    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
+                    $agile_mock->mock( 'CustomerSearch', sub { {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
@@ -1305,6 +1322,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
+                    unlike $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
                     like $mech->content, qr/18 January 2024, subscription overdue/,
@@ -1429,7 +1449,7 @@ FixMyStreet::override_config {
                 };
 
                 subtest 'Ended more than 14 days but less than 3 months ago - renewal becomes a new signup' => sub {
-                    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
+                    $agile_mock->mock( 'CustomerSearch', sub { {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
@@ -1473,6 +1493,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
+                    unlike $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
                     like $mech->content, qr/1 November 2023, subscription overdue/,
@@ -1524,7 +1547,7 @@ FixMyStreet::override_config {
                 };
 
                 subtest 'Ended more than 3 months ago - no renewal option' => sub {
-                    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
+                    $agile_mock->mock( 'CustomerSearch', sub { {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
@@ -1550,6 +1573,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
+                    unlike $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
                     unlike $mech->content, qr/subscription overdue/,
@@ -1571,7 +1597,7 @@ FixMyStreet::override_config {
                     );
                     $new_sub_report->update;
 
-                    $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
+                    $agile_mock->mock( 'CustomerSearch', sub { {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
@@ -1597,7 +1623,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
-
+                    unlike $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'cannot cancel';
                 };
             };
         };
@@ -1962,7 +1990,7 @@ FixMyStreet::override_config {
                     },
                 );
 
-                $bexley_mocks{agile}->mock( 'CustomerSearch', sub { {
+                $agile_mock->mock( 'CustomerSearch', sub { {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
