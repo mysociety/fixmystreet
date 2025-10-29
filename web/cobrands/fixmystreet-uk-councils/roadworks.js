@@ -104,10 +104,12 @@ fixmystreet.roadworks.display_message = function(feature) {
 };
 
 fixmystreet.roadworks.filter = function(feature) {
-  var category = fixmystreet.reporting.selectedCategory().category,
+  var selected = fixmystreet.reporting.selectedCategory(),
+        category = selected.category,
+        group = selected.group,
         data = document.getElementById('roadworks-categories').dataset.roadworksCategories || '[]',
         categories = JSON.parse(data);
-    return !categories.length || OpenLayers.Util.indexOf(categories, category) != -1;
+    return !categories.length || OpenLayers.Util.indexOf(categories, category) != -1 || OpenLayers.Util.indexOf(categories, group) != -1;
 };
 
 var roadworks_layer = fixmystreet.assets.add(roadworks_defaults);
