@@ -429,6 +429,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+            like $mech->content, qr/Cancel your brown wheelie bin subscription/, 'cancel link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
             like $mech->text, qr/Sign in or create an account/, 'modify link goes to login page';
@@ -441,6 +442,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+            like $mech->content, qr/Cancel your brown wheelie bin subscription/, 'cancel link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
             $mech->submit_form_ok(
@@ -499,6 +501,7 @@ FixMyStreet::override_config {
 
             $mech->get_ok("/waste/$uprn");
             like $mech->content, qr/Change your brown wheelie bin subscription/, 'modify link present';
+            like $mech->content, qr/Cancel your brown wheelie bin subscription/, 'cancel link present';
 
             $mech->get_ok("/waste/$uprn/garden_modify");
             $mech->submit_form_ok(
@@ -557,6 +560,10 @@ FixMyStreet::override_config {
                         qr/Change your brown wheelie bin subscription/,
                         'No modification link';
                     like $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'Has cancel link';
+
+                    like $mech->content,
                         qr/Renew your brown wheelie bin subscription/,
                         'Renewal link instead';
 
@@ -568,6 +575,7 @@ FixMyStreet::override_config {
                 set_fixed_time('2024-02-01T00:00:00');
                 $mech->get_ok("/waste/$uprn");
                 like $mech->content, qr/Change your brown wheelie bin subscription/;
+                like $mech->content, qr/Cancel your brown wheelie bin subscription/;
 
                 $mech->get_ok("/waste/$uprn/garden_modify");
                 $mech->submit_form_ok(
@@ -988,6 +996,9 @@ FixMyStreet::override_config {
                 like $mech->content,
                     qr/Change your brown wheelie bin subscription/,
                     'can amend subscription';
+                like $mech->content,
+                    qr/Cancel your brown wheelie bin subscription/,
+                    'can cancel';
                 unlike $mech->content, qr/Renew subscription today/,
                     '"Renew today" notification box not shown';
                 unlike $mech->content, qr/14 March 2024, soon due for renewal/,
@@ -1024,6 +1035,9 @@ FixMyStreet::override_config {
                 unlike $mech->content,
                     qr/Change your brown wheelie bin subscription/,
                     'cannot amend subscription';
+                like $mech->content,
+                    qr/Cancel your brown wheelie bin subscription/,
+                    'can cancel';
                 like $mech->content, qr/Renew subscription today/,
                     '"Renew today" notification box shown';
                 like $mech->content, qr/14 March 2024, soon due for renewal/,
@@ -1254,6 +1268,9 @@ FixMyStreet::override_config {
                 like $mech->content,
                     qr/Change your brown wheelie bin subscription/,
                     'can amend subscription';
+                like $mech->content,
+                    qr/Cancel your brown wheelie bin subscription/,
+                    'can cancel';
                 like $mech->content, qr/Renewal.*15 March 2024/s,
                     'Renewal date shown';
                 unlike $mech->content,
@@ -1289,6 +1306,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
+                    unlike $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
                     like $mech->content, qr/18 January 2024, subscription overdue/,
@@ -1457,6 +1477,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
+                    unlike $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
                     like $mech->content, qr/1 November 2023, subscription overdue/,
@@ -1534,6 +1557,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
+                    unlike $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'cannot cancel';
                     unlike $mech->content, qr/Renew subscription today/,
                         '"Renew today" notification box not shown';
                     unlike $mech->content, qr/subscription overdue/,
@@ -1581,7 +1607,9 @@ FixMyStreet::override_config {
                     unlike $mech->content,
                         qr/Change your brown wheelie bin subscription/,
                         'cannot amend subscription';
-
+                    unlike $mech->content,
+                        qr/Cancel your brown wheelie bin subscription/,
+                        'cannot cancel';
                 };
             };
         };
