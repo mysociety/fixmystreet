@@ -189,6 +189,14 @@ HERE
     return $open311_only;
 };
 
+=head2 open311_send_category_change
+
+We pass any category change to Confirm.
+
+=cut
+
+sub open311_send_category_change { 1 }
+
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
