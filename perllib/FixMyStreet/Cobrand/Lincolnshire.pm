@@ -151,6 +151,7 @@ sub categories_restriction {
             'Litter',
             'Street nameplates',
             'Bench', 'Cycle rack', 'Litter bin', 'Planter',
+            'Street light', # For SKDC shared lighting layer
         ] },
     ] } );
 }
