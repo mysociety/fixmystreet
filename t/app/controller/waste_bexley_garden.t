@@ -12,7 +12,7 @@ END { FixMyStreet::App->log->enable('info', 'error'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $comment_user = $mech->create_user_ok('comment');
+my $comment_user = $mech->create_user_ok( 'comment', name => 'Comment User' );
 my $body = $mech->create_body_ok( 2494, 'Bexley',
     { cobrand => 'bexley', comment_user => $comment_user } );
 
@@ -3088,6 +3088,7 @@ FixMyStreet::override_config {
         is $req->header('Accept'), 'application/json', 'Accept is correct';
     };
 
+# HERE
     subtest 'AccessPaySuite webhook for cancelling DD' => sub {
         $mech->delete_problems_for_body($body->id);
         set_fixed_time('2025-01-01T00:00:00Z');
@@ -3145,6 +3146,7 @@ FixMyStreet::override_config {
             direct_debit_contract_id => 'DD_CONTRACT_123',
             direct_debit_customer_id => 'DD_CUSTOMER_123',
             direct_debit_reference   => 'APIRTM_123',
+            property_address => '123 Bexley St',
         );
         $dd_report->update;
 
@@ -3152,7 +3154,7 @@ FixMyStreet::override_config {
             FixMyStreet::Script::Reports::send();
             $mech->clear_emails_ok;
 
-            is $mech->post(
+            my $res = $mech->post(
                 '/waste/access_paysuite/contract_updates',
                 Content_Type => 'application/json',
                 Content      => encode_json(
@@ -3164,7 +3166,16 @@ FixMyStreet::override_config {
                             'Contract Cancelled because of ADDACS code 1 (Instruction Cancelled)',
                     }
                 ),
-            )->code, 200, 'successful';
+            );
+
+# warn "====\n\t" . "DUMP:" . "\n====";
+# use Data::Dumper;
+# $Data::Dumper::Indent = 1;
+# $Data::Dumper::Maxdepth = 10;
+# $Data::Dumper::Sortkeys = 1;
+# warn Dumper $res;
+
+            is $res->code, 200, 'successful';
             is $archive_contract_called, 1, 'archive_contract was called';
             is $archived_contract_id, 'DD_CONTRACT_123', 'correct contract_id was passed';
             FixMyStreet::Script::Reports::send();

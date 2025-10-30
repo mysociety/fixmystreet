@@ -1,6 +1,7 @@
 =head1 NAME
 
-FixMyStreet::Script::Bexley::CancelGardenWaste - cancel garden waste subscriptions from Agile
+FixMyStreet::Script::Bexley::CancelGardenWaste - cancel garden waste subscriptions
+from Agile or Access PaySuite
 
 =cut
 
@@ -25,7 +26,7 @@ has 'agile' => (
     },
 );
 
-sub cancel_from_api {
+sub cancel_from_agile {
     my ($self, $days) = @_;
 
     my $contracts = $self->agile->LastCancelled($days);
@@ -51,61 +52,121 @@ sub cancel_by_uprn {
     $self->_vprint("Attempting to cancel subscription for UPRN $uprn");
 
     # Find active garden subscription report for this UPRN
-    my $report = $self->cobrand->problems->search({
-        category => 'Garden Subscription',
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
-        state => [ FixMyStreet::DB::Result::Problem->open_states ],
-    })->order_by('-id')->first;
-
-    unless ($report) {
-        $self->_vprint("  No active garden subscription found for UPRN $uprn");
-        return;
-    }
-
-    $self->_vprint("  Found active report " . $report->id);
+    my $original_report = $self->get_original_report( uprn => $uprn );
 
     # See if there is an existing cancellation report for current subscription
-    my $dtf = FixMyStreet::DB->schema->storage->datetime_parser;
-    my $current_created = $dtf->format_datetime( $report->created );
-    my $cancellation_report = $self->cobrand->problems->search({
-        category => 'Cancel Garden Subscription',
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
-        state => [ FixMyStreet::DB::Result::Problem->open_states ],
-        # Make sure it was created after the current subscription, otherwise
-        # it is a cancellation for a previous subscription
-        created => { '>' => $current_created },
-    })->order_by('-id')->first;
-
-    if ($cancellation_report) {
-        $self->_vprint("  Active cancellation report " . $cancellation_report->id . " already exists");
-        return;
-    }
+    my $cancellation_report
+        = $self->get_existing_cancellation($original_report);
+    return if $cancellation_report;
 
     $cancellation_report
-        = $self->create_cancellation_report( $report, $reason );
+        = $self->create_cancellation_report( $original_report, 1, $reason );
 
     $self->_vprint("  Created cancellation report " . $cancellation_report->id);
 
-    my $payment_method = $report->get_extra_field_value('payment_method') || 'credit_card';
+    my $payment_method = $original_report->get_extra_field_value('payment_method') || 'credit_card';
     if ($payment_method eq 'direct_debit') {
-        $self->_cancel_direct_debit($report);
+        $self->_cancel_direct_debit($original_report);
     } else {
         # Nothing to do for credit card
     }
 }
 
+sub cancel_from_aps {
+    my ( $self, $dd_contract_id, $reason ) = @_;
+
+    $self->_vprint("Attempting to cancel subscription for DD contract ID $dd_contract_id");
+
+    # Find active garden subscription report for this UPRN
+    my $original_report = $self->get_original_report( dd_contract_id => $dd_contract_id );
+
+    # See if there is an existing cancellation report for current subscription
+    my $cancellation_report
+        = $self->get_existing_cancellation($original_report);
+    return if $cancellation_report;
+
+    $cancellation_report
+        = $self->create_cancellation_report( $original_report, 0, $reason );
+
+    $self->_vprint("  Created cancellation report " . $cancellation_report->id);
+}
+
+# Based on Controller/Waste.pm->get_original_sub
+sub get_original_report {
+    my ( $self, %args ) = @_;
+
+    my $uprn = $args{uprn};
+    my $dd_contract_id = $args{dd_contract_id};
+
+    my $extra = $uprn
+        ? { '@>' => encode_json({ '_fields' => [ { name => 'uprn', value => $uprn } ] }) }
+        : { '@>' => encode_json({ direct_debit_contract_id => $dd_contract_id }) };
+
+    my $report = $self->cobrand->problems->search({
+        category => 'Garden Subscription',
+        title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
+        extra => $extra,
+        state => { '!=' => 'hidden' },
+    })->order_by('-id')->first;
+
+    unless ($report) {
+        $self->_vprint( "  No active garden subscription found for "
+                . ( $uprn ? "UPRN $uprn" : "DD contract ID $dd_contract_id" )
+        );
+        return;
+    }
+
+    $self->_vprint("  Found active report " . $report->id);
+    return $report;
+}
+
+sub get_existing_cancellation {
+    my ( $self, $original_report ) = @_;
+
+    # See if there is an existing cancellation report for current subscription
+    my $dtp = FixMyStreet::DB->schema->storage->datetime_parser;
+    my $original_created = $dtp->format_datetime( $original_report->created );
+
+    my $uprn = $original_report->get_extra_field_value('uprn');
+
+    my $cancellation_report = $self->cobrand->problems->search({
+        category => 'Cancel Garden Subscription',
+        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
+        state => { '!=' => 'hidden' },
+        # Make sure it was created after the current subscription, otherwise
+        # it is a cancellation for a previous subscription
+        created => { '>' => $original_created },
+    })->order_by('-id')->first;
+
+    if ($cancellation_report) {
+        $self->_vprint("  Active cancellation report " . $cancellation_report->id . " already exists");
+        return $cancellation_report;
+    } else {
+        return;
+    }
+}
+
 sub create_cancellation_report {
-    my ( $self, $existing_report, $reason ) = @_;
+    my ( $self, $existing_report, $from_agile, $reason ) = @_;
+
+warn "====\n\t" . $self->cobrand->moniker . "\n====";
+warn "====\n\t" . "BODY:" . "\n====";
+use Data::Dumper;
+$Data::Dumper::Indent = 1;
+$Data::Dumper::Maxdepth = 3;
+$Data::Dumper::Sortkeys = 1;
+warn Dumper { $self->cobrand->body->get_columns };
 
     my %cancellation_params = (
         state => 'confirmed',
-        send_state => 'sent',
         category => 'Cancel Garden Subscription',
         title => 'Garden Subscription - Cancel',
         detail => '', # Populated below
         used_map => 0,
         user_id => $self->cobrand->body->comment_user_id,
         name => $self->cobrand->body->comment_user->name,
+
+        $from_agile ? ( send_state => 'sent' ) : (),
     );
     for (qw/
         postcode
@@ -148,9 +209,11 @@ sub create_cancellation_report {
         = grep { $_->{name} =~ /^($match_str)$/ } @$existing_extra;
     push @cancellation_extra, {
         name  => 'reason',
-        value => 'Cancelled on Agile end: '
-            . ( $reason || 'No reason provided' )
+        value => 'Cancelled in '
+            . ( $from_agile ? 'Agile' : 'Access PaySuite' ) . ': '
+            . ( $reason || 'No reason provided' ),
     };
+
     $cancellation_report->set_extra_fields(@cancellation_extra);
 
     $cancellation_report->update;

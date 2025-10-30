@@ -36,5 +36,5 @@ my $canceller = FixMyStreet::Script::Bexley::CancelGardenWaste->new(
 if ($opts->uprn) {
     $canceller->cancel_by_uprn($opts->uprn);
 } else {
-    $canceller->cancel_from_api($opts->days);
+    $canceller->cancel_from_agile($opts->days);
 }
