@@ -155,6 +155,7 @@ if ($opt->test_fixtures) {
                 { group => 'Grass, hedges and weeds', category => 'Grass cutting' },
                 { group => 'Grass, hedges and weeds', category => 'Hedge problem' },
             ], name => 'Adstock Parish Council' }, # Buckinghamshire parish council
+        { area_id => 2505, categories => [ 'Trees', 'Street lights' ], name => 'Camden Borough Council', cobrand => 'camden' },
         { area_id => 164186, categories => [ 'Graffiti' ], name => 'West Northamptonshire Council' },
         { area_id => 2483, categories => [
                 'Potholes', { category => 'Other', non_public => 1 },

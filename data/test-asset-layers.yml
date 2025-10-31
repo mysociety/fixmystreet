@@ -249,6 +249,18 @@ buckinghamshire:
     stylemap: fixmystreet.assets.stylemap_invisible
     # Want to use this for parish categories as well as Bucks, so skip body checks.
     body: ~
+
+camden:
+  - - asset_type: spot
+      body: Camden Borough Council
+      http_wfs_url: https://tilma.mysociety.org/proxy/camden/wfs
+      srsName: EPSG:27700
+  - asset_category: Trees
+    asset_item: tree
+    class: OpenLayers.Layer.VectorAssetMove
+    max_resolution: 0.5971642833948135
+    wfs_feature: Trees
+
 lincolnshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/lincs"
     geometryName: 'msGeometry'
