@@ -2125,6 +2125,21 @@ FixMyStreet::override_config {
         set_fixed_time('2024-02-01T12:00:00');
         $mech->delete_problems_for_body($body->id);
 
+        # Create a cancellation for a different UPRN to verify filtering works
+        my $other_user = $mech->create_user_ok('other@example.org', name => 'Other User');
+        my ($other_cancel) = $mech->create_problems_for_body(1, $body->id, 'Garden Subscription - Cancel', {
+            user => $other_user,
+            category => 'Cancel Garden Subscription',
+            title => 'Garden Subscription - Cancel',
+            state => 'confirmed',
+            extra => {
+                _fields => [
+                    { name => 'uprn', value => '10002' },
+                    { name => 'payment_method', value => 'credit_card' },
+                ]
+            },
+        });
+
         # Set up Agile mock with active subscription
         $agile_mock->mock( 'CustomerSearch', sub { {
             Customers => [{
