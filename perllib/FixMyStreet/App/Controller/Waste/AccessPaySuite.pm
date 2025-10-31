@@ -31,9 +31,6 @@ sub contract_updates : Path('/waste/access_paysuite/contract_updates') : Args(0)
             $c->stash->{$field} = $report->$field;
         };
 
-        $c->stash->{contacts} = [ $c->model('DB::Contact')->search({
-            category => 'Cancel Garden Subscription'
-        }) ];
         $c->stash->{orig_sub} = $report;
         $c->stash->{property} = $c->cobrand->call_hook(
             look_up_property => $report->get_extra_field_value('uprn') );

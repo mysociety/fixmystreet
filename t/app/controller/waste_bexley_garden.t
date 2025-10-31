@@ -3154,6 +3154,8 @@ FixMyStreet::override_config {
                 title    => 'Garden Subscription - New',
                 external_id => 'Agile-CONTRACT_123',
                 user => $user,
+                latitude => 51.466707,
+                longitude => 0.181108,
             },
         );
         $dd_report->set_extra_fields(
