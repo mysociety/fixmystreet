@@ -169,7 +169,7 @@ Hide TfL's River Piers categories on the Merton cobrand.
 sub categories_restriction {
     my ($self, $rs) = @_;
 
-    return $rs->search( { 'me.category' => { -not_like => 'River Piers%' } } );
+    return $rs->search( { 'me.category' => { -not_like => 'River %' } } );
 }
 
 =head2 check_report_is_on_cobrand_asset

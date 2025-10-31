@@ -5,6 +5,7 @@ use FixMyStreet::DB;
 use Open311;
 use Open311::PostServiceRequestUpdates;
 use FixMyStreet::Script::CSVExport;
+use FixMyStreet::Script::Reports;
 use CGI::Simple;
 use File::Temp 'tempdir';
 
@@ -25,6 +26,7 @@ my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params);
 $mech->create_contact_ok(body_id => $body->id, category => 'Pothole', email => 'potholes@example.org');
 $mech->create_contact_ok(body_id => $body->id, category => 'Surface Issue', email => 'surface_issue@example.org',
     extra => { _fields => [ { code => '_wrapped_service_code', variable => 'true', datatype => 'string' } ] });
+$mech->create_contact_ok(body => $body, category => 'Other', email => 'Other');
 my $lincs_user = $mech->create_user_ok('lincs@example.org', name => 'Lincolnshire User', from_body => $body);
 my $superuser = $mech->create_user_ok('super@example.org', name => 'Super User', is_superuser => 1, email_verified => 1);
 my $superuser_email = $superuser->email;
@@ -135,7 +137,7 @@ FixMyStreet::override_config {
             { confirmed => DateTime->now }
         );
 
-        my $params = {};
+        my $params = { description => 'Description' };
 
         subtest 'Regular category change' => sub {
             $report->update({ category => 'Surface Issue' });
@@ -147,7 +149,7 @@ FixMyStreet::override_config {
             $report->update_extra_field({ name => '_wrapped_service_code', value => 'ABC_DEF' });
             $report->update;
             $comment->discard_changes;
-            %$params = ();
+            $params = { description => 'Description' };
             $cobrand->open311_munge_update_params($params, $comment);
             is $params->{service_code}, 'ABC_DEF', 'Service code is set from field value';
         };
@@ -158,9 +160,9 @@ FixMyStreet::override_config {
                 'f', 'confirmed', 'confirmed',
                 { confirmed => DateTime->now }
             );
-            $params = {};
+            $params = { description => 'Description' };
             $cobrand->open311_munge_update_params($params, $regular_comment);
-            is scalar keys %$params, 0, 'No parameters added for non-category change comments';
+            is scalar keys %$params, 1, 'No parameters added for non-category change comments';
         };
 
         $report->comments->delete;
@@ -297,6 +299,7 @@ subtest 'Dashboard CSV export includes extra staff columns' => sub {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'lincolnshire',
     MAPIT_URL => 'http://mapit.uk/',
+    STAGING_FLAGS => { send_reports => 1 },
     STAGING_SITE => 1,
 }, sub {
     subtest "fetching problems from Open311 on staging doesn't include private user information" => sub {
@@ -352,6 +355,13 @@ FixMyStreet::override_config {
         is $p->user->email, $superuser_email, 'correct email associated with problem';
     };
 
+    subtest "a staff report includes extra text" => sub {
+        FixMyStreet::Script::Reports::send(); # Sends the CSV one created above
+        my $req = Open311->test_req_used;
+        my $c = CGI::Simple->new($req->content);
+        is $c->param('attribute[title]'), '[LCC Update by CSV Staff] CSV Export Test Issue Test 1 for ' . $body->id;
+    };
+
     subtest "a staff update includes the extra info" => sub {
         my $test_res = '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>';
 
@@ -405,6 +415,7 @@ sub xml_report {
         <contact_name>$data->{name}</contact_name>
         <contact_email>$data->{email}</contact_email>
         <status>open</status>
+        <service_code>CODE</service_code>
         <service_name>Street light not working</service_name>
         <description>Street light not working</description>
         <requested_datetime>DATETIME</requested_datetime>
