@@ -1037,51 +1037,51 @@ fixmystreet.assets.lincolnshire.llpg_stylemap = new OpenLayers.StyleMap({
     })
 });
 
+$(fixmystreet).on("report_new:page_change", function(e, $curr, $page) {
+    if ($page.hasClass('js-lincs-grass-notice')) {
+        $page.find('.js-reporting-page--next').prop('disabled', false);
+    }
+});
+
 fixmystreet.assets.lincolnshire.grass_found = function(layer) {
     var data = layer.selected_feature.attributes;
     var parish_regex = new RegExp(/Contact Parish/);
     /* If it is handled by LCC and has cut dates provided,
     add an extra notice to the reporting form showing the cut dates */
     if (data.Cut_By.match(/LCC|F0|F1|Flail|STR/) && lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3]).length) {
+        var msg = "<h1>Grass cutting schedule</h1>" +
+                    "<p>The grass in this area is scheduled to be cut ";
+                    if (data.Cut_3 === 'N/A') {
+                        msg = msg + "on <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+                    } else {
+                        msg = msg + "between <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
+                    }
+
+        if (data.Cut_By != 'LCC') {
+            msg += '<p>In rural areas we cut roads to the first 1.1m width from the edge of the road and leave the rest for wildlife except for areas providing visibility at junctions and bends where a greater width is cut. We also cut a strip either side of footways where possible.</p>';
+        }
+        msg += "<p>Does this answer your question about grass cutting?</p>";
         var $div = $(".js-reporting-page.js-lincs-grass-notice");
         if ($div.length) {
             $div.removeClass('js-reporting-page--skip');
+            $div.find('.js-lincs-grass-dynamic').html(msg);
+            $('.js-reporting-page--active').after($div);
         } else {
-            var msg = "<div class='box-warning js-lincs-grass-notice'>" +
-                        "<h1>Grass cutting schedule</h1>" +
-                        "<p>The grass in this area is scheduled to be cut ";
-                        if (data.Cut_3 === 'N/A') {
-                            msg = msg + "on <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
-                        } else {
-                            msg = msg + "between <strong>" + lincs_has_dates([data.Cut_1, data.Cut_2, data.Cut_3])[0] + "</strong>";
-                        }
-
-            if (data.Cut_By != 'LCC') {
-                msg += '<p>In rural areas we cut roads to the first 1.1m width from the edge of the road and leave the rest for wildlife except for areas providing visibility at junctions and bends where a greater width is cut. We also cut a strip either side of footways where possible.</p>';
-            }
-            msg += "<p>Does this answer your question about grass cutting?</p>";
+            msg = "<div class='box-warning js-lincs-grass-notice'><div class='js-lincs-grass-dynamic'>" + msg + '</div></div>';
             $div = $(msg);
-
             var $button = $("<div><button id='lincs-yes-verge-query' class='btn btn--block'>Yes</button></div>");
             $button.on( "click", function(e) {
                 e.preventDefault();
-                $('.js-reporting-page--next').prop('disabled', true);
+                $('.js-reporting-page.js-lincs-grass-notice .js-reporting-page--next').prop('disabled', true);
                 if (!$('#lincs-thank-you').length) {
                     $div.append('<p id="lincs-thank-you">Thank you for making an enquiry. If you have any other highways faults to report please <a href="/">make another report</a>.</p>');
                 }
             });
             $div.append($button);
+            fixmystreet.pageController.addNextPage('lincs_grass', $div);
             // We'll call the 'Continue' button 'No' for this page
             // as clicking 'No' should continue report
-            $(fixmystreet).on("report_new:page_change", function(e, $curr, $page) {
-                if ($page.hasClass('js-lincs-grass-notice')) {
-                    $('.js-reporting-page--next').text('No');
-                } else {
-                    $('.js-reporting-page--next').prop('disabled', false);
-                    $('.js-reporting-page--next').text('Continue');
-                }
-            });
-            fixmystreet.pageController.addNextPage('lincs_grass', $div);
+            $('.js-reporting-page.js-lincs-grass-notice .js-reporting-page--next').text('No');
         }
         fixmystreet.body_overrides.only_send('Lincolnshire County Council');
     }
@@ -1171,6 +1171,7 @@ fixmystreet.assets.lincolnshire.grass_found = function(layer) {
 };
 
 fixmystreet.assets.lincolnshire.grass_not_found = function(layer) {
+    $(".js-reporting-page.js-lincs-grass-notice").addClass('js-reporting-page--skip');
     // road_found to remove any stopper messages
     fixmystreet.message_controller.road_found(layer);
     fixmystreet.body_overrides.only_send('Lincolnshire County Council');
