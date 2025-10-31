@@ -239,6 +239,58 @@ sub open311_get_user {
     return $user;
 }
 
+=head2 open311_extra_data_include
+
+We want to include staff information in the description
+when the report is made by a staff member.
+
+=cut
+
+around open311_extra_data_include => sub {
+    my ($orig, $self) = (shift, shift);
+    my $open311_only = $self->$orig(@_);
+
+    my ($row, $h, $contact) = @_;
+    my $staff = $row->get_extra_metadata('contributed_by');
+    my $prefix = _get_notes_prefix($staff);
+    for (@$open311_only) {
+        if ($_->{name} eq 'title') {
+            $_->{value} = "$prefix $_->{value}";
+        }
+    }
+
+    return $open311_only;
+};
+
+=head2 open311_munge_update_params
+
+We want to include staff information in the description
+when the update is made by a staff member.
+
+=cut
+
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+
+    my $contributed_by = $comment->get_extra_metadata('contributed_by');
+    my $is_body_user = $comment->get_extra_metadata('is_body_user');
+    my $user_id = $comment->user_id;
+    my $staff = $contributed_by || ($is_body_user ? $user_id : undef);
+    my $prefix = _get_notes_prefix($staff);
+    $params->{description} = "$prefix $params->{description}";
+}
+
+sub _get_notes_prefix {
+    my $user = shift;
+    if ($user) {
+        $user = FixMyStreet::DB->resultset("User")->find($user);
+        my $name = $user->name;
+        return "[LCC Update by $name]";
+    } else {
+        return "[Customer update]";
+    }
+}
+
 sub dashboard_export_problems_add_columns {
     my ($self, $csv) = @_;
 
