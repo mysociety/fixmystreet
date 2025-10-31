@@ -186,7 +186,7 @@ Camden don't want TfL's River Piers categories on their cobrand.
 sub categories_restriction {
     my ($self, $rs) = @_;
 
-    return $rs->search( { 'me.category' => { -not_like => 'River Piers%' } } );
+    return $rs->search( { 'me.category' => { -not_like => 'River %' } } );
 }
 
 # Problems and comments are always treated as anonymous so the user's name isn't displayed.
