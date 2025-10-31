@@ -45,6 +45,21 @@ bathnes:
     actions:
       found: fixmystreet.assets.banes.curo_found
       not_found: fixmystreet.assets.banes.curo_not_found
+
+borsetshire:
+  - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/borsetshire"
+    asset_type: 'spot'
+    srsName: "EPSG:3857"
+    body: "Borsetshire"
+  - wfs_feature: "Roads"
+    stylemap: 'fixmystreet.assets.stylemap_invisible'
+    asset_category: 'Public toilets'
+    non_interactive: true
+    road: true
+    actions:
+      found: fixmystreet.message_controller.road_found
+      not_found: fixmystreet.message_controller.road_not_found
+
 brent:
   - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/brent"
     max_resolution: 4.777314267158508
