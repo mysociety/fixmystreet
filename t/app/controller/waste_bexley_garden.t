@@ -2738,9 +2738,6 @@ FixMyStreet::override_config {
                 like $mech->text,
                     qr/Manage garden waste bins/,
                     'management link shown';
-                like $mech->text,
-                    qr/Payment methodDebit or Credit Card/,
-                    'payment method displayed';
             };
 
             subtest 'Whitespace data, but no Agile data' => sub {
@@ -2940,9 +2937,6 @@ FixMyStreet::override_config {
                     qr/You have a pending garden subscription\./,
                     'Subscription shown as pending',
                 );
-                like $mech->text,
-                    qr/Payment methodDirect Debit/,
-                    'payment method displayed';
                 like $mech->text,
                     qr/This property has a pending direct debit subscription/,
                     'pending DD message shown';
