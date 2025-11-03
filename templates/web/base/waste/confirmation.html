@@ -30,6 +30,11 @@ END ~%]
           [% END %]
           [% INCLUDE 'waste/_report_ids.html' %]
         </p>
+        <p>
+          [% IF report.category == 'Request assisted collection' AND is_staff %]
+              You can respond to this with this <a href="[% cobrand.base_url _ '/waste/' _ report.waste_property_id _ '/assisted/' _ report.id %]">form</a>
+          [% END %]
+        </p>
     </div>
 </div>
 
