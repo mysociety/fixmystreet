@@ -50,11 +50,13 @@ sub cancel_by_uprn {
 
     $self->_vprint("Attempting to cancel subscription for UPRN $uprn");
 
-    # Find active garden subscription report for this UPRN
+    # Find active garden subscription report for this UPRN.
+    # Based on get_original_sub in FixMyStreet/App/Controller/Waste.pm.
     my $report = $self->cobrand->problems->search({
         category => 'Garden Subscription',
+        title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
         extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
-        state => [ FixMyStreet::DB::Result::Problem->open_states ],
+        state => { '!=' => 'hidden' },
     })->order_by('-id')->first;
 
     unless ($report) {
