@@ -101,11 +101,11 @@ sub create_cancellation_report {
 
     my %cancellation_params = (
         state => 'confirmed',
+        confirmed => \'current_timestamp',
         send_state => 'sent',
         category => 'Cancel Garden Subscription',
         title => 'Garden Subscription - Cancel',
         detail => '', # Populated below
-        used_map => 0,
         user_id => $self->cobrand->body->comment_user_id,
         name => $self->cobrand->body->comment_user->name,
     );
@@ -115,9 +115,11 @@ sub create_cancellation_report {
         longitude
         bodies_str
         areas
+        used_map
         anonymous
         cobrand
         cobrand_data
+        send_questionnaire
         non_public
     /) {
         $cancellation_params{$_} = $existing_report->$_;

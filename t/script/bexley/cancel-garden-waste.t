@@ -145,6 +145,7 @@ FixMyStreet::override_config {
             my $cancel_report = _last_cancel_report();
 
             is $cancel_report->state, 'confirmed';
+            ok $cancel_report->confirmed, 'there is a confirmed timestamp';
             is $cancel_report->send_state, 'sent';
             is $cancel_report->category, 'Cancel Garden Subscription';
             is $cancel_report->title, 'Garden Subscription - Cancel';
