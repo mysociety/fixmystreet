@@ -1203,6 +1203,15 @@ fixmystreet.assets.merton.streetlight_stylemap = new OpenLayers.StyleMap({
   'select': fixmystreet.assets.construct_named_select_style("${UnitNumber}")
 });
 
+fixmystreet.assets.merton.streetlight_asset_found = function(asset) {
+    fixmystreet.message_controller.asset_found.call(this, asset);
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+fixmystreet.assets.merton.streetlight_asset_not_found = function() {
+    fixmystreet.message_controller.asset_not_found.call(this);
+    fixmystreet.assets.named_select_action_not_found.call(this);
+};
+
 merton_style_default_green = new OpenLayers.Style({
     fillColor: "#55BB00",
     strokeColor: "#000000",
