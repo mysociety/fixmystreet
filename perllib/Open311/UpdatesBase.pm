@@ -369,11 +369,12 @@ sub _handle_category_change {
     my $body = $self->current_body;
 
     if ($request->{extras}) {
+        my $contact = $p->contact;
         # TODO Do we want to check that category and group match?
         if ( my $category = $request->{extras}{category} ) {
-            if (my $contact = $body->contacts->not_deleted_admin->search( { category => $category } )->first) {
+            if (my $new_contact = $body->contacts->not_deleted_admin->search( { category => $category } )->first) {
                 my $old = $p->category;
-                my $new = $contact->category;
+                my $new = $new_contact->category;
                 if ($new ne $old) {
                     $p->category($new);
                     my $text = '*' . sprintf(_('Category changed from ‘%s’ to ‘%s’'), $old, $new) . '*';
@@ -385,8 +386,16 @@ sub _handle_category_change {
                     if ( $self->suppress_alerts ) {
                         $p->cancel_update_alert($comment->id, $p->user->id);
                     }
+
+                    $contact = $new_contact;
                 }
             }
+        }
+
+        # If the update includes an original_service_code and the new contact
+        # has _wrapped_service_code, store it on the problem
+        if ( $request->{extras}{original_service_code} && $contact->get_extra_field( code => '_wrapped_service_code' ) ) {
+            $p->update_extra_field({ name => '_wrapped_service_code', value => $request->{extras}{original_service_code} });
         }
 
         if ( my $group = $request->{extras}{group} ) {
