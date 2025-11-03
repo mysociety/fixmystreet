@@ -236,10 +236,11 @@ sub _create_report {
 
     my ($garden_report) = $mech->create_problems_for_body(
         1, $body->id,
-        $is_cancel ? 'Garden Subscription - Cancel' : 'Garden Subscription - New',
+        '',
         {   category => $is_cancel
             ? 'Cancel Garden Subscription'
             : 'Garden Subscription',
+            title => ( $is_cancel ? 'Garden Subscription - Cancel' : 'Garden Subscription - New' ),
             created => $args{created} || \'current_timestamp',
         },
 
