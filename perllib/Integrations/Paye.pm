@@ -132,6 +132,22 @@ sub pay {
         $args->{$field} = substr($args->{$field}, 0, 50) if $args->{$field};
     }
 
+    my $person = {
+        'name' => {
+            'surname' => $args->{name},
+        },
+        'address' => ixhash(
+            'address1' => $args->{address1},
+            'address2' => $args->{address2},
+            'postcode' => $args->{postcode},
+        ),
+        $args->{email} ? (
+            'contact' => {
+                'email' => $args->{email},
+            }
+        ) : (),
+    };
+
     my @items;
     my $total = 0;
     foreach (@{$args->{items}}) {
@@ -147,22 +163,7 @@ sub pay {
                     'narrative' => $args->{narrative} || $args->{uprn},
                     'additionalReference' => $_->{lineId},
                 ),
-                'accountDetails' => {
-                    'name' => {
-                        'surname' => $args->{name},
-                    },
-                    'address' => ixhash(
-                        'address1' => $args->{address1},
-                        'address2' => $args->{address2},
-                        #'country' => $args->{country},
-                        'postcode' => $args->{postcode},
-                    ),
-                    $args->{email} ? (
-                        'contact' => {
-                            'email' => $args->{email},
-                        }
-                    ) : (),
-                },
+                'accountDetails' => $person,
             ),
             $self->config->{scp_vat_code} ? (
                 'vat' =>ixhash(
@@ -198,6 +199,7 @@ sub pay {
             items => {
                 item => \@items,
             },
+            receiptDetails => $person,
         ),
     ) ];
 

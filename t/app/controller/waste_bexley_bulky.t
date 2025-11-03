@@ -613,6 +613,8 @@ FixMyStreet::override_config {
         my ($token, $report, $report_id) = get_report_from_redirect($sent_params->{returnUrl});
         is $sent_params->{items}[0]{reference}, 'bulky-customer-ref';
         is $sent_params->{narrative}, "Bulky waste - $report_id";
+        is $call_params->{'temp:request'}{sale}{receiptDetails}{name}{surname}, 'Bob Marge';
+        is $call_params->{'temp:request'}{sale}{items}{item}[0]{itemDetails}{accountDetails}{name}{surname}, 'Bob Marge';
     };
 };
 
