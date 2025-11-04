@@ -355,6 +355,39 @@ textarea.code {
     max-width: initial;
 }
 
+/* Tabs */
+
+tabbed-element {
+  [role="tablist"] {
+    padding: 0 0 0 1rem;
+    margin: 0 0 1rem;
+    border-bottom: 2px solid;
+  }
+
+  [role="tablist"] li, [role="tablist"] a {
+    display: inline-block;
+    margin: 0;
+  }
+
+  [role="tablist"] a {
+    text-decoration: none;
+    padding: 0.5rem 1em;
+  }
+
+  [role="tablist"] [aria-selected] {
+    border: 2px solid;
+    color: #000;
+    background: #fff;
+    border-bottom: 0;
+    position: relative;
+    top: 2px;
+  }
+
+  [role="tabpanel"] h2 {
+    display: none;
+  }
+}
+
 // WasteWorks
 
 // Some layout improvements for bulky items editing
