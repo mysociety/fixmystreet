@@ -554,7 +554,14 @@ sub inspect : Private {
             my $assignee = $c->model('DB::User')->find({ id => $assigned });
             $assignee->add_to_planned_reports($problem);
         }
-        $problem->non_public($c->get_param('non_public') ? 1 : 0);
+
+        my $non_public = $c->get_param('non_public') ? 1 : 0;
+        if ($non_public != $problem->non_public) {
+            my $change = $non_public ? _('Marked private') : _('Marked public');
+            $c->forward( '/admin/log_edit', [ $problem->id, 'problem', $change ] );
+            $problem->non_public($non_public);
+        }
+
         if ($problem->non_public) {
             $problem->get_photoset->delete_cached(plus_updates => 1);
         }

@@ -309,10 +309,15 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         $c->forward('/auth/check_csrf_token');
 
         my $old_state = $problem->state;
+        my %columns;
 
-        my %columns = (
-            non_public => $c->get_param('non_public') ? 1 : 0,
-        );
+        my $non_public = $c->get_param('non_public') ? 1 : 0;
+        if ($non_public != $problem->non_public) {
+            my $change = $non_public ? _('Marked private') : _('Marked public');
+            $c->forward( '/admin/log_edit', [ $id, 'problem', $change ] );
+            $columns{non_public} = $non_public;
+        }
+
         # Only superusers can flag / unflag a report
         if ($c->user->is_superuser) {
             $columns{flagged} = $c->get_param('flagged') ? 1 : 0;
