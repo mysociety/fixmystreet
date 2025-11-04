@@ -1212,6 +1212,17 @@ sub get_time_spent {
     return $admin_logs ? $admin_logs->get_column('sum_time_spent') : 0;
 }
 
+sub admin_log_by_date_user {
+    my $self = shift;
+    my %time;
+    my @logs = $self->admin_log_entries->order_by('id')->all;
+    foreach (@logs) {
+        $time{$_->whenedited->epoch}{date} = $_->whenedited;
+        push @{$time{$_->whenedited->epoch}{users}{$_->admin_user}}, $_;
+    }
+    return %time ? \%time : undef;
+}
+
 =head2 get_cobrand_logged
 
 Get a cobrand object for the cobrand the problem was logged for.
