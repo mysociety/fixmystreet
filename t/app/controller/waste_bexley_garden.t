@@ -2140,6 +2140,23 @@ FixMyStreet::override_config {
             },
         });
 
+        # Set up Whitespace mock to return garden waste service
+        $whitespace_mock->mock(
+            'GetSiteCollections',
+            sub {
+                [   {   SiteServiceID          => 1,
+                        ServiceItemDescription => 'Garden waste',
+                        ServiceItemName => 'GA-140',  # Garden 140 ltr Bin
+                        ServiceName          => 'Brown Wheelie Bin',
+                        NextCollectionDate   => '2024-02-07T00:00:00',
+                        SiteServiceValidFrom => '2024-01-01T00:00:00',
+                        SiteServiceValidTo   => '0001-01-01T00:00:00',
+                        RoundSchedule => 'RND-1 Mon',
+                    }
+                ];
+            }
+        );
+
         # Set up Agile mock with active subscription
         $agile_mock->mock( 'CustomerSearch', sub { {
             Customers => [{
