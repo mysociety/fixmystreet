@@ -2167,11 +2167,11 @@ FixMyStreet::override_config {
         }});
         like $mech->text, qr/Your subscription has been cancelled/, 'First cancellation succeeded';
 
-        # Get the first cancellation report
+        # Get the first cancellation report (most recent)
         my $first_cancel = FixMyStreet::DB->resultset('Problem')->search({
             category => 'Cancel Garden Subscription',
             state => 'confirmed',
-        })->first;
+        }, { order_by => { -desc => 'id' } })->first;
         ok $first_cancel, 'First cancellation report created';
         my $first_id = $first_cancel->id;
         is $first_cancel->get_extra_field_value('uprn'), '10001', 'First cancellation has correct UPRN';
