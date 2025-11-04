@@ -142,4 +142,20 @@ sub object {
     return $object;
 }
 
+my %action_map = (
+    add => 'Added',
+    delete => 'Deleted',
+    edit => 'Edited',
+    merge => 'Merged',
+    moderation => 'Moderated',
+    resend => 'Resent',
+    category_change => 'Changed category',
+    state_change => 'Changed state',
+);
+
+sub action_display {
+    my $self = shift;
+    return $action_map{$self->action} || $self->action;
+}
+
 1;
