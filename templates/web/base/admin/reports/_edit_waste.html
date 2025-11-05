@@ -81,22 +81,38 @@
 <textarea class="form-control" name='detail' id='detail' cols=60 rows=5>[% problem.detail | html %]</textarea></li>
 </ul>
 
-<ul>
-  [% IF problem.get_extra_field_value('uprn') %]
-    <li>UPRN: [% problem.get_extra_field_value('uprn') %]
-  [% END %]
+[% SET uprn = problem.get_extra_field_value('uprn') %]
+
+[% IF uprn OR problem.waste_property_id %]
+<p>
   [% IF problem.waste_property_id %]
-    <li>Property ID: <a href="/waste/[% problem.waste_property_id %]">[% problem.waste_property_id %]</a>
+    <a class="btn" href="[% c.uri_for_action('/waste/bin_days', [ problem.waste_property_id ]) %]">Property page</a>
+  [% ELSIF uprn AND c.cobrand.moniker == 'peterborough' # TODO Store same as others %]
+    <a class="btn" href="[% c.uri_for_action('/waste/uprn_redirect', [ uprn ]) %]">Property page</a>
+  [% END %]
+  [% IF uprn %]
+    <a class="btn" href="[% c.uri_for_action('/admin/reports/index') %]?search=uprn:[% uprn %]">All reports here</a>
+  [% END %]
+</p>
+[% END %]
+
+<ul>
+  [% IF uprn OR problem.waste_property_id %]
+    <li>
+      [% IF problem.waste_property_id %]Property ID: [% problem.waste_property_id %][% END %]
+      [%- IF uprn AND problem.waste_property_id %],[% END %]
+      [% IF uprn %]UPRN: [% uprn %][% END %]
+    </li>
   [% END %]
   [% IF problem.get_extra_field_value('service_id') %]
     <li>Service ID: [% problem.get_extra_field_value('service_id') %]
   [% END %]
-  [% IF c.cobrand.moniker == 'bromley' %]
+  [% IF c.cobrand.moniker == 'bromley' AND problem.get_extra_field_value('Source') %]
     <li>Source: [% problem.get_extra_field_value('Source') %]
   [% END %]
   [% IF c.cobrand.moniker == 'merton' %]
-    <li>Echo ID: [% problem.get_extra_field_value('echo_id') OR 'None' %]
-    <li>Dynamics ID: [% problem.get_extra_metadata('crimson_external_id') OR 'None' %]
+    [% IF problem.get_extra_field_value('echo_id') %]<li>Echo ID: [% problem.get_extra_field_value('echo_id') %][% END %]
+    [% IF problem.get_extra_metadata('crimson_external_id') %]<li>Dynamics ID: [% problem.get_extra_metadata('crimson_external_id') %][% END %]
   [% END %]
 
   [%~ IF extra_fields.size ~%]

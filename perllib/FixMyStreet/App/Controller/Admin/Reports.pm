@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use utf8;
 use List::MoreUtils 'uniq';
+use JSON::MaybeXS;
 use FixMyStreet::SMS;
 use Utils;
 
@@ -83,6 +84,10 @@ sub index : Path {
             $query->{'-or'} = [
                 'me.external_id' => { like => "%$1%" }
             ];
+        } elsif ($search =~ /^uprn:(\d+)$/) {
+            $query = {
+                'me.extra' => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $1 } ] }) },
+            };
         } elsif ($valid_email) {
             $query->{'-or'} = [
                 'user.email' => { ilike => $like_search },
@@ -134,6 +139,8 @@ sub index : Path {
                 'me.problem_id' => int($1),
             ];
         } elsif ($search =~ /^area:(\d+)$/) {
+            $query = 0;
+        } elsif ($search =~ /^uprn:(\d+)$/) {
             $query = 0;
         } else {
             $updates = $updates->search_text($search);
