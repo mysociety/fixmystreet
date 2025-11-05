@@ -138,7 +138,7 @@ FixMyStreet::override_config {
                 return 1;
             });
 
-            stdout_like { $canceller->cancel_by_uprn($uprn) }
+            stdout_like { $canceller->cancel_by_uprn($uprn, 'Moved house') }
                 qr/Attempting to cancel subscription for UPRN $uprn.*Found active report.*Cancelling Direct Debit.*Successfully sent cancellation request/s,
                 "Successfully handles direct debit cancellation";
 
@@ -164,7 +164,7 @@ FixMyStreet::override_config {
                 { name => 'payment_method', value => 'direct_debit' },
                 { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },
                 { name => 'direct_debit_reference', value => 'DD_REF_123' },
-                { name => 'reason', value => 'Cancelled on Agile end: No reason provided' },
+                { name => 'reason', value => 'Cancelled on Agile end: Moved house' },
             ], 'correct extra fields set on cancellation report';
 
         };

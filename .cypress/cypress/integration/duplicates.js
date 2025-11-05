@@ -1,22 +1,4 @@
 describe('Duplicate tests', function() {
-    it('has a separate duplicate suggestions step when needed', function() {
-      cy.server();
-      cy.route('/report/new/ajax*').as('report-ajax');
-      cy.route('/around/nearby*').as('nearby-ajax');
-      cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-hide'); // Server-side setup
-      cy.visit('http://borsetshire.localhost:3001/report/1');
-      cy.contains('Report another problem here').click();
-      cy.wait('@report-ajax');
-      cy.pickCategory('Licensing');
-      cy.nextPageReporting();
-      cy.get('.js-subcategory input[value=Skips]').click();
-      cy.wait('@nearby-ajax');
-      cy.nextPageReporting();
-      cy.contains('Already been reported?');
-      cy.get('.extra-category-questions').should('not.be.visible');
-      cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-hide');
-    });
-
     it('has a separate duplicate suggestions step when on cobrands on FMS', function() {
       cy.server();
       cy.route('/report/new/ajax*').as('report-ajax');
@@ -27,12 +9,50 @@ describe('Duplicate tests', function() {
       cy.wait('@report-ajax');
       cy.pickCategory('Licensing');
       cy.nextPageReporting();
-      cy.get('.js-subcategory input[value=Skips]').click();
+      cy.pickSubcategory('Licensing', 'Skips');
       cy.wait('@nearby-ajax');
       cy.nextPageReporting();
-      cy.contains('Already been reported?');
+      cy.contains('Already been reported?').should('be.visible');
       cy.get('.extra-category-questions').should('not.be.visible');
       cy.visit('http://fixmystreet.localhost:3001/_test/teardown/regression-duplicate-hide');
+    });
+
+    it('has a separate duplicate suggestions step when needed', function() {
+      cy.server();
+      cy.route('/report/new/ajax*').as('report-ajax');
+      cy.route('/around/nearby*').as('nearby-ajax');
+      cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-hide'); // Server-side setup
+      cy.visit('http://borsetshire.localhost:3001/report/1');
+      cy.contains('Report another problem here').click();
+      cy.wait('@report-ajax');
+      cy.pickCategory('Licensing');
+      cy.nextPageReporting();
+      cy.pickSubcategory('Licensing', 'Skips');
+      cy.wait('@nearby-ajax');
+      cy.nextPageReporting();
+      cy.contains('Already been reported?').should('be.visible');
+      cy.get('.extra-category-questions').should('not.be.visible');
+      cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-hide');
+    });
+
+    it('still maintains asset problem when duplicates shown on mobile', function() {
+      cy.viewport(480, 800);
+      cy.server();
+      cy.route('/report/new/ajax*').as('report-ajax');
+      cy.route('/around/nearby*').as('nearby-ajax');
+      cy.visit('http://borsetshire.localhost:3001/_test/setup/regression-duplicate-mobile');
+      cy.visit('http://borsetshire.localhost:3001/report/1');
+      cy.contains('Report another problem here').click({ force: true });
+      cy.wait('@report-ajax');
+      cy.get('#mob_ok').should('be.visible').click();
+      cy.pickCategory('Public toilets');
+      cy.wait('@nearby-ajax');
+      cy.nextPageReporting();
+      cy.contains('Already been reported?').should('be.visible');
+      cy.nextPageReporting();
+      cy.contains('Please select an item').should('be.visible');
+      cy.get('.extra-category-questions').should('not.be.visible');
+      cy.visit('http://borsetshire.localhost:3001/_test/teardown/regression-duplicate-mobile');
     });
 
     it('does not show duplicate suggestions when signing in during reporting', function() {
@@ -45,7 +65,7 @@ describe('Duplicate tests', function() {
       cy.pickCategory('Potholes');
       cy.wait('@nearby-ajax');
       cy.nextPageReporting();
-      cy.contains('Already been reported?');
+      cy.contains('Already been reported?').should('be.visible');
       cy.nextPageReporting(); // Go past duplicates
       cy.nextPageReporting(); // No photo
       cy.get('[name=title]').type('Title');

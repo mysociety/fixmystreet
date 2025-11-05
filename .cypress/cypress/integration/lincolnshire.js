@@ -75,9 +75,9 @@ describe('Grass cutting layer', function(){
         cy.nextPageReporting();
         cy.contains('12 June - 16 July').should('be.visible');
         cy.contains('Thank you for making an enquiry').should('not.be.visible');
-        cy.get('.js-reporting-page--next').contains('No');
+        cy.get('.js-reporting-page--active').contains('No');
         cy.get('#lincs-yes-verge-query').contains('Yes').click();
-        cy.get('.js-reporting-page--next').should('be.disabled');
+        cy.get('.js-reporting-page--active .js-reporting-page--next').should('be.disabled');
         cy.contains('In rural areas we cut roads to the first').should('not.be.visible');
         cy.contains('Thank you for making an enquiry').should('be.visible');
         cy.go('back');

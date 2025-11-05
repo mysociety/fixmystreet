@@ -129,6 +129,17 @@ FixMyStreet::override_config {
             }
         }
     });
+    $paye->mock(query => sub {
+        my $self = shift;
+        $sent_params = shift;
+        $paye->original('query')->($self, $sent_params);
+        return {
+            transactionState => 'Complete',
+            paymentResult => {
+                status => 'Denied',
+            }
+        }
+    });
 
     my $report;
     subtest 'Bulky goods collection booking' => sub {
@@ -500,18 +511,25 @@ FixMyStreet::override_config {
             is $p->comments->count, 0;
         };
 
-        subtest 'No payment but made by staff - not cancelled' => sub {
-            $p->set_extra_metadata( contributed_as => 'another_user' );
+        subtest 'No payment but made by staff - still cancelled' => sub {
             $p->unset_extra_metadata('payment_reference');
+            $p->unset_extra_metadata('scpReference');
+            $p->set_extra_metadata( contributed_as => 'another_user' );
+            $p->set_extra_metadata('apnReference', 'unpaid');
             $p->update;
             $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
+            is $sent_params->{apnReference}, 'unpaid';
             $p->discard_changes;
-            is $p->state, "confirmed";
-            is $p->comments->count, 0;
+            is $p->state, "cancelled";
+            is $p->comments->count, 1;
+            $p->unset_extra_metadata('contributed_as');
+            $p->unset_extra_metadata('apnReference');
+            $p->state('confirmed');
+            $p->update;
+            $p->comments->delete;
         };
 
         subtest 'No payment non-staff but check shows was paid - not cancelled' => sub {
-            $p->unset_extra_metadata('contributed_as');
             $p->set_extra_metadata('scpReference', 'paid');
             $p->update;
             $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
@@ -533,6 +551,7 @@ FixMyStreet::override_config {
             $cobrand->cancel_bulky_collections_without_payment({ commit => 1 });
             $p->discard_changes;
             is $p->state, "cancelled";
+            is $p->comments->count, 1;
             my $cancellation_update = $p->comments->first;
             is $cancellation_update->text, "Booking cancelled since payment was not made in time";
             is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
@@ -594,6 +613,8 @@ FixMyStreet::override_config {
         my ($token, $report, $report_id) = get_report_from_redirect($sent_params->{returnUrl});
         is $sent_params->{items}[0]{reference}, 'bulky-customer-ref';
         is $sent_params->{narrative}, "Bulky waste - $report_id";
+        is $call_params->{'temp:request'}{sale}{receiptDetails}{name}{surname}, 'Bob Marge';
+        is $call_params->{'temp:request'}{sale}{items}{item}[0]{itemDetails}{accountDetails}{name}{surname}, 'Bob Marge';
     };
 };
 

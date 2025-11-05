@@ -850,7 +850,6 @@ sub cancel_bulky_collections_without_payment {
             created  => { '<'  => $cutoff_date },
             external_id => { '!=', undef },
             state => [ FixMyStreet::DB::Result::Problem->open_states ],
-            -not => { extra => { '@>' => '{"contributed_as":"another_user"}' } },
             -or => [
                 extra => undef,
                 -not => { extra => { '\?' => 'payment_reference' } }
@@ -859,26 +858,33 @@ sub cancel_bulky_collections_without_payment {
     );
 
     while ( my $report = $rs->next ) {
-        my $scp_reference = $report->get_extra_metadata('scpReference');
-        if ($scp_reference) {
+        # For Bromley, don't cancel bookings without payment if staff created.
+        my $as = $report->get_extra_metadata('contributed_as') || '';
+        if ($as eq 'another_user' && $self->moniker eq 'bromley') {
+            next;
+        }
 
+        my ($error, $reference);
+        if (my $scp = $report->get_extra_metadata('scpReference')) {
             # Double check whether the payment was made.
-            my ($error, $reference) = $self->cc_check_payment_and_update($scp_reference, $report);
-            if (!$error) {
-                if ($params->{verbose}) {
-                    printf(
-                        'Booking %s for report %d was found to be paid (reference %s).' .
-                        ' Updating with payment information and not cancelling.',
-                        $report->external_id,
-                        $report->id,
-                        $reference,
-                    );
-                }
-                if ($params->{commit}) {
-                    $report->waste_confirm_payment($reference);
-                }
-                next;
+            ($error, $reference) = $self->cc_check_payment_and_update($scp, $report);
+        } elsif (my $apn = $report->get_extra_metadata('apnReference')) {
+            ($error, $reference) = $self->paye_check_payment_and_update($apn, $report);
+        }
+        if ($reference) {
+            if ($params->{verbose}) {
+                printf(
+                    'Booking %s for report %d was found to be paid (reference %s).' .
+                    ' Updating with payment information and not cancelling.',
+                    $report->external_id,
+                    $report->id,
+                    $reference,
+                );
             }
+            if ($params->{commit}) {
+                $report->waste_confirm_payment($reference);
+            }
+            next;
         }
 
         if ($params->{commit}) {

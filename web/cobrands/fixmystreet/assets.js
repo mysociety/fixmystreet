@@ -111,11 +111,13 @@ OpenLayers.Layer.VectorBase = OpenLayers.Class(OpenLayers.Layer.Vector, {
             var zoomLevel = fixmystreet.map.getZoomForResolution(firstVisibleResolution);
             if (window.selected_problem_id) {
                 var feature = fixmystreet.maps.get_marker_by_id(window.selected_problem_id);
-                var center = feature.geometry.getBounds().getCenterLonLat();
-                fixmystreet.map.setCenter(center, zoomLevel);
-            } else {
-                fixmystreet.map.zoomTo(zoomLevel);
+                if (feature) {
+                    var center = feature.geometry.getBounds().getCenterLonLat();
+                    fixmystreet.map.setCenter(center, zoomLevel);
+                    return;
+                }
             }
+            fixmystreet.map.zoomTo(zoomLevel);
         }
     },
 

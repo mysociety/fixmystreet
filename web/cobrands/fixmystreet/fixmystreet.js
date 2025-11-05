@@ -2109,6 +2109,9 @@ fixmystreet.display = {
         return;
     }
 
+    // In case we are coming straight from an ajax-loaded report page
+    window.selected_problem_id = undefined;
+
     lonlat = fixmystreet.maps.begin_report(lonlat);
 
     // Store pin location in form fields, and check coverage of point

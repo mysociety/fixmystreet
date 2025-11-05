@@ -139,6 +139,10 @@
     }
 
     function render_duplicate_pins() {
+        if ($('html').hasClass('mobile')) {
+            return;
+        }
+
         fixmystreet.markers.addFeatures( current_duplicate_markers );
 
         // Hide any asset layer that might be visible and get confused with the duplicates
@@ -157,6 +161,10 @@
     }
 
     function remove_duplicate_pins() {
+        if ($('html').hasClass('mobile')) {
+            return;
+        }
+
         if (!fixmystreet.markers) {
             return;
         }

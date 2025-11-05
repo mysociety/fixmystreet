@@ -42,6 +42,23 @@ sub setup : Path('/_test/setup') : Args(1) {
         my $problem = FixMyStreet::DB->resultset("Problem")->find(1);
         $problem->update({ category => 'Skips' });
         $c->response->body("OK");
+    } elsif ($test eq 'regression-duplicate-mobile') {
+        my $problem = FixMyStreet::DB->resultset("Problem")->find(1);
+        $problem->update({ category => 'Public toilets' });
+        $c->response->body("OK");
+    } elsif ($test eq 'camden-report-ours') {
+        my $body = FixMyStreet::DB->resultset("Body")->find({ name => 'Camden Borough Council' });
+        my $problem = FixMyStreet::DB->resultset("Problem")->find(1);
+        if ($problem->bodies_str != $body->id) {
+            $problem->set_extra_metadata(original => {
+                map { $_ => $problem->$_ } qw(bodies_str latitude longitude) });
+            $problem->update({
+                bodies_str => $body->id,
+                latitude => 51.529432,
+                longitude => -0.124514,
+            });
+        }
+        $c->response->body("OK");
     } elsif ( $test eq 'regression-duplicate-stopper') {
         my $problem = FixMyStreet::DB->resultset("Problem")->find(1);
         $problem->update({ category => 'Flytipping' });
@@ -85,6 +102,10 @@ sub teardown : Path('/_test/teardown') : Args(1) {
         my $problem = FixMyStreet::DB->resultset("Problem")->find(1);
         $problem->update({ category => 'Potholes' });
         $c->response->body("OK");
+    } elsif ($test eq 'regression-duplicate-mobile') {
+        my $problem = FixMyStreet::DB->resultset("Problem")->find(1);
+        $problem->update({ category => 'Potholes' });
+        $c->response->body("OK");
     } elsif ( $test eq 'regression-duplicate-stopper') {
         my $problem = FixMyStreet::DB->resultset("Problem")->find(1);
         $problem->update({ category => 'Potholes' });
@@ -93,6 +114,15 @@ sub teardown : Path('/_test/teardown') : Args(1) {
         })->first;
         $category->remove_extra_field('hazardous');
         $category->update;
+        $c->response->body("OK");
+    } elsif ($test eq 'camden-report-ours') {
+        my $problem = FixMyStreet::DB->resultset("Problem")->find(1);
+        my $original = $problem->get_extra_metadata('original');
+        foreach (keys %$original) {
+            $problem->$_($original->{$_});
+        }
+        $problem->unset_extra_metadata('original');
+        $problem->update;
         $c->response->body("OK");
     } elsif ($test eq 'oxfordshire-defect') {
         my $problem = FixMyStreet::DB->resultset("Problem")->find(1);

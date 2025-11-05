@@ -106,6 +106,7 @@ my @PLACES = (
     ['?', 51.511258, -0.011937, 2506, 'Tower Hamlets Borough Council', 'LBO'],
     ['?', 51.512139, -0.013074, 2506, 'Tower Hamlets Borough Council', 'LBO'],
     ['WC1H 8EQ', 51.529432, -0.124514, 2505, 'Camden Borough Council', 'LBO'],
+    ['?', 51.529430, -0.124510, 2505, 'Camden Borough Council', 'LBO'],
     ['HA9 0FJ', 51.55904, -0.28168, 2488, 'Brent Council', 'LBO'], # Somewhere in Brent
     ['?', 51.564493, -0.277156, 2488, 'Brent Council', 'LBO'], # Housing estate in Brent
     ['?', 51.563623, -0.274082, 2488, 'Brent Council', 'LBO'], # Park in Brent

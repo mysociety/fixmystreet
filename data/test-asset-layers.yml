@@ -45,6 +45,21 @@ bathnes:
     actions:
       found: fixmystreet.assets.banes.curo_found
       not_found: fixmystreet.assets.banes.curo_not_found
+
+borsetshire:
+  - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/borsetshire"
+    asset_type: 'spot'
+    srsName: "EPSG:3857"
+    body: "Borsetshire"
+  - wfs_feature: "Roads"
+    stylemap: 'fixmystreet.assets.stylemap_invisible'
+    asset_category: 'Public toilets'
+    non_interactive: true
+    road: true
+    actions:
+      found: fixmystreet.message_controller.road_found
+      not_found: fixmystreet.message_controller.road_not_found
+
 brent:
   - http_wfs_url: "https://tilma.staging.mysociety.org/mapserver/brent"
     max_resolution: 4.777314267158508
@@ -249,6 +264,18 @@ buckinghamshire:
     stylemap: fixmystreet.assets.stylemap_invisible
     # Want to use this for parish categories as well as Bucks, so skip body checks.
     body: ~
+
+camden:
+  - - asset_type: spot
+      body: Camden Borough Council
+      http_wfs_url: https://tilma.mysociety.org/proxy/camden/wfs
+      srsName: EPSG:27700
+  - asset_category: Trees
+    asset_item: tree
+    class: OpenLayers.Layer.VectorAssetMove
+    max_resolution: 0.5971642833948135
+    wfs_feature: Trees
+
 lincolnshire:
   - wfs_url: "https://tilma.staging.mysociety.org/mapserver/lincs"
     geometryName: 'msGeometry'
