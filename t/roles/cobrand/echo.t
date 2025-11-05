@@ -18,7 +18,7 @@ sub waste_extra_service_info {}
 sub garden_subscription_event_id {}
 sub garden_echo_container_name {}
 sub garden_container_data_extract {}
-sub garden_due_days {}
+sub garden_due_date {}
 sub garden_service_id {}
 
 package main;

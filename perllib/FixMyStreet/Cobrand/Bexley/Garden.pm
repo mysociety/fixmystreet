@@ -304,7 +304,10 @@ sub waste_garden_sub_params {
     }
 }
 
-sub garden_due_days { 42 }
+sub garden_due_date {
+    my ($self, $end_date) = @_;
+    return $end_date->subtract(days => 42);
+};
 
 =head2 garden_renew_as_new_days
 
@@ -331,22 +334,6 @@ sub garden_renew_as_new {
     my $cutoff = $sub_end->add( days => $self->garden_renew_as_new_days );
 
     return $now > $cutoff;
-}
-
-=head2 waste_sub_due
-
-Returns true/false if now is less than garden_due_days before DATE.
-
-=cut
-
-sub waste_sub_due {
-    my ( $self, $date ) = @_;
-
-    my $now = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
-    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
-
-    my $diff = $now->delta_days($sub_end)->in_units('days');
-    return $diff <= $self->garden_due_days;
 }
 
 =head2 waste_sub_overdue
