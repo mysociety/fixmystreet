@@ -836,6 +836,44 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345/garden_renew');
         $mech->content_lacks('id="apply_discount', 'Discount not available for non-staff');
     };
+
+    subtest 'check garden renewal date is fixed to 1st of Jan' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => 'brent',
+            MAPIT_URL => 'http://mapit.uk/',
+            STAGING_FLAGS => { skip_waste_payment => 1},
+            COBRAND_FEATURES => {
+                echo => { brent => { url => 'http://example.org' } },
+                waste => { brent => 1 },
+                payment_gateway => { brent => {
+                    ggw_cost => 5000,
+                    cc_url => 'http://example.org/cc_submit',
+                    hmac => '1234',
+                    hmac_id => '1234',
+                    scpID => '1234',
+                    paye_hmac => '1234',
+                    paye_hmac_id => '1234',
+                    paye_siteID => '1234',
+                } },
+                waste_features => { brent => {
+                    text_for_waste_payment => 'Payment processed',
+                    dd_disabled => 1,
+                } },
+                anonymous_account => { brent => 'anonymous.customer' },
+            },
+        }, sub {
+            $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
+            $mech->log_in_ok($staff_user->email);
+
+            set_fixed_time('2021-01-01T00:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('/waste/12345/garden_renew');
+
+            set_fixed_time('2020-12-31T23:59:59Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('/waste/12345/garden_renew');
+        };
+    };
 };
 
 sub get_report_from_redirect {
