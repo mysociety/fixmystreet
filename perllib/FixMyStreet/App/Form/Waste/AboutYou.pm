@@ -10,6 +10,7 @@ with 'FixMyStreet::App::Form::Waste::AboutYou::Shared';
 has_field name => (
     type => 'Text',
     label => 'Full name',
+    order => 1,
     required => 1,
     validate_method => sub {
         my $self = shift;
