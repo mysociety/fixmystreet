@@ -127,6 +127,14 @@ sub _need_events_echo_lookup {
     return 1;
 }
 
+sub uprn_to_property_id {
+    my ($self, $uprn) = @_;
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    my $result = $echo->GetPointAddress($uprn, 'Uprn');
+    return $result->{Id};
+}
+
 sub look_up_property {
     my ($self, $id) = @_;
 

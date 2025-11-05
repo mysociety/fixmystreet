@@ -1252,12 +1252,9 @@ sub setup_categories_and_bodies : Private {
 
 sub uprn_redirect : Path('/property') : Args(1) {
     my ($self, $c, $uprn) = @_;
-
-    my $cfg = $c->cobrand->feature('echo');
-    my $echo = Integrations::Echo->new(%$cfg);
-    my $result = $echo->GetPointAddress($uprn, 'Uprn');
-    $c->detach( '/page_error_404_not_found', [] ) unless $result;
-    $c->res->redirect('/waste/' . $result->{Id});
+    my $id = $c->cobrand->uprn_to_property_id($uprn);
+    $c->detach( '/page_error_404_not_found', [] ) unless $id;
+    $c->res->redirect('/waste/' . $id);
 }
 
 sub property_redirect : Private {

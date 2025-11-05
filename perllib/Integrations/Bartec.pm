@@ -92,7 +92,8 @@ sub Premises_Detail_Get {
 # Given a postcode, returns an arrayref of addresses
 sub Premises_Get {
     my $self = shift;
-    my $pc = shift;
+    my $type = shift;
+    my $id = shift;
 
     if ($self->sample_data) {
         return [
@@ -165,7 +166,7 @@ sub Premises_Get {
         ];
     }
 
-    my $res = $self->call('Premises_Get', token => $self->token, Postcode => $pc);
+    my $res = $self->call('Premises_Get', token => $self->token, $type => $id);
     my $som = $res->{SOM};
 
     my @premises;

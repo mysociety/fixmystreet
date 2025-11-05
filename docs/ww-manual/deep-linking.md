@@ -55,4 +55,11 @@ In these instances, you can link directly to the corresponding page on WasteWork
 
 `<a href="https://your.wasteworks.example/waste?type=bulky">Request a bulky waste collection</a>`
 
+## Linking directly to a property page
 
+Each property page on WasteWorks has its own ID. What that ID is can depend upon the
+backend waste system used, sometimes for performance reasons. If you hold the UPRN for a property,
+say because a user has already looked up their address in a form on your website, then you can
+always get directly to a property page by linking to a URL of the form:
+
+`https://your.wasteworks.example/property/UPRN`
