@@ -50,6 +50,24 @@ body.waste {
     }
 }
 
+.govuk-grid-column {
+  box-sizing: border-box;
+  padding: 0 15px;
+}
+.govuk-grid-column-always-one-quarter {
+  width: 25%;
+  float: left;
+}
+.govuk-grid-column-always-three-quarters {
+  width: 75%;
+  float: left;
+}
+@media (min-width: $large-screen) {
+  .govuk-grid-column-wide-three-quarters {
+    margin-left: 25%;
+  }
+}
+
 .waste__collections,
 .waste__summary {
   .govuk-summary-list {
