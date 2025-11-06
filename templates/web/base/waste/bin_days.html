@@ -103,6 +103,25 @@
 
     [% END %]
 
+    [% IF c.cobrand.moniker == 'bromley' AND unit.garden_overdue AND unit.garden_waste AND NOT waste_features.garden_renew_disabled %]
+    <div class="govuk-warning-text overdue">
+      <div class="govuk-warning-text__img">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      </div>
+      <div class="govuk-warning-text__content">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is now overdue.</h3>
+        Collections have been paused. They’ll start again when you renew.
+        [% WRAPPER 'waste/_garden_status_messages.html' %]
+            <form method="post" action="[% c.uri_for_action('waste/garden/renew', [ property.id ]) %]">
+              <input type="hidden" name="token" value="[% csrf_token %]">
+              <input type="submit" value="Renew subscription today" class="govuk-button">
+            </form>
+        [% END %]
+      </div>
+    </div>
+    [% END %]
+
     [% IF !unit.garden_overdue %]
 
     [% IF unit.garden_due AND NOT pending_subscription AND NOT waste_features.garden_disabled AND NOT waste_features.garden_renew_disabled %]
