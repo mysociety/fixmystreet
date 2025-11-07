@@ -208,7 +208,7 @@ sub get_body_sender {
     if (my $split_emails = $self->_parse_split_emails($contact->email)) {
         my $owner = $problem->get_extra_field_value('owner');
         my $owner_key = $owner ? $self->_normalize_owner_key($owner) : '';
-        my $to = $owner_key ? ($split_emails->{$owner_key} || $split_emails->{other}) : $split_emails->{other};
+        my $to = $split_emails->{$owner_key} || $split_emails->{other};
         if ($to) {
             $problem->set_extra_metadata(split_match => { $contact->email => $to });
             if (is_valid_email($to)) {

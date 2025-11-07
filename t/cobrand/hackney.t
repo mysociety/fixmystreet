@@ -103,6 +103,44 @@ my @reports = $mech->create_problems_for_body(1, $hackney->id, 'A Hackney report
     external_id => 101202303
 });
 
+# Create tree categories with 'Trees' group using split email format
+# Format: housing:email1;highways:email2;parks:email3;other:email4
+# Or simplified: housing:email1;other:email2 (where 'other' catches highways/parks/unknown)
+# The 'owner' extra field is populated automatically from the tree asset layer
+my $tree_contact = $mech->create_contact_ok(
+    body_id => $hackney->id,
+    category => 'Tree issue',
+    email => 'housing:estategardeners@example.com;housing individual:individual-trees@example.com;other:streettrees@example.com',
+    send_method => 'Email',
+    group => 'Trees',
+    extra => { _fields => [
+        { code => 'owner', description => 'Tree owner', required => 'false', automated => 'hidden_field' },
+        { code => 'tree_code', description => 'Tree code', required => 'false', automated => 'hidden_field' },
+    ] },
+);
+
+my $dangerous_tree_contact = $mech->create_contact_ok(
+    body_id => $hackney->id,
+    category => 'Dangerous tree',
+    email => 'housing:estategardeners@example.com;highways:highways-streettrees@example.com;parks:parks-streettrees@example.com;other:default-trees@example.com',
+    send_method => 'Email',
+    group => 'Trees',
+    extra => { _fields => [
+        { code => 'owner', description => 'Tree owner', required => 'false', automated => 'hidden_field' },
+        { code => 'tree_code', description => 'Tree code', required => 'false', automated => 'hidden_field' },
+    ] },
+);
+
+# Create a non-tree category for comparison
+my $grass_contact = $mech->create_contact_ok(
+    body_id => $hackney->id,
+    category => 'Grass and Hedges',
+    email => 'grass@example.com',
+    send_method => 'Email',
+);
+
+my $cobrand = FixMyStreet::Cobrand::Hackney->new;
+
 subtest "check clicking all reports link" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',
@@ -559,44 +597,6 @@ subtest 'Dashboard CSV extra columns' => sub {
 };
 
 # Test tree routing for Hackney based on asset owner attribute
-
-# Create tree categories with 'Trees' group using split email format
-# Format: housing:email1;highways:email2;parks:email3;other:email4
-# Or simplified: housing:email1;other:email2 (where 'other' catches highways/parks/unknown)
-# The 'owner' extra field is populated automatically from the tree asset layer
-my $tree_contact = $mech->create_contact_ok(
-    body_id => $hackney->id,
-    category => 'Tree issue',
-    email => 'housing:estategardeners@example.com;housing individual:individual-trees@example.com;other:streettrees@example.com',
-    send_method => 'Email',
-    group => 'Trees',
-    extra => { _fields => [
-        { code => 'owner', description => 'Tree owner', required => 'false', automated => 'hidden_field' },
-        { code => 'tree_code', description => 'Tree code', required => 'false', automated => 'hidden_field' },
-    ] },
-);
-
-my $dangerous_tree_contact = $mech->create_contact_ok(
-    body_id => $hackney->id,
-    category => 'Dangerous tree',
-    email => 'housing:estategardeners@example.com;highways:highways-streettrees@example.com;parks:parks-streettrees@example.com;other:default-trees@example.com',
-    send_method => 'Email',
-    group => 'Trees',
-    extra => { _fields => [
-        { code => 'owner', description => 'Tree owner', required => 'false', automated => 'hidden_field' },
-        { code => 'tree_code', description => 'Tree code', required => 'false', automated => 'hidden_field' },
-    ] },
-);
-
-# Create a non-tree category for comparison
-my $grass_contact = $mech->create_contact_ok(
-    body_id => $hackney->id,
-    category => 'Grass and Hedges',
-    email => 'grass@example.com',
-    send_method => 'Email',
-);
-
-my $cobrand = FixMyStreet::Cobrand::Hackney->new;
 
 sub create_tree_problem {
     my ($category, $owner, $title) = @_;
