@@ -114,7 +114,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'BR1 1AA' } });
         $mech->content_contains('13345'); # For comparing against type check below
-        $mech->submit_form_ok({ with_fields => { address => 'missing' } });
+        $mech->submit_form_ok({ with_fields => { address => 'missing-BR11AA' } });
         $mech->content_contains('find your address in our records');
     };
     subtest 'Postcode with extra bits' => sub {

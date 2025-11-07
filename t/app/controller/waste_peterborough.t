@@ -91,7 +91,7 @@ FixMyStreet::override_config {
     subtest 'Missing address lookup' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok({ with_fields => { postcode => 'PE1 3NA' } });
-        $mech->submit_form_ok({ with_fields => { address => 'missing' } });
+        $mech->submit_form_ok({ with_fields => { address => 'missing-PE13NA' } });
         $mech->content_contains('find your address in our records', "Missing message found");
     };
 
