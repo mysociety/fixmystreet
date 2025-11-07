@@ -27,7 +27,7 @@ has_field reason => (
     type => 'Select',
     widget => 'RadioGroup',
     required => 1,
-    label => 'Reason for cancellation',
+    label => 'Why are you cancelling your subscription?',
     messages => { required => 'Please select a reason' },
 );
 
