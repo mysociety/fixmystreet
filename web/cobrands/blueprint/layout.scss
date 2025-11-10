@@ -1,0 +1,64 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* NAVBAR */
+#site-logo {
+    background-size: contain;
+    height: $mappage-header-height;
+    width: 8.625rem;
+}
+
+.nav-menu--main {
+  a, span {
+    font-weight: 800;
+    font-size: 1rem; // They have 18px, but we have more items in the navbar so I ended up using this size instead.
+    margin-left: 0.1rem;
+    border-radius: 16px;
+    padding: $button-padding-top $button-padding-left;
+
+    &:hover {
+      color: $cobrand_black_900;
+    }
+
+    &:focus {
+      background-color: $primary;
+      $color: $primary_b;
+      outline: none;
+    }
+  }
+
+  span {
+    color: $primary_b;
+    background-color: $cobrand_grey_300;
+    &:hover {
+      color: $nav_colour;
+    }
+  }
+
+  a.report-a-problem-btn {
+    border-radius: $button-border-radius;
+    padding: $button-padding-top $button-padding-left;
+    background-color: $button-primary-bg-top;
+    color: $primary_text;
+    margin: 0;
+    &:hover {
+      background-color: $button-primary-hover-bg-bottom;
+    }
+  }
+}
+
+/* FRONTPAGE */
+
+#front_stats {
+  border-color: $primary_b;
+}
+
+/* MAP PAGE */
+.big-green-banner {
+  font-size: 1.2rem;
+}
+
+/* FOOTER */
+.cobrand-footer {
+   font-size: 1rem;
+}

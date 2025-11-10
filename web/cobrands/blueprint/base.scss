@@ -1,0 +1,99 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+/*TYPOGRAPHY */
+h1, .h1,
+h2, .h2,
+h3, .h3, 
+.item-list__heading {
+    font-weight: 700;
+}
+
+/* BUTTONS */
+a#geolocate_link,
+#report-cta {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  text-decoration: none;
+}
+
+a {
+  &:focus {
+    outline: none;
+    // Important to override styles in .sticky-sidebar a:focus and navigation bar
+    color: $cobrand_white !important;
+    background-color: $primary!important;
+    box-shadow: 0 -2px $primary, 0 4px #0b0c0c;
+    text-decoration: none;
+  }
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/blueprint/images/logo.svg");
+  background-size: auto 3rem;
+}
+
+.nav-menu--main {
+  a {
+    background-color: $cobrand_white;
+    color: $primary;
+    text-decoration: none;
+
+    &:visited {
+      color: $primary;
+    }
+  }
+
+  span {
+    background-color: $primary;
+    color: $primary_text;
+  }
+}
+
+/* FRONTPAGE */
+.postcode-form-box {
+  input#sub {
+    font-family: $body-font;
+    font-weight: 600;
+    background-color: $button-primary-bg-top;
+
+    &:hover {
+      background-color: $button-primary-hover-bg-top;
+      color: $button-primary-text;
+    }
+  }
+}
+
+/* OTHERS */
+.item-list__item {
+  a {
+    text-decoration: none;
+
+    &:focus {
+      h3, small {
+        color: $primary_text;
+      }
+    }
+  }
+}
+
+/* SITE MESSAGE */
+// Found here: https://www.blueprint.gov.uk/schools/music-lessons/music-tuition
+.site-message {
+  color: $primary_b;
+  padding: 1.5rem;
+  background-color: $cobrand_white;
+  border: none;
+  border-left: 2px solid white;
+  word-wrap: break-word;
+}
+
+/* FOOTER */
+.cobrand-footer {
+  font-size: 1rem;
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
