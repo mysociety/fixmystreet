@@ -1,0 +1,112 @@
+/* This styling is based on https://www.southkesteven.gov.uk/
+*/
+
+/* COLOURS */
+$cobrand_red: #e4251b;
+$cobrand_yellow: #fd0; // This cobrand doesn't use yellow for focus state
+$cobrand_white: #fff;
+$cobrand_grey: #f2f2f2; // Body bg colour
+$cobrand_grey_300: #e0e0e0; // Active and Hover navbar link
+$cobrand_black: #43444A; // Body font and Secondary buttons
+$cobrand_black_900: #000; // Some focus states and hover color for navlinks
+$cobrand_teal: #056689; // Buttons & Links
+$cobrand_teal_600: #034158; // Button Hover and Focus
+
+$primary: $cobrand_teal;
+$yellow: $cobrand_yellow;
+
+$primary_b: $cobrand_black;
+$primary_text: $cobrand_white;
+
+/* FRONTPAGE */
+$base_bg: $cobrand_grey;
+$base_fg: $cobrand_black;
+$front_stats_bg: $cobrand_white;
+$layout_front_stats_color: $primary_b;
+
+/* LINKS */
+$primary_link_color: $primary;
+$primary_link_hover_color: $cobrand_teal_600;
+$primary_link_decoration: underline;
+$primary_link_hover_decoration: none;
+
+$link-color: $primary;
+$link-hover-color: $cobrand_teal_600;
+$link-visited-color: $primary;
+$link-text-decoration: underline;
+$link-hover-text-decoration: none;
+
+/* BUTTONS */
+$button-padding-top: 0.9375rem;
+$button-padding-bottom: 0.9375rem;
+$button-padding-left: 1.25rem;
+$button-padding-right: 1.25rem;
+$button-border-radius: 16px;
+
+// Usage 
+/*
+a#geolocate_link {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+    @include focus-state;
+}
+*/
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $cobrand_teal_600;
+$button-primary-hover-bg-top: $cobrand_teal_600;
+$button-primary-hover-border: $cobrand_teal_600;
+$button-primary-hover-text: $primary_text;
+
+$geolocation-link: $primary;
+$geolocation-link-border: $primary;
+
+/* FONTS */
+
+$heading-font: "Roboto", Helvetica, Arial, sans-serif;
+$body-font: "Roboto", Helvetica, Arial, sans-serif;
+$meta-font: "Roboto", Helvetica, Arial, sans-serif;
+
+/* NAVBAR */
+
+$nav_colour: $primary_b;
+$nav_background_colour: $cobrand_white;
+$nav_hover_background_colour: $cobrand_grey_300;
+
+$mappage-header-height: 5.625rem;
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+$menu-image: "menu-black";
+// $close-menu-image: "close-#{$menu-image}";
+
+/* OTHER VARIABLES */
+
+$container-max-width: 82.5rem;
+
+$col_click_map: $primary;
+$col_fixed_label: $primary;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
+$dropzone-button-text: $primary_text;
+
+// $pagination_background: #f6f6f6;
+$itemlist_item_background:  $base_bg;
+$itemlist_item_background_hover: mix($primary, white, 20%);
+$col_big_numbers: $primary_b;
+
+// $form-control-border-color: #aaaaaa;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$front-main-color: $primary_b;
+$postcodeform-background: $base_bg;
+$postcodeform-color: $primary_b;
+
+$postcodeform-color-desktop: $primary_b;
+$front-main-color-desktop: $primary_b;
+// $front-main-background-desktop:;
+$front-main-container-background-desktop: $cobrand_white
