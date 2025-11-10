@@ -1,0 +1,65 @@
+@import "_variables";
+@import "../sass/layout";
+
+/* NAVBAR */
+#site-logo {
+  background-size: auto 2rem;
+  width: 196px;
+  height: 5rem;
+}
+
+.nav-menu {
+    a {
+        &:hover {
+            text-decoration: underline;
+            color: $cobrand_black;
+        }
+    }
+}
+
+/* FRONTPAGE */
+#front-main {
+  background: $cobrand_green;
+  background-image: url("/cobrands/biffa/images/gwc-banner.svg");
+  background-repeat: no-repeat;
+  background-position: calc(50%) center;
+  background-size: 1083px 762px;
+  padding: 6rem 1rem;
+}
+
+.nav-menu--main {
+    a.report-a-problem-btn {
+      @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+      text-decoration: none;
+      border-radius: 5px;
+
+      @include biffa-button-arrow;
+    }
+}
+
+
+/* MAP PAGE */
+
+/* SITE MESSAGE */
+.site-message {
+  font-size: 1.125rem;
+}
+
+/* FOOTER */
+.footer {
+    padding: 3em 0;
+    margin-top: 4rem;;
+
+    .footer-wrapper {
+        display: grid;
+        grid-template-columns: 4fr 5fr 3fr;
+        gap: 2em;
+    }
+
+    .footer-contact {
+        padding: 0 0 0 1.5em;
+        border-top: 0;
+        border-left: 1px solid rgba(255, 255, 255, 0.6);
+        border-right: 1px solid rgba(255, 255, 255, 0.6);
+    }
+}

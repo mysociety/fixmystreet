@@ -1,0 +1,173 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+@import "../sass/waste";
+
+/*TYPOGRAPHY */
+html {
+    body {
+        font-size: 1.125rem;
+        font-weight: 300;
+    }
+
+    p, span,
+    .content .waste-service-descriptor,
+    dd,
+    .waste__address__property {
+      font-weight: 300;
+    }
+}
+
+ul>li {
+  list-style: disc;
+}
+
+/* BUTTONS */
+a#geolocate_link,
+#report-cta {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  text-decoration: none;
+
+  @include biffa-button-arrow;
+}
+
+.postcode-form-box input#sub {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  text-decoration: none;
+}
+
+.btn--primary {
+  font-weight: 300;
+  
+  &:not(.btn--block) {
+    @include biffa-button-arrow;
+  }
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/biffa/images/logo.png");
+  background-size: auto 1.5rem;
+  width: 148px;
+  height: 5rem;
+}
+
+#nav-link {
+  color: $primary;
+  background: transparent url("/cobrands/biffa/images/menu.svg") left 0.5rem center no-repeat;
+}
+
+html.js-nav-open #nav-link {
+  background: transparent url("/cobrands/biffa/images/menu.svg") left 0.5rem center no-repeat;
+}
+
+
+.nav-menu a, .nav-menu span {
+  font-size: 1rem;
+  color: $cobrand_black;
+  text-decoration: none;
+}
+
+/* FRONTPAGE */
+
+#front-main {
+  background: $cobrand_green;
+  background-image: url("/cobrands/biffa/images/gwc-banner.svg");
+  background-repeat: no-repeat;
+  background-position: calc(50%) center;
+  background-size: 1083px 762px;
+}
+
+.postcode-form-box {
+  div {
+    border-color: $cobrand_white;
+  }
+}
+
+/* OTHERS */
+
+
+/* SITE MESSAGE */
+// I couldn't find an example on their website so I made this one.
+.site-message {
+  border-color: #c7dcd3;
+  border-width: 2px;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 0;
+    padding: 2em 0;
+    background-color: $primary;
+    color: $cobrand_white;
+    font-size: 0.8888888889rem;
+    border-top: 3px solid $cobrand_white;
+
+    a,
+    a:visited,
+    a:hover,
+    a:focus {
+        color: $cobrand_white;
+    }
+
+    .footer-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5em;
+    }
+  
+    .footer-info {
+        p {
+            margin: 0 0 1em;
+            line-height: 1.5;
+        }
+    }
+
+    .footer-links {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+            margin: 0 0 0.75em;
+            font-size: 1rem;
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+            &:hover,
+            &:focus {
+                text-decoration: underline;
+            }
+        }
+    }
+  
+    .footer-contact {
+        padding-top: 1.5em;
+        border-top: 1px solid rgba(255, 255, 255, 0.6);
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75em;
+            text-decoration: none;
+            &:before {
+                content: "";
+                width: 1.1rem;
+                height: 1.1rem;
+                background-color: currentColor;
+                opacity: 0.6;
+                mask: url("/cobrands/biffa/images/mail.svg") center / contain no-repeat;
+            }
+            &:hover,
+            &:focus {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+@import "../fixmystreet-uk-councils/societyworks-footer";
