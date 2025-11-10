@@ -1,0 +1,30 @@
+@font-face {
+    font-display: swap;
+    font-family: 'Modern Era Regular';
+    src:
+         url('/cobrands/canalrivertrust/fonts/ModernEra-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Modern Era Regular';
+    src:
+         url('/cobrands/canalrivertrust/fonts/ModernEra-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Modern Era Regular';
+    src:
+         url('/cobrands/canalrivertrust/fonts/ModernEra-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+}
+
+$heading-font: 'Modern Era Regular', Arial, sans-serif;
+$body-font: 'Modern Era Regular', Arial, sans-serif;
+$meta-font: 'Modern Era Regular', Arial, sans-serif;
