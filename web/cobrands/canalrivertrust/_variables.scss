@@ -1,0 +1,128 @@
+/* This styling is based on https://canalrivertrust.org.uk/ and https://www.figma.com/design/pgFRt1j7ayP0C7UKV7Tm46/CRT-Design-System--1-?node-id=6340-4743&t=TdxoDuHOXdBlm7SC-1
+*/
+
+/* COLOURS */
+$cobrand_blue: #1e29f5; // Primary, Button & Link default
+$cobrand_blue_100: #D2D4FD;
+$cobrand_blue_800: #00416E; // Button & Link hover
+$cobrand_teal: #0086a6; // Numbers in homepage
+$cobrand_white: #fff;
+$cobrand_black: #333333;
+$cobrand_black_headings: #111827; // Headings(Used only on website)
+$cobrand_red: #b83f00; // Taken from https://canalrivertrust.org.uk/support-us/donate
+$cobrand_yellow: #FFD400; // Secondary button
+$cobrand_orange: #FF8700; // Orange button
+$cobrand_grey: #F9F7F5; // Lightest shade of gravel
+
+$primary: $cobrand_blue;
+$yellow: $cobrand_yellow;
+
+$primary_b: $cobrand_black;
+$primary_text: $cobrand_white;
+
+/* FRONTPAGE */
+$base_bg: $cobrand_grey;
+$base_fg: $cobrand_black;
+$layout_front_stats_color: $cobrand_teal;
+
+/* LINKS */
+// Style comes from: https://canalrivertrust.org.uk/news-and-views/media-centre?tags=Press+Release&page=1
+$primary_link_color: $primary;
+$primary_link_hover_color: $cobrand_blue_800;
+$primary_link_decoration: underline;
+$primary_link_hover_decoration: underline;
+
+$link-color: $primary;
+$link-hover-color: $cobrand_blue_800;
+$link-visited-color: purple;
+$link-text-decoration: underline;
+$link-hover-text-decoration: underline;
+
+/* BUTTONS */
+// Values in pixels because according to the Figma file the padding for mobile and desktop is the same. However using rem would make the padding to change between mobile and desktop.
+$button-padding-top: 16px;
+$button-padding-bottom: 16px;
+$button-padding-left: 32px;
+$button-padding-right: 32px;
+$button-border-radius: 50px;
+
+// Usage 
+/*
+a#geolocate_link {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+    @include focus-state;
+}
+*/
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $cobrand_blue_800;
+$button-primary-hover-bg-top: $cobrand_blue_800;
+$button-primary-hover-border: $cobrand_blue_800;
+$button-primary-hover-text: $primary_text;
+$button-primary-focus-bg-bottom: $cobrand_blue_800;
+$button-primary-focus-bg-top: $cobrand_blue_800;
+$button-primary-focus-border: $cobrand_blue_800;
+$button-primary-focus-text: $primary_text;
+
+$button-secondary-bg-top: $cobrand_yellow;
+$button-secondary-bg-bottom: $cobrand_yellow;
+$button-secondary-border: $cobrand_yellow;
+$button-secondary-text: $primary_b;
+$button-secondary-hover-bg-bottom: $cobrand_orange;
+$button-secondary-hover-bg-top: $cobrand_orange;
+$button-secondary-hover-border: $cobrand_orange;
+$button-secondary-hover-text: $primary_b;
+$button-secondary-focus-bg-bottom: $cobrand_orange;
+$button-secondary-focus-bg-top: $cobrand_orange;
+$button-secondary-focus-border: $cobrand_orange;
+$button-secondary-focus-text: $primary_b;
+
+$geolocation-link: $primary;
+$geolocation-link-border: $primary;
+
+/* NAVBAR */
+
+$nav_colour: $primary_text;
+$nav_background_colour: $primary;
+$nav_hover_background_colour: $primary;
+
+$mappage-header-height: 6rem;
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+$menu-image: "menu-white"; 
+// $close-menu-image: "close-#{$menu-image}";
+
+/* OTHER VARIABLES */
+
+$container-max-width: 82.5rem;
+
+$col_click_map: $primary;
+$col_fixed_label: $primary;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+
+// $search-help-background: #fff3f3;
+// $search-help-header-font-size-desktop: 1.25em;
+
+$dropzone-button-text: $primary_text;
+
+// $pagination_background: #f6f6f6;
+$itemlist_item_background:  $base_bg;
+$itemlist_item_background_hover: $cobrand_blue_100;
+$col_big_numbers: $cobrand_teal;
+
+// $form-control-border-color: #aaaaaa;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$front-main-color: $primary_b;
+$postcodeform-background: #D2D4FD;
+$postcodeform-color: $primary_b;
+
+$postcodeform-color-desktop: $primary_b;
+$front-main-color-desktop: $primary_b;
+$front-main-background-desktop: white url("/cobrands/canalrivertrust/images/crt-hero.webp") no-repeat center / cover;
+$front-main-container-background-desktop: $cobrand_white;
+
+$report-forms-wrapper-flex-column-gap: 5rem;
