@@ -1,0 +1,62 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+/*TYPOGRAPHY */
+
+
+/* BUTTONS */
+a#geolocate_link,
+#report-cta {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  text-decoration: none;
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/blueprint/images/logo.svg");
+  background-size: auto 3rem;
+}
+
+.nav-menu--main {
+  a {
+    background-color: $cobrand_white;
+    color: $primary;
+    text-decoration: none;
+
+    &:visited {
+      color: $primary;
+    }
+  }
+
+  span {
+    background-color: $primary;
+    color: $primary_text;
+  }
+}
+
+/* FRONTPAGE */
+
+
+/* OTHERS */
+
+
+/* SITE MESSAGE */
+// Found here: https://www.blueprint.gov.uk/schools/music-lessons/music-tuition
+.site-message {
+  color: $primary_b;
+  padding: 1.5rem;
+  background-color: $cobrand_white;
+  border: none;
+  border-left: 2px solid white;
+  word-wrap: break-word;
+}
+
+/* FOOTER */
+.cobrand-footer {
+  font-size: 1rem;
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
