@@ -1,0 +1,145 @@
+/* This styling is based on https://www.dumfriesandgalloway.gov.uk/
+*/
+
+/* COLOURS */
+$cobrand_purple: #95398d; // Navbar and links
+$cobrand_purple-600: #592255;
+$cobrand_green: #397364; // Primary button and link hover
+$cobrand_green-600: #274F44; // Border
+$cobrand_white: #fff;
+$cobrand_red: #E00519;
+$cobrand_yellow: #FFD910; // Focust state for links and buttons
+$cobrand_black: #0B0C0C; // Sometimes they use #000, but this version seems to be more widely used across the Figma and website.
+$cobrand_black_900: #0B0C0C; // Some focus states and hover color for navlinks
+$cobrand_grey: #eff0f4; // Body bg colour
+
+
+$cobrand_grey_300: #e0e0e0; // Active and Hover navbar link
+$cobrand_teal: #056689; // Buttons & Links
+
+$primary: $cobrand_purple;
+$yellow: $cobrand_yellow;
+
+$primary_b: $cobrand_black;
+$primary_text: $cobrand_white;
+
+/* FRONTPAGE */
+$base_bg: $cobrand_grey;
+$base_fg: $cobrand_black;
+$front_stats_bg: $cobrand_white;
+$layout_front_stats_color: $primary_b;
+
+/* LINKS */
+$primary_link_color: $primary;
+$primary_link_hover_color: $cobrand_green;
+$primary_link_decoration: underline;
+$primary_link_hover_decoration: none;
+
+$link-color: $primary;
+$link-hover-color: $cobrand_green;
+$link-visited-color: $primary;
+$link-text-decoration: underline;
+$link-hover-text-decoration: none;
+
+/* BUTTONS */
+$button-padding-top: 0.625rem;
+$button-padding-bottom: 0.625rem;
+$button-padding-left: 0.9375rem;
+$button-padding-right: 0.9375rem;
+$button-border-radius: 5px;
+
+// Usage 
+/*
+a#geolocate_link {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+    @include focus-state;
+}
+*/
+$button-primary-bg-top: $cobrand_green;
+$button-primary-bg-bottom: $cobrand_green;
+$button-primary-border: $cobrand_green;
+$button-primary-text: $primary_text;
+$button-primary-hover-bg-bottom: $cobrand_green-600;
+$button-primary-hover-bg-top: $cobrand_green-600;
+$button-primary-hover-border: $cobrand_green-600;
+$button-primary-hover-text: $primary_text;
+$button-primary-focus-bg-top: $cobrand_yellow;
+$button-primary-focus-bg-bottom: $cobrand_yellow;
+$button-primary-focus-border: $cobrand_yellow;
+$button-primary-focus-text: $cobrand_black;
+
+$geolocation-link: $primary;
+$geolocation-link-border: $primary;
+
+/* FONTS */
+
+$heading-font: "Source Sans 3",Arial,sans-serif;
+$body-font: "Source Sans 3",Arial,sans-serif;
+$meta-font: "Source Sans 3",Arial,sans-serif;
+
+/* NAVBAR */
+
+$nav_colour: $primary_text;
+$nav_background_colour: $primary;
+$nav_hover_background_colour: $primary;
+
+$mappage-header-height: 6.25rem;
+$header-top-border: false;
+// $header-top-border-width: 0.25em;
+// $header-top-border: $header-top-border-width solid $primary;
+$menu-image: "menu-white";
+// $close-menu-image: "close-#{$menu-image}";
+
+/* OTHER VARIABLES */
+
+$container-max-width: 73.75rem;
+
+$col_click_map: $primary;
+$col_fixed_label: $primary;
+// $col_fixed_label_light: mix($col_fixed_label, #fff, 10%);
+
+$search-help-background: #fff3f3;
+$search-help-header-font-size-desktop: 1.25em;
+
+$dropzone-button-text: $primary_text;
+
+// $pagination_background: #f6f6f6;
+$itemlist_item_background:  $base_bg;
+$itemlist_item_background_hover: mix($primary, white, 20%);
+$col_big_numbers: $primary_b;
+
+// $form-control-border-color: #aaaaaa;
+$mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$front-main-background: $primary url(/cobrands/dumfries/images/dumfries-background.jpeg) 50% 50% / cover no-repeat;
+
+$front-main-color: $primary_text;
+$front-main-h2-color: $primary_text;
+$postcodeform-background: $base_bg;
+$postcodeform-color: $primary_b;
+
+$front-main-background-desktop: $primary url(/cobrands/dumfries/images/dumfries-background.jpeg) 50% 50% / cover no-repeat;
+$postcodeform-color-desktop: $primary_b;
+$front-main-color-desktop: $primary_b;
+// $front-main-background-desktop:;
+$front-main-container-background-desktop: $cobrand_white;
+
+@mixin white-outline-btn {
+    border-radius: $button-border-radius;
+    padding: $button-padding-top $button-padding-left !important; // Overrides _layout rule
+    background-color: transparent;
+    border: 1px solid $primary_text;
+    border-bottom: 3px solid $primary_text;
+    color: $primary_text;
+    margin: 0;
+    text-decoration: none;
+    font-size: 1.125rem;
+    font-weight: 600;
+    &:hover {
+      background-color: $primary_text;
+      color: $primary;
+    }
+    &:focus {
+        border-color: $yellow;
+    }
+}
