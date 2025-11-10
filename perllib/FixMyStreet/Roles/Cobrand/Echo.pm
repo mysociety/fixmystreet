@@ -27,7 +27,7 @@ requires 'waste_extra_service_info';
 requires 'garden_subscription_event_id';
 requires 'garden_echo_container_name';
 requires 'garden_container_data_extract';
-requires 'garden_due_days';
+requires 'garden_due_date';
 requires 'garden_service_id';
 
 requires 'waste_bulky_missed_blocked_codes';
@@ -125,6 +125,14 @@ sub _need_events_echo_lookup {
     my $action = $self->{c}->action;
     return 0 if $action eq 'waste/calendar_ics';
     return 1;
+}
+
+sub uprn_to_property_id {
+    my ($self, $uprn) = @_;
+    my $cfg = $self->feature('echo');
+    my $echo = Integrations::Echo->new(%$cfg);
+    my $result = $echo->GetPointAddress($uprn, 'Uprn');
+    return $result->{Id};
 }
 
 sub look_up_property {
@@ -847,22 +855,6 @@ sub waste_get_next_dd_day {
     my $next_day = $wd->add_days( $dt, $dd_delay );
 
     return $next_day;
-}
-
-=head2 waste_sub_due
-
-Returns true/false if now is less than garden_due_days before DATE.
-
-=cut
-
-sub waste_sub_due {
-    my ($self, $date) = @_;
-
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
-
-    my $diff = $now->delta_days($sub_end)->in_units('days');
-    return $diff <= $self->garden_due_days;
 }
 
 =head2 waste_sub_overdue

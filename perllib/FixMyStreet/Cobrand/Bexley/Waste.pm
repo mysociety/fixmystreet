@@ -223,6 +223,12 @@ sub bin_addresses_for_postcode {
     return \@data;
 }
 
+# Bexley ID is the UPRN
+sub uprn_to_property_id {
+    my ($self, $uprn) = @_;
+    return $uprn;
+}
+
 sub look_up_property {
     my ( $self, $uprn ) = @_;
 

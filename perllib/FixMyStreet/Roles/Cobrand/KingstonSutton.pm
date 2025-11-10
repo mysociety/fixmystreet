@@ -97,7 +97,10 @@ sub available_permissions {
 
 sub waste_auto_confirm_report { 1 }
 
-sub garden_due_days { 30 }
+sub garden_due_date {
+    my ($self, $end_date) = @_;
+    return $end_date->subtract(days => 30);
+};
 
 sub garden_staff_provide_email { 1 }
 

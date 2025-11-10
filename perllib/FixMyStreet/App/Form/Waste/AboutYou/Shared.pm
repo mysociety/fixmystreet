@@ -15,9 +15,12 @@ has non_staff_user => (
     },
 );
 
+# Order skips 2 in case first/last name separate (as in Bexley Verify form)
+
 has_field phone => (
     type => 'Text',
     label => 'Telephone number',
+    order => 4,
     validate_method => sub {
         my $self = shift;
         my $parsed = FixMyStreet::SMS->parse_username($self->value);
@@ -35,6 +38,7 @@ sub default_phone {
 
 has_field email => (
     type => 'Email',
+    order => 3,
     tags => {
         hint => 'Provide an email address so we can send you order status updates'
     },

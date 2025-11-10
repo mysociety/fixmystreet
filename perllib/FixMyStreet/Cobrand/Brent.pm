@@ -1388,7 +1388,7 @@ sub waste_munge_request_form_data {
 
 =item * Cheque payments are not an option
 
-=item * Renewals can happen within 90 days so they are available from beginning of Jan
+=item * Renewals are available from beginning of Jan
 
 =cut
 
@@ -1399,7 +1399,14 @@ use constant GARDEN_WASTE_PAID_COLLECTION_BIN => 1;
 use constant GARDEN_WASTE_PAID_COLLECTION_SACK => 2;
 sub garden_service_name { 'Garden waste collection service' }
 sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden} }
-sub garden_due_days { 87 }
+sub garden_due_date {
+    my ($self, $end_date) = @_;
+    return DateTime->new(
+        year => $end_date->year,
+        month => 1,
+        day => 1,
+    );
+}
 
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;

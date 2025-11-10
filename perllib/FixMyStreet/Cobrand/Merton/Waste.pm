@@ -481,7 +481,10 @@ sub waste_munge_request_data {
     }
 }
 
-sub garden_due_days { 30 }
+sub garden_due_date {
+    my ($self, $end_date) = @_;
+    return $end_date->subtract(days => 30);
+};
 
 =head2 waste_munge_report_form_pages
 

@@ -750,7 +750,10 @@ sub garden_service_name { 'Green Garden Waste collection service' }
 sub garden_subscription_type_field { 'Subscription_Type' }
 sub garden_subscription_container_field { 'Subscription_Details_Container_Type' }
 sub garden_echo_container_name { 'LBB - GW Container' }
-sub garden_due_days { 48 }
+sub garden_due_date {
+    my ($self, $end_date) = @_;
+    $end_date->subtract(days => 48);
+};
 
 sub service_name_override {
     my ($self, $service) = @_;

@@ -76,6 +76,19 @@ sub service_name_override {
     };
 }
 
+sub uprn_to_property_id {
+    my ($self, $uprn) = @_;
+
+    my $cfg = $self->feature('bartec');
+    my $bartec = Integrations::Bartec->new(%$cfg);
+    my $response = $bartec->Premises_Get(UPRN => $uprn);
+    my $property = $response->[0];
+    if ($property) {
+        my $id = join(':', $property->{Address}{PostCode}, $property->{UPRN});
+        return $id;
+    }
+}
+
 sub _premises_for_postcode {
     my $self = shift;
     my $pc = shift;
@@ -88,7 +101,7 @@ sub _premises_for_postcode {
 
     my $cfg = $self->feature('bartec');
     my $bartec = Integrations::Bartec->new(%$cfg);
-    my $response = $bartec->Premises_Get($pc);
+    my $response = $bartec->Premises_Get(Postcode => $pc);
 
     if (!$c->user_exists || !($c->user->from_body || $c->user->is_superuser)) {
         my $blocked = $cfg->{blocked_uprns} || [];

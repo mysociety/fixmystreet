@@ -304,6 +304,11 @@ FixMyStreet::override_config {
         $mech->content_contains('<option value="10002">2 The Avenue</option>');
     };
 
+    subtest '/property lookup' => sub {
+        $mech->get_ok('/property/10001');
+        is $mech->uri->path, '/waste/10001';
+    };
+
     subtest 'Postcode with one address progresses to selecting an address' => sub {
         $mech->get_ok('/waste');
         $mech->submit_form_ok( { with_fields => { postcode => 'DA1 3NP' } } );

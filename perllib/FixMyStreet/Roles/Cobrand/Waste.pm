@@ -99,4 +99,19 @@ sub garden_hide_payment_method_field {
     return $non_staff_no_dd || $staff_no_choose;
 }
 
+=head2 waste_sub_due
+
+Returns true/false if now is after garden_due_date.
+
+=cut
+
+sub waste_sub_due {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    my $sub_end = DateTime::Format::W3CDTF->parse_datetime($date);
+    my $due_date = $self->garden_due_date($sub_end->truncate(to => 'day'));
+    return $now >= $due_date;
+}
+
 1;

@@ -94,6 +94,12 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { address => 'missing' } });
         $mech->content_contains('find your address in our records', "Missing message found");
     };
+
+    subtest '/property lookup' => sub {
+        $mech->get_ok('/property/100090215480');
+        is $mech->uri->path, '/waste/PE1%203NA:100090215480';
+    };
+
     subtest 'Address lookup' => sub {
         set_fixed_time('2021-08-05T21:00:00Z');
         $mech->get_ok('/waste');
