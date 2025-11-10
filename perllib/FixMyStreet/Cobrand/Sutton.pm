@@ -804,4 +804,42 @@ sub waste_munge_small_items_data {
     $self->waste_munge_bulky_data($data);
 }
 
+=head2 waste_show_cancel_request
+
+Shows the option to cancel a request if:
+* It has not been escalated.
+* It was created on WW and the matching report isn't already cancelled.
+
+=cut
+
+sub waste_show_cancel_request {
+    my ($self, $service, $request_event) = @_;
+    return unless $request_event->{report}
+        && $request_event->{report}->state ne 'cancelled';
+    # We assume there is only one open container request per service,
+    # so if there's an escalation event it must match.
+    return if $service->{escalations}{container_open};
+    return 1;
+}
+
+=head2 waste_can_cancel_request
+
+Allows cancelling a request if:
+* It has not been escalated.
+* It was created on WW and the matching report isn't already cancelled.
+* The user is staff or the person who created the request.
+
+=cut
+
+sub waste_can_cancel_request {
+    my ($self, $service, $request_event) = @_;
+    return unless $self->waste_show_cancel_request($service, $request_event);
+
+    # Staff members and the person who made the request can cancel it.
+    my $c = $self->{c};
+    return $c->user->is_superuser ||
+        $c->user->belongs_to_body($self->body->id) ||
+        $c->user->id == $request_event->{report}->user_id;
+}
+
 1;

@@ -114,4 +114,28 @@ sub waste_sub_due {
     return $now >= $due_date;
 }
 
+=head2 waste_show_cancel_request
+
+Whether the option to cancel a request is shown.
+Defaults to false.
+
+=cut
+
+sub waste_show_cancel_request {
+    my ($self, $service, $request_event) = @_;
+    return 0;
+}
+
+=head2 waste_can_cancel_request
+
+Whether or not the given request can be cancelled.
+Defaults to false.
+
+=cut
+
+sub waste_can_cancel_request {
+    my ($self, $service, $request_event) = @_;
+    return 0;
+}
+
 1;
