@@ -13,6 +13,8 @@ use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use FixMyStreet::App::Form::Waste::Garden::Transfer;
 use WasteWorks::Costs;
 use Hash::Util qw(lock_hash);
+use JSON::MaybeXS;
+use MIME::Base64;
 
 has feature => (
     is => 'ro',
@@ -540,6 +542,7 @@ sub direct_debit : Path('/waste/dd') : Args(0) {
     $c->detach;
 }
 
+# TODO Does bug affect Bexley as well?
 sub direct_debit_internal : Private {
     my ($self, $c) = @_;
 
@@ -572,6 +575,44 @@ sub direct_debit_complete : Path('/waste/dd_complete') : Args(0) {
         to => [ [ $c->stash->{report}->user->email, $c->stash->{report}->name ] ],
         sent_confirm_id_ref => $c->stash->{report}->id,
     } );
+
+    # TODO Build URI
+    # with query params for dd_complete.html template:
+    ### stash: error
+    ### stash: title
+    ### stash: message
+    ### stash: report (.user.email) -> use report ID and look it up on redirect?
+    ### property_id
+    #
+    # or
+    #
+    # make hash of these? esp. stash
+
+    my $params_encoded = encode_base64(
+        JSON::MaybeXS->new( utf8 => 1 )->encode(
+            {   email       => $c->stash->{report}->user->email,
+                error       => $c->stash->{error},
+                message     => $c->stash->{message},
+                property_id => $c->stash->{report}->waste_property_id,
+                report_id   => $c->stash->{report}->id,
+                title       => $c->stash->{title},
+            },
+        ),
+    );
+
+    $c->response->redirect(
+        $c->uri_for( '/waste/dd_end', { token => $params_encoded } ) );
+
+    # $c->stash->{template} = 'waste/dd_complete.html';
+}
+
+sub direct_debit_end : Path('/waste/dd_end') : Args(0) {
+    my ($self, $c) = @_;
+
+    my $params = JSON::MaybeXS->new( utf8 => 1 )
+        ->decode( decode_base64( $c->req->param('token') ) );
+
+    $c->stash->{$_} = $params->{$_} for keys %$params;
 
     $c->stash->{template} = 'waste/dd_complete.html';
 }
