@@ -22,7 +22,7 @@ sub customer_reference {
                 my $current_subscription
                     = $form->c->cobrand->garden_current_subscription;
 
-                if ( $ref eq $current_subscription->{customer_external_ref} ) {
+                if ( $ref eq $current_subscription->{customer_ref} ) {
                     $form->saved_data->{customer_external_ref}
                         = $current_subscription->{customer_external_ref};
 
@@ -38,7 +38,7 @@ sub customer_reference {
                     return $args{next_page_if_verified};
 
                 } else {
-                    $form->c->stash->{error_customer_external_ref} = 1;
+                    $form->c->stash->{error_customer_ref} = 1;
                     return 'about_you';
 
                 }
