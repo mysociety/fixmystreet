@@ -43,6 +43,7 @@ sub lookup_subscription_for_uprn {
     my $sub = {
         cost => undef,
         end_date => undef,
+        customer_ref => undef,
         customer_external_ref => undef,
         bins_count => undef,
     };
@@ -121,6 +122,7 @@ sub lookup_subscription_for_uprn {
     }
 
     $sub->{customer_external_ref} = Utils::trim_text( $customer->{CustomerExternalReference} );
+    $sub->{customer_ref} = Utils::trim_text( $customer->{CustomerReference} );
     $sub->{customer_first_name}   = Utils::trim_text( $customer->{Firstname} );
     $sub->{customer_last_name}    = Utils::trim_text( $customer->{Surname} );
     $sub->{customer_email}        = Utils::trim_text( $customer->{Email} );
@@ -196,6 +198,7 @@ sub garden_current_subscription {
     for ( @{ $self->garden_service_ids } ) {
         if ( my $srv = $service_ids->{$_} ) {
             $srv->{customer_external_ref} = $sub->{customer_external_ref};
+            $srv->{customer_ref} = $sub->{customer_ref};
             $srv->{customer_first_name} = $sub->{customer_first_name};
             $srv->{customer_last_name} = $sub->{customer_last_name};
             $srv->{customer_email} = $sub->{customer_email};
@@ -216,6 +219,7 @@ sub garden_current_subscription {
     my $service = {
         agile_only => 1,
         customer_external_ref => $sub->{customer_external_ref},
+        customer_ref => $sub->{customer_ref},
         customer_first_name => $sub->{customer_first_name},
         customer_last_name => $sub->{customer_last_name},
         customer_email => $sub->{customer_email},

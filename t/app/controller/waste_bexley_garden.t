@@ -403,6 +403,7 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
+                    CustomerReference => 'GWIT-456',
                     Firstname => '  Verity  ',
                     Surname => '  Wright  ',
                     Email => 'verity@wright.com',
@@ -539,7 +540,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         has_reference => 'Yes',
-                        customer_reference => 'customer_123',
+                        customer_reference => 'gwit-456',
                     },
                 },
             );
@@ -688,7 +689,7 @@ FixMyStreet::override_config {
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 has_reference => 'Yes',
-                                customer_reference => 'CUSTOMER_123',
+                                customer_reference => 'GWIT-456',
                             },
                         },
                     );
@@ -807,7 +808,7 @@ FixMyStreet::override_config {
                 $mech->submit_form_ok(
                     {   with_fields => {
                             has_reference => 'Yes',
-                            customer_reference => 'CUSTOMER_123',
+                            customer_reference => 'GWIT-456',
                         },
                     },
                 );
@@ -915,6 +916,7 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        CustomerReference => 'GWIT-456',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -941,6 +943,7 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        CustomerReference => 'GWIT-456',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
@@ -992,6 +995,7 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            CustomerReference => 'GWIT-456',
                             CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
@@ -1029,6 +1033,7 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            CustomerReference => 'GWIT-456',
                             Firstname => 'Verity',
                             Surname => 'Wright',
                             CustomertStatus => 'ACTIVATED',
@@ -1198,7 +1203,7 @@ FixMyStreet::override_config {
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 has_reference => 'Yes',
-                                customer_reference => 'CUSTOMER_123',
+                                customer_reference => 'GWIT-456',
                             },
                         },
                     );
@@ -1264,6 +1269,7 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            CustomerReference => 'GWIT-456',
                             CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
@@ -1300,6 +1306,7 @@ FixMyStreet::override_config {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
+                                CustomerReference => 'GWIT-456',
                                 Firstname => 'Verity',
                                 Surname => 'Wright',
                                 CustomertStatus => 'ACTIVATED',
@@ -1337,7 +1344,7 @@ FixMyStreet::override_config {
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 has_reference => 'Yes',
-                                customer_reference => 'CUSTOMER_123',
+                                customer_reference => 'GWIT-456',
                             },
                         },
                     );
@@ -1453,6 +1460,7 @@ FixMyStreet::override_config {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
+                                CustomerReference => 'GWIT-456',
                                 Firstname => 'Verity',
                                 Surname => 'Wright',
                                 CustomertStatus => 'INACTIVE',
@@ -1509,7 +1517,7 @@ FixMyStreet::override_config {
                     $mech->submit_form_ok(
                         {   with_fields => {
                                 has_reference => 'Yes',
-                                customer_reference => 'CUSTOMER_123',
+                                customer_reference => 'GWIT-456',
                             },
                         },
                     );
@@ -1551,6 +1559,7 @@ FixMyStreet::override_config {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
+                                CustomerReference => 'GWIT-456',
                                 Firstname => 'Verity',
                                 Surname => 'Wright',
                                 CustomertStatus => 'INACTIVE',
@@ -1601,6 +1610,7 @@ FixMyStreet::override_config {
                         Customers => [
                             {
                                 CustomerExternalReference => 'CUSTOMER_123',
+                                CustomerReference => 'GWIT-456',
                                 Firstname => 'Verity',
                                 Surname => 'Wright',
                                 CustomertStatus => 'INACTIVE',
@@ -1994,6 +2004,7 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            CustomerReference => 'GWIT-456',
                             CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
@@ -2054,6 +2065,7 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
+                    CustomerReference => 'GWIT-456',
                     Firstname => 'VERITY',
                     Surname => 'wright',
                     Email => 'verity@wright.com',
@@ -2175,7 +2187,7 @@ FixMyStreet::override_config {
             $mech->submit_form_ok(
                 {   with_fields => {
                         has_reference => 'Yes',
-                        customer_reference => 'CUSTOMER_123',
+                        customer_reference => 'GWIT-456',
                     },
                 },
             );
@@ -2252,6 +2264,7 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        CustomerReference => 'GWIT-456',
                         Firstname => 'Verity',
                         Surname => 'Wright',
                         CustomertStatus => 'ACTIVATED',
@@ -2391,6 +2404,7 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        CustomerReference => 'GWIT-456',
                         Firstname => 'Verity',
                         Surname => 'Wright',
                         CustomertStatus => 'ACTIVATED',
@@ -2431,7 +2445,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     has_reference => 'Yes',
-                    customer_reference => 'CUSTOMER_123',
+                    customer_reference => 'GWIT-456',
                 },
             },
         );
@@ -2504,6 +2518,7 @@ FixMyStreet::override_config {
             Customers => [
                 {
                     CustomerExternalReference => 'CUSTOMER_123',
+                    CustomerReference => 'GWIT-456',
                     Firstname => 'Verity',
                     Surname => 'Wright',
                     CustomertStatus => 'ACTIVATED',
@@ -2568,7 +2583,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok(
             {   with_fields => {
                     has_reference => 'Yes',
-                    customer_reference => 'CUSTOMER_123',
+                    customer_reference => 'GWIT-456',
                 },
             },
         );
@@ -2709,6 +2724,7 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            CustomerReference => 'GWIT-456',
                             CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
@@ -2786,6 +2802,7 @@ FixMyStreet::override_config {
                     Customers => [
                         {
                             CustomerExternalReference => 'CUSTOMER_123',
+                            CustomerReference => 'GWIT-456',
                             CustomertStatus => 'ACTIVATED',
                             ServiceContracts => [
                                 {
@@ -2875,6 +2892,7 @@ FixMyStreet::override_config {
                 Customers => [
                     {
                         CustomerExternalReference => 'CUSTOMER_123',
+                        CustomerReference => 'GWIT-456',
                         CustomertStatus => 'ACTIVATED',
                         ServiceContracts => [
                             {
