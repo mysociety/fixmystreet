@@ -1373,9 +1373,6 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         var reports_list;
         if (typeof(obj.reports_list) != 'undefined' && (reports_list = document.getElementById('js-reports-list'))) {
             reports_list.innerHTML = obj.reports_list;
-            if (fixmystreet.loading_recheck) {
-                fixmystreet.loading_recheck();
-            }
             if ( $('.item-list--reports').data('show-old-reports') ) {
                 $('#show_old_reports_wrapper').removeClass('hidden');
             } else {
