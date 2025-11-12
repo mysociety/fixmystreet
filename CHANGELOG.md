@@ -23,6 +23,7 @@
         - Update tested Perl versions on GitHub. #5446
         - Upgrade bundled `cpanm` and harden both it and `carton` for HTTPS. #5437
         - Upgrade jQuery to 3.7.1.
+        - Remove lazy loading polyfill.
     - Open311 improvements:
         - Process update sending in order. #5298
         - Only update lastupdate timestamp if update timestamp is newer. #5350

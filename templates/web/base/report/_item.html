@@ -55,9 +55,7 @@ END;
     [% PROCESS 'report/_item_photo_title.html' ~%]
   [% CATCH file ~%]
     [% IF problem.photo %]
-        <noscript class="loading-lazy">
-            <img loading="lazy" class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
-        </noscript>
+        <img loading="lazy" class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     [% END %]
       [% TRY %]
         [% PROCESS 'report/_item_heading.html' %]
