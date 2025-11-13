@@ -237,10 +237,10 @@ $assisted_collection_approval->set_extra_fields(
         description => "Is this request for permanent or temporary help?",
         values => [
             map { { key => $_, name => $_ } } (
-                '3 months',
-                '6 months',
-                '12 months',
-                'no end date',
+                '3 Months',
+                '6 Months',
+                '12 Months',
+                'No End Date',
             )
         ],
     }
@@ -1494,7 +1494,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok( { with_fields => {outcome_choice => 'Approve'} } );
         $mech->submit_form_ok( {
             with_fields => {
-                assisted_duration => '3 months',
+                assisted_duration => '3 Months',
                 assisted_reason => 'property',
                 assisted_location => 'Behind the back gate',
             }
@@ -1508,7 +1508,7 @@ FixMyStreet::override_config {
         like $mech->content, qr#Reason for assistance</dt>#, "Reason choice shown";
         like $mech->content, qr#property</dd>#, "Option shown: property";
         like $mech->content, qr#Duration of assistance</dt>#, "Duration choice shown";
-        like $mech->content, qr#3 months</dd>#, "Option shown: 3 months";
+        like $mech->content, qr#3 Months</dd>#, "Option shown: 3 Months";
         like $mech->content, qr#Location of bins</dt>#, "Location shown";
         like $mech->content, qr#Behind the back gate</dd>#, "Location notes shown";
 
@@ -1535,7 +1535,7 @@ FixMyStreet::override_config {
 
         my $open311_report = FixMyStreet::DB->resultset('Problem')->search( { category => 'Assisted collection add' } )->first;
         is $open311_report->get_extra_field_value('assisted_reason'), 'property';
-        is $open311_report->get_extra_field_value('assisted_duration'), '3 months';
+        is $open311_report->get_extra_field_value('assisted_duration'), '3 Months';
         is $open311_report->get_extra_field_value('assisted_location'), 'Behind the back gate';
     };
 

@@ -73,20 +73,20 @@ has_field assisted_duration => (
     required => 1,
     options => [
         {
-            label => '3 months',
-            value => '3 months',
+            label => '3 Months',
+            value => '3 Months',
         },
         {
-            label => '6 months',
-            value => '6 months',
+            label => '6 Months',
+            value => '6 Months',
         },
         {
-            label => '12 months',
-            value => '12 months',
+            label => '12 Months',
+            value => '12 Months',
         },
         {
-            label => 'No end date',
-            value => 'no end date',
+            label => 'No End Date',
+            value => 'No End Date',
         },
     ],
 );
