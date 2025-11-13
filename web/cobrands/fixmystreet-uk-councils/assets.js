@@ -325,6 +325,14 @@ fixmystreet.assets.bromley.add_park_message = function(layer) {
     layer.map_messaging.asset = layer.fixmystreet.no_asset_message;
 };
 
+fixmystreet.assets.bromley.chinbrook_found = function(layer) {
+    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+};
+
+fixmystreet.assets.bromley.chinbrook_not_found = function(layer) {
+    fixmystreet.message_controller.road_found(layer);
+};
+
 /* Buckinghamshire */
 
 fixmystreet.assets.buckinghamshire = {};
