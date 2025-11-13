@@ -10,9 +10,17 @@ has_field category => ( type => 'Hidden' );
 has_field service_id => ( type => 'Hidden' );
 
 has_page about_you => (
-    fields => ['name', 'phone', 'email', 'continue'],
+    fields => ['name', 'phone', 'email', 'category', 'service_id', 'continue'],
     title => 'About you',
     next => 'summary',
+    update_field_list => sub {
+        my $form = shift;
+        my $c = $form->c;
+        return {
+            category => { default => $c->get_param('category') },
+            service_id => { default => $c->get_param('service_id') },
+        }
+    }
 );
 
 with 'FixMyStreet::App::Form::Waste::AboutYou';

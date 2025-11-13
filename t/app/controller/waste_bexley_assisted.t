@@ -28,11 +28,6 @@ my $contact = $mech->create_contact_ok(
             required => "false",
             automated => "hidden_field",
             description => "UPRN reference",
-        }, {
-            code => "notes",
-            required => "false",
-            datatype => 'text',
-            description => "Notes",
         } ],
     },
     group => ['Waste'],
@@ -52,7 +47,6 @@ FixMyStreet::override_config {
         $mech->log_in_ok($staff_user->email);
         $mech->get_ok('/waste/10001');
         $mech->follow_link_ok({ text => 'Remove assisted collection' });
-        $mech->submit_form_ok({ with_fields => { extra_notes => 'Notes' } });
         $mech->submit_form_ok({ with_fields => { name => 'Test McTest', email => 'test@example.org' } });
         $mech->submit_form_ok({ with_fields => { submit => "Submit" } });;
         $mech->content_contains('Your enquiry has been submitted');
