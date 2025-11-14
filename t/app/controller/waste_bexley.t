@@ -1399,7 +1399,7 @@ FixMyStreet::override_config {
         };
 
         $mech->submit_form_ok({form_number => 3});
-        $mech->content_lacks('You can respond to this with this form', "Link to approve not present for public");
+        $mech->content_lacks('Respond to this request', "Link to approve not present for public");
     };
 
     subtest 'Request assisted collection report' => sub {
@@ -1480,7 +1480,7 @@ FixMyStreet::override_config {
 
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         my $report_id = $report->id;
-        $mech->content_contains("You can respond to this with this <a href=\"http://bexley.example.org/waste/10006/assisted/$report_id\">form</a>", "Link for staff to approve/deny request present");
+        $mech->content_contains("<a href=\"http://bexley.example.org/waste/10006/assisted/$report_id\">Respond to this request</a>", "Link for staff to approve/deny request present");
         unlike $report->detail, qr/Stairs down to pavement/, "Staff Notes data not added to report";
 
         $mech->clear_emails_ok;
