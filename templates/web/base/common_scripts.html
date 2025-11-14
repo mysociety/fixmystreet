@@ -15,7 +15,6 @@ IF bodyclass.match('frontpage');
         version('/js/offline_draft.js'),
         version('/js/front.js'),
         version('/js/geolocation.js'),
-        version('/js/loading-attribute-polyfill.js'),
     );
 ELSIF bodyclass.match('alertpage');
     scripts.push(
@@ -84,7 +83,6 @@ IF bodyclass.match('mappage');
         version('/vendor/fancybox/jquery.fancybox-1.3.4.pack.js'),
         version('/vendor/uFuzzy.iife.min.js'),
         version('/js/fancybox.js'),
-        version('/js/loading-attribute-polyfill.js'),
     );
 ELSE;
     scripts.push(
