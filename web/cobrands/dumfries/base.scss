@@ -1,0 +1,301 @@
+@import "../sass/h5bp";
+@import "_variables";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+/*TYPOGRAPHY */
+
+h1, .h1,
+h2, .h2,
+h3, .h3, 
+.item-list__heading {
+    font-weight: 700;
+}
+
+/* BUTTONS */
+.btn--primary {
+  box-shadow: 0 3px $cobrand_green-600;
+  font-size: 1.125rem;
+  font-weight: 600;
+
+  &:focus {
+    box-shadow: 0 3px $cobrand_black;
+  }
+}
+
+#report-cta {
+  @include white-outline-btn;
+}
+
+a#geolocate_link {
+  @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+  text-decoration: none;
+  box-shadow: 0 3px $cobrand_green-600;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+a, button {
+  &:focus {
+    outline: none;
+    // Important to override styles in .sticky-sidebar a:focus and navigation bar
+    color: $cobrand_black !important;
+    background-color: $yellow!important;
+    box-shadow: 0 3px $cobrand_black !important;
+    text-decoration: none !important; // This is a shared property between links and buttons
+  }
+}
+
+input[type=search],
+input[type=text] {
+  &:focus {
+    outline: 0.1875rem solid $cobrand_yellow;
+  }
+}
+
+/* NAVBAR */
+#site-logo {
+  background-image: url("/cobrands/dumfries/images/logo.svg");
+  background-size: 100% auto;
+  height: 4.6875rem;
+  width: 11.75rem;
+
+  &:focus {
+    background-image: url("/cobrands/dumfries/images/logo-black.svg");
+  }
+}
+
+.nav-menu--main {
+  a {
+    background-color: $cobrand_white;
+    color: $primary;
+    text-decoration: none;
+
+    &:visited {
+      color: $primary;
+    }
+  }
+
+  span {
+    background-color: $primary;
+    color: $primary_text;
+  }
+}
+
+/* FRONTPAGE */
+
+#front-main { 
+  background-size: cover;
+
+  #front-main-container {
+    h1 {
+      font-size: 2rem;
+      text-shadow: 0 0 0.625rem rgba(0,0,0,0.63);
+      margin-bottom: 0.25em;
+    }
+    h2 {
+      font-size: 1.625rem;
+      text-shadow: 0 0 0.625rem rgba(0,0,0,0.63);
+      font-style: normal;
+    }
+  }
+}
+
+.postcode-form-box {
+  div {
+    border-width: 0;
+  }
+
+  input#pc {
+    border-top-left-radius: $button-border-radius;
+    border-bottom-left-radius: $button-border-radius;
+    border: 1px solid #000;
+    border-right-width: 0;
+  }
+
+  input#sub {
+    font-weight: 600;
+    background-color: $primary;
+    border-top-right-radius: $button-border-radius;
+    border-bottom-right-radius: $button-border-radius;
+
+    &:hover {
+      background-color: $cobrand_green;
+      color: $button-primary-text;
+    }
+
+    &:focus {
+      outline: none;
+      // Important to override styles in .sticky-sidebar a:focus and navigation bar
+      color: $cobrand_black !important;
+      background-color: $yellow!important;
+      box-shadow: 0 !important;
+      text-decoration: none !important; // This is a shared property between links and buttons
+    }
+  }
+}
+
+/* OTHERS */
+.item-list__item {
+  a {
+    color: $primary_link_color;
+    text-decoration: none;
+
+    h3 {
+      text-decoration: underline;
+    }
+
+    &:hover {
+      h3 {
+        text-decoration: none;
+      }
+      color: $primary_link_hover_color;
+    }
+  }
+}
+
+/* SITE MESSAGE */
+// Got style from Figma
+.site-message {
+  border: none;
+  color: $primary_text;
+  background: #00838F;
+  background-image: url("/cobrands/dumfries/images/info-logo.svg");
+  background-size: 20px auto;
+  background-repeat: no-repeat;
+  background-position: 1rem;
+  font-weight: bold;
+  border-bottom: 3px solid #004D5C;
+  padding: 1rem;
+  padding-left: 2.875rem;
+  font-size: 1.125rem;
+  word-wrap: break-word;
+  margin-top: 2rem;
+
+  a, p {
+    font-weight: 600;
+    color: $primary_text;
+  }
+}
+
+/* FOOTER */
+.cobrand-footer {
+  font-size: 1rem;
+  background-color: #30333e;
+  color: #fff;
+  padding: 3.5rem 0;
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+    margin-top: 2.5rem;
+  }
+
+  ul {
+    margin-left: 0;
+  }
+
+  li {
+    list-style: none;
+    margin-bottom: 0;
+  }
+
+  a {
+    color: #fff;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+
+  .menu-footer {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.75rem;
+    column-gap: 2rem;
+    font-size: 1.125rem;
+  }
+
+  .gaelic-language-plan {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+
+    #dgc-mark {
+      height:4.75rem;
+    }
+
+    .gaelic-content {
+      max-width: 15rem;
+    }
+
+    .gaelic-title {
+      font-style: italic;
+      font-weight: 600;
+      font-size: 1.25rem;
+      line-height: 1.5rem;
+      margin-bottom: 0;
+    }
+  }
+
+  .social-list {
+    display: flex;
+    list-style: none;
+    margin-bottom: 2rem;
+    padding-left: 0;
+    gap: 1rem;
+
+    li {
+      display: flex;
+      align-items: center;
+
+      a {
+        display: flex;
+        align-items: flex-start;
+
+        span {
+          max-height: 2.5rem;
+        }
+
+        &:hover {
+          svg {
+            path {
+              fill: #585b69;
+            }
+            rect {
+              fill: #fff;
+            }
+          }
+        }
+
+        &:focus {
+          svg {
+            path {
+              fill: $yellow;
+            }
+            rect {
+              fill: $cobrand_black;
+            }
+          }
+        }
+      }
+
+      svg {
+        width: 2.5rem;
+        height: 2.5rem;
+  
+        rect {
+          fill: #30333e;
+        }
+      }
+    }
+  }
+}
+
+@import "../fixmystreet-uk-councils/societyworks-footer";
