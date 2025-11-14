@@ -84,6 +84,7 @@ create_contact({ category => 'Request new container', email => '3129' }, 'Waste'
     { code => 'Reason', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 0, automated => 'hidden_field' },
     { code => 'payment', required => 0, automated => 'hidden_field' },
+    { code => 'property_id', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Bin not returned', email => '3135' }, 'Waste',
     { code => 'NotAssisted', description => 'Thank you for bringing this to our attention. We will use your feedback to improve performance in the future.  Please accept our apologies for the inconvenience caused.', variable => 'false'  },
@@ -189,6 +190,8 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_text_body_from_email;
         like $email, qr/please allow up to 20 working days/;
+        like $email, qr/cancel your request/, 'include cancel link text';
+        like $email, qr/waste\/12345\/request\/cancel\//, 'include cancel link';
     };
     subtest 'Request a larger bin than current' => sub {
         $mech->get_ok('/waste/12345/request');
