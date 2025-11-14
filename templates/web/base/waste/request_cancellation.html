@@ -1,0 +1,14 @@
+[% PROCESS 'waste/header.html' %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+  <h1 class="govuk-panel__title">
+      Request cancelled
+  </h1>
+  <div class="govuk-panel__body">
+    <p>Your [% request_to_cancel_service_name FILTER lower %] container request has been cancelled.</p>
+  </div>
+</div>
+
+[% INCLUDE 'waste/_button_show_upcoming.html' %]
+
+[% INCLUDE footer.html %]

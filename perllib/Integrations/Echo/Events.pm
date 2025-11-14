@@ -95,6 +95,7 @@ sub filter {
         && ($params->{type} ? $_->{type} eq $params->{type} : 1)
         && ($params->{containers} ? $containers{$_->{container}} : 1)
         && (defined $params->{closed} ? $_->{closed} == $params->{closed} : 1)
+        && (defined $params->{report_not_cancelled} ? !$_->{report} || $_->{report}->state ne 'cancelled': 1)
     } $self->list;
     return $self->new(%$self, _events => \@events);
 }

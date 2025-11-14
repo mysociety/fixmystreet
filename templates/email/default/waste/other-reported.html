@@ -48,6 +48,11 @@ INCLUDE '_email_top.html';
             <li>It must be visible from the public highway, so delivery drivers can see it.</li>
             <li>We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.</li>
         </ul>
+        [% cancel_url = cobrand.base_url _ '/waste/' _ report.waste_property_id _ '/request/cancel/' _ report.id; %]
+        <p style="[% p_style %]">
+        You can
+        <a href="[% cancel_url %]">cancel your request</a>
+        if you would like. A refund will not be issued.
     [% ELSIF report.category == 'Waste spillage' %]
       <p style="[% p_style %]">
         We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.

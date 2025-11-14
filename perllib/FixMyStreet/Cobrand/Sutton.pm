@@ -804,4 +804,34 @@ sub waste_munge_small_items_data {
     $self->waste_munge_bulky_data($data);
 }
 
+=head2 waste_show_cancel_request
+
+Show the option to cancel a request for all users, if the report hasn't
+already been cancelled.
+
+=cut
+
+sub waste_show_cancel_request {
+    my ($self, $request_report) = @_;
+    return $request_report->state ne 'cancelled';
+}
+
+=head2 waste_can_cancel_request
+
+Allows cancelling a request if the user is staff or the person that
+made the request, and the report is not already cancelled.
+
+=cut
+
+sub waste_can_cancel_request {
+    my ($self, $request_report) = @_;
+    return unless $request_report->state ne 'cancelled';
+
+    # Staff members and the person who made the request can cancel it.
+    my $c = $self->{c};
+    return $c->user->is_superuser ||
+        $c->user->belongs_to_body($self->body->id) ||
+        $c->user->id == $request_report->user_id;
+}
+
 1;
