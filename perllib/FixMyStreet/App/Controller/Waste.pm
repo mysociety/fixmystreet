@@ -108,30 +108,39 @@ sub index : Path : Args(0) {
     my $form = FixMyStreet::App::Form::Waste::UPRN->new( cobrand => $c->cobrand );
     $form->process( params => $c->req->body_params );
     if ($form->validated) {
-        my $addresses = $form->value->{postcode};
         $c->stash->{template} = 'waste/form.html';
-        $form = address_list_form($addresses);
+        $form = address_list_form($form);
     }
     $c->stash->{form} = $form;
 }
 
 sub address_list_form {
-    my $addresses = shift;
+    my $form = shift;
+    my $fields = [
+        address => {
+            required => 1,
+            type => 'Select',
+            label => 'Select an address',
+            tags => { last_differs => 1, small => 1, autocomplete => 1 },
+            options => $form->addresses,
+        },
+    ];
+    if ($form->cobrand->moniker eq 'kingston') {
+        my $url = $form->cobrand->feature('waste_features')->{missing_address_url};
+        (my $pc = $form->value->{postcode}) =~ s/ //g;
+        push @$fields, message => {
+                type => 'Notice',
+                label => '<a href="' . $url . '?postcode=' . $pc . '">I can’t find my address in this list</a>',
+            };
+    }
+    push @$fields, go => {
+        type => 'Submit',
+        value => 'Continue',
+        element_attr => { class => 'govuk-button' },
+    };
     HTML::FormHandler->new(
-        field_list => [
-            address => {
-                required => 1,
-                type => 'Select',
-                label => 'Select an address',
-                tags => { last_differs => 1, small => 1, autocomplete => 1 },
-                options => $addresses,
-            },
-            go => {
-                type => 'Submit',
-                value => 'Continue',
-                element_attr => { class => 'govuk-button' },
-            },
-        ],
+        field_name_space => 'FixMyStreet::App::Form::Field',
+        field_list => $fields,
     );
 }
 
@@ -528,7 +537,8 @@ sub property : Chained('property_id') : PathPart('') : CaptureArgs(0) {
         $c->detach('/auth/redirect');
     }
 
-    if ($id eq 'missing') {
+    if ($id =~ /^missing-?(.*)/) {
+        $c->stash->{postcode} = $1;
         $c->stash->{template} = 'waste/missing.html';
         $c->detach;
     }
