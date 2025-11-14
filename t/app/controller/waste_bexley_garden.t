@@ -1497,45 +1497,95 @@ FixMyStreet::override_config {
                         qr/Renew your brown wheelie bin subscription/,
                         'Renewal link available';
 
-                    $mech->get_ok("/waste/$uprn/garden_renew");
-
-                    $mech->submit_form_ok(
-                        {   with_fields => {
-                                has_reference => 'Yes',
-                                customer_reference => 'GWIT-456',
+                    subtest 'with correct customer ref' => sub {
+                        $mech->get_ok("/waste/$uprn/garden_renew");
+                        $mech->submit_form_ok(
+                            {   with_fields => {
+                                    has_reference => 'Yes',
+                                    customer_reference => 'GWIT-456',
+                                },
                             },
-                        },
-                    );
+                        );
 
-                    like $mech->content, qr/name="current_bins.*value="2"/s,
-                        'Current bins pre-populated';
-                    like $mech->content, qr/name="bins_wanted.*value="2"/s,
-                        'Wanted bins pre-populated';
+                        like $mech->content, qr/name="current_bins.*value="2"/s,
+                            'Current bins pre-populated';
+                        like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                            'Wanted bins pre-populated';
 
-                    $mech->submit_form_ok(
-                        {   with_fields => {
-                                bins_wanted => 2,
-                                payment_method => 'credit_card',
+                        $mech->submit_form_ok(
+                            {   with_fields => {
+                                    bins_wanted => 2,
+                                    payment_method => 'credit_card',
+                                },
+                            }
+                        );
+                        $mech->waste_submit_check(
+                            { with_fields => { tandc => 1 } } );
+
+                        my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+                        # Should be new signup with customer ref
+                        check_extra_data_pre_confirm(
+                            $renew_report,
+                            type         => 'New',
+                            current_bins => 2,
+                            new_bins     => 0,
+                            bins_wanted  => 2,
+                            customer_external_ref => 'CUSTOMER_123',
+                            renew_as_new_subscription => 1,
+                        );
+
+                        $renew_report->delete;
+                    };
+
+                    subtest 'with incorrect customer ref but correct name' => sub {
+                        $mech->get_ok("/waste/$uprn/garden_renew");
+                        $mech->submit_form_ok(
+                            {   with_fields => {
+                                    has_reference => 'Yes',
+                                    customer_reference => 'GWIT-BAD',
+                                },
                             },
-                        }
-                    );
-                    $mech->waste_submit_check(
-                        { with_fields => { tandc => 1 } } );
+                        );
+                        $mech->submit_form_ok(
+                            {   with_fields => {
+                                    verifications_first_name => 'Verity',
+                                    verifications_last_name => 'Wright',
+                                    email => 'verity@wright.com',
+                                },
+                            },
+                        );
 
-                    my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+                        like $mech->content, qr/name="current_bins.*value="2"/s,
+                            'Current bins pre-populated';
+                        like $mech->content, qr/name="bins_wanted.*value="2"/s,
+                            'Wanted bins pre-populated';
 
-                    # Should be new signup with customer ref
-                    check_extra_data_pre_confirm(
-                        $renew_report,
-                        type         => 'New',
-                        current_bins => 2,
-                        new_bins     => 0,
-                        bins_wanted  => 2,
-                        customer_external_ref => 'CUSTOMER_123',
-                        renew_as_new_subscription => 1,
-                    );
+                        $mech->submit_form_ok(
+                            {   with_fields => {
+                                    bins_wanted => 2,
+                                    payment_method => 'credit_card',
+                                },
+                            }
+                        );
+                        $mech->waste_submit_check(
+                            { with_fields => { tandc => 1 } } );
 
-                    $renew_report->delete;
+                        my ( $token, $renew_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+                        # Should be new signup with customer ref
+                        check_extra_data_pre_confirm(
+                            $renew_report,
+                            type         => 'New',
+                            current_bins => 2,
+                            new_bins     => 0,
+                            bins_wanted  => 2,
+                            customer_external_ref => 'CUSTOMER_123',
+                            renew_as_new_subscription => 1,
+                        );
+
+                        $renew_report->delete;
+                    };
 
                 };
 
