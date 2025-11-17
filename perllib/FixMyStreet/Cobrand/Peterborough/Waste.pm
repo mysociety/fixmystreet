@@ -618,17 +618,17 @@ sub waste_munge_request_data {
 
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
-    return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');
+    return "BULKY-" . $p->uprn . "-" .$p->get_extra_field_value('DATE');
 }
 
 sub waste_cc_payment_admin_fee_line_item_ref {
     my ($self, $p) = @_;
-    return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');
+    return "BULKY-" . $p->uprn . "-" .$p->get_extra_field_value('DATE');
 }
 
 sub waste_cc_payment_sale_ref {
     my ($self, $p) = @_;
-    return "BULKY-" . $p->get_extra_field_value('uprn') . "-" .$p->get_extra_field_value('DATE');
+    return "BULKY-" . $p->uprn . "-" .$p->get_extra_field_value('DATE');
 }
 
 sub bin_payment_types {

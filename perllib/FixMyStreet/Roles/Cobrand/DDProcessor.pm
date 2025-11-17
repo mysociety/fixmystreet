@@ -400,7 +400,7 @@ sub _process_reference {
         return (undef, undef);
     }
 
-    $uprn = $origin->get_extra_field_value('uprn');
+    $uprn = $origin->uprn;
     $self->log( "extra query is {payerReference: $payer" );
     my $rs = FixMyStreet::DB->resultset('Problem')->search({
         -or => [

@@ -384,7 +384,7 @@ sub find_booked_collections {
 
     my @reports = $self->problems->search({
         category => ['Bulky collection', 'Small items collection'],
-        extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
+        uprn => $uprn,
     })->order_by('-id')->all;
 
     my $dt = DateTime->now( time_zone => FixMyStreet->local_time_zone )->truncate( to => 'day' )->subtract ( days => 10 );

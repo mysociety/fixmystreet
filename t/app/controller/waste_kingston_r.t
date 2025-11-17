@@ -32,10 +32,7 @@ sub create_contact {
     my ($params, $group, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $kingston, %$params, group => [$group]);
     $contact->set_extra_metadata( type => 'waste' );
-    $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
-        @extra,
-    );
+    $contact->set_extra_fields(@extra);
     $contact->update;
 }
 
@@ -44,7 +41,6 @@ create_contact({ category => 'Report missed collection', email => '3145' }, 'Was
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
-    { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
@@ -162,7 +158,7 @@ FixMyStreet::override_config {
             $mech->get_ok("/waste/pay_complete/$report_id/$token");
             $mech->content_contains('request has been sent');
             $mech->content_contains('>Return to property details<', "Button text changed for Kingston");
-            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->uprn, 1000000002;
             is $report->detail, "2 Example Street, Kingston, KT1 1AA";
             is $report->category, 'Request new container';
             is $report->title, "Request $_->{name} delivery";
@@ -217,7 +213,7 @@ FixMyStreet::override_config {
         $mech->get_ok("/waste/pay_complete/$report_id/$token");
         $mech->content_contains('request has been sent');
 
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "2 Example Street, Kingston, KT1 1AA";
         is $report->category, 'Request new container';
         is $report->title, 'Request Green recycling box (55L) delivery';
@@ -232,7 +228,7 @@ FixMyStreet::override_config {
         my $sent_count = 1;
         foreach (@{ $report->get_extra_metadata('grouped_ids') }) {
             my $report = FixMyStreet::DB->resultset("Problem")->find($_);
-            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->uprn, 1000000002;
             if ($report->title eq 'Request Green recycling bin (240L) collection') {
                 is $report->get_extra_field_value('Container_Type'), 15, 'correct bin type';
                 is $report->get_extra_field_value('service_id'), 970;
@@ -337,7 +333,7 @@ FixMyStreet::override_config {
                 my ( $token, $report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
                 $mech->get_ok("/waste/pay_complete/$report_id/$token");
                 $mech->content_contains('request has been sent');
-                is $report->get_extra_field_value('uprn'), 1000000002;
+                is $report->uprn, 1000000002;
                 is $report->detail, "2 Example Street, Kingston, KT1 1AA";
                 is $report->category, 'Request new container';
                 is $report->title, "Request $names{$_->{id}} replacement";
@@ -381,7 +377,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Thank you for reporting a missed collection');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "Report missed Food waste\n\n2 Example Street, Kingston, KT1 1AA";
         is $report->title, 'Report missed Food waste';
         is $report->bodies_str, $kingston->id, 'correct bodies_str';

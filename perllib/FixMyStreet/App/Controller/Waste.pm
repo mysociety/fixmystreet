@@ -183,11 +183,11 @@ sub get_pending_subscription : Private {
 
         my $subs = $c->model('DB::Problem')->search({
             # Bexley confirms garden reports immediately
+            uprn => $c->stash->{property}{uprn},
             state => 'confirmed',
             created => { '>=' => \"current_timestamp-'20 days'::interval" },
             category => 'Garden Subscription',
             title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New'] },
-            extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) }
         })->to_body($c->cobrand->body);
 
         my $status = $c->stash->{direct_debit_status} || '';
@@ -197,11 +197,11 @@ sub get_pending_subscription : Private {
 
     } else {
         my $subs = $c->model('DB::Problem')->search({
+            uprn => $c->stash->{property}{uprn},
             state => 'unconfirmed',
             created => { '>=' => \"current_timestamp-'20 days'::interval" },
             category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
             title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New', 'Garden Subscription - Cancel'] },
-            extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) }
         })->to_body($c->cobrand->body);
 
         while (my $sub = $subs->next) {
@@ -1177,21 +1177,10 @@ sub get_current_payment_method : Private {
 sub get_original_sub : Private {
     my ($self, $c, $type) = @_;
 
-    # Explicitly use the property ID variable in a string when looking it up.
-    # This is in case the variable been used in a numeric context somewhere, giving the SV a cached numeric value
-    # which encode_json defaults to using.
-    my $id = $c->stash->{property}{id};
-    my $extra = { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => "$id" } ] }) };
-
-    if ($c->cobrand->moniker eq 'bexley') {
-        # Bexley doesn't store property_id
-        $extra = { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) };
-    }
-
     my $p = $c->model('DB::Problem')->search({
+        uprn => $c->stash->{property}{uprn},
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew', 'Garden Subscription - Transfer'],
-        extra => $extra,
         state => { '!=' => 'hidden' },
     })->order_by('-id')->to_body($c->cobrand->body);
 
@@ -1257,7 +1246,6 @@ sub add_report : Private {
     $c->set_param('category', $data->{category});
     $c->set_param('title', $data->{title});
     $c->set_param('detail', $data->{detail});
-    $c->set_param('uprn', $data->{uprn} || $c->stash->{property}{uprn});
     $c->set_param('property_id', $c->stash->{property}{id}) unless $c->get_param('property_id');
 
     # Data may contain duplicate photo data under different keys e.g.

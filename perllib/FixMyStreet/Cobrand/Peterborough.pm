@@ -91,7 +91,7 @@ This hooks around the default from Roles::ConfirmOpen311.
 
 around open311_update_missing_data => sub {
     my ($orig, $self, $row, $h, $contact) = @_;
-    return if $row->get_extra_field_value('uprn');
+    return if $row->uprn;
     return $self->$orig($row, $h, $contact);
 };
 

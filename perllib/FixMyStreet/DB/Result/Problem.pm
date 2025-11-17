@@ -1550,7 +1550,7 @@ property_id on the report, but could be the UPRN (e.g. Bexley).
 
 sub waste_property_id {
     my $self = shift;
-    return $self->get_extra_field_value('uprn') if $self->cobrand eq 'bexley';
+    return $self->uprn if $self->cobrand eq 'bexley';
     return $self->get_extra_field_value('property_id');
 }
 
