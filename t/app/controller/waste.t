@@ -39,7 +39,6 @@ sub create_contact {
     my ($params, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
     $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         @extra,
@@ -261,7 +260,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->get_extra_field_value('Quantity'), 2;
         is $report->get_extra_field_value('Container_Type'), 1;
         is $report->get_extra_field_value('Action'), '';
@@ -283,7 +282,7 @@ FixMyStreet::override_config {
         $mech->content_contains('/waste/12345"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $report->title, 'Request new Garden Waste Container';
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->get_extra_field_value('Quantity'), 1;
         is $report->get_extra_field_value('Container_Type'), 44;
         is $report->get_extra_field_value('Reason'), 3;
@@ -311,11 +310,11 @@ FixMyStreet::override_config {
         like $body, qr/Your request to Bromley Council has been logged/;
         my @reports = FixMyStreet::DB->resultset("Problem")->order_by('-id')->search(undef, { rows => 2 });
         is $reports[0]->state, 'confirmed';
-        is $reports[0]->get_extra_field_value('uprn'), 1000000002;
+        is $reports[0]->uprn, 1000000002;
         is $reports[0]->get_extra_field_value('Quantity'), 2;
         is $reports[0]->get_extra_field_value('Container_Type'), 9;
         is $reports[1]->state, 'confirmed';
-        is $reports[1]->get_extra_field_value('uprn'), 1000000002;
+        is $reports[1]->uprn, 1000000002;
         is $reports[1]->get_extra_field_value('Quantity'), 1;
         is $reports[1]->get_extra_field_value('Container_Type'), 10;
     };
@@ -817,6 +816,7 @@ FixMyStreet::override_config {
     my ($p) = $mech->create_problems_for_body(1, $body->id, 'Garden Subscription - New', {
         user_id => $user->id,
         category => 'Garden Subscription',
+        uprn => 1000000002,
     });
     $p->title('Garden Subscription - New');
     $p->update_extra_field({ name => 'property_id', value => '12345'});

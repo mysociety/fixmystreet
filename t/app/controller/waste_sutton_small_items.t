@@ -28,7 +28,6 @@ sub create_contact {
     my ($params, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $sutton, %$params, group => ['Waste'], extra => { type => 'waste' }, email => 'test@test.com');
     $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         @extra,
@@ -287,11 +286,6 @@ FixMyStreet::override_config {
         #is $report->user->name, 'Mary Kay', "Report made by user";
         is $report->user->email, $user->email, "Report made by user";
         my $test_extra = [
-          {
-            'value' => '1000000002',
-            'description' => undef,
-            'name' => 'uprn'
-          },
           {
             'name' => 'property_id',
             'description' => undef,
@@ -555,7 +549,7 @@ FixMyStreet::override_config {
         like $report->detail, qr/Previously submitted as/, 'Original report detail field updated';
         is $report->category, 'Small items collection';
         is $report->title, 'Small items collection';
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2025-08-12T00:00:00';
         is $report->get_extra_field_value('Small_Item_Type'), '1::2::2';
         is $report->get_extra_field_value('property_id'), '12345';

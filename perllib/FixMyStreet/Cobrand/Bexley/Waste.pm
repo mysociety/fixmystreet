@@ -2106,7 +2106,7 @@ sub waste_get_paye_narrative {
     if ($p->category eq 'Bulky collection') {
         return "Bulky waste - $id";
     } else {
-        my $uprn = $p->get_extra_field_value('uprn');
+        my $uprn = $p->uprn;
         return "Garden Waste Service Payment - Reference: $id Contract: $uprn";
     }
 }

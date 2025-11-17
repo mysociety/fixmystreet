@@ -15,7 +15,7 @@
     <tr> <th><p>Details</p></th> <th><p>Data</p></th> </tr>
     <tr> <td><p>Enquiry reference number</p></td> <td><p>[% report.id %]</p></td> </tr>
     <tr> <td><p>Address</p></td> <td><p>[% report.get_extra_metadata.property_address %]</p></td> </tr>
-    <tr> <td><p>UPRN</p></td> <td><p>[% report.get_extra_field_value('uprn') %]</p></td> </tr>
+    <tr> <td><p>UPRN</p></td> <td><p>[% report.uprn %]</p></td> </tr>
     <tr> <td><p>Time Received</p></td> <td><p>[% USE date; date.format(report.confirmed.epoch, '%Y-%m-%dT%H:%M:%SZ', gmt=1) %]</p></td> </tr>
     <tr> <td><p>New/replacement container</p></td> <td><p>[% report.get_extra_field_value('Container').join('; ') %]</p></td> </tr>
     <tr> <td><p>Full name</p></td> <td><p>[% report.name %]</p></td> </tr>
