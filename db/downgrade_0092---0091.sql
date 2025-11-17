@@ -1,0 +1,5 @@
+BEGIN;
+
+ALTER TABLE problem DROP uprn;
+
+COMMIT;

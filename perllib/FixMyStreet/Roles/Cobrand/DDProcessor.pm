@@ -314,6 +314,7 @@ sub _duplicate_waste_report {
 
     my $renew = FixMyStreet::DB->resultset('Problem')->new({
         category => 'Garden Subscription',
+        uprn => $report->uprn,
         user => $report->user,
         latitude => $report->latitude,
         longitude => $report->longitude,
