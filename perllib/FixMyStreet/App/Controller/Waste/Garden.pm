@@ -507,7 +507,7 @@ sub process_garden_transfer : Private {
     my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
     $c->set_param($end_date_field, $now->dmy('/'));
     $c->set_param('property_id', $old_property_id);
-    $c->set_param('uprn', $data->{transfer_old_ggw_sub}{transfer_uprn});
+    $cancel->{uprn} = $data->{transfer_old_ggw_sub}{transfer_uprn};
     $c->set_param('transferred_to', $c->stash->{property}->{uprn});
     $c->forward('setup_garden_sub_params', [ $cancel, undef ]);
     $c->forward('/waste/add_report', [ $cancel ]) or return;
@@ -526,7 +526,6 @@ sub process_garden_transfer : Private {
     $c->set_param('Start_Date', $now->dmy('/'));
     $c->set_param($end_date_field, $expiry->dmy('/'));
     $c->set_param('property_id', '');
-    $c->set_param('uprn', '');
     $c->set_param('transferred_from', $data->{transfer_old_ggw_sub}{transfer_uprn});
     $c->forward('setup_garden_sub_params', [ $new, $c->cobrand->waste_subscription_types->{Transfer} ]);
     $c->forward('/waste/add_report', [ $new ]) or return;

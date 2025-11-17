@@ -130,7 +130,6 @@ sub waste_munge_bulky_data {
     my $c = $self->{c};
     my $property = $c->stash->{property};
     my $address = $property->{address};
-    my $uprn = $property->{uprn};
 
     my ($date, $ref) = split(";", $data->{chosen_date});
 
@@ -159,8 +158,6 @@ sub waste_munge_bulky_data {
     }
     $data->{extra_bulky_items} = join("::", @ids);
     $self->bulky_total_cost($data);
-
-    $c->set_param('uprn', $uprn);
 }
 
 =head2 suppress_report_sent_email

@@ -266,6 +266,7 @@ sub open311_update_missing_data {
         if (!$row->get_extra_field_value('uprn')) {
             if (my $ref = $feature->{properties}{UPRN}) {
                 $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
+                $row->uprn($ref);
             }
         }
     } else { # Symology
