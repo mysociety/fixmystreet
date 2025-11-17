@@ -161,7 +161,6 @@ FixMyStreet::override_config {
             }, 'correct metadata set on cancellation report';
 
             cmp_deeply $cancel_report->get_extra_fields, [
-                { name => 'uprn', value => $uprn },
                 { name => 'property_id', value => $uprn },
                 { name => 'payment_method', value => 'direct_debit' },
                 { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },
@@ -300,7 +299,6 @@ sub _create_report {
 
     );
     $garden_report->set_extra_fields(
-        { name => 'uprn', value => $args{uprn} },
         { name => 'property_id', value => $args{uprn} },
         { name => 'payment_method', value => 'direct_debit' },
         { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },

@@ -87,7 +87,7 @@ sub waste_check_existing_dd {
     my $payer_reference = $p->get_extra_metadata('payerReference');
     if (!$payer_reference) {
         my $code = $self->waste_payment_ref_council_code;
-        my $uprn = $p->get_extra_field_value('uprn') || '';
+        my $uprn = $p->uprn || '';
         my $id = $p->id;
         $payer_reference = substr($code . '-' . $id . '-' . $uprn, 0, 18);
     }

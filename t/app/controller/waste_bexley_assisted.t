@@ -31,12 +31,6 @@ $body->add_to_response_templates({
 
 $assisted_collection->set_extra_fields(
     {
-        code => "uprn",
-        required => "false",
-        automated => "hidden_field",
-        description => "UPRN reference",
-    },
-    {
         code => "fixmystreet_id",
         required => "true",
         automated => "server_set",
@@ -92,12 +86,6 @@ my $assisted_collection_approval = $mech->create_contact_ok(
 
 $assisted_collection_approval->set_extra_fields(
     {
-        code => "uprn",
-        required => "false",
-        automated => "hidden_field",
-        description => "UPRN reference",
-    },
-    {
         code => "fixmystreet_id",
         required => "true",
         automated => "server_set",
@@ -144,12 +132,6 @@ $mech->create_contact_ok(
     email => 'assistedremove@example.org',
     extra => {
         type => 'waste',
-        _fields => [ {
-            code => "uprn",
-            required => "false",
-            automated => "hidden_field",
-            description => "UPRN reference",
-        } ],
     },
     group => ['Waste'],
 );
@@ -347,7 +329,7 @@ FixMyStreet::override_config {
     subtest 'Remove assisted collection flow, requester' => sub {
         my $report = FixMyStreet::DB->resultset('Problem')->search( { category => 'Request assisted collection' } )->order_by('-id')->first;
         my $user = $mech->log_in_ok($report->user->email);
-        $report->update_extra_field({ name => 'uprn', value => '10001' });
+        $report->uprn(10001);
         $report->update({ user => $user }); # Because of uniqueify
         $mech->get_ok('/waste/10001');
         $mech->follow_link_ok({ text => 'Remove assisted collection' });

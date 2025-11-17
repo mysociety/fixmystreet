@@ -253,7 +253,7 @@ FixMyStreet::override_config {
 
     subtest 'extra CSV columns present, and questionnaire answers work' => sub {
         my $fly = FixMyStreet::DB->resultset("Problem")->search({ category => 'Flytipping' })->single;
-        $fly->update_extra_field({ name => 'uprn', value => '10000001' });
+        $fly->uprn('10000001');
         $fly->update_extra_field({ name => 'payment_method', value => 'credit_card' });
         $fly->update({ confirmed => $fly->confirmed->clone->subtract(days => 2), state => 'fixed - user' });
 
