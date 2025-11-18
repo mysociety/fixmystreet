@@ -88,6 +88,14 @@ sub process_parish : Private {
         FixMyStreet::DB->resultset("Config")->set(extra_parishes => [$data->{parish}]);
     }
 
+    if ($c->user_exists && $c->user->is_superuser) {
+        # Immediate creation without payment, I guess!
+        $c->stash->{body} = $body;
+        $c->stash->{user} = $user;
+        $c->stash->{override_template} = 'parishes/pay_complete.html';
+        return 1;
+    }
+
     my $session = $self->stripe->request(POST => 'checkout/sessions', {
         success_url => $c->uri_for_action('/parishes/pay_complete') . '?session={CHECKOUT_SESSION_ID}',
         #cancel_url='https://example.com/canceled.html',

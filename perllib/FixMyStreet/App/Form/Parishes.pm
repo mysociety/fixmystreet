@@ -98,7 +98,7 @@ has_page summary => (
 has_page done => (
     tags => { hide => 1 },
     title => 'Success',
-    template => 'parishes/confirmation.html',
+    template => 'parishes/pay_complete.html',
 );
 
 has_field name => (

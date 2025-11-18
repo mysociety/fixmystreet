@@ -289,8 +289,7 @@ sub waste_garden_sub_params {
     } elsif ( $data->{title} =~ /Renew/ ) {
         $c->set_param( 'type', 'renew' );
         $c->set_param( 'total_containers', $data->{bins_wanted} );
-        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} )
-            unless $data->{blank_customer_external_ref};
+        $c->set_param( 'customer_external_ref', $srv->{customer_external_ref} );
 
     } elsif ( $data->{title} =~ /Amend/ ) {
         $c->set_param( 'type', 'amend' );
