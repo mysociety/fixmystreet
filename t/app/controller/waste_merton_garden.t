@@ -130,6 +130,12 @@ sub garden_waste_two_bins {
     return [ $refuse_bin->[0], $garden_bins->[0] ];
 }
 
+sub garden_waste_four_bins {
+    my $refuse_bin = garden_waste_no_bins();
+    my $garden_bins = _garden_waste_service_units(4, 'bin');
+    return [ $refuse_bin->[0], $garden_bins->[0] ];
+}
+
 sub garden_waste_only_refuse_sacks {
     return [ {
         Id => 1001,
@@ -691,6 +697,44 @@ FixMyStreet::override_config {
         unlike $body, qr/Bins to be removed: 1/;
         like $body, qr/Total:.*?$two_cost_human/;
     };
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_four_bins);
+    subtest 'renew with four bins (exception above 3-bin limit)' => sub {
+        set_fixed_time('2021-03-09T17:00:00Z');
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/waste/12345/garden_renew');
+        my $form = $mech->form_with_fields( qw( current_bins ) );
+        ok $form, 'found form';
+        is $mech->value('current_bins'), 4, "correct current bin count";
+        # bins_wanted field should be disabled during renewal
+        my $bins_wanted_field = $form->find_input('bins_wanted');
+        ok $bins_wanted_field->disabled, 'bins_wanted field is disabled during renewal';
+        $mech->submit_form_ok({ with_fields => {
+            current_bins => 4,
+            name => 'Test McTest',
+            email => 'test@example.net',
+        } });
+        my $four_cost = $cost * 4;
+        my $four_cost_human = sprintf("%.2f", $four_cost/100);
+        $mech->content_contains($four_cost_human);
+        $mech->waste_submit_check({ with_fields => { tandc => 1 } });
+
+        is $sent_params->{items}[0]{amount}, $four_cost, 'correct amount used for 4 bins';
+
+        my ( $token, $new_report, $report_id ) = get_report_from_redirect( $sent_params->{returnUrl} );
+
+        check_extra_data_pre_confirm($new_report, type => 'Renew', new_bins => 0, quantity => 4);
+
+        $mech->get_ok("/waste/pay_complete/$report_id/$token");
+        check_extra_data_post_confirm($new_report);
+
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send();
+        my @emails = $mech->get_email;
+        my $body = $mech->get_text_body_from_email($emails[1]);
+        like $body, qr/Number of bin subscriptions: 4/;
+        like $body, qr/Total:.*?$four_cost_human/;
+    };
+    $echo->mock('GetServiceUnitsForObject', \&garden_waste_two_bins);
     subtest 'request multiple containers' => sub {
         $mech->get_ok('/waste/12345/request');
         $mech->submit_form_ok({ with_fields => { 'container-39' => 1, 'quantity-39' => 2 } });
