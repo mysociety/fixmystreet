@@ -116,26 +116,44 @@ sub waste_sub_due {
 
 =head2 waste_show_cancel_request
 
-Whether the option to cancel a request is shown.
-Defaults to false.
+Show the option to cancel a request for all users, if the report hasn't
+already been cancelled.
+
+Enabled if 'request_cancel_enabled' is set.
 
 =cut
 
 sub waste_show_cancel_request {
     my ($self, $request_report) = @_;
-    return 0;
+
+    my $c = $self->{c};
+    return unless $c->stash->{waste_features}->{request_cancel_enabled};
+
+    return $request_report->state ne 'cancelled';
 }
 
 =head2 waste_can_cancel_request
 
-Whether or not the given request can be cancelled.
-Defaults to false.
+
+Allows cancelling a request if the user is staff or the person that
+made the request, and the report is not already cancelled.
+
+Enabled if 'request_cancel_enabled' is set.
 
 =cut
 
 sub waste_can_cancel_request {
     my ($self, $request_report) = @_;
-    return 0;
+
+    my $c = $self->{c};
+    return unless $c->stash->{waste_features}->{request_cancel_enabled};
+
+    return unless $request_report->state ne 'cancelled';
+
+    # Staff members and the person who made the request can cancel it.
+    return $c->user->is_superuser ||
+        $c->user->belongs_to_body($self->body->id) ||
+        $c->user->id == $request_report->user_id;
 }
 
 1;
