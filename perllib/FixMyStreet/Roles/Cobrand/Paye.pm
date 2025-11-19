@@ -29,7 +29,6 @@ around waste_cc_get_redirect_url => sub {
         });
 
         my $p = $c->stash->{report};
-        my $uprn = $p->get_extra_field_value('uprn');
 
         my $amount = $p->get_extra_field_value( 'pro_rata' );
         unless ($amount) {
@@ -86,7 +85,7 @@ around waste_cc_get_redirect_url => sub {
             description => $p->title,
             name => $p->name,
             email => $p->user->email,
-            uprn => $uprn,
+            uprn => $p->uprn,
             address1 => shift @parts,
             address2 => shift @parts,
             country => 'UK',

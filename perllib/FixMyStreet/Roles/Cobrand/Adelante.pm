@@ -24,7 +24,6 @@ sub waste_cc_get_redirect_url {
     });
 
     my $p = $c->stash->{report};
-    #my $uprn = $p->get_extra_field_value('uprn');
 
     my $amount = $p->get_extra_field_value( 'pro_rata' );
     unless ($amount) {
@@ -80,7 +79,6 @@ sub waste_cc_get_redirect_url {
             name => $p->name,
             email => $p->user->email,
             phone => $p->user->phone,
-            #uprn => $uprn,
             address => $address,
             items => \@items,
             staff => $c->stash->{staff_payments_allowed} eq 'cnp',

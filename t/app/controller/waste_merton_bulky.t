@@ -21,7 +21,6 @@ my $body = $mech->create_body_ok( 2500, 'Merton Council',
 
 my $contact = $mech->create_contact_ok(body => $body, ( category => 'Report missed collection', email => 'missed@example.org' ), group => ['Waste'], extra => { type => 'waste' });
   $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         { code => 'Exact_Location', required => 0, automated => 'hidden_field' },
@@ -422,7 +421,7 @@ FixMyStreet::override_config {
             is $report->detail, "Address: 2 Example Street, Merton, KT1 1AA";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
-            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->uprn, 1000000002;
             is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
             is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '12345';
@@ -634,7 +633,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
             is $report->state, 'confirmed', 'report confirmed';
             is $report->get_extra_metadata('payment_reference'), '54321', 'correct payment reference on report';
-            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->uprn, 1000000002;
             is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
             is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6', 'updated items';
 
@@ -750,7 +749,7 @@ FixMyStreet::override_config {
             like $report->detail, qr/Previously submitted as/, 'Original report detail field updated';
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
-            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->uprn, 1000000002;
             is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-01T00:00:00';
             is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6::84';
             is $report->get_extra_field_value('property_id'), '12345';
@@ -880,7 +879,7 @@ FixMyStreet::override_config {
             like $report->detail, qr/Previously submitted as/, 'Original report detail field updated';
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
-            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->uprn, 1000000002;
             is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
             is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6::83::83';
             is $report->get_extra_field_value('property_id'), '12345';
@@ -979,7 +978,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('payment_method'), 'csc', 'correct payment method on report';
             is $report->state, 'confirmed', 'report confirmed';
             is $report->get_extra_metadata('scpReference'), '12345', 'correct scp reference on report';
-            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->uprn, 1000000002;
             is $report->get_extra_field_value('Collection_Date_-_Bulky_Items'), '2023-07-08T00:00:00';
             is $report->get_extra_field_value('TEM_-_Bulky_Collection_Item'), '83::6::83::83', 'Not changed yet';
 
@@ -1294,7 +1293,6 @@ sub create_contact {
 
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
     $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         @extra,

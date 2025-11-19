@@ -152,6 +152,7 @@ FixMyStreet::override_config {
             is $cancel_report->detail, "Cancel Garden Subscription\n\n123 Bexley St";
             is $cancel_report->user_id, $comment_user->id;
             is $cancel_report->name, $comment_user->name;
+            is $cancel_report->uprn, $uprn;
 
             cmp_deeply $cancel_report->get_extra_metadata, {
                 property_address => '123 Bexley St',
@@ -159,7 +160,6 @@ FixMyStreet::override_config {
             }, 'correct metadata set on cancellation report';
 
             cmp_deeply $cancel_report->get_extra_fields, [
-                { name => 'uprn', value => $uprn },
                 { name => 'property_id', value => $uprn },
                 { name => 'payment_method', value => 'direct_debit' },
                 { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },
@@ -243,11 +243,11 @@ sub _create_report {
             : 'Garden Subscription',
             title => ( $is_cancel ? 'Garden Subscription - Cancel' : 'Garden Subscription - New' ),
             created => $args{created} || \'current_timestamp',
+            uprn => $args{uprn},
         },
 
     );
     $garden_report->set_extra_fields(
-        { name => 'uprn', value => $args{uprn} },
         { name => 'property_id', value => $args{uprn} },
         { name => 'payment_method', value => 'direct_debit' },
         { name => 'customer_external_ref', value => 'AGILE_CUSTOMER_REF' },

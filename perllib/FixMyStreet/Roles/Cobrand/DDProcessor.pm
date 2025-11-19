@@ -314,6 +314,7 @@ sub _duplicate_waste_report {
 
     my $renew = FixMyStreet::DB->resultset('Problem')->new({
         category => 'Garden Subscription',
+        uprn => $report->uprn,
         user => $report->user,
         latitude => $report->latitude,
         longitude => $report->longitude,
@@ -399,7 +400,7 @@ sub _process_reference {
         return (undef, undef);
     }
 
-    $uprn = $origin->get_extra_field_value('uprn');
+    $uprn = $origin->uprn;
     $self->log( "extra query is {payerReference: $payer" );
     my $rs = FixMyStreet::DB->resultset('Problem')->search({
         -or => [

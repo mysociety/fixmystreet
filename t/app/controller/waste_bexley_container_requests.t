@@ -68,11 +68,6 @@ my $contact_removal = $mech->create_contact_ok(
 for ( $contact_delivery, $contact_removal ) {
     $_->set_extra_fields(
         {
-            code => "uprn",
-            required => "false",
-            automated => "hidden_field",
-        },
-        {
             code => "service_item_name",
             required => "false",
             automated => "hidden_field",
@@ -559,7 +554,6 @@ Reason: My existing bin is damaged
 Quantity: 3',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'Deliver Box lids 55L',
                         quantity          => 3,
                         assisted_yn       => 'No',
@@ -578,7 +572,6 @@ Reason: My existing bin is damaged
 Quantity: 2',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'FO-23',
                         quantity          => 2,
                         assisted_yn       => 'No',
@@ -597,7 +590,6 @@ Reason: My existing bin is damaged
 Quantity: 1',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'RES-140',
                         quantity          => 1,
                         assisted_yn       => 'No',
@@ -616,7 +608,6 @@ Reason: My existing bin is damaged
 Quantity: 1',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'RES-180',
                         quantity          => 1,
                         assisted_yn       => 'No',
@@ -635,7 +626,6 @@ Reason: My existing bin is damaged
 Quantity: 2',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'FO-23',
                         quantity          => 2,
                         assisted_yn       => 'No',
@@ -938,7 +928,7 @@ FixMyStreet::override_config {
             while ( my $report = $rows->next ) {
                 ok $report->confirmed;
                 is $report->state, 'confirmed';
-                is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+                is $report->uprn, '10001', 'UPRN is correct';
                 is $report->get_extra_field_value('assisted_yn'), 'Yes',
                     'assisted_yn is correct';
                 is $report->get_extra_field_value('location_of_containers'),
@@ -1038,7 +1028,7 @@ FixMyStreet::override_config {
                 is $report->category, 'Request new container';
                 like $report->detail, qr/Reason: I need more sacks/,
                     'Default reason provided';
-                is $report->get_extra_field_value('uprn'), '10002', 'UPRN is correct';
+                is $report->uprn, '10002', 'UPRN is correct';
                 is $report->get_extra_field_value('assisted_yn'), 'No',
                     'assisted_yn is correct';
                 is $report->get_extra_field_value('location_of_letterbox'), 'Communal entrance',
@@ -1124,7 +1114,7 @@ FixMyStreet::override_config {
             ok $report->confirmed;
             is $report->state, 'confirmed';
             is $report->category, 'Request container removal';
-            is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+            is $report->uprn, '10001', 'UPRN is correct';
             is $report->get_extra_field_value('assisted_yn'), 'Yes',
                 'assisted_yn is correct';
             is $report->get_extra_field_value('location_of_containers'),

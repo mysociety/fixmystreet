@@ -39,7 +39,6 @@ sub create_contact {
     my ($params, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' }, email => 'test@test.com');
     $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         @extra,
@@ -223,7 +222,7 @@ FixMyStreet::override_config {
             is $report->get_extra_field_value('payment_method'), undef;
             is $report->state, 'confirmed', 'report confirmed';
             is $report->detail, "Address: 1 Example Street, Brent, HA0 5HF";
-            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->uprn, 1000000002;
             is $report->get_extra_field_value('Collection_Date'), '2023-07-01T00:00:00';
 
             is $report->get_extra_field_value('Notes'), "Collection date: Saturday 01 July 2023\n1 x Podback Bag\n1 x Small electricals: Other item under 30x30x30 cm (A widget)\n1 x Tied bag of domestic batteries (min 10 - max 100)\n1 x Toaster";
