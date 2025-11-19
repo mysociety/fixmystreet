@@ -9,19 +9,6 @@
 }
 </style>
 
-[%
-action_map = {
-    add = 'Added'
-    delete = 'Deleted'
-    edit = 'Edited'
-    merge = 'Merged'
-    moderation = 'Moderated'
-    resend = 'Resent'
-    category_change = 'Changed category of'
-    state_change = 'Changed state of'
-}
-%]
-
 [%- date = '' %]
 [% FOREACH moment IN time.keys.sort.reverse %]
     [%- curdate = time.$moment.0.date.strftime('%A, %e %B %Y') -%]
@@ -58,10 +45,10 @@ action_map = {
                 [%~ SET object_summary = item.log.object_summary %]
               [% IF object_summary %]
                 [%~ SET link = tprintf('<a href="%s">%s</a>', item.log.link, object_summary) %]
-                [%- tprintf('%s %s %s', action_map.${item.log.action}, item.log.actual_object_type, mark_safe(link)) %]
+                [%- tprintf('%s %s %s', item.log.action_display, item.log.actual_object_type, mark_safe(link)) %]
                 [% ' – ' _ item.log.reason IF item.log.reason %]
               [% ELSE %]
-                [%- tprintf('%s %s %s', action_map.${item.log.action}, item.log.actual_object_type, item.log.object_id) %]
+                [%- tprintf('%s %s %s', item.log.action_display, item.log.actual_object_type, item.log.object_id) %]
               [% END %]
         [%- END %]
         </li>
