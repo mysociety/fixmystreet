@@ -104,7 +104,10 @@ FixMyStreet::override_config {
             url => 'http://example.org/',
         } },
         waste => { sutton => 1 },
-        waste_features => { sutton => { no_service_residential_address_types => [ 283, 284, 285 ] } },
+        waste_features => { sutton => {
+                no_service_residential_address_types => [ 283, 284, 285 ],
+                request_cancel_enabled => 1,
+            } },
         echo => { sutton => { bulky_service_id => 960 }},
         payment_gateway => { sutton => {
             cc_url => 'http://example.com',
