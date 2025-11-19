@@ -145,12 +145,10 @@ Enabled if 'request_cancel_enabled' is set.
 sub waste_can_cancel_request {
     my ($self, $request_report) = @_;
 
-    my $c = $self->{c};
-    return unless $c->stash->{waste_features}->{request_cancel_enabled};
-
-    return unless $request_report->state ne 'cancelled';
+    return unless $self->waste_show_cancel_request($request_report);
 
     # Staff members and the person who made the request can cancel it.
+    my $c = $self->{c};
     return $c->user->is_superuser ||
         $c->user->belongs_to_body($self->body->id) ||
         $c->user->id == $request_report->user_id;
