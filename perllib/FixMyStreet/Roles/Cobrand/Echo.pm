@@ -290,7 +290,7 @@ sub bin_services_for_address {
             {
                 type => 'request',
                 containers => $containers,
-                report_not_cancelled => 1,
+                report_not_cancelled => 1,  # Don't include requests which have cancellations pending
             }
         )->list };
 
