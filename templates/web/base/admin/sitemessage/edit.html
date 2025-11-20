@@ -11,6 +11,8 @@
 }
 </style>
 
+[% IF body_cobrand.moniker != 'kingston' AND body_cobrand.moniker != 'sutton' %]
+
 <h2>Homepage</h2>
 
 <p>[% loc('This site message will be shown on the homepage.') %]</p>
@@ -32,6 +34,7 @@
         <textarea name="site_message_ooh" class="form-control" rows="10">[% site_message_ooh %]</textarea>
     </p>
     </div>
+[% END %]
 
   [% IF body_cobrand.feature('waste') %]
     <h2>WasteWorks</h2>
@@ -47,6 +50,8 @@
     </p>
     </div>
   [% END %]
+
+[% IF body_cobrand.moniker != 'kingston' AND body_cobrand.moniker != 'sutton' %]
 
     <h2>Reporting page</h2>
 
@@ -66,7 +71,7 @@
     </p>
     </div>
   [% END %]
-
+[% END %]
 <h2>Out of hours periods</h2>
 
 <p>
