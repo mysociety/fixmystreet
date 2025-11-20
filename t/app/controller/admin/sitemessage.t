@@ -8,7 +8,8 @@ my $bexley = $mech->create_body_ok(2494, 'Bexley Council', { cobrand => 'bexley'
 $mech->create_contact_ok(body_id => $bexley->id, category => 'Damaged road', email => "ROAD");
 my $body = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
 my $user = $mech->create_user_ok('user@example.com', name => 'Test User', from_body => $body);
-
+my $sutton = $mech->create_body_ok(2498, 'Sutton Borough Council', { cobrand => 'sutton' });
+my $sutton_user = $mech->create_user_ok('sutton_user@example.com', name => 'Test User', from_body => $sutton);
 $mech->log_in_ok( $user->email );
 
 my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
@@ -60,6 +61,23 @@ FixMyStreet::override_config {
 };
 
 FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'sutton' ],
+    COBRAND_FEATURES => { waste => { sutton => 1 } },
+}, sub {
+    subtest "Sutton don't have Report or Homepage message form elements" => sub     {
+        $sutton_user->user_body_permissions->create({
+            body => $sutton,
+            permission_type => 'emergency_message_edit',
+        });
+        $mech->log_in_ok( $sutton_user->email );
+        $mech->get_ok('/admin/sitemessage');
+        $mech->content_lacks('Reporting page');
+        $mech->content_lacks('Homepage');
+        $mech->content_contains('Waste message');
+    }
+};
+
+FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'oxfordshire' ],
     COBRAND_FEATURES => { waste => { oxfordshire => 1 } },
 }, sub {
@@ -68,7 +86,7 @@ FixMyStreet::override_config {
             body => $body,
             permission_type => 'emergency_message_edit',
         });
-
+        $mech->log_in_ok( $user->email );
         $mech->get_ok('/admin/sitemessage');
         $mech->content_contains('Waste message');
         $mech->submit_form_ok({ with_fields => { site_message_waste => 'Testing site waste message' } });
