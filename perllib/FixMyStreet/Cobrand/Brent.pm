@@ -1366,7 +1366,21 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'request_refuse_call_us' if $choice == $CONTAINER_IDS{rubbish_grey_bin};
+        if ($choice == $CONTAINER_IDS{rubbish_grey_bin}) {
+            my $date = DateTime->now()->subtract( weeks => 2 );
+            my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d');
+            my $c = $self->{c};
+            $data->{outcome} = $c->cobrand->problems->search(
+                {
+                    category => 'Request new container',
+                    title => ['Request new General rubbish bin (grey bin)'],
+                    confirmed => { '>=', $parser->format_datetime($date) },
+                    extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
+                    state => [ 'hidden' ]
+                }
+            )->first ? 1 : 0;
+            return 'refuse_request_intro';
+        };
         return 'replacement';
     };
 }
@@ -1490,6 +1504,121 @@ sub waste_garden_mod_params {
     if ($data->{new_bins} > 0) {
         $c->set_param('Container_Type', 1);
         $c->set_param('Container_Quantity', $data->{new_bins});
+    }
+}
+
+sub waste_request_fields {
+    my ($self, $field, $value, $part) = @_;
+
+    my %fields = (
+        request_property_type => {
+            label => 'What type of property do you live in?',
+            values => {
+                1 => 'House',
+                2 => 'Shared accommodation',
+                3 => 'Flats',
+                4 => 'Flats above shops',
+                5 => 'Other',
+            }
+        },
+        request_property_people => {
+            label => 'How many people live at your property?',
+            values => {
+                '1' => '1',
+                '2' => '2',
+                '3' => '3',
+                '4' => '4',
+                '5' => '5',
+                '6' => '6 or more' ,
+            },
+        },
+        request_property_nappies => {
+            label => 'How many children under 4 or children in nappies live at the property?',
+            values => {
+                '0' => '0',
+                '1' => '1',
+                '2' => '2',
+                '3' => '3',
+                '4' => '4',
+                '5' => '5',
+                '6' => '6 or more' ,
+            },
+        },
+        request_reason_refuse => {
+            label => 'Reason for requesting a refuse bin',
+            values => {
+                1 => 'Bin missing',
+                2 => 'Bin damaged',
+                3 => 'More capacity',
+                4 => 'Reduce capacity',
+            }
+        },
+        request_reason_refuse_size => {
+            label => 'What size is the current general waste bin?',
+            values => {
+                1 => '140l',
+                2 => '240l (same size as blue-lidded recycling bin)',
+                3 => 'N/A no bin at property',
+            }
+        },
+        request_reason_refuse_number => {
+            label => 'How many general waste bins are currently at the property?',
+            values => {
+                '0' => '0',
+                '1' => '1',
+                '2' => '2',
+                '3' => '3',
+                '4' => '4',
+            }
+        },
+    );
+
+    if ($part) {
+        return $fields{$field}->{$part}->{$value} || '';
+    } else {
+        return $fields{$field}->{$value} || '';
+    }
+}
+
+sub waste_post_report_creation {
+    my ($self, $report, $data) = @_;
+
+    if ($report->title =~ /Request new General rubbish bin \(grey bin\)/) {
+        $report->send_state('skipped');
+        $report->state('hidden');
+
+        my $result = calculate_refuse_application_criteria($data);
+
+        if ($result) {
+            my $to = $self->feature('waste_request_refuse_container_email');
+            my %extra = map { $_ => $self->waste_request_fields($_, $data->{$_}, 'values') || $data->{$_} } grep { $_ =~ /^request_/ } keys %$data;
+            # 'name' seems to be overridden in the template by something else so needs renaming, but renaming
+            # everything for consistency
+            for my $field ('email', 'name', 'phone') {
+                $extra{"request_$field"} = $data->{$field} || '';
+            };
+            $extra{request_address} = $self->{c}->stash->{property}->{address};
+            $self->{c}->send_email( 'waste/container_request.txt', { to => $to, %extra });
+            $report->detail('Request forwarded to Brent Council by email');
+        } else {
+            $self->{c}->stash->{brent_request_automatic} = 1;
+            $report->detail('Request automatically calculated');
+        }
+        $report->update;
+    }
+};
+
+sub calculate_refuse_application_criteria {
+    my ($data) = @_;
+
+    if (
+        $data->{request_reason_refuse} == 3
+        && ($data->{request_property_people} != 6 && $data->{request_property_nappies} == 0)
+    )
+    {
+        return;
+    } else {
+        return 1;
     }
 }
 
