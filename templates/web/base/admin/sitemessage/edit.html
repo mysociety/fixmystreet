@@ -11,6 +11,8 @@
 }
 </style>
 
+[% IF !body_cobrand.wasteworks_only %]
+
 <h2>Homepage</h2>
 
 <p>[% loc('This site message will be shown on the homepage.') %]</p>
@@ -32,8 +34,14 @@
         <textarea name="site_message_ooh" class="form-control" rows="10">[% site_message_ooh %]</textarea>
     </p>
     </div>
+[% END %]
 
   [% IF body_cobrand.feature('waste') %]
+    [% IF body_cobrand.wasteworks_only %]
+      <form method="post"
+      accept-charset="utf-8"
+      class="validate">
+    [% END %]
     <h2>WasteWorks</h2>
     <p>The waste message will be shown on all waste pages.</p>
     <div class="two-col">
@@ -47,6 +55,8 @@
     </p>
     </div>
   [% END %]
+
+[% IF !body_cobrand.wasteworks_only %]
 
     <h2>Reporting page</h2>
 
@@ -66,7 +76,7 @@
     </p>
     </div>
   [% END %]
-
+[% END %]
 <h2>Out of hours periods</h2>
 
 <p>
