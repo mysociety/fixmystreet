@@ -21,4 +21,11 @@ sub council_area { return 'Dumfries and Galloway'; }
 sub council_name { return 'Dumfries and Galloway'; }
 sub council_url { return 'dumfriesandgalloway'; }
 
+=item * Dumfries use their own privacy policy
+
+=cut
+
+sub privacy_policy_url { 'https://www.dumfriesandgalloway.gov.uk/sites/default/files/2025-03/privacy-notice-customer-services-centres-dumfries-and-galloway-council.pdf' }
+
+
 1;
