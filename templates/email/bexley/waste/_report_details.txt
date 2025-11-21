@@ -12,10 +12,16 @@
     detail = report.title.remove('Request removal of ');
   ELSIF is_request_enquiry;
     key = 'Bins requested';
+  ELSIF is_assisted_request;
+    key = 'Request for an assisted collection';
   END;
 %]
+
+[% IF is_assisted_request %]
+[% cobrand.waste_format_assistance_results(report, template.name) %]
+[% ELSE %]
 [% key %]:
 [% detail %]
-
+[% END %]
 Address:
 [% address %]

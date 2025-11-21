@@ -3,6 +3,8 @@
   is_delivery_request = report.category == 'Request new container';
   is_removal_request = report.category == 'Request container removal';
   is_container_request = is_delivery_request || is_removal_request;
+  is_assisted_request = report.category == 'Request assisted collection';
+  is_assisted_removal = report.category == 'Assisted collection remove';
 %]
 
 [% IF is_missed_collection %]
@@ -85,5 +87,29 @@
   </p>
 
   <br>
+
+[% ELSIF is_assisted_request %]
+
+    <h2>Address:</h2>
+    <p>[% property.address %]</p>
+
+    <h2>What happens next?</h2>
+
+    <p>Your request has been sent to the Environmental Services Team for approval.
+    A member of staff will contact you within 5 working days to discuss your request.</p>
+
+    <p>Please be aware that not all assisted collection requests are approved.
+    Your circumstances will be fully considered before a decision is made.</p>
+
+[% ELSIF is_assisted_removal %]
+
+    <h2>Address:</h2>
+    <p>[% property.address %]</p>
+
+    <h2>What happens next?</h2>
+
+    <p>Your request to remove an assisted collection will be sent to our waste collection contactor to be actioned.</p>
+
+    <p>Please ensure that your bins are left for collection at the front of your property going forwards.</p>
 
 [% END %]
