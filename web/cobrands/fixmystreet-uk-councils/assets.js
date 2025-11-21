@@ -1216,6 +1216,12 @@ fixmystreet.assets.merton.streetlight_asset_not_found = function() {
     fixmystreet.assets.named_select_action_not_found.call(this);
 };
 
+fixmystreet.assets.merton.drain_selected_message = function(asset) {
+    var id = asset.attributes[this.fixmystreet.feature_code] || '';
+    var out = 'You have selected drain <b>' + id + '</b>. Choose a different drain if necessary. If the drain you wish to report does not show on the map then please report as an Unmapped Drain or Gully problem.';
+    return out;
+};
+
 merton_style_default_green = new OpenLayers.Style({
     fillColor: "#55BB00",
     strokeColor: "#000000",
