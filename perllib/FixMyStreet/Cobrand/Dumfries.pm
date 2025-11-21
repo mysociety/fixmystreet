@@ -32,6 +32,13 @@ sub enter_postcode_text {
     'Enter a Dumfries and Galloway post code or street name and area, or a reference number of a problem previously reported'
 }
 
+=item * Dumfries use their own privacy policy
+
+=cut
+
+sub privacy_policy_url { 'https://www.dumfriesandgalloway.gov.uk/sites/default/files/2025-03/privacy-notice-customer-services-centres-dumfries-and-galloway-council.pdf' }
+
+
 =head2 open311_get_update_munging
 
 Dumfries want certain fields shown in updates on FMS.
