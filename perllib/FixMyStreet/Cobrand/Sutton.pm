@@ -687,10 +687,6 @@ sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
     my $c = $self->{c};
 
-    # Escalations have no notes
-    $data->{category} = $c->get_param('category') unless $data->{category};
-    $data->{service_id} = $c->get_param('service_id') unless $data->{service_id};
-
     my $address = $c->stash->{property}->{address};
 
     $data->{title} = _enquiry_nice_title($data->{category});
