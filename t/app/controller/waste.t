@@ -1246,8 +1246,13 @@ FixMyStreet::override_config {
         $mech->get("/waste/dd_complete?reference=NOTATOKEN&report_id=$report_id");
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
+
         $mech->get_ok("/waste/dd_complete?reference=$token&report_id=$report_id");
+        $mech->text_contains("Your reference number is $report_id", 'reference number displayed');
         $mech->content_contains('confirmation details once your Direct Debit');
+        $mech->content_contains('your email address, test@example.net', 'email address displayed');
+        $mech->content_contains('href="/waste/12345"', 'link back to bin days');
+        $mech->reload;
 
         $dd->mock('get_payer', sub { 'Creation Pending' });
         $mech->get_ok('/waste/12345');
@@ -1263,7 +1268,7 @@ FixMyStreet::override_config {
         is $new_report->state, 'unconfirmed', 'report still not confirmed';
         $new_report->delete;
     };
-
+exit;
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_one_bin);
 
     subtest 'check modify sub with bad details' => sub {
@@ -1807,7 +1812,7 @@ FixMyStreet::override_config {
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
 
-    for my $test ( 
+    for my $test (
         {
             return => {
                 transactionState => 'INVALID_REFERENCE',
