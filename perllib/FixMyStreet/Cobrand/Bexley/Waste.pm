@@ -22,6 +22,7 @@ use DBI;
 use FixMyStreet;
 use FixMyStreet::App::Form::Waste::Request::Bexley;
 use FixMyStreet::Template;
+use JSON::MaybeXS;
 use Integrations::Whitespace;
 use Lingua::EN::Inflect qw( NUMWORDS );
 use Sort::Key::Natural qw(natkeysort_inplace);
@@ -523,6 +524,20 @@ sub bin_services_for_address {
     }
 
     @site_services_filtered = $self->service_sort(@site_services_filtered);
+
+    # Assisted user
+    my $c = $self->{c};
+    if ($c->user_exists) {
+        my $report = $self->problems->search({
+            category => 'Request assisted collection',
+            user_id => $c->user->id,
+            state => 'fixed - council', # Successful request
+            extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
+        })->order_by('-id')->first;
+        if ($report) {
+            $c->stash->{user_requested_assisted} = 1;
+        }
+    }
 
     # Garden subscription.
     # This call removes Whitespace service if there is no contract in Agile.

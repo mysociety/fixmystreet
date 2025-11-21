@@ -1111,6 +1111,11 @@ sub enquiry : Chained('property') : Args(0) {
     $c->detach('/auth/redirect') if $staff_form && !$staff;
     $c->stash->{staff_form} = $staff_form;
 
+    # Bexley special for assisted collection removal
+    if ($c->cobrand->moniker eq 'bexley' && $category eq 'Assisted collection remove') {
+        $c->detach('/auth/redirect') unless $staff || $c->stash->{user_requested_assisted};
+    }
+
     # If the contact has no extra fields (e.g. Peterborough) then skip to the
     # "about you" page instead of showing an empty first page.
     $c->stash->{first_page} = @$field_list ? 'enquiry' : 'about_you';
