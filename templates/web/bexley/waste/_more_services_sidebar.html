@@ -41,4 +41,10 @@
         <li>This property is not set up for assisted collections.</li>
       [% END %]
     </ul>
+[% ELSIF property.has_assisted AND user_requested_assisted %]
+    <h3>Assisted collection</h3>
+    <ul>
+        <li>This property is set up for assisted collections.</li>
+        <li><a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Assisted+collection+remove">Remove assisted collection</a></li>
+    </ul>
 [% END %]

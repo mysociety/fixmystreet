@@ -344,6 +344,18 @@ FixMyStreet::override_config {
         is $open311_report->get_extra_field_value('assisted_location'), 'Behind the back gate';
     };
 
+    subtest 'Remove assisted collection flow, requester' => sub {
+        my $report = FixMyStreet::DB->resultset('Problem')->search( { category => 'Request assisted collection' } )->order_by('-id')->first;
+        my $user = $mech->log_in_ok($report->user->email);
+        $report->update_extra_field({ name => 'uprn', value => '10001' });
+        $report->update({ user => $user }); # Because of uniqueify
+        $mech->get_ok('/waste/10001');
+        $mech->follow_link_ok({ text => 'Remove assisted collection' });
+        $mech->submit_form_ok({ with_fields => { name => 'Test McTest', email => 'test@example.org' } });
+        $mech->submit_form_ok({ with_fields => { submit => "Submit" } });;
+        $mech->content_contains('Your enquiry has been submitted');
+    };
+
     subtest 'Request assisted collection denial' => sub {
         &_delete_all_assisted_collection_reports;
         $mech->log_out_ok;
@@ -389,6 +401,8 @@ FixMyStreet::override_config {
         $mech->log_out_ok;
         $mech->get_ok('/waste/10001');
         $mech->content_lacks('Remove assisted collection');
+        $mech->get_ok('/waste/10001/enquiry?category=Assisted+collection+remove');
+        is $mech->uri->path, '/auth';
     };
 
     subtest 'Remove assisted collection flow, staff' => sub {
