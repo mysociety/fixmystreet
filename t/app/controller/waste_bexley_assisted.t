@@ -22,6 +22,13 @@ my $assisted_collection = $mech->create_contact_ok(
     group => ['Waste'],
 );
 
+$body->add_to_response_templates({
+    title => 'Assisted denial',
+    text => 'Has been denied :-(',
+    auto_response => 1,
+    state => 'closed',
+});
+
 $assisted_collection->set_extra_fields(
     {
         code => "uprn",
@@ -226,7 +233,7 @@ FixMyStreet::override_config {
         subtest 'Customer emails have correct data' => sub {
             for my $email ($customer_text, $customer_html) {
                 like $email, qr/Thank you for your request for an assisted collection/;
-                like $email, qr/We will look into your request and get back to you as soon as possible/;
+                like $email, qr/Your request has been sent to the Environmental Services Team for approval/;
                 like $email, qr/If you need to contact us about this enquiry, please quote your reference number/;
                 unlike $email, qr/Staff notes/, "Staff notes field not included";
             }
@@ -381,7 +388,7 @@ FixMyStreet::override_config {
         my $email = $mech->get_email;
         is $email->header('to'), 'gg@example.com', "Update sent to customer";
         my $email_html = $mech->get_html_body_from_email($email);
-        like $email_html, qr/Your request for an assisted collection has been denied/, 'Denial update text sent to customer';
+        like $email_html, qr/Has been denied :-\(/, 'Denial update text sent to customer';
 
         $report->discard_changes;
         is $report->state, 'closed', 'Request report has been closed';

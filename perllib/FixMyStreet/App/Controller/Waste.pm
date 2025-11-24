@@ -864,6 +864,8 @@ sub process_assisted_data : Private {
 sub add_update_to_assisted_request : Private {
     my ($self, $c, $response) = @_;
 
+    my $report = $c->stash->{assisted_request_report};
+
     my $text;
     my $status;
 
@@ -877,28 +879,22 @@ sub add_update_to_assisted_request : Private {
         return;
     };
 
-    my $uprn = $c->stash->{property}{uprn};
+    my $template = $report->response_template_for($status, 'confirmed', '', '');
+    $text = $template->text if $template;
 
-    my $request_report = $c->stash->{assisted_request_report};
+    my $comment = $report->add_to_comments({
+        text => $text,
+        state => 'confirmed',
+        problem_state => $status,
+        user => $c->stash->{cobrand}->body->comment_user,
+        confirmed => \'current_timestamp',
+        send_state => 'processed',
+    });
 
-    my $comment = FixMyStreet::DB->resultset('Comment')->new(
-            {
-                problem => $request_report,
-                text => $text,
-                state => 'confirmed',
-                problem_state => $status,
-                user => $c->stash->{cobrand}->body->comment_user,
-                confirmed => \'current_timestamp'
-            }
-        );
-    $comment->insert;
-
-    $request_report->update(
-        {
-            state => $status,
-            lastupdate => \'current_timestamp',
-        }
-    );
+    $report->update({
+        state => $status,
+        lastupdate => \'current_timestamp',
+    });
 }
 
 sub problem : Chained('property') : Args(0) {
@@ -1217,6 +1213,11 @@ sub add_report : Private {
 
     # We want to take what has been entered in the form, even if someone is logged in
     $c->stash->{ignore_logged_in_user} = 1;
+
+    # We don't want reporter updates on assisted collection adds, tells us nothing
+    if ($data->{category} eq 'Assisted collection add') {
+        $c->stash->{no_reporter_alert} = 1;
+    }
 
     if ($c->user_exists) {
         if ($c->user->from_body && !$data->{email} && !$data->{phone}) {

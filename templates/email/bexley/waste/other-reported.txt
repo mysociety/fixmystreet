@@ -19,7 +19,9 @@ If you need to contact us about this report, please quote your reference number.
 We will look into your enquiry and get back to you as soon as possible.
 If you need to contact us about this enquiry, please quote your reference number.
 [% ELSIF is_assisted_request %]
-We will look into your request and get back to you as soon as possible.
+Your request has been sent to the Environmental Services Team for approval.
+A member of staff will contact you within 5 working days to discuss your request.
+Please continue to place your bins out for collection at the front of your property until your request is confirmed.
 If you need to contact us about this enquiry, please quote your reference number.
 [% END %]
 
