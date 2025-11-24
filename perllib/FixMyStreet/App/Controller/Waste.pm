@@ -1224,8 +1224,6 @@ sub add_report : Private {
             $c->set_param('form_as', 'anonymous_user');
         } elsif ($c->user->from_body && $c->user->email ne ($data->{email} || '')) {
             $c->set_param('form_as', 'another_user');
-        } elsif ($c->user->from_body) {
-            $c->set_param('form_as', 'body');
         }
         $c->set_param('username', $data->{email} || $data->{phone});
     } else {
