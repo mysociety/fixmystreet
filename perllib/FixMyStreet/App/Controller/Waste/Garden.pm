@@ -659,9 +659,19 @@ sub direct_debit_cancel_sub : Private {
     my $i = $c->cobrand->get_dd_integration;
 
     $c->stash->{payment_method} = 'direct_debit';
+
+    # For Bexley legacy subscriptions without stored contract ID, look up by UPRN
+    my @extra_args;
+    if ($c->cobrand->moniker eq 'bexley' && !$p->get_extra_metadata('direct_debit_contract_id')) {
+        if (my $legacy_ids = $c->cobrand->waste_get_legacy_contract_ids($c->stash->{orig_sub})) {
+            push @extra_args, contract_ids => $legacy_ids;
+        }
+    }
+
     my $update_ref = $i->cancel_plan( {
         payer_reference => $ref,
         report => $p,
+        @extra_args,
     } );
 
     # Bexley can have immediate cancellation

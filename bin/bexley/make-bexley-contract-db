@@ -1,0 +1,130 @@
+#!/usr/bin/env perl
+
+=head1 NAME
+
+make-bexley-contract-db
+
+=head1 DESCRIPTION
+
+Creates a SQLite database for UPRN to contract ID lookups for Bexley
+pre-WasteWorks garden waste subscriptions.
+
+The input CSV should have columns: UPRN, Bank Reference, Contract ID
+
+Rows with missing UPRNs will be skipped. Multiple contracts per UPRN are
+allowed (e.g., if a property subscribed multiple times over the years).
+
+=head1 USAGE
+
+    bin/bexley/make-bexley-contract-db --csv=/path/to/contracts.csv
+
+=cut
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use BexleyContracts;
+use DBI;
+use FixMyStreet;
+use File::Copy;
+use File::Temp;
+use Text::CSV;
+use Getopt::Long::Descriptive;
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['csv=s',   "path to contracts CSV file", { required => 1 }],
+    ['verbose|v', "verbose output"],
+    ['help|h',  "print usage message and exit"],
+);
+print($usage->text), exit if $opts->help;
+
+open my $fh, '<:encoding(utf8)', $opts->csv
+    or die "Cannot open CSV file: $!";
+
+my $csv = Text::CSV->new( { binary => 1, auto_diag => 1 } );
+
+my $header = $csv->getline($fh);
+die "CSV must have 'UPRN' column\n"
+    unless grep { $_ eq 'UPRN' } @$header;
+die "CSV must have 'Contract ID' column\n"
+    unless grep { $_ eq 'Contract ID' } @$header;
+die "CSV must have 'Bank Reference' column\n"
+    unless grep { $_ eq 'Bank Reference' } @$header;
+
+$csv->column_names(@$header);
+
+my $db_file = File::Temp->new();
+my $db = DBI->connect( 'dbi:SQLite:dbname=' . $db_file,
+    undef, undef, { RaiseError => 1, AutoCommit => 1 } );
+
+verbose('Creating contracts table...');
+create_table();
+verbose('Table created');
+
+my $insert = $db->prepare(
+    'INSERT INTO contracts (uprn, contract_id, bank_reference) VALUES (?,?,?)'
+);
+
+verbose('Importing contract data...');
+my $count = 0;
+my $skipped = 0;
+
+$db->begin_work;
+
+while (my $row = $csv->getline_hr($fh)) {
+    my $uprn = $row->{UPRN};
+    my $contract_id = $row->{'Contract ID'};
+    my $bank_ref = $row->{'Bank Reference'};
+
+    # Skip rows with missing UPRN
+    if (!$uprn) {
+        $skipped++;
+        next;
+    }
+
+    $insert->execute($uprn, $contract_id, $bank_ref);
+    $count++;
+
+    verbose("Imported $count contracts...") if $count % 1000 == 0;
+}
+
+$db->commit;
+
+verbose("Imported $count contracts");
+verbose("Skipped $skipped rows with missing UPRN") if $skipped > 0;
+
+# Create index for fast UPRN lookups
+verbose('Creating index on UPRN...');
+$db->do('CREATE INDEX idx_contracts_uprn ON contracts(uprn)');
+verbose('Index created');
+
+$db->disconnect;
+
+verbose('Moving new database into place');
+move($db_file, BexleyContracts::database_file)
+    or die "Failed to move database into place: $!";
+
+verbose('Done!');
+
+sub create_table {
+    $db->do(<<'SQL') or die;
+    CREATE TABLE contracts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        uprn INTEGER NOT NULL,
+        contract_id TEXT NOT NULL,
+        bank_reference TEXT
+    )
+SQL
+}
+
+sub verbose {
+    say shift if $opts->verbose;
+}
