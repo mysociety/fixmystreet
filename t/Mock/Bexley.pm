@@ -20,11 +20,35 @@ $bexley_mocks{addresses} = Test::MockModule->new('BexleyAddresses');
 # We don't actually read from the file, so just put anything that is a valid path
 $bexley_mocks{addresses}->mock( 'database_file', '/' );
 
+$bexley_mocks{contracts} = Test::MockModule->new('BexleyContracts');
+# We don't actually read from the file, so just put anything that is a valid path
+$bexley_mocks{contracts}->mock( 'database_file', '/' );
+
 $bexley_mocks{dbi} = Test::MockModule->new('DBI');
 $bexley_mocks{dbi}->mock( 'connect', sub {
     my $dbh = Test::MockObject->new;
     $dbh->mock( 'selectall_arrayref', sub {
-        my ( undef, undef, undef, $postcode ) = @_;
+        my ( undef, $sql, undef, @params ) = @_;
+
+        # Check if this is a contracts query
+        if ( $sql =~ /SELECT contract_id/ ) {
+            my $uprn = $params[0];
+            # Return test contract IDs for test UPRNs
+            if ( $uprn == 10001 ) {
+                return [
+                    { contract_id => 'TEST-CONTRACT-10001' },
+                ];
+            } elsif ( $uprn == 10002 ) {
+                return [
+                    { contract_id => 'TEST-CONTRACT-10002-1' },
+                    { contract_id => 'TEST-CONTRACT-10002-2' },
+                ];
+            }
+            return [];
+        }
+
+        # Otherwise it's an address query
+        my $postcode = $params[0];
 
         if ( $postcode eq 'DA13LD' ) {
             return [

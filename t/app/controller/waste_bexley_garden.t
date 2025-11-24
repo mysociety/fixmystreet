@@ -2518,6 +2518,112 @@ FixMyStreet::override_config {
         $access_mock->unmock_all;
     };
 
+    subtest 'Test direct debit cancellation with legacy contract lookup' => sub {
+        $mech->delete_problems_for_body($body->id);
+        $mech->clear_emails_ok;
+        $mech->log_in_ok($staff_user->email);
+
+        my $agile_contract_id = 'AGILE_LEGACY_CONTRACT';
+
+        # Legacy pre-WasteWorks subscription without direct_debit_contract_id
+        my ($new_sub_report) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'Garden Subscription - New',
+            {
+                category => 'Garden Subscription',
+                title => 'Garden Subscription - New',
+                external_id => "Agile-$agile_contract_id",
+                user => $user,
+            },
+        );
+        $new_sub_report->set_extra_fields(
+            { name => 'uprn', value => '10001' },
+            { name => 'payment_method', value => 'direct_debit' },
+        );
+        $new_sub_report->update;
+        FixMyStreet::Script::Reports::send();
+
+        $whitespace_mock->mock(
+            'GetSiteCollections',
+            sub {
+                [{
+                    SiteServiceID => 1,
+                    ServiceItemDescription => 'Garden waste',
+                    ServiceItemName => 'GA-140',
+                    ServiceName => 'Brown Wheelie Bin',
+                    NextCollectionDate => '2024-02-07T00:00:00',
+                    SiteServiceValidFrom => '2024-01-01T00:00:00',
+                    SiteServiceValidTo => '0001-01-01T00:00:00',
+                    RoundSchedule => 'RND-1 Mon',
+                }];
+            }
+        );
+
+        $agile_mock->mock( 'CustomerSearch', sub {
+            my ($self, $uprn) = @_;
+            return {} unless $uprn eq '10001';
+            return {
+                Customers => [
+                    {
+                        CustomerExternalReference => 'CUSTOMER_LEGACY',
+                        CustomerReference => 'GWIT-LEGACY',
+                        Firstname => 'Legacy',
+                        Surname => 'User',
+                        CustomertStatus => 'ACTIVATED',
+                        ServiceContracts => [
+                            {
+                                EndDate => '12/12/2025 12:21',
+                                ServiceContractStatus => 'ACTIVE',
+                                UPRN => '10001',
+                                Reference => $agile_contract_id,
+                                WasteContainerQuantity => 1,
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Direct Debit' } ],
+                            },
+                        ],
+                    },
+                ],
+            };
+        });
+
+        my @archived_contract_ids;
+        $access_mock->mock('archive_contract', sub {
+            my ($self, $contract_id) = @_;
+            push @archived_contract_ids, $contract_id;
+            return {};
+        });
+
+        $mech->get_ok('/waste/10001');
+        like $mech->content, qr/waste-service-subtitle.*Garden waste/s, 'Garden waste service is shown';
+
+        $mech->get_ok('/waste/10001/garden_cancel');
+        $mech->submit_form_ok({
+            with_fields => {
+                has_reference => 'Yes',
+                customer_reference => 'GWIT-LEGACY',
+            },
+        });
+        $mech->submit_form_ok({
+            with_fields => {
+                reason => 'Other',
+                reason_further_details => 'Legacy cancellation test',
+            },
+        });
+        $mech->submit_form_ok({
+            with_fields => {
+                confirm => 1,
+            },
+        });
+
+        $mech->content_contains('subscription has been cancelled');
+
+        # Mock in t/Mock/Bexley.pm returns 'TEST-CONTRACT-10001' for UPRN 10001
+        is scalar(@archived_contract_ids), 1, 'archive_contract was called once';
+        is $archived_contract_ids[0], 'TEST-CONTRACT-10001', 'legacy contract_id from database was used';
+
+        $access_mock->unmock_all;
+    };
+
     subtest 'renew garden subscription with direct debit that was previously paid by credit card' => sub {
         $mech->delete_problems_for_body($body->id);
 
