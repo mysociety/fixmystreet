@@ -1383,10 +1383,15 @@ sub waste_request_form_first_next {
                     title => ['Request new General rubbish bin (grey bin)'],
                     confirmed => { '>=', $parser->format_datetime($date) },
                     extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
-                    state => [ 'hidden' ]
                 }
-            )->first ? 1 : 0;
-            return 'refuse_request_intro';
+            )->first;
+        };
+        if ($data->{outcome}) {
+            if ($data->{outcome}->get_extra_field_value('request_referral')) {
+                $data->{outcome} = 'referral';
+            } else {
+                $data->{outcome} = 'capacity';
+            }
         };
         return 'replacement';
     };

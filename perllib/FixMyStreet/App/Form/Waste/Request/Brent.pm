@@ -66,6 +66,7 @@ has_page replacement => (
         my $reason = $data->{request_reason};
 
         if ($choice == $CONTAINER_GREY_BIN && $reason eq 'extra') {
+            return 'request_extra_refusal' if $data->{outcome};
             return 'request_refuse_container';
         }
         return 'about_you' if $choice == $CONTAINER_CLEAR_SACK;

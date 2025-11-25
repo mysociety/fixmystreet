@@ -6,7 +6,7 @@
 <h1 class="govuk-heading-xl">Request new container</h1>
 
 <p class="govuk-body">
-[% IF form.saved_data.outcome %]
+[% IF form.saved_data.outcome AND form.saved_data.outcome == 'capacity' %]
     Your property meets current general waste bin capacity requirements.
 [% ELSE %]
     We are unable to complete your request because our records show a similar container was recently ordered to this address.
