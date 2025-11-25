@@ -50,6 +50,8 @@ my $highways = $mech->create_body_ok(164186, 'National Highways', { send_method 
 
 $mech->create_contact_ok(email => 'testareaemail@nh', body_id => $highways->id, category => 'Pothole (NH)');
 
+my $superuser = $mech->create_user_ok('super@example.com', name => 'Admin', from_body => $highways, password => 'password', is_superuser => 1);
+
 my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $highways, password => 'password');
 
 $staffuser->alerts->create({
@@ -223,6 +225,16 @@ FixMyStreet::override_config {
     };
 };
 
+subtest 'Dashboard can be accessed by superuser' => sub {
+    $mech->log_in_ok( $superuser->email );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'highwaysengland',
+    }, sub {
+        $mech->get_ok('/dashboard');
+    };
+};
+
 subtest 'Dashboard CSV extra columns' => sub {
     $mech->delete_problems_for_body($highways->id);
     my ($problem1, $problem2) = $mech->create_problems_for_body(2, $highways->id, 'Title');
@@ -312,8 +324,6 @@ FixMyStreet::override_config {
     };
 
     subtest 'Categories must end with (NH)' => sub {
-        my $superuser = $mech->create_user_ok('super@example.com', name => 'Admin',
-            from_body => $highways, password => 'password', is_superuser => 1);
         $mech->log_in_ok( $superuser->email );
 
         my $expected_error = 'Category must end with (NH).';
