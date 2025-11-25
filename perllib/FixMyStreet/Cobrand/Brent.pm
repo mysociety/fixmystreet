@@ -1357,6 +1357,13 @@ sub request_referral {
     # return 1 if ($data->{contamination_reports} || 0) >= 3; # Will be present on missing only
     return 1 if ($data->{how_long_lived} || '') eq '3more'; # Will be present on new build only
     return 1 if $data->{ordered_previously};
+
+    if (
+        (($data->{'container-choice'} && $data->{'container-choice'} == $CONTAINER_IDS{rubbish_grey_bin} && $data->{request_reason} eq 'extra')
+        || $data->{'container-' . $CONTAINER_IDS{rubbish_grey_bin}} && $data->{request_reason} eq 'extra')
+        && ($data->{request_property_people} == 6 || $data->{request_property_nappies} eq 'Yes')
+    )
+    { return 1 };
 }
 
 sub waste_request_form_first_title { 'Which container do you need?' }
@@ -1511,44 +1518,21 @@ sub waste_garden_mod_params {
 sub waste_post_report_creation {
     my ($self, $report, $data) = @_;
 
-    if ($report->title =~ /Request new General rubbish bin \(grey bin\)/) {
-        $report->send_state('skipped');
-        $report->state('hidden');
+    if (
+        $report->title =~ /Request new General rubbish bin \(grey bin\)/
+        && $data->{request_reason} eq 'extra'
+        ) {
 
-        my $result = calculate_refuse_application_criteria($data);
-
-        if ($result) {
-            my $to = $self->feature('waste_request_refuse_container_email');
-            my %extra = map { $_ => $self->waste_request_fields($_, $data->{$_}, 'values') || $data->{$_} } grep { $_ =~ /^request_/ } keys %$data;
-            # 'name' seems to be overridden in the template by something else so needs renaming, but renaming
-            # everything for consistency
-            for my $field ('email', 'name', 'phone') {
-                $extra{"request_$field"} = $data->{$field} || '';
-            };
-            $extra{request_address} = $self->{c}->stash->{property}->{address};
-            $self->{c}->send_email( 'waste/container_request.txt', { to => $to, %extra });
+        if ($report->get_extra_field_value('request_referral')) {
             $report->detail('Request forwarded to Brent Council by email');
         } else {
             $self->{c}->stash->{brent_request_automatic} = 1;
             $report->detail('Request automatically calculated');
+            $report->state('fixed - council');
         }
         $report->update;
     }
 };
-
-sub calculate_refuse_application_criteria {
-    my ($data) = @_;
-
-    if (
-        $data->{request_reason_refuse} == 3
-        && ($data->{request_property_people} != 6 && $data->{request_property_nappies} == 0)
-    )
-    {
-        return;
-    } else {
-        return 1;
-    }
-}
 
 =item * Uses custom text for the title field for new reports.
 
