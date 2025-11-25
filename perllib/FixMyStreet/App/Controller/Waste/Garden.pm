@@ -14,6 +14,7 @@ use FixMyStreet::App::Form::Waste::Garden::Transfer;
 use WasteWorks::Costs;
 use Hash::Util qw(lock_hash);
 use JSON::MaybeXS;
+use MIME::Base64;
 
 has feature => (
     is => 'ro',
@@ -587,14 +588,12 @@ sub direct_debit_complete : Path('/waste/dd_complete') : Args(0) {
     $c->forward('/waste/check_payment_redirect_id', [ $id, $token]);
     $c->cobrand->call_hook( 'garden_waste_dd_complete' => $c->stash->{report} );
 
-    $c->stash->{title} = "Direct Debit mandate";
-
     $c->send_email('waste/direct_debit_in_progress.txt', {
         to => [ [ $c->stash->{report}->user->email, $c->stash->{report}->name ] ],
         sent_confirm_id_ref => $c->stash->{report}->id,
     } );
 
-    $c->stash->{template} = 'waste/dd_complete.html';
+    $c->res->redirect( $c->stash->{report}->confirmation_url($c) );
 }
 
 sub direct_debit_cancelled : Path('/waste/dd_cancelled') : Args(0) {
