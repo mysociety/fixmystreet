@@ -1291,7 +1291,7 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
 
-    for (qw(how_long_lived contamination_reports ordered_previously)) {
+    for (qw(how_long_lived contamination_reports ordered_previously request_property_people request_property_nappies)) {
         $c->set_param("request_$_", $data->{$_} || '');
     }
     if (request_referral($id, $data)) {
@@ -1507,78 +1507,6 @@ sub waste_garden_mod_params {
     }
 }
 
-sub waste_request_fields {
-    my ($self, $field, $value, $part) = @_;
-
-    my %fields = (
-        request_property_type => {
-            label => 'What type of property do you live in?',
-            values => {
-                1 => 'House',
-                2 => 'Shared accommodation',
-                3 => 'Flats',
-                4 => 'Flats above shops',
-                5 => 'Other',
-            }
-        },
-        request_property_people => {
-            label => 'How many people live at your property?',
-            values => {
-                '1' => '1',
-                '2' => '2',
-                '3' => '3',
-                '4' => '4',
-                '5' => '5',
-                '6' => '6 or more' ,
-            },
-        },
-        request_property_nappies => {
-            label => 'How many children under 4 or children in nappies live at the property?',
-            values => {
-                '0' => '0',
-                '1' => '1',
-                '2' => '2',
-                '3' => '3',
-                '4' => '4',
-                '5' => '5',
-                '6' => '6 or more' ,
-            },
-        },
-        request_reason_refuse => {
-            label => 'Reason for requesting a refuse bin',
-            values => {
-                1 => 'Bin missing',
-                2 => 'Bin damaged',
-                3 => 'More capacity',
-                4 => 'Reduce capacity',
-            }
-        },
-        request_reason_refuse_size => {
-            label => 'What size is the current general waste bin?',
-            values => {
-                1 => '140l',
-                2 => '240l (same size as blue-lidded recycling bin)',
-                3 => 'N/A no bin at property',
-            }
-        },
-        request_reason_refuse_number => {
-            label => 'How many general waste bins are currently at the property?',
-            values => {
-                '0' => '0',
-                '1' => '1',
-                '2' => '2',
-                '3' => '3',
-                '4' => '4',
-            }
-        },
-    );
-
-    if ($part) {
-        return $fields{$field}->{$part}->{$value} || '';
-    } else {
-        return $fields{$field}->{$value} || '';
-    }
-}
 
 sub waste_post_report_creation {
     my ($self, $report, $data) = @_;

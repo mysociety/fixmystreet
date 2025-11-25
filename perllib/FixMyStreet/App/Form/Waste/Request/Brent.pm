@@ -52,18 +52,6 @@ has_page about_you => (
     next => 'summary',
 );
 
-has_page refuse_request_intro => (
-    intro => 'refuse_call_us.html',
-    title => 'Request additional container',
-    fields => ['continue_request_container'],
-    next => sub {
-        my $data = shift;
-        return $data->{outcome}
-            ? 'request_extra_refusal'
-            : 'request_refuse_container'
-    },
-);
-
 has_page request_extra_refusal => (
     fields => [],
     template => 'waste/refuse_extra_container.html',
@@ -77,6 +65,9 @@ has_page replacement => (
         my $choice = $data->{"container-choice"};
         my $reason = $data->{request_reason};
 
+        if ($choice == $CONTAINER_GREY_BIN && $reason eq 'extra') {
+            return 'request_refuse_container';
+        }
         return 'about_you' if $choice == $CONTAINER_CLEAR_SACK;
         return 'how_long_lived' if $reason eq 'new_build';
         return 'request_extra_refusal' if $reason eq 'extra' && $data->{ordered_previously};
@@ -153,7 +144,7 @@ sub options_request_reason {
         push @options, { value => 'damaged', label => 'My container is damaged' };
         push @options, { value => 'missing', label => 'My container is missing' };
     } else {
-        push @options, { value => 'new_build', label => 'I am a new resident without a container' };
+        push @options, { value => 'new_build', label => 'I am a new resident without a container' } unless $choice == $CONTAINER_GREY_BIN;
         push @options, { value => 'damaged', label => 'My container is damaged' };
         push @options, { value => 'missing', label => 'My container is missing' };
         push @options, { value => 'extra', label => 'I would like an extra container' };
@@ -180,89 +171,29 @@ has_field how_long_lived => (
 
 has_page request_refuse_container => (
     title => 'Household details',
-    fields => ['request_property_type', 'request_property_people', 'request_property_nappies', 'request_reason_refuse', 'request_reason_refuse_number', 'request_reason_refuse_size', 'continue'],
+    intro => 'refuse_call_us.html',
+    fields => [ 'request_property_people', 'request_property_nappies', 'continue'],
     next => 'about_you',
-);
-
-has_field request_property_type =>(
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    build_label_method => sub {
-        my $self = shift;
-        return $self->parent->create_label($self->name);
-    },
-    options_method => sub {
-        my $self = shift;
-        return $self->parent->create_options($self->name);
-    }
 );
 
 has_field request_property_people =>(
     required => 1,
     type => 'Select',
-    build_label_method => sub {
-        my $self = shift;
-        return $self->parent->create_label($self->name);
-    },
-    options_method => sub {
-        my $self = shift;
-        return $self->parent->create_options($self->name);
-    }
+    label => 'How many people live at your property?',
+    options => [
+        { value => '1', label => 'Up to 5' },
+        { value => '6', label => '6 or more' }
+    ],
 );
 
 has_field request_property_nappies =>(
     required => 1,
     type => 'Select',
-    build_label_method => sub {
-        my $self = shift;
-        return $self->parent->create_label($self->name);
-    },
-        options_method => sub {
-        my $self = shift;
-        return $self->parent->create_options($self->name);
-    }
-);
-
-has_field request_reason_refuse =>(
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    build_label_method => sub {
-        my $self = shift;
-        return $self->parent->create_label($self->name);
-    },
-        options_method => sub {
-        my $self = shift;
-        return $self->parent->create_options($self->name);
-    }
-);
-
-has_field request_reason_refuse_number =>(
-    required => 1,
-    type => 'Select',
-    build_label_method => sub {
-        my $self = shift;
-        return $self->parent->create_label($self->name);
-    },
-        options_method => sub {
-        my $self = shift;
-        return $self->parent->create_options($self->name);
-    }
-);
-
-has_field request_reason_refuse_size =>(
-    required => 1,
-    type => 'Select',
-    widget => 'RadioGroup',
-    build_label_method => sub {
-        my $self = shift;
-        return $self->parent->create_label($self->name);
-    },
-        options_method => sub {
-        my $self = shift;
-        return $self->parent->create_options($self->name);
-    }
+    label => 'Do any children under 4 years old live at the property?',
+    options => [
+        { value => 'No', label => 'No' },
+        { value => 'Yes', label => 'Yes' }
+    ],
 );
 
 has_field continue_request_container => (
@@ -301,20 +232,4 @@ sub validate {
     };
 
 };
-
-sub create_label {
-    my ($self, $field_name) = @_;
-    return $self->{c}->cobrand->waste_request_fields($field_name, 'label');
-};
-
-sub create_options {
-    my ($self, $field_name) = @_;
-    my $options = $self->{c}->cobrand->waste_request_fields($field_name, 'values');
-    my @options_array;
-    for my $key (sort keys %$options) {
-        push @options_array, { value => $key, label => $options->{$key} };
-    };
-    return \@options_array;
-};
-
 1;

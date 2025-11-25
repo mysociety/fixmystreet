@@ -29,7 +29,7 @@ step1 = first_page;
         </dd>
       [% END %]
       </div>
-      [% IF c.cobrand.moniker == 'brent' AND containers.$container_id == 'General rubbish bin (grey bin)' %]
+      [% IF c.cobrand.moniker == 'brent' AND containers.$container_id == 'General rubbish bin (grey bin)' AND data.request_reason == 'extra' %]
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Household details</dt>
         <dd class="govuk-summary-list__value"></dd>
@@ -41,13 +41,14 @@ step1 = first_page;
           </form>
         </dd>
       </div>
-        [% FOR field IN ['request_property_type', 'request_property_people', 'request_property_nappies',
-        'request_reason_refuse', 'request_reason_refuse_number', 'request_reason_refuse_size'] %]
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% c.cobrand.waste_request_fields(field, 'label') %]</dt>
-          <dd class="govuk-summary-list__value">[% c.cobrand.waste_request_fields(field, data.$field, 'values') OR data.field.value OR '0' %]</dd>
+          <dt class="govuk-summary-list__key govuk-summary-list__key--sub">People at propery</dt>
+          <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_property_people', data.request_property_people) %]</dd>
         </div>
-        [% END %]
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Children at property</dt>
+          <dd class="govuk-summary-list__value">[% label_for_field(form, 'request_property_nappies', data.request_property_nappies) %]</dd>
+        </div>
       [% END %]
     [% END %]
   [% FOR removal IN data.keys.grep('^removal-') %]
