@@ -1,6 +1,8 @@
 package FixMyStreet::Cobrand::Enfield;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
+use FixMyStreet::Geocode::OSPlaces;
+
 sub council_area_id { 2495 }
 sub council_area { 'Enfield'; }
 sub council_name { return 'Enfield Council'; }
@@ -17,18 +19,17 @@ sub open311_config {
 sub open311_update_missing_data {
     my ($self, $row, $h, $contact) = @_;
 
+    my $type = 'usrn';
+    my $classes = [];
     if ($row->get_extra_field_value('pac')) {
-        if (my $result = $self->_lookup_os('uprn', $row)) {
-            if (my $uprn = $result->{LPI}{UPRN}) {
-                $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $uprn });
-            }
-        }
-    } else {
-        if (my $result = $self->_lookup_os('usrn', $row)) {
-            if (my $usrn = $result->{LPI}{USRN}) {
-                $row->update_extra_field({ name => 'usrn', description => 'USRN', value => $usrn });
-            }
-        }
+        $type = 'uprn';
+        $classes = ['LP01', 'LP03', 'LL', 'CC06'];
+    }
+
+    my $result = FixMyStreet::Geocode::OSPlaces->reverse_geocode(
+        $self, $row->latitude, $row->longitude, $classes);
+    if ($result && (my $value = $result->{LPI}{uc $type})) {
+        $row->update_extra_field({ name => $type, description => uc $type, value => $value });
     }
 }
 
@@ -45,22 +46,6 @@ sub open311_extra_data_include {
     ];
 
     return $open311_only;
-}
-
-my $BASE = 'https://api.os.uk/search/places/v1/nearest?dataset=LPI&srs=WGS84&radius=1000';
-my $CODES = 'fq=CLASSIFICATION_CODE:LP01+CLASSIFICATION_CODE:LP03+CLASSIFICATION_CODE:LL+CLASSIFICATION_CODE:CC06';
-
-sub _lookup_os {
-    my ($self, $type, $row) = @_;
-    if (my $key = $self->feature('os_places_api_key')) {
-        my $url = "$BASE&key=$key&point=" . $row->latitude . ',' . $row->longitude;
-        if ($type eq 'uprn') {
-            $url .= "&$CODES";
-        }
-        my $j = FixMyStreet::Geocode::cache('osplaces', $url);
-        return $j ? $j->{results}[0] : undef;
-    }
-    return undef;
 }
 
 sub open311_post_send {
