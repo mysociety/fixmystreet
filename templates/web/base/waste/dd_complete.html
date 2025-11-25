@@ -1,4 +1,4 @@
-[% INCLUDE header.html %]
+[% INCLUDE waste/header.html %]
 
 <div class="govuk-panel govuk-panel--confirmation">
 [% IF error %]
@@ -24,8 +24,8 @@
 
 <p>
     [% message %]
-  [% IF report.user.email %]
-    A copy has been sent to your email address, [% report.user.email %].
+  [% IF report.user.email || email %]
+    A copy has been sent to your email address, [% report.user.email || email %].
   [% END %]
 </p>
 
