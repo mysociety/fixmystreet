@@ -4,7 +4,7 @@ FixMyStreet::Cobrand::Dumfries - code specific to the Dumfries and Galloway cobr
 
 =head1 SYNOPSIS
 
-Dumfries and Galloway is a unitary authority, with an Alloy backend.
+Dumfries and Galloway Council (DGC) is a unitary authority, with an Alloy backend.
 
 =head1 DESCRIPTION
 
@@ -12,6 +12,9 @@ Dumfries and Galloway is a unitary authority, with an Alloy backend.
 
 package FixMyStreet::Cobrand::Dumfries;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
+
+use Moo;
+with 'FixMyStreet::Roles::Open311Alloy';
 
 use strict;
 use warnings;
@@ -50,5 +53,63 @@ sub disambiguate_location {
         result_strip => ', Dumfries and Galloway, Alba / Scotland',
     };
 }
+
+=head2 open311_update_missing_data
+
+All reports sent to Alloy should have a parent asset they're associated with.
+This is indicated by the value in the asset_resource_id field. For certain
+categories (e.g. street lights) this will be the asset the user
+selected from the map. For other categories (e.g. potholes) or if the user
+didn't select an asset then we look up the nearest road from DGC's
+Alloy server and use that as the parent.
+
+=cut
+
+sub open311_update_missing_data {
+    my ($self, $row, $h, $contact) = @_;
+
+    if (!$row->get_extra_field_value('asset_resource_id')) {
+        if (my $item_id = $self->lookup_site_code($row)) {
+            $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
+        }
+    }
+}
+
+
+sub lookup_site_code_config {
+    my ($self) = @_;
+    my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
+
+    my $suffix = FixMyStreet->config('STAGING_SITE') ? "staging" : "assets";
+    return {
+        buffer => 200, # metres
+        _nearest_uses_latlon => 1,
+        proxy_url => "https://$host/alloy/layer.php",
+        layer => "designs_highwaysNetworkAsset_64bf8f949c5fa17f953be9d6",
+        url => "https://dumfries.$suffix",
+        property => "itemId",
+        accept_feature => sub { 1 }
+    };
+}
+
+sub _fetch_features_url {
+    my ($self, $cfg) = @_;
+
+    # Alloy layer proxy needs the bbox in lat/lons
+    my ($w, $s, $e, $n) = split(/,/, $cfg->{bbox});
+    ($s, $w) = Utils::convert_en_to_latlon($w, $s);
+    ($n, $e) = Utils::convert_en_to_latlon($e, $n);
+    my $bbox = "$w,$s,$e,$n";
+
+    my $uri = URI->new($cfg->{proxy_url});
+    $uri->query_form(
+        layer => $cfg->{layer},
+        url => $cfg->{url},
+        bbox => $bbox,
+    );
+
+    return $uri;
+}
+
 
 1;
