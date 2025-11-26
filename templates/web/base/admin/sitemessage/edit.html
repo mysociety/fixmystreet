@@ -11,7 +11,7 @@
 }
 </style>
 
-[% IF body_cobrand.moniker != 'kingston' AND body_cobrand.moniker != 'sutton' %]
+[% IF !body_cobrand.wasteworks_only %]
 
 <h2>Homepage</h2>
 
@@ -37,6 +37,11 @@
 [% END %]
 
   [% IF body_cobrand.feature('waste') %]
+    [% IF body_cobrand.wasteworks_only %]
+      <form method="post"
+      accept-charset="utf-8"
+      class="validate">
+    [% END %]
     <h2>WasteWorks</h2>
     <p>The waste message will be shown on all waste pages.</p>
     <div class="two-col">
@@ -51,7 +56,7 @@
     </div>
   [% END %]
 
-[% IF body_cobrand.moniker != 'kingston' AND body_cobrand.moniker != 'sutton' %]
+[% IF !body_cobrand.wasteworks_only %]
 
     <h2>Reporting page</h2>
 

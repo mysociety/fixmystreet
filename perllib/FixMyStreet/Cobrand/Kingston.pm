@@ -17,6 +17,16 @@ sub council_name { return 'Kingston upon Thames Council'; }
 sub council_url { return 'kingston'; }
 sub admin_user_domain { 'kingston.gov.uk' }
 
+=head2 wasteworks_only
+
+Configuration for cobrands which don't have street reporting.
+Currently in use for the ooh messages on the admin page to
+remove unnecessary fields.
+
+=cut
+
+sub wasteworks_only { 1 }
+
 my %SERVICE_IDS = (
     domestic_refuse => 966, # 4394
     communal_refuse => 969, # 4407
