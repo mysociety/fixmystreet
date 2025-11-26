@@ -934,6 +934,16 @@ fixmystreet.assets.gloucestershire.traffic_asset_details = function() {
         "LED/Halogen: " + a.led_halogen;
 };
 
+
+/* Hackney */
+
+fixmystreet.assets.hackney = {};
+fixmystreet.assets.hackney.found = function(layer) {
+    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+};
+
+
+
 /* Hounslow */
 
 fixmystreet.assets.hounslow = {};
