@@ -197,7 +197,9 @@ FixMyStreet::override_config {
         );
 
         subtest "User assignment on $host site" => sub {
-            $mech->get_ok( '/report/' . $problem_to_update->id );
+            $mech->clear_emails_ok;
+            my $id = $problem_to_update->id;
+            $mech->get_ok( '/report/' . $id );
             $mech->submit_form_ok({ form_id => 'planned_form' });
             my $comment
                 = $problem_to_update->comments->order_by('-id')->first;
@@ -206,7 +208,12 @@ FixMyStreet::override_config {
                 is_superuser     => 1,
             }, 'Comment created for user assignment';
 
-            my $id = $o->post_service_request_update($comment);
+            ok $mech->email_count_is(1), 'email sent for user assignment';
+            my $email = $mech->get_email;
+            like $mech->get_text_body_from_email($email),
+                qr/You have been assigned.*$id/i, 'Correct email text';
+
+            $o->post_service_request_update($comment);
             my $cgi = CGI::Simple->new($o->test_req_used->content);
             is $cgi->param('attribute[assigned_to_user_email]'),
                 $superuser->email,
@@ -215,7 +222,8 @@ FixMyStreet::override_config {
                 '',
                 'correct extra_details attribute';
 
-            $mech->get_ok( '/report/' . $problem_to_update->id );
+            $mech->clear_emails_ok;
+            $mech->get_ok( '/report/' . $id );
             $mech->submit_form_ok({ form_id => 'planned_form' });
             $comment
                 = $problem_to_update->comments->order_by('-id')->first;
@@ -224,7 +232,10 @@ FixMyStreet::override_config {
                 is_superuser     => 1,
             }, 'Comment created for user un-assignment';
 
-            $id = $o->post_service_request_update($comment);
+            ok $mech->email_count_is(0),
+                'email not sent for user un-assignment';
+
+            $o->post_service_request_update($comment);
             $cgi = CGI::Simple->new($o->test_req_used->content);
             is $cgi->param('attribute[assigned_to_user_email]'),
                 '',

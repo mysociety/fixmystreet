@@ -12,6 +12,7 @@ use base 'FixMyStreet::Cobrand::UKCouncils';
 use strict;
 use warnings;
 use DateTime::Format::W3CDTF;
+use FixMyStreet::Email;
 use Utils;
 
 =head2 Defaults
@@ -290,6 +291,47 @@ sub record_update_extra_fields {
     {   shortlisted_user     => 1,
         detailed_information => 1,
     };
+}
+
+=head2 inform_about_shortlisted
+
+We send email and text to inspector when report (re)allocated to them.
+
+=cut
+
+sub inform_about_shortlisted {
+    my ( $self, $user, $report ) = @_;
+
+    # XXX In future we may want to do some extra filtering here, to only send
+    # to users with specific roles or
+    # for reports with specific categories
+
+    my $email = $user->email;
+    my $phone = $user->phone;
+
+    if ($email) {
+        my $h = {
+            cobrand => $self,
+            report => $report,
+        };
+
+        my $result = FixMyStreet::Email::send_cron(
+            FixMyStreet::DB->schema,
+            'inform-shortlisted.txt',
+            $h,
+            { To => $email },
+            undef,    # env_from
+            0,        # nomail
+            $self,
+            $report->lang,
+        );
+
+        warn 'Email sending failed' if $result;
+    }
+
+    if ($phone) {
+        # TODO Check it is mobile/can receive texts
+    }
 }
 
 =head2 open311_munge_update_params
