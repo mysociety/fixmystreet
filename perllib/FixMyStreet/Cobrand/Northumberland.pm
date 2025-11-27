@@ -13,6 +13,7 @@ use strict;
 use warnings;
 use DateTime::Format::W3CDTF;
 use FixMyStreet::Email;
+use FixMyStreet::SMS;
 use Utils;
 
 =head2 Defaults
@@ -329,8 +330,26 @@ sub inform_about_shortlisted {
         warn 'Email sending failed' if $result;
     }
 
-    if ($phone) {
-        # TODO Check it is mobile/can receive texts
+    if ( $phone && $user->phone_verified ) {
+        my $parsed = FixMyStreet::SMS->parse_username($phone);
+
+        if ( $parsed->{may_be_mobile} ) {
+            my $report_id = $report->id;
+            my $report_title = $report->title;
+            my $report_url = $self->base_url_for_report($report) . $report->url;
+
+            my $result = FixMyStreet::SMS->new( cobrand => $self )->send(
+                to => $phone,
+                body => sprintf(
+                    _("You have been assigned to report %s (reference %s); to view: %s"),
+                    $report->title,
+                    $report->id,
+                    $self->base_url_for_report($report) . $report->url,
+                ),
+            );
+
+            warn 'SMS sending failed' if $result;
+        }
     }
 }
 

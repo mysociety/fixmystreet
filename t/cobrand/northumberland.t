@@ -2,6 +2,7 @@ use CGI::Simple;
 use FixMyStreet::TestMech;
 use FixMyStreet::Map::OS::Leisure;
 use FixMyStreet::Script::CSVExport;
+use JSON::MaybeXS;
 use Text::CSV;
 use Test::MockModule;
 use File::Temp 'tempdir';
@@ -174,15 +175,29 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'northumberland', 'fixmystreet' ],
     MAPIT_URL => 'http://mapit.uk/',
     COBRAND_FEATURES => {
-        os_maps_leisure => { _fallback => 1 }
+        os_maps_leisure => { _fallback => 1 },
+        sms_authentication => { northumberland => 1 },
+        govuk_notify => { northumberland => { key => 'test-0123456789abcdefghijklmnopqrstuvwxyz-key-goes-here' } },
     }
 }, sub {
     my $o = Open311->new( fixmystreet_body => $body );
 
+    my $mod_lwp = Test::MockModule->new('LWP::UserAgent');
+    my $sms_content;
+    $mod_lwp->mock('post', sub {
+        my ( $self, $url, %args ) = @_;
+        my $data = decode_json( $args{Content} );
+        $sms_content = $data->{personalisation}{text};
+        HTTP::Response->new( 200, 'OK', [], '{ "id": 123 }' );
+    });
+
     my $superuser = $mech->create_user_ok(
         'superuser@example.com',
         name         => 'Super User',
+        phone        => '+447700900002',
         is_superuser => 1,
+        email_verified => 1,
+        phone_verified => 1,
     );
     $mech->log_in_ok( $superuser->email );
 
@@ -192,12 +207,14 @@ FixMyStreet::override_config {
         my ($problem_to_update) = $mech->create_problems_for_body(
             1,
             $body->id,
-            'Test',
+            'A Test Report',
             { cobrand => $host, external_id => 123 },
         );
 
         subtest "User assignment on $host site" => sub {
             $mech->clear_emails_ok;
+            $sms_content = undef;
+
             my $id = $problem_to_update->id;
             $mech->get_ok( '/report/' . $id );
             $mech->submit_form_ok({ form_id => 'planned_form' });
@@ -210,8 +227,13 @@ FixMyStreet::override_config {
 
             ok $mech->email_count_is(1), 'email sent for user assignment';
             my $email = $mech->get_email;
-            like $mech->get_text_body_from_email($email),
-                qr/You have been assigned.*$id/i, 'Correct email text';
+            like $mech->get_html_body_from_email($email),
+                qr/assigned.*\/report\/$id.*A Test Report/i;
+            like $mech->get_html_body_from_email($email),
+                qr/Reference: $id/i, 'Correct email HTML';
+            like $sms_content,
+                qr/assigned.*A Test Report.*$id.*\/report\/$id/,
+                'SMS sent for user assignment';
 
             $o->post_service_request_update($comment);
             my $cgi = CGI::Simple->new($o->test_req_used->content);
@@ -223,6 +245,8 @@ FixMyStreet::override_config {
                 'correct extra_details attribute';
 
             $mech->clear_emails_ok;
+            $sms_content = undef;
+
             $mech->get_ok( '/report/' . $id );
             $mech->submit_form_ok({ form_id => 'planned_form' });
             $comment
@@ -234,6 +258,7 @@ FixMyStreet::override_config {
 
             ok $mech->email_count_is(0),
                 'email not sent for user un-assignment';
+            ok !$sms_content, 'SMS not sent for user un-assignment';
 
             $o->post_service_request_update($comment);
             $cgi = CGI::Simple->new($o->test_req_used->content);
