@@ -568,38 +568,16 @@ sub direct_debit_complete : Path('/waste/dd_complete') : Args(0) {
     $c->forward('/waste/check_payment_redirect_id', [ $id, $token]);
     $c->cobrand->call_hook( 'garden_waste_dd_complete' => $c->stash->{report} );
 
-    $c->stash->{title} = "Direct Debit mandate";
-
     $c->send_email('waste/direct_debit_in_progress.txt', {
         to => [ [ $c->stash->{report}->user->email, $c->stash->{report}->name ] ],
         sent_confirm_id_ref => $c->stash->{report}->id,
     } );
 
-    my $params_encoded = encode_base64(
-        JSON::MaybeXS->new( utf8 => 1 )->encode(
-            {   email       => $c->stash->{report}->user->email,
-                error       => $c->stash->{error},
-                message     => $c->stash->{message},
-                property_id => $c->stash->{report}->waste_property_id,
-                report_id   => $c->stash->{report}->id,
-                title       => $c->stash->{title},
-            },
-        ),
-    );
+    for (qw/ message error /) {
+        $c->flash->{$_} = $c->stash->{$_} if $c->stash->{$_};
+    }
 
-    $c->response->redirect(
-        $c->uri_for( '/waste/dd_end', { token => $params_encoded } ) );
-}
-
-sub direct_debit_end : Path('/waste/dd_end') : Args(0) {
-    my ($self, $c) = @_;
-
-    my $params = JSON::MaybeXS->new( utf8 => 1 )
-        ->decode( decode_base64( $c->req->param('token') ) );
-
-    $c->stash->{$_} = $params->{$_} for keys %$params;
-
-    $c->stash->{template} = 'waste/dd_complete.html';
+    $c->res->redirect( $c->stash->{report}->confirmation_url($c) );
 }
 
 sub direct_debit_cancelled : Path('/waste/dd_cancelled') : Args(0) {

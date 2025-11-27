@@ -1,5 +1,5 @@
 [% IF report.get_extra_metadata('grouped_ids') %]
     Your reference numbers are: <strong>[% report.id %], [% report.get_extra_metadata('grouped_ids').join(', ') %]</strong>.
 [% ELSE %]
-    Your reference number is <strong>[% report.id || report_id %]</strong>.
+    Your reference number is <strong>[% report.id %]</strong>.
 [% END %]
