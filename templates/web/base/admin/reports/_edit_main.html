@@ -216,21 +216,83 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </div>
 
 [% moderation_history = problem.moderation_history %]
-[% IF moderation_history %]
-<div class="full-width" style="margin-bottom:-2em; padding-bottom: 2em">
-    <h2>[% loc('Moderation history') %]</h2>
-    [% last_history = problem %]
-    <ul>
-      [% FOR history IN moderation_history %]
-        <li><i>[% INCLUDE 'report/update/moderation_meta.html' %]</i>
-            [% INCLUDE 'report/update/moderation_diff.html' diff=history.compare_with(last_history) %]
-        </li>
-        [% last_history = history %]
-      [% END %]
-    </ul>
-</div>
-[% END %]
-
+[% admin_log = problem.admin_log_by_date_user %]
+[% SET show_tabs = (moderation_history AND admin_log) OR (moderation_history AND updates.size) OR (admin_log AND updates.size) %]
 <div class="full-width full-width--bottom">
-[% INCLUDE 'admin/list_updates.html' %]
+
+  [% IF show_tabs %]
+    <tabbed-element>
+      <ul>
+       [% IF updates.size %]
+        <li><a href="#section_updates">[% loc('Updates') %]</a></li>
+       [% END %]
+       [% IF moderation_history %]
+        <li><a href="#section_moderation">[% loc('Moderation log') %]</a></li>
+       [% END %]
+       [% IF admin_log %]
+        <li><a href="#section_log">[% loc('Admin log') %]</a></li>
+       [% END %]
+      </ul>
+  [% END %]
+
+    <section id="section_updates">
+        [% INCLUDE 'admin/list_updates.html' %]
+    </section>
+
+ [% IF moderation_history %]
+  <section id="section_moderation">
+        <h2>[% loc('Moderation history') %]</h2>
+        [% last_history = problem %]
+        <ul>
+          [% FOR history IN moderation_history %]
+            <li><i>[% INCLUDE 'report/update/moderation_meta.html' %]</i>
+                [% INCLUDE 'report/update/moderation_diff.html' diff=history.compare_with(last_history) %]
+            </li>
+            [% last_history = history %]
+          [% END %]
+        </ul>
+  </section>
+    [% END %]
+
+  [% IF admin_log %]
+    <section id="section_log">
+        <h2>[% loc('Admin log') %]</h2>
+        <table cellspacing="0" cellpadding="2" border="1">
+            <tr>
+                <th>[% loc('Time') %]</th>
+                <th>[% loc('User') %]</th>
+                <th>[% loc('Action') %]</th>
+            </tr>
+        [% FOREACH moment IN admin_log.keys.sort %]
+            [%- curdate = admin_log.$moment.date.strftime('%A, %e %B %Y') -%]
+            [%- IF date != curdate %]
+                <tr><th class="group" colspan="3">[% curdate %]</th></tr>
+                [%- date = curdate -%]
+            [%- END -%]
+          [% FOREACH admin_user IN admin_log.$moment.users.keys %]
+            <tr>
+                <td>[% admin_log.$moment.date.hms %]</td>
+                <td>[% admin_user %]</td>
+                <td>
+                [% FOREACH item IN admin_log.$moment.users.$admin_user %]
+                    [%- item.action_display %]
+                    [%- ' – ' _ item.reason IF item.reason %]
+                    [%- '; ' IF NOT loop.last %]
+                [% END %]
+                </td>
+            </tr>
+          [%- END %]
+        [%- END %]
+        </table>
+    </section>
+  [% END %]
+
+  [% IF show_tabs %]
+    </tabbed-element>
+  [% END %]
+
 </div>
+
+[% IF show_tabs %]
+<script type="module" src="[% version('/js/tabbed-interface.js') %]"></script>
+[% END %]

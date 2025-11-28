@@ -100,6 +100,10 @@ sub about_you {
 
             if ($name_verified) {
                 $form->saved_data->{name} = $first_name . ' ' . $last_name;
+
+                $form->saved_data->{customer_external_ref}
+                    = $current_subscription->{customer_external_ref};
+
                 return $args{next_page};
 
             } elsif ( $form->isa('FixMyStreet::App::Form::Waste::Garden::Renew::Bexley') ) {

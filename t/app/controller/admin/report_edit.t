@@ -295,7 +295,7 @@ foreach my $test (
             non_public => 'on',
         },
         log_entries => [
-            qw/edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+            qw/edit private resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },
@@ -315,7 +315,7 @@ foreach my $test (
         },
         changes => { closed_updates => 'on' },
         log_entries => [
-            qw/edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+            qw/edit edit private resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
     },
     {
@@ -335,7 +335,7 @@ foreach my $test (
         expect_comment => 1,
         changes   => { state => 'investigating' },
         log_entries => [
-            qw/edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+            qw/edit state_change edit edit private resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },
@@ -357,7 +357,7 @@ foreach my $test (
         expected_text => '*Category changed from ‘Other’ to ‘Potholes’*',
         changes   => { state => 'in progress', category => 'Potholes' },
         log_entries => [
-            qw/edit state_change category_change edit state_change edit edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
+            qw/edit state_change category_change edit state_change edit edit private resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },
@@ -385,7 +385,8 @@ foreach my $test (
 
         is_deeply( $mech->visible_form_values(), $new_fields, 'changed form values' );
         is $log_entries->count, scalar @{$test->{log_entries}}, 'log entry count';
-        is $log_entries->next->action, $_, 'log entry added' for @{ $test->{log_entries} };
+        my @test_log_entries = map { s/private/Marked private/; $_ } @{$test->{log_entries}};
+        is $log_entries->next->action, $_, 'log entry added' for @test_log_entries;
 
         $report->discard_changes;
 

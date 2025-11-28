@@ -18,9 +18,7 @@
 
   [% IF problem.photo %]
     <a href="[% c.cobrand.relative_url_for_report( problem ) %][% problem.url %]" class="item-list__item--expandable__hide-when-expanded">
-        <noscript class="loading-lazy">
-            <img loading="lazy" class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
-        </noscript>
+        <img loading="lazy" class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     </a>
   [% END %]
 
