@@ -1155,6 +1155,11 @@ sub get_current_payment_method : Private {
         $payment_method = $c->stash->{orig_sub}->get_extra_field_value('payment_method');
     }
 
+    # Allow cobrand to override payment method detection for legacy subscriptions
+    if (!$payment_method) {
+        $payment_method = $c->cobrand->call_hook('waste_get_current_payment_method' => $c->stash->{orig_sub});
+    }
+
     return $payment_method || 'credit_card';
 
 }

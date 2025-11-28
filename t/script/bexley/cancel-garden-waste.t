@@ -173,7 +173,7 @@ FixMyStreet::override_config {
         subtest 'handles legacy UPRN-based direct debit cancellation' => sub {
             $mech->delete_problems_for_body( $body->id );
 
-            my $uprn = '10001';  # UPRN that has legacy contracts in mock
+            my $uprn = '20001';  # UPRN that has legacy contracts in mock
 
             # Create report WITHOUT direct_debit_contract_id metadata
             my $garden_report = _create_report( uprn => $uprn, skip_contract_id => 1 );
@@ -195,7 +195,7 @@ FixMyStreet::override_config {
                 "Successfully handles legacy direct debit cancellation";
 
             ok $cancel_plan_called, 'cancel_plan was called';
-            is_deeply $passed_contract_ids, ['TEST-CONTRACT-10001'],
+            is_deeply $passed_contract_ids, ['TEST-CONTRACT-20001'],
                 'Correct legacy contract ID passed from BexleyContracts lookup';
         };
 
@@ -260,7 +260,7 @@ FixMyStreet::override_config {
         subtest 'archive_contract fails for legacy contracts' => sub {
             $mech->delete_problems_for_body( $body->id );
 
-            my $legacy_uprn = '10001';  # UPRN that has legacy contracts in mock
+            my $legacy_uprn = '20001';  # UPRN that has legacy contracts in mock
 
             $access_mock->unmock('cancel_plan');
             $access_mock->mock(

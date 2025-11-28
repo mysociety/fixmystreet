@@ -294,6 +294,35 @@ sub waste_get_legacy_contract_ids {
     return $contract_ids;
 }
 
+=head2 waste_get_current_payment_method
+
+For legacy pre-WasteWorks subscriptions without stored payment_method,
+check if there are legacy contracts in the BexleyContracts database for this UPRN.
+If legacy contracts exist, assume direct debit.
+
+This is safe because:
+- If the legacy subscription was actually direct debit, we need to cancel it via AccessPaySuite
+- If it was actually credit card, the DD cancellation will just not find anything to cancel
+
+Returns 'direct_debit' if legacy contracts found, undef otherwise.
+
+=cut
+
+sub waste_get_current_payment_method {
+    my ($self, $orig_sub) = @_;
+
+    my $property = $self->{c}->stash->{property};
+    return unless $property;
+
+    my $uprn = $property->{uprn};
+    return unless $uprn;
+
+    my $legacy_contract_ids = BexleyContracts::contract_ids_for_uprn($uprn);
+    if ($legacy_contract_ids && @$legacy_contract_ids) {
+        return 'direct_debit';
+    }
+}
+
 sub waste_garden_sub_params {
     my ( $self, $data, $type ) = @_;
 
