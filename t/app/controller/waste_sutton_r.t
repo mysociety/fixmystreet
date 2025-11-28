@@ -39,6 +39,7 @@ my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, {
 });
 my $kingston = $mech->create_body_ok(2480, 'Kingston Council', { %$params, cobrand => 'kingston' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+my $user2 = $mech->create_user_ok('test2@example.net', name => 'Normal User The Second');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 $staff->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 
@@ -83,6 +84,7 @@ create_contact({ category => 'Request new container', email => '3129' }, 'Waste'
     { code => 'Reason', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 0, automated => 'hidden_field' },
     { code => 'payment', required => 0, automated => 'hidden_field' },
+    { code => 'property_id', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Bin not returned', email => '3135' }, 'Waste',
     { code => 'NotAssisted', description => 'Thank you for bringing this to our attention. We will use your feedback to improve performance in the future.  Please accept our apologies for the inconvenience caused.', variable => 'false'  },
@@ -106,7 +108,10 @@ FixMyStreet::override_config {
             url => 'http://example.org/',
         } },
         waste => { sutton => 1 },
-        waste_features => { sutton => { no_service_residential_address_types => [ 283, 284, 285 ] } },
+        waste_features => { sutton => {
+                no_service_residential_address_types => [ 283, 284, 285 ],
+                request_cancel_enabled => 1,
+            } },
         echo => { sutton => { bulky_service_id => 960 }},
         payment_gateway => { sutton => {
             cc_url => 'http://example.com',
@@ -188,6 +193,8 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_text_body_from_email;
         like $email, qr/please allow up to 20 working days/;
+        like $email, qr/cancel your request/, 'include cancel link text';
+        like $email, qr/waste\/12345\/request\/cancel\//, 'include cancel link';
     };
     subtest 'Request a larger bin than current' => sub {
         $mech->get_ok('/waste/12345/request');
@@ -945,6 +952,104 @@ FixMyStreet::override_config {
         $mech->get_ok('/dashboard?export=1');
         $mech->content_like(qr/Complaint against time.*LBS-123/);
         $mech->content_like(qr/Failure to Deliver.*LBS-789/);
+    };
+
+    subtest "Container request cancellations" => sub {
+        my ($container_request_report) = $mech->create_problems_for_body(
+            1, $body->id,
+            'Container request', {
+                cobrand => 'sutton',
+                external_id => 'container-request-event-guid',
+                cobrand_data => 'waste',
+                user => $user,
+            }
+        );
+        $container_request_report->set_extra_fields({
+            name => 'service_id',
+            value => 940,  # Domestic Refuse Collection
+        });
+        $container_request_report->update;
+        my $open_container_request_event = {
+            Id => '112112321',
+            ServiceId => 940,  # Domestic Refuse Collection
+            ClientReference => 'LBS-789',
+            EventTypeId => 3129,  # Container request
+            EventDate => { DateTime => "2025-02-03T08:00:00Z" },
+            Data => { ExtensibleDatum => [
+                { Value => 2, DatatypeName => 'Source' },
+                {
+                    ChildData => { ExtensibleDatum => [
+                        { Value => 1, DatatypeName => 'Action' },
+                        { Value => 1, DatatypeName => 'Container Type' },  # Refuse container
+                    ] },
+                },
+            ] },
+            Guid => 'container-request-event-guid',
+        };
+        $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+        $e->mock('GetEventsForObject', sub { [$open_container_request_event] });
+
+        my $cancellation_url = "/waste/12345/request/cancel/" . $container_request_report->id;
+        my $cancel_form_title = "Cancel your non-recyclable refuse container request";
+        set_fixed_time('2025-02-05T08:00:00Z');
+
+        subtest "Link shown" => sub {
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains($cancellation_url);
+        };
+
+        foreach ((
+            {
+                scenario => "Staff",
+                can_cancel => 1,
+                user => $staff,
+            },
+            {
+                scenario => "The user that made the request",
+                can_cancel => 1,
+                user => $user,
+            },
+            {
+                scenario => "Random user",
+                can_cancel => 0,
+                user => $user2,
+            },
+        )) {
+            my $can_cancel = $_->{can_cancel};
+            my $can_cancel_text = $can_cancel ? 'can cancel' : "can't cancel";
+            my $scenario = $_->{scenario};
+            my $u = $_->{user};
+            subtest "$scenario $can_cancel_text" => sub {
+                $mech->log_in_ok($u->email);
+                $mech->get_ok($cancellation_url);
+                if ($can_cancel) {
+                    $mech->content_contains($cancel_form_title);
+                } else {
+                    $mech->content_lacks($cancel_form_title);
+                }
+            };
+        }
+
+        subtest "Cancel" => sub {
+            $mech->log_in_ok($user->email);
+            $mech->get_ok($cancellation_url);
+            $mech->content_contains($cancel_form_title);
+            $mech->content_contains("I acknowledge that the payment will not be refunded");
+            $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+            $mech->content_contains("Your non-recyclable refuse container request has been cancelled.");
+            $container_request_report->discard_changes;
+            is $container_request_report->state, 'cancelled';
+            my $latest_comment = $container_request_report->comments->search(
+                    {},
+                    { order_by => { -desc => 'id' } },
+            )->first;
+            is $latest_comment->text, "Request cancelled";
+        };
+
+        subtest "Link not shown after already cancelled" => sub {
+            $mech->log_in_ok($user->email);
+            $mech->content_lacks($cancellation_url);
+        };
     };
 };
 

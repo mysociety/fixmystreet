@@ -6,7 +6,8 @@
     [% IF cobrand.moniker != 'sutton' %]
     A [% unit.service_name FILTER lower %] container request has been made
     [% ELSE %]
-        A [% unit.service_name FILTER lower %] container request was made on [% date.format(unit.requests_open.values.0.date, '%A, %-d %B') %].
+       [% SET request = unit.requests_open.values.0; %]
+        A [% unit.service_name FILTER lower %] container request was made on [% date.format(request.date, '%A, %-d %B') %].
         We aim to deliver the container within [% cobrand.wasteworks_config.request_timeframe %] (Monday to Friday).
 
         [% IF unit.escalations.container AND NOT unit.escalations.container_open %]
@@ -14,6 +15,12 @@
             We’re sorry if this issue has not been resolved to your satisfaction;
             <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.container.id %]:[% unit.escalations.container.guid %]:[% unit.escalations.container.ref %]&amp;category=Failure+to+Deliver+Bags%2FContainers"
                 class="waste-service-link">please report the problem here</a>
+        [% END %]
+        [% IF request.report AND c.cobrand.waste_show_cancel_request(request.report) %]
+            <br>
+            You can
+            <a href="[% c.uri_for_action('waste/cancel_request', [ property.id, request.report.id ]) %]" class="waste-service-link">cancel your container order</a>
+            if you would like. A refund will not be issued.
         [% END %]
     [% END %]
   </span>

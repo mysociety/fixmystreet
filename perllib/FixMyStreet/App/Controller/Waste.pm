@@ -15,7 +15,7 @@ use FixMyStreet::App::Form::Waste::Report;
 use FixMyStreet::App::Form::Waste::Problem;
 use FixMyStreet::App::Form::Waste::Enquiry;
 use FixMyStreet::App::Form::Waste::Assisted;
-
+use FixMyStreet::App::Form::Waste::Request::Cancel;
 use Memcached;
 use JSON::MaybeXS;
 
@@ -787,6 +787,44 @@ sub process_request_data : Private {
         $c->forward('/waste/pay_process', [ 'request', $payment_method, $data ]);
     }
 
+    return 1;
+}
+
+sub cancel_request : Chained('property') : PathPart('request/cancel') : Args(1) {
+    my ($self, $c, $request_report_id) = @_;
+    $c->detach( '/auth/redirect' ) unless $c->user_exists;
+
+    my $request_report = $c->model('DB::Problem')->find( { id => $request_report_id } )
+        || $c->detach('/waste/property_redirect');
+
+    $c->detach('/waste/property_redirect')
+        if !$c->cobrand->waste_can_cancel_request($request_report);
+
+    # Try to get the service name
+    my $service_id = $request_report->get_extra_field_value('service_id');
+    my $service = $c->stash->{services}->{$service_id};
+    my $service_name;
+    if ($service) {
+        $service_name = $service->{service_name};
+    }
+
+    $c->stash->{request_to_cancel} = $request_report;
+    $c->stash->{request_to_cancel_service_name} = $service_name;
+    $c->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::Cancel";
+    $c->forward('form');
+}
+
+sub process_request_cancellation : Private {
+    my ( $self, $c, $form ) = @_;
+    my $report = $c->stash->{request_to_cancel};
+    $report->add_to_comments({
+        text => "Request cancelled",
+        user => $c->cobrand->body->comment_user || $report->user,
+        extra => { request_cancellation => 1 },
+        problem_state => 'cancelled',
+    });
+    $report->state('cancelled');
+    $report->update;
     return 1;
 }
 
