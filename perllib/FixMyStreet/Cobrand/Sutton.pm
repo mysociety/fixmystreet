@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Sutton - code specific to the Sutton cobrand
+
+=head1 SYNOPSIS
+
+Sutton is a London borough, where we integrate with Echo for WasteWorks.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::Sutton;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
@@ -61,6 +73,12 @@ my %CONTAINERS = (
 );
 lock_hash(%CONTAINERS);
 
+=head2 skip_alert_state_changed_to
+
+Do not include the "State changed to" line on small item collection update alerts.
+
+=cut
+
 sub skip_alert_state_changed_to {
     my ( $self, $report ) = @_;
 
@@ -91,6 +109,12 @@ sub waste_on_the_day_criteria {
     }
 }
 
+=head2 waste_check_staff_payment_permissions
+
+Staff take payments off-session, then enter an authorization code on our site.
+
+=cut
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
@@ -99,6 +123,22 @@ sub waste_check_staff_payment_permissions {
 
     $c->stash->{staff_payments_allowed} = 'paye';
 }
+
+=head2 Garden waste
+
+=over 4
+
+=item * Line items will include an LBS prefix
+
+=item * Garden collection is from 6am
+
+=item * Only staff can cancel garden subscriptions
+
+=item * Garden subscriptions are 5 bins maximum
+
+=back
+
+=cut
 
 sub waste_payment_ref_council_code { "LBS" }
 
@@ -120,6 +160,12 @@ sub garden_subscription_start_days {
     my ($self, $data) = @_;
     return $data->{current_bins} ? 0 : 10;
 }
+
+=head2 small_items_allowed_property
+
+Small items collection is allowed if the feature is enabled and the property has a small items service.
+
+=cut
 
 sub small_items_allowed_property {
     my ( $self, $property ) = @_;
@@ -145,6 +191,13 @@ sub waste_munge_bin_services_open_requests {
         $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
     }
 }
+
+=head2 Escalations
+
+Sutton has custom behaviour to allow escalation of unresolved missed collections
+or container requests.
+
+=cut
 
 around booked_check_missed_collection => sub {
     my ($orig, $self, $type, $events, $blocked_codes) = @_;
@@ -279,6 +332,12 @@ sub _setup_container_request_escalations_for_service {
     }
 }
 
+=head2 image_for_unit
+
+Working out which image to use for which container or service.
+
+=cut
+
 sub image_for_unit {
     my ($self, $unit) = @_;
     my $base = '/i/waste-containers';
@@ -325,6 +384,12 @@ sub image_for_unit {
     };
     return $images->{$container} || $images->{$service_id};
 }
+
+=head2 waste_containers
+
+Customer facing names for containers
+
+=cut
 
 sub waste_containers {
     my $self = shift;
@@ -475,6 +540,13 @@ sub waste_munge_request_form_data {
     $data->{"container-$container_id"} = 1;
 }
 
+=head2 waste_munge_request_data
+
+Get the right Echo data in place for container requests, including the action,
+reason, container IDs and title.
+
+=cut
+
 sub waste_munge_request_data {
     my ($self, $id, $data, $form) = @_;
 
@@ -603,6 +675,14 @@ sub request_cost {
     }
 }
 
+=head2 waste_munge_enquiry_form_pages
+
+The Bin not returned flow has some more complex setup depending on whether
+the property has an assisted collection or not, with an extra question,
+and showing/hiding different notices.
+
+=cut
+
 sub waste_munge_enquiry_form_pages {
     my ($self, $pages, $fields) = @_;
     my $c = $self->{c};
@@ -683,6 +763,12 @@ sub _enquiry_nice_title {
     return $category;
 }
 
+=head2 waste_munge_enquiry_data
+
+Get the right data in place for the bin not returned / waste spillage / escalation categories.
+
+=cut
+
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
     my $c = $self->{c};
@@ -721,7 +807,9 @@ sub waste_munge_enquiry_data {
 
 =head2 Bulky waste collection
 
-Sutton starts collections at 6am, and lets you cancel up until 6am.
+=over 4
+
+=item * Bulky collection is allowed for certain address types, if the property has a bulky service.
 
 =cut
 
@@ -733,12 +821,14 @@ sub bulky_allowed_property {
     return $self->bulky_enabled && $property->{has_bulky_service} && $valid_type;
 }
 
+=item * Collections start at 6am, and let you cancel up until 6am.
+
+=cut
+
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0, days_before => 0 } }
 
-=head2 bulky_collection_window_start_date
-
-K&S have an 11pm cut-off for looking to book next day collections.
+=item * There is an 11pm cut-off for looking to book next day collections.
 
 =cut
 
@@ -752,6 +842,10 @@ sub bulky_collection_window_start_date {
     return $start_date;
 }
 
+=item * There is a custom text prompt for the location field
+
+=cut
+
 sub bulky_location_text_prompt {
     my $self = shift;
 
@@ -760,7 +854,12 @@ sub bulky_location_text_prompt {
     "Please tell us where you will place the items for collection (the " . $text . " collection crews are different to the normal round collection crews and will not know any access codes to your property, so please include access codes here if appropriate)";
 }
 
-# Mandatory for bulky, not possible for small items
+=item * Item notes are mandatory for bulky, but not shown at all for small items
+
+=back
+
+=cut
+
 sub bulky_item_notes_field_mandatory {
     my $self = shift;
     return $self->{c}->stash->{small_items} ? 0 : 1;

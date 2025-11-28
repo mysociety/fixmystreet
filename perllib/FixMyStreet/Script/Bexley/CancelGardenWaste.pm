@@ -171,15 +171,25 @@ sub _cancel_direct_debit {
         return;
     }
 
-    my $payer_ref = $original_report->get_extra_metadata('direct_debit_contract_id');
-    if (!$payer_ref) {
-        $self->_vprint("  WARNING: Direct debit cancellation failed: direct_debit_contract_id not found on original report " . $original_report->id);
-        return;
+    # Check if we have a contract ID in metadata (modern WasteWorks)
+    my $contract_id = $original_report->get_extra_metadata('direct_debit_contract_id');
+
+    # For legacy pre-WasteWorks subscriptions, look up by UPRN
+    my $legacy_contract_ids;
+    if (!$contract_id) {
+        $legacy_contract_ids = $self->cobrand->waste_get_legacy_contract_ids($original_report);
+        if (!$legacy_contract_ids) {
+            $self->_vprint("  WARNING: No contract ID in metadata and no legacy contracts found for UPRN");
+            return;
+        }
+        $self->_vprint("  Found " . scalar(@$legacy_contract_ids) . " legacy contract(s) to try");
     }
 
-    $self->_vprint("  Cancelling Direct Debit plan with payer reference $payer_ref");
+    $self->_vprint("  Cancelling Direct Debit plan" . ($contract_id ? " with contract ID $contract_id" : ""));
+
     my $resp = $i->cancel_plan({
         report => $original_report,
+        $legacy_contract_ids ? (contract_ids => $legacy_contract_ids) : (),
     });
 
     # TODO Set a flag on report if failure here?

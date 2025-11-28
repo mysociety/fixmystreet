@@ -14,6 +14,7 @@ use FixMyStreet::App::Form::Waste::Garden::Renew::Bexley;
 use Try::Tiny;
 use JSON::MaybeXS;
 use Utils;
+use BexleyContracts;
 
 use Moo::Role;
 with 'FixMyStreet::Roles::Cobrand::SCP',
@@ -265,6 +266,60 @@ sub waste_report_extra_dd_data {
         my $contract_id = $orig_sub->get_extra_metadata('direct_debit_contract_id');
         $report->set_extra_metadata(direct_debit_contract_id => $contract_id);
         $report->update;
+    }
+}
+
+=head2 waste_get_legacy_contract_ids
+
+For legacy pre-WasteWorks garden subscriptions, Bexley needs to look up
+contract IDs by UPRN from a static database of historical subscriptions.
+
+This handles the transition period where old subscriptions don't have the
+direct_debit_contract_id stored in metadata.
+
+Returns an arrayref of contract IDs, or undef if none found.
+
+=cut
+
+sub waste_get_legacy_contract_ids {
+    my ($self, $report) = @_;
+
+    # TODO: Update this to use `$report->uprn` once GH-5745 is merged.
+    my $uprn = $report->get_extra_field_value('uprn');
+    return undef unless $uprn;
+
+    my $contract_ids = BexleyContracts::contract_ids_for_uprn($uprn);
+    return undef unless @$contract_ids;
+
+    return $contract_ids;
+}
+
+=head2 waste_get_current_payment_method
+
+For legacy pre-WasteWorks subscriptions without stored payment_method,
+check if there are legacy contracts in the BexleyContracts database for this UPRN.
+If legacy contracts exist, assume direct debit.
+
+This is safe because:
+- If the legacy subscription was actually direct debit, we need to cancel it via AccessPaySuite
+- If it was actually credit card, the DD cancellation will just not find anything to cancel
+
+Returns 'direct_debit' if legacy contracts found, undef otherwise.
+
+=cut
+
+sub waste_get_current_payment_method {
+    my ($self, $orig_sub) = @_;
+
+    my $property = $self->{c}->stash->{property};
+    return unless $property;
+
+    my $uprn = $property->{uprn};
+    return unless $uprn;
+
+    my $legacy_contract_ids = BexleyContracts::contract_ids_for_uprn($uprn);
+    if ($legacy_contract_ids && @$legacy_contract_ids) {
+        return 'direct_debit';
     }
 }
 

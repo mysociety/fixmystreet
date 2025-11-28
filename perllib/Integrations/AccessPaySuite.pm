@@ -229,10 +229,25 @@ sub archive_contract {
 =item cancel_plan
 
 Cancels a direct debit plan by archiving the contract.
-Takes an args hashref that must contain either contract_id directly or
-a report object that has the contract_id stored in its metadata.
+Takes an args hashref that must contain:
+- report: The report object containing the subscription
 
-Returns 1 on success or a hashref with an error key on failure.
+The method will look for a contract_id in the report's metadata. If found, it will
+attempt to cancel that single contract and return any errors that occur.
+
+If no contract_id is found in metadata, the caller can optionally provide an arrayref
+of contract IDs to try via the contract_ids parameter:
+
+    $integration->cancel_plan({
+        report => $report,
+        contract_ids => ['CONTRACT-1', 'CONTRACT-2'],
+    });
+
+If multiple contract IDs are provided via contract_ids, the method will attempt to
+cancel all of them, ignoring any errors (useful for legacy scenarios where we may
+not know which contract is the correct one).
+
+Returns 1 on success, or a hashref with an error key on failure.
 
 =cut
 sub cancel_plan {
@@ -240,16 +255,21 @@ sub cancel_plan {
     my $report = $args->{report};
     my $contract_id = $report->get_extra_metadata('direct_debit_contract_id');
 
-    unless ($contract_id) {
-        die "No direct debit contract ID found in report metadata";
-    }
-
-    my $resp = $self->archive_contract($contract_id);
-
-    if (ref $resp eq 'HASH' && $resp->{error}) {
-        return $resp;
-    } else {
+    if ($contract_id) {
+        # Single contract from metadata - handle errors properly
+        my $resp = $self->archive_contract($contract_id);
+        if (ref $resp eq 'HASH' && $resp->{error}) {
+            return $resp;
+        }
         return 1;
+    } elsif ($args->{contract_ids}) {
+        # Multiple contract IDs for legacy scenarios - try all, ignoring errors
+        for my $cid (@{$args->{contract_ids}}) {
+            $self->archive_contract($cid);
+        }
+        return 1;
+    } else {
+        return { error => "No contract ID found for this subscription" };
     }
 }
 

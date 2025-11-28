@@ -1,3 +1,15 @@
+=head1 NAME
+
+FixMyStreet::Cobrand::Kingston - code specific to the Kingston cobrand
+
+=head1 SYNOPSIS
+
+Kingston is a London borough, we integrate with Echo for WasteWorks.
+
+=head1 DESCRIPTION
+
+=cut
+
 package FixMyStreet::Cobrand::Kingston;
 use parent 'FixMyStreet::Cobrand::UKCouncils';
 
@@ -62,6 +74,12 @@ my %CONTAINERS = (
 );
 lock_hash(%CONTAINERS);
 
+=head2 waste_check_staff_payment_permissions
+
+Staff take payments off-session, then enter an authorization code on our site.
+
+=cut
+
 sub waste_check_staff_payment_permissions {
     my $self = shift;
     my $c = $self->{c};
@@ -70,6 +88,20 @@ sub waste_check_staff_payment_permissions {
 
     $c->stash->{staff_payments_allowed} = 'paye';
 }
+
+=head2 Garden waste
+
+=over 4
+
+=item * Line items will include an RBK prefix
+
+=item * Garden collection is from 6:30am
+
+=item * Garden subscriptions are 5 bins maximum
+
+=back
+
+=cut
 
 sub waste_payment_ref_council_code { "RBK" }
 
@@ -472,6 +504,13 @@ sub waste_munge_request_form_data {
     %$data = (%$data, %$new_data);
 }
 
+=head2 waste_munge_request_data
+
+Get the right Echo data in place for container requests, including the action,
+reason, container IDs and title.
+
+=cut
+
 sub waste_munge_request_data {
     my ($self, $id, $data, $form) = @_;
 
@@ -576,7 +615,9 @@ sub admin_fee_cost {
 
 =head2 Bulky waste collection
 
-Kingston starts collections at 6:30am, and lets you cancel up until then.
+=over 4
+
+=item * Collection is allowed for certain address types, including a domestic farm if it has a domestic refuse bin.
 
 =cut
 
@@ -592,12 +633,14 @@ sub bulky_allowed_property {
     return $self->bulky_enabled && $valid_type && $domestic_farm;
 }
 
+=item * Kingston starts collections at 6:30am, and lets you cancel up until then.
+
+=cut
+
 sub bulky_collection_time { { hours => 6, minutes => 30 } }
 sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 30, days_before => 0 } }
 
-=head2 bulky_collection_window_start_date
-
-K&S have an 11pm cut-off for looking to book next day collections.
+=item * There is an 11pm cut-off for looking to book next day collections.
 
 =cut
 
@@ -610,6 +653,12 @@ sub bulky_collection_window_start_date {
     }
     return $start_date;
 }
+
+=item * There is a custom prompt for the bulky location field
+
+=back
+
+=cut
 
 sub bulky_location_text_prompt {
     "Please tell us where you will place the items for collection (include any access codes the crew will need)";

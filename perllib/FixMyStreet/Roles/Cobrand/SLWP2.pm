@@ -398,7 +398,13 @@ sub waste_munge_report_data {
     $c->set_param('service_id', $id);
 }
 
-# Garden waste
+=head2 Garden waste
+
+Garden containers are stored in a different location than other containers.
+We loop through the provided information, looking for a valid container entry
+and set the garden container data accordingly.
+
+=cut
 
 sub garden_service_name { 'garden waste collection service' }
 sub garden_echo_container_name { 'Container Details' } # Not actually used, TODO refactor
@@ -436,7 +442,12 @@ sub garden_container_data_extract {
     return ($garden_bins, $garden_sacks, $garden_cost, $garden_container, $container_end_date);
 }
 
-# We don't have overdue renewals here
+=over 4
+
+=item * There are no overdue (post subscription end) renewals
+
+=cut
+
 sub waste_sub_overdue { 0 }
 
 sub alternative_backend_field_names {
@@ -446,6 +457,10 @@ sub alternative_backend_field_names {
     );
     return $alternative_name{$field};
 }
+
+=item * Set the various Echo fields depending on the data provided
+
+=cut
 
 sub waste_garden_sub_params {
     my ($self, $data, $type) = @_;
@@ -520,6 +535,10 @@ sub waste_garden_mod_params {
         $c->set_param('Container_Ordered_Quantity', $data->{new_bins});
     }
 }
+
+=item * There is different form behaviour if the property has sacks
+
+=cut
 
 sub waste_garden_subscribe_form_setup {
     my ($self) = @_;
@@ -620,6 +639,8 @@ sub open311_post_send {
 }
 
 =item * Look for completion photos on updates, and ignore "Not Completed" without a resolution code
+
+=back
 
 =cut
 

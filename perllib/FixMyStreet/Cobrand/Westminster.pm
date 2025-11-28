@@ -211,6 +211,7 @@ sub categories_restriction {
             -or => [
                 'me.send_method' => undef, # Open311 categories
                 'me.send_method' => '', # Open311 categories that have been edited in the admin
+                'me.send_method' => 'Open311', # Open311 categories that have been added manually - rare
             ]
         });
 }
