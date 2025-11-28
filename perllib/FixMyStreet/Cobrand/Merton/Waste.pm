@@ -221,9 +221,9 @@ sub image_for_unit {
 
         # Fallback to the service if no container match
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),
-        $SERVICE_IDS{domestic_food} => "$base/caddy-brown-large",
+        $SERVICE_IDS{domestic_food} => { src => "$base/caddy-brown-large", alt => 'Large brown box' },
         $SERVICE_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
-        $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
+        $SERVICE_IDS{domestic_mixed} => { src => "$base/box-green-mix", alt => 'Green box' },
         $SERVICE_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
         $SERVICE_IDS{garden} => svg_container_bin('wheelie', '#8B5E3D'),
         $SERVICE_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
