@@ -878,7 +878,9 @@ FixMyStreet::override_config {
             },
         );
         $new_sub_report->set_extra_fields(
-            { name => 'uprn', value => $uprn } );
+            { name => 'uprn', value => $uprn },
+            { name => 'payment_method', value => 'credit_card' },
+        );
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
@@ -2538,8 +2540,8 @@ FixMyStreet::override_config {
             },
         );
         $new_sub_report->set_extra_fields(
-            { name => 'uprn', value => '10001' },
-            { name => 'payment_method', value => 'direct_debit' },
+            { name => 'uprn', value => '20001' },
+            # Don't set payment_method - let the hook detect it from legacy contracts
         );
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
@@ -2562,7 +2564,7 @@ FixMyStreet::override_config {
 
         $agile_mock->mock( 'CustomerSearch', sub {
             my ($self, $uprn) = @_;
-            return {} unless $uprn eq '10001';
+            return {} unless $uprn eq '20001';
             return {
                 Customers => [
                     {
@@ -2575,7 +2577,7 @@ FixMyStreet::override_config {
                             {
                                 EndDate => '12/12/2025 12:21',
                                 ServiceContractStatus => 'ACTIVE',
-                                UPRN => '10001',
+                                UPRN => '20001',
                                 Reference => $agile_contract_id,
                                 WasteContainerQuantity => 1,
                                 Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Direct Debit' } ],
@@ -2593,10 +2595,10 @@ FixMyStreet::override_config {
             return {};
         });
 
-        $mech->get_ok('/waste/10001');
+        $mech->get_ok('/waste/20001');
         like $mech->content, qr/waste-service-subtitle.*Garden waste/s, 'Garden waste service is shown';
 
-        $mech->get_ok('/waste/10001/garden_cancel');
+        $mech->get_ok('/waste/20001/garden_cancel');
         $mech->submit_form_ok({
             with_fields => {
                 has_reference => 'Yes',
@@ -2617,9 +2619,93 @@ FixMyStreet::override_config {
 
         $mech->content_contains('subscription has been cancelled');
 
-        # Mock in t/Mock/Bexley.pm returns 'TEST-CONTRACT-10001' for UPRN 10001
+        # Mock in t/Mock/Bexley.pm returns 'TEST-CONTRACT-20001' for UPRN 20001
         is scalar(@archived_contract_ids), 1, 'archive_contract was called once';
-        is $archived_contract_ids[0], 'TEST-CONTRACT-10001', 'legacy contract_id from database was used';
+        is $archived_contract_ids[0], 'TEST-CONTRACT-20001', 'legacy contract_id from database was used';
+
+        $access_mock->unmock_all;
+    };
+
+    subtest 'Test waste_get_current_payment_method hook for legacy subscriptions' => sub {
+        $mech->delete_problems_for_body($body->id);
+        $mech->clear_emails_ok;
+
+        my ($sub) = $mech->create_problems_for_body(
+            1,
+            $body->id,
+            'Garden Subscription - New',
+            {
+                category => 'Garden Subscription',
+                title => 'Garden Subscription - New',
+                external_id => "Agile-HOOK-TEST",
+                user => $user,
+            },
+        );
+        $sub->set_extra_fields(
+            { name => 'uprn', value => '20001' },
+            # No payment_method, should be auto-detected.
+        );
+        $sub->update;
+        FixMyStreet::Script::Reports::send();
+
+        $agile_mock->mock( 'CustomerSearch', sub {
+            my ($self, $uprn) = @_;
+            return {} unless $uprn eq '20001';
+            return {
+                Customers => [
+                    {
+                        CustomerExternalReference => 'CUSTOMER_HOOK_TEST',
+                        CustomerReference => 'GWIT-HOOK',
+                        Firstname => 'Hook',
+                        Surname => 'Test',
+                        CustomertStatus => 'ACTIVATED',
+                        ServiceContracts => [
+                            {
+                                EndDate => '12/12/2025 12:21',
+                                ServiceContractStatus => 'ACTIVE',
+                                UPRN => '20001',
+                                Reference => 'AGILE-HOOK-TEST',
+                                WasteContainerQuantity => 1,
+                            },
+                        ],
+                    },
+                ],
+            };
+        });
+
+        # Track archive_contract calls
+        my @hook_archived_contract_ids;
+        $access_mock->mock('archive_contract', sub {
+            my ($self, $contract_id) = @_;
+            push @hook_archived_contract_ids, $contract_id;
+            return {};
+        });
+
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/20001/garden_cancel');
+        $mech->submit_form_ok({
+            with_fields => {
+                has_reference => 'Yes',
+                customer_reference => 'GWIT-HOOK',
+            },
+        });
+        $mech->submit_form_ok({
+            with_fields => {
+                reason => 'Other',
+                reason_further_details => 'Hook test',
+            },
+        });
+        $mech->submit_form_ok({
+            with_fields => {
+                confirm => 1,
+            },
+        });
+
+        $mech->content_contains('subscription has been cancelled');
+
+        # Verify that DD cancellation was attempted
+        is scalar(@hook_archived_contract_ids), 1, 'archive_contract called once';
+        is $hook_archived_contract_ids[0], 'TEST-CONTRACT-20001', 'Correct contract_id used';
 
         $access_mock->unmock_all;
     };

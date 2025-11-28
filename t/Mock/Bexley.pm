@@ -34,14 +34,10 @@ $bexley_mocks{dbi}->mock( 'connect', sub {
         if ( $sql =~ /SELECT contract_id/ ) {
             my $uprn = $params[0];
             # Return test contract IDs for test UPRNs
-            if ( $uprn == 10001 ) {
+            # UPRN 20001 has a legacy contract for testing legacy DD cancellation
+            if ( $uprn == 20001 ) {
                 return [
-                    { contract_id => 'TEST-CONTRACT-10001' },
-                ];
-            } elsif ( $uprn == 10002 ) {
-                return [
-                    { contract_id => 'TEST-CONTRACT-10002-1' },
-                    { contract_id => 'TEST-CONTRACT-10002-2' },
+                    { contract_id => 'TEST-CONTRACT-20001' },
                 ];
             }
             return [];
@@ -224,6 +220,15 @@ sub _site_info {
             AccountSiteUPRN => '10006',
             Site            => {
                 SiteShortAddress => ', 6, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
+        20001 => {
+            AccountSiteID   => 20001,
+            AccountSiteUPRN => '20001',
+            Site            => {
+                SiteShortAddress => ', 20001, LEGACY STREET, DA1 3LD',
                 SiteLatitude     => 51.466707,
                 SiteLongitude    => 0.181108,
             },
@@ -572,6 +577,17 @@ sub _worksheet_detail_service_items {
         ],
         5 => [
             { ServiceItemName => 'PA-55' },
+        ],
+        20001 => [
+            {   SiteServiceID          => 20001,
+                ServiceItemDescription => 'Garden waste',
+                ServiceItemName => 'GA-140',
+                ServiceName => 'Brown Wheelie Bin',
+                NextCollectionDate   => '2024-02-07T00:00:00',
+                SiteServiceValidFrom => '2024-01-01T00:00:00',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
+                RoundSchedule => 'RND-1 Mon',
+            },
         ],
     };
 }
