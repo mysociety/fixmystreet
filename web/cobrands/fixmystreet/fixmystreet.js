@@ -1091,15 +1091,15 @@ $.extend(fixmystreet.set_up, {
         }
         var prevFile;
         var photodrop = new Dropzone($dropzone[0], {
-            url: '/photo/upload',
+            url: '/photo/upload?get_latlon=1',
             paramName: 'photo',
             maxFiles: max_photos,
             addRemoveLinks: true,
             thumbnailHeight: 150,
             thumbnailWidth: 150,
-            resizeWidth: 2048,
-            resizeHeight: 2048,
-            resizeQuality: 0.6,
+            // resizeWidth: 2048,
+            // resizeHeight: 2048,
+            // resizeQuality: 0.6,
             acceptedFiles: 'image/jpeg,image/pjpeg,image/gif,image/tiff,image/png,.png,.tiff,.tif,.gif,.jpeg,.jpg',
             dictDefaultMessage: default_message,
             dictCancelUploadConfirmation: translation_strings.upload_cancel_confirmation,
