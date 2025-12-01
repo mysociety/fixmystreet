@@ -108,7 +108,7 @@ sub state_groups_inspect {
         [ 'Scheduled', [ 'action scheduled' ] ],
         [ 'Pending', [ 'in progress' ] ],
         [ 'Fixed', [ 'fixed - council' ] ],
-        [ 'Closed', [ 'not responsible', 'duplicate', 'unable to fix' ] ],
+        [ 'Closed', [ 'not responsible', 'duplicate', 'unable to fix', 'internal referral' ] ],
     ]
 }
 
