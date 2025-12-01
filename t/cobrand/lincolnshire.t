@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use Test::MockModule;
 use Open311::GetServiceRequests;
 use Open311::GetServiceRequestUpdates;
 use FixMyStreet::DB;
@@ -11,7 +12,8 @@ use File::Temp 'tempdir';
 
 my $mech = FixMyStreet::TestMech->new;
 
-use_ok 'FixMyStreet::Cobrand::Lincolnshire';
+my $cobrand_mock = Test::MockModule->new('FixMyStreet::Cobrand::Lincolnshire');
+$cobrand_mock->mock(open311_send_category_change => sub { 1 } );
 
 my $params = {
     send_method => 'Open311',
@@ -23,6 +25,7 @@ my $params = {
     cobrand => 'lincolnshire',
 };
 my $body = $mech->create_body_ok(2232, 'Lincolnshire County Council', $params);
+$mech->create_contact_ok(body => $body, category => 'Other', email => 'Other');
 $mech->create_contact_ok(body_id => $body->id, category => 'Pothole', email => 'potholes@example.org');
 $mech->create_contact_ok(body_id => $body->id, category => 'Surface Issue', email => 'surface_issue@example.org',
     extra => { _fields => [ { code => '_wrapped_service_code', variable => 'true', datatype => 'string' } ] });
@@ -137,7 +140,7 @@ FixMyStreet::override_config {
             { confirmed => DateTime->now }
         );
 
-        my $params = { description => 'Description' };
+        my $params = { description => 'text' };
 
         subtest 'Regular category change' => sub {
             $report->update({ category => 'Surface Issue' });
@@ -149,7 +152,7 @@ FixMyStreet::override_config {
             $report->update_extra_field({ name => '_wrapped_service_code', value => 'ABC_DEF' });
             $report->update;
             $comment->discard_changes;
-            $params = { description => 'Description' };
+            delete $params->{service_code};
             $cobrand->open311_munge_update_params($params, $comment);
             is $params->{service_code}, 'ABC_DEF', 'Service code is set from field value';
         };
@@ -160,7 +163,7 @@ FixMyStreet::override_config {
                 'f', 'confirmed', 'confirmed',
                 { confirmed => DateTime->now }
             );
-            $params = { description => 'Description' };
+            delete $params->{service_code};
             $cobrand->open311_munge_update_params($params, $regular_comment);
             is scalar keys %$params, 1, 'No parameters added for non-category change comments';
         };
