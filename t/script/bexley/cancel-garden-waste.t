@@ -263,7 +263,6 @@ FixMyStreet::override_config {
 
             my $legacy_uprn = '20001';  # UPRN that has legacy contracts in mock
 
-            $access_mock->unmock('cancel_plan');
             $access_mock->mock(
                 'archive_contract',
                 sub {

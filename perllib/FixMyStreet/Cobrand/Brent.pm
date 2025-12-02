@@ -1472,7 +1472,7 @@ sub waste_garden_sub_params {
     $c->set_param('Paid_Collection_Container_Type', $container);
     $c->set_param('Paid_Collection_Container_Quantity', $data->{bins_wanted});
     $c->set_param('Payment_Value', $data->{cost_pa});
-    if ( $data->{new_bins} > 0 && $container != GARDEN_WASTE_PAID_COLLECTION_SACK ) {
+    if ( ($data->{new_bins} || 0) > 0 && $container != GARDEN_WASTE_PAID_COLLECTION_SACK ) {
         $c->set_param('Container_Type', $container);
         $c->set_param('Container_Quantity', $data->{new_bins});
     }

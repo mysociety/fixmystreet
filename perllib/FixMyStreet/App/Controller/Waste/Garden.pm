@@ -223,8 +223,8 @@ sub process_garden_cancellation : Private {
     $c->set_param($end_date_field, $now->dmy('/'));
 
     my $service = $c->cobrand->garden_current_subscription;
-    # Not actually used by Kingston/Sutton
-    if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin240} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin140}) {
+    # Bromley record/send the number of bins being removed
+    if ($c->cobrand->moniker eq 'bromley') {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
     }
