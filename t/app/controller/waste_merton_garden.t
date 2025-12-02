@@ -596,7 +596,7 @@ FixMyStreet::override_config {
         $mech->content_contains($two_cost_human);
         $mech->content_contains($delivery_human);
         $mech->submit_form_ok({ with_fields => { goto => 'alter' } });
-        $mech->content_contains('<span id="cost_per_year">' . $two_cost_human);
+        $mech->content_lacks('<span id="cost_per_year">' . $two_cost_human);
         $mech->content_contains('<span id="pro_rata_cost">' . $total_human);
         $mech->submit_form_ok({ with_fields => { current_bins => 1, bins_wanted => 2 } });
         $mech->waste_submit_check({ with_fields => { tandc => 1 } });
