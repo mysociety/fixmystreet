@@ -13,6 +13,7 @@ use FixMyStreet::App::Form::Waste::Garden::Sacks::Purchase;
 use FixMyStreet::App::Form::Waste::Garden::Transfer;
 use WasteWorks::Costs;
 use Hash::Util qw(lock_hash);
+use JSON::MaybeXS;
 
 has feature => (
     is => 'ro',
@@ -234,6 +235,27 @@ sub process_garden_cancellation : Private {
         $data->{new_bins} = $bin_count * -1;
     }
     $c->forward('setup_garden_sub_params', [ $data, undef ]);
+
+    # Check for existing recent cancellation to prevent duplicates from concurrent requests
+    # This is Bexley-specific as Bexley auto-confirms cancellations
+    if ($c->cobrand->moniker eq 'bexley') {
+        my $uprn = $c->stash->{property}{uprn};
+        my $existing_cancel = $c->cobrand->problems->search({
+            category => 'Cancel Garden Subscription',
+            state => 'confirmed',  # Bexley auto-confirms cancellations
+            created => { '>=' => \"current_timestamp-'1 hour'::interval" },
+            # TODO: Update this to use the new `uprn` column once GH-5745 is merged.
+            extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) }
+        })->first;
+
+        if ($existing_cancel) {
+            # Already cancelled recently - show confirmation without creating duplicate
+            $c->stash->{payment_method} = $existing_cancel->get_extra_field_value('payment_method');
+            $c->stash->{template} = 'waste/garden/cancel_confirmation.html';
+            $c->stash->{property_id} = $c->stash->{property}{id};
+            $c->detach;
+        }
+    }
 
     $c->forward('/waste/add_report', [ $data, 1 ]) or return;
 

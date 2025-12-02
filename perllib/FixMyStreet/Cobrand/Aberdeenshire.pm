@@ -310,10 +310,10 @@ sub disambiguate_location {
 
 =head2 pin_colour
 
-* Green if fixed or closed
 * Grey if no further action or not responsible
-* Orange work if in progress
 * Orange if investigating or planned or internal referral
+* Green if fixed or closed
+* Orange work if in progress
 * Orange if defect
 * Red if open or action scheduled
 
@@ -326,10 +326,10 @@ sub is_defect {
 
 sub pin_colour {
     my ( $self, $p ) = @_;
-    return 'green' if $p->is_fixed || $p->is_closed;
     return 'grey' if $p->state eq 'not responsible' || $p->state eq 'unable to fix';
-    return 'orange-work' if $p->state eq 'in progress';
     return 'orange' if $p->state eq 'investigating' || $p->state eq 'planned' || $p->state eq 'internal referral';
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'orange-work' if $p->state eq 'in progress';
     return 'orange' if $self->is_defect($p);
     # Confirmed/open or action scheduled
     return 'red';
