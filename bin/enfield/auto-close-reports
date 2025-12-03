@@ -1,0 +1,44 @@
+#!/usr/bin/env perl
+#
+# Close reports older than 28 days if they have state 'action_scheduled' or
+# 'investigating'
+
+use strict;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use CronFns;
+use Getopt::Long::Descriptive;
+use FixMyStreet::Script::UK::AutoClose;
+
+my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
+CronFns::language($site);
+
+my $default_text = 'Report automatically closed because older than 28 days.';
+
+my ($opts, $usage) = describe_options(
+    '%c %o',
+    ['commit!', "actually close reports and send emails. Omitting this flag will do a dry-run"],
+    ['closure_text=s', "text of the message to add to reports", { default => $default_text } ],
+    ['days:i', "Number of days before autoclosing", { default => 28, callbacks => { positive => sub { shift() > 0 } } } ],
+    ['help|h', "print usage message and exit" ],
+    { show_defaults => 1 }
+);
+print($usage->text), exit if $opts->help;
+
+warn "DRY RUN: use --commit to close reports\n" unless $opts->commit;
+
+FixMyStreet::Script::UK::AutoClose->new(
+    commit => $opts->commit,
+    retain_alerts => 1,
+    body_name => 'Enfield Council',
+    states => [ 'action_scheduled', 'investigating' ],
+    to => $opts->days,
+    closure_text => $opts->closure_text,
+)->close;
