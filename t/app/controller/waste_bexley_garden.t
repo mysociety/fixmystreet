@@ -2628,6 +2628,103 @@ FixMyStreet::override_config {
         $access_mock->unmock_all;
     };
 
+    subtest 'Test legacy DD cancellation without any orig_sub in database' => sub {
+        # This test simulates a truly legacy subscription where there is NO
+        # subscription record in FMS database at all (pre-WasteWorks era).
+        # This would have caused the bug where direct_debit_cancel_sub tried
+        # to call methods on undefined $c->stash->{orig_sub}.
+
+        $mech->delete_problems_for_body($body->id);
+        $mech->clear_emails_ok;
+
+        # Don't create any subscription report - simulating pre-WasteWorks legacy
+        # where subscription only exists in Agile/Whitespace, not in FMS database
+
+        $whitespace_mock->mock(
+            'GetSiteCollections',
+            sub {
+                [{
+                    SiteServiceID => 1,
+                    ServiceItemDescription => 'Garden waste',
+                    ServiceItemName => 'GA-140',
+                    ServiceName => 'Brown Wheelie Bin',
+                    NextCollectionDate => '2024-02-07T00:00:00',
+                    SiteServiceValidFrom => '2020-01-01T00:00:00',  # Old date = legacy
+                    SiteServiceValidTo => '0001-01-01T00:00:00',
+                    RoundSchedule => 'RND-1 Mon',
+                }];
+            }
+        );
+
+        $agile_mock->mock( 'CustomerSearch', sub {
+            my ($self, $uprn) = @_;
+            return {} unless $uprn eq '20001';
+            return {
+                Customers => [
+                    {
+                        CustomerExternalReference => 'CUSTOMER_NO_ORIG',
+                        CustomerReference => 'GWIT-NO-ORIG',
+                        Firstname => 'No',
+                        Surname => 'OrigSub',
+                        CustomertStatus => 'ACTIVATED',
+                        ServiceContracts => [
+                            {
+                                EndDate => '12/12/2025 12:21',
+                                ServiceContractStatus => 'ACTIVE',
+                                UPRN => '20001',
+                                Reference => 'AGILE-NO-ORIG',
+                                WasteContainerQuantity => 1,
+                                Payments => [ { PaymentStatus => 'Paid', Amount => '100', PaymentMethod => 'Direct Debit' } ],
+                            },
+                        ],
+                    },
+                ],
+            };
+        });
+
+        my @archived_contract_ids;
+        $access_mock->mock('archive_contract', sub {
+            my ($self, $contract_id) = @_;
+            push @archived_contract_ids, $contract_id;
+            return {};
+        });
+
+        $mech->log_in_ok($staff_user->email);
+        $mech->get_ok('/waste/20001/garden_cancel');
+        $mech->submit_form_ok({
+            with_fields => {
+                has_reference => 'Yes',
+                customer_reference => 'GWIT-NO-ORIG',
+            },
+        });
+        $mech->submit_form_ok({
+            with_fields => {
+                reason => 'Other',
+                reason_further_details => 'Truly legacy - no orig_sub',
+            },
+        });
+        $mech->submit_form_ok({
+            with_fields => {
+                confirm => 1,
+            },
+        });
+
+        $mech->content_contains('subscription has been cancelled');
+
+        # Verify the cancellation report was created and confirmed
+        my $cancel_report = FixMyStreet::DB->resultset('Problem')->search({
+            category => 'Cancel Garden Subscription',
+        })->first;
+        ok $cancel_report, 'Cancellation report was created';
+        is $cancel_report->state, 'confirmed', 'Cancellation report was confirmed despite no orig_sub';
+
+        # Verify DD cancellation was attempted using legacy contract lookup
+        is scalar(@archived_contract_ids), 1, 'archive_contract was called once';
+        is $archived_contract_ids[0], 'TEST-CONTRACT-20001', 'legacy contract_id from BexleyContracts database was used';
+
+        $access_mock->unmock_all;
+    };
+
     subtest 'Test waste_get_current_payment_method hook for legacy subscriptions' => sub {
         $mech->delete_problems_for_body($body->id);
         $mech->clear_emails_ok;

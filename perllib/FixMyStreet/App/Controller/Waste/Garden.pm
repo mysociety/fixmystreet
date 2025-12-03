@@ -672,9 +672,15 @@ sub direct_debit_cancel_sub : Private {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{report};
-    my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
-    $p->set_extra_metadata(payerReference => $ref);
-    $p->update;
+    # Copy payer reference from original subscription if available
+    my $ref;
+    if ($c->stash->{orig_sub}) {
+        $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
+        if ($ref) {
+            $p->set_extra_metadata(payerReference => $ref);
+            $p->update;
+        }
+    }
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
     my $i = $c->cobrand->get_dd_integration;
@@ -684,7 +690,7 @@ sub direct_debit_cancel_sub : Private {
     # For Bexley legacy subscriptions without stored contract ID, look up by UPRN
     my @extra_args;
     if ($c->cobrand->moniker eq 'bexley' && !$p->get_extra_metadata('direct_debit_contract_id')) {
-        if (my $legacy_ids = $c->cobrand->waste_get_legacy_contract_ids($c->stash->{orig_sub})) {
+        if (my $legacy_ids = $c->cobrand->waste_get_legacy_contract_ids($p)) {
             push @extra_args, contract_ids => $legacy_ids;
         }
     }
