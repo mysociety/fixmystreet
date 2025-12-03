@@ -1,25 +1,86 @@
 @import "_colours";
 @import "../sass/layout";
 
-#site-logo {
-    height: 9rem;
-    width: 5.9375rem;
+/* TYPOGRAPHY */
+h1,
+h1.govuk-heading-xl {
+    font-size: 2rem;
+    line-height: 1.188;
 
-    .mappage & {
-        width: 3.43rem;
-        height: 4rem;
-    }
-
-    &:focus {
-        outline: 2px solid $blue;
-        background-color: $white;
+    @media (min-width: $screen-size-min-width-large) {
+        font-size: 2.5rem;
+        line-height: 1.2;
     }
 }
 
-.nav-wrapper {
-    top: 40px;
-    .mappage & {
-        top: 10px;
+h2,
+h2.govuk-heading-l {
+    font-size: 1.75rem;
+    line-height: 1.214;
+
+    @media (min-width: $screen-size-min-width-large) {
+        font-size: 2rem;
+        line-height: 1.25;
+    }
+}
+
+.h2-small {
+    font-size: 1.375rem;
+    line-height: 1.273;
+
+    @media (min-width: $screen-size-min-width-large) {
+        font-size: 1.5rem;
+        line-height: 1.333;
+    }
+}
+
+h3,
+h3.govuk-heading-m {
+    font-size: 1.375rem;
+    line-height: 1.273;
+
+    @media (min-width: $screen-size-min-width-large) {
+        font-size: 1.5rem;
+        line-height: 1.333;
+    }
+}
+
+.h3-small {
+    font-size: 1.25rem;
+    line-height: 1.3;
+
+    @media (min-width: $screen-size-min-width-large) {
+        font-size: 1.25rem;
+        line-height: 1.4;
+    }
+}
+
+.body-large {
+    font-size: 1.25rem;
+    line-height: 1.4rem;
+}
+
+/* GENERAL */
+input[type="text"], input[type="email"], textarea {
+    border-radius: $border-radius;
+}
+
+label,
+body.waste label {
+    // Overrides _waste default
+    font-weight: 600 !important;
+    @extend .body-large;
+}
+
+/* NAVBAR */
+#site-logo {
+    height: 9rem;
+    width: 6.0625rem;
+    background-size: auto 7rem;
+
+    &:focus {
+        outline: 2px solid $yellow;
+        background-color: $white;
     }
 }
 
@@ -33,53 +94,58 @@
 
     a,
     span {
-        padding: 0.5em 0.75em;
-        font-size: 18px;
-        font-weight: 700;
-        text-decoration: none;
+        @extend .body-large;
     }
 
     a {
         &:hover, &:focus {
-            background-color: $blue;
-            color: $white;
             text-decoration: underline;
+            color: $navy-blue;
         }
     }
 }
 
+/* FRONTPAGE */
 #front-main {
-    margin-top: 60px;
-    padding: 0 1em;
+    padding: 1rem 1.875rem 4rem;
 
     #front-main-container {
-        padding: 3em;
-        border-top: 4px solid $green;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    @media (min-width: $screen-size-min-width-large) {
+        padding: 1rem 3.125rem 6rem;
+
+        h1 {
+            margin-bottom: 3rem;
+        }
+    }
+
+    ul {
+        margin-bottom: 0;
     }
 }
 
-.content {
-    padding: 3em;
+.postcode-form-box {
+    div {
+        flex-direction: row;
+    }
+
+    @media (min-width: $screen-size-min-width-large) {
+        ul {
+            margin-top: 3rem;
+        }
+    }
 }
 
-input.form-error,
-textarea.form-error {
-    border-radius: 4px;
-}
-
-.kingston-footer {
-    margin-top: 4em;
-}
-
-body.mappage #site-header {
-    height: $mappage-header-height - 3px;
-}
-
-// FOOTER
-
+/* FOOTER */
 .site-footer {
-    .footer-logo {
-        width: 8em;
-        height: 9.31em;
+    margin-top: 0;
+    padding: 2rem 1.875rem 4rem;
+    column-gap: 4rem;
+
+    @media (min-width: $screen-size-min-width-large) {
+        padding: 3rem 3.125rem 4rem;
     }
 }
