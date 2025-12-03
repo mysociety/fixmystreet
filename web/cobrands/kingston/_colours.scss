@@ -1,146 +1,130 @@
 /* COLOURS */
 
-$menu-image: 'menu-black';
 
-$red: #a0505c;
-$black: #3c3c3c;
-$green: #029A81;
-$blue: #09509d;
-$blue-l1: #0c69cd;
+$black: #0B0C0C;
 $white: #fff;
-$yellow: #fdb945;
+$red: #AD0000;
+$green: #00681F;
+$green-600: #004E17;
+$navy-blue: #162655; // RBK Blue
+$blue: #0060AC;
+$blue-600: #003078;
+$yellow: #FFDD00;
+$purple: #4C2C92;
+$grey-300: #F3F2F1;
+$grey-400: #B1B4B6;
+$grey-500: #505A5F;
+$grey-600: #475054; // Text secondary
 
-$primary: $red;
+$screen-size-min-width-tablet: 48rem; // 768px
+$screen-size-min-width-large: 75rem; // 1200px
+
+$primary: $blue;
 $primary_b: $black;
-$primary_text: $primary_b;
+$primary_text: $white;
 $primary_link_color: $blue;
-$primary_link_hover_color: $blue-l1;
+$primary_link_hover_color: $blue-600;
 
 $link-color: $blue;
-$link-hover-color: $blue-l1;
-$link-visited-color: $primary;
+$link-hover-color: $blue-600;
+$link-visited-color: $purple;
 
-$base_bg: #eef1e6;
-$base_fg: #1a1a1a;
+$base_bg: $white;
+$base_fg: $black;
 
 $nav_background_colour: $white;
-$nav_colour: $primary_b;
-$nav_hover_background_colour: $white;
+$nav_colour: $navy-blue;
+$nav_hover_background_colour: transparent;
 
 $col_click_map: $primary;
 $col_fixed_label: $primary;
 
-// $header-top-border-width: 4px;
+$header-top-border-width: 0;
 
-$mappage-header-height: 70px;
-$body-font: 'Noto Sans', sans-serif;
-$border-radius: 25px;
+$mappage-header-height: 9rem; // Desktop
+$heading-font: "Open Sans", serif;
+$body-font: "Open Sans", serif;
+$meta-font: "Open Sans", serif;
+
+$border-radius: 8px;
 //The orginal website uses a width of 1280px, however that looks
 //way to spacious for page with no much elements.
-$container-max-width: 1024px;
+$container-max-width: 1340px;
 
 $dropzone-border-colour: #999;
 $dropzone-button-text: $white;
-$dropzone-button-background: #00703c; // match govuk-success-colour;
-$dropzone-button-border: #00703c;
+$dropzone-button-background: $green;
+$dropzone-button-border: $green-600;
 $dropzone-link-color--awakened: #999;
 $dropzone-border-color--full: $red;
 $dropzone-background-color: $white;
 
-
-$front-main-container-background-desktop: $white;
+$front-main-color-desktop: $primary_b;
+$front-main-color: $primary_b;
+$front-main-container-background-desktop: transparent;
 $postcodeform-background: transparent;
+$postcodeform-color-desktop: $primary_b;
+$postcodeform-color: $primary_b;
 
-@mixin kingston-form-input($margin: 0.5em 0, $padding: 5px) {
-    margin-right: 5px;
+@mixin kingston-form-input($margin: 0.5em 0.5em 0.5em 0, $padding: 0.5rem 0.5rem) {
+    margin: $margin;
     padding: $padding;
-    border: 1px solid #bbb;
-    border-radius: 5px;
+    border: 2px solid $black;
     box-shadow: none;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: $grey-600;
 
     &:focus {
-        outline: none; // hide browser default outline, to match screenshot in branding guidelines
-        border: 1px solid $green;
-        background-color: mix($green, $white, 5%);
-        box-shadow: 0 1px 3px #e1e1e1, 0 0 4px $green;
+        box-shadow: 0px 0px 0px 4px $yellow;
+        outline: none;
     }
 }
 
-@mixin kingston-form-label() {
-    color: $black;
-    font-weight: 700;
-}
+$button-primary-bg-top: $primary;
+$button-primary-bg-bottom: $primary;
+$button-primary-border: $primary;
+$button-primary-text: $white;
+$button-primary-hover-bg-bottom: $blue-600;
+$button-primary-hover-bg-top: $blue-600;
+$button-primary-hover-border: $blue-600;
+$button-primary-hover-text: $white;
+$button-primary-focus-bg-bottom: $blue;
+$button-primary-focus-bg-top: $blue;
+$button-primary-focus-border: $blue;
+$button-primary-focus-text: $white;
 
-@mixin kingston-button-primary($padding: 0.33em 1em, $font-size: 1em, $line-height: 1.5em) {
-    font-weight: bold;
+@mixin kingston-button-primary($padding: 1rem 1.5rem, $font-size: 1.125rem, $line-height: 100%) {
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text, $focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
     text-align: center;
     font-size: $font-size;
     line-height: $line-height;
     padding: $padding;
-    border-radius: 25px;
-    border: 4px solid $primary;
-    background: $primary;
-    // Ovverides inherit !important on button-variant mixin
-    color: $white !important;
+    border-radius: $border-radius;
+    transition: all .3s ease;
+    box-shadow: 0 4px 0 0 $navy-blue;
     text-decoration: none;
+    border: none; // Replaces the border for govuk-button
+    flex: none; // Get rid of flex rule in _base .postcode-form-box input#sub
 
-    // This gets rid of the .govuk-button box-shadow
-    box-shadow: none;
-
-    &:hover, &:focus {
-        // Overrides .govuk-button:focus:not(:active):not(:hover)
-        background: $white !important;
-        color: $primary !important;
-        border-color: $primary !important;
+    &:hover {
+        box-shadow: 0 4px 0 0 $blue;
         outline:none;
         text-decoration: none;
     }
 
     &:focus {
-        text-decoration: underline;
+        // Overrides govuk-button
+        text-decoration: none;
+        outline: 4px solid $yellow;
     }
 
     &.govuk-button:focus:not(:active):not(:hover) {
         border-color: $primary;
         box-shadow: none;
     }
-}
 
-@mixin kingston-button-secondary($padding: 0.33em 1em, $font-size: 1em, $line-height: 1.5em) {
-    font-weight: bold;
-    text-align: center;
-    font-size: $font-size;
-    line-height: $line-height;
-    padding: $padding;
-    border: 4px solid $blue;
-    border-radius: $border-radius;
-    background: $white;
-    color: $blue;
-
-    // This gets rid of the .govuk-button box-shadow
-    box-shadow: none;
-
-    &:hover, &:focus {
-        background: $blue;
-        color: $white;
-        text-decoration: none;
+    @media (min-width: $screen-size-min-width-large) {
+        font-size: 1.25rem;
     }
-
-    &:focus { text-decoration: underline !important;}
-
-    &.govuk-button:focus:not(:active):not(:hover) {
-        border-color: $blue;
-        box-shadow: none;
-    }
-}
-
-@mixin visually-hidden {
-    border: 0;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
 }
