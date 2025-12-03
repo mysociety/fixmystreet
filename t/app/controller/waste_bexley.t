@@ -246,6 +246,7 @@ FixMyStreet::override_config {
             $cobrand->{c}->mock( stash => sub { {} } );
             $cobrand->{c}->mock( cobrand => sub { $cobrand });
             $cobrand->{c}->mock( action => sub { "" } );
+            $cobrand->{c}->mock( user_exists => sub { 0 } );
 
             my @sorted = $cobrand->service_sort(
                 @{  $cobrand->bin_services_for_address(

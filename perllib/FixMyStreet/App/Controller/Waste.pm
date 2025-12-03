@@ -1285,7 +1285,7 @@ sub add_report : Private {
     $c->set_param('category', $data->{category});
     $c->set_param('title', $data->{title});
     $c->set_param('detail', $data->{detail});
-    $c->set_param('uprn', $c->stash->{property}{uprn}) unless $c->get_param('uprn');
+    $c->set_param('uprn', $data->{uprn} || $c->stash->{property}{uprn});
     $c->set_param('property_id', $c->stash->{property}{id}) unless $c->get_param('property_id');
 
     # Data may contain duplicate photo data under different keys e.g.
@@ -1307,6 +1307,9 @@ sub add_report : Private {
 
     # Never send questionnaires for waste reports
     $report->send_questionnaire(0);
+
+    # Set UPRN on report
+    $report->uprn($data->{uprn} || $c->stash->{property}{uprn});
 
     # store photos
     foreach (grep { /^(item|location)_photo/ } keys %$data) {

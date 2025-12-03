@@ -110,6 +110,7 @@ sub create_cancellation_report {
         name => $self->cobrand->body->comment_user->name,
     );
     for (qw/
+        uprn
         postcode
         latitude
         longitude

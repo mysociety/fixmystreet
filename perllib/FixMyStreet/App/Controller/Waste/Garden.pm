@@ -229,8 +229,8 @@ sub process_garden_cancellation : Private {
     $c->set_param($end_date_field, $now->dmy('/'));
 
     my $service = $c->cobrand->garden_current_subscription;
-    # Not actually used by Kingston/Sutton
-    if (!$c->stash->{slwp_garden_sacks} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin240} || $service->{garden_container} == $GARDEN_IDS{$c->cobrand->moniker}{bin140}) {
+    # Bromley record/send the number of bins being removed
+    if ($c->cobrand->moniker eq 'bromley') {
         my $bin_count = $c->cobrand->get_current_garden_bins;
         $data->{new_bins} = $bin_count * -1;
     }
@@ -513,7 +513,7 @@ sub process_garden_transfer : Private {
     my $end_date_field = $c->cobrand->call_hook(alternative_backend_field_names => 'Subscription_End_Date') || 'Subscription_End_Date';
     $c->set_param($end_date_field, $now->dmy('/'));
     $c->set_param('property_id', $old_property_id);
-    $c->set_param('uprn', $data->{transfer_old_ggw_sub}{transfer_uprn});
+    $cancel->{uprn} = $data->{transfer_old_ggw_sub}{transfer_uprn};
     $c->set_param('transferred_to', $c->stash->{property}->{uprn});
     $c->forward('setup_garden_sub_params', [ $cancel, undef ]);
     $c->forward('/waste/add_report', [ $cancel ]) or return;
@@ -532,7 +532,6 @@ sub process_garden_transfer : Private {
     $c->set_param('Start_Date', $now->dmy('/'));
     $c->set_param($end_date_field, $expiry->dmy('/'));
     $c->set_param('property_id', '');
-    $c->set_param('uprn', '');
     $c->set_param('transferred_from', $data->{transfer_old_ggw_sub}{transfer_uprn});
     $c->forward('setup_garden_sub_params', [ $new, $c->cobrand->waste_subscription_types->{Transfer} ]);
     $c->forward('/waste/add_report', [ $new ]) or return;
@@ -679,9 +678,15 @@ sub direct_debit_cancel_sub : Private {
     my ($self, $c) = @_;
 
     my $p = $c->stash->{report};
-    my $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
-    $p->set_extra_metadata(payerReference => $ref);
-    $p->update;
+    # Copy payer reference from original subscription if available
+    my $ref;
+    if ($c->stash->{orig_sub}) {
+        $ref = $c->stash->{orig_sub}->get_extra_metadata('payerReference');
+        if ($ref) {
+            $p->set_extra_metadata(payerReference => $ref);
+            $p->update;
+        }
+    }
     $c->cobrand->call_hook('waste_report_extra_dd_data');
 
     my $i = $c->cobrand->get_dd_integration;
@@ -691,7 +696,7 @@ sub direct_debit_cancel_sub : Private {
     # For Bexley legacy subscriptions without stored contract ID, look up by UPRN
     my @extra_args;
     if ($c->cobrand->moniker eq 'bexley' && !$p->get_extra_metadata('direct_debit_contract_id')) {
-        if (my $legacy_ids = $c->cobrand->waste_get_legacy_contract_ids($c->stash->{orig_sub})) {
+        if (my $legacy_ids = $c->cobrand->waste_get_legacy_contract_ids($p)) {
             push @extra_args, contract_ids => $legacy_ids;
         }
     }

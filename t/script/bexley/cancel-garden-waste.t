@@ -153,6 +153,7 @@ FixMyStreet::override_config {
             is $cancel_report->detail, "Cancel Garden Subscription\n\n123 Bexley St";
             is $cancel_report->user_id, $comment_user->id;
             is $cancel_report->name, $comment_user->name;
+            is $cancel_report->uprn, $uprn;
 
             cmp_deeply $cancel_report->get_extra_metadata, {
                 property_address => '123 Bexley St',
@@ -262,7 +263,6 @@ FixMyStreet::override_config {
 
             my $legacy_uprn = '20001';  # UPRN that has legacy contracts in mock
 
-            $access_mock->unmock('cancel_plan');
             $access_mock->mock(
                 'archive_contract',
                 sub {
@@ -295,6 +295,7 @@ sub _create_report {
             : 'Garden Subscription',
             title => ( $is_cancel ? 'Garden Subscription - Cancel' : 'Garden Subscription - New' ),
             created => $args{created} || \'current_timestamp',
+            uprn => $args{uprn},
         },
 
     );

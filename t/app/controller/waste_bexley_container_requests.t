@@ -559,7 +559,6 @@ Reason: My existing bin is damaged
 Quantity: 3',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'Deliver Box lids 55L',
                         quantity          => 3,
                         assisted_yn       => 'No',
@@ -578,7 +577,6 @@ Reason: My existing bin is damaged
 Quantity: 2',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'FO-23',
                         quantity          => 2,
                         assisted_yn       => 'No',
@@ -597,7 +595,6 @@ Reason: My existing bin is damaged
 Quantity: 1',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'RES-140',
                         quantity          => 1,
                         assisted_yn       => 'No',
@@ -616,7 +613,6 @@ Reason: My existing bin is damaged
 Quantity: 1',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'RES-180',
                         quantity          => 1,
                         assisted_yn       => 'No',
@@ -635,7 +631,6 @@ Reason: My existing bin is damaged
 Quantity: 2',
                     },
                     expected_params => {
-                        uprn              => 123456,
                         service_item_name => 'FO-23',
                         quantity          => 2,
                         assisted_yn       => 'No',

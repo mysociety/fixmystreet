@@ -1229,7 +1229,7 @@ sub waste_munge_report_data {
     $service_description = 'Various' if $service_description =~ /<li>/;
     $data->{title} = "$service_name ($service_description)";
     $data->{detail} = "$data->{title}\n\n$address";
-    $c->set_param('uprn', $uprn);
+    $data->{uprn} = $uprn; # Needed to override for some parent properties
     $c->set_param('service_id', $id);
     $c->set_param('location_of_containers', $data->{bin_location}) if $data->{bin_location};
     $c->set_param('service_item_name', $service_id);
@@ -1754,7 +1754,6 @@ sub waste_munge_request_data {
 
     my $assisted_yn = $c->stash->{property}{has_assisted} ? 'Yes' : 'No';
 
-    $c->set_param( 'uprn',              $c->stash->{property}{uprn} );
     $c->set_param( 'service_item_name', $service->{service_item_name} );
     $c->set_param( 'quantity',          $quantity );
     $c->set_param( 'assisted_yn', $assisted_yn );
