@@ -77,7 +77,7 @@ has template => (
                 'me.state' => 'closed',
                 'me.auto_response' => 1,
                 'me.body_id' => $self->body->id,
-                'contact.category' => $self->category,
+                ( 'contact.category' => $self->category ) x !!$self->category,
             }, {
                 join => { contact_response_templates => 'contact' },
             })->first;
@@ -104,9 +104,9 @@ sub close {
 
     my $reports = FixMyStreet::DB->resultset("Problem")->search({
         bodies_str => $self->body->id,
-        category => $self->category,
         state => $self->states,
         confirmed => $time_param,
+        ( category => $self->category ) x !!$self->category,
     });
 
     # Provide some variables to the archiving script
