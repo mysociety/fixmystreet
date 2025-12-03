@@ -22,6 +22,6 @@ use warnings;
 sub council_area_id { return 2656; }
 sub council_area { return 'Dumfries and Galloway'; }
 sub council_name { return 'Dumfries and Galloway'; }
-sub council_url { return 'dumfriesandgalloway'; }
+sub council_url { return 'dumfries'; }
 
 1;
