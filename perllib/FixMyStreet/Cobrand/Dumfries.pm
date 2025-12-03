@@ -111,5 +111,11 @@ sub _fetch_features_url {
     return $uri;
 }
 
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
+
 
 1;
