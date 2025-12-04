@@ -1246,8 +1246,18 @@ FixMyStreet::override_config {
         $mech->get("/waste/dd_complete?reference=NOTATOKEN&report_id=$report_id");
         ok !$mech->res->is_success(), "want a bad response";
         is $mech->res->code, 404, "got 404";
+
         $mech->get_ok("/waste/dd_complete?reference=$token&report_id=$report_id");
+        is $mech->res->previous->code, 302, 'got 302 for redirect';
+        like $mech->uri, qr{/report/confirmation.*token=}, 'redirects to report confirmation';
+
+        $mech->text_contains("Your reference number is $report_id", 'reference number displayed');
         $mech->content_contains('confirmation details once your Direct Debit');
+        $mech->content_contains('your email address, test@example.net', 'email address displayed');
+        $mech->content_contains('href="/waste/12345"', 'link back to bin days');
+
+        # Make sure that reloading page does not send another email
+        $mech->get( $mech->uri );
 
         $dd->mock('get_payer', sub { 'Creation Pending' });
         $mech->get_ok('/waste/12345');
@@ -1807,7 +1817,7 @@ FixMyStreet::override_config {
 
     $echo->mock('GetServiceUnitsForObject', \&garden_waste_no_bins);
 
-    for my $test ( 
+    for my $test (
         {
             return => {
                 transactionState => 'INVALID_REFERENCE',
