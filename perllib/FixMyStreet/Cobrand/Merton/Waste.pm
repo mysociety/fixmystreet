@@ -277,6 +277,31 @@ one container.
 sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
 
+    # Calendars
+    foreach (@$rows) {
+        if ($_->{next}{schedule}) {
+            my $allocation = $_->{next}{schedule}{Allocation};
+            my $type = $allocation->{RoundGroupName} || '';
+            my $name = lc ($allocation->{RoundName} || '');
+
+            my $id;
+            if ($type eq 'NTE') {
+                my ($zone) = $name =~ /zone ([12])/;
+                $id = "timebanded-$zone";
+            } elsif ($_->{service_id} == $SERVICE_IDS{domestic_refuse}) {
+                $name =~ s/\s+//g;
+                my $week = substr $type, -1;
+                my $container = $_->{request_containers}[0] || 0;
+                my $prop = ($container == $CONTAINERS{refuse_red_stripe_bag}) ? 'bags' : 'houses';
+                $id = join('-', $prop, $name, $week);
+            }
+            if ($id) {
+                my $links = $self->feature('waste_calendar_links');
+                $self->{c}->stash->{calendar_link} = $links->{$id};
+            }
+        }
+    }
+
     return if $self->{c}->stash->{schedule2_property};
 
     foreach (@$rows) {
