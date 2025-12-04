@@ -20,9 +20,12 @@ use FixMyStreet::Script::UK::AutoClose;
 my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
 CronFns::language($site);
 
+my $default_text = 'Report automatically closed because older than 28 days.';
+
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['commit!', "actually close reports and send emails. Omitting this flag will do a dry-run"],
+    ['closure_text=s', "text of the message to add to reports", { default => $default_text } ],
     ['days:i', "Number of days before autoclosing", { default => 28, callbacks => { positive => sub { shift() > 0 } } } ],
     ['help|h', "print usage message and exit" ],
     { show_defaults => 1 }
@@ -37,4 +40,5 @@ FixMyStreet::Script::UK::AutoClose->new(
     body_name => 'Enfield Council',
     states => [ 'action_scheduled', 'investigating' ],
     to => $opts->days,
+    closure_text => $opts->closure_text,
 )->close;
