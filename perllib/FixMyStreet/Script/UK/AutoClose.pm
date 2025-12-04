@@ -60,12 +60,18 @@ has to_date => (
     }
 );
 
+# closure_text implies template lookup is not needed
+has closure_text => ( is => 'ro' );
+
 has template_title => ( is => 'ro' );
 
 has template => (
     is => 'lazy',
     default => sub {
         my $self = shift;
+
+        return if $self->closure_text;
+
         my $template;
         if ($self->template_title) {
             $template = FixMyStreet::DB->resultset("ResponseTemplate")->search({
@@ -77,7 +83,7 @@ has template => (
                 'me.state' => 'closed',
                 'me.auto_response' => 1,
                 'me.body_id' => $self->body->id,
-                'contact.category' => $self->category,
+                ( 'contact.category' => $self->category ) x !!$self->category,
             }, {
                 join => { contact_response_templates => 'contact' },
             })->first;
@@ -104,15 +110,15 @@ sub close {
 
     my $reports = FixMyStreet::DB->resultset("Problem")->search({
         bodies_str => $self->body->id,
-        category => $self->category,
         state => $self->states,
         confirmed => $time_param,
+        ( category => $self->category ) x !!$self->category,
     });
 
     # Provide some variables to the archiving script
     FixMyStreet::Script::ArchiveOldEnquiries::update_options({
         user => $self->body->comment_user->id,
-        closure_text => $self->template->text,
+        closure_text => $self->closure_text || $self->template->text,
         retain_alerts => $self->retain_alerts,
         commit => $self->commit,
     });
