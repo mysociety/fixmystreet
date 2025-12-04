@@ -101,6 +101,10 @@ FixMyStreet::override_config {
             open311_api_key => 'api_key',
         } },
         waste => { merton => 1 },
+        waste_calendar_links => { merton => {
+            'timebanded-2' => 'Timebanded-2',
+            'houses-friday-A' => 'houses-friday-A',
+        } },
         payment_gateway => { merton => {
             request_cost_2 => 1800,
             request_cost_3 => 1800,
@@ -153,6 +157,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Every other Friday');
         $mech->content_contains('Friday 2 September');
         $mech->content_contains('Report a missed mixed recycling collection');
+        $mech->content_contains('houses-friday-A');
     };
 
     subtest 'Schedule 2 property' => sub {
@@ -543,6 +548,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Request a non-recyclable waste container');
         $mech->content_contains( 'You need to buy your own black sacks',
             'Property has black sack message' );
+        $mech->content_contains('Timebanded-2', 'Correct calendar');
 
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
