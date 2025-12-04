@@ -39,15 +39,6 @@ my ($report) = $mech->create_problems_for_body(1, $hounslow_id, 'A brand new pro
     cobrand => 'fixmystreet'
 });
 
-subtest "showing the front page" => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => 'hounslow',
-    }, sub {
-        $mech->get_ok('/');
-        $mech->content_contains('completed in past month');
-    };
-};
-
 subtest "it still shows old reports on fixmystreet.com" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.uk/',

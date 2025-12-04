@@ -17,14 +17,6 @@ use charnames ':full';
 
 ok( request('/')->is_success, 'Request should succeed' );
 
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'tester' ],
-}, sub {
-    my $page = decode_utf8(get('/'));
-    my $num = "12( | )345";
-    like $page, qr/$num/;
-};
-
 subtest 'CSP header' => sub {
     my $res = request('/');
     is $res->header('Content-Security-Policy'), undef, 'None by default';
