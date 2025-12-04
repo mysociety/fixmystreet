@@ -10,6 +10,8 @@ use FixMyStreet::Geocode::Address;
 use FixMyStreet::OutOfHours;
 use DateTime;
 use JSON::MaybeXS;
+use Path::Tiny;
+use Try::Tiny;
 use List::MoreUtils 'none';
 use URI;
 use Digest::MD5 qw(md5_hex);
@@ -411,43 +413,85 @@ sub shorten_recency_if_new_greater_than_fixed {
 
 sub front_stats_show_middle { 'fixed' }
 
+=item calculate_front_stats_data
+
+Calculates and returns a data structure containing the front stats information
+for this cobrand. Results are cached in memcached according to CACHE_TIMEOUT.
+
+=cut
+
+sub calculate_front_stats_data {
+    my ( $self ) = @_;
+
+    my $moniker = $self->moniker;
+    my $key = $self->site_key . ":front_stats:$moniker";
+    my $timeout = FixMyStreet::DB::ResultSet::Problem->_cache_timeout();
+
+    return Memcached::get_or_calculate($key, $timeout, sub {
+        my $recency         = '1 week';
+        my $shorter_recency = '3 days';
+
+        my ($fixed, $completed);
+        if ($self->front_stats_show_middle eq 'completed') {
+            $completed = $self->problems->recent_completed();
+        } elsif ($self->front_stats_show_middle eq 'fixed') {
+            $fixed = $self->problems->recent_fixed();
+        }
+        my $updates = $self->problems->number_comments();
+        my $new     = $self->problems->recent_new( $recency );
+
+        my $middle = $fixed // $completed // 0;
+        if ( $new > $middle && $self->shorten_recency_if_new_greater_than_fixed ) {
+            $recency = $shorter_recency;
+            $new     = $self->problems->recent_new( $recency );
+        }
+
+        return {
+            completed => $completed,
+            fixed   => $fixed,
+            updates => $updates,
+            new     => $new,
+            recency => $recency,
+        };
+    });
+}
+
 =item front_stats_data
 
-Return a data structure containing the front stats information that a template
-can then format.
+Reads the stats from a JSON file and returns the data structure for formatting/
+display by the template. Falls back to calculating stats directly if the file
+doesn't exist, can't be parsed, or is too old (> 48 hours).
 
 =cut
 
 sub front_stats_data {
     my ( $self ) = @_;
 
-    my $recency         = '1 week';
-    my $shorter_recency = '3 days';
+    my $stats;
+    try {
+        my $moniker = $self->moniker;
+        my $file = FixMyStreet->path_to("../data/front-page-stats.json");
 
-    my ($fixed, $completed);
-    if ($self->front_stats_show_middle eq 'completed') {
-        $completed = $self->problems->recent_completed();
-    } elsif ($self->front_stats_show_middle eq 'fixed') {
-        $fixed = $self->problems->recent_fixed();
-    }
-    my $updates = $self->problems->number_comments();
-    my $new     = $self->problems->recent_new( $recency );
+        if (-e $file) {
+            my $json = path($file)->slurp_utf8;
+            my $all_stats = JSON::MaybeXS->new->decode($json);
 
-    my $middle = $fixed // $completed // 0;
-    if ( $new > $middle && $self->shorten_recency_if_new_greater_than_fixed ) {
-        $recency = $shorter_recency;
-        $new     = $self->problems->recent_new( $recency );
-    }
+            # Check if stats are fresh (less than 48 hours old)
+            my $fresh = 1;
+            if (my $generated = $all_stats->{_generated}) {
+                my $age = time() - $generated;
+                $fresh = 0 if $age > 172800;
+            }
 
-    my $stats = {
-        completed => $completed,
-        fixed   => $fixed,
-        updates => $updates,
-        new     => $new,
-        recency => $recency,
+            # Use stats from file if fresh and available for this cobrand
+            if ($fresh && $all_stats->{$moniker}) {
+                $stats = $all_stats->{$moniker};
+            }
+        }
     };
 
-    return $stats;
+    # Fall back to calculating stats if not available from file
+    return $stats || $self->calculate_front_stats_data;
 }
 
 =item disambiguate_location

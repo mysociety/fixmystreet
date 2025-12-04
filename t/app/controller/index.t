@@ -1,6 +1,9 @@
 use FixMyStreet::TestMech;
 use DateTime;
 use Web::Scraper;
+use Path::Tiny;
+use Test::MockModule;
+use JSON::MaybeXS;
 
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
@@ -125,6 +128,88 @@ subtest "recent reports are correctly shown on front page" => sub {
         'Recent problem Test 1 for 2651',
         'Recent problem Test 2 for 2651'
     ], "correct ordering of recent problems";
+};
+
+subtest "Front page stats on-disk caching" => sub {
+    # Set up a temporary dir for the JSON files, and mock path_to to use it
+    my $TEMP_DIR = Path::Tiny->tempdir->child("fixmystreet");
+    $TEMP_DIR->mkpath;
+    my $fms = Test::MockModule->new('FixMyStreet');
+    $fms->mock('path_to', sub {
+        my $class = shift;
+        return $TEMP_DIR->child(@_);
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+    }, sub {
+
+    subtest "front stats fall back to calculation when JSON file doesn't exist" => sub {
+        $mech->get_ok('/');
+        $mech->content_contains('<div id="front_stats">', 'stats section present');
+        $mech->content_contains('<big>0</big>', 'zero count displayed');
+    };
+
+    subtest "front stats are shown when JSON file exists with fresh data" => sub {
+        my $stats_dir = FixMyStreet->path_to('../data');
+        path($stats_dir)->mkpath;
+
+        my $stats_file = path($stats_dir, "front-page-stats.json");
+        my $all_stats = {
+            _generated => time(),
+            fixmystreet => {
+                completed => 10,
+                fixed => 20,
+                updates => 30,
+                new => 40,
+                recency => '1 week',
+            },
+        };
+        $stats_file->spew_utf8(JSON::MaybeXS->new->encode($all_stats));
+
+        $mech->get_ok('/');
+        $mech->content_contains('<div id="front_stats">', 'stats section present with fresh data');
+        $mech->content_contains('<big>40</big>', 'new reports count displayed');
+        $mech->content_contains('<big>30</big>', 'updates count displayed');
+        $mech->content_contains('<big>20</big>', 'fixed count displayed');
+        $mech->content_contains('<big>10</big>', 'completed count displayed');
+    };
+
+    subtest "front stats fall back to calculation when JSON file has stale data" => sub {
+        my $stats_dir = FixMyStreet->path_to('../data');
+
+        my $stats_file = path($stats_dir, "front-page-stats.json");
+        my $all_stats = {
+            _generated => time() - 172801, # 48 hours + 1 second ago
+            fixmystreet => {
+                completed => 10,
+                fixed => 20,
+                updates => 30,
+                new => 40,
+                recency => '1 week',
+            },
+        };
+        $stats_file->spew_utf8(JSON::MaybeXS->new->encode($all_stats));
+
+        $mech->get_ok('/');
+        $mech->content_contains('<div id="front_stats">', 'stats section present');
+        $mech->content_contains('<big>0</big>', 'zero count displayed');
+        $mech->content_lacks('<big>40</big>', 'stale file data not used');
+    };
+
+    subtest "front stats fall back to calculation when JSON file is invalid" => sub {
+        my $stats_dir = FixMyStreet->path_to('../data');
+
+        my $stats_file = path($stats_dir, "front-page-stats.json");
+        $stats_file->spew_utf8("INVALID");
+
+        $mech->get_ok('/');
+        $mech->content_contains('<h1>Report, view, or discuss local problems</h1>');
+        $mech->content_contains('<div id="front_stats">', 'stats section present');
+        $mech->content_contains('<big>0</big>', 'zero count displayed');
+    };
+
+    };
 };
 
 END {
