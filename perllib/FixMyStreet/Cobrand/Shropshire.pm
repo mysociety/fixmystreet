@@ -17,6 +17,8 @@ use strict;
 use warnings;
 
 use Moo;
+use JSON::MaybeXS;
+use Path::Tiny;
 
 =pod
 
@@ -241,5 +243,32 @@ sub pin_colour {
 }
 
 sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
+
+=head2 Reports by parishes
+
+Shropshire have an additional way of showing All Reports by parish.
+
+=cut
+
+sub add_parish_wards {
+    my ($self, $areas) = @_;
+
+    my $extra_areas = decode_json(path(FixMyStreet->path_to('data/shropshire_cover.json'))->slurp_utf8);
+
+    %$areas = (
+        %$areas,
+        %$extra_areas
+    );
+}
+
+sub get_ward_type {
+    my ($self, $ward_type) = @_;
+
+    if ($ward_type eq 'CPC') {
+        return 'parish';
+    } else {
+        return 'ward';
+    }
+}
 
 1;
