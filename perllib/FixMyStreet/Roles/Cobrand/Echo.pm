@@ -501,6 +501,7 @@ sub _parse_schedules {
             $next_orig = construct_bin_date($last->{OriginalScheduledDate});
         } elsif ($d && (!$max_last || $d > $max_last->{date})) {
             $max_last = _schedule_object($last, $d);
+            $max_last->{schedule} = $schedule;
             $last_orig = construct_bin_date($last->{OriginalScheduledDate});
         }
     }
