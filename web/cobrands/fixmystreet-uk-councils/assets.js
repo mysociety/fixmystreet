@@ -934,7 +934,6 @@ fixmystreet.assets.gloucestershire.traffic_asset_details = function() {
         "LED/Halogen: " + a.led_halogen;
 };
 
-
 /* Hackney */
 
 fixmystreet.assets.hackney = {};
@@ -942,7 +941,15 @@ fixmystreet.assets.hackney.found = function(layer) {
     fixmystreet.message_controller.road_not_found(layer, function() {return true;});
 };
 
-
+fixmystreet.assets.hackney.canal_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillColor: "#6CF",
+        fillOpacity: 0.3,
+        strokeColor: "#6CF",
+        strokeOpacity: 1,
+        strokeWidth: 2
+    })
+});
 
 /* Hounslow */
 
