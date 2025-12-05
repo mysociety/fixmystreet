@@ -757,6 +757,7 @@ FixMyStreet::override_config {
         is $report->state, "confirmed";
         $mech->submit_form_ok({ with_fields => { payment_failed => 1 } });
         $mech->content_contains('Payment Failed');
+
         $report->discard_changes;
         is $report->state, 'cancelled', "report cancelled after staff marked as payment failed";
         my $cancellation_update = $report->comments->first;
@@ -764,6 +765,15 @@ FixMyStreet::override_config {
         is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
         unlike $report->detail, qr/Cancelled at user request/;
         like $report->detail, qr/Cancelled/;
+
+        # Test that user cannot go back and mark payment as successful
+        $mech->back;
+        $mech->submit_form_ok();
+        like $mech->text, qr/This booking was previously cancelled/,
+            'Payment cannot be confirmed after previously marked as failed';
+        $report->discard_changes;
+        is $report->comments, 1, 'No new comments';
+
         $report->comments->delete;
         $report->delete;
     };
