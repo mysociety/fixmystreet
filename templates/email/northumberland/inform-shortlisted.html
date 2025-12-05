@@ -1,6 +1,6 @@
 [%
 
-title = report.title | html;
+title = report.title;
 email_columns = 2;
 
 PROCESS '_email_settings.html';
@@ -11,7 +11,7 @@ INCLUDE '_email_top.html';
 
 <th style="[% td_style %][% primary_column_style %]" id="primary_column">
   [% start_padded_box | safe %]
-  <h1 style="[% h1_style %]">You have been assigned to <a href="[% cobrand.base_url_for_report(report) %][% report.url %]">[% title %]</a></h1>
+  <h1 style="[% h1_style %]">You have been assigned to <a href="[% report_url %]">[% title %]</a></h1>
   <p>Reference: [% report.id %]</p>
   [% end_padded_box | safe %]
 </th>

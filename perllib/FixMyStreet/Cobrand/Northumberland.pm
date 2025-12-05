@@ -309,11 +309,13 @@ sub inform_about_shortlisted {
 
     my $email = $user->email;
     my $phone = $user->phone;
+    my $report_url = $self->base_url_for_report($report) . $report->url;
 
-    if ($email) {
+    if ( $email && $user->email_verified ) {
         my $h = {
             cobrand => $self,
             report => $report,
+            report_url => $report_url,
         };
 
         my $result = FixMyStreet::Email::send_cron(
@@ -334,17 +336,13 @@ sub inform_about_shortlisted {
         my $parsed = FixMyStreet::SMS->parse_username($phone);
 
         if ( $parsed->{may_be_mobile} ) {
-            my $report_id = $report->id;
-            my $report_title = $report->title;
-            my $report_url = $self->base_url_for_report($report) . $report->url;
-
             my $result = FixMyStreet::SMS->new( cobrand => $self )->send(
                 to => $phone,
                 body => sprintf(
                     _("You have been assigned to report %s (reference %s); to view: %s"),
                     $report->title,
                     $report->id,
-                    $self->base_url_for_report($report) . $report->url,
+                    $report_url,
                 ),
             );
 
