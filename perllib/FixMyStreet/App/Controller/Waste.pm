@@ -1338,7 +1338,7 @@ sub add_report : Private {
         $c->forward('/report/new/redirect_or_confirm_creation', [ 1 ]);
     }
 
-    $c->cobrand->call_hook('waste_post_report_creation', $report);
+    $c->cobrand->call_hook('waste_post_report_creation', $report, $data);
 
     $c->user->update({ name => $original_name }) if $original_name;
 
