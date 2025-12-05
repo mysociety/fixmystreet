@@ -461,6 +461,19 @@ sub csc_payment : Path('csc_payment') : Args(0) {
     my $id = $c->get_param('report_id');
 
     my $report = $c->model('DB::Problem')->find({ id => $id});
+
+    # Make sure report hasn't previously been cancelled.
+    # When staff mark payment as failed, report may be cancelled
+    # immediately (e.g. for bulky waste for certain cobrands),
+    # but staff can click back and try to mark as successful.
+    if ( $report->state eq 'cancelled' ) {
+        $c->stash->{attempted_resubmission} = 1;
+        $c->stash->{report} = $report;
+        $c->stash->{property_id} = $report->waste_property_id;
+        $c->stash->{template} = 'waste/garden/csc_payment_failed.html';
+        $c->detach;
+    }
+
     $report->update_extra_field({ name => 'payment_method', value => 'csc' });
     $report->update;
     $c->stash->{report} = $report;
