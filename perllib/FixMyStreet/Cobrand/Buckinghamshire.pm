@@ -660,14 +660,14 @@ around 'munge_sendreport_params' => sub {
 
 sub car_park_wfs_query {
     my ($self, $row) = @_;
-    my $uri = "https://maps.buckinghamshire.gov.uk/server/services/Transport/Car_Parks/MapServer/WFSServer";
+    my $uri = "https://tilma.mysociety.org/proxy/bcc/car-parks";
     return $self->_wfs_post($uri, $row, 'BC_CAR_PARKS', ['OBJECTID', 'Shape']);
 }
 
 sub speed_limit_wfs_query {
     my ($self, $row) = @_;
-    my $uri = "https://maps.buckinghamshire.gov.uk/server/services/Transport/OS_Highways_Speed/MapServer/WFSServer";
-    return $self->_wfs_post($uri, $row, 'OS_Highways_Speed:OS_Highways_Speed', ['OBJECTID', 'Shape', 'speed']);
+    my $uri = "https://tilma.mysociety.org/proxy/bcc/highways-speed";
+    return $self->_wfs_post($uri, $row, 'OS_Highways_Speed', ['OBJECTID', 'Shape', 'speed']);
 }
 
 sub _wfs_post {
