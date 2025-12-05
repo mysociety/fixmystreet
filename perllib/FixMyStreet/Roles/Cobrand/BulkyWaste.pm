@@ -878,11 +878,12 @@ sub cancel_bulky_collections_without_payment {
         }
 
         if ($params->{commit}) {
-            $report->add_to_comments({
+            my $comment = $report->add_to_comments({
                 text => 'Booking cancelled since payment was not made in time',
                 user_id => $self->body->comment_user_id,
                 extra => { bulky_cancellation => 1 },
             });
+            $report->cancel_update_alert($comment->id);
             $report->state('cancelled');
             $report->detail(
                 $report->detail . " | Cancelled since payment was not made in time"
