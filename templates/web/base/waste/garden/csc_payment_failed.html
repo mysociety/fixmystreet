@@ -10,7 +10,11 @@
           [% END %]
         </p>
 
-      [% IF report.category == 'Bulky collection' %]
+      [% IF attempted_resubmission %]
+        <p>
+          This booking was previously cancelled so cannot be resubmitted.
+        </p>
+      [% ELSIF report.category == 'Bulky collection' %]
         <p>
             No booking has been created.
           [% IF waste_features.bulky_retry_bookings %]
