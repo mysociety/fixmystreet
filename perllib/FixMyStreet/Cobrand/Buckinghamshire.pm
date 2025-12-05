@@ -215,7 +215,11 @@ sub open311_update_missing_data {
     # This may happen because the report was made on the app, without JS,
     # using a screenreader, etc.
     if ($dest !~ /^(Abavus|Cams)/ && !$row->get_extra_field_value('asset_resource_id')) {
-        if (my $item_id = $self->lookup_site_code($row, 'alloy')) {
+        if ($row->category =~ /Grass cutting|Hedge problem|Weed problem on the highway/) {
+            if (my $item_id = $self->lookup_site_code($row, 'snapshot')) {
+                $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
+            }
+        } elsif (my $item_id = $self->lookup_site_code($row, 'alloy')) {
             $row->update_extra_field({ name => 'asset_resource_id', value => $item_id });
         }
     }
@@ -509,12 +513,13 @@ sub categories_restriction {
 sub lookup_site_code_config {
     my ($self, $type) = @_;
     my $host = FixMyStreet->config('STAGING_SITE') ? "tilma.staging.mysociety.org" : "tilma.mysociety.org";
-    if ($type eq 'streets') {
+    if ($type eq 'streets' || $type eq 'snapshot') {
+        my $typename = $type eq 'streets' ? "Whole_Street" : "OS_HIGHWAYS_SPEED";
         return {
             buffer => 200,
             url => "https://$host/mapserver/bucks",
             srsname => "urn:ogc:def:crs:EPSG::27700",
-            typename => "Whole_Street",
+            typename => $typename,
             accept_feature => sub { 1 }
         };
     } elsif ($type eq 'alloy') {
