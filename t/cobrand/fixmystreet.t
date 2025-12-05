@@ -7,6 +7,8 @@ sub council_area_id { 2514 }
 sub cut_off_date { DateTime->now->subtract(days => 30)->strftime('%Y-%m-%d') }
 
 package main;
+use Path::Tiny;
+use JSON::MaybeXS;
 use Test::MockModule;
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::UpdateAllReports;
@@ -669,6 +671,101 @@ FixMyStreet::override_config {
         $mech->get_ok('/around?longitude=-2.364050&latitude=51.386269&geolocate=1');
         $mech->content_contains("data-zoom=4");
     }
+};
+
+subtest 'store_front_stats_data generates correct JSON file' => sub {
+    # Set up a temporary dir for the JSON files, and mock path_to to use it
+    my $TEMP_DIR = Path::Tiny->tempdir->child("fixmystreet");
+    $TEMP_DIR->mkpath;
+    my $fms = Test::MockModule->new('FixMyStreet');
+    $fms->mock('path_to', sub {
+        my $class = shift;
+        return $TEMP_DIR->child(@_);
+    });
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'fixmystreet',
+    }, sub {
+        FixMyStreet::DB->resultset('Problem')->delete_all;
+        FixMyStreet::DB->resultset('Comment')->delete_all;
+
+        my $test_body = $mech->create_body_ok(2651, 'Test Body');
+        my $user = $mech->create_user_ok('testuser@example.org');
+
+        # Create 3 new reports (confirmed recently)
+        my @new_reports = $mech->create_problems_for_body(3, $test_body->id, 'New report', {
+            confirmed => DateTime->now->subtract(days => 3),
+        });
+
+        # Create 2 fixed reports (updated in last month)
+        my @fixed_reports = $mech->create_problems_for_body(2, $test_body->id, 'Fixed report', {
+            confirmed => DateTime->now->subtract(days => 20),
+            state => 'fixed - council',
+            lastupdate => DateTime->now->subtract(days => 5),
+        });
+
+        # Create 4 comments on various reports
+        $new_reports[0]->comments->create({
+            user => $user,
+            name => 'Test User',
+            anonymous => 'f',
+            text => 'update 1',
+            state => 'confirmed',
+            confirmed => DateTime->now->subtract(days => 2),
+        });
+        $new_reports[1]->comments->create({
+            user => $user,
+            name => 'Test User',
+            anonymous => 'f',
+            text => 'update 2',
+            state => 'confirmed',
+            confirmed => DateTime->now->subtract(days => 1),
+        });
+        $fixed_reports[0]->comments->create({
+            user => $user,
+            name => 'Test User',
+            anonymous => 'f',
+            text => 'update 3',
+            state => 'confirmed',
+            confirmed => DateTime->now->subtract(days => 3),
+        });
+        $fixed_reports[1]->comments->create({
+            user => $user,
+            name => 'Test User',
+            anonymous => 'f',
+            text => 'update 4',
+            state => 'confirmed',
+            confirmed => DateTime->now->subtract(days => 4),
+        });
+
+        # Get the cobrand and calculate stats
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('fixmystreet')->new;
+        my $stats = $cobrand->calculate_front_stats_data;
+
+        # Verify calculated stats are correct
+        is $stats->{new}, 3, 'new reports count is correct (3 confirmed in last 3 days)';
+        is $stats->{updates}, 4, 'updates count is correct';
+        is $stats->{fixed}, 2, 'fixed reports count is correct';
+        is $stats->{recency}, '3 days', 'recency is correct (new > fixed, so shortened)';
+
+        # Write stats to file (mimicking what the script does)
+        my $all_stats = {
+            _generated => time(),
+            fixmystreet => $stats,
+        };
+        my $stats_file = FixMyStreet->path_to('../data/front-page-stats.json');
+        my $dir = FixMyStreet->path_to('../data');
+        path($dir)->mkpath unless -d $dir;
+        path($stats_file)->spew_utf8(JSON::MaybeXS->new(pretty => 1, canonical => 1)->encode($all_stats));
+
+        # Verify file was written correctly
+        ok -e $stats_file, 'JSON file created on disk';
+        my $json_content = path($stats_file)->slurp_utf8;
+        my $parsed_all_stats = JSON::MaybeXS->new->decode($json_content);
+        ok $parsed_all_stats->{_generated} > 0, '_generated is a positive number';
+        ok $parsed_all_stats->{_generated} <= time(), '_generated is not in the future';
+        ok $parsed_all_stats->{fixmystreet}, 'fixmystreet stats exist in JSON file';
+    };
 };
 
 done_testing();

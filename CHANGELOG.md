@@ -29,6 +29,8 @@
         - Only update lastupdate timestamp if update timestamp is newer. #5350
         - Add ability to process extra question disable messages from endpoint. #5431
         - Persist send_method_used immediately during report sending to prevent loss when senders call discard_changes(). #5671
+    - Performance improvements:
+        - Use on-disk cache for front page stats rather than memcache. #5763
 
 * v6.0 (14th November 2024)
     - Front end improvements:

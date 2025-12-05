@@ -480,6 +480,8 @@ FixMyStreet::override_config {
             like $text, qr/Auth Code: 112233/, 'Correct auth code';
             like $text, qr/reference2: ${report_id}/, 'Correct reference2';
         };
+        FixMyStreet::Script::Alerts::send_updates();
+        $mech->clear_emails_ok;
     };
 
     subtest "Cancel booking when no payment within 30 minutes" => sub {
@@ -556,6 +558,8 @@ FixMyStreet::override_config {
             is $cancellation_update->text, "Booking cancelled since payment was not made in time";
             is $cancellation_update->get_extra_metadata('bulky_cancellation'), 1;
             is $cancellation_update->user_id, $staff_user->id;
+            FixMyStreet::Script::Alerts::send_updates();
+            $mech->email_count_is(0);
         };
     };
 

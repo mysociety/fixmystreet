@@ -3,6 +3,7 @@
 [%
     stats = c.cobrand.front_stats_data();
 
+  IF stats;
     new_text =
         stats.recency == '1 week'
         ? nget(
@@ -15,25 +16,25 @@
             "<big>%s</big> reports recently",
             stats.new
          );
-    
-  IF stats.completed.defined;
-    completed_text = nget(
-        "<big>%s</big> completed in past month",
-        "<big>%s</big> completed in past month",
-        stats.completed
-    );
-    completed_n = stats.completed | format_number;
-  END;
 
-  IF stats.fixed.defined;
-    fixed_text = nget(
-        "<big>%s</big> fixed in past month",
-        "<big>%s</big> fixed in past month",
-        stats.fixed
-    );
-    fixed_n = stats.fixed | format_number;
-  END;
-    
+    IF stats.completed.defined;
+      completed_text = nget(
+          "<big>%s</big> completed in past month",
+          "<big>%s</big> completed in past month",
+          stats.completed
+      );
+      completed_n = stats.completed | format_number;
+    END;
+
+    IF stats.fixed.defined;
+      fixed_text = nget(
+          "<big>%s</big> fixed in past month",
+          "<big>%s</big> fixed in past month",
+          stats.fixed
+      );
+      fixed_n = stats.fixed | format_number;
+    END;
+
     updates_text = nget(
         "<big>%s</big> update on reports",
         "<big>%s</big> updates on reports",
@@ -47,3 +48,6 @@
 <div id="front_stats">
     [% PROCESS 'front/_stats.html' %]
 </div>
+[%
+  END;
+%]
