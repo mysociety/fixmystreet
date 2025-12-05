@@ -221,9 +221,9 @@ sub image_for_unit {
 
         # Fallback to the service if no container match
         $SERVICE_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),
-        $SERVICE_IDS{domestic_food} => "$base/caddy-brown-large",
+        $SERVICE_IDS{domestic_food} => { src => "$base/caddy-brown-large", alt => 'Large brown box' },
         $SERVICE_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
-        $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
+        $SERVICE_IDS{domestic_mixed} => { src => "$base/box-green-mix", alt => 'Green box' },
         $SERVICE_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
         $SERVICE_IDS{garden} => svg_container_bin('wheelie', '#8B5E3D'),
         $SERVICE_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
@@ -276,6 +276,31 @@ one container.
 
 sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
+
+    # Calendars
+    foreach (@$rows) {
+        if ($_->{next}{schedule}) {
+            my $allocation = $_->{next}{schedule}{Allocation};
+            my $type = $allocation->{RoundGroupName} || '';
+            my $name = lc ($allocation->{RoundName} || '');
+
+            my $id;
+            if ($type eq 'NTE') {
+                my ($zone) = $name =~ /zone ([12])/;
+                $id = "timebanded-$zone";
+            } elsif ($_->{service_id} == $SERVICE_IDS{domestic_refuse}) {
+                $name =~ s/\s+//g;
+                my $week = substr $type, -1;
+                my $container = $_->{request_containers}[0] || 0;
+                my $prop = ($container == $CONTAINERS{refuse_red_stripe_bag}) ? 'bags' : 'houses';
+                $id = join('-', $prop, $name, $week);
+            }
+            if ($id) {
+                my $links = $self->feature('waste_calendar_links');
+                $self->{c}->stash->{calendar_link} = $links->{$id};
+            }
+        }
+    }
 
     return if $self->{c}->stash->{schedule2_property};
 

@@ -1,0 +1,64 @@
+#!/usr/bin/env perl
+
+# generate-front-stats: Generate and store front page statistics for all cobrands
+#
+# Usage:
+#
+# $ bin/generate-front-stats [--verbose]
+
+use v5.14;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+    STDOUT->autoflush(1);
+}
+
+use FixMyStreet;
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
+use Getopt::Long;
+use JSON::MaybeXS;
+use Path::Tiny;
+
+my $verbose = 0;
+
+GetOptions(
+    'verbose' => \$verbose,
+);
+
+my @cobrands = FixMyStreet::Cobrand->available_cobrand_classes;
+my $all_stats = {};
+
+foreach my $cobrand_info (@cobrands) {
+    my $cobrand_class = $cobrand_info->{class};
+    next unless $cobrand_class;
+    my $cobrand = $cobrand_class->new;
+    my $moniker = $cobrand->moniker;
+
+    print "Generating stats for $moniker... " if $verbose;
+
+    eval {
+        my $stats = $cobrand->calculate_front_stats_data;
+        $all_stats->{$moniker} = $stats;
+        print "done.\n" if $verbose;
+    };
+    if ($@) {
+        warn "Error generating stats for $moniker: $@\n";
+    }
+}
+
+# Add generation timestamp
+$all_stats->{_generated} = time();
+
+# Write consolidated stats file
+my $dir = FixMyStreet->path_to('../data');
+path($dir)->mkpath unless -d $dir;
+
+my $file = path($dir, "front-page-stats.json");
+$file->spew_utf8(JSON::MaybeXS->new(pretty => 1, canonical => 1)->encode($all_stats));
+
+print "Stats written to $file\n" if $verbose;

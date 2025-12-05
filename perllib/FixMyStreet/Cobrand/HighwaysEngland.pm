@@ -468,6 +468,9 @@ sub dashboard_permission {
     my $self = shift;
     my $c = $self->{c};
 
+    # Default behaviour if no user, or is a superuser
+    return if !$c->user_exists || $c->user->is_superuser;
+    # Otherwise, check the roles
     my $admin = grep { $_->name eq 'Admin' } $c->user->obj->roles->all;
     return 0 unless $admin;
     return undef;

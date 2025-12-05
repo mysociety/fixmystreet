@@ -51,6 +51,8 @@ around problems_restriction => sub {
 
 =item * We can send multiple photos through to Echo, directly
 
+=back
+
 =cut
 
 sub open311_config {
@@ -58,6 +60,12 @@ sub open311_config {
     $params->{multi_photos} = 1;
     $params->{upload_files} = 1;
 }
+
+=head2 state_groups_admin / available_permissions
+
+We do not need all the states and permissions for only WasteWorks.
+
+=cut
 
 sub state_groups_admin {
     [
@@ -68,7 +76,6 @@ sub state_groups_admin {
     ]
 }
 
-# Cut down list as only Waste
 sub available_permissions {
     my $self = shift;
 
@@ -97,16 +104,37 @@ sub available_permissions {
 
 sub waste_auto_confirm_report { 1 }
 
+=head2 Garden
+
+=over 4
+
+=item * Garden subscriptions can be renewed 30 days before they end.
+
+=cut
+
 sub garden_due_date {
     my ($self, $end_date) = @_;
     return $end_date->subtract(days => 30);
 };
 
+=item * Even staff must provide an email address for garden subscriptions
+
+=cut
+
 sub garden_staff_provide_email { 1 }
+
+=item * Do not offer people to set a password
+
+=cut
 
 sub waste_password_hidden { 1 }
 
-# For renewal/modify
+=item * Allow people to edit the current number of bins for renewal/modify
+
+=back
+
+=cut
+
 sub waste_allow_current_bins_edit { 1 }
 
 =head2 waste_munge_report_form_fields

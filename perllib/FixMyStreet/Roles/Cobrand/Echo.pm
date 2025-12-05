@@ -592,6 +592,12 @@ sub waste_task_resolutions {
             $row->{report_allowed} = 0;
             $row->{report_locked_out} = 1;
         }
+
+        # No missed reporting for Kingston if Roadworks
+        if ($self->moniker eq 'kingston' && $orig_resolution =~ /Roadworks/i) {
+            $row->{report_allowed} = 0;
+            $row->{report_locked_out} = 1;
+        }
     }
 }
 

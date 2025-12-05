@@ -20,11 +20,31 @@ $bexley_mocks{addresses} = Test::MockModule->new('BexleyAddresses');
 # We don't actually read from the file, so just put anything that is a valid path
 $bexley_mocks{addresses}->mock( 'database_file', '/' );
 
+$bexley_mocks{contracts} = Test::MockModule->new('BexleyContracts');
+# We don't actually read from the file, so just put anything that is a valid path
+$bexley_mocks{contracts}->mock( 'database_file', '/' );
+
 $bexley_mocks{dbi} = Test::MockModule->new('DBI');
 $bexley_mocks{dbi}->mock( 'connect', sub {
     my $dbh = Test::MockObject->new;
     $dbh->mock( 'selectall_arrayref', sub {
-        my ( undef, undef, undef, $postcode ) = @_;
+        my ( undef, $sql, undef, @params ) = @_;
+
+        # Check if this is a contracts query
+        if ( $sql =~ /SELECT contract_id/ ) {
+            my $uprn = $params[0];
+            # Return test contract IDs for test UPRNs
+            # UPRN 20001 has a legacy contract for testing legacy DD cancellation
+            if ( $uprn == 20001 ) {
+                return [
+                    { contract_id => 'TEST-CONTRACT-20001' },
+                ];
+            }
+            return [];
+        }
+
+        # Otherwise it's an address query
+        my $postcode = $params[0];
 
         if ( $postcode eq 'DA13LD' ) {
             return [
@@ -149,7 +169,7 @@ sub _site_info {
     return {
         10001 => {
             AccountSiteID   => 1,
-            AccountSiteUPRN => 10001,
+            AccountSiteUPRN => '10001',
             Site            => {
                 SiteShortAddress => ', 1, THE AVENUE, DA1 3NP',
                 SiteLatitude     => 51.466707,
@@ -158,7 +178,7 @@ sub _site_info {
         },
         10002 => {
             AccountSiteID   => 2,
-            AccountSiteUPRN => 10002,
+            AccountSiteUPRN => '10002',
             Site            => {
                 SiteShortAddress => ', 2, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
@@ -168,7 +188,7 @@ sub _site_info {
         },
         10003 => {
             AccountSiteID   => 3,
-            AccountSiteUPRN => 10003,
+            AccountSiteUPRN => '10003',
             Site            => {
                 SiteShortAddress => ', 3, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
@@ -178,7 +198,7 @@ sub _site_info {
         },
         10004 => {
             AccountSiteID   => 4,
-            AccountSiteUPRN => 10004,
+            AccountSiteUPRN => '10004',
             Site            => {
                 SiteShortAddress => ', 4, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
@@ -188,7 +208,7 @@ sub _site_info {
         },
         10005 => {
             AccountSiteID   => 5,
-            AccountSiteUPRN => 10005,
+            AccountSiteUPRN => '10005',
             Site            => {
                 SiteShortAddress => ', 5, THE AVENUE, DA1 3LD',
                 SiteLatitude     => 51.466707,
@@ -197,9 +217,18 @@ sub _site_info {
         },
         10006 => {
             AccountSiteID   => 6,
-            AccountSiteUPRN => 10006,
+            AccountSiteUPRN => '10006',
             Site            => {
                 SiteShortAddress => ', 6, THE AVENUE, DA1 3LD',
+                SiteLatitude     => 51.466707,
+                SiteLongitude    => 0.181108,
+            },
+        },
+        20001 => {
+            AccountSiteID   => 20001,
+            AccountSiteUPRN => '20001',
+            Site            => {
+                SiteShortAddress => ', 20001, LEGACY STREET, DA1 3LD',
                 SiteLatitude     => 51.466707,
                 SiteLongitude    => 0.181108,
             },
@@ -209,7 +238,7 @@ sub _site_info {
 
 sub _account_site_id {
     return {
-        AccountSiteUprn => 10001,
+        AccountSiteUprn => '10001',
     };
 }
 
@@ -548,6 +577,17 @@ sub _worksheet_detail_service_items {
         ],
         5 => [
             { ServiceItemName => 'PA-55' },
+        ],
+        20001 => [
+            {   SiteServiceID          => 20001,
+                ServiceItemDescription => 'Garden waste',
+                ServiceItemName => 'GA-140',
+                ServiceName => 'Brown Wheelie Bin',
+                NextCollectionDate   => '2024-02-07T00:00:00',
+                SiteServiceValidFrom => '2024-01-01T00:00:00',
+                SiteServiceValidTo   => '0001-01-01T00:00:00',
+                RoundSchedule => 'RND-1 Mon',
+            },
         ],
     };
 }

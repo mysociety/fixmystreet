@@ -1207,6 +1207,30 @@ fixmystreet.assets.merton.streetlight_stylemap = new OpenLayers.StyleMap({
   'select': fixmystreet.assets.construct_named_select_style("${UnitNumber}")
 });
 
+fixmystreet.assets.merton.streetlight_asset_found = function(asset) {
+    fixmystreet.message_controller.asset_found.call(this, asset);
+    fixmystreet.assets.named_select_action_found.call(this, asset);
+};
+fixmystreet.assets.merton.streetlight_asset_not_found = function() {
+    fixmystreet.message_controller.asset_not_found.call(this);
+    fixmystreet.assets.named_select_action_not_found.call(this);
+};
+
+fixmystreet.assets.merton.light_selected_message = function(asset) {
+    var id = asset.attributes[this.fixmystreet.feature_code] || '';
+    var message = [
+        'You have selected', this.fixmystreet.asset_item, '<b>' + id + '</b>.',
+        'If needed, select a different street light. If the street light you want to report isn’t shown on the map, it means Merton Council does not maintain it. Please contact the appropriate landowner or service provider instead.'
+    ];
+    return message.join(' ');
+};
+
+fixmystreet.assets.merton.drain_selected_message = function(asset) {
+    var id = asset.attributes[this.fixmystreet.feature_code] || '';
+    var out = 'You have selected drain <b>' + id + '</b>. Choose a different drain if necessary. If the drain you wish to report does not show on the map then please report as an Unmapped Drain or Gully problem.';
+    return out;
+};
+
 merton_style_default_green = new OpenLayers.Style({
     fillColor: "#55BB00",
     strokeColor: "#000000",

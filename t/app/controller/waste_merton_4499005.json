@@ -21,7 +21,7 @@
           "ServiceTaskSchedules": {
             "ServiceTaskSchedule": {
               "ScheduleDescription": "Monday every week",
-              "Allocation": { "RoundGroupName": "NTE" },
+              "Allocation": { "RoundGroupName": "NTE", "RoundName": "NTE ZONE 2" },
               "LastInstance": {
                 "Ref": { "Value": { "anyType": [ "23293043", "8318" ] } },
                 "OriginalScheduledDate": { "DateTime": "2022-10-09T23:00:00Z" },

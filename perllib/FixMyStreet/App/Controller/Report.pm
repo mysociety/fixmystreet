@@ -716,7 +716,12 @@ sub confirmation : Path('confirmation') : Args(1) {
     # We're now confident the user is allowed to view this report so stick it on
     # the stash and load up the correct template.
     $c->stash->{problem} = $report;
-    if ( $report->confirmed ) {
+    if ( $report->cobrand_data eq 'waste' && $report->get_extra_field_value('payment_method') eq 'direct_debit' ) {
+        $c->stash->{report} = $c->stash->{problem};
+        $c->stash->{title} = 'Direct Debit mandate';
+        $c->stash->{template} = 'waste/dd_complete.html';
+
+    } elsif ( $report->confirmed ) {
         $c->stash->{template} = 'tokens/confirm_problem.html';
         $c->stash->{created_report} = "loggedin";
         $c->stash->{report} = $c->stash->{problem};

@@ -17,7 +17,10 @@ use strict;
 use warnings;
 use Time::Piece;
 use DateTime;
+use List::MoreUtils qw(firstidx);
 use Moo;
+use JSON;
+
 with 'FixMyStreet::Roles::Open311Multi',
      'FixMyStreet::Cobrand::Bexley::Garden',
      'FixMyStreet::Cobrand::Bexley::Bulky',
@@ -55,7 +58,7 @@ sub get_geocoder { 'Bexley' }
 
 sub default_map_zoom { 4 }
 
-=item * It doesn't sent questionnaires to reporters
+=item * It doesn't send questionnaires to reporters
 
 =cut
 
@@ -170,6 +173,36 @@ sub munge_report_new_category_list {
     }
 }
 
+sub waste_munge_enquiry_form_pages {
+    my ($self, $pages, $fields) = @_;
+    my $c = $self->{c};
+    my $category = $c->get_param('category');
+
+    if ($category eq 'Request assisted collection' && !$c->stash->{is_staff}) {
+        my $splice = firstidx { $_ eq 'extra_assisted_staff_notes' } @$fields;
+        splice(@$fields, $splice, 2);
+        $splice = firstidx { $_ eq 'extra_assisted_staff_notes' } @{$pages->[1]{fields}};
+        splice(@{$pages->[1]{fields}}, $splice, 1);
+    }
+}
+
+sub waste_format_assistance_results {
+    my ($self, $report, $template_name) = @_;
+
+    my @question_names = ('reason_for_collection', 'bin_location', 'permanent_or_temporary_help');
+    if ($template_name =~ /^submit\.(txt|html)$/) {
+        push (@question_names, 'assisted_staff_notes');
+    };
+    my $answers = '';
+    for my $field (@{$report->get_extra_fields}) {
+        if (grep { $_ eq $field->{name} } @question_names) {
+            $answers = $answers . $field->{description} . ': ' . ($field->{value} || 'No notes left') . "\n\n";
+        };
+    };
+
+    return $answers;
+}
+
 sub open311_munge_update_params {
     my ($self, $params, $comment, $body) = @_;
 
@@ -233,6 +266,7 @@ sub open311_update_missing_data {
         if (!$row->get_extra_field_value('uprn')) {
             if (my $ref = $feature->{properties}{UPRN}) {
                 $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
+                $row->uprn($ref);
             }
         }
     } else { # Symology

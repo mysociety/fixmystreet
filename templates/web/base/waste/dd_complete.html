@@ -1,4 +1,4 @@
-[% INCLUDE header.html %]
+[% INCLUDE waste/header.html %]
 
 <div class="govuk-panel govuk-panel--confirmation">
 [% IF error %]
@@ -33,6 +33,6 @@
     We’ll send you confirmation details once your Direct Debit has been successfully set up and the first payment taken, after which we’ll start your Garden Waste Subscription.
 </p>
 
-<p><a class="govuk-button" href="/waste/[% property_id %]">Show upcoming bin days</a></p>
+<p><a class="govuk-button" href="/waste/[% report.waste_property_id %]">Show upcoming bin days</a></p>
 
 [% INCLUDE footer.html %]

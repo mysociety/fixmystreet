@@ -10,6 +10,11 @@
          [% uri = c.uri_for_email( '/report', problem.id ) %]
     <li><a href="[% uri %]" class="admin-offsite-link">[% loc('View report on site' )%]</a></li>
 
+[% IF problem.category == 'Request assisted collection' AND report.state == 'confirmed' %]
+[% SET response_link = cobrand.base_url _ '/waste/' _ problem.get_extra_field_value('uprn') _ '/assisted/' _ problem.id %]
+<li><a href="[% response_link %]" class="admin-offsite-link">[% loc('Respond to request' )%]</a></li></li>
+[% END %]
+
 [% IF problem.extra.address %]
 <li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
 [% END %]

@@ -169,6 +169,7 @@
           "ServiceTaskSchedules": {
             "ServiceTaskSchedule": {
               "ScheduleDescription": "Friday every other week",
+              "Allocation": { "RoundGroupName": "REF2A", "RoundName": "Friday" },
               "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
               "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
               "LastInstance": {

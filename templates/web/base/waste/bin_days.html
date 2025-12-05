@@ -80,6 +80,8 @@
           <img src="[% image %].png" alt="" class="waste-service-image">
         [% ELSIF image.type == 'png1' %]
           <img src="[% image.src %].png" alt="[% image.alt %]" class="waste-service-image">
+        [% ELSIF image.src %]
+          <img src="[% image.src %].png" srcset="[% image.src %].png 1x, [% image.src %]@2x.png 2x" alt="[% image.alt %]" class="waste-service-image">
         [% ELSE  %]
           <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
         [% END %]

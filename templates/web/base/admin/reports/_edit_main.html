@@ -235,9 +235,12 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
       </ul>
   [% END %]
 
-    <section id="section_updates">
+    [% IF updates.size %]
+      <section id="section_updates">
         [% INCLUDE 'admin/list_updates.html' %]
-    </section>
+      </section>
+    [% END %]
+
 
  [% IF moderation_history %]
   <section id="section_moderation">
