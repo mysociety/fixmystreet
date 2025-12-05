@@ -185,20 +185,14 @@ sub get_pending_subscription : Private {
             # Bexley confirms garden reports immediately
             state => 'confirmed',
             created => { '>=' => \"current_timestamp-'20 days'::interval" },
-            category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
-            title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New', 'Garden Subscription - Cancel'] },
+            category => 'Garden Subscription',
+            title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New'] },
             extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) }
         })->to_body($c->cobrand->body);
 
+        my $status = $c->stash->{direct_debit_status} || '';
         while (my $sub = $subs->next) {
-            # TODO Better way to handle pending cancellations (any payment type)
-            if ( $sub->title eq 'Garden Subscription - Cancel' ) {
-                $cancel = $sub;
-            } elsif (
-                ( $c->stash->{direct_debit_status} || '' ) eq 'pending'
-            ) {
-                $new = $sub;
-            }
+            $new = $sub if $status eq 'pending';
         }
 
     } else {
