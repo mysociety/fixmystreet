@@ -28,8 +28,29 @@ step1 = first_page;
             [% IF data.$removal_key %][% data.$removal_key %] to remove[% END %]
         </dd>
       [% END %]
-    </div>
-  [% END %]
+      </div>
+      [% IF c.cobrand.moniker == 'brent' AND containers.$container_id == 'General rubbish bin (grey bin)' AND data.request_reason == 'extra' %]
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Household details</dt>
+        <dd class="govuk-summary-list__value"></dd>
+        <dd class="govuk-summary-list__actions">
+          <form method="post">
+            <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+            <input type="hidden" name="goto" value="request_refuse_container">
+            <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
+          </form>
+        </dd>
+      </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-summary-list__key--sub">People at propery</dt>
+          <dd class="govuk-summary-list__value">[% label_for_field(form, 'property_people', data.property_people) %]</dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Children at property</dt>
+          <dd class="govuk-summary-list__value">[% label_for_field(form, 'property_children', data.property_children) %]</dd>
+        </div>
+      [% END %]
+    [% END %]
   [% FOR removal IN data.keys.grep('^removal-') %]
     [% SET container_key = removal.replace('removal-', 'container-') %]
     [% SET container_id = removal.replace('removal-', '') %]

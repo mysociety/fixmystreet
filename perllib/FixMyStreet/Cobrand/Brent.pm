@@ -1291,7 +1291,7 @@ sub waste_munge_request_data {
 
     my $c = $self->{c};
 
-    for (qw(how_long_lived contamination_reports ordered_previously)) {
+    for (qw(how_long_lived contamination_reports ordered_previously property_people property_children)) {
         $c->set_param("request_$_", $data->{$_} || '');
     }
     if (request_referral($id, $data)) {
@@ -1357,6 +1357,13 @@ sub request_referral {
     # return 1 if ($data->{contamination_reports} || 0) >= 3; # Will be present on missing only
     return 1 if ($data->{how_long_lived} || '') eq '3more'; # Will be present on new build only
     return 1 if $data->{ordered_previously};
+
+    if (
+        (($data->{'container-choice'} && $data->{'container-choice'} == $CONTAINER_IDS{rubbish_grey_bin} && $data->{request_reason} eq 'extra')
+        || $data->{'container-' . $CONTAINER_IDS{rubbish_grey_bin}} && $data->{request_reason} eq 'extra')
+        && ($data->{property_people} == 6 || $data->{property_children} eq 'Yes')
+    )
+    { return 1 };
 }
 
 sub waste_request_form_first_title { 'Which container do you need?' }
@@ -1366,7 +1373,26 @@ sub waste_request_form_first_next {
     return sub {
         my $data = shift;
         my $choice = $data->{"container-choice"};
-        return 'request_refuse_call_us' if $choice == $CONTAINER_IDS{rubbish_grey_bin};
+        if ($choice == $CONTAINER_IDS{rubbish_grey_bin}) {
+            my $date = DateTime->now()->subtract( weeks => 2 );
+            my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d');
+            my $c = $self->{c};
+            $data->{refuse_outcome} = $c->cobrand->problems->search(
+                {
+                    category => 'Request new container',
+                    title => ['Request new General rubbish bin (grey bin)'],
+                    confirmed => { '>=', $parser->format_datetime($date) },
+                    extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
+                }
+            )->first;
+        };
+        if ($data->{refuse_outcome}) {
+            if ($data->{refuse_outcome}->get_extra_field_value('request_referral')) {
+                $data->{refuse_outcome} = 'referral';
+            } else {
+                $data->{refuse_outcome} = 'capacity';
+            }
+        };
         return 'replacement';
     };
 }
@@ -1492,6 +1518,26 @@ sub waste_garden_mod_params {
         $c->set_param('Container_Quantity', $data->{new_bins});
     }
 }
+
+
+sub waste_post_report_creation {
+    my ($self, $report, $data) = @_;
+
+    if (
+        $report->title =~ /Request new General rubbish bin \(grey bin\)/
+        && $data->{request_reason} eq 'extra'
+        ) {
+
+        if ($report->get_extra_field_value('request_referral')) {
+            $report->detail('Request forwarded to Brent Council by email');
+        } else {
+            $self->{c}->stash->{brent_request_automatic} = 1;
+            $report->detail('Request automatically calculated');
+            $report->state('fixed - council');
+        }
+        $report->update;
+    }
+};
 
 =item * Uses custom text for the title field for new reports.
 
