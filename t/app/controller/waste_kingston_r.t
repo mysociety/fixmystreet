@@ -132,6 +132,26 @@ FixMyStreet::override_config {
         $e->mock('GetTasks', sub { [] });
     };
 
+    subtest 'Roadworks so no collection' => sub {
+        $kingston->add_to_response_templates({
+            title => 'Roadworks',
+            text => 'We will continue to try and collect over the next few days',
+            external_status_code => 613,
+        });
+        $e->mock('GetTasks', sub { [ {
+            Ref => { Value => { anyType => [ 17430692, 8287 ] } },
+            State => { Name => 'Completed' },
+            Resolution => { Name => "NA - Roadworks", Ref => { Value => { anyType => 613 } } },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        } ] });
+        set_fixed_time('2022-09-09T16:30:00Z');
+        $mech->get_ok('/waste/12345');
+        $mech->content_lacks('Report a non-recyclable refuse collection as missed');
+        $mech->content_contains('missed collection cannot be reported');
+        $mech->content_contains('continue to try and collect');
+        $e->mock('GetTasks', sub { [] });
+    };
+
     foreach (
         { id => 27, name => 'Blue lid paper and cardboard bin (240L)', service => 974, price => 4200 },
         { id => 12, name => 'Green recycling box (55L)', service => 970, price => 2400 },
