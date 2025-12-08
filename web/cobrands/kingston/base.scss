@@ -5,43 +5,54 @@
 @import "../sass/waste";
 @import "../fixmystreet-uk-councils/societyworks-footer";
 
-* {
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-}
+$govuk-brand-colour: $blue;
+$govuk-error-colour: black;
+$govuk-success-colour: $green;
 
+/* TYPOGRAPHY */
 body {
-    font-family: $body-font;
-    color: $black;
-    background-color: #eef1e6;
+    line-height: 1.5;
 }
 
-.content {
-    color: $black !important;
-    background: #fff;
-    padding: 0.75rem 1.5rem;
-    margin-top: 1em;
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.govuk-heading-xl,
+.govuk-heading-l {
+    font-weight: 600;
 }
 
-.visually-hidden {
-    @include visually-hidden;
+h1,
+h1.govuk-heading-xl {
+    font-size: 1.75rem;
+    line-height: 1.143;
 }
 
-#site-header {
-    border-top-width: 0;
+h2,
+h2.govuk-heading-l {
+    font-size: 1.5rem;
+    line-height: 1.167;
 }
 
-#site-logo {
-    width: 3.43rem;
-    height: 4rem;
-    background-image: url("/cobrands/kingston/images/logo.svg");
-    background-size: 90%;
-
-    .mappage & {
-        height: $mappage-header-height;
-    }
+.h2-small {
+    font-size: 1.25rem;
+    line-height: 1.2;
 }
 
+h3,
+h3.govuk-heading-m {
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.h3-small {
+  font-size: 1.125rem;
+  line-height: 1.222;
+}
+
+.body-large {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+}
 
 a,
 .fake-link {
@@ -63,9 +74,140 @@ a,
 }
 
 .fake-link:focus,
-#nav-link.focussed,
 .olButton:focus {
     text-decoration: underline;
+}
+
+/* GENERAL */
+ul>li {
+    list-style: disc;
+}
+
+input[type="text"], 
+input[type="email"], 
+textarea,
+body.waste input[type="text"].govuk-input {
+    @include kingston-form-input;
+    height: auto;
+    &.govuk-input {
+        @include kingston-form-input;
+    }
+}
+
+.govuk-button {
+    @include kingston-button-primary;
+}
+
+label,
+body.waste label {
+    // Overrides _waste default
+    font-weight: 600 !important;
+    @extend .body-large;
+}
+
+label.btn {
+    // Avoid weird box-shadow in pills elements in the my account page
+    box-shadow: none;
+    background: #E8F1F8;
+    // overrides button-variant
+    color: $primary !important;
+
+    &:hover {
+        box-shadow: none;
+    }
+}
+
+/* NAVBAR */
+#site-header {
+    box-shadow: 0 2px 4px rgba(22,38,85,0.25);
+}
+
+.nav-opened-text {
+    display: none;
+}
+
+.js-nav-open {
+    .nav-opened-text {
+        display: block;
+    }
+    .nav-closed-text {
+        display: none;
+    }
+}
+
+#nav-link {
+    padding: 0rem 2.2rem 0rem 1rem;
+    background-color: $nav_colour;
+    color: $white;
+    height: 2.5rem;
+    background-position: right 1rem top 50%;
+    background-size: 1rem auto;
+    right: 1rem;
+    border-radius: $border-radius;
+
+    .nav-link-text  {
+        line-height: 2.5rem;
+        text-decoration: none;
+    }
+
+    &.focussed {
+        outline: none;
+    }
+}
+
+#site-logo {
+    background-image: url("/cobrands/kingston/images/logo.svg");
+    width: 5.625rem;
+    height: 8.25rem;
+    background-size: auto 6.25rem;
+}
+
+.nav-menu--main a {
+    @extend .body-large;
+    font-weight: 600;
+    text-decoration: none
+}
+
+#report-cta {
+    @include kingston-button-primary;
+    right: 9rem;
+}
+
+/* FRONTPAGE */
+#front-main {
+    // Spacing based on Kingston's assets
+    padding: 1rem 1.25rem 4rem;
+    margin-top: 0;
+
+    #front-main-container {
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        margin-top: 0;
+        margin-bottom: 2rem;
+    }
+}
+
+.postcode-form-box {
+    div {
+        border: none;
+        background: transparent;
+        gap: 1rem;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        flex-direction: column;
+    }
+
+    input#pc {
+        @include kingston-form-input($margin: 0 0 0 0);
+        min-width: 12.5rem;
+    }
+
+    input#sub {
+        @include kingston-button-primary();
+    }
 }
 
 .item-list--reports__item a {
@@ -80,91 +222,6 @@ a,
     }
 }
 
-.nav-menu a {
-    text-decoration: none;
-    &:focus {
-        color: $white;
-        text-decoration: underline;
-    }
-}
-
-#report-cta {
-    @include kingston-button-primary;
-}
-
-.olButton:focus {
-    z-index: 1; // pull forward, so entire outline is visible
-}
-
-.kingston-footer {
-    background: $primary_b;
-    color: $white;
-    padding: 1.5em 0;
-
-    ul {
-        margin: 0;
-        font-size: 12px;
-    }
-
-    li {
-        list-style: none;
-        margin: 0.66em 0;
-    }
-
-    a {
-        color: inherit;
-        text-decoration: underline;
-    }
-}
-
-#report-cta {
-    border-color: $white;
-}
-
-.postcode-form-box {
-    div {
-        border: none;
-        background: transparent;
-    }
-
-    input#pc {
-        @include kingston-form-input($margin: 0 0.5em 0 0, $padding: 5px 0.5em);
-        font-size: 1.25em;
-        background: #fff;
-    }
-
-    input#sub {
-        @include kingston-button-primary();
-        border-radius: 5px;
-        font-size: 1.25em;
-    }
-}
-
-#front-main {
-    h2 {
-        font-style: inherit;
-    }
-}
-
-a#geolocate_link {
-    @include kingston-button-secondary();
-}
-
-h1, h2, h3, .h1, .h2, .h3 {
-    font-family: $body-font;
-}
-
-h1, h1.govuk-heading-xl {
-    font-size: 2.375em;
-    line-height: 1.25em;
-    font-weight: 600;
-    color: $blue;
-}
-
-h2, h2.govuk-heading-l {
-    color: $black;
-    font-size: 1.75em;
-}
 .govuk-panel--confirmation {
     background-color: $blue !important;
 }
@@ -178,10 +235,6 @@ h2, h2.govuk-heading-l {
     font-size: 1.5rem !important;
 }
 
-label {
-    @include kingston-form-label();
-}
-
 .form-control {
     @include kingston-form-input();
 
@@ -190,34 +243,14 @@ label {
     }
 }
 
-input[type="submit"] {
-    border-radius: 5px;
-}
-
-.multi-select-button {
-    // Focus style, copied from kingston-form-input() mixin
-    &:focus {
-        outline: none;
-        border: 1px solid #52A8EC;
-        box-shadow: 0 1px 3px #000, 0 0 8px #52A8EC;
-    }
-}
-
-input.form-error,
-textarea.form-error {
-    background: #FBE3E4;
-    border: 1px solid #FBC2C4;
-    border-radius: 4px;
-}
-
 div.form-error,
 p.form-error {
     background: transparent;
     padding: 0;
     border-radius: 0;
 
-    color: #A22C2E;
-    font-weight: 700;
+    color: $red;
+    font-weight: 600;
 }
 
 .dropzone {
@@ -233,22 +266,6 @@ p.form-error {
     @include kingston-button-primary();
 }
 
-// As per Kingston Website style guide
-.skiplink:focus {
-    border: 1px solid #FFFFFF;
-    background: #2C2C2C;
-    padding: 6px;
-    color: #FFFFFF;
-    min-width: 150px;
-    outline: none;
-    text-align: center;
-    border-radius: 6px;
-    box-shadow: 2px 2px 5px #5F5F5F;
-
-    top: 0.5em;
-    left: 0.5em;
-}
-
 .item-list__item--empty {
     color: $blue;
 }
@@ -257,51 +274,18 @@ p.form-error {
     background-color: $yellow;
 }
 
-.segmented-control.segmented-control--radio {
-    input:checked+label {
-        background: $blue !important;
-        color: $white !important;
-        &:hover {
-            background-color: $blue !important;
-            color: white !important;
-            text-decoration: none !important;
-            cursor: default;
-        }
-    }
-    label.btn {
-        background: $white !important;
-        border-color: $blue;
-        color: $blue !important;
-        &:hover {
-            background: $white !important;
-            color: $blue !important;
-            text-decoration: underline !important;
-        }
-        &:last-child {
-            border-right-width: 4px;
-            border-left-width: 2px;
-        }
-    }
-}
-
-//ADMIN
-
-.my-account-buttons {
-    text-align: right;
-}
-
-.fms-admin-info {
-    border-color: $green;
-    background-color: mix($green, $white, 15%);
-}
-
-//FOOTER
+/* FOOTER */
 .site-footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: $black;
-    padding: 3em 1em 1.5em 1em;
+    background-color: $navy-blue;
+
+    .container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        // Spacing based on Kingston's assets
+        padding: 2rem 1.25rem 4rem;
+        column-gap: 2rem;
+    }
 
     a {
         color:$white;
@@ -316,92 +300,19 @@ p.form-error {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
+        gap: 1rem;
         li {
             list-style: none;
-            margin-right: 10px;
-        }
-    }
-
-    .nav--social-links {
-        margin-top: 1.125em;
-
-        li {
-            display: inline-block;
-            margin: 0.75em 1em 0;
-
-            a.list__link {
-                color: $black;
-                background-color: $white;
-                border-radius: 50%;
-                display: block;
-                // padding: 0.5em;
-                width: 34px;
-                height: 34px;
-                position: relative;
-            }
-        }
-
-        .icon {
-            position: relative;
-            z-index: 2;
-            height: 2.125em;
-            width: 2.125em;
-            background-size: 20px;
-            background-position: center;
-            background-repeat: no-repeat;
-
-            &.icon-misc-facebook {
-                background-image: url(data:image/svg+xml;charset%3DUS-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20preserveAspectRatio%3D%22xMinYMid%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20d%3D%22M22.37%2C12.54v7.85H16.62V30h5.75V58.5H34.18V30h7.93s.74-4.6%2C1.1-9.63h-9V13.79a2.79%2C2.79%2C0%2C0%2C1%2C2.56-2.3h6.43V1.5H34.47C22.08%2C1.5%2C22.37%2C11.11%2C22.37%2C12.54Z%22%20fill%3D%22%233c3c3c%22%20%2F%3E%3C%2Fsvg%3E);
-            }
-            &.icon-misc-twitter {
-                background-image: url(data:image/svg+xml;charset%3DUS-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20preserveAspectRatio%3D%22xMinYMid%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20d%3D%22M52.67%2C18.38c0%2C.5%2C0%2C1%2C0%2C1.51%2C0%2C15.45-11.76%2C33.27-33.27%2C33.27A33.06%2C33.06%2C0%2C0%2C1%2C1.5%2C47.91a23.36%2C23.36%2C0%2C0%2C0%2C2.79.16%2C23.43%2C23.43%2C0%2C0%2C0%2C14.52-5A11.7%2C11.7%2C0%2C0%2C1%2C7.89%2C34.94a11.4%2C11.4%2C0%2C0%2C0%2C2.2.21%2C11.56%2C11.56%2C0%2C0%2C0%2C3.08-.41A11.69%2C11.69%2C0%2C0%2C1%2C3.79%2C23.28v-.15a11.72%2C11.72%2C0%2C0%2C0%2C5.3%2C1.46A11.71%2C11.71%2C0%2C0%2C1%2C5.47%2C9%2C33.22%2C33.22%2C0%2C0%2C0%2C29.57%2C21.2%2C11.7%2C11.7%2C0%2C0%2C1%2C49.5%2C10.53a23.38%2C23.38%2C0%2C0%2C0%2C7.43-2.84%2C11.73%2C11.73%2C0%2C0%2C1-5.15%2C6.47%2C23.3%2C23.3%2C0%2C0%2C0%2C6.72-1.84A23.83%2C23.83%2C0%2C0%2C1%2C52.67%2C18.38Z%22%20fill%3D%22%233c3c3c%22%20%2F%3E%3C%2Fsvg%3E);
-            }
-            &.icon-misc-youtube {
-                background-image: url(data:image/svg+xml;charset%3DUS-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2260%22%20height%3D%2243%22%20viewBox%3D%220%200%2060%2043%22%20preserveAspectRatio%3D%22xMinYMid%22%20aria-hidden%3D%22true%22%20focusable%3D%22false%22%3E%3Cpath%20fill%3D%22%233C3C3C%22%20d%3D%22M23.4%2C32.2V8.8L41%2C20.5L23.4%2C32.2L23.4%2C32.2z%20M59.9%2C9.3c0-5.1-4-9.3-9-9.3H8.9%20c-5%2C0-9%2C4.1-9%2C9.3v24.6c0%2C5.1%2C4%2C9.3%2C9%2C9.3h42.1c5%2C0%2C9-4.1%2C9-9.3V9.3L59.9%2C9.3z%22%2F%3E%3C%2Fsvg%3E);
-            }
-        }
-
-        a.list__link::before {
-            background-color: #dbebfd;
-            border-radius: 50%;
-            bottom: 0;
-            content: '';
-            display: block;
-            left: 0;
-            position: absolute;
-            right: 0;
-            top: 0;
-            -webkit-transform: scale(0);
-            -ms-transform: scale(0);
-            transform: scale(0);
-            -webkit-transform-origin: center;
-            -ms-transform-origin: center;
-            transform-origin: center;
-            -webkit-transition: -webkit-transform .3s ease-out;
-            transition: -webkit-transform .3s ease-out;
-            -o-transition: transform .3s ease-out;
-            transition: transform .3s ease-out;
-            transition: transform .3s ease-out, -webkit-transform .3s ease-out;
-            z-index: 1;
-        }
-
-        &:hover {
-            .list__link:hover::before {
-                -webkit-transform: scale(1);
-                -ms-transform: scale(1);
-                transform: scale(1);
-            }
         }
     }
 
     .footer-logo {
         display: block;
-        width: 6.25em;
-        height: 7.25em;
+        width: 6rem;
+        height: 7rem;
         background-image: url("/cobrands/kingston/images/logo-white.svg");
         background-size: contain;
         background-repeat: no-repeat;
-        margin-bottom: 0.75em;
     }
 }
 
@@ -409,12 +320,8 @@ p.form-error {
     text-align: center;
 }
 
-//WASTEWORKS
+/* WASTEWORKS */
 .waste {
-    .content[role="main"] {
-        border-top: 4px solid $green;
-    }
-
     #front-main + div:not(:has(.site-message)) {
         display: none;
     }
@@ -424,11 +331,11 @@ p.form-error {
     .item-summary-table {
         thead {
             background-color: $white;
-            border-color: #ccc;
+            border-color: #F3F2F1;
         }
         tbody {
             tr {
-                border-color: #ccc;
+                border-color: #F3F2F1;
             }
         }
     }
@@ -437,15 +344,4 @@ p.form-error {
             width: 100%;
         }
     }
-}
-
-input[type="text"], input[type="email"], textarea {
-    &.govuk-input {
-        @include kingston-form-input;
-    }
-}
-
-.govuk-radios__input:focus + .govuk-radios__label:before {
-    border-width: 3px;
-    box-shadow: 0 0 0 3px mix($green, $white, 65%) !important;
 }
