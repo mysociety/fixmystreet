@@ -563,14 +563,14 @@ FixMyStreet::override_config {
 
         my $request = {
             extras => {
-                priority => 'DP'
+                priority => 'DPM'
             }
         };
 
         $cobrand->open311_report_fetched($fetched_report, $request);
 
         $fetched_report->discard_changes;
-        is $fetched_report->get_extra_metadata('confirmPriorityCode'), 'DP';
+        is $fetched_report->get_extra_metadata('confirmPriorityCode'), 'DPM';
 
         is $cobrand->pin_colour($fetched_report), 'grey';
     };

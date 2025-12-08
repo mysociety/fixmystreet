@@ -335,7 +335,7 @@ sub pin_colour {
     return 'orange' if $p->state eq 'investigating' || $p->state eq 'planned' || $p->state eq 'internal referral';
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'orange-work' if $p->state eq 'in progress';
-    return 'grey' if ($p->get_extra_metadata('confirmPriorityCode') || '') eq 'DP';
+    return 'grey' if ($p->get_extra_metadata('confirmPriorityCode') || '') eq 'DPM';
     return 'orange' if $self->is_defect($p);
     # Confirmed/open or action scheduled
     return 'red';
