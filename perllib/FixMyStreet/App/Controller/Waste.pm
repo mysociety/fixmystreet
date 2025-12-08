@@ -1013,6 +1013,9 @@ sub report : Chained('property') : Args(0) {
 
     my $field_list = construct_bin_report_form($c);
 
+    # If there are no items to be chosen, redirect back to bin day page
+    $c->detach('property_redirect') unless @$field_list;
+
     $c->stash->{first_page} = 'report';
     my $next = $c->cobrand->call_hook('waste_report_form_first_next') || 'about_you';
 
