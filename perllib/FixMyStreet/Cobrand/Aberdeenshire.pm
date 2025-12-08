@@ -229,9 +229,14 @@ sub open311_report_fetched {
     my ($self, $problem, $request) = @_;
 
     my $supersedes = $request->{extras}{supersedes};
-    return unless $supersedes && $supersedes =~ /^DEFECT_/;
+    if ($supersedes && $supersedes =~ /^DEFECT_/) {
+        $self->_supersede_report($problem, $supersedes);
+    }
 
-    $self->_supersede_report($problem, $supersedes);
+    if (my $priority = $request->{extras}{priority}) {
+        $problem->set_extra_metadata(confirmPriorityCode => $priority);
+        $problem->update;
+    }
 }
 
 
