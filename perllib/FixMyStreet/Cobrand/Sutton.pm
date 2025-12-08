@@ -237,8 +237,8 @@ around booked_check_missed_collection => sub {
         }
 
         if (
-            # And report is closed completed, or open
-            (!$missed_event->{closed} || $missed_event->{completed})
+            # Report is still open
+            !$missed_event->{closed}
             # And no existing escalation since last collection
             && !$open_escalation
         ) {
@@ -276,8 +276,8 @@ sub _setup_missed_collection_escalations_for_service {
     if (
         # If there's a missed bin report
         $missed_event
-        # And report is closed completed, or open
-        && (!$missed_event->{closed} || $missed_event->{completed})
+        # And report is still open
+        && !$missed_event->{closed}
         # And the event source is the same as the current property (for communal)
         && ($missed_event->{source} || 0) == $property->{id}
         # And no existing escalation since last collection

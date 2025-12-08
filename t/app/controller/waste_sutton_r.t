@@ -733,7 +733,7 @@ FixMyStreet::override_config {
             $mech->content_lacks('please report the problem here');
         };
 
-        subtest 'Completed missed collection' => sub {
+        subtest 'Completed missed collection - no escalation' => sub {
             $e->mock('GetEventsForObject', sub { [ {
                 Id => '112112321',
                 EventTypeId => 3145, # Missed collection
@@ -750,11 +750,11 @@ FixMyStreet::override_config {
 
             set_fixed_time('2022-09-13T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('please report the problem here');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-15T17:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('please report the problem here');
+            $mech->content_lacks('please report the problem here');
 
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok('/waste/12345');
