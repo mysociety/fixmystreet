@@ -1208,9 +1208,11 @@ fixmystreet.assets.lincolnshire.grass_not_found = function(layer) {
 };
 
 fixmystreet.assets.lincolnshire.light_found = function(asset) {
+    fixmystreet.message_controller.asset_found.call(this);
     fixmystreet.body_overrides.only_send(asset.layer.fixmystreet.body);
 };
 fixmystreet.assets.lincolnshire.light_not_found = function() {
+    fixmystreet.message_controller.asset_not_found.call(this);
     // Default to Lincolnshire if layer is visible
     // (this action fires on the Lincolnshire part of the asset layer)
     if (this.getVisibility()) {
