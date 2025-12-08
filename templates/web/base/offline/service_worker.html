@@ -2,6 +2,7 @@
 SET bodyclass = "offlinepage"; # For selection of scripts
 PROCESS 'common_scripts.html';
 SET offline_html = version('../templates/web/base/offline/fallback.html', '/offline/fallback');
+SET offline_waste_html = version('../templates/web/base/offline/waste_fallback.html', '/offline/waste_fallback');
 SET scripts_seen = {};
 
 ~%]
@@ -20,7 +21,8 @@ const requiredOffline = [
     ~%]
     "[%- script %]",
   [% END %]
-  "[% offline_html %]"
+  "[% offline_html %]",
+  "[% offline_waste_html %]"
 ];
 
 const staticCache = 'static';
@@ -41,6 +43,11 @@ addEventListener('fetch',  fetchEvent => {
 
   if (url.origin !== location.origin) {
       return;
+  }
+
+  let offline_page = "[% offline_html %]";
+  if (RegExp('/waste').test(url)) {
+    offline_page = "[% offline_waste_html %]";
   }
 
   // Handle inspection form submission if offline...
@@ -112,7 +119,7 @@ addEventListener('fetch',  fetchEvent => {
         return await fetchPromise;
       }
       catch {
-        let cached = await caches.match(request) || await caches.match("[% offline_html %]");
+        let cached = await caches.match(request) || await caches.match(offline_page);
         return cached || offlineResponse();
       }
     } else {
