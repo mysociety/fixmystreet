@@ -69,6 +69,20 @@ sub privacy_policy_url { 'https://www.southwark.gov.uk/council-and-democracy/fre
 
 sub contact_extra_fields { [ 'display_name' ] }
 
+=item * Customised pin colours
+
+Have a green tick for closed/fixed, and yellow cone for open.
+
+=cut
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'green-tick' if $p->is_fixed || $p->is_closed;
+    return 'yellow-cone';
+}
+
+sub path_to_pin_icons { '/i/pins/whole-shadow-cone-spot/' }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
