@@ -229,9 +229,14 @@ sub open311_report_fetched {
     my ($self, $problem, $request) = @_;
 
     my $supersedes = $request->{extras}{supersedes};
-    return unless $supersedes && $supersedes =~ /^DEFECT_/;
+    if ($supersedes && $supersedes =~ /^DEFECT_/) {
+        $self->_supersede_report($problem, $supersedes);
+    }
 
-    $self->_supersede_report($problem, $supersedes);
+    if (my $priority = $request->{extras}{priority}) {
+        $problem->set_extra_metadata(confirmPriorityCode => $priority);
+        $problem->update;
+    }
 }
 
 
@@ -330,6 +335,7 @@ sub pin_colour {
     return 'orange' if $p->state eq 'investigating' || $p->state eq 'planned' || $p->state eq 'internal referral';
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'orange-work' if $p->state eq 'in progress';
+    return 'grey' if ($p->get_extra_metadata('confirmPriorityCode') || '') eq 'DP';
     return 'orange' if $self->is_defect($p);
     # Confirmed/open or action scheduled
     return 'red';
