@@ -816,6 +816,7 @@ sub cancel_request : Chained('property') : PathPart('request/cancel') : Args(1) 
     }
 
     $c->stash->{request_to_cancel} = $request_report;
+    $c->stash->{request_to_cancel_is_paid} = $request_report->waste_has_payment;
     $c->stash->{request_to_cancel_service_name} = $service_name;
     $c->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::Cancel";
     $c->forward('form');
