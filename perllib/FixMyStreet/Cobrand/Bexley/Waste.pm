@@ -254,7 +254,7 @@ sub look_up_property {
 
     # Check if today or any of the next 7 days are bank holidays
     my $upcoming_bank_holiday = 0;
-    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => $self->public_holidays());
     for (-7..14) {
         my $dt = DateTime->now->add(days => $_);
         if ($wd->is_public_holiday($dt)) {
@@ -1208,7 +1208,7 @@ sub _subtract_working_days {
         unless $dt;
 
     my $wd = FixMyStreet::WorkingDays->new(
-        public_holidays => FixMyStreet::Cobrand::UK::public_holidays() );
+        public_holidays => $self->public_holidays() );
 
     return $wd->sub_days( $dt, $day_count );
 }

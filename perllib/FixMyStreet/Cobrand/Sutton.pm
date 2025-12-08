@@ -119,6 +119,21 @@ sub waste_on_the_day_criteria {
     }
 }
 
+=head2 public_holidays
+
+The only Bank Holidays relevant to Sutton are Christmas, Boxing, New Year.
+=cut
+
+sub public_holidays {
+    my $self = shift;
+    my $nation = 'england-and-wales';
+    my $json = $self->_get_bank_holiday_json();
+    return [
+        map { $_->{date} }
+        grep { $_->{title} =~ /Christmas|Boxing|New Year/ }
+        @{$json->{$nation}{events}} ];
+}
+
 =head2 waste_check_staff_payment_permissions
 
 Staff take payments off-session, then enter an authorization code on our site.

@@ -563,6 +563,7 @@ sub check_recaptcha {
 }
 
 sub public_holidays {
+    my $self = shift;
     my $nation = shift || 'england-and-wales';
     my $json = _get_bank_holiday_json();
     return [ map { $_->{date} } @{$json->{$nation}{events}} ];
@@ -615,7 +616,7 @@ sub _fetch_url {
 sub ooh_times {
     my ($self, $body) = @_;
     my $times = $body->get_extra_metadata("ooh_times");
-    return FixMyStreet::OutOfHours->new(times => $times, holidays => public_holidays());
+    return FixMyStreet::OutOfHours->new(times => $times, holidays => $self->public_holidays());
 }
 
 # UK council dashboard summary/heatmap access
