@@ -44,12 +44,8 @@ has_field submit => (
 sub _build_title {
     my $self = shift;
     my $c = $self->form->{c};
-    my $service_name = $c->stash->{request_to_cancel_service_name} || "";
-    if ($service_name) {
-        $service_name = lc $service_name;
-        $service_name .= " ";
-    }
-    return "Cancel your $service_name" . "container request";
+    my $request_description = $c->stash->{request_to_cancel_description} || "";
+    return "Cancel your $request_description";
 }
 
 1;

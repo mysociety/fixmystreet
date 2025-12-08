@@ -975,6 +975,7 @@ FixMyStreet::override_config {
                     external_id => $event_guid,
                     cobrand_data => 'waste',
                     user => $user,
+                    title => "Request replacement container",
                 }
             );
             my @extra_fields = ({
@@ -1011,7 +1012,7 @@ FixMyStreet::override_config {
             $e->mock('GetEventsForObject', sub { [$open_container_request_event] });
 
             my $cancellation_url = "/waste/12345/request/cancel/" . $container_request_report->id;
-            my $cancel_form_title = "Cancel your non-recyclable refuse container request";
+            my $cancel_form_title = "Cancel your replacement container request";
             set_fixed_time('2025-02-05T08:00:00Z');
 
             subtest "Link shown" => sub {
@@ -1064,7 +1065,7 @@ FixMyStreet::override_config {
                     $mech->content_contains("I acknowledge that the payment will not be refunded.");
                 }
                 $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
-                $mech->content_contains("Your non-recyclable refuse container request has been cancelled.");
+                $mech->content_contains("Your replacement container request has been cancelled.");
                 $container_request_report->discard_changes;
                 is $container_request_report->state, 'cancelled';
                 my $latest_comment = $container_request_report->comments->search(

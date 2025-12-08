@@ -669,6 +669,17 @@ sub waste_munge_request_data {
     }
 }
 
+=head2 waste_container_request_description
+
+Returns a description of the container request report.
+
+=cut
+
+sub waste_container_request_description {
+    my ($self, $report) = @_;
+    return ($report->title =~ s/^Request //r) . " request";
+}
+
 =head2 request_cost
 
 Calculate how much, if anything, a request for a container should be.
