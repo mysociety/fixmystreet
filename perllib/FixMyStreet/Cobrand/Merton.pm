@@ -32,8 +32,6 @@ sub disambiguate_location {
     };
 }
 
-sub report_sent_confirmation_email { 'id' }
-
 sub report_validation {
     my ($self, $report, $errors) = @_;
 
