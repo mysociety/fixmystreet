@@ -41,6 +41,9 @@ END;
         on [% date.format(service.last.date) | replace('~~~', service.last.ordinal) %].
         If it has not been collected, you can report it as missed and we will return within 2 working days to collect it.
         </p>
+        [% IF c.cobrand.moniker == 'kingston' AND fas_property %]
+             <p>If a spillage on a public highway occurred during a [% service.service_name FILTER lower %] collection, please report <a href="https://kingston-self.achieveservice.com/service/Request_a_street_clean_in_Kingston">a street cleaning issue</a>.</p>
+        [% END %]
     [% END %]
 [% END %]
 [%
@@ -97,7 +100,9 @@ IF NOT original_booking_report; # Not a bulky booking
     f.push(field);
 
     SET field = { value = 'Waste spillage', label = 'Report a spillage by the crew' };
-    IF service.report_allowed;
+    IF c.cobrand.moniker == 'kingston' AND fas_property;
+        field.disabled = 1;
+    ELSIF service.report_allowed;
         IF service.events.filter(event_type = 3227);
             field.hint = 'You have already reported a spillage';
             field.disabled = 1;
