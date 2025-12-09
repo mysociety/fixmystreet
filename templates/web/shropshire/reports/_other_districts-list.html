@@ -1,0 +1,29 @@
+<section id="council_parishes" class="js-sub-area-list[% UNLESS c.req.params.show_parishes %] hidden-js[% END %]">
+[% SET show_parish_hidden_class = c.req.params.show_parishes ? 'hidden' : 'js-ward-single' %]
+[% SET show_parish_shown_class = c.req.params.show_parishes ? '' : 'js-ward-multi hidden' %]
+<h2>View reports by parish</h2>
+    <p class="[% show_parish_hidden_class %]">[% loc('Follow a parish link to view only reports within that parish.') %]</p>
+    <p class="[% show_parish_shown_class %]">[% loc('Select multiple parishes to view only reports within those parishes.') %]</p>
+    <p class="[% show_parish_hidden_class %]"><a href="?show_parishes=1" class="js-ward-select-multiple">[% loc('Select multiple parishes?') %]</a></p>
+    <form method="get" action="">
+    <section class="full-width">
+    <ul class="item-list item-list--wards govuk-checkboxes govuk-checkboxes--small">
+      [% FOR child IN parish_ward.values.sort('name') %]
+      [% IF child.type == 'CPC' %]
+      <li class="govuk-checkboxes__item">
+        <input class="[% show_wards_shown_class %] govuk-checkboxes__input" id="[% child.name | lower | replace(' ', '-') %]" type="checkbox" name="ward" value="[% child.name | html %]">
+        <label class="[% show_parish_shown_class %] js-ward-multi govuk-label govuk-checkboxes__label" for="[% child.name | lower | replace(' ', '-') %]">
+          [% child.name %]
+        </label>
+        <a class="[% show_parish_hidden_class %]" href="[% child.url %]">[% child.name %]</a>
+      </li>
+      [% END %]
+    [% END %]
+    </ul>
+    </section>
+    <p>
+      <input type="hidden" name="type" value="CPC">
+      <input class="btn [% show_parish_shown_class %]" type="submit" value="[% loc('View parishes') %]" />
+    </p>
+    </form>
+</section>

@@ -20,7 +20,7 @@
             <br>
             You can
             <a href="[% c.uri_for_action('waste/cancel_request', [ property.id, request.report.id ]) %]" class="waste-service-link">cancel your container order</a>
-            if you would like. A refund will not be issued.
+            if you would like.[% IF request.report.waste_has_payment %] A refund will not be issued.[% END %]
         [% END %]
     [% END %]
   </span>

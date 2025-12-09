@@ -16,7 +16,14 @@
           </div>
           <ul>
             <li>Find your bin collection days</li>
+
+            [% IF c.cobrand.moniker == 'merton' %]
+              <li>Add collection days to your online calendar</li>
+              <li>Download a printable PDF calendar</li>
+            [% END %]
+
             <li>Report a missed bin collection</li>
+
             [% IF c.cobrand.moniker == 'bexley' %]
                 <li>Request a bin delivery or removal</li>
             [% ELSIF c.cobrand.moniker == 'sutton' %]
@@ -24,13 +31,16 @@
             [% ELSE %]
                 <li>Order new or additional bins</li>
             [% END %]
-            <li>Subscribe to garden waste collection service</li>
+
+            <li>Subscribe to the garden waste collection service</li>
+
             [% IF c.cobrand.call_hook('bulky_enabled') %]
               <li>Book a bulky waste collection</li>
             [% END %]
             [% IF c.cobrand.call_hook('small_items_enabled') %]
               <li>Book a small items collection</li>
             [% END %]
+
             [% IF c.cobrand.moniker == 'bexley' %]
               <li>Get help with putting your bins out</li>
             [% END %]

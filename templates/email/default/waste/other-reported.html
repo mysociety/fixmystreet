@@ -52,7 +52,7 @@ INCLUDE '_email_top.html';
         <p style="[% p_style %]">
         You can
         <a href="[% cancel_url %]">cancel your request</a>
-        if you would like. A refund will not be issued.
+        if you would like.[% IF report.waste_has_payment %] A refund will not be issued.[% END %]
     [% ELSIF report.category == 'Waste spillage' %]
       <p style="[% p_style %]">
         We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.

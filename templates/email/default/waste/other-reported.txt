@@ -40,7 +40,7 @@ If you have requested a bin, box or caddy to be collected as part of the request
 * We will not be able to exchange a bin, box or caddy if the old bin is not available, and you may not receive your replacement.
 
 [% cancel_url = cobrand.base_url _ '/waste/' _ report.waste_property_id _ '/request/cancel/' _ report.id; %]
-You can cancel your request at [% cancel_url %]. A refund will not be issued.
+You can cancel your request at [% cancel_url %].[% IF report.waste_has_payment %] A refund will not be issued.[% END %]
 
 [% ELSIF report.category == 'Waste spillage' %]
 We apologise for any inconvenience caused and appreciate your feedback.  We're committed to using it to improve our customer service.

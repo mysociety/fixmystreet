@@ -506,7 +506,6 @@ FixMyStreet::override_config {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'oxfordshire',
-    COBRAND_FEATURES => { sub_ward_reporting => { oxfordshire => ['DIW', 'CPC'] }},
     MAPIT_URL => 'http://mapit.uk/',
 
 }, sub {
@@ -551,7 +550,6 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => 'oxfordshire',
     STAGING_FLAGS => { send_reports => 1 },
     COBRAND_FEATURES => {
-        sub_ward_reporting => { oxfordshire => ['DIW', 'CPC'] },
         open311_email => { oxfordshire => { 'Trees obstructing traffic light' => 'trafficlights@example.org' } }
         },
     MAPIT_URL => 'http://mapit.uk/',
