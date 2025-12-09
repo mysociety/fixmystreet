@@ -601,16 +601,6 @@ sub waste_munge_request_data {
     }
 }
 
-sub _enquiry_nice_title {
-    my $category = shift;
-    if ($category eq 'Complaint against time') {
-        $category = 'Issue with collection';
-    } elsif ($category eq 'Failure to Deliver Bags/Containers') {
-        $category = 'Issue with delivery';
-    }
-    return $category;
-}
-
 =head2 waste_munge_enquiry_data
 
 Get the right data in place for the bin not returned / waste spillage / escalation categories.
@@ -638,7 +628,22 @@ sub waste_munge_enquiry_data {
         $data->{extra_Notes} = "Originally Echo Event #$echo";
         $data->{extra_original_ref} = $ww;
         $data->{extra_container_request_guid} = $guid;
+    } elsif ($data->{category} eq 'Bin not returned') {
+        my $assisted = $c->stash->{assisted_collection};
+        my $returned = $data->{now_returned} || '';
+        if ($assisted && lc($returned) eq 'no') {
+           $data->{extra_Notes} = '*** Property is on assisted list ***';
+        }
+    } elsif ($data->{category} eq 'Waste spillage') {
+        $detail = $data->{extra_Notes} . "\n\n";
     }
+
+    if ($data->{extra_details}) {
+        my $extra = ref $data->{extra_details} ne '' ? join(', ', @{$data->{extra_details}}) : $data->{extra_details};
+        my $nl = $data->{extra_Notes} ? "\n" : '';
+        $data->{extra_Notes} .= $nl . "Details: " . $extra;
+    }
+
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;
 
