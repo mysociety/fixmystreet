@@ -371,14 +371,14 @@ sub waste_relevant_serviceunits {
 =item within_working_days
 
 Given a DateTime object and a number, return true if today is less than or
-equal to that number of working days (excluding weekends and bank holidays)
-after the date. Sutton includes Bank Holidays as working days.
+equal to that number of working days (excluding weekends and bank holidays,
+or any special cobrand definition of those) after the date.
 
 =cut
 
 sub within_working_days {
     my ($self, $dt, $days, $future) = @_;
-    my $holidays = $self->council_url eq 'sutton' ? [] : FixMyStreet::Cobrand::UK::public_holidays();
+    my $holidays = $self->public_holidays();
     my $wd = FixMyStreet::WorkingDays->new(public_holidays => $holidays);
     $dt = $wd->add_days($dt, $days)->ymd;
     my $today = DateTime->now->set_time_zone(FixMyStreet->local_time_zone)->ymd;
@@ -858,7 +858,7 @@ sub waste_get_next_dd_day {
     if ($payment_type && ($payment_type eq 'ad-hoc')) { $dd_delay = 5; }
 
     my $dt = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => $self->public_holidays());
 
     my $next_day = $wd->add_days( $dt, $dd_delay );
 

@@ -119,6 +119,21 @@ sub waste_on_the_day_criteria {
     }
 }
 
+=head2 public_holidays
+
+The only Bank Holidays relevant to Sutton are Christmas, Boxing, New Year.
+=cut
+
+sub public_holidays {
+    my $self = shift;
+    my $nation = 'england-and-wales';
+    my $json = $self->_get_bank_holiday_json();
+    return [
+        map { $_->{date} }
+        grep { $_->{title} =~ /Christmas|Boxing|New Year/ }
+        @{$json->{$nation}{events}} ];
+}
+
 =head2 waste_check_staff_payment_permissions
 
 Staff take payments off-session, then enter an authorization code on our site.
@@ -237,8 +252,8 @@ around booked_check_missed_collection => sub {
         }
 
         if (
-            # And report is closed completed, or open
-            (!$missed_event->{closed} || $missed_event->{completed})
+            # Report is still open
+            !$missed_event->{closed}
             # And no existing escalation since last collection
             && !$open_escalation
         ) {
@@ -276,8 +291,8 @@ sub _setup_missed_collection_escalations_for_service {
     if (
         # If there's a missed bin report
         $missed_event
-        # And report is closed completed, or open
-        && (!$missed_event->{closed} || $missed_event->{completed})
+        # And report is still open
+        && !$missed_event->{closed}
         # And the event source is the same as the current property (for communal)
         && ($missed_event->{source} || 0) == $property->{id}
         # And no existing escalation since last collection
