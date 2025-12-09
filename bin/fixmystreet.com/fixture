@@ -47,6 +47,7 @@ my $categories = [
     'Dog fouling',
     'Flyposting',
     'Flytipping',
+    'Fly-tipping',
     'Footpath/bridleway away from road',
     'Graffiti',
     'Parks/landscapes',
