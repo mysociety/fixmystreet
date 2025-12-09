@@ -189,7 +189,9 @@ sub _process_update {
             order_by => [ { -desc => 'confirmed' }, { -desc => 'id' } ],
             rows => 1,
         })->first;
-        return if $latest && $text eq $latest->text && $state eq $latest->problem_state;
+        return if $latest
+            && $text eq $latest->text
+            && $state eq ($latest->problem_state || '');
     }
 
     # An update shouldn't precede an auto-internal update nor should it be earlier than when the
@@ -260,10 +262,10 @@ sub _process_update {
     $latest = undef if $latest && $latest->user_id != $comment->user_id;
 
     # If nothing to show (no text change, photo, or state change), don't show this update
-    $comment->state('hidden') unless
-        ($comment->text && (!$latest || $latest->text ne $comment->text))
-        || ($comment->photo && (!$latest || $latest->photo ne $comment->photo))
-        || ($comment->problem_state && $state ne $old_state);
+    my $text_change = $comment->text && (!$latest || $latest->text ne $comment->text);
+    my $photo_change = $comment->photo && (!$latest || ($latest->photo||'') ne $comment->photo);
+    my $state_change = $comment->problem_state && $state ne $old_state;
+    $comment->state('hidden') unless $text_change || $photo_change || $state_change;
 
     my $cobrand = $body->get_cobrand_handler;
     $cobrand->call_hook(open311_get_update_munging => $comment, $state, $request)
