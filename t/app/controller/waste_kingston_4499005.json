@@ -1,0 +1,146 @@
+[
+    {
+      "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+      "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+      "Id": "1001",
+      "ServiceTasks": {
+        "ServiceTask": {
+          "ServiceTaskSchedules": {
+            "ServiceTaskSchedule": {
+              "ScheduleDescription": "Monday every week",
+              "LastInstance": {
+                "Ref": { "Value": { "anyType": [ "23293043", "8318" ] } },
+                "OriginalScheduledDate": { "DateTime": "2022-10-09T23:00:00Z" },
+                "CurrentScheduledDate": { "DateTime": "2022-10-10T05:00:00Z" },
+                "CompletedDate": { "DateTime": "2022-10-10T06:00:00Z" }
+              },
+              "NextInstance": {
+                "Ref": { "Value": { "anyType": [ "23293043", "8325" ] } },
+                "OriginalScheduledDate": { "DateTime": "2022-10-16T23:00:00Z" },
+                "CurrentScheduledDate": { "DateTime": "2022-10-16T23:00:00Z" }
+              },
+              "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+              "StartDate": { "DateTime": "2018-09-02T23:00:00Z" }
+            }
+          },
+          "ScheduleDescription": "Every Monday",
+          "TaskTypeId": "2242",
+          "Id": "2001",
+          "Data": {
+            "ExtensibleDatum": [
+              {
+                "ChildData": {
+                  "ExtensibleDatum": [
+                    { "DatatypeName": "Container Type", "Value": "6" },
+                    { "Value": "1", "DatatypeName": "Quantity" }
+                  ]
+                },
+                "DatatypeName": "Refuse Containers"
+              }
+            ]
+          },
+          "TaskTypeName": "Collect Domestic Refuse Bag",
+          "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+          "EndDate": { "DateTime": "2050-01-01T00:00:00Z" }
+        }
+      },
+      "ServiceName": "Domestic Refuse Collection",
+      "ServiceUnitTypeId": "65",
+      "ServiceId": "967"
+    },
+    {
+      "ServiceTasks": {
+        "ServiceTask": {
+          "ScheduleDescription": "Every Monday",
+          "TaskTypeId": "2246",
+          "ServiceTaskSchedules": {
+            "ServiceTaskSchedule": {
+              "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+              "StartDate": { "DateTime": "2020-06-08T23:00:00Z" },
+              "NextInstance": {
+                "CurrentScheduledDate": { "DateTime": "2022-10-16T23:00:00Z" },
+                "OriginalScheduledDate": { "DateTime": "2022-10-16T23:00:00Z" },
+                "Ref": { "Value": { "anyType": [ "29313385", "8325" ] } }
+              },
+              "LastInstance": {
+                "Ref": { "Value": { "anyType": [ "29313385", "8318" ] } },
+                "CurrentScheduledDate": { "DateTime": "2022-10-10T05:00:00Z" },
+                "OriginalScheduledDate": { "DateTime": "2022-10-09T23:00:00Z" }
+              },
+              "ScheduleDescription": "Monday every week"
+            }
+          },
+          "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+          "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+          "Id": "2002",
+          "TaskTypeName": "Collect Domestic Recycling Bag",
+          "Data": {
+            "ExtensibleDatum": [
+              {
+                "ChildData": {
+                  "ExtensibleDatum": [
+                    { "DatatypeName": "Container Type", "Value": "18" },
+                    { "DatatypeName": "Quantity", "Value": "1" }
+                  ]
+                },
+                "DatatypeName": "Recycling Containers"
+              }
+            ]
+          }
+        }
+      },
+      "Id": "1002",
+      "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+      "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+      "ServiceId": "971",
+      "ServiceName": "Domestic Recycling Collection"
+    },
+    {
+      "Id": "1003",
+      "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+      "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+      "ServiceId": "975",
+      "ServiceName": "Domestic Recycling Collection",
+      "ServiceUnitTypeId": "65",
+      "ServiceTasks": {
+        "ServiceTask": {
+          "Data": {
+            "ExtensibleDatum": [
+              {
+                "ChildData": {
+                  "ExtensibleDatum": [
+                    { "DatatypeName": "Container Type", "Value": "17" },
+                    { "Value": "1", "DatatypeName": "Quantity" }
+                  ]
+                },
+                "DatatypeName": "Recycling Containers"
+              }
+            ]
+          },
+          "ServiceTaskSchedules": {
+            "ServiceTaskSchedule": {
+              "ScheduleDescription": "Wednesday, Saturday every week",
+              "LastInstance": {
+                "Ref": { "Value": { "anyType": [ "23293043", "8318" ] } },
+                "OriginalScheduledDate": { "DateTime": "2022-10-09T23:00:00Z" },
+                "CurrentScheduledDate": { "DateTime": "2022-10-10T05:00:00Z" }
+              },
+              "NextInstance": {
+                "Ref": { "Value": { "anyType": [ "23293043", "8325" ] } },
+                "OriginalScheduledDate": { "DateTime": "2022-10-16T23:00:00Z" },
+                "CurrentScheduledDate": { "DateTime": "2022-10-16T23:00:00Z" }
+              },
+              "EndDate": { "DateTime": "2050-01-01T00:00:00Z" },
+              "StartDate": { "DateTime": "2018-09-02T23:00:00Z" }
+            }
+          },
+          "ScheduleDescription": "Every Wednesday and Saturday",
+          "TaskTypeId": "2246",
+          "Id": "2001",
+          "TaskTypeName": "Collect Domestic Refuse Bag",
+          "StartDate": { "DateTime": "2017-01-01T00:00:00Z" },
+          "EndDate": { "DateTime": "2050-01-01T00:00:00Z" }
+        }
+      }
+    }
+]
