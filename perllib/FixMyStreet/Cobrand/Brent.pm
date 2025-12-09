@@ -1362,11 +1362,18 @@ sub request_referral {
     return 1 if $data->{ordered_previously};
 
     if (
-        (($data->{'container-choice'} && $data->{'container-choice'} == $CONTAINER_IDS{rubbish_grey_bin} && $data->{request_reason} eq 'extra')
-        || $data->{'container-' . $CONTAINER_IDS{rubbish_grey_bin}} && $data->{request_reason} eq 'extra')
-        && ($data->{property_people} == 6 || $data->{property_children} eq 'Yes')
-    )
-    { return 1 };
+        ( ($data->{'container-choice'} && $data->{'container-choice'} == $CONTAINER_IDS{rubbish_grey_bin})
+          || $data->{'container-' . $CONTAINER_IDS{rubbish_grey_bin}}
+        )
+    ) {
+        if ($data->{request_reason} eq 'extra') {
+            if ($data->{property_people} == 6 || $data->{property_children} eq 'Yes') {
+                return 1;
+            }
+        } else {
+          return 1;
+        }
+    }
 }
 
 sub waste_request_form_first_title { 'Which container do you need?' }
