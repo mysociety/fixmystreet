@@ -1228,6 +1228,9 @@ sub waste_munge_request_form_fields {
         next unless $key =~ /^container-(\d+)/;
         my $id = $1;
         my ($cost, $hint) = $self->request_cost($id);
+        if (!$hint) {
+            $hint = $id == $CONTAINER_IDS{rubbish_grey_bin} ? 'Chargeable - Subject to approval' : '';
+        }
         push @radio_options, {
             value => $id,
             label => $self->{c}->stash->{containers}->{$id},
