@@ -1342,7 +1342,25 @@ FixMyStreet::override_config {
         restore_time();
     };
 
-    subtest 'test requesting a refuse container' => sub {
+    subtest 'test requesting a replacement refuse container' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' } }, "Request replacement for damaged refuse container");
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+        $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
+        $mech->content_contains('Your container request has been sent');
+        my ($report) = FixMyStreet::DB->resultset('Problem')->search(
+                {
+                    category => 'Request new container',
+                    title => ['Request new General rubbish bin (grey bin)'],
+                }
+            );
+        is $report->get_extra_field_value('request_referral'), 1, "Damaged refuse container is a referral";
+        $report->delete;
+    };
+
+    subtest 'test requesting an extra refuse container' => sub {
         for my $test (
             { children => 'Yes', detail => 'Request forwarded to Brent Council by email', referral => 1},
             { children => 'No', detail => 'Request automatically calculated', referral => ''},
@@ -1375,8 +1393,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('Your container request has been sent');
                 $mech->content_contains('contact you to let you know if your request has been approved');
             } else {
-                $mech->content_lacks('Your container request has been sent');
-                $mech->content_contains('Your container request');
+                $mech->content_lacks('Your container request');
                 $mech->content_lacks('contact you to let you know if your request has been approved');
                 $mech->content_contains('Your property meets current general waste bin capacity requirements');
             }

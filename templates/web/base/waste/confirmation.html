@@ -3,7 +3,7 @@ IF report.category == 'Request new container' || report.category == 'Request con
     IF cobrand.moniker == 'bexley';
         title = 'Your bin request has been sent';
     ELSIF cobrand.moniker == 'brent' AND brent_request_automatic;
-        title = 'Your container request';
+        title = '';
     ELSE;
         title = 'Your container request has been sent';
     END;
@@ -16,7 +16,11 @@ ELSE;
 END ~%]
 [% PROCESS 'waste/header.html' %]
 
+[% IF report.category == 'Request new container' && c.cobrand.moniker == 'brent' && brent_request_automatic %]
+<div class="govuk-panel govuk-panel--warning">
+[% ELSE %]
 <div class="govuk-panel govuk-panel--confirmation">
+[% END %]
     <h1 class="govuk-panel__title">
         [% title %]
     </h1>

@@ -93,7 +93,7 @@ a {
   }
 }
 
-.item-list__item__shortlist-add { 
+.item-list__item__shortlist-add {
   @include brent-input-with-no-border;
 }
 
@@ -188,7 +188,7 @@ a {
     outline: none;
     background: $link-focus-color url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='18' viewBox='0 0 22 18'%3E%3Cpath d='M2.01 3.999h17.98c1.109 0 2.01-.896 2.01-2.001A2.006 2.006 0 0019.99 0H2.01C.9 0 0 .896 0 1.999 0 3.104.901 4 2.01 4v-.001zM19.99 7H2.01C.9 7 0 7.896 0 8.999 0 10.102.901 11 2.01 11h17.98c1.109 0 2.01-.896 2.01-2.001A2.005 2.005 0 0019.99 7zm0 7H2.01C.9 14 0 14.894 0 15.999 0 17.102.901 18 2.01 18h17.98c1.109 0 2.01-.896 2.01-2.001A2.005 2.005 0 0019.99 14z'/%3E%3C/svg%3E") center center no-repeat;
   }
-  
+
   html.js-nav-open & {
     background: $nav_background_colour url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='18' viewBox='0 0 22 18'%3E%3Cpath d='M3.223 1.221c.78-.78 2.049-.778 2.835.008l4.941 4.942 4.943-4.942a2.005 2.005 0 012.835-.008 2.006 2.006 0 01-.006 2.837v-.001l-4.944 4.942 4.944 4.943c.743.744.785 1.923.125 2.708l-.116.127a2.006 2.006 0 01-2.837-.007L11 11.827 6.057 16.77a2.006 2.006 0 01-2.837.007c-.779-.78-.775-2.05.01-2.835L8.171 9 3.23 4.057a2.005 2.005 0 01-.007-2.836z'/%3E%3C/svg%3E") center center no-repeat;
     &:focus, &.focussed {
@@ -371,13 +371,13 @@ dl dt {
         font-weight: 700;
         margin-bottom: 0.5em;
       }
-  
+
       &-link {
         display: block;
         color: $footer-colour;
         text-decoration: none;
         padding: 0.5em 0;
-    
+
         &:hover {
           text-decoration: underline;
         }
@@ -387,7 +387,7 @@ dl dt {
           color: $primary_b;
           text-decoration: underline;
         }
-    
+
         svg {
           height: 1em;
           overflow: visible;
@@ -398,12 +398,12 @@ dl dt {
       &:last-of-type {
         order: 2;
         margin-bottom: calc(30px*1.5);
-      } 
+      }
 
       &:first-of-type {
         order: 1;
         margin-bottom: calc(30px*1.5);
-      } 
+      }
     }
 
     .footer__column-summary {
@@ -513,7 +513,7 @@ dl dt {
 .place-banner__bg-inner-container {
   max-width: 1110px;
   margin: 0 auto;
-  
+
 }
 
 .place-banner__bg-inner {
@@ -548,6 +548,11 @@ dl dt {
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.govuk-panel--warning {
+    color: #000;
+    background: #d8a166;
 }
 
 // Waste
