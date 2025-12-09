@@ -450,6 +450,13 @@ sub waste_munge_enquiry_data {
         $data->{extra_original_ref} = $original->{ref};
         $data->{extra_container_request_guid} = $original->{guid};
     }
+
+    if ($self->moniker eq 'kingston' && $data->{extra_details}) {
+        my $extra = ref $data->{extra_details} ne '' ? join(', ', @{$data->{extra_details}}) : $data->{extra_details};
+        my $nl = $data->{extra_Notes} ? "\n" : '';
+        $data->{extra_Notes} .= $nl . "Details: " . $extra;
+    }
+
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;
 
