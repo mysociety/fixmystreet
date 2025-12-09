@@ -35,7 +35,7 @@ sub waste_get_next_dd_day {
 
     my $dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
     my $wd = FixMyStreet::WorkingDays->new(
-        public_holidays => FixMyStreet::Cobrand::UK::public_holidays()
+        public_holidays => $self->public_holidays()
     );
 
     my $payment_date = $wd->add_days( $dt, $dd_delay );

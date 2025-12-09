@@ -195,20 +195,14 @@ sub get_pending_subscription : Private {
             # Bexley confirms garden reports immediately
             state => 'confirmed',
             created => { '>=' => \"current_timestamp-'20 days'::interval" },
-            category => { -in => ['Garden Subscription', 'Cancel Garden Subscription'] },
-            title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New', 'Garden Subscription - Cancel'] },
+            category => 'Garden Subscription',
+            title => { -in => ['Garden Subscription - Renew', 'Garden Subscription - New'] },
             extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $c->stash->{property}{uprn} } ] }) }
         })->to_body($c->cobrand->body);
 
+        my $status = $c->stash->{direct_debit_status} || '';
         while (my $sub = $subs->next) {
-            # TODO Better way to handle pending cancellations (any payment type)
-            if ( $sub->title eq 'Garden Subscription - Cancel' ) {
-                $cancel = $sub;
-            } elsif (
-                ( $c->stash->{direct_debit_status} || '' ) eq 'pending'
-            ) {
-                $new = $sub;
-            }
+            $new = $sub if $status eq 'pending';
         }
 
     } else {
@@ -477,6 +471,19 @@ sub csc_payment : Path('csc_payment') : Args(0) {
     my $id = $c->get_param('report_id');
 
     my $report = $c->model('DB::Problem')->find({ id => $id});
+
+    # Make sure report hasn't previously been cancelled.
+    # When staff mark payment as failed, report may be cancelled
+    # immediately (e.g. for bulky waste for certain cobrands),
+    # but staff can click back and try to mark as successful.
+    if ( $report->state eq 'cancelled' ) {
+        $c->stash->{attempted_resubmission} = 1;
+        $c->stash->{report} = $report;
+        $c->stash->{property_id} = $report->waste_property_id;
+        $c->stash->{template} = 'waste/garden/csc_payment_failed.html';
+        $c->detach;
+    }
+
     $report->update_extra_field({ name => 'payment_method', value => 'csc' });
     $report->update;
     $c->stash->{report} = $report;
@@ -1054,6 +1061,9 @@ sub report : Chained('property') : Args(0) {
         if $c->get_param('original_booking_id');
 
     my $field_list = construct_bin_report_form($c);
+
+    # If there are no items to be chosen, redirect back to bin day page
+    $c->detach('property_redirect') unless @$field_list;
 
     $c->stash->{first_page} = 'report';
     my $next = $c->cobrand->call_hook('waste_report_form_first_next') || 'about_you';

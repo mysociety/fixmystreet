@@ -7,9 +7,11 @@ use DateTime::Format::W3CDTF;
 use Memcached;
 use Moo;
 use FixMyStreet;
+use Time::HiRes;
 
 with 'Integrations::Roles::SOAP';
 with 'Integrations::Roles::ParallelAPI';
+with 'FixMyStreet::Roles::Syslog';
 
 has attr => ( is => 'ro', default => 'http://bartec-systems.com/' );
 has action => ( is => 'lazy', default => sub { $_[0]->attr . "/Service/" } );
@@ -19,6 +21,18 @@ has url => ( is => 'ro' );
 has auth_url => ( is => 'ro' );
 
 has sample_data => ( is => 'ro', default => 0 );
+
+has log_ident => (
+    is => 'ro',
+    default => sub {
+        my $feature = 'bartec';
+        my $features = FixMyStreet->config('COBRAND_FEATURES');
+        return unless $features && ref $features eq 'HASH';
+        return unless $features->{$feature} && ref $features->{$feature} eq 'HASH';
+        my $f = $features->{$feature}->{_fallback};
+        return $f->{log_ident};
+    }
+);
 
 has endpoint => (
     is => 'lazy',
@@ -61,10 +75,15 @@ sub call {
 
     require SOAP::Lite;
     @params = make_soap_structure_with_attr(@params);
+
+    my $start = Time::HiRes::time();
     my $som = $self->endpoint->call(
         SOAP::Data->name($method)->attr({ xmlns => $self->attr }),
         @params
     );
+    my $time = Time::HiRes::time() - $start;
+    $self->log("$method took $time seconds");
+
     my $res = $som->result;
     $res->{SOM} = $som;
     return $res;

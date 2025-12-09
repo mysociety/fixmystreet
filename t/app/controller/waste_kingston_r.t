@@ -401,6 +401,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Food waste bin (outdoor)');
         $mech->content_contains('Black rubbish bin');
     };
+
     subtest 'Report missed collection' => sub {
         $mech->get_ok('/waste/12345/report');
 		$mech->content_contains('Food waste');
@@ -418,6 +419,13 @@ FixMyStreet::override_config {
         is $report->title, 'Report missed Food waste';
         is $report->bodies_str, $kingston->id, 'correct bodies_str';
     };
+    subtest 'Report missed collection out of time' => sub {
+        set_fixed_time('2022-09-14T19:00:00Z');
+        $mech->get_ok('/waste/12345/report');
+        is $mech->uri->path, '/waste/12345', 'redirected as nothing to report';
+        set_fixed_time('2022-09-13T19:00:00Z');
+    };
+
     subtest 'No reporting/requesting if open request' => sub {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('Report a mixed recycling collection as missed');

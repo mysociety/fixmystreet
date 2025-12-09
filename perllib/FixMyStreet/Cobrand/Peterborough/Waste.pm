@@ -497,7 +497,7 @@ collection day. So a bin not collected on Tuesday can be rung through up to
 sub _waste_report_allowed {
     my ($self, $dt) = @_;
 
-    my $wd = FixMyStreet::WorkingDays->new(public_holidays => FixMyStreet::Cobrand::UK::public_holidays());
+    my $wd = FixMyStreet::WorkingDays->new(public_holidays => $self->public_holidays());
     $dt = $wd->add_days($dt, 1);
     $dt->set( hour => 16, minute => 0, second => 0 );
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);

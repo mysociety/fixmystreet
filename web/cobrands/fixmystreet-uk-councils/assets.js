@@ -934,6 +934,23 @@ fixmystreet.assets.gloucestershire.traffic_asset_details = function() {
         "LED/Halogen: " + a.led_halogen;
 };
 
+/* Hackney */
+
+fixmystreet.assets.hackney = {};
+fixmystreet.assets.hackney.found = function(layer) {
+    fixmystreet.message_controller.road_not_found(layer, function() {return true;});
+};
+
+fixmystreet.assets.hackney.canal_stylemap = new OpenLayers.StyleMap({
+    'default': new OpenLayers.Style({
+        fillColor: "#6CF",
+        fillOpacity: 0.3,
+        strokeColor: "#6CF",
+        strokeOpacity: 1,
+        strokeWidth: 2
+    })
+});
+
 /* Hounslow */
 
 fixmystreet.assets.hounslow = {};
@@ -1186,9 +1203,11 @@ fixmystreet.assets.lincolnshire.grass_not_found = function(layer) {
 };
 
 fixmystreet.assets.lincolnshire.light_found = function(asset) {
+    fixmystreet.message_controller.asset_found.call(this);
     fixmystreet.body_overrides.only_send(asset.layer.fixmystreet.body);
 };
 fixmystreet.assets.lincolnshire.light_not_found = function() {
+    fixmystreet.message_controller.asset_not_found.call(this);
     // Default to Lincolnshire if layer is visible
     // (this action fires on the Lincolnshire part of the asset layer)
     if (this.getVisibility()) {

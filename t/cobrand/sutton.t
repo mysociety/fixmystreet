@@ -7,6 +7,7 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Alerts;
 use FixMyStreet::Script::Reports;
 use FixMyStreet::SendReport::Open311;
+use FixMyStreet::WorkingDays;
 
 my $mech = FixMyStreet::TestMech->new;
 my $sample_file = path(__FILE__)->parent->child("zurich-logo_portal.x.jpg");
@@ -166,6 +167,33 @@ FixMyStreet::override_config {
         ok $mech->host("sutton.example.org"), "change host to Sutton";
         $mech->get_ok('/admin/report_edit/' . $report->id);
         $mech->content_contains('xxxx4321');
+    };
+
+    subtest 'Bank Holidays' => sub {
+        my $cobrand = $body->get_cobrand_handler;
+
+        my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+        my $hols2025 = [
+            { "title" => "New Year’s Day", "date" => "2025-01-01", sutton => 1 },
+            { "title" => "Good Friday", "date" => "2025-04-18", },
+            { "title" => "Easter Monday", "date" => "2025-04-21", },
+            { "title" => "Early May bank holiday", "date" => "2025-05-05", },
+            { "title" => "Spring bank holiday", "date" => "2025-05-26", },
+            { "title" => "Summer bank holiday", "date" => "2025-08-25", },
+            { "title" => "Christmas Day", "date" => "2025-12-25", sutton => 1 },
+            { "title" => "Boxing Day", "date" => "2025-12-26", sutton => 1 },
+        ];
+        $ukc->mock('_get_bank_holiday_json', sub {
+            { "england-and-wales" => { "events" => $hols2025 } }
+        });
+        my $hols = $cobrand->public_holidays;
+        my $wd = FixMyStreet::WorkingDays->new(public_holidays => $hols);
+
+        foreach (@$hols2025) {
+            my ($y, $m, $d) = split /-/, $_->{date};
+            my $dt = DateTime->new(year => $y, month => $m, day => $d);
+            is $wd->is_public_holiday($dt), $_->{sutton};
+        }
     };
 };
 

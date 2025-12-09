@@ -463,7 +463,7 @@ sub bulky_collection_window_start_date {
         $start_date->add( days => $days_before );
     } else {
         my $wd = FixMyStreet::WorkingDays->new(
-            public_holidays => FixMyStreet::Cobrand::UK::public_holidays(),
+            public_holidays => $self->public_holidays(),
         );
         if ($cutoff_date_now >= $cutoff_date || $wd->is_non_working_day($start_date)) {
             $start_date = $wd->add_days($start_date, 1);
@@ -609,7 +609,7 @@ sub within_bulky_refund_window {
 
 sub _bulky_refund_cutoff_date {
     my ($self, $collection_date) = @_;
-    return _bulky_time_object_to_datetime($collection_date, $self->bulky_refund_cutoff_time());
+    return $self->_bulky_time_object_to_datetime($collection_date, $self->bulky_refund_cutoff_time());
 }
 
 sub bulky_nice_collection_date {
@@ -651,7 +651,7 @@ sub bulky_nice_cancellation_cutoff_time {
 
 sub _bulky_cancellation_cutoff_date {
     my ($self, $collection_date) = @_;
-    return _bulky_time_object_to_datetime($collection_date, $self->bulky_cancellation_cutoff_time());
+    return $self->_bulky_time_object_to_datetime($collection_date, $self->bulky_cancellation_cutoff_time());
 }
 
 sub bulky_reminders {
@@ -787,7 +787,7 @@ sub bulky_amendment_cutoff_time {
 
 sub _bulky_amendment_cutoff_date {
     my ($self, $collection_date) = @_;
-    return _bulky_time_object_to_datetime($collection_date, $self->bulky_amendment_cutoff_time());
+    return $self->_bulky_time_object_to_datetime($collection_date, $self->bulky_amendment_cutoff_time());
 }
 
 sub _bulky_within_a_window {
@@ -805,7 +805,7 @@ sub _bulky_check_within_a_window {
 }
 
 sub _bulky_time_object_to_datetime {
-    my ($collection_date, $time) = @_;
+    my ($self, $collection_date, $time) = @_;
     my $days_before = $time->{days_before} // 1;
     my $dt = $collection_date->clone->set(
         hour   => $time->{hours},
@@ -813,7 +813,7 @@ sub _bulky_time_object_to_datetime {
     );
     if ($time->{working_days}) {
         my $wd = FixMyStreet::WorkingDays->new(
-            public_holidays => FixMyStreet::Cobrand::UK::public_holidays(),
+            public_holidays => $self->public_holidays(),
         );
         $dt = $wd->sub_days($dt, $days_before);
     } else {
@@ -878,11 +878,12 @@ sub cancel_bulky_collections_without_payment {
         }
 
         if ($params->{commit}) {
-            $report->add_to_comments({
+            my $comment = $report->add_to_comments({
                 text => 'Booking cancelled since payment was not made in time',
                 user_id => $self->body->comment_user_id,
                 extra => { bulky_cancellation => 1 },
             });
+            $report->cancel_update_alert($comment->id);
             $report->state('cancelled');
             $report->detail(
                 $report->detail . " | Cancelled since payment was not made in time"

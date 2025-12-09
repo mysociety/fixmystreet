@@ -16,7 +16,7 @@ $ukc->mock('_get_bank_holiday_json', sub {
     }
 });
 
-my $ooh = FixMyStreet::OutOfHours->new(holidays => FixMyStreet::Cobrand::UK::public_holidays());
+my $ooh = FixMyStreet::OutOfHours->new(holidays => FixMyStreet::Cobrand::UK->public_holidays());
 
 set_fixed_time('2022-07-01T12:00:00Z');
 is $ooh->active, 0, 'not out of hours middle of weekday';
