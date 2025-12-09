@@ -68,6 +68,14 @@
     [% END %]
 [% END %]
 
+[% IF c.cobrand.moniker == 'kingston' AND (property.domestic_refuse_bin OR communal_property OR fas_property) %]
+    [% IF unit.report_allowed AND fas_property %]
+        If a spillage on a public highway occured during a [% unit.service_name FILTER lower %] collection, please report <a href="https://kingston-self.achieveservice.com/service/Request_a_street_clean_in_Kingston">a street cleaning issue</a>.
+    [% ELSIF unit.report_allowed %]
+        <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a spillage or bin not returned issue with a [% unit.service_name FILTER lower %] collection</a>
+    [% END %]
+[% END %]
+
 [% IF unit.garden_waste %]
   [% PROCESS 'waste/_services_garden_current.html' %]
 [% END %]

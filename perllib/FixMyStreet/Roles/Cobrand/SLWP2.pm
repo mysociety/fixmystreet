@@ -249,6 +249,7 @@ sub waste_extra_service_info {
         }
         $self->{c}->stash->{communal_property} = 1 if $service_id == $service_ids->{communal_refuse} || $service_id == $service_ids->{communal_food} || $service_id == $service_ids->{communal_paper} || $service_id == $service_ids->{communal_mixed};
 
+        # detect flat above shop
         if ($service_id == $service_ids->{fas_refuse} || $service_id == $service_ids->{fas_mixed}) {
             $self->{c}->stash->{fas_property} = 1;
         }

@@ -548,7 +548,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a non-recyclable refuse collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
-        $mech->submit_form_ok( { with_fields => { now_returned => 'Yes' } } );
+        $mech->submit_form_ok( { with_fields => { now_returned => 'yes' } } );
         $mech->content_contains('We will not return to your address on this occasion');
         $mech->content_lacks('We will return to your address as soon as we can to return the bin');
         $mech->content_lacks('We will use your feedback');
@@ -581,7 +581,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a spillage or bin not returned issue with a non-recyclable refuse collection' });
         $mech->submit_form_ok( { with_fields => { category => 'Bin not returned' } });
-        $mech->submit_form_ok( { with_fields => { now_returned => 'No' } } );
+        $mech->submit_form_ok( { with_fields => { now_returned => 'no' } } );
         $mech->content_contains('We will return to your address as soon as we can to return the bin');
         $mech->content_lacks('We will not return to your address on this occasion');
         $mech->content_lacks('We will use your feedback');
