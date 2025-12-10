@@ -40,8 +40,6 @@ FixMyStreet::override_config {
         },
     }
 }, sub {
-    my $enfield = FixMyStreet::Cobrand::Enfield->new;
-
     subtest 'Post normal report' => sub {
         my ($p) = $mech->create_problems_for_body(1, $body, 'Title');
 
