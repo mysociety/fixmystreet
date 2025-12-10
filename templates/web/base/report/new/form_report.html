@@ -52,7 +52,7 @@
 
 [% IF form_show_category_only %]
     <div class="hidden-js">
-        <input class="btn btn--primary btn--block btn--final" type="submit" name="submit_category_part_only" value="[% loc('Submit') %]">
+        <input class="btn btn--primary btn--block btn--final" type="submit" name="submit_category_part_only" value="[% loc('Submit') %]" data-disable>
     </div>
     [% SET field_required = '' %]
 [% ELSE %]
