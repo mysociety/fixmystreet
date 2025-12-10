@@ -702,7 +702,8 @@ sub active_planned_reports {
 sub is_planned_report {
     my ($self, $problem) = @_;
     my $id = $problem->id;
-    return scalar grep { $_->report_id == $id } $self->active_user_planned_reports->all;
+    my $user = $problem->shortlisted_user;
+    return $user && $self->id == $user->id;
 }
 
 has categories => (

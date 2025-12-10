@@ -24,12 +24,14 @@ $user->remove_from_planned_reports($problem);
 is $user->active_planned_reports, 0;
 is $user->planned_reports, 1;
 $user->discard_changes;
-is $user->is_planned_report($problem), 0;
+$problem = FixMyStreet::DB->resultset("Problem")->find($problem->id); # shortlisted_user is cached
+is $user->is_planned_report($problem), undef;
 
 $user->add_to_planned_reports($problem);
 is $user->active_planned_reports, 1;
 is $user->planned_reports, 2;
 $user->discard_changes;
+$problem = FixMyStreet::DB->resultset("Problem")->find($problem->id);
 is $user->is_planned_report($problem), 1;
 
 $user2->add_to_planned_reports($problem);
