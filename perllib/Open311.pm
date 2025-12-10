@@ -201,11 +201,6 @@ sub _populate_service_request_params {
         $params->{deviceid} = $problem->service;
     }
 
-    # Always send through UPRN as an attribute if set on the report
-    if ($problem->uprn) {
-        $params->{'attribute[uprn]'} = $problem->uprn;
-    }
-
     for my $attr ( @{$problem->get_extra_fields} ) {
         my $attr_name = $attr->{name};
         if ( $attr_name eq 'first_name' || $attr_name eq 'last_name' ) {
@@ -215,6 +210,11 @@ sub _populate_service_request_params {
         $attr_name =~ s/fms_extra_//;
         my $name = sprintf( 'attribute[%s]', $attr_name );
         $params->{ $name } = $attr->{value};
+    }
+
+    # Always send through UPRN as an attribute if set on the report
+    if ($problem->uprn) {
+        $params->{'attribute[uprn]'} = $problem->uprn;
     }
 
     return $params;
