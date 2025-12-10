@@ -825,8 +825,9 @@ sub cancel_request : Chained('property') : PathPart('request/cancel') : Args(1) 
 sub process_request_cancellation : Private {
     my ( $self, $c, $form ) = @_;
     my $report = $c->stash->{request_to_cancel};
+    my $text = $c->cobrand->waste_container_request_cancellation_text($report);
     $report->add_to_comments({
-        text => "Request cancelled",
+        text => $text,
         user => $c->cobrand->body->comment_user || $report->user,
         extra => { request_cancellation => 1 },
         problem_state => 'cancelled',

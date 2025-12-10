@@ -680,6 +680,28 @@ sub waste_container_request_description {
     return ($report->title =~ s/^Request //r) . " request";
 }
 
+=head2 waste_container_request_cancellation_text
+
+Returns text to use on the cancellation update.
+
+Looks for a response template.
+
+=cut
+
+sub waste_container_request_cancellation_text {
+    my $self = shift;
+    my $template = FixMyStreet::DB->resultset('ResponseTemplate')->search({
+        'me.body_id' => $self->body->id,
+        'contact.category' => 'Request new container',
+        'me.state' => 'cancelled',
+        'me.auto_response' => 1,
+    },{
+        join => { 'contact_response_templates' => 'contact' },
+    })->first;
+    return "Request cancelled." unless $template;
+    return $template->text;
+}
+
 =head2 request_cost
 
 Calculate how much, if anything, a request for a container should be.
