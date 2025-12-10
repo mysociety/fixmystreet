@@ -223,6 +223,7 @@ else {
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
     return 'EMPTY' if ! table_exists('problem');
+    return '0093' if index_exists('user_planned_reports_report_id_idx');
     return '0092' if column_exists('problem', 'uprn');
     return '0091' if column_exists('abuse', 'safe');
     return '0090' if table_exists('config');
