@@ -57,6 +57,9 @@ sub call_api {
     my $outdir = FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR');
     mkdir($outdir) unless -d $outdir;
     my $tmp = $outdir . "/" . md5_hex("$key $calls");
+    if (-e $tmp && _uncleared_file($tmp)) {
+        unlink($tmp);
+    }
 
     my @cmd = (
         FixMyStreet->path_to('bin/fixmystreet.com/call-wasteworks-backend'),
@@ -73,7 +76,7 @@ sub call_api {
     my $start_call = 1;
 
     # uncoverable branch false
-    if (FixMyStreet->test_mode || $self->sample_data) {
+    if ((FixMyStreet->test_mode || $self->sample_data) && $self->sample_data != 2) {
         $start_call = 0;
         $data = $self->_parallel_api_calls(@_);
     } elsif (-e $tmp) {
@@ -96,7 +99,9 @@ sub call_api {
 
     # Either the temp file wasn't there, or it had bad data
     if ($start_call) {
-        if ($background) {
+        if ($self->sample_data == 2) {
+            $data = $self->_parallel_api_calls(@_);
+        } elsif ($background) {
             # wrap the $calls value in single quotes
             push(@cmd, "'" . pop(@cmd) . "'");
             # run it in the background
@@ -156,6 +161,23 @@ sub _parallel_api_calls {
     $pm->wait_all_children;
 
     return \%calls;
+}
+
+=head2 _uncleared_file
+
+Return a positive if a file is over a minute old
+
+=cut
+
+sub _uncleared_file {
+    my $file = shift;
+
+    my $time = time;
+    my @stat = stat($file);
+
+    if (($time - $stat[9]) > 60) {
+        return 1;
+    }
 }
 
 1;
