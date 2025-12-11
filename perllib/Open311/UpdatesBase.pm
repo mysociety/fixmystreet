@@ -23,6 +23,7 @@ has current_open311 => ( is => 'rwp', lazy => 1, builder => 1 );
 has open311_config => ( is => 'ro' ); # If we need to pass in a devolved contact
 
 Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
+Readonly::Scalar my $AREA_ID_HACKNEY => 2508;
 
 sub fetch {
     my ($self, $open311) = @_;
@@ -192,6 +193,11 @@ sub _process_update {
         return if $latest
             && $text eq $latest->text
             && $state eq ($latest->problem_state || '');
+
+        # For Hackney, don't let it change back to open from another state
+        if ($body->areas->{$AREA_ID_HACKNEY} && $state eq 'confirmed') {
+            return;
+        }
     }
 
     # An update shouldn't precede an auto-internal update nor should it be earlier than when the
