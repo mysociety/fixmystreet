@@ -51,6 +51,22 @@ $contact->set_extra_fields({
     ],
 });
 $contact->update;
+
+my $contact_signs = $mech->create_contact_ok(body_id => $body->id, category => 'Unauthorised signs', email => "SIGNS");
+$contact_signs->set_extra_fields({
+    code => 'is_flag',
+    datatype => 'singlevaluelist',
+    description => 'Is your report about flags?',
+    order => 100,
+    required => 'true',
+    variable => 'true',
+    values => [
+        { key => 'yes', name => 'Yes' },
+        { key => 'no', name => 'No' },
+    ],
+});
+$contact_signs->update;
+
 $mech->create_contact_ok(body_id => $body->id, category => 'Abandoned vehicles', email => 'Abavus-ABANDONED_17821_C');
 $mech->create_contact_ok(body_id => $body->id, category => 'Potholes', email => "POT");
 $mech->create_contact_ok(body_id => $body->id, category => 'Blocked drain', email => "DRA");
@@ -841,6 +857,76 @@ subtest 'Rights of way server fallback' => sub {
     FixMyStreet::Script::Reports::send();
     $report->discard_changes;
     is $report->get_extra_field_value('LinkCode'), 'AAB/1/1';
+};
+
+subtest 'Unauthorised signs report' => sub {
+    $mech->delete_problems_for_body( $body->id );
+    $mech->log_in_ok($publicuser->email);
+
+    subtest 'is automatically marked private if about flags' => sub {
+        subtest 'on Bucks site' => sub {
+            ok $mech->host("buckinghamshire.fixmystreet.com"),
+                "make sure host is bucks";
+            $mech->get_ok('/report/new?latitude=51.561705&longitude=-0.868388&category=Unauthorised signs');
+
+            $mech->submit_form_ok({
+                with_fields => {
+                    title => 'Flag',
+                    detail => 'Flaggy flag',
+                    category => 'Unauthorised signs',
+                    is_flag => 'yes',
+                }
+            }, 'Form submitted');
+
+            $mech->content_contains('on its way to the council');
+            $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+            ok $report, 'Report created';
+            ok $report->non_public, 'Report set to private';
+            $report->delete;
+        };
+
+        subtest 'on .com' => sub {
+            ok $mech->host("www.fixmystreet.com"), "change host to www";
+
+            $mech->get_ok('/report/new?latitude=51.561705&longitude=-0.868388&category=Unauthorised signs');
+
+            $mech->submit_form_ok({
+                with_fields => {
+                    title => 'Flag',
+                    detail => 'Flaggy flag',
+                    category => 'Unauthorised signs',
+                    is_flag => 'yes',
+                }
+            }, 'Form submitted');
+
+            $mech->content_contains('on its way to the council');
+            $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+            ok $report, 'Report created';
+            ok $report->non_public, 'Report set to private';
+            $report->delete;
+        };
+    };
+
+    subtest 'is kept public if not about flags' => sub {
+        ok $mech->host("buckinghamshire.fixmystreet.com");
+        $mech->get_ok('/report/new?latitude=51.561705&longitude=-0.868388&category=Unauthorised signs');
+
+        $mech->submit_form_ok({
+            with_fields => {
+                title => 'Flag',
+                detail => 'Flaggy flag',
+                category => 'Unauthorised signs',
+                is_flag => 'no',
+            }
+        }, 'Form submitted');
+
+        $mech->content_contains('on its way to the council');
+        $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
+        ok $report, 'Report created';
+        ok !$report->non_public, 'Report not set to private';
+        $report->delete;
+    };
+
 };
 
 };
