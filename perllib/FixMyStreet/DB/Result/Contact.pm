@@ -93,15 +93,32 @@ __PACKAGE__->many_to_many( response_priorities => 'contact_response_priorities',
 __PACKAGE__->many_to_many( defect_types => 'contact_defect_types', 'defect_type' );
 
 __PACKAGE__->might_have(
-  "translations",
+  "translation_category",
   "FixMyStreet::DB::Result::Translation",
   sub {
     my $args = shift;
+    my $lang = $args->{self_resultsource}->schema->lang;
     return {
         "$args->{foreign_alias}.object_id" => { -ident => "$args->{self_alias}.id" },
-        "$args->{foreign_alias}.tbl" => { '=' => \"?" },
-        "$args->{foreign_alias}.col" => { '=' => \"?" },
-        "$args->{foreign_alias}.lang" => { '=' => \"?" },
+        "$args->{foreign_alias}.tbl" => 'contact',
+        "$args->{foreign_alias}.col" => 'category',
+        "$args->{foreign_alias}.lang" => $lang,
+    };
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+__PACKAGE__->might_have(
+  "translation_body",
+  "FixMyStreet::DB::Result::Translation",
+  sub {
+    my $args = shift;
+    my $lang = $args->{self_resultsource}->schema->lang;
+    return {
+        "$args->{foreign_alias}.object_id" => { -ident => "$args->{self_alias}.id" },
+        "$args->{foreign_alias}.tbl" => 'body',
+        "$args->{foreign_alias}.col" => 'name',
+        "$args->{foreign_alias}.lang" => $lang,
     };
   },
   { cascade_copy => 0, cascade_delete => 0 },
