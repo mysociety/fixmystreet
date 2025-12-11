@@ -75,6 +75,16 @@ my $roadworks = $mech->create_contact_ok(
     email => 'roadworks@example.org',
     send_method => 'Email'
 );
+my $cycle_hanger = $mech->create_contact_ok(
+    body_id => $bristol->id,
+    category => 'Damaged cycle hanger (Street furniture)',
+    email => 'cycles@example.org',
+    send_method => 'Email',
+    extra => {
+        display_name => 'Damaged cycle hanger',
+    },
+);
+
 my $flytipping = $mech->create_contact_ok(
     body_id => $bristol->id,
     category => 'Flytipping',
@@ -214,6 +224,32 @@ subtest "idle roadworks automatically closed" => sub {
         is $p->state, 'closed', 'report closed having sent email';
         is $p->comments->count, 1, 'comment added';
         like $p->comments->first->text, qr/This issue has been forwarded on/, 'correct comment text';
+
+        $mech->email_count_is(1);
+    };
+};
+
+subtest 'Damaged cycle hanger automatically closed' => sub {
+    FixMyStreet::override_config {
+        STAGING_FLAGS => { send_reports => 1 },
+        MAPIT_URL => 'http://mapit.uk/',
+        ALLOWED_COBRANDS => 'bristol',
+    }, sub {
+        $mech->clear_emails_ok;
+
+        my ($p) = $mech->create_problems_for_body(1, $bristol->id, 'Title', {
+            cobrand => 'bristol',
+            category => $cycle_hanger->category,
+        } );
+
+        FixMyStreet::Script::Reports::send();
+
+        $p->discard_changes;
+        ok $p->whensent, 'Report marked as sent';
+        is $p->get_extra_metadata('sent_to')->[0], 'cycles@example.org', 'sent_to extra metadata set';
+        is $p->state, 'closed', 'report closed having sent email';
+        is $p->comments->count, 1, 'comment added';
+        like $p->comments->first->text, qr/This issue has been forwarded.*cycle hangers/, 'correct comment text';
 
         $mech->email_count_is(1);
     };
