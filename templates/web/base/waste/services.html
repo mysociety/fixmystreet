@@ -68,6 +68,17 @@
     [% END %]
 [% END %]
 
+[% IF c.cobrand.moniker == 'kingston' AND (property.domestic_refuse_bin OR communal_property) %]
+    [% IF unit.escalations.missed_open %]
+      <span class="waste-service-descriptor">
+        Thank you for reporting an issue with this collection; we are investigating.
+      </span>
+    [% END %]
+    [% IF unit.report_allowed %]
+        <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a spillage or bin not returned issue with a [% unit.service_name FILTER lower %] collection</a>
+    [% END %]
+[% END %]
+
 [% IF unit.garden_waste %]
   [% PROCESS 'waste/_services_garden_current.html' %]
 [% END %]
