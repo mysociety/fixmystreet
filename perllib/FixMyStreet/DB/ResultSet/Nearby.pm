@@ -66,6 +66,8 @@ sub nearby {
     if ($c->user_exists) {
         if ($c->user->from_body || $c->user->is_superuser) {
             push @{$attrs->{prefetch}}, 'contact';
+            $attrs->{join}{contact} = 'translation_category';
+            push @{$attrs->{"+columns"}}, { 'contact.msgstr' => \"COALESCE(translation_category.msgstr, contact.category)" };
         }
         if ($c->user->has_body_permission_to('planned_reports')) {
             push @{$attrs->{prefetch}}, 'user_planned_reports';
