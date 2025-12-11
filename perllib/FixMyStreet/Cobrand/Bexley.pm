@@ -263,9 +263,8 @@ sub open311_update_missing_data {
             }
         }
     } elsif ($contact->email =~ /^Whitespace/) {
-        if (!$row->get_extra_field_value('uprn')) {
+        if (!$row->uprn) {
             if (my $ref = $feature->{properties}{UPRN}) {
-                $row->update_extra_field({ name => 'uprn', description => 'UPRN', value => $ref });
                 $row->uprn($ref);
             }
         }
@@ -492,15 +491,14 @@ sub dashboard_export_problems_add_columns {
     $csv->csv_extra_data(sub {
         my $report = shift;
 
-        my $uprn = $csv->_extra_field($report, 'uprn') || '';
         my $payment_method = $csv->_extra_field($report, 'payment_method') || '';
         return {
-            uprn => $uprn,
             payment_method => $payment_method,
             $csv->dbi ? (
                 # user_email already covered
             ) : (
                 user_email => $report->user ? $report->user->email : '',
+                uprn => $report->uprn,
             ),
         };
     });

@@ -43,10 +43,7 @@ sub create_contact {
     my ($params, $group, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => [$group]);
     $contact->set_extra_metadata( type => 'waste' );
-    $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
-        @extra,
-    );
+    $contact->set_extra_fields(@extra);
     $contact->update;
 }
 
@@ -523,7 +520,7 @@ FixMyStreet::override_config {
             is $report->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
-            is $report->get_extra_field_value('uprn'), 100090215480;
+            is $report->uprn, 100090215480;
             is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
             is $report->get_extra_field_value('CREW NOTES'), '';
             is $report->get_extra_field_value('CHARGEABLE'), 'CHARGED';
@@ -822,7 +819,7 @@ FixMyStreet::override_config {
             like $report->detail, qr/Previously submitted as/, 'Original report detail field updated';
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
-            is $report->get_extra_field_value('uprn'), 100090215480;
+            is $report->uprn, 100090215480;
             is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
             is $report->get_extra_field_value('CHARGEABLE'), 'CHARGED';
             is $report->get_extra_field_value('ITEM_01'), 'Amplifiers';
@@ -974,7 +971,7 @@ FixMyStreet::override_config {
         is $report2->detail, "Address: 1 Pope Way, Peterborough, PE1 3NA";
         is $report2->category, 'Bulky collection';
         is $report2->title, 'Bulky goods collection';
-        is $report2->get_extra_field_value('uprn'), 100090215480;
+        is $report2->uprn, 100090215480;
         is $report2->get_extra_field_value('DATE'), '2022-09-02T00:00:00';
         is $report2->get_extra_field_value('CHARGEABLE'), 'CHARGED';
         is $report2->get_extra_field_value('ITEM_01'), 'Chest of drawers';
@@ -1309,7 +1306,7 @@ FixMyStreet::override_config {
 
         is $report->get_extra_field_value('payment_method'), 'credit_card';
         is $report->get_extra_field_value('payment'), 1001 + 5050;
-        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->uprn, 100090215480;
     };
 
     subtest 'Bulky collection, payment by staff' => sub {
@@ -1365,7 +1362,7 @@ FixMyStreet::override_config {
         is $report->category, 'Bulky collection';
         is $report->title, 'Bulky goods collection';
         is $report->get_extra_field_value('payment_method'), 'csc';
-        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->uprn, 100090215480;
         is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
         is $report->get_extra_field_value('CREW NOTES'), 'to the side of the drive';
         is $report->get_extra_field_value('ITEM_01'), 'Amplifiers';
@@ -1430,7 +1427,7 @@ FixMyStreet::override_config {
         is $report->category, 'Bulky collection';
         is $report->title, 'Bulky goods collection';
         is $report->get_extra_field_value('payment_method'), '';
-        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->uprn, 100090215480;
         is $report->get_extra_field_value('DATE'), '2022-08-26T00:00:00';
         is $report->get_extra_field_value('CHARGEABLE'), 'FREE';
 
@@ -1485,7 +1482,7 @@ FixMyStreet::override_config {
 
         is $report->get_extra_field_value('payment_method'), 'credit_card';
         is $report->get_extra_field_value('payment'), 2350;
-        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->uprn, 100090215480;
 
         $report->delete;
         $b->mock('Premises_Attributes_Get', sub { [] });

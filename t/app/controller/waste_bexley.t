@@ -38,12 +38,6 @@ my $contact = $mech->create_contact_ok(
 );
 $contact->set_extra_fields(
     {
-        code => "uprn",
-        required => "false",
-        automated => "hidden_field",
-        description => "UPRN reference",
-    },
-    {
         code => "service_item_name",
         required => "false",
         automated => "hidden_field",
@@ -108,7 +102,6 @@ my $contact3 = $mech->create_contact_ok(
     send_method => 'Email::Bexley',
 );
 $contact3->set_extra_fields(
-    { code => 'uprn', automated => "hidden_field" },
     { code => 'complaint_type', automated => "hidden_field" },
     {
         code => "Container",
@@ -701,7 +694,7 @@ FixMyStreet::override_config {
         while ( my $report = $rows->next ) {
             ok $report->confirmed;
             is $report->state, 'confirmed';
-            is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+            is $report->uprn, '10001', 'UPRN is correct';
             is $report->get_extra_field_value('assisted_yn'), 'Yes', 'Assisted collection is correct';
             is $report->get_extra_field_value('location_of_containers'), 'Front boundary of property', 'Location of containers is correct';
             push @service_item_names, $report->get_extra_field_value('service_item_name');
@@ -725,7 +718,7 @@ FixMyStreet::override_config {
 
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
 
-        is $report->get_extra_field_value('uprn'), '10001', 'Report is against the parent property';
+        is $report->uprn, '10001', 'Report is against the parent property';
     };
 
     subtest 'Make sure missed collection cannot be made against ineligible container when page is not refreshed'

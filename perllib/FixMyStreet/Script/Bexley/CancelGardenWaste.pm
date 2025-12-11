@@ -55,7 +55,7 @@ sub cancel_by_uprn {
     my $report = $self->cobrand->problems->search({
         category => 'Garden Subscription',
         title => ['Garden Subscription - New', 'Garden Subscription - Renew'],
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
+        uprn => $uprn,
         state => { '!=' => 'hidden' },
     })->order_by('-id')->first;
 
@@ -71,7 +71,7 @@ sub cancel_by_uprn {
     my $current_created = $dtf->format_datetime( $report->created );
     my $cancellation_report = $self->cobrand->problems->search({
         category => 'Cancel Garden Subscription',
-        extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) },
+        uprn => $uprn,
         state => [ FixMyStreet::DB::Result::Problem->open_states ],
         # Make sure it was created after the current subscription, otherwise
         # it is a cancellation for a previous subscription

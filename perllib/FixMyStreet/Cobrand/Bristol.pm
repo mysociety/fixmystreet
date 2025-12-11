@@ -53,6 +53,12 @@ sub admin_user_domain { 'bristol.gov.uk' }
 
 sub send_questionnaires { 0 }
 
+=item * Add display_name as an extra contact field
+
+=cut
+
+sub contact_extra_fields { [ 'display_name' ] }
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

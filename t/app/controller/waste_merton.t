@@ -32,10 +32,7 @@ sub create_contact {
     my ($params, $group, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $merton, %$params, group => [$group]);
     $contact->set_extra_metadata( type => 'waste' );
-    $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
-        @extra,
-    );
+    $contact->set_extra_fields(@extra);
     $contact->update;
 }
 
@@ -44,7 +41,6 @@ create_contact({ category => 'Report missed collection', email => 'missed' }, 'W
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
 );
 create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
-    { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
@@ -206,7 +202,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Damaged\n\n1x Blue lid paper and cardboard bin (240L) to deliver\n\n1x Blue lid paper and cardboard bin (240L) to collect";
         is $report->category, 'Request new container';
         is $report->title, 'Request replacement Blue lid paper and cardboard bin (240L)';
@@ -227,7 +223,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Missing\n\n1x Green recycling box (55L) to deliver";
         is $report->title, 'Request replacement Green recycling box (55L)';
         FixMyStreet::Script::Reports::send();
@@ -260,7 +256,7 @@ FixMyStreet::override_config {
         $mech->content_contains('request has been sent');
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\n1x Black rubbish bin (240L) to deliver";
         is $report->title, 'Request new Black rubbish bin (240L)';
         FixMyStreet::Script::Reports::send();
@@ -337,7 +333,7 @@ FixMyStreet::override_config {
         $mech->content_contains('request has been sent');
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\n1x Black rubbish bin (240L) to deliver\n\nAdditional details: " . "Large household" x 10;
         is $report->title, 'Request new Black rubbish bin (240L)';
         FixMyStreet::Script::Reports::send();
@@ -370,7 +366,7 @@ FixMyStreet::override_config {
 
         check_extra_data_post_confirm($report);
         $mech->content_contains('request has been sent');
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->get_extra_field_value('service_id'), 1075;
         is $report->detail, "Quantity: 2\n\n2 Example Street, Merton, KT1 1AA\n\nReason: I am a new resident without a container\n\n1x Blue lid paper and cardboard bin (360L) to deliver\n\nAdditional details: Large household";
         is $report->title, 'Request new Blue lid paper and cardboard bin (360L)';
@@ -422,7 +418,7 @@ FixMyStreet::override_config {
         $mech->content_contains('consider your request');
 
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\n1x Black rubbish bin (240L) to deliver\n\n1x Black rubbish bin (180L) to collect";
         is $report->title, 'Request exchange for Black rubbish bin (240L)';
         FixMyStreet::Script::Reports::send();
@@ -446,7 +442,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('Thank you for reporting a missed collection');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "Report missed Food waste\n\n2 Example Street, Merton, KT1 1AA";
         is $report->title, 'Report missed Food waste';
     };
@@ -525,7 +521,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "Quantity: 1\n\n2 Example Street, Merton, KT1 1AA\n\nReason: Additional bag required\n\n1x Recycling Blue Stripe Bag to deliver";
         is $report->category, 'Request new container';
         is $report->title, 'Request new Recycling Blue Stripe Bag';
@@ -664,7 +660,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
         $mech->content_contains('additional collection has been requested');
         my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->detail, "Request additional Food waste collection\n\n2 Example Street, Merton, KT1 1AA";
         is $report->title, 'Request additional Food waste collection';
     };

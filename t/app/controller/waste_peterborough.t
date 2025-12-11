@@ -36,10 +36,7 @@ sub create_contact {
     my ($params, $group, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => [$group]);
     $contact->set_extra_metadata( type => 'waste' );
-    $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
-        @extra,
-    );
+    $contact->set_extra_fields(@extra);
     $contact->update;
 }
 
@@ -299,7 +296,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->uprn, 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin\n\nExtra detail: Extra";
         is $report->category, 'All bins';
         is $report->title, 'Request new All bins';
@@ -318,7 +315,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->uprn, 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: (Other - PD STAFF)";
         is $report->category, 'All bins';
         is $report->title, 'Request new All bins';
@@ -333,7 +330,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->uprn, 100090215480;
         is $report->detail, "Quantity: 1\n\n1 Pope Way, Peterborough, PE1 3NA\n\nReason: Lost/stolen bin";
         is $report->title, 'Request new Both food bins';
         $mech->log_in_ok($staff->email);
@@ -417,7 +414,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->uprn, 100090215480;
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA";
         is $report->title, 'Report missed 240L Green bin';
     };
@@ -430,7 +427,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Show upcoming bin days');
         $mech->content_contains('/waste/PE1%203NA:100090215480"');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 100090215480;
+        is $report->uprn, 100090215480;
         is $report->detail, "1 Pope Way, Peterborough, PE1 3NA\n\nExtra detail: This is the extra detail.";
         is $report->title, 'Report missed 240L Green bin';
     };
