@@ -173,7 +173,7 @@ sub _process_update {
     my $customer_reference = $request->{customer_reference} || '';
     my $old_external_status_code = $p->get_extra_metadata('external_status_code') || '';
     my $template = $p->response_template_for(
-        $state, $old_state, $external_status_code, $old_external_status_code
+        $body, $state, $old_state, $external_status_code, $old_external_status_code
     );
     my ($text, $email_text) = $self->comment_text_for_request($template, $request, $p);
     if (!$email_text && $request->{email_text}) {

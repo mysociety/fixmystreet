@@ -886,14 +886,15 @@ sub add_update_to_assisted_request : Private {
         return;
     };
 
-    my $template = $report->response_template_for($status, 'confirmed', '', '');
+    my $body = $c->cobrand->body;
+    my $template = $report->response_template_for($body, $status, 'confirmed', '', '');
     $text = $template->text if $template;
 
     my $comment = $report->add_to_comments({
         text => $text,
         state => 'confirmed',
         problem_state => $status,
-        user => $c->stash->{cobrand}->body->comment_user,
+        user => $body->comment_user,
         confirmed => \'current_timestamp',
         send_state => 'processed',
     });
