@@ -97,4 +97,10 @@ subtest 'offline fallback page' => sub {
     $mech->content_contains('offline_list');
 };
 
+subtest 'offline fallback page' => sub {
+    $mech->get_ok('/offline/waste_fallback');
+    $mech->content_contains('currently offline');
+    $mech->content_contains('bin collections');
+};
+
 done_testing();

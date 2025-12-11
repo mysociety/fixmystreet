@@ -6,6 +6,7 @@
           of initial steps of reporting flow.
         - Improve display of key tools on mobile. #5354
         - Add option for checking against UserCheck. #5508
+        - WasteWorks urls use a separate offline page #4655
     - Accessibility improvements:
         - Improved accessibility of small drawer. #5354
         - Added skip report tools to Around page. #5354
