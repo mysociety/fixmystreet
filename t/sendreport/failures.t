@@ -37,8 +37,9 @@ $p1->update({
 
 subtest "check sendreport failure messages" => sub {
     my $e = FixMyStreet::Script::Reports->new;
+    my $base = FixMyStreet->config('BASE_URL');
     my ($id1, $id2) = ( $p1->id, $p2->id );
-    stdout_like { $e->end_summary_failures } qr%The following 2 reports had problems sending:\nCouncil of the Thousand \(2\): $id2, $id1.*report/$id2.*report/$id1%s, "includes count of reports and reports in fixed order"
+    stdout_like { $e->end_summary_failures } qr%The following 2 reports had problems sending:\nCouncil of the Thousand \(2\): $base/admin/report_edit/$id2, $base/admin/report_edit/$id1.*report/$id2.*report/$id1%s, "includes count of reports and reports in fixed order"
 
 };
 
