@@ -132,7 +132,7 @@ sub end_summary_failures {
         my $base_url = FixMyStreet->config('BASE_URL');
         my $key =  join ', ', @{ $row->body_names };
         $bodies{$key} ||= [];
-        push @{ $bodies{$key} }, $row->id;
+        push @{ $bodies{$key} }, "$base_url/admin/report_edit/" . $row->id;
         $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* " . $base_url . "/report/" . $row->id . ", failed "
             . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
             . ", reason " . $row->send_fail_reason . "\n";
