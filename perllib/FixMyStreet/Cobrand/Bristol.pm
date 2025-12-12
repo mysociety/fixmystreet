@@ -38,6 +38,7 @@ sub council_name { return 'Bristol City Council'; }
 sub council_url { return 'bristol'; }
 
 use constant ROADWORKS_CATEGORY => 'Inactive roadworks';
+use constant CYCLE_HANGERS_CATEGORY => 'Damaged cycle hanger (Street furniture)';
 
 =item * Users with a bristol.gov.uk email can always be found in the admin.
 
@@ -355,6 +356,9 @@ sub post_report_sent {
 
     if ($problem->category eq ROADWORKS_CATEGORY) {
         $self->_post_report_sent_close($problem, 'report/new/roadworks_text.html');
+    }
+    if ($problem->category eq CYCLE_HANGERS_CATEGORY) {
+        $self->_post_report_sent_close($problem, 'report/new/cycle_hangers_text.html');
     }
 }
 
