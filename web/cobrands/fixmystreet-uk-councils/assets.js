@@ -657,13 +657,12 @@ var centralbeds_types = [
 
 function cb_should_not_require_road() {
     // Ensure the user can select anywhere on the map if they want to
-    // make a report in the "Trees", "Fly Tipping" or "Public Rights of way" categories.
+    // make a report in the "Trees" group, or the "Fly Tipping" or "Public Rights of way" categories.
     // This means we don't show the "not found" message if no category/group has yet been selected
-    // or if one of the groups containing either the "Trees", "Fly Tipping" or "Public Rights of way"
+    // or if one of the groups containing either the "Fly Tipping" or "Public Rights of way"
     // categories has been selected.
     var selected = fixmystreet.reporting.selectedCategory();
-    return selected.category === "Trees" ||
-            (selected.group === "Grass, Trees, Verges and Weeds" && !selected.category) ||
+    return selected.group === "Trees" ||
             selected.category === "Fly Tipping" ||
             (selected.group === "Flytipping, Bins and Graffiti" && !selected.category) ||
             selected.category === 'Housing Fly-tipping' ||
