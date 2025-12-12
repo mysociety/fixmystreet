@@ -39,6 +39,7 @@ my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, {
 });
 my $kingston = $mech->create_body_ok(2480, 'Kingston Council', { %$params, cobrand => 'kingston' });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
+my $user2 = $mech->create_user_ok('test2@example.net', name => 'Normal User The Second');
 my $staff = $mech->create_user_ok('staff@example.net', name => 'Staff User', from_body => $body->id);
 $staff->user_body_permissions->create({ body => $body, permission_type => 'report_edit' });
 
@@ -48,6 +49,7 @@ sub create_contact {
     $contact->set_extra_metadata( type => 'waste' );
     $contact->set_extra_fields(@extra);
     $contact->update;
+    return $contact;
 }
 
 create_contact({ category => 'Report missed collection', email => 'missed' }, 'Waste',
@@ -71,7 +73,8 @@ create_contact({ category => 'Failure to Deliver Bags/Containers', email => '314
     { code => 'original_ref', required => 1, automated => 'hidden_field' },
     { code => 'container_request_guid', required => 0, automated => 'hidden_field' },
 );
-create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
+my $new_container_request_contact = create_contact({ category => 'Request new container', email => '3129' }, 'Waste',
+    { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'Container_Type', required => 1, automated => 'hidden_field' },
@@ -79,6 +82,7 @@ create_contact({ category => 'Request new container', email => '3129' }, 'Waste'
     { code => 'Reason', required => 1, automated => 'hidden_field' },
     { code => 'payment_method', required => 0, automated => 'hidden_field' },
     { code => 'payment', required => 0, automated => 'hidden_field' },
+    { code => 'property_id', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Bin not returned', email => '3135' }, 'Waste',
     { code => 'NotAssisted', description => 'Thank you for bringing this to our attention. We will use your feedback to improve performance in the future.  Please accept our apologies for the inconvenience caused.', variable => 'false'  },
@@ -102,7 +106,10 @@ FixMyStreet::override_config {
             url => 'http://example.org/',
         } },
         waste => { sutton => 1 },
-        waste_features => { sutton => { no_service_residential_address_types => [ 283, 284, 285 ] } },
+        waste_features => { sutton => {
+                no_service_residential_address_types => [ 283, 284, 285 ],
+                request_cancel_enabled => 1,
+            } },
         echo => { sutton => { bulky_service_id => 960 }},
         payment_gateway => { sutton => {
             cc_url => 'http://example.com',
@@ -184,6 +191,9 @@ FixMyStreet::override_config {
         FixMyStreet::Script::Reports::send();
         my $email = $mech->get_text_body_from_email;
         like $email, qr/please allow up to 20 working days/;
+        like $email, qr/cancel your request/, 'include cancel link text';
+        like $email, qr/A refund will not be issued/, 'include no refund text for paid request';
+        like $email, qr/waste\/12345\/request\/cancel\//, 'include cancel link';
     };
     subtest 'Request a larger bin than current' => sub {
         $mech->get_ok('/waste/12345/request');
@@ -942,6 +952,145 @@ FixMyStreet::override_config {
         $mech->content_like(qr/Complaint against time.*LBS-123/);
         $mech->content_like(qr/Failure to Deliver.*LBS-789/);
     };
+
+    my $template = FixMyStreet::DB->resultset("ResponseTemplate")->create({
+        body => $body,
+        state => 'cancelled',
+        title => 'title',
+        text => 'response template text',
+        auto_response => 1,
+    });
+    $template->add_to_contacts($new_container_request_contact);
+
+    foreach ((
+        {
+            scenario => "with payment",
+            payment => 1,
+        },
+        {
+            scenario => "without payment",
+            payment => 0,
+        },
+    )) {
+        my $scenario = $_->{scenario};
+        my $payment = $_->{payment};
+
+        subtest "Container request $scenario cancellations" => sub {
+
+            my $event_guid = "container-request-event-guid-$scenario";
+            my ($container_request_report) = $mech->create_problems_for_body(
+                1, $body->id,
+                'Container request', {
+                    cobrand => 'sutton',
+                    external_id => $event_guid,
+                    cobrand_data => 'waste',
+                    user => $user,
+                    title => "Request replacement container",
+                }
+            );
+            my @extra_fields = ({
+                name => 'service_id',
+                value => 940,  # Domestic Refuse Collection
+            });
+            if ($payment) {
+                push @extra_fields, {
+                    name => 'payment',
+                    value => 100,
+                };
+            }
+            $container_request_report->set_extra_fields(@extra_fields);
+            $container_request_report->update;
+
+            my $open_container_request_event = {
+                Id => '112112321',
+                ServiceId => 940,  # Domestic Refuse Collection
+                ClientReference => 'LBS-789',
+                EventTypeId => 3129,  # Container request
+                EventDate => { DateTime => "2025-02-03T08:00:00Z" },
+                Data => { ExtensibleDatum => [
+                    { Value => 2, DatatypeName => 'Source' },
+                    {
+                        ChildData => { ExtensibleDatum => [
+                            { Value => 1, DatatypeName => 'Action' },
+                            { Value => 1, DatatypeName => 'Container Type' },  # Refuse container
+                        ] },
+                    },
+                ] },
+                Guid => $event_guid,
+            };
+            $e->mock('GetServiceUnitsForObject', sub { $bin_data });
+            $e->mock('GetEventsForObject', sub { [$open_container_request_event] });
+
+            my $cancellation_url = "/waste/12345/request/cancel/" . $container_request_report->id;
+            my $cancel_form_title = "Cancel your replacement container request";
+            set_fixed_time('2025-02-05T08:00:00Z');
+
+            subtest "Link shown" => sub {
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains($cancellation_url);
+                $mech->content_contains('cancel your container order');
+                if ($payment) {
+                    $mech->content_contains('A refund will not be issued.');
+                }
+            };
+
+            foreach ((
+                {
+                    scenario => "Staff",
+                    can_cancel => 1,
+                    user => $staff,
+                },
+                {
+                    scenario => "The user that made the request",
+                    can_cancel => 1,
+                    user => $user,
+                },
+                {
+                    scenario => "Random user",
+                    can_cancel => 0,
+                    user => $user2,
+                },
+            )) {
+                my $can_cancel = $_->{can_cancel};
+                my $can_cancel_text = $can_cancel ? 'can cancel' : "can't cancel";
+                my $scenario = $_->{scenario};
+                my $u = $_->{user};
+                subtest "$scenario $can_cancel_text" => sub {
+                    $mech->log_in_ok($u->email);
+                    $mech->get_ok($cancellation_url);
+                    if ($can_cancel) {
+                        $mech->content_contains($cancel_form_title);
+                    } else {
+                        $mech->content_lacks($cancel_form_title);
+                    }
+                };
+            }
+
+            subtest "Cancel" => sub {
+                $mech->log_in_ok($user->email);
+                $mech->get_ok($cancellation_url);
+                $mech->content_contains($cancel_form_title);
+                $mech->content_contains("I would like to cancel my container request.");
+                if ($payment) {
+                    $mech->content_contains("I acknowledge that the payment will not be refunded.");
+                }
+                $mech->submit_form_ok( { with_fields => { confirm => 1 } } );
+                $mech->content_contains("Your replacement container request has been cancelled.");
+                $container_request_report->discard_changes;
+                is $container_request_report->state, 'cancelled';
+                my $latest_comment = $container_request_report->comments->search(
+                        {},
+                        { order_by => { -desc => 'id' } },
+                )->first;
+                is $latest_comment->text, "response template text", "cancel update uses response template";
+            };
+
+            subtest "Link not shown after already cancelled" => sub {
+                $mech->log_in_ok($user->email);
+                $mech->content_lacks($cancellation_url);
+            };
+        };
+    }
 };
 
 sub get_report_from_redirect {
