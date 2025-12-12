@@ -245,8 +245,7 @@ sub process_garden_cancellation : Private {
             category => 'Cancel Garden Subscription',
             state => 'confirmed',  # Bexley auto-confirms cancellations
             created => { '>=' => \"current_timestamp-'1 hour'::interval" },
-            # TODO: Update this to use the new `uprn` column once GH-5745 is merged.
-            extra => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $uprn } ] }) }
+            uprn => $uprn,
         })->first;
 
         if ($existing_cancel) {

@@ -212,6 +212,11 @@ sub _populate_service_request_params {
         $params->{ $name } = $attr->{value};
     }
 
+    # Always send through UPRN as an attribute if set on the report
+    if ($problem->uprn) {
+        $params->{'attribute[uprn]'} = $problem->uprn;
+    }
+
     return $params;
 }
 

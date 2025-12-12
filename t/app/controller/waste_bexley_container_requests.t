@@ -68,11 +68,6 @@ my $contact_removal = $mech->create_contact_ok(
 for ( $contact_delivery, $contact_removal ) {
     $_->set_extra_fields(
         {
-            code => "uprn",
-            required => "false",
-            automated => "hidden_field",
-        },
-        {
             code => "service_item_name",
             required => "false",
             automated => "hidden_field",
@@ -933,7 +928,7 @@ FixMyStreet::override_config {
             while ( my $report = $rows->next ) {
                 ok $report->confirmed;
                 is $report->state, 'confirmed';
-                is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+                is $report->uprn, '10001', 'UPRN is correct';
                 is $report->get_extra_field_value('assisted_yn'), 'Yes',
                     'assisted_yn is correct';
                 is $report->get_extra_field_value('location_of_containers'),
@@ -1033,7 +1028,7 @@ FixMyStreet::override_config {
                 is $report->category, 'Request new container';
                 like $report->detail, qr/Reason: I need more sacks/,
                     'Default reason provided';
-                is $report->get_extra_field_value('uprn'), '10002', 'UPRN is correct';
+                is $report->uprn, '10002', 'UPRN is correct';
                 is $report->get_extra_field_value('assisted_yn'), 'No',
                     'assisted_yn is correct';
                 is $report->get_extra_field_value('location_of_letterbox'), 'Communal entrance',
@@ -1119,7 +1114,7 @@ FixMyStreet::override_config {
             ok $report->confirmed;
             is $report->state, 'confirmed';
             is $report->category, 'Request container removal';
-            is $report->get_extra_field_value('uprn'), '10001', 'UPRN is correct';
+            is $report->uprn, '10001', 'UPRN is correct';
             is $report->get_extra_field_value('assisted_yn'), 'Yes',
                 'assisted_yn is correct';
             is $report->get_extra_field_value('location_of_containers'),

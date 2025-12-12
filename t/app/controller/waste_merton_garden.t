@@ -20,7 +20,6 @@ sub create_contact {
     my ($params, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
     $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         @extra,
@@ -63,7 +62,6 @@ create_contact({ category => 'Cancel Garden Subscription', email => 'garden_canc
 
 # For reductions
 create_contact({ category => 'Request new container', email => '3129@example.com' },
-    { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
     { code => 'payment', required => 1, automated => 'hidden_field' },
@@ -1222,7 +1220,7 @@ FixMyStreet::override_config {
         is $new_report->user->email, $p->user->email, 'User email on report';
         is $new_report->title, 'Garden Subscription - Transfer', 'New report title correct';
         is $new_report->detail, "Garden Subscription\n\n2 Example Street, Merton,", 'New report detail correct';
-        is $new_report->get_extra_field_value('uprn'), '1000000002', 'Correct uprn on new report';
+        is $new_report->uprn, '1000000002', 'Correct uprn on new report';
         is $new_report->get_extra_field_value('property_id'), '12345', 'Correct property id on new report';
         is $new_report->get_extra_field_value('Paid_Container_Quantity'), 1, 'Correct bin containers amount set on new report';
         is $new_report->get_extra_field_value('Paid_Container_Type'), 1915, 'Correct bin type set on new report';
@@ -1231,7 +1229,7 @@ FixMyStreet::override_config {
         is $new_report->get_extra_field_value('transferred_from'), '1000000001';
         is $cancel_report->title, 'Garden Subscription - Cancel', 'Cancelled report title correct';
         is $cancel_report->detail, "Cancel Garden Subscription\n\n1 Example Street, Merton, SM2 5HF", 'Cancelled report detail correct';
-        is $cancel_report->get_extra_field_value('uprn'), '1000000001', 'Correct uprn on cancelled report';
+        is $cancel_report->uprn, '1000000001', 'Correct uprn on cancelled report';
         is $cancel_report->get_extra_field_value('property_id'), '11345', 'Correct property id on cancelled report';
         is $cancel_report->get_extra_field_value('transferred_to'), '1000000002';
         is $cancel_report->get_extra_field_value('End_Date'), '09/02/2021', 'Subscription ends today on cancelled report';

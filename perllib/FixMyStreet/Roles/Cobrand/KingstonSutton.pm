@@ -208,7 +208,7 @@ sub _waste_cc_line_item_ref {
 
 sub waste_cc_payment_sale_ref {
     my ($self, $p) = @_;
-    return "GGW" . $p->get_extra_field_value('uprn');
+    return "GGW" . $p->uprn;
 }
 
 =head2 Dashboard export
@@ -272,11 +272,11 @@ sub dashboard_export_problems_add_columns {
 
         my $data = {
             detail => $detail,
-            uprn => $fields{uprn},
             $csv->dbi ? (
                 user_name_display => $report->{name},
                 payment_reference => $report->{extra}{payment_reference} || '',
             ) : (
+                uprn => $report->uprn,
                 user_name_display => $report->name,
                 user_email => $report->user->email || '',
                 user_phone => $report->user->phone || '',

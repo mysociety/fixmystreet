@@ -45,7 +45,6 @@ sub create_contact {
     my ($params, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
     $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         @extra,
@@ -319,7 +318,7 @@ FixMyStreet::override_config {
             is $report->detail, "Address: 2 Example Street, Bromley, BR1 1AF";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky goods collection';
-            is $report->get_extra_field_value('uprn'), 1000000002;
+            is $report->uprn, 1000000002;
             is $report->get_extra_field_value('property_id'), '12345';
             is $report->get_extra_field_value('Exact_Location'), 'in the middle of the drive';
             is $report->get_extra_field_value('Notes'), 'in the middle of the drive';
@@ -685,10 +684,10 @@ FixMyStreet::override_config {
             cobrand => "bromley",
         });
         $p->set_extra_fields(
-            { name => 'uprn', value => 'UPRN' },
             { name => 'payment_method', value => 'credit_card' },
             { name => 'payment', value => '3000' },
         );
+        $p->uprn('UPRN');
         $p->set_extra_metadata('payment_reference', 'test');
         $p->set_extra_metadata('scpReference', 'unpaid');
         $p->update;
@@ -725,7 +724,7 @@ FixMyStreet::override_config {
         is $p->get_extra_metadata('authCode'), 112233;
         is $p->get_extra_metadata('payment_reference'), 54321;
         is $p->comments->first->text, "Payment confirmed, reference 54321, amount £30.00";
-        is $p->get_extra_field_value('uprn'), 'UPRN';
+        is $p->uprn, 'UPRN';
 
         # No payment non-staff and check confirms unpaid - cancelled.
         $p->set_extra_metadata('scpReference', 'unpaid');

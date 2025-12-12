@@ -284,11 +284,9 @@ Returns an arrayref of contract IDs, or undef if none found.
 sub waste_get_legacy_contract_ids {
     my ($self, $report) = @_;
 
-    # TODO: Update this to use `$report->uprn` once GH-5745 is merged.
-    my $uprn = $report->get_extra_field_value('uprn');
-    return undef unless $uprn;
+    return undef unless $report->uprn;
 
-    my $contract_ids = BexleyContracts::contract_ids_for_uprn($uprn);
+    my $contract_ids = BexleyContracts::contract_ids_for_uprn($report->uprn);
     return undef unless @$contract_ids;
 
     return $contract_ids;
@@ -424,7 +422,7 @@ sub waste_garden_maximum { 5 }
 # TODO Check
 sub waste_cc_payment_sale_ref {
     my ($self, $p) = @_;
-    return "GGW" . $p->get_extra_field_value('uprn');
+    return "GGW" . $p->uprn;
 }
 
 sub waste_cc_payment_line_item_ref {
@@ -444,7 +442,7 @@ sub waste_setup_direct_debit {
     my $email = $report->user->email || 'gardenwaste@' . $self->admin_user_domain;
 
     my $data = $c->stash->{form_data};
-    my $uprn = $report->get_extra_field_value('uprn');
+    my $uprn = $report->uprn;
 
     my $i = $self->get_dd_integration;
 

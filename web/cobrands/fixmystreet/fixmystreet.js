@@ -540,9 +540,7 @@ $.extend(fixmystreet.set_up, {
             }
         },
         submitHandler: function(form) {
-            if (form.submit_problem) {
-                $('input[type=submit]', form).prop("disabled", true);
-            }
+            $('input[type=submit][data-disable]', form).prop("disabled", true);
             form.submit();
         },
         // make sure we can see the error message when we focus on invalid elements

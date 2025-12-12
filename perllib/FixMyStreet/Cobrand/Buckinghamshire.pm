@@ -405,13 +405,20 @@ sub open311_get_update_munging {
 sub report_new_munge_before_insert {
     my ($self, $report) = @_;
 
-    return unless $report->category eq 'Flytipping';
     return unless $self->{c}->stash->{report}->to_body_named('Buckinghamshire');
 
-    my $placement = $self->{c}->get_param('road-placement');
-    return unless $placement && $placement eq 'off-road';
+    if ( $report->category eq 'Unauthorised signs' ) {
+        # If they are reporting flags, automatically mark as private
+        my $is_flag = $report->get_extra_field_value('is_flag') || '';
+        $report->non_public(1) if $is_flag eq 'yes';
 
-    $report->category('Flytipping (off-road)');
+    } elsif ( $report->category eq 'Flytipping' ) {
+        my $placement = $self->{c}->get_param('road-placement');
+        return unless $placement && $placement eq 'off-road';
+
+        $report->category('Flytipping (off-road)');
+    }
+
 }
 
 sub filter_report_description {

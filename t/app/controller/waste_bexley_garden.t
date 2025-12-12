@@ -26,7 +26,6 @@ sub create_contact {
     my ($params, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
     $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         @extra,
     );
@@ -49,7 +48,6 @@ create_contact(
     { code => 'customer_external_ref', required => 1, automated => 'hidden_field' },
     { code => 'due_date', required => 1, automated => 'hidden_field' },
     { code => 'reason', required => 1, automated => 'hidden_field' },
-    { code => 'uprn', required => 1, automated => 'hidden_field' },
     { code => 'fixmystreet_id', required => 1, automated => 'server' },
 );
 
@@ -394,8 +392,7 @@ FixMyStreet::override_config {
                 user => $user,
             },
         );
-        $new_sub_report->set_extra_fields(
-            { name => 'uprn', value => $uprn } );
+        $new_sub_report->uprn($uprn);
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
@@ -788,8 +785,8 @@ FixMyStreet::override_config {
                 );
                 $orig_dd_sub_report->set_extra_fields(
                     { name => 'payment_method', value => 'direct_debit' },
-                    { name => 'uprn', value => $uprn },
                 );
+                $orig_dd_sub_report->uprn($uprn);
                 $orig_dd_sub_report->set_extra_metadata(
                     direct_debit_customer_id => $dd_customer_id,
                     direct_debit_contract_id => $dd_contract_id,
@@ -893,9 +890,9 @@ FixMyStreet::override_config {
             },
         );
         $new_sub_report->set_extra_fields(
-            { name => 'uprn', value => $uprn },
             { name => 'payment_method', value => 'credit_card' },
         );
+        $new_sub_report->uprn($uprn);
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
@@ -1174,7 +1171,7 @@ FixMyStreet::override_config {
                         bins_wanted  => 3,
                         customer_external_ref => 'CUSTOMER_123',
                     );
-                    is $renew_report->get_extra_field_value('uprn'), $uprn;
+                    is $renew_report->uprn, $uprn;
                     is $renew_report->get_extra_field_value('payment'), $ggw_cost_first + 2 * $ggw_cost;
                     is $renew_report->get_extra_field_value('type'), 'renew';
 
@@ -1236,7 +1233,7 @@ FixMyStreet::override_config {
                         bins_wanted  => 1,
                         customer_external_ref => 'CUSTOMER_123',
                     );
-                    is $renew_report->get_extra_field_value('uprn'), $uprn;
+                    is $renew_report->uprn, $uprn;
                     is $renew_report->get_extra_field_value('payment'), $ggw_cost_first;
                     is $renew_report->get_extra_field_value('type'), 'renew';
 
@@ -1378,7 +1375,7 @@ FixMyStreet::override_config {
                         customer_external_ref => 'CUSTOMER_123',
                         renew_as_new_subscription => '',
                     );
-                    is $renew_report->get_extra_field_value('uprn'), $uprn;
+                    is $renew_report->uprn, $uprn;
                     is $renew_report->get_extra_field_value('payment'), $ggw_cost_first;
                     is $renew_report->get_extra_field_value('type'), 'renew';
 
@@ -1648,9 +1645,9 @@ FixMyStreet::override_config {
 
                 subtest 'Inactive DD subscription' => sub {
                     $new_sub_report->set_extra_fields(
-                        { name => 'uprn', value => $uprn } ,
                         { name => 'direct_debit_reference', value => 'APIRTM-DEFGHIJ1KL' },
                     );
+                    $new_sub_report->uprn($uprn);
                     $new_sub_report->set_extra_metadata(
                         direct_debit_customer_id => 'DD_CUSTOMER_123',
                         direct_debit_contract_id => 'DD_CONTRACT_123',
@@ -2032,9 +2029,9 @@ FixMyStreet::override_config {
                     },
                 );
                 $dd_report->set_extra_fields(
-                    { name => 'uprn', value => '10001' },
                     { name  => 'payment_method', value => 'direct_debit' },
                 );
+                $dd_report->uprn(10001);
                 $dd_report->set_extra_metadata(
                     direct_debit_customer_id => 'DD_CUSTOMER_123' );
                 $dd_report->update;
@@ -2327,7 +2324,7 @@ FixMyStreet::override_config {
                                 Reference => $contract_id,
                                 WasteContainerQuantity => 2,
                                 ServiceContractStatus => 'ACTIVE',
-                                UPRN => '10001',
+                                UPRN => "$uprn",
                             },
                         ],
                     },
@@ -2345,9 +2342,9 @@ FixMyStreet::override_config {
                 },
             );
             $new_sub_report->set_extra_fields(
-                { name => 'uprn', value => $uprn },
                 { name => 'payment_method', value => 'direct_debit' },
             );
+            $new_sub_report->uprn($uprn);
             $new_sub_report->update;
             FixMyStreet::Script::Reports::send();
 
@@ -2424,9 +2421,9 @@ FixMyStreet::override_config {
 
         $new_sub_report->set_extra_metadata(direct_debit_contract_id => $contract_id);
         $new_sub_report->set_extra_fields(
-            { name => 'uprn', value => '10001' },
             { name => 'payment_method', value => 'direct_debit' },
         );
+        $new_sub_report->uprn(10001);
         $new_sub_report->update;
 
         FixMyStreet::Script::Reports::send();
@@ -2558,10 +2555,8 @@ FixMyStreet::override_config {
                 user => $user,
             },
         );
-        $new_sub_report->set_extra_fields(
-            { name => 'uprn', value => '20001' },
-            # Don't set payment_method - let the hook detect it from legacy contracts
-        );
+        $new_sub_report->uprn(20001);
+        # Don't set payment_method - let the hook detect it from legacy contracts
         $new_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
@@ -2757,10 +2752,8 @@ FixMyStreet::override_config {
                 user => $user,
             },
         );
-        $sub->set_extra_fields(
-            { name => 'uprn', value => '20001' },
-            # No payment_method, should be auto-detected.
-        );
+        $sub->uprn(20001);
+        # No payment_method, should be auto-detected.
         $sub->update;
         FixMyStreet::Script::Reports::send();
 
@@ -2848,9 +2841,9 @@ FixMyStreet::override_config {
             },
         );
         $existing_sub_report->set_extra_fields(
-            { name => 'uprn', value => $uprn },
             { name => 'payment_method', value => 'credit_card' }, # This indicates it was paid by credit card
         );
+        $existing_sub_report->uprn($uprn);
         $existing_sub_report->update;
         FixMyStreet::Script::Reports::send();
 
@@ -3048,9 +3041,9 @@ FixMyStreet::override_config {
                 },
             );
             $cc_report->set_extra_fields(
-                { name => 'uprn', value => '10001' },
                 { name => 'payment_method', value => 'credit_card' },
             );
+            $cc_report->uprn(10001);
             $cc_report->update;
 
             subtest 'No Agile or Whitespace data' => sub {
@@ -3222,9 +3215,9 @@ FixMyStreet::override_config {
                 },
             );
             $dd_report->set_extra_fields(
-                { name => 'uprn', value => '10001' },
                 { name => 'payment_method', value => 'direct_debit' },
             );
+            $dd_report->uprn(10001);
             $dd_report->set_extra_metadata(
                 direct_debit_customer_id => 'DD_CUSTOMER_123' );
             $dd_report->update;
@@ -3600,10 +3593,10 @@ FixMyStreet::override_config {
             },
         );
         $first_cancel->set_extra_fields(
-            { name => 'uprn', value => '10001' },
             { name => 'reason', value => 'Price' },
             { name => 'payment_method', value => 'credit_card' },
         );
+        $first_cancel->uprn(10001);
         $first_cancel->update;
         my $first_id = $first_cancel->id;
 
@@ -3616,10 +3609,10 @@ FixMyStreet::override_config {
             },
         );
         $other_uprn_cancel->set_extra_fields(
-            { name => 'uprn', value => '10002' },
             { name => 'reason', value => 'Moving' },
             { name => 'payment_method', value => 'direct_debit' },
         );
+        $other_uprn_cancel->uprn(10002);
         $other_uprn_cancel->update;
 
         # Attempt second cancellation via web form
@@ -3644,8 +3637,8 @@ FixMyStreet::override_config {
         })->all;
         is scalar(@all_cancels), 2, 'Two cancellations total - one for each UPRN';
 
-        my @uprn_10001_cancels = grep { ($_->get_extra_field_value('uprn') || '') eq '10001' } @all_cancels;
-        my @uprn_10002_cancels = grep { ($_->get_extra_field_value('uprn') || '') eq '10002' } @all_cancels;
+        my @uprn_10001_cancels = grep { $_->uprn eq '10001' } @all_cancels;
+        my @uprn_10002_cancels = grep { $_->uprn eq '10002' } @all_cancels;
 
         is scalar(@uprn_10001_cancels), 1, 'Only one cancellation for UPRN 10001 - duplicate prevented';
         is scalar(@uprn_10002_cancels), 1, 'One cancellation for UPRN 10002 - unaffected';

@@ -324,7 +324,7 @@ FixMyStreet::override_config {
             is $report->detail, "Address: Flat, 98a-99b The Court, 1a-2b The Avenue, Little Bexlington, Bexley, DA1 3NP";
             is $report->category, 'Bulky collection';
             is $report->title, 'Bulky waste collection';
-            is $report->get_extra_field_value('uprn'), 10001;
+            is $report->uprn, 10001;
             is $report->get_extra_field_value('collection_date'), '2025-07-04';
             is $report->get_extra_field_value('bulky_items'), '3::85::83';
             is $report->get_extra_field_value('property_id'), '10001';
@@ -493,10 +493,10 @@ FixMyStreet::override_config {
             cobrand => "bexley",
         });
         $p->set_extra_fields(
-            { name => 'uprn', value => 'UPRN' },
             { name => 'payment_method', value => 'credit_card' },
             { name => 'payment', value => '6930' },
         );
+        $p->uprn('UPRN');
         $p->set_extra_metadata('payment_reference', 'test');
         $p->set_extra_metadata('scpReference', 'unpaid');
         $p->update;
@@ -542,7 +542,7 @@ FixMyStreet::override_config {
             is $p->get_extra_metadata('authCode'), 112233;
             is $p->get_extra_metadata('payment_reference'), 54321;
             is $p->comments->first->text, "Payment confirmed, reference 54321, amount £69.30";
-            is $p->get_extra_field_value('uprn'), 'UPRN';
+            is $p->uprn, 'UPRN';
         };
 
         subtest 'No payment non-staff and check confirms unpaid - cancelled' => sub {
@@ -802,7 +802,6 @@ sub create_contact {
 
     my $contact = $mech->create_contact_ok(body => $body, %$params, group => ['Waste'], extra => { type => 'waste' });
     $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },

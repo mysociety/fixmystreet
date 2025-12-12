@@ -1017,18 +1017,18 @@ sub waste_payment_ref_council_code { "LBB" }
 
 sub waste_cc_payment_line_item_ref {
     my ($self, $p) = @_;
-    return "GGW" . $p->get_extra_field_value('uprn') unless $p->category eq 'Bulky collection';
+    return "GGW" . $p->uprn unless $p->category eq 'Bulky collection';
     return $p->id;
 }
 
 sub waste_cc_payment_admin_fee_line_item_ref {
     my ($self, $p) = @_;
-    return "GGW" . $p->get_extra_field_value('uprn');
+    return "GGW" . $p->uprn;
 }
 
 sub waste_cc_payment_sale_ref {
     my ($self, $p) = @_;
-    return "GGW" . $p->get_extra_field_value('uprn');
+    return "GGW" . $p->uprn;
 }
 
 sub dashboard_export_problems_add_columns {

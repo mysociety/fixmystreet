@@ -89,6 +89,12 @@ sub new_report_title_field_label {
     "Location of the problem"
 }
 
+=item * We  include the time of updates in alert emails
+
+=cut
+
+sub include_time_in_update_alerts { 1 }
+
 =item * The front page text is tweaked to explain existing report numbers
 can be looked up.
 

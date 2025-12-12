@@ -11,7 +11,7 @@
     <li><a href="[% uri %]" class="admin-offsite-link">[% loc('View report on site' )%]</a></li>
 
 [% IF problem.category == 'Request assisted collection' AND report.state == 'confirmed' %]
-[% SET response_link = cobrand.base_url _ '/waste/' _ problem.get_extra_field_value('uprn') _ '/assisted/' _ problem.id %]
+[% SET response_link = cobrand.base_url _ '/waste/' _ problem.uprn _ '/assisted/' _ problem.id %]
 <li><a href="[% response_link %]" class="admin-offsite-link">[% loc('Respond to request' )%]</a></li></li>
 [% END %]
 
@@ -86,27 +86,25 @@
 <textarea class="form-control" name='detail' id='detail' cols=60 rows=5>[% problem.detail | html %]</textarea></li>
 </ul>
 
-[% SET uprn = problem.get_extra_field_value('uprn') %]
-
-[% IF uprn OR problem.waste_property_id %]
+[% IF problem.uprn OR problem.waste_property_id %]
 <p>
   [% IF problem.waste_property_id %]
     <a class="btn" href="[% c.uri_for_action('/waste/bin_days', [ problem.waste_property_id ]) %]">Property page</a>
-  [% ELSIF uprn AND c.cobrand.moniker == 'peterborough' # TODO Store same as others %]
-    <a class="btn" href="[% c.uri_for_action('/waste/uprn_redirect', [ uprn ]) %]">Property page</a>
+  [% ELSIF problem.uprn AND c.cobrand.moniker == 'peterborough' # TODO Store same as others %]
+    <a class="btn" href="[% c.uri_for_action('/waste/uprn_redirect', [ problem.uprn ]) %]">Property page</a>
   [% END %]
-  [% IF uprn %]
-    <a class="btn" href="[% c.uri_for_action('/admin/reports/index') %]?search=uprn:[% uprn %]">All reports here</a>
+  [% IF problem.uprn %]
+    <a class="btn" href="[% c.uri_for_action('/admin/reports/index') %]?search=uprn:[% problem.uprn %]">All reports here</a>
   [% END %]
 </p>
 [% END %]
 
 <ul>
-  [% IF uprn OR problem.waste_property_id %]
+  [% IF problem.uprn OR problem.waste_property_id %]
     <li>
       [% IF problem.waste_property_id %]Property ID: [% problem.waste_property_id %][% END %]
-      [%- IF uprn AND problem.waste_property_id %],[% END %]
-      [% IF uprn %]UPRN: [% uprn %][% END %]
+      [%- IF problem.uprn AND problem.waste_property_id %],[% END %]
+      [% IF problem.uprn %]UPRN: [% problem.uprn %][% END %]
     </li>
   [% END %]
   [% IF problem.get_extra_field_value('service_id') %]

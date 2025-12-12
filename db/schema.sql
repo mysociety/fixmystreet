@@ -46,6 +46,7 @@ create table users (
 );
 CREATE UNIQUE INDEX users_email_verified_unique ON users (email) WHERE email_verified;
 CREATE UNIQUE INDEX users_phone_verified_unique ON users (phone) WHERE phone_verified;
+CREATE INDEX users_from_body_idx ON users (from_body) WHERE from_body IS NOT NULL;
 create index users_fulltext_idx on users USING GIN(
     to_tsvector(
         'english',
@@ -103,6 +104,8 @@ create table user_roles (
     role_id         integer not null references roles(id) ON DELETE CASCADE,
     user_id         integer not null references users(id) ON DELETE CASCADE
 );
+CREATE INDEX user_roles_role_id_idx ON user_roles(role_id);
+CREATE INDEX user_roles_user_id_idx ON user_roles(user_id);
 
 -- The contact for a category within a particular body
 create table contacts (
@@ -550,6 +553,8 @@ create table user_planned_reports (
     added timestamp not null default current_timestamp,
     removed timestamp
 );
+CREATE INDEX user_planned_reports_report_id_idx ON user_planned_reports(report_id);
+CREATE INDEX user_planned_reports_user_id_idx ON user_planned_reports(user_id);
 
 create table response_templates (
     id serial not null primary key,

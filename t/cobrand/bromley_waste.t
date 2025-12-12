@@ -1547,10 +1547,7 @@ subtest 'check direct debit reconcilliation' => sub {
     is $renewal_from_cc_sub->get_extra_field_value('service_id'), 545, 'Renewal has correct service id';
     is $renewal_from_cc_sub->get_extra_field_value('payment_method'), 'direct_debit', 'correct payment method field';
 
-    my $subsequent_renewal_from_cc_sub = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { '@>' => encode_json({ _fields => [ { name => "uprn", value => "3654321" } ] }) },
-        },
-    )->order_by('-id');
+    my $subsequent_renewal_from_cc_sub = FixMyStreet::DB->resultset('Problem')->search({ uprn => "3654321" })->order_by('-id');
     is $subsequent_renewal_from_cc_sub->count, 2, "two record for subsequent renewal property";
     $subsequent_renewal_from_cc_sub = $subsequent_renewal_from_cc_sub->first;
     is $subsequent_renewal_from_cc_sub->state, 'confirmed', "Renewal report confirmed";
@@ -1581,10 +1578,7 @@ subtest 'check direct debit reconcilliation' => sub {
     $cancel_nothing_in_echo->discard_changes;
     is $cancel_nothing_in_echo->state, 'hidden', 'hide already cancelled report';
 
-    my $renewal = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { '@>' => encode_json({ _fields => [ { name => "uprn", value => "654322" } ] }) },
-        },
-    )->order_by('-id');
+    my $renewal = FixMyStreet::DB->resultset('Problem')->search({ uprn => "654322" })->order_by('-id');
 
     is $renewal->count, 2, "two records for renewal property";
     my $p = $renewal->first;
@@ -1609,28 +1603,17 @@ subtest 'check direct debit reconcilliation' => sub {
     $p->title("Garden Subscription - New");
     $p->update;
 
-    my $renewal_too_recent = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { '@>' => encode_json({ _fields => [ { name => "uprn", value => "654329" } ] }) },
-        },
-    )->order_by('-id');
+    my $renewal_too_recent = FixMyStreet::DB->resultset('Problem')->search({ uprn => "654329" })->order_by('-id');
     is $renewal_too_recent->count, 0, "ignore payments less that three days old";
 
-    my $cancel = FixMyStreet::DB->resultset('Problem')->search({
-        extra => { '@>' => encode_json({ _fields => [ { name => "uprn", value => "654323" } ] }) },
-    })->order_by('-id');
+    my $cancel = FixMyStreet::DB->resultset('Problem')->search({ uprn => "654323" })->order_by('-id');
     is $cancel->count, 1, "one record for cancel property";
     is $cancel->first->id, $sub_for_cancel->id, "only record is the original one, no cancellation report created";
 
-    my $processed = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { '@>' => encode_json({ _fields => [ { name => "uprn", value => "654324" } ] }) },
-        },
-    )->order_by('-id');
+    my $processed = FixMyStreet::DB->resultset('Problem')->search({ uprn => "654324" })->order_by('-id');
     is $processed->count, 2, "two records for processed renewal property";
 
-    my $ad_hoc_processed_rs = FixMyStreet::DB->resultset('Problem')->search({
-            extra => { '@>' => encode_json({ _fields => [ { name => "uprn", value => "654326" } ] }) },
-        },
-    )->order_by('-id');
+    my $ad_hoc_processed_rs = FixMyStreet::DB->resultset('Problem')->search({ uprn => "654326" })->order_by('-id');
     is $ad_hoc_processed_rs->count, 1, "one records for processed ad hoc property";
 
     $unprocessed_cancel->discard_changes;
@@ -1746,6 +1729,7 @@ subtest 'Garden Waste new subs alert update emails contain bin collection days l
 sub setup_dd_test_report {
     my $extras = shift;
     my ($report) = $mech->create_problems_for_body( 1, $body->id, 'Test', {
+        uprn => delete $extras->{uprn},
         category => 'Garden Subscription',
         latitude => 51.402092,
         longitude => 0.015783,

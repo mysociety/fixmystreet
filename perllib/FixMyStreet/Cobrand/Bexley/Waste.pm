@@ -532,7 +532,7 @@ sub bin_services_for_address {
             category => 'Request assisted collection',
             user_id => $c->user->id,
             state => 'fixed - council', # Successful request
-            extra => { '@>' => encode_json({ "_fields" => [ { name => 'uprn', value => $uprn } ] }) },
+            uprn => $uprn,
         })->order_by('-id')->first;
         if ($report) {
             $c->stash->{user_requested_assisted} = 1;
@@ -2128,7 +2128,7 @@ sub waste_get_paye_narrative {
     if ($p->category eq 'Bulky collection') {
         return "Bulky waste - $id";
     } else {
-        my $uprn = $p->get_extra_field_value('uprn');
+        my $uprn = $p->uprn;
         return "Garden Waste Service Payment - Reference: $id Contract: $uprn";
     }
 }

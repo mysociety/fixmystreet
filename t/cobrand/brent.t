@@ -167,7 +167,6 @@ sub create_contact {
     my ($params, @extra) = @_;
     my $contact = $mech->create_contact_ok(body => $brent, %$params, extra => { type => 'waste' });
     $contact->set_extra_fields(
-        { code => 'uprn', required => 1, automated => 'hidden_field' },
         { code => 'property_id', required => 1, automated => 'hidden_field' },
         { code => 'service_id', required => 0, automated => 'hidden_field' },
         @extra,
@@ -1327,7 +1326,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
         $mech->content_contains('Your container request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->get_extra_field_value('Container_Request_Container_Type'), '13::13';
         is $report->get_extra_field_value('Container_Request_Action'), '2::1';
         is $report->get_extra_field_value('Container_Request_Reason'), '4::4';
@@ -1435,7 +1434,7 @@ FixMyStreet::override_config {
                 is $report->category, 'Request new container', 'correct category on report';
                 is $report->title, "Request new \u$test->{name}", 'correct title on report';
                 is $report->get_extra_field_value('payment_method'), 'credit_card', 'correct payment method on report';
-                is $report->get_extra_field_value('uprn'), 1000000002;
+                is $report->uprn, 1000000002;
                 is $report->get_extra_field_value('Container_Request_Container_Type'), join('::', $test->{id}, $test->{id});
                 is $report->get_extra_field_value('Container_Request_Action'), '2::1';
                 is $report->get_extra_field_value('Container_Request_Reason'), '4::4';
@@ -1636,7 +1635,7 @@ FixMyStreet::override_config {
         $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
         $mech->content_contains('Your container request has been sent');
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
-        is $report->get_extra_field_value('uprn'), 1000000002;
+        is $report->uprn, 1000000002;
         is $report->get_extra_field_value('Container_Request_Container_Type'), '8';
         is $report->get_extra_field_value('Container_Request_Action'), '1';
         is $report->get_extra_field_value('Container_Request_Reason'), '6';
@@ -1707,8 +1706,8 @@ subtest 'Dashboard CSV extra columns' => sub {
         {name => 'Container_Request_Reason', value => 1},
         {name => 'service_id', value => 1},
         {name => 'usrn', value => 1234},
-        {name => 'uprn', value => 4321},
     );
+    $flexible_problem->uprn(4321);
     $flexible_problem->external_id('121');
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
@@ -1728,15 +1727,15 @@ subtest 'Dashboard CSV extra columns' => sub {
     );
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,,,,,,,,,,/, "Location name added") or diag $mech->content;
+    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,4321,121,Y,,,,,,,,,,,,,,,,,,/, "Location name added") or diag $mech->content;
     $flexible_problem->set_extra_metadata('item_1' => 'Sofa', 'item_2' => 'Wardrobe');
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
+    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,4321,121,Y,,,,,,,,,,,,,,,,,,,Sofa,Wardrobe,,,,,,,/, "Bulky items added") or diag $mech->content;
     $flexible_problem->set_extra_metadata('contributed_by' => $staff_user->id);
     $flexible_problem->update;
     $mech->get_ok('/dashboard?export=1');
-    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,,121,Y,,,,,,,,,,,,,,,,,,Role,Sofa,Wardrobe,,,,,,,/, "Role added") or diag $mech->content;
+    ok $mech->content_like(qr/Flexible problem.*?,,,"Test Park","Test User",.*?,,4321,121,Y,,,,,,,,,,,,,,,,,,Role,Sofa,Wardrobe,,,,,,,/, "Role added") or diag $mech->content;
   }
 };
 
@@ -1755,8 +1754,8 @@ subtest 'Dashboard CSV pre-generation' => sub {
         {name => 'Container_Request_Reason', value => '4::4'},
         {name => 'service_id', value => 1},
         {name => 'usrn', value => 1234},
-        {name => 'uprn', value => 4321},
     );
+    $problems[0]->uprn(4321);
     $problems[0]->external_id('121');
     $problems[0]->update;
     $problems[1]->category('Fly-tipping');

@@ -88,7 +88,7 @@ sub index : Path {
             ];
         } elsif ($search =~ /^uprn:(\d+)$/) {
             $query = {
-                'me.extra' => { '@>' => encode_json({ "_fields" => [ { name => "uprn", value => $1 } ] }) },
+                'me.uprn' => $1,
             };
         } elsif ($valid_email) {
             $query->{'-or'} = [
