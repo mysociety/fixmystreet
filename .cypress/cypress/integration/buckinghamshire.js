@@ -181,3 +181,56 @@ describe('buckinghamshire roads handling', function() {
     cy.contains('Please select a road on which to make a report.').should('be.visible');
   });
 });
+
+describe('Abandoned vehicle behaviour', function() {
+  beforeEach(function() {
+    cy.server();
+    cy.route('/report/new/ajax*').as('report-ajax');
+    cy.route('/around\?ajax*').as('update-results');
+    cy.visit('http://buckinghamshire.localhost:3001/');
+    cy.contains('Buckinghamshire');
+    cy.get('[name=pc]').type('SL9 0NX');
+    cy.get('[name=pc]').parents('form').submit();
+    cy.wait('@update-results');
+    cy.get('#map_box').click(322, 307);
+    cy.wait('@report-ajax');
+    cy.pickCategory('Abandoned/Nuisance vehicle');
+    cy.nextPageReporting();
+    cy.pickSubcategory('Abandoned/Nuisance vehicle', 'A vehicle blocking a footpath');
+    cy.nextPageReporting();
+  });
+
+  it('No reg plate', function() {
+    cy.get('.js-reporting-page--active').contains('No').click();
+    cy.nextPageReporting();
+    cy.get('[name=VEHICLE_REGISTRATION]').should('have.value', 'Not known');
+  });
+
+  it('Said yes but no reg plate', function() {
+    cy.get('.js-reporting-page--active').contains('Yes').click();
+    cy.nextPageReporting();
+    cy.contains('This field is required');
+  });
+
+  it('Gave an okay reg plate', function() {
+    cy.route('POST', '/report/dvla', 'fixture:bucks_dvla_ok.json').as('dvla');
+    cy.get('.js-reporting-page--active').contains('Yes').click();
+    cy.get('[name=dvla_reg]').type('G00D');
+    cy.nextPageReporting();
+    cy.wait('@dvla');
+    cy.contains('White Audi car, Petrol, 2016');
+    cy.contains('that are taxed or have a valid MOT');
+  });
+
+  it('Gave an untaxed reg plate', function() {
+    cy.route('POST', '/report/dvla', 'fixture:bucks_dvla_notok.json').as('dvla');
+    cy.get('.js-reporting-page--active').contains('Yes').click();
+    cy.get('[name=dvla_reg]').type('B4D');
+    cy.nextPageReporting();
+    cy.wait('@dvla');
+    cy.get('[name=VEHICLE_REGISTRATION]').should('have.value', 'B4D');
+    cy.get('[name=ABANDONED_VEHICLE_TAXED]').should('have.value', 'No');
+    cy.get('[name=ABANDONED_SELECT_TYPE]').should('have.value', 'Motorbike');
+    cy.get('[name="MAKE_/_COLOUR_OF_THE_VEHI"]').should('have.value', 'Kawasaki / Black');
+  });
+});
