@@ -147,6 +147,8 @@ if ($opt->test_fixtures) {
         { area_id => 164186, categories => ['Shelter Damaged', 'Very Urgent'], name => 'Northamptonshire Highways', cobrand => 'northamptonshire' },
         { area_id => 163793, categories => [
                 'Flytipping', 'Roads',
+                { group => 'Abandoned/Nuisance vehicle', category => 'A vehicle blocking a footpath' },
+                { group => 'Abandoned/Nuisance vehicle', category => 'A vehicle burnt out on the road' },
                 { group => 'Grass, hedges and weeds', category => 'Grass cutting' },
                 { group => 'Grass, hedges and weeds', category => 'Hedge problem' },
                 { group => 'Roads & Pavements', category => 'Parks' },
@@ -280,6 +282,20 @@ if ($opt->test_fixtures) {
             variable => 'true',
             automated => 'hidden_field',
         });
+        $child_cat->update;
+    }
+
+    for my $cat ('A vehicle blocking a footpath', 'A vehicle burnt out on the road') {
+        $child_cat = FixMyStreet::DB->resultset("Contact")->find({
+            body => $bodies->{163793},
+            category => $cat,
+        });
+        $child_cat->set_extra_fields(
+            {"code" => "VEHICLE_REGISTRATION", "datatype" => "string", "required" => "true", "variable" => "true", "protected" => "false", "description" => "Vehicle registration number"},
+            {"code" => "ABANDONED_VEHICLE_TAXED", "values" => [{"key" => "Yes", "name" => "Yes"}, {"key" => "No", "name" => "No"}], "datatype" => "singlevaluelist", "required" => "true", "variable" => "true", "protected" => "false", "description" => "Is the vehicle taxed?"},
+            {"code" => "ABANDONED_SELECT_TYPE", "values" => [{"key" => "Car", "name" => "Car"}, {"key" => "Motorbike", "name" => "Motorbike"}, {"key" => "Other", "name" => "Other"}, {"key" => "Van", "name" => "Van"}], "datatype" => "singlevaluelist", "required" => "false", "variable" => "true", "protected" => "false", "description" => "Please select the type of vehicle"},
+            {"code" => "MAKE_/_COLOUR_OF_THE_VEHI", "datatype" => "string", "required" => "false", "variable" => "true", "protected" => "false", "description" => "Make/colour of the vehicle (if not known, please note not known)"},
+        );
         $child_cat->update;
     }
 
