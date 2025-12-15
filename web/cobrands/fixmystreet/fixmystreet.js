@@ -451,6 +451,11 @@ fixmystreet.pageController = {
         $div.attr('data-page-name', name);
         $div.append("<button class='btn btn--block btn--final js-reporting-page--next'>" + translation_strings.ok + "</button>");
         $('.js-reporting-page--active').after($div);
+    },
+    addPageAfter: function(after, name, $div) {
+        $div.addClass('js-reporting-page');
+        $div.attr('data-page-name', name);
+        $('.js-reporting-page[data-page-name=' + after + ']').after($div);
     }
 };
 
