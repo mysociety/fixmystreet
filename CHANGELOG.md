@@ -26,6 +26,7 @@
         - List categories that prevent reporting.
         - Show report search on the admin summary page for staff with `user_edit`. #5903
         - Population lookup size for radius alert can be configured per cobrand
+        - Select correct category group on report inspect dropdowns, and allow updating of category group
     - Development improvements
         - More logging when `page_error` is called, to aid troubleshooting. #5279
         - Docker changes needed for systemd to work. #5257
