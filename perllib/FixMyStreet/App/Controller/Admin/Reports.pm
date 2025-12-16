@@ -400,23 +400,44 @@ Returns 1 if category changed, 0 if no change.
 =cut
 
 sub edit_category : Private {
-    my ($self, $c, $problem, $no_comment, $contact) = @_;
+    my ($self, $c, $problem, $no_comment, $contact, $group_new) = @_;
 
-    my $category;
+    my ($group, $category);
     my $category_display;
+    my $group_old = $problem->get_extra_metadata('group') // '';
+
     if ($contact) {
+        $group = $group_new;
         $category = $contact->category;
-        return 0 if $contact->id == $problem->contact->id;
+
+        return 0
+            if $group eq $group_old
+            && $contact->id == $problem->contact->id;
+
         $category_display = $contact->category_display;
     } else {
-        $category = $c->get_param('category');
-        return 0 if $category eq $problem->category;
+        my $group_and_category = $c->get_param('category');
+
+        my $rgx = qr/__/;
+        ( $group, $category )
+            = $group_and_category =~ $rgx
+            ? ( split $rgx, $group_and_category )
+            : ( '', $group_and_category );
+
+        # No changes
+        return 0
+            if $group eq $group_old
+            && $category eq $problem->category;
+
         $category_display = $category;
     }
 
     my $category_old = $problem->category;
     my $category_old_display = $problem->category_display;
     $problem->category($category);
+    $group
+        ? $problem->set_extra_metadata( group => $group )
+        : $problem->unset_extra_metadata('group');
 
     my @contacts;
     if ($contact) {

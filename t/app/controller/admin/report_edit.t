@@ -10,7 +10,6 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', {cobrand => 'oxfordshire'});
 my $user3 = $mech->create_user_ok('body_user@example.com', name => 'Body User', from_body => $oxfordshire);
-my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com', extra => { group => 'Road' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Yellow lines', email => 'yellow@example.com', extra => { group => 'Road' } );
 $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Refuse', email => 'refuse@example.com', extra => { display_name => 'Bins' } );
@@ -454,22 +453,90 @@ FixMyStreet::override_config {
 }, sub {
 
 subtest 'change report category' => sub {
+    note 'Test category that is under multiple groups';
+
+    my $potholes_contact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com', extra => { group => 'Road' } );
+    $potholes_contact->set_extra_metadata( group => [ 'Road', 'Highways' ] );
+    $potholes_contact->update;
+
     my ($ox_report) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Unsure', {
         category => 'Potholes',
         areas => ',2237,2421,', # Cached used by categories_for_point...
         latitude => 51.7549262252,
         longitude => -1.25617899435,
         whensent => \'current_timestamp',
+        extra => { group => 'Road' },
     });
+
     $mech->get_ok("/admin/report_edit/" . $ox_report->id);
     $mech->content_contains('<optgroup label="Road">');
+    $mech->content_contains('<option value="Road__Potholes" selected>', 'group/category selected');
+    $mech->content_contains('<optgroup label="Highways">');
+    $mech->content_contains('<option value="Highways__Potholes">');
     $mech->content_lacks('<option value="group-Road"');
+
+    note '  Set to new group but same category';
+    $mech->submit_form_ok( { with_fields => { category => 'Highways__Potholes' } }, 'form_submitted' );
+    $ox_report->discard_changes;
+    is $ox_report->category, 'Potholes';
+    is $ox_report->get_extra_metadata('group'), 'Highways';
+    is $ox_report->comments->order_by('-id')->first->text, '*Category changed from ‘Potholes’ to ‘Potholes’*', 'Comment text correct';
+    isnt $ox_report->whensent, undef;
+    $mech->get_ok("/admin/report_edit/" . $ox_report->id);
+    $mech->content_contains('<optgroup label="Road">');
+    $mech->content_contains('<option value="Road__Potholes">');
+    $mech->content_contains('<optgroup label="Highways">');
+    $mech->content_contains('<option value="Highways__Potholes" selected>', 'new group selected');
+
+    note '  Change group name';
+    $potholes_contact->set_extra_metadata( group => [ 'Road', 'HIGHWAYS' ] );
+    $potholes_contact->update;
+    $mech->get_ok("/admin/report_edit/" . $ox_report->id);
+    $mech->content_contains('<optgroup label="Road">');
+    $mech->content_contains('<option value="Road__Potholes">');
+    $mech->content_lacks('<optgroup label="Highways">');
+    $mech->content_contains('<optgroup label="HIGHWAYS">');
+    $mech->content_contains('<option value="HIGHWAYS__Potholes">', 'renamed group not selected');
+
+    note '  Set contact back to single group';
+    $potholes_contact->set_extra_metadata( group => [ 'Road' ] );
+    $potholes_contact->update;
+    $mech->get_ok("/admin/report_edit/" . $ox_report->id);
+    $mech->content_contains('<optgroup label="Road">');
+    $mech->content_contains('<option value="Road__Potholes">', 'remaining group/category is not selected');
+    $mech->content_lacks('<optgroup label="Highways">');
+    $mech->content_lacks('<optgroup label="HIGHWAYS">');
+
+    note '  Submit form with remaining group/category';
+    $mech->submit_form_ok( { with_fields => { category => 'Road__Potholes' } }, 'submit with remaining group/category' );
+    $ox_report->discard_changes;
+    is $ox_report->category, 'Potholes';
+    is $ox_report->get_extra_metadata('group'), 'Road';
+    is $ox_report->comments->order_by('-id')->first->text, '*Category changed from ‘Potholes’ to ‘Potholes’*', 'Comment text correct';
+    $mech->content_contains('<option value="Road__Potholes" selected>', 'group/category selected');
+
+    note '  Set category to deleted';
+    $potholes_contact->update( { state => 'deleted' } );
+    $mech->get_ok("/admin/report_edit/" . $ox_report->id);
+    $mech->content_contains('<optgroup label="Existing category">', '"Existing category" selection is displayed');
+    $mech->content_contains('<option selected value="Potholes">');
+    $mech->submit_form_ok( { with_fields => { category => 'Potholes' } }, 'submit with deleted category' );
+    $ox_report->discard_changes;
+    is $ox_report->category, 'Potholes';
+    is $ox_report->get_extra_metadata('group'), undef;
+    is $ox_report->comments->order_by('-id')->first->text, '*Category changed from ‘Potholes’ to ‘Potholes’*', 'Comment text correct';
+    is $ox_report->bodies_str, '', 'bodies_str is unset if deleted category submitted'; # Should this happen?
+    isnt $ox_report->whensent, undef;
+
+    note 'Test categories with one or no groups';
+
+    $ox_report->update( { bodies_str => $oxfordshire->id } );
     $mech->submit_form_ok( { with_fields => { category => 'Traffic lights' } }, 'form_submitted' );
     $ox_report->discard_changes;
     is $ox_report->category, 'Traffic lights';
-    isnt $ox_report->whensent, undef;
-    is $ox_report->comments->count, 1, "Comment created for update";
-    is $ox_report->comments->first->text, '*Category changed from ‘Potholes’ to ‘Traffic lights’*', 'Comment text correct';
+    is $ox_report->get_extra_metadata('group'), undef;
+    isnt $ox_report->whensent, undef; # Not sure why this becomes undef
+    is $ox_report->comments->order_by('-id')->first->text, '*Category changed from ‘Potholes’ to ‘Traffic lights’*', 'Comment text correct';
 
     $mech->submit_form_ok( { with_fields => { category => 'Graffiti' } }, 'form_submitted' );
     $ox_report->discard_changes;
