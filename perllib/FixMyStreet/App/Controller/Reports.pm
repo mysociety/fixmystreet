@@ -647,6 +647,8 @@ sub load_problems_parameters : Private {
         my $prefetch = [];
         if ($c->user->from_body || $c->user->is_superuser) {
             push @$prefetch, 'contact';
+            push @{$filter->{join}}, { contact => 'translation_category' };
+            push @{$filter->{"+columns"}}, { 'contact.msgstr' => \"COALESCE(translation_category.msgstr, contact.category)" };
         }
         if ($c->user->has_permission_to('planned_reports', $body->id)) {
             push @$prefetch, 'user_planned_reports';
@@ -661,7 +663,7 @@ sub load_problems_parameters : Private {
     if (defined $c->stash->{filter_status}{shortlisted}) {
         $where->{'me.id'} = { '=', \"user_planned_reports.report_id"};
         $where->{'user_planned_reports.removed'} = undef;
-        $filter->{join} = 'user_planned_reports';
+        push @{$filter->{join}}, 'user_planned_reports';
     } elsif (defined $c->stash->{filter_status}{unshortlisted}) {
         my $shortlisted_ids = $c->cobrand->problems->search({
             'me.id' => { '=', \"user_planned_reports.report_id"},

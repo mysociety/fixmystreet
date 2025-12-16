@@ -54,11 +54,9 @@ column containing possible translations of the body name.
 
 sub translated {
     my $rs = shift;
-    my $schema = $rs->result_source->schema;
     $rs->search(undef, {
-        '+columns' => { 'msgstr' => \'COALESCE(translations.msgstr, me.name)' },
-        join => 'translations',
-        bind => [ 'name', $schema->lang, 'body' ],
+        '+columns' => { 'msgstr' => \'COALESCE(translation_name.msgstr, me.name)' },
+        join => 'translation_name',
     });
 }
 

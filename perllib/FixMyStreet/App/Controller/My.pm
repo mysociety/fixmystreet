@@ -163,9 +163,8 @@ sub get_problems : Private {
         "$table.state" => [ FixMyStreet::DB::Result::Problem->visible_states() ],
         "$table.category" => { '!=', 'Bulky cancel' },
     }, {
-        join => { 'contact' => 'translations' },
-        columns => [ "$table.category", { 'msgstr' => \"COALESCE(translations.msgstr, $table.category)" } ],
-        bind => [ 'category', $c->stash->{lang_code}, 'contact' ],
+        join => { 'contact' => 'translation_category' },
+        columns => [ "$table.category", { 'msgstr' => \"COALESCE(translation_category.msgstr, $table.category)" } ],
         distinct => 1,
     } )->all;
     my %cats = map { $_->category => $_->get_column('msgstr') } @categories;

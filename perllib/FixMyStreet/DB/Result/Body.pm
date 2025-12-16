@@ -163,15 +163,16 @@ sub url {
 }
 
 __PACKAGE__->might_have(
-  "translations",
+  "translation_name",
   "FixMyStreet::DB::Result::Translation",
   sub {
     my $args = shift;
+    my $lang = $args->{self_resultsource}->schema->lang;
     return {
         "$args->{foreign_alias}.object_id" => { -ident => "$args->{self_alias}.id" },
-        "$args->{foreign_alias}.tbl" => { '=' => \"?" },
-        "$args->{foreign_alias}.col" => { '=' => \"?" },
-        "$args->{foreign_alias}.lang" => { '=' => \"?" },
+        "$args->{foreign_alias}.tbl" => 'body',
+        "$args->{foreign_alias}.col" => 'name',
+        "$args->{foreign_alias}.lang" => $lang,
     };
   },
   { cascade_copy => 0, cascade_delete => 0 },
