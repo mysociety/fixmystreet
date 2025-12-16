@@ -123,9 +123,9 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </li>
 
 <li>[% loc('Extra data:') ~%]
-    [%~ IF extra_fields.size ~%]
+    [%~ IF extra_fields_display.size ~%]
         <ul>
-        [%~ FOREACH field IN extra_fields ~%]
+        [%~ FOREACH field IN extra_fields_display ~%]
             <li><strong>[%~ field.name ~%]</strong>: [% IF field.val.0.defined ~%]
                     [%~ field.val.list.join(", ") ~%]
                 [%~ ELSE ~%]
