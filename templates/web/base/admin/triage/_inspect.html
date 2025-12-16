@@ -23,7 +23,7 @@
                     [% IF group_select == 0 AND problem.category == group.name %]
                         [% selected = 1; group_select = 1 %]
                     [% END %]
-                    <option value="[% cat_op.id %]"[% ' selected' IF selected OR problem.contact.id == cat_op.id %]>[% cat_op.category_display %][% IF cat_op.email %] ([% cat_op.email %])[% END %]</option>
+                    <option value="[% ( group.name && cat_op.id ? group.name _ '__' _ cat_op.id : cat_op.id ) %]"[% ' selected' IF selected OR ( problem.contact.id == cat_op.id && problem.get_extra_metadata('group') == group.name ) %]>[% cat_op.category_display %][% IF cat_op.email %] ([% cat_op.email %])[% END %]</option>
                     [% selected = 0 %]
                 [%~ END ~%]
                 [% IF group.name %]</optgroup>[% END %]
