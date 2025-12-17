@@ -69,7 +69,7 @@ fixmystreet.dvla.lookup = function(e) {
             var stopperId = 'js-dvla-stopper';
             var $id = $('#' + stopperId);
 
-            var vehicle_desc = [data.colour, data.make, vehicle_type=='Other'?'':vehicle_type.toLowerCase()].join(' ');
+            var vehicle_desc = [data.colour, data.make, vehicle_type=='Other'?'':vehicle_type.toLowerCase()].filter(Boolean).join(' ');
             if (data.fuelType) vehicle_desc += ', ' + data.fuelType;
             if (data.yearOfManufacture) vehicle_desc += ', ' + data.yearOfManufacture;
             var reason = 'We cannot accept reports on vehicles that ' + reasons.join(' or ');
@@ -96,7 +96,7 @@ fixmystreet.dvla.lookup = function(e) {
                 field.value = vehicle_type;
             }
             field = document.querySelector('select[name*="' + fields.taxed + '"]');
-            if (field) {
+            if (field && !data.errors) {
                 field.value = 'No';
             }
             field = document.querySelector('input[name*="' + fields.reg + '"]');
