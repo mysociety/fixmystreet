@@ -1,4 +1,5 @@
 <svg width="469" height="248" viewBox="0 0 469 248" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>Box</title>
 <style>
 .main { fill: var(--primary-color, var(--default-color)); }
 .recycling-logo { fill: #ffffff; opacity: var(--recycling-logo, 0); }

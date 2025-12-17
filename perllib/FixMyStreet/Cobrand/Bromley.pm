@@ -688,8 +688,8 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $base = '/i/waste-containers';
     my $images = {
-        $SERVICE_IDS{domestic_refuse} => svg_container_sack("normal", '#333333'),
-        $SERVICE_IDS{fas_refuse} => svg_container_sack("normal", '#333333'),
+        $SERVICE_IDS{domestic_refuse} => svg_container_sack('Black sack', "normal", '#333333'),
+        $SERVICE_IDS{fas_refuse} => svg_container_sack('Black sack', "normal", '#333333'),
         $SERVICE_IDS{communal_refuse} => "$base/large-communal-grey-black-lid",
         $SERVICE_IDS{domestic_mixed} => "$base/box-green-mix",
         $SERVICE_IDS{communal_mixed} => "$base/bin-grey-green-lid-recycling",
