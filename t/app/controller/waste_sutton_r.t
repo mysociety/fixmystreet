@@ -1,10 +1,12 @@
 use JSON::MaybeXS;
 use Path::Tiny;
 use Storable qw(dclone);
+use Test::LongString;
 use Test::MockModule;
 use Test::MockTime qw(:all);
 use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
+use FixMyStreet::Script::Alerts;
 use CGI::Simple;
 
 FixMyStreet::App->log->disable('info');
@@ -26,6 +28,7 @@ my $bin_140_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_140
 my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_sutton_4471550.json')->slurp_utf8);
 my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_sutton_4499005.json')->slurp_utf8);
 
+my $body_user = $mech->create_user_ok('systemuser@example.org');
 my $params = {
     send_method => 'Open311',
     api_key => 'KEY',
@@ -33,6 +36,7 @@ my $params = {
     jurisdiction => 'home',
     can_be_devolved => 1,
     cobrand => 'sutton',
+    comment_user => $body_user,
 };
 my $body = $mech->create_body_ok(2498, 'Sutton Council', $params, {
     wasteworks_config => { request_timeframe => '20 working days' }
@@ -986,6 +990,7 @@ FixMyStreet::override_config {
                     cobrand_data => 'waste',
                     user => $user,
                     title => "Request replacement container",
+                    category => "Request new container",
                 }
             );
             my @extra_fields = ({
@@ -1067,6 +1072,15 @@ FixMyStreet::override_config {
             }
 
             subtest "Cancel" => sub {
+                FixMyStreet::DB->resultset('Alert')->create({
+                    user => $staff,
+                    alert_type => 'new_updates',
+                    parameter => $container_request_report->id,
+                    confirmed => 1,
+                    cobrand => 'sutton',
+                    whensubscribed => DateTime->new(year => 1),
+                });
+
                 $mech->log_in_ok($user->email);
                 $mech->get_ok($cancellation_url);
                 $mech->content_contains($cancel_form_title);
@@ -1083,6 +1097,13 @@ FixMyStreet::override_config {
                         { order_by => { -desc => 'id' } },
                 )->first;
                 is $latest_comment->text, "response template text", "cancel update uses response template";
+
+                $mech->clear_emails_ok;
+                FixMyStreet::Script::Alerts::send_updates();
+                $mech->email_count_is(1);
+                my $body = $mech->get_email->as_string;
+                contains_string $body, "response template text";
+                lacks_string $body, "State changed to:";
             };
 
             subtest "Link not shown after already cancelled" => sub {
