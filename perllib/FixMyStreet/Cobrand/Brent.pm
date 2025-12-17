@@ -1157,15 +1157,15 @@ sub image_for_unit {
 
     my $base = '/i/waste-containers';
     my $images = {
-        $SERVICE_IDS{domestic_refuse} => svg_container_bin("wheelie", '#767472'),
-        $SERVICE_IDS{domestic_mixed} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
+        $SERVICE_IDS{domestic_refuse} => svg_container_bin('Grey bin', "wheelie", '#767472'),
+        $SERVICE_IDS{domestic_mixed} => svg_container_bin('Blue lidded bin', "wheelie", '#767472', '#00A6D2', 1),
         $SERVICE_IDS{domestic_food} => "$base/caddy-green-recycling",
-        $SERVICE_IDS{garden} => svg_container_bin("wheelie", '#41B28A'),
-        $SERVICE_IDS{communal_refuse} => svg_container_bin("communal", '#333333'),
-        $SERVICE_IDS{communal_mixed} => svg_container_bin("communal", '#00A6D2', undef, 1),
-        $SERVICE_IDS{communal_food} => svg_container_bin("wheelie", '#8B5E3D'),
-        $SERVICE_IDS{fas_refuse} => svg_container_sack("normal", '#333333'),
-        $SERVICE_IDS{fas_mixed} => svg_container_sack("normal", '#d8d8d8'),
+        $SERVICE_IDS{garden} => svg_container_bin('Green bin', "wheelie", '#41B28A'),
+        $SERVICE_IDS{communal_refuse} => svg_container_bin('Black communal bin', "communal", '#333333'),
+        $SERVICE_IDS{communal_mixed} => svg_container_bin('Blue communal bin', "communal", '#00A6D2', undef, 1),
+        $SERVICE_IDS{communal_food} => svg_container_bin('Brown bin', "wheelie", '#8B5E3D'),
+        $SERVICE_IDS{fas_refuse} => svg_container_sack('Black sack', "normal", '#333333'),
+        $SERVICE_IDS{fas_mixed} => svg_container_sack('Clear sack', "normal", '#d8d8d8'),
         $SERVICE_IDS{domestic_paper} => "$base/bag-blue",
         small_items => "$base/electricals-batteries-textiles",
     };

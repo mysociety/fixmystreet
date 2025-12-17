@@ -191,9 +191,9 @@ sub image_for_unit {
     my $service_id = $unit->{service_id};
     my $base = '/i/waste-containers';
     my $images = {
-        $CONTAINERS{black_240} => svg_container_bin('wheelie', '#333333'),
-        $CONTAINERS{green_240} => svg_container_bin("wheelie", '#41B28A'),
-        $CONTAINERS{brown_240} => svg_container_bin("wheelie", '#8B5E3D'),
+        $CONTAINERS{black_240} => svg_container_bin('Black wheelie bin', 'wheelie', '#333333'),
+        $CONTAINERS{green_240} => svg_container_bin('Green wheelie bin', "wheelie", '#41B28A'),
+        $CONTAINERS{brown_240} => svg_container_bin('Brown wheelie bin', "wheelie", '#8B5E3D'),
         bulky => "$base/bulky-white",
     };
     return $images->{$service_id};

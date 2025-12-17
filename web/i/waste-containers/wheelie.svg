@@ -1,4 +1,5 @@
 <svg width="401" height="692" viewBox="0 0 401 692" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>Wheelie bin</title>
 <style>
 .wheel { fill: #333333; }
 .main { fill: var(--primary-color, var(--default-color)); }

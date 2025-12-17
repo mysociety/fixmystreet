@@ -36,12 +36,14 @@ TYPE is either 'normal' or 'stripe'.
 =cut
 
 sub svg_container_sack {
-    my ($type, $colour) = @_;
+    my ($title, $type, $colour) = @_;
     my $dir = path(FixMyStreet->path_to("web/i/waste-containers"));
     $type = ($type eq 'stripe') ? 'sack-stripe' : 'sack';
+    my $data = $dir->child("$type.svg")->slurp_raw;
+    $data =~ s{<title>.*?</title>}{<title>$title</title>};
     return {
         type => 'svg',
-        data => $dir->child("$type.svg")->slurp_raw,
+        data => $data,
         colour => $colour,
     };
 }
@@ -53,11 +55,13 @@ TYPE is either 'wheelie' or 'communal'.
 =cut
 
 sub svg_container_bin {
-    my ($type, $colour_main, $colour_lid, $recycling_logo) = @_;
+    my ($title, $type, $colour_main, $colour_lid, $recycling_logo) = @_;
     my $dir = path(FixMyStreet->path_to("web/i/waste-containers"));
+    my $data = $dir->child("$type.svg")->slurp_raw;
+    $data =~ s{<title>.*?</title>}{<title>$title</title>};
     return {
         type => 'svg',
-        data => $dir->child("$type.svg")->slurp_raw,
+        data => $data,
         colour => $colour_main,
         lid_colour => $colour_lid,
         recycling_logo => $recycling_logo,
@@ -65,11 +69,13 @@ sub svg_container_bin {
 }
 
 sub svg_container_box {
-    my ($colour, $recycling_logo) = @_;
+    my ($title, $colour, $recycling_logo) = @_;
     my $dir = path(FixMyStreet->path_to("web/i/waste-containers"));
+    my $data = $dir->child("box.svg")->slurp_raw;
+    $data =~ s{<title>.*?</title>}{<title>$title</title>};
     return {
         type => 'svg',
-        data => $dir->child("box.svg")->slurp_raw,
+        data => $data,
         colour => $colour,
         recycling_logo => $recycling_logo,
     };

@@ -212,22 +212,22 @@ sub image_for_unit {
     my $container = $unit->{request_containers}[0] || 0;
 
     my $images = {
-        $CONTAINERS{refuse_black_bag} => svg_container_sack('normal', '#3B3B3A'),
-        $CONTAINERS{recycling_purple_bag} => svg_container_sack('normal', '#BD63D1'),
-        $CONTAINERS{recycling_blue_stripe_bag} => svg_container_sack('stripe', '#3E50FA'),
-        $CONTAINERS{refuse_red_stripe_bag} => svg_container_sack('stripe', '#F1506D'),
-        $CONTAINERS{paper_bag} => svg_container_sack('normal', '#D8D8D8'),
-        $CONTAINERS{garden_sack} => svg_container_sack('normal', '#A2845D'),
+        $CONTAINERS{refuse_black_bag} => svg_container_sack('Black sack', 'normal', '#3B3B3A'),
+        $CONTAINERS{recycling_purple_bag} => svg_container_sack('Purple bag', 'normal', '#BD63D1'),
+        $CONTAINERS{recycling_blue_stripe_bag} => svg_container_sack('Blue striped bag', 'stripe', '#3E50FA'),
+        $CONTAINERS{refuse_red_stripe_bag} => svg_container_sack('Red striped bag', 'stripe', '#F1506D'),
+        $CONTAINERS{paper_bag} => svg_container_sack('Clear bag', 'normal', '#D8D8D8'),
+        $CONTAINERS{garden_sack} => svg_container_sack('Brown sack', 'normal', '#A2845D'),
 
         # Fallback to the service if no container match
-        $SERVICE_IDS{domestic_refuse} => svg_container_bin('wheelie', '#333333'),
-        $SERVICE_IDS{domestic_food} => { src => "$base/caddy-brown-large", alt => 'Large brown box' },
-        $SERVICE_IDS{domestic_paper} => svg_container_bin("wheelie", '#767472', '#00A6D2', 1),
+        $SERVICE_IDS{domestic_refuse} => svg_container_bin('Black wheelie bin', 'wheelie', '#333333'),
+        $SERVICE_IDS{domestic_food} => { src => "$base/caddy-brown-large", alt => 'Large brown caddy' },
+        $SERVICE_IDS{domestic_paper} => svg_container_bin('Blue lidded wheelie bin', "wheelie", '#767472', '#00A6D2', 1),
         $SERVICE_IDS{domestic_mixed} => { src => "$base/box-green-mix", alt => 'Green box' },
-        $SERVICE_IDS{communal_refuse} => svg_container_bin('communal', '#767472', '#333333'),
-        $SERVICE_IDS{garden} => svg_container_bin('wheelie', '#8B5E3D'),
-        $SERVICE_IDS{communal_food} => svg_container_bin('wheelie', '#8B5E3D'),
-        $SERVICE_IDS{communal_mixed} => svg_container_bin('communal', '#41B28A'),
+        $SERVICE_IDS{communal_refuse} => svg_container_bin('Grey communal bin', 'communal', '#767472', '#333333'),
+        $SERVICE_IDS{garden} => svg_container_bin('Brown wheelie bin', 'wheelie', '#8B5E3D'),
+        $SERVICE_IDS{communal_food} => svg_container_bin('Brown wheelie bin', 'wheelie', '#8B5E3D'),
+        $SERVICE_IDS{communal_mixed} => svg_container_bin('Green communal bin', 'communal', '#41B28A'),
         bulky => "$base/bulky-black",
     };
     return $images->{$container} || $images->{$service_id};

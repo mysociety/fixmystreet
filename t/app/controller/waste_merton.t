@@ -154,6 +154,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Friday 2 September');
         $mech->content_contains('Report a missed mixed recycling collection');
         $mech->content_contains('houses-friday-A');
+        $mech->content_contains('Blue lidded wheelie bin');
     };
 
     subtest 'Schedule 2 property' => sub {
