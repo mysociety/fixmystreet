@@ -92,7 +92,7 @@ Do not include the "State changed to" line on small item collection update alert
 sub skip_alert_state_changed_to {
     my ( $self, $report ) = @_;
 
-    return $report->category eq 'Small items collection';
+    return $report->category eq 'Small items collection' || $report->category eq 'Request new container';
 }
 
 =head2 waste_on_the_day_criteria
