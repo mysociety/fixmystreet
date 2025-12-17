@@ -108,7 +108,7 @@ sub receive_echo_event_notification : Path('/waste/echo') : Args(0) {
                 $updates->suppress_alerts(1);
             }
 
-            # If it's a cancelletion update on a container request
+            # If it's a cancellation update on a container request
             # that is already cancelled, don't send an alert as
             # we would have already sent one out for this.
             if ($p->category eq 'Request new container'
