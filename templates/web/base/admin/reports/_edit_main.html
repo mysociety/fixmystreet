@@ -32,13 +32,21 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 
 <li>[% loc('Bodies') %]:
   [% IF problem.bodies_str %]
-    [% FOREACH body IN problem.bodies.values %]
-      [% SET body_printed = 1 %]
-      <a href="[% c.uri_for_action('admin/bodies/edit', [ body.id ]) %]">[% body.name | html %]</a>
-      [%- ',' IF NOT loop.last %]
-    [% END %]
-    [% IF NOT body_printed %]
-      <em>[% problem.bodies_str %]</em>
+    [% IF c.user.is_superuser AND NOT problem.whensent AND problem.send_fail_count > 0 AND problem.bodies_str_ids.size == 1 AND bodies.values.size > 1 %]
+      <select class="form-control" name="body_id" id="body_id">
+        [% FOREACH body IN bodies.values %]
+          <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name | html %]</option>
+        [% END %]
+      </select>
+    [% ELSE %]
+      [% FOREACH body IN problem.bodies.values %]
+        [% SET body_printed = 1 %]
+        <a href="[% c.uri_for_action('admin/bodies/edit', [ body.id ]) %]">[% body.name | html %]</a>
+        [%- ',' IF NOT loop.last %]
+      [% END %]
+      [% IF NOT body_printed %]
+        <em>[% problem.bodies_str %]</em>
+      [% END %]
     [% END %]
   [% ELSE %]
     <em>[% loc('None' ) %]</em>
