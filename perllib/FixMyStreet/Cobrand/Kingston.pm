@@ -623,6 +623,41 @@ sub admin_fee_cost {
     return $cost;
 }
 
+=head2 waste_munge_enquiry_data
+
+Get the right data in place for the bin not returned / waste spillage / escalation categories.
+
+=cut
+
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+
+    $data->{title} = _enquiry_nice_title($data->{category});
+
+    my $detail = "";
+    if ($data->{category} eq 'Bin not returned') {
+        my $assisted = $c->stash->{assisted_collection};
+        my $returned = $data->{now_returned} || '';
+        if ($assisted && lc($returned) eq 'no') {
+           $data->{extra_Notes} = '*** Property is on assisted list ***';
+        }
+    } elsif ($data->{category} eq 'Waste spillage') {
+        $detail = $data->{extra_Notes} . "\n\n";
+    }
+    if ($data->{extra_details}) {
+        my $extra = ref $data->{extra_details} ne '' ? join(', ', @{$data->{extra_details}}) : $data->{extra_details};
+        my $nl = $data->{extra_Notes} ? "\n" : '';
+        $data->{extra_Notes} .= $nl . "Details: " . $extra;
+    } 
+    $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
+    $detail .= $address;
+
+    $data->{detail} = $detail;
+}
+
 =head2 Bulky waste collection
 
 =over 4

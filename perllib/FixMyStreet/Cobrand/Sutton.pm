@@ -700,93 +700,6 @@ sub request_cost {
     }
 }
 
-=head2 waste_munge_enquiry_form_pages
-
-The Bin not returned flow has some more complex setup depending on whether
-the property has an assisted collection or not, with an extra question,
-and showing/hiding different notices.
-
-=cut
-
-sub waste_munge_enquiry_form_pages {
-    my ($self, $pages, $fields) = @_;
-    my $c = $self->{c};
-    my $category = $c->get_param('category');
-
-    # Add the service to the main fields form page
-    $pages->[1]{intro} = 'enquiry-intro.html';
-    $pages->[1]{title} = _enquiry_nice_title($category);
-
-    return unless $category eq 'Bin not returned';;
-
-    my $assisted = $c->stash->{assisted_collection};
-    if ($assisted) {
-        # Add extra first page with extra question
-        $c->stash->{first_page} = 'now_returned';
-        unshift @$pages, now_returned => {
-            fields => [ 'now_returned', 'continue' ],
-            intro => 'enquiry-intro.html',
-            title => _enquiry_nice_title($category),
-            next => 'enquiry',
-        };
-        push @$fields, now_returned => {
-            type => 'Select',
-            widget => 'RadioGroup',
-            required => 1,
-            label => 'Has the container now been returned to the property?',
-            options => [
-                { label => 'Yes', value => 'Yes' },
-                { label => 'No', value => 'No' },
-            ],
-        };
-
-        # Remove any non-assisted extra notices
-        my @new;
-        for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_NotAssisted/) {
-                push @new, $fields->[$i], $fields->[$i+1];
-            }
-        }
-        @$fields = @new;
-        $pages->[3]{fields} = [ grep { !/^extra_NotAssisted/ } @{$pages->[3]{fields}} ];
-        $pages->[3]{update_field_list} = sub {
-            my $form = shift;
-            my $c = $form->c;
-            my $data = $form->saved_data;
-            my $returned = $data->{now_returned} || '';
-            my $key = $returned eq 'No' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
-            return {
-                category => { default => $c->get_param('category') },
-                service_id => { default => $c->get_param('service_id') },
-                $key => { widget => 'Hidden' },
-            }
-        };
-    } else {
-        # Remove any assisted extra notices
-        my @new;
-        for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_Assisted/) {
-                push @new, $fields->[$i], $fields->[$i+1];
-            }
-        }
-        @$fields = @new;
-        $pages->[1]{fields} = [ grep { !/^extra_Assisted/ } @{$pages->[1]{fields}} ];
-    }
-}
-
-sub _enquiry_nice_title {
-    my $category = shift;
-    if ($category eq 'Bin not returned') {
-        $category = 'Wheelie bin, box or caddy not returned correctly after collection';
-    } elsif ($category eq 'Waste spillage') {
-        $category = 'Spillage during collection';
-    } elsif ($category eq 'Complaint against time') {
-        $category = 'Issue with collection';
-    } elsif ($category eq 'Failure to Deliver Bags/Containers') {
-        $category = 'Issue with delivery';
-    }
-    return $category;
-}
 
 =head2 waste_munge_enquiry_data
 
@@ -806,7 +719,7 @@ sub waste_munge_enquiry_data {
     if ($data->{category} eq 'Bin not returned') {
         my $assisted = $c->stash->{assisted_collection};
         my $returned = $data->{now_returned} || '';
-        if ($assisted && $returned eq 'No') {
+        if ($assisted && lc($returned) eq 'no') {
            $data->{extra_Notes} = '*** Property is on assisted list ***';
         }
     } elsif ($data->{category} eq 'Waste spillage') {
