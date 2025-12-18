@@ -39,12 +39,23 @@
 
     <div class="report-list-filters">
         <label for="wards">
-        [% loc('In wards') %]
+        [% IF parish_children %]In areas[% ELSE %][% loc('In wards') %][% END %]
         </label>
 <select class="form-control js-multiple" multiple id="wards" name="wards">
+  [% IF parish_children %]
+    <optgroup label="Wards">
+  [% END %]
   [% FOR child IN children.values.sort('name') %]
   [% SET aid = child.id %]
   <option value="[% aid %]"[% ' selected' IF ward_hash.$aid %]>[% child.name %]</option>
+  [% END %]
+  [% IF parish_children %]
+    </optgroup>
+    <optgroup label="Town/parish council">
+      [% FOR child IN parish_children.values.sort('name') %]
+      [% SET aid = child.id %]
+      <option value="[% aid %]"[% ' selected' IF ward_hash.$aid %]>[% child.name %]</option>
+      [% END %]
   [% END %]
 </select>
     </div>
