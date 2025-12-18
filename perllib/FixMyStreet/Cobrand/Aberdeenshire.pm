@@ -332,11 +332,11 @@ sub is_defect {
 sub pin_colour {
     my ( $self, $p ) = @_;
     return 'grey' if ($p->get_extra_metadata('confirmPriorityCode') || '') eq 'DPM';
-    return 'orange' if $self->is_defect($p);
     return 'grey' if $p->state eq 'not responsible' || $p->state eq 'unable to fix';
     return 'orange' if $p->state eq 'investigating' || $p->state eq 'planned' || $p->state eq 'internal referral';
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'orange-work' if $p->state eq 'in progress';
+    return 'orange' if $self->is_defect($p);
     # Confirmed/open or action scheduled
     return 'red';
 }
