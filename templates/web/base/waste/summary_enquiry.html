@@ -1,8 +1,14 @@
 [%
-title = 'Submit enquiry';
-thing = 'enquiry';
-summary_title = data.category;
-step1 = 'enquiry';
+  data = form.saved_data;
+  step1 = first_page;
+  escalation = ( data.category == 'Escalate missed collection report' );
+  IF escalation;
+    title = 'Submit escalation';
+  ELSE;
+    title = 'Submit enquiry';
+  END;
+  thing = 'enquiry';
+  summary_title = data.category;
 %]
 
 [% BLOCK answers %]
