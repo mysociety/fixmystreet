@@ -9,6 +9,10 @@ has verbose => ( is => 'ro' );
 
 has unconfirmed_data => ( is => 'ro', default => sub { {} } );
 
+has base_url => ( is => 'lazy', is => 'ro', default => sub { return FixMyStreet->config('COBRAND_FEATURES') ? FixMyStreet->config('COBRAND_FEATURES')->{base_url} : { } } );
+
+has default_base_url => ( is => 'lazy', is => 'ro', default => sub { return  FixMyStreet->config('BASE_URL') } );
+
 # Static method, used by send-reports cron script and tests.
 # Creates a manager object from provided data and processes it.
 sub send {
@@ -129,10 +133,10 @@ sub end_summary_failures {
     })->order_by('-confirmed');
     my %bodies;
     while (my $row = $unsent->next) {
-        my $base_url = FixMyStreet->config('BASE_URL');
         my $key =  join ', ', @{ $row->body_names };
         $bodies{$key} ||= [];
-        push @{ $bodies{$key} }, $row->id;
+        my $base_url = get_base($self, $row);
+        push @{ $bodies{$key} }, $base_url . "/admin/report_edit/" . $row->id;
         $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* " . $base_url . "/report/" . $row->id . ", failed "
             . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
             . ", reason " . $row->send_fail_reason . "\n";
@@ -142,7 +146,7 @@ sub end_summary_failures {
         my $bodies = join "\n", map {
             my $n = scalar @{ $bodies{$_} };
             "$_ ($n): " . join ', ', @{ $bodies{$_} }
-        } keys %bodies;
+        } sort keys %bodies;
 
         print "The following $count reports had problems sending:\n$bodies\n$sending_errors";
     }
@@ -152,6 +156,17 @@ sub log {
     my ($self, $msg) = @_;
     return unless $self->verbose;
     STDERR->print("[fmsd] $msg\n");
+}
+
+sub get_base {
+    my ($self, $row) = @_;
+
+    my $base;
+    if ($row->contact->body->name eq 'TfL' || ($row->contact->extra && $row->contact->get_extra_metadata('type') eq 'waste')) {
+        $base = $self->base_url->{ $row->contact->body->cobrand };
+    }
+
+    return $base || $self->default_base_url;
 }
 
 1;
