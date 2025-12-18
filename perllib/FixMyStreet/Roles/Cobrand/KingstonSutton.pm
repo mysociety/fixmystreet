@@ -185,8 +185,6 @@ around booked_check_missed_collection => sub {
 
     $self->$orig($type, $events, $blocked_codes);
 
-    return unless $self->moniker eq 'sutton'; # Sutton only for now
-
     # Now check for any old open missed collections that can be escalated
 
     my $cfg = $self->feature('echo');
@@ -230,8 +228,6 @@ around booked_check_missed_collection => sub {
 
 sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
-
-    return unless $self->moniker eq 'sutton'; # Sutton only for now
 
     # Escalations
     foreach (@$rows) {
