@@ -33,7 +33,7 @@
 [% loc('In wards') %] <select class="form-control js-multiple" multiple id="wards" name="wards">
   [% FOR child IN children.values.sort('name') %]
   [% SET aid = child.id %]
-  <option value="[% child.name | html %]"[% ' selected' IF ward_hash.$aid %]>[% child.name %]</option>
+  <option value="[% aid %]"[% ' selected' IF ward_hash.$aid %]>[% child.name %]</option>
   [% END %]
 </select>
 
