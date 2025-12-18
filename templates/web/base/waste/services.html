@@ -3,7 +3,7 @@
 
 [% IF unit.requests_open.size %]
   <span class="waste-service-descriptor">
-    [% IF cobrand.moniker != 'sutton' %]
+    [% IF cobrand.moniker != 'sutton' AND cobrand.moniker != 'kingston' %]
     A [% unit.service_name FILTER lower %] container request has been made
     [% ELSE %]
        [% SET request = unit.requests_open.values.0; %]
@@ -72,6 +72,14 @@
     [% END %]
     [% IF unit.report_allowed %]
         <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a spillage or bin not returned issue with a [% unit.service_name FILTER lower %] collection</a>
+    [% END %]
+[% END %]
+
+[% IF c.cobrand.moniker == 'kingston' AND (property.domestic_refuse_bin OR communal_property) %]
+    [% IF unit.escalations.missed_open %]
+      <span class="waste-service-descriptor">
+        Thank you for reporting an issue with this collection; we are investigating.
+      </span>
     [% END %]
 [% END %]
 
