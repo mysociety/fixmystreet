@@ -406,6 +406,7 @@ sub edit_category : Private {
     my ($group_changed, $category_changed);
     my $category_display;
     my $group_old = $problem->get_extra_metadata('group') // '';
+    my $category_old = $problem->category;
 
     if ($contact) {
         $group = $group_new;
@@ -428,7 +429,7 @@ sub edit_category : Private {
             : ( '', $group_and_category );
 
         $group_changed = $group ne $group_old;
-        $category_changed = $category ne $problem->category;
+        $category_changed = $category ne $category_old;
 
         # No changes
         return 0
@@ -437,24 +438,29 @@ sub edit_category : Private {
         $category_display = $category;
     }
 
-    my $category_old = $problem->category;
-    my $category_old_display = $problem->category_display;
-    $problem->category($category);
-    $group
-        ? $problem->set_extra_metadata( group => $group )
-        : $problem->unset_extra_metadata('group');
-
     my @contacts;
     if ($contact) {
         @contacts = ($contact);
     } else {
-        @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
+        @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
 
         # See if we have one matching contact and use its display name if we do.
         if (@contacts == 1) {
             $category_display = $contacts[0]->category_display;
         }
     }
+
+    # @contacts may be empty if form has been submitted with a deleted
+    # category. If we don't return here, it will lead to an empty bodies_str
+    # below. We also don't want to update group or category on the problem.
+    return 0 unless @contacts;
+
+    my $category_old_display = $problem->category_display;
+    $problem->category($category);
+    $group
+        ? $problem->set_extra_metadata( group => $group )
+        : $problem->unset_extra_metadata('group');
+
 
     # TODO Do we ever want to do this if only group has changed?
     check_resend($c, $category_old, $problem, \@contacts);
