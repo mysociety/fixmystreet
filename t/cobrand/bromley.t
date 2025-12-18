@@ -668,6 +668,7 @@ subtest 'Can select asset that is in Lewisham area on Bromley Cobrand' => sub {
         my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $problem->title, 'Lamp issue in Lewisham on Bromley', 'Report has been made';
         is $problem->body, 'Bromley Council', 'Problem on correct body';
+        $problem->delete;
     };
 };
 
@@ -691,6 +692,7 @@ subtest 'Can select asset that is in Lewisham area on FMS' => sub {
         my $problem = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         is $problem->title, 'Lamp issue in Lewisham on FMS', 'Report has been made';
         is $problem->body, 'Bromley Council', 'Problem on correct body';
+        $problem->delete;
     };
 };
 

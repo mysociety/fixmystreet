@@ -561,6 +561,14 @@ FixMyStreet::override_config {
 
         is $cobrand->pin_colour($fetched_report), 'red';
 
+        # Mark it as a defect, which overrides red
+        $aberdeenshire->update({ comment_user_id => $fetched_report->user->id });
+        is $cobrand->pin_colour($fetched_report), 'orange';
+
+        # State should override the fact that it's a defect
+        $fetched_report->update({ state => 'in progress' });
+        is $cobrand->pin_colour($fetched_report), 'orange-work';
+
         my $request = {
             extras => {
                 priority => 'DPM'
