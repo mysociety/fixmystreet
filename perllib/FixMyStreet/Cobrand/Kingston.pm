@@ -595,6 +595,50 @@ sub waste_munge_request_data {
     }
 }
 
+sub _enquiry_nice_title {
+    my $category = shift;
+    if ($category eq 'Complaint against time') {
+        $category = 'Issue with collection';
+    } elsif ($category eq 'Failure to Deliver Bags/Containers') {
+        $category = 'Issue with delivery';
+    }
+    return $category;
+}
+
+=head2 waste_munge_enquiry_data
+
+Get the right data in place for the bin not returned / waste spillage / escalation categories.
+
+=cut
+
+sub waste_munge_enquiry_data {
+    my ($self, $data) = @_;
+    my $c = $self->{c};
+
+    my $address = $c->stash->{property}->{address};
+
+    $data->{title} = _enquiry_nice_title($data->{category});
+
+    my $detail = "";
+    if ($data->{category} eq 'Complaint against time') {
+        my $event_id = $c->get_param('event_id');
+        my ($echo, $ww) = split /:/, $event_id;
+        $data->{extra_Notes} = "Originally Echo Event #$echo";
+        $data->{extra_original_ref} = $ww;
+        $data->{extra_missed_guid} = $c->get_param('event_guid');
+    } elsif ($data->{category} eq 'Failure to Deliver Bags/Containers') {
+        my $event_id = $c->get_param('event_id');
+        my ($echo, $guid, $ww) = split /:/, $event_id;
+        $data->{extra_Notes} = "Originally Echo Event #$echo";
+        $data->{extra_original_ref} = $ww;
+        $data->{extra_container_request_guid} = $guid;
+    }
+    $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
+    $detail .= $address;
+
+    $data->{detail} = $detail;
+}
+
 =head2 container_cost / admin_fee_cost
 
 Calculate how much, if anything, a request for a container should be.
