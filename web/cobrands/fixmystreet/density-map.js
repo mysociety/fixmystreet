@@ -70,8 +70,6 @@ $(function(){
         $(fixmystreet.map.div).addClass("heatmap-active");
     }
 
-    $('#sort').closest('.report-list-filters').hide();
-
     $("#wards, #start_date, #end_date").on("change.filters", debounce(function() {
         // If the category or status has changed we need to re-fetch map markers
         fixmystreet.markers.events.triggerEvent("refresh", {force: true});

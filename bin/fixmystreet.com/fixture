@@ -47,7 +47,6 @@ my $categories = [
     'Dog fouling',
     'Flyposting',
     'Flytipping',
-    'Fly-tipping',
     'Footpath/bridleway away from road',
     'Graffiti',
     'Parks/landscapes',
@@ -122,6 +121,8 @@ if ($opt->test_fixtures) {
     my $bodies;
 
     FixMyStreet::DB->resultset("Config")->create({ key => "tlrn_categories", value => ["Other (TfL)", "Mobile Crane Operation"] });
+
+    FixMyStreet::DB::Factory::Contact->find_or_create({ body => $body, category => "Fly-tipping" });
 
     my $params = {
         name => 'National Highways',

@@ -39,11 +39,21 @@
 
     [% IF NOT c.user.area_ids.size %]
     <p>
-        <label for="ward">[% loc('Ward:') %]</label>
+        <label for="ward">[% IF parish_children %]Area:[% ELSE %][% loc('Ward:') %][% END %]</label>
         <select class="form-control js-multiple" multiple name="ward" id="ward">
+          [% IF parish_children %]
+            <optgroup label="Wards">
+          [% END %]
             [% FOR w IN children.values.sort('name') %]
                 <option value="[% w.id %]"[% ' selected' IF ward.grep(w.id).size %]>[% w.name %]</option>
             [% END %]
+          [% IF parish_children %]
+            </optgroup>
+            <optgroup label="Town/parish council">
+              [% FOR w IN parish_children.values.sort('name') %]
+              <option value="[% w.id %]"[% ' selected' IF ward.grep(w.id).size %]>[% w.name %]</option>
+              [% END %]
+          [% END %]
         </select>
     </p>
     [% END %]
