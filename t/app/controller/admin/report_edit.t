@@ -480,7 +480,7 @@ subtest 'change report category' => sub {
     $ox_report->discard_changes;
     is $ox_report->category, 'Potholes';
     is $ox_report->get_extra_metadata('group'), 'Highways';
-    is $ox_report->comments->order_by('-id')->first->text, '*Category changed from ‘Potholes’ to ‘Potholes’*', 'Comment text correct';
+    is $ox_report->comments->order_by('-id')->first->text, '*Category group changed from ‘Road’ to ‘Highways’*', 'Comment text correct';
     isnt $ox_report->whensent, undef;
     $mech->get_ok("/admin/report_edit/" . $ox_report->id);
     $mech->content_contains('<optgroup label="Road">');
@@ -512,7 +512,7 @@ subtest 'change report category' => sub {
     $ox_report->discard_changes;
     is $ox_report->category, 'Potholes';
     is $ox_report->get_extra_metadata('group'), 'Road';
-    is $ox_report->comments->order_by('-id')->first->text, '*Category changed from ‘Potholes’ to ‘Potholes’*', 'Comment text correct';
+    is $ox_report->comments->order_by('-id')->first->text, '*Category group changed from ‘Highways’ to ‘Road’*', 'Comment text correct';
     $mech->content_contains('<option value="Road__Potholes" selected>', 'group/category selected');
 
     note '  Set category to deleted';
@@ -524,7 +524,7 @@ subtest 'change report category' => sub {
     $ox_report->discard_changes;
     is $ox_report->category, 'Potholes';
     is $ox_report->get_extra_metadata('group'), undef;
-    is $ox_report->comments->order_by('-id')->first->text, '*Category changed from ‘Potholes’ to ‘Potholes’*', 'Comment text correct';
+    is $ox_report->comments->order_by('-id')->first->text, '*Category group changed from ‘Road’ to ‘’*', 'Comment text correct';
     is $ox_report->bodies_str, '', 'bodies_str is unset if deleted category submitted'; # Should this happen?
     isnt $ox_report->whensent, undef;
 

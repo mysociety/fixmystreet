@@ -403,6 +403,7 @@ sub edit_category : Private {
     my ($self, $c, $problem, $no_comment, $contact, $group_new) = @_;
 
     my ($group, $category);
+    my ($group_changed, $category_changed);
     my $category_display;
     my $group_old = $problem->get_extra_metadata('group') // '';
 
@@ -410,9 +411,11 @@ sub edit_category : Private {
         $group = $group_new;
         $category = $contact->category;
 
+        $group_changed = $group ne $group_old;
+        $category_changed = $contact->id != $problem->contact->id;
+
         return 0
-            if $group eq $group_old
-            && $contact->id == $problem->contact->id;
+            if !$group_changed && !$category_changed;
 
         $category_display = $contact->category_display;
     } else {
@@ -424,10 +427,12 @@ sub edit_category : Private {
             ? ( split $rgx, $group_and_category )
             : ( '', $group_and_category );
 
+        $group_changed = $group ne $group_old;
+        $category_changed = $category ne $problem->category;
+
         # No changes
         return 0
-            if $group eq $group_old
-            && $category eq $problem->category;
+            if !$group_changed && !$category_changed;
 
         $category_display = $category;
     }
@@ -451,12 +456,24 @@ sub edit_category : Private {
         }
     }
 
+    # TODO Do we ever want to do this if only group has changed?
     check_resend($c, $category_old, $problem, \@contacts);
 
     my @new_body_ids = map { $_->body_id } @contacts;
     $problem->bodies_str(join( ',', @new_body_ids ));
 
-    my $update_text = '*' . sprintf(_('Category changed from ‘%s’ to ‘%s’'), $category_old_display, $category_display) . '*';
+    my $update_text;
+    if ($category_changed) {
+        $update_text = '*'
+            . sprintf( _('Category changed from ‘%s’ to ‘%s’'),
+            $category_old_display, $category_display ) . '*';
+
+    } else {
+        $update_text = '*'
+            . sprintf( _('Category group changed from ‘%s’ to ‘%s’'),
+            $group_old, $group ) . '*';
+    }
+
     if ($no_comment) {
         $c->stash->{update_text} = $update_text;
     } else {
