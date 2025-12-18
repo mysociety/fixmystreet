@@ -19,24 +19,35 @@
         [% body.name %]
     </h1>
 
+<form method="get" action="">
+
+<input type="hidden" id="body" name="body" value="[% body.id %]">
+
 <div class="full-width">
 
-[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 heatmap=1 %]
+<div id="report-list-filters" class="report-list-filters-wrapper govuk-fieldset-wrapper govuk-small">
 
-<input type="hidden" id="body" name="body" value="[% body.id | html %]">
+[% INCLUDE "reports/_list-filters.html" heatmap=1 %]
 
-<p class="report-list-filters" style='padding-top:0.25em'>
-    [% loc('From') %] <input type="date" id="start_date" name="start_date" class="form-control" value="[% start_date | html %]">
-    [% loc('To') %] <input type="date" id="end_date" name="end_date" class="form-control" value="[% end_date | html %]">
+<div class="filter-group">
+    <div class="report-list-filters">
+    <label for="start_date">[% loc('From') %]</label> <input type="date" id="start_date" name="start_date" value="[% start_date | html %]">
+    </div>
+    <div class="report-list-filters">
+    <label for="end_date">[% loc('To') %]</label> <input type="date" id="end_date" name="end_date" value="[% end_date | html %]">
+    </div>
 
-<p class="report-list-filters">
-[% loc('In wards') %] <select class="form-control js-multiple" multiple id="wards" name="wards">
+    <div class="report-list-filters">
+        <label for="wards">
+        [% loc('In wards') %]
+        </label>
+<select class="form-control js-multiple" multiple id="wards" name="wards">
   [% FOR child IN children.values.sort('name') %]
   [% SET aid = child.id %]
   <option value="[% aid %]"[% ' selected' IF ward_hash.$aid %]>[% child.name %]</option>
   [% END %]
 </select>
-
+    </div>
 </div>
 
 <p class="segmented-control segmented-control--radio">
@@ -45,6 +56,12 @@
     <input type="radio" name="heatmap" id="heatmap_no" value="No">
     <label class="btn" for="heatmap_no">[% loc('Pin map') %]</label>
 </p>
+
+</div>
+
+</div>
+
+</form>
 
 <div id="js-reports-list">
 </div>

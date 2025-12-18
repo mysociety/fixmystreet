@@ -27,7 +27,9 @@
   [% END %]
 [% END %]
 
+[% IF NOT heatmap %]
 <div id="report-list-filters" class="report-list-filters-wrapper govuk-fieldset-wrapper govuk-small">
+[% END %]
 
 [% IF use_form_wrapper %]
     <form method="get" action="">
@@ -46,6 +48,7 @@
                 </div>
             </div>
 
+          [% IF NOT heatmap %]
             <div class="filter-group">
               [% PROCESS 'reports/_list-filters-sort.html' %]
 
@@ -59,10 +62,14 @@
               [% END %]
               <input type="submit" name="filter_update" value="[% loc('Go') %]">
             </div>
+          [% END %]
+
         </fieldset>
 
 [% IF use_form_wrapper %]
     </form>
 [% END %]
 
+[% IF NOT heatmap %]
 </div>
+[% END %]
