@@ -1673,6 +1673,15 @@ subtest 'check direct debit reconcilliation' => sub {
     stdout_like {
         $c->waste_reconcile_direct_debits({ reference => $renewal_nothing_in_echo_ref, force_when_missing => 1, verbose => 1 });
     } qr/looking at payment $renewal_nothing_in_echo_ref for £10 on 16\/03\/2021.*?category: Garden Subscription \(2\).*?is a renewal.*?looking at potential match @{[$renewal_nothing_in_echo->id]}.*?is a matching new report.*?created new confirmed report.*?done looking at payment/s, "creates a renewal if forced to";
+
+    # Test that a processed renewal that is then hidden doesn't generate warnings
+    $processed_renewal->discard_changes;
+    $processed_renewal->update({ state => 'hidden' });
+
+    my $processed_renewal_ref = "GGW654324";
+    warnings_are {
+        $c->waste_reconcile_direct_debits({ reference => $processed_renewal_ref });
+    } [], "no warnings for processed renewal that was later hidden";
 };
 
 };

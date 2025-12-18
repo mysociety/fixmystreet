@@ -135,10 +135,10 @@ sub waste_reconcile_direct_debits {
                 $self->log("looking at potential match " . $cur->id . " with state " . $cur->state);
                 # only match direct debit payments
                 next unless $self->waste_is_dd_payment($cur);
-                # only confirmed records are valid.
-                next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
                 # already processed
                 next RECORD if $cur->get_extra_metadata('dd_date') && $cur->get_extra_metadata('dd_date') eq $payment->date;
+                # only confirmed records are valid.
+                next unless FixMyStreet::DB::Result::Problem->visible_states()->{$cur->state};
                 next if $p;
 
                 my $sub_type = $cur->get_extra_field_value($self->garden_subscription_type_field);
