@@ -17,6 +17,7 @@ use Path::Tiny 'path';
 use FixMyStreet::App::Model::PhotoSet;
 use FixMyStreet::ImageMagick;
 use Try::Tiny;
+use MIME::Base64;
 
 has jurisdiction => ( is => 'ro', isa => Str );;
 has api_key => ( is => 'ro', isa => Str );
@@ -413,7 +414,13 @@ sub add_media {
         my $photo_blob;
         if ($_ =~ /^data:/) {
             my @parts = split ',', $_, 2;
-            $photo_blob = $parts[1];
+            if ($parts[0] =~ m{image/(jpeg|pjpeg|gif|tiff|png)}) {
+                my $data = $parts[1];
+                if ($parts[0] =~ /;base64/) {
+                    $data = decode_base64($data);
+                }
+                $photo_blob = $data;
+            }
         } else {
             my $ua = LWP::UserAgent->new;
             my $res = $ua->get($_);
