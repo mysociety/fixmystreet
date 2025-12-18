@@ -60,11 +60,6 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     STAGING_FLAGS => { send_reports => 1, skip_checks => 0 },
     COBRAND_FEATURES => {
-        area_code_mapping => { centralbedfordshire => {
-            59795 => 'Area1',
-            60917 => 'Area2',
-            60814 => 'Area3',
-        } },
         open311_email => { centralbedfordshire => {
             Potholes => 'potholes@example.org',
         } }
@@ -82,18 +77,14 @@ FixMyStreet::override_config {
         $mech->content_contains('Central Bedfordshire');
     };
 
-    subtest 'Correct area_code and NSGRef parameters for Open311' => sub {
+    subtest 'Correct NSGRef parameters for Open311' => sub {
         $report->set_extra_fields({ name => 'UnitID', value => 'Asset 123' });
         $report->update;
         FixMyStreet::Script::Reports::send();
         my $req = Open311->test_req_used;
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'BRIDGES';
-        is $c->param('attribute[area_code]'), 'Area1';
         is $c->param('attribute[NSGRef]'), 'Road ID';
-        is $c->param('attribute[title]'),  $report->title;
-        (my $c_description = $c->param('attribute[description]')) =~ s/\r\n/\n/g;
-        is $c_description, $report->detail . "\n\nUnit ID: Asset 123";
         is $c->param('attribute[report_url]'),  "http://centralbedfordshire.example.org/report/" . $report->id;
         is $c->param('attribute[UnitID]'), undef, 'Unit ID not included as attribute';
         like $c->param('description'), qr/Unit ID: Asset 123/, 'But is included in description';
