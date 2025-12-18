@@ -5,7 +5,8 @@ FixMyStreet::Cobrand::CentralBedfordshire - code specific to the Central Bedford
 
 =head1 SYNOPSIS
 
-We integrate with Central Bedfordshire's Symology back end.
+We integrate with Central Bedfordshire's Symology Aurora back end
+and Jadu for fly tipping reports..
 
 =head1 DESCRIPTION
 
@@ -141,25 +142,12 @@ sub enter_postcode_text { 'Enter a postcode, street name and area, or check an e
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
     $params->{multi_photos} = 1;
-    if ($contact->email =~ /Jadu/) {
-        $params->{upload_files} = 1;
-    }
-}
-
-sub open311_munge_update_params {
-    my ($self, $params, $comment, $body) = @_;
-
-    # TODO: This is the same as Bexley - could be factored into its own Role.
-    $params->{service_request_id_ext} = $comment->problem->id;
-
-    my $contact = $comment->problem->contact;
-    $params->{service_code} = $contact->email;
+    $params->{upload_files} = 1;
 }
 
 =head2 should_skip_sending_update
 
-Do not try and send updates to the Jadu backend, or if
-we fail a couple of times to send to Symology.
+Do not try and send updates to the Jadu backend.
 
 =cut
 
@@ -168,7 +156,6 @@ sub should_skip_sending_update {
 
     my $code = $update->problem->contact->email;
     return 1 if $code =~ /^Jadu/;
-    return 1 if $update->send_fail_count >= 2 && $update->send_fail_reason =~ /Username required for notification/;
     return 0;
 }
 
@@ -218,10 +205,6 @@ sub open311_extra_data_include {
     }
 
     my $open311_only = [
-        { name => 'title',
-          value => $row->title },
-        { name => 'description',
-          value => $row->detail },
         { name => 'report_url',
           value => $h->{url} },
     ];
@@ -240,14 +223,6 @@ sub open311_extra_data_include {
         }
         push @$open311_only, { name => 'reported_by_staff', value => $reported_by_staff };
         return $open311_only;
-    }
-
-    if (my $cfg = $self->feature('area_code_mapping')) {;
-        my @areas = split ',', $row->areas;
-        my @matches = grep { $_ } map { $cfg->{$_} } @areas;
-        if (@matches) {
-            push @$open311_only, { name => 'area_code', value => $matches[0] };
-        }
     }
 
     return $open311_only;
