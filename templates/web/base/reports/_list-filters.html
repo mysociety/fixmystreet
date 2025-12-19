@@ -3,8 +3,12 @@
 [%# We want to only select things that match all filters, if filters are provided ~%]
 [% BLOCK category_options %]
     [% FOR cat IN categories %]
+[% # TODO What if no group? %]
+      [% SET group_safe = mark_safe(group.name) %]
       [% SET cat_safe = mark_safe(cat.category) %]
-        <option value="[% cat.category %]"[% ' selected' IF ( filter_category.size OR filter_group ) AND ( NOT filter_category.size OR filter_category.$cat_safe ) AND ( NOT filter_group OR filter_group == group.name ) %]>
+        [% group_and_category = group ? group.name _ '__' _ cat.category : cat.category %]
+        [% group_and_category_safe = mark_safe(group_and_category) %]
+        <option value="[% group_and_category %]"[% ' selected' IF ( filter_category.size AND filter_category.$group_and_category_safe ) OR ( filter_group AND group.name == filter_group ) %]>
             [% cat.category_display %]
             [%~ IF cat.get_extra_metadata('help_text') %] ([% cat.get_extra_metadata('help_text') %])[% END ~%]
         </option>

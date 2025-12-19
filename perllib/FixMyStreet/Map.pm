@@ -108,6 +108,7 @@ sub map_features {
     $p{report_age} = $report_age;
 
     $p{page} = $c->get_param('p') || 1;
+# HERE on_map is the important bit?
     my $on_map = $c->cobrand->problems_on_map->around_map( $c, %p );
     my $pager = $c->stash->{pager} = $on_map->pager;
     $on_map = [ $on_map->all ];
@@ -119,7 +120,7 @@ sub map_features {
         my $older = $c->cobrand->problems_on_map->around_map( $c, %p, report_age => undef, page => 1 );
         $c->stash->{num_old_reports} = $older->pager->total_entries - $pager->total_entries;
     }
-
+# Oh, disable_nearby_topup has been turned on for performance reasons.
     # if there are fewer entries than our paging limit on the map then
     # also return nearby entries for display
     my $nearby;

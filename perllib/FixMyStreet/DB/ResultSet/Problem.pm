@@ -241,7 +241,35 @@ sub around_map {
             = { '>=', \"current_timestamp-'$report_age'::interval" };
     }
 
-    $q->{'me.category'} = $p{categories} if $p{categories} && @{$p{categories}};
+    my $q_group_and_category;
+    if ( $p{categories} && @{$p{categories}} ) {
+        my @or;
+        my $rgx = qr/__/;
+
+        # Build subquery like e.g.
+        # (
+        #     ( category = ? AND group = ? )
+        #     OR
+        #     ( category = ? AND group IS NULL )
+        #     OR
+        #     ...
+        # )
+        for my $group_and_category ( @{ $p{categories} } ) {
+            my ( $group, $category )
+                = $group_and_category =~ $rgx
+                ? ( split $rgx, $group_and_category )
+                : ( '', $group_and_category );
+
+            push @or, {
+                'me.category' => $category,
+                $group
+                    ? ( 'me.extra' => { '@>' => '{ "group": "' . $group . '" }' } )
+                    : ( -not => { 'me.extra' => { '\?' => 'group' } } ),
+            };
+        }
+
+        push @{ $q->{-and} }, \@or if @or;
+    }
 
     $rs->non_public_if_possible($q, $c);
 

@@ -1440,6 +1440,7 @@ sub report_on_private_contacts {
     return [ FixMyStreet::DB->resultset('Contact')->not_deleted->search({category => $category})->all ];
 }
 
+# TODO? Not sure there's anything I need to do here.
 sub munge_around_filter_category_list {
     my $self = shift;
 

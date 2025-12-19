@@ -122,7 +122,7 @@ sub ward : Path : Args(2) {
 
     $c->forward('/auth/get_csrf_token');
 
-    my @wards = $c->get_param('wards') ? $c->get_param_list('wards', 1) : split /\|/, $ward || "";
+    my @wards = $c->get_param('wards') ? $c->get_param_list('wards', 1) : split /\|/, $ward || ""; #/
     $c->forward( 'body_check', [ $body ] );
 
     $c->stash->{ward_code} = $c->get_param('type') if $c->get_param('type');

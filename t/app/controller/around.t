@@ -334,6 +334,7 @@ subtest 'check category, status and extra filtering works on /around' => sub {
 
 my $district = $mech->create_body_ok(2421, "Oxford City");
 
+# FIXME
 subtest 'check categories with same name are only shown once in filters' => sub {
     my $params = {
         postcode  => 'OX20 1SZ',
