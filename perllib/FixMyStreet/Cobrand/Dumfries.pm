@@ -13,6 +13,9 @@ Dumfries and Galloway is a unitary authority, with an Alloy backend.
 package FixMyStreet::Cobrand::Dumfries;
 use parent 'FixMyStreet::Cobrand::Whitelabel';
 
+use Moo;
+with 'FixMyStreet::Roles::MyGovScotOIDC';
+
 use strict;
 use warnings;
 
