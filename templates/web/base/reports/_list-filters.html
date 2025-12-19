@@ -6,7 +6,7 @@
 [% # TODO What if no group? %]
       [% SET group_safe = mark_safe(group.name) %]
       [% SET cat_safe = mark_safe(cat.category) %]
-        [% group_and_category = group ? group.name _ '__' _ cat.category : cat.category %]
+        [% group_and_category = group.name ? group.name _ '__' _ cat.category : cat.category %]
         [% group_and_category_safe = mark_safe(group_and_category) %]
         <option value="[% group_and_category %]"[% ' selected' IF ( filter_category.size AND filter_category.$group_and_category_safe ) OR ( filter_group AND group.name == filter_group ) %]>
             [% cat.category_display %]

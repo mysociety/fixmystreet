@@ -241,9 +241,8 @@ sub around_map {
             = { '>=', \"current_timestamp-'$report_age'::interval" };
     }
 
-    my $q_group_and_category;
     if ( $p{categories} && @{$p{categories}} ) {
-        my @or;
+        my @sub_q;
         my $rgx = qr/__/;
 
         # Build subquery like e.g.
@@ -260,15 +259,18 @@ sub around_map {
                 ? ( split $rgx, $group_and_category )
                 : ( '', $group_and_category );
 
-            push @or, {
+            push @sub_q, {
                 'me.category' => $category,
                 $group
                     ? ( 'me.extra' => { '@>' => '{ "group": "' . $group . '" }' } )
-                    : ( -not => { 'me.extra' => { '\?' => 'group' } } ),
+                    : ( -or => [
+                        extra => undef,
+                        -not => { 'me.extra' => { '\?' => 'group' } },
+                    ] ),
             };
         }
 
-        push @{ $q->{-and} }, \@or if @or;
+        push @{ $q->{-and} }, \@sub_q if @sub_q;
     }
 
     $rs->non_public_if_possible($q, $c);

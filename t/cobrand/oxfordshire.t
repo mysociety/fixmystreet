@@ -127,7 +127,17 @@ subtest "check /reports/Oxfordshire?ajax doesn't get extra pins from wfs at zoom
 $oxfordshire_cobrand->mock('defect_wfs_query', sub { return { features => [] }; });
 
 subtest 'check /around?ajax defaults to open reports only' => sub {
-    my $categories = [ 'Bridges', 'Fences', 'Manhole' ];
+    my @category_names = ( 'Bridges', 'Fences', 'Manhole' );
+    my @categories;
+    for (@category_names) {
+        push @categories,
+            $mech->create_contact_ok(
+                body_id  => $oxon->id,
+                category => $_,
+                email    => "$_\@example.com",
+            );
+    }
+
     my $params = {
         postcode  => 'OX28 4DS',
         cobrand => 'oxfordshire',
@@ -138,7 +148,7 @@ subtest 'check /around?ajax defaults to open reports only' => sub {
                 . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
 
     # Create one open and one fixed report in each category
-    foreach my $category ( @$categories ) {
+    foreach my $category (@category_names) {
         foreach my $state ( 'confirmed', 'fixed' ) {
             my %report_params = (
                 %$params,
@@ -163,7 +173,10 @@ subtest 'check /around?ajax defaults to open reports only' => sub {
         $json = $mech->get_ok_json( '/around?ajax=1&filter_category=Fences&bbox=' . $bbox );
         $pins = $json->{pins};
         is scalar @$pins, 1, 'only one Fences report by default';
-    }
+    };
+
+    # So we don't get muddled with categories created below
+    $_->delete for @categories;
 };
 
 my @problems = FixMyStreet::DB->resultset('Problem')->search({}, { rows => 3, order_by => 'id' })->all;

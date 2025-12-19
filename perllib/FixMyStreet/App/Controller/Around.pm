@@ -282,6 +282,9 @@ sub check_and_stash_category : Private {
         }
     )->all_sorted;
 
+    my %seen;
+    my %category_ids_to_remove;
+
     my @group_categories;
     for my $row (@category_rows) {
         my $groups = $row->get_extra_metadata('group');
@@ -294,33 +297,28 @@ sub check_and_stash_category : Private {
         } else {
             push @group_categories, $row->category;
         }
+
+        # Ensure only uniquely named categories are shown
+        next unless $row->category_display;
+
+        if ($groups) {
+            $groups = [$groups] unless ref $groups eq 'ARRAY';
+        }
+        else {
+            $groups = ['no_group'];
+        }
+
+        for my $group (@$groups) {
+            $seen{$group}{ $row->category_display }++;
+
+            if ( $seen{$group}{ $row->category_display } > 1 ) {
+                $category_ids_to_remove{ $row->id } = 1;
+            }
+        }
     }
 
-    # Ensure only uniquely named categories are shown
-    # my %seen;
-    # my %filter_id;
-    # my $group;
-
-    # for my $category (@category_rows) {
-    #     next unless $category->category_display;
-    #     if ($category->extra->{group}) {
-    #         $group = $category->extra->{group};
-    #         if (ref $group ne 'ARRAY') {
-    #             $group = [$group];
-    #         }
-    #     } else {
-    #         $group = ['no_group'];
-    #     }
-    #     for my $group_name (@$group) {
-    #         $seen{$group_name}->{$category->category_display}++;
-    #         if ($seen{$group_name}{$category->category_display} > 1) {
-    #             my $id = $category->id;
-    #             $filter_id{$id} = 1
-    #         }
-    #     }
-    # };
-
-    # @category_rows = grep { !$filter_id{$_->id} } @category_rows;
+    @category_rows
+        = grep { !$category_ids_to_remove{ $_->id } } @category_rows;
 
     $c->stash->{filter_categories} = \@category_rows;
     my %categories_mapped = map { $_->category => 1 } @category_rows;
