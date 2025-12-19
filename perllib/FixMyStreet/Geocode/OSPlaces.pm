@@ -17,7 +17,7 @@ sub reverse_geocode {
     $classes = ['M*', 'C*', 'R*', 'Z*'] unless $classes;
     if (my $key = $cobrand->feature('os_places_api_key')) {
         my $url = "$BASE&key=$key&point=$latitude,$longitude";
-        if ($classes) {
+        if (@$classes) {
             $url .= '&' . _classes_to_query_string($classes);
         }
         my $j = FixMyStreet::Geocode::cache('osplaces', $url);
