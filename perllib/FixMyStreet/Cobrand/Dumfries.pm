@@ -15,6 +15,7 @@ use parent 'FixMyStreet::Cobrand::Whitelabel';
 
 use Moo;
 with 'FixMyStreet::Roles::Open311Alloy';
+with 'FixMyStreet::Roles::MyGovScotOIDC';
 
 use strict;
 use warnings;
