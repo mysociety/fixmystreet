@@ -37,9 +37,6 @@ sub nearby {
 
     FixMyStreet::DB::ResultSet::Problem->non_public_if_possible($params, $c, 'problem');
 
-    # Add in any optional extra query parameters
-    $params = { %$params, %{$args{extra}} } if $args{extra};
-
     my $attrs = {
         join => 'problem',
         bind => [ $args{latitude}, $args{longitude}, $args{distance} ],

@@ -761,7 +761,6 @@ sub _nearby_json :Private {
             my $pin_size = $c->get_param('pin_size') || '';
             $pin_size = 'small' unless $pin_size =~ /^(mini|small|normal|big)$/;
 
-            $params->{extra} = $c->cobrand->call_hook('display_location_extra_params');
             $params->{limit} = 5;
 
             my $nearby = $c->model('DB::Nearby')->nearby($c, %$params);

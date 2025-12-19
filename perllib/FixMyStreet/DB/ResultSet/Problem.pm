@@ -245,9 +245,6 @@ sub around_map {
 
     $rs->non_public_if_possible($q, $c);
 
-    # Add in any optional extra query parameters
-    $q = { %$q, %{$p{extra}} } if $p{extra};
-
     my $problems = mySociety::Locale::in_gb_locale {
         $rs->search( $q, $attr )->include_comment_counts->page($p{page});
     };
