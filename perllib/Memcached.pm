@@ -47,7 +47,7 @@ sub increment {
 
 sub get_or_calculate {
     my ($key, $expiry, $callback) = @_;
-    if (!instance->get_sock) {
+    if (FixMyStreet->test_mode || !instance->get_sock) {
         return $callback->();
     }
 
