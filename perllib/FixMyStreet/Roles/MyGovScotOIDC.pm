@@ -1,6 +1,9 @@
 package FixMyStreet::Roles::MyGovScotOIDC;
 use Moo::Role;
 
+use JSON::MaybeXS;
+use LWP::UserAgent;
+
 =head1 NAME
 
 FixMyStreet::Roles::MyGovScotOIDC - role for enabling mygov.scot OIDC SSO
