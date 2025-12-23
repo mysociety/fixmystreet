@@ -467,6 +467,7 @@ subtest 'change report category' => sub {
     $mech->content_contains('<optgroup label="Highways">');
     $mech->content_contains('<option value="Highways__Litter">');
     $mech->content_lacks('<option value="group-Road"');
+    $mech->content_like(qr/group.*: Road/, 'correct group under Extra Data');
 
     note '  Set to new group but same category';
     $mech->submit_form_ok( { with_fields => { category => 'Highways__Litter' } }, 'form_submitted' );
@@ -475,11 +476,15 @@ subtest 'change report category' => sub {
     is $ox_report->get_extra_metadata('group'), 'Highways';
     is $ox_report->comments->order_by('-id')->first->text, '*Category group changed from ‘Road’ to ‘Highways’*', 'Comment text correct';
     isnt $ox_report->whensent, undef;
+    $mech->content_unlike(qr/group.*: Road/);
+    $mech->content_like(qr/group.*: Highways/, 'correct group updated under Extra Data before getting page again');
+
     $mech->get_ok("/admin/report_edit/" . $ox_report->id);
     $mech->content_contains('<optgroup label="Road">');
     $mech->content_contains('<option value="Road__Litter">');
     $mech->content_contains('<optgroup label="Highways">');
     $mech->content_contains('<option value="Highways__Litter" selected>', 'new group selected');
+    $mech->content_like(qr/group.*: Highways/, 'correct group under Extra Data after getting page again');
 
     note '  Change group name';
     $litter_contact->set_extra_metadata( group => [ 'Road', 'HIGHWAYS' ] );

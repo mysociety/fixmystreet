@@ -118,8 +118,8 @@
     [% IF problem.get_extra_metadata('crimson_external_id') %]<li>Dynamics ID: [% problem.get_extra_metadata('crimson_external_id') %][% END %]
   [% END %]
 
-  [%~ IF extra_fields.size ~%]
-    [%~ FOREACH field IN extra_fields ~%]
+  [%~ IF extra_fields_display.size ~%]
+    [%~ FOREACH field IN extra_fields_display ~%]
         [% IF field.code == 'contributed_by' %]
             <li>[%~ field.name ~%]: [% field.val ~%]</li>
         [% END %]
