@@ -192,8 +192,10 @@ body.waste {
 
 .waste-service-name.govuk-heading-m {
   margin-top: 1.5em;
-  border-bottom: 1px solid #808080;
   padding-bottom: 0.5em;
+  @media (min-width: $large-screen) {
+    border-bottom: 1px solid #808080;
+  }
 }
 
 .waste-service-wrapper {

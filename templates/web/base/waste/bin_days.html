@@ -13,7 +13,7 @@
 
 <div class="waste__collections">
   [% IF c.cobrand.moniker != 'peterborough' %]
-    <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-2 govuk-!-margin-top-8">Your collections</h2>
     [% IF c.cobrand.moniker == 'brent' && service_data.size %]
       [% FOR unit IN service_data %]
         [% IF unit.service_id == 262 ~%]
@@ -25,7 +25,7 @@
     [% END %]
   [% ELSE %]
     <div class="govuk-!-margin-bottom-8">
-      <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
+      <h2 class="govuk-heading-l govuk-!-margin-bottom-2 govuk-!-margin-top-8">Your collections</h2>
       [% IF service_data.size %]
         [% TRY %][% PROCESS waste/_calendar.html %][% CATCH file %]
           <a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar</a>
