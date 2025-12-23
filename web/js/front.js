@@ -1,14 +1,13 @@
-// document.getElementById('pc').focus();
+document.getElementById('pc').focus();
 
 (function(){
 
     function dropzoneSetup() {
-        console.log('dropzoneSetup');
         if ('Dropzone' in window) {
             Dropzone.autoDiscover = false;
             console.log('Dropzone', Dropzone);
         } else {
-            console.log('Dropzone not found');
+            console.error('Dropzone not found');
             return;
         }
 
@@ -31,29 +30,62 @@
             init: function() {
                 console.log('init', this);
                 var $f = $("#photoForm");
+                var $errorContainer = $("#photo-upload-error");
                 $("#photoForm label, #photoForm input[type=file], #photoForm input[type=submit]").hide();
                 $f.attr("method", "get");
                 $f.attr("action", "/report/new");
                 $f.attr("enctype", "");
+
+                this.on("error", function(file, errorMessage) {
+                    // Show error in the dedicated container (visible on mobile)
+                    var message = typeof errorMessage === 'string' ? errorMessage : (errorMessage.error || 'Upload failed');
+                    $errorContainer.text(message).removeAttr('hidden');
+                    // Remove the failed file so user can try again
+                    this.removeFile(file);
+                });
+
+                this.on("addedfile", function() {
+                    // Clear any previous error when user tries again
+                    $errorContainer.attr('hidden', true);
+                });
+
                 this.on("success", function(file, xhrResponse) {
                     console.log('success', file, xhrResponse);
 
-                    if (!xhrResponse.lat || !xhrResponse.lon) {
-                        if (file.previewElement) {
-                            file.previewElement.classList.add("dz-error");
-                            var errorElement = file.previewElement.querySelector("[data-dz-errormessage]");
-                            if (errorElement) {
-                                errorElement.textContent = "No location data found. You can still use the postcode form on the left to start a report";
-                            }
-                        }
-                        return;
-                    }
-
                     $("#photoForm label, #photoForm input[type=file], #photoForm input[type=submit]").remove();
+
+                    // Create photo_id input if it doesn't exist
+                    if ($f.find("input[name=photo_id]").length === 0) {
+                        $f.append('<input type="hidden" name="photo_id">');
+                    }
                     $f.find("input[name=photo_id]").val(xhrResponse.id);
-                    $f.find("input[name=lat]").val(xhrResponse.lat);
-                    $f.find("input[name=lon]").val(xhrResponse.lon);
-                    $f.submit();
+
+                    if (!xhrResponse.lat || !xhrResponse.lon) {
+                        // Photo without GPS - go to /around
+                        // Remove lat/lon fields so they don't get submitted as empty values
+                        $f.find("input[name=lat]").remove();
+                        $f.find("input[name=lon]").remove();
+                        $f.find("input[name=start_report]").remove();
+                        $f.attr("action", "/around");
+                        $f.submit();
+                    } else {
+                        // Photo with GPS - go to /report/new with photo_first flag
+                        $f.attr("action", "/report/new");
+                        // Create lat/lon inputs if they don't exist
+                        if ($f.find("input[name=lat]").length === 0) {
+                            $f.append('<input type="hidden" name="lat">');
+                        }
+                        if ($f.find("input[name=lon]").length === 0) {
+                            $f.append('<input type="hidden" name="lon">');
+                        }
+                        // Add photo_first flag to indicate GPS was detected from photo
+                        if ($f.find("input[name=photo_first]").length === 0) {
+                            $f.append('<input type="hidden" name="photo_first" value="1">');
+                        }
+                        $f.find("input[name=lat]").val(xhrResponse.lat);
+                        $f.find("input[name=lon]").val(xhrResponse.lon);
+                        $f.submit();
+                    }
                 });
             }
         });

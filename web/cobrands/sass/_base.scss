@@ -2929,6 +2929,17 @@ body.authpage {
   }
 }
 
+// Photo upload error - similar styling to search-help__header
+.photo-upload-error {
+  background: $error_color;
+  color: #fff;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
 .report-forms-wrapper {
   .image-first-form-wrapper {
     .label {

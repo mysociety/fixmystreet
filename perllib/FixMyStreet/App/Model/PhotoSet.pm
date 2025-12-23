@@ -164,12 +164,13 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     }
                     unless (defined $out) {
                         my ($w, $h, $err) = Image::Size::imgsize($filename);
-                        die _("Please upload an image only") . "\n" if !defined $w || $err !~ /JPG|GIF|PNG|TIF/;
+                        die "invalid image type\n" if !defined $w || $err !~ /JPG|GIF|PNG|TIF/;
                     }
-                    die _("Please upload an image only") . "\n" if $out && $out =~ /Not JPEG:/;
+                    die "invalid JPEG\n" if $out && $out =~ /Not JPEG:/;
                     my $photo = $upload->slurp;
                 };
                 if ( my $error = $@ ) {
+                    chomp $error;
                     my $format = _(
             "That image doesn't appear to have uploaded correctly (%s), please try again."
                     );
@@ -232,7 +233,10 @@ sub stash_gps_info {
                 $lon = -$lon if $1 eq 'W';
             }
         }
-        $self->c->stash->{photo_gps} = { lat => $lat, lon => $lon };
+        # Only set GPS info if both coordinates were found
+        if (defined $lat && defined $lon) {
+            $self->c->stash->{photo_gps} = { lat => $lat, lon => $lon };
+        }
     };
 }
 

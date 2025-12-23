@@ -50,12 +50,15 @@ sub index : Path : Args(0) {
     # Check if we have a partial report
     my $partial_report = $c->forward('load_partial');
 
+    # Check if we have a photo
+    my $photo_info = $c->forward('load_photo');
+
     # Try to create a location for whatever we have
     my $ret = $c->forward('/location/determine_location_from_bbox')
         || $c->forward('/location/determine_location_from_coords')
         || $c->forward('/location/determine_location_from_pc');
     unless ($ret) {
-        return $c->res->redirect('/') unless $c->get_param('pc') || $partial_report;
+        return $c->res->redirect('/') unless $c->get_param('pc') || $partial_report || $photo_info;
         # Cobrand may want to perform custom searching at this point,
         # e.g. presenting a list of reports matching the user's query.
         $c->cobrand->call_hook("around_custom_search");
@@ -65,13 +68,14 @@ sub index : Path : Args(0) {
     # Check to see if the spot is covered by a area - if not show an error.
     return unless $c->forward('check_location_is_acceptable', []);
 
-    # Redirect to /report/new in three cases:
+    # Redirect to /report/new in four cases:
     #  - if we have a partial report, so that it can be completed.
     #  - if the cobrand doesn't show anything on /around (e.g. a private
     #    reporting site)
     #  - if we are setting the location for an offline draft.
+    #  - if we have a photo from the front page upload.
     my $draft = $c->get_param('setDraftLocation');
-    if ($partial_report || $c->cobrand->call_hook("skip_around_page") || defined($draft)) {
+    if ($partial_report || $c->cobrand->call_hook("skip_around_page") || defined($draft) || $photo_info) {
         my $params = {
             latitude  => $c->stash->{latitude},
             longitude => $c->stash->{longitude},
@@ -83,6 +87,8 @@ sub index : Path : Args(0) {
         }
         if ($partial_report) {
             $params->{partial} = $c->stash->{partial_token}->token;
+        } elsif ($photo_info) {
+            $params->{photo_id} = $c->stash->{photo_id};
         } elsif ($c->get_param("category")) {
             $params->{category} = $c->get_param("category");
         }
@@ -168,6 +174,35 @@ sub load_partial : Private {
     $c->stash->{partial_report} = $report;
 
     return $report;
+}
+
+=head2 load_photo
+
+    my $photo_info = $c->forward('load_photo');
+
+Check for the photo_id parameter and validate it exists in storage.
+If found, save photo_id to stash and return true. Otherwise return false.
+
+=cut
+
+sub load_photo : Private {
+    my ( $self, $c ) = @_;
+
+    my $photo_id = $c->get_param('photo_id')
+      || return;
+
+    # Validate the photo exists in storage
+    my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+        data_items => [ $photo_id ]
+    });
+
+    # Check if photo_id is valid (has at least one image)
+    return unless $photoset->num_images > 0;
+
+    # Save to stash for templates
+    $c->stash->{photo_id} = $photo_id;
+
+    return 1;
 }
 
 =head2 display_location

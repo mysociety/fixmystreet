@@ -4,6 +4,15 @@
             [% PROCESS 'around/intro.html' %]
         [% END %]
 
+        [% IF photo_id AND NOT partial_token %]
+            <div class="box-info">
+                <p>[% loc('Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box below.') %]</p>
+                <div class="photo-preview" style="margin-top: 1em;">
+                    <img src="/photo/temp.[% photo_id %]" alt="[% loc('Your uploaded photo') %]" style="max-width: 100%; height: auto; max-height: 300px;">
+                </div>
+            </div>
+        [% END %]
+
         [%
             question = c.cobrand.enter_postcode_text || loc('Enter a nearby street name and area');
         %]
@@ -31,11 +40,15 @@
                     [%~ IF c.cobrand.moniker == 'oxfordshire' %] placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]"[% END %] aria-label="Add a postcode or address. Alternatively, there is a geolocate button at the end of this form">
                     [% INCLUDE 'around/_postcode_submit_button.html' %]
                 </div>
-    
+
                 [% IF partial_token %]
                     <input type="hidden" name="partial" value="[% partial_token.token %]">
                 [% END %]
-    
+
+                [% IF photo_id %]
+                    <input type="hidden" name="photo_id" value="[% photo_id %]">
+                [% END %]
+
                 [% IF c.get_param('filter_category') OR c.get_param('filter_group') %]
                   <input type="hidden" name="filter_category" value="[% c.get_param('filter_category') | html %]">
                   <input type="hidden" name="filter_group" value="[% c.get_param('filter_group') | html %]">
@@ -66,22 +79,23 @@
                     [% INCLUDE 'around/_postcode_form_post.html' %]
                 [% END %]
             </form>
-            
+
+            [% IF c.cobrand.allow_photo_upload AND c.req.uri.path == '/' %]
             <div class="image-first-form-wrapper">
                 <p class="label"><span class="badge">New</span>Or start a report with a photo</p>
+
+                <div id="photo-upload-error" class="photo-upload-error" role="alert" hidden></div>
 
                 <form action="[% c.uri_for('/photo/upload') %]" method="post" name="photoForm" id="photoForm" class="js-geolocate" enctype="multipart/form-data">
                     <div id="photoFormPhoto" class="dropzone" tabindex="0">
                         <label for="photo">[% loc('Drag or browse a photo') %]:</label>
                         <input type="file" name="photo" id="photo" accept="image/*" required>
                     </div>
-                    <input type="hidden" name="lat">
-                    <input type="hidden" name="lon">
                     <input type="hidden" name="start_report" value="1">
-                    <input type="hidden" name="photo_id">
                     <input type="submit" value="[% loc('Start report from photo') %]" class="btn btn--final">
                 </form>
             </div>
+            [% END %]
         </div>
     </div>
 </main>
