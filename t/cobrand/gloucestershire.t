@@ -184,6 +184,28 @@ FixMyStreet::override_config {
         is $alert, undef, "no alert created";
     };
 
+    subtest 'anonymous reporting only allowed for Gloucestershire categories' => sub {
+        # Create a Gloucester body and category
+        my $gloucester_body = $mech->create_body_ok(
+            2325,
+            'Gloucester City Council',
+            { cobrand => 'gloucester' },
+        );
+        my $gloucester_category = $mech->create_contact_ok(
+            body_id => $gloucester_body->id,
+            category => 'Broken glass',
+            email => 'GLOUCESTER_GLASS',
+        );
+
+        # Test Gloucestershire category (should allow)
+        is $cobrand->allow_anonymous_reports('Graffiti'), 'button',
+            'Anonymous allowed for Gloucestershire category';
+
+        # Test Gloucester category (should deny)
+        is $cobrand->allow_anonymous_reports('Broken glass'), 0,
+            'Anonymous denied for Gloucester category';
+    };
+
     for my $host ( 'fixmystreet', 'gloucestershire' ) {
         ok $mech->host($host), "change host to $host";
 
