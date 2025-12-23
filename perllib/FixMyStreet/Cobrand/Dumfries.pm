@@ -32,4 +32,23 @@ sub enter_postcode_text {
     'Enter a Dumfries and Galloway post code or street name and area, or a reference number of a problem previously reported'
 }
 
+=head2 open311_get_update_munging
+
+Dumfries want certain fields shown in updates on FMS.
+
+These values, if present, are passed back from open311-adapter in the <extras>
+element. If the template being used for this update has placeholders matching
+any field configured in the 'response_template_variables' Config entry, they
+get replaced with the value from extras, or an empty string otherwise.
+
+=cut
+
+sub open311_get_update_munging {
+    my ($self, $comment, $state, $request) = @_;
+
+    my $text = $self->open311_get_update_munging_template_variables($comment->text, $request);
+    $comment->text($text);
+}
+
+
 1;
