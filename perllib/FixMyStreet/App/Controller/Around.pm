@@ -274,47 +274,67 @@ sub check_and_stash_category : Private {
     } else {
         $rs = $rs->not_deleted;
     }
-    my @categories = $rs->search(
+    my @category_rows = $rs->search(
         $where,
         {
             columns => [ 'id', 'category', 'extra' ],
             distinct => 1
         }
     )->all_sorted;
-    # Ensure only uniquely named categories are shown
+
     my %seen;
-    my %filter_id;
-    my $group;
-    for my $category (@categories) {
-        next unless $category->category_display;
-        if ($category->extra->{group}) {
-            $group = $category->extra->{group};
-            if (ref $group ne 'ARRAY') {
-                $group = [$group];
-            }
+    my %category_ids_to_remove;
+
+    my @group_categories;
+    for my $row (@category_rows) {
+        my $groups = $row->get_extra_metadata('group');
+
+        if ( ref $groups eq 'ARRAY' ) {
+            push @group_categories, ( $_ . '__' . $row->category )
+                for @$groups;
+        } elsif ($groups) {
+            push @group_categories, $groups . '__' . $row->category;
         } else {
-            $group = ['no_group'];
+            push @group_categories, $row->category;
         }
-        for my $group_name (@$group) {
-            $seen{$group_name}->{$category->category_display}++;
-            if ($seen{$group_name}{$category->category_display} > 1) {
-                my $id = $category->id;
-                $filter_id{$id} = 1
+
+        # Ensure only uniquely named categories are shown
+        next unless $row->category_display;
+
+        if ($groups) {
+            $groups = [$groups] unless ref $groups eq 'ARRAY';
+        }
+        else {
+            $groups = ['no_group'];
+        }
+
+        for my $group (@$groups) {
+            $seen{$group}{ $row->category_display }++;
+
+            if ( $seen{$group}{ $row->category_display } > 1 ) {
+                $category_ids_to_remove{ $row->id } = 1;
             }
         }
-    };
+    }
 
-    @categories = grep { !$filter_id{$_->id} } @categories;
-    $c->stash->{filter_categories} = \@categories;
-    my %categories_mapped = map { $_->category => 1 } @categories;
-    $c->forward('/report/stash_category_groups', [ \@categories ]);
+    @category_rows
+        = grep { !$category_ids_to_remove{ $_->id } } @category_rows;
 
-    my $categories = [ $c->get_param_list('filter_category', 1) ];
-    my %valid_categories = map { $_ => 1 } grep { $_ && $categories_mapped{$_} } @$categories;
+    $c->stash->{filter_categories} = \@category_rows;
+    my %categories_mapped = map { $_->category => 1 } @category_rows;
+    $c->forward('/report/stash_category_groups', [ \@category_rows ]);
+
+    my %group_categories_mapped = map { $_ => 1 } @group_categories;
+
+    my $categories_to_select = [ $c->get_param_list('filter_category', 1) ];
+
+    my %valid_categories = map { $_ => 1 }
+        grep { $_ && $group_categories_mapped{$_} } @$categories_to_select;
+
     $c->stash->{filter_category} = \%valid_categories;
     $c->cobrand->call_hook('munge_around_filter_category_list');
 
-    $c->forward('/report/assigned_users_only', [ \@categories ]);
+    $c->forward('/report/assigned_users_only', [ \@category_rows ]);
 }
 
 sub map_features : Private {
@@ -376,6 +396,7 @@ sub ajax : Path('/ajax') {
         return;
     }
 
+# TODO?
     my %valid_categories = map { $_ => 1 } $c->get_param_list('filter_category', 1);
     $c->stash->{filter_category} = \%valid_categories;
     $c->cobrand->call_hook('munge_around_filter_category_list');
@@ -384,6 +405,7 @@ sub ajax : Path('/ajax') {
     $c->forward('/reports/ajax', [ 'around/on_map_list_items.html' ]);
 }
 
+# TODO? Currently disabled.
 sub nearby : Path {
     my ($self, $c) = @_;
 

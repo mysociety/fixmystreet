@@ -915,6 +915,7 @@ sub stash_category_groups : Private {
     $c->stash->{category_groups}  = \@category_groups;
 }
 
+# TODO? Anything I need to consider here?
 sub assigned_users_only : Private {
     my ($self, $c, $categories) = @_;
 

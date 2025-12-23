@@ -313,10 +313,10 @@ subtest 'check category, status and extra filtering works on /around' => sub {
         $mech->content_contains('<optgroup label="Environment">');
 
         $mech->get_ok( '/around?filter_group=Environment&bbox=' . $bbox );
-        $mech->content_contains('<option value="Flytipping" selected>');
+        $mech->content_contains('<option value="Environment__Flytipping" selected>');
 
         $mech->get_ok( '/around?filter_group=Environment&filter_category=Vegetation&bbox=' . $bbox );
-        $mech->content_like(qr/<optgroup label="Environment">.*?<option value="Vegetation" selected>.*?<optgroup label="Green">.*?<option value="Vegetation">/s);
+        $mech->content_like(qr/<optgroup label="Environment">.*?<option value="Environment__Vegetation" selected>.*?<optgroup label="Green">.*?<option value="Green__Vegetation">/s);
     };
 
     $json = $mech->get_ok_json( '/around?ajax=1&filter_category=Pothole&bbox=' . $bbox );
@@ -334,6 +334,7 @@ subtest 'check category, status and extra filtering works on /around' => sub {
 
 my $district = $mech->create_body_ok(2421, "Oxford City");
 
+# FIXME
 subtest 'check categories with same name are only shown once in filters' => sub {
     my $params = {
         postcode  => 'OX20 1SZ',
@@ -344,6 +345,7 @@ subtest 'check categories with same name are only shown once in filters' => sub 
                 . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
 
     # Identically-named categories should be combined even if their extra metadata is different
+    # NOTE There is already a 'Pothole' category created above.
     my $contact2 = $mech->create_contact_ok( category => "Pothole", body_id => $district->id, email => 'pothole@district-example.org' );
     $contact2->set_extra_metadata(some_extra_field => "dummy");
     $contact2->update;
@@ -370,14 +372,15 @@ subtest 'check categories with same name are only shown once in filters' => sub 
         COBRAND_FEATURES => { category_groups => { fixmystreet => 1 } },
     }, sub {
         $mech->get_ok( '/around?bbox=' . $bbox );
+
         $mech->content_contains('<option value="Pothole">');
         $mech->content_unlike(qr{Pothole</option>.*<option value="Pothole">\s*Pothole</option>}s, "Pothole category only appears once in ungrouped section");
         $mech->content_lacks('<option value="Pothole (alternative)">');
-        $mech->content_contains('<option value="Litter">', "Unique display name appears in category with duplicate display names");
-        $mech->content_contains('<option value="Pothole (A Pavement)">', "Pothole Category appears in group");
-        $mech->content_lacks('<option value="Pothole (B Pavement)">', "Pothole Category with duplicate display name in group does not appear");
-        $mech->content_contains('<option value="Pothole (A Road)">', "Pothole Category appears in group");
-        $mech->content_lacks('<option value="Pothole (B Road)">', "Pothole Category with duplicate display name in group does not appear");
+        $mech->content_contains('<option value="Pavements__Litter">', "Unique display name appears in category with duplicate display names");
+        $mech->content_contains('<option value="Pavements__Pothole (A Pavement)">', "Pothole Category appears in group");
+        $mech->content_lacks('<option value="Pavements__Pothole (B Pavement)">', "Pothole Category with duplicate display name in group does not appear");
+        $mech->content_contains('<option value="Roads__Pothole (A Road)">', "Pothole Category appears in group");
+        $mech->content_lacks('<option value="Roads__Pothole (B Road)">', "Pothole Category with duplicate display name in group does not appear");
     };
 };
 
