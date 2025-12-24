@@ -675,6 +675,7 @@ sub create_body_ok {
 sub create_problems_for_body {
     my ( $mech, $count, $body, $title, $params ) = @_;
 
+    $body = $body->id if ref $body;
     my $dt = $params->{dt} || DateTime->now();
 
     my $email = $mech->uniquify_email('test@example.com', (caller)[1]);
