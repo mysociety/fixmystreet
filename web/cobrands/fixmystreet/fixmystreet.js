@@ -365,6 +365,11 @@ fixmystreet.pageController = {
         } else {
             $page = $('.js-reporting-page[data-page-name=' + page + ']');
         }
+        // On mobile, skip desktop-only pages
+        if ($("html").hasClass("mobile") && $page.hasClass('js-reporting-page--desktop-only')) {
+            $page = $page.nextAll('.js-reporting-page:not(.js-reporting-page--skip,.js-reporting-page--desktop-only)').first();
+            page = $page.data('pageName');
+        }
         if ($curr.data('pageName') === 'map' || $('#mob_ok:visible').length || opts.forceMapHide) {
             if ($("html").hasClass("mobile")) {
                 $('#map_box').addClass('hidden-js');
@@ -406,7 +411,8 @@ fixmystreet.pageController = {
         }
         $map_box.append('<p class="sub-map-links" id="mob_sub_map_links">' + links + '</p>');
 
-        $('.mobile-map-banner span').text(translation_strings.right_place);
+        var bannerText = fixmystreet.photo_first ? translation_strings.right_place_photo_first : translation_strings.right_place;
+        $('.mobile-map-banner span').text(bannerText);
 
         // mobile user clicks 'ok' on map
         $('#mob_ok').on('click', function(e){
@@ -1089,15 +1095,15 @@ $.extend(fixmystreet.set_up, {
         }
         var prevFile;
         var photodrop = new Dropzone($dropzone[0], {
-            url: '/photo/upload',
+            url: '/photo/upload?get_latlon=1',
             paramName: 'photo',
             maxFiles: max_photos,
             addRemoveLinks: true,
             thumbnailHeight: 150,
             thumbnailWidth: 150,
-            resizeWidth: 2048,
-            resizeHeight: 2048,
-            resizeQuality: 0.6,
+            // resizeWidth: 2048,
+            // resizeHeight: 2048,
+            // resizeQuality: 0.6,
             acceptedFiles: 'image/jpeg,image/pjpeg,image/gif,image/tiff,image/png,.png,.tiff,.tif,.gif,.jpeg,.jpg',
             dictDefaultMessage: default_message,
             dictCancelUploadConfirmation: translation_strings.upload_cancel_confirmation,

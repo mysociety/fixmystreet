@@ -17,7 +17,21 @@
     </div></div></div>
 [% END %]
 
-<div data-page-name="category" class="js-reporting-page js-reporting-page--category js-reporting-page--active">
+[% IF photo_first AND c.cobrand.allow_photo_upload %]
+<div data-page-name="photo-confirm" class="js-reporting-page js-reporting-page--active js-reporting-page--desktop-only">
+    <div class="photo-confirm-message">
+        <h3>[% loc('Photo uploaded successfully') %]</h3>
+        <p>[% loc('We’ve detected the location from your photo. Please check the position is correct on the map.') %]</p>
+        <div class="photo-preview">
+            <img src="/photo/temp.[% photo_id %]" alt="[% loc('Uploaded photo preview') %]">
+        </div>
+        <p class="confirm-instruction">[% loc('You can drag the pin on the map to adjust the location if needed, then click Continue.') %]</p>
+    </div>
+    [% INCLUDE continue_button %]
+</div>
+[% END %]
+
+<div data-page-name="category" class="js-reporting-page js-reporting-page--category[% UNLESS photo_first %] js-reporting-page--active[% END %]">
   [% IF public_councils_text_at_top %]
     [% INCLUDE public_councils_text %]
   [% END %]
@@ -107,6 +121,10 @@
 
 [% IF partial_token %]
     <input type="hidden" name="partial" value="[% partial_token.token %]">
+[% END %]
+
+[% IF photo_id %]
+    <input type="hidden" name="photo_id" value="[% photo_id %]">
 [% END %]
 
 <input type="hidden" id="single_body_only" name="single_body_only" value="">

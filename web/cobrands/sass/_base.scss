@@ -2587,7 +2587,7 @@ label .muted {
 .form-hint {
   display: block;
   margin-bottom: 0.5em;
-  color: #666;
+  color: #3d3d3d;
 
   // Reduce space between labels and their form-hints
   label + & {
@@ -2841,6 +2841,42 @@ body.authpage {
       text-decoration: $primary_link_hover_decoration;
     }
   }
+
+  #photoForm {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem; 
+    width: auto;
+    background: transparent;
+    z-index: 1;
+    box-shadow: 0px -1px 13px 5px transparentize($color: #000, $amount: 0.3);
+    border-radius: 4px;
+
+    .dropzone {
+      text-align: left;
+      margin-bottom: 0;
+      padding: 0;
+      border-width: 0;
+
+      .dz-message {
+        u {
+          margin-left: 0;
+        }
+      }
+    }
+
+    .dropzone-desktop {
+      display: none;
+    }
+
+    .dropzone-mobile {
+      display: block;
+    }
+  }
+
+  .label, label {
+    font-size: 1.25em;
+  }
 }
 
 .postcode-form-box {
@@ -2893,7 +2929,39 @@ body.authpage {
   }
 }
 
+// Photo upload error - similar styling to search-help__header
+.photo-upload-error {
+  background: $error_color;
+  color: #fff;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
 
+.report-forms-wrapper {
+  .image-first-form-wrapper {
+    .label {
+      display: none;
+    }
+
+    .dropzone-mobile {
+      u {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.25rem;
+        font-weight: 600;
+
+        svg {
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+    }
+  }
+}
 
 a#geolocate_link {
   border: 1px solid $geolocation-link-border;
@@ -3490,6 +3558,19 @@ $site-message-border: 1px solid #525252 !default;
 
 .keyboard-instructions-wrapper, .keyboard-pin {
   display: none;
+}
+
+.badge {
+  padding: 0.25em 0.35em;
+  margin-right: 0.25em;
+  text-transform: uppercase;
+  font-weight: 600;
+  background-color: mix($primary, #fff, 30%);
+  border: 1px solid darken($primary, 10%);
+  font-size: 0.85rem;
+  color: #222;
+  border-radius: 4px;
+  vertical-align: middle;
 }
 
 @import "_admin";
