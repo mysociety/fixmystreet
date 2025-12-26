@@ -20,9 +20,11 @@
     data-per_new_bin_cost="[% garden_costs.per_new_bin %]"
     data-pro_rata_bin_cost="[% garden_costs.per_pro_rata_bin %]"
   >
+  [% IF c.cobrand.moniker != 'merton' %]
     <span class="cost-pa__total-costs">
     Total per year, from [% display_end_date.strftime('%e %B %Y') %]: £<span id="cost_per_year">[% tprintf('%.2f', cost_pa) %]</span>
     </span>
+  [% END %]
   [% IF garden_costs.per_new_bin %]
     <span class="cost-pa__total-costs">
         Admin fee: £<span id="cost_now_admin">[% tprintf( '%.2f', cost_now_admin ) %]</span>
