@@ -4,6 +4,10 @@
 	    <link rel="stylesheet" href="[% version('/cobrands/fixmystreet/dashboard.css') %]">
 [% END %]
 
+[% extra_js = [
+    version('/cobrands/fixmystreet/dashboard.js')
+] %]
+
 [%
     INCLUDE 'header.html'
         title = loc('Dashboard')
@@ -166,7 +170,8 @@
   [% SET current_category = '' %]
   [% FOR k IN rows %][% k_safe = mark_safe(k) %]
     [% IF category_to_group.$k_safe AND category_to_group.$k_safe != current_category %]
-    [% SET current_category = category_to_group.$k_safe %]
+      [% # 'current_category' denotes current group %]
+      [% SET current_category = category_to_group.$k_safe %]
       <tr>
         [% IF group_by == 'category+state' %]
         <th colspan="5" scope="colgroup">[% category_to_group.$k_safe %]</th>
@@ -175,23 +180,27 @@
         [% END %]
       </tr>
     [% END %]
+    [% IF group_by == 'state' %]
     <tr>
-      [% IF group_by == 'state' %]
-        <th scope="row">[% prettify_state(k) %]</th>
-      [% ELSE %]
-        <th scope="row">[% k %]</th>
+      <th scope="row">[% prettify_state(k) %]</th>
+    [% ELSIF group_by == 'category+state' || group_by == 'category' %]
+    <tr [% IF group_to_category.$current_category.$k_safe.state == 'deleted' %]class="is-deleted" [% END %]>
+      <th class="contact-category" scope="row">[% k %]</th>
+    [% ELSE %]
+    <tr>
+      <th scope="row">[% k %]</th>
+    [% END %]
+    [% IF group_by == 'category+state' %]
+      <td>[% grouped.$k_safe.open OR 0 %]</td>
+      <td>[% grouped.$k_safe.closed OR 0 %]</td>
+      <td>[% grouped.$k_safe.fixed OR 0 %]</td>
+      <td>[% grouped.$k_safe.total OR 0 %]</td>
+    [% ELSE %]
+      [% FOR k2 IN columns.sort %]
+        <td>[% grouped.$k_safe.$k2 OR 0 %]</td>
       [% END %]
-      [% IF group_by == 'category+state' %]
-        <td>[% grouped.$k_safe.open OR 0 %]</td>
-        <td>[% grouped.$k_safe.closed OR 0 %]</td>
-        <td>[% grouped.$k_safe.fixed OR 0 %]</td>
-        <td>[% grouped.$k_safe.total OR 0 %]</td>
-      [% ELSE %]
-        [% FOR k2 IN columns.sort %]
-          <td>[% grouped.$k_safe.$k2 OR 0 %]</td>
-        [% END %]
-        <td>[% grouped.$k_safe.total OR 0 %]</td>
-      [% END %]
+      <td>[% grouped.$k_safe.total OR 0 %]</td>
+    [% END %]
     </tr>
   [% END %]
     <tr class="subtotal">

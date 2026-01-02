@@ -37,6 +37,12 @@
         padding-#{$left}: 10px;
     }
 
+    tr.is-deleted {
+        background-color: #ffdddd;
+        th.contact-category {
+        text-decoration: line-through;
+        }
+    }
     tr.subtotal {
         background-color:#eee;
         border-bottom:20px solid white;
@@ -46,6 +52,10 @@
         th {
             font-weight: bold;
         }
+    }
+
+    .js tr.is-deleted {
+        display: none;
     }
 
 

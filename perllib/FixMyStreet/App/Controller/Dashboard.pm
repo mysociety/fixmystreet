@@ -309,6 +309,9 @@ sub generate_grouped_data : Private {
                 } else {
                     $category_to_group{$category->category} = 'Multiple';
                 }
+
+                $c->stash->{group_to_category}{ $group->{name} }
+                    { $category->category }{state} = $category->state;
             }
         };
         my ($single_group, $multiple_groups) = part { $category_to_group{$_} eq 'Multiple'} @sorting_categories;
@@ -530,4 +533,3 @@ Licensed under the Affero GPL.
 __PACKAGE__->meta->make_immutable;
 
 1;
-
