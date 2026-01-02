@@ -184,7 +184,26 @@
     <tr>
       <th scope="row">[% prettify_state(k) %]</th>
     [% ELSIF group_by == 'category+state' || group_by == 'category' %]
-    <tr [% IF group_to_category.$current_category.$k_safe.state == 'deleted' %]class="is-deleted" [% END %]>
+    [%
+      SET is_zero =
+        (
+          group_by == 'category+state'
+            && !grouped.$k_safe.open
+            && !grouped.$k_safe.closed
+            && !grouped.$k_safe.fixed
+        ) || (
+          group_by == 'category'
+            && !grouped.$k_safe.total
+        );
+
+      SET class_to_hide =
+        group_to_category.$current_category.$k_safe.state == 'deleted' ?
+          'is-deleted' :
+          is_zero ?
+            'is-zero' :
+            '';
+    %]
+    <tr [% IF class_to_hide %]class="[% class_to_hide %]"[% END %]>
       <th class="contact-category" scope="row">[% k %]</th>
     [% ELSE %]
     <tr>

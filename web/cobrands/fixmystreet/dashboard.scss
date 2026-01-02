@@ -40,8 +40,11 @@
     tr.is-deleted {
         background-color: #ffdddd;
         th.contact-category {
-        text-decoration: line-through;
+            text-decoration: line-through;
         }
+    }
+    tr.is-zero {
+        background-color: #ddddff;
     }
     tr.subtotal {
         background-color:#eee;
@@ -54,7 +57,7 @@
         }
     }
 
-    .js tr.is-deleted {
+    .js tr.is-deleted, .js tr.is-zero {
         display: none;
     }
 
