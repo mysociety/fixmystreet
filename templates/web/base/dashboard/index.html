@@ -172,7 +172,7 @@
     [% IF category_to_group.$k_safe AND category_to_group.$k_safe != current_category %]
       [% # 'current_category' denotes current group %]
       [% SET current_category = category_to_group.$k_safe %]
-      <tr>
+      <tr class="group-heading">
         [% IF group_by == 'category+state' %]
         <th colspan="5" scope="colgroup">[% category_to_group.$k_safe %]</th>
         [% ELSE %]
