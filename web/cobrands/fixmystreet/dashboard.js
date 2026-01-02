@@ -16,6 +16,8 @@ $(function(){
                 $cols.show();
                 $(this).prop("value", 'Hide categories with zero reports');
             }
+
+            toggleGroupHeadings();
         });
     }
 
@@ -35,7 +37,39 @@ $(function(){
                 $cols.show();
                 $(this).prop("value", 'Hide deleted categories');
             }
+
+            toggleGroupHeadings();
         });
     }
+
+    function toggleGroupHeadings() {
+        var $rows = $('table#overview tr');
+        var $current_group_heading;
+        var $visible_count = 0;
+
+        $rows.each( function( idx, elem ) {
+            if ( $(this).hasClass('group-heading') ) {
+                // Hide previous group heading if no visible categories
+                if ($current_group_heading) {
+                    if ( $visible_count == 0 ) {
+                        $current_group_heading.hide();
+                    } else {
+                        $current_group_heading.show();
+                    }
+                }
+
+                // Then set next group heading
+                $current_group_heading = $(this);
+                $visible_count = 0;
+
+            } else {
+                if ( $(this).is(':visible') ) {
+                    $visible_count++;
+                }
+            }
+        });
+    }
+
+    toggleGroupHeadings();
 
 });
