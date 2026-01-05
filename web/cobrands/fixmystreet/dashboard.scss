@@ -57,6 +57,10 @@
         }
     }
 
+    tr.is-unselected-category {
+        display: none;
+    }
+
     .js tr.is-deleted, .js tr.is-zero {
         display: none;
     }
