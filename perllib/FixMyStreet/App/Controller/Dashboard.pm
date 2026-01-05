@@ -143,13 +143,25 @@ sub index : Path : Args(0) {
         $c->stash->{category} = [ $c->get_param_list('category') ];
         my @remove_from_display;
 
+        # Determines which groups and categories are displayed in table
+        my %table_groups_and_categories;
+
         foreach (@{$c->stash->{category}}) {
-            next unless /^group-(.*)/;
-            for my $contact (@{$group_names{$1}}) {
-                push @{ $c->stash->{category} }, $contact->category;
-                push @remove_from_display, $contact->category;
+            if ( /^group-(.*)/ ) {
+                $table_groups_and_categories{groups}{$1} = 1;
+
+                for my $contact (@{$group_names{$1}}) {
+                    $table_groups_and_categories{$contact->category} = 1;
+                    push @{ $c->stash->{category} }, $contact->category;
+                    push @remove_from_display, $contact->category;
+                }
+            } else {
+                $table_groups_and_categories{$_} = 1;
             }
         }
+
+        $c->stash->{table_groups_and_categories}
+            = \%table_groups_and_categories;
 
         my %display_categories = map { $_ => 1 } @{$c->stash->{category}};
         delete $display_categories{$_} for (@remove_from_display);
@@ -308,6 +320,12 @@ sub generate_grouped_data : Private {
                     $category_to_group{$category->category} = $group->{name};
                 } else {
                     $category_to_group{$category->category} = 'Multiple';
+
+                    # Make sure 'Multiple' heading is displayed in table
+                    $c->stash->{table_groups_and_categories}{groups}
+                        {'Multiple'} = 1
+                        if $c->stash->{table_groups_and_categories}
+                        { $category->category };
                 }
 
                 $c->stash->{group_to_category}{ $group->{name} }
