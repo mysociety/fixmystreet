@@ -200,7 +200,7 @@ subtest 'Updates on waste reports still have munged params' => sub {
 };
 
 subtest 'check display of waste reports' => sub {
-$report->update({ category => 'Other' });
+    $report->update({ category => 'Other' });
     $mech->get_ok( '/report/' . $report->id );
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'bromley',
@@ -225,7 +225,7 @@ subtest 'check staff can filter on waste reports' => sub {
         $mech->get_ok( '/reports/Bromley');
         $mech->content_contains('<optgroup label="Waste"');
         $mech->get_ok( '/report/' . $report->id );
-        $mech->content_contains('<option value="Report missed collection">');
+        $mech->content_contains('<option value="Waste__Report missed collection">');
     };
 };
 

@@ -384,6 +384,7 @@ sub open311_munge_update_params {
         ? $assigned_to->email
         : '';
 
+    # TODO Do we want to send update when only group has been changed?
     if ( $comment->text =~ /Category changed/ ) {
         my $service_code = $p->contact->email;
         my $category_group = $p->get_extra_metadata('group');
