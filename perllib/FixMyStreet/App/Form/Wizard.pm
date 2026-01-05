@@ -42,7 +42,7 @@ has current_page => ( is => 'ro', lazy => 1,
     predicate => 'has_current_page',
 );
 
-=item * c - the Catalyst App, so we cna get anything we need out of it
+=item * c - the Catalyst App, so we can get anything we need out of it
 
 =cut
 

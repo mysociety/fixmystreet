@@ -172,12 +172,18 @@ sub waste_relevant_serviceunits {
         my $service_name = $self->service_name_override({ ServiceId => $_->{ServiceId} });
         next unless $service_name;
 
+        my $schedules = _parse_schedules($servicetask);
+        if ($self->moniker eq 'sutton' && $schedules->{description} =~ /weeks/) {
+            # Assume is something up if greater than 2 weeks (FD-6463)
+            $schedules->{description} = '';
+        }
+
         push @rows, {
             Id => $_->{Id},
             ServiceId => $_->{ServiceId},
             ServiceTask => $servicetask,
             Service => $_,
-            Schedules => _parse_schedules($servicetask),
+            Schedules => $schedules,
         };
     }
 
