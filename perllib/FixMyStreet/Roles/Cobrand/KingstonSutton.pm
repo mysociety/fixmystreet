@@ -197,14 +197,21 @@ around booked_check_missed_collection => sub {
 
         if ($missed_event) {
             my $open_escalation = 0;
+            my $escalation_event;
             foreach ($escalations->list) {
                 next unless $_->{report};
                 my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
                 next unless $missed_guid;
                 if ($missed_guid eq $missed_event->{guid}) {
                     $missed->{$guid}{escalations}{missed_open} = $_;
+                    $escalation_event = $_;
                     $open_escalation = 1;
                 }
+            }
+
+            my $wd = FixMyStreet::WorkingDays->new();
+            if ($self->waste_target_days->{missed_bulky}) {
+                $self->{c}->stash->{booked_missed}->{target} = $wd->add_days($missed_event->{date}, $self->waste_target_days->{missed_bulky})->set_hour($self->waste_day_end_hour);
             }
 
             if (
@@ -215,11 +222,14 @@ around booked_check_missed_collection => sub {
             ) {
                 my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
                 # And two working days (from 6pm) have passed
-                my $wd = FixMyStreet::WorkingDays->new();
                 my $start = $wd->add_days($missed_event->{date}, $self->waste_escalation_window->{bulky_start})->set_hour($self->waste_day_end_hour);
                 my $end = $wd->add_days($start, $self->waste_escalation_window->{bulky_length});
                 if ($now >= $start && $now < $end) {
                     $missed->{$guid}{escalations}{missed} = $missed_event;
+                }
+            } elsif ($open_escalation) {
+                if ($self->waste_target_days->{missed_bulky_escalation}) {
+                    $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_bulky_escalation})->set_hour($self->waste_day_end_hour);
                 }
             }
         }
@@ -243,6 +253,11 @@ sub _setup_missed_collection_escalations_for_service {
     my $c = $self->{c};
     my $property = $c->stash->{property};
 
+    my $wd = FixMyStreet::WorkingDays->new();
+    if ($row->{report_open} && $self->waste_target_days->{missed}) {
+        $row->{report_open}->{target} = $wd->add_days($row->{report_open}->{date}, $self->waste_target_days->{missed})->set_hour($self->waste_day_end_hour);
+    }
+
     my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
     my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
     if (
@@ -257,7 +272,6 @@ sub _setup_missed_collection_escalations_for_service {
     ) {
         my $day_cfg = $self->waste_escalation_window;
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-        my $wd = FixMyStreet::WorkingDays->new();
 
         my $start = $wd->add_days($missed_event->{date}, $day_cfg->{missed_start})->set_hour($self->waste_day_end_hour);
         my $window = $row->{schedule} =~ /every other/i ? $day_cfg->{missed_length_fortnightly} : $day_cfg->{missed_length_weekly};
@@ -266,9 +280,14 @@ sub _setup_missed_collection_escalations_for_service {
             $row->{escalations}{missed} = $missed_event;
         }
     } elsif ($escalation_event) {
+        if ($self->waste_target_days->{missed_escalation}) {
+            $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_escalation})->set_hour($self->waste_day_end_hour);
+        }
         $row->{escalations}{missed_open} = $escalation_event;
     }
 }
+
+sub waste_target_days { {} }
 
 sub _setup_container_request_escalations_for_service {
     my ($self, $row) = @_;
@@ -287,6 +306,9 @@ sub _setup_container_request_escalations_for_service {
         next unless $escalation_event_report;
 
         if ($escalation_event_report->get_extra_field_value('container_request_guid') eq $open_request_event->{guid}) {
+            if ($self->waste_target_days->{container_escalation}) {
+                $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{container_escalation});
+            }
             $row->{escalations}{container_open} = $escalation_event;
             # We've marked that there is already an escalation event for the container
             # request, so there's nothing left to do
