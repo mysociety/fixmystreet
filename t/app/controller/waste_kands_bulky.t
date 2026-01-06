@@ -869,6 +869,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' }, 'In time, normal completion');
         $mech->content_contains('A bulky waste collection was reported as missed');
+        $mech->content_contains('We aim to resolve this by Friday, 7 July');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [] } );
