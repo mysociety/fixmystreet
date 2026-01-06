@@ -601,6 +601,38 @@ sub request_cost {
     }
 }
 
+=head2 waste_day_end_hour
+
+Time that the day ends for the purposes of calculating things like escalation windows
+
+=cut
+
+sub waste_day_end_hour { 18 }
+
+=head2 waste_escalation_window
+
+Configure when the escalation window for waste complaints starts/ends.
+
+=cut
+
+sub waste_escalation_window {
+    my $lengths = {
+        missed_start => 2,
+        missed_length_weekly => 2,
+        missed_length_fortnightly => 2,
+        container_start => 21,
+        container_length => 10,
+        bulky_start => 2,
+        bulky_length => 2,
+    };
+    # use smaller windows on staging for testing
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
+        for (keys %$lengths) {
+            $lengths->{$_} = 1;
+        }
+    }
+    return $lengths;
+}
 
 =head2 Bulky waste collection
 
