@@ -265,6 +265,8 @@ sub _setup_missed_collection_escalations_for_service {
     }
 }
 
+sub waste_escalation_target_days {}
+
 sub _setup_container_request_escalations_for_service {
     my ($self, $row) = @_;
     my $open_requests = $row->{requests_open};
@@ -282,6 +284,9 @@ sub _setup_container_request_escalations_for_service {
         next unless $escalation_event_report;
 
         if ($escalation_event_report->get_extra_field_value('container_request_guid') eq $open_request_event->{guid}) {
+            if ($self->waste_target_days && $self->waste_target_days->{container_escalation}) {
+                $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{container_escalation});
+            }
             $row->{escalations}{container_open} = $escalation_event;
             # We've marked that there is already an escalation event for the container
             # request, so there's nothing left to do
