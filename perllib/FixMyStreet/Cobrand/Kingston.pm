@@ -136,6 +136,12 @@ sub waste_munge_bin_services_open_requests {
     if ($open_requests->{$CONTAINERS{paper_140}}) {
         $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
     }
+
+    my $wd = FixMyStreet::WorkingDays->new();
+    for my $req (values %$open_requests) {
+        next unless $req;
+        $req->{expected_date} = $wd->add_days($req->{date}, $self->wasteworks_config->{request_timeframe_raw})->set_hour(0);
+    }
 }
 
 sub image_for_unit {
@@ -638,6 +644,14 @@ sub waste_munge_enquiry_data {
 
     $data->{detail} = $detail;
 }
+
+=head2 waste_escalation_target_days
+
+Configure the number of days a containter escalation is expected to be resolved in.
+
+=cut
+
+sub waste_escalation_target_days { 5; }
 
 =head2 waste_escalation_window
 

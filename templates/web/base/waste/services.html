@@ -8,7 +8,11 @@
     [% ELSE %]
        [% SET request = unit.requests_open.values.0; %]
         A [% unit.service_name FILTER lower %] container request was made on [% date.format(request.date, '%A, %-d %B') %].
+        [% IF cobrand.moniker == 'sutton' %]
         We aim to deliver the container within [% cobrand.wasteworks_config.request_timeframe %] (Monday to Friday).
+        [% ELSIF cobrand.moniker == 'kingston' %]
+        We expect to deliver your container on or before [% date.format(request.expected_date, '%A, %-d %B') %].
+        [% END %]
 
         [% IF unit.escalations.container AND NOT unit.escalations.container_open %]
             <br>
@@ -27,7 +31,11 @@
 
     [% IF unit.escalations.container_open %]
       <span class="waste-service-descriptor">
-        Thank you for reporting an issue with this delivery; we are investigating.
+        [% IF c.cobrand.moniker == 'kingston' %]
+            Thank you for reporting an issue with this delivery; we are investigating and aim to deliver the container by [% date.format(unit.escalations.container_open.target, '%A, %-d %B') %].
+        [% ELSE %]
+            Thank you for reporting an issue with this delivery; we are investigating.
+        [% END %]
       </span>
     [% END %]
 
