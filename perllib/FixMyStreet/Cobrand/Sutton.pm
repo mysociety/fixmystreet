@@ -593,6 +593,31 @@ sub request_cost {
     }
 }
 
+=head2 waste_day_end_hour
+
+Time that the day ends for the purposes of calculating things like escalation windows
+
+=cut
+
+sub waste_day_end_hour { 18 }
+
+=head2 waste_escalation_window
+
+Configure when the escalation window for waste complaints starts/ends.
+
+=cut
+
+sub waste_escalation_window {
+    {
+        missed_start => 2,
+        missed_length_weekly => 1,
+        missed_length_fortnightly => 2,
+        container_start => 21,
+        container_length => 10,
+        bulky_start => 2,
+        bulky_length => 2,
+    }
+}
 
 =head2 Bulky waste collection
 
