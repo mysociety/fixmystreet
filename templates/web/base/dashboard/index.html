@@ -152,7 +152,7 @@
     </li>
 </ul>
 
-<table width="100%" id="overview"[% IF ( group_by == 'category+state' || group_by == 'category' ) && !category.size %] class="js-show-category-buttons"[% END %]>
+<table width="100%" id="overview">
     <tr>
       <th></th>
       [% IF group_by == 'category+state' %]
@@ -237,7 +237,7 @@
     </tr>
   [% END %]
     <tr class="subtotal">
-        <th scope="row">[% loc('Total') %]</th>
+        <th scope="row">[% loc('Total (including deleted categories)') %]</th>
       [% IF group_by == 'category+state' %]
         <td>[% totals.open OR 0 %]</td>
         <td>[% totals.closed OR 0 %]</td>
