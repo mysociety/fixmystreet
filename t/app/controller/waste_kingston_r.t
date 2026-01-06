@@ -770,7 +770,11 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=966');
             $mech->content_lacks('Escalate my missed collection');
 
-            set_fixed_time('2022-09-13T19:00:00Z');
+            set_fixed_time('2022-09-13T17:59:00Z');
+            $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=966');
+            $mech->content_lacks('Escalate my missed collection');
+
+            set_fixed_time('2022-09-13T18:01:00Z');
             $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=966');
             $mech->content_contains('Escalate my missed collection');
 
@@ -886,11 +890,11 @@ FixMyStreet::override_config {
     subtest 'Escalations of container delivery failure' => sub {
         my $request_time = "2025-02-03T08:00:00Z";
 
-        my $window_start_time = "2025-03-04T00:00:00Z";
-        my $just_before_window = "2025-03-03T23:59:59Z";
+        my $window_start_time = "2025-02-17T00:00:00Z";
+        my $just_before_window = "2025-02-16T23:59:59Z";
 
-        my $window_end_time = "2025-03-18T23:59:59Z";
-        my $just_after_window = "2025-03-19T00:00:00Z";
+        my $window_end_time = "2025-03-03T23:59:59Z";
+        my $just_after_window = "2025-03-04T00:00:00Z";
 
         my $open_container_request_event = {
             Id => '112112321',
@@ -1005,6 +1009,23 @@ FixMyStreet::override_config {
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
+
+        subtest "No open request; can't escalate" => sub {
+            foreach my $config ((
+                { 'time' => $window_start_time, label => 'window start' },
+                { 'time' => $window_end_time,  label => 'window end' },
+            )) {
+                subtest $config->{label} => sub {
+                    set_fixed_time($config->{time});
+                    $mech->get_ok('/waste/12345');
+                    $mech->content_contains('Request a non-recyclable refuse container');
+                    $mech->follow_link_ok({ text => 'Report a problem with a non-recyclable refuse collection' });
+                    $mech->content_lacks('Failure to Deliver Bags');
+                    $mech->content_lacks('A non-recyclable refuse container request was made');
+                    $mech->content_lacks('Thank you for reporting an issue with this delivery');
+                };
+            }
+        };
     };
 };
 
