@@ -144,6 +144,12 @@ sub waste_munge_bin_services_open_requests {
     if ($open_requests->{$CONTAINERS{paper_140}}) {
         $open_requests->{$CONTAINERS{paper_240}} = $open_requests->{$CONTAINERS{paper_140}};
     }
+
+    my $wd = FixMyStreet::WorkingDays->new();
+    for my $req (values %$open_requests) {
+        next unless $req;
+        $req->{expected_date} = $wd->add_days($req->{date}, $self->wasteworks_config->{request_timeframe_raw})->set_hour(0);
+    }
 }
 
 sub image_for_unit {
@@ -600,6 +606,22 @@ sub waste_munge_request_data {
             }
         }
         $c->set_param('payment', $cost || undef); # Want to undefine it if free
+    }
+}
+
+=head2 waste_target_days
+
+Configure the number of days a waste event is expected to be resolved in.
+
+=cut
+
+sub waste_target_days {
+    {
+        container_escalation => 5,
+        missed => 2,
+        missed_escalation => 1,
+        missed_bulky => 2,
+        missed_bulky_escalation => 2,
     }
 }
 

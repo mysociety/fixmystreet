@@ -913,7 +913,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
             $mech->content_lacks('redirect-missed', 'Report missed not present');
-            $mech->content_contains('collection was reported as missed', "Message to resident displayed");
+            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating', "Message to resident displayed");
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
@@ -979,7 +979,7 @@ FixMyStreet::override_config {
                     $mech->content_lacks('Request a non-recyclable refuse container');
                     $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
                     $mech->follow_link_ok( { url_regex => qr/service_id=940/}, 'Follow "Report a problem" link for Non-Recyclable Waste collection' );
-                    $mech->content_contains('Thank you for reporting an issue with this delivery; we are investigating.');
+                    $mech->content_contains('Thank you for reporting an issue with this delivery; we are investigating');
                 };
             }
         };
