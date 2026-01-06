@@ -89,9 +89,13 @@ $button-primary-hover-bg-bottom: $blue-600;
 $button-primary-hover-bg-top: $blue-600;
 $button-primary-hover-border: $blue-600;
 $button-primary-hover-text: $white;
+$button-primary-focus-bg-bottom: $blue;
+$button-primary-focus-bg-top: $blue;
+$button-primary-focus-border: $blue;
+$button-primary-focus-text: $white;
 
 @mixin kingston-button-primary($padding: 1rem 1.5rem, $font-size: 1.125rem, $line-height: 100%) {
-    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text);
+    @include button-variant($bg-top: $button-primary-bg-top, $bg-bottom: $button-primary-bg-bottom, $border: $button-primary-border, $text: $button-primary-text, $hover-bg-bottom: $button-primary-hover-bg-bottom, $hover-bg-top: $button-primary-hover-bg-top, $hover-border: $button-primary-hover-border, $hover-text: $button-primary-hover-text, $focus-bg-bottom: $button-primary-focus-bg-bottom, $focus-bg-top: $button-primary-focus-bg-top, $focus-border: $button-primary-focus-border, $focus-text: $button-primary-focus-text);
     text-align: center;
     font-size: $font-size;
     line-height: $line-height;
@@ -111,7 +115,6 @@ $button-primary-hover-text: $white;
 
     &:focus {
         // Overrides govuk-button
-        background-color: $blue !important;
         text-decoration: none;
         outline: 4px solid $yellow;
     }
@@ -119,6 +122,7 @@ $button-primary-hover-text: $white;
     &.govuk-button:focus:not(:active):not(:hover) {
         border-color: $primary;
         box-shadow: none;
+        background: $blue;
     }
 
     @media (min-width: $screen-size-min-width-large) {

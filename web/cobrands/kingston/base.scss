@@ -12,6 +12,7 @@ $govuk-success-colour: $green;
 /* TYPOGRAPHY */
 body {
     line-height: 1.5;
+    color: $black;
 }
 
 h1, h2, h3, h4, h5, h6,
@@ -283,7 +284,9 @@ p.form-error {
         flex-direction: row;
         align-items: center;
         // Spacing based on Kingston's assets
-        padding: 2rem 1.25rem 4rem;
+        padding: 1.25rem;
+        padding-top: 2rem;
+        padding-bottom: 4rem;
         column-gap: 2rem;
     }
 
@@ -299,7 +302,6 @@ p.form-error {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        justify-content: center;
         gap: 1rem;
         li {
             list-style: none;
@@ -308,7 +310,7 @@ p.form-error {
 
     .footer-logo {
         display: block;
-        width: 6rem;
+        min-width: 6rem;
         height: 7rem;
         background-image: url("/cobrands/kingston/images/logo-white.svg");
         background-size: contain;
