@@ -25,7 +25,9 @@ my $params = {
     can_be_devolved => 1,
     cobrand => 'kingston',
 };
-my $kingston = $mech->create_body_ok(2480, 'Kingston Council', $params);
+my $kingston = $mech->create_body_ok(2480, 'Kingston Council', $params, {
+        wasteworks_config => { request_timeframe_raw => 10, request_timeframe => '10 working days' }
+    });
 my $user = $mech->create_user_ok('test@example.net', name => 'Normal User');
 
 sub create_contact {
@@ -719,7 +721,7 @@ FixMyStreet::override_config {
             EventTypeId => 3141, # Failure to Deliver Bags/Containers
             EventStateId => 0,
             ServiceId => 966, # Refuse
-            EventDate => { DateTime => "2022-09-13T19:00:00Z" },
+            EventDate => { DateTime => "2025-02-19T19:00:00Z" },
             Guid => 'container-escalation-event-guid',
         };
         my ($escalation_report) = $mech->create_problems_for_body(
@@ -749,7 +751,7 @@ FixMyStreet::override_config {
                     $mech->content_lacks('Request a non-recyclable refuse container');
                     $mech->content_lacks('please report the problem here');
                     $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
-                    $mech->content_contains('Thank you for reporting an issue with this delivery; we are investigating.');
+                    $mech->content_contains('Thank you for reporting an issue with this delivery; we are investigating and aim to deliver the container by Wednesday, 26 February.');
                 };
             }
         };
@@ -782,7 +784,8 @@ FixMyStreet::override_config {
                     $mech->get_ok('/waste/12345');
                     $mech->content_lacks('Request a non-recyclable refuse container');
                     $mech->content_contains('please report the problem here');
-                    $mech->content_contains('A non-recyclable refuse container request was made');
+                    $mech->content_contains('A non-recyclable refuse container request was made on Monday, 3 February');
+                    $mech->content_contains('We expect to deliver your container on or before Monday, 17 February');
                     $mech->content_lacks('Thank you for reporting an issue with this delivery');
                 };
             }
