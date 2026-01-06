@@ -869,6 +869,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' }, 'In time, normal completion');
         $mech->content_contains('A bulky waste collection was reported as missed');
+        $mech->content_contains('We aim to resolve this by the end of the day on Friday, 7 July');
         $mech->get_ok('/waste/12345/report');
         $mech->content_lacks('Bulky waste collection');
         $echo->mock( 'GetEventsForObject', sub { [] } );
@@ -1271,7 +1272,7 @@ FixMyStreet::override_config {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
-            $mech->content_lacks('We aim to resolve this by Thursday, 10 April');
+            $mech->content_lacks('We aim to resolve this by the end of Thursday, 10 April');
 
             $mech->content_like(qr/Escalate my missed collection report/);
             $mech->submit_form_ok({ with_fields => { category => 'Escalate missed collection report' }});
