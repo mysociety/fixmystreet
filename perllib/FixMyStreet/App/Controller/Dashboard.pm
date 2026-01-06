@@ -318,8 +318,15 @@ sub generate_grouped_data : Private {
                 push @sorting_categories, $category->category;
                 if (!$category_to_group{$category->category}) {
                     $category_to_group{$category->category} = $group->{name};
+
+                    $c->stash->{group_to_category}{ $group->{name} }
+                        { $category->category }{state} = $category->state;
+
                 } else {
                     $category_to_group{$category->category} = 'Multiple';
+
+                    $c->stash->{group_to_category}{'Multiple'}
+                        { $category->category }{state} = $category->state;
 
                     # Make sure 'Multiple' heading is displayed in table
                     $c->stash->{table_groups_and_categories}{groups}
@@ -327,11 +334,9 @@ sub generate_grouped_data : Private {
                         if $c->stash->{table_groups_and_categories}
                         { $category->category };
                 }
-
-                $c->stash->{group_to_category}{ $group->{name} }
-                    { $category->category }{state} = $category->state;
             }
         };
+
         my ($single_group, $multiple_groups) = part { $category_to_group{$_} eq 'Multiple'} @sorting_categories;
         my @multiple = sort (uniq(@$multiple_groups));
 
