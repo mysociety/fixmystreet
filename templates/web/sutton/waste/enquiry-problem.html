@@ -13,7 +13,11 @@ END;
 %]
 
 [% enquiry_message = BLOCK %]
-    [% IF service.escalations.missed.event %]
+    [% IF service.escalations.missed.open %]
+        <p>Thank you for reporting an issue with this collection; we are investigating.
+        We aim to resolve this by [% date.format(service.escalations.missed.open.target, '%A, %-d %B') %].
+        </p>
+    [% ELSIF service.escalations.missed.event %]
         <p>A [% service.service_name FILTER lower %] collection was reported as missed
         [% IF communal_property %]
             by yourself, a neighbour, or your Managing Agent
@@ -28,7 +32,8 @@ END;
             by yourself, a neighbour, or your Managing Agent
         [% END %]
         on [% date.format(service.report_open.date, '%A, %-d %B') %].
-        We aim to resolve missed collection reports within 2 working days (Monday to Friday).
+        [% SET resolve_date = service.target OR service.report_open.target %]
+        We aim to resolve this by [% date.format(resolve_date, '%A, %-d %B') %].
         </p>
     [% ELSIF service.report_locked_out %]
         <p>The crew have closed your collection task as not collected[%
@@ -57,7 +62,6 @@ IF service.escalations.missed;
         END;
         field.disabled = 1;
     ELSIF service.escalations.missed.open;
-        field.hint = 'Thank you for reporting an issue with this collection; we are investigating.';
         field.disabled = 1;
     END;
     f.push(field);
@@ -114,7 +118,7 @@ END;
 
 SET field = { value = 'Failure to Deliver Bags/Containers', label = 'My container / bags have not been delivered' };
 IF service.escalations.container_open;
-    field.hint = 'Thank you for reporting an issue with this delivery; we are investigating.';
+    field.hint = 'Thank you for reporting an issue with this delivery; we are investigating and aim to deliver the container by ' _ date.format(service.escalations.container_open.target, '%A, %-d %B') _ '.';
     field.disabled = 1;
     f.push(field);
 ELSIF service.escalations.container;
