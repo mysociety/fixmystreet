@@ -293,8 +293,7 @@ sub _setup_container_request_escalations_for_service {
     # we check now to see if it's within the window for an escalation to be raised
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
 
-    my $start_days = 21; # Window starts on the 21st working day after the request was made
-    my $window_days = 10; # Window ends a further 10 working days after the start date
+    my ($start_days, $window_days) = $self->waste_escalation_window;
     if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
         # For staging site testing (but not automated testing) use quicker/smaller windows
         $start_days = 1;
