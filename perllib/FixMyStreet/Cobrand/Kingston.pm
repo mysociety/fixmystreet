@@ -645,13 +645,17 @@ sub waste_munge_enquiry_data {
     $data->{detail} = $detail;
 }
 
-=head2 waste_escalation_target_days
+=head2 waste_target_days
 
-Configure the number of days a containter escalation is expected to be resolved in.
+Configure the number of days a waste event is expected to be resolved in.
 
 =cut
 
-sub waste_escalation_target_days { 5; }
+sub waste_target_days {
+    {
+        container_escalation => 5,
+    }
+}
 
 =head2 waste_day_end_hour
 
