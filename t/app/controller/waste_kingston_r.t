@@ -578,7 +578,11 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_lacks('please report the problem here');
 
-            set_fixed_time('2022-09-13T19:00:00Z');
+            set_fixed_time('2022-09-13T23:59:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('please report the problem here');
+
+            set_fixed_time('2022-09-14T00:01:00Z');
             $mech->get_ok('/waste/12345');
             $mech->content_contains('please report the problem here');
 
@@ -599,7 +603,7 @@ FixMyStreet::override_config {
                 is $report->get_extra_field_value('original_ref'), 'LBS-123';
             };
 
-            set_fixed_time('2022-09-15T17:00:00Z');
+            set_fixed_time('2022-09-14T17:00:00Z');
             $mech->get_ok('/waste/12345');
             $mech->content_contains('please report the problem here');
 
