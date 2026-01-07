@@ -253,8 +253,7 @@ sub _setup_missed_collection_escalations_for_service {
         my $day_cfg = $self->waste_escalation_window;
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
 
-        my $wd = FixMyStreet::WorkingDays->new();
-        my $start = $wd->add_days($missed_event->{date}, $day_cfg->{missed_start})->set_hour($day_cfg->{day_end});
+        my $start = $wd->add_days($missed_event->{date}, $day_cfg->{missed_start})->set_hour($self->waste_day_end_hour);
         # And window is one day (weekly) two WDs (fortnightly)
         my $window = $row->{schedule} =~ /every other/i ? $day_cfg->{missed_length_fortnightly} : $day_cfg->{missed_length_weekly};
         my $end = $wd->add_days($start, $window);

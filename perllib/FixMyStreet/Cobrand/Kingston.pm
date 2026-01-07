@@ -657,6 +657,14 @@ sub waste_target_days {
     }
 }
 
+=head2 waste_day_end_hour
+
+Time that the day ends for the purposes of calculating things like escalation windows
+
+=cut
+
+sub waste_day_end_hour { 0; }
+
 =head2 waste_escalation_window
 
 Configure when the escalation window for waste complaints starts/ends.
@@ -665,7 +673,6 @@ Configure when the escalation window for waste complaints starts/ends.
 
 sub waste_escalation_window {
     {
-        day_end => 0,
         missed_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
         missed_length_weekly => 1,
         missed_length_fortnightly => 1,

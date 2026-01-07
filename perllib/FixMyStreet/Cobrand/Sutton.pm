@@ -690,6 +690,14 @@ sub waste_munge_enquiry_data {
     $data->{detail} = $detail;
 }
 
+=head2 waste_day_end_hour
+
+Time that the day ends for the purposes of calculating things like escalation windows
+
+=cut
+
+sub waste_day_end_hour { 18 }
+
 =head2 waste_escalation_window
 
 Configure when the escalation window for waste complaints starts/ends.
@@ -698,7 +706,6 @@ Configure when the escalation window for waste complaints starts/ends.
 
 sub waste_escalation_window {
     {
-        day_end => 18,
         missed_start => 2,
         missed_length_weekly => 1,
         missed_length_fortnightly => 2,
