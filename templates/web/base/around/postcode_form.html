@@ -87,12 +87,13 @@
                 <div id="photo-upload-error" class="photo-upload-error" role="alert" hidden></div>
 
                 <form action="[% c.uri_for('/photo/upload') %]" method="post" name="photoForm" id="photoForm" class="js-geolocate" enctype="multipart/form-data">
-                    <div id="photoFormPhoto" class="dropzone" tabindex="0">
+                    <div id="photoFormPhoto" class="dropzone" tabindex="0" role="button"></div>
+                    <div class="hidden-js fallback">
                         <label for="photo">[% loc('Drag or browse a photo') %]:</label>
                         <input type="file" name="photo" id="photo" accept="image/*" required>
+                        <input type="submit" value="[% loc('Start report from photo') %]" class="btn btn--final">
                     </div>
                     <input type="hidden" name="start_report" value="1">
-                    <input type="submit" value="[% loc('Start report from photo') %]" class="btn btn--final">
                 </form>
             </div>
             [% END %]

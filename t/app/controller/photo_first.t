@@ -17,8 +17,8 @@ ok $sample_with_gps->exists, "sample file with GPS exists";
 
 # Expected GPS coordinates from sample-with-gps-exif.jpg:
 # EXIF data: N 51d 47m 57.02s, W 2d 28m 43.82s
-my $expected_lat = 51 + 47/60 + 57.02/3600;
-my $expected_lon = -(2 + 28/60 + 43.82/3600);
+my $expected_lat = sprintf('%.6f', 51 + 47/60 + 57.02/3600);
+my $expected_lon = sprintf('%.6f', -(2 + 28/60 + 43.82/3600));
 
 my $UPLOAD_DIR = tempdir(CLEANUP => 1);
 
@@ -46,8 +46,8 @@ FixMyStreet::override_config {
         ok exists $response->{lon}, 'Response contains longitude';
 
         # Verify GPS coordinates are reasonable (tolerance for JSON floating-point precision)
-        cmp_ok abs($response->{lat} - $expected_lat), '<', 1e-10, 'Latitude is correct';
-        cmp_ok abs($response->{lon} - $expected_lon), '<', 1e-10, 'Longitude is correct';
+        is $response->{lat}, $expected_lat, 'Latitude is correct';
+        is $response->{lon}, $expected_lon, 'Longitude is correct';
     };
 
     subtest "Photo upload with get_latlon=1 but NO GPS returns id only" => sub {

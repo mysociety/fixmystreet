@@ -15,8 +15,8 @@ ok $sample_no_gps->exists, "No-GPS test image exists";
 
 # Expected GPS coordinates from sample-with-gps-exif.jpg:
 # EXIF data: N 51d 47m 57.02s, W 2d 28m 43.82s
-my $expected_lat = 51 + 47/60 + 57.02/3600;
-my $expected_lon = -(2 + 28/60 + 43.82/3600);
+my $expected_lat = sprintf('%.6f', 51 + 47/60 + 57.02/3600);
+my $expected_lon = sprintf('%.6f', -(2 + 28/60 + 43.82/3600));
 
 my $UPLOAD_DIR = tempdir(CLEANUP => 1);
 
@@ -46,9 +46,9 @@ FixMyStreet::override_config {
         ok defined $stash{photo_gps}{lon}, 'Longitude is present';
 
         # Use tolerance for floating point precision
-        cmp_ok abs($stash{photo_gps}{lat} - $expected_lat), '<', 1e-10,
+        is $stash{photo_gps}{lat}, $expected_lat,
             "Latitude is correct: got $stash{photo_gps}{lat}, expected ~$expected_lat";
-        cmp_ok abs($stash{photo_gps}{lon} - $expected_lon), '<', 1e-10,
+        is $stash{photo_gps}{lon}, $expected_lon,
             "Longitude is correct: got $stash{photo_gps}{lon}, expected ~$expected_lon";
     };
 

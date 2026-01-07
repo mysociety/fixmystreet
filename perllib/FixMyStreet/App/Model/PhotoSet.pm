@@ -228,9 +228,11 @@ sub stash_gps_info {
             if (/GPS Latitude : ([NS])\s+([\d.]+)d\s+([\d.]+)m\s+([\d.]+)s/) {
                 $lat = $2 + $3/60 + $4/3600;
                 $lat = -$lat if $1 eq 'S';
+                $lat = sprintf("%.6f", $lat);
             } elsif (/GPS Longitude: ([EW])\s+([\d.]+)d\s+([\d.]+)m\s+([\d.]+)s/) {
                 $lon = $2 + $3/60 + $4/3600;
                 $lon = -$lon if $1 eq 'W';
+                $lon = sprintf("%.6f", $lon);
             }
         }
         # Only set GPS info if both coordinates were found
