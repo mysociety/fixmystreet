@@ -60,6 +60,10 @@ $geolocation-link: #222 !default;
 $geolocation-link-border: $geolocation-link !default;
 $geolocation-link-background-color: transparent !default;
 
+// Useful when a cobrand has a front-main container with dark background.
+// This varaible will only be used when JS is not enabled.
+$dropzone-frontpage-white-background-mobile: true !default;
+
 $footer-main-nav-font-size: 1rem !default;
 $footer-main-nav-padding: 2em 0 !default;
 $footer-main-nav-background: #2E3033 !default;
@@ -2848,20 +2852,24 @@ body.authpage {
 }
 
 #photoForm {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem; 
-  width: auto;
-  background: #fff;
-  z-index: 1;
-  box-shadow: 0px -1px 13px 5px transparentize($color: #000, $amount: 0.3);
+  .js & {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    width: auto;
+    background: #fff;
+    z-index: 1;
+    box-shadow: 0px -1px 13px 5px transparentize($color: #000, $amount: 0.3);
+    .dropzone {
+      margin-bottom: 0;
+      padding: 0;
+      border-width: 0;
+    }
+  }
   border-radius: 4px;
 
   .dropzone {
     text-align: left;
-    margin-bottom: 0;
-    padding: 0;
-    border-width: 0;
 
     .dz-message {
       u {
@@ -2888,6 +2896,30 @@ body.authpage {
 
   .dropzone-mobile {
     display: block;
+  }
+}
+
+.no-js {
+  #photoForm {
+    position: static;
+    width: auto;
+    box-shadow: auto;
+
+    .dropzone {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@if (($dropzone-frontpage-white-background-mobile == true )) {
+  .no-js #front-main .dropzone {
+    background-color: #fff;
+    border-color: transparentize($color: #000, $amount: 0.4);
+
+    &:hover {
+      background-color: transparentize($color: $primary, $amount: 0.5);
+      border-color: transparentize($color: #000, $amount: 0.6);
+    }
   }
 }
 
@@ -2952,7 +2984,7 @@ body.authpage {
   text-align: center;
 }
 
-.report-forms-wrapper {
+.js .report-forms-wrapper {
   .image-first-form-wrapper {
     .label {
       display: none;
@@ -2971,6 +3003,24 @@ body.authpage {
           height: 2rem;
         }
       }
+    }
+  }
+
+}
+
+.no-js .image-first-form-wrapper {
+  margin: 0rem -1rem;
+  padding: 1rem;
+  background: $postcodeform-background;
+
+  .dropzone {
+    label {
+      margin-top: 0;
+    }
+
+    input {
+      max-width: 12.5rem;
+      margin: 0 auto;
     }
   }
 }

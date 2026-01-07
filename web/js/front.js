@@ -31,7 +31,7 @@ document.getElementById('pc').focus();
             dictInvalidFileType: translation_strings.upload_invalid_file_type,
             fallback: function() {
                 dropzone.remove();
-                photoForm.querySelector('.fallback').classList.remove('hidden-js');
+                photoForm.querySelectorAll('.hidden-js').forEach(function(i){ i.classList.remove('hidden-js'); });
             },
             init: function() {
                 var errorContainer = document.getElementById("photo-upload-error");

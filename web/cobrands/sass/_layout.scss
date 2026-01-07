@@ -1058,6 +1058,7 @@ textarea.form-error {
 }
 
 #photoForm {
+ .js &, .no-js & {
   position: static;
   width: auto;
   margin: 0;
@@ -1086,6 +1087,13 @@ textarea.form-error {
       box-sizing: border-box;
     }
   }
+ }
+}
+
+.no-js .image-first-form-wrapper {
+  padding: 0;
+  margin: auto;
+  background: transparent;
 }
 
 .report-forms-wrapper {
@@ -1098,9 +1106,13 @@ textarea.form-error {
 
   .image-first-form-wrapper {
     flex-basis: 40%;
+
     .label {
-      display: block;
       margin-top: 0;
+
+      .js & {
+        display: block;
+      }
     }
   }
 }
