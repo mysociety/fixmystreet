@@ -604,9 +604,8 @@ sub get_ward_type {
     }
 }
 
-around updates_disallowed => sub {
-    my ($orig, $self, $problem) = @_;
-    my $result = $self->$orig($problem);
+sub updates_disallowed_override {
+    my ($self, $problem, $result) = @_;
 
     # Allow staff and reporter updates on specific categories.
     if (($problem->category eq 'Other' ||
@@ -619,6 +618,13 @@ around updates_disallowed => sub {
     }
 
     return $result;
+
+}
+
+around updates_disallowed => sub {
+    my ($orig, $self, $problem) = @_;
+    my $result = $self->$orig($problem);
+    return $self->updates_disallowed_override($problem, $result);
 };
 
 1;
