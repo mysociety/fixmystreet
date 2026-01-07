@@ -604,4 +604,21 @@ sub get_ward_type {
     }
 }
 
+around updates_disallowed => sub {
+    my ($orig, $self, $problem) = @_;
+    my $result = $self->$orig($problem);
+
+    # Allow staff and reporter updates on specific categories.
+    if (($problem->category eq 'Other' ||
+        $problem->category eq 'Other lighting issue' ||
+        $problem->category eq 'Unauthorised objects on street lighting assets' ||
+        $problem->category eq 'Unauthorised objects on other highway infrastructure')
+        && $result) {
+        my $c = $self->{c};
+        return !($c->user_exists && ($c->user->from_body || $problem->user_id == $c->user->id));
+    }
+
+    return $result;
+};
+
 1;
