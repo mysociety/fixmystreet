@@ -697,10 +697,14 @@ Configure when the escalation window for waste complaints starts/ends.
 =cut
 
 sub waste_escalation_window {
-    my $start_days = 21; # Window starts on the 21st working day after the request was made
-    my $window_days = 10; # Window ends a further 10 working days after the start date
-
-    return ($start_days, $window_days);
+    {
+        day_end => 18,
+        missed_start => 2,
+        missed_length_weekly => 1,
+        missed_length_fortnightly => 2,
+        container_start => 21,
+        container_length => 10,
+    }
 }
 
 =head2 Bulky waste collection

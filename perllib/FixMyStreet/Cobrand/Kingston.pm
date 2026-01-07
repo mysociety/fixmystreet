@@ -660,10 +660,14 @@ Configure when the escalation window for waste complaints starts/ends.
 =cut
 
 sub waste_escalation_window {
-    my $start_days = 10; # Window starts on the 10th working day after the request was made
-    my $window_days = 10; # Window ends a further 10 working days after the start date
-
-    return ($start_days, $window_days);
+    {
+        day_end => 0,
+        missed_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
+        missed_length_weekly => 1,
+        missed_length_fortnightly => 1,
+        container_start => 10,
+        container_length => 10,
+    }
 }
 
 =head2 container_cost / admin_fee_cost
