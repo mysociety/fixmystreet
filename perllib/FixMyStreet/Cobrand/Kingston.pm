@@ -654,6 +654,7 @@ Configure the number of days a waste event is expected to be resolved in.
 sub waste_target_days {
     {
         container_escalation => 5,
+        missed => 2,
     }
 }
 

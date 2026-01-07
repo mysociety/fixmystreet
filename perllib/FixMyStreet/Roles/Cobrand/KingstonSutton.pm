@@ -238,6 +238,11 @@ sub _setup_missed_collection_escalations_for_service {
     my $c = $self->{c};
     my $property = $c->stash->{property};
 
+    my $wd = FixMyStreet::WorkingDays->new();
+    if ($row->{report_open} && $self->waste_target_days && $self->waste_target_days->{missed}) {
+        $row->{report_open}->{target} = $wd->add_days($row->{report_open}->{date}, $self->waste_target_days->{missed})->set_hour($self->waste_day_end_hour);
+    }
+
     my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
     my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
     if (
