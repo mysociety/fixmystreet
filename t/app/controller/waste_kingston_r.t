@@ -450,6 +450,7 @@ FixMyStreet::override_config {
         $mech->content_like(qr/name="container-43" value="1"[^>]+disabled/s); # indoor
         $mech->content_like(qr/name="container-46" value="1"[^>]+>/s); # outdoor
 
+        set_fixed_time('2022-09-12T19:00:00Z');
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3145,
             EventStateId => 0,
@@ -458,7 +459,9 @@ FixMyStreet::override_config {
         } ] });
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A mixed recycling collection has been reported as missed');
+        $mech->content_contains('We aim to resolve this by Tuesday, 13 September');
         $mech->content_contains('Request a mixed recycling container');
+        set_fixed_time('2022-09-13T19:00:00Z');
 
         $e->mock('GetEventsForObject', sub { [ {
             EventTypeId => 3145,
