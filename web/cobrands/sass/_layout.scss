@@ -1057,35 +1057,43 @@ textarea.form-error {
   }
 
   #photoForm {
-    position: static;
-    width: auto;
-    margin: 0;
-    background: transparent;
-    box-shadow: none;
-
-    .dropzone-desktop {
-      display: block;
-    }
-    .dropzone-mobile {
-      display: none;
-    }
-
-    .dropzone {
-    background-image: url("/cobrands/fixmystreet/images/icon-image-upload.svg");
-    background-repeat: no-repeat;
-    padding: 2em;
-    padding-left: 4rem;
-    background-position: 1em 1.25em;
-    background-size: 3rem;
-    border-width: 1px;
-
-    .dz-error-message  {
-      padding-top: 0;
-      padding-right: 2rem;
-      box-sizing: border-box;
+    .js &, .no-js & {
+      position: static;
+      width: auto;
+      margin: 0;
+      background: transparent;
+      box-shadow: none;
+  
+      .dropzone-desktop {
+        display: block;
+      }
+      .dropzone-mobile {
+        display: none;
+      }
+  
+      .dropzone {
+        background-image: url("/cobrands/fixmystreet/images/icon-image-upload.svg");
+        background-repeat: no-repeat;
+        padding: 2em;
+        padding-left: 4rem;
+        background-position: 1em 1.25em;
+        background-size: 3rem;
+        border-width: 1px;
+  
+        .dz-error-message  {
+          padding-top: 0;
+          padding-right: 2rem;
+          box-sizing: border-box;
+        }
+      }
     }
   }
-  }
+}
+
+.no-js .image-first-form-wrapper {
+  padding: 0;
+  margin: auto;
+  background: transparent;
 }
 
 .report-forms-wrapper {
@@ -1098,9 +1106,13 @@ textarea.form-error {
 
   .image-first-form-wrapper {
     flex-basis: 40%;
+
     .label {
-      display: block;
       margin-top: 0;
+
+      .js & {
+        display: block;
+      }
     }
   }
 }
