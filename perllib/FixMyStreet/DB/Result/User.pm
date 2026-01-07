@@ -651,12 +651,12 @@ around add_to_planned_reports => sub {
 after add_to_planned_reports => sub {
     my ( $self, $report, $no_comment ) = @_;
 
-    unless ($no_comment) {
-        my $cobrand = $report->get_cobrand_logged;
-        $cobrand
-            = $cobrand->call_hook( get_body_handler_for_problem => $report )
-            || $cobrand;
+    my $cobrand = $report->get_cobrand_logged;
+    $cobrand
+        = $cobrand->call_hook( get_body_handler_for_problem => $report )
+        || $cobrand;
 
+    unless ($no_comment) {
         my $report_extra = $cobrand->call_hook('record_update_extra_fields');
         $report->add_to_comments(
             {   text  => '',
@@ -665,6 +665,8 @@ after add_to_planned_reports => sub {
             }
         ) if $report_extra->{shortlisted_user};
     }
+
+    $cobrand->call_hook( inform_about_shortlisted => $self, $report );
 };
 
 # Override the default auto-created function as we don't want to ever delete anything
