@@ -50,6 +50,8 @@ $postcodeform-background-desktop: transparent !default;
 $postcodeform-color-desktop: $primary_text !default;
 $form-hint-color-desktop: transparentize($postcodeform-color-desktop, 0.2) !default;
 $front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
+// This variable will be helpful for cobrands where the copy inside the postcode form is too long leaving to no space available for the image report first form.
+$postcodeform-max-width: 100% !default;
 
 //This variable controls the color of .content for the front-page
 $content-background-desktop: #fff !default;
@@ -1021,6 +1023,49 @@ textarea.form-error {
 // Frontpage
 
 // big yellow bit full screen width
+.report-forms-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: $report-forms-wrapper-flex-column-gap;
+  row-gap: $report-forms-wrapper-flex-row-gap;
+  margin-top: 2rem;
+
+  color: $postcodeform-color-desktop;
+  background: $postcodeform-background-desktop;
+  max-width: $postcodeform-max-width;
+
+  @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
+    padding: 1em;
+    margin: 0 -1em;
+  } @else if not (($front-main-container-background-desktop == transparent) or ($front-main-container-background-desktop == none)) {
+    padding: 1rem;
+    margin: 2rem 0;
+  } @else {
+    padding: 0;
+    margin: 2rem 0;
+  }
+
+  .image-first-form-wrapper {
+    flex: 1 1 40%;
+    max-width: 30rem;
+  
+    .label {
+      margin-top: 0;
+
+      .js & {
+        display: block;
+      }
+    }
+
+    .no-js & {
+      padding: 0;
+      margin: 0;
+      background: transparent;
+    }
+  }
+}
+
 #front-main {
   color: $front-main-color-desktop;
   background: $front-main-background-desktop;
@@ -1057,8 +1102,22 @@ textarea.form-error {
   }
 }
 
+.postcode-form-box {
+  overflow: visible; // Doesn't cover the outline when focusing elements
+  background: $postcodeform-background-desktop;
+  .form-hint {
+    margin-top: -0.25em;
+    color: $form-hint-color-desktop;
+  }
+  div {
+    width:20em;
+  }
+}
+
+// PhotoForn FrontPage
 #photoForm {
- .js &, .no-js & {
+ .js &,
+ .no-js & {
   position: static;
   width: auto;
   margin: 0;
@@ -1088,53 +1147,6 @@ textarea.form-error {
     }
   }
  }
-}
-
-.no-js .image-first-form-wrapper {
-  padding: 0;
-  margin: auto;
-  background: transparent;
-}
-
-.report-forms-wrapper {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  column-gap: $report-forms-wrapper-flex-column-gap;
-  row-gap: $report-forms-wrapper-flex-row-gap;
-  margin-top: 2rem;
-
-  .image-first-form-wrapper {
-    flex-basis: 40%;
-
-    .label {
-      margin-top: 0;
-
-      .js & {
-        display: block;
-      }
-    }
-  }
-}
-
-.postcode-form-box {
-  color: $postcodeform-color-desktop;
-  background: $postcodeform-background-desktop;
-  @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
-    padding: 1em;
-    margin: 0 -1em;
-  } @else {
-    padding: 0;
-    margin: 0;
-  }
-  overflow: visible; // Doesn't cover the outline when focusing elements
-  .form-hint {
-    margin-top: -0.25em;
-    color: $form-hint-color-desktop;
-  }
-  div {
-    width:20em;
-  }
 }
 
 #front-howto {
