@@ -250,12 +250,12 @@ sub _setup_missed_collection_escalations_for_service {
         # And no existing escalation since last collection
         && !$escalation_event
     ) {
+        my $day_cfg = $self->waste_escalation_window;
         my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-        # And two working days (from 6pm) have passed
-        my $wd = FixMyStreet::WorkingDays->new();
-        my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
+
+        my $start = $wd->add_days($missed_event->{date}, $day_cfg->{missed_start})->set_hour($self->waste_day_end_hour);
         # And window is one day (weekly) two WDs (fortnightly)
-        my $window = $row->{schedule} =~ /every other/i ? 2 : 1;
+        my $window = $row->{schedule} =~ /every other/i ? $day_cfg->{missed_length_fortnightly} : $day_cfg->{missed_length_weekly};
         my $end = $wd->add_days($start, $window);
         if ($now >= $start && $now < $end) {
             $row->{escalations}{missed} = $missed_event;
@@ -298,7 +298,9 @@ sub _setup_container_request_escalations_for_service {
     # we check now to see if it's within the window for an escalation to be raised
     my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
 
-    my ($start_days, $window_days) = $self->waste_escalation_window;
+    my $day_cfg = $self->waste_escalation_window;
+    my $start_days = $day_cfg->{container_start};
+    my $window_days = $day_cfg->{container_length};
     if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
         # For staging site testing (but not automated testing) use quicker/smaller windows
         $start_days = 1;
