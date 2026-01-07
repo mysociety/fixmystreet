@@ -265,7 +265,7 @@ sub _setup_missed_collection_escalations_for_service {
     }
 }
 
-sub waste_escalation_target_days {}
+sub waste_target_days {}
 
 sub _setup_container_request_escalations_for_service {
     my ($self, $row) = @_;
