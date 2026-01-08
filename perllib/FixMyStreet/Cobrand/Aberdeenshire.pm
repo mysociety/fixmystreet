@@ -421,5 +421,10 @@ sub skip_alert_state_changed_to { 1 }
 
 sub default_map_zoom { 5 }
 
+=item * Use Scotland bank holidays for out of hours messages
+
+=cut
+
+sub is_scotland { 1 }
 
 1;
