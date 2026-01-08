@@ -189,4 +189,10 @@ sub _updates_disallowed_check {
     return '';  # Updates are allowed
 }
 
+=item * Use Scotland bank holidays for out of hours messages
+
+=cut
+
+sub is_scotland { 1 }
+
 1;
