@@ -744,6 +744,8 @@ sub waste_escalation_window {
         missed_length_fortnightly => 2,
         container_start => 21,
         container_length => 10,
+        bulky_start => 2,
+        bulky_length => 2,
     }
 }
 
