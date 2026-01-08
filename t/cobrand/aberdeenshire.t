@@ -3,6 +3,7 @@ use FixMyStreet::Script::Reports;
 use FixMyStreet::Script::CSVExport;
 use FixMyStreet::Script::Alerts;
 use File::Temp 'tempdir';
+use Test::MockTime qw(:all);
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -544,6 +545,72 @@ FixMyStreet::override_config {
             $test_report->discard_changes;
 
             is $test_report->state, $initial_state, 'Report state unchanged when superseded report not found in fetched report';
+        };
+
+        subtest 'uses Scotland bank holidays' => sub {
+            use Test::MockModule;
+            my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+            $ukc->mock('_get_bank_holiday_json', sub {
+                {
+                    "england-and-wales" => {
+                        "events" => [
+                            { "date" => "2024-08-26", "title" => "Summer bank holiday" }
+                        ]
+                    },
+                    "scotland" => {
+                        "events" => [
+                            { "date" => "2024-01-02", "title" => "2nd January" },
+                            { "date" => "2024-08-05", "title" => "Summer bank holiday" }
+                        ]
+                    }
+                }
+            });
+
+            my $cobrand = FixMyStreet::Cobrand::Aberdeenshire->new;
+            my $holidays = $cobrand->public_holidays();
+
+            is_deeply $holidays, ['2024-01-02', '2024-08-05'], 'Aberdeenshire uses Scotland bank holidays';
+        };
+
+        subtest 'out-of-hours functionality uses Scotland bank holidays' => sub {
+            use Test::MockModule;
+            use Time::Piece;
+            my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
+            $ukc->mock('_get_bank_holiday_json', sub {
+                {
+                    "england-and-wales" => {
+                        "events" => [
+                            { "date" => "2024-08-26", "title" => "Summer bank holiday" }
+                        ]
+                    },
+                    "scotland" => {
+                        "events" => [
+                            { "date" => "2024-01-02", "title" => "2nd January" },
+                            { "date" => "2024-08-05", "title" => "Summer bank holiday" }
+                        ]
+                    }
+                }
+            });
+
+            my $cobrand = FixMyStreet::Cobrand::Aberdeenshire->new;
+            my $ooh = $cobrand->ooh_times($aberdeenshire);
+
+            # Verify Scotland holidays are passed to OutOfHours object
+            is_deeply [sort @{$ooh->holidays}], ['2024-01-02', '2024-08-05'],
+                'OutOfHours object receives Scotland bank holidays';
+
+            # Test holiday detection
+            my $scotland_holiday = Time::Piece->strptime('2024-01-02', '%Y-%m-%d');
+            is $ooh->is_public_holiday($scotland_holiday), 1,
+                'Scottish 2nd January recognized as public holiday';
+
+            my $england_holiday = Time::Piece->strptime('2024-08-26', '%Y-%m-%d');
+            is $ooh->is_public_holiday($england_holiday), 0,
+                'England/Wales-only Summer bank holiday not recognized';
+
+            my $scotland_summer = Time::Piece->strptime('2024-08-05', '%Y-%m-%d');
+            is $ooh->is_public_holiday($scotland_summer), 1,
+                'Scottish Summer bank holiday recognized';
         };
 
     subtest 'open311_report_fetched handles priority setting' => sub {
