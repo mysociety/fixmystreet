@@ -23,6 +23,8 @@ use Digest::MD5 qw(md5_hex);
 use Try::Tiny;
 use Fcntl qw(:flock);
 
+has sample_data => ( is => 'ro', default => 0 );
+
 =head2 call_api
 
   call_api($c, "bromley", "look_up_property:123", 0,
