@@ -193,12 +193,14 @@ around booked_check_missed_collection => sub {
         next unless $missed_event;
 
         my $open_escalation = 0;
+        my $escalation_event;
         foreach ($escalations->list) {
             next unless $_->{report};
             my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
             next unless $missed_guid;
             if ($missed_guid eq $missed_event->{guid}) {
                 $missed->{$guid}{escalations}{missed_open} = $_;
+                $escalation_event = $_;
                 $open_escalation = 1;
             }
         }
@@ -216,11 +218,16 @@ around booked_check_missed_collection => sub {
         ) {
             my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
             # And two working days (from 6pm) have passed
-            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
-            my $end = $wd->add_days($start, 2);
+            my $start = $wd->add_days($missed_event->{date}, $self->waste_escalation_window->{bulky_start})->set_hour($self->waste_day_end_hour);
+            my $end = $wd->add_days($start, $self->waste_escalation_window->{bulky_length});
             if ($now >= $start && $now < $end) {
                 $missed->{$guid}{escalations}{missed} = $missed_event;
             }
+        } elsif ($open_escalation) {
+            if ($self->waste_target_days && $self->waste_target_days->{missed_bulky_escalation}) {
+                $missed_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_bulky_escalation})->set_hour($self->waste_day_end_hour);
+            }
+            $missed->{$guid}{escalations}{missed_open} = $missed_event;
         }
     }
 };
