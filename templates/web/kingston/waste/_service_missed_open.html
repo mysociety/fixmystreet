@@ -3,11 +3,13 @@ A [% unit.service_name FILTER lower %] collection has been reported as missed
     by yourself, a neighbour, or your Managing Agent
 [% END %]
 on [% date.format(unit.report_open.date, '%A, %-d %B') %].
+[% IF booked_missed AND NOT unit.escalations.missed_open %]
+We aim to resolve this by [% date.format(booked_missed.target, '%A, %-d %B') %].
+[% ELSIF unit.report_open AND NOT unit.escalations.missed_open %]
 We aim to resolve this by [% date.format(unit.report_open.target, '%A, %-d %B') %].
+[% END %]
 
-[% IF unit.escalations.missed_open %]
-    We aim to resolve this by [% date.format(unit.escalations.missed_open.target, '%A, %-d %B') %].
-[% ELSIF unit.escalations.missed %]
+[% IF unit.escalations.missed AND NOT unit.escalations.missed_open %]
     <br>
     We’re sorry if this issue has not been resolved to your satisfaction;
     <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Complaint+against+time&amp;service_id=[% unit.service_id %]&amp;event_id=[% unit.escalations.missed.id %]:[% unit.escalations.missed.ref %][%

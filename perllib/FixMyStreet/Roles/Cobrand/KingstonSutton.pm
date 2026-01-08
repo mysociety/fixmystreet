@@ -203,6 +203,11 @@ around booked_check_missed_collection => sub {
             }
         }
 
+        my $wd = FixMyStreet::WorkingDays->new();
+        if ($self->waste_target_days->{missed_bulky}) {
+            $self->{c}->stash->{booked_missed}->{target} = $wd->add_days($missed_event->{date}, $self->waste_target_days->{missed_bulky})->set_hour($self->waste_day_end_hour);
+        }
+
         if (
             # Report is still open
             !$missed_event->{closed}
@@ -211,7 +216,6 @@ around booked_check_missed_collection => sub {
         ) {
             my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
             # And two working days (from 6pm) have passed
-            my $wd = FixMyStreet::WorkingDays->new();
             my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
             my $end = $wd->add_days($start, 2);
             if ($now >= $start && $now < $end) {
@@ -273,7 +277,7 @@ sub _setup_missed_collection_escalations_for_service {
     }
 }
 
-sub waste_target_days {}
+sub waste_target_days { {} }
 
 sub _setup_container_request_escalations_for_service {
     my ($self, $row) = @_;
