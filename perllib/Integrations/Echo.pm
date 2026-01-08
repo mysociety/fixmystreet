@@ -19,8 +19,6 @@ has password => ( is => 'ro' );
 has url => ( is => 'ro' );
 has address_types => ( is => 'ro' );
 
-has sample_data => ( is => 'ro', default => 0 );
-
 has log_ident => (
     is => 'ro',
     default => sub {
