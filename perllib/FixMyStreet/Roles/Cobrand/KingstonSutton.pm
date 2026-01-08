@@ -266,6 +266,9 @@ sub _setup_missed_collection_escalations_for_service {
             $row->{escalations}{missed} = $missed_event;
         }
     } elsif ($escalation_event) {
+        if ($self->waste_target_days && $self->waste_target_days->{missed_escalation}) {
+            $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_escalation})->set_hour($self->waste_day_end_hour);
+        }
         $row->{escalations}{missed_open} = $escalation_event;
     }
 }

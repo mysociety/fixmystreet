@@ -604,7 +604,40 @@ FixMyStreet::override_config {
                 is $report->name, 'Joe Schmoe', 'User details added to report';
                 is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
                 is $report->get_extra_field_value('original_ref'), 'LBS-123';
+
+                $e->mock('GetEventsForObject', sub { [ 
+                    {
+                        Id => '112112321',
+                        ClientReference => 'LBS-123',
+                        EventTypeId => 3145, # Missed collection
+                        EventStateId => 19240, # Allocated to Crew
+                        ServiceId => 966, # Refuse
+                        EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                        EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+                    },
+                    {
+                        Id => '112112321',
+                        ClientReference => 'LBS-123',
+                        EventTypeId => 3134, # Missed collection escalation
+                        EventStateId => 19240, # Allocated to Crew
+                        ServiceId => 966, # Refuse
+                        EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                        EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+                    }
+                ] });
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains("We aim to resolve this by Monday, 12 September");
             };
+
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                ClientReference => 'LBS-123',
+                EventTypeId => 3145, # Missed collection
+                EventStateId => 19240, # Allocated to Crew
+                ServiceId => 966, # Refuse
+                EventDate => { DateTime => "2022-09-10T17:00:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
 
             set_fixed_time('2022-09-14T17:00:00Z');
             $mech->get_ok('/waste/12345');

@@ -87,6 +87,7 @@
     [% IF unit.escalations.missed_open %]
       <span class="waste-service-descriptor">
         Thank you for reporting an issue with this collection; we are investigating.
+        We aim to resolve this by [% date.format(unit.escalations.missed_open.target, '%A, %-d %B') %].
       </span>
     [% END %]
 [% END %]
