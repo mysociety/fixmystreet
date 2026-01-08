@@ -516,6 +516,20 @@ sub open311_extra_data {
     return ($include, $exclude);
 };
 
+sub open311_get_update_munging_template_variables {
+    my ($self, $text, $request) = @_;
+
+    my $vars = FixMyStreet::DB->resultset("Config")->get('response_template_variables');
+    my @fields = @{ $vars->{$self->moniker} || [] };
+
+    for my $field (@fields) {
+        my $value = $request->{extras}->{$field} || '';
+        $text =~ s/\{\{$field}}/$value/;
+    }
+
+    return $text;
+}
+
 =head2 lookup_site_code
 
 Reports made via FMS.com or the app probably won't have a site code
