@@ -19,6 +19,7 @@ with 'FixMyStreet::Roles::MyGovScotOIDC';
 
 use strict;
 use warnings;
+use DateTime::Format::Strptime;
 
 sub council_area_id { return 2656; }
 sub council_area { return 'Dumfries and Galloway'; }
@@ -61,6 +62,18 @@ sub open311_get_update_munging {
         $text = $self->open311_get_update_munging_template_variables(
             $text, $request );
         $comment->private_email_text($text);
+    }
+
+    # If the update includes a latest_inspection_time, store it on the problem
+    # If the value is 'NOT COMPLETE', unset the metadata
+    if (my $inspection_time = $request->{extras}{latest_inspection_time}) {
+        my $problem = $comment->problem;
+        if ($inspection_time eq 'NOT COMPLETE') {
+            $problem->unset_extra_metadata('latest_inspection_time');
+        } else {
+            $problem->set_extra_metadata(latest_inspection_time => $inspection_time);
+        }
+        $problem->update;
     }
 }
 
@@ -150,5 +163,56 @@ sub _fetch_features_url {
 
 sub contact_extra_fields { [ 'display_name' ] }
 
+
+=head2 _updates_disallowed_check
+
+Updates are only allowed on reports in an open state (confirmed, investigating, etc.),
+and only if the problem has a latest_inspection_time set and at least 14 days
+have passed since that inspection time. When these conditions are met, only
+the original reporter can leave updates.
+
+=cut
+
+sub _updates_disallowed_check {
+    my ($self, $cfg, $problem, $body_user) = @_;
+
+    # First check parent class restrictions
+    my $parent_result = $self->next::method($cfg, $problem, $body_user);
+    return $parent_result if $parent_result;
+
+    my $c = $self->{c};
+    my $reporter = $c->user_exists && $c->user->id == $problem->user->id;
+
+    # Only the original reporter can leave updates
+    unless ($reporter) {
+        return 1;
+    }
+
+    # Check if state is an open state
+    my $open_states = FixMyStreet::DB::Result::Problem->open_states();
+    unless ($open_states->{$problem->state}) {
+        return 1;
+    }
+
+    # Check if the problem has a latest_inspection_time
+    my $inspection_time = $problem->get_extra_metadata('latest_inspection_time');
+    unless ($inspection_time) {
+        return 1;
+    }
+
+    # Parse the inspection time and check if at least 14 days have passed
+    my $parser = DateTime::Format::Strptime->new(pattern => '%Y-%m-%dT%H:%M:%S');
+    my $inspection_dt = $parser->parse_datetime($inspection_time);
+    unless ($inspection_dt) {
+        return 1; # If we can't parse the date, disallow updates
+    }
+
+    my $cutoff = DateTime->now(time_zone => FixMyStreet->local_time_zone)->subtract(days => 14);
+    if ($inspection_dt > $cutoff) {
+        return 1;
+    }
+
+    return '';  # Updates are allowed
+}
 
 1;
