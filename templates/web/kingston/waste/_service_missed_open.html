@@ -3,7 +3,11 @@ A [% unit.service_name FILTER lower %] collection has been reported as missed
     by yourself, a neighbour, or your Managing Agent
 [% END %]
 on [% date.format(unit.report_open.date, '%A, %-d %B') %].
+[% IF booked_missed %]
+We aim to resolve this by [% date.format(booked_missed.target, '%A, %-d %B') %].
+[% ELSIF unit.report_open %]
 We aim to resolve this by [% date.format(unit.report_open.target, '%A, %-d %B') %].
+[% END %]
 
 [% IF unit.escalations.missed_open %]
     We aim to resolve this by [% date.format(unit.escalations.missed_open.target, '%A, %-d %B') %].
