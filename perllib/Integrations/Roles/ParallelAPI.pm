@@ -56,11 +56,10 @@ sub call_api {
 
     my $outdir = FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR');
     mkdir($outdir) unless -d $outdir;
-    my $tmp_file_name = md5_hex("$key $calls");
-    if (-e $outdir . "/" . $tmp_file_name && _uncleared_file($outdir . "/" . $tmp_file_name)) {
-        unlink($outdir . "/" . $tmp_file_name);
+    my $tmp = $outdir . "/" . md5_hex("$key $calls");
+    if (-e $tmp && _uncleared_file($tmp)) {
+        unlink($tmp);
     }
-    my $tmp = $outdir . "/" . $tmp_file_name;
 
     my @cmd = (
         FixMyStreet->path_to('bin/fixmystreet.com/call-wasteworks-backend'),
