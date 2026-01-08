@@ -51,11 +51,32 @@ sub council_url { 'gloucestershire' }
 
 sub admin_user_domain { 'gloucestershire.gov.uk' }
 
-=item * Allows anonymous reporting
+=item * Allows anonymous reporting (but not for Gloucester City categories)
 
 =cut
 
-sub allow_anonymous_reports { 'button' }
+sub allow_anonymous_reports {
+    my ($self, $category_name, $lookup) = @_;
+
+    # Get category from stash if not provided
+    $category_name ||= $self->{c}->stash->{category};
+
+    return 0 unless $category_name;
+
+    return $lookup->{$category_name} if $lookup && $lookup->{$category_name};
+
+    # Find the contact for this category in our body only
+    my $contact_rs = FixMyStreet::DB->resultset("Contact")->search({
+        body_id => $self->body->id,
+        category => $category_name
+    });
+
+    # Allow anonymous only for our body's categories
+    return 'button' if $contact_rs->first;
+
+    # Deny for other bodies' categories
+    return 0;
+}
 
 =item * Gloucestershire use their own privacy policy
 
