@@ -9,10 +9,6 @@ has verbose => ( is => 'ro' );
 
 has unconfirmed_data => ( is => 'ro', default => sub { {} } );
 
-has base_url => ( is => 'lazy', is => 'ro', default => sub { return FixMyStreet->config('COBRAND_FEATURES') ? FixMyStreet->config('COBRAND_FEATURES')->{base_url} : { } } );
-
-has default_base_url => ( is => 'lazy', is => 'ro', default => sub { return  FixMyStreet->config('BASE_URL') } );
-
 # Static method, used by send-reports cron script and tests.
 # Creates a manager object from provided data and processes it.
 sub send {
@@ -161,12 +157,8 @@ sub log {
 sub get_base {
     my ($self, $row) = @_;
 
-    my $base;
-    if ($row->contact->body->name eq 'TfL' || ($row->contact->extra && $row->contact->get_extra_metadata('type') eq 'waste')) {
-        $base = $self->base_url->{ $row->contact->body->cobrand };
-    }
-
-    return $base || $self->default_base_url;
+    my $base = ($row->cobrand eq 'tfl' || $row->cobrand_data eq 'waste') ? $row->get_cobrand_logged->base_url : FixMyStreet->config('BASE_URL');
+    return $base;
 }
 
 1;

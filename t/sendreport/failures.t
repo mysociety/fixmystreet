@@ -54,6 +54,7 @@ $p1->update({
 });
 
 my ($p_tfl) = $mech->create_problems_for_body(1, $tfl->id, 'Test', {
+    cobrand => 'tfl',
     user => $user,
     bodies_str => $tfl->id,
     category => 'category',
@@ -63,6 +64,8 @@ my ($p_tfl) = $mech->create_problems_for_body(1, $tfl->id, 'Test', {
 } );
 
 my ($p_bromley) = $mech->create_problems_for_body(1, $bromley->id, 'Test', {
+    cobrand => 'bromley',
+    cobrand_data => 'waste',
     user => $user,
     bodies_str => $bromley->id,
     category => 'category',
@@ -75,6 +78,7 @@ my ($p_bromley) = $mech->create_problems_for_body(1, $bromley->id, 'Test', {
 FixMyStreet::override_config {
     COBRAND_FEATURES => { base_url => { 'tfl' => 'http://tfl.example.org', 'bromley' => 'http://bromley.example.org' } },
     BASE_URL => 'http://www.example.org',
+    ALLOWED_COBRANDS => [ 'tfl', 'bromley', 'fixmystreet' ],
 }, sub {
     subtest "check sendreport failure messages" => sub {
         my $e = FixMyStreet::Script::Reports->new;
