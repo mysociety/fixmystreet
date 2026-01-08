@@ -54,6 +54,13 @@ sub disambiguate_location {
     };
 }
 
+=item * Map starts at zoom level 5, closer than default and not based on population density.
+
+=cut
+
+sub default_map_zoom { 5 }
+
+
 =head2 open311_update_missing_data
 
 All reports sent to Alloy should have a parent asset they're associated with.
