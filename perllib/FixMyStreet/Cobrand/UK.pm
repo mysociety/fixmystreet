@@ -562,9 +562,18 @@ sub check_recaptcha {
         unless $res->{success};
 }
 
+=head2 is_scotland
+
+A bool to indicate whether this cobrand is for a body in Scotland for the
+purposes of calculating bank holidays.
+
+=cut
+
+sub is_scotland { 0 }
+
 sub public_holidays {
     my $self = shift;
-    my $nation = shift || 'england-and-wales';
+    my $nation = shift || ($self->is_scotland ? 'scotland' : 'england-and-wales');
     my $json = _get_bank_holiday_json();
     return [ map { $_->{date} } @{$json->{$nation}{events}} ];
 }
