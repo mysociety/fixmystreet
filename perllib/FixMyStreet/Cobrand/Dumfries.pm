@@ -135,4 +135,44 @@ sub open311_get_update_munging {
     $comment->text($text);
 }
 
+=head2 _updates_disallowed_check
+
+Updates are only allowed on reports in the 'planned' or 'investigating' state,
+and only if at least 14 days have passed since the last update. When these
+conditions are met, only staff or the original reporter can leave updates.
+
+=cut
+
+sub _updates_disallowed_check {
+    my ($self, $cfg, $problem, $body_user) = @_;
+
+    # First check parent class restrictions
+    my $parent_result = $self->next::method($cfg, $problem, $body_user);
+    return $parent_result if $parent_result;
+
+    my $c = $self->{c};
+    my $superuser = $c->user_exists && $c->user->is_superuser;
+    my $staff = $body_user || $superuser;
+    my $reporter = $c->user_exists && $c->user->id == $problem->user->id;
+
+    # Check if state is planned or investigating
+    my $state = $problem->state;
+    unless ($state eq 'planned' || $state eq 'investigating') {
+        return 1;
+    }
+
+    # Check if at least 14 days have passed since lastupdate
+    my $cutoff = DateTime->now(time_zone => FixMyStreet->local_time_zone)->subtract(days => 14);
+    if ($problem->lastupdate > $cutoff) {
+        return 1;
+    }
+
+    # Only staff or the original reporter can leave updates
+    unless ($staff || $reporter) {
+        return 1;
+    }
+
+    return '';  # Updates are allowed
+}
+
 1;
