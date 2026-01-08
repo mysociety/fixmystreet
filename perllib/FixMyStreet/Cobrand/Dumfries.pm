@@ -31,6 +31,13 @@ sub council_url { return 'dumfries'; }
 sub privacy_policy_url { 'https://www.dumfriesandgalloway.gov.uk/sites/default/files/2025-03/privacy-notice-customer-services-centres-dumfries-and-galloway-council.pdf' }
 
 
+=item * We do not send questionnaires.
+
+=cut
+
+sub send_questionnaires { 0 }
+
+
 =item * Make a few improvements to the display of geocoder results
 
 Remove 'Dumfries and Galloway' and 'Alba / Scotland', skip any that don't mention Dumfries and Galloway at all
