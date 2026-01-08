@@ -579,5 +579,35 @@ FixMyStreet::override_config {
 
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'oxfordshire',
+}, sub {
+    subtest "Staff and reporter updates enabled for specific categories" => sub {
+        my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Other', email => 'OT' );
+        $contact->set_extra_metadata( updates_disallowed => 1 );
+        $contact->update;
+        my ($report) = $mech->create_problems_for_body(1, $oxon->id, 'Other report', {
+            category => 'Other',
+            cobrand => 'oxfordshire',
+            user_id => $user->id,
+        });
+
+        # Reporter can update.
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Provide an update');
+
+        # Staff can update.
+        $mech->log_in_ok($counciluser->email);
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Provide an update');
+
+        # Non reporter can't.
+        $mech->log_in_ok($user2->email);
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('Provide an update');
+    };
+};
+
 
 done_testing();

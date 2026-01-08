@@ -443,6 +443,15 @@ sub per_body_config {
     return ($value, $body);
 }
 
+around updates_disallowed => sub {
+    my ($orig, $self, $problem) = @_;
+    my $result = $self->$orig($problem);
+    if ($problem->to_body_named('Oxfordshire')) {
+        return FixMyStreet::Cobrand::Oxfordshire->new({ c => $self->{c} })->updates_disallowed_override($problem, $result);
+    }
+    return $result
+};
+
 sub updates_disallowed {
     my $self = shift;
     my ($problem) = @_;
