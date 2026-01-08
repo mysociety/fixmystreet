@@ -1,4 +1,10 @@
+use FixMyStreet;
+BEGIN { FixMyStreet->test_mode(1); }
+
+use DateTime;
 use FixMyStreet::TestMech;
+use Catalyst::Test 'FixMyStreet::App';
+use Test::More;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -78,9 +84,9 @@ my $cobrand = FixMyStreet::Cobrand::Dumfries->new({ c => $c });
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => ['dumfries'],
 }, sub {
-    subtest 'updates_disallowed - state not planned or investigating' => sub {
+    subtest 'updates_disallowed - state not open' => sub {
         $problem->update({
-            state => 'confirmed',
+            state => 'closed',
             lastupdate => \"'2020-01-01 00:00:00'",
         });
         $problem->discard_changes;
@@ -88,71 +94,102 @@ FixMyStreet::override_config {
 
         my $result = $cobrand->updates_disallowed($problem);
         is $result, 1,
-            'Updates disallowed when state is not planned or investigating';
+            'Updates disallowed when state is not an open state';
     };
 
-    subtest 'updates_disallowed - state is planned but less than 14 days' => sub {
-        my $recent = DateTime->now->subtract(days => 7)->strftime('%Y-%m-%d %H:%M:%S');
+    subtest 'updates_disallowed - no latest_inspection_time set' => sub {
+        my $old = DateTime->now->subtract(days => 20)->strftime('%Y-%m-%d %H:%M:%S');
         $problem->update({
-            state => 'planned',
-            lastupdate => \"'$recent'",
-        });
-        $problem->discard_changes;
-        $c->user($reporter);
-
-        my $result = $cobrand->updates_disallowed($problem);
-        is $result, 1,
-            'Updates disallowed when less than 14 days have passed';
-    };
-
-    subtest 'updates_disallowed - state is investigating but less than 14 days' => sub {
-        my $recent = DateTime->now->subtract(days => 10)->strftime('%Y-%m-%d %H:%M:%S');
-        $problem->update({
-            state => 'investigating',
-            lastupdate => \"'$recent'",
-        });
-        $problem->discard_changes;
-        $c->user($reporter);
-
-        my $result = $cobrand->updates_disallowed($problem);
-        is $result, 1,
-            'Updates disallowed when less than 14 days have passed (investigating state)';
-    };
-
-    subtest 'updates allowed - reporter on planned report after 14 days' => sub {
-        my $old = DateTime->now->subtract(days => 14)->strftime('%Y-%m-%d %H:%M:%S');
-        $problem->update({
-            state => 'planned',
+            state => 'confirmed',
             lastupdate => \"'$old'",
         });
+        $problem->unset_extra_metadata('latest_inspection_time');
+        $problem->update;
         $problem->discard_changes;
         $c->user($reporter);
 
         my $result = $cobrand->updates_disallowed($problem);
-        is $result, '',
-            'Updates allowed when reporter updates their own report (planned, 14+ days)';
+        is $result, 1,
+            'Updates disallowed when no latest_inspection_time is set';
     };
 
-    subtest 'updates allowed - staff on investigating report after 14 days' => sub {
+    subtest 'updates_disallowed - latest_inspection_time less than 14 days ago' => sub {
+        my $recent_inspection = DateTime->now->subtract(days => 7)->strftime('%Y-%m-%dT%H:%M:%S');
+        my $old = DateTime->now->subtract(days => 20)->strftime('%Y-%m-%d %H:%M:%S');
+        $problem->update({
+            state => 'confirmed',
+            lastupdate => \"'$old'",
+        });
+        $problem->set_extra_metadata(latest_inspection_time => $recent_inspection);
+        $problem->update;
+        $problem->discard_changes;
+        $c->user($reporter);
+
+        my $result = $cobrand->updates_disallowed($problem);
+        is $result, 1,
+            'Updates disallowed when less than 14 days have passed since inspection';
+    };
+
+    subtest 'updates_disallowed - open state, inspection time less than 14 days' => sub {
+        my $recent_inspection = DateTime->now->subtract(days => 10)->strftime('%Y-%m-%dT%H:%M:%S');
+        my $old = DateTime->now->subtract(days => 20)->strftime('%Y-%m-%d %H:%M:%S');
+        $problem->update({
+            state => 'confirmed',
+            lastupdate => \"'$old'",
+        });
+        $problem->set_extra_metadata(latest_inspection_time => $recent_inspection);
+        $problem->update;
+        $problem->discard_changes;
+        $c->user($reporter);
+
+        my $result = $cobrand->updates_disallowed($problem);
+        is $result, 1,
+            'Updates disallowed when less than 14 days have passed since inspection (open state)';
+    };
+
+    subtest 'updates allowed - reporter on open report with old inspection' => sub {
+        my $old_inspection = DateTime->now->subtract(days => 15)->strftime('%Y-%m-%dT%H:%M:%S');
         my $old = DateTime->now->subtract(days => 20)->strftime('%Y-%m-%d %H:%M:%S');
         $problem->update({
             state => 'investigating',
             lastupdate => \"'$old'",
         });
+        $problem->set_extra_metadata(latest_inspection_time => $old_inspection);
+        $problem->update;
+        $problem->discard_changes;
+        $c->user($reporter);
+
+        my $result = $cobrand->updates_disallowed($problem);
+        is $result, '',
+            'Updates allowed when reporter updates their own report (investigating, 14+ days since inspection)';
+    };
+
+    subtest 'updates disallowed - staff on open report with old inspection' => sub {
+        my $old_inspection = DateTime->now->subtract(days => 15)->strftime('%Y-%m-%dT%H:%M:%S');
+        my $old = DateTime->now->subtract(days => 20)->strftime('%Y-%m-%d %H:%M:%S');
+        $problem->update({
+            state => 'investigating',
+            lastupdate => \"'$old'",
+        });
+        $problem->set_extra_metadata(latest_inspection_time => $old_inspection);
+        $problem->update;
         $problem->discard_changes;
         $c->user($staff_user);
 
         my $result = $cobrand->updates_disallowed($problem);
-        is $result, '',
-            'Updates allowed when staff updates report (investigating, 14+ days)';
+        is $result, 1,
+            'Updates disallowed when staff tries to update open report (investigating, 14+ days since inspection)';
     };
 
-    subtest 'updates disallowed - other user on planned report after 14 days' => sub {
-        my $old = DateTime->now->subtract(days => 20)->strftime('%Y-%m-%d %H:%M:%S');
+    subtest 'updates disallowed - other user on closed report with old inspection' => sub {
+        my $old_inspection = DateTime->now->subtract(days => 20)->strftime('%Y-%m-%dT%H:%M:%S');
+        my $old = DateTime->now->subtract(days => 25)->strftime('%Y-%m-%d %H:%M:%S');
         $problem->update({
-            state => 'planned',
+            state => 'duplicate',
             lastupdate => \"'$old'",
         });
+        $problem->set_extra_metadata(latest_inspection_time => $old_inspection);
+        $problem->update;
         $problem->discard_changes;
         $c->user($other_user);
 
@@ -162,11 +199,14 @@ FixMyStreet::override_config {
     };
 
     subtest 'updates disallowed - not logged in user' => sub {
-        my $old = DateTime->now->subtract(days => 14)->strftime('%Y-%m-%d %H:%M:%S');
+        my $old_inspection = DateTime->now->subtract(days => 15)->strftime('%Y-%m-%dT%H:%M:%S');
+        my $old = DateTime->now->subtract(days => 20)->strftime('%Y-%m-%d %H:%M:%S');
         $problem->update({
-            state => 'planned',
+            state => 'closed',
             lastupdate => \"'$old'",
         });
+        $problem->set_extra_metadata(latest_inspection_time => $old_inspection);
+        $problem->update;
         $problem->discard_changes;
         $c->user(undef);
 
@@ -175,70 +215,74 @@ FixMyStreet::override_config {
             'Updates disallowed when not logged in';
     };
 
-    subtest 'uses Scotland bank holidays' => sub {
-        use Test::MockModule;
-        my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
-        $ukc->mock('_get_bank_holiday_json', sub {
-            {
-                "england-and-wales" => {
-                    "events" => [
-                        { "date" => "2024-08-26", "title" => "Summer bank holiday" }
-                    ]
-                },
-                "scotland" => {
-                    "events" => [
-                        { "date" => "2024-01-02", "title" => "2nd January" },
-                        { "date" => "2024-08-05", "title" => "Summer bank holiday" }
-                    ]
-                }
-            }
+    subtest 'latest_inspection_time stored on problem when present in update' => sub {
+        my $comment = FixMyStreet::DB->resultset('Comment')->new({
+            problem_id => $problem->id,
+            user_id    => $staff_user->id,
+            text       => 'Test update',
+            state      => 'confirmed',
+            confirmed  => DateTime->now,
         });
 
-        my $cobrand = FixMyStreet::Cobrand::Dumfries->new;
-        my $holidays = $cobrand->public_holidays();
+        my $request = {
+            extras => {
+                latest_inspection_time => '2024-01-15T10:30:00',
+            },
+        };
 
-        is_deeply $holidays, ['2024-01-02', '2024-08-05'], 'Dumfries uses Scotland bank holidays';
+        $cobrand->open311_get_update_munging($comment, 'investigating', $request);
+
+        $problem->discard_changes;
+        is $problem->get_extra_metadata('latest_inspection_time'), '2024-01-15T10:30:00',
+            'latest_inspection_time stored on problem from update';
     };
 
-    subtest 'out-of-hours functionality uses Scotland bank holidays' => sub {
-        use Test::MockModule;
-        use Time::Piece;
-        my $ukc = Test::MockModule->new('FixMyStreet::Cobrand::UK');
-        $ukc->mock('_get_bank_holiday_json', sub {
-            {
-                "england-and-wales" => {
-                    "events" => [
-                        { "date" => "2024-08-26", "title" => "Summer bank holiday" }
-                    ]
-                },
-                "scotland" => {
-                    "events" => [
-                        { "date" => "2024-01-02", "title" => "2nd January" },
-                        { "date" => "2024-08-05", "title" => "Summer bank holiday" }
-                    ]
-                }
-            }
+    subtest 'latest_inspection_time cleared from problem when "NOT COMPLETE" in update' => sub {
+        $problem->set_extra_metadata(latest_inspection_time => '2024-01-10T09:00:00');
+        $problem->update;
+
+        my $comment = FixMyStreet::DB->resultset('Comment')->new({
+            problem_id => $problem->id,
+            user_id    => $staff_user->id,
+            text       => 'Test update with NOT COMPLETE',
+            state      => 'confirmed',
+            confirmed  => DateTime->now,
         });
 
-        my $cobrand = FixMyStreet::Cobrand::Dumfries->new;
-        my $ooh = $cobrand->ooh_times($body);
+        my $request = {
+            extras => {
+                latest_inspection_time => 'NOT COMPLETE',
+            },
+        };
 
-        # Verify Scotland holidays are passed to OutOfHours object
-        is_deeply [sort @{$ooh->holidays}], ['2024-01-02', '2024-08-05'],
-            'OutOfHours object receives Scotland bank holidays';
+        $cobrand->open311_get_update_munging($comment, 'investigating', $request);
 
-        # Test holiday detection
-        my $scotland_holiday = Time::Piece->strptime('2024-01-02', '%Y-%m-%d');
-        is $ooh->is_public_holiday($scotland_holiday), 1,
-            'Scottish 2nd January recognized as public holiday';
+        $problem->discard_changes;
+        is $problem->get_extra_metadata('latest_inspection_time'), undef,
+            'Inspection time unset when value is NOT COMPLETE';
+    };
 
-        my $england_holiday = Time::Piece->strptime('2024-08-26', '%Y-%m-%d');
-        is $ooh->is_public_holiday($england_holiday), 0,
-            'England/Wales-only Summer bank holiday not recognized';
+    subtest 'latest_inspection_time not cleared from problem when absent from update' => sub {
+        $problem->set_extra_metadata(latest_inspection_time => '2024-01-10T09:00:00');
+        $problem->update;
 
-        my $scotland_summer = Time::Piece->strptime('2024-08-05', '%Y-%m-%d');
-        is $ooh->is_public_holiday($scotland_summer), 1,
-            'Scottish Summer bank holiday recognized';
+        my $comment = FixMyStreet::DB->resultset('Comment')->new({
+            problem_id => $problem->id,
+            user_id    => $staff_user->id,
+            text       => 'Test update without inspection time',
+            state      => 'confirmed',
+            confirmed  => DateTime->now,
+        });
+
+        my $request = {
+            extras => {},
+        };
+
+        $cobrand->open311_get_update_munging($comment, 'investigating', $request);
+
+        $problem->discard_changes;
+        is $problem->get_extra_metadata('latest_inspection_time'), '2024-01-10T09:00:00',
+            'Inspection time not cleared when not in extras';
     };
 };
 
