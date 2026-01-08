@@ -39,6 +39,14 @@ sub fallback : Local {
 
 }
 
+sub waste_fallback : Local {
+    my ($self, $c) = @_;
+
+    # Fetch git version
+    $c->forward('/admin/config/git_version');
+
+}
+
 sub drafts : Local {
     my ($self, $c) = @_;
 }

@@ -2,6 +2,9 @@ use FixMyStreet::TestMech;
 use FixMyStreet::Script::Reports;
 use Path::Tiny;
 use Test::MockModule;
+use Test::MockTime 'set_fixed_time';
+
+set_fixed_time('2025-12-31T00:00:00Z');
 
 my $sample_file = path(__FILE__)->parent->child("sample.jpg");
 ok $sample_file->exists, "sample file $sample_file exists";
