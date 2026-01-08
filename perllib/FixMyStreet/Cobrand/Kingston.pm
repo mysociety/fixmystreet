@@ -681,6 +681,8 @@ sub waste_escalation_window {
         missed_length_fortnightly => 1,
         container_start => 10,
         container_length => 10,
+        bulky_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
+        bulky_length => 2,
     }
 }
 

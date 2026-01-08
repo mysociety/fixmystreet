@@ -216,8 +216,8 @@ around booked_check_missed_collection => sub {
         ) {
             my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
             # And two working days (from 6pm) have passed
-            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
-            my $end = $wd->add_days($start, 2);
+            my $start = $wd->add_days($missed_event->{date}, $self->waste_escalation_window->{bulky_start})->set_hour($self->waste_day_end_hour);
+            my $end = $wd->add_days($start, $self->waste_escalation_window->{bulky_length});
             if ($now >= $start && $now < $end) {
                 $missed->{$guid}{escalations}{missed} = $missed_event;
             }
