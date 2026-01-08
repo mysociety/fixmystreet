@@ -222,49 +222,6 @@ sub edit : Path('/admin/report_edit') : Args(1) {
     }
 
     $c->stash->{problem} = $problem;
-    if ( $problem->extra ) {
-        my @fields;
-        if ( my $fields = $problem->get_extra_fields ) {
-            for my $field ( @{$fields} ) {
-                my $name = $field->{description} ?
-                    "$field->{description} ($field->{name})" :
-                    "$field->{name}";
-                push @fields, { name => $name, val => $field->{value} };
-            }
-        }
-        my $extra = $problem->get_extra_metadata;
-        if ( $extra->{duplicates} ) {
-            push @fields, { name => 'Duplicates', val => join( ',', @{ $problem->get_extra_metadata('duplicates') } ) };
-            delete $extra->{duplicates};
-        }
-
-        if ( $extra->{contributed_by} ) {
-            my $u = $c->cobrand->users->find({id => $extra->{contributed_by}});
-            if ( $u ) {
-                my $uri = $c->uri_for_action('admin/users/index', { search => $u->email } );
-                push @fields, {
-                    name => _('Created By'),
-                    code => 'contributed_by',
-                    val => FixMyStreet::Template::SafeString->new( "<a href=\"$uri\">@{[$u->name]} (@{[$u->email]})</a>" )
-                };
-                if ( $u->from_body ) {
-                    push @fields, { name => _('Created Body'), val => $u->from_body->name };
-                } elsif ( $u->is_superuser ) {
-                    push @fields, { name => _('Created Body'), val => _('Superuser') };
-                }
-            } else {
-                push @fields, { name => 'contributed_by', code => 'contributed_by', val => $extra->{contributed_by} };
-            }
-            delete $extra->{contributed_by};
-        }
-
-        for my $key ( keys %$extra ) {
-            next if $key =~ /^(whensent_previous|rdi_processed|gender|variant|CyclingUK)/;
-            push @fields, { name => $key, val => $extra->{$key} };
-        }
-
-        $c->stash->{extra_fields} = \@fields;
-    }
 
     $c->forward('/auth/get_csrf_token');
 
@@ -389,6 +346,52 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         $problem->discard_changes;
     }
 
+    # Handle display of extra data.
+    # This should be handled *after* any edits to extra data.
+    if ( $problem->extra ) {
+        my @fields;
+        if ( my $fields = $problem->get_extra_fields ) {
+            for my $field ( @{$fields} ) {
+                my $name = $field->{description} ?
+                    "$field->{description} ($field->{name})" :
+                    "$field->{name}";
+                push @fields, { name => $name, val => $field->{value} };
+            }
+        }
+        my $extra = $problem->get_extra_metadata;
+        if ( $extra->{duplicates} ) {
+            push @fields, { name => 'Duplicates', val => join( ',', @{ $problem->get_extra_metadata('duplicates') } ) };
+            delete $extra->{duplicates};
+        }
+
+        if ( $extra->{contributed_by} ) {
+            my $u = $c->cobrand->users->find({id => $extra->{contributed_by}});
+            if ( $u ) {
+                my $uri = $c->uri_for_action('admin/users/index', { search => $u->email } );
+                push @fields, {
+                    name => _('Created By'),
+                    code => 'contributed_by',
+                    val => FixMyStreet::Template::SafeString->new( "<a href=\"$uri\">@{[$u->name]} (@{[$u->email]})</a>" )
+                };
+                if ( $u->from_body ) {
+                    push @fields, { name => _('Created Body'), val => $u->from_body->name };
+                } elsif ( $u->is_superuser ) {
+                    push @fields, { name => _('Created Body'), val => _('Superuser') };
+                }
+            } else {
+                push @fields, { name => 'contributed_by', code => 'contributed_by', val => $extra->{contributed_by} };
+            }
+            delete $extra->{contributed_by};
+        }
+
+        for my $key ( keys %$extra ) {
+            next if $key =~ /^(whensent_previous|rdi_processed|gender|variant|CyclingUK)/;
+            push @fields, { name => $key, val => $extra->{$key} };
+        }
+
+        $c->stash->{extra_fields_display} = \@fields;
+    }
+
     $c->detach('edit_display');
 }
 
@@ -400,29 +403,49 @@ Returns 1 if category changed, 0 if no change.
 =cut
 
 sub edit_category : Private {
-    my ($self, $c, $problem, $no_comment, $contact) = @_;
+    my ($self, $c, $problem, $no_comment, $contact, $group_new) = @_;
 
-    my $category;
+    my ($group, $category);
+    my ($group_changed, $category_changed);
     my $category_display;
+    my $group_old = $problem->get_extra_metadata('group') // '';
+    my $category_old = $problem->category;
+
     if ($contact) {
+        $group = $group_new;
         $category = $contact->category;
-        return 0 if $contact->id == $problem->contact->id;
+
+        $group_changed = $group ne $group_old;
+        $category_changed = $contact->id != $problem->contact->id;
+
+        return 0
+            if !$group_changed && !$category_changed;
+
         $category_display = $contact->category_display;
     } else {
-        $category = $c->get_param('category');
-        return 0 if $category eq $problem->category;
+        my $group_and_category = $c->get_param('category');
+
+        my $rgx = qr/__/;
+        ( $group, $category )
+            = $group_and_category =~ $rgx
+            ? ( split $rgx, $group_and_category )
+            : ( '', $group_and_category );
+
+        $group_changed = $group ne $group_old;
+        $category_changed = $category ne $category_old;
+
+        # No changes
+        return 0
+            if !$group_changed && !$category_changed;
+
         $category_display = $category;
     }
-
-    my $category_old = $problem->category;
-    my $category_old_display = $problem->category_display;
-    $problem->category($category);
 
     my @contacts;
     if ($contact) {
         @contacts = ($contact);
     } else {
-        @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
+        @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
 
         # See if we have one matching contact and use its display name if we do.
         if (@contacts == 1) {
@@ -430,12 +453,40 @@ sub edit_category : Private {
         }
     }
 
+    # @contacts may be empty if form has been submitted with a deleted
+    # category. If we don't return here, it will lead to an empty bodies_str
+    # below. We also don't want to update group or category on the problem.
+    return 0 unless @contacts;
+
+    my $category_old_display = $problem->category_display;
+    $problem->category($category);
+    $group
+        ? $problem->set_extra_metadata( group => $group )
+        : $problem->unset_extra_metadata('group');
+
+
+    # TODO Do we ever want to do this if only group has changed?
     check_resend($c, $category_old, $problem, \@contacts);
 
     my @new_body_ids = map { $_->body_id } @contacts;
     $problem->bodies_str(join( ',', @new_body_ids ));
 
-    my $update_text = '*' . sprintf(_('Category changed from ‘%s’ to ‘%s’'), $category_old_display, $category_display) . '*';
+    my ($update_text, $action);
+    if ($category_changed) {
+        $update_text = '*'
+            . sprintf( _('Category changed from ‘%s’ to ‘%s’'),
+            $category_old_display, $category_display ) . '*';
+
+        $action = 'category_change';
+
+    } else {
+        $update_text = '*'
+            . sprintf( _('Category group changed from ‘%s’ to ‘%s’'),
+            $group_old, $group ) . '*';
+
+        $action = 'group_change';
+    }
+
     if ($no_comment) {
         $c->stash->{update_text} = $update_text;
     } else {
@@ -445,7 +496,7 @@ sub edit_category : Private {
         });
     }
 
-    $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'category_change' ] );
+    $c->forward( '/admin/log_edit', [ $problem->id, 'problem', $action ] );
     return 1;
 }
 

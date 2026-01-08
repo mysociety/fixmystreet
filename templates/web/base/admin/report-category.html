@@ -2,7 +2,7 @@
 [% IF cat.is_disabled AND NOT cobrand.staff_can_assign_reports_to_disabled_categories %]
     [% SET disable = 1 %]
 [% END %]
-<option value="[% cat.category | html %]"[% ' selected' IF problem.category == cat.category %][% ' disabled' IF disable %]>[% cat.category_display | html %][% ' (' _ loc('disabled')  _ ')' IF disable %]</option>
+<option value="[% ( group.name ? group.name _ '__' _ cat.category : cat.category ) | html %]"[% ' selected' IF problem.category == cat.category && problem.get_extra_metadata('group') == group.name %][% ' disabled' IF disable %]>[% cat.category_display | html %][% ' (' _ loc('disabled')  _ ')' IF disable %]</option>
 [%~ END ~%]
 
 <select class="form-control" name="category" id="category">
