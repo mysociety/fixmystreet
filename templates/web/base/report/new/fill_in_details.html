@@ -31,7 +31,11 @@
     [% map_html | safe %]
 
         <div class="mobile-map-banner">
-            <span>[% loc('Reposition if needed, then hit Continue') %]</span>
+            [% IF photo_first %]
+                <span>[% loc('We’ve detected the location from your photo. Please check the position is correct on the map.') %]</span>
+            [% ELSE %]
+                <span>[% loc('Reposition if needed, then hit Continue') %]</span>
+            [% END %]
         </div>
     </div>
     <div id="map_sidebar">

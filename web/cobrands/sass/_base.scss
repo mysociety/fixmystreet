@@ -60,6 +60,10 @@ $geolocation-link: #222 !default;
 $geolocation-link-border: $geolocation-link !default;
 $geolocation-link-background-color: transparent !default;
 
+// Useful when a cobrand has a front-main container with dark background.
+// This varaible will only be used when JS is not enabled.
+$dropzone-frontpage-white-background-mobile: true !default;
+
 $footer-main-nav-font-size: 1rem !default;
 $footer-main-nav-padding: 2em 0 !default;
 $footer-main-nav-background: #2E3033 !default;
@@ -2587,7 +2591,7 @@ label .muted {
 .form-hint {
   display: block;
   margin-bottom: 0.5em;
-  color: #666;
+  color: #3d3d3d;
 
   // Reduce space between labels and their form-hints
   label + & {
@@ -2841,6 +2845,82 @@ body.authpage {
       text-decoration: $primary_link_hover_decoration;
     }
   }
+
+  .label, label {
+    font-size: 1.25em;
+  }
+}
+
+#photoForm {
+  .js & {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    width: auto;
+    background: #fff;
+    z-index: 1;
+    box-shadow: 0px -1px 13px 5px transparentize($color: #000, $amount: 0.3);
+    .dropzone {
+      margin-bottom: 0;
+      padding: 0;
+      border-width: 0;
+    }
+  }
+  border-radius: 4px;
+
+  .dropzone {
+    text-align: left;
+
+    .dz-message {
+      u {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .dz-max-files-reached .dz-message {
+    display: block;
+    visibility: hidden;
+    height: 0;
+    width: 8em;
+    margin-bottom: 0;
+  }
+  .dz-preview {
+    width: 100%;
+    padding-bottom: 100%;
+  }
+
+  .dropzone-desktop {
+    display: none;
+  }
+
+  .dropzone-mobile {
+    display: block;
+  }
+}
+
+.no-js {
+  #photoForm {
+    position: static;
+    width: auto;
+    box-shadow: auto;
+
+    .dropzone {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@if (($dropzone-frontpage-white-background-mobile == true )) {
+  .no-js #front-main .dropzone {
+    background-color: #fff;
+    border-color: transparentize($color: #000, $amount: 0.4);
+
+    &:hover {
+      background-color: transparentize($color: $primary, $amount: 0.5);
+      border-color: transparentize($color: #000, $amount: 0.6);
+    }
+  }
 }
 
 .postcode-form-box {
@@ -2893,7 +2973,57 @@ body.authpage {
   }
 }
 
+// Photo upload error - similar styling to search-help__header
+.photo-upload-error {
+  background: $error_color;
+  color: #fff;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
 
+.js .report-forms-wrapper {
+  .image-first-form-wrapper {
+    .label {
+      display: none;
+    }
+
+    .dropzone-mobile {
+      u {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.25rem;
+        font-weight: 600;
+
+        svg {
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+    }
+  }
+
+}
+
+.no-js .image-first-form-wrapper {
+  margin: 0rem -1rem;
+  padding: 1rem;
+  background: $postcodeform-background;
+
+  .dropzone {
+    label {
+      margin-top: 0;
+    }
+
+    input {
+      max-width: 12.5rem;
+      margin: 0 auto;
+    }
+  }
+}
 
 a#geolocate_link {
   border: 1px solid $geolocation-link-border;
@@ -3490,6 +3620,19 @@ $site-message-border: 1px solid #525252 !default;
 
 .keyboard-instructions-wrapper, .keyboard-pin {
   display: none;
+}
+
+.badge {
+  padding: 0.25em 0.35em;
+  margin-right: 0.25em;
+  text-transform: uppercase;
+  font-weight: 600;
+  background-color: mix($primary, #fff, 30%);
+  border: 1px solid darken($primary, 10%);
+  font-size: 0.85rem;
+  color: #222;
+  border-radius: 4px;
+  vertical-align: middle;
 }
 
 @import "_admin";

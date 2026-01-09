@@ -47,7 +47,7 @@ jobs:
     - name: Add packages
       run: |
         sudo apt update
-        sudo apt install -y gettext language-pack-en language-pack-de language-pack-sv-base=1:22.04+20220415 language-pack-sv=1:22.04+20220415 libimage-magick-perl
+        sudo apt install -y gettext jhead language-pack-en language-pack-de language-pack-sv-base=1:22.04+20220415 language-pack-sv=1:22.04+20220415 libimage-magick-perl
         ~/perl5/perlbrew/bin/perlbrew exec vendor/bin/carton install --deployment
         commonlib/bin/gettext-makemo FixMyStreet
 

@@ -34,7 +34,7 @@ jobs:
     - name: Install packages
       run: |
         sudo apt update
-        sudo apt install -y gettext
+        sudo apt install -y gettext jhead
         npm install cypress@3.8.3 @cypress/code-coverage@3.9.4
         vendor/bin/carton install --deployment
         commonlib/bin/gettext-makemo FixMyStreet

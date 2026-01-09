@@ -15,14 +15,7 @@ describe('Adding a photo', function() {
   it('uploads a photo', function() {
     cy.server();
     cy.route('POST', '/photo/upload').as('photo-upload');
-    var dropEvent = { dataTransfer: { files: [] } };
-    cy.fixture('../fixtures/photo.jpeg').then(function(picture) {
-      return Cypress.Blob.base64StringToBlob(picture, 'image/jpeg').then(function(blob) {
-        dropEvent.dataTransfer.files.push(blob);
-      });
-    });
-    cy.get('.dropzone').trigger('drop', dropEvent);
-    cy.wait('@photo-upload');
+    cy.uploadPhoto('photo.jpeg', '.dropzone');
     cy.nextPageReporting();
   });
   it('finishes creating the report, and redacts the photo', function() {
