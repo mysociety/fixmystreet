@@ -50,6 +50,24 @@ body.waste {
     }
 }
 
+.govuk-grid-column {
+  box-sizing: border-box;
+  padding: 0 15px;
+}
+.govuk-grid-column-always-one-quarter {
+  width: 25%;
+  float: left;
+}
+.govuk-grid-column-always-three-quarters {
+  width: 75%;
+  float: left;
+}
+@media (min-width: $large-screen) {
+  .govuk-grid-column-wide-three-quarters {
+    margin-left: 25%;
+  }
+}
+
 .waste__collections,
 .waste__summary {
   .govuk-summary-list {
@@ -69,6 +87,35 @@ body.waste {
   .govuk-summary-list__key--sub { 
     padding-top: 10px; 
     font-weight: normal !important; /* Ugh */ 
+  }
+}
+
+.waste-service-grid {
+  display: grid;
+  column-gap: 1rem;
+  row-gap: 0;
+
+  grid-template-columns: 25% 75%;
+  grid-template-areas:
+  "image name"
+  "description description";
+
+  &--service-name {
+    grid-area: name;
+  }
+
+  &--service-image {
+    grid-area: image;
+  }
+
+  &--service-description {
+    grid-area: description;
+  }
+
+  @media (min-width: $large-screen) {
+    grid-template-areas:
+      "name name"
+      "image description";
   }
 }
 
@@ -153,7 +200,6 @@ body.waste {
 
 .waste-service-name.govuk-heading-m {
   margin-top: 1.5em;
-  border-bottom: 1px solid #808080;
   padding-bottom: 0.5em;
 }
 
