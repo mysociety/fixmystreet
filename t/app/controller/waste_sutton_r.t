@@ -1112,6 +1112,32 @@ FixMyStreet::override_config {
             };
         };
     }
+
+    subtest "Container request cancellation in admin" => sub {
+        my ($container_request_report) = $mech->create_problems_for_body(
+            1, $body->id,
+            'Container request', {
+                cobrand => 'sutton',
+                external_id => 'container-request',
+                cobrand_data => 'waste',
+                user => $user,
+                title => "Request replacement container",
+                category => "Request new container",
+            }
+        );
+        $container_request_report->update({ state => 'confirmed' });
+        $mech->log_in_ok($staff->email);
+        $mech->get_ok('/admin/report_edit/' . $container_request_report->id);
+        $mech->submit_form_ok({ with_fields => { state => 'cancelled' } });
+        $container_request_report->discard_changes;
+        is $container_request_report->state, 'cancelled';
+        my $latest_comment = $container_request_report->comments->search(
+                {},
+                { order_by => { -desc => 'id' } },
+        )->first;
+        is $latest_comment->text, "response template text", "cancel update uses response template";
+    };
+
 };
 
 sub get_report_from_redirect {
