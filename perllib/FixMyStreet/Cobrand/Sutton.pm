@@ -92,7 +92,7 @@ Do not include the "State changed to" line on small item collection update alert
 sub skip_alert_state_changed_to {
     my ( $self, $report ) = @_;
 
-    return $report->category eq 'Small items collection';
+    return $report->category eq 'Small items collection' || $report->category eq 'Request new container';
 }
 
 =head2 waste_on_the_day_criteria
@@ -667,6 +667,39 @@ sub waste_munge_request_data {
         my ($cost) = $self->request_cost($id, $c->stash->{quantities});
         $c->set_param('payment', $cost || undef);
     }
+}
+
+=head2 waste_container_request_description
+
+Returns a description of the container request report.
+
+=cut
+
+sub waste_container_request_description {
+    my ($self, $report) = @_;
+    return ($report->title =~ s/^Request //r) . " request";
+}
+
+=head2 waste_container_request_cancellation_text
+
+Returns text to use on the cancellation update.
+
+Looks for a response template.
+
+=cut
+
+sub waste_container_request_cancellation_text {
+    my $self = shift;
+    my $template = FixMyStreet::DB->resultset('ResponseTemplate')->search({
+        'me.body_id' => $self->body->id,
+        'contact.category' => 'Request new container',
+        'me.state' => 'cancelled',
+        'me.auto_response' => 1,
+    },{
+        join => { 'contact_response_templates' => 'contact' },
+    })->first;
+    return "Request cancelled." unless $template;
+    return $template->text;
 }
 
 =head2 request_cost

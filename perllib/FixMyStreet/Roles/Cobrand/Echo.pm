@@ -286,7 +286,14 @@ sub bin_services_for_address {
         }
 
         # $containers should contain them all now (garden may only have been added just above here)
-        my $open_requests = { map { $_->{container} => $_ } $events->filter({ type => 'request', containers => $containers })->list };
+        my $open_requests = { map { $_->{container} => $_ } $events->filter(
+            {
+                type => 'request',
+                containers => $containers,
+                report_not_cancelled => 1,  # Don't include requests which have cancellations pending
+            }
+        )->list };
+
         $self->call_hook(waste_munge_bin_services_open_requests => $open_requests);
 
         my $any_request_max = ref $request_max ? sum(values %$request_max) : $request_max;
