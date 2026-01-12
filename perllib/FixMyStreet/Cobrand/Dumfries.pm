@@ -190,4 +190,26 @@ sub _updates_disallowed_check {
     return '';  # Updates are allowed
 }
 
+=item * Use Scotland bank holidays for out of hours messages
+
+=cut
+
+sub is_scotland { 1 }
+
+
+=item * We allow response templates to be associated with the 'planned' state
+
+=cut
+
+sub state_groups_inspect {
+    my $rs = FixMyStreet::DB->resultset("State");
+    my @fixed = FixMyStreet::DB::Result::Problem->fixed_states;
+    [
+        [ $rs->display('confirmed'), [ FixMyStreet::DB::Result::Problem->open_states ] ],
+        @fixed ? [ $rs->display('fixed'), [ 'fixed - council' ] ] : (),
+        [ $rs->display('closed'), [ FixMyStreet::DB::Result::Problem->closed_states ] ],
+    ]
+}
+
+
 1;
