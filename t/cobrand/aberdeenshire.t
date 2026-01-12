@@ -545,6 +545,43 @@ FixMyStreet::override_config {
 
             is $test_report->state, $initial_state, 'Report state unchanged when superseded report not found in fetched report';
         };
+
+    subtest 'open311_report_fetched handles priority setting' => sub {
+        my $cobrand = FixMyStreet::Cobrand::Aberdeenshire->new;
+
+        my ($fetched_report) = $mech->create_problems_for_body(1, $aberdeenshire->id, 'Fetched Superseding Report', {
+            category => 'Pothole',
+            cobrand => 'aberdeenshire',
+            latitude => 57.29126,
+            longitude => -2.45012,
+            areas => '2648',
+            external_id => 'DEFECT_FETCH_456',
+            state => 'confirmed'
+        });
+
+        is $cobrand->pin_colour($fetched_report), 'red';
+
+        # Mark it as a defect, which overrides red
+        $aberdeenshire->update({ comment_user_id => $fetched_report->user->id });
+        is $cobrand->pin_colour($fetched_report), 'orange';
+
+        # State should override the fact that it's a defect
+        $fetched_report->update({ state => 'in progress' });
+        is $cobrand->pin_colour($fetched_report), 'orange-work';
+
+        my $request = {
+            extras => {
+                priority => 'DPM'
+            }
+        };
+
+        $cobrand->open311_report_fetched($fetched_report, $request);
+
+        $fetched_report->discard_changes;
+        is $fetched_report->get_extra_metadata('confirmPriorityCode'), 'DPM';
+
+        is $cobrand->pin_colour($fetched_report), 'grey';
+    };
 };
 
 

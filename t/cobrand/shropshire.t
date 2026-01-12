@@ -176,12 +176,28 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'shropshire',
     PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
+    COBRAND_FEATURES => { heatmap => { shropshire => 1 } },
 }, sub {
-    subtest 'Dashboard CSV adds column "Private" for "non_public" attribute and "Subscribers" ' => sub {
-        my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
-            from_body => $body, password => 'password');
+    my $staffuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User',
+        from_body => $body, password => 'password');
+    $mech->log_in_ok( $staffuser->email );
 
-        $mech->log_in_ok( $staffuser->email );
+    subtest 'Dashboard includes parishes' => sub {
+        $mech->get_ok('/dashboard');
+        $mech->content_contains('Town/parish council');
+        $mech->content_contains('Abdon and Heath');
+        $mech->submit_form_ok({ with_fields => { ward => 144013 } });
+        $mech->content_contains('<option value="144013" selected>Oswestry</option>');
+        $mech->content_like(qr{<th scope="row">Total</th>\s*<td>1</td>});
+
+        $mech->get_ok('/dashboard/heatmap');
+        $mech->content_contains('Town/parish council');
+        $mech->content_contains('Abdon and Heath');
+        $mech->submit_form_ok({ with_fields => { wards => 144013 } });
+        $mech->content_contains('<option value="144013" selected>Oswestry</option>');
+    };
+
+    subtest 'Dashboard CSV adds column "Private" for "non_public" attribute and "Subscribers" ' => sub {
         my $report = FixMyStreet::DB->resultset("Problem")->order_by('-id')->first;
         $report->non_public(1);
         $report->update;

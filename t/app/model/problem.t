@@ -353,6 +353,19 @@ subtest 'Test receiving latest data only' => sub {
 
     my $update = $updates->process_update($request, $problem);
     is $update, undef;
+
+    $problem->add_to_comments({
+        user => $user,
+        external_id => 'timestampD',
+        send_state => 'processed',
+        text => 'Another latest data update',
+        confirmed => $comment_time,
+        created => $comment_time,
+    });
+
+    $request->{description} = 'Another latest data update';
+    $update = $updates->process_update($request, $problem);
+    isnt $update, undef;
 };
 
 for my $test (

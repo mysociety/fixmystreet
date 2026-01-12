@@ -768,4 +768,40 @@ subtest 'store_front_stats_data generates correct JSON file' => sub {
     };
 };
 
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'fixmystreet',
+}, sub {
+    subtest "Oxfordshire updates allowed override applies" => sub {
+        my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', { cobrand => 'oxfordshire' });
+        my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Other', email => 'OT' );
+        $contact->set_extra_metadata( updates_disallowed => 1 );
+        $contact->update;
+
+        my $user = $mech->create_user_ok( 'user@example.com', name => 'Test User' );
+        my $user2 = $mech->create_user_ok( 'user2@example.com', name => 'Test User2' );
+        my $counciluser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxon);
+
+        my ($report) = $mech->create_problems_for_body(1, $oxon->id, 'Other report', {
+            category => 'Other',
+            cobrand => 'oxfordshire',
+            user_id => $user->id,
+        });
+
+        # Reporter can update.
+        $mech->log_in_ok($user->email);
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Provide an update');
+
+        # Staff can update.
+        $mech->log_in_ok($counciluser->email);
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_contains('Provide an update');
+
+        # Non reporter can't.
+        $mech->log_in_ok($user2->email);
+        $mech->get_ok('/report/' . $report->id);
+        $mech->content_lacks('Provide an update');
+    };
+};
+
 done_testing();

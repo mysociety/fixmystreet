@@ -89,6 +89,9 @@ sub questionnaire : Local : Args(0) {
     my ( $self, $c ) = @_;
 
     my $questionnaires = $c->model('DB::Questionnaire')->search(
+        $c->cobrand->restriction,
+        { join => 'problem' }
+    )->search(
         { whenanswered => { '!=', undef } },
         { group_by => [ 'ever_reported' ],
             select => [ 'ever_reported', { count => 'me.id' } ],
@@ -105,13 +108,19 @@ sub questionnaire : Local : Args(0) {
     $c->stash->{questionnaires} = \%questionnaire_counts;
 
     $c->stash->{state_changes_count} = $c->model('DB::Questionnaire')->search(
+        $c->cobrand->restriction,
+        { join => 'problem' }
+    )->search(
         { whenanswered => \'is not null' }
     )->count;
     $c->stash->{state_changes} = $c->model('DB::Questionnaire')->search(
+        $c->cobrand->restriction,
+        { join => 'problem' }
+    )->search(
         { whenanswered => \'is not null' },
         {
             group_by => [ 'old_state', 'new_state' ],
-            columns => [ 'old_state', 'new_state', { c => { count => 'id' } } ],
+            columns => [ 'old_state', 'new_state', { c => { count => 'me.id' } } ],
         },
     );
 

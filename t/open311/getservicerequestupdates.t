@@ -992,6 +992,7 @@ subtest "hides duplicate updates with photo from endpoint" => sub {
 
     (my $requests_xml = $template) =~ s/{n}/1/;
     (my $requests_xml2 = $template) =~ s/{n}/2/;
+    (my $requests_xml3 = $template) =~ s/{n}/3/;
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com');
 
@@ -1015,6 +1016,15 @@ subtest "hides duplicate updates with photo from endpoint" => sub {
     is $problem->comments->count, 2;
     is $problem->comments->search({ state => 'confirmed' })->count, 1;
     is $problem->comments->search({ state => 'confirmed' })->first->photo,
+        '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
+
+    $problem->comments->update({ photo => undef });
+    Open311->_inject_response('/servicerequestupdates.xml', $requests_xml3);
+    $update->process_body;
+    $problem->discard_changes;
+    is $problem->comments->count, 3;
+    is $problem->comments->search({ state => 'confirmed' })->count, 2;
+    is $problem->comments->search({ state => 'confirmed' })->order_by('-id')->first->photo,
         '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg';
 
 };

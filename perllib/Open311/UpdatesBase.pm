@@ -23,6 +23,7 @@ has current_open311 => ( is => 'rwp', lazy => 1, builder => 1 );
 has open311_config => ( is => 'ro' ); # If we need to pass in a devolved contact
 
 Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
+Readonly::Scalar my $AREA_ID_HACKNEY => 2508;
 
 sub fetch {
     my ($self, $open311) = @_;
@@ -173,7 +174,7 @@ sub _process_update {
     my $customer_reference = $request->{customer_reference} || '';
     my $old_external_status_code = $p->get_extra_metadata('external_status_code') || '';
     my $template = $p->response_template_for(
-        $state, $old_state, $external_status_code, $old_external_status_code
+        $body, $state, $old_state, $external_status_code, $old_external_status_code
     );
     my ($text, $email_text) = $self->comment_text_for_request($template, $request, $p);
     if (!$email_text && $request->{email_text}) {
@@ -189,7 +190,14 @@ sub _process_update {
             order_by => [ { -desc => 'confirmed' }, { -desc => 'id' } ],
             rows => 1,
         })->first;
-        return if $latest && $text eq $latest->text && $state eq $latest->problem_state;
+        return if $latest
+            && $text eq $latest->text
+            && $state eq ($latest->problem_state || '');
+
+        # For Hackney, don't let it change back to open from another state
+        if ($body->areas->{$AREA_ID_HACKNEY} && $state eq 'confirmed') {
+            return;
+        }
     }
 
     # An update shouldn't precede an auto-internal update nor should it be earlier than when the
@@ -260,10 +268,10 @@ sub _process_update {
     $latest = undef if $latest && $latest->user_id != $comment->user_id;
 
     # If nothing to show (no text change, photo, or state change), don't show this update
-    $comment->state('hidden') unless
-        ($comment->text && (!$latest || $latest->text ne $comment->text))
-        || ($comment->photo && (!$latest || $latest->photo ne $comment->photo))
-        || ($comment->problem_state && $state ne $old_state);
+    my $text_change = $comment->text && (!$latest || $latest->text ne $comment->text);
+    my $photo_change = $comment->photo && (!$latest || ($latest->photo||'') ne $comment->photo);
+    my $state_change = $comment->problem_state && $state ne $old_state;
+    $comment->state('hidden') unless $text_change || $photo_change || $state_change;
 
     my $cobrand = $body->get_cobrand_handler;
     $cobrand->call_hook(open311_get_update_munging => $comment, $state, $request)

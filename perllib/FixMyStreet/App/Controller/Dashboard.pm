@@ -127,6 +127,9 @@ sub index : Path : Args(0) {
 
         my $children = $c->stash->{children} = $body->area_children;
 
+        my $parishes = $c->stash->{parish_children} = {};
+        $c->cobrand->call_hook(add_parish_wards => $parishes);
+
         $c->forward('/admin/fetch_contacts');
         $c->stash->{contacts} = [ $c->stash->{contacts}->all ];
         $c->forward('/report/stash_category_groups', [ $c->stash->{contacts} ]);
@@ -390,7 +393,7 @@ sub heatmap : Local : Args(0) {
     $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
 
     my @wards = $c->get_param_list('wards', 1);
-    $c->forward('/reports/ward_check', [ @wards ]) if @wards;
+    $c->stash->{wards} = [ map { { id => $_ } } @wards ] if @wards;
     $c->forward('/reports/stash_report_filter_status');
     $c->forward('/reports/stash_report_sort', [ $c->cobrand->reports_ordering ]); # Not actually used
     my $parameters = $c->forward( '/reports/load_problems_parameters');
@@ -420,6 +423,10 @@ sub heatmap : Local : Args(0) {
     }
 
     my $children = $c->stash->{body}->area_children;
+
+    my $parishes = $c->stash->{parish_children} = {};
+    $c->cobrand->call_hook(add_parish_wards => $parishes);
+
     $c->stash->{children} = $children;
     $c->stash->{ward_hash} = { map { $_->{id} => 1 } @{$c->stash->{wards}} } if $c->stash->{wards};
 

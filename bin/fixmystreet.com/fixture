@@ -122,6 +122,8 @@ if ($opt->test_fixtures) {
 
     FixMyStreet::DB->resultset("Config")->create({ key => "tlrn_categories", value => ["Other (TfL)", "Mobile Crane Operation"] });
 
+    FixMyStreet::DB::Factory::Contact->find_or_create({ body => $body, category => "Fly-tipping" });
+
     my $params = {
         name => 'National Highways',
         area_id => 2608,

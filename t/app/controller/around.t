@@ -330,13 +330,6 @@ subtest 'check category, status and extra filtering works on /around' => sub {
     $json = $mech->get_ok_json( '/around?ajax=1&status=fixed&filter_category=Vegetation&bbox=' . $bbox );
     $pins = $json->{pins};
     is scalar @$pins, 2, 'correct number of fixed Vegetation reports';
-
-    my $cobrand = Test::MockModule->new('FixMyStreet::Cobrand::Default');
-    $cobrand->mock('display_location_extra_params', sub { { external_body => "Pothole-confirmed" } });
-
-    $json = $mech->get_ok_json( '/around?ajax=1&bbox=' . $bbox );
-    $pins = $json->{pins};
-    is scalar @$pins, 1, 'correct number of external_body reports';
 };
 
 my $district = $mech->create_body_ok(2421, "Oxford City");

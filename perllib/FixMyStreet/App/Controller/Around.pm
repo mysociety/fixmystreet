@@ -329,16 +329,12 @@ sub map_features : Private {
 
     return if $c->get_param('js'); # JS will request the same (or more) data client side
 
-    # Allow the cobrand to add in any additional query parameters
-    my $extra_params = $c->cobrand->call_hook('display_location_extra_params');
-
     my ( $on_map, $nearby, $distance ) =
       FixMyStreet::Map::map_features(
         $c, %$extra,
         categories => [ keys %{$c->stash->{filter_category}} ],
         states => $c->stash->{filter_problem_states},
         order => $c->stash->{sort_order},
-        extra => $extra_params,
       );
 
     my @pins;

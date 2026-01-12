@@ -920,7 +920,7 @@ sub response_templates {
 }
 
 sub response_template_for {
-    my ($self, $state, $old_state, $ext_code, $old_ext_code) = @_;
+    my ($self, $body, $state, $old_state, $ext_code, $old_ext_code) = @_;
 
     # Response templates are only triggered if the state/external status has changed.
     # And treat any fixed state as fixed.
@@ -943,6 +943,7 @@ sub response_template_for {
         };
 
         $template = $self->response_templates->search({
+            'me.body_id' => $body->id,
             auto_response => 1,
             -or => $state_params,
         }, $order )->first;
@@ -1522,7 +1523,7 @@ sub create_related_things {
             blank_updates_permitted => 1,
         );
 
-        my $template = $self->response_template_for('confirmed', 'dummy', '', '');
+        my $template = $self->response_template_for($body, 'confirmed', 'dummy', '', '');
         my ($description, $email_text) = $updates->comment_text_for_request($template, {}, $self);
         next unless $description;
 

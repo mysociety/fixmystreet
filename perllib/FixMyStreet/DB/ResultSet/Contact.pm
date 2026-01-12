@@ -53,29 +53,22 @@ sub for_new_reports {
     }
 
     $rs = $rs->search($params, { prefetch => 'body' });
-    my $schema = $rs->result_source->schema;
     $rs = $rs->search(undef, {
         '+columns' => {
-            'body.msgstr' => \"COALESCE(translations.msgstr, body.name)",
-            'msgstr' => \"COALESCE(translations_2.msgstr, me.category)"
+            'body.msgstr' => \"COALESCE(translation_body.msgstr, body.name)",
+            'msgstr' => \"COALESCE(translation_category.msgstr, me.category)"
         },
-        join => [ 'translations', 'translations' ],
-        bind => [
-            'name', $schema->lang, 'body',
-            'category', $schema->lang, 'contact',
-        ],
+        join => [ 'translation_category', 'translation_body' ],
     });
     return $rs;
 }
 
 sub translated {
     my $rs = shift;
-    my $schema = $rs->result_source->schema;
     if (!$rs->{attrs}{'+columns'}[0]{msgstr}) {
         $rs = $rs->search(undef, {
-            '+columns' => { 'msgstr' => \"COALESCE(translations.msgstr, me.category)" },
-            join => 'translations',
-            bind => [ 'category', $schema->lang, 'contact' ],
+            '+columns' => { 'msgstr' => \"COALESCE(translation_category.msgstr, me.category)" },
+            join => 'translation_category',
         });
     }
     return $rs;

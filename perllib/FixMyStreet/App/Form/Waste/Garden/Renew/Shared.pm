@@ -202,8 +202,9 @@ has_field submit => (
 sub validate {
     my $self = shift;
     my $max_bins = $self->{c}->stash->{garden_form_data}->{max_bins};
-    unless ( $self->field('bins_wanted')->is_inactive ) {
-        my $total = $self->field('bins_wanted')->value;
+    my $bins_wanted = $self->field('bins_wanted');
+    unless ( $bins_wanted->is_inactive || $bins_wanted->disabled ) {
+        my $total = $bins_wanted->value;
         $self->add_form_error('The total number of bins cannot exceed ' . $max_bins)
             if $total > $max_bins;
 

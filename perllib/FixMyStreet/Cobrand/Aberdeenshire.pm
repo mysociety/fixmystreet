@@ -229,9 +229,14 @@ sub open311_report_fetched {
     my ($self, $problem, $request) = @_;
 
     my $supersedes = $request->{extras}{supersedes};
-    return unless $supersedes && $supersedes =~ /^DEFECT_/;
+    if ($supersedes && $supersedes =~ /^DEFECT_/) {
+        $self->_supersede_report($problem, $supersedes);
+    }
 
-    $self->_supersede_report($problem, $supersedes);
+    if (my $priority = $request->{extras}{priority}) {
+        $problem->set_extra_metadata(confirmPriorityCode => $priority);
+        $problem->update;
+    }
 }
 
 
@@ -310,9 +315,12 @@ sub disambiguate_location {
 
 =head2 pin_colour
 
+* Grey/orange if pulled-in defect with Confirm priority code DPM/otherwise
+* Grey if no further action or not responsible
+* Orange if investigating or planned or internal referral
 * Green if fixed or closed
-* Orange if defect or in progress
-* Red if open/confirmed
+* Orange work if in progress
+* Red if open or action scheduled
 
 =cut
 
@@ -323,13 +331,13 @@ sub is_defect {
 
 sub pin_colour {
     my ( $self, $p ) = @_;
-
+    return 'grey' if ($p->get_extra_metadata('confirmPriorityCode') || '') eq 'DPM';
+    return 'grey' if $p->state eq 'not responsible' || $p->state eq 'unable to fix';
+    return 'orange' if $p->state eq 'investigating' || $p->state eq 'planned' || $p->state eq 'internal referral';
     return 'green' if $p->is_fixed || $p->is_closed;
-
-    return 'orange' if $self->is_defect($p)
-        || $p->is_in_progress;
-
-    # Confirmed/open
+    return 'orange-work' if $p->state eq 'in progress';
+    return 'orange' if $self->is_defect($p);
+    # Confirmed/open or action scheduled
     return 'red';
 }
 

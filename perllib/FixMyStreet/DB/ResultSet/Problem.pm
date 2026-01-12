@@ -208,6 +208,8 @@ sub around_map {
     if ($c->user_exists) {
         if ($c->user->from_body || $c->user->is_superuser) {
             push @{$attr->{prefetch}}, 'contact';
+            $attr->{join}{contact} = 'translation_category';
+            push @{$attr->{"+columns"}}, { 'contact.msgstr' => \"COALESCE(translation_category.msgstr, contact.category)" };
         }
         if ($c->user->has_body_permission_to('planned_reports')) {
             push @{$attr->{prefetch}}, 'user_planned_reports';
@@ -242,9 +244,6 @@ sub around_map {
     $q->{'me.category'} = $p{categories} if $p{categories} && @{$p{categories}};
 
     $rs->non_public_if_possible($q, $c);
-
-    # Add in any optional extra query parameters
-    $q = { %$q, %{$p{extra}} } if $p{extra};
 
     my $problems = mySociety::Locale::in_gb_locale {
         $rs->search( $q, $attr )->include_comment_counts->page($p{page});
