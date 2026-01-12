@@ -407,7 +407,8 @@ sub _handle_category_change {
         }
 
         if ( my $group = $request->{extras}{group} ) {
-            $p->set_extra_metadata( group => $group );
+            $group = $group->[0] if ref $group eq 'ARRAY';
+            $p->set_extra_metadata( group => $group ) if $group;
         }
     }
 
