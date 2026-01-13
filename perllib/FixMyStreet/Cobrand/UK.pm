@@ -684,7 +684,6 @@ sub roles_from_oidc {
     }
 
     for my $assign_role (@$roles) {
-        print STDERR "Role $assign_role being checked\n";
         my ($body_role) = grep { $role_map->{$assign_role} && $_->{name} eq $role_map->{$assign_role} } @body_roles;
 
         if ($body_role) {

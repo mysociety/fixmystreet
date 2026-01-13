@@ -322,7 +322,6 @@ sub user_from_oidc {
             Authorization => 'Bearer ' . $access_token,
         );
         my $user = decode_json($response->decoded_content);
-        print STDERR $response->decoded_content . "\n";
         $payload->{roles} = [ $user->{department} ] if $user->{department};
     }
 
