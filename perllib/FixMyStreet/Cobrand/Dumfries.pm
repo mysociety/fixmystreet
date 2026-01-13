@@ -167,6 +167,9 @@ sub _updates_disallowed_check {
     my $c = $self->{c};
     my $superuser = $c->user_exists && $c->user->is_superuser;
     my $staff = $body_user || $superuser;
+
+    return 0 if $staff; # superusers/staff can do whatever XXX remove after client testing
+
     my $reporter = $c->user_exists && $c->user->id == $problem->user->id;
 
     # Check if state is planned or investigating
