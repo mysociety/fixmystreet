@@ -131,10 +131,13 @@ p.form-error {
     }
 }
 
-.postcode-form-box {
-    margin: 1em auto;
-    font-family: inherit;
+.report-forms-wrapper {
     max-width: 60em;
+    margin: 1em auto;
+}
+
+.postcode-form-box {
+    font-family: inherit;
 
     div {
         border: none;
