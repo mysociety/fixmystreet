@@ -8,6 +8,7 @@
         - Add option for checking against UserCheck. #5508
         - Improve category search to allow flexible searching for hyphenated categories
         - WasteWorks urls use a separate offline page #4655
+        - Add photo first reporting flow. #15
     - Accessibility improvements:
         - Improved accessibility of small drawer. #5354
         - Added skip report tools to Around page. #5354
