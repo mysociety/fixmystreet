@@ -23,7 +23,15 @@ has_field confirm => (
     type => 'Checkbox',
     required => 1,
     label => "Confirm",
-    option_label => "I acknowledge that the payment will not be refunded and would like to cancel my request",
+    build_option_label_method => sub {
+        my $self = shift;
+        my $c = $self->form->{c};
+        my $text = "I would like to cancel my container request.";
+        if ($c->stash->{request_to_cancel_is_paid}) {
+            $text .= " I acknowledge that the payment will not be refunded."
+        }
+        return $text;
+    },
 );
 
 has_field submit => (
@@ -36,12 +44,8 @@ has_field submit => (
 sub _build_title {
     my $self = shift;
     my $c = $self->form->{c};
-    my $service_name = $c->stash->{request_to_cancel_service_name} || "";
-    if ($service_name) {
-        $service_name = lc $service_name;
-        $service_name .= " ";
-    }
-    return "Cancel your $service_name" . "container request";
+    my $request_description = $c->stash->{request_to_cancel_description} || "";
+    return "Cancel your $request_description";
 }
 
 1;

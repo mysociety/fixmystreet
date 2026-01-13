@@ -816,7 +816,8 @@ sub cancel_request : Chained('property') : PathPart('request/cancel') : Args(1) 
     }
 
     $c->stash->{request_to_cancel} = $request_report;
-    $c->stash->{request_to_cancel_service_name} = $service_name;
+    $c->stash->{request_to_cancel_is_paid} = $request_report->waste_has_payment;
+    $c->stash->{request_to_cancel_description} = $c->cobrand->waste_container_request_description($request_report);
     $c->stash->{form_class} = "FixMyStreet::App::Form::Waste::Request::Cancel";
     $c->forward('form');
 }
@@ -824,8 +825,9 @@ sub cancel_request : Chained('property') : PathPart('request/cancel') : Args(1) 
 sub process_request_cancellation : Private {
     my ( $self, $c, $form ) = @_;
     my $report = $c->stash->{request_to_cancel};
+    my $text = $c->cobrand->waste_container_request_cancellation_text($report);
     $report->add_to_comments({
-        text => "Request cancelled",
+        text => $text,
         user => $c->cobrand->body->comment_user || $report->user,
         extra => { request_cancellation => 1 },
         problem_state => 'cancelled',

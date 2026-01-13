@@ -451,7 +451,7 @@ sub report_new_is_on_he_road {
     };
 
     my $ukc = FixMyStreet::Cobrand::UKCouncils->new;
-    my $features = $ukc->_fetch_features($cfg);
+    my $features = $ukc->_fetch_features($cfg) || [];
     my $nearest = $ukc->_nearest_feature($cfg, $x, $y, $features);
     # National Highways responsible for litter on Motorways and AM roads
     # And doesn't matter if we are not on a NH road

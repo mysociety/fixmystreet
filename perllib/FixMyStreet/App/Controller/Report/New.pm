@@ -639,6 +639,21 @@ sub initialize_report : Private {
         $report = $c->model('DB::Problem')->new( {} );
     }
 
+    if (!$c->stash->{upload_fileid} && $c->get_param('photo_id')) {
+        $c->stash->{upload_fileid} = $c->get_param('photo_id');
+    }
+
+    # Store photo_id if we have one (for attaching photo to report)
+    if (my $photo_id = $c->get_param('photo_id')) {
+        $c->stash->{photo_id} = $photo_id;
+    }
+
+    # photo_first flag indicates GPS was detected from the photo - only set if
+    # explicitly passed (photos uploaded via /around without GPS won't have this)
+    if ($c->get_param('photo_first')) {
+        $c->stash->{photo_first} = 1;
+    }
+
     # If we have a user logged in let's prefill some values for them.
     if (!$report->user && $c->user) {
         my $user = $c->user->obj;
@@ -2052,6 +2067,11 @@ sub redirect_to_around : Private {
 
     if ( my $token = $c->stash->{partial_token} ) {
         $params->{partial} = $token->token;
+    }
+
+    # Preserve photo_id when redirecting to around
+    if ( my $photo_id = $c->get_param('photo_id') ) {
+        $params->{photo_id} = $photo_id;
     }
 
     my $around_uri = $c->uri_for( '/around', $params );

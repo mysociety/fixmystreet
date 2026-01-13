@@ -337,8 +337,21 @@ sub edit : Path('/admin/report_edit') : Args(1) {
         if ( $problem->state ne $old_state ) {
             $c->forward( '/admin/log_edit', [ $id, 'problem', 'state_change' ] );
 
+            my $updates = Open311::GetServiceRequestUpdates->new(
+                blank_updates_permitted => 1,
+            );
+
+            my ($description, $email_text);
+            foreach my $body (values %{$problem->bodies}) {
+                my $template = $problem->response_template_for($body, $problem->state, $old_state, '', '');
+                ($description, $email_text) = $updates->comment_text_for_request($template, {}, $problem);
+            }
+
+            my $text = join("\n\n", grep { $_ } ($c->stash->{update_text}, $description));
+
             $problem->add_to_comments( {
-                text => $c->stash->{update_text} || '',
+                text => $text,
+                $email_text ? (private_email_text => $email_text) : (),
                 user => $c->user->obj,
                 problem_state => $problem->state,
             } );

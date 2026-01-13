@@ -1392,7 +1392,7 @@ sub waste_request_form_first_next {
                     category => 'Request new container',
                     title => ['Request new General rubbish bin (grey bin)'],
                     confirmed => { '>=', $parser->format_datetime($date) },
-                    extra => { '@>' => encode_json({ "_fields" => [ { name => "property_id", value => $c->stash->{property}{id} } ] }) },
+                    uprn => $c->stash->{property}{uprn},
                 }
             )->first;
         };

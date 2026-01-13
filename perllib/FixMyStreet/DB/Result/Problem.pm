@@ -1555,14 +1555,25 @@ sub waste_property_id {
     return $self->get_extra_field_value('property_id');
 }
 
-=head3 waste_check_payment
+=head3 waste_has_payment
+
+Check if the report has an associated payment.
+
+=cut
+
+sub waste_has_payment {
+    return $_[0]->get_extra_field_value('payment');
+}
+
+
+=head3 waste_check_payment_state
 
 This is called to see if a report has already had payment made on it.
 
 =cut
 
 sub waste_check_payment_state {
-    my ($self, $reference) = @_;
+    my $self = shift;
     my $cobrand = $self->get_cobrand_logged;
 
     my $already_confirmed;
