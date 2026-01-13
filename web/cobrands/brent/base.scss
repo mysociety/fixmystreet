@@ -283,8 +283,6 @@ dl dt {
 }
 
 .dropzone {
-  margin-top: 0.5em;
-
   &:focus, &:focus-visible {
     background-color: transparentize($color: $link-hover-color, $amount: 0.7);
     border-color: $link-focus-color;

@@ -22,6 +22,8 @@ $col_click_map: #00BD08;
 $itemlist_item_background: #f6f6f6;
 $itemlist_item_background_hover: mix(#fff, $primary, 70%);
 
+$postcodeform-max-width: 45%;
+
 $layout_front_stats_color: #222;
 
 $nicetable-stripe-background: #f3f3f3;
@@ -32,3 +34,6 @@ $front-main-background-desktop: $primary url(/cobrands/fixmystreet.com/images/ti
 $dropzone-frontpage-white-background-desktop: true;
 
 $dropzone-frontpage-color: #222;
+
+$button-primary-bg-top: $primary;
+$button-primary-text: $primary_text;

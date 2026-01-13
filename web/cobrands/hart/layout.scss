@@ -51,23 +51,12 @@
     max-width: $container-max-width;
 
     #front-main-container {
-        max-width: 40em;
+        max-width: 65em;
         text-align: left;
-        padding: 1.5em 0 1em 0;
+        padding: 1.5em;
         margin-left: 0;
         @include hart-boxshadow(20px, 20px, 0 , 0, $primary);
     }
-
-    #postcode-intro {
-        margin-right: 1em;
-        margin-left: 1em;
-    }
-}
-
-.postcode-form-box {
-    max-width: 500px;
-    margin-left: 0em;
-    padding: 1em;
 }
 
 #front_stats big {
