@@ -80,7 +80,7 @@
                 [% END %]
             </form>
 
-            [% IF c.cobrand.allow_photo_upload AND c.req.uri.path == '/' %]
+            [% IF c.cobrand.moniker == 'fixmystreet' AND c.cobrand.allow_photo_upload AND c.req.uri.path == '/' %]
             <div class="image-first-form-wrapper">
                 <p class="label"><span class="badge">New</span>Or start a report with a photo</p>
 
