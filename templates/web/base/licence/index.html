@@ -1,0 +1,31 @@
+[% SET bodyclass = 'formflow govuk licence';
+   SET title = form.title;
+%]
+
+[% INCLUDE header.html %]
+
+  [% PROCESS 'govuk/fields.html' %]
+  [% PROCESS errors %]
+  [% PROCESS title %]
+
+  [%# Templates can be type-specific (scaffold/intro.html) or shared (dates.html) %]
+  [% IF form.intro_template %][% PROCESS "licence/${form.intro_template}" %][% END %]
+
+<form method="post" enctype="multipart/form-data">
+  [% PROCESS form %]
+</form>
+
+[% IF form.current_page.name != 'intro' %]
+<button id='form-back' class="hidden-nojs govuk-button govuk-button--secondary">Back</button>
+
+<script nonce="[% csp_nonce %]">
+(function(){
+    var back = document.getElementById('form-back');
+    back.addEventListener('click', function(e) {
+        history.back();
+    });
+})();
+</script>
+[% END %]
+
+[% INCLUDE footer.html %]
