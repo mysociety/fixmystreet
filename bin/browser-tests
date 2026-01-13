@@ -157,6 +157,7 @@ sub run {
             COBRAND_FEATURES => {
                 category_groups => { map { $_ => 1 } @$cobrand },
                 suggest_duplicates => { map { $_ => 1 } @$cobrand },
+                image_first => { fixmystreet => 1 },
                 asset_layers => $asset_layers,
             }
         });

@@ -1,3 +1,4 @@
+[% photo_upload = c.cobrand.feature('image_first') AND c.cobrand.allow_photo_upload AND c.req.uri.path == '/' ~%]
 <main id="front-main">
     <div id="front-main-container">
         [% UNLESS possible_location_matches %]
@@ -25,7 +26,12 @@
             <p>To continue draft<span class="js-draft-name"></span> enter its location.<br>
             <a href="/" class="btn">Cancel</a>
         </div>
+
+
+      [% IF photo_upload %]
         <div class="report-forms-wrapper">
+      [% END %]
+
             <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
                 <label for="pc">[% question %]:</label>
                 [% INCLUDE 'around/_postcode_form_examples.html' %]
@@ -80,7 +86,7 @@
                 [% END %]
             </form>
 
-            [% IF c.cobrand.moniker == 'fixmystreet' AND c.cobrand.allow_photo_upload AND c.req.uri.path == '/' %]
+            [% IF photo_upload %]
             <div class="image-first-form-wrapper">
                 <p class="label"><span class="badge">New</span>Or start a report with a photo</p>
 
@@ -98,6 +104,10 @@
                 </form>
             </div>
             [% END %]
+
+      [% IF photo_upload %]
         </div>
+      [% END %]
+
     </div>
 </main>
