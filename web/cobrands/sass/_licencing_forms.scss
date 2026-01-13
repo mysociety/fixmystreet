@@ -1,0 +1,67 @@
+body.formflow {
+    label, legend {
+      margin-top: 0; font-weight: normal !important;
+    } /* from base/h5bp */
+
+    input[type="text"].govuk-input--width-2 {
+      max-width: 5.4ex;
+    }
+
+    input[type="text"].govuk-input--width-4 {
+      max-width: 9ex;
+    }
+
+    input[type="time"].govuk-input {
+      max-width: 20ex;
+    }
+
+    input[type="text"].govuk-input, input[type="time"].govuk-input, input[type="email"].govuk-input {
+      font-size: 16px;
+      font-size: 1rem;
+      line-height: 1.25;
+      padding: 5px;
+      @media (min-width: 40.0625em) {
+        font-size: 19px; font-size: 1.1875rem; line-height: 1.31579;
+      }
+    }
+}
+
+.licence__summary {
+  .govuk-summary-list {
+    font-size: 1em;
+    border-top: 1px solid #808080;
+    background-color: white;
+  }
+
+  .govuk-summary-list__row {
+    background-color: white;
+  }
+
+  .govuk-heading-m {
+    margin-bottom: 10px;
+  }
+
+  .govuk-summary-list__key--sub {
+    padding-top: 10px;
+    font-weight: normal !important; /* Ugh */
+  }
+
+  .govuk-button--secondary {
+    font-size: 1em;
+  }
+  .govuk-summary-list__key {
+    vertical-align: middle;
+  }
+}
+
+.govuk-select {
+  width: auto;
+  min-width: 5em;
+}
+
+.formflow {
+  .govuk-fieldset__heading {
+    font-size: 1.4375rem;
+    font-weight: bold;
+  }
+}

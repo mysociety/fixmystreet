@@ -1098,26 +1098,6 @@ sub format_for_display {
     return $value;
 }
 
-# params does not include file uploads which causes breaks the
-# validation and value setting so we need to handle them here.
-sub get_params {
-    my ($self, $c) = @_;
-
-    my @params = $c->req->body_params;
-
-    if ( $c->req->uploads ) {
-        for my $field ( keys %{ $c->req->uploads } ) {
-            next unless $self->field($field);
-            if ($self->field($field)->{type} eq 'FileIdUpload') {
-                $self->file_upload($field);
-                $params[0]->{$field} = $self->saved_data->{$field};
-            }
-        }
-    }
-
-    return @params;
-}
-
 # this makes sure that if any of the child fields have errors we mark the date
 # as invalid, even if it's technically a valid date. This is mostly to catch
 # range errors on the year. Otherwise we get an error at the top of the page

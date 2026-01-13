@@ -101,10 +101,24 @@ sub has_page_called {
     return grep { $_->name eq $page_name } $self->all_pages;
 }
 
+# body_params does not include file uploads, which breaks validation
+# and value setting, so we need to add them here.
 sub get_params {
     my ($self, $c) = @_;
 
-    return $c->req->body_params;
+    my @params = $c->req->body_params;
+
+    if ( $c->req->uploads ) {
+        for my $field ( keys %{ $c->req->uploads } ) {
+            next unless $self->field($field);
+            if ($self->field($field)->{type} eq 'FileIdUpload') {
+                $self->file_upload($field);
+                $params[0]->{$field} = $self->saved_data->{$field};
+            }
+        }
+    }
+
+    return @params;
 }
 
 =head2 next
