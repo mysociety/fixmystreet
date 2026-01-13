@@ -89,6 +89,12 @@
                   <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
                 [% END %]
               </div>
+            [% ELSE %]
+              [% IF c.cobrand.moniker == 'peterborough' %]
+                <div class="waste-service-grid--service-name">
+                  <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
+                </div>
+              [% END %]
             [% END %]
 
             <div class="waste-service-grid--service-description">
