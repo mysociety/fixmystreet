@@ -1,0 +1,13 @@
+[% SET title = 'Licence Applications' %]
+
+[% INCLUDE header.html %]
+
+<h1>Available Licence Types</h1>
+
+<ul>
+[% FOREACH type IN licence_types.keys.sort %]
+  <li><a href="/licence/[% type %]">[% licence_types.$type.name %]</a></li>
+[% END %]
+</ul>
+
+[% INCLUDE footer.html %]
