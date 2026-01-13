@@ -50,9 +50,18 @@ $postcodeform-background-desktop: transparent !default;
 $postcodeform-color-desktop: $primary_text !default;
 $form-hint-color-desktop: transparentize($postcodeform-color-desktop, 0.2) !default;
 $front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
+// This variable will be helpful for cobrands where the copy inside the postcode form is too long leaving to no space available for the image report first form.
+$postcodeform-max-width: 100% !default;
 
 //This variable controls the color of .content for the front-page
 $content-background-desktop: #fff !default;
+
+// Gap between the postcode form and the dropzone form
+$report-forms-wrapper-flex-column-gap: 7rem !default;
+$report-forms-wrapper-flex-row-gap: 2rem !default;
+
+// Useful when a cobrand has a front-main container with dark background.
+$dropzone-frontpage-white-background-desktop: false !default;
 
 .internal-link-fixed-header {
     display: block;
@@ -1014,6 +1023,52 @@ textarea.form-error {
 // Frontpage
 
 // big yellow bit full screen width
+.report-forms-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: $report-forms-wrapper-flex-column-gap;
+  row-gap: $report-forms-wrapper-flex-row-gap;
+  margin-top: 2rem;
+
+  color: $postcodeform-color-desktop;
+  background: $postcodeform-background-desktop;
+  max-width: $postcodeform-max-width;
+
+  @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
+    // Cases like Southwark
+    padding: 1rem;
+    margin: 0;
+  } @else if not (($front-main-container-background-desktop == transparent) or ($front-main-container-background-desktop == none)) {
+    // Cases like Aberdeenshire
+    padding: 0;
+    margin: 0;
+  } @else {
+    // Most Cases. Eg. Bath
+    padding: 0;
+    margin: 1rem 0 0;
+  }
+
+  .image-first-form-wrapper {
+    flex: 1 1 40%;
+    max-width: 30rem;
+
+    .label {
+      margin-top: 0;
+
+      .js & {
+        display: block;
+      }
+    }
+
+    .no-js & {
+      padding: 0;
+      margin: 0;
+      background: transparent;
+    }
+  }
+}
+
 #front-main {
   color: $front-main-color-desktop;
   background: $front-main-background-desktop;
@@ -1029,23 +1084,30 @@ textarea.form-error {
       padding: 0;
     }
   }
+  h1 {
+    margin-bottom: 0.25em;
+  }
   h2 {
     font-style:normal;
     color: $front-main-h2-color-desktop;
   }
+
+  @if (($dropzone-frontpage-white-background-desktop == true )) {
+    .dropzone {
+      background-color: #fff;
+      border-color: transparentize($color: #000, $amount: 0.4);
+
+      &:hover {
+        background-color: transparentize($color: $primary, $amount: 0.5);
+        border-color: transparentize($color: #000, $amount: 0.6);
+      }
+    }
+  }
 }
 
 .postcode-form-box {
-  color: $postcodeform-color-desktop;
-  background: $postcodeform-background-desktop;
-  @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
-    padding: 1em;
-    margin: 0 -1em;
-  } @else {
-    padding: 0;
-    margin: 1em auto 0;
-  }
   overflow: visible; // Doesn't cover the outline when focusing elements
+  background: $postcodeform-background-desktop;
   .form-hint {
     margin-top: -0.25em;
     color: $form-hint-color-desktop;
@@ -1053,6 +1115,41 @@ textarea.form-error {
   div {
     width:20em;
   }
+}
+
+// PhotoForm FrontPage
+#photoForm {
+ .js &,
+ .no-js & {
+  position: static;
+  width: auto;
+  margin: 0;
+  background: transparent;
+  box-shadow: none;
+
+  .dropzone-desktop {
+    display: block;
+  }
+  .dropzone-mobile {
+    display: none;
+  }
+
+  .dropzone {
+    background-image: url("/cobrands/fixmystreet/images/icon-image-upload.svg");
+    background-repeat: no-repeat;
+    padding: 2em;
+    padding-left: 4rem;
+    background-position: 1em 1.25em;
+    background-size: 3rem;
+    border-width: 1px;
+
+    .dz-error-message  {
+      padding-top: 0;
+      padding-right: 2rem;
+      box-sizing: border-box;
+    }
+  }
+ }
 }
 
 #front-howto {
