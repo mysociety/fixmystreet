@@ -482,13 +482,7 @@ sub format_for_display {
     my $field = $form->field($field_name);
 
     if ( $field->{type} eq 'Select' ) {
-        # Find label for the selected value
-        for my $opt (@{$field->options}) {
-            return $opt->{label} if defined $opt->{value} && $opt->{value} eq $value;
-        }
-        return $value;
         return $form->c->stash->{label_for_field}($form, $field_name, $value);
-
     } elsif ( $field->{type} eq 'DateTime' ) {
         # if field was on the last screen then we get the DateTime and not
         # the hash because it's not been through the freeze/that process
