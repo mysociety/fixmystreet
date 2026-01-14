@@ -247,6 +247,22 @@ subtest 'Scaffold form submission - smoke test' => sub {
         is $problem->non_public, 1, 'Problem is non-public';
         is $problem->user->email, 'test@example.com', 'User email set correctly';
         is $problem->user->name, 'Test Person', 'User name set correctly';
+
+        # Verify uploads went to the licence_files directory
+        my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+        my $base_dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
+        my $upload_dir = path($base_dir, "licence_files")->absolute(FixMyStreet->path_to());
+
+        ok -d $upload_dir, 'licence_files directory exists';
+
+        # Check each upload field has a file reference and the file exists
+        my $extra = $problem->get_extra_metadata;
+        for my $field (qw(upload_insurance upload_rams upload_scaffold_drawing)) {
+            ok $extra->{$field}, "Extra metadata contains $field";
+            ok $extra->{$field}->{files}, "$field has files key";
+            my $file_path = $upload_dir->child($extra->{$field}->{files});
+            ok -f $file_path, "Uploaded file exists at $file_path";
+        }
     };
 };
 

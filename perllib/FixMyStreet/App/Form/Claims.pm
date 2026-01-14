@@ -3,11 +3,7 @@ package FixMyStreet::App::Form::Claims;
 use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Wizard';
 use utf8;
-
 use Path::Tiny;
-use File::Copy;
-use Digest::SHA qw(sha1_hex);
-use File::Basename;
 
 has c => ( is => 'ro' );
 
@@ -17,11 +13,10 @@ has finished_action => ( is => 'ro' );
 
 has '+is_html5' => ( default => 1 );
 
-has upload_dir => ( is => 'ro', default => sub {
+has '+upload_dir' => ( default => sub {
     my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
     my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
-    $dir = path($dir, "claims_files")->absolute(FixMyStreet->path_to())->mkdir;
-    return $dir;
+    path($dir, "claims_files")->absolute(FixMyStreet->path_to())->mkdir;
 });
 
 before _process_page_array => sub {
@@ -1116,49 +1111,6 @@ sub validate_datetime {
     }
 
     $field->add_error("Please enter a valid date") unless $valid;
-}
-
-sub file_upload {
-    my ($form, $field) = @_;
-
-    my $c = $form->{c};
-    my $saved_data = $form->saved_data;
-
-    my $upload = $c->req->upload($field);
-    if ( $upload ) {
-        FixMyStreet::PhotoStorage::base64_decode_upload($c, $upload);
-        my ($p, $n, $ext) = fileparse($upload->filename, qr/\.[^.]*/);
-        my $key = sha1_hex($upload->slurp) . $ext;
-        my $out = $form->upload_dir->child($key);
-        unless (copy($upload->tempname, $out)) {
-            $c->log->info('Couldn\'t copy temp file to destination: ' . $!);
-            $c->stash->{photo_error} = _("Sorry, we couldn't save your file(s), please try again.");
-            return;
-        }
-        # Then store the file hashes along with the original filenames for display
-        $saved_data->{$field} = { files => $key, filenames => [ $upload->raw_basename ] };
-    }
-}
-
-sub handle_upload {
-    my ($form, $field, $fields) = @_;
-
-    my $saved_data = $form->saved_data;
-    if ( $saved_data->{$field} ) {
-        $fields->{$field} = { default => $saved_data->{$field}->{files}, tags => $saved_data->{$field} };
-    }
-}
-
-sub process_upload {
-    my ($form, $field) = @_;
-
-    my $saved_data = $form->saved_data;
-    my $c = $form->{c};
-
-    if ( !$saved_data->{$field} && $c->req->params->{$field . '_fileid'} ) {
-        # The data was already passed in from when it was saved before (also in tags, from above)
-        $saved_data->{$field} = $form->field($field)->init_value;
-    }
 }
 
 1;

@@ -2,9 +2,6 @@ package FixMyStreet::App::Form::Licence;
 
 use Moose::Role;
 use Path::Tiny;
-use File::Copy;
-use Digest::SHA qw(sha1_hex);
-use File::Basename;
 
 =head1 NAME
 
@@ -13,91 +10,20 @@ FixMyStreet::App::Form::Licence - Role for TfL licence application forms
 =head1 DESCRIPTION
 
 This role provides shared functionality for all licence application forms,
-including file upload handling and summary display methods.
+including summary display methods.
+
+File upload methods (file_upload, handle_upload, process_upload) are provided
+by the base Wizard class.
 
 =cut
 
 # Upload directory for licence files (separate from claims)
+# Note: This shadows the upload_dir from Wizard.pm when this role is composed
 has upload_dir => ( is => 'ro', lazy => 1, default => sub {
     my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
     my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
-    $dir = path($dir, "licence_files")->absolute(FixMyStreet->path_to())->mkdir;
-    return $dir;
+    path($dir, "licence_files")->absolute(FixMyStreet->path_to())->mkdir;
 });
-
-=head2 handle_upload
-
-Called in a page's update_field_list to restore upload field state from saved_data.
-
-    update_field_list => sub {
-        my ($form) = @_;
-        my $fields = {};
-        $form->handle_upload('field_name', $fields);
-        return $fields;
-    },
-
-=cut
-
-sub handle_upload {
-    my ($form, $field, $fields) = @_;
-
-    my $saved_data = $form->saved_data;
-    if ( $saved_data->{$field} ) {
-        $fields->{$field} = { default => $saved_data->{$field}->{files}, tags => $saved_data->{$field} };
-    }
-}
-
-=head2 process_upload
-
-Called in a page's post_process to save upload field data.
-
-    post_process => sub {
-        my ($form) = @_;
-        $form->process_upload('field_name');
-    },
-
-=cut
-
-sub process_upload {
-    my ($form, $field) = @_;
-
-    my $saved_data = $form->saved_data;
-    my $c = $form->{c};
-
-    if ( !$saved_data->{$field} && $c->req->params->{$field . '_fileid'} ) {
-        # The data was already passed in from when it was saved before (also in tags, from above)
-        $saved_data->{$field} = $form->field($field)->init_value;
-    }
-}
-
-=head2 file_upload
-
-Called by Wizard.pm when processing FileIdUpload fields. Saves the uploaded
-file to the upload directory with a SHA1 hash filename.
-
-=cut
-
-sub file_upload {
-    my ($form, $field) = @_;
-
-    my $c = $form->{c};
-    my $saved_data = $form->saved_data;
-
-    my $upload = $c->req->upload($field);
-    if ( $upload ) {
-        FixMyStreet::PhotoStorage::base64_decode_upload($c, $upload);
-        my ($p, $n, $ext) = fileparse($upload->filename, qr/\.[^.]*/);
-        my $key = sha1_hex($upload->slurp) . $ext;
-        my $out = $form->upload_dir->child($key);
-        unless (copy($upload->tempname, $out)) {
-            $c->log->info('Couldn\'t copy temp file to destination: ' . $!);
-            $c->stash->{photo_error} = _("Sorry, we couldn't save your file(s), please try again.");
-            return;
-        }
-        # Store the file hash along with the original filename for display
-        $saved_data->{$field} = { files => $key, filenames => [ $upload->raw_basename ] };
-    }
-}
 
 =head2 fields_for_display
 
