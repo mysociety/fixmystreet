@@ -51,7 +51,7 @@ $postcodeform-color-desktop: $primary_text !default;
 $form-hint-color-desktop: transparentize($postcodeform-color-desktop, 0.2) !default;
 $front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
 // This variable will be helpful for cobrands where the copy inside the postcode form is too long leaving to no space available for the image report first form.
-$postcodeform-max-width: 100% !default;
+$postcodeform-max-width: 55% !default;
 
 //This variable controls the color of .content for the front-page
 $content-background-desktop: #fff !default;
@@ -1033,7 +1033,6 @@ textarea.form-error {
 
   color: $postcodeform-color-desktop;
   background: $postcodeform-background-desktop;
-  max-width: $postcodeform-max-width;
 
   @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
     // Cases like Southwark
@@ -1108,6 +1107,7 @@ textarea.form-error {
 .postcode-form-box {
   overflow: visible; // Doesn't cover the outline when focusing elements
   background: $postcodeform-background-desktop;
+  max-width: $postcodeform-max-width;
   .form-hint {
     margin-top: -0.25em;
     color: $form-hint-color-desktop;
