@@ -117,6 +117,17 @@ for my $cat ('Dropped Kerbs', 'Skips') {
     $child_cat->update;
 }
 
+# Categories with multiple parents
+for my $cat ( 'Broken glass', 'Litter' ) {
+    my $child_cat = FixMyStreet::DB::Factory::Contact->find_or_create(
+        {   body     => $body,
+            category => $cat,
+        }
+    );
+    $child_cat->set_extra_metadata( group => [ 'Streets', 'Parks' ] );
+    $child_cat->update;
+}
+
 if ($opt->test_fixtures) {
     my $bodies;
 
@@ -491,10 +502,36 @@ my $template = FixMyStreet::DB::Factory::ResponseTemplate->create({
     body => $body, title => 'Not responsible', state => 'not responsible',
     text => 'This report is not the responsibility of the council and will be passed to the relevant organisation.' });
 $template->add_to_contacts($body->contacts->first);
-my $priority = FixMyStreet::DB::Factory::ResponsePriority->create({ body => $body, description => '4 hour fix' });
+my $template_single_group = FixMyStreet::DB::Factory::ResponseTemplate->create(
+    {   body  => $body,
+        title => 'Not responsible - one group',
+        state => 'not responsible',
+        text  =>
+            'This report with a category under one group is not the responsibility of the council.',
+    }
+);
+$template_single_group->add_to_contacts(
+    $body->contacts->search( { category => 'Skips' } )
+);
+my $template_multiple_groups = FixMyStreet::DB::Factory::ResponseTemplate->create(
+    {   body  => $body,
+        title => 'Not responsible - multiple groups',
+        state => 'not responsible',
+        text  =>
+            'This report with a category under multiple groups is not the responsibility of the council.',
+    }
+);
+$template_multiple_groups->add_to_contacts(
+    $body->contacts->search( { category => 'Litter' } )
+);
+my $priority_1 = FixMyStreet::DB::Factory::ResponsePriority->create({ body => $body, description => '4 hour fix' });
 FixMyStreet::DB::Factory::ResponsePriority->create({ body => $body, description => '28 day fix' });
 FixMyStreet::DB::Factory::ResponsePriority->create({ body => $body, description => 'For information only' });
-$priority->add_to_contacts($body->contacts->first);
+$priority_1->add_to_contacts($body->contacts->first);
+my $priority_4 = FixMyStreet::DB::Factory::ResponsePriority->create(
+    { body => $body, description => 'Ignore' } );
+$priority_4->add_to_contacts(
+    $body->contacts->search( { category => 'Litter' } ) );
 
 # Users
 say "Created users, all with password 'password':";
