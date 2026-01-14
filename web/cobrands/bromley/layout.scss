@@ -118,6 +118,12 @@ body:not(.mappage) {
   }
 }
 
+.report-forms-wrapper {
+  padding: 0;
+  background: transparent;
+  margin: 0;
+}
+
 .postcode-form-box,
 .image-first-form-wrapper {
   margin: 0 0;
@@ -125,6 +131,7 @@ body:not(.mappage) {
   border-radius: 8px;
   border: 2px solid $bromley_green;
   max-width: 550px;
+  min-width: 550px;
   padding: 1.5em 2em;
   .alertpage & {
     border: none;

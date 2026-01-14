@@ -28,9 +28,7 @@
         </div>
 
 
-      [% IF photo_upload %]
         <div class="report-forms-wrapper">
-      [% END %]
 
             <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
                 <label for="pc">[% question %]:</label>
@@ -76,11 +74,11 @@
                     END;
                 %]
                 [% INCLUDE 'around/_postcode_form_geolocation.html' url=c.uri_for('/around', link_params) %]
-    
+
                 [% IF c.req.uri.path == '/' %]
                 [% TRY %][% INCLUDE "front/front-main-message.html" %][% CATCH file %][% END %]
                 [% END %]
-    
+
                 [% UNLESS possible_location_matches OR location_error_pc_lookup %]
                     [% INCLUDE 'around/_postcode_form_post.html' %]
                 [% END %]
@@ -105,9 +103,7 @@
             </div>
             [% END %]
 
-      [% IF photo_upload %]
         </div>
-      [% END %]
 
     </div>
 </main>

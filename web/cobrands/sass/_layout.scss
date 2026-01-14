@@ -1041,14 +1041,17 @@ textarea.form-error {
   max-width: $postcodeform-max-width;
 
   @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
-    padding: 1em;
-    margin: 0 -1em;
-  } @else if not (($front-main-container-background-desktop == transparent) or ($front-main-container-background-desktop == none)) {
+    // Cases like Southwark
     padding: 1rem;
-    margin: 2rem 0;
-  } @else {
+    margin: 0;
+  } @else if not (($front-main-container-background-desktop == transparent) or ($front-main-container-background-desktop == none)) {
+    // Cases like Aberdeenshire
     padding: 0;
-    margin: 2rem 0;
+    margin: 0;
+  } @else {
+    // Most Cases. Eg. Bath
+    padding: 0;
+    margin: 1rem 0 0;
   }
 
   .image-first-form-wrapper {

@@ -36,7 +36,6 @@ has attr => ( is => 'ro', default => 'http://webservices.whitespacews.com/' );
 has username => ( is => 'ro' );
 has password => ( is => 'ro' );
 has url => ( is => 'ro' );
-has sample_data => ( is => 'ro', default => 0 );
 
 has endpoint => (
     is => 'lazy',

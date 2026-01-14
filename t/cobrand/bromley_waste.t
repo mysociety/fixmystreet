@@ -9,6 +9,10 @@ use FixMyStreet::TestMech;
 use FixMyStreet::SendReport::Open311;
 use FixMyStreet::Script::Alerts;
 use Open311::PostServiceRequestUpdates;
+use Path::Tiny;
+use Storable qw(store_fd);
+use Integrations::Echo;
+use JSON::MaybeXS;
 use List::Util 'any';
 use Regexp::Common 'URI';
 my $mech = FixMyStreet::TestMech->new;
@@ -427,6 +431,28 @@ FixMyStreet::override_config {
         $mech->content_lacks('Request a new food waste container');
         $mech->content_lacks('Request a new container');
     };
+};
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => 'bromley',
+    COBRAND_FEATURES => {
+        echo => { bromley => { sample_data => 2} },
+        waste => { bromley => 1 }
+    },
+}, sub {
+    subtest "Temporary data deleted" => sub {
+        &create_tmp_data_files;
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('2 Stored Street, Bromley, BR1 1AA', "Used stored call data");
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('2 Example Street, Bromley, BR1 1AA', 'Used backend call as tmp data deleted having been called previously');
+
+        &create_tmp_data_files(1);
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_contains('2 Example Street, Bromley, BR1 1AA', "Used backend call as tmp file deleted by timestamp");
+    }
 };
 
 subtest 'Checking correct renewal prices' => sub {
@@ -1756,6 +1782,42 @@ sub setup_dd_test_report {
     $report->update;
 
     return $report;
+}
+
+
+sub create_tmp_data_files {
+    my $age_files = shift;
+
+    my $tmp_dir = path(FixMyStreet->config('WASTEWORKS_BACKEND_TMP_DIR'));
+    my $fh;
+    my $data = &data_to_save;
+
+    open($fh, '>', path($tmp_dir, '444eb5ed78849f0054f3cca4431e6789'));
+    store_fd({'GetServiceUnitsForObject 12345' => $data->{GetServiceUnitsForObject}, 'GetPointAddress 12345' => $data->{GetPointAddress}, 'GetEventsForObject PointAddress 12345' => $data->{GetEventsForObject} }, $fh);
+    close($fh);
+    open($fh, '>', path($tmp_dir, '5749a71301c144005209234c2f21bb08'));
+    store_fd($data->{collated_services}, $fh);
+    close($fh);
+    if ($age_files) {
+        my $past = DateTime->now()->subtract(seconds => 65)->epoch;
+        utime($past, $past, path($tmp_dir, '444eb5ed78849f0054f3cca4431e6789'));
+        utime($past, $past, path($tmp_dir, '5749a71301c144005209234c2f21bb08'));
+    }
+};
+
+sub data_to_save {
+
+    my %data = ();
+    my $echo = Integrations::Echo->new(sample_data => 1);
+    $data{'GetPointAddress'} = $echo->GetPointAddress(12345);
+    $data{'GetPointAddress'}->{'Description'} = '2 Stored Street, Bromley, BR1 1AA';
+    $data{'GetServiceUnitsForObject'} = $echo->GetServiceUnitsForObject;
+    $data{'GetEventsForObject'} = $echo->GetEventsForObject('PointAddress');
+    for my $service (1001, 1002, 1003, 1004) {
+        $data{'collated_services'}->{"GetEventsForObject ServiceUnit $service"} = $echo->GetEventsForObject(['ServiceUnit', $service]);
+    }
+    $data{'collated_services'}->{'GetTasks'} = $echo->GetTasks([123, 456], [234, 567], [345, 678], [456, 789]);
+    return \%data;
 }
 
 done_testing();

@@ -129,10 +129,10 @@ sub end_summary_failures {
     })->order_by('-confirmed');
     my %bodies;
     while (my $row = $unsent->next) {
-        my $base_url = FixMyStreet->config('BASE_URL');
         my $key =  join ', ', @{ $row->body_names };
         $bodies{$key} ||= [];
-        push @{ $bodies{$key} }, $row->id;
+        my $base_url = get_base($self, $row);
+        push @{ $bodies{$key} }, $base_url . "/admin/report_edit/" . $row->id;
         $sending_errors .= "\n" . '=' x 80 . "\n\n" . "* " . $base_url . "/report/" . $row->id . ", failed "
             . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
             . ", reason " . $row->send_fail_reason . "\n";
@@ -142,7 +142,7 @@ sub end_summary_failures {
         my $bodies = join "\n", map {
             my $n = scalar @{ $bodies{$_} };
             "$_ ($n): " . join ', ', @{ $bodies{$_} }
-        } keys %bodies;
+        } sort keys %bodies;
 
         print "The following $count reports had problems sending:\n$bodies\n$sending_errors";
     }
@@ -152,6 +152,13 @@ sub log {
     my ($self, $msg) = @_;
     return unless $self->verbose;
     STDERR->print("[fmsd] $msg\n");
+}
+
+sub get_base {
+    my ($self, $row) = @_;
+
+    my $base = ($row->cobrand eq 'tfl' || $row->cobrand_data eq 'waste') ? $row->get_cobrand_logged->base_url : FixMyStreet->config('BASE_URL');
+    return $base;
 }
 
 1;
