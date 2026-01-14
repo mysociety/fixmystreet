@@ -3026,8 +3026,8 @@ a#geolocate_link {
     border-color: transparentize(#000, 0.4);
 
     &:hover {
-      background-color: transparentize($primary, 0.5);
-      border-color: transparentize(#000, 0.6);
+      background-color: transparentize(#fff, 0.2);
+      border-color: #000;
     }
   }
 }
@@ -3055,6 +3055,10 @@ a#geolocate_link {
       align-items: center;
       gap: 0.25rem;
       font-weight: 600;
+      padding: 0.5em 0.75em;
+      background-color: $button-primary-bg-top;
+      color: $button-primary-text;
+      border: none;
 
       svg {
         width: 2rem;
@@ -3077,6 +3081,11 @@ a#geolocate_link {
         margin: 0 auto;
       }
     }
+  }
+
+  // In case the bg of the primary colour has the same colour as its container.
+  .hidden-js.btn--primary {
+    border: 1px solid #fff !important;
   }
 }
 
