@@ -59,6 +59,7 @@ $content-background-desktop: #fff !default;
 // Gap between the postcode form and the dropzone form
 $report-forms-wrapper-flex-column-gap: 7rem !default;
 $report-forms-wrapper-flex-row-gap: 2rem !default;
+$report-forms-wrapper-margin-top: 1rem !default;
 
 // Useful when a cobrand has a front-main container with dark background.
 $dropzone-frontpage-white-background-desktop: false !default;
@@ -1029,24 +1030,21 @@ textarea.form-error {
   flex-wrap: wrap;
   column-gap: $report-forms-wrapper-flex-column-gap;
   row-gap: $report-forms-wrapper-flex-row-gap;
-  margin-top: 2rem;
-
+  
   color: $postcodeform-color-desktop;
   background: $postcodeform-background-desktop;
-
+  
   @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
     // Cases like Southwark
     padding: 1rem;
     margin: 0;
-  } @else if not (($front-main-container-background-desktop == transparent) or ($front-main-container-background-desktop == none)) {
-    // Cases like Aberdeenshire
-    padding: 0;
-    margin: 0;
   } @else {
     // Most Cases. Eg. Bath
     padding: 0;
-    margin: 1rem 0 0;
+    margin: 0;
   }
+
+  margin-top: $report-forms-wrapper-margin-top;
 
   .image-first-form-wrapper {
     flex: 1 1 40%;
@@ -1097,8 +1095,9 @@ textarea.form-error {
       border-color: transparentize($color: #000, $amount: 0.4);
 
       &:hover {
-        background-color: transparentize($color: $primary, $amount: 0.5);
+        background-color: transparentize($color: #fff, $amount: 0.2);
         border-color: transparentize($color: #000, $amount: 0.6);
+        border-style: solid;
       }
     }
   }
