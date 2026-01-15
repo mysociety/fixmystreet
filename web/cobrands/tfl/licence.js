@@ -1,7 +1,7 @@
 // Licence forms: disable contractor fields when "same as applicant" is checked
-$(function() {
-    var $checkbox = $('#contractor_same_as_applicant-0');
-    if (!$checkbox.length) {
+(function() {
+    var checkbox = document.getElementById('contractor_same_as_applicant-0');
+    if (!checkbox) {
         return;
     }
 
@@ -15,12 +15,15 @@ $(function() {
     ];
 
     function updateContractorFields() {
-        var disabled = $checkbox.is(':checked');
+        var disabled = checkbox.checked;
         contractorFields.forEach(function(fieldName) {
-            $('#' + fieldName).prop('disabled', disabled);
+            var field = document.getElementById(fieldName);
+            if (field) {
+                field.disabled = disabled;
+            }
         });
     }
 
-    $checkbox.on('change', updateContractorFields);
+    checkbox.addEventListener('change', updateContractorFields);
     updateContractorFields();
-});
+})();
