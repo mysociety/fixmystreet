@@ -601,6 +601,22 @@ sub request_cost {
     }
 }
 
+=head2 waste_target_days
+
+Configure the number of days a waste event is expected to be resolved in.
+
+=cut
+
+sub waste_target_days {
+    {
+        container_escalation => 5,
+        missed => 2,
+        missed_escalation => 1,
+        missed_bulky => 2,
+        missed_bulky_escalation => 2,
+    }
+}
+
 =head2 waste_day_end_hour
 
 Time that the day ends for the purposes of calculating things like escalation windows

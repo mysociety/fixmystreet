@@ -25,7 +25,8 @@ END;
             by yourself, a neighbour, or your Managing Agent
         [% END %]
         on [% date.format(service.report_open.date, '%A, %-d %B') %].
-        Our crews should have returned to collect within 2 working days of the report;
+        [% SET resolve_date = service.target OR service.report_open.target %]
+        Our crews should have returned to collect by [% date.format(resolve_date, '%A, %-d %B') %];
         if they have not returned you can escalate the report.
         </p>
     [% ELSIF service.report_open %]
