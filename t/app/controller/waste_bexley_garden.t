@@ -1693,6 +1693,7 @@ FixMyStreet::override_config {
         $mech->content_like(qr/name="post_code"[^>]*value="DA1 3NP"/);
 
         my %valid_fields = (
+            guarantee_check => 1,
             name_title => 'Mr',
             first_name => 'Test',
             surname => 'McTest',
@@ -1706,6 +1707,7 @@ FixMyStreet::override_config {
 
         # Test missing required fields
         my %empty_fields = map { $_ => '' } keys %valid_fields;
+        delete $empty_fields{guarantee_check};
         $mech->submit_form_ok({ with_fields => \%empty_fields });
         $mech->content_contains('Name of account holder field is required', 'Shows error for missing account holder name');
         $mech->content_contains('Account number field is required', 'Shows error for missing account number');
@@ -1715,6 +1717,7 @@ FixMyStreet::override_config {
         $mech->content_contains('Postcode field is required', 'Shows error for missing postcode');
         $mech->content_contains('Sort code field is required', 'Shows error for missing sort code');
         $mech->content_contains('Surname field is required', 'Shows error for missing surname');
+        $mech->content_contains('Direct Debit Guarantee field is required');
 
         # Test invalid account holder name (too long)
         $mech->submit_form_ok({ with_fields => {
@@ -1846,6 +1849,7 @@ FixMyStreet::override_config {
 
         # Submit bank details form
         $mech->submit_form_ok({ with_fields => {
+            guarantee_check => 1,
             name_title => 'Mr',
             first_name => 'Test',
             surname => 'McTest',
@@ -1969,6 +1973,7 @@ FixMyStreet::override_config {
 
         # Submit bank details form
         $mech->submit_form_ok({ with_fields => {
+            guarantee_check => 1,
             name_title => 'Mr',
             first_name => 'Test',
             surname => 'McTest',
@@ -2925,6 +2930,7 @@ FixMyStreet::override_config {
 
         # Submit bank details
         $mech->submit_form_ok({ with_fields => {
+            guarantee_check => 1,
             name_title => 'Mr',
             first_name => 'Test',
             surname => 'McTest',

@@ -13,7 +13,7 @@ use URI;
 sub bank_details { return (
     title => 'Enter Your Bank Details',
     template => 'waste/bank_details.html',
-    fields => ['name_title', 'first_name', 'surname', 'address1', 'address2', 'address3', 'address4', 'post_code', 'account_holder', 'account_number', 'sort_code', 'submit_bank_details'],
+    fields => ['name_title', 'first_name', 'surname', 'address1', 'address2', 'address3', 'address4', 'post_code', 'account_holder', 'account_number', 'sort_code', 'guarantee_check', 'submit_bank_details'],
     next => 'summary',
     update_field_list => sub {
         my $form = shift;
@@ -174,6 +174,23 @@ has_field sort_code => (
         $self->value($sort_code);
         $self->add_error('Please enter a valid 6 digit sort code')
             unless $sort_code =~ /^\d{6}$/;
+    },
+);
+
+has_field guarantee_check => (
+    type => 'Checkbox',
+    required => 1,
+    label => "Direct Debit Guarantee",
+    build_option_label_method => sub {
+        my $c = $_[0]->form->{c};
+        my $guarantee = '<a href="https://www.directdebit.co.uk/direct-debit-guarantee/">Direct Debit Guarantee</a>';
+        my $text;
+        if ($c->stash->{is_staff}) {
+            $text = "I can confirm I have read out the $guarantee to the customer";
+        } else {
+            $text = "I confirm I have read and understand the $guarantee";
+        }
+        return FixMyStreet::Template::SafeString->new($text);
     },
 );
 
