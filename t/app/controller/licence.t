@@ -18,7 +18,7 @@ my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 # Create the category for scaffold licences
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
-    category => 'Licence: Scaffold',
+    category => 'Scaffold licence',
     email => 'licence@tfl.gov.uk'
 );
 
@@ -245,7 +245,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
 
         # Verify Problem was created
         my $problem = FixMyStreet::DB->resultset('Problem')
-            ->search({ category => 'Licence: Scaffold' })
+            ->search({ category => 'Scaffold licence' })
             ->order_by({ -desc => 'id' })->first;
         ok $problem, 'Problem record created';
         is $problem->cobrand_data, 'licence', 'cobrand_data is licence';
