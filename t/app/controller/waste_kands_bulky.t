@@ -900,7 +900,7 @@ FixMyStreet::override_config {
             set_fixed_time('2023-07-12T15:00:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' });
-            # TODO $mech->content_contains('We aim to resolve this by Tuesday, 11 July', 'missed collection escalation date correct');
+            $mech->content_contains('should have returned to collect by Tuesday, 11 July', 'missed collection escalation date correct');
             $mech->submit_form_ok( { with_fields => { category => 'Complaint against time' } } );
 
             subtest 'actually make the report' => sub {
@@ -972,7 +972,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with a bulky waste collection' });
             $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating');
-            # TODO $mech->content_contains('aim to resolve this by Friday, 14 July', 'contains missed escalation target date');
+            $mech->content_contains('aim to resolve this by Friday, 14 July', 'contains missed escalation target date');
             $mech->content_lacks('aim to resolve this by Tuesday, 11 July', 'does not contain missed collection target date');
         };
 
@@ -1272,7 +1272,7 @@ FixMyStreet::override_config {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
-            $mech->content_lacks('We aim to resolve this by Thursday, 10 April');
+            $mech->content_contains('should have returned to collect by Thursday, 10 April');
 
             $mech->content_like(qr/Escalate my missed collection report/);
             $mech->submit_form_ok({ with_fields => { category => 'Complaint against time' }});
@@ -1338,6 +1338,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
             $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating.');
+            $mech->content_contains('We aim to resolve this by Tuesday, 15 April.');
             $mech->content_lacks('if they have not returned you can escalate the report');
         };
 
