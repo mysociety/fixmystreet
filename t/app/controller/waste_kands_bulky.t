@@ -941,7 +941,7 @@ FixMyStreet::override_config {
             set_fixed_time('2023-07-12T16:01:00Z');
             $mech->get_ok('/waste/12345');
             $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating');
-            $mech->content_contains('aim to resolve this by Thursday, 13 July', 'contains missed escalation target date');
+            $mech->content_contains('aim to resolve this by Friday, 14 July', 'contains missed escalation target date');
             $mech->content_lacks('aim to resolve this by Tuesday, 11 July', 'does not contain missed collection target date');
             $mech->content_lacks('please report the problem here');
         };
@@ -1219,7 +1219,7 @@ FixMyStreet::override_config {
 
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('We aim to resolve this by Thursday, 10 April');
+            $mech->content_contains('We aim to resolve this by Thursday, 10 April');
 
             $mech->follow_link_ok({ text => 'please report the problem here' });
 
@@ -1281,7 +1281,7 @@ FixMyStreet::override_config {
 
             set_fixed_time('2025-04-12T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating.');
+            $mech->content_contains('Thank you for reporting an issue with this collection; we are investigating and aim to resolve this by Tuesday, 15 April.');
             $mech->content_lacks('please report the problem here');
         };
 
