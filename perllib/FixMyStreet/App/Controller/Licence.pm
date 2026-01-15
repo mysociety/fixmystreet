@@ -91,7 +91,7 @@ sub process_licence : Private {
         }
     }
 
-    my $category = "Licence: $name";
+    my $category = "$name licence";
 
     my %shared = (
         state        => 'unconfirmed',
