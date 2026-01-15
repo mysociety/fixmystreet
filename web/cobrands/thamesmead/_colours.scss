@@ -48,6 +48,9 @@ $mappage-header-height: 64px;
 
 /* VARIABLES */
 
+$button-primary-bg-top: $peabody-brick-d1;
+$button-primary-text: $peabody-white;
+
 $border-radius: 5px;
 $box-background-colour: mix($primary, $peabody-white, 15%);
 
@@ -60,3 +63,7 @@ $front-main-container-background-desktop: $peabody-white;
 $postcodeform-background: transparent;
 $postcodeform-color: $peabody-mid-grey;
 $postcodeform-color-desktop: $peabody-mid-grey;
+
+$postcodeform-max-width: 44%;
+$report-forms-wrapper-flex-column-gap: 5rem;
+$report-forms-wrapper-margin-top: 1.5rem;

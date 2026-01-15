@@ -146,6 +146,9 @@ $btn-text-decoration-thickness-focus: 2px !important;
 $btn-underline-offset: $text-underline-offset;
 
 // * Primary button
+$button-primary-bg-top: $link-color;
+$button-primary-text: $white;
+
 $primary_button_background_color: $link-color;
 $primary_button_color: $white;
 $primary_button_border_color: $link-color;

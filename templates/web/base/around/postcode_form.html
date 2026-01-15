@@ -75,10 +75,6 @@
                 %]
                 [% INCLUDE 'around/_postcode_form_geolocation.html' url=c.uri_for('/around', link_params) %]
 
-                [% IF c.req.uri.path == '/' %]
-                [% TRY %][% INCLUDE "front/front-main-message.html" %][% CATCH file %][% END %]
-                [% END %]
-
                 [% UNLESS possible_location_matches OR location_error_pc_lookup %]
                     [% INCLUDE 'around/_postcode_form_post.html' %]
                 [% END %]
@@ -98,12 +94,14 @@
                         </div>
                     </div>
                     <input type="hidden" name="start_report" value="1">
-                    <input type="submit" value="[% loc('Start report from photo') %]" class="hidden-js btn btn--final">
+                    <input type="submit" value="[% loc('Start report from photo') %]" class="hidden-js btn btn--final btn--primary">
                 </form>
             </div>
             [% END %]
-
         </div>
+        [% IF c.req.uri.path == '/' %]
+        [% TRY %][% INCLUDE "front/front-main-message.html" %][% CATCH file %][% END %]
+        [% END %]
 
     </div>
 </main>
