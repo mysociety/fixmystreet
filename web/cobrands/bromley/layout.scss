@@ -131,12 +131,18 @@ body:not(.mappage) {
   border-radius: 8px;
   border: 2px solid $bromley_green;
   max-width: 550px;
-  min-width: 550px;
+  min-width: 40%;
   padding: 1.5em 2em;
+  background: white;
   .alertpage & {
     border: none;
     padding: 0;
   }
+}
+
+.no-js .report-forms-wrapper .image-first-form-wrapper {
+  padding: 1rem;
+  background: white;
 }
 
 .container .content {

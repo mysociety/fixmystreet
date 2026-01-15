@@ -1,6 +1,6 @@
 /* COLOURS */
 
-$eh_green: #006633;
+$eh_green: #007A4E; // Updated from their website on 2026
 $eh_yellow: #fedd33;
 $eh_blue: #007FA3;
 $eh_light_grey: #EBEBEB;
@@ -51,3 +51,7 @@ $dropzone-button-border: $eh_green;
 $sticky-sidebar-bg-color: mix($eh_green, #fff, 20%);
 $mobile-sticky-sidebar-button-bg: $eh_green;
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
+
+$button-primary-bg-top: #007A4E;
+$button-primary-text: #fff;
+$button-primary-border: #007A4E;

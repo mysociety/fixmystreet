@@ -97,7 +97,16 @@ h1 {
     #front-main-container {
         margin-top: 100px;
         padding: 2rem;
+        text-align: left;
+
+        h1 {
+            text-align: center;
+        }
     }
+}
+
+.postcode-form-box div {
+    margin: 0;
 }
 
 body.frontpage {
@@ -135,11 +144,6 @@ body.frontpage {
     .frontpage & {
         margin: 3rem -2rem;
     }
-}
-
-.report-forms-wrapper {
-    justify-content: center;
-    margin-top: 1rem;
 }
 
 // MAPPAGE
