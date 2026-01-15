@@ -93,36 +93,32 @@ sub process_licence : Private {
 
     my $category = "$name licence";
 
-    my %shared = (
-        state        => 'unconfirmed',
-        cobrand      => $c->cobrand->moniker,
-        cobrand_data => 'licence',
-        lang         => $c->stash->{lang_code},
-        user         => $user,
-        name         => $user->name || '',
-        anonymous    => 0,
-        extra        => $data,
-    );
-
     # Default to central London (Trafalgar Square) if geocoding didn't provide coordinates.
     # This ensures the report can be viewed without National Grid conversion errors.
     my $latitude = $data->{latitude} || 51.508;
     my $longitude = $data->{longitude} || -0.128;
 
     my $problem = $c->model('DB::Problem')->new({
-        non_public       => 1,
-        category         => $category,
-        used_map         => $data->{latitude} ? 1 : 0,
-        title            => $category,
-        detail           => $detail,
-        postcode         => $data->{postcode} || '',
-        latitude         => $latitude,
-        longitude        => $longitude,
-        areas            => '',
+        non_public         => 1,
+        category           => $category,
+        used_map           => $data->{latitude} ? 1 : 0,
+        title              => $category,
+        detail             => $detail,
+        postcode           => $data->{postcode} || '',
+        latitude           => $latitude,
+        longitude          => $longitude,
+        areas              => '',
         send_questionnaire => 0,
-        bodies_str       => $c->cobrand->body->id,
-        photo            => $data->{photos},
-        %shared,
+        bodies_str         => $c->cobrand->body->id,
+        photo              => $data->{photos},
+        state              => 'unconfirmed',
+        cobrand            => $c->cobrand->moniker,
+        cobrand_data       => 'licence',
+        lang               => $c->stash->{lang_code},
+        user               => $user,
+        name               => $user->name || '',
+        anonymous          => 0,
+        extra              => $data,
     });
 
     $c->stash->{detail} = $detail;
