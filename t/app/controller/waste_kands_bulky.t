@@ -1336,6 +1336,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok( { url_regex => qr/service_id=960/}, 'Follow "Report a problem" link for bulky waste' );
             $mech->content_contains('You escalated this missed collection report on Friday, 11 April.');
+            $mech->content_contains('We aim to resolve this by the end of Tuesday, 15 April.');
             $mech->content_lacks('you can escalate the report now');
         };
 
