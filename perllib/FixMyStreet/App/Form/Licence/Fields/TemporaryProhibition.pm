@@ -19,7 +19,7 @@ These fields are identical across all 16 licence types.
 has_field parking_bay_suspension => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'VIII. Will a parking, loading, disabled and/or motorcycle parking bay need to be suspended?',
+    label => 'Will a parking, loading, disabled and/or motorcycle parking bay need to be suspended?',
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -31,7 +31,7 @@ has_field parking_bay_suspension => (
 has_field road_closure_required => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'IX. Will a road closure be required?',
+    label => 'Will a road closure be required?',
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },

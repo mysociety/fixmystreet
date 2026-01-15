@@ -28,12 +28,14 @@ has_field contractor_organisation => (
     type => 'Text',
     label => 'Organisation name',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
+    tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
 );
 
 has_field contractor_contact_name => (
     type => 'Text',
     label => 'Contact name',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
+    tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
     validate_method => sub {
         my $self = shift;
         $self->add_error('Please enter your full name.')
@@ -50,6 +52,7 @@ has_field contractor_address => (
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
     tags => {
         hint => 'Including postcode',
+        hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} },
     },
 );
 
@@ -57,12 +60,14 @@ has_field contractor_email => (
     type => 'Email',
     label => 'Email address',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
+    tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
 );
 
 has_field contractor_phone => (
     type => 'Text',
     label => 'Telephone number (9am-5pm)',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
+    tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
     validate_method => sub {
         my $self = shift;
         my $parsed = FixMyStreet::SMS->parse_username($self->value);
@@ -75,6 +80,7 @@ has_field contractor_phone_24h => (
     type => 'Text',
     label => 'Telephone number (24/7)',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
+    tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
     validate_method => sub {
         my $self = shift;
         my $parsed = FixMyStreet::SMS->parse_username($self->value);

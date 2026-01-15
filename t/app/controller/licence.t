@@ -202,6 +202,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
 
         # Site specific page
         $mech->submit_form_ok({ with_fields => {
+            site_adequate_space => 'Yes',
             site_within_450mm => 'No',
             site_obstruct_infrastructure => 'No',
             site_protection_fan => 'No',
@@ -231,6 +232,10 @@ subtest 'Scaffold form submission - smoke test' => sub {
 
         # Summary page - check it rendered
         $mech->content_contains('Check your answers', 'Summary page rendered');
+
+        # Contractor fields should be hidden since "same as applicant" was checked
+        # "Contact name" is unique to contractor section (applicant uses "Full name")
+        $mech->content_lacks('Contact name', 'Contractor fields hidden when same as applicant');
 
         # Summary page - submit (need to specify process field for wizard forms)
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
