@@ -1,6 +1,11 @@
 [%
+  SET non_actionable_report =
+    cobrand.moniker == 'kingston'
+    && report.category == 'General enquiry'
+%]
+[%
 
-email_columns = 2;
+email_columns = non_actionable_report ? 1 : 0;
 
 PROCESS '_email_settings.html';
 INCLUDE '_email_top.html';
@@ -24,7 +29,7 @@ INCLUDE '_email_top.html';
   <p style="[% p_style %]">Thank you for contacting Sutton Council.</p>
   [% END %]
 
-[% INCLUDE '_council_reference.html' problem=report %]
+[% INCLUDE '_council_reference.html' problem=report IF !non_actionable_report %]
 
 [% IF cobrand.moniker == 'bromley' %]
 
@@ -80,6 +85,11 @@ INCLUDE '_email_top.html';
     to remove it. We aim for this to be the same day as we deliver your new bin, but it could be a different day.
   </p>
 
+[% ELSIF non_actionable_report %]
+  <p style="[% p_style %]">
+    Thank you for reporting a missed [% report.title %] collection on [% report.date %]. As you reported this after the 2 day time period for reporting missed collections, we will not be able to return on this occasion. However, we will use your report to improve our service.
+  </p>
+
 [% ELSIF cobrand.moniker == 'merton' AND report.category == 'Waste spillage' %]
   <p style="[% p_style %]">
   Your report about the problem with your bin collection has been made to the council.
@@ -119,9 +129,12 @@ INCLUDE '_email_top.html';
 
   [% end_padded_box | safe %]
 </th>
-[% WRAPPER '_email_sidebar.html' object = report %]
-    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
-    [% report.detail | html_para_email(secondary_p_style) %]
+
+[% IF !non_actionable_report %]
+  [% WRAPPER '_email_sidebar.html' object = report %]
+      <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+      [% report.detail | html_para_email(secondary_p_style) %]
+  [% END %]
 [% END %]
 
 [% INCLUDE '_email_bottom.html' %]
