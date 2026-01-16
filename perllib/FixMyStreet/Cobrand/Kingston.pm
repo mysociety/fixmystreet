@@ -638,6 +638,13 @@ sub waste_munge_enquiry_data {
         $data->{extra_Notes} = "Originally Echo Event #$echo";
         $data->{extra_original_ref} = $ww;
         $data->{extra_container_request_guid} = $guid;
+    } elsif ($data->{category} eq 'General enquiry') {
+        $data->{title}
+            = 'Report missed '
+            . $self->service_name_override( { ServiceId => $data->{service_id} } )
+            . ' (non-actionable)';
+
+        $data->{extra_Notes} = 'Non-actionable missed collection report';
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;
@@ -645,7 +652,7 @@ sub waste_munge_enquiry_data {
     $data->{detail} = $detail;
 }
 
-=head2 waste_escalation_target_days
+=head2 waste_target_days
 
 Configure the number of days an escalation is expected to be resolved in.
 
@@ -684,6 +691,19 @@ sub waste_escalation_window {
         bulky_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
         bulky_length => 2,
     }
+}
+
+=head2 waste_allow_non_actionable_report
+
+TODO
+
+=cut
+
+sub waste_allow_non_actionable_report {
+    my ( $self, $service ) = @_;
+
+    # TODO More complex than 'not report_allowed'
+    $service->{report_allowed_non_actionable} = !$service->{report_allowed};
 }
 
 =head2 container_cost / admin_fee_cost

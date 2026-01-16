@@ -339,6 +339,9 @@ sub bin_services_for_address {
             my $recent_events = $row->{events}->filter({ type => 'missed' });
             $row->{report_open} = ($recent_events->list)[0];
         }
+
+        $self->call_hook( waste_allow_non_actionable_report => $row );
+
         push @out, $row;
     }
 
