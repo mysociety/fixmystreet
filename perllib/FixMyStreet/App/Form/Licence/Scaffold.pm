@@ -51,7 +51,7 @@ has '+current_page' => (
 );
 
 # ==========================================================================
-# Page 1: Introduction / Before you get started
+# Introduction / Before you get started
 # ==========================================================================
 has_page intro => (
     fields => ['start'],
@@ -67,7 +67,7 @@ has_field start => (
 );
 
 # ==========================================================================
-# Page 2: Location (fields from Fields::Location role)
+# Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location => (
     fields => ['street_name', 'building_name_number', 'borough', 'postcode', 'continue'],
@@ -81,7 +81,7 @@ has_page location => (
 );
 
 # ==========================================================================
-# Page 3: Dates (fields from Fields::Dates role)
+# Dates (fields from Fields::Dates role)
 # ==========================================================================
 has_page dates => (
     fields => ['proposed_start_date', 'proposed_end_date', 'continue'],
@@ -91,7 +91,7 @@ has_page dates => (
 );
 
 # ==========================================================================
-# Page 4: About You (Applicant)
+# About You (Applicant)
 # Fields: organisation, address, phone_24h from Fields::Applicant role
 # Fields: name, email, phone from AboutYou role
 # ==========================================================================
@@ -110,7 +110,7 @@ has_page applicant => (
 );
 
 # ==========================================================================
-# Page 5: About You (Principal Contractor)
+# About You (Principal Contractor)
 # Fields from Fields::Contractor role, plus scaffold-specific NASC question
 # ==========================================================================
 has_page contractor => (
@@ -126,10 +126,9 @@ has_page contractor => (
         'continue'
     ],
     title => 'About you (Principal Contractor)',
-    next => 'details',
+    next => 'dimensions',
 );
 
-# Scaffold-specific: NASC membership question
 has_field contractor_nasc_member => (
     type => 'Select',
     widget => 'RadioGroup',
@@ -142,21 +141,12 @@ has_field contractor_nasc_member => (
 );
 
 # ==========================================================================
-# Page 6: Details of Scaffold / Activity (all scaffold-specific)
+# Scaffold dimensions
 # ==========================================================================
-has_page details => (
-    fields => [
-        'scaffold_height',
-        'scaffold_length',
-        'scaffold_width',
-        'scaffold_activity',
-        'scaffold_type',
-        'footway_incursion',
-        'carriageway_incursion',
-        'continue'
-    ],
-    title => 'Details of scaffold',
-    next => 'site_specific',
+has_page dimensions => (
+    fields => ['scaffold_height', 'scaffold_length', 'scaffold_width', 'continue'],
+    title => 'Scaffold dimensions',
+    next => 'activity',
 );
 
 has_field scaffold_height => (
@@ -177,6 +167,15 @@ has_field scaffold_width => (
     required => 1,
 );
 
+# ==========================================================================
+# Scaffold activity
+# ==========================================================================
+has_page activity => (
+    fields => ['scaffold_activity', 'continue'],
+    title => 'What will the scaffold be used for?',
+    next => 'scaffold_type',
+);
+
 has_field scaffold_activity => (
     type => 'Text',
     widget => 'Textarea',
@@ -187,6 +186,15 @@ has_field scaffold_activity => (
     },
 );
 
+# ==========================================================================
+# Scaffold type
+# ==========================================================================
+has_page scaffold_type => (
+    fields => ['scaffold_type', 'continue'],
+    title => 'Type of scaffold',
+    next => 'incursion',
+);
+
 has_field scaffold_type => (
     type => 'Text',
     label => 'What type of scaffold will be used?',
@@ -194,6 +202,15 @@ has_field scaffold_type => (
     tags => {
         hint => 'For example, "independent", "gantry" or "mobile scaffold tower"',
     },
+);
+
+# ==========================================================================
+# Incursion details
+# ==========================================================================
+has_page incursion => (
+    fields => ['footway_incursion', 'carriageway_incursion', 'continue'],
+    title => 'Footway and carriageway incursion',
+    next => 'site_pedestrian_space',
 );
 
 has_field footway_incursion => (
@@ -217,22 +234,14 @@ has_field carriageway_incursion => (
 );
 
 # ==========================================================================
-# Page 7: Site Specific Information (scaffold-specific questions)
+# Site Specific Information (scaffold-specific questions)
+# Split into one question per page for better UX with long labels
 # ==========================================================================
-has_page site_specific => (
-    fields => [
-        'site_adequate_space',
-        'site_within_450mm',
-        'site_obstruct_infrastructure',
-        'site_protection_fan',
-        'site_foundations_surveyed',
-        'site_hoarding_attached',
-        'site_trees_nearby',
-        'continue'
-    ],
-    title => 'Site specific information',
+has_page site_pedestrian_space => (
+    fields => ['site_adequate_space', 'continue'],
+    title => 'Pedestrian space',
     intro => 'scaffold/site_specific.html',
-    next => 'have_you_considered',
+    next => 'site_carriageway_distance',
 );
 
 has_field site_adequate_space => (
@@ -247,6 +256,13 @@ has_field site_adequate_space => (
     ],
 );
 
+# ==========================================================================
+has_page site_carriageway_distance => (
+    fields => ['site_within_450mm', 'continue'],
+    title => 'Distance from carriageway',
+    next => 'site_infrastructure',
+);
+
 has_field site_within_450mm => (
     type => 'Select',
     widget => 'RadioGroup',
@@ -257,6 +273,13 @@ has_field site_within_450mm => (
         { label => 'No', value => 'No' },
         { label => 'N/A', value => 'N/A' },
     ],
+);
+
+# ==========================================================================
+has_page site_infrastructure => (
+    fields => ['site_obstruct_infrastructure', 'continue'],
+    title => 'Street infrastructure',
+    next => 'site_protection',
 );
 
 has_field site_obstruct_infrastructure => (
@@ -271,6 +294,13 @@ has_field site_obstruct_infrastructure => (
     ],
 );
 
+# ==========================================================================
+has_page site_protection => (
+    fields => ['site_protection_fan', 'continue'],
+    title => 'Public protection',
+    next => 'site_foundations',
+);
+
 has_field site_protection_fan => (
     type => 'Select',
     widget => 'RadioGroup',
@@ -281,6 +311,13 @@ has_field site_protection_fan => (
         { label => 'No', value => 'No' },
         { label => 'N/A', value => 'N/A' },
     ],
+);
+
+# ==========================================================================
+has_page site_foundations => (
+    fields => ['site_foundations_surveyed', 'continue'],
+    title => 'Foundations',
+    next => 'site_hoarding',
 );
 
 has_field site_foundations_surveyed => (
@@ -298,6 +335,13 @@ has_field site_foundations_surveyed => (
     ],
 );
 
+# ==========================================================================
+has_page site_hoarding => (
+    fields => ['site_hoarding_attached', 'continue'],
+    title => 'Hoarding',
+    next => 'site_trees',
+);
+
 has_field site_hoarding_attached => (
     type => 'Select',
     widget => 'RadioGroup',
@@ -311,6 +355,13 @@ has_field site_hoarding_attached => (
         { label => 'No', value => 'No' },
         { label => 'N/A', value => 'N/A' },
     ],
+);
+
+# ==========================================================================
+has_page site_trees => (
+    fields => ['site_trees_nearby', 'continue'],
+    title => 'Nearby trees',
+    next => 'have_you_considered',
 );
 
 has_field site_trees_nearby => (
@@ -329,7 +380,7 @@ has_field site_trees_nearby => (
 );
 
 # ==========================================================================
-# Page 8: Have you considered? (TCSR/TTRO + T&Cs)
+# Have you considered? (TCSR/TTRO + T&Cs)
 # Fields from Fields::TemporaryProhibition role
 # ==========================================================================
 has_page have_you_considered => (
@@ -345,7 +396,7 @@ has_page have_you_considered => (
 );
 
 # ==========================================================================
-# Page 9: Upload required documents (scaffold-specific)
+# Upload required documents (scaffold-specific)
 # ==========================================================================
 has_page uploads => (
     fields => [
@@ -404,7 +455,7 @@ has_field upload_scaffold_drawing => (
 );
 
 # ==========================================================================
-# Page 10: Payment
+# Payment
 # ==========================================================================
 has_page payment => (
     fields => [
@@ -425,7 +476,7 @@ has_field payment_transaction_id => (
 );
 
 # ==========================================================================
-# Page 11: Summary
+# Summary
 # ==========================================================================
 has_page summary => (
     fields => ['submit'],
@@ -450,7 +501,7 @@ has_field submit => (
 );
 
 # ==========================================================================
-# Page 12: Confirmation
+# Confirmation
 # ==========================================================================
 has_page done => (
     title => 'Application complete',

@@ -189,27 +189,37 @@ subtest 'Scaffold form submission - smoke test' => sub {
             contractor_nasc_member => 'Yes',
         }});
 
-        # Details page
+        # Dimensions page
         $mech->submit_form_ok({ with_fields => {
             scaffold_height => '10',
             scaffold_length => '20',
             scaffold_width => '2',
+        }});
+
+        # Activity page
+        $mech->submit_form_ok({ with_fields => {
             scaffold_activity => 'Building repair',
+        }});
+
+        # Scaffold type page
+        $mech->submit_form_ok({ with_fields => {
             scaffold_type => 'Independent',
+        }});
+
+        # Incursion page
+        $mech->submit_form_ok({ with_fields => {
             footway_incursion => 'No footway incursion',
             carriageway_incursion => 'No carriageway incursion',
         }});
 
-        # Site specific page
-        $mech->submit_form_ok({ with_fields => {
-            site_adequate_space => 'Yes',
-            site_within_450mm => 'No',
-            site_obstruct_infrastructure => 'No',
-            site_protection_fan => 'No',
-            site_foundations_surveyed => 'Yes',
-            site_hoarding_attached => 'No',
-            site_trees_nearby => 'No',
-        }});
+        # Site specific pages (one question per page)
+        $mech->submit_form_ok({ with_fields => { site_adequate_space => 'Yes' }});
+        $mech->submit_form_ok({ with_fields => { site_within_450mm => 'No' }});
+        $mech->submit_form_ok({ with_fields => { site_obstruct_infrastructure => 'No' }});
+        $mech->submit_form_ok({ with_fields => { site_protection_fan => 'No' }});
+        $mech->submit_form_ok({ with_fields => { site_foundations_surveyed => 'Yes' }});
+        $mech->submit_form_ok({ with_fields => { site_hoarding_attached => 'No' }});
+        $mech->submit_form_ok({ with_fields => { site_trees_nearby => 'No' }});
 
         # Have you considered page
         $mech->submit_form_ok({ with_fields => {
