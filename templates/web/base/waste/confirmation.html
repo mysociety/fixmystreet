@@ -46,6 +46,9 @@ END ~%]
           [% IF report.category == 'Request new container' AND c.cobrand.wasteworks_config.request_timeframe %]
               Containers typically arrive within [% c.cobrand.wasteworks_config.request_timeframe %], but this may vary due to demand.
           [% END %]
+          [% IF confirmation_text %]
+            [% confirmation_text %]
+          [% END %]
           [% INCLUDE 'waste/_report_ids.html' %]
         </p>
         [% END %]

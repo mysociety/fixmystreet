@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #
-# Close reports older than 28 days if they have state 'action_scheduled' or
-# 'investigating'
+# Close reports older than a number of days if they have state
+# 'action_scheduled' or 'investigating'
 
 use strict;
 use warnings;
@@ -20,13 +20,13 @@ use FixMyStreet::Script::UK::AutoClose;
 my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
 CronFns::language($site);
 
-my $default_text = 'Report automatically closed because older than 28 days.';
+my $default_text = 'Reports to Enfield are automatically closed after 40 days.';
 
 my ($opts, $usage) = describe_options(
     '%c %o',
     ['commit!', "actually close reports and send emails. Omitting this flag will do a dry-run"],
     ['closure_text=s', "text of the message to add to reports", { default => $default_text } ],
-    ['days:i', "Number of days before autoclosing", { default => 28, callbacks => { positive => sub { shift() > 0 } } } ],
+    ['days:i', "Number of days before autoclosing", { default => 40, callbacks => { positive => sub { shift() > 0 } } } ],
     ['help|h', "print usage message and exit" ],
     { show_defaults => 1 }
 );
