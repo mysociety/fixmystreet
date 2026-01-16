@@ -415,8 +415,10 @@ sub open311_post_send {
     push @to, email_list($emails->{lighting}, 'FixMyStreet Bexley Street Lighting') if $lighting{$row->category};
     push @to, email_list($emails->{flooding}, 'FixMyStreet Bexley Flooding') if $flooding{$row->category};
     push @to, email_list($emails->{outofhours}, 'Bexley out of hours') if $outofhours_email && $is_out_of_hours;
+    push @to, email_list($emails->{eh}, 'FixMyStreet Bexley EH') if $contact->email =~ /^Uniform/;
+    return unless @to;
+
     if ($contact->email =~ /^Uniform/) {
-        push @to, email_list($emails->{eh}, 'FixMyStreet Bexley EH');
         $row->push_extra_fields({ name => 'uniform_id', description => 'Uniform ID', value => $row->external_id });
     }
 
@@ -426,7 +428,6 @@ sub open311_post_send {
     }
     $row->push_extra_fields({ name => 'fixmystreet_id', description => 'FMS reference', value => $row->id });
 
-    return unless @to;
     my $emailsender = FixMyStreet::SendReport::Email->new(
         use_verp => 0,
         use_replyto => 1,
