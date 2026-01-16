@@ -1,3 +1,5 @@
+[% USE pounds = format('%.2f'); ~%]
+
 <div id="side">
 
 <form method="post" action="[% c.uri_for_action( '/admin/reports/edit', [ problem.id ] ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
@@ -131,14 +133,17 @@
 [%
 BLOCK show_fields;
     FOR field IN fields;
-        IF field.2; # From metadata
+        IF field.2 == 'meta'; # From metadata
             SET val = problem.get_extra_metadata(field.1);
         ELSE;
             SET val = problem.get_extra_field_value(field.1);
         END;
         IF val;
+            IF field.3; # Is an amount in pence
+                val = '£' _ pounds(val / 100).replace('\.00$', '');
+            END;
             '<li>' _ field.0 _ ': ';
-            IF field.3; # Blank out except last 4
+            IF field.4; # Blank out except last 4
                 SET x = 'x';
                 x.repeat(val.length - 4) _ val.substr(-4);
             ELSE;
@@ -245,18 +250,18 @@ END
 [%
 SET sutton = cobrand.moniker == 'sutton';
 INCLUDE show_fields fields=[
-    [ 'Payment', 'payment' ],
-    [ 'Pro rata payment', 'pro_rata' ],
-    [ 'Admin fee', 'admin_fee' ],
-    [ 'Payment explanation', 'payment_explanation', 1 ],
-    [ 'DD reference', 'payerReference', 1 ],
-    [ 'SCP reference', 'scpReference', 1 ],
-    [ 'Payment code', 'payment_reference', 1, sutton ],
-    [ 'DD collection date', 'dd_date', 1 ],
+    [ 'Payment', 'payment', 'field', 'pence' ],
+    [ 'Pro rata payment', 'pro_rata', 'field', 'pence' ],
+    [ 'Admin fee', 'admin_fee', 'field', 'pence' ],
+    [ 'Payment explanation', 'payment_explanation', 'meta' ],
+    [ 'DD reference', 'payerReference', 'meta' ],
+    [ 'SCP reference', 'scpReference', 'meta' ],
+    [ 'Payment code', 'payment_reference', 'meta', '', sutton ],
+    [ 'DD collection date', 'dd_date', 'meta' ],
     # AccessPay
-    [ 'DD customer ID', 'direct_debit_customer_id', 1 ],
-    [ 'DD contract ID', 'direct_debit_contract_id', 1 ],
-    [ 'DD reference', 'direct_debit_reference', 1 ],
+    [ 'DD customer ID', 'direct_debit_customer_id', 'meta' ],
+    [ 'DD contract ID', 'direct_debit_contract_id', 'meta' ],
+    [ 'DD reference', 'direct_debit_reference', 'meta' ],
 ];
 
 # Old Bromley direct debits stored PaymentCode and not payment_reference

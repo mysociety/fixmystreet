@@ -114,8 +114,7 @@ around waste_cc_get_redirect_url => sub {
             if ( $result->{transactionState} eq 'InProgress' &&
                  $result->{invokeResult}->{status} eq 'Success' ) {
 
-                 $p->set_extra_metadata('apnReference', $result->{apnReference});
-                 $p->update;
+                 $p->update_extra_metadata(apnReference => $result->{apnReference});
 
                  my $redirect = $result->{invokeResult}->{redirectUrl};
                  $redirect .= "?apnReference=$result->{apnReference}";
