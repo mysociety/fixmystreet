@@ -79,16 +79,23 @@ sub process_licence : Private {
     $user->name($data->{name}) if $data->{name};
     $user->phone($data->{phone}) if $data->{phone};
 
-    # Build detail string from form fields
+    # Build detail string from form fields, grouped by section
     my $detail = "";
     if ($form->can('fields_for_display')) {
+        my @sections;
         for my $stage (@{ $form->fields_for_display }) {
             next if $stage->{hide};
-            for my $field (@{ $stage->{fields} }) {
-                next if $field->{hide};
-                $detail .= "$field->{desc}: " . $field->{pretty} . "\n";
+            my @visible_fields = grep { !$_->{hide} } @{ $stage->{fields} };
+            next unless @visible_fields;
+
+            my $section = "";
+            $section .= "[$stage->{title}]\n" if $stage->{title};
+            for my $field (@visible_fields) {
+                $section .= "$field->{desc}: $field->{pretty}\n";
             }
+            push @sections, $section;
         }
+        $detail = join("\n", @sections);
     }
 
     my $category = "$name licence";

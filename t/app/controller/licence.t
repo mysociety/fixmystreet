@@ -263,6 +263,14 @@ subtest 'Scaffold form submission - smoke test' => sub {
         is $problem->user->email, 'test@example.com', 'User email set correctly';
         is $problem->user->name, 'Test Person', 'User name set correctly';
 
+        # Detail string should group fields by section with headers and blank lines,
+        # making it easier to distinguish e.g. applicant vs contractor answers
+        my $detail = $problem->detail;
+        like $detail, qr/\[Location of the scaffolding\]/, 'Detail contains Location section header';
+        like $detail, qr/\[About you \(Applicant\)\]/, 'Detail contains Applicant section header';
+        like $detail, qr/\n\n/, 'Detail has blank lines between sections';
+        unlike $detail, qr/Contact name:/, 'Contractor contact name hidden when same as applicant';
+
         # Verify uploads went to the licence_files directory
         my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
         my $base_dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
