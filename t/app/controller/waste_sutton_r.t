@@ -32,6 +32,7 @@ my $bin_240_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_pap
 my $bin_360_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_paper_360.json')->slurp_utf8);
 my $kerbside_bag_data = decode_json(path(__FILE__)->sibling('waste_sutton_4471550.json')->slurp_utf8);
 my $above_shop_data = decode_json(path(__FILE__)->sibling('waste_sutton_4499005.json')->slurp_utf8);
+my $missed_collection_data = decode_json(path(__FILE__)->sibling('waste_sutton_4443082_missed.json')->slurp_utf8);
 
 my $body_user = $mech->create_user_ok('systemuser@example.org');
 my $params = {
@@ -104,6 +105,11 @@ create_contact({ category => 'Bin not returned', email => '3135' }, 'Waste',
 create_contact({ category => 'Waste spillage', email => '3227' }, 'Waste',
     { code => 'Image', description => 'Image', required => 0, datatype => 'image' },
     { code => 'Notes', description => 'Details of the spillage', required => 0, datatype => 'text' },
+);
+
+create_contact({ category => 'Missed collection dispute', email => '3143' }, 'Waste',
+    { code => 'Image', description => 'Image', required => 0, datatype => 'image' },
+    { code => 'Notes', description => 'Reason for dispute', required => 1, datatype => 'text' },
 );
 
 my $sent_params;
@@ -784,6 +790,116 @@ FixMyStreet::override_config {
         $mech->back;
         $mech->follow_link_ok( { url_regex => qr/service_id=954/}, 'Follow "Report a problem" link for the food collection' );
         $mech->content_unlike(qr/name="category" value="Waste spillage" aria-describedby="category-item-hint"\s+disabled/s);
+        $e->mock('GetEventsForObject', sub { [] }); # reset
+    };
+
+    subtest 'Dispute of missed collections' => sub {
+        my $dispute_label = 'Dispute collection closure reason';
+        my $problem_url
+            = '/waste/12345/enquiry?template=problem&service_id=940';
+
+        subtest 'No missed collection' => sub {
+            set_fixed_time('2022-09-10T19:00:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_lacks($dispute_label);
+
+            set_fixed_time('2022-09-13T19:00:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_lacks($dispute_label);
+
+            set_fixed_time('2022-09-15T17:00:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_lacks($dispute_label);
+
+            set_fixed_time('2022-09-15T19:00:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_lacks($dispute_label);
+        };
+
+        # domestic refuse
+        $e->mock('GetTasks', sub { [ {
+            Ref => { Value => { anyType => [ 17430692, 8287 ] } },
+            State => { Name => 'Not Completed' },
+            Resolution => { Name => 'Contaminated builder waste', Ref => { Value => { 'anyType' => 1135 } } },
+            CompletedDate => { DateTime => '2022-09-09T16:00:00Z' }
+        } ] });
+
+        subtest 'Raising a dispute only available within window' => sub {
+            set_fixed_time('2022-09-09T15:30:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_lacks($dispute_label, 'not allowed before window opens');
+
+            set_fixed_time('2022-09-14T19:00:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_lacks($dispute_label, 'not allowed after window closes');
+
+            set_fixed_time('2022-09-14T00:01:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_lacks($dispute_label, 'not allowed just after window closes');
+
+            set_fixed_time('2022-09-13T23:59:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_contains($dispute_label, 'allowed just before window closes');
+
+            set_fixed_time('2022-09-09T16:01:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_contains($dispute_label, 'allowed just after window opens');
+
+            set_fixed_time('2022-09-11T18:01:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_contains($dispute_label, 'allowed during window');
+        };
+
+        subtest 'Open dispute for missed collection' => sub {
+            $mech->clear_emails_ok;
+            set_fixed_time('2022-09-11T18:01:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
+            $mech->submit_form_ok(
+                { with_fields => { category => 'Missed collection dispute' } }
+            );
+            $mech->content_contains('Contaminated (builder’s waste)', 'details of missed bin collection displayed');
+            $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
+            $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'There was no problem with the bin' } }, 'submitted reasons');
+            $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
+            $mech->submit_form_ok( { with_fields => { submit => '1' } }, 'submitted confirmation');
+            $mech->content_contains('Your enquiry has been submitted');
+            $mech->content_contains('Return to property details');
+            $mech->content_contains('/waste/12345"');
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->category, 'Missed collection dispute', "Correct category";
+            is $report->title, 'Missed collection dispute';
+            is $report->detail, "Non-Recyclable Refuse\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
+            is $report->user->email, 'schmoe@example.org', 'User details added to report';
+            is $report->name, 'Joe Schmoe', 'User details added to report';
+            is $report->get_extra_field_value('Notes'), "There was no problem with the bin";
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(1);
+            my $email = $mech->get_email;
+            my $text_email = $mech->get_text_body_from_email($email);
+            my $html_email = $mech->get_html_body_from_email($email);
+            like $text_email, qr/respond in the next two working days/, 'Correct text email next steps';
+            like $html_email, qr/respond in the next two working days/, 'Correct text email next steps';
+        };
+
+        subtest 'Existing dispute event' => sub {
+            # Now mock there is an existing escalation
+            $e->mock('GetEventsForObject', sub { [ {
+                Id => '112112321',
+                EventTypeId => 3143,
+                EventStateId => 0,
+                ServiceId => 940, # Refuse
+                EventDate => { DateTime => "2022-09-11T18:03:00Z" },
+                EventObjects => { EventObject => [ { EventObjectType => 'Source', ObjectRef => { Key => "Id", Type => "PointAddress", Value => { anyType => 12345 } } } ] },
+            } ] });
+
+            set_fixed_time('2022-09-14T19:00:00Z');
+            $mech->get_ok($problem_url);
+            $mech->content_like(qr/Missed collection dispute.*disabled/s);
+            $mech->content_contains('We are investigating the problem with this collection.');
+        };
+
+
         $e->mock('GetEventsForObject', sub { [] }); # reset
     };
 

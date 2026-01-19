@@ -208,6 +208,59 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
+sub _check_date_within_dispute_window {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    # And two working days (from 6pm) have passed
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $start = $date;
+    my $days = FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode ? 1 : 3;
+    my $end = $wd->add_days($start, $days)->set_hour(0)->set_minute(0)->set_second(0);
+
+    return 1 if $now >= $start && $now < $end;
+    return 0;
+}
+
+=head2 waste_check_can_raise_dispute
+
+Checks if disputes can be raised for the service and resolution text.
+
+=cut
+
+sub waste_check_can_raise_dispute {
+    my ($self, $service_id, $resolution) = @_;
+
+    # currently we allow disputes on all resolution codes
+    return 1;
+}
+
+=head2 Disputes
+
+=cut
+
+sub _setup_scheduled_collection_disputes_for_service {
+    my ($self, $row) = @_;
+    my $events = $row->{events};
+
+    my $dispute_event;
+    if ($events) {
+        $dispute_event = ($events->filter({ event_type => 3143 })->list)[0];
+    }
+    # check if a dispute is allowed on reports that have been marked as unable to be collected
+    if ($row->{last} && $row->{last}->{completed} && $row->{report_locked_out} && !$dispute_event) {
+        # and then check if we can open a dispute for this resolution
+        if ( $self->waste_check_can_raise_dispute($row->{service_id}, $row->{last}->{resolution}) ) {
+            if ( $self->_check_date_within_dispute_window($row->{last}->{completed}) ) {
+                $row->{dispute}{allowed} = 1;
+            }
+        }
+    }
+    if ($dispute_event) {
+        $row->{dispute}{open} = 1;
+    }
+}
+
 =head2 image_for_unit
 
 Working out which image to use for which container or service.
@@ -713,6 +766,27 @@ sub bulky_show_individual_notes {
     my $self = shift;
     return $self->{c}->stash->{small_items} ? 0 : 1;
 }
+
+=head2 waste_bulky_resolution_photo_update
+
+Given a report id get the update with the resolution photo for a bulky waste collection
+
+=cut
+
+sub waste_bulky_resolution_photo_update {
+    my ($self, $report_id) = @_;
+
+    if ($report_id) {
+        my $update = FixMyStreet::DB->resultset('Comment')->search({
+            problem_id => $report_id,
+            problem_state => 'unable to fix',
+            photo => { '!=' => undef },
+        })->first();
+        return $update if $update;
+    }
+}
+
+
 
 =head2 filter_booking_dates
 

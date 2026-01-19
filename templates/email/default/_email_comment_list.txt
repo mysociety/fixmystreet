@@ -1,6 +1,8 @@
 [% FOR row IN data -%]
 [% IF report.category == 'Bulky collection' AND (row.item_problem_state == 'closed' OR row.item_problem_state == 'fixed - council' OR row.item_problem_state == 'unable to fix') -%]
 [% INCLUDE 'waste/_bulky_email_comment_end.txt' -%]
+[% ELSIF cobrand.moniker == 'sutton' AND report.category == 'Small items collection' AND (row.item_problem_state == 'closed' OR row.item_problem_state == 'fixed - council' OR row.item_problem_state == 'unable to fix') -%]
+[% INCLUDE 'waste/_bulky_email_comment_end.txt' -%]
 [% ELSE -%]
 [% IF NOT private_email -%]
 [% row.item_name _ ' : ' IF row.item_name AND NOT row.item_anonymous -%]
