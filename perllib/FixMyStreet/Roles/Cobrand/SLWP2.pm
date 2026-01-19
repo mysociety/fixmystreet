@@ -112,6 +112,7 @@ my %EVENT_TYPE_IDS = (
     garden_amend => 3163,
     bulky => 3130,
     small_items => 3144,
+    general_enquiry => 3140,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -153,6 +154,8 @@ sub waste_service_to_containers { () }
 sub garden_subscription_event_id { $EVENT_TYPE_IDS{garden_add} }
 
 sub garden_renewal_reduction_sparks_container_removal { 1 }
+
+sub general_enquiry_event_id { $EVENT_TYPE_IDS{general_enquiry} }
 
 sub waste_show_garden_modify {
     my ($self, $unit) = @_;
@@ -645,6 +648,11 @@ sub open311_post_send {
             $row->discard_changes;
         }
     });
+
+    if ( $row->category eq 'Report out-of-time missed collection' ) {
+        $row->update( { state => 'no further action' } );
+    }
+
 }
 
 =item * Look for completion photos on updates, and ignore "Not Completed" without a resolution code
