@@ -10,6 +10,9 @@
     <input type="submit" value="Report a [% unit.service_name FILTER lower %] collection as missed" class="waste-service-descriptor waste-service-link">
   </form>
 [% ELSIF unit.report_locked_out %]
+  [% IF c.cobrand.moniker == 'sutton' and unit.dispute_allowed %]
+    <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?category=Missed collection dispute&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">dispute missed</a>
+  [% ELSE %]
   <span class="waste-service-descriptor">A missed collection cannot be reported;
     [% IF unit.report_locked_out_reason %]
         [% unit.report_locked_out_reason %]
@@ -17,6 +20,7 @@
         please see the last collection status above.
     [% END %]
   </span>
+  [% END %]
 [% ELSIF unit.next AND unit.next.state == 'In progress' %]
   <span class="waste-service-descriptor">A missed collection cannot be reported on the day of collection until the crew have finished their round.</span>
 [% ELSIF NOT no_default %]

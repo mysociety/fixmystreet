@@ -357,6 +357,30 @@ sub _setup_container_request_escalations_for_service {
     }
 }
 
+=head2 Disputes
+
+=cut
+
+sub munge_waste_task_resolutions {
+    my ($self, $row) = @_;
+
+    my $start_days = 0; # Window starts on the day the collection was missed
+    my $window_days = 2; # Window ends 2 working days after the start date
+
+    # check if a dispute is allowed on reports that have been marked as unable to be collected
+    if ($row->{last}->{completed} && $row->{report_locked_out}) {
+        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+        my $wd = FixMyStreet::WorkingDays->new();
+        my $start = $wd->add_days($row->{last}->{completed}, $start_days)->set_hour(18);
+        my $end = $wd->add_days($start, $window_days + 1)->set_hour(0); # Before this
+
+        # check window
+        if ($now >= $start && $now < $end) {
+            $row->{dispute_allowed} = 1;
+        }
+    }
+}
+
 =head2 image_for_unit
 
 Working out which image to use for which container or service.
