@@ -268,8 +268,9 @@ has_page site_pedestrian_space => (
 has_field site_adequate_space => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => '1. Will adequate space be maintained for pedestrians as defined in section 4 of TfL’s Licensing Guidance, available from TfL’s Website i.e. 2m for lightly used footways, 3m for medium use footways, and 4 m for busy footways, with no reduction of width for intensely used footways?',
+    label => 'Will adequate space be maintained for pedestrians as defined in section 4 of TfL’s Licensing Guidance, available from TfL’s Website i.e. 2m for lightly used footways, 3m for medium use footways, and 4 m for busy footways, with no reduction of width for intensely used footways?',
     required => 1,
+    tags => { hint => 'If no, then a site meeting between the applicant and TfL may be required.' },
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
@@ -287,7 +288,8 @@ has_page site_carriageway_distance => (
 has_field site_within_450mm => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => '2. Will any part of the scaffold be within 450mm of the edge of carriageway?',
+    label => 'Will any part of the scaffold be within 450mm of the edge of carriageway?',
+    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -306,7 +308,8 @@ has_page site_infrastructure => (
 has_field site_obstruct_infrastructure => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => '3. Will the scaffolding obstruct or obscure any of the following: traffic signal, traffic signal controller, bus stop, pedestrian crossing, junction sight line, road lighting column, traffic sign, parking bay, or any ironwork in the highway or other street furniture?',
+    label => 'Will the scaffolding obstruct or obscure any of the following: traffic signal, traffic signal controller, bus stop, pedestrian crossing, junction sight line, road lighting column, traffic sign, parking bay, or any ironwork in the highway or other street furniture?',
+    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -325,7 +328,8 @@ has_page site_protection => (
 has_field site_protection_fan => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => '4. Will a public protection fan and/or gantry be installed whilst the erection and dismantling of the scaffolding takes place?',
+    label => 'Will a public protection fan and/or gantry be installed whilst the erection and dismantling of the scaffolding takes place?',
+    tags => { hint => 'If yes, then a site meeting between the applicant and TfL may be required.' },
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -344,10 +348,10 @@ has_page site_foundations => (
 has_field site_foundations_surveyed => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => '5. Have existing foundations been surveyed to ensure they are adequate to carry the loads imposed by the scaffolding structure?',
+    label => 'Have existing foundations been surveyed to ensure they are adequate to carry the loads imposed by the scaffolding structure?',
     required => 1,
     tags => {
-        hint => 'If answer is no, what additional measures are intended? (Give details in scaffold plan)',
+        hint => 'If the answer is no, what additional measures are intended? (Give details in scaffold plan). If yes, then a site meeting between the applicant and TfL may be required.',
     },
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -369,7 +373,7 @@ has_field site_hoarding_attached => (
     label => 'Will a hoarding be attached to the scaffolding?',
     required => 1,
     tags => {
-        hint => "6. If the answer is 'yes' there will also be a requirement for a separate hoarding application",
+        hint => "If the answer is yes, there will also be a requirement for a separate hoarding application, and a site meeting between the applicant and TfL may be required.",
     },
     options => [
         { label => 'Yes', value => 'Yes' },
@@ -388,10 +392,10 @@ has_page site_trees => (
 has_field site_trees_nearby => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => '7. Are there any trees within falling distance of any part of the proposed scaffold?',
+    label => 'Are there any trees within falling distance of any part of the proposed scaffold?',
     required => 1,
     tags => {
-        hint => "If answer is 'yes', then the application will be referred to the TfL Arboriculture & Landscape Manager for further consideration",
+        hint => "If answer is yes, then the application will be referred to the TfL Arboriculture & Landscape Manager for further consideration, and a site meeting between the applicant and TfL may be required.",
     },
     options => [
         { label => 'Yes', value => 'Yes' },
