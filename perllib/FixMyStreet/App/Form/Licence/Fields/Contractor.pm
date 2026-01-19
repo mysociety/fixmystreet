@@ -26,7 +26,7 @@ has_field contractor_same_as_applicant => (
 
 has_field contractor_organisation => (
     type => 'Text',
-    label => 'Organisation name',
+    label => 'Company name',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
     tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
 );

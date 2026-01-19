@@ -17,9 +17,15 @@ which provides the standard name, email, phone fields.
 
 =cut
 
+has_field job_title => (
+    type => 'Text',
+    label => 'Job title',
+    required => 1,
+);
+
 has_field organisation => (
     type => 'Text',
-    label => 'Organisation name',
+    label => 'Company name',
     required => 1,
 );
 
