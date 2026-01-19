@@ -102,10 +102,12 @@ body.waste {
 
   &--service-name {
     grid-area: name;
+    align-self: center;
   }
 
   &--service-image {
     grid-area: image;
+    align-self: center;
   }
 
   &--service-description {
@@ -116,6 +118,14 @@ body.waste {
     grid-template-areas:
       "name name"
       "image description";
+
+    &--service-name {
+      align-self: start;
+    }
+
+    &--service-image {
+      align-self: start;
+    }
   }
 }
 
@@ -123,7 +133,6 @@ body.waste {
   max-width: 100%;
   max-height: 140px;
   height: auto;
-  margin-bottom: 1em;
 }
 
 .waste__summary {
