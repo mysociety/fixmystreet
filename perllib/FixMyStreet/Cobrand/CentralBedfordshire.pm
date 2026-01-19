@@ -6,7 +6,7 @@ FixMyStreet::Cobrand::CentralBedfordshire - code specific to the Central Bedford
 =head1 SYNOPSIS
 
 We integrate with Central Bedfordshire's Symology Aurora back end
-and Jadu for fly tipping reports..
+and Jadu for fly tipping reports.
 
 =head1 DESCRIPTION
 
