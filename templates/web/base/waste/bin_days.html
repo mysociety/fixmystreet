@@ -67,7 +67,7 @@
 
       [% SET image = c.cobrand.image_for_unit(unit) ~%]
       [% IF image %]
-        <div class="govuk-grid-column-one-quarter text-centered">
+        <div class="govuk-grid-column govuk-grid-column-always-one-quarter text-centered">
          [% IF c.cobrand.moniker == 'peterborough' %]
           <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
          [% END %]
@@ -86,7 +86,7 @@
           <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
         [% END %]
         </div>
-        <div class="govuk-grid-column-three-quarters">
+        <div class="govuk-grid-column govuk-grid-column-always-three-quarters">
       [% ELSE %]
         <div class="govuk-grid-column-full">
          [% IF c.cobrand.moniker == 'peterborough' %]
@@ -103,6 +103,25 @@
             [%~ END %]
         </p>
 
+    [% END %]
+
+    [% IF c.cobrand.moniker == 'bromley' AND unit.garden_overdue AND unit.garden_waste AND NOT waste_features.garden_renew_disabled %]
+    <div class="govuk-warning-text overdue">
+      <div class="govuk-warning-text__img">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      </div>
+      <div class="govuk-warning-text__content">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is now overdue.</h3>
+        Collections have been paused. They’ll start again when you renew.
+        [% WRAPPER 'waste/_garden_status_messages.html' %]
+            <form method="post" action="[% c.uri_for_action('waste/garden/renew', [ property.id ]) %]">
+              <input type="hidden" name="token" value="[% csrf_token %]">
+              <input type="submit" value="Renew subscription today" class="govuk-button">
+            </form>
+        [% END %]
+      </div>
+    </div>
     [% END %]
 
     [% IF !unit.garden_overdue %]
@@ -198,6 +217,10 @@
       </dl>
     [% END %]
       [% IF c.cobrand.moniker == 'peterborough' %]<hr>[% END %]
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column govuk-grid-column-wide-three-quarters">
       <div class="waste-services-launch-panel" id="panel-[% unit.service_id %]">
           [% PROCESS waste/services.html %]
       </div>
@@ -224,15 +247,15 @@
         </p>
     [% END %]
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-quarter text-centered">
+    <div class="govuk-grid-column govuk-grid-column-always-one-quarter text-centered">
   [% ELSE %]
   <div class="govuk-grid-row waste-service-wrapper">
-    <div class="govuk-grid-column-one-quarter">
+    <div class="govuk-grid-column govuk-grid-column-always-one-quarter">
       <h3 id="bulky-waste" class="govuk-heading-m">Bulky Waste</h3>
   [% END %]
       <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
     </div>
-    <div class="govuk-grid-column-three-quarters">
+    <div class="govuk-grid-column govuk-grid-column-always-three-quarters">
       [% IF c.cobrand.moniker == 'peterborough' %]<hr>[% END %]
       [% IF property.commercial_property %]
         [% PROCESS waste/_bulky_waste_message.html %]
@@ -254,10 +277,10 @@
       </p>
     [% END %]
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-quarter text-centered">
+    <div class="govuk-grid-column govuk-grid-column-always-one-quarter text-centered">
       <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
     </div>
-    <div class="govuk-grid-column-three-quarters">
+    <div class="govuk-grid-column govuk-grid-column-always-three-quarters">
       [% PROCESS 'waste/bulky/_bin_days_list.html' type='small_items' %]
     </div>
   </div>
