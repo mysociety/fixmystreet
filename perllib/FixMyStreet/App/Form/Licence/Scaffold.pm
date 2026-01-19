@@ -107,7 +107,18 @@ has_page applicant => (
         'continue'
     ],
     title => 'Applicant details',
+    intro => 'applicant.html',
     next => 'contractor',
+    # For now, force ordering to be same as list above - TODO do this everywhere/by default? Or change sorted fields to use the page fields list?
+    update_field_list => sub {
+        my ($form) = @_;
+        my $fields = {};
+        my $c = 0;
+        foreach (@{$form->current_page->fields}) {
+            $fields->{$_}{order} = $c++;
+        }
+        return $fields;
+    },
 );
 
 # ==========================================================================
