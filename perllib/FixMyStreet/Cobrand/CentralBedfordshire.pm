@@ -145,6 +145,12 @@ sub open311_config {
     $params->{upload_files} = 1;
 }
 
+sub open311_munge_update_params {
+    my ($self, $params, $comment, $body) = @_;
+    my $contact = $comment->problem->contact;
+    $params->{service_code} = $contact->email;
+}
+
 =head2 should_skip_sending_update
 
 Do not try and send updates to the Jadu backend.
