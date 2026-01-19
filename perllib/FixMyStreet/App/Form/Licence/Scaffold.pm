@@ -71,7 +71,7 @@ has_field start => (
 # ==========================================================================
 has_page location => (
     fields => ['street_name', 'building_name_number', 'borough', 'postcode', 'continue'],
-    title => 'Location of the scaffolding',
+    title => 'Location of the scaffold',
     intro => 'location.html',
     next => 'dates',
     post_process => sub {
@@ -85,7 +85,7 @@ has_page location => (
 # ==========================================================================
 has_page dates => (
     fields => ['proposed_start_date', 'proposed_end_date', 'continue'],
-    title => 'Period for which this application is made',
+    title => 'Proposed working dates',
     intro => 'dates.html',
     next => 'applicant',
 );
@@ -99,13 +99,14 @@ has_page applicant => (
     fields => [
         'organisation',
         'name',
+        'job_title',
         'address',
         'email',
         'phone',
         'phone_24h',
         'continue'
     ],
-    title => 'About you (Applicant)',
+    title => 'Applicant details',
     next => 'contractor',
 );
 
@@ -125,7 +126,7 @@ has_page contractor => (
         'contractor_nasc_member',
         'continue'
     ],
-    title => 'About you (Principal Contractor)',
+    title => 'Contractor details (Scaffold Contractor)',
     next => 'dimensions',
 );
 
