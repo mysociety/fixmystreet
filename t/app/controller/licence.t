@@ -77,8 +77,8 @@ subtest 'Date validation' => sub {
     }, sub {
         # Calculate test dates
         my $too_soon = $today->clone->add(weeks => 2);  # Only 2 weeks away (need 4+)
-        my $too_far = $today->clone->add(years => 1, days => 10);  # More than 1 year
         my $valid_start = $today->clone->add(weeks => 5);
+        my $too_far = $valid_start->clone->add(years => 1, days => 10);  # More than 1 year
         my $valid_end = $valid_start->clone->add(weeks => 4);
 
         $mech->get_ok('/licence/scaffold');
@@ -113,7 +113,7 @@ subtest 'Date validation' => sub {
             'proposed_end_date.month' => $too_far->month,
             'proposed_end_date.year' => $too_far->year,
         }});
-        $mech->content_contains('End date must be within 1 year from today',
+        $mech->content_contains('End date must be within 1 year from the start date',
             'Error shown when end date is more than 1 year away');
 
         # Test 3: End date before start date
@@ -188,6 +188,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => {
             contractor_same_as_applicant => 1,
             contractor_nasc_member => 'Yes',
+            contractor_meeting => 1,
         }});
 
         # Dimensions page

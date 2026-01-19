@@ -146,10 +146,6 @@ sub process_licence : Private {
     $problem->insert;
     $problem->create_related_things();
 
-    # Check for auto-response template
-    my $template = $problem->response_templates->search({ 'me.state' => $problem->state })->first;
-    $c->stash->{auto_response} = $template->text if $template;
-
     $c->stash->{problem} = $problem;
     $c->stash->{reference} = 'FMS' . $problem->id;
 

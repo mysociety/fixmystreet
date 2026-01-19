@@ -23,7 +23,7 @@ has_field proposed_start_date => (
     type => 'DateTime',
     label => 'Proposed start date',
     required => 1,
-    tags => { hint => 'For example, 27 3 2026' },
+    tags => { hint => 'For example, 27 3 2026. Working dates must set in four‑weekly periods' },
     messages => {
         datetime_invalid => 'Please enter a valid date',
     },
@@ -58,17 +58,14 @@ has_field proposed_end_date => (
         my $dt = $field->value;
         return unless $dt;
 
-        my $today = DateTime->today(time_zone => FixMyStreet->local_time_zone);
-        my $max_date = $today->clone->add(years => 1);
-
-        if ($dt > $max_date) {
-            $field->add_error('End date must be within 1 year from today');
-        }
-
-        # Check end date is after start date
         my $start_date = $field->form->field('proposed_start_date')->value;
-        if ($start_date && $dt <= $start_date) {
-            $field->add_error('End date must be after start date');
+        if ($start_date) {
+            my $max_date = $start_date->clone->add(years => 1);
+            if ($dt <= $start_date) {
+                $field->add_error('End date must be after start date');
+            } elsif ($dt > $max_date) {
+                $field->add_error('End date must be within 1 year from the start date')
+            }
         }
     },
 );

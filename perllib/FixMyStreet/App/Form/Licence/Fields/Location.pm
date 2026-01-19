@@ -19,15 +19,15 @@ from the page's post_process hook.
 
 =cut
 
-has_field street_name => (
-    type => 'Text',
-    label => 'Street name',
-    required => 1,
-);
-
 has_field building_name_number => (
     type => 'Text',
     label => 'Building name / number',
+    required => 1,
+);
+
+has_field street_name => (
+    type => 'Text',
+    label => 'Street name',
     required => 1,
 );
 

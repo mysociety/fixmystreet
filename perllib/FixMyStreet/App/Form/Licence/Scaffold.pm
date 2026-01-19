@@ -70,7 +70,7 @@ has_field start => (
 # Location (fields from Fields::Location role)
 # ==========================================================================
 has_page location => (
-    fields => ['street_name', 'building_name_number', 'borough', 'postcode', 'continue'],
+    fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
     title => 'Location of the scaffold',
     intro => 'location.html',
     next => 'dates',
@@ -124,6 +124,7 @@ has_page contractor => (
         'contractor_phone',
         'contractor_phone_24h',
         'contractor_nasc_member',
+        'contractor_meeting',
         'continue'
     ],
     title => 'Contractor details (Scaffold Contractor)',
@@ -139,6 +140,14 @@ has_field contractor_nasc_member => (
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
     ],
+);
+
+has_field contractor_meeting => (
+    type => 'Checkbox',
+    label => '',
+    messages => { required => 'Please confirm that a site meeting has taken place' },
+    option_label => 'I confirm that a site meeting has taken place between the Applicant and the Scaffold Contractor',
+    required => 1,
 );
 
 # ==========================================================================
