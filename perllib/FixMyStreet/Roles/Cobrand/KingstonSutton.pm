@@ -173,10 +173,11 @@ sub waste_report_form_first_next {
     };
 }
 
-=head2 Escalations
+=head2 Escalations and Disputes
 
 Kingston and Sutton have custom behaviour to allow escalation of unresolved missed collections
-or container requests.
+or container requests. Sutton also allows disputing when the council has not collected a bin or
+bulky collection because of a problem.
 
 =cut
 
@@ -191,9 +192,11 @@ around booked_check_missed_collection => sub {
     my $service_id = $cfg->{$type . '_service_id'} or return;
 
     my $escalations = $events->filter({ event_type => 3134, service => $service_id });
+    my $disputes = $events->filter({ event_type => 3143, service => $service_id });
     my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
+        my $locked_out = $missed->{$guid}{report_locked_out};
 
         if ($missed_event) {
             my $open_escalation = 0;
@@ -232,9 +235,36 @@ around booked_check_missed_collection => sub {
                     $escalation_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_bulky_escalation})->set_hour($self->waste_day_end_hour);
                 }
             }
+        } elsif ($locked_out) {
+            my $open_dispute = 0;
+            foreach ($disputes->list) {
+                next unless $_->{report};
+                my $original_guid = $_->{report}->get_extra_field_value('original_guid');
+                next unless $original_guid;
+                if ($original_guid eq $guid) {
+                    $open_dispute = 1;
+                }
+            }
+            my $within_window = $self->_check_date_within_dispute_window(
+                $missed->{$guid}{report_locked_out_date}
+            );
+            my $resolution_valid = $self->waste_check_can_raise_dispute(
+                $missed->{$guid}{service_id},
+                $missed->{$guid}{report_locked_out_reason}
+            );
+            if ($open_dispute) {
+                $missed->{$guid}{dispute}{open} = 1;
+            } elsif ($within_window && $resolution_valid) {
+                $missed->{$guid}{dispute}{allowed} = 1;
+            }
         }
     }
 };
+
+# default to never allowing disputes
+sub _check_date_within_dispute_window { 0; }
+sub waste_check_can_raise_dispute { 0; }
+sub _setup_scheduled_collection_disputes_for_service {}
 
 sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
@@ -243,6 +273,7 @@ sub munge_bin_services_for_address {
     foreach (@$rows) {
         $self->_setup_missed_collection_escalations_for_service($_);
         $self->_setup_container_request_escalations_for_service($_);
+        $self->_setup_scheduled_collection_disputes_for_service($_);
     }
 }
 
@@ -352,6 +383,19 @@ sub waste_munge_enquiry_form_pages {
     my $c = $self->{c};
     my $category = $c->get_param('category');
 
+    my $booking_id = $c->get_param('original_booking_id');
+    if ($booking_id) {
+        my $report = $c->cobrand->problems->find($booking_id);
+        unless ( $report && $c->user_exists && (
+                $c->stash->{is_staff} || $report->user->id == $c->user->id
+        ) ) {
+            my $property_uri = $c->uri_for_action( 'waste/bin_days', $c->stash->{property_id} );
+            my $uri = $c->uri_for( '/auth', { r => $property_uri } );
+            $c->res->redirect($uri);
+        }
+        $c->stash->{guid} = $report->external_id;
+    }
+
     # Add the service to the main fields form page
     $pages->[1]{intro} = 'enquiry-intro.html';
     $pages->[1]{title} = _enquiry_nice_title($category);
@@ -435,7 +479,30 @@ sub waste_munge_enquiry_form_pages {
                 hint => 'Provide an email address so we can send you updates.'
             },
         };
+    } elsif ( $category eq 'Missed collection dispute') {
+        my $guid = $c->stash->{guid};
+        # if we have a guid then it might be a link from an email and
+        # so it might be clicked outside the window so re-check if
+        # disputes are allowed
+        if ($guid) {
+            my $dispute_allowed = $self->_check_date_within_dispute_window(
+                $c->stash->{booked_missed}{$guid}{report_locked_out_date}
+            );
+            unless ($dispute_allowed) {
+                $c->stash->{first_page} = 'window_expired';
+                @$pages = (window_expired => {
+                    title => _enquiry_nice_title($category),
+                    fields => [ 'window_expired' ],
+                });
 
+                @$fields = (window_expired => {
+                    type => 'Notice',
+                    widget => 'NoRender',
+                    required => 0,
+                    label => 'Missed collections can only be disputed for 2 working days after the collection date.',
+                });
+            }
+        }
     }
 }
 
@@ -512,6 +579,10 @@ sub waste_munge_enquiry_data {
         $data->{extra_Notes} = "Non-actionable spillage report\n\n" . $data->{extra_Notes};
     } elsif ($data->{category} eq 'Report out-of-time not returned') {
         $data->{extra_Notes} = "Non-actionable not returned container\n\n" . $data->{extra_Notes};
+    } elsif ($data->{category} eq 'Missed collection dispute') {
+        if (my $report = $c->stash->{original_booking_report}) {
+            $data->{extra_original_guid} = $report->external_id;
+        }
     }
 
     if ($self->moniker eq 'kingston' && $data->{extra_details}) {
