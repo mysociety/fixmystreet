@@ -29,12 +29,13 @@ END;
         Our crews should have returned to collect by [% date.format(resolve_date, '%A, %-d %B') %];
         if they have not returned you can escalate the report.
         </p>
-    [% ELSIF service.report_open %]
+    [% ELSIF service.report_open OR service.report_open_non_actionable %]
+        [% SET report_date = service.report_open.date || service.report_open_non_actionable.date %]
         <p>A [% service.service_name FILTER lower %] collection was reported as missed
         [% IF communal_property %]
             by yourself, a neighbour, or your Managing Agent
         [% END %]
-        on [% date.format(service.report_open.date, '%A, %-d %B') %].
+        on [% date.format(report_date, '%A, %-d %B') %].
         [% SET resolve_date = service.target OR service.report_open.target %]
         We aim to resolve this by [% date.format(resolve_date, '%A, %-d %B') %].
         </p>
@@ -73,7 +74,9 @@ END;
 
 IF NOT service.escalations.missed;
     SET field = { value = 'redirect-missed', label = 'Report a missed collection' };
-    IF service.report_open;
+    IF service.report_allowed_non_actionable;
+        field.value = 'Report out-of-time missed collection';
+    ELSIF service.report_open OR service.report_open_non_actionable;
         field.disabled = 1;
     ELSIF service.report_locked_out;
         field.disabled = 1;
