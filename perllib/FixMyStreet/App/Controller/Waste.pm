@@ -855,7 +855,6 @@ sub construct_bin_problem_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        # next unless ( $_->{last} && $_->{report_allowed} && !$_->{report_open}) || $_->{report_only};
         my $id = $_->{service_id};
         my $name = $_->{service_name};
         push @$field_list, "service-$id" => {
@@ -1163,6 +1162,8 @@ sub enquiry : Chained('property') : Args(0) {
         $c->detach('/auth/redirect') unless $staff || $c->stash->{user_requested_assisted};
     }
 
+    $c->stash->{non_actionable} = $c->get_param('non_actionable');
+
     # If the contact has no extra fields (e.g. Peterborough) then skip to the
     # "about you" page instead of showing an empty first page.
     $c->stash->{first_page} = @$field_list ? 'enquiry' : 'about_you';
@@ -1322,6 +1323,7 @@ sub add_report : Private {
 
     $report->set_extra_metadata(property_address => $c->stash->{property}{address});
     $report->set_extra_metadata(phone => $c->stash->{phone});
+    $report->set_extra_metadata(non_actionable => 1) if $c->stash->{non_actionable};
     $c->cobrand->call_hook('save_item_names_to_report' => $data);
     $report->update;
 
