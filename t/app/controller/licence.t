@@ -137,7 +137,7 @@ subtest 'Date validation' => sub {
             'proposed_end_date.month' => $valid_end->month,
             'proposed_end_date.year' => $valid_end->year,
         }});
-        $mech->content_contains('About you (Applicant)',
+        $mech->content_contains('Applicant details',
             'Valid dates proceed to next page');
     };
 };
@@ -176,6 +176,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         # Applicant page
         $mech->submit_form_ok({ with_fields => {
             organisation => 'Test Scaffolding Ltd',
+            job_title => 'Scaffolder',
             name => 'Test Person',
             address => '123 Test Street, London, NW1 1AA',
             email => 'test@example.com',
@@ -251,7 +252,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => { process => 'summary' } });
 
         # Check we're on confirmation page
-        $mech->content_contains('Application submitted', 'Shows confirmation page');
+        $mech->content_contains('This is not a licence', 'Shows confirmation page');
 
         # Verify Problem was created
         my $problem = FixMyStreet::DB->resultset('Problem')
@@ -266,8 +267,8 @@ subtest 'Scaffold form submission - smoke test' => sub {
         # Detail string should group fields by section with headers and blank lines,
         # making it easier to distinguish e.g. applicant vs contractor answers
         my $detail = $problem->detail;
-        like $detail, qr/\[Location of the scaffolding\]/, 'Detail contains Location section header';
-        like $detail, qr/\[About you \(Applicant\)\]/, 'Detail contains Applicant section header';
+        like $detail, qr/\[Location of the scaffold\]/, 'Detail contains Location section header';
+        like $detail, qr/\[Applicant details\]/, 'Detail contains Applicant section header';
         like $detail, qr/\n\n/, 'Detail has blank lines between sections';
         unlike $detail, qr/Contact name:/, 'Contractor contact name hidden when same as applicant';
 
