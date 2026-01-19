@@ -85,6 +85,9 @@ FixMyStreet::override_config {
         my $c = CGI::Simple->new($req->content);
         is $c->param('service_code'), 'BRIDGES';
         is $c->param('attribute[NSGRef]'), 'Road ID';
+        is $c->param('attribute[title]'),  $report->title;
+        (my $c_description = $c->param('attribute[description]')) =~ s/\r\n/\n/g;
+        is $c_description, $report->detail . "\n\nUnit ID: Asset 123";
         is $c->param('attribute[report_url]'),  "http://centralbedfordshire.example.org/report/" . $report->id;
         is $c->param('attribute[UnitID]'), undef, 'Unit ID not included as attribute';
         like $c->param('description'), qr/Unit ID: Asset 123/, 'But is included in description';

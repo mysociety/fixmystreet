@@ -207,6 +207,10 @@ sub open311_extra_data_include {
     }
 
     my $open311_only = [
+        { name => 'title',
+          value => $row->title },
+        { name => 'description',
+          value => $row->detail },
         { name => 'report_url',
           value => $h->{url} },
     ];
