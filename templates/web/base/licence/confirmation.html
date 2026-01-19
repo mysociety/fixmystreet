@@ -1,0 +1,20 @@
+[% SET title = 'Application Submitted' %]
+
+[% INCLUDE header.html %]
+
+<div class="govuk-panel govuk-panel--confirmation">
+  <h1 class="govuk-panel__title">Application submitted</h1>
+  <div class="govuk-panel__body">
+    Your reference number is<br><strong>[% reference %]</strong>
+  </div>
+</div>
+
+<h2>What happens next</h2>
+
+<p>We will review your application and contact you if we need any further information.</p>
+
+[% IF auto_response %]
+<p>[% auto_response %]</p>
+[% END %]
+
+[% INCLUDE footer.html %]

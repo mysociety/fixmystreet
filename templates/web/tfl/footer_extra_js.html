@@ -15,6 +15,12 @@ IF bodyclass.match('mappage');
   );
 END;
 
+IF bodyclass.match('licence');
+  scripts.push(
+    version('/cobrands/tfl/licence.js'),
+  );
+END;
+
 IF c.user_exists AND ((c.user.from_body AND c.user.from_body.name == 'TfL') OR c.user.is_superuser);
     scripts.push(
         version('/cobrands/tfl/staff.js'),

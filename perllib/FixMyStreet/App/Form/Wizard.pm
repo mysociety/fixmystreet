@@ -15,6 +15,11 @@ use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';
 with ('HTML::FormHandler::BuildPages', 'HTML::FormHandler::Pages' );
 
+use Path::Tiny;
+use File::Copy;
+use Digest::SHA qw(sha1_hex);
+use File::Basename;
+
 sub is_wizard { 1 } # So build_active is called
 
 =pod
@@ -70,6 +75,19 @@ has csrf_token => ( is => 'ro', isa => 'Str' );
 
 has already_submitted_error => ( is => 'rw', isa => 'Bool', default => 0 );
 
+=item * upload_dir - directory for FileIdUpload files. Forms can override this
+to use a different directory (e.g. claims_files/, licence_files/).
+
+=back
+
+=cut
+
+has upload_dir => ( is => 'ro', lazy => 1, default => sub {
+    my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
+    my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
+    path($dir, "uploads")->absolute(FixMyStreet->path_to())->mkdir;
+});
+
 =head2 Form fields
 
 =over 4
@@ -101,10 +119,24 @@ sub has_page_called {
     return grep { $_->name eq $page_name } $self->all_pages;
 }
 
+# body_params does not include file uploads, which breaks validation
+# and value setting, so we need to add them here.
 sub get_params {
     my ($self, $c) = @_;
 
-    return $c->req->body_params;
+    my @params = $c->req->body_params;
+
+    if ( $c->req->uploads ) {
+        for my $field ( keys %{ $c->req->uploads } ) {
+            next unless $self->field($field);
+            if ($self->field($field)->{type} eq 'FileIdUpload') {
+                $self->file_upload($field);
+                $params[0]->{$field} = $self->saved_data->{$field};
+            }
+        }
+    }
+
+    return @params;
 }
 
 =head2 next
@@ -280,6 +312,85 @@ sub update_photo {
         my $fileid = $field . '_fileid';
         $saved_data->{$fileid} = $saved_data->{$field};
         $fields->{$fileid} = { default => $saved_data->{$field} };
+    }
+}
+
+=head2 File upload methods
+
+FileIdUpload fields are handled similarly to Photo fields. These methods
+deal with saving uploaded files and managing their state across form pages.
+
+=head3 file_upload
+
+Called automatically by get_params() when processing FileIdUpload fields.
+Saves the uploaded file to upload_dir with a SHA1 hash filename.
+
+=cut
+
+sub file_upload {
+    my ($form, $field) = @_;
+
+    my $c = $form->{c};
+    my $saved_data = $form->saved_data;
+
+    my $upload = $c->req->upload($field);
+    if ( $upload ) {
+        FixMyStreet::PhotoStorage::base64_decode_upload($c, $upload);
+        my ($p, $n, $ext) = fileparse($upload->filename, qr/\.[^.]*/);
+        my $key = sha1_hex($upload->slurp) . $ext;
+        my $out = $form->upload_dir->child($key);
+        unless (copy($upload->tempname, $out)) {
+            $c->log->info('Couldn\'t copy temp file to destination: ' . $!);
+            $c->stash->{photo_error} = _("Sorry, we couldn't save your file(s), please try again.");
+            return;
+        }
+        # Store the file hash along with the original filename for display
+        $saved_data->{$field} = { files => $key, filenames => [ $upload->raw_basename ] };
+    }
+}
+
+=head3 handle_upload
+
+Called in a page's update_field_list to restore upload field state from saved_data.
+
+    update_field_list => sub {
+        my ($form) = @_;
+        my $fields = {};
+        $form->handle_upload('field_name', $fields);
+        return $fields;
+    },
+
+=cut
+
+sub handle_upload {
+    my ($form, $field, $fields) = @_;
+
+    my $saved_data = $form->saved_data;
+    if ( $saved_data->{$field} ) {
+        $fields->{$field} = { default => $saved_data->{$field}->{files}, tags => $saved_data->{$field} };
+    }
+}
+
+=head3 process_upload
+
+Called in a page's post_process to save upload field data.
+
+    post_process => sub {
+        my ($form) = @_;
+        $form->process_upload('field_name');
+    },
+
+=cut
+
+sub process_upload {
+    my ($form, $field) = @_;
+
+    my $saved_data = $form->saved_data;
+    my $c = $form->{c};
+
+    if ( !$saved_data->{$field} && $c->req->params->{$field . '_fileid'} ) {
+        # The data was already passed in from when it was saved before (also in tags, from above)
+        $saved_data->{$field} = $form->field($field)->init_value;
     }
 }
 
