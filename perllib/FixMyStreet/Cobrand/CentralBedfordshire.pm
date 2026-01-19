@@ -166,7 +166,9 @@ we fail a couple of times to send to Symology.
 sub should_skip_sending_update {
     my ($self, $update) = @_;
 
-    my $code = $update->problem->contact->email;
+    my $code = $update->problem->contact;
+    return 1 unless $code; # No category found
+    $code = $code->email;
     return 1 if $code =~ /^Jadu/;
     return 1 if $update->send_fail_count >= 2 && $update->send_fail_reason =~ /Username required for notification/;
     return 0;
