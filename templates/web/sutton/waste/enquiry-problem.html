@@ -90,6 +90,15 @@ IF NOT service.escalations.missed;
     f.push(field);
 END;
 
+IF service.dispute_allowed || service.dispute_open;
+    SET field = { value = 'Missed collection dispute', label = 'Dispute collection closure reason' };
+    IF service.dispute_open;
+        field.hint = 'We are investigating the problem with this collection.';
+        field.disabled = 1;
+    END;
+    f.push(field);
+END;
+
 IF NOT original_booking_report; # Not a bulky booking
 
     SET field = { value = 'Bin not returned', label = 'Report a bin, box or caddy not returned to the correct location' };
