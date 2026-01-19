@@ -1,0 +1,36 @@
+[% USE date %]
+[%
+  SET bin_type = report.title.replace('Report missed ', '');
+%]
+[%
+
+email_columns = 1;
+
+PROCESS '_email_settings.html';
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box | safe %]
+
+  <h1 style="[% h1_style %]">Your report has been&nbsp;logged</h1>
+
+  <p style="[% p_style %]">
+    Thank you for reporting a missed [% bin_type %] collection on [% date.format(report.created, '%A, %-d %B') %].
+  </p>
+  <p style="[% p_style %]">
+    As you reported this after the 2 day time period for reporting missed collections, we will not be able to return on this occasion.
+  </p>
+  <p style="[% p_style %]">
+    However, we will use your report to improve our service.
+  </p>
+
+  <p style="[% p_style %]">
+    [% INCLUDE 'waste/signature.html' %]
+  </p>
+
+  [% end_padded_box | safe %]
+</th>
+
+[% INCLUDE '_email_bottom.html' %]
