@@ -593,6 +593,9 @@ sub waste_task_resolutions {
             $row->{report_allowed} = 0;
             $row->{report_locked_out} = 1;
         }
+
+
+        $self->call_hook(munge_waste_task_resolutions => $row);
     }
 }
 
