@@ -632,7 +632,7 @@ fixmystreet.assets.centralbedfordshire = {};
 fixmystreet.assets.centralbedfordshire.streetlight_stylemap = new OpenLayers.StyleMap({
     'default': fixmystreet.assets.style_default,
     'hover': fixmystreet.assets.style_default_hover,
-    'select': fixmystreet.assets.construct_named_select_style("${lighting_c}")
+    'select': fixmystreet.assets.construct_named_select_style("${label}")
 });
 
 fixmystreet.assets.centralbedfordshire.style_default_green = new OpenLayers.Style({
