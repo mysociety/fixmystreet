@@ -3,289 +3,320 @@
 [% PROCESS 'waste/header.html' %]
 
 [% IF c.cobrand.moniker != 'sutton' %]
-<h1 class="govuk-heading-xl">Your bin days</h1>
+  <h1 class="govuk-heading-xl">Your bin days</h1>
 [% END %]
 
 [% TRY %][% PROCESS waste/_service_navigation_bar.html %][% CATCH file %][% END %]
 [% INCLUDE 'waste/_address_display.html' %]
 [% TRY %][% PROCESS waste/_rotation_schedule.html %][% CATCH file %][% END %]
 [% TRY %][% PROCESS waste/_announcement.html %][% CATCH file %][% END %]
+
 <div class="waste__collections">
- [% IF c.cobrand.moniker != 'peterborough' %]
-  <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
-  [% IF c.cobrand.moniker == 'brent' && service_data.size %]
-    [% FOR unit IN service_data %]
+  [% IF c.cobrand.moniker != 'peterborough' %]
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-2 govuk-!-margin-top-8">Your collections</h2>
+    [% IF c.cobrand.moniker == 'brent' && service_data.size %]
+      [% FOR unit IN service_data %]
         [% IF unit.service_id == 262 ~%]
-            [% domestic_collection = 1 ~%]
-            <p>Please note all collections can take place between 7am &ndash; 10pm.</p>
-            [% BREAK %]
+          [% domestic_collection = 1 ~%]
+          <p>Please note all collections can take place between 7am &ndash; 10pm.</p>
+          [% BREAK %]
         [% END %]
-    [% END %]
-  [% END %]
- [% ELSE %]
-  <div class="govuk-!-margin-bottom-8">
-    <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Your collections</h2>
-    [% IF service_data.size %]
-      [% TRY %][% PROCESS waste/_calendar.html %][% CATCH file %]
-      <a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar</a>
       [% END %]
     [% END %]
-  </div>
- [% END %]
+  [% ELSE %]
+    <div class="govuk-!-margin-bottom-8">
+      <h2 class="govuk-heading-l govuk-!-margin-bottom-2 govuk-!-margin-top-8">Your collections</h2>
+      [% IF service_data.size %]
+        [% TRY %][% PROCESS waste/_calendar.html %][% CATCH file %]
+          <a href="[% c.uri_for_action('waste/calendar', [ property.id ]) %]">Add to your calendar</a>
+        [% END %]
+      [% END %]
+    </div>
+  [% END %]
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-    [% DEFAULT any_report_allowed = 0 ~%]
-    [% SET any_request_allowed = 0 ~%]
-    [% IF NOT waste_features.garden_disabled AND pending_subscription AND NOT c.cobrand.garden_current_subscription %]
+      [% DEFAULT any_report_allowed = 0 ~%]
+      [% SET any_request_allowed = 0 ~%]
+      [% IF NOT waste_features.garden_disabled AND pending_subscription AND NOT c.cobrand.garden_current_subscription %]
         <p class="govuk-body-l">You have a pending
-            [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
-                garden subscription renewal.
-            [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
-                garden subscription.
-            [%~ END %]
+          [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
+            garden subscription renewal.
+          [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
+            garden subscription.
+          [%~ END %]
         </p>
-    [% END %]
-    [% FOR unit IN service_data %]
-    [% UNLESS unit.request_only %]
-
-     [% IF c.cobrand.moniker != 'peterborough' %]
-      <h3 class="govuk-heading-m waste-service-name">
-          [% unit.service_name %]
-          [% IF c.cobrand.moniker == 'brent' %]collection[% END %]
-          [% IF unit.service_description %]
-            <div class="waste-service-subtitle">
-              [% unit.service_description | safe %]
-            </div>
-          [% END %]
-      </h3>
-      <div class="govuk-grid-row">
-     [% ELSE %]
-      <div class="govuk-grid-row waste-service-wrapper">
-     [% END %]
-
-      [% SET image = c.cobrand.image_for_unit(unit) ~%]
-      [% IF image %]
-        <div class="govuk-grid-column-one-quarter text-centered">
-         [% IF c.cobrand.moniker == 'peterborough' %]
-          <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
-         [% END %]
-        [% IF image.type == 'svg' %]
-          <span style="--primary-color: [% image.colour %];
-            [%~ IF image.lid_colour %]--lid-color: [% image.lid_colour %];[% END %]
-            [%~ IF image.recycling_logo %]--recycling-logo: 1;[% END ~%]
-            ">[% image.data.replace('<svg', '<svg class="waste-service-image"') | safe %]</span>
-        [% ELSIF c.cobrand.waste_images_2x_unavailable %]
-          <img src="[% image %].png" alt="" class="waste-service-image">
-        [% ELSIF image.type == 'png1' %]
-          <img src="[% image.src %].png" alt="[% image.alt %]" class="waste-service-image">
-        [% ELSIF image.src %]
-          <img src="[% image.src %].png" srcset="[% image.src %].png 1x, [% image.src %]@2x.png 2x" alt="[% image.alt %]" class="waste-service-image">
-        [% ELSE  %]
-          <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
-        [% END %]
-        </div>
-        <div class="govuk-grid-column-three-quarters">
-      [% ELSE %]
-        <div class="govuk-grid-column-full">
-         [% IF c.cobrand.moniker == 'peterborough' %]
-          <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
-         [% END %]
       [% END %]
 
-    [% IF NOT waste_features.garden_disabled AND pending_subscription AND unit.garden_waste %]
-        <p class="govuk-body-l">You have a pending
-            [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
-                garden subscription renewal.
-            [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
-                garden subscription.
-            [%~ END %]
-        </p>
+      [% FOR unit IN service_data %]
+        [% UNLESS unit.request_only %]
 
-    [% END %]
+          <div class="waste-service-grid">
+            [% IF c.cobrand.moniker != 'peterborough' %]
+              <div class="waste-service-grid--service-name">
+                <h3 class="govuk-heading-m waste-service-name">
+                  [% unit.service_name %]
+                  [% IF c.cobrand.moniker == 'brent' %]collection[% END %]
+                  [% IF unit.service_description %]
+                    <div class="waste-service-subtitle">
+                      [% unit.service_description | safe %]
+                    </div>
+                  [% END %]
+                </h3>
+              </div>
+            [% END %]
 
-    [% IF !unit.garden_overdue %]
+            [% SET image = c.cobrand.image_for_unit(unit) ~%]
+            [% IF image %]
+              <div class="waste-service-grid--service-image">
+                [% IF c.cobrand.moniker == 'peterborough' %]
+                  <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name text-centered">[% unit.service_name %]</h3>
+                [% END %]
 
-    [% IF unit.garden_due AND NOT pending_subscription AND NOT waste_features.garden_disabled AND NOT waste_features.garden_renew_disabled %]
-    <div class="govuk-warning-text due">
-      <div class="govuk-warning-text__img">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-      </div>
-      <div class="govuk-warning-text__content">
-          <span class="govuk-warning-text__assistive">Warning</span>
-          <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is soon due for renewal.</h3>
-          [% WRAPPER 'waste/_garden_status_messages.html' %]
-          Avoid disruption to your service.
-          <form method="post" action="[% c.uri_for_action('waste/garden/renew', [ property.id ]) %]">
-            <input type="hidden" name="token" value="[% csrf_token %]">
-            <input type="submit" value="[%
-                IF c.cobrand.moniker == 'merton';
-                    'Renew without making changes';
-                ELSE;
-                    'Renew subscription today';
-                END;
-            %]" class="govuk-button">
-          </form>
-          [% IF c.cobrand.moniker == 'merton' %]
-            <p class="govuk-body-s govuk-!-margin-top-2">
-            If you do wish to make changes, please wait and reapply after
-            [% date.format(unit.end_date _ ' 00:00:00', '%A %-d %B') %].
-            </p>
-          [% END %]
-          [% END %]
-      </div>
-    </div>
-    [% END %]
-
-     [% IF c.cobrand.moniker != 'peterborough' %]
-      <dl class="govuk-summary-list">
-     [% ELSE %]
-      <hr>
-      <dl class="govuk-summary-list govuk-!-margin-bottom-0">
-     [% END %]
-        [% IF unit.schedule %]
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Frequency</dt>
-            <dd class="govuk-summary-list__value">
-              [% unit.schedule %]
-              [% IF unit.timeband %]
-                ([% date.format(unit.timeband.start, '%H:%M') %]&ndash;[% date.format(unit.timeband.end, '%H:%M') %])
+                [% IF image.type == 'svg' %]
+                  <span style="--primary-color: [% image.colour %];
+                    [%~ IF image.lid_colour %]--lid-color: [% image.lid_colour %];[% END %]
+                    [%~ IF image.recycling_logo %]--recycling-logo: 1;[% END ~%]
+                    ">[% image.data.replace('<svg', '<svg class="waste-service-image"') | safe %]</span>
+                [% ELSIF c.cobrand.waste_images_2x_unavailable %]
+                  <img src="[% image %].png" alt="" class="waste-service-image">
+                [% ELSIF image.type == 'png1' %]
+                  <img src="[% image.src %].png" alt="[% image.alt %]" class="waste-service-image">
+                [% ELSIF image.src %]
+                  <img src="[% image.src %].png" srcset="[% image.src %].png 1x, [% image.src %]@2x.png 2x" alt="[% image.alt %]" class="waste-service-image">
+                [% ELSE  %]
+                  <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
+                [% END %]
+              </div>
+            [% ELSE %]
+              [% IF c.cobrand.moniker == 'peterborough' %]
+                <div class="waste-service-grid--service-name">
+                  <h3 id="[% unit.service_name %]" class="govuk-heading-m waste-service-name">[% unit.service_name %]</h3>
+                </div>
               [% END %]
-            </dd>
+            [% END %]
+
+            <div class="waste-service-grid--service-description">
+              [% IF NOT waste_features.garden_disabled AND pending_subscription AND unit.garden_waste %]
+                <p class="govuk-body-l">You have a pending
+                  [%= IF pending_subscription.title == 'Garden Subscription - Renew' ~%]
+                    garden subscription renewal.
+                  [%~ ELSIF pending_subscription.title == 'Garden Subscription - New' ~%]
+                    garden subscription.
+                  [%~ END %]
+                </p>
+              [% END %]
+
+              [% IF c.cobrand.moniker == 'bromley' AND unit.garden_overdue AND unit.garden_waste AND NOT waste_features.garden_renew_disabled %]
+                <div class="govuk-warning-text overdue">
+                  <div class="govuk-warning-text__img">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                  </div>
+                  <div class="govuk-warning-text__content">
+                    <span class="govuk-warning-text__assistive">Warning</span>
+                    <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is now overdue.</h3>
+                    Collections have been paused. They’ll start again when you renew.
+                    [% WRAPPER 'waste/_garden_status_messages.html' %]
+                      <form method="post" action="[% c.uri_for_action('waste/garden/renew', [ property.id ]) %]">
+                        <input type="hidden" name="token" value="[% csrf_token %]">
+                        <input type="submit" value="Renew subscription today" class="govuk-button">
+                      </form>
+                    [% END %]
+                  </div>
+                </div>
+              [% END %]
+
+              [% IF !unit.garden_overdue %]
+
+                [% IF unit.garden_due AND NOT pending_subscription AND NOT waste_features.garden_disabled AND NOT waste_features.garden_renew_disabled %]
+                  <div class="govuk-warning-text due">
+                    <div class="govuk-warning-text__img">
+                      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    </div>
+                    <div class="govuk-warning-text__content">
+                      <span class="govuk-warning-text__assistive">Warning</span>
+                      <h3 class="govuk-heading-l govuk-warning-text__heading">Your subscription is soon due for renewal.</h3>
+                      [% WRAPPER 'waste/_garden_status_messages.html' %]
+                        Avoid disruption to your service.
+                        <form method="post" action="[% c.uri_for_action('waste/garden/renew', [ property.id ]) %]">
+                          <input type="hidden" name="token" value="[% csrf_token %]">
+                          <input type="submit" value="[%
+                            IF c.cobrand.moniker == 'merton';
+                              'Renew without making changes';
+                            ELSE;
+                              'Renew subscription today';
+                            END;
+                          %]" class="govuk-button">
+                        </form>
+                        [% IF c.cobrand.moniker == 'merton' %]
+                          <p class="govuk-body-s govuk-!-margin-top-2">
+                            If you do wish to make changes, please wait and reapply after
+                            [% date.format(unit.end_date _ ' 00:00:00', '%A %-d %B') %].
+                          </p>
+                        [% END %]
+                      [% END %]
+                    </div>
+                  </div>
+                [% END %]
+
+                [% IF c.cobrand.moniker != 'peterborough' %]
+                  <dl class="govuk-summary-list">
+                [% ELSE %]
+                  <hr>
+                  <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+                [% END %]
+                  [% IF unit.schedule %]
+                      <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Frequency</dt>
+                        <dd class="govuk-summary-list__value">
+                          [% unit.schedule %]
+                          [% IF unit.timeband %]
+                            ([% date.format(unit.timeband.start, '%H:%M') %]&ndash;[% date.format(unit.timeband.end, '%H:%M') %])
+                          [% END %]
+                        </dd>
+                      </div>
+                  [% END %]
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Next collection</dt>
+                    <dd class="govuk-summary-list__value">
+                      [% IF unit.next %]
+                        [% IF unit.next.already_collected %]
+                          [% IF unit.report_locked_out %]
+                            <strong>Could not be collected today because it was red-tagged. See reason below.</strong>
+                          [% ELSE %]
+                            <strong>Reported as collected today</strong>
+                          [% END %]
+                        [% ELSIF unit.next.is_today %]
+                          <strong>Being collected today</strong>
+                        [% ELSIF unit.next.pending %]
+                          <strong>Pending</strong>
+                        [% ELSE %]
+                          [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
+                        [% END %]
+                        [% IF unit.next.changed %](this collection has been adjusted from its usual time)[% END %]
+                        [% IF unit.next.state %]([% unit.next.state %])[% END %]
+                      [% ELSE %]
+                        <i>None</i>
+                      [% END %]
+                    </dd>
+                  </div>
+                  [% IF unit.last AND unit.last.date.year > 2000 %][%# Bartec uses 1900-01-01T00:00:00 for jobs that have no previous collection %]
+                    <div class="govuk-summary-list__row">
+                      <dt class="govuk-summary-list__key">Last collection</dt>
+                      <dd class="govuk-summary-list__value">
+                        [% IF unit.last.is_delayed %]
+                          <strong>We are currently behind on collecting this. We will be there shortly.</strong>
+                        [% ELSE %]
+                          [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
+                          [%~ IF unit.last.completed %], at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%][% END %]
+                          [% IF unit.last.changed %](this collection was adjusted from its usual time)[% END %]
+                          [% IF unit.last.state %]([% unit.last.state %])[% END %]
+                          [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
+                        [% END %]
+                      </dd>
+                    </div>
+                  [% END %]
+                </dl>
+              [% END %]
+
+              [% IF c.cobrand.moniker == 'peterborough' %]<hr>[% END %]
+
+              <div class="waste-services-launch-panel" id="panel-[% unit.service_id %]">
+                [% PROCESS waste/services.html %]
+              </div>
+            </div>
+
           </div>
         [% END %]
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Next collection</dt>
-          <dd class="govuk-summary-list__value">
-            [% IF unit.next %]
-              [% IF unit.next.already_collected %]
-                [% IF unit.report_locked_out %]
-                  <strong>Could not be collected today because it was red-tagged. See reason below.</strong>
-                [% ELSE  %]
-                  <strong>Reported as collected today</strong>
-                [% END %]
-              [% ELSIF unit.next.is_today %]
-                <strong>Being collected today</strong>
-              [% ELSIF unit.next.pending %]
-                <strong>Pending</strong>
-              [% ELSE %]
-                [% date.format(unit.next.date) | replace('~~~', unit.next.ordinal) %]
-              [% END %]
-              [% IF unit.next.changed %](this collection has been adjusted from its usual time)[% END %]
-              [% IF unit.next.state %]([% unit.next.state %])[% END %]
-            [% ELSE %]
-              <i>None</i>
-            [% END %]
-          </dd>
-        </div>
-      [% IF unit.last AND unit.last.date.year > 2000 %][%# Bartec uses 1900-01-01T00:00:00 for jobs that have no previous collection %]
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Last collection</dt>
-          <dd class="govuk-summary-list__value">
-              [% IF unit.last.is_delayed %]
-                <strong>We are currently behind on collecting this. We will be there shortly.</strong>
-              [% ELSE %]
-                [% date.format(unit.last.date) | replace('~~~', unit.last.ordinal) %]
-                [%~ IF unit.last.completed %], at [% date.format(unit.last.completed, '%l:%M%p') | lower ~%][% END %]
-                [% IF unit.last.changed %](this collection was adjusted from its usual time)[% END %]
-                [% IF unit.last.state %]([% unit.last.state %])[% END %]
-                [% IF unit.last.resolution %][% unit.last.resolution | staff_html_markup({ is_body_user => 1 }) %][% END ~%]
-              [% END %]
-          </dd>
-        </div>
       [% END %]
-      </dl>
-    [% END %]
-      [% IF c.cobrand.moniker == 'peterborough' %]<hr>[% END %]
-      <div class="waste-services-launch-panel" id="panel-[% unit.service_id %]">
-          [% PROCESS waste/services.html %]
-      </div>
-    </div>
-  </div>
-[% END %]
-[% END %]
 
-[% IF
-  property.show_bulky_waste
-  || (c.cobrand.call_hook('bulky_enabled') && property.commercial_property);
-    SET image = c.cobrand.image_for_unit({ service_id => 'bulky' });
-%]
-  [% IF c.cobrand.moniker != 'peterborough' %]
-  <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">[%
-      IF c.cobrand.moniker == 'sutton' %]Bulky Waste[% ELSE %]Bulky waste[% END
-  %]</h3>
-    [% IF c.cobrand.moniker == 'kingston' || c.cobrand.moniker == 'sutton' %]
-        <p>
-            Pay to have large household items like furniture or appliances collected from your address.
-          [% IF c.cobrand.moniker == 'sutton' %]
-            Please make sure you’ve read the <a href="https://www.sutton.gov.uk/w/bulky-waste-collections-terms-and-conditions">bulky goods collection page</a> before making a booking.
+      [% IF
+        property.show_bulky_waste
+        || (c.cobrand.call_hook('bulky_enabled') && property.commercial_property);
+        SET image = c.cobrand.image_for_unit({ service_id => 'bulky' });
+      %]
+      <div class="waste-service-grid">
+          [% IF c.cobrand.moniker != 'peterborough' %]
+          <div class="waste-service-grid--service-name">
+            <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">[%
+              IF c.cobrand.moniker == 'sutton' %]Bulky Waste[% ELSE %]Bulky waste[% END
+            %]</h3>
+              [% IF c.cobrand.moniker == 'kingston' || c.cobrand.moniker == 'sutton' %]
+                <p>
+                  Pay to have large household items like furniture or appliances collected from your address.
+                  [% IF c.cobrand.moniker == 'sutton' %]
+                    Please make sure you’ve read the <a href="https://www.sutton.gov.uk/w/bulky-waste-collections-terms-and-conditions">bulky goods collection page</a> before making a booking.
+                  [% END %]
+                </p>
+              [% END %]
+          </div>
           [% END %]
-        </p>
-    [% END %]
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-quarter text-centered">
-  [% ELSE %]
-  <div class="govuk-grid-row waste-service-wrapper">
-    <div class="govuk-grid-column-one-quarter">
-      <h3 id="bulky-waste" class="govuk-heading-m">Bulky Waste</h3>
-  [% END %]
-      <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
-    </div>
-    <div class="govuk-grid-column-three-quarters">
-      [% IF c.cobrand.moniker == 'peterborough' %]<hr>[% END %]
-      [% IF property.commercial_property %]
-        [% PROCESS waste/_bulky_waste_message.html %]
-      [% ELSE %]
-        [% PROCESS 'waste/bulky/_bin_days_list.html' type='bulky' %]
+
+          <div class="waste-service-grid--service-image">
+          [% IF c.cobrand.moniker == 'peterborough' %]
+            <h3 id="bulky-waste" class="govuk-heading-m text-centered">Bulky Waste</h3>
+          [% END %]
+            <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
+          </div>
+
+          <div class="waste-service-grid--service-description">
+            [% IF c.cobrand.moniker == 'peterborough' %]<hr>[% END %]
+            [% IF property.commercial_property %]
+              [% PROCESS waste/_bulky_waste_message.html %]
+            [% ELSE %]
+              [% PROCESS 'waste/bulky/_bin_days_list.html' type='bulky' %]
+            [% END %]
+          </div>
+        </div>
       [% END %]
+
+        [% IF property.show_small_items;
+          SET image = c.cobrand.image_for_unit({ service_id => 'small_items' });
+        %]
+        <div class="waste-service-grid">
+          <div class="waste-service-grid--service-name">
+            <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Small items</h3>
+            [% IF c.cobrand.moniker == 'sutton' %]
+              <p>
+                Get small electrical items, batteries and textiles collected from your address for free.
+                Please make sure you’ve read the <a href="https://www.sutton.gov.uk/w/small-items-collections-terms-and-conditions">small items collection page</a> before making a booking.
+              </p>
+            [% END %]
+          </div>
+          <div class="waste-service-grid--service-image">
+            <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
+          </div>
+          <div class="waste-service-grid--service-description">
+
+            [% PROCESS 'waste/bulky/_bin_days_list.html' type='small_items' %]
+          </div>
+        </div>
+        [% END %]
+
+      [% IF NOT service_data.size %]
+        [% TRY %][% PROCESS waste/_bin_days_no_collections.html %][% CATCH file %]
+          <p>This property has no collections.</p>
+        [% END %]
+      [% END %]
+
+      [% TRY %][% PROCESS waste/services_extra.html %][% CATCH file %][% END %]
+
     </div>
-  </div>
-[% END %]
 
-[% IF property.show_small_items;
-    SET image = c.cobrand.image_for_unit({ service_id => 'small_items' });
-%]
-  <h3 id="bulky-waste" class="govuk-heading-m waste-service-name">Small items</h3>
-    [% IF c.cobrand.moniker == 'sutton' %]
-      <p>
-          Get small electrical items, batteries and textiles collected from your address for free.
-          Please make sure you’ve read the <a href="https://www.sutton.gov.uk/w/small-items-collections-terms-and-conditions">small items collection page</a> before making a booking.
-      </p>
-    [% END %]
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-quarter text-centered">
-      <img src="[% image %].png" srcset="[% image %].png 1x, [% image %]@2x.png 2x" alt="" class="waste-service-image">
-    </div>
-    <div class="govuk-grid-column-three-quarters">
-      [% PROCESS 'waste/bulky/_bin_days_list.html' type='small_items' %]
-    </div>
-  </div>
-[% END %]
-
-[% IF NOT service_data.size %]
-    [% TRY %][% PROCESS waste/_bin_days_no_collections.html %][% CATCH file %]
-    <p>This property has no collections.</p>
-    [% END %]
-[% END %]
-
-        [% TRY %][% PROCESS waste/services_extra.html %][% CATCH file %][% END %]
-
-    </div>
-
- [% IF c.cobrand.moniker != 'peterborough' %]
-    <div class="govuk-grid-column-one-third">
-      <div class="aside">
-        [% INCLUDE waste/bin_days_sidebar.html %]
+    [% IF c.cobrand.moniker != 'peterborough' %]
+      <div class="govuk-grid-column-one-third">
+        <div class="aside">
+          [% INCLUDE waste/bin_days_sidebar.html %]
+        </div>
       </div>
     </div>
-  </div>
- [% ELSE %]
+    [% ELSE %]
   </div>
   <div id="more-services">
     [% INCLUDE waste/bin_days_sidebar.html %]
   </div>
- [% END %]
+    [% END %]
 </div>
 
 [% INCLUDE footer.html %]

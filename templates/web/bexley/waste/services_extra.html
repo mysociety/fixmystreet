@@ -1,13 +1,14 @@
-<div class="govuk-grid-row" id="in-cab-logs">
-  [% IF property.garden_signup_eligible %]
-  <h3 class="govuk-heading-m waste-service-name">
-    Brown Wheelie Bin
-  </h3>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-quarter text-centered">
+[% IF property.garden_signup_eligible %]
+  <div class="waste-service-grid">
+    <div class="waste-service-grid--service-name">
+      <h3 class="govuk-heading-m waste-service-name">
+        Brown Wheelie Bin
+      </h3>
+    </div>
+    <div class="waste-service-grid--service-image">
       <img src="/i/waste-containers/bexley/garden-waste-brown-bin.png" alt="" class="waste-service-image">
     </div>
-    <div class="govuk-grid-column-three-quarters">
+    <div class="waste-service-grid--service-description">
       <div class="waste-services-launch-panel" id="panel-GA-240">
         <p><strong>Status:</strong> You do not have a Garden waste collection.
         </p>
@@ -19,15 +20,17 @@
       </div>
     </div>
   </div>
-  [% ELSIF property.garden_api_error %]
-  <h3 class="govuk-heading-m waste-service-name">
-    Brown Wheelie Bin
-  </h3>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-quarter text-centered">
+[% ELSIF property.garden_api_error %]
+  <div class="waste-service-grid">
+    <div class="waste-service-grid--service-name">
+      <h3 class="govuk-heading-m waste-service-name">
+        Brown Wheelie Bin
+      </h3>
+    </div>
+    <div class="waste-service-grid--service-image">
       <img src="/i/waste-containers/bexley/garden-waste-brown-bin.png" alt="" class="waste-service-image">
     </div>
-    <div class="govuk-grid-column-three-quarters">
+    <div class="waste-service-grid--service-description">
       <div class="waste-services-launch-panel" id="panel-GA-240">
         <p><strong>Status:</strong> We're currently unable to check your garden waste subscription status.
         </p>
@@ -37,7 +40,7 @@
       </div>
     </div>
   </div>
-  [% END %]
+[% END %]
 
   [%# Allow superusers to see red tags and service updates for debugging purposes %]
   [% IF c.user.is_superuser %]
@@ -134,4 +137,3 @@
     [% END %]
   </details>
   [% END %]
-</div>
