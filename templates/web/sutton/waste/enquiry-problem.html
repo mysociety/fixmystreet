@@ -54,8 +54,8 @@ END;
 
 f = [];
 
-SET field = { label = 'Escalate my missed collection report', value = 'Complaint against time' };
 IF service.escalations.missed;
+    SET field = { label = 'Escalate my missed collection report', value = 'Complaint against time' };
     IF service.escalations.missed.too_late;
         IF original_booking_report;
             field.hint = 'You cannot escalate the reported missed collection as the 2 working day escalation window has closed.';
@@ -67,9 +67,14 @@ IF service.escalations.missed;
         field.disabled = 1;
     END;
     f.push(field);
-END;
-
-IF NOT service.escalations.missed;
+ELSIF service.dispute;
+    SET field = { value = 'Missed collection dispute', label = 'Dispute collection closure reason' };
+    IF service.dispute.open;
+        field.hint = 'We are investigating the problem with this collection.';
+        field.disabled = 1;
+    END;
+    f.push(field);
+ELSE;
     SET field = { value = 'redirect-missed', label = 'Report a missed collection' };
     IF service.report_allowed_non_actionable;
         field.value = 'Report out-of-time missed collection';
