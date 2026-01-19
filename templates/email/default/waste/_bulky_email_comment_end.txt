@@ -2,6 +2,10 @@
 
 [% email_summary %]
 
+[% IF row.item_problem_state == 'unable to fix' %]
+To report a problem with this missed collection visit your bin page
+[% END %]
+
 [% email_sanitize_text(row, 'item_text_original') %]
 
 Collection date: [% collection_date %]
