@@ -1,11 +1,30 @@
 [%
-title = 'Submit enquiry';
-thing = 'enquiry';
-summary_title = data.category;
-step1 = 'enquiry';
+  data = form.saved_data;
+  step1 = first_page;
+  non_actionable = ( data.category == 'Report out-of-time missed collection' );
+  IF non_actionable;
+    title = 'Submit missed bin report';
+    thing = 'missed collection';
+    summary_title = 'Missed collection';
+  ELSE;
+    title = 'Submit enquiry';
+    thing = 'enquiry';
+    summary_title = data.category;
+  END
 %]
 
 [% BLOCK answers %]
+  [% IF non_actionable && data.service_id %]
+    [% SET service_id = data.service_id %]
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% services.$service_id.service_name %]</dt>
+        <dd class="govuk-summary-list__value">
+            [%~ IF services.$service_id.last.date %]
+                [%~ date.format(services.$service_id.last.date) | replace('~~~', services.$service_id.last.ordinal) %]
+            [%~ END ~%]
+        </dd>
+    </div>
+  [% END %]
   [% FOR extra IN data.keys.grep('^extra_') %]
     [% NEXT UNLESS data.$extra %]
     [% SET extra_name = extra.replace('extra_', '').replace('_', ' ') %]
