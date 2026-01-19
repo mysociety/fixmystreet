@@ -410,6 +410,32 @@ sub waste_munge_enquiry_form_pages {
             @$fields = @new;
             $pages->[1]{fields} = [ grep { !/^extra_assisted/i } @{$pages->[1]{fields}} ];
         }
+
+    } elsif ( $category eq 'Report out-of-time missed collection' ) {
+        $c->stash->{first_page} = 'intro';
+        unshift @$pages, intro => {
+            fields => [ 'continue' ],
+            intro => 'enquiry-non-actionable-intro.html',
+            title => _enquiry_nice_title($category),
+            next => 'about_you',
+        };
+
+        # Remove and replace email field
+        my @new;
+        for (my $i=0; $i<@$fields; $i+=2) {
+            if ($fields->[$i] ne 'email') {
+                push @new, $fields->[$i], $fields->[$i+1];
+            }
+        }
+        @$fields = @new;
+        push @$fields, email => {
+            type => 'Email',
+            order => 3,
+            tags => {
+                hint => 'Provide an email address so we can send you updates.'
+            },
+        };
+
     }
 }
 
@@ -423,6 +449,8 @@ sub _enquiry_nice_title {
         $category = 'Issue with collection';
     } elsif ($category eq 'Failure to Deliver Bags/Containers') {
         $category = 'Issue with delivery';
+    } elsif ($category eq 'Report out-of-time missed collection') {
+        $category = 'Reporting a missed collection outside the reporting window';
     }
     return $category;
 }
@@ -468,6 +496,12 @@ sub waste_munge_enquiry_data {
         $data->{extra_Notes} = "Originally Echo Event #$original->{id}";
         $data->{extra_original_ref} = $original->{ref};
         $data->{extra_container_request_guid} = $original->{guid};
+    } elsif ($data->{category} eq 'Report out-of-time missed collection') {
+        $data->{title}
+            = 'Report missed '
+            . $self->service_name_override( { ServiceId => $data->{service_id} } );
+
+        $data->{extra_Notes} = 'Non-actionable missed collection report';
     }
 
     if ($self->moniker eq 'kingston' && $data->{extra_details}) {
