@@ -33,7 +33,7 @@ has_field contractor_organisation => (
 
 has_field contractor_contact_name => (
     type => 'Text',
-    label => 'Contact name',
+    label => 'Contractor full name',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
     tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
     validate_method => sub {
@@ -48,7 +48,7 @@ has_field contractor_contact_name => (
 has_field contractor_address => (
     type => 'Text',
     widget => 'Textarea',
-    label => 'Full address',
+    label => 'Company address',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
     tags => {
         hint => 'Including postcode',
@@ -78,7 +78,7 @@ has_field contractor_phone => (
 
 has_field contractor_phone_24h => (
     type => 'Text',
-    label => 'Telephone number (24/7)',
+    label => 'Emergency telephone number 24/7',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
     tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
     validate_method => sub {
