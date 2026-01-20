@@ -44,7 +44,7 @@ has_field terms_accepted => (
     type => 'Checkbox',
     label => 'Terms and Conditions',
     required => 1,
-    option_label => 'I confirm that I have read and understood the Highway licensing policy and Standard conditions for highways consents, and that I am the applicant applying for this licence',
+    option_label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/consents-guidance-highway-licence-applications-v4.pdf">Highway licensing policy</a> and <a href="https://content.tfl.gov.uk/standard-conditions-guidance-highway-licence.pdf">Standard conditions for highways consents</a>, and that I am the applicant applying for this licence'),
 );
 
 1;

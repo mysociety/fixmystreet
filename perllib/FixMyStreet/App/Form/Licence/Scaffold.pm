@@ -4,9 +4,6 @@ use HTML::FormHandler::Moose;
 extends 'FixMyStreet::App::Form::Wizard';
 use utf8;
 
-# Core licence functionality (upload handling, display methods)
-with 'FixMyStreet::App::Form::Licence';
-
 # Shared field roles
 with 'FixMyStreet::App::Form::Licence::Fields::Location';
 with 'FixMyStreet::App::Form::Licence::Fields::Dates';
@@ -20,28 +17,13 @@ sub type { 'scaffold' }
 # Human-readable name for display
 sub name { 'Scaffold' }
 
+has upload_subdir => ( is => 'ro', default => 'tfl_licence_scaffold_files' );
+
 has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
 
 has finished_action => ( is => 'ro', default => 'process_licence' );
 
 has '+is_html5' => ( default => 1 );
-
-before _process_page_array => sub {
-    my ($self, $pages) = @_;
-    foreach my $page (@$pages) {
-        $page->{type} = $self->default_page_type
-            unless $page->{type};
-    }
-};
-
-# Add some functions to the form to pass through to the current page
-has '+current_page' => (
-    handles => {
-        intro_template => 'intro',
-        title => 'title',
-        template => 'template',
-    }
-);
 
 # ==========================================================================
 # Introduction / Before you get started
@@ -219,7 +201,6 @@ has_page incursion => (
 
 has_field footway_incursion => (
     type => 'Text',
-    widget => 'Textarea',
     label => 'What is the proposed footway incursion?',
     required => 1,
     tags => {
@@ -229,7 +210,6 @@ has_field footway_incursion => (
 
 has_field carriageway_incursion => (
     type => 'Text',
-    widget => 'Textarea',
     label => 'What is the proposed carriageway incursion?',
     required => 1,
     tags => {

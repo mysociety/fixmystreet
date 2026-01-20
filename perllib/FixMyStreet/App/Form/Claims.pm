@@ -5,36 +5,13 @@ extends 'FixMyStreet::App::Form::Wizard';
 use utf8;
 use Path::Tiny;
 
-has c => ( is => 'ro' );
-
 has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
 
 has finished_action => ( is => 'ro' );
 
 has '+is_html5' => ( default => 1 );
 
-has '+upload_dir' => ( default => sub {
-    my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-    my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
-    path($dir, "claims_files")->absolute(FixMyStreet->path_to())->mkdir;
-});
-
-before _process_page_array => sub {
-    my ($self, $pages) = @_;
-    foreach my $page (@$pages) {
-        $page->{type} = $self->default_page_type
-            unless $page->{type};
-    }
-};
-
-# Add some functions to the form to pass through to the current page
-has '+current_page' => (
-    handles => {
-        intro_template => 'intro',
-        title => 'title',
-        template => 'template',
-    }
-);
+has upload_subdir => ( is => 'ro', default => 'claims_files' );
 
 has_page intro => (
     fields => ['start'],
@@ -1019,39 +996,6 @@ has_field start => ( type => 'Submit', value => 'Start', element_attr => { class
 has_field continue => ( type => 'Submit', value => 'Continue', element_attr => { class => 'govuk-button' } );
 has_field submit => ( type => 'Submit', value => 'Submit', element_attr => { class => 'govuk-button' } );
 
-sub fields_for_display {
-    my ($form) = @_;
-
-     my $things = [];
-     for my $page ( @{ $form->pages } ) {
-         my $x = {
-             stage => $page->{name},
-             title => $page->{title},
-             ( $page->tag_exists('hide') ? ( hide => $page->get_tag('hide') ) : () ),
-             fields => []
-         };
-
-         for my $f ( @{ $page->fields } ) {
-             my $field = $form->field($f);
-             next if $field->type eq 'Submit';
-             my $value = $form->saved_data->{$field->{name}} || '';
-             push @{$x->{fields}}, {
-                 name => $field->{name},
-                 desc => $field->{label},
-                 type => $field->type,
-                 pretty => $form->format_for_display( $field->{name}, $value ),
-                 value => $value,
-                 ( $field->tag_exists('block') ? ( block => $field->get_tag('block') ) : () ),
-                 ( $field->tag_exists('hide') ? ( hide => $field->get_tag('hide') ) : () ),
-             };
-         }
-
-         push @$things, $x;
-     }
-
-     return $things;
-}
-
 sub value_equals {
     my ($form, $field, $answer) = @_;
 
@@ -1064,33 +1008,6 @@ sub value_nequals {
 
     return defined $form->saved_data->{$field} &&
         $form->saved_data->{$field} ne $answer;
-}
-
-sub format_for_display {
-    my ($form, $field_name, $value) = @_;
-    my $field = $form->field($field_name);
-    if ( $field->{type} eq 'Select' ) {
-        return $form->c->stash->{label_for_field}($form, $field_name, $value);
-    } elsif ( $field->{type} eq 'DateTime' ) {
-        # if field was on the last screen then we get the DateTime and not
-        # the hash because it's not been through the freeze/that process
-        if ( ref $value eq 'DateTime' ) {
-            return join( '/', $value->day, $value->month, $value->year);
-        } else {
-            return "" unless $value;
-            return "$value->{day}/$value->{month}/$value->{year}";
-        }
-    } elsif ( $field->{type} eq 'FileIdUpload' ) {
-        if ( ref $value eq 'HASH' ) {
-           return join( ', ', @{ $value->{filenames} } );
-        }
-        return "";
-    } elsif ( $field->{type} eq 'Photo' ) {
-        my $num = split /,/, $value;
-        return sprintf(mySociety::Locale::nget("%d photo", "%d photos", $num), $num);
-    }
-
-    return $value;
 }
 
 # this makes sure that if any of the child fields have errors we mark the date

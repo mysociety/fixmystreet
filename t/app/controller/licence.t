@@ -1,4 +1,5 @@
 use FixMyStreet::TestMech;
+use File::Temp 'tempdir';
 use Path::Tiny;
 use DateTime;
 
@@ -143,12 +144,14 @@ subtest 'Date validation' => sub {
 };
 
 subtest 'Scaffold form submission - smoke test' => sub {
+  my $UPLOAD_DIR = tempdir( CLEANUP => 1 );
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => 'tfl',
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
         },
+        PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
         $mech->get_ok('/licence/scaffold');
 
@@ -275,8 +278,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
 
         # Verify uploads went to the licence_files directory
         my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-        my $base_dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
-        my $upload_dir = path($base_dir, "licence_files")->absolute(FixMyStreet->path_to());
+        my $upload_dir = path($UPLOAD_DIR, "tfl_licence_scaffold_files")->absolute(FixMyStreet->path_to());
 
         ok -d $upload_dir, 'licence_files directory exists';
 

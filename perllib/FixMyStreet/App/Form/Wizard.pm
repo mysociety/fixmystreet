@@ -45,7 +45,20 @@ has page_name => ( is => 'ro', isa => 'Str' );
 has current_page => ( is => 'ro', lazy => 1,
     default => sub { $_[0]->page($_[0]->page_name) },
     predicate => 'has_current_page',
+    handles => {
+        intro_template => 'intro',
+        title => 'title',
+        template => 'template',
+    }
 );
+
+before _process_page_array => sub {
+    my ($self, $pages) = @_;
+    foreach my $page (@$pages) {
+        $page->{type} = $self->default_page_type
+            unless $page->{type};
+    }
+};
 
 =item * c - the Catalyst App, so we can get anything we need out of it
 
@@ -85,7 +98,7 @@ to use a different directory (e.g. claims_files/, licence_files/).
 has upload_dir => ( is => 'ro', lazy => 1, default => sub {
     my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
     my $dir = $cfg ? $cfg->{UPLOAD_DIR} : FixMyStreet->config('UPLOAD_DIR');
-    path($dir, "uploads")->absolute(FixMyStreet->path_to())->mkdir;
+    path($dir, $_[0]->upload_subdir)->absolute(FixMyStreet->path_to())->mkdir;
 });
 
 =head2 Form fields
@@ -392,6 +405,106 @@ sub process_upload {
         # The data was already passed in from when it was saved before (also in tags, from above)
         $saved_data->{$field} = $form->field($field)->init_value;
     }
+}
+
+=head2 Summary display methods
+
+=head3 fields_for_display
+
+Returns an array of pages with their fields, formatted for display on the
+summary page. Each page contains:
+
+    {
+        stage  => 'page_name',
+        title  => 'Page Title',
+        hide   => 0/1,  # optional
+        fields => [
+            {
+                name   => 'field_name',
+                desc   => 'Field Label',
+                type   => 'Text',
+                pretty => 'Formatted value',
+                value  => 'raw_value',
+                hide   => 0/1,  # optional
+            },
+            ...
+        ]
+    }
+
+=cut
+
+sub fields_for_display {
+    my ($form) = @_;
+
+    my $things = [];
+    for my $page ( @{ $form->pages } ) {
+        my $x = {
+            stage => $page->{name},
+            title => $page->{title},
+            ( $page->tag_exists('hide') ? ( hide => $page->get_tag('hide') ) : () ),
+            fields => []
+        };
+
+        for my $f ( @{ $page->fields } ) {
+            my $field = $form->field($f);
+            next if $field->type eq 'Submit';
+            my $value = $form->saved_data->{$field->{name}} // '';
+            push @{$x->{fields}}, {
+                name => $field->{name},
+                desc => $field->{label},
+                type => $field->type,
+                pretty => $form->format_for_display( $field->{name}, $value ),
+                value => $value,
+                ( $field->tag_exists('hide') ? ( hide => $field->get_tag('hide') ) : () ),
+            };
+        }
+
+        push @$things, $x;
+    }
+
+    return $things;
+}
+
+=head3 format_for_display
+
+Converts a field value to a human-readable format for display.
+
+Handles special cases:
+- Select fields: returns the label for the selected value
+- DateTime fields: formats as day/month/year
+- Checkbox fields: returns 'Yes' or 'No'
+- FileIdUpload fields: returns comma-separated filenames
+
+=cut
+
+sub format_for_display {
+    my ($form, $field_name, $value) = @_;
+    my $field = $form->field($field_name);
+
+    if ( $field->{type} eq 'Select' ) {
+        return $form->c->stash->{label_for_field}($form, $field_name, $value);
+    } elsif ( $field->{type} eq 'DateTime' ) {
+        # if field was on the last screen then we get the DateTime and not
+        # the hash because it's not been through the freeze/that process
+        if ( ref $value eq 'DateTime' ) {
+            return join( '/', $value->day, $value->month, $value->year);
+        } elsif ( ref $value eq 'HASH' && $value->{day} ) {
+            return "$value->{day}/$value->{month}/$value->{year}";
+        }
+        return "";
+    } elsif ( $field->{type} eq 'Checkbox' ) {
+        return $value ? 'Yes' : 'No';
+    } elsif ( $field->{type} eq 'FileIdUpload' ) {
+        if ( ref $value eq 'HASH' && $value->{filenames} ) {
+            return join( ', ', @{ $value->{filenames} } );
+        }
+        return "";
+    } elsif ( $field->{type} eq 'Photo' ) {
+        my $num = split /,/, $value;
+        return sprintf(mySociety::Locale::nget("%d photo", "%d photos", $num), $num);
+    }
+
+    return $value // '';
 }
 
 __PACKAGE__->meta->make_immutable;
