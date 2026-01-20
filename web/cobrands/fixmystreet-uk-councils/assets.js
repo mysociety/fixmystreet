@@ -933,6 +933,16 @@ fixmystreet.assets.gloucestershire.traffic_asset_details = function() {
         "LED/Halogen: " + a.led_halogen;
 };
 
+// attendedDate is a Unix timestamp in milliseconds;
+// -2209161600000 is 1899-12-30, used to mean "no date"
+fixmystreet.assets.gloucestershire.drains_construct_selected_asset_message = function(asset) {
+    var date = asset.attributes.attendedDate;
+    if (!date || date === -2209161600000) {
+        return '';
+    }
+    return 'This drain was last inspected on ' + new Date(date).toLocaleDateString('en-GB');
+};
+
 /* Hackney */
 
 fixmystreet.assets.hackney = {};
