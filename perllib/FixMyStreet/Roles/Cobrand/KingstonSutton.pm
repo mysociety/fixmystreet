@@ -190,44 +190,55 @@ around booked_check_missed_collection => sub {
     my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
-        next unless $missed_event;
+        my $locked_out = $missed->{$guid}{report_locked_out};
 
-        my $open_escalation = 0;
-        my $escalation_event;
-        foreach ($escalations->list) {
-            next unless $_->{report};
-            my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
-            next unless $missed_guid;
-            if ($missed_guid eq $missed_event->{guid}) {
-                $missed->{$guid}{escalations}{missed_open} = $_;
-                $escalation_event = $_;
-                $open_escalation = 1;
+        if ($missed_event) {
+            my $open_escalation = 0;
+            my $escalation_event;
+            foreach ($escalations->list) {
+                next unless $_->{report};
+                my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
+                next unless $missed_guid;
+                if ($missed_guid eq $missed_event->{guid}) {
+                    $missed->{$guid}{escalations}{missed_open} = $_;
+                    $escalation_event = $_;
+                    $open_escalation = 1;
+                }
             }
-        }
 
-        my $wd = FixMyStreet::WorkingDays->new();
-        if ($self->waste_target_days->{missed_bulky}) {
-            $self->{c}->stash->{booked_missed}->{target} = $wd->add_days($missed_event->{date}, $self->waste_target_days->{missed_bulky})->set_hour($self->waste_day_end_hour);
-        }
+            my $wd = FixMyStreet::WorkingDays->new();
+            if ($self->waste_target_days->{missed_bulky}) {
+                $self->{c}->stash->{booked_missed}->{target} = $wd->add_days($missed_event->{date}, $self->waste_target_days->{missed_bulky})->set_hour($self->waste_day_end_hour);
+            }
 
-        if (
-            # Report is still open
-            !$missed_event->{closed}
-            # And no existing escalation since last collection
-            && !$open_escalation
-        ) {
+            if (
+                # Report is still open
+                !$missed_event->{closed}
+                # And no existing escalation since last collection
+                && !$open_escalation
+            ) {
+                my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+                # And two working days (from 6pm) have passed
+                my $start = $wd->add_days($missed_event->{date}, $self->waste_escalation_window->{bulky_start})->set_hour($self->waste_day_end_hour);
+                my $end = $wd->add_days($start, $self->waste_escalation_window->{bulky_length});
+                if ($now >= $start && $now < $end) {
+                    $missed->{$guid}{escalations}{missed} = $missed_event;
+                }
+            } elsif ($open_escalation) {
+                if ($self->waste_target_days && $self->waste_target_days->{missed_bulky_escalation}) {
+                    $missed_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_bulky_escalation})->set_hour($self->waste_day_end_hour);
+                }
+                $missed->{$guid}{escalations}{missed_open} = $missed_event;
+            }
+        } elsif ($locked_out) {
             my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
             # And two working days (from 6pm) have passed
-            my $start = $wd->add_days($missed_event->{date}, $self->waste_escalation_window->{bulky_start})->set_hour($self->waste_day_end_hour);
-            my $end = $wd->add_days($start, $self->waste_escalation_window->{bulky_length});
+            my $wd = FixMyStreet::WorkingDays->new();
+            my $start = $wd->add_days($missed->{$guid}{report_locked_out_date}, 0)->set_hour(18);
+            my $end = $wd->add_days($start, 3)->set_hour(0);
             if ($now >= $start && $now < $end) {
-                $missed->{$guid}{escalations}{missed} = $missed_event;
+                $missed->{$guid}{dispute_allowed} = 1;
             }
-        } elsif ($open_escalation) {
-            if ($self->waste_target_days && $self->waste_target_days->{missed_bulky_escalation}) {
-                $missed_event->{target} = $wd->add_days($escalation_event->{date}, $self->waste_target_days->{missed_bulky_escalation})->set_hour($self->waste_day_end_hour);
-            }
-            $missed->{$guid}{escalations}{missed_open} = $missed_event;
         }
     }
 };

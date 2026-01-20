@@ -1,24 +1,41 @@
-[% SET service_id = c.req.params.service_id %]
-[% IF services.$service_id %]
+[%- 
+SET service_id = c.req.params.service_id;
+SET guid = c.req.params.guid; 
+SET category = c.req.params.category;
+
+IF services.$service_id;
+    SET service = services.$service_id;
+    SET service_name = service.service_name;
+    SET resolution = service.last.resolution;
+END; 
+
+IF booked_missed.$guid;
+    SET missed = booked_missed.$guid;
+    SET service_name = missed.service_name;
+    SET resolution = missed.report_locked_out_reason;
+END -%]
+
+[%- IF service_name %]
 <dl class="waste__address">
     <dt class="waste__address__title">Service</dt>
-    <dd class="waste__address__property">[% services.$service_id.service_name %]</dd>
+    <dd class="waste__address__property">[% service_name %]</dd>
 </dl>
-[% SET category = c.req.params.category %]
-[% IF category == 'Missed collection dispute' %]
-    [% SET service = services.$service_id %]
+[% END -%]
+
+[%- IF category == 'Missed collection dispute' %]
+    [%- IF service_name AND resolution %]
     <p>
-    Our crews reported that your [% service.service_name %] collection was not made due to [% service.last.resolution %].
+    Our crews reported that your [% service_name %] collection was not made due to [% resolution %].
     </p>
+    [% END -%]
 
     <p>
     If you are disputing the reasons for this missed collection please use this form. We will investigate using our onboard 360 degree video cameras and other photo evidence before making a decision.
     </p>
 
-    [% IF resolution_photo %]
+    [%- IF resolution_photo %]
     <p>
         This photo provides the evidence why your collection wasn’t made. If you agree with this, no further action is needed, if you don’t agree with this please continue to report the reason you are disputing this missed on this form.
     </p>
-    [% END %]
-[% END %]
+    [% END -%]
 [% END %]
