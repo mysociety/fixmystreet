@@ -243,7 +243,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         }});
 
         # Summary page - check it rendered
-        $mech->content_contains('Check your answers', 'Summary page rendered');
+        $mech->content_contains('Application Summary', 'Summary page rendered');
 
         # Contractor fields should be hidden since "same as applicant" was checked
         # "Contact name" is unique to contractor section (applicant uses "Full name")

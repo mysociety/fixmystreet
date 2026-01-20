@@ -23,7 +23,7 @@ has_field proposed_start_date => (
     type => 'DateTime',
     label => 'Proposed start date',
     required => 1,
-    tags => { hint => 'For example, 27 3 2026. Working dates must set in four‑weekly periods' },
+    tags => { hint => 'For example, 27 3 2026' },
     messages => {
         datetime_invalid => 'Please enter a valid date',
     },
@@ -49,7 +49,7 @@ has_field proposed_end_date => (
     type => 'DateTime',
     label => 'Proposed end date',
     required => 1,
-    tags => { hint => 'For example, 24 4 2026' },
+    tags => { hint => 'For example, 23 4 2026' },
     messages => {
         datetime_invalid => 'Please enter a valid date',
     },

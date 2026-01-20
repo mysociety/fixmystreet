@@ -7,9 +7,6 @@ use utf8;
 # Core licence functionality (upload handling, display methods)
 with 'FixMyStreet::App::Form::Licence';
 
-# Standard user fields (name, email, phone)
-with 'FixMyStreet::App::Form::AboutYou';
-
 # Shared field roles
 with 'FixMyStreet::App::Form::Licence::Fields::Location';
 with 'FixMyStreet::App::Form::Licence::Fields::Dates';
@@ -28,10 +25,6 @@ has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
 has finished_action => ( is => 'ro', default => 'process_licence' );
 
 has '+is_html5' => ( default => 1 );
-
-# Required by AboutYou role
-has email_hint => ( is => 'ro', default => "We'll only use this to send you updates on your application" );
-has phone_hint => ( is => 'ro', default => 'Telephone number for contact during office hours (9am-5pm)' );
 
 before _process_page_array => sub {
     my ($self, $pages) = @_;
@@ -109,16 +102,6 @@ has_page applicant => (
     title => 'Applicant details',
     intro => 'applicant.html',
     next => 'contractor',
-    # For now, force ordering to be same as list above - TODO do this everywhere/by default? Or change sorted fields to use the page fields list?
-    update_field_list => sub {
-        my ($form) = @_;
-        my $fields = {};
-        my $c = 0;
-        foreach (@{$form->current_page->fields}) {
-            $fields->{$_}{order} = $c++;
-        }
-        return $fields;
-    },
 );
 
 # ==========================================================================
@@ -428,6 +411,7 @@ has_page uploads => (
         'upload_insurance',
         'upload_rams',
         'upload_scaffold_drawing',
+        'upload_additional',
         'continue'
     ],
     title => 'Upload required documents',
@@ -439,6 +423,7 @@ has_page uploads => (
         $form->handle_upload('upload_insurance', $fields);
         $form->handle_upload('upload_rams', $fields);
         $form->handle_upload('upload_scaffold_drawing', $fields);
+        $form->handle_upload('upload_additional', $fields);
         return $fields;
     },
     post_process => sub {
@@ -446,6 +431,7 @@ has_page uploads => (
         $form->process_upload('upload_insurance');
         $form->process_upload('upload_rams');
         $form->process_upload('upload_scaffold_drawing');
+        $form->process_upload('upload_additional');
     },
 );
 
@@ -453,7 +439,7 @@ has_field upload_insurance => (
     type => 'FileIdUpload',
     label => 'Public Liability Insurance certificate',
     tags => {
-        hint => 'Copy of your 10 million pound Public Liability Insurance',
+        hint => 'Minimum 10 million pound Public Liability Insurance',
     },
     messages => {
         upload_file_not_found => 'Please upload your Public Liability Insurance certificate',
@@ -472,10 +458,19 @@ has_field upload_scaffold_drawing => (
     type => 'FileIdUpload',
     label => 'Scaffold drawing',
     tags => {
-        hint => 'Including measures and space maintained for pedestrians',
+        hint => 'Including measurements and available space maintained for pedestrians',
     },
     messages => {
         upload_file_not_found => 'Please upload a scaffold drawing',
+    },
+);
+
+
+has_field upload_additional => (
+    type => 'FileIdUpload',
+    label => 'Additional supporting documentation',
+    messages => {
+        upload_file_not_found => 'Please upload any additional supporting documentation',
     },
 );
 
@@ -494,10 +489,7 @@ has_page payment => (
 
 has_field payment_transaction_id => (
     type => 'Text',
-    label => 'Transaction ID',
-    tags => {
-        hint => 'Enter the transaction ID from your payment',
-    },
+    label => 'Enter the transaction ID from your payment below',
 );
 
 # ==========================================================================
@@ -505,7 +497,7 @@ has_field payment_transaction_id => (
 # ==========================================================================
 has_page summary => (
     fields => ['submit'],
-    title => 'Check your answers',
+    title => 'Application Summary',
     template => 'licence/summary.html',
     finished => sub {
         my $form = shift;
