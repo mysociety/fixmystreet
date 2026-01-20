@@ -286,6 +286,13 @@ FixMyStreet::override_config {
                 '',
                 'correct extra_details attribute';
         };
+
+
+        subtest "'Twin' state is shown if appropriate" => sub {
+            $mech->get_ok( '/report/' . $problem_to_update->id );
+            $mech->content_contains($host eq 'northumberland', '<option value="twin">Twin</option>');
+        };
+
     }
 
     subtest 'Correct mapping' => sub {
