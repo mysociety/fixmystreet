@@ -932,6 +932,21 @@ fixmystreet.assets.gloucestershire.traffic_asset_details = function() {
         "LED/Halogen: " + a.led_halogen;
 };
 
+// attendedDate is a Unix timestamp in milliseconds;
+// -2209161600000 is 1899-12-30, used to mean "no date"
+fixmystreet.assets.gloucestershire.drains_construct_selected_asset_message = function(asset) {
+    var date = asset.attributes.attendedDate;
+    var message = '<p>All GCC gullies are maintained on a cyclical program. ' +
+        'For more information, please visit the ' +
+        '<a href="https://www.gloucestershire.gov.uk/roads/road-maintenance/gully-emptying-schedules/">' +
+        'Highways Road Maintenance/ Gully page</a>.</p>';
+    if (!date || date === -2209161600000) {
+        return message;
+    }
+    return message + '<p>This drain was last cleansed on ' +
+        new Date(date).toLocaleDateString('en-GB') + '</p>';
+};
+
 /* Hackney */
 
 fixmystreet.assets.hackney = {};
