@@ -46,6 +46,11 @@ create_contact($sutton, { category => 'Complaint against time', email => '3134' 
     { code => 'missed_guid', required => 0, automated => 'hidden_field' },
 );
 
+create_contact($sutton, { category => 'Missed collection dispute', email => '3143' },
+    { code => 'Image', description => 'Image', required => 0, datatype => 'image' },
+    { code => 'Notes', description => 'Reason for dispute', required => 1, datatype => 'text' },
+);
+
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.uk/',
     ALLOWED_COBRANDS => 'kingston',
@@ -1175,6 +1180,66 @@ FixMyStreet::override_config {
         };
 
         $echo->mock('GetEventsForObject', sub { [] }); # reset
+    };
+    subtest 'Dispute of failed bulky collections' => sub {
+        $echo->mock('GetEventsForObject', sub { [ {
+            Id => '8004',
+            ClientReference => 'LBS-123',
+            Guid => 'booking-guid',
+            ServiceId => 960, # Bulky
+            EventTypeId => 3130, # Bulky collection
+            EventStateId => 19185, # Not Completed
+            EventDate => { DateTime => '2025-04-01T00:00:00Z' },
+            ResolvedDate => { DateTime => '2025-04-08T00:00:00Z' },
+            ResolutionCodeId => 466, # No access - Gate locked
+        } ] });
+
+        subtest 'Check Bulky waste dispute window' => sub {
+            set_fixed_time('2025-04-07T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report before collection happened');
+
+            set_fixed_time('2025-04-11T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report after window closed');
+
+            set_fixed_time('2025-04-08T17:59:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
+
+            set_fixed_time('2025-04-11T00:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window closes');
+
+            set_fixed_time('2025-04-10T23:59:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
+
+            set_fixed_time('2025-04-08T18:01:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
+        };
+
+        subtest 'Open collection dispute' => sub {
+            set_fixed_time('2025-04-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+            $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
+            $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'The gate was open' } }, 'submitted reasons');
+            $mech->submit_form_ok( { with_fields => { name => 'Joe Schmoe', email => 'schmoe@example.org' } }, 'sumitted name and email');
+            $mech->submit_form_ok( { with_fields => { submit => '1' } }, 'submitted confirmation');
+            $mech->content_contains('Your enquiry has been submitted');
+            $mech->content_contains('Return to property details');
+            $mech->content_contains('/waste/12345"');
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            is $report->category, 'Missed collection dispute', "Correct category";
+            is $report->title, 'Missed collection dispute';
+            is $report->detail, "Bulky waste\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
+            is $report->user->email, 'schmoe@example.org', 'User details added to report';
+            is $report->name, 'Joe Schmoe', 'User details added to report';
+            is $report->get_extra_field_value('Notes'), "The gate was open";
+        };
     };
 
 };
