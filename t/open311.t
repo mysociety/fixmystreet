@@ -985,6 +985,37 @@ EOT
     is $c_description, $description, 'description correct';
 };
 
+subtest 'add_media with base64 data URIs' => sub {
+    my $o = Open311->new();
+
+    # 1x1px PNG
+    my $base64_png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP4z/AfAAQAAf8c9+lcAAAAAElFTkSuQmCC';
+    my $data_uri_base64 = "data:image/png;base64,$base64_png";
+
+    my $test_problem = FixMyStreet::DB->resultset('Problem')->new({
+        latitude => 1,
+        longitude => 1,
+        title => 'test',
+        detail => 'test',
+        user => $user,
+    });
+
+    # Test base64 data URI
+    $o->add_media($data_uri_base64, $test_problem);
+    ok $test_problem->photo, 'photo set from base64 data URI';
+
+    # Test multiple data URIs
+    $test_problem->photo(undef);
+    $o->add_media([$data_uri_base64, $data_uri_base64], $test_problem);
+    ok $test_problem->photo, 'photos set from multiple base64 data URIs';
+
+    # Test invalid MIME type is rejected
+    $test_problem->photo(undef);
+    my $invalid_data_uri = "data:text/plain;base64,bmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXA=";
+    $o->add_media($invalid_data_uri, $test_problem);
+    ok !$test_problem->photo, 'photo not set from invalid MIME type data URI';
+};
+
 done_testing();
 
 
