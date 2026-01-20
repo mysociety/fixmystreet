@@ -238,32 +238,43 @@ around booked_check_missed_collection => sub {
     my $missed = $self->{c}->stash->{booked_missed};
     foreach my $guid (keys %$missed) {
         my $missed_event = $missed->{$guid}{report_open};
-        next unless $missed_event;
+        my $locked_out = $missed->{$guid}{report_locked_out};
 
-        my $open_escalation = 0;
-        foreach ($escalations->list) {
-            next unless $_->{report};
-            my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
-            next unless $missed_guid;
-            if ($missed_guid eq $missed_event->{guid}) {
-                $missed->{$guid}{escalations}{missed_open} = $_;
-                $open_escalation = 1;
+        if ($missed_event) {
+            my $open_escalation = 0;
+            foreach ($escalations->list) {
+                next unless $_->{report};
+                my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
+                next unless $missed_guid;
+                if ($missed_guid eq $missed_event->{guid}) {
+                    $missed->{$guid}{escalations}{missed_open} = $_;
+                    $open_escalation = 1;
+                }
             }
-        }
 
-        if (
-            # Report is still open
-            !$missed_event->{closed}
-            # And no existing escalation since last collection
-            && !$open_escalation
-        ) {
+            if (
+                # Report is still open
+                !$missed_event->{closed}
+                # And no existing escalation since last collection
+                && !$open_escalation
+            ) {
+                my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+                # And two working days (from 6pm) have passed
+                my $wd = FixMyStreet::WorkingDays->new();
+                my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
+                my $end = $wd->add_days($start, 2);
+                if ($now >= $start && $now < $end) {
+                    $missed->{$guid}{escalations}{missed} = $missed_event;
+                }
+            }
+        } elsif ($locked_out) {
             my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
             # And two working days (from 6pm) have passed
             my $wd = FixMyStreet::WorkingDays->new();
-            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
-            my $end = $wd->add_days($start, 2);
+            my $start = $wd->add_days($missed->{$guid}{report_locked_out_date}, 0)->set_hour(18);
+            my $end = $wd->add_days($start, 3)->set_hour(0);
             if ($now >= $start && $now < $end) {
-                $missed->{$guid}{escalations}{missed} = $missed_event;
+                $missed->{$guid}{dispute_allowed} = 1;
             }
         }
     }
@@ -909,6 +920,33 @@ sub bulky_allowed_property {
 
 sub bulky_collection_time { { hours => 6, minutes => 0 } }
 sub bulky_cancellation_cutoff_time { { hours => 6, minutes => 0, days_before => 0 } }
+
+sub waste_bulky_missed_blocked_codes {
+    return {
+        # Partially completed
+        12399 => {
+            507 => 'Not all items presented',
+            380 => 'Some items too heavy',
+        },
+        # Completed
+        12400 => {
+            606 => 'More items presented than booked',
+        },
+        # Not Completed
+        12401 => {
+            460 => 'Nothing out',
+            379 => 'Item not as described',
+            100 => 'No access',
+            212 => 'Too heavy',
+            473 => 'Damage on site',
+            234 => 'Hazardous waste',
+        },
+        # Not Completed
+        19185 => {
+            466 => 'Not Available - Gate Locked',
+        },
+    };
+}
 
 =item * There is an 11pm cut-off for looking to book next day collections.
 
