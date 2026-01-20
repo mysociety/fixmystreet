@@ -258,6 +258,7 @@ FixMyStreet::override_config {
 
     subtest 'Booking summary' => sub {
         $mech->content_contains('Booking Summary', "On booking confirmation page");
+        $mech->content_contains("won't be able to amend the booking once submitted", "Shows correct amendment warning for small items");
         $mech->content_lacks('Bookings are not refundable', "Small items service is free so no mention of refunds");
         $mech->content_contains('2 Example Street, Sutton, SM2 5HF', "Shows correct address");
         $mech->content_contains('3 items requested for collection', "3 items for collection");
