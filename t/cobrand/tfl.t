@@ -643,10 +643,15 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('Category,Subcategory');
     $mech->content_contains('Query,Borough');
     $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
-    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by",Photo,"Is the pole leaning?"');
     $mech->content_contains('"Bus things","Bus stops"');
     $mech->content_contains('"BR1 3UH",Bromley,');
-    $mech->content_contains(',,,no,busstops@example.com,,,,Yes');
+    $mech->content_contains(',,,no,busstops@example.com,,,,0,Yes');
+
+    $report->update({ photo => 't/fixtures/blank.jpeg' });
+    $mech->get_ok('/dashboard?export=1&category=Bus+stops');
+    $mech->content_contains(',,,no,busstops@example.com,,,,1,Yes', "Photo column is 1 for report with photo");
+    $report->update({ photo => undef });
 
     $report->set_extra_fields({ name => 'safety_critical', value => 'yes' });
     $report->anonymous(1);
@@ -668,19 +673,19 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains('Query,Borough');
     $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
-    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by"');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by",Photo');
     $mech->content_contains('(anonymous ' . $report->id . ')');
     $mech->content_contains($dt . ',,,confirmed,51.4021');
-    $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User"');
+    $mech->content_contains(',,,yes,busstops@example.com,,' . $dt . ',"Council User",0');
 
     $report->set_extra_fields({ name => 'stop_code', value => '98756' }, { name => 'Question', value => '12345' });
     $report->update;
 
     $mech->get_ok('/dashboard?export=1');
     $mech->content_contains(',12345,,no,busstops@example.com,,', "Bike number added to csv");
-    $mech->content_contains('"Council User",,,98756', "Stop code added to csv for all categories report");
+    $mech->content_contains('"Council User",0,,,98756', "Stop code added to csv for all categories report");
     $mech->get_ok('/dashboard?export=1&category=Bus+stops');
-    $mech->content_contains('"Council User",,,98756', "Stop code added to csv for bus stop category report");
+    $mech->content_contains('"Council User",0,,,98756', "Stop code added to csv for bus stop category report");
 
     $report->set_extra_fields({ name => 'leaning', value => 'Yes' }, { name => 'safety_critical', value => 'yes' },
         { name => 'stop_code', value => '98756' }, { name => 'Question', value => '12345' });
@@ -702,10 +707,10 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('Category,Subcategory');
     $mech->content_contains('Query,Borough');
     $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
-    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by",Photo,"Is the pole leaning?"');
     $mech->content_contains('"Bus things","Bus stops"');
     $mech->content_contains('"BR1 3UH",Bromley,');
-    $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",Yes,,98756');
+    $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",0,Yes,,98756');
     my $c = () = $mech->encoded_content =~ /^$y_id/mg;
     is $c, 1, 'Only one report from yesterday';
 
@@ -713,10 +718,10 @@ subtest 'Dashboard CSV extra columns' => sub {
     $mech->content_contains('Category,Subcategory');
     $mech->content_contains('Query,Borough');
     $mech->content_contains(',Acknowledged,"Action scheduled",Fixed');
-    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by","Is the pole leaning?"');
+    $mech->content_contains(',"Safety critical","Delivered to","Closure email at","Reassigned at","Reassigned by",Photo,"Is the pole leaning?"');
     $mech->content_contains('(anonymous ' . $report->id . ')');
     $mech->content_contains($dt . ',,,confirmed,51.4021');
-    $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",Yes,,98756');
+    $mech->content_contains(',12345,,yes,busstops@example.com,,' . $dt . ',"Council User",0,Yes,,98756');
 
     $mech->get_ok('/dashboard?export=1&category=Trees+(brown)');
     $mech->content_contains('Trees (brown)');
