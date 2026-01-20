@@ -2172,6 +2172,16 @@ html.js #map .noscript {
       height: 1px;
       overflow: hidden;
       white-space: nowrap;
+
+      ul {
+        list-style: none;
+        margin: 0 0.5em;
+        padding: 0;
+
+        li {
+          margin: 0;
+        }
+      }
     }
   }
 
@@ -2200,6 +2210,15 @@ html.js #map .noscript {
 
     &.loading {
       background-image: url("/cobrands/fixmystreet/images/geolocate-link-loading.svg");
+    }
+  }
+
+  .js-pins-key {
+    background-image: url("/i/pins/key.png");
+    background-size: 27px 36px;
+    background-position-x: right 5px;
+    &:hover {
+      height: auto;
     }
   }
 }
