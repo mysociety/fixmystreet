@@ -27,35 +27,8 @@ This module provides the specific functionality for the Zurich FMS cobrand.
 
 =head1 DEVELOPMENT NOTES
 
-The admin for Zurich is different to the other cobrands. To access it you need
-to be logged in as a user associated with an appropriate body.
-
-You can create the bodies needed to develop by running the 't/cobrand/zurich.t'
-test script with the three C<$mech->delete...> lines at the end commented out.
-This should leave you with the bodies and users correctly set up.
-
-The entries will be something like this (but with different ids).
-
-    Bodies:
-         id |     name      | parent |         endpoint
-        ----+---------------+--------+---------------------------
-          1 | Zurich        |        |
-          2 | Division 1    |      1 | division@example.org
-          3 | Subdivision A |      2 | subdivision@example.org
-          4 | External Body |        | external_body@example.org
-
-    Users:
-         id |      email       | from_body
-        ----+------------------+-----------
-          1 | super@example.org|         1
-          2 | dm1@example.org  |         2
-          3 | sdm1@example.org |         3
-
-The passwords for the users is 'secret'.
-
-Note: the password hashes are salted with the user's id so cannot be easily
-changed. High ids have been used so that it should not conflict with anything
-you already have, and the countres set so that they shouldn't in future.
+Run `bin/zurich/fixture --commit` to set up the cobrand locally, with
+example admin users (all with a password of 'password').
 
 =cut
 
@@ -613,6 +586,23 @@ sub admin_report_edit {
 
     }
 
+    # Fetch hierarchical attributes for the current division (for all user types)
+    my $division = (values %{ $problem->bodies })[0];
+    my $parent = $division->parent;
+    if ($parent && $parent->parent) { # $body is an SDM
+        $division = $parent;
+    }
+    if ($division) {
+        my $hierarchical_attributes = $division->get_extra_metadata('hierarchical_attributes') || {};
+        if (!keys %$hierarchical_attributes) {
+            $hierarchical_attributes = $c->cobrand->get_default_hierarchical_attributes();
+        }
+        $c->stash->{hierarchical_attributes} = hierarchical_entry_sort($hierarchical_attributes);
+
+        my $selected_attributes = $problem->get_extra_metadata('hierarchical_attributes') || {};
+        $c->stash->{selected_hierarchical_attributes} = $selected_attributes;
+    }
+
     # If super or dm check that the token is correct before proceeding
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
@@ -640,6 +630,26 @@ sub admin_report_edit {
 
     # Problem updates upon submission
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
+
+        # Validate hierarchical attributes if problem state is not 'submitted'
+        my %hierarchical_errors;
+        if ($problem->state ne 'submitted') {
+            my %values;
+            foreach (keys %{$c->stash->{hierarchical_attributes}}) {
+                $values{$_} = $c->get_param("hierarchical_$_");
+                if (!$values{$_} || !$c->stash->{hierarchical_attributes}{$_}{entries}{$values{$_}}) {
+                    $hierarchical_errors{$_} = _("Please select a value");
+                }
+            }
+
+            if (%hierarchical_errors) {
+                $c->stash->{hierarchical_errors} = \%hierarchical_errors;
+                $c->stash->{status_message} = '<p class="message-error">' . _('Please select all hierarchical attributes before saving') . '</p>';
+                return $self->admin_report_edit_done;
+            }
+
+            $problem->set_extra_metadata('hierarchical_attributes', \%values);
+        }
 
         my @keys = grep { /^publish_photo/ } keys %{ $c->req->params };
         my %publish_photo;
@@ -704,6 +714,12 @@ sub admin_report_edit {
             $problem->bodies_str( $cat->body_id );
             $problem->resend;
             $problem->set_extra_metadata(changed_category => 1);
+
+            # Clear hierarchical attributes if reassigned to different body
+            if ($cat->body_id ne $body->id) {
+                $problem->unset_extra_metadata('hierarchical_attributes');
+            }
+
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
             $redirect = 1 if $cat->body_id ne $body->id;
@@ -728,6 +744,12 @@ sub admin_report_edit {
             $self->set_problem_state($c, $problem, 'in progress');
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
+
+            # Clear hierarchical attributes if reassigned to different body
+            if ($subdiv ne $body->id) {
+                $problem->unset_extra_metadata('hierarchical_attributes');
+            }
+
             $problem->resend;
             $redirect = 1;
         } else {
@@ -855,6 +877,10 @@ sub admin_report_edit {
         # do not display correctly (reloads problem from database, including
         # fields modified by the database when saving)
         $problem->discard_changes;
+
+        # Update stash with the newly saved hierarchical attributes so they display correctly
+        my $updated_selected_attributes = $problem->get_extra_metadata('hierarchical_attributes') || {};
+        $c->stash->{selected_hierarchical_attributes} = $updated_selected_attributes;
 
         # Create an internal note if required
         if ($internal_note_text) {
@@ -1284,6 +1310,7 @@ sub export_as_csv {
                     'latitude', 'longitude',
                     'cobrand',  'category',
                     'state',    'user_id',
+                    'bodies_str',
                     'external_body',
                     'title', 'detail',
                     'photo',
@@ -1302,7 +1329,7 @@ sub export_as_csv {
             'External Body', 'Time Spent', 'Title', 'Detail',
             'Media URL', 'Interface Used', 'Council Response',
             'Strasse', 'Mast-Nr.', 'Haus-Nr.', 'Hydranten-Nr.',
-            'Interne meldung',
+            'Interne meldung', 'Geschäftsbereich', 'Objekt', 'Kategorie',
         ],
         csv_columns => [
             'id', 'created', 'whensent', 'lastupdate', 'local_coords_x',
@@ -1311,14 +1338,32 @@ sub export_as_csv {
             'body_name', 'sum_time_spent', 'title', 'detail',
             'media_url', 'service', 'public_response',
             'strasse', 'mast_nr',' haus_nr', 'hydranten_nr',
-            'interne_meldung',
+            'interne_meldung', 'geschaftsbereich', 'objekt', 'kategorie',
         ],
         csv_extra_data => sub {
             my $report = shift;
 
             my $body_name = "";
-            if ( my $external_body = $report->body ) {
+            if ( my $external_body_id = $report->external_body ) {
+                my $cache = $report->result_source->schema->cache;
+                my $external_body = $cache->{bodies}{$external_body_id} //= FixMyStreet::DB->resultset('Body')->find({ id => $external_body_id });
                 $body_name = $external_body->name || '[Unknown body]';
+            }
+
+            # Get division for its attributes
+            my $attributes;
+            my $body = (values %{ $report->bodies })[0];
+            if ($body) {
+                my $parent = $body->parent;
+                if ($parent && $parent->parent) { # $body is an SDM
+                    $body = $parent;
+                }
+                my $body_attributes = $body->get_extra_metadata('hierarchical_attributes') || {};
+                my $report_attributes = $report->get_extra_metadata('hierarchical_attributes') || {};
+                foreach (qw(Geschäftsbereich Objekt Kategorie)) {
+                    my $value = $report_attributes->{$_} or next;
+                    $attributes->{$_} = $body_attributes->{$_}{entries}{$value}{name};
+                }
             }
 
             my $detail = $report->detail;
@@ -1358,6 +1403,9 @@ sub export_as_csv {
                 haus_nr => $extras{'haus_nr'} || '',
                 hydranten_nr => $extras{'hydranten_nr'} || '',
                 interne_meldung => $report->non_public,
+                geschaftsbereich => $attributes->{Geschäftsbereich} || '',
+                objekt => $attributes->{Objekt} || '',
+                kategorie => $attributes->{Kategorie} || '',
             };
         },
         filename => 'stats',
@@ -1447,6 +1495,32 @@ sub munge_around_filter_category_list {
 
     $c->stash->{prefill_category} = $c->get_param('prefill_category') if $c->get_param('prefill_category');
     $c->stash->{prefill_description} = $c->get_param('prefill_description') if $c->get_param('prefill_description');
+}
+
+sub get_default_hierarchical_attributes {
+    my $self = shift;
+    return {
+        "Geschäftsbereich" => {
+            "entries" => {}
+        },
+        "Objekt" => {
+            "parent" => "Geschäftsbereich",
+            "entries" => {}
+        },
+        "Kategorie" => {
+            "parent" => "Geschäftsbereich",
+            "entries" => {}
+        }
+    };
+}
+
+sub hierarchical_entry_sort {
+    my $attributes = shift;
+    foreach my $key (keys %$attributes) {
+        my $entries = $attributes->{$key}{entries};
+        $attributes->{$key}{sorted_entries} = [ sort { $entries->{$a}{name} cmp $entries->{$b}{name} } keys %$entries ];
+    }
+    return $attributes;
 }
 
 1;
