@@ -2498,3 +2498,8 @@ function setup_popstate() {
         });
     }, 0);
 }
+
+// Move the message "Not maintained..." message right above the "continue" button
+if (!$("html").hasClass("mobile")) { 
+    $('#js-roads-responsibility').insertBefore('.js-reporting-page--category .js-reporting-page--next');
+}
