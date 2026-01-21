@@ -2,6 +2,7 @@
 SET service_id = c.req.params.service_id;
 SET guid = c.req.params.guid; 
 SET category = c.req.params.category;
+SET booking_id = c.req.params.booking_id;
 
 IF services.$service_id;
     SET service = services.$service_id;
@@ -33,7 +34,10 @@ END -%]
     If you are disputing the reasons for this missed collection please use this form. We will investigate using our onboard 360 degree video cameras and other photo evidence before making a decision.
     </p>
 
-    [%- IF resolution_photo %]
+    [%- SET update = cobrand.waste_bulky_resolution_photo_update( booking_id) %]
+    [%- IF update %]
+    [% INCLUDE 'report/photo.html' object=update %]
+
     <p>
         This photo provides the evidence why your collection wasn’t made. If you agree with this, no further action is needed, if you don’t agree with this please continue to report the reason you are disputing this missed on this form.
     </p>
