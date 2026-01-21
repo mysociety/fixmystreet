@@ -44,7 +44,7 @@ FixMyStreet::override_config {
     };
 
 
-my $body = $mech->create_body_ok(2656, 'Dumfries and Galloway', {
+my $body = $mech->create_body_ok(2656, 'Dumfries and Galloway Council', {
     cobrand => 'dumfries'
 });
 
