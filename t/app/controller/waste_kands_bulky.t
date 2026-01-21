@@ -1240,6 +1240,29 @@ FixMyStreet::override_config {
             is $report->name, 'Joe Schmoe', 'User details added to report';
             is $report->get_extra_field_value('Notes'), "The gate was open";
         };
+
+        my $comment = FixMyStreet::DB->resultset('Comment')->create(
+            {
+                user          => $user,
+                problem_id    => $report->id,
+                text          => 'update text',
+                confirmed     => $report->confirmed + DateTime::Duration->new( days => 1 ),
+                problem_state => 'closed',
+                anonymous     => 0,
+                mark_open     => 0,
+                mark_fixed    => 0,
+                state         => 'confirmed',
+                photo         => $sample_file->slurp,
+            }
+        );
+
+        subtest 'Open collection dispute with photo' => sub {
+            set_fixed_time('2025-04-10T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({ text => 'dispute missed' });
+            $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
+        };
     };
 
 };

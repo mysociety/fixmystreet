@@ -989,6 +989,26 @@ sub bulky_show_individual_notes {
     return $self->{c}->stash->{small_items} ? 0 : 1;
 }
 
+=head2 waste_bulky_resolution_photo_update
+
+Given a report id get the update with the resolution photo for a bulky waste collection
+
+=cut
+
+sub waste_bulky_resolution_photo_update {
+    my ($self, $report_id) = @_;
+
+    if ($report_id) {
+        my $update = FixMyStreet::DB->resultset('Comment')->search({
+            problem_id => $report_id,
+            problem_state => 'closed'
+        })->first();
+        return $update if $update && $update->photo;
+    }
+}
+
+
+
 =head2 filter_booking_dates
 
 For small items, don't offer a date where there is already a small items booking
