@@ -10,7 +10,7 @@ use FixMyStreet::Cobrand::Dumfries;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $body = $mech->create_body_ok(2656, 'Dumfries and Galloway', {
+my $body = $mech->create_body_ok(2656, 'Dumfries and Galloway Council', {
     cobrand => 'dumfries'
 });
 
