@@ -22,7 +22,7 @@ use warnings;
 
 sub council_area_id { return 2656; }
 sub council_area { return 'Dumfries and Galloway'; }
-sub council_name { return 'Dumfries and Galloway'; }
+sub council_name { return 'Dumfries and Galloway Council'; }
 sub council_url { return 'dumfries'; }
 
 =item * Dumfries use their own privacy policy
