@@ -9,6 +9,16 @@ sub council_name { return 'Enfield Council'; }
 sub council_url { return 'enfield'; }
 sub base_url { return FixMyStreet->config('BASE_URL'); }
 
+=head2 Disable updates
+
+Verint doesn't support receiving updates, so we skip sending them
+and indicate in the UI that updates won't reach the body.
+
+=cut
+
+sub should_skip_sending_update { 1 }
+sub updates_sent_to_body { 0 }
+
 sub open311_config {
     my ($self, $row, $h, $params, $contact) = @_;
 
