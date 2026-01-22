@@ -65,7 +65,7 @@ has_field contractor_email => (
 
 has_field contractor_phone => (
     type => 'Text',
-    label => 'Telephone number (9am-5pm)',
+    label => 'Telephone number',
     required_when => { 'contractor_same_as_applicant' => sub { !$_[0] } },
     tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
     validate_method => sub {
