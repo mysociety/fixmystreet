@@ -37,15 +37,6 @@
         padding-#{$left}: 10px;
     }
 
-    tr.is-deleted {
-        background-color: #ffdddd;
-        th.contact-category {
-            text-decoration: line-through;
-        }
-    }
-    tr.is-zero {
-        background-color: #ddddff;
-    }
     tr.subtotal {
         background-color:#eee;
         border-bottom:20px solid white;
@@ -56,15 +47,6 @@
             font-weight: bold;
         }
     }
-
-    tr.is-unselected-category {
-        display: none;
-    }
-
-    .js tr.is-deleted, .js tr.is-zero {
-        display: none;
-    }
-
 
     #reports{
         th {
