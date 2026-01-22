@@ -170,11 +170,17 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     my $photo = $upload->slurp;
                 };
                 if ( my $error = $@ ) {
+                    chomp $error;
                     my $format = _(
             "That image doesn't appear to have uploaded correctly (%s), please try again."
                     );
                     $self->c->stash->{photo_error} = sprintf( $format, $error );
                     return ();
+                }
+
+                if ($type eq 'jpeg' && !$self->c->stash->{photo_gps}) {
+                    # only store GPS for the first uploaded photo
+                    $self->stash_gps_info($upload->tempname);
                 }
 
                 # Convert all images to JPEGs
@@ -205,6 +211,36 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
         return \@photos;
     },
 );
+
+sub stash_gps_info {
+    my ($self, $filename) = @_;
+
+    return unless can_run('jhead');
+
+    eval {
+        # run jhead on $filename and store in $stdout
+        my $stdout;
+        my $pid = open3(undef, $stdout, undef, 'jhead', $filename);
+        # parse lines like "GPS Latitude : N 51d 36m 52.32s
+        # GPS Longitude: W  0d 42m 27.24s"
+        my ($lat, $lon);
+        while (<$stdout>) {
+            if (/GPS Latitude : ([NS])\s+([\d.]+)d\s+([\d.]+)m\s+([\d.]+)s/) {
+                $lat = $2 + $3/60 + $4/3600;
+                $lat = -$lat if $1 eq 'S';
+                $lat = sprintf("%.6f", $lat);
+            } elsif (/GPS Longitude: ([EW])\s+([\d.]+)d\s+([\d.]+)m\s+([\d.]+)s/) {
+                $lon = $2 + $3/60 + $4/3600;
+                $lon = -$lon if $1 eq 'W';
+                $lon = sprintf("%.6f", $lon);
+            }
+        }
+        # Only set GPS info if both coordinates were found
+        if (defined $lat && defined $lon) {
+            $self->c->stash->{photo_gps} = { lat => $lat, lon => $lon };
+        }
+    };
+}
 
 sub get_image_type {
     my ($self, $index) = @_;

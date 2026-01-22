@@ -730,6 +730,23 @@ FixMyStreet::override_config {
         $mech->content_contains('is set up for assisted collection');
         $e->mock('GetServiceUnitsForObject', sub { $bin_data });
     };
+
+    FixMyStreet::Script::Reports::send();
+    $mech->clear_emails_ok;
+
+    subtest 'test special text for mixed recycling container requests' => sub {
+        $mech->get_ok('/waste/12345/request');
+        $mech->content_contains('Currently out of stock.');
+        $mech->submit_form_ok({ with_fields => { 'container-12' => 1, 'quantity-12' => 1 } });
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'new_build', 'request_reason_text' => 'Large household' }});
+        $mech->submit_form_ok({ with_fields => { name => 'Bob Marge', email => $user->email }});
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        $mech->content_contains('Currently out of stock.');
+
+        FixMyStreet::Script::Reports::send();
+        my $email = $mech->get_email;
+        is $mech->get_text_body_from_email($email) =~ /Currently out of stock./, 1, 'Note included in confirmation email.';
+    }
 };
 
 sub shared_echo_mocks {

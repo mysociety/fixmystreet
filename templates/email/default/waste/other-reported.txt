@@ -77,6 +77,8 @@ Please note that we are unable to return to correct the problem, unless you are 
 [% ELSIF cobrand.moniker == 'merton' AND (report.category == 'Lid not closed' OR report.category == 'Bin not returned') %]
   Your report about the problem with your bin collection has been made to the council.
   The crew will be advised. Please let us know if it happens again.
+[% ELSIF cobrand.moniker == 'merton' AND report.category == 'Request new container' AND cobrand.container_request_note(report.get_extra_field_value('service_id')) %]
+[% cobrand.container_request_note(report.get_extra_field_value('service_id')) %]
 
 [% ELSE %]
 

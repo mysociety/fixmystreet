@@ -97,6 +97,9 @@ $col_click_map: $primary;
 $mobile-sticky-sidebar-button-menu-image: "menu-white";
 $sticky-sidebar-link-color: $primary;
 
+$dropzone-frontpage-white-background-desktop: true;
+$report-forms-wrapper-margin-top: 2rem;
+
 /* MIXINS */
 @mixin surrey-focus {
   &:focus {

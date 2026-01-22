@@ -206,6 +206,8 @@ create_contact({ category => 'Request new container', email => 'request@example.
     { code => 'request_how_long_lived', required => 0, automated => 'hidden_field' },
     { code => 'request_ordered_previously', required => 0, automated => 'hidden_field' },
     { code => 'request_contamination_reports', required => 0, automated => 'hidden_field' },
+    { code => 'request_property_people', required => 0, automated => 'hidden_field' },
+    { code => 'request_property_nappies', required => 0, automated => 'hidden_field' },
 );
 create_contact({ category => 'Assisted collection add', email => 'Echo-assisted' },
     { code => 'Notes', description => 'Additional notes', required => 0, datatype => 'text' },
@@ -1281,10 +1283,6 @@ FixMyStreet::override_config {
         $mech->content_contains('Request a recycling container');
         $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
 
-        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
-        $mech->content_contains('Apply for a new/replacement refuse bin');
-        $mech->back;
-
         $mech->submit_form_ok({ with_fields => { 'container-choice' => 13 } }, "Choose garden bin");
         $mech->content_contains("Why do you need a replacement container?");
         $mech->content_contains("My container is damaged", "Can report damaged container");
@@ -1341,6 +1339,78 @@ FixMyStreet::override_config {
         my $body = $mech->get_text_body_from_email;
         like $body, qr/We aim to deliver this container/;
         restore_time();
+    };
+
+    subtest 'test requesting a replacement refuse container' => sub {
+        $mech->get_ok('/waste/12345');
+        $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+        $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
+        $mech->submit_form_ok({ with_fields => { 'request_reason' => 'damaged' } }, "Request replacement for damaged refuse container");
+        $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+        $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
+        $mech->content_contains('Your container request has been sent');
+        my ($report) = FixMyStreet::DB->resultset('Problem')->search(
+                {
+                    category => 'Request new container',
+                    title => ['Request new General rubbish bin (grey bin)'],
+                }
+            );
+        is $report->get_extra_field_value('request_referral'), 1, "Damaged refuse container is a referral";
+        $report->delete;
+    };
+
+    subtest 'test requesting an extra refuse container' => sub {
+        for my $test (
+            { children => 'Yes', detail => 'Request forwarded to Brent Council by email', referral => 1},
+            { children => 'No', detail => 'Request automatically calculated', referral => ''},
+        ) {
+            FixMyStreet::DB->resultset('Problem')->search(
+                {
+                    category => 'Request new container',
+                    title => ['Request new General rubbish bin (grey bin)'],
+                }
+            )->delete;
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+            $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
+            $mech->content_contains("Why do you need a replacement container?");
+            $mech->content_contains("My container is damaged", "Can report damaged container");
+            $mech->content_contains("I would like an extra container", "Can not request an extra container");
+            $mech->content_contains("My container is missing", "Can report missing container");
+            $mech->content_lacks("I am a new resident without a container", "Can not request new container as new resident");
+            $mech->submit_form_ok({ with_fields => { 'request_reason' => 'extra' } }, "Request extra container");
+            $mech->content_contains('Household details', "Questions for extra refuse container");
+            $mech->submit_form_ok({ with_fields =>
+                    {
+                        'property_people' => 'Up to 5' ,
+                        'property_children' => $test->{children},
+                    },
+                }, "Request extra container");
+            $mech->submit_form_ok({ with_fields => { name => "Test McTest", email => $user1->email } });
+            $mech->submit_form_ok({ with_fields => { 'process' => 'summary' } });
+            if ($test->{referral}) {
+                $mech->content_contains('Your container request has been sent');
+                $mech->content_contains('contact you to let you know if your request has been approved');
+            } else {
+                $mech->content_lacks('Your container request');
+                $mech->content_lacks('contact you to let you know if your request has been approved');
+                $mech->content_contains('Your property meets current general waste bin capacity requirements');
+            }
+            $mech->content_lacks('A copy has been sent to your email address');
+            my ($report) = FixMyStreet::DB->resultset('Problem')->search({ category => 'Request new container' })->order_by('-id')->first;
+            is $report->detail, $test->{detail};
+            is $report->get_extra_field_value('request_referral'), $test->{referral}, "Correct referral status";
+            is $report->state, $test->{referral} ? 'confirmed' : 'fixed - council';
+            $mech->get_ok('/waste/12345');
+            $mech->follow_link_ok({url => 'http://brent.fixmystreet.com/waste/12345/request'});
+            $mech->submit_form_ok({ with_fields => { 'container-choice' => 16 } }, "Choose refuse bin");
+            $mech->submit_form_ok({ with_fields => { 'request_reason' => 'extra' } }, "Request extra container");
+            if ($test->{referral}) {
+                $mech->content_contains('We are unable to complete your request because our records show a similar container');
+            } else {
+                $mech->content_contains('Your property meets current general waste bin capacity requirements');
+            }
+        };
     };
 
     subtest 'test requesting a container with payment' => sub {

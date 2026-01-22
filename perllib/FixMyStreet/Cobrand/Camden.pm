@@ -152,7 +152,7 @@ sub open311_update_missing_data {
         }
     }
 
-    if ($row->get_extra_field('site_code') && !$row->get_extra_field_value('site_code')) {
+    if ($row->get_extra_field(name => 'site_code') && !$row->get_extra_field_value('site_code')) {
         $row->update_extra_field({ name => 'site_code', value => $row->get_extra_field_value('NSGRef') });
     }
 

@@ -120,8 +120,7 @@ body.mappage {
 }
 
 #front-main {
-    color: #333;
-    padding-bottom: 5em;
+    padding-bottom: 7em;
     padding-top: 4em;
 
     h1 {
@@ -137,7 +136,7 @@ body.mappage {
 .postcode-form-box {
     div {
         font-size: 1.3em;
-        width: 24em;
+        min-width: 20em;
     }
     label {
         font-family: $body-font;

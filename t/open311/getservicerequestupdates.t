@@ -1947,6 +1947,16 @@ subtest 'Category changes' => sub {
         category => 'Other',
         email => 'other@example.com',
     });
+    my $contact_with_groups = FixMyStreet::DB->resultset('Contact')->create({
+        state => 'confirmed',
+        editor => 'Test',
+        whenedited => \'current_timestamp',
+        note => 'Created for test',
+        body_id => $bodies{2482}->id,
+        category => 'Litter',
+        email => 'litter@example.com',
+        extra => { group => [ 'Streets', 'Parks' ] },
+    });
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
     my $update = Open311::GetServiceRequestUpdates->new(
@@ -2040,6 +2050,37 @@ subtest 'Category changes' => sub {
         my $category_comment = $problem->comments->search({ text => { like => '%Category changed%' } })->first;
         ok !$category_comment, 'No category change comment created for invalid category';
     };
+
+    subtest 'Update group' => sub {
+        # Clear existing comments and set known category & group
+        $problem->comments->delete;
+        $problem->set_extra_metadata( group => 'Streets' );
+        $problem->update( { category => 'Litter' } );
+
+        my $requests_xml = update_xml('group_change_1', $problem->external_id, 'Update group', group => 'Parks');
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+        $update->process_body;
+        $problem->discard_changes;
+
+        is $problem->category, 'Litter', 'category unchanged';
+        is $problem->get_extra_metadata('group'), 'Parks', 'group updated';
+        is $problem->comments->count, 1, 'Only one comment created for update';
+        is $problem->comments->first->text, 'Update group', 'correct comment text';
+
+        note 'Group as empty string';
+        $problem->comments->delete;
+        $requests_xml = update_xml('group_change_2', $problem->external_id, 'Empty string group', group => '');
+        Open311->_inject_response('/servicerequestupdates.xml', $requests_xml);
+
+        $update->process_body;
+        $problem->discard_changes;
+
+        is $problem->category, 'Litter', 'category unchanged';
+        is $problem->get_extra_metadata('group'), 'Parks', 'group unchanged';
+        is $problem->comments->count, 1, 'Only one comment created for update';
+        is $problem->comments->first->text, 'Empty string group', 'correct comment text';
+    };
 };
 
 done_testing();
@@ -2070,6 +2111,9 @@ sub update_xml {
 XML
     if ($extra{category}) {
         $xml .= "<extras><category>$extra{category}</category></extras>";
+    }
+    if ( exists $extra{group} ) {
+        $xml .= "<extras><group>$extra{group}</group></extras>";
     }
     if ($extra{fms_id}) {
         $xml .= "<fixmystreet_id>$extra{fms_id}</fixmystreet_id>";

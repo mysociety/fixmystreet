@@ -2,6 +2,8 @@
 IF report.category == 'Request new container' || report.category == 'Request container removal';
     IF cobrand.moniker == 'bexley';
         title = 'Your bin request has been sent';
+    ELSIF cobrand.moniker == 'brent' AND brent_request_automatic;
+        title = '';
     ELSE;
         title = 'Your container request has been sent';
     END;
@@ -14,11 +16,27 @@ ELSE;
 END ~%]
 [% PROCESS 'waste/header.html' %]
 
+[% IF report.category == 'Request new container' && c.cobrand.moniker == 'brent' && brent_request_automatic %]
+<div class="govuk-panel govuk-panel--warning">
+[% ELSE %]
 <div class="govuk-panel govuk-panel--confirmation">
+[% END %]
     <h1 class="govuk-panel__title">
         [% title %]
     </h1>
     <div class="govuk-panel__body">
+        [% IF report.category == 'Request new container' && c.cobrand.moniker == 'brent' %]
+            [% IF NOT brent_request_automatic %]
+            <p class="govuk-body">Your application has been sent to Brent Council who will
+            contact you to let you know if your request has been approved. If it has, they will need
+            to take payment before any bins can be delivered.
+            </p>
+            [% ELSE %]
+            <p class="govuk-body">
+                Your property meets current general waste bin capacity requirements.
+            </p>
+            [% END %]
+        [% ELSE %]
         <p>
             [% IF report.user.email && report.get_extra_metadata('contributed_as') != 'anonymous_user' %]
                 A copy has been sent to your email address, [% report.user.email %].
@@ -28,8 +46,12 @@ END ~%]
           [% IF report.category == 'Request new container' AND c.cobrand.wasteworks_config.request_timeframe %]
               Containers typically arrive within [% c.cobrand.wasteworks_config.request_timeframe %], but this may vary due to demand.
           [% END %]
+          [% IF confirmation_text %]
+            [% confirmation_text %]
+          [% END %]
           [% INCLUDE 'waste/_report_ids.html' %]
         </p>
+        [% END %]
     </div>
 </div>
 

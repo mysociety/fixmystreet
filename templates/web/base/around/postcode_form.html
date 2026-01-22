@@ -1,7 +1,17 @@
+[% photo_upload = c.cobrand.feature('image_first') AND c.cobrand.allow_photo_upload AND c.req.uri.path == '/' ~%]
 <main id="front-main">
     <div id="front-main-container">
         [% UNLESS possible_location_matches %]
             [% PROCESS 'around/intro.html' %]
+        [% END %]
+
+        [% IF photo_id AND NOT partial_token %]
+            <div class="box-info">
+                <p>[% loc('Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box below.') %]</p>
+                <div class="photo-preview" style="margin-top: 1em;">
+                    <img src="/photo/temp.[% photo_id %]" alt="[% loc('Your uploaded photo') %]" style="max-width: 100%; height: auto; max-height: 300px;">
+                </div>
+            </div>
         [% END %]
 
         [%
@@ -16,54 +26,82 @@
             <p>To continue draft<span class="js-draft-name"></span> enter its location.<br>
             <a href="/" class="btn">Cancel</a>
         </div>
-        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
-            <label for="pc">[% question %]:</label>
-            [% INCLUDE 'around/_postcode_form_examples.html' %]
-            [% IF location_error_pc_lookup %]
-            <p id="pc-error" class="form-error">
-                <span class="visuallyhidden">Error:</span>
-                [% loc('Please enter a valid postcode or area') %]
-            </p>
-            [% END %]
-            <div>
-                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint [% IF location_error_pc_lookup %]search-help pc-error[% END %]"
-                [%~ IF c.cobrand.moniker == 'oxfordshire' %] placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]"[% END %] aria-label="Add a postcode or address. Alternatively, there is a geolocate button at the end of this form">
-                [% INCLUDE 'around/_postcode_submit_button.html' %]
+
+
+        <div class="report-forms-wrapper">
+
+            <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm" class="postcode-form-box js-geolocate">
+                <label for="pc">[% question %]:</label>
+                [% INCLUDE 'around/_postcode_form_examples.html' %]
+                [% IF location_error_pc_lookup %]
+                <p id="pc-error" class="form-error">
+                    <span class="visuallyhidden">Error:</span>
+                    [% loc('Please enter a valid postcode or area') %]
+                </p>
+                [% END %]
+                <div>
+                    <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" required aria-describedby="pc-hint [% IF location_error_pc_lookup %]search-help pc-error[% END %]"
+                    [%~ IF c.cobrand.moniker == 'oxfordshire' %] placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]"[% END %] aria-label="Add a postcode or address. Alternatively, there is a geolocate button at the end of this form">
+                    [% INCLUDE 'around/_postcode_submit_button.html' %]
+                </div>
+
+                [% IF partial_token %]
+                    <input type="hidden" name="partial" value="[% partial_token.token %]">
+                [% END %]
+
+                [% IF photo_id %]
+                    <input type="hidden" name="photo_id" value="[% photo_id %]">
+                [% END %]
+
+                [% IF c.get_param('filter_category') OR c.get_param('filter_group') %]
+                  <input type="hidden" name="filter_category" value="[% c.get_param('filter_category') | html %]">
+                  <input type="hidden" name="filter_group" value="[% c.get_param('filter_group') | html %]">
+                [% ELSIF c.user_exists AND c.user.categories.size %]
+                  <input type="hidden" name="filter_category" value="[% c.user.categories_string | html %]">
+                [% END %]
+                [% IF c.cobrand.moniker == 'zurich' AND ( c.get_param('prefill_category') OR c.get_param('prefill_description') ) %]
+                    <input type="hidden" name="prefill_category" value="[% c.get_param('prefill_category') %]">
+                    <input type="hidden" name="prefill_description" value="[% c.get_param('prefill_description') %]">
+                [% END %]
+                [%~ SET link_params = {
+                        geolocate = 1
+                    };
+                    IF c.get_param('filter_category'); link_params.filter_category = c.get_param('filter_category'); END;
+                    IF c.get_param('filter_group'); link_params.filter_group = c.get_param('filter_group'); END;
+                    IF c.cobrand.moniker == 'zurich';
+                        IF c.get_param('prefill_category'); link_params.prefill_category = c.get_param('prefill_category'); END;
+                        IF c.get_param('prefill_description'); link_params.prefill_description = c.get_param('prefill_description'); END;
+                    END;
+                %]
+                [% INCLUDE 'around/_postcode_form_geolocation.html' url=c.uri_for('/around', link_params) %]
+
+                [% UNLESS possible_location_matches OR location_error_pc_lookup %]
+                    [% INCLUDE 'around/_postcode_form_post.html' %]
+                [% END %]
+            </form>
+
+            [% IF photo_upload %]
+            <div class="image-first-form-wrapper">
+                <p class="label"><span class="badge">New</span>Or start a report with a photo</p>
+
+                <div id="photo-upload-error" class="photo-upload-error" role="alert" hidden></div>
+
+                <form action="[% c.uri_for('/photo/upload') %]" method="post" name="photoForm" id="photoForm" class="js-geolocate" enctype="multipart/form-data">
+                    <div id="photoFormPhoto" class="dropzone" tabindex="0" role="button">
+                        <div class="hidden-js">
+                            <label for="photo">[% loc('Drag or browse a photo') %]:</label>
+                            <input type="file" name="photo" id="photo" accept="image/*" required>
+                        </div>
+                    </div>
+                    <input type="hidden" name="start_report" value="1">
+                    <input type="submit" value="[% loc('Start report from photo') %]" class="hidden-js btn btn--final btn--primary">
+                </form>
             </div>
+            [% END %]
+        </div>
+        [% IF c.req.uri.path == '/' %]
+        [% TRY %][% INCLUDE "front/front-main-message.html" %][% CATCH file %][% END %]
+        [% END %]
 
-            [% IF partial_token %]
-                <input type="hidden" name="partial" value="[% partial_token.token %]">
-            [% END %]
-
-            [% IF c.get_param('filter_category') OR c.get_param('filter_group') %]
-              <input type="hidden" name="filter_category" value="[% c.get_param('filter_category') | html %]">
-              <input type="hidden" name="filter_group" value="[% c.get_param('filter_group') | html %]">
-            [% ELSIF c.user_exists AND c.user.categories.size %]
-              <input type="hidden" name="filter_category" value="[% c.user.categories_string | html %]">
-            [% END %]
-            [% IF c.cobrand.moniker == 'zurich' AND ( c.get_param('prefill_category') OR c.get_param('prefill_description') ) %]
-                <input type="hidden" name="prefill_category" value="[% c.get_param('prefill_category') %]">
-                <input type="hidden" name="prefill_description" value="[% c.get_param('prefill_description') %]">
-            [% END %]
-            [%~ SET link_params = {
-                    geolocate = 1
-                };
-                IF c.get_param('filter_category'); link_params.filter_category = c.get_param('filter_category'); END;
-                IF c.get_param('filter_group'); link_params.filter_group = c.get_param('filter_group'); END;
-                IF c.cobrand.moniker == 'zurich';
-                    IF c.get_param('prefill_category'); link_params.prefill_category = c.get_param('prefill_category'); END;
-                    IF c.get_param('prefill_description'); link_params.prefill_description = c.get_param('prefill_description'); END;
-                END;
-            %]
-            [% INCLUDE 'around/_postcode_form_geolocation.html' url=c.uri_for('/around', link_params) %]
-
-            [% IF c.req.uri.path == '/' %]
-            [% TRY %][% INCLUDE "front/front-main-message.html" %][% CATCH file %][% END %]
-            [% END %]
-
-            [% UNLESS possible_location_matches OR location_error_pc_lookup %]
-                [% INCLUDE 'around/_postcode_form_post.html' %]
-            [% END %]
-        </form>
     </div>
 </main>

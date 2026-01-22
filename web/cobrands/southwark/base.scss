@@ -353,8 +353,6 @@ dl dt {
 }
 
 .postcode-form-box {
-  margin-top: 1em;
-
   div {
     border-width: 0px;
     align-items: center;
@@ -410,6 +408,10 @@ dl dt {
 .form-box {
   margin-left: 0;
   margin-right: 0;
+}
+
+.js #photoForm .dropzone {
+  margin-top: 0;
 }
 
 .dropzone {

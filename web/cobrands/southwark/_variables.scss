@@ -40,6 +40,8 @@ $mainform_bg: $white-2;
 $postcodeform-background-desktop: $mainform_bg;
 $postcodeform-background: $mainform_bg;
 $form-hint-color-desktop: $gray-2;
+$postcodeform-max-width: 45%;
+$report-forms-wrapper-flex-column-gap: 6rem;
 
 /* 
 IMPORTANT
@@ -160,6 +162,9 @@ $btn-text-decoration-thickness-active: auto !important;
 $btn-text-decoration-thickness-hover: auto !important;
 $btn-text-decoration-thickness-focus: auto !important;
 $btn-underline-offset: $text-underline-offset;
+
+$button-primary-bg-top: $theme-2;
+$button-primary-text: $white;
 
 // * Primary button
 // https://www.southwark.gov.uk/jobs-and-careers/apprenticeships

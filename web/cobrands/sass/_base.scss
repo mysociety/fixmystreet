@@ -60,6 +60,12 @@ $geolocation-link: #222 !default;
 $geolocation-link-border: $geolocation-link !default;
 $geolocation-link-background-color: transparent !default;
 
+// Useful when a cobrand has a front-main container with dark background.
+// This varaible will only be used when JS is not enabled.
+$dropzone-frontpage-white-background-mobile: true !default;
+$dropzone-frontpage-border-radius: 4px !default;
+$dropzone-frontpage-color: $primary_b !default;
+
 $footer-main-nav-font-size: 1rem !default;
 $footer-main-nav-padding: 2em 0 !default;
 $footer-main-nav-background: #2E3033 !default;
@@ -2587,7 +2593,7 @@ label .muted {
 .form-hint {
   display: block;
   margin-bottom: 0.5em;
-  color: #666;
+  color: #3d3d3d;
 
   // Reduce space between labels and their form-hints
   label + & {
@@ -2843,7 +2849,7 @@ body.authpage {
   }
 }
 
-.postcode-form-box {
+.report-forms-wrapper {
   color: $postcodeform-color;
   background: $postcodeform-background;
   @if not (($postcodeform-background == transparent) or ($postcodeform-background == none)) {
@@ -2853,6 +2859,9 @@ body.authpage {
     padding: 0;
     margin: 1em 0
   }
+}
+
+.postcode-form-box {
   font-family: $meta-font;
   label {
     margin-top: 0;
@@ -2892,8 +2901,6 @@ body.authpage {
     margin-top: 2em;
   }
 }
-
-
 
 a#geolocate_link {
   border: 1px solid $geolocation-link-border;
@@ -2950,6 +2957,136 @@ a#geolocate_link {
 .btn--geolocate.loading {
   background: url("/cobrands/fixmystreet/images/spinner-white.gif") flip(100%, 0) 50% no-repeat;
   padding-#{$right}: 1.5em;
+}
+
+// PhotoForm FrontPage
+#photoForm {
+  border-radius: $dropzone-frontpage-border-radius;
+
+  .dropzone {
+    text-align: left;
+    color: $dropzone-frontpage-color;
+
+    .dz-message u {
+      margin-left: 0;
+    }
+  }
+
+  .dz-max-files-reached .dz-message {
+    display: block;
+    visibility: hidden;
+    height: 0;
+    width: 8em;
+    margin-bottom: 0;
+  }
+
+  .dz-preview {
+    width: 100%;
+    padding-bottom: 100%;
+  }
+
+  .dropzone-desktop {
+    display: none;
+  }
+
+  .dropzone-mobile {
+    display: block;
+  }
+
+  .js & {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    width: auto;
+    background: #fff;
+    z-index: 1;
+    box-shadow: 0 -1px 13px 5px transparentize(#000, 0.3);
+
+    .dropzone {
+      margin-bottom: 0;
+      padding: 0;
+      border-width: 0;
+    }
+  }
+
+  .no-js & {
+    position: static;
+    width: auto;
+    box-shadow: none;
+
+    .dropzone {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@if $dropzone-frontpage-white-background-mobile {
+  .no-js #front-main .dropzone {
+    background-color: #fff;
+    border-color: transparentize(#000, 0.4);
+
+    &:hover {
+      background-color: transparentize(#fff, 0.2);
+      border-color: #000;
+    }
+  }
+}
+
+// Photo upload error
+.photo-upload-error {
+  background: $error_color;
+  color: #fff;
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 4px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.image-first-form-wrapper {
+  .js & {
+    .label {
+      display: none;
+    }
+
+    .dropzone-mobile u {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.25rem;
+      font-weight: 600;
+      padding: 0.5em 0.75em;
+      background-color: $button-primary-bg-top;
+      color: $button-primary-text;
+      border: none;
+
+      svg {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+
+  .no-js & {
+    margin: 0 -1rem;
+    padding: 1rem;
+    background: $postcodeform-background;
+
+    .dropzone {
+      label {
+        margin-top: 0;
+      }
+
+      input {
+        margin: 0 auto;
+      }
+    }
+  }
+
+  // In case the bg of the primary colour has the same colour as its container.
+  .hidden-js.btn--primary {
+    border: 1px solid #fff !important;
+  }
 }
 
 #front_stats {
@@ -3490,6 +3627,19 @@ $site-message-border: 1px solid #525252 !default;
 
 .keyboard-instructions-wrapper, .keyboard-pin {
   display: none;
+}
+
+.badge {
+  padding: 0.25em 0.35em;
+  margin-right: 0.25em;
+  text-transform: uppercase;
+  font-weight: 600;
+  background-color: mix($primary, #fff, 30%);
+  border: 1px solid darken($primary, 10%);
+  font-size: 0.85rem;
+  color: #222;
+  border-radius: 4px;
+  vertical-align: middle;
 }
 
 @import "_admin";

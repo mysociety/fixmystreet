@@ -444,8 +444,6 @@ dl dt {
 }
 
 .postcode-form-box {
-  margin-top: 1em;
-
   div {
     border-width: 0px;
     align-items: center;
@@ -511,8 +509,6 @@ a#geolocate_link {
 }
 
 .dropzone {
-  margin-top: 0.5em;
-
   &:focus, &:focus-visible {
     background-color: transparentize($color: $link-hover-color, $amount: 0.7);
     border-color: $yellow;
