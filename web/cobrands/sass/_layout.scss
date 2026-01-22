@@ -51,7 +51,7 @@ $postcodeform-color-desktop: $primary_text !default;
 $form-hint-color-desktop: transparentize($postcodeform-color-desktop, 0.2) !default;
 $front-main-h2-color-desktop: transparentize($front-main-color-desktop, 0.1) !default;
 // This variable will be helpful for cobrands where the copy inside the postcode form is too long leaving to no space available for the image report first form.
-$postcodeform-max-width: 100% !default;
+$postcodeform-max-width: 55% !default;
 
 //This variable controls the color of .content for the front-page
 $content-background-desktop: #fff !default;
@@ -59,6 +59,7 @@ $content-background-desktop: #fff !default;
 // Gap between the postcode form and the dropzone form
 $report-forms-wrapper-flex-column-gap: 7rem !default;
 $report-forms-wrapper-flex-row-gap: 2rem !default;
+$report-forms-wrapper-margin-top: 1rem !default;
 
 // Useful when a cobrand has a front-main container with dark background.
 $dropzone-frontpage-white-background-desktop: false !default;
@@ -1034,25 +1035,21 @@ textarea.form-error {
   flex-wrap: wrap;
   column-gap: $report-forms-wrapper-flex-column-gap;
   row-gap: $report-forms-wrapper-flex-row-gap;
-  margin-top: 2rem;
-
+  
   color: $postcodeform-color-desktop;
   background: $postcodeform-background-desktop;
-  max-width: $postcodeform-max-width;
-
+  
   @if not (($postcodeform-background-desktop == transparent) or ($postcodeform-background-desktop == none)) {
     // Cases like Southwark
     padding: 1rem;
     margin: 0;
-  } @else if not (($front-main-container-background-desktop == transparent) or ($front-main-container-background-desktop == none)) {
-    // Cases like Aberdeenshire
-    padding: 0;
-    margin: 0;
   } @else {
     // Most Cases. Eg. Bath
     padding: 0;
-    margin: 1rem 0 0;
+    margin: 0;
   }
+
+  margin-top: $report-forms-wrapper-margin-top;
 
   .image-first-form-wrapper {
     flex: 1 1 40%;
@@ -1103,8 +1100,9 @@ textarea.form-error {
       border-color: transparentize($color: #000, $amount: 0.4);
 
       &:hover {
-        background-color: transparentize($color: $primary, $amount: 0.5);
+        background-color: transparentize($color: #fff, $amount: 0.2);
         border-color: transparentize($color: #000, $amount: 0.6);
+        border-style: solid;
       }
     }
   }
@@ -1113,6 +1111,7 @@ textarea.form-error {
 .postcode-form-box {
   overflow: visible; // Doesn't cover the outline when focusing elements
   background: $postcodeform-background-desktop;
+  max-width: $postcodeform-max-width;
   .form-hint {
     margin-top: -0.25em;
     color: $form-hint-color-desktop;

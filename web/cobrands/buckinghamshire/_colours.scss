@@ -66,7 +66,11 @@ $postcodeform-background: none;
 $front-main-color-desktop: $primary_b;
 $postcodeform-color: $primary_b;
 $postcodeform-color-desktop: $primary_b;
+$postcodeform-max-width: 50%;
+$report-forms-wrapper-flex-column-gap: 2rem;
 
+$button-primary-bg-top: $bucks_button_bg;
+$button-primary-text: $bucks_charcoal;
 
 @mixin bucks-button {
   background-color: $bucks_button_bg;

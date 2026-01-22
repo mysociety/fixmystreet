@@ -73,6 +73,9 @@ $front-main-background-desktop: no-repeat center/cover url("/cobrands/westnortha
 $front-main-container-background-desktop: transparentize($white, 0.05);
 $front-main-color-desktop: $primary_b;
 
+$postcodeform-max-width: 46%;
+$report-forms-wrapper-margin-top: 2rem;
+
 $geolocation-link-border: $primary;
 $geolocation-link: $primary;
 $geolocation-link-background-color: $white;
