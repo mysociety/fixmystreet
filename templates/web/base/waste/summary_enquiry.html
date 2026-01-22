@@ -1,8 +1,20 @@
+[% data = form.saved_data %]
+[% non_actionable = ( data.category == 'Report out-of-time missed collection' ) %]
+[% IF non_actionable %]
+  [%
+    title = 'Submit missed bin report';
+    thing = 'missed collection';
+    summary_title = 'Missed collection';
+  %]
+[% ELSE %]
+  [%
+    title = 'Submit enquiry';
+    thing = 'enquiry';
+    summary_title = data.category;
+  %]
+[% END %]
 [%
-title = non_actionable ? 'Submit missed bin report' : 'Submit enquiry';
-thing = non_actionable ? 'missed collection' : 'enquiry';
-summary_title = non_actionable ? 'Missed collection' : data.category;
-step1 = first_page;
+  step1 = first_page;
 %]
 
 [% BLOCK answers %]

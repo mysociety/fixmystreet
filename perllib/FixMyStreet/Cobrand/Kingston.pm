@@ -638,7 +638,7 @@ sub waste_munge_enquiry_data {
         $data->{extra_Notes} = "Originally Echo Event #$echo";
         $data->{extra_original_ref} = $ww;
         $data->{extra_container_request_guid} = $guid;
-    } elsif ($data->{category} eq 'General enquiry') {
+    } elsif ($data->{category} eq 'Report out-of-time missed collection') {
         $data->{title}
             = 'Report missed '
             . $self->service_name_override( { ServiceId => $data->{service_id} } )

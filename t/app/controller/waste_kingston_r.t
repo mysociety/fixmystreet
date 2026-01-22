@@ -67,7 +67,7 @@ create_contact({ category => 'Failure to Deliver Bags/Containers', email => '314
 );
 
 create_contact(
-    { category => 'General enquiry', email => 3140 },
+    { category => 'Report out-of-time missed collection', email => 3140 },
     'Waste',
     { code => 'Notes', required => 1, automated => 'hidden_field' },
     { code => 'service_id', required => 1, automated => 'hidden_field' },
@@ -445,7 +445,7 @@ FixMyStreet::override_config {
             ->first;
         my $report_id = $report->id;
 
-        is $report->category, 'General enquiry';
+        is $report->category, 'Report out-of-time missed collection';
         is $report->title, 'Report missed Food waste (non-actionable)';
         is $report->get_extra_metadata('non_actionable'), 1;
         is $report->get_extra_field_value('service_id'), 980;

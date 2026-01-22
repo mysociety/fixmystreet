@@ -1162,8 +1162,6 @@ sub enquiry : Chained('property') : Args(0) {
         $c->detach('/auth/redirect') unless $staff || $c->stash->{user_requested_assisted};
     }
 
-    $c->stash->{non_actionable} = $c->get_param('non_actionable');
-
     # If the contact has no extra fields (e.g. Peterborough) then skip to the
     # "about you" page instead of showing an empty first page.
     $c->stash->{first_page} = @$field_list ? 'enquiry' : 'about_you';
@@ -1323,7 +1321,8 @@ sub add_report : Private {
 
     $report->set_extra_metadata(property_address => $c->stash->{property}{address});
     $report->set_extra_metadata(phone => $c->stash->{phone});
-    $report->set_extra_metadata(non_actionable => 1) if $c->stash->{non_actionable};
+    $report->set_extra_metadata( non_actionable => 1 )
+        if $data->{category} eq 'Report out-of-time missed collection';
     $c->cobrand->call_hook('save_item_names_to_report' => $data);
     $report->update;
 
