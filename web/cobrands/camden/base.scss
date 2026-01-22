@@ -508,6 +508,11 @@ a#geolocate_link {
   background-color: $white-2;
 }
 
+.js #photoForm {
+  right: auto;
+  left: 1rem;
+}
+
 .dropzone {
   &:focus, &:focus-visible {
     background-color: transparentize($color: $link-hover-color, $amount: 0.7);
