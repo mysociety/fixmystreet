@@ -2404,6 +2404,11 @@ html.js #map .noscript {
   p:last-child {
     margin-bottom: 0;
   }
+
+  a, a:hover, a:active {
+    color: #fff;
+    text-decoration: underline;
+  }
 }
 
 .olControlAttribution {
