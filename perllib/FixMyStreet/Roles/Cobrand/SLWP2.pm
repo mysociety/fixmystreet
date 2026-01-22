@@ -646,8 +646,7 @@ sub open311_post_send {
         }
     });
 
-    # Close non-actionable reports
-    if ( $row->get_extra_metadata('non_actionable') ) {
+    if ( $row->category eq 'Report out-of-time missed collection' ) {
         $row->update( { state => 'no further action' } );
     }
 

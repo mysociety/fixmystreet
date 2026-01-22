@@ -1,4 +1,4 @@
-[% IF report.get_extra_metadata('non_actionable') ~%]
+[% IF report.category == 'Report out-of-time missed collection' ~%]
 [% PROCESS 'waste/other-reported-non-actionable.txt' ~%]
 [% ELSIF report.category == 'Garden Subscription' OR report.category == 'Cancel Garden Subscription' OR report.category == 'Amend Garden Subscription' ~%]
 [% PROCESS 'waste/other-reported-garden.txt' ~%]
