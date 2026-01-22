@@ -1197,33 +1197,33 @@ FixMyStreet::override_config {
         subtest 'Check Bulky waste dispute window' => sub {
             set_fixed_time('2025-04-07T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed', 'cannot report before collection happened');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report before collection happened');
 
             set_fixed_time('2025-04-11T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed', 'cannot report after window closed');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report after window closed');
 
             set_fixed_time('2025-04-08T17:59:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed', 'cannot report just before window opens');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just before window opens');
 
             set_fixed_time('2025-04-11T00:01:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed', 'cannot report just after window closes');
+            $mech->content_lacks('Report a problem with this missed collection', 'cannot report just after window closes');
 
             set_fixed_time('2025-04-10T23:59:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('dispute missed', 'can report just before window closes');
+            $mech->content_contains('Report a problem with this missed collection', 'can report just before window closes');
 
             set_fixed_time('2025-04-08T18:01:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('dispute missed', 'can report just after window opens');
+            $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
         };
 
         subtest 'Open collection dispute' => sub {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->follow_link_ok({ text => 'dispute missed' });
+            $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
             $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'The gate was open' } }, 'submitted reasons');
