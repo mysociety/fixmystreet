@@ -673,19 +673,19 @@ FixMyStreet::override_config {
         subtest 'No missed collection' => sub {
             set_fixed_time('2022-09-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed');
+            $mech->content_lacks('Report a problem with this missed collection');
 
             set_fixed_time('2022-09-13T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed');
+            $mech->content_lacks('Report a problem with this missed collection');
 
             set_fixed_time('2022-09-15T17:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed');
+            $mech->content_lacks('Report a problem with this missed collection');
 
             set_fixed_time('2022-09-15T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed');
+            $mech->content_lacks('Report a problem with this missed collection');
         };
 
         # domestic refuse
@@ -699,33 +699,33 @@ FixMyStreet::override_config {
         subtest 'Raising a dispute only available within window' => sub {
             set_fixed_time('2022-09-09T17:30:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed', 'not allowed before window opens');
+            $mech->content_lacks('Report a problem with this missed collection', 'not allowed before window opens');
 
             set_fixed_time('2022-09-14T19:00:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed', 'not allowed after window closes');
+            $mech->content_lacks('Report a problem with this missed collection', 'not allowed after window closes');
 
             set_fixed_time('2022-09-14T00:01:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_lacks('dispute missed', 'not allowed just after window closes');
+            $mech->content_lacks('Report a problem with this missed collection', 'not allowed just after window closes');
 
             set_fixed_time('2022-09-13T23:59:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('dispute missed', 'allowed just before window closes');
+            $mech->content_contains('Report a problem with this missed collection', 'allowed just before window closes');
 
             set_fixed_time('2022-09-09T18:01:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('dispute missed', 'allowed just after window opens');
+            $mech->content_contains('Report a problem with this missed collection', 'allowed just after window opens');
 
             set_fixed_time('2022-09-11T18:01:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->content_contains('dispute missed', 'allowed during window');
+            $mech->content_contains('Report a problem with this missed collection', 'allowed during window');
         };
 
         subtest 'Open dispute for missed collection' => sub {
             set_fixed_time('2022-09-11T18:01:00Z');
             $mech->get_ok('/waste/12345');
-            $mech->follow_link_ok({ text => 'dispute missed' });
+            $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
             $mech->content_contains('Our crews reported that your Non-Recyclable Refuse collection was not made due to Contaminated builder waste', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'There was no problem with the bin' } }, 'submitted reasons');
