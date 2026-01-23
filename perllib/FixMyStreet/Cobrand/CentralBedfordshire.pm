@@ -240,13 +240,6 @@ sub open311_extra_data_include {
     return $open311_only;
 }
 
-# Currently, Central Beds does not handle the Unit ID being passed through for
-# Trees; this will need adjusting if a new asset layer is added for which it
-# does want to receive this.
-sub open311_extra_data_exclude {
-    [ 'UnitID' ]
-}
-
 sub open311_post_send {
     my ($self, $row, $h) = @_;
 
