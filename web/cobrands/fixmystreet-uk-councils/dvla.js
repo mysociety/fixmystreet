@@ -31,12 +31,19 @@ fixmystreet.dvla.lookup = function(e) {
         }
         return;
     }
+
     const reg_field = document.getElementById('dvla_reg');
     const reg = reg_field.value;
     if (!reg) return;
+
     e.preventDefault();
     e.stopPropagation();
+
+    const page = document.querySelector('.js-dvla-page');
+    page.classList.add('loading');
+
     $.post('/report/dvla', {'registration':reg}, function(data) {
+        page.classList.remove('loading');
         if (data.errors) {
             const error = data.errors[0];
             if ($('#dvla_reg-error').length) {
