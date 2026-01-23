@@ -11,6 +11,7 @@ sub lookup : Path : Args(0) {
     my ($self, $c) = @_;
 
     my $reg = $c->req->body_params->{registration};
+    $reg =~ s/[^a-z0-9]//i;
     my $request = {
         registrationNumber => $reg,
     };

@@ -3,8 +3,9 @@
 
 (function(){
 
-var FIELDS = {
+const FIELDS = {
     'buckinghamshire': {
+        'group': 'Abandoned/Nuisance vehicle',
         'reg': 'VEHICLE_REGISTRATION',
         'taxed': 'ABANDONED_VEHICLE_TAXED',
         'type': 'ABANDONED_SELECT_TYPE',
@@ -19,25 +20,36 @@ function title_case(str) {
 }
 
 fixmystreet.dvla.lookup = function(e) {
-    var yesno = document.querySelector('input[name=dvla_reg_have]:checked');
-
-    var fields = FIELDS[fixmystreet.cobrand];
+    const fields = FIELDS[fixmystreet.cobrand];
+    const yesno = document.querySelector('input[name=dvla_reg_have]:checked');
 
     if (!yesno) return;
-    yesno = yesno.value;
-    if (!yesno) {
-        field = document.querySelector('input[name*="' + fields.reg + '"]');
+    if (!yesno.value) {
+        const field = document.querySelector('input[name*="' + fields.reg + '"]');
         if (field) {
             field.value = 'Not known';
         }
         return;
     }
-    var reg = document.getElementById('dvla_reg').value;
+    const reg_field = document.getElementById('dvla_reg');
+    const reg = reg_field.value;
     if (!reg) return;
     e.preventDefault();
     e.stopPropagation();
     $.post('/report/dvla', {'registration':reg}, function(data) {
-        var reasons = [];
+        if (data.errors) {
+            const error = data.errors[0];
+            if ($('#dvla_reg-error').length) {
+                $('#dvla_reg-error').text(error.detail).show();
+            } else {
+                const $err = $('<div id="dvla_reg-error" class="form-error"><span class="visuallyhidden">Error:</span> ' + error.detail + '</div>');
+                $(reg_field).before($err);
+            }
+            $(reg_field).addClass('form-error');
+            return;
+        }
+
+        const reasons = [];
         if (data.taxStatus == 'Taxed') {
             reasons.push('are taxed');
         } else if (data.taxStatus == 'SORN') {
@@ -51,10 +63,10 @@ fixmystreet.dvla.lookup = function(e) {
         data.colour = title_case(data.colour || '');
         data.fuelType = title_case(data.fuelType || '');
 
-        var type = data.typeApproval || '';
-        var wheelplan = data.wheelplan || '';
-        var vehicle_type = '';
-        if (type.match(/L[1-7]|motorcycle/i) || wheelplan.match(/motorcyle|moped|2 wheel/i)) {
+        const type = data.typeApproval || '';
+        const wheelplan = data.wheelplan || '';
+        let vehicle_type = '';
+        if (type.match(/L[1-7]|motorcycle/i) || wheelplan.match(/motorcycle|moped|2 wheel/i)) {
             vehicle_type = 'Motorbike';
         } else if (type.match(/N1|commercial/i) || wheelplan.match(/van|commercial/i)) {
             vehicle_type = 'Van';
@@ -66,14 +78,14 @@ fixmystreet.dvla.lookup = function(e) {
 
         if (reasons.length) {
             $('.js-reporting-page--next').prop('disabled', true);
-            var stopperId = 'js-dvla-stopper';
-            var $id = $('#' + stopperId);
+            const stopperId = 'js-dvla-stopper';
+            const $id = $('#' + stopperId);
 
-            var vehicle_desc = [data.colour, data.make, vehicle_type=='Other'?'':vehicle_type.toLowerCase()].filter(Boolean).join(' ');
+            let vehicle_desc = [data.colour, data.make, vehicle_type=='Other'?'':vehicle_type.toLowerCase()].filter(Boolean).join(' ');
             if (data.fuelType) vehicle_desc += ', ' + data.fuelType;
             if (data.yearOfManufacture) vehicle_desc += ', ' + data.yearOfManufacture;
-            var reason = 'We cannot accept reports on vehicles that ' + reasons.join(' or ');
-            $msg = $('<div class="js-stopper-notice box-warning"><strong>' + vehicle_desc + '</strong><br>' + reason + '. You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.</div>');
+            const reason = 'We cannot accept reports on vehicles that ' + reasons.join(' or ');
+            const $msg = $('<div class="js-stopper-notice box-warning"><strong>' + vehicle_desc + '</strong><br>' + reason + '. You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.</div>');
             $msg.attr('id', stopperId);
             $msg.attr('role', 'alert');
             $msg.attr('aria-live', 'assertive');
@@ -84,9 +96,9 @@ fixmystreet.dvla.lookup = function(e) {
             }
             $('.js-reporting-page--active').css('padding-bottom', $('.js-reporting-page--active .pre-button-messaging').height());
         } else {
-            var field = document.querySelector('input[name*="' + fields.colour + '"]');
+            let field = document.querySelector('input[name*="' + fields.colour + '"]');
             if (field) {
-                var a = [];
+                const a = [];
                 if (data.make) a.push(data.make);
                 if (data.colour) a.push(data.colour);
                 field.value = a.join(' / ');
@@ -109,9 +121,10 @@ fixmystreet.dvla.lookup = function(e) {
 };
 
 fixmystreet.dvla.setup = function() {
-    var selected = fixmystreet.reporting.selectedCategory();
-    if (selected.group == 'Abandoned/Nuisance vehicle') {
-        var $msg = $(`<div class="js-dvla-message">
+    const fields = FIELDS[fixmystreet.cobrand];
+    const selected = fixmystreet.reporting.selectedCategory();
+    if (selected.group == fields.group) {
+        const $msg = $(`<div class="js-dvla-message">
 
 <div class="govuk-form-group">
   <fieldset class="govuk-radios govuk-radios--small">
@@ -122,7 +135,7 @@ fixmystreet.dvla.setup = function() {
         <input class="govuk-radios__input" id="dvla_reg_have_yes" name="dvla_reg_have" type="radio" value="1" data-show="#dvla_reg_field" required>
         <label class="govuk-label govuk-radios__label" for="dvla_reg_have_yes">Yes</label>
       </div>
-      <div id="dvla_reg_field" class="hidden-js govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-contact">
+      <div id="dvla_reg_field" class="hidden-js govuk-radios__conditional govuk-radios__conditional--hidden">
         <div class="govuk-form-group">
           <label class="govuk-label" for="dvla_reg">Registration number</label>
           <input class="govuk-input required" id="dvla_reg" name="dvla_reg" type="text" spellcheck="false">
@@ -143,12 +156,18 @@ fixmystreet.dvla.setup = function() {
 </div></div></div>
 `);
 
-        var $div = $(".js-reporting-page.js-dvla-page");
+        let $div = $(".js-reporting-page.js-dvla-page");
         if (!$div.length) {
             $div = $("<div class='js-dvla-page'></div>");
         }
         $div.html($msg);
         $div.find('button').on('click', fixmystreet.dvla.lookup);
+        $div.find('input[type=text]').on('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                $div.find('button').click();
+            }
+        });
         fixmystreet.pageController.addPageAfter('duplicates', 'dvla', $div);
         fixmystreet.set_up.toggle_visibility();
     } else {
