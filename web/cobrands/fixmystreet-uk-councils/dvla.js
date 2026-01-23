@@ -13,13 +13,11 @@ const FIELDS = {
     }
 };
 
-fixmystreet.dvla = {};
-
 function title_case(str) {
     return str.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase());
 }
 
-fixmystreet.dvla.lookup = function(e) {
+function dvla_lookup(e) {
     const fields = FIELDS[fixmystreet.cobrand];
     const yesno = document.querySelector('input[name=dvla_reg_have]:checked');
 
@@ -42,17 +40,23 @@ fixmystreet.dvla.lookup = function(e) {
     const page = document.querySelector('.js-dvla-page');
     page.classList.add('loading');
 
-    $.post('/report/dvla', {'registration':reg}, function(data) {
+    const request = new XMLHttpRequest();
+    request.open('POST', '/report/dvla', true);
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    request.onload = function response() {
+        const data = JSON.parse(this.response);
         page.classList.remove('loading');
         if (data.errors) {
             const error = data.errors[0];
-            if ($('#dvla_reg-error').length) {
-                $('#dvla_reg-error').text(error.detail).show();
+            const error_elt = document.getElementById('dvla_reg-error');
+            if (error_elt) {
+                error_elt.textContent = error.detail;
+                error_elt.style.display = '';
             } else {
-                const $err = $('<div id="dvla_reg-error" class="form-error"><span class="visuallyhidden">Error:</span> ' + error.detail + '</div>');
-                $(reg_field).before($err);
+                const err = `<div id="dvla_reg-error" class="form-error"><span class="visuallyhidden">Error:</span> ${error.detail}</div>`;
+                reg_field.before(err);
             }
-            $(reg_field).addClass('form-error');
+            reg_field.classList.add('form-error');
             return;
         }
 
@@ -84,24 +88,23 @@ fixmystreet.dvla.lookup = function(e) {
         }
 
         if (reasons.length) {
-            $('.js-reporting-page--next').prop('disabled', true);
+            document.querySelectorAll('.js-reporting-page--next').forEach(b => b.disabled = true);
             const stopperId = 'js-dvla-stopper';
-            const $id = $('#' + stopperId);
+            const id = document.getElementById(stopperId);
 
             let vehicle_desc = [data.colour, data.make, vehicle_type=='Other'?'':vehicle_type.toLowerCase()].filter(Boolean).join(' ');
             if (data.fuelType) vehicle_desc += ', ' + data.fuelType;
             if (data.yearOfManufacture) vehicle_desc += ', ' + data.yearOfManufacture;
             const reason = 'We cannot accept reports on vehicles that ' + reasons.join(' or ');
-            const $msg = $('<div class="js-stopper-notice box-warning"><strong>' + vehicle_desc + '</strong><br>' + reason + '. You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.</div>');
-            $msg.attr('id', stopperId);
-            $msg.attr('role', 'alert');
-            $msg.attr('aria-live', 'assertive');
-            if ($id.length) {
-                $id.replaceWith($msg);
+            const msg = `<div id="${stopperId}" class="js-stopper-notice box-warning" role="alert" aria-live="assertive"><strong>${vehicle_desc}</strong><br>${reason}. You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.</div>`;
+            const wrapper = document.querySelector('.js-reporting-page--active .pre-button-messaging');
+            if (id) {
+                id.outerHTML = msg;
             } else {
-                $msg.prependTo('.js-reporting-page--active .pre-button-messaging');
+                wrapper.insertAdjacentHTML('afterbegin', msg);
             }
-            $('.js-reporting-page--active').css('padding-bottom', $('.js-reporting-page--active .pre-button-messaging').height());
+            const height = wrapper.getBoundingClientRect().height;
+            document.querySelector('.js-reporting-page--active').style.paddingBottom = height;
         } else {
             let field = document.querySelector('input[name*="' + fields.colour + '"]');
             if (field) {
@@ -124,14 +127,15 @@ fixmystreet.dvla.lookup = function(e) {
             }
             fixmystreet.pageController.toPage('next');
         }
-    });
-};
+    };
+    request.send(`registration=${reg}`);
+}
 
-fixmystreet.dvla.setup = function() {
+function dvla_setup() {
     const fields = FIELDS[fixmystreet.cobrand];
     const selected = fixmystreet.reporting.selectedCategory();
     if (selected.group == fields.group) {
-        const $msg = $(`<div class="js-dvla-message">
+        const msg = `<div class="js-dvla-message">
 
 <div class="govuk-form-group">
   <fieldset class="govuk-radios govuk-radios--small">
@@ -161,27 +165,31 @@ fixmystreet.dvla.setup = function() {
         <div class="pre-button-messaging"></div>
         <button class="btn btn--block btn--primary js-reporting-page--next">Continue</button>
 </div></div></div>
-`);
+`;
 
-        let $div = $(".js-reporting-page.js-dvla-page");
-        if (!$div.length) {
-            $div = $("<div class='js-dvla-page'></div>");
+        let div = document.querySelector(".js-reporting-page.js-dvla-page");
+        if (!div) {
+            div = document.createElement('div');
+            div.className = 'js-dvla-page';
         }
-        $div.html($msg);
-        $div.find('button').on('click', fixmystreet.dvla.lookup);
-        $div.find('input[type=text]').on('keydown', function(e) {
+        div.innerHTML = msg;
+        div.querySelector('button').addEventListener('click', dvla_lookup);
+        div.querySelector('input[type=text]').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                $div.find('button').click();
+                div.querySelector('button').click();
             }
         });
-        fixmystreet.pageController.addPageAfter('duplicates', 'dvla', $div);
+        fixmystreet.pageController.addPageAfter('duplicates', 'dvla', $(div));
         fixmystreet.set_up.toggle_visibility();
     } else {
-        $(".js-dvla-page").remove();
+        const page = document.querySelector('.js-dvla-page');
+        if (page) {
+            page.remove();
+        }
     }
-};
+}
 
-$(fixmystreet).on('report_new:category_change', fixmystreet.dvla.setup);
+$(fixmystreet).on('report_new:category_change', dvla_setup);
 
 })();
