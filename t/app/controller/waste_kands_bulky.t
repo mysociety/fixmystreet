@@ -1321,6 +1321,7 @@ FixMyStreet::override_config {
         $echo->mock('GetEventsForObject', sub { [] }); # reset
     };
     subtest 'Dispute of failed bulky collections' => sub {
+        $mech->log_in_ok($report->user->email);
         $echo->mock('GetEventsForObject', sub { [ {
             Id => '8004',
             ClientReference => 'LBS-123',
@@ -1359,10 +1360,13 @@ FixMyStreet::override_config {
             $mech->content_contains('Report a problem with this missed collection', 'can report just after window opens');
         };
 
+        my $link;
         subtest 'Open collection dispute' => sub {
             set_fixed_time('2025-04-10T19:00:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
+            # save this for checking logged out access below
+            $link = $mech->uri;
             $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
             $mech->content_lacks('This photo provides the evidence', 'No resolution photo text');
             $mech->submit_form_ok( { with_fields => { 'extra_Notes' => 'The gate was open' } }, 'submitted reasons');
@@ -1374,13 +1378,25 @@ FixMyStreet::override_config {
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
             is $report->category, 'Missed collection dispute', "Correct category";
             is $report->title, 'Missed collection dispute';
-            is $report->detail, "Bulky waste\n\n2 Example Street, Sutton, SM1 1AA", "Details of report contain information about problem";
+            is $report->detail, "2/3 Example Street, Sutton, SM2 5HF", "Details of report contain information about problem";
             is $report->user->email, 'schmoe@example.org', 'User details added to report';
             is $report->name, 'Joe Schmoe', 'User details added to report';
             is $report->get_extra_field_value('Notes'), "The gate was open";
         };
 
+        subtest 'Must be report user to open collection dispute' => sub {
+            $mech->log_out_ok;
+            $mech->get_ok($link);
+            my $report_id = $report->id;
+            is $mech->uri->path, '/auth', 'Redirects to auth if not logged in';
+            like $mech->content, qr#name="r"[^>]*waste/12345/enquiry[^ ]*booking_id=$report_id#, 'login page contains correct redirect'
+        };
+
+
+        $mech->log_in_ok($report->user->email);
         set_fixed_time('2025-04-10T19:00:00Z');
+        $report->update_extra_field( { name => 'GUID', value => 'booking-guid'} );
+        $report->update;
         my $comment = FixMyStreet::DB->resultset('Comment')->create(
             {
                 user          => $sutton_user,
@@ -1407,11 +1423,13 @@ FixMyStreet::override_config {
         $comment->confirmed( DateTime->now ); # - DateTime::Duration->new( minutes => 15 ) );
         $comment->update;
 
+        my $email;
+        set_fixed_time('2025-04-10T19:00:00Z');
         subtest 'Open collection dispute from email' => sub {
             $mech->clear_emails_ok;
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(1);
-            my $email = $mech->get_email;
+            $email = $mech->get_email;
             my $email_text = $mech->get_text_body_from_email($email);
             my $email_html = $mech->get_html_body_from_email($email);
             like $email_text, qr/Not Available - Gate Locked/, 'Reason pulled from comment';
@@ -1419,7 +1437,7 @@ FixMyStreet::override_config {
             like $email_html, qr/Not Available - Gate Locked/, 'Reason pulled from comment';
             like $email_html, qr/Our crews reported your bulky waste collection was not made/, 'extra bulky waste text included';
             like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
-            like $email_html, qr{waste/enquiry/12345}, 'HTML alert contains report link';
+            like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
 
             # we only want the HTML link as the text version does not contain the link
             my @links = $email_html =~ m{https?://[^"]+}g;
