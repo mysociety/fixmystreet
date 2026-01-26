@@ -944,7 +944,7 @@ fixmystreet.assets.gloucestershire.drains_construct_selected_asset_message = fun
     if (!date || date === -2209161600000) {
         return message;
     }
-    return message + '<p>This drain was last inspected on ' +
+    return message + '<p>This drain was last cleansed on ' +
         new Date(date).toLocaleDateString('en-GB') + '</p>';
 };
 
