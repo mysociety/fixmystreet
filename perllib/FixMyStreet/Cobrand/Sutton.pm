@@ -217,10 +217,11 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
-=head2 Escalations
+=head2 Escalations and Disputes
 
 Sutton has custom behaviour to allow escalation of unresolved missed collections
-or container requests.
+or container requests. This also covers disputing when the council has not collected
+a bin, or bulky upload because of a problem.
 
 =cut
 
@@ -268,17 +269,29 @@ around booked_check_missed_collection => sub {
                 }
             }
         } elsif ($locked_out) {
-            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-            # And two working days (from 6pm) have passed
-            my $wd = FixMyStreet::WorkingDays->new();
-            my $start = $wd->add_days($missed->{$guid}{report_locked_out_date}, 0)->set_hour(18);
-            my $end = $wd->add_days($start, 3)->set_hour(0);
-            if ($now >= $start && $now < $end) {
-                $missed->{$guid}{dispute_allowed} = 1;
-            }
+            $missed->{$guid}{dispute_allowed} = $self->_check_date_within_dispute_window(
+                $missed->{$guid}{report_locked_out_date}
+            );
         }
     }
 };
+
+sub _check_date_within_dispute_window {
+    my ($self, $date) = @_;
+
+    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
+    # And two working days (from 6pm) have passed
+    my $wd = FixMyStreet::WorkingDays->new();
+    my $start = $wd->add_days($date, 0)->set_hour(18);
+    my $end = $wd->add_days($start, 3)->set_hour(0);
+
+    if ($now >= $start && $now < $end) {
+        return 1;
+    }
+
+    return 0;
+}
+
 
 sub munge_bin_services_for_address {
     my ($self, $rows) = @_;
@@ -785,60 +798,84 @@ sub waste_munge_enquiry_form_pages {
     $pages->[1]{intro} = 'enquiry-intro.html';
     $pages->[1]{title} = _enquiry_nice_title($category);
 
-    return unless $category eq 'Bin not returned';;
+    if ( $category eq 'Bin not returned') {
+        my $assisted = $c->stash->{assisted_collection};
+        if ($assisted) {
+            # Add extra first page with extra question
+            $c->stash->{first_page} = 'now_returned';
+            unshift @$pages, now_returned => {
+                fields => [ 'now_returned', 'continue' ],
+                intro => 'enquiry-intro.html',
+                title => _enquiry_nice_title($category),
+                next => 'enquiry',
+            };
+            push @$fields, now_returned => {
+                type => 'Select',
+                widget => 'RadioGroup',
+                required => 1,
+                label => 'Has the container now been returned to the property?',
+                options => [
+                    { label => 'Yes', value => 'Yes' },
+                    { label => 'No', value => 'No' },
+                ],
+            };
 
-    my $assisted = $c->stash->{assisted_collection};
-    if ($assisted) {
-        # Add extra first page with extra question
-        $c->stash->{first_page} = 'now_returned';
-        unshift @$pages, now_returned => {
-            fields => [ 'now_returned', 'continue' ],
-            intro => 'enquiry-intro.html',
-            title => _enquiry_nice_title($category),
-            next => 'enquiry',
-        };
-        push @$fields, now_returned => {
-            type => 'Select',
-            widget => 'RadioGroup',
-            required => 1,
-            label => 'Has the container now been returned to the property?',
-            options => [
-                { label => 'Yes', value => 'Yes' },
-                { label => 'No', value => 'No' },
-            ],
-        };
+            # Remove any non-assisted extra notices
+            my @new;
+            for (my $i=0; $i<@$fields; $i+=2) {
+                if ($fields->[$i] !~ /^extra_NotAssisted/) {
+                    push @new, $fields->[$i], $fields->[$i+1];
+                }
+            }
+            @$fields = @new;
+            $pages->[3]{fields} = [ grep { !/^extra_NotAssisted/ } @{$pages->[3]{fields}} ];
+            $pages->[3]{update_field_list} = sub {
+                my $form = shift;
+                my $c = $form->c;
+                my $data = $form->saved_data;
+                my $returned = $data->{now_returned} || '';
+                my $key = $returned eq 'No' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
+                return {
+                    category => { default => $c->get_param('category') },
+                    service_id => { default => $c->get_param('service_id') },
+                    $key => { widget => 'Hidden' },
+                }
+            };
+        } else {
+            # Remove any assisted extra notices
+            my @new;
+            for (my $i=0; $i<@$fields; $i+=2) {
+                if ($fields->[$i] !~ /^extra_Assisted/) {
+                    push @new, $fields->[$i], $fields->[$i+1];
+                }
+            }
+            @$fields = @new;
+            $pages->[1]{fields} = [ grep { !/^extra_Assisted/ } @{$pages->[1]{fields}} ];
+        }
+    } elsif ( $category eq 'Missed collection dispute') {
+        my $guid = $c->get_param('guid');
+        # if we have a guid then it might be a link from an email and
+        # so it might be clicked outside the window so re-check if
+        # disputes are allowed
+        if ($guid) {
+            my $dispute_allowed = $self->_check_date_within_dispute_window(
+                $c->stash->{booked_missed}{$guid}{report_locked_out_date}
+            );
+            unless ($dispute_allowed) {
+                $c->stash->{first_page} = 'window_expired';
+                @$pages = (window_expired => {
+                    title => _enquiry_nice_title($category),
+                    fields => [ 'window_expired' ],
+                });
 
-        # Remove any non-assisted extra notices
-        my @new;
-        for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_NotAssisted/) {
-                push @new, $fields->[$i], $fields->[$i+1];
+                @$fields = (window_expired => {
+                    type => 'Notice',
+                    widget => 'NoRender',
+                    required => 0,
+                    label => 'Missed collections can only be disputed for 2 working days after the collection date.',
+                });
             }
         }
-        @$fields = @new;
-        $pages->[3]{fields} = [ grep { !/^extra_NotAssisted/ } @{$pages->[3]{fields}} ];
-        $pages->[3]{update_field_list} = sub {
-            my $form = shift;
-            my $c = $form->c;
-            my $data = $form->saved_data;
-            my $returned = $data->{now_returned} || '';
-            my $key = $returned eq 'No' ? 'extra_AssistedReturned' : 'extra_AssistedNotReturned';
-            return {
-                category => { default => $c->get_param('category') },
-                service_id => { default => $c->get_param('service_id') },
-                $key => { widget => 'Hidden' },
-            }
-        };
-    } else {
-        # Remove any assisted extra notices
-        my @new;
-        for (my $i=0; $i<@$fields; $i+=2) {
-            if ($fields->[$i] !~ /^extra_Assisted/) {
-                push @new, $fields->[$i], $fields->[$i+1];
-            }
-        }
-        @$fields = @new;
-        $pages->[1]{fields} = [ grep { !/^extra_Assisted/ } @{$pages->[1]{fields}} ];
     }
 }
 
