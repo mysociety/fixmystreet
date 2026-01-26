@@ -1245,6 +1245,8 @@ FixMyStreet::override_config {
         };
 
         set_fixed_time('2025-04-10T19:00:00Z');
+        $report->update_extra_field( { name => 'GUID', value => 'booking-guid'} );
+        $report->update;
         my $comment = FixMyStreet::DB->resultset('Comment')->create(
             {
                 user          => $sutton_user,
@@ -1271,18 +1273,20 @@ FixMyStreet::override_config {
         $comment->confirmed( DateTime->now ); # - DateTime::Duration->new( minutes => 15 ) );
         $comment->update;
 
+        my $email;
+        set_fixed_time('2025-04-10T19:00:00Z');
         subtest 'Open collection dispute from email' => sub {
             $mech->clear_emails_ok;
             FixMyStreet::Script::Alerts::send_updates();
             $mech->email_count_is(1);
-            my $email = $mech->get_email;
+            $email = $mech->get_email;
             my $email_text = $mech->get_text_body_from_email($email);
             my $email_html = $mech->get_html_body_from_email($email);
             like $email_text, qr/We could not collect your bin/, 'Got correct update in text email';
             like $email_text, qr/report a problem with this missed collection/, 'Report a problem text in text email';
             like $email_html, qr/We could not collect your bin/, 'Got correct update in html email';
             like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
-            like $email_html, qr{waste/enquiry/12345}, 'HTML alert contains report link';
+            like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
 
             # we only want the HTML link as the text version does not contain the link
             my @links = $email_html =~ m{https?://[^"]+}g;
@@ -1290,6 +1294,22 @@ FixMyStreet::override_config {
             $mech->get_ok($enq_links[0]);
             $mech->content_contains('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
             $mech->content_contains('This photo provides the evidence', 'Has resolution photo text');
+        };
+
+        set_fixed_time('2025-04-11T19:00:00Z');
+        subtest 'Cannot open collection dispute from email outside window' => sub {
+            my $email_html = $mech->get_html_body_from_email($email);
+            like $email_html, qr/We could not collect your bin/, 'Got correct update in html email';
+            like $email_html, qr/Report a problem with this missed collection/, 'Report a problem text in html email';
+            like $email_html, qr{waste/12345/enquiry}, 'HTML alert contains report link';
+
+            # we only want the HTML link as the text version does not contain the link
+            my @links = $email_html =~ m{https?://[^"]+}g;
+            my @enq_links = grep( /enquiry/, @links );
+            $mech->get_ok($enq_links[0]);
+            $mech->content_lacks('Our crews reported that your Bulky waste collection was not made due to Not Available - Gate Locked', 'details of missed bin collection displayed');
+            $mech->content_lacks('This photo provides the evidence', 'Has resolution photo text');
+            $mech->content_contains('Missed collections can only be disputed');
         };
     };
 
