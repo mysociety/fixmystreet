@@ -17,6 +17,14 @@ function title_case(str) {
     return str.replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase());
 }
 
+function esc(strings, ...params) {
+    return strings.raw.reduce((acc, lit, i) => {
+        let p = params[i-1];
+        p = p.replace(/[^\w. ]/gi, c => '&#' + c.charCodeAt(0) + ';');
+        return acc + p + lit;
+    });
+}
+
 function dvla_lookup(e) {
     const fields = FIELDS[fixmystreet.cobrand];
     const yesno = document.querySelector('input[name=dvla_reg_have]:checked');
@@ -53,8 +61,8 @@ function dvla_lookup(e) {
                 error_elt.textContent = error.detail;
                 error_elt.style.display = '';
             } else {
-                const err = `<div id="dvla_reg-error" class="form-error"><span class="visuallyhidden">Error:</span> ${error.detail}</div>`;
-                reg_field.before(err);
+                const err = esc`<div id="dvla_reg-error" class="form-error"><span class="visuallyhidden">Error:</span> ${error.detail}</div>`;
+                reg_field.insertAdjacentHTML('beforebegin', err);
             }
             reg_field.classList.add('form-error');
             return;
@@ -96,7 +104,7 @@ function dvla_lookup(e) {
             if (data.fuelType) vehicle_desc += ', ' + data.fuelType;
             if (data.yearOfManufacture) vehicle_desc += ', ' + data.yearOfManufacture;
             const reason = 'We cannot accept reports on vehicles that ' + reasons.join(' or ');
-            const msg = `<div id="${stopperId}" class="js-stopper-notice box-warning" role="alert" aria-live="assertive"><strong>${vehicle_desc}</strong><br>${reason}. You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.</div>`;
+            const msg = esc`<div id="${stopperId}" class="js-stopper-notice box-warning" role="alert" aria-live="assertive"><strong>${vehicle_desc}</strong><br>${reason}. You may be able to <a href="https://contact.dvla.gov.uk/report-untaxed-vehicle">contact the DVLA</a>.</div>`;
             const wrapper = document.querySelector('.js-reporting-page--active .pre-button-messaging');
             if (id) {
                 id.outerHTML = msg;
@@ -128,7 +136,7 @@ function dvla_lookup(e) {
             fixmystreet.pageController.toPage('next');
         }
     };
-    request.send(`registration=${reg}`);
+    request.send(`registration=${encodeURIComponent(reg)}`);
 }
 
 function dvla_setup() {
