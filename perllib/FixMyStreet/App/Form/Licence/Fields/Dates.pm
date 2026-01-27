@@ -23,7 +23,7 @@ has_field proposed_start_date => (
     type => 'DateTime',
     label => 'Proposed start date',
     required => 1,
-    tags => { hint => 'For example, 27 3 2026' },
+    tags => { hint => 'Working dates must be set in four‑weekly periods. For example, 1/1/2026 to 29/1/2026.' },
     messages => {
         datetime_invalid => 'Please enter a valid date',
     },
@@ -49,7 +49,6 @@ has_field proposed_end_date => (
     type => 'DateTime',
     label => 'Proposed end date',
     required => 1,
-    tags => { hint => 'For example, 23 4 2026' },
     messages => {
         datetime_invalid => 'Please enter a valid date',
     },
@@ -73,5 +72,7 @@ has_field proposed_end_date => (
 has_field 'proposed_end_date.day' => ( type => 'MonthDay' );
 has_field 'proposed_end_date.month' => ( type => 'Month' );
 has_field 'proposed_end_date.year' => ( type => 'Year' );
+
+has_field year_warning => ( type => 'Notice', label => 'All licences are limited to a duration of one year.', required => 0, widget => 'NoRender' );
 
 1;

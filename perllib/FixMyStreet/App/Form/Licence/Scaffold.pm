@@ -59,7 +59,7 @@ has_page location => (
 # Dates (fields from Fields::Dates role)
 # ==========================================================================
 has_page dates => (
-    fields => ['proposed_start_date', 'proposed_end_date', 'continue'],
+    fields => ['proposed_start_date', 'proposed_end_date', 'year_warning', 'continue'],
     title => 'Proposed working dates',
     intro => 'dates.html',
     next => 'applicant',
@@ -132,25 +132,77 @@ has_field contractor_meeting => (
 has_page dimensions => (
     fields => ['scaffold_height', 'scaffold_length', 'scaffold_width', 'continue'],
     title => 'Scaffold dimensions',
-    next => 'activity',
+    next => 'scaffold_type',
 );
 
 has_field scaffold_height => (
     type => 'Text',
     label => 'Height (metres)',
     required => 1,
+    tags => { number => 1 },
 );
 
 has_field scaffold_length => (
     type => 'Text',
     label => 'Length (metres)',
     required => 1,
+    tags => { number => 1 },
 );
 
 has_field scaffold_width => (
     type => 'Text',
     label => 'Width / Depth (metres)',
     required => 1,
+    tags => { number => 1 },
+);
+
+# ==========================================================================
+# Scaffold type
+# ==========================================================================
+has_page scaffold_type => (
+    fields => ['scaffold_type', 'scaffold_type_more', 'continue'],
+    title => 'Type of scaffold',
+    intro => 'scaffold/type.html',
+    next => 'activity',
+    update_field_list => sub {
+        my $form = shift;
+        my $data = $form->saved_data;
+        my $fields = {};
+
+        my $length = $data->{scaffold_length};
+        $fields->{scaffold_type}{default} = 'Scaffold (Large)' if $length >= 10;
+        return $fields;
+    },
+);
+
+has_field scaffold_type => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Scaffold type',
+    required => 1,
+    options_method => sub {
+        my $self = shift;
+        my $data = $self->form->saved_data;
+        my $length = $data->{scaffold_length};
+        my $disabled = $length >= 10 ? 1 : 0;
+        return [
+            { label => 'Scaffold', value => 'Scaffold', disabled => $disabled,
+                hint => 'For a standard scaffold less than 10 metres in length' },
+            { label => 'Scaffold (Large)', value => 'Scaffold (Large)',
+                hint => 'For any scaffold 10 metres or greater in length' },
+            { label => 'Scaffold (Mobile Tower)', value => 'Scaffold (Mobile Tower)', disabled => $disabled,
+                hint => 'For small mobile scaffold towers, only valid up to two weeks.' },
+        ];
+    },
+);
+
+has_field scaffold_type_more => (
+    type => 'Text',
+    label => 'What type of scaffold will be used?',
+    required => 1,
+    tags => {
+        hint => 'For example, "independent", "gantry" or "mobile scaffold tower"',
+    },
 );
 
 # ==========================================================================
@@ -159,7 +211,7 @@ has_field scaffold_width => (
 has_page activity => (
     fields => ['scaffold_activity', 'continue'],
     title => 'What will the scaffold be used for?',
-    next => 'scaffold_type',
+    next => 'incursion',
 );
 
 has_field scaffold_activity => (
@@ -169,24 +221,6 @@ has_field scaffold_activity => (
     required => 1,
     tags => {
         hint => 'For example, "building repair" or "window replacement"',
-    },
-);
-
-# ==========================================================================
-# Scaffold type
-# ==========================================================================
-has_page scaffold_type => (
-    fields => ['scaffold_type', 'continue'],
-    title => 'Type of scaffold',
-    next => 'incursion',
-);
-
-has_field scaffold_type => (
-    type => 'Text',
-    label => 'What type of scaffold will be used?',
-    required => 1,
-    tags => {
-        hint => 'For example, "independent", "gantry" or "mobile scaffold tower"',
     },
 );
 

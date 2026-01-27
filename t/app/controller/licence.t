@@ -201,14 +201,15 @@ subtest 'Scaffold form submission - smoke test' => sub {
             scaffold_width => '2',
         }});
 
+        # Scaffold type page
+        $mech->submit_form_ok({ with_fields => {
+            scaffold_type => 'Scaffold',
+            scaffold_type_more => 'Independent',
+        }});
+
         # Activity page
         $mech->submit_form_ok({ with_fields => {
             scaffold_activity => 'Building repair',
-        }});
-
-        # Scaffold type page
-        $mech->submit_form_ok({ with_fields => {
-            scaffold_type => 'Independent',
         }});
 
         # Incursion page
