@@ -2,7 +2,11 @@
 
 f = [];
 service_id = c.req.params.service_id;
+status = c.req.params.status;
 service = services.$service_id;
+IF status;
+    f.push( { value = 'Dispute missed collection', label = 'Collection was missed' } );
+END;
 IF service.report_allowed;
     IF !service.events.filter(event_type = 2118);
         f.push( { value = 'Gate not closed', label = 'A gate or enclosure wasn’t closed after the collection' } );
@@ -26,5 +30,6 @@ f.push(
 PROCESS waste/enquiry.html
     title = 'Report a problem'
     field_options = f;
+    status = status;
 
 %]

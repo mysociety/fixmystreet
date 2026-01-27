@@ -1,0 +1,20 @@
+[% SET service_id = c.req.params.service_id %]
+[% SET status = c.req.params.status %]
+[% IF services.$service_id %]
+<dl class="waste__address">
+    <dt class="waste__address__title">Service</dt>
+    <dd class="waste__address__property">[% services.$service_id.service_name %]</dd>
+</dl>
+[% END %]
+
+<p>
+  To request a missed collection, please confirm the following:
+</p>
+<ul>
+  <li>The correct container was presented by 7:00 AM></li>
+  <li>The container was presented withing arm's reach of the pavement (or approved collection location)</li>
+</ul>
+<p>
+  <strong>Please note all our waste and recylcling vehicles are fitted with CCTV and disputed missed collections may be investigated before the collection teams are instructed to return.</strong>
+</p>
+
