@@ -21,15 +21,16 @@ my ($opts, $usage) = describe_options(
     '%c %o',
     ['nomail|n', 'do not actually send any email'],
     ['verbose|v', 'more verbose output'],
-    ['cobrand=s', 'which cobrand to send reminders for'],
+    ['cobrand=s@', 'which cobrand(s) to send reminders for'],
     ['help|h', "print usage message and exit" ],
 );
 $usage->die if $opts->help;
 $usage->die unless $opts->cobrand;
 
-my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($opts->cobrand)->new;
-$cobrand->bulky_reminders({
-    nomail => $opts->nomail,
-    verbose => $opts->verbose,
-});
-
+foreach (@{$opts->cobrand}) {
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($_)->new;
+    $cobrand->bulky_reminders({
+        nomail => $opts->nomail,
+        verbose => $opts->verbose,
+    });
+}

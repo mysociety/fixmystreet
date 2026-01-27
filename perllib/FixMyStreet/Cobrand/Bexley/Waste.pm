@@ -310,23 +310,18 @@ sub bin_services_for_address {
     my $containers = $self->_containers($property);
     my $now_dt = DateTime->now->set_time_zone( FixMyStreet->local_time_zone );
 
-    # Filter out out-of-date rows first, or those without a container
+    # Filter out out-of-date rows first, or those without a container.
+    #
+    # Whitespace returns a standard bin service alongside an assisted
+    # collection service where an assisted collection is in place.
+    # Mark which containers have an assisted service.
     my @site_services_filtered;
-    my %seen_containers;
+    my %assisted;
     for my $service (@$site_services) {
         next if !$service->{NextCollectionDate};
 
         my $container = $containers->{ $service->{ServiceItemName} };
         next unless $container;
-
-        # There may be duplicate container types; skip if container has been
-        # seen before.
-        # EXCEPTION for assisted collections, which are handled further down.
-        my $assisted_collection = $service->{ServiceName}
-            && $service->{ServiceName} eq 'Assisted Collection' ? 1 : 0;
-        next
-            if !$assisted_collection
-            && $seen_containers{ $container->{name} };
 
         my $next_dt = eval {
             DateTime::Format::W3CDTF->parse_datetime(
@@ -359,6 +354,11 @@ sub bin_services_for_address {
             next if $now_dt > $to_dt;
         }
 
+        if (($service->{ServiceName}||'') eq 'Assisted Collection') {
+            $assisted{$container->{name}} = 1;
+            next;
+        }
+
         my $filtered_service = {
             id => $service->{SiteServiceID},
             service_id => $service->{ServiceItemName},
@@ -369,16 +369,20 @@ sub bin_services_for_address {
             round_schedule => $service->{RoundSchedule},
             next => $service->{NextCollectionDate},
             next_dt => $next_dt,
-            assisted_collection => $assisted_collection,
             uprn => $uprn,
             garden_waste => $container->{description} eq 'Garden waste' ? 1 : 0,
         };
-
         push @site_services_filtered, $filtered_service;
-        $seen_containers{ $container->{name} } = 1;
     }
 
-    @site_services_filtered = $self->_remove_service_if_assisted_exists(@site_services_filtered);
+    # Now set the assisted flag on the right services and skip any duplicates
+    my %seen_containers;
+    for my $service (@site_services_filtered) {
+        # There may be duplicate container types; skip if container has been seen before.
+        next if $seen_containers{ $service->{service_name} };
+        $service->{assisted_collection} = $assisted{$service->{service_name}} ? 1 : 0;
+        $seen_containers{ $service->{service_name} } = 1;
+    }
 
     # If fetching the calendar page, we can shortcircuit with just what we need
     return \@site_services_filtered if $self->{c}->action eq 'waste/calendar_ics';
@@ -578,28 +582,6 @@ show a page suggesting the user retries later, rather than 404.
 =cut
 
 sub waste_suggest_retry_on_no_property_data { 1 }
-
-=head2 _remove_service_if_assisted_exists
-
-Whitespace returns a standard bin service alongside an assisted collection service where
-an assisted collection is in place.
-
-This results in a duplication of bin services on the bin page so, if there is an assisted collection
-for a service, we will use that and remove the standard service it corresponds to.
-
-In case there is no corresponding assisted collection for a service we will show the standard
-collection for that service.
-
-=cut
-
-sub _remove_service_if_assisted_exists {
-    my ($self, @services) = @_;
-
-    my %service_by_service_id = map { $_->{service_id} => $_ } grep { !$_->{assisted_collection} } @services;
-    %service_by_service_id = (%service_by_service_id, map { $_->{service_id} => $_ } grep { $_->{assisted_collection} } @services);
-
-    return values %service_by_service_id;
-}
 
 # Returns hashref of 'ServiceItemName's (FO-140, GA-140, etc.), each mapped
 # to details of an open missed collection report or container request

@@ -669,8 +669,7 @@ function cb_should_not_require_road() {
     var selected = fixmystreet.reporting.selectedCategory();
     return selected.group === "Trees" ||
             selected.category === "Fly Tipping" ||
-            (selected.group === "Flytipping, Bins and Graffiti" && !selected.category) ||
-            selected.category === 'Housing Fly-tipping' ||
+            (selected.group === "Flytipping and Bins" && !selected.category) ||
             selected.category === 'Public Rights of way' ||
             (!selected.group && !selected.category);
 }

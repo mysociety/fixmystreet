@@ -646,11 +646,10 @@ Include special note for domestic_mixed container requests.
 
 sub container_request_note {
     my ($self, $service_id) = @_;
-    if ($service_id eq $SERVICE_IDS{domestic_mixed}) {
+    if ($service_id && $service_id eq $SERVICE_IDS{domestic_mixed}) {
         return 'Currently out of stock. ' .
         'Orders will be delievered once stock is available, but we do not know when this will be.';
     }
-    return;
 }
 
 =head2 bin_request_form_extra_fields

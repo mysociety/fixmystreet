@@ -106,12 +106,6 @@ function _update_category(input, highways_body_flag, highways_body_name) {
 function regenerate_category(highways_body_flag, highways_body_name) {
     if (!fixmystreet.reporting_data) return;
 
-    if (highways_body_flag) {
-        // We do not want to reenable the form if it has been disabled for
-        // a non-highways category
-        $('.js-reporting-page--next').prop('disabled', false);
-    }
-
     // If we have come from NH site, the server has returned all the categories to show
     if (window.location.href.indexOf('&he_referral=1') != -1) {
         return;
@@ -215,7 +209,7 @@ function add_highways_warning(road_name, highways_body_name) {
     $radios.appendTo($warning);
     $warning.wrap($page);
     $page = $warning.parent();
-    $page.append('<button type="button" class="btn btn--block js-reporting-page--next" disabled>Continue</button>');
+    $page.append('<button type="button" class="btn btn--block js-reporting-page--next">Continue</button>');
 
     $('.js-reporting-page').first().before($page);
     $page.nextAll('.js-reporting-page').removeClass('js-reporting-page--active');

@@ -21,6 +21,7 @@ my $graffiti = $mech->create_contact_ok(
     body_id  => $body->id,
     category => 'Graffiti',
     email    => 'GLOS_GRAFFITI',
+    extra    => { anonymous_allowed => 1 },
 );
 
 my $standard_user_1
