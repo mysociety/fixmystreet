@@ -657,7 +657,7 @@ sub waste_target_days {
         missed => 2,
         missed_escalation => 1,
         missed_bulky => 2,
-        missed_bulky_escalation => 1,
+        missed_bulky_escalation => 2,
     }
 }
 
