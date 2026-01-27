@@ -17,9 +17,9 @@
     function updateContractorFields() {
         var disabled = checkbox.checked;
         contractorFields.forEach(function(fieldName) {
-            var field = document.getElementById(fieldName);
+            var field = document.getElementById('form-' + fieldName + '-row');
             if (field) {
-                field.disabled = disabled;
+                field.classList.toggle('hidden-js', disabled);
             }
         });
     }
