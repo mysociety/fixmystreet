@@ -228,10 +228,13 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => { site_trees_nearby => 'No' }});
 
         # Have you considered page
+        $mech->form_with_fields('terms_accepted');
+        $mech->current_form->find_input('terms_accepted', undef, 1)->value(1);
+        $mech->current_form->find_input('terms_accepted', undef, 2)->value(2);
+        $mech->current_form->find_input('terms_accepted', undef, 3)->value(4);
         $mech->submit_form_ok({ with_fields => {
             parking_bay_suspension => 'No',
             road_closure_required => 'No',
-            terms_accepted => 1,
         }});
 
         # Uploads page

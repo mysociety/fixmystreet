@@ -121,9 +121,7 @@ has_field contractor_nasc_member => (
 has_field contractor_meeting => (
     type => 'Checkbox',
     label => '',
-    messages => { required => 'Please confirm that a site meeting has taken place' },
     option_label => 'I confirm that a site meeting has taken place between the Applicant and the Scaffold Contractor',
-    required => 1,
 );
 
 # ==========================================================================

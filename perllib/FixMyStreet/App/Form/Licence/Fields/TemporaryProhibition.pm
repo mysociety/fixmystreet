@@ -41,10 +41,20 @@ has_field road_closure_required => (
 );
 
 has_field terms_accepted => (
-    type => 'Checkbox',
+    type => 'Multiple',
+    widget => 'CheckboxGroup',
     label => 'Terms and Conditions',
     required => 1,
-    option_label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/consents-guidance-highway-licence-applications-v4.pdf">Highway licensing policy</a> and <a href="https://content.tfl.gov.uk/standard-conditions-guidance-highway-licence.pdf">Standard conditions for highways consents</a>, and that I am the applicant applying for this licence'),
+    options => [
+        { label => 'I confirm that I am the applicant applying for this licence', value => 1 },
+        { label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/consents-guidance-highway-licence-applications-v4.pdf">Highway licensing policy</a>'), value => 2 },
+        { label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/standard-conditions-guidance-highway-licence.pdf">Standard conditions for highways consents</a>'), value => 4 },
+    ],
+    validate_method => sub {
+        my $self = shift;
+        my $vals = $self->value;
+        $self->add_error('Please confirm all options') if @$vals < 3;
+    },
 );
 
 1;
