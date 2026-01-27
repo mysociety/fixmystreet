@@ -171,7 +171,7 @@ sub waste_report_form_first_next {
 
 =head2 Escalations
 
-Sutton has custom behaviour to allow escalation of unresolved missed collections
+Kingston and Sutton have custom behaviour to allow escalation of unresolved missed collections
 or container requests.
 
 =cut
