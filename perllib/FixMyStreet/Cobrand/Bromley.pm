@@ -957,6 +957,47 @@ sub waste_munge_report_data {
     $self->_set_user_source;
 }
 
+
+=head2 waste_munge_enquiry_form_pages
+
+We are using an enquiry form to report a disputed missed collection.
+
+So we add an extra page to inform whether a dispute can be raised and an extra page
+for the user to confirm they would like to raise a dispute with a declaration
+their container was correctly placed, which they only reach
+if they they are able to dispute the missed collection
+
+=cut
+
+
+sub waste_munge_enquiry_form_pages {
+    my ($self, $pages, $fields) = @_;
+    my $c = $self->{c};
+    my $category = $c->get_param('category');
+
+    my $status = $c->get_param('status') || '0';
+    my $service_id = $c->get_param('service_id');
+
+    if ($category eq 'General Enquiry') {
+        unshift @$fields, 'bromley_missed_notice',
+          {
+            'widget' => 'NoRender',
+            'required' => 0,
+            'type' => 'Notice',
+            'label' => "This is not for reporting a missed collection. Use the report a missed collection from the <a href='enquiry?template=problem&service_id=$service_id&status=$status'>menu</a>"
+          };
+    } elsif ($category eq 'Dispute missed collection') {
+        my $intro_fields = [];
+	unshift @$pages, 'missed_collection_intro', { intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
+        if ($status eq '3') {
+            push @$fields, 'declaration', { type => 'Select', label => 'I declare my container was correctly positioned', widget => 'RadioGroup', required => 1, options => [{ label => 'Yes', value => 'Yes'}, { label => 'No', value => 'No' } ] };
+            $intro_fields->[0] = 'continue';
+	    unshift @$pages, 'missed_collection_declaration', { intro => 'enquiry_missed_declaration.html', fields => ['declaration', 'continue'], next => sub { $_[0]->{declaration} eq 'Yes' ? 'enquiry' : 'missed_collection_declaration' } };
+        };
+	$c->stash->{first_page} = 'missed_collection_intro';
+    }
+}
+
 sub waste_munge_enquiry_data {
     my ($self, $data) = @_;
 
@@ -989,6 +1030,16 @@ sub munge_bin_services_for_address {
         if (grep { $property->{id} eq $_ } @{$_[0]->wasteworks_config->{exclude_property_from_requests}}) {
             $row->{request_allowed} = 0;
         }
+    }
+}
+
+sub convert_locked_out_to_code {
+    my ($self, $row, $report_allowed, $resolution_id) = @_;
+
+    if ($resolution_id && $resolution_id eq '33') { # Contaminated (33)
+	$row->{report_locked_out} = 4;
+    } elsif ($resolution_id && $resolution_id eq '66' && $report_allowed) { # Not presented (66)
+	$row->{report_locked_out} = 3;
     }
 }
 

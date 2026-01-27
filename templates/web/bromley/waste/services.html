@@ -1,7 +1,14 @@
 [% PROCESS 'waste/_services_header.html' %]
 [% PROCESS 'waste/_service_missed.html' %]
 
-  <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
+[% SET status = 0 %]
+[% IF unit.report_locked_out AND unit.report_locked_out != 1%]
+  [% SET status = unit.report_locked_out %]
+[% ELSIF !unit.report_allowed AND !unit.report_open %]
+  [% SET status = 2 %]
+[% END %]
+
+  <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]&amp;status=[% status %]" class="waste-service-link waste-service-descriptor">Report a problem with a [% unit.service_name FILTER lower %] collection</a>
 
 [% IF unit.requests_open.size %]
   <span class="waste-service-descriptor">
@@ -27,7 +34,7 @@
         </dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Renewal</dt>   
+        <dt class="govuk-summary-list__key">Renewal</dt>
         <dd class="govuk-summary-list__value
         [%~ ' renewal-status' IF current_payment_method != 'direct_debit' AND ( unit.garden_due OR unit.garden_overdue ) AND NOT waste_features.garden_renew_disabled ~%]
         ">[% date.format(unit.end_date _ ' 00:00:00', '%d %B %Y') %]

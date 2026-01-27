@@ -590,8 +590,12 @@ sub waste_task_resolutions {
 
         # If the task is ended and could not be done, do not allow reporting
         if ($state eq 'Not Completed' || ($state eq 'Completed' && $orig_resolution =~ /Excess/)) {
+            my $report_allowed_state = $row->{report_allowed};
             $row->{report_allowed} = 0;
             $row->{report_locked_out} = 1;
+            my $body = $self->body;
+            my $cobrand = $body->get_cobrand_handler;
+            $cobrand->call_hook('convert_locked_out_to_code' => $row, $report_allowed_state, $resolution_id);
         }
     }
 }
