@@ -59,7 +59,7 @@ has_page location => (
 # Dates (fields from Fields::Dates role)
 # ==========================================================================
 has_page dates => (
-    fields => ['proposed_start_date', 'proposed_end_date', 'year_warning', 'continue'],
+    fields => ['proposed_start_date', 'proposed_duration', 'year_warning', 'continue'],
     title => 'Proposed working dates',
     intro => 'dates.html',
     next => 'applicant',

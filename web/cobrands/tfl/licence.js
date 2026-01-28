@@ -27,3 +27,32 @@
     checkbox.addEventListener('change', updateContractorFields);
     updateContractorFields();
 })();
+
+// Licence forms: update end date when weeks changed
+(function() {
+    var row = document.getElementById('form-proposed_duration-row');
+    if (!row) {
+        return;
+    }
+
+    function updateEndDateFromChecked() {
+        var checked = row.querySelector('input:checked');
+        if (checked) {
+            updateEndDate(checked.value);
+        }
+    }
+
+    function updateEndDate(weeks) {
+        var d = document.getElementById('proposed_start_date.day').value,
+            m = document.getElementById('proposed_start_date.month').value,
+            y = document.getElementById('proposed_start_date.year').value,
+            date = new Date(y, m-1, d),
+            end = document.getElementById('js-proposed_end_date');
+        date.setDate(date.getDate() + weeks * 7);
+        end.innerHTML = 'Your proposed end date will be ' + date.toLocaleDateString() + '.<br><br>';
+    }
+
+    row.addEventListener('change', updateEndDateFromChecked);
+    document.getElementById('proposed_start_date').addEventListener('change', updateEndDateFromChecked);
+    updateEndDateFromChecked();
+})();
