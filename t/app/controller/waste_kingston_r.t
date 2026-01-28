@@ -446,7 +446,7 @@ FixMyStreet::override_config {
         my $report_id = $report->id;
 
         is $report->category, 'Report out-of-time missed collection';
-        is $report->title, 'Report missed Food waste (non-actionable)';
+        is $report->title, 'Report missed Food waste';
         is $report->get_extra_field_value('service_id'), 980;
         is $report->get_extra_field_value('Notes'), 'Non-actionable missed collection report';
         is $report->state, 'confirmed', 'Report is initially confirmed';

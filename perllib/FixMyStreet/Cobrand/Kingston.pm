@@ -641,8 +641,7 @@ sub waste_munge_enquiry_data {
     } elsif ($data->{category} eq 'Report out-of-time missed collection') {
         $data->{title}
             = 'Report missed '
-            . $self->service_name_override( { ServiceId => $data->{service_id} } )
-            . ' (non-actionable)';
+            . $self->service_name_override( { ServiceId => $data->{service_id} } );
 
         $data->{extra_Notes} = 'Non-actionable missed collection report';
     }
