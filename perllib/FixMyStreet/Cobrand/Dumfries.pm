@@ -24,4 +24,12 @@ sub council_area { return 'Dumfries and Galloway'; }
 sub council_name { return 'Dumfries and Galloway Council'; }
 sub council_url { return 'dumfries'; }
 
+=item * Custom postcode text which includes hint about reference number search
+
+=cut
+
+sub enter_postcode_text {
+    'Enter a Dumfries and Galloway post code or street name and area, or a reference number of a problem previously reported'
+}
+
 1;
