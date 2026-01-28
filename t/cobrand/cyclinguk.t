@@ -109,15 +109,15 @@ $mech->log_in_ok($super->email);
 subtest 'cyclinguk dashboard shows correct report data' => sub {
     $problem->update({ cobrand => 'fixmystreet'});
     $mech->get_ok("/dashboard");
-    $mech->content_like(qr{th scope="row">Total</th>\s*<td>0</td>}, ".com reports not shown in dashboard");
+    $mech->content_like(qr{th scope="row">Total.*</th>\s*<td>0</td>}, ".com reports not shown in dashboard");
 
     $problem->update({ cobrand => 'bathnes'});
     $mech->get_ok("/dashboard");
-    $mech->content_like(qr{th scope="row">Total</th>\s*<td>0</td>}, "council cobrand reports not shown in dashboard");
+    $mech->content_like(qr{th scope="row">Total.*</th>\s*<td>0</td>}, "council cobrand reports not shown in dashboard");
 
     $problem->update({ cobrand => 'cyclinguk'});
     $mech->get_ok("/dashboard");
-    $mech->content_like(qr{th scope="row">Total</th>\s*<td>1</td>}, "cyclinguk cobrand reports are shown in dashboard");
+    $mech->content_like(qr{th scope="row">Total.*</th>\s*<td>1</td>}, "cyclinguk cobrand reports are shown in dashboard");
 };
 
 subtest 'cyclinguk dashboard shows correct bodies' => sub {
