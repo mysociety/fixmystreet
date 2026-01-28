@@ -405,7 +405,10 @@ has_field site_trees_nearby => (
 # ==========================================================================
 has_page have_you_considered => (
     fields => [
+        'parking_dispensation',
         'parking_bay_suspension',
+        'bus_stop_suspension',
+        'bus_lane_suspension',
         'road_closure_required',
         'terms_accepted',
         'continue'

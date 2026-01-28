@@ -220,7 +220,10 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing policy');
         $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions');
         $mech->submit_form_ok({ with_fields => {
+            parking_dispensation => 'Yes',
             parking_bay_suspension => 'No',
+            bus_stop_suspension => 'Yes',
+            bus_lane_suspension => 'No',
             road_closure_required => 'No',
         }});
 

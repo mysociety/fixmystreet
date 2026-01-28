@@ -10,22 +10,57 @@ FixMyStreet::App::Form::Licence::Fields::TemporaryProhibition - Temporary prohib
 =head1 DESCRIPTION
 
 Provides temporary traffic prohibition fields used by all TfL licence forms:
-parking_bay_suspension, road_closure_required, terms_accepted
+parking_dispensation, parking_bay_suspension, bus_stop_suspension,
+bus_lane_suspension, road_closure_required, terms_accepted
 
 These fields are identical across all 16 licence types.
 
 =cut
 
-has_field parking_bay_suspension => (
+has_field parking_dispensation => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Will a parking, loading, disabled and/or motorcycle parking bay need to be suspended?',
+    label => 'Will a parking dispensation be required?',
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
-        { label => 'N/A', value => 'N/A' },
     ],
+);
+
+has_field parking_bay_suspension => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will a parking, loading, disabled or motorcycle parking bay need to be suspended?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+    tags => { hint => 'If yes, a TCSR will be required, or a possible TTRO' },
+);
+
+has_field bus_stop_suspension => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will a temporary bus stop suspension be required?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+);
+
+has_field bus_lane_suspension => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Will a us lane need to be suspended?',
+    required => 1,
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+    ],
+    tags => { hint => 'If yes, a TCSR will be required' },
 );
 
 has_field road_closure_required => (
@@ -36,8 +71,8 @@ has_field road_closure_required => (
     options => [
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
-        { label => 'N/A', value => 'N/A' },
     ],
+    tags => { hint => 'If yes, a TTRO will be required' },
 );
 
 has_field terms_accepted => (
