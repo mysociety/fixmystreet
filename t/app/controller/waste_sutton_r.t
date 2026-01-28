@@ -304,8 +304,8 @@ FixMyStreet::override_config {
         $mech->content_contains('A mixed recycling (cans, plastics &amp; glass) container request was made on Saturday, 10 September');
         $mech->content_contains('Report a mixed recycling (cans, plastics &amp; glass) collection as missed');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-choice" value="12"\s+disabled/s); # green
-
+        $mech->content_like(qr/name="container-choice" value="12" aria-describedby="container-choice-item-hint"\s+disabled/s); # green
+        $mech->content_like(qr/Mixed Recycling Green Box \(55L\).*?<span id="container-choice-item-hint" class="govuk-hint govuk-checkboxes__hint">\s+Unavailable to request as order in progress/s);
         $e->mock('GetEventsForObject', sub { [ {
             # Request
             EventDate => { DateTime => "2022-09-10T17:00:00Z" },
@@ -323,7 +323,7 @@ FixMyStreet::override_config {
         $mech->get_ok('/waste/12345');
         $mech->content_contains('A food waste container request was made on Saturday, 10 September');
         $mech->get_ok('/waste/12345/request');
-        $mech->content_like(qr/name="container-choice" value="43"\s+disabled/s); # indoor
+        $mech->content_like(qr/name="container-choice" value="43" aria-describedby="container-choice-item-hint"\s+disabled/s); # indoor
         $mech->content_like(qr/name="container-choice" value="46"\s*>/s); # outdoor
 
         $e->mock('GetEventsForObject', sub { [ {

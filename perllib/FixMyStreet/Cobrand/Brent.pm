@@ -1232,7 +1232,7 @@ sub waste_munge_request_form_fields {
             value => $id,
             label => $self->{c}->stash->{containers}->{$id},
             disabled => $value->{disabled},
-            $hint ? (hint => $hint) : (),
+            hint => $value->{option_hint} || $hint, # In progress overrides
         };
         $seen{$id} = 1;
     }
