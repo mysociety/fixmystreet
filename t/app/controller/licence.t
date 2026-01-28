@@ -5,11 +5,9 @@ use DateTime;
 
 my $sample_pdf = path(__FILE__)->parent->child("sample.pdf");
 
-# Calculate valid dates for the form (start date must be 4+ weeks from now,
-# end date must be within 1 year)
+# Calculate valid dates for the form (start date must be 4+ weeks from now)
 my $today = DateTime->today;
 my $start_date = $today->clone->add(weeks => 5);
-my $end_date = $start_date->clone->add(weeks => 4);
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -79,7 +77,6 @@ subtest 'Date validation' => sub {
         # Calculate test dates
         my $too_soon = $today->clone->add(weeks => 2);  # Only 2 weeks away (need 4+)
         my $valid_start = $today->clone->add(weeks => 5);
-        my $too_far = $valid_start->clone->add(years => 1, days => 10);  # More than 1 year
         my $valid_end = $valid_start->clone->add(weeks => 4);
 
         $mech->get_ok('/licence/scaffold');
@@ -98,9 +95,7 @@ subtest 'Date validation' => sub {
             'proposed_start_date.day' => $too_soon->day,
             'proposed_start_date.month' => $too_soon->month,
             'proposed_start_date.year' => $too_soon->year,
-            'proposed_end_date.day' => $valid_end->day,
-            'proposed_end_date.month' => $valid_end->month,
-            'proposed_end_date.year' => $valid_end->year,
+            proposed_duration => 4,
         }});
         $mech->content_contains('Start date must be at least 4 weeks from today',
             'Error shown when start date is less than 4 weeks away');
@@ -110,11 +105,9 @@ subtest 'Date validation' => sub {
             'proposed_start_date.day' => $valid_start->day,
             'proposed_start_date.month' => $valid_start->month,
             'proposed_start_date.year' => $valid_start->year,
-            'proposed_end_date.day' => $too_far->day,
-            'proposed_end_date.month' => $too_far->month,
-            'proposed_end_date.year' => $too_far->year,
+            proposed_duration => 54,
         }});
-        $mech->content_contains('End date must be within 1 year from the start date',
+        $mech->content_contains('is not a valid value',
             'Error shown when end date is more than 1 year away');
 
         # Test 3: End date before start date
@@ -122,11 +115,9 @@ subtest 'Date validation' => sub {
             'proposed_start_date.day' => $valid_end->day,
             'proposed_start_date.month' => $valid_end->month,
             'proposed_start_date.year' => $valid_end->year,
-            'proposed_end_date.day' => $valid_start->day,
-            'proposed_end_date.month' => $valid_start->month,
-            'proposed_end_date.year' => $valid_start->year,
+            'proposed_duration' => -4,
         }});
-        $mech->content_contains('End date must be after start date',
+        $mech->content_contains('is not a valid value',
             'Error shown when end date is before start date');
 
         # Test 4: Valid dates should proceed to next page
@@ -134,9 +125,7 @@ subtest 'Date validation' => sub {
             'proposed_start_date.day' => $valid_start->day,
             'proposed_start_date.month' => $valid_start->month,
             'proposed_start_date.year' => $valid_start->year,
-            'proposed_end_date.day' => $valid_end->day,
-            'proposed_end_date.month' => $valid_end->month,
-            'proposed_end_date.year' => $valid_end->year,
+            'proposed_duration' => 4,
         }});
         $mech->content_contains('Applicant details',
             'Valid dates proceed to next page');
@@ -171,9 +160,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
             'proposed_start_date.day' => $start_date->day,
             'proposed_start_date.month' => $start_date->month,
             'proposed_start_date.year' => $start_date->year,
-            'proposed_end_date.day' => $end_date->day,
-            'proposed_end_date.month' => $end_date->month,
-            'proposed_end_date.year' => $end_date->year,
+            proposed_duration => 4,
         }});
 
         # Applicant page
@@ -204,7 +191,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         # Scaffold type page
         $mech->submit_form_ok({ with_fields => {
             scaffold_type => 'Scaffold',
-            scaffold_type_more => 'Independent',
+            scaffold_configured => 'Independent',
         }});
 
         # Activity page
@@ -212,28 +199,35 @@ subtest 'Scaffold form submission - smoke test' => sub {
             scaffold_activity => 'Building repair',
         }});
 
-        # Incursion page
+        # Site specific pages (one question per page)
         $mech->submit_form_ok({ with_fields => {
             footway_incursion => 'No footway incursion',
-            carriageway_incursion => 'No carriageway incursion',
+            site_adequate_space => 'Yes'
         }});
-
-        # Site specific pages (one question per page)
-        $mech->submit_form_ok({ with_fields => { site_adequate_space => 'Yes' }});
-        $mech->submit_form_ok({ with_fields => { site_within_450mm => 'No' }});
-        $mech->submit_form_ok({ with_fields => { site_obstruct_infrastructure => 'No' }});
-        $mech->submit_form_ok({ with_fields => { site_protection_fan => 'No' }});
-        $mech->submit_form_ok({ with_fields => { site_foundations_surveyed => 'Yes' }});
+        $mech->submit_form_ok({ with_fields => {
+            carriageway_incursion => 'No carriageway incursion',
+            site_within_450mm => 'No'
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            site_obstruct_infrastructure => 'No',
+            site_trees_nearby => 'No',
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            site_protection_fan => 'No',
+            site_foundations_surveyed => 'Yes',
+        }});
         $mech->submit_form_ok({ with_fields => { site_hoarding_attached => 'No' }});
-        $mech->submit_form_ok({ with_fields => { site_trees_nearby => 'No' }});
 
         # Have you considered page
         $mech->form_with_fields('terms_accepted');
-        $mech->current_form->find_input('terms_accepted', undef, 1)->value(1);
-        $mech->current_form->find_input('terms_accepted', undef, 2)->value(2);
-        $mech->current_form->find_input('terms_accepted', undef, 3)->value(4);
+        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Applicant');
+        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing policy');
+        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions');
         $mech->submit_form_ok({ with_fields => {
+            parking_dispensation => 'Yes',
             parking_bay_suspension => 'No',
+            bus_stop_suspension => 'Yes',
+            bus_lane_suspension => 'No',
             road_closure_required => 'No',
         }});
 
