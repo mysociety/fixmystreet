@@ -73,7 +73,9 @@ sub index : Path : Args(0) {
     $c->stash->{edit_body_contacts} = 1
         if grep { $_ eq 'body' } keys %{$c->stash->{allowed_pages}};
 
-    my @unsent = $c->cobrand->problems->search( {
+    my $problems = ($c->cobrand->moniker eq 'fixmystreet' && $c->user->is_superuser) ? $c->model('DB::Problem') : $c->cobrand->problems;
+
+    my @unsent = $problems->search( {
         send_state => ['unprocessed', 'acknowledged'],
         'me.state' => [ FixMyStreet::DB::Result::Problem::open_states() ],
         bodies_str => { '!=', undef },
@@ -82,7 +84,7 @@ sub index : Path : Args(0) {
     },
     {
         '+columns' => ['user.email'],
-        prefetch => 'contact',
+        prefetch => [ 'contact', 'user_planned_reports' ],
         join => 'user',
         order_by => 'confirmed',
     } )->all;
