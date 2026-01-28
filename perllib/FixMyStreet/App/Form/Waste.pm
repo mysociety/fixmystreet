@@ -7,23 +7,6 @@ has default_page_type => ( is => 'ro', isa => 'Str', default => 'Waste' );
 
 has finished_action => ( is => 'ro' );
 
-before _process_page_array => sub {
-    my ($self, $pages) = @_;
-    foreach my $page (@$pages) {
-        $page->{type} = $self->default_page_type
-            unless $page->{type};
-    }
-};
-
-# Add some functions to the form to pass through to the current page
-has '+current_page' => (
-    handles => {
-        intro_template => 'intro',
-        title => 'title',
-        template => 'template',
-    }
-);
-
 sub wizard_finished {
     my ($form, $action) = @_;
     my $c = $form->c;

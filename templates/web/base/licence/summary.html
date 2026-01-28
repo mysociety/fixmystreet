@@ -1,0 +1,42 @@
+[% SET bodyclass = 'formflow govuk' %]
+
+[% PROCESS 'govuk/fields.html' %]
+[% INCLUDE header.html %]
+
+[% PROCESS errors %]
+
+<h1 class="govuk-heading-xl">[% form.title %]</h1>
+<p>Please review your application before submitting.</p>
+
+<div class="forms__summary">
+<dl class="govuk-summary-list">
+  [% FOR page IN form.fields_for_display %]
+      [% NEXT IF page.hide %]
+      [% NEXT IF page.stage == 'intro' OR page.stage == 'summary' OR page.stage == 'done' %]
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">[% page.title %]</dt>
+        <dd class="govuk-summary-list__value"></dd>
+        <dd class="govuk-summary-list__actions">
+        <form method="post">
+            <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+            <input type="hidden" name="goto" value="[% page.stage %]">
+            <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
+        </form>
+        </dd>
+      </div>
+      [% FOR field IN page.fields %]
+      [% NEXT IF field.hide %]
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% field.desc %]</dt>
+            <dd class="govuk-summary-list__value">[% field.pretty | html %]</dd>
+        </div>
+      [% END %]
+  [% END %]
+</dl>
+
+<form method="post" enctype="multipart/form-data">
+    [% PROCESS form %]
+</form>
+</div>
+
+[% INCLUDE footer.html %]
