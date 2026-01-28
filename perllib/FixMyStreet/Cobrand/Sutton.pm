@@ -502,7 +502,14 @@ sub waste_munge_request_form_fields {
         my $id = $1;
 
         my ($cost, $hint) = $self->request_cost($id, $c->stash->{quantities});
-
+	if ($value->{disabled}) {
+	    my $text = 'Unavailable to request as order in progress';
+	    if ($hint) {
+		$hint .= "\n$text";
+	    } else {
+		$hint = $text;
+	    }
+	};
         my $data = {
             value => $id,
             label => $self->{c}->stash->{containers}->{$id},
