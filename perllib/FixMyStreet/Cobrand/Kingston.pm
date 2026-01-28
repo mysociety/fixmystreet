@@ -638,6 +638,12 @@ sub waste_munge_enquiry_data {
         $data->{extra_Notes} = "Originally Echo Event #$echo";
         $data->{extra_original_ref} = $ww;
         $data->{extra_container_request_guid} = $guid;
+    } elsif ($data->{category} eq 'Report out-of-time missed collection') {
+        $data->{title}
+            = 'Report missed '
+            . $self->service_name_override( { ServiceId => $data->{service_id} } );
+
+        $data->{extra_Notes} = 'Non-actionable missed collection report';
     }
     $detail .= $self->service_name_override({ ServiceId => $data->{service_id} }) . "\n\n";
     $detail .= $address;
@@ -685,6 +691,36 @@ sub waste_escalation_window {
         bulky_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
         bulky_length => 2,
     }
+}
+
+=head2 waste_allow_non_actionable_report
+
+Permit a non-actionable missed collection report if normal missed collection
+window has passed, and a report has not already been made for the given
+service within the current collection cycle.
+
+Non-actionable means Kingston receive the report but only for information
+purposes; they do not act on it and the report is automatically closed.
+
+This method assumes 'events' has been set on $service.
+
+=cut
+
+sub waste_allow_non_actionable_report {
+    my ( $self, $service ) = @_;
+
+    return
+        if $service->{report_allowed}
+        || $service->{report_open};
+
+    my $recent_non_actionable
+        = ( $service->{events}
+            ->filter( { event_type => $self->general_enquiry_event_id } )
+            ->list )[0];
+
+    $recent_non_actionable
+        ? ( $service->{report_open_non_actionable} = $recent_non_actionable )
+        : ( $service->{report_allowed_non_actionable} = 1 );
 }
 
 =head2 container_cost / admin_fee_cost

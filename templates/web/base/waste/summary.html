@@ -18,11 +18,13 @@
     </dd>
     <dd class="govuk-summary-list__actions">
       [% TRY %][% INCLUDE 'waste/_change_answers_top.html' %][% CATCH file %]
-        <form method="post">
-          <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
-          <input type="hidden" name="goto" value="[% step1 %]">
-          <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
-        </form>
+        [% IF step1 != 'about_you' %]
+          <form method="post">
+            <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
+            <input type="hidden" name="goto" value="[% step1 %]">
+            <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
+          </form>
+        [% END %]
       [% END %]
     </dd>
   </div>
@@ -31,7 +33,7 @@
         <dd class="govuk-summary-list__value">[% property.address %]</dd>
     </div>
     [% INCLUDE answers %]
-  
+
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       About you

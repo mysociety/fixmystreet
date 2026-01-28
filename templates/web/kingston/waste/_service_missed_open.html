@@ -1,8 +1,9 @@
+[% SET report_date = unit.report_open.date || unit.report_open_non_actionable.date %]
 A [% unit.service_name FILTER lower %] collection has been reported as missed
 [% IF communal_property %]
     by yourself, a neighbour, or your Managing Agent
 [% END %]
-on [% date.format(unit.report_open.date, '%A, %-d %B') %].
+on [% date.format(report_date, '%A, %-d %B') %].
 [% IF booked_missed AND NOT unit.escalations.missed_open %]
 We aim to resolve this by [% date.format(booked_missed.target, '%A, %-d %B') %].
 [% ELSIF unit.report_open AND NOT unit.escalations.missed_open %]
