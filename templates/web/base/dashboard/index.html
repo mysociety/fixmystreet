@@ -167,12 +167,11 @@
         <th scope="col">[% loc('Total') %]</th>
       [% END %]
     </tr>
-  [% SET current_category = '' %]
+  [% SET current_group = '' %]
   [% FOR k IN rows %][% k_safe = mark_safe(k) %]
-    [% IF category_to_group.$k_safe AND category_to_group.$k_safe != current_category %]
-      [% # 'current_category' denotes current group %]
-      [% SET current_category = category_to_group.$k_safe %]
-      <tr class="group-heading[% IF category.size && !(table_groups_and_categories.groups.$current_category) %] is-unselected-category[% END %]">
+    [% IF category_to_group.$k_safe AND category_to_group.$k_safe != current_group %]
+      [% SET current_group = category_to_group.$k_safe %]
+      <tr class="group-heading[% IF category.size && !(table_groups_to_display.$current_group) %] is-unselected-category[% END %]">
         [% IF group_by == 'category+state' %]
         <th colspan="5" scope="colgroup">[% category_to_group.$k_safe %]</th>
         [% ELSE %]
@@ -191,7 +190,7 @@
         %]
         [%
           SET class_to_hide =
-            table_groups_and_categories.$k ?
+            table_categories_to_display.$k ?
               '' :
               'is-unselected-category';
         %]
@@ -210,11 +209,12 @@
             );
 
           SET class_to_hide =
-            group_to_category.$current_category.$k_safe.state == 'deleted' ?
+            group_to_category.$current_group.$k_safe.state == 'deleted' ?
               'is-deleted' :
-              is_zero ?
+              ( is_zero ?
                 'is-zero' :
-                '';
+                ''
+              );
         %]
       [% END %]
     <tr [% IF class_to_hide %]class="[% class_to_hide %]"[% END %]>
