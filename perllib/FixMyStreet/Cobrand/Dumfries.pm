@@ -67,6 +67,14 @@ sub disambiguate_location {
 
 sub default_map_zoom { 5 }
 
+=item * Custom postcode text which includes hint about reference number search
+
+=cut
+
+sub enter_postcode_text {
+    'Enter a Dumfries and Galloway post code or street name and area, or a reference number of a problem previously reported'
+}
+
 
 =head2 open311_update_missing_data
 
