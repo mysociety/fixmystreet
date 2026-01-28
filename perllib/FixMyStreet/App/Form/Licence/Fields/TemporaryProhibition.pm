@@ -46,9 +46,9 @@ has_field terms_accepted => (
     label => 'Terms and Conditions',
     required => 1,
     options => [
-        { label => 'I confirm that I am the applicant applying for this licence', value => 1 },
-        { label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/consents-guidance-highway-licence-applications-v4.pdf">Highway licensing policy</a>'), value => 2 },
-        { label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/standard-conditions-guidance-highway-licence.pdf">Standard conditions for highways consents</a>'), value => 4 },
+        { label => 'I confirm that I am the applicant applying for this licence', value => 'Applicant' },
+        { label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/consents-guidance-highway-licence-applications-v4.pdf">Highway licensing policy</a>'), value => 'Highway licensing policy' },
+        { label => FixMyStreet::Template::SafeString->new('I confirm that I have read and understood the <a href="https://content.tfl.gov.uk/standard-conditions-guidance-highway-licence.pdf">Standard conditions for highways consents</a>'), value => 'Standard conditions' },
     ],
     validate_method => sub {
         my $self = shift;
