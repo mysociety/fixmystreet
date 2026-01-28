@@ -712,4 +712,107 @@ subtest "Test display and changing of send_status" => sub {
     }
 };
 
+subtest "Test body change for failed unsent reports" => sub {
+    # Switch back to superuser
+    $mech->log_in_ok($superuser->email);
+
+    # Create a report that hasn't been sent, with a single body, and has failed to send
+    my ($failed_report) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Failed report', {
+        category => 'Potholes',
+        areas => ',2237,2421,',
+        latitude => 51.7549262252,
+        longitude => -1.25617899435,
+        whensent => undef,
+    });
+
+    # Set up failure conditions
+    $failed_report->update({
+        send_fail_count => 1,
+        send_fail_timestamp => \'current_timestamp',
+        send_fail_reason => 'Test failure',
+        send_fail_body_ids => [ $oxfordshire->id ],
+    });
+
+    $mech->get_ok("/admin/report_edit/" . $failed_report->id);
+
+    # Check that the dropdown is present
+    $mech->content_contains('select class="form-control" name="body_id"', 'Body dropdown shown for superuser on failed unsent single-body report');
+    $mech->content_contains('<option value="' . $oxfordshire->id . '" selected', 'Current body selected in dropdown');
+
+    # Check that oxford is available in the dropdown
+    $mech->content_contains('<option value="' . $oxford->id . '"', 'Other bodies available in dropdown');
+
+    # Change the body
+    $mech->submit_form_ok({ with_fields => { body_id => $oxford->id } }, 'Changed body');
+
+    $failed_report->discard_changes;
+
+    # Verify the body was changed
+    is $failed_report->bodies_str, $oxford->id, 'Body changed to Oxford';
+
+    # Verify the old body was removed from send_fail_body_ids
+    my @fail_body_ids = @{$failed_report->send_fail_body_ids};
+    ok !(grep { $_ == $oxfordshire->id } @fail_body_ids), 'Old body removed from send_fail_body_ids';
+
+    # Verify a log entry was created
+    my $log_entry = FixMyStreet::DB->resultset('AdminLog')->search({
+        object_type => 'problem',
+        object_id => $failed_report->id,
+        action => { -like => 'Body changed from%' }
+    })->first;
+    ok $log_entry, 'Log entry created for body change';
+    like $log_entry->action, qr/Body changed from Oxfordshire County Council to Oxford City Council/, 'Log entry text correct';
+
+    # Test that dropdown is not shown when report has been sent
+    $failed_report->update({ whensent => \'current_timestamp' });
+    $mech->get_ok("/admin/report_edit/" . $failed_report->id);
+    $mech->content_lacks('select class="form-control" name="body_id"', 'Body dropdown not shown for sent report');
+
+    # Test that dropdown is not shown when send_fail_count is 0
+    $failed_report->update({ whensent => undef, send_fail_count => 0 });
+    $mech->get_ok("/admin/report_edit/" . $failed_report->id);
+    $mech->content_lacks('select class="form-control" name="body_id"', 'Body dropdown not shown when send_fail_count is 0');
+
+    # Test that dropdown is not shown when report has multiple bodies
+    $failed_report->update({ send_fail_count => 1, bodies_str => join(',', $oxford->id, $oxfordshire->id) });
+    $mech->get_ok("/admin/report_edit/" . $failed_report->id);
+    $mech->content_lacks('select class="form-control" name="body_id"', 'Body dropdown not shown for multi-body report');
+
+    # Test that non-superusers can't access the feature
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire'],
+    }, sub {
+        # Create a new failed unsent report for testing
+        my ($failed_report2) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Failed report 2', {
+            category => 'Potholes',
+            areas => ',2237,2421,',
+            latitude => 51.7549262252,
+            longitude => -1.25617899435,
+            whensent => undef,
+        });
+
+        $failed_report2->update({
+            send_fail_count => 1,
+            send_fail_timestamp => \'current_timestamp',
+            send_fail_reason => 'Test failure',
+            send_fail_body_ids => [ $oxfordshire->id ],
+        });
+
+        # Log in as body user with report_edit permission (already created in earlier test)
+        $mech->log_in_ok($user3->email);
+
+        $mech->get_ok("/admin/report_edit/" . $failed_report2->id);
+
+        # Body user should see the body name as text, not a dropdown
+        $mech->content_lacks('select class="form-control" name="body_id"', 'Body dropdown not shown for non-superuser');
+        $mech->content_contains('Oxfordshire County Council', 'Body name shown as text for non-superuser');
+
+        # Clean up
+        $failed_report2->delete;
+    };
+
+    # Clean up
+    $failed_report->delete;
+};
+
 done_testing();

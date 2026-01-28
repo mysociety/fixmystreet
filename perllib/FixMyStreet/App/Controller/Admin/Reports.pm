@@ -352,6 +352,34 @@ sub edit : Path('/admin/report_edit') : Args(1) {
             $problem->send_state($c->get_param('send_state'));
         };
 
+        # Handle body change for superusers
+        if ($c->user->is_superuser && $c->get_param('body_id')) {
+            my $new_body_id = $c->get_param('body_id');
+            my @current_body_ids = @{$problem->bodies_str_ids};
+
+            # Only allow body change if report hasn't been sent, has failed, and has a single body
+            if (!$problem->whensent && $problem->send_fail_count > 0 && scalar(@current_body_ids) == 1) {
+                my $old_body_id = $current_body_ids[0];
+
+                if ($new_body_id ne $old_body_id) {
+                    # Update the bodies_str
+                    $problem->bodies_str($new_body_id);
+
+                    # Remove the old body from send_fail_body_ids
+                    $problem->remove_send_fail_body_ids($old_body_id);
+
+                    # Log the change
+                    my $old_body = $c->model('DB::Body')->find($old_body_id);
+                    my $new_body = $c->model('DB::Body')->find($new_body_id);
+                    my $change = sprintf('Body changed from %s to %s',
+                        $old_body ? $old_body->name : $old_body_id,
+                        $new_body ? $new_body->name : $new_body_id
+                    );
+                    $c->forward( '/admin/log_edit', [ $id, 'problem', $change ] );
+                }
+            }
+        }
+
         $c->forward( '/admin/reports/edit_category', [ $problem, $problem->state ne $old_state ] );
         $c->forward('/admin/update_user', [ $problem ]);
 
