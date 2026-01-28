@@ -69,13 +69,18 @@ has_field proposed_duration => (
         my $field = shift;
         return if $field->has_errors; # Called even if already failed
 
+        my $saved_data = $field->form->saved_data;
         my $weeks = $field->value;
 
         my $start_date = $field->form->field('proposed_start_date');
         if (!$start_date->has_errors) {
             my $end = $start_date->value->clone->add(weeks => $weeks);
-            my $saved_data = $field->form->saved_data;
             $saved_data->{proposed_end_date} = $end;
+        }
+
+        # Make sure if weeks is set to 2, we set the type to mobile tower
+        if ($weeks == 2) {
+            $saved_data->{scaffold_type} = 'Scaffold (Mobile Tower)';
         }
     },
 );

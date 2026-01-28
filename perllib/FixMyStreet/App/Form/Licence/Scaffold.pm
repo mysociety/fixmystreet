@@ -138,6 +138,11 @@ has_field scaffold_height => (
     label => 'Height (metres)',
     required => 1,
     tags => { number => 1 },
+    validate_method => sub {
+        my $self = shift;
+        return if $self->has_errors; # Called even if already failed
+        $self->add_error('Please provide a number') unless $self->value =~ /^\d+(\.\d+)?$/;
+    },
 );
 
 has_field scaffold_length => (
@@ -145,6 +150,21 @@ has_field scaffold_length => (
     label => 'Length (metres)',
     required => 1,
     tags => { number => 1 },
+    validate_method => sub {
+        my $self = shift;
+        return if $self->has_errors; # Called even if already failed
+
+        my $length = $self->value;
+        $self->add_error('Please provide a number') unless $length =~ /^\d+(\.\d+)?$/;
+
+        my $weeks = $self->form->saved_data->{proposed_duration};
+        if ($weeks == 2 && $length >= 10) {
+            $self->add_error('Cannot be a large scaffold with only 2 weeks duration');
+        } elsif ($length >= 10) {
+            # Make sure we set the correct type if large length
+            $self->form->saved_data->{scaffold_type} = 'Scaffold (Large)';
+        }
+    },
 );
 
 has_field scaffold_width => (
@@ -152,6 +172,11 @@ has_field scaffold_width => (
     label => 'Width / Depth (metres)',
     required => 1,
     tags => { number => 1 },
+    validate_method => sub {
+        my $self = shift;
+        return if $self->has_errors; # Called even if already failed
+        $self->add_error('Please provide a number') unless $self->value =~ /^\d+(\.\d+)?$/;
+    },
 );
 
 # ==========================================================================
@@ -162,15 +187,6 @@ has_page scaffold_type => (
     title => 'Type of scaffold',
     intro => 'scaffold/type.html',
     next => 'activity',
-    update_field_list => sub {
-        my $form = shift;
-        my $data = $form->saved_data;
-        my $fields = {};
-
-        my $length = $data->{scaffold_length};
-        $fields->{scaffold_type}{default} = 'Scaffold (Large)' if $length >= 10;
-        return $fields;
-    },
 );
 
 has_field scaffold_type => (
@@ -181,14 +197,20 @@ has_field scaffold_type => (
     options_method => sub {
         my $self = shift;
         my $data = $self->form->saved_data;
-        my $length = $data->{scaffold_length};
-        my $disabled = $length >= 10 ? 1 : 0;
+        my ($disabled_normal, $disabled_large, $disabled_mobile) = (0, 0, 0);
+        if ($data->{scaffold_length} >= 10) {
+            $disabled_normal = 1;
+            $disabled_mobile = 1;
+        } elsif ($data->{proposed_duration} == 2) {
+            $disabled_normal = 1;
+            $disabled_large = 1;
+        }
         return [
-            { label => 'Scaffold', value => 'Scaffold', disabled => $disabled,
+            { label => 'Scaffold', value => 'Scaffold', disabled => $disabled_normal,
                 hint => 'A standard scaffold less than 10 metres in length' },
-            { label => 'Scaffold (Large)', value => 'Scaffold (Large)',
+            { label => 'Scaffold (Large)', value => 'Scaffold (Large)', disabled => $disabled_large,
                 hint => 'Any scaffold 10 metres or greater in length' },
-            { label => 'Scaffold (Mobile Tower)', value => 'Scaffold (Mobile Tower)', disabled => $disabled,
+            { label => 'Scaffold (Mobile Tower)', value => 'Scaffold (Mobile Tower)', disabled => $disabled_mobile,
                 hint => 'For small mobile scaffold towers, only valid up to two weeks' },
         ];
     },
