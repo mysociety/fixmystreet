@@ -209,7 +209,7 @@ has_field scaffold_configured => (
 has_page activity => (
     fields => ['scaffold_activity', 'continue'],
     title => 'Purpose of the scaffold',
-    next => 'incursion',
+    next => 'site_pedestrian_space',
 );
 
 has_field scaffold_activity => (
@@ -223,12 +223,14 @@ has_field scaffold_activity => (
 );
 
 # ==========================================================================
-# Incursion details
+# Site Specific Information (scaffold-specific questions)
+# Split into one question per page sometimes for better UX with long labels
 # ==========================================================================
-has_page incursion => (
-    fields => ['footway_incursion', 'carriageway_incursion', 'continue'],
-    title => 'Footway and carriageway incursion',
-    next => 'site_pedestrian_space',
+has_page site_pedestrian_space => (
+    fields => ['footway_incursion', 'site_adequate_space', 'continue'],
+    title => 'Pedestrian space',
+    intro => 'scaffold/site_specific.html',
+    next => 'site_carriageway_distance',
 );
 
 has_field footway_incursion => (
@@ -238,26 +240,6 @@ has_field footway_incursion => (
     tags => {
         hint => 'For example, "1m from building line and 3m unobstructed footway" or "no footway incursion"',
     },
-);
-
-has_field carriageway_incursion => (
-    type => 'Text',
-    label => 'What is the proposed carriageway incursion?',
-    required => 1,
-    tags => {
-        hint => 'For example, "no carriageway incursion" or "temporary lane closure for installation"',
-    },
-);
-
-# ==========================================================================
-# Site Specific Information (scaffold-specific questions)
-# Split into one question per page for better UX with long labels
-# ==========================================================================
-has_page site_pedestrian_space => (
-    fields => ['site_adequate_space', 'continue'],
-    title => 'Pedestrian space',
-    intro => 'scaffold/site_specific.html',
-    next => 'site_carriageway_distance',
 );
 
 has_field site_adequate_space => (
@@ -275,9 +257,18 @@ has_field site_adequate_space => (
 
 # ==========================================================================
 has_page site_carriageway_distance => (
-    fields => ['site_within_450mm', 'continue'],
-    title => 'Distance from carriageway',
+    fields => ['carriageway_incursion', 'site_within_450mm', 'continue'],
+    title => 'Carriageway impact',
     next => 'site_infrastructure',
+);
+
+has_field carriageway_incursion => (
+    type => 'Text',
+    label => 'What is the proposed carriageway incursion?',
+    required => 1,
+    tags => {
+        hint => 'For example, "no carriageway incursion" or "temporary lane closure for installation"',
+    },
 );
 
 has_field site_within_450mm => (
@@ -295,7 +286,7 @@ has_field site_within_450mm => (
 
 # ==========================================================================
 has_page site_infrastructure => (
-    fields => ['site_obstruct_infrastructure', 'continue'],
+    fields => ['site_obstruct_infrastructure', 'site_trees_nearby', 'continue'],
     title => 'Street infrastructure',
     next => 'site_protection',
 );
@@ -313,11 +304,26 @@ has_field site_obstruct_infrastructure => (
     ],
 );
 
+has_field site_trees_nearby => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Are there any trees within falling distance of any part of the proposed scaffold?',
+    required => 1,
+    tags => {
+        hint => "If answer is yes, then the application will be referred to the TfL Arboriculture & Landscape Manager for further consideration, and a site meeting between the applicant and TfL may be required.",
+    },
+    options => [
+        { label => 'Yes', value => 'Yes' },
+        { label => 'No', value => 'No' },
+        { label => 'N/A', value => 'N/A' },
+    ],
+);
+
 # ==========================================================================
 has_page site_protection => (
-    fields => ['site_protection_fan', 'continue'],
-    title => 'Public protection',
-    next => 'site_foundations',
+    fields => ['site_protection_fan', 'site_foundations_surveyed', 'continue'],
+    title => 'Scaffold installation',
+    next => 'site_hoarding',
 );
 
 has_field site_protection_fan => (
@@ -331,13 +337,6 @@ has_field site_protection_fan => (
         { label => 'No', value => 'No' },
         { label => 'N/A', value => 'N/A' },
     ],
-);
-
-# ==========================================================================
-has_page site_foundations => (
-    fields => ['site_foundations_surveyed', 'continue'],
-    title => 'Foundations',
-    next => 'site_hoarding',
 );
 
 has_field site_foundations_surveyed => (
@@ -359,7 +358,7 @@ has_field site_foundations_surveyed => (
 has_page site_hoarding => (
     fields => ['site_hoarding_attached', 'continue'],
     title => 'Hoarding',
-    next => 'site_trees',
+    next => 'have_you_considered',
 );
 
 has_field site_hoarding_attached => (
@@ -369,28 +368,6 @@ has_field site_hoarding_attached => (
     required => 1,
     tags => {
         hint => "If the answer is yes, there will also be a requirement for a separate hoarding application, and a site meeting between the applicant and TfL may be required.",
-    },
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-        { label => 'N/A', value => 'N/A' },
-    ],
-);
-
-# ==========================================================================
-has_page site_trees => (
-    fields => ['site_trees_nearby', 'continue'],
-    title => 'Nearby trees',
-    next => 'have_you_considered',
-);
-
-has_field site_trees_nearby => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Are there any trees within falling distance of any part of the proposed scaffold?',
-    required => 1,
-    tags => {
-        hint => "If answer is yes, then the application will be referred to the TfL Arboriculture & Landscape Manager for further consideration, and a site meeting between the applicant and TfL may be required.",
     },
     options => [
         { label => 'Yes', value => 'Yes' },

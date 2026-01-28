@@ -199,20 +199,24 @@ subtest 'Scaffold form submission - smoke test' => sub {
             scaffold_activity => 'Building repair',
         }});
 
-        # Incursion page
+        # Site specific pages (one question per page)
         $mech->submit_form_ok({ with_fields => {
             footway_incursion => 'No footway incursion',
-            carriageway_incursion => 'No carriageway incursion',
+            site_adequate_space => 'Yes'
         }});
-
-        # Site specific pages (one question per page)
-        $mech->submit_form_ok({ with_fields => { site_adequate_space => 'Yes' }});
-        $mech->submit_form_ok({ with_fields => { site_within_450mm => 'No' }});
-        $mech->submit_form_ok({ with_fields => { site_obstruct_infrastructure => 'No' }});
-        $mech->submit_form_ok({ with_fields => { site_protection_fan => 'No' }});
-        $mech->submit_form_ok({ with_fields => { site_foundations_surveyed => 'Yes' }});
+        $mech->submit_form_ok({ with_fields => {
+            carriageway_incursion => 'No carriageway incursion',
+            site_within_450mm => 'No'
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            site_obstruct_infrastructure => 'No',
+            site_trees_nearby => 'No',
+        }});
+        $mech->submit_form_ok({ with_fields => {
+            site_protection_fan => 'No',
+            site_foundations_surveyed => 'Yes',
+        }});
         $mech->submit_form_ok({ with_fields => { site_hoarding_attached => 'No' }});
-        $mech->submit_form_ok({ with_fields => { site_trees_nearby => 'No' }});
 
         # Have you considered page
         $mech->form_with_fields('terms_accepted');
