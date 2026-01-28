@@ -204,7 +204,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         # Scaffold type page
         $mech->submit_form_ok({ with_fields => {
             scaffold_type => 'Scaffold',
-            scaffold_type_more => 'Independent',
+            scaffold_configured => 'Independent',
         }});
 
         # Activity page

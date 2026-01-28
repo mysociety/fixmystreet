@@ -158,7 +158,7 @@ has_field scaffold_width => (
 # Scaffold type
 # ==========================================================================
 has_page scaffold_type => (
-    fields => ['scaffold_type', 'scaffold_type_more', 'continue'],
+    fields => ['scaffold_type', 'scaffold_configured', 'continue'],
     title => 'Type of scaffold',
     intro => 'scaffold/type.html',
     next => 'activity',
@@ -185,21 +185,21 @@ has_field scaffold_type => (
         my $disabled = $length >= 10 ? 1 : 0;
         return [
             { label => 'Scaffold', value => 'Scaffold', disabled => $disabled,
-                hint => 'For a standard scaffold less than 10 metres in length' },
+                hint => 'A standard scaffold less than 10 metres in length' },
             { label => 'Scaffold (Large)', value => 'Scaffold (Large)',
-                hint => 'For any scaffold 10 metres or greater in length' },
+                hint => 'Any scaffold 10 metres or greater in length' },
             { label => 'Scaffold (Mobile Tower)', value => 'Scaffold (Mobile Tower)', disabled => $disabled,
-                hint => 'For small mobile scaffold towers, only valid up to two weeks.' },
+                hint => 'For small mobile scaffold towers, only valid up to two weeks' },
         ];
     },
 );
 
-has_field scaffold_type_more => (
+has_field scaffold_configured => (
     type => 'Text',
-    label => 'What type of scaffold will be used?',
+    label => 'How will the scaffold be configured?',
     required => 1,
     tags => {
-        hint => 'For example, "independent", "gantry" or "mobile scaffold tower"',
+        hint => 'For example, “independent”, “gantry” or “cantilever”',
     },
 );
 
@@ -208,7 +208,7 @@ has_field scaffold_type_more => (
 # ==========================================================================
 has_page activity => (
     fields => ['scaffold_activity', 'continue'],
-    title => 'What will the scaffold be used for?',
+    title => 'Purpose of the scaffold',
     next => 'incursion',
 );
 
@@ -410,7 +410,7 @@ has_page have_you_considered => (
         'terms_accepted',
         'continue'
     ],
-    title => 'Have you considered?',
+    title => 'Additional considerations',
     intro => 'have_you_considered.html',
     next => 'uploads',
 );
