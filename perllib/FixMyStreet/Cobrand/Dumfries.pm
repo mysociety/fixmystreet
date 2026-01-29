@@ -48,7 +48,12 @@ sub open311_get_update_munging {
 
     my $text = $self->open311_get_update_munging_template_variables($comment->text, $request);
     $comment->text($text);
-}
 
+    if ( $text = $comment->private_email_text ) {
+        $text = $self->open311_get_update_munging_template_variables(
+            $text, $request );
+        $comment->private_email_text($text);
+    }
+}
 
 1;
