@@ -340,15 +340,15 @@ FixMyStreet::override_config {
             'contacts[' . $missed->id . ']' => 1,
             task_type => 3216,
             task_state => 'Completed',
-	} });
-	$mech->get_ok('/admin/templates/' . $body->id . '/new');
+        } });
+        $mech->get_ok('/admin/templates/' . $body->id . '/new');
         $mech->submit_form_ok({ with_fields => {
             title => 'Wrong bin (Not completed)',
             text => 'We could not collect your waste as it was not correctly presented.',
             resolution_code => 66,
             task_state => 'Not Completed',
         } });
-	$mech->get_ok('/admin/templates/' . $body->id . '/new');
+        $mech->get_ok('/admin/templates/' . $body->id . '/new');
         $mech->submit_form_ok({ with_fields => {
             title => 'Contaminated (Not completed)',
             text => 'We could not collect your waste as it was contaminated.',
@@ -379,126 +379,125 @@ FixMyStreet::override_config {
 
     subtest 'test extra missed collection reporting options' => sub {
         my $echo = Test::MockModule->new('Integrations::Echo');
-	set_fixed_time('2020-05-27T19:00:00Z');
+        set_fixed_time('2020-05-27T19:00:00Z');
 
-	subtest 'Within two days, not correctly placed' => sub {
-	    $echo->mock('GetTasks', sub { return &_bromley_test($_[1], $_[2], '66') });
-	    $mech->get_ok('/waste/12345');
-	    $mech->content_like(qr/May, at 10:00a\.?m\.?/);
-	    $mech->content_contains('We could not collect your waste as it was not correctly presented.', 'Waste template from resolution 66');
-	    $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
-	    $mech->content_contains(';service_id=531&amp;status=3', 'Link updated with status');
-	    $mech->get_ok( '/waste/12345/enquiry?template=problem&amp;service_id=531&amp;status=3');
-	    # Enquiry type list page
-	    $mech->content_contains('Collection was missed', 'Can report a missed collection in the general enquiry list');
-	    $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
-	    # 'Not presented' information page
-	    $mech->content_contains('If you believe the correct container <strong>was</strong> presented at the edge of your property by 7:00 AM on your collection day, please click below', 'Contains page detailing proper placement');
-	    $mech->content_contains('Continue', 'User can continue the enquiry');
-	    $mech->submit_form_ok();
-	    # Declaration page
-	    $mech->content_contains('To request a missed collection, please confirm the following', 'Declaration page is shown');
-	    $mech->submit_form_ok();
-	    $mech->content_contains('I declare my container was correctly positioned field is required', 'Error if field not filled');
-	    $mech->submit_form_ok( { with_fields => { declaration => 'No'} });
-	    $mech->content_lacks('I declare my container was correctly positioned field is required', 'No error as field was filled...');
-	    $mech->content_contains('To request a missed collection, please confirm the following', '...but not moved forward as "No" selected');
-	    $mech->submit_form_ok( { with_fields => { declaration => 'Yes'} });
-	    # Enquiry page
-	    $mech->submit_form_ok( {with_fields => { extra_notes => 'My bin was in front of the house near the pavement' } });
-	    # About you page
-	    $mech->submit_form_ok( { with_fields => { name => 'James Herriot', email => 'test@example.com' } });
-	    # Summary page
-	    $mech->content_contains('Please review the information you’ve provided before you submit your enquiry', 'Reached summary page');
-	    $mech->content_contains('I declare my container was in reach of the pavement and out by 7:00 AM', 'Can change answer for declaration');
-	    $mech->clear_emails_ok;
-	    $mech->submit_form_ok( { form_number => 4 } );
-	    # Confirm report
-	    $mech->get_ok($mech->get_link_from_email);
-	    my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
-	    my $id = $report->id;
-	    $mech->content_contains('You have successfully submitted your missed collection request');
-	    $mech->content_contains("Your reference number is <strong>$id</strong>");
-	    $mech->content_contains('Our team will now investigate this matter further');
-	    restore_time();
-	};
+        subtest 'Within two days, not correctly placed' => sub {
+            $echo->mock('GetTasks', sub { return &_bromley_test($_[1], $_[2], '66') });
+            $mech->get_ok('/waste/12345');
+            $mech->content_like(qr/May, at 10:00a\.?m\.?/);
+            $mech->content_contains('We could not collect your waste as it was not correctly presented.', 'Waste template from resolution 66');
+            $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
+            $mech->content_contains(';service_id=531&amp;status=3', 'Link updated with status');
+            $mech->get_ok( '/waste/12345/enquiry?template=problem&amp;service_id=531&amp;status=3');
+            # Enquiry type list page
+            $mech->content_contains('Collection was missed', 'Can report a missed collection in the general enquiry list');
+            $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
+            # 'Not presented' information page
+            $mech->content_contains('If you believe the correct container <strong>was</strong> presented at the edge of your property by 7:00 AM on your collection day, please click below', 'Contains page detailing proper placement');
+            $mech->content_contains('Continue', 'User can continue the enquiry');
+            $mech->submit_form_ok();
+            # Declaration page
+            $mech->content_contains('To request a missed collection, please confirm the following', 'Declaration page is shown');
+            $mech->submit_form_ok();
+            $mech->content_contains('I declare my container was correctly positioned field is required', 'Error if field not filled');
+            $mech->submit_form_ok( { with_fields => { declaration => 'No'} });
+            $mech->content_lacks('I declare my container was correctly positioned field is required', 'No error as field was filled...');
+            $mech->content_contains('To request a missed collection, please confirm the following', '...but not moved forward as "No" selected');
+            $mech->submit_form_ok( { with_fields => { declaration => 'Yes'} });
+            # Enquiry page
+            $mech->submit_form_ok( {with_fields => { extra_notes => 'My bin was in front of the house near the pavement' } });
+            # About you page
+            $mech->submit_form_ok( { with_fields => { name => 'James Herriot', email => 'test@example.com' } });
+            # Summary page
+            $mech->content_contains('Please review the information you’ve provided before you submit your enquiry', 'Reached summary page');
+            $mech->content_contains('I declare my container was in reach of the pavement and out by 7:00 AM', 'Can change answer for declaration');
+            $mech->clear_emails_ok;
+            $mech->submit_form_ok( { form_number => 4 } );
+            # Confirm report
+            $mech->get_ok($mech->get_link_from_email);
+            my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;
+            my $id = $report->id;
+            $mech->content_contains('You have successfully submitted your missed collection request');
+            $mech->content_contains("Your reference number is <strong>$id</strong>");
+            $mech->content_contains('Our team will now investigate this matter further');
+            restore_time();
+        };
 
-	subtest 'After two days, not presented' => sub {
-	    $echo->mock('GetTasks', sub { return &_bromley_test($_[1], $_[2], '66') });
-	    set_fixed_time('2020-05-30T19:00:00Z');
-	    $mech->get_ok('/waste/12345');
-	    $mech->content_contains('We could not collect your waste as it was not correctly presented.', 'Waste template from resolution 66');
-	    $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
-	    $mech->content_contains(';service_id=531&amp;status=2', 'Link updated with status');
-	    $mech->get_ok( '/waste/12345/enquiry?template=problem&amp;service_id=531&amp;status=2');
-	    # Enquiry type list page
-	    $mech->content_contains('Collection was missed', 'Can report a missed collection in the general enquiry list');
-	    $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
-	    # 'Missed collection' information page
-	    $mech->content_contains('Reports of missed collections must be raised within 2');
-	    $mech->content_lacks('Continue', 'No option offered to continue enquiry');
-	    restore_time();
-	};
+        subtest 'After two days, not presented' => sub {
+            $echo->mock('GetTasks', sub { return &_bromley_test($_[1], $_[2], '66') });
+            set_fixed_time('2020-05-30T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_contains('We could not collect your waste as it was not correctly presented.', 'Waste template from resolution 66');
+            $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
+            $mech->content_contains(';service_id=531&amp;status=2', 'Link updated with status');
+            $mech->get_ok( '/waste/12345/enquiry?template=problem&amp;service_id=531&amp;status=2');
+            # Enquiry type list page
+            $mech->content_contains('Collection was missed', 'Can report a missed collection in the general enquiry list');
+            $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
+            # 'Missed collection' information page
+            $mech->content_contains('Reports of missed collections must be raised within 2');
+            $mech->content_lacks('Continue', 'No option offered to continue enquiry');
+            restore_time();
+        };
 
-	subtest 'Report already open' => sub {
-	    set_fixed_time('2020-05-27T19:00:00Z');
-	    $mech->get_ok('/waste/12345');
-	    $mech->content_like(qr/May, at 10:00a\.?m\.?/);
-	    $mech->content_contains('A paper &amp; cardboard collection has been reported as missed');
-	    $mech->content_contains(';service_id=537&amp;status=0');
-	    $mech->get_ok('/waste/12345/enquiry?template=problem&amp;service_id=537&amp;status=0');
-	    $mech->content_lacks('Collection was missed', 'No option to report again in the enquiry list');
-	    restore_time();
-	};
+        subtest 'Report already open' => sub {
+            set_fixed_time('2020-05-27T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_like(qr/May, at 10:00a\.?m\.?/);
+            $mech->content_contains('A paper &amp; cardboard collection has been reported as missed');
+            $mech->content_contains(';service_id=537&amp;status=0');
+            $mech->get_ok('/waste/12345/enquiry?template=problem&amp;service_id=537&amp;status=0');
+            $mech->content_lacks('Collection was missed', 'No option to report again in the enquiry list');
+            restore_time();
+        };
 
-	subtest 'After cutoff time' => sub {
-	    set_fixed_time('2020-05-27T19:00:00Z');
-	    $mech->get_ok('/waste/12345');
-	    $mech->content_like(qr/May, at 10:00a\.?m\.?/);
-	    $mech->content_contains('service_id=545&amp;status=2');
-	    $mech->get_ok('/waste/12345/enquiry?template=problem&amp;service_id=545&amp;status=2');
-	    $mech->content_contains('Collection was missed', 'Option to report in the enquiry list');
-	    $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
-	    # 'Missed collection' information page
-	    $mech->content_contains('Reports of missed collections must be raised within 2');
-	    $mech->content_lacks('Continue', 'No option offered to continue enquiry');
-	    restore_time();
-	};
+        subtest 'After cutoff time' => sub {
+            set_fixed_time('2020-05-27T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_like(qr/May, at 10:00a\.?m\.?/);
+            $mech->content_contains('service_id=545&amp;status=2');
+            $mech->get_ok('/waste/12345/enquiry?template=problem&amp;service_id=545&amp;status=2');
+            $mech->content_contains('Collection was missed', 'Option to report in the enquiry list');
+            $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
+            # 'Missed collection' information page
+            $mech->content_contains('Reports of missed collections must be raised within 2');
+            $mech->content_lacks('Continue', 'No option offered to continue enquiry');
+            restore_time();
+        };
 
-	subtest 'Other contains link back to menu' => sub {
-	    set_fixed_time('2020-05-27T19:00:00Z');
-	    $mech->get_ok('/waste/12345');
-	    $mech->content_like(qr/May, at 10:00a\.?m\.?/);
-	    $mech->content_contains('service_id=545&amp;status=2');
-	    $mech->get_ok('/waste/12345/enquiry?template=problem&amp;service_id=545&amp;status=2');
-	    $mech->submit_form_ok({ with_fields => {category => 'General Enquiry'} });
-	    $mech->content_contains("This is not for reporting a missed collection. Use the report a missed collection from the <a href='enquiry?template=problem&service_id=545&status=2'>menu</a></p>");
-	    restore_time();
-	};
+        subtest 'Other contains link back to menu' => sub {
+            set_fixed_time('2020-05-27T19:00:00Z');
+            $mech->get_ok('/waste/12345');
+            $mech->content_like(qr/May, at 10:00a\.?m\.?/);
+            $mech->content_contains('service_id=545&amp;status=2');
+            $mech->get_ok('/waste/12345/enquiry?template=problem&amp;service_id=545&amp;status=2');
+            $mech->submit_form_ok({ with_fields => {category => 'General Enquiry'} });
+            $mech->content_contains("This is not for reporting a missed collection. Use the report a missed collection from the <a href='enquiry?template=problem&service_id=545&status=2'>menu</a></p>");
+            restore_time();
+        };
 
 
-	for my $test (
-		      { date => '2020-05-27T19:00:00Z', title => 'Within two days, contaminated' },
-		      { date => '2020-05-30T19:00:00Z', title => 'After two days, contaminated' },
-		     )
-	  {
-	      subtest $test->{title} => sub {
-		  set_fixed_time($test->{date});
-		  $echo->mock('GetTasks', sub { return &_bromley_test($_[1], $_[2], '33') });
-		  $mech->get_ok('/waste/12345');
-		  $mech->content_contains('We could not collect your waste as it was contaminated.', 'Waste template from resolution 33');
-		  $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
-		  $mech->content_contains(';service_id=531&amp;status=4', 'Link updated with status');
-		  $mech->get_ok( '/waste/12345/enquiry?template=problem&amp;service_id=531&amp;status=4');
-		  # Enquiry type list page
-		  $mech->content_contains('Collection was missed', 'Can report a missed collection in the general enquiry list');
-		  $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
-		  # 'Contaminated' information page
-		  $mech->content_contains('Please remove any contaminated items and we will empty your container on the next scheduled collection day');
-		  $mech->content_lacks('Continue', 'No option offered to continue enquiry');
-		  restore_time();
-	      };
-	};
+        for my $test (
+            { date => '2020-05-27T19:00:00Z', title => 'Within two days, contaminated' },
+            { date => '2020-05-30T19:00:00Z', title => 'After two days, contaminated' },
+        ) {
+            subtest $test->{title} => sub {
+                set_fixed_time($test->{date});
+                $echo->mock('GetTasks', sub { return &_bromley_test($_[1], $_[2], '33') });
+                $mech->get_ok('/waste/12345');
+                $mech->content_contains('We could not collect your waste as it was contaminated.', 'Waste template from resolution 33');
+                $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
+                $mech->content_contains(';service_id=531&amp;status=4', 'Link updated with status');
+                $mech->get_ok( '/waste/12345/enquiry?template=problem&amp;service_id=531&amp;status=4');
+                # Enquiry type list page
+                $mech->content_contains('Collection was missed', 'Can report a missed collection in the general enquiry list');
+                $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
+                # 'Contaminated' information page
+                $mech->content_contains('Please remove any contaminated items and we will empty your container on the next scheduled collection day');
+                $mech->content_lacks('Continue', 'No option offered to continue enquiry');
+                restore_time();
+            };
+        };
     };
 
     subtest 'test not using different backend template' => sub {
@@ -1990,33 +1989,32 @@ sub data_to_save {
 }
 
 sub _bromley_test {
-       my $id = pop @_;
-       my %lookup = map { $_->[0] . ',' . $_->[1] => 1 } @_;
-       my $data = [];
-       my %issue = ( 66 => 'Wrong Bin Out', 33 => 'Bin Contaminated' );
+    my $id = pop @_;
+    my %lookup = map { $_->[0] . ',' . $_->[1] => 1 } @_;
+    my $data = [];
+    my %issue = ( 66 => 'Wrong Bin Out', 33 => 'Bin Contaminated' );
 
-       push @$data, {
-		     Ref => { Value => { anyType => [ '123', '456' ] } },
-		     State => { Name => 'Not Completed' },
-		     Resolution => { Ref => { Value => { anyType => $id } }, Name => $issue{$id} },
-		     TaskTypeId => '3216',
-		     CompletedDate => { DateTime => '2020-05-27T10:00:00Z' }
-		    } if $lookup{"123,456"};
-       push @$data, {
-		     Ref => { Value => { anyType => [ '234', '567' ] } },
-		     State => { Name => 'Outstanding' },
-		     CompletedDate => undef
-		    } if $lookup{"234,567"};
-       push @$data, {
-		     Ref => { Value => { anyType => [ '345', '678' ] } },
-		     State => { Name => 'Not Completed' }
-		    } if $lookup{"345,678"};
-       push @$data, {
-		     Ref => { Value => { anyType => [ '456', '789' ] } },
-		     CompletedDate => undef
-		    } if $lookup{"456,789"};
-       return $data;
-   }
-
+    push @$data, {
+        Ref => { Value => { anyType => [ '123', '456' ] } },
+        State => { Name => 'Not Completed' },
+        Resolution => { Ref => { Value => { anyType => $id } }, Name => $issue{$id} },
+        TaskTypeId => '3216',
+        CompletedDate => { DateTime => '2020-05-27T10:00:00Z' }
+    } if $lookup{"123,456"};
+    push @$data, {
+        Ref => { Value => { anyType => [ '234', '567' ] } },
+        State => { Name => 'Outstanding' },
+        CompletedDate => undef
+    } if $lookup{"234,567"};
+    push @$data, {
+        Ref => { Value => { anyType => [ '345', '678' ] } },
+        State => { Name => 'Not Completed' }
+    } if $lookup{"345,678"};
+    push @$data, {
+        Ref => { Value => { anyType => [ '456', '789' ] } },
+        CompletedDate => undef
+    } if $lookup{"456,789"};
+    return $data;
+}
 
 done_testing();

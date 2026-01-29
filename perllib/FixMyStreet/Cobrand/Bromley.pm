@@ -988,13 +988,13 @@ sub waste_munge_enquiry_form_pages {
           };
     } elsif ($category eq 'Dispute missed collection') {
         my $intro_fields = [];
-	unshift @$pages, 'missed_collection_intro', { intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
+        unshift @$pages, 'missed_collection_intro', { intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
         if ($status eq '3') {
             push @$fields, 'declaration', { type => 'Select', label => 'I declare my container was correctly positioned', widget => 'RadioGroup', required => 1, options => [{ label => 'Yes', value => 'Yes'}, { label => 'No', value => 'No' } ] };
             $intro_fields->[0] = 'continue';
-	    unshift @$pages, 'missed_collection_declaration', { intro => 'enquiry_missed_declaration.html', fields => ['declaration', 'continue'], next => sub { $_[0]->{declaration} eq 'Yes' ? 'enquiry' : 'missed_collection_declaration' } };
+            unshift @$pages, 'missed_collection_declaration', { intro => 'enquiry_missed_declaration.html', fields => ['declaration', 'continue'], next => sub { $_[0]->{declaration} eq 'Yes' ? 'enquiry' : 'missed_collection_declaration' } };
         };
-	$c->stash->{first_page} = 'missed_collection_intro';
+        $c->stash->{first_page} = 'missed_collection_intro';
     }
 }
 
@@ -1037,9 +1037,9 @@ sub convert_locked_out_to_code {
     my ($self, $row, $report_allowed, $resolution_id) = @_;
 
     if ($resolution_id && $resolution_id eq '33') { # Contaminated (33)
-	$row->{report_locked_out} = 4;
+        $row->{report_locked_out} = 4;
     } elsif ($resolution_id && $resolution_id eq '66' && $report_allowed) { # Not presented (66)
-	$row->{report_locked_out} = 3;
+        $row->{report_locked_out} = 3;
     }
 }
 

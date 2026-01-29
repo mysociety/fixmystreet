@@ -48,15 +48,13 @@ END ~%]
           [% IF report.category == 'Request new container' AND c.cobrand.wasteworks_config.request_timeframe %]
               Containers typically arrive within [% c.cobrand.wasteworks_config.request_timeframe %], but this may vary due to demand.
           [% END %]
-	  [% report.category %]
-	  [% c.cobrand.moniker %]
-	  [% IF report.category == 'Dispute missed collection' AND c.cobrand.moniker == 'bromley' %]
-	<p>Our team will now investigate this matter further. The crew <strong>may</strong> return within 5 working days, please make sure your bin meets our collection guidelines:</p>
-	<ul>
-	  <li>Presented before 7:00 AM</li>
-	  <li>Presented within arms reach of the pavement</li>
-	</ul>
-	  [% END %]
+          [% IF report.category == 'Dispute missed collection' AND c.cobrand.moniker == 'bromley' %]
+            <p>Our team will now investigate this matter further. The crew <strong>may</strong> return within 5 working days, please make sure your bin meets our collection guidelines:</p>
+            <ul>
+              <li>Presented before 7:00 AM</li>
+              <li>Presented within arms reach of the pavement</li>
+            </ul>
+          [% END %]
           [% IF confirmation_text %]
             [% confirmation_text %]
           [% END %]
