@@ -80,6 +80,14 @@ create_contact({ category => 'Waste spillage', email => '3227' }, 'Waste',
     { code => 'Notes', description => 'Details of the spillage', required => 0, datatype => 'text' },
 );
 
+create_contact(
+    { category => 'Report out-of-time missed collection', email => 3140 },
+    'Waste',
+    { code => 'Notes', required => 1, automated => 'hidden_field' },
+    { code => 'service_id', required => 1, automated => 'hidden_field' },
+    { code => 'fixmystreet_id', required => 1, automated => 'hidden_field' },
+);
+
 # Merton also covers Kingston because of an out-of-area park which is their responsibility
 my $merton = $mech->create_body_ok(2500, 'Merton Council');
 FixMyStreet::DB->resultset('BodyArea')->create({ area_id => 2480, body_id => $merton->id });
@@ -445,11 +453,88 @@ FixMyStreet::override_config {
         is $report->title, 'Report missed Food waste';
         is $report->bodies_str, $kingston->id, 'correct bodies_str';
     };
-    subtest 'Report missed collection out of time' => sub {
+    subtest 'Report missed collection out of time - can make non-actionable report' => sub {
         set_fixed_time('2022-09-14T19:00:00Z');
+
         $mech->get_ok('/waste/12345/report');
-        is $mech->uri->path, '/waste/12345', 'redirected as nothing to report';
+        is $mech->uri->path, '/waste/12345',
+            'redirected as nothing to report via normal missed collection path';
+
+        $mech->content_contains('Report a paper and card collection as missed');
+        $mech->content_contains('Report a food waste collection as missed');
+
+        $mech->follow_link_ok(
+            { text_regex => qr/Report a food waste collection as missed/ } );
+
+        # About you
+        $mech->submit_form_ok(
+            { with_fields => { name => 'Bob Marge', email => $user->email } }
+        );
+
+        # Summary.
+        # Is an enquiry form but should look like a missed collection.
+        $mech->content_contains('Submit missed bin report');
+        $mech->content_contains('before you submit your missed collection');
+        $mech->content_like(qr/govuk-summary-list__key.*Missed collection/s);
+        $mech->content_contains('Food waste');
+        $mech->content_contains('Friday, 9th September');
+        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+
+        # Confirmation page
+        $mech->content_contains('Thank you for reporting a missed collection');
+        $mech->content_contains('A copy has been sent to your email address');
+        $mech->content_lacks('Your reference number');
+
+        # Check report
+        my $report
+            = FixMyStreet::DB->resultset("Problem")
+            ->search( undef, { order_by => { -desc => 'id' } } )
+            ->first;
+        my $report_id = $report->id;
+
+        is $report->category, 'Report out-of-time missed collection';
+        is $report->title, 'Report missed Food waste';
+        is $report->get_extra_field_value('service_id'), 980;
+        is $report->get_extra_field_value('Notes'), 'Non-actionable missed collection report';
+        is $report->state, 'confirmed', 'Report is initially confirmed';
+
+        # Send report
+        $mech->clear_emails_ok;
+        FixMyStreet::Script::Reports::send(0,0,0,$report_id);
+
+        # Check again - should be closed
+        $report->discard_changes;
+        is $report->state, 'no further action',
+            'Report is closed - no further action';
+
+        # Check email
+        $mech->email_count_is(1);
+        my $email = $mech->get_email;
+        unlike $email->header('Subject'), qr/RBK-$report_id/,
+            'no report ID in subject';
+
+        my $html = $mech->get_html_body_from_email($email);
+        like $html, qr/missed Food waste/;
+        unlike $html, qr/RBK-$report_id/, 'no report ID in HTML';
+
+        my $plain = $mech->get_text_body_from_email($email);
+        like $plain, qr/Food waste/;
+        unlike $plain, qr/RBK-$report_id/, 'no report ID in plaintext';
+
+        # Mock enquiry event
+        $e->mock('GetEventsForObject', sub { [ {
+            EventTypeId => 3140,
+            EventDate => { DateTime => "2022-09-14T19:00:00Z" },
+            ServiceId => 980,
+        } ] });
+
+        $mech->get_ok('/waste/12345');
+        $mech->content_like(
+            qr/food waste.*reported as missed.*on Wednesday, 14 September/s);
+        $mech->content_lacks('Report a food waste collection as missed');
+
         set_fixed_time('2022-09-13T19:00:00Z');
+        $e->mock( 'GetEventsForObject', sub { [] } );
     };
 
     subtest 'No reporting/requesting if open request' => sub {
@@ -818,7 +903,7 @@ FixMyStreet::override_config {
                 is $report->get_extra_field_value('Notes'), 'Originally Echo Event #112112321';
                 is $report->get_extra_field_value('original_ref'), 'LBS-123';
 
-                $e->mock('GetEventsForObject', sub { [ 
+                $e->mock('GetEventsForObject', sub { [
                     {
                         Id => '112112321',
                         ClientReference => 'LBS-123',

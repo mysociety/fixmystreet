@@ -1,0 +1,19 @@
+[% USE date ~%]
+Subject: Your report has been logged
+
+Dear [% report.name %],
+
+Thank you for reporting the following:
+
+[% report.detail %]
+
+on [% date.format(report.created, '%A, %-d %B') %].
+
+As you reported this after the 2 day time period for reporting missed collections, we will not be able to return on this occasion.
+
+However, we will use your report to improve our service.
+
+[% signature %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

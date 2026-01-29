@@ -866,7 +866,6 @@ sub construct_bin_problem_form {
     my $field_list = [];
 
     foreach (@{$c->stash->{service_data}}) {
-        # next unless ( $_->{last} && $_->{report_allowed} && !$_->{report_open}) || $_->{report_only};
         my $id = $_->{service_id};
         my $name = $_->{service_name};
         push @$field_list, "service-$id" => {

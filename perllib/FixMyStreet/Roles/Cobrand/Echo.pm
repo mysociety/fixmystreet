@@ -338,7 +338,10 @@ sub bin_services_for_address {
             $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
             my $recent_events = $row->{events}->filter({ type => 'missed' });
             $row->{report_open} = ($recent_events->list)[0];
+
+            $self->call_hook(waste_allow_non_actionable_report => $row);
         }
+
         push @out, $row;
     }
 
@@ -591,6 +594,7 @@ sub waste_task_resolutions {
         # If the task is ended and could not be done, do not allow reporting
         if ($state eq 'Not Completed' || ($state eq 'Completed' && $orig_resolution =~ /Excess/)) {
             $row->{report_allowed} = 0;
+            $row->{report_allowed_non_actionable} = 0;
             $row->{report_locked_out} = 1;
         }
 
@@ -620,6 +624,7 @@ sub waste_on_the_day_criteria {
     }
     if (!$completed) {
         $row->{report_allowed} = 0;
+        $row->{report_allowed_non_actionable} = 0;
     }
 }
 
