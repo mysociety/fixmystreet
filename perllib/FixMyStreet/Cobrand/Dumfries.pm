@@ -18,6 +18,7 @@ with 'FixMyStreet::Roles::Open311Alloy';
 
 use strict;
 use warnings;
+use DateTime::Format::Strptime;
 
 sub council_area_id { return 2656; }
 sub council_area { return 'Dumfries and Galloway'; }
@@ -161,13 +162,27 @@ sub open311_get_update_munging {
             $text, $request );
         $comment->private_email_text($text);
     }
+
+    # If the update includes a latest_inspection_time, store it on the problem
+    # If the value is 'NOT COMPLETE', unset the metadata
+    if (exists $request->{extras}{latest_inspection_time}) {
+        my $inspection_time = $request->{extras}{latest_inspection_time};
+        my $problem = $comment->problem;
+        if ($inspection_time eq 'NOT COMPLETE') {
+            $problem->unset_extra_metadata('latest_inspection_time');
+        } else {
+            $problem->set_extra_metadata(latest_inspection_time => $inspection_time);
+        }
+        $problem->update;
+    }
 }
 
 =head2 _updates_disallowed_check
 
-Updates are only allowed on reports in the 'planned' or 'investigating' state,
-and only if at least 14 days have passed since the last update. When these
-conditions are met, only staff or the original reporter can leave updates.
+Updates are only allowed on reports in a closed state (closed, duplicate, etc.),
+and only if the problem has a latest_inspection_time set and at least 14 days
+have passed since that inspection time. When these conditions are met, only
+staff or the original reporter can leave updates.
 
 =cut
 
@@ -186,15 +201,27 @@ sub _updates_disallowed_check {
 
     my $reporter = $c->user_exists && $c->user->id == $problem->user->id;
 
-    # Check if state is planned or investigating
-    my $state = $problem->state;
-    unless ($state eq 'planned' || $state eq 'investigating') {
+    # Check if state is a closed state
+    my $closed_states = FixMyStreet::DB::Result::Problem->closed_states();
+    unless ($closed_states->{$problem->state}) {
         return 1;
     }
 
-    # Check if at least 14 days have passed since lastupdate
+    # Check if the problem has a latest_inspection_time
+    my $inspection_time = $problem->get_extra_metadata('latest_inspection_time');
+    unless ($inspection_time) {
+        return 1;
+    }
+
+    # Parse the inspection time and check if at least 14 days have passed
+    my $parser = DateTime::Format::Strptime->new(pattern => '%Y-%m-%dT%H:%M:%S');
+    my $inspection_dt = $parser->parse_datetime($inspection_time);
+    unless ($inspection_dt) {
+        return 1; # If we can't parse the date, disallow updates
+    }
+
     my $cutoff = DateTime->now(time_zone => FixMyStreet->local_time_zone)->subtract(days => 14);
-    if ($problem->lastupdate > $cutoff) {
+    if ($inspection_dt > $cutoff) {
         return 1;
     }
 
