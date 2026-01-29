@@ -217,146 +217,6 @@ sub waste_munge_bin_services_open_requests {
     }
 }
 
-=head2 Escalations
-
-Sutton has custom behaviour to allow escalation of unresolved missed collections
-or container requests.
-
-=cut
-
-around booked_check_missed_collection => sub {
-    my ($orig, $self, $type, $events, $blocked_codes) = @_;
-
-    $self->$orig($type, $events, $blocked_codes);
-
-    # Now check for any old open missed collections that can be escalated
-
-    my $cfg = $self->feature('echo');
-    my $service_id = $cfg->{$type . '_service_id'} or return;
-
-    my $escalations = $events->filter({ event_type => 3134, service => $service_id });
-    my $missed = $self->{c}->stash->{booked_missed};
-    foreach my $guid (keys %$missed) {
-        my $missed_event = $missed->{$guid}{report_open};
-        next unless $missed_event;
-
-        my $open_escalation = 0;
-        foreach ($escalations->list) {
-            next unless $_->{report};
-            my $missed_guid = $_->{report}->get_extra_field_value('missed_guid');
-            next unless $missed_guid;
-            if ($missed_guid eq $missed_event->{guid}) {
-                $missed->{$guid}{escalations}{missed_open} = $_;
-                $open_escalation = 1;
-            }
-        }
-
-        if (
-            # Report is still open
-            !$missed_event->{closed}
-            # And no existing escalation since last collection
-            && !$open_escalation
-        ) {
-            my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-            # And two working days (from 6pm) have passed
-            my $wd = FixMyStreet::WorkingDays->new();
-            my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
-            my $end = $wd->add_days($start, 2);
-            if ($now >= $start && $now < $end) {
-                $missed->{$guid}{escalations}{missed} = $missed_event;
-            }
-        }
-    }
-};
-
-sub munge_bin_services_for_address {
-    my ($self, $rows) = @_;
-
-    # Escalations
-    foreach (@$rows) {
-        $self->_setup_missed_collection_escalations_for_service($_);
-        $self->_setup_container_request_escalations_for_service($_);
-    }
-}
-
-sub _setup_missed_collection_escalations_for_service {
-    my ($self, $row) = @_;
-    my $events = $row->{events} or return;
-
-    my $c = $self->{c};
-    my $property = $c->stash->{property};
-
-    my $missed_event = ($events->filter({ type => 'missed' })->list)[0];
-    my $escalation_event = ($events->filter({ event_type => 3134 })->list)[0];
-    if (
-        # If there's a missed bin report
-        $missed_event
-        # And report is still open
-        && !$missed_event->{closed}
-        # And the event source is the same as the current property (for communal)
-        && ($missed_event->{source} || 0) == $property->{id}
-        # And no existing escalation since last collection
-        && !$escalation_event
-    ) {
-        my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-        # And two working days (from 6pm) have passed
-        my $wd = FixMyStreet::WorkingDays->new();
-        my $start = $wd->add_days($missed_event->{date}, 2)->set_hour(18);
-        # And window is one day (weekly) two WDs (fortnightly)
-        my $window = $row->{schedule} =~ /every other/i ? 2 : 1;
-        my $end = $wd->add_days($start, $window);
-        if ($now >= $start && $now < $end) {
-            $row->{escalations}{missed} = $missed_event;
-        }
-    } elsif ($escalation_event) {
-        $row->{escalations}{missed_open} = $escalation_event;
-    }
-}
-
-sub _setup_container_request_escalations_for_service {
-    my ($self, $row) = @_;
-    my $open_requests = $row->{requests_open};
-
-    # If there are no open container requests, there's nothing for us to do
-    return unless scalar keys %$open_requests;
-
-    # We're only expecting one open container request per service
-    my $open_request_event = (values %$open_requests)[0];
-    my $escalation_events = $row->{all_events}->filter({ event_type => 3141 });
-    my $wd = FixMyStreet::WorkingDays->new();
-
-    foreach my $escalation_event ($escalation_events->list) {
-        my $escalation_event_report = $escalation_event->{report};
-        next unless $escalation_event_report;
-
-        if ($escalation_event_report->get_extra_field_value('container_request_guid') eq $open_request_event->{guid}) {
-            $row->{escalations}{container_open} = $escalation_event;
-            # We've marked that there is already an escalation event for the container
-            # request, so there's nothing left to do
-            return;
-        }
-    }
-
-    # There's an open container request with no matching escalation so
-    # we check now to see if it's within the window for an escalation to be raised
-    my $now = DateTime->now->set_time_zone(FixMyStreet->local_time_zone);
-
-    my $start_days = 21; # Window starts on the 21st working day after the request was made
-    my $window_days = 10; # Window ends a further 10 working days after the start date
-    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
-        # For staging site testing (but not automated testing) use quicker/smaller windows
-        $start_days = 1;
-        $window_days = 2;
-    }
-
-    my $start = $wd->add_days($open_request_event->{date}, $start_days)->set_hour(0);
-    my $end = $wd->add_days($start, $window_days + 1); # Before this
-
-    if ($now >= $start && $now < $end) {
-        $row->{escalations}{container} = $open_request_event;
-    }
-}
-
 =head2 image_for_unit
 
 Working out which image to use for which container or service.
@@ -774,6 +634,48 @@ sub waste_munge_enquiry_data {
     $detail .= $address;
 
     $data->{detail} = $detail;
+}
+
+=head2 waste_target_days
+
+Configure the number of days a waste event is expected to be resolved in.
+
+=cut
+
+sub waste_target_days {
+    {
+        container_escalation => 5,
+        missed => 2,
+        missed_escalation => 1,
+        missed_bulky => 2,
+        missed_bulky_escalation => 2,
+    }
+}
+
+=head2 waste_day_end_hour
+
+Time that the day ends for the purposes of calculating things like escalation windows
+
+=cut
+
+sub waste_day_end_hour { 18 }
+
+=head2 waste_escalation_window
+
+Configure when the escalation window for waste complaints starts/ends.
+
+=cut
+
+sub waste_escalation_window {
+    {
+        missed_start => 2,
+        missed_length_weekly => 1,
+        missed_length_fortnightly => 2,
+        container_start => 21,
+        container_length => 10,
+        bulky_start => 2,
+        bulky_length => 2,
+    }
 }
 
 =head2 Bulky waste collection

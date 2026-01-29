@@ -96,3 +96,23 @@ describe('National Highways litter picking test', function() {
         cy.contains('Street cleaning');
     });
 });
+
+describe('Stopper messages', function() {
+    it.only('shows the correct stopper message on .com', function() {
+        cy.server();
+        cy.route('**/mapserver/highways*', 'fixture:highways.xml').as('highways-tilma');
+        cy.route('**/report/new/ajax*', 'fixture:highways-ajax.json').as('report-ajax');
+        cy.visit('/');
+        cy.contains('Go');
+        cy.get('[name=pc]').type(Cypress.env('postcode'));
+        cy.get('[name=pc]').parents('form').submit();
+        cy.url().should('include', '/around');
+        cy.get('#map_box').click(272, 249);
+        cy.wait('@report-ajax');
+        cy.wait('@highways-tilma');
+        cy.nextPageReporting();
+        cy.pickCategory('Incorrect sign');
+        cy.contains('Please email us').should('be.visible');
+        cy.get('.js-reporting-page--next:visible').should('be.disabled');
+    });
+});

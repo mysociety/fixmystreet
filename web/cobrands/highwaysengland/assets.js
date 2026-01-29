@@ -29,6 +29,18 @@ var defaults = {
     body: 'National Highways'
 };
 
+function disable_form() {
+    $('#js-top-message').hide();
+    $('.js-reporting-page--category').css('visibility', 'hidden');
+    $('.pre-button-messaging').css('visibility', 'visible');
+}
+
+function enable_form() {
+    $('#js-top-message').show();
+    $('.js-reporting-page--category').css('visibility', 'visible');
+    $('.pre-button-messaging').css('visibility', '');
+}
+
 fixmystreet.assets.add(defaults, {
     wfs_feature: "Highways",
     stylemap: highways_stylemap,
@@ -63,12 +75,10 @@ fixmystreet.assets.add(defaults, {
             // If the road is a DBFO road then we want to show the not found message.
             fixmystreet.message_controller.road_found(layer, feature, function(feature) {
                 if (feature.attributes.area_name.indexOf('DBFO') === -1) {
-                    $('#js-top-message').show();
-                    $('.js-reporting-page--category').css('visibility', 'visible');
+                    enable_form();
                     return true;
                 } else {
-                    $('#js-top-message').hide();
-                    $('.js-reporting-page--category').css('visibility', 'hidden');
+                    disable_form();
                     return false;
                 }
             }, '#js-dbfo-road');
@@ -76,9 +86,7 @@ fixmystreet.assets.add(defaults, {
         },
         not_found: function(layer) {
             fixmystreet.message_controller.road_not_found(layer);
-            $('#js-top-message').hide();
-            $('.js-reporting-page--category').css('visibility', 'hidden');
-            $('.pre-button-messaging').css('visibility', 'visible');
+            disable_form();
             change_header('maintenance');
         }
     }
@@ -99,8 +107,7 @@ fixmystreet.assets.add(defaults, {
         found: function(layer, feature) {
             if ( $("#js-dbfo-road").is(":hidden") && !$('.js-not-an-asset').length ) {
                 fixmystreet.message_controller.road_found(layer, feature, function(feature) {
-                    $('#js-top-message').show();
-                    $('.js-reporting-page--category').css('visibility', 'visible');
+                    enable_form();
                     return true;
                 });
             }
@@ -113,11 +120,10 @@ fixmystreet.assets.add(defaults, {
                     var selected = fixmystreet.reporting.selectedCategory();
                     if ((selected.category === 'Flytipping (NH)' || selected.group === 'Litter') && (road_number && !road_number.match(/^(M|A\d+M)/)) ) {
                         fixmystreet.message_controller.road_not_found(layer);
-                        $('#js-top-message').hide();
-                        $('.js-reporting-page--category').css('visibility', 'hidden');
+                        disable_form();
                         change_header('litter');
                     } else {
-                        $('.js-reporting-page--category').css('visibility', 'visible');
+                        enable_form();
                         change_header('maintenance');
                     }
                 }

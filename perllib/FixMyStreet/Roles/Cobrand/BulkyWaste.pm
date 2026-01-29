@@ -185,7 +185,7 @@ sub bulky_is_cancelled {
     my ($self, $p, $state) = @_;
     $state ||= 'confirmed';
     if ($self->bulky_cancel_by_update) {
-        return $p->comments->find({ state => $state, extra => { '@>' => '{"bulky_cancellation":1}' } });
+        return $p->comments->search({ state => $state, extra => { '@>' => '{"bulky_cancellation":1}' } }, { rows => 1 })->single;
     } else {
         return $self->bulky_cancellation_report($p);
     }

@@ -3,12 +3,16 @@
 
 [% IF unit.requests_open.size %]
   <span class="waste-service-descriptor">
-    [% IF cobrand.moniker != 'sutton' %]
+    [% IF cobrand.moniker != 'sutton' AND cobrand.moniker != 'kingston' %]
     A [% unit.service_name FILTER lower %] container request has been made
     [% ELSE %]
        [% SET request = unit.requests_open.values.0; %]
         A [% unit.service_name FILTER lower %] container request was made on [% date.format(request.date, '%A, %-d %B') %].
+        [% IF cobrand.moniker == 'sutton' %]
         We aim to deliver the container within [% cobrand.wasteworks_config.request_timeframe %] (Monday to Friday).
+        [% ELSIF cobrand.moniker == 'kingston' %]
+        We expect to deliver your container on or before [% date.format(request.expected_date, '%A, %-d %B') %].
+        [% END %]
 
         [% IF unit.escalations.container AND NOT unit.escalations.container_open %]
             <br>
@@ -27,7 +31,11 @@
 
     [% IF unit.escalations.container_open %]
       <span class="waste-service-descriptor">
-        Thank you for reporting an issue with this delivery; we are investigating.
+        [% IF c.cobrand.moniker == 'kingston' %]
+            Thank you for reporting an issue with this delivery; we are investigating and aim to deliver the container by [% date.format(unit.escalations.container_open.target, '%A, %-d %B') %].
+        [% ELSE %]
+            Thank you for reporting an issue with this delivery; we are investigating.
+        [% END %]
       </span>
     [% END %]
 
@@ -68,6 +76,7 @@
     [% IF unit.escalations.missed_open %]
       <span class="waste-service-descriptor">
         Thank you for reporting an issue with this collection; we are investigating.
+        We aim to resolve this by [% date.format(unit.escalations.missed_open.target, '%A, %-d %B') %].
       </span>
     [% END %]
     [% IF unit.report_allowed %]
@@ -76,7 +85,12 @@
 [% END %]
 
 [% IF c.cobrand.moniker == 'kingston' AND (property.domestic_refuse_bin OR communal_property OR fas_property) %]
-    [% IF unit.report_allowed AND fas_property %]
+    [% IF unit.escalations.missed_open %]
+      <span class="waste-service-descriptor">
+        Thank you for reporting an issue with this collection; we are investigating.
+        We aim to resolve this by [% date.format(unit.escalations.missed_open.target, '%A, %-d %B') %].
+      </span>
+    [% ELSIF unit.report_allowed AND fas_property %]
         If a spillage on a public highway occured during a [% unit.service_name FILTER lower %] collection, please report <a href="https://kingston-self.achieveservice.com/service/Request_a_street_clean_in_Kingston">a street cleaning issue</a>.
     [% ELSIF unit.report_allowed %]
         <a href="[% c.uri_for_action('waste/enquiry', [ property.id ]) %]?template=problem&amp;service_id=[% unit.service_id %]" class="waste-service-link waste-service-descriptor">Report a spillage or bin not returned issue with a [% unit.service_name FILTER lower %] collection</a>
