@@ -41,6 +41,13 @@ my %bodies = (
         comment_user_id => $user->id,
         cobrand => 'aberdeenshire',
     }),
+    2656 => FixMyStreet::DB->resultset("Body")->create({
+        name => 'Dumfries and Galloway',
+        send_method => 'Open311',
+        endpoint => 'endpoint',
+        comment_user_id => $user->id,
+        cobrand => 'dumfries',
+    }),
     2651 => FixMyStreet::DB->resultset("Body")->create({ name => 'Edinburgh' }),
 );
 $bodies{2237}->body_areas->create({ area_id => 2237 });
@@ -510,18 +517,20 @@ subtest 'Check template placeholders' => sub {
     $problem->comments->delete;
 };
 
-subtest 'Check Aberdeenshire template interpolation' => sub {
-    # Set up Config for allowed template vars
-    FixMyStreet::DB->resultset("Config")->find_or_create({
-        key => 'response_template_variables',
-        value => {
-            aberdeenshire => ['featureSPD', 'featureCCAT']
-        }
-    });
+# Set up Config for allowed template vars
+FixMyStreet::DB->resultset("Config")->find_or_create({
+    key => 'response_template_variables',
+    value => {
+        aberdeenshire => ['featureSPD', 'featureCCAT'],
+        dumfries => ['priority'],
+    },
+});
 
+subtest 'Check Aberdeenshire template interpolation' => sub {
     my $tpl = $bodies{2648}->response_templates->create({
         title => "a placeholder in progress template",
         text => "Target date: {{targetDate}}\nCategory: {{featureCCAT}}\nSpeed limit: {{featureSPD}}",
+        email_text => "EMAIL: Target date: {{targetDate}}\nCategory: {{featureCCAT}}\nSpeed limit: {{featureSPD}}",
         auto_response => 1,
         state => "in progress"
     });
@@ -554,6 +563,7 @@ subtest 'Check Aberdeenshire template interpolation' => sub {
     my $c = $aber_problem->comments->first;
     ok $c, 'comment exists';
     is $c->text, "Target date: 31/12/2025\nCategory: 3A\nSpeed limit: 60mph", 'template correctly interpolated';
+    is $c->private_email_text, "EMAIL: Target date: 31/12/2025\nCategory: 3A\nSpeed limit: 60mph", 'email template correctly interpolated';
     $aber_problem->comments->delete;
 
     # Also test jobStartDate interpolation
@@ -584,6 +594,52 @@ subtest 'Check Aberdeenshire template interpolation' => sub {
 
     $aber_problem->comments->delete;
     $aber_problem->delete;
+    $tpl->delete;
+};
+
+subtest 'Check Dumfries template interpolation' => sub {
+    my $dmf = $bodies{2656};
+
+    my $tpl = $dmf->response_templates->create({
+        title => "a priority template",
+        text => "Priority: {{priority}}",
+        email_text => "EMAIL: Priority: {{priority}}",
+        auto_response => 1,
+        state => "in progress"
+    });
+
+    my $dmf_problem = create_problem( $dmf->id );
+    my $local_requests_xml = setup_xml($dmf_problem->external_id, $dmf_problem->id, 'IN_PROGRESS', '',
+        '<priority>1 to 5 days</priority>');
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com' );
+    Open311->_inject_response('/servicerequestupdates.xml', $local_requests_xml);
+
+    $dmf_problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $dmf_problem->state( 'confirmed' );
+    $dmf_problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new(
+        system_user => $user,
+        current_open311 => $o,
+        current_body => $dmf,
+    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => 'dumfries',
+    }, sub {
+        $update->process_body;
+    };
+
+    $dmf_problem->discard_changes;
+    is $dmf_problem->comments->count, 1, 'comment count';
+
+    my $c = $dmf_problem->comments->first;
+    ok $c, 'comment exists';
+    is $c->text, 'Priority: 1 to 5 days', 'template correctly interpolated';
+    is $c->private_email_text,'EMAIL: Priority: 1 to 5 days', 'email template correctly interpolated';
+
+    $dmf_problem->comments->delete;
+    $dmf_problem->delete;
     $tpl->delete;
 };
 
