@@ -56,6 +56,15 @@ sub send_comments {
         my $cobrand = $problem->get_cobrand_logged;
         FixMyStreet::DB->schema->cobrand($cobrand);
         $cobrand->set_lang_and_domain($problem->lang, 1);
+
+        my $passthrough_id = $problem->get_extra_metadata('passthrough_id');
+        if (!$passthrough_id || $passthrough_id eq 'Passthrough-') { # No/bad problem ID stored
+            $row->set_extra_metadata( sent_to_banes_passthrough => 1 );
+            $row->set_extra_metadata( passthrough_id => '-' );
+            $row->update;
+            next;
+        }
+
         my $service_code = 'Passthrough-' . $row->problem->contact->email;
         my %o311_cfg = (
             jurisdiction => 'banes',
@@ -67,7 +76,7 @@ sub send_comments {
             service_code => $service_code,
         );
         my $o = Open311->new(%o311_cfg);
-        $problem->set_extra_metadata( customer_reference => $problem->get_extra_metadata('passthrough_id') );
+        $problem->set_extra_metadata( customer_reference => $passthrough_id );
         my $id = $o->post_service_request_update( $row );
         if ( $id ) {
             $row->external_id($confirm_id);
