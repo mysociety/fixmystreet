@@ -194,9 +194,9 @@ describe('Abandoned vehicle behaviour', function() {
     cy.wait('@update-results');
     cy.get('#map_box').click(322, 307);
     cy.wait('@report-ajax');
-    cy.pickCategory('Abandoned/Nuisance vehicle');
+    cy.pickCategory('Abandoned vehicle');
     cy.nextPageReporting();
-    cy.pickSubcategory('Abandoned/Nuisance vehicle', 'A vehicle blocking a footpath');
+    cy.pickSubcategory('Abandoned vehicle', 'A vehicle blocking a footpath');
     cy.nextPageReporting();
   });
 

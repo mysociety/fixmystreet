@@ -11,6 +11,7 @@ sub lookup : Path : Args(0) {
     my ($self, $c) = @_;
 
     my $reg = $c->req->body_params->{registration};
+    $reg =~ s/[^a-z0-9]//gi;
     my $request = {
         registrationNumber => $reg,
     };
@@ -18,6 +19,8 @@ sub lookup : Path : Args(0) {
     my $ua = LWP::UserAgent->new;
 
     my $dvla = $c->cobrand->feature('dvla');
+    $c->detach( '/page_error_404_not_found' ) unless $dvla;
+
     my $response = $ua->post(
         $dvla->{uri} . '/v1/vehicles',
         X_API_Key => $dvla->{key},
