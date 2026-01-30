@@ -11,6 +11,8 @@ ELSIF report.category == 'Report missed collection' OR report.category == 'Repor
     title = 'Thank you for reporting a missed collection';
 ELSIF report.category == 'Request additional collection';
     title = 'Your additional collection has been requested';
+ELSIF report.category == 'Return request' AND c.cobrand.moniker == 'bromley';
+    title = 'You have successfully submitted your missed collection request';
 ELSE;
     title = 'Your enquiry has been submitted';
 END ~%]
@@ -44,6 +46,13 @@ END ~%]
         <p>
           [% IF report.category == 'Request new container' AND c.cobrand.wasteworks_config.request_timeframe %]
               Containers typically arrive within [% c.cobrand.wasteworks_config.request_timeframe %], but this may vary due to demand.
+          [% END %]
+          [% IF report.category == 'Return request' AND c.cobrand.moniker == 'bromley' %]
+            <p>Our team will now investigate this matter further. The crew <strong>may</strong> return within 5 working days, please follow our collection guidelines:</p>
+            <ul>
+              <li>Presented by 7:00 AM</li>
+              <li>Presented within arm’s reach of the pavement (or approved collection location)</li>
+            </ul>
           [% END %]
           [% IF confirmation_text %]
             [% confirmation_text %]

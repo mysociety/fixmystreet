@@ -332,7 +332,9 @@ sub bin_services_for_address {
             my $ref = join(',', @{$row->{last}{ref}});
             $task_ref_to_row{$ref} = $row;
 
-            $row->{report_allowed} = $self->within_working_days($row->{last}{date}, 2);
+            my $within = $self->within_working_days($row->{last}{date}, 2);
+            $row->{report_within_time} = $within;
+            $row->{report_allowed} = $within; # This may be overridden by task resolutions
 
             my $events_unit = $self->_parse_events($calls->{"GetEventsForObject ServiceUnit $_->{Id}"});
             $row->{events} = $events->combine($events_unit)->filter({ service => $service_id, since => $row->{last}{date} });
@@ -581,6 +583,7 @@ sub waste_task_resolutions {
         $row->{last}{state} = $state unless $state eq 'Completed' || $state eq 'Not Completed' || $state eq 'Outstanding' || $state eq 'Allocated';
         $row->{last}{completed} = $completed;
         $row->{last}{resolution} = $resolution;
+        $row->{last}{resolution_id} = $resolution_id;
 
         # Special handling if last instance is today e.g. if it's before a
         # particular hour and outstanding, show it as in progress
