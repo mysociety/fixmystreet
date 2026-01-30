@@ -767,11 +767,18 @@ subtest 'updating of waste reports' => sub {
             my ($key, $type, $value) = ${$args[3]->value}->value;
             my $external_id = ${$value->value}->value->value;
             my ($waste, $event_state_id, $resolution_code, $event_type_id) = split /-/, $external_id;
+            my %data;
+            if (($event_type_id||0) == 3240) {
+                $data{Data}{ExtensibleDatum} = [
+                    { DatatypeName => 'Investigation Outcome', Value => 1 },
+                ];
+            }
             return SOAP::Result->new(result => {
                 EventStateId => $event_state_id,
                 EventTypeId => $event_type_id || '2104',
                 LastUpdatedDate => { OffsetMinutes => 60, DateTime => '2020-06-24T14:00:00Z' },
                 ResolutionCodeId => $resolution_code,
+                %data,
             });
         } elsif ($method eq 'GetEventType') {
             return SOAP::Result->new(result => {
@@ -814,6 +821,13 @@ subtest 'updating of waste reports' => sub {
         $body->response_templates->create({
             title => 'Allocated title', text => 'This has been allocated',
             'auto_response' => 1, state => 'action scheduled',
+        });
+        $body->response_templates->create({
+            title => 'Return request approved',
+            text => 'We will return to pick up your waste.',
+            external_status_code => 'Approved',
+            state => '',
+            auto_response => 1,
         });
 
         @reports = $mech->create_problems_for_body(2, $body->id, 'Report missed collection', {
@@ -898,6 +912,17 @@ subtest 'updating of waste reports' => sub {
         $report->discard_changes;
         is $report->comments->count, ++$comment_count, 'A new update';
         is $report->state, 'unable to fix', 'A state change';
+
+        $report->update({ external_id => 'waste-15004--3240', state => 'confirmed' });
+        stdout_like {
+            $cobrand->waste_fetch_events({ verbose => 1 });
+        } qr/Updating report to state fixed - council, Completed/;
+        $report->discard_changes;
+        is $report->comments->count, ++$comment_count, 'A new update';
+        is $report->state, 'fixed - council', 'A state change';
+        $update = FixMyStreet::DB->resultset('Comment')->order_by('-id')->first;
+        is $update->text, 'We will return to pick up your waste.';
+        is $update->get_extra_metadata('external_status_code'), 'Approved';
     };
 
     FixMyStreet::override_config {

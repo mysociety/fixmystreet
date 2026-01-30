@@ -57,6 +57,7 @@ my %EVENT_TYPE_IDS = (
     request => 2104,
     bulky => 2175,
     garden => 2106,
+    return_request => 3240,
 );
 lock_hash(%EVENT_TYPE_IDS);
 
@@ -459,6 +460,21 @@ Ingore any updates from Echo that aren't New/Completed and don't have a resoluti
 sub open311_waste_update_extra {
     my ($self, $cfg, $event) = @_;
 
+    my $esc;
+    if ($event->{EventTypeId} == $EVENT_TYPE_IDS{return_request}) {
+        # Could have got here with a full event (pull) or subset (push)
+        if (!$event->{Data}) {
+            $event = $cfg->{echo}->GetEvent($event->{Guid});
+        }
+        my $data = Integrations::Echo::force_arrayref($event->{Data}, 'ExtensibleDatum');
+        foreach (@$data) {
+            if ($_->{DatatypeName} eq 'Investigation Outcome') {
+                $esc = 'Approved' if $_->{Value} == 1;
+                $esc = 'Declined' if $_->{Value} == 2;
+            }
+        }
+    }
+
     my $override_status;
     my $event_type = $cfg->{event_types}{$event->{EventTypeId}};
     my $state_id = $event->{EventStateId};
@@ -473,6 +489,7 @@ sub open311_waste_update_extra {
 
     return (
         defined $override_status ? (status => $override_status ) : (),
+        defined $esc ? (external_status_code => $esc) : (),
     );
 }
 
