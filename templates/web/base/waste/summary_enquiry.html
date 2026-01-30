@@ -30,18 +30,11 @@ step1 = 'enquiry';
         </dd>
     </div>
   [% END %]
-  [% IF c.cobrand.moniker == 'bromley' AND data.declaration == 'Yes' %]
+  [% IF c.cobrand.moniker == 'bromley' AND data.declaration %]
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Declaration</dt>
         <dd class="govuk-summary-list__value">I declare my container was in reach of the pavement and out by 7:00 AM</dd>
       </div>
-      <dd class="govuk-summary-list__actions">
-        <form method="post">
-          <input type="hidden" name="saved_data" value="[% form.fif.saved_data %]">
-          <input type="hidden" name="goto" value="missed_collection_declaration">
-          <input type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" value="Change answers">
-        </form>
-      </dd>
   [% END %]
 [% END %]
 

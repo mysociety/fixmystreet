@@ -394,11 +394,15 @@ FixMyStreet::override_config {
             # Declaration page
             $mech->content_contains('To request a missed collection, please confirm the following', 'Declaration page is shown');
             $mech->submit_form_ok();
-            $mech->content_contains('I declare my container was correctly positioned field is required', 'Error if field not filled');
-            $mech->submit_form_ok( { with_fields => { declaration => 'No'} });
+            $mech->content_contains('field is required', 'Error if field not filled');
+            $mech->form_with_fields('declaration');
+            $mech->current_form->find_input('declaration', undef, 1)->value('7am');
+            $mech->submit_form_ok;
             $mech->content_lacks('I declare my container was correctly positioned field is required', 'No error as field was filled...');
             $mech->content_contains('To request a missed collection, please confirm the following', '...but not moved forward as "No" selected');
-            $mech->submit_form_ok( { with_fields => { declaration => 'Yes'} });
+            $mech->form_with_fields('declaration');
+            $mech->current_form->find_input('declaration', undef, 2)->value('arm');
+            $mech->submit_form_ok;
             # Enquiry page
             $mech->submit_form_ok( {with_fields => { extra_Notes => 'My bin was in front of the house near the pavement' } });
             # About you page
@@ -407,7 +411,7 @@ FixMyStreet::override_config {
             $mech->content_contains('Please review the information you’ve provided before you submit your enquiry', 'Reached summary page');
             $mech->content_contains('I declare my container was in reach of the pavement and out by 7:00 AM', 'Can change answer for declaration');
             $mech->clear_emails_ok;
-            $mech->submit_form_ok( { form_number => 4 } );
+            $mech->submit_form_ok( { form_number => 3 } );
             # Confirm report
             $mech->get_ok($mech->get_link_from_email);
             my $report = FixMyStreet::DB->resultset("Problem")->search(undef, { order_by => { -desc => 'id' } })->first;

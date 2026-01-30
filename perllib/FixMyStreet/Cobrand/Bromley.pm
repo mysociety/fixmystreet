@@ -11,6 +11,7 @@ use Hash::Util qw(lock_hash);
 use Integrations::Echo;
 use BromleyParks;
 use FixMyStreet::App::Form::Waste::Request::Bromley;
+use FixMyStreet::App::Form::Waste::Enquiry::Bromley;
 use FixMyStreet::DB;
 use Moo;
 use WasteWorks::Costs;
@@ -992,39 +993,23 @@ sub waste_munge_enquiry_form_pages {
     my ($self, $pages, $fields) = @_;
     my $c = $self->{c};
     my $category = $c->get_param('category');
-
-    my $service_id = $c->get_param('service_id');
     my $reason = $self->return_request_option;
 
-    if ($reason eq 'not-presented') {
-        if ($category eq 'General Enquiry') {
-            unshift @$fields, 'bromley_missed_notice', {
-                'widget' => 'NoRender',
-                'required' => 0,
-                'type' => 'Notice',
-                'label' => "Do not use this form to report a missed collection. Instead, please <a href='enquiry?category=Return+request&amp;service_id=$service_id'>Report a missed collection</a>"
-            };
-        } elsif ($category eq 'Return request') {
-            my $intro_fields = [];
-            unshift @$pages, 'missed_collection_intro', { title => 'Missed collection', intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
-            push @$fields, 'declaration', { type => 'Select', label => 'I declare my container was correctly positioned', widget => 'RadioGroup', required => 1, options => [{ label => 'Yes', value => 'Yes'}, { label => 'No', value => 'No' } ] };
-            $intro_fields->[0] = 'continue';
-            unshift @$pages, 'missed_collection_declaration', { title => 'Missed collection', intro => 'enquiry_missed_declaration.html', fields => ['declaration', 'continue'], next => sub { $_[0]->{declaration} eq 'Yes' ? 'enquiry' : 'missed_collection_declaration' } };
+    $c->stash->{form_class} = 'FixMyStreet::App::Form::Waste::Enquiry::Bromley';
+
+    if ($category eq 'Return request') {
+        # If we have a reason, we need to start with a special page
+        if ($reason eq 'not-presented') {
+            $c->stash->{first_page} = 'missed_collection_intro_not_presented';
+        } elsif ($reason eq 'contaminated' || $reason eq 'too-late') {
             $c->stash->{first_page} = 'missed_collection_intro';
         }
-    } elsif ($reason eq 'contaminated' || $reason eq 'too-late') {
-        if ($category eq 'General Enquiry') {
-            unshift @$fields, 'bromley_missed_notice', {
-                'widget' => 'NoRender',
-                'required' => 0,
-                'type' => 'Notice',
-                order => -1,
-                'label' => "We cannot accept missed collection reports through this form. If you believe you are eligible for re-collection, please visit <a href='enquiry?category=Return+request&amp;service_id=$service_id'>My bin was not collected</a>"
-            };
-        } elsif ($category eq 'Return request') {
-            my $intro_fields = [];
-            unshift @$pages, 'missed_collection_intro', { title => 'Missed collection', intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
-            $c->stash->{first_page} = 'missed_collection_intro';
+    } elsif ($category eq 'General Enquiry') {
+        # If we have a reason, add a notice to the start of the Other form
+        if ($reason eq 'not-presented') {
+            unshift @{$pages->[1]{fields}}, 'bromley_missed_notice_not_presented';
+        } elsif ($reason eq 'contaminated' || $reason eq 'too-late') {
+            unshift @{$pages->[1]{fields}}, 'bromley_missed_notice';
         }
     }
 }
