@@ -1101,9 +1101,6 @@ sub waste_extra_service_info {
 
         $_->{timeband} = _timeband_for_schedule($schedules->{next});
 
-        # Brent has two overlapping schedules for food
-        $schedules->{description} =~ s/other\s*// if $_->{ServiceId} == $SERVICE_IDS{domestic_food} || $_->{ServiceId} == $SERVICE_IDS{communal_refuse};
-
         # Check calendar allocation
         if (($_->{ServiceId} == $SERVICE_IDS{domestic_refuse} || $_->{ServiceId} == $SERVICE_IDS{garden} || $_->{ServiceId} == $SERVICE_IDS{domestic_paper}) && ($schedules->{description} =~ /every other/i || $schedules->{description} =~ /every \d+ week/i) && $schedules->{next}{schedule}) {
             my $allocation = $schedules->{next}{schedule}{Allocation};

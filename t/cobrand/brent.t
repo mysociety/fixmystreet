@@ -1274,7 +1274,7 @@ FixMyStreet::override_config {
     $mech->content_contains("(07:30&ndash;08:30)", 'shows time band');
     $mech->content_contains('https://example.org/media/16420712/wednesdayweek2', 'showing PDF calendar');
     $mech->content_contains('https://example.org/media/16420712/mondayweek2', 'showing green garden waste PDF calendar');
-    $mech->content_contains('Every Thursday', 'food showing right schedule');
+    $mech->content_contains('Every other Thursday', 'food showing right schedule');
 
     subtest 'test requesting a container' => sub {
         set_fixed_time('2025-01-27T12:00:00Z'); # After new general bin notice text
