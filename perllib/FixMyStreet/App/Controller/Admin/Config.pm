@@ -41,6 +41,33 @@ sub index : Path( '' ) : Args(0) {
         my $db = FixMyStreet::DB->schema->storage;
         my $txn_guard = $db->txn_scope_guard;
 
+        # Handle adding new config entry
+        if (my $new_key = $c->get_param('new-config-key')) {
+            $new_key =~ s/^\s+|\s+$//g;  # Trim whitespace
+            my $new_value = $c->get_param('new-config-value');
+
+            if ($new_key && $new_value) {
+                if (FixMyStreet::DB->resultset("Config")->get($new_key)) {
+                    $c->stash->{errors}->{new} =
+                        sprintf(_("Configuration key '%s' already exists"), $new_key);
+                    $c->stash->{new_config_key} = $new_key;
+                    $c->stash->{new_config_value} = $new_value;
+                } else {
+                    try {
+                        FixMyStreet::DB->resultset("Config")->set($new_key, $json->decode($new_value));
+                    } catch {
+                        my $e = $_;
+                        $e =~ s/ at \/.*$//; # trim the filename/lineno
+                        $c->stash->{errors}->{new} =
+                            sprintf(_("Not a valid JSON string: %s"), $e);
+                        $c->stash->{new_config_key} = $new_key;
+                        $c->stash->{new_config_value} = $new_value;
+                    };
+                }
+            }
+        }
+
+        # Handle updating existing config entries
         foreach my $entry (@db_config) {
             if (my $cfg = $c->get_param("db-config-" . $entry->key)) {
                 try {
@@ -57,6 +84,8 @@ sub index : Path( '' ) : Args(0) {
         if (!%{$c->stash->{errors}}) {
             $txn_guard->commit;
             $c->stash->{db_status_message} = _("Updated!");
+            # Refetch config entries to include any newly added ones
+            @db_config = FixMyStreet::DB->resultset("Config")->order_by('key')->all;
         }
     }
 

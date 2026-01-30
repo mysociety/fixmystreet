@@ -13,6 +13,7 @@
         - Improved accessibility of small drawer. #5354
         - Added skip report tools to Around page. #5354
     - Admin improvements:
+        - Allow superusers to add new database config entries.
         - Improve performance of admin reports search for email. #5284
         - import-export-data script exports and imports `send_method` for category #4818
         - Include extra question answer labels in submit emails. #5383
