@@ -1274,7 +1274,7 @@ FixMyStreet::override_config {
     $mech->content_contains("(07:30&ndash;08:30)", 'shows time band');
     $mech->content_contains('https://example.org/media/16420712/wednesdayweek2', 'showing PDF calendar');
     $mech->content_contains('https://example.org/media/16420712/mondayweek2', 'showing green garden waste PDF calendar');
-    $mech->content_contains('Every Thursday', 'food showing right schedule');
+    $mech->content_contains('Every other Thursday', 'food showing right schedule');
 
     subtest 'test requesting a container' => sub {
         set_fixed_time('2025-01-27T12:00:00Z'); # After new general bin notice text
@@ -1361,8 +1361,8 @@ FixMyStreet::override_config {
 
     subtest 'test requesting an extra refuse container' => sub {
         for my $test (
-            { children => 'Yes', detail => 'Request forwarded to Brent Council by email', referral => 1},
-            { children => 'No', detail => 'Request automatically calculated', referral => ''},
+            { children => 'Yes', detail => "Request forwarded to Brent Council by email\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => 1},
+            { children => 'No', detail => "Request automatically calculated\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => ''},
         ) {
             FixMyStreet::DB->resultset('Problem')->search(
                 {
