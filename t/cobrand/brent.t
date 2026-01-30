@@ -1361,8 +1361,8 @@ FixMyStreet::override_config {
 
     subtest 'test requesting an extra refuse container' => sub {
         for my $test (
-            { children => 'Yes', detail => 'Request forwarded to Brent Council by email', referral => 1},
-            { children => 'No', detail => 'Request automatically calculated', referral => ''},
+            { children => 'Yes', detail => "Request forwarded to Brent Council by email\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => 1},
+            { children => 'No', detail => "Request automatically calculated\n\nQuantity: 1\n\n2 Example Street, Brent, NW2 1AA\n\nReason: I would like an extra container", referral => ''},
         ) {
             FixMyStreet::DB->resultset('Problem')->search(
                 {
