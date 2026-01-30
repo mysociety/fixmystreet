@@ -986,13 +986,13 @@ sub waste_munge_enquiry_form_pages {
             'type' => 'Notice',
             'label' => "This is not for reporting a missed collection. Use the report a missed collection from the <a href='enquiry?template=problem&service_id=$service_id&status=$status'>menu</a>"
           };
-    } elsif ($category eq 'Dispute missed collection') {
+    } elsif ($category eq 'Return request') {
         my $intro_fields = [];
-        unshift @$pages, 'missed_collection_intro', { intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
+        unshift @$pages, 'missed_collection_intro', { title => 'Missed collection', intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
         if ($status eq '3') {
             push @$fields, 'declaration', { type => 'Select', label => 'I declare my container was correctly positioned', widget => 'RadioGroup', required => 1, options => [{ label => 'Yes', value => 'Yes'}, { label => 'No', value => 'No' } ] };
             $intro_fields->[0] = 'continue';
-            unshift @$pages, 'missed_collection_declaration', { intro => 'enquiry_missed_declaration.html', fields => ['declaration', 'continue'], next => sub { $_[0]->{declaration} eq 'Yes' ? 'enquiry' : 'missed_collection_declaration' } };
+            unshift @$pages, 'missed_collection_declaration', { title => 'Missed collection', intro => 'enquiry_missed_declaration.html', fields => ['declaration', 'continue'], next => sub { $_[0]->{declaration} eq 'Yes' ? 'enquiry' : 'missed_collection_declaration' } };
         };
         $c->stash->{first_page} = 'missed_collection_intro';
     }

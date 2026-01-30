@@ -5,7 +5,7 @@ service_id = c.req.params.service_id;
 status = c.req.params.status;
 service = services.$service_id;
 IF status;
-    f.push( { value = 'Dispute missed collection', label = 'Collection was missed' } );
+    f.push( { value = 'Return request', label = 'My bin was not collected' } );
 END;
 IF service.report_allowed;
     IF !service.events.filter(event_type = 2118);

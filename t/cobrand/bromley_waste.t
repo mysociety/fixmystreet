@@ -63,29 +63,29 @@ $mech->create_contact_ok(
 
 my ($dispute) = $mech->create_contact_ok(
     body => $body,
-    category => 'Dispute missed collection',
-    email => '2107',
+    category => 'Return request',
+    email => '3240',
     send_method => 'Open311',
     endpoint => 'waste-endpoint',
     extra => { type => 'waste' },
     group => ['Waste'],
 );
 $dispute->set_extra_fields(
-    { code => 'notes', datatype => 'text', required => 0 },
+    { code => 'Notes', datatype => 'text', required => 0 },
 );
 $dispute->update;
 
 my ($general) = $mech->create_contact_ok(
     body => $body,
     category => 'General Enquiry',
-    email => '2107',
+    email => '2148',
     send_method => 'Open311',
     endpoint => 'waste-endpoint',
     extra => { type => 'waste' },
     group => ['Waste'],
 );
 $general->set_extra_fields(
-    { code => 'notes', datatype => 'text', required => 0 },
+    { code => 'Notes', datatype => 'text', required => 0 },
 );
 $general->update;
 
@@ -341,21 +341,6 @@ FixMyStreet::override_config {
             task_type => 3216,
             task_state => 'Completed',
         } });
-        $mech->get_ok('/admin/templates/' . $body->id . '/new');
-        $mech->submit_form_ok({ with_fields => {
-            title => 'Wrong bin (Not completed)',
-            text => 'We could not collect your waste as it was not correctly presented.',
-            resolution_code => 66,
-            task_state => 'Not Completed',
-        } });
-        $mech->get_ok('/admin/templates/' . $body->id . '/new');
-        $mech->submit_form_ok({ with_fields => {
-            title => 'Contaminated (Not completed)',
-            text => 'We could not collect your waste as it was contaminated.',
-            resolution_code => 33,
-            task_state => 'Not Completed',
-        } });
-
         $mech->log_out_ok;
     };
 
@@ -378,6 +363,17 @@ FixMyStreet::override_config {
     };
 
     subtest 'test extra missed collection reporting options' => sub {
+        $body->response_templates->create({
+            title => 'Wrong bin (Not completed)',
+            text => 'We could not collect your waste as it was not correctly presented.',
+            external_status_code => '66,,Not Completed',
+        });
+        $body->response_templates->create({
+            title => 'Contaminated (Not completed)',
+            text => 'We could not collect your waste as it was contaminated.',
+            external_status_code => '33,,Not Completed',
+        });
+
         my $echo = Test::MockModule->new('Integrations::Echo');
         set_fixed_time('2020-05-27T19:00:00Z');
 
@@ -388,10 +384,10 @@ FixMyStreet::override_config {
             $mech->content_contains('We could not collect your waste as it was not correctly presented.', 'Waste template from resolution 66');
             $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
             $mech->content_contains(';service_id=531&amp;status=3', 'Link updated with status');
-            $mech->get_ok( '/waste/12345/enquiry?template=problem&amp;service_id=531&amp;status=3');
+            $mech->get_ok( '/waste/12345/enquiry?template=problem&service_id=531&status=3');
             # Enquiry type list page
-            $mech->content_contains('Collection was missed', 'Can report a missed collection in the general enquiry list');
-            $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
+            $mech->content_contains('My bin was not collected', 'Can report a missed collection in the general enquiry list');
+            $mech->submit_form_ok({ with_fields => {category => 'Return request'} });
             # 'Not presented' information page
             $mech->content_contains('If you believe the correct container <strong>was</strong> presented at the edge of your property by 7:00 AM on your collection day, please click below', 'Contains page detailing proper placement');
             $mech->content_contains('Continue', 'User can continue the enquiry');
@@ -405,7 +401,7 @@ FixMyStreet::override_config {
             $mech->content_contains('To request a missed collection, please confirm the following', '...but not moved forward as "No" selected');
             $mech->submit_form_ok( { with_fields => { declaration => 'Yes'} });
             # Enquiry page
-            $mech->submit_form_ok( {with_fields => { extra_notes => 'My bin was in front of the house near the pavement' } });
+            $mech->submit_form_ok( {with_fields => { extra_Notes => 'My bin was in front of the house near the pavement' } });
             # About you page
             $mech->submit_form_ok( { with_fields => { name => 'James Herriot', email => 'test@example.com' } });
             # Summary page
@@ -430,10 +426,10 @@ FixMyStreet::override_config {
             $mech->content_contains('We could not collect your waste as it was not correctly presented.', 'Waste template from resolution 66');
             $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
             $mech->content_contains(';service_id=531&amp;status=2', 'Link updated with status');
-            $mech->get_ok( '/waste/12345/enquiry?template=problem&amp;service_id=531&amp;status=2');
+            $mech->get_ok( '/waste/12345/enquiry?template=problem&service_id=531&status=2');
             # Enquiry type list page
-            $mech->content_contains('Collection was missed', 'Can report a missed collection in the general enquiry list');
-            $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
+            $mech->content_contains('My bin was not collected', 'Can report a missed collection in the general enquiry list');
+            $mech->submit_form_ok({ with_fields => {category => 'Return request'} });
             # 'Missed collection' information page
             $mech->content_contains('Reports of missed collections must be raised within 2');
             $mech->content_lacks('Continue', 'No option offered to continue enquiry');
@@ -446,8 +442,8 @@ FixMyStreet::override_config {
             $mech->content_like(qr/May, at 10:00a\.?m\.?/);
             $mech->content_contains('A paper &amp; cardboard collection has been reported as missed');
             $mech->content_contains(';service_id=537&amp;status=0');
-            $mech->get_ok('/waste/12345/enquiry?template=problem&amp;service_id=537&amp;status=0');
-            $mech->content_lacks('Collection was missed', 'No option to report again in the enquiry list');
+            $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=537&status=0');
+            $mech->content_lacks('My bin was not collected', 'No option to report again in the enquiry list');
             restore_time();
         };
 
@@ -456,9 +452,9 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_like(qr/May, at 10:00a\.?m\.?/);
             $mech->content_contains('service_id=545&amp;status=2');
-            $mech->get_ok('/waste/12345/enquiry?template=problem&amp;service_id=545&amp;status=2');
-            $mech->content_contains('Collection was missed', 'Option to report in the enquiry list');
-            $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
+            $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=545&status=2');
+            $mech->content_contains('My bin was not collected', 'Option to report in the enquiry list');
+            $mech->submit_form_ok({ with_fields => {category => 'Return request'} });
             # 'Missed collection' information page
             $mech->content_contains('Reports of missed collections must be raised within 2');
             $mech->content_lacks('Continue', 'No option offered to continue enquiry');
@@ -470,7 +466,7 @@ FixMyStreet::override_config {
             $mech->get_ok('/waste/12345');
             $mech->content_like(qr/May, at 10:00a\.?m\.?/);
             $mech->content_contains('service_id=545&amp;status=2');
-            $mech->get_ok('/waste/12345/enquiry?template=problem&amp;service_id=545&amp;status=2');
+            $mech->get_ok('/waste/12345/enquiry?template=problem&service_id=545&status=2');
             $mech->submit_form_ok({ with_fields => {category => 'General Enquiry'} });
             $mech->content_contains("This is not for reporting a missed collection. Use the report a missed collection from the <a href='enquiry?template=problem&service_id=545&status=2'>menu</a></p>");
             restore_time();
@@ -488,10 +484,10 @@ FixMyStreet::override_config {
                 $mech->content_contains('We could not collect your waste as it was contaminated.', 'Waste template from resolution 33');
                 $mech->content_lacks('Report a non-recyclable refuse collection', 'Can not report a missed collection as resolved');
                 $mech->content_contains(';service_id=531&amp;status=4', 'Link updated with status');
-                $mech->get_ok( '/waste/12345/enquiry?template=problem&amp;service_id=531&amp;status=4');
+                $mech->get_ok( '/waste/12345/enquiry?template=problem&service_id=531&status=4');
                 # Enquiry type list page
-                $mech->content_contains('Collection was missed', 'Can report a missed collection in the general enquiry list');
-                $mech->submit_form_ok({ with_fields => {category => 'Dispute missed collection'} });
+                $mech->content_contains('My bin was not collected', 'Can report a missed collection in the general enquiry list');
+                $mech->submit_form_ok({ with_fields => {category => 'Return request'} });
                 # 'Contaminated' information page
                 $mech->content_contains('Please remove any contaminated items and we will empty your container on the next scheduled collection day');
                 $mech->content_lacks('Continue', 'No option offered to continue enquiry');
