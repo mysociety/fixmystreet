@@ -969,32 +969,63 @@ if they they are able to dispute the missed collection
 
 =cut
 
+sub return_request_option {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $service_id = $c->get_param('service_id');
+    my $service = $c->stash->{services}{$service_id};
+    my $last = $service->{last};
+    my $next = $service->{next};
+    my $next_state = $next->{state} || '';
+
+    return 'too-late' unless $service->{report_within_time};
+
+    my $resolution_id = $last->{resolution_id} || 0;
+    return 'not-presented' if $resolution_id == 66;
+    return 'contaminated' if $resolution_id == 33;
+
+    return '';
+}
 
 sub waste_munge_enquiry_form_pages {
     my ($self, $pages, $fields) = @_;
     my $c = $self->{c};
     my $category = $c->get_param('category');
 
-    my $status = $c->get_param('status') || '0';
     my $service_id = $c->get_param('service_id');
+    my $reason = $self->return_request_option;
 
-    if ($category eq 'General Enquiry') {
-        unshift @$fields, 'bromley_missed_notice',
-          {
-            'widget' => 'NoRender',
-            'required' => 0,
-            'type' => 'Notice',
-            'label' => "This is not for reporting a missed collection. Use the report a missed collection from the <a href='enquiry?template=problem&service_id=$service_id&status=$status'>menu</a>"
-          };
-    } elsif ($category eq 'Return request') {
-        my $intro_fields = [];
-        unshift @$pages, 'missed_collection_intro', { title => 'Missed collection', intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
-        if ($status eq '3') {
+    if ($reason eq 'not-presented') {
+        if ($category eq 'General Enquiry') {
+            unshift @$fields, 'bromley_missed_notice', {
+                'widget' => 'NoRender',
+                'required' => 0,
+                'type' => 'Notice',
+                'label' => "Do not use this form to report a missed collection. Instead, please <a href='enquiry?category=Return+request&amp;service_id=$service_id'>Report a missed collection</a>"
+            };
+        } elsif ($category eq 'Return request') {
+            my $intro_fields = [];
+            unshift @$pages, 'missed_collection_intro', { title => 'Missed collection', intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
             push @$fields, 'declaration', { type => 'Select', label => 'I declare my container was correctly positioned', widget => 'RadioGroup', required => 1, options => [{ label => 'Yes', value => 'Yes'}, { label => 'No', value => 'No' } ] };
             $intro_fields->[0] = 'continue';
             unshift @$pages, 'missed_collection_declaration', { title => 'Missed collection', intro => 'enquiry_missed_declaration.html', fields => ['declaration', 'continue'], next => sub { $_[0]->{declaration} eq 'Yes' ? 'enquiry' : 'missed_collection_declaration' } };
-        };
-        $c->stash->{first_page} = 'missed_collection_intro';
+            $c->stash->{first_page} = 'missed_collection_intro';
+        }
+    } elsif ($reason eq 'contaminated' || $reason eq 'too-late') {
+        if ($category eq 'General Enquiry') {
+            unshift @$fields, 'bromley_missed_notice', {
+                'widget' => 'NoRender',
+                'required' => 0,
+                'type' => 'Notice',
+                order => -1,
+                'label' => "We cannot accept missed collection reports through this form. If you believe you are eligible for re-collection, please visit <a href='enquiry?category=Return+request&amp;service_id=$service_id'>My bin was not collected</a>"
+            };
+        } elsif ($category eq 'Return request') {
+            my $intro_fields = [];
+            unshift @$pages, 'missed_collection_intro', { title => 'Missed collection', intro => 'enquiry_missed_intro.html', fields => $intro_fields, next => 'missed_collection_declaration' };
+            $c->stash->{first_page} = 'missed_collection_intro';
+        }
     }
 }
 
@@ -1030,16 +1061,6 @@ sub munge_bin_services_for_address {
         if (grep { $property->{id} eq $_ } @{$_[0]->wasteworks_config->{exclude_property_from_requests}}) {
             $row->{request_allowed} = 0;
         }
-    }
-}
-
-sub convert_locked_out_to_code {
-    my ($self, $row, $report_allowed, $resolution_id) = @_;
-
-    if ($resolution_id && $resolution_id eq '33') { # Contaminated (33)
-        $row->{report_locked_out} = 4;
-    } elsif ($resolution_id && $resolution_id eq '66' && $report_allowed) { # Not presented (66)
-        $row->{report_locked_out} = 3;
     }
 }
 

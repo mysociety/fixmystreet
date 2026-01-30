@@ -2,9 +2,8 @@
 
 f = [];
 service_id = c.req.params.service_id;
-status = c.req.params.status;
 service = services.$service_id;
-IF status;
+IF c.cobrand.return_request_option;
     f.push( { value = 'Return request', label = 'My bin was not collected' } );
 END;
 IF service.report_allowed;
@@ -30,6 +29,5 @@ f.push(
 PROCESS waste/enquiry.html
     title = 'Report a problem'
     field_options = f;
-    status = status;
 
 %]

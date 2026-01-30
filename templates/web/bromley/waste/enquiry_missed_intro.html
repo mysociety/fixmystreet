@@ -1,5 +1,7 @@
-[% SET service_id = c.req.params.service_id %]
-[% SET status = c.req.params.status %]
+[%
+SET service_id = c.req.params.service_id;
+SET reason = c.cobrand.return_request_option;
+%]
 [% IF services.$service_id %]
 <dl class="waste__address">
     <dt class="waste__address__title">Service</dt>
@@ -7,7 +9,7 @@
 </dl>
 [% END %]
 
-[% IF status == '4' %]
+[% IF reason == 'contaminated' %]
 <p>
   Your most recent collection was reported as <strong>contaminated</strong> by the collection team and they were unable to empty your container.
 </p>
@@ -20,7 +22,7 @@
 <p>
   Please visit our website for further details at <a href='https://www.bromley.gov.uk/household-waste-recycling'>https://www.bromley.gov.uk/household-waste-recycling</a>
 </p>
-[% ELSIF status == '3' %]
+[% ELSIF reason == 'not-presented' %]
 <p>
   Your most recent collection has been reported as <strong>not presented</strong> by the collection team.
 </p>
@@ -35,7 +37,9 @@
 </p>
 <p>
   If you believe the correct container <strong>was</strong> presented at the edge of your property by 7:00 AM on your collection day, please click below.
-[% ELSIF status == '2' %]
+
+[% ELSIF reason == 'too-late' %]
+
 <p>
   <strong>Reports of missed collections must be raised within 2 working days of your scheduled collection date.</strong>
 </p>
