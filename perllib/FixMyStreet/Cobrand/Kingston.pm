@@ -695,7 +695,7 @@ Configure when the escalation window for waste complaints starts/ends.
 =cut
 
 sub waste_escalation_window {
-    {
+    my $lengths = {
         missed_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
         missed_length_weekly => 1,
         missed_length_fortnightly => 1,
@@ -703,7 +703,15 @@ sub waste_escalation_window {
         container_length => 10,
         bulky_start => 3, # 2 days, plus 1 because time is from 00:00 on missed report day
         bulky_length => 2,
+    };
+    # use smaller windows on staging for testing
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->test_mode) {
+        for (keys %$lengths) {
+            $lengths->{$_} = 1;
+        }
     }
+
+    return $lengths;
 }
 
 =head2 waste_allow_non_actionable_report
