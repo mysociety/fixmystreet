@@ -185,6 +185,7 @@ sub build_active {
     my $self = shift;
 
     my %active;
+    die "Page " . $self->page_name . " does not exist" unless $self->current_page;
     foreach my $fname ($self->current_page->all_fields) {
         $active{$fname} = 1;
     }
@@ -192,6 +193,7 @@ sub build_active {
     foreach my $page ( $self->all_pages ) {
         foreach my $fname ( $page->all_fields_copy ) {
             my $field = $self->field($fname);
+            die "$fname does not exist in page " . $page->name unless $field;
             $field->inactive(1) unless $active{$fname};
         }
     }
