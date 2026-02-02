@@ -219,10 +219,6 @@ subtest 'Scaffold form submission - smoke test' => sub {
         $mech->submit_form_ok({ with_fields => { site_hoarding_attached => 'No' }});
 
         # Have you considered page
-        $mech->form_with_fields('terms_accepted');
-        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Applicant');
-        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing policy');
-        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions');
         $mech->submit_form_ok({ with_fields => {
             parking_dispensation => 'Yes',
             parking_bay_suspension => 'No',
@@ -230,6 +226,12 @@ subtest 'Scaffold form submission - smoke test' => sub {
             bus_lane_suspension => 'No',
             road_closure_required => 'No',
         }});
+
+        $mech->form_with_fields('terms_accepted');
+        $mech->current_form->find_input('terms_accepted', undef, 1)->value('Applicant');
+        $mech->current_form->find_input('terms_accepted', undef, 2)->value('Highway licensing policy');
+        $mech->current_form->find_input('terms_accepted', undef, 3)->value('Standard conditions');
+        $mech->submit_form_ok;
 
         # Uploads page
         $mech->submit_form_ok({ with_fields => {

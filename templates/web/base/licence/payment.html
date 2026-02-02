@@ -1,9 +1,20 @@
+[%
+SET type = form.saved_data.scaffold_type;
+IF type == 'Scaffold (Mobile Tower)';
+    SET payment_link = 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/rKoNGpTjrw8wwoygPdsmbNjiPhbCLr98MHR1B2xx9iazhSecgrT8mZziDEUnol6L';
+ELSIF type == 'Scaffold (Large)';
+    SET payment_link = 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/mzWBnuiA747cclZIDar9r8jF5BConLNld6QWbfZJJfTViBsEggO0jpu68tI7DWMx';
+ELSE;
+    SET payment_link = 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/1S1H8aiH78NUYsz3863iSbn1Z7OdesWjzBLAo41i0alca5Q2uM9RPTF3NGYIK5WR';
+END;
+%]
+
 <p>Before continuing with your application, you need to make the required payment.</p>
 
 <h3>How to pay</h3>
 
 <ol>
-  <li><a href="https://ebc2test.cybersource.com/ebc2/payByLink/pay/1S1H8aiH78NUYsz3863iSbn1Z7OdesWjzBLAo41i0alca5Q2uM9RPTF3NGYIK5WR" class="govuk-link" target="_blank" rel="noopener noreferrer">Make your payment online</a> (opens in a new window)</li>
+  <li><a class="btn" href="[% payment_link %]" target="_blank" rel="noopener noreferrer">Pay Now</a> (opens in a new window)</li>
   <li>After completing your payment, you will receive a transaction ID</li>
   <li>Enter your transaction ID below</li>
 </ol>

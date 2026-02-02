@@ -26,6 +26,7 @@ has_field parking_dispensation => (
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
     ],
+    tags => { hint => FixMyStreet::Template::SafeString->new('Please consider <a href="https://tfl.gov.uk/modes/driving/red-routes/dispensations" target="_blank" rel="noopener">TfL Red Route dispensations</a>') },
 );
 
 has_field parking_bay_suspension => (
@@ -49,12 +50,13 @@ has_field bus_stop_suspension => (
         { label => 'Yes', value => 'Yes' },
         { label => 'No', value => 'No' },
     ],
+    tags => { hint => FixMyStreet::Template::SafeString->new('Please read about <a href="https://tfl.gov.uk/info-for/urban-planning-and-construction/our-land-and-infrastructure/roadworks-and-street-faults#on-this-page-10" target="_blank" rel="noopener">Bus stop suspensions</a>') },
 );
 
 has_field bus_lane_suspension => (
     type => 'Select',
     widget => 'RadioGroup',
-    label => 'Will a us lane need to be suspended?',
+    label => 'Will a bus lane need to be suspended?',
     required => 1,
     options => [
         { label => 'Yes', value => 'Yes' },

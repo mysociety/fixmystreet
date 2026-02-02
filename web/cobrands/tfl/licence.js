@@ -11,7 +11,8 @@
         'contractor_address',
         'contractor_email',
         'contractor_phone',
-        'contractor_phone_24h'
+        'contractor_phone_24h',
+        'contractor_meeting',
     ];
 
     function updateContractorFields() {

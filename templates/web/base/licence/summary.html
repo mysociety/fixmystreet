@@ -30,6 +30,12 @@
             <dt class="govuk-summary-list__key govuk-summary-list__key--sub">[% field.desc %]</dt>
             <dd class="govuk-summary-list__value">[% field.pretty | html %]</dd>
         </div>
+        [% IF field.desc == 'Number of weeks required'; SET end = form.saved_data.proposed_end_date %]
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key govuk-summary-list__key--sub">Proposed end date</dt>
+                <dd class="govuk-summary-list__value">[% end.day %]/[% end.month %]/[% end.year %]</dd>
+            </div>
+        [% END %]
       [% END %]
   [% END %]
 </dl>

@@ -451,7 +451,7 @@ sub fields_for_display {
             my $value = $form->saved_data->{$field->{name}} // '';
             push @{$x->{fields}}, {
                 name => $field->{name},
-                desc => $field->{label},
+                desc => $field->{label} || $field->{option_label},
                 type => $field->type,
                 pretty => $form->format_for_display( $field->{name}, $value ),
                 value => $value,
