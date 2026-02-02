@@ -127,6 +127,7 @@ has_field contractor_meeting => (
         my $same = $self->form->field('contractor_same_as_applicant')->value;
         $self->add_error('Please confirm') if !$self->value && !$same;
     },
+    tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
 );
 
 # ==========================================================================
