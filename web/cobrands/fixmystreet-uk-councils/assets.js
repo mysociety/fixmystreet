@@ -691,19 +691,22 @@ function cb_hide_non_stopper_message(layer) {
 
 fixmystreet.assets.centralbedfordshire.found = function(layer, feature) {
     fixmystreet.message_controller.road_found(layer, feature, function(feature) {
-        cb_hide_non_stopper_message(layer);
-        if (OpenLayers.Util.indexOf(centralbeds_types, feature.attributes.adoption) != -1) {
-            return true;
-        }
-        if (cb_should_not_require_road()) {
-            cb_show_non_stopper_message(layer);
-            return true;
-        }
-        return false;
+        // Temporarily skip responsibility checks whilst we figure out
+        // how to handle there being no 'adoption' attribute in new layer.
+        return true;
+        //cb_hide_non_stopper_message(layer);
+        //if (OpenLayers.Util.indexOf(centralbeds_types, feature.attributes.adoption) != -1) {
+            //return true;
+        //}
+        //if (cb_should_not_require_road()) {
+            //cb_show_non_stopper_message(layer);
+            //return true;
+        //}
+        //return false;
     }, "#js-not-council-road");
 };
 fixmystreet.assets.centralbedfordshire.not_found = function(layer) {
-    cb_hide_non_stopper_message(layer);
+    //cb_hide_non_stopper_message(layer);
     if (cb_should_not_require_road()) {
         fixmystreet.message_controller.road_found(layer);
     } else {
