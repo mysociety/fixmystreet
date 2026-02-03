@@ -1,15 +1,8 @@
 package FixMyStreet::App::Form::Licence::Landscaping;
 
 use HTML::FormHandler::Moose;
-extends 'FixMyStreet::App::Form::Wizard';
+extends 'FixMyStreet::App::Form::Licence';
 use utf8;
-
-# Shared field roles
-with 'FixMyStreet::App::Form::Licence::Fields::Location';
-with 'FixMyStreet::App::Form::Licence::Fields::Dates';
-with 'FixMyStreet::App::Form::Licence::Fields::Applicant';
-with 'FixMyStreet::App::Form::Licence::Fields::Contractor';
-with 'FixMyStreet::App::Form::Licence::Fields::TemporaryProhibition';
 
 # Type identifier used in URL: /licence/landscaping
 sub type { 'landscaping' }
@@ -17,13 +10,7 @@ sub type { 'landscaping' }
 # Human-readable name for display
 sub name { 'Landscaping/Planting' }
 
-has upload_subdir => ( is => 'ro', default => 'tfl_licence_landscaping_files' );
-
-has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
-
-has finished_action => ( is => 'ro', default => 'process_licence' );
-
-has '+is_html5' => ( default => 1 );
+sub next_after_contractor { 'activity' }
 
 # ==========================================================================
 # Introduction / Before you get started
@@ -54,57 +41,6 @@ has_page location => (
         $form->post_process_location;
     },
 );
-
-# ==========================================================================
-# Dates (fields from Fields::Dates role)
-# ==========================================================================
-has_page dates => (
-    fields => ['proposed_start_date', 'proposed_duration', 'year_warning', 'continue'],
-    title => 'Proposed working dates',
-    intro => 'dates.html',
-    next => 'applicant',
-);
-
-# ==========================================================================
-# About You (Applicant)
-# Fields: organisation, address, phone_24h from Fields::Applicant role
-# Fields: name, email, phone from AboutYou role
-# ==========================================================================
-has_page applicant => (
-    fields => [
-        'organisation',
-        'name',
-        'job_title',
-        'address',
-        'email',
-        'phone',
-        'phone_24h',
-        'continue'
-    ],
-    title => 'Applicant details',
-    intro => 'landscaping/applicant.html',
-    next => 'contractor',
-);
-
-# ==========================================================================
-# About You (Principal Contractor)
-# Fields from Fields::Contractor role
-# ==========================================================================
-has_page contractor => (
-    fields => [
-        'contractor_same_as_applicant',
-        'contractor_organisation',
-        'contractor_contact_name',
-        'contractor_address',
-        'contractor_email',
-        'contractor_phone',
-        'contractor_phone_24h',
-        'continue'
-    ],
-    title => 'Contractor details (Landscaping/Planting Contractor)',
-    next => 'activity',
-);
-
 
 # ==========================================================================
 # Landscaping activity
@@ -307,74 +243,6 @@ has_field upload_specification => (
     messages => {
         upload_file_not_found => 'Please upload a landscaping specification or planting schedule',
     },
-);
-
-# ==========================================================================
-# Payment
-# ==========================================================================
-has_page payment => (
-    fields => [
-        'payment_transaction_id',
-        'continue'
-    ],
-    title => 'Payment',
-    intro => 'payment.html',
-    next => 'summary',
-
-    update_field_list => sub {
-        my $form = shift;
-        my $c = $form->{c};
-        # FIXME
-        $c->stash->{payment_link} = 'LINK';
-        return {};
-    },
-);
-
-has_field payment_transaction_id => (
-    type => 'Text',
-    label => 'Transaction ID',
-);
-
-# ==========================================================================
-# Summary
-# ==========================================================================
-has_page summary => (
-    fields => ['submit'],
-    title => 'Application Summary',
-    template => 'licence/summary.html',
-    finished => sub {
-        my $form = shift;
-        my $c = $form->c;
-        my $success = $c->forward('process_licence', [ $form ]);
-        if (!$success) {
-            $form->add_form_error('Something went wrong, please try again');
-        }
-        return $success;
-    },
-    next => 'done',
-);
-
-has_field submit => (
-    type => 'Submit',
-    value => 'Submit application',
-    element_attr => { class => 'govuk-button' },
-);
-
-# ==========================================================================
-# Confirmation
-# ==========================================================================
-has_page done => (
-    title => 'Application complete',
-    template => 'licence/confirmation.html',
-);
-
-# ==========================================================================
-# Shared fields
-# ==========================================================================
-has_field continue => (
-    type => 'Submit',
-    value => 'Continue',
-    element_attr => { class => 'govuk-button' },
 );
 
 __PACKAGE__->meta->make_immutable;

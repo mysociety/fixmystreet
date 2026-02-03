@@ -18,7 +18,7 @@ my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Builder\'s skip licence',
-    email => 'licence@tfl.gov.uk'
+    email => 'licence@tfl.gov.uk.example.org'
 );
 
 subtest 'Skip form submission - smoke test' => sub {
@@ -43,6 +43,9 @@ subtest 'Skip form submission - smoke test' => sub {
             borough => 'camden',
             postcode => 'NW1 1AA',
         }});
+
+        $mech->content_contains('2 weeks');
+        $mech->content_lacks('28 weeks');
 
         # Dates page (using dynamic dates calculated at test start)
         $mech->submit_form_ok({ with_fields => {
@@ -142,7 +145,7 @@ subtest 'Skip form submission - smoke test' => sub {
 
         # Verify uploads went to the licence_files directory
         my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-        my $upload_dir = path($UPLOAD_DIR, "tfl_licence_builders_skip_files")->absolute(FixMyStreet->path_to());
+        my $upload_dir = path($UPLOAD_DIR, "tfl-licence-builders-skip")->absolute(FixMyStreet->path_to());
 
         ok -d $upload_dir, 'licence_files directory exists';
 

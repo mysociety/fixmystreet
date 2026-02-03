@@ -17,7 +17,7 @@ my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Temporary Traffic Signs licence',
-    email => 'licence@tfl.gov.uk'
+    email => 'licence@tfl.gov.uk.example.org'
 );
 
 subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
@@ -48,7 +48,7 @@ subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
             'proposed_start_date.day' => $start_date->day,
             'proposed_start_date.month' => $start_date->month,
             'proposed_start_date.year' => $start_date->year,
-            proposed_duration => 4,
+            'proposed_duration' => 4,
         }});
 
         # Applicant page
@@ -150,7 +150,7 @@ subtest 'Temporary Traffic Signs form submission - smoke test' => sub {
 
         # Verify uploads went to the licence_files directory
         my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-        my $upload_dir = path($UPLOAD_DIR, "tfl_licence_temporary-traffic-signs_files")->absolute(FixMyStreet->path_to());
+        my $upload_dir = path($UPLOAD_DIR, "tfl-licence-temporary-traffic-signs")->absolute(FixMyStreet->path_to());
 
         ok -d $upload_dir, 'licence_files directory exists';
 

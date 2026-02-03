@@ -17,7 +17,7 @@ my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Mobile apparatus licence',
-    email => 'licence@tfl.gov.uk'
+    email => 'licence@tfl.gov.uk.example.org'
 );
 
 subtest 'Mobile apparatus form submission - smoke test' => sub {
@@ -65,7 +65,6 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
         # Contractor page - use "same as applicant"
         $mech->submit_form_ok({ with_fields => {
             contractor_same_as_applicant => 1,
-            contractor_meeting => 1,
         }});
 
         # Details page
@@ -162,7 +161,7 @@ subtest 'Mobile apparatus form submission - smoke test' => sub {
 
         # Verify uploads went to the licence_files directory
         my $cfg = FixMyStreet->config('PHOTO_STORAGE_OPTIONS');
-        my $upload_dir = path($UPLOAD_DIR, "tfl_licence_mobile_apparatus_files")->absolute(FixMyStreet->path_to());
+        my $upload_dir = path($UPLOAD_DIR, "tfl-licence-mobile-apparatus")->absolute(FixMyStreet->path_to());
 
         ok -d $upload_dir, 'licence_files directory exists';
 

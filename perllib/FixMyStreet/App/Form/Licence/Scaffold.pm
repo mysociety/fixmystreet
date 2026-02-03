@@ -1,15 +1,8 @@
 package FixMyStreet::App::Form::Licence::Scaffold;
 
 use HTML::FormHandler::Moose;
-extends 'FixMyStreet::App::Form::Wizard';
+extends 'FixMyStreet::App::Form::Licence';
 use utf8;
-
-# Shared field roles
-with 'FixMyStreet::App::Form::Licence::Fields::Location';
-with 'FixMyStreet::App::Form::Licence::Fields::Dates';
-with 'FixMyStreet::App::Form::Licence::Fields::Applicant';
-with 'FixMyStreet::App::Form::Licence::Fields::Contractor';
-with 'FixMyStreet::App::Form::Licence::Fields::TemporaryProhibition';
 
 # Type identifier used in URL: /licence/scaffold
 sub type { 'scaffold' }
@@ -17,13 +10,7 @@ sub type { 'scaffold' }
 # Human-readable name for display
 sub name { 'Scaffold' }
 
-has upload_subdir => ( is => 'ro', default => 'tfl_licence_scaffold_files' );
-
-has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
-
-has finished_action => ( is => 'ro', default => 'process_licence' );
-
-has '+is_html5' => ( default => 1 );
+sub next_after_contractor { 'dimensions' }
 
 # ==========================================================================
 # Introduction / Before you get started
@@ -53,81 +40,6 @@ has_page location => (
         my $form = shift;
         $form->post_process_location;
     },
-);
-
-# ==========================================================================
-# Dates (fields from Fields::Dates role)
-# ==========================================================================
-has_page dates => (
-    fields => ['proposed_start_date', 'proposed_duration', 'year_warning', 'continue'],
-    title => 'Proposed working dates',
-    intro => 'dates.html',
-    next => 'applicant',
-);
-
-# ==========================================================================
-# About You (Applicant)
-# Fields: organisation, address, phone_24h from Fields::Applicant role
-# Fields: name, email, phone from AboutYou role
-# ==========================================================================
-has_page applicant => (
-    fields => [
-        'organisation',
-        'name',
-        'job_title',
-        'address',
-        'email',
-        'phone',
-        'phone_24h',
-        'continue'
-    ],
-    title => 'Applicant details',
-    intro => 'scaffold/applicant.html',
-    next => 'contractor',
-);
-
-# ==========================================================================
-# About You (Principal Contractor)
-# Fields from Fields::Contractor role, plus scaffold-specific NASC question
-# ==========================================================================
-has_page contractor => (
-    fields => [
-        'contractor_same_as_applicant',
-        'contractor_organisation',
-        'contractor_contact_name',
-        'contractor_address',
-        'contractor_email',
-        'contractor_phone',
-        'contractor_phone_24h',
-        'contractor_nasc_member',
-        'contractor_meeting',
-        'continue'
-    ],
-    title => 'Contractor details (Scaffold Contractor)',
-    next => 'dimensions',
-);
-
-has_field contractor_nasc_member => (
-    type => 'Select',
-    widget => 'RadioGroup',
-    label => 'Is the scaffold contractor a member of a regulated scaffolding association, such as NASC?',
-    required => 1,
-    options => [
-        { label => 'Yes', value => 'Yes' },
-        { label => 'No', value => 'No' },
-    ],
-);
-
-has_field contractor_meeting => (
-    type => 'Checkbox',
-    label => '',
-    option_label => 'I confirm that I am authorised on behalf of the scaffold contractor named in this application and have been granted full written authority to submit this application on their behalf. I further confirm that all liabilities, insurance requirements, safety obligations, and statutory responsibilities remain with the scaffold contractor, and that all information supplied has been provided with their consent.',
-    validate_method => sub {
-        my $self = shift;
-        my $same = $self->form->field('contractor_same_as_applicant')->value;
-        $self->add_error('Please confirm') if !$self->value && !$same;
-    },
-    tags => { hide => sub { $_[0]->form->saved_data->{contractor_same_as_applicant} } },
 );
 
 # ==========================================================================
@@ -491,7 +403,6 @@ has_field upload_scaffold_drawing => (
     },
 );
 
-
 has_field upload_additional => (
     type => 'FileIdUpload',
     label => 'Additional supporting documentation',
@@ -500,80 +411,17 @@ has_field upload_additional => (
     },
 );
 
-# ==========================================================================
-# Payment
-# ==========================================================================
-has_page payment => (
-    fields => [
-        'payment_transaction_id',
-        'continue'
-    ],
-    title => 'Payment',
-    intro => 'payment.html',
-    next => 'summary',
-
-    update_field_list => sub {
-        my $form = shift;
-        my $data = $form->saved_data;
-        my $type = $data->{scaffold_type};
-        my $c = $form->{c};
-        if ($type eq 'Scaffold (Mobile Tower)') {
-            $c->stash->{payment_link} = 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/rKoNGpTjrw8wwoygPdsmbNjiPhbCLr98MHR1B2xx9iazhSecgrT8mZziDEUnol6L';
-        } elsif ($type eq 'Scaffold (Large)') {
-            $c->stash->{payment_link} = 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/mzWBnuiA747cclZIDar9r8jF5BConLNld6QWbfZJJfTViBsEggO0jpu68tI7DWMx';
-        } else {
-            $c->stash->{payment_link} = 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/1S1H8aiH78NUYsz3863iSbn1Z7OdesWjzBLAo41i0alca5Q2uM9RPTF3NGYIK5WR';
-        }
-        return {};
-    },
-);
-
-has_field payment_transaction_id => (
-    type => 'Text',
-    label => 'Transaction ID',
-);
-
-# ==========================================================================
-# Summary
-# ==========================================================================
-has_page summary => (
-    fields => ['submit'],
-    title => 'Application Summary',
-    template => 'licence/summary.html',
-    finished => sub {
-        my $form = shift;
-        my $c = $form->c;
-        my $success = $c->forward('process_licence', [ $form ]);
-        if (!$success) {
-            $form->add_form_error('Something went wrong, please try again');
-        }
-        return $success;
-    },
-    next => 'done',
-);
-
-has_field submit => (
-    type => 'Submit',
-    value => 'Submit application',
-    element_attr => { class => 'govuk-button' },
-);
-
-# ==========================================================================
-# Confirmation
-# ==========================================================================
-has_page done => (
-    title => 'Application complete',
-    template => 'licence/confirmation.html',
-);
-
-# ==========================================================================
-# Shared fields
-# ==========================================================================
-has_field continue => (
-    type => 'Submit',
-    value => 'Continue',
-    element_attr => { class => 'govuk-button' },
-);
+sub payment_link {
+    my $self = shift;
+    my $type = $self->saved_data->{scaffold_type};
+    if ($type eq 'Scaffold (Mobile Tower)') {
+        return 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/rKoNGpTjrw8wwoygPdsmbNjiPhbCLr98MHR1B2xx9iazhSecgrT8mZziDEUnol6L';
+    } elsif ($type eq 'Scaffold (Large)') {
+        return 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/mzWBnuiA747cclZIDar9r8jF5BConLNld6QWbfZJJfTViBsEggO0jpu68tI7DWMx';
+    } else {
+        return 'https://ebc2test.cybersource.com/ebc2/payByLink/pay/1S1H8aiH78NUYsz3863iSbn1Z7OdesWjzBLAo41i0alca5Q2uM9RPTF3NGYIK5WR';
+    }
+}
 
 __PACKAGE__->meta->make_immutable;
 
