@@ -67,6 +67,13 @@ INCLUDE '_email_top.html';
       <p style="[% p_style %]">
         Please note that we are unable to return to correct the problem, unless you are on the Assisted Collection service and you have indicated you require additional help.
       </p>
+    [% ELSIF report.category == 'Missed collection dispute' %]
+      <p style="[% p_style %]">
+        We apologise for any inconvenience this may have caused and appreciate your feedback. We're committed to using it to improve our customer service.
+      </p>
+      <p style="[% p_style %]">
+        We will investigate and aim to respond in the next two working days.
+      </p>
     [% END %]
 
 [% ELSIF cobrand.moniker == 'kingston' AND report.category == 'Request new container' %]
