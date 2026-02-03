@@ -145,8 +145,8 @@ subtest 'Scaffold form submission - smoke test' => sub {
         # "Contact name" is unique to contractor section (applicant uses "Full name")
         $mech->content_lacks('Contact name', 'Contractor fields hidden when same as applicant');
 
-        # Summary page - submit (need to specify process field for wizard forms)
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        # Summary page - submit
+        $mech->submit_form_ok({ with_fields => { confirmation => 1 } });
 
         # Check we're on confirmation page
         $mech->content_contains('This is not a licence', 'Shows confirmation page');

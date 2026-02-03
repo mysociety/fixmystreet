@@ -120,8 +120,8 @@ subtest 'Skip form submission - smoke test' => sub {
         # Summary page - check it rendered
         $mech->content_contains('Application Summary', 'Summary page rendered');
 
-        # Summary page - submit (need to specify process field for wizard forms)
-        $mech->submit_form_ok({ with_fields => { process => 'summary' } });
+        # Summary page - submit
+        $mech->submit_form_ok({ with_fields => { confirmation => 1 } });
 
         # Check we're on confirmation page
         $mech->content_contains('This is not a licence', 'Shows confirmation page');

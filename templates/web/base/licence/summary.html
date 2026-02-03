@@ -12,7 +12,7 @@
 <dl class="govuk-summary-list">
   [% FOR page IN form.fields_for_display %]
       [% NEXT IF page.hide %]
-      [% NEXT IF page.stage == 'intro' OR page.stage == 'summary' OR page.stage == 'done' %]
+      [% NEXT IF page.stage == 'intro' OR page.stage == 'done' %]
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">[% page.title %]</dt>
         <dd class="govuk-summary-list__value"></dd>
