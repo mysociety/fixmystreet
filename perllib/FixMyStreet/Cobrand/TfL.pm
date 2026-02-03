@@ -27,7 +27,9 @@ are assigned an FMS account and user role when logging in.
 
 with 'FixMyStreet::Roles::BoroughEmails';
 
+use MIME::Types;
 use POSIX qw(strcoll);
+use Path::Tiny;
 
 use FixMyStreet::MapIt;
 use mySociety::ArrayUtils;
@@ -704,6 +706,34 @@ around 'munge_sendreport_params' => sub {
 
     $params->{From} = [ $self->do_not_reply_email, $self->contact_name ];
     delete $params->{'Reply-To'} if $params->{'Reply-To'};
+
+    if ($row->cobrand_data eq 'licence') {
+        my @attachments;
+        my $subdir = 'tfl-licence-' . $row->get_extra_metadata('licence_type');
+        # Attach documents
+        my $mime_types = MIME::Types->new;
+        # Any field beginning upload_ is perhaps a file
+        my $extra = $row->get_extra_metadata;
+        my @files = grep { $_ } map { $extra->{$_} } grep { /^upload_/ } keys %$extra;
+        foreach (@files) {
+            my $filename = $_->{filenames}[0];
+            my $id = $_->{files};
+            my $dir = FixMyStreet->config('PHOTO_STORAGE_OPTIONS')->{UPLOAD_DIR};
+            $dir = path($dir, $subdir)->absolute(FixMyStreet->path_to());
+            my $data = path($dir, $id)->slurp_raw;
+            push @attachments, {
+                body => $data,
+                attributes => {
+                    filename => $filename,
+                    content_type => $mime_types->mimeTypeOf($filename),
+                    encoding => 'base64', # quoted-printable ends up with newlines corrupting binary data
+                    name => $filename,
+                },
+            };
+        }
+
+        $params->{_attachments_} = \@attachments;
+    }
 };
 
 sub is_hardcoded_category {
