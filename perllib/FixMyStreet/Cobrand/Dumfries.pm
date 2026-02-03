@@ -255,4 +255,88 @@ sub state_groups_inspect {
 }
 
 
+=head2 validate_response_template_external_status_code
+
+Validates that an external_status_code entered in the admin templates page
+conforms to Dumfries format rules:
+
+- Must have exactly 3 colon-separated segments (status:outcome:priority)
+- Each segment must be either empty, a '*' wildcard, or an Alloy ID
+- Wildcards cannot be mixed with other text in a segment
+- At least one segment must be a concrete Alloy ID (not empty or wildcard)
+  i.e. '::' and '*:*:*' are not valid
+
+Returns an error message string if invalid, undef if valid.
+
+=cut
+
+sub validate_response_template_external_status_code {
+    my ($self, $ext_code) = @_;
+
+    return unless defined $ext_code && $ext_code ne '';
+
+    my @parts = split /:/, $ext_code, -1;
+
+    if (@parts != 3) {
+        return _('External status code must have exactly 3 colon-separated parts (status:outcome:priority).');
+    }
+
+    for my $i (0..2) {
+        my $part = $parts[$i];
+        # Each part must be: empty, exactly '*', or a non-* value (Alloy ID)
+        if ($part ne '' && $part ne '*' && $part =~ /\*/) {
+            return _('Wildcards (*) cannot be mixed with other text. Each segment must be empty, a single *, or an Alloy ID.');
+        }
+    }
+
+    # Must have at least one non-empty, non-wildcard segment
+    my @concrete = grep { $_ ne '' && $_ ne '*' } @parts;
+    if (!@concrete) {
+        return _('External status code must have at least one concrete value (not empty or wildcard).');
+    }
+
+    return;  # Valid
+}
+
+
+=head2 expand_external_status_code_for_template_match
+
+Dumfries external status codes from Alloy are colon-separated values
+(status:outcome:priority). This method generates all possible wildcard
+variants for matching response templates.
+
+A template with external_status_code '123:*:*' will match any incoming
+code starting with '123:' followed by two non-empty segments.
+
+Wildcards only substitute for non-empty segments - if the incoming code
+has an empty segment (e.g. '123::789'), that segment stays empty in all
+variants and won't match a '*' in a template.
+
+=cut
+
+sub expand_external_status_code_for_template_match {
+    my ($self, $ext_code) = @_;
+
+    my @parts = split /:/, $ext_code, -1;  # -1 preserves trailing empty strings
+    my %seen;
+
+    # Generate 2^N combinations where each non-empty part can be itself or '*'
+    my $n = scalar @parts;
+    for my $mask (0 .. (2**$n - 1)) {
+        my @combo;
+        for my $i (0 .. $n-1) {
+            # Only substitute '*' for non-empty parts
+            if (($mask & (1 << $i)) && $parts[$i] ne '') {
+                push @combo, '*';
+            } else {
+                push @combo, $parts[$i];
+            }
+        }
+        $seen{join(':', @combo)} = 1;
+    }
+
+    return [ keys %seen ];
+}
+
+
 1;
