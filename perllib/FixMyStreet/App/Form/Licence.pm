@@ -7,6 +7,7 @@ use warnings;
 use Module::Pluggable
     sub_name    => '_forms',
     search_path => 'FixMyStreet::App::Form::Licence',
+    except => qr/Base/,
     require     => 1;
 
 my @ALL_FORM_CLASSES = __PACKAGE__->_forms;

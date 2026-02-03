@@ -1,14 +1,8 @@
 package FixMyStreet::App::Form::Licence::TemporaryTrafficSigns;
 
 use HTML::FormHandler::Moose;
-extends 'FixMyStreet::App::Form::Wizard';
+extends 'FixMyStreet::App::Form::Licence::Base';
 use utf8;
-
-# Shared field roles
-with 'FixMyStreet::App::Form::Licence::Fields::Location';
-with 'FixMyStreet::App::Form::Licence::Fields::Dates';
-with 'FixMyStreet::App::Form::Licence::Fields::Applicant';
-with 'FixMyStreet::App::Form::Licence::Fields::TemporaryProhibition';
 
 # Type identifier used in URL: /licence/temporary-traffic-signs
 sub type { 'temporary-traffic-signs' }
@@ -16,13 +10,7 @@ sub type { 'temporary-traffic-signs' }
 # Human-readable name for display
 sub name { 'Temporary Traffic Signs' }
 
-has upload_subdir => ( is => 'ro', default => 'tfl_licence_temporary-traffic-signs_files' );
-
-has default_page_type => ( is => 'ro', isa => 'Str', default => 'Wizard' );
-
-has finished_action => ( is => 'ro', default => 'process_licence' );
-
-has '+is_html5' => ( default => 1 );
+sub next_after_applicant { 'activity' }
 
 # ==========================================================================
 # Introduction / Before you get started
@@ -52,37 +40,6 @@ has_page location => (
         my $form = shift;
         $form->post_process_location;
     },
-);
-
-# ==========================================================================
-# Dates (fields from Fields::Dates role)
-# ==========================================================================
-has_page dates => (
-    fields => ['proposed_start_date', 'proposed_duration', 'year_warning', 'continue'],
-    title => 'Proposed working dates',
-    intro => 'dates.html',
-    next => 'applicant',
-);
-
-# ==========================================================================
-# About You (Applicant)
-# Fields: organisation, address, phone_24h from Fields::Applicant role
-# Fields: name, email, phone from AboutYou role
-# ==========================================================================
-has_page applicant => (
-    fields => [
-        'organisation',
-        'name',
-        'job_title',
-        'address',
-        'email',
-        'phone',
-        'phone_24h',
-        'continue'
-    ],
-    title => 'Applicant details',
-    intro => 'temporary-traffic-signs/applicant.html',
-    next => 'activity',
 );
 
 # ==========================================================================
@@ -333,73 +290,6 @@ has_field upload_additional => (
     messages => {
         upload_file_not_found => 'Please upload any additional supporting documentation',
     },
-);
-
-# ==========================================================================
-# Payment
-# ==========================================================================
-has_page payment => (
-    fields => [
-        'payment_transaction_id',
-        'continue'
-    ],
-    title => 'Payment',
-    intro => 'payment.html',
-    next => 'summary',
-
-    update_field_list => sub {
-        my $form = shift;
-        my $c = $form->{c};
-        $c->stash->{payment_link} = 'LINK';
-        return {};
-    },
-);
-
-has_field payment_transaction_id => (
-    type => 'Text',
-    label => 'Transaction ID',
-);
-
-# ==========================================================================
-# Summary
-# ==========================================================================
-has_page summary => (
-    fields => ['submit'],
-    title => 'Application Summary',
-    template => 'licence/summary.html',
-    finished => sub {
-        my $form = shift;
-        my $c = $form->c;
-        my $success = $c->forward('process_licence', [ $form ]);
-        if (!$success) {
-            $form->add_form_error('Something went wrong, please try again');
-        }
-        return $success;
-    },
-    next => 'done',
-);
-
-has_field submit => (
-    type => 'Submit',
-    value => 'Submit application',
-    element_attr => { class => 'govuk-button' },
-);
-
-# ==========================================================================
-# Confirmation
-# ==========================================================================
-has_page done => (
-    title => 'Application complete',
-    template => 'licence/confirmation.html',
-);
-
-# ==========================================================================
-# Shared fields
-# ==========================================================================
-has_field continue => (
-    type => 'Submit',
-    value => 'Continue',
-    element_attr => { class => 'govuk-button' },
 );
 
 __PACKAGE__->meta->make_immutable;

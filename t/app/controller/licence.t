@@ -13,7 +13,7 @@ my $body = $mech->create_body_ok(2482, 'TfL', { cobrand => 'tfl' });
 my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Scaffold licence',
-    email => 'licence@tfl.gov.uk'
+    email => 'licence@tfl.gov.uk.example.org'
 );
 
 subtest 'Feature flag disabled returns 404' => sub {

@@ -12,7 +12,6 @@
         'contractor_email',
         'contractor_phone',
         'contractor_phone_24h',
-        'contractor_meeting',
         'contractor_authorised',
     ];
 
