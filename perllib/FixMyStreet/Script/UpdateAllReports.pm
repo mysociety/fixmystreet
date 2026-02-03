@@ -136,7 +136,7 @@ sub generate_dashboard {
     my %data;
 
     my $rs = FixMyStreet::DB->resultset('Problem')->search({
-        cobrand_data => { -not_in => ["waste", "noise", "claim"] },
+        cobrand_data => { -not_in => ["waste", "noise", "claim", "licence"] },
     });
     $rs = $rs->to_body($body) if $body;
 
