@@ -229,7 +229,7 @@ sub munge_report_new_bodies {
 sub munge_report_new_contacts {
     my ($self, $contacts) = @_;
 
-    # Ignore contacts with a special type (e.g. waste, noise, claim)
+    # Ignore contacts with a special type (e.g. waste, noise, form)
     @$contacts = grep { !$_->get_extra_metadata('type') } @$contacts;
 
     my %bodies = map { $_->body->get_column('name') => $_->body } @$contacts;
