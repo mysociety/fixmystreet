@@ -939,7 +939,19 @@ sub response_template_for {
             # The double comma option here dates from Echo updates with only a
             # resolution code ID being stored in the database as "CODE,,". Once
             # they're all updated to only be CODE, this can be removed.
-            push @$state_params, { 'me.state' => '', 'me.external_status_code' => [$ext_code, "$ext_code,,"] };
+            my @ext_codes = ($ext_code, "$ext_code,,");
+
+            # Allow cobrands to expand the external status code to include wildcard variants
+            my $cobrand = $body->get_cobrand_handler;
+            if (my $expanded = $cobrand && $cobrand->call_hook(
+                expand_external_status_code_for_template_match => $ext_code
+            )) {
+                @ext_codes = @$expanded;
+                # Order by fewest wildcards first (most specific match wins)
+                $order = { order_by => \"(LENGTH(me.external_status_code) - LENGTH(REPLACE(me.external_status_code, '*', ''))) ASC, me.external_status_code DESC NULLS LAST, contact.category" };
+            }
+
+            push @$state_params, { 'me.state' => '', 'me.external_status_code' => \@ext_codes };
         };
 
         $template = $self->response_templates->search({

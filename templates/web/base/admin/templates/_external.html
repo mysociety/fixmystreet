@@ -34,11 +34,40 @@
 
 [% ELSE %]
 
+    [%# Check if the body's cobrand needs custom help text for external status codes %]
+    [% body_cobrand = body.get_cobrand_handler %]
+
+    [% IF body_cobrand.moniker == 'dumfries' %]
+    <div class="admin-hint">
+      <p>
+        For [% body_cobrand.council_name %], external status codes from Alloy have 3 colon-separated parts:
+        <strong>status:outcome:priority</strong>
+      </p>
+      <p>
+        You can use <code>*</code> as a wildcard to match any non-empty value in a segment.
+        The most specific template will be used when multiple templates match.
+      </p>
+      <p><strong>Examples:</strong></p>
+      <ul>
+        <li><code>abc123:def456:ghi789</code> &ndash; matches only this exact status code</li>
+        <li><code>abc123:*:*</code> &ndash; matches any code starting with abc123 (any outcome/priority)</li>
+        <li><code>abc123:def456:*</code> &ndash; matches abc123 with def456 outcome (any priority)</li>
+        <li><code>abc123:*:ghi789</code> &ndash; matches abc123 with ghi789 priority (any outcome)</li>
+        <li><code>abc123:def456:</code> &ndash; matches when priority is empty</li>
+      </ul>
+      <p>
+        <strong>Note:</strong> Wildcards only match non-empty segments.
+        <code>abc:*:*</code> will <em>not</em> match <code>abc::</code>.
+        At least one segment must be a concrete Alloy ID (not empty or wildcard).
+      </p>
+    </div>
+    [% ELSE %]
     <div class="admin-hint">
       <p>
         [% loc('If you want to use this template to prefill the update field when a report&rsquo;s <strong>external</strong> (e.g. Confirm) status code changes, enter the status code here.') %]
       </p>
     </div>
+    [% END %]
     <p>
       <label for="external_status_code">[% loc('External status code') %]</label>
       <input type="text" id="external_status_code" name="external_status_code" class="form-control" size="30" value="[% rt.external_status_code | html %]">

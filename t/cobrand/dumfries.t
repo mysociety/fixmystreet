@@ -23,6 +23,7 @@ my $contact = $mech->create_contact_ok(
 my $reporter = $mech->create_user_ok('reporter@example.com', name => 'Reporter');
 my $staff_user = $mech->create_user_ok('staff@dumgal.gov.uk', name => 'Staff User', from_body => $body);
 my $other_user = $mech->create_user_ok('other@example.com', name => 'Other User');
+my $superuser = $mech->create_user_ok('super@example.com', name => 'Superuser', is_superuser => 1);
 
 # Create problem once and reuse it
 my $problem = FixMyStreet::DB->resultset('Problem')->create({
@@ -329,5 +330,328 @@ FixMyStreet::override_config {
 };
 
 $problem->delete;
+
+subtest 'expand_external_status_code_for_template_match' => sub {
+    my $cobrand = FixMyStreet::Cobrand::Dumfries->new;
+
+    subtest 'three non-empty segments generates all 8 combinations' => sub {
+        my $result = $cobrand->expand_external_status_code_for_template_match('aaa:bbb:ccc');
+        my @sorted = sort @$result;
+        is_deeply \@sorted, [
+            '*:*:*',
+            '*:*:ccc',
+            '*:bbb:*',
+            '*:bbb:ccc',
+            'aaa:*:*',
+            'aaa:*:ccc',
+            'aaa:bbb:*',
+            'aaa:bbb:ccc',
+        ], 'All 8 wildcard combinations generated for 3 non-empty segments';
+    };
+
+    subtest 'empty segment stays empty, not replaced with wildcard' => sub {
+        my $result = $cobrand->expand_external_status_code_for_template_match('aaa::ccc');
+        my @sorted = sort @$result;
+        is_deeply \@sorted, [
+            '*::*',
+            '*::ccc',
+            'aaa::*',
+            'aaa::ccc',
+        ], 'Empty middle segment preserved in all combinations';
+    };
+
+    subtest 'trailing empty segment preserved' => sub {
+        my $result = $cobrand->expand_external_status_code_for_template_match('aaa:bbb:');
+        my @sorted = sort @$result;
+        is_deeply \@sorted, [
+            '*:*:',
+            '*:bbb:',
+            'aaa:*:',
+            'aaa:bbb:',
+        ], 'Trailing empty segment preserved';
+    };
+
+    subtest 'all empty segments returns single result' => sub {
+        my $result = $cobrand->expand_external_status_code_for_template_match('::');
+        is_deeply $result, ['::'], 'All empty segments returns only exact match';
+    };
+
+    subtest 'single segment generates two combinations' => sub {
+        my $result = $cobrand->expand_external_status_code_for_template_match('abc');
+        my @sorted = sort @$result;
+        is_deeply \@sorted, ['*', 'abc'], 'Single segment generates exact and wildcard';
+    };
+};
+
+subtest 'response_template_for with wildcard matching' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        # Create a new problem for these tests
+        my $test_problem = FixMyStreet::DB->resultset('Problem')->create({
+            postcode           => 'DG1 1AA',
+            bodies_str         => $body->id,
+            areas              => ',2656,',
+            category           => 'Potholes',
+            title              => 'Template test problem',
+            detail             => 'Test detail',
+            used_map           => 1,
+            name               => 'Reporter',
+            anonymous          => 0,
+            state              => 'confirmed',
+            confirmed          => DateTime->now,
+            lastupdate         => DateTime->now,
+            latitude           => 55.0706,
+            longitude          => -3.9568,
+            user_id            => $reporter->id,
+            cobrand            => 'dumfries',
+        });
+
+        # Create response templates with various external_status_codes
+        my $template_exact = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Exact Match Template',
+            text => 'Exact match response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:outcome1:priority1',
+        });
+
+        my $template_wildcard_one = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'One Wildcard Template',
+            text => 'One wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:outcome1:*',
+        });
+
+        my $template_wildcard_two = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Two Wildcard Template',
+            text => 'Two wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1:*:*',
+        });
+
+        my $template_all_wildcard = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'All Wildcard Template',
+            text => 'All wildcard response',
+            auto_response => 1,
+            state => '',
+            external_status_code => '*:*:*',
+        });
+
+        my $template_empty_segments = FixMyStreet::DB->resultset('ResponseTemplate')->create({
+            body_id => $body->id,
+            title => 'Empty Segments Template',
+            text => 'Empty segments response',
+            auto_response => 1,
+            state => '',
+            external_status_code => 'status1::',
+        });
+
+        subtest 'exact match beats wildcards' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priority1', ''
+            );
+            is $template->title, 'Exact Match Template',
+                'Exact match template selected over wildcards';
+        };
+
+        subtest 'more specific wildcard beats less specific' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priorityX', ''
+            );
+            is $template->title, 'One Wildcard Template',
+                'One wildcard template beats two wildcard template';
+        };
+
+        subtest 'two wildcards beats three wildcards' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcomeX:priorityX', ''
+            );
+            is $template->title, 'Two Wildcard Template',
+                'Two wildcard template beats all wildcard template';
+        };
+
+        subtest 'all wildcards matches when nothing more specific' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'statusX:outcomeX:priorityX', ''
+            );
+            is $template->title, 'All Wildcard Template',
+                'All wildcard template matches when no better match';
+        };
+
+        subtest 'empty segments do not match wildcards' => sub {
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1::', ''
+            );
+            is $template->title, 'Empty Segments Template',
+                'Empty segments match empty template, not wildcard';
+        };
+
+        subtest 'wildcard does not match empty segment' => sub {
+            # Delete the empty segments template so it can't match
+            $template_empty_segments->delete;
+
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1::', ''
+            );
+            is $template, undef,
+                'No template matches when segments are empty and no exact match exists';
+        };
+
+        subtest 'no match when external_status_code unchanged' => sub {
+            $test_problem->set_extra_metadata(external_status_code => 'status1:outcome1:priority1');
+            $test_problem->update;
+
+            my $template = $test_problem->response_template_for(
+                $body, 'investigating', 'confirmed',
+                'status1:outcome1:priority1', 'status1:outcome1:priority1'
+            );
+            is $template, undef,
+                'No template when external_status_code has not changed';
+        };
+
+        # Cleanup
+        $template_exact->delete;
+        $template_wildcard_one->delete;
+        $template_wildcard_two->delete;
+        $template_all_wildcard->delete;
+        $test_problem->delete;
+    };
+};
+
+subtest 'admin template external_status_code validation' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => ['dumfries'],
+    }, sub {
+        $mech->log_in_ok($superuser->email);
+
+        subtest 'valid external_status_code is accepted' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({
+                with_fields => {
+                    title => 'Valid Template',
+                    text => 'Template text',
+                    auto_response => 'on',
+                    external_status_code => 'abc:def:ghi',
+                }
+            });
+            # Should redirect on success
+            is $mech->uri->path, '/admin/templates/' . $body->id, 'Redirected after valid submission';
+
+            # Cleanup
+            $mech->delete_response_template($_) for $body->response_templates->search({ title => 'Valid Template' });
+        };
+
+        subtest 'wildcard external_status_code is accepted' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({
+                with_fields => {
+                    title => 'Wildcard Template',
+                    text => 'Template text',
+                    auto_response => 'on',
+                    external_status_code => 'abc:*:*',
+                }
+            });
+            is $mech->uri->path, '/admin/templates/' . $body->id, 'Redirected after valid wildcard submission';
+
+            $mech->delete_response_template($_) for $body->response_templates->search({ title => 'Wildcard Template' });
+        };
+
+        subtest 'invalid segment count is rejected' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({
+                with_fields => {
+                    title => 'Invalid Template',
+                    text => 'Template text',
+                    auto_response => 'on',
+                    external_status_code => 'abc:def',
+                }
+            });
+            is $mech->uri->path, '/admin/templates/' . $body->id . '/new', 'Not redirected on error';
+            $mech->content_contains('exactly 3', 'Error message shown for wrong segment count');
+        };
+
+        subtest 'mixed wildcard is rejected' => sub {
+            $mech->get_ok('/admin/templates/' . $body->id . '/new');
+            $mech->submit_form_ok({
+                with_fields => {
+                    title => 'Mixed Wildcard Template',
+                    text => 'Template text',
+                    auto_response => 'on',
+                    external_status_code => 'abc*:def:ghi',
+                }
+            });
+            is $mech->uri->path, '/admin/templates/' . $body->id . '/new', 'Not redirected on error';
+            $mech->content_contains('cannot be mixed', 'Error message shown for mixed wildcard');
+        };
+
+        $mech->log_out_ok;
+    };
+};
+
+subtest 'validate_response_template_external_status_code' => sub {
+    my $cobrand = FixMyStreet::Cobrand::Dumfries->new;
+
+    subtest 'valid codes return undef' => sub {
+        is $cobrand->validate_response_template_external_status_code('abc:def:ghi'), undef,
+            'Three non-empty segments is valid';
+        is $cobrand->validate_response_template_external_status_code('abc:*:*'), undef,
+            'Wildcards in segments is valid';
+        is $cobrand->validate_response_template_external_status_code('abc::'), undef,
+            'Empty segments is valid';
+        is $cobrand->validate_response_template_external_status_code('abc:*:'), undef,
+            'Mix of value, wildcard, and empty is valid';
+    };
+
+    subtest 'must have at least one concrete value' => sub {
+        like $cobrand->validate_response_template_external_status_code('*:*:*'), qr/at least one concrete/,
+            'All wildcards returns error';
+        like $cobrand->validate_response_template_external_status_code('::'), qr/at least one concrete/,
+            'All empty segments returns error';
+        like $cobrand->validate_response_template_external_status_code('*::'), qr/at least one concrete/,
+            'Wildcard and empty returns error';
+        like $cobrand->validate_response_template_external_status_code(':*:'), qr/at least one concrete/,
+            'Empty wildcard empty returns error';
+    };
+
+    subtest 'empty/undef codes return undef (no validation needed)' => sub {
+        is $cobrand->validate_response_template_external_status_code(''), undef,
+            'Empty string returns undef';
+        is $cobrand->validate_response_template_external_status_code(undef), undef,
+            'Undef returns undef';
+    };
+
+    subtest 'wrong number of segments returns error' => sub {
+        like $cobrand->validate_response_template_external_status_code('abc'), qr/exactly 3/,
+            'Single segment returns error';
+        like $cobrand->validate_response_template_external_status_code('abc:def'), qr/exactly 3/,
+            'Two segments returns error';
+        like $cobrand->validate_response_template_external_status_code('abc:def:ghi:jkl'), qr/exactly 3/,
+            'Four segments returns error';
+    };
+
+    subtest 'mixed wildcard and text returns error' => sub {
+        like $cobrand->validate_response_template_external_status_code('abc*:def:ghi'), qr/cannot be mixed/,
+            'Wildcard mixed with text at start returns error';
+        like $cobrand->validate_response_template_external_status_code('abc:d*f:ghi'), qr/cannot be mixed/,
+            'Wildcard in middle of text returns error';
+        like $cobrand->validate_response_template_external_status_code('abc:def:ghi*'), qr/cannot be mixed/,
+            'Wildcard at end of text returns error';
+        like $cobrand->validate_response_template_external_status_code('abc:**:ghi'), qr/cannot be mixed/,
+            'Double wildcard returns error';
+    };
+};
 
 done_testing();
