@@ -7,6 +7,8 @@
     [%~ END %]
     [% IF report.category == 'Bulky collection' AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'fixed - council' OR update.item_problem_state == 'unable to fix') %]
       [% INCLUDE 'waste/_bulky_email_comment_end.html' %]
+    [% ELSIF cobrand.moniker == 'sutton' AND report.category == 'Small items collection' AND (update.item_problem_state == 'closed' OR update.item_problem_state == 'fixed - council' OR update.item_problem_state == 'unable to fix') %]
+      [% INCLUDE 'waste/_small_items_email_comment_end.html' %]
     [% ELSE %]
       [% email_sanitize_html(update, private_email ? "item_private_email_text" : undef) | replace('<p>', '<p style="' _ list_item_p_style _ '">') %]
       [% IF NOT private_email %]

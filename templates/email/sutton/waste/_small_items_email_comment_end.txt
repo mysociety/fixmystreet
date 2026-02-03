@@ -1,0 +1,16 @@
+[% PROCESS 'waste/_bulky_data.html' ~%]
+
+[% email_summary %]
+
+[% IF row.item_problem_state == 'unable to fix' %]
+To report a problem with this missed collection visit your bin page
+[% END %]
+
+[% email_sanitize_text(row, 'item_text_original') %]
+
+Collection date: [% collection_date %]
+
+Items for collection:
+[% INCLUDE 'waste/_bulky_list.txt' %]
+
+[% INCLUDE '_council_reference.txt' problem=report %]
