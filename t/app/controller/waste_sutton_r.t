@@ -724,6 +724,7 @@ FixMyStreet::override_config {
         };
 
         subtest 'Open dispute for missed collection' => sub {
+            $mech->clear_emails_ok;
             set_fixed_time('2022-09-11T18:01:00Z');
             $mech->get_ok('/waste/12345');
             $mech->follow_link_ok({ text => 'Report a problem with this missed collection' });
@@ -742,6 +743,13 @@ FixMyStreet::override_config {
             is $report->user->email, 'schmoe@example.org', 'User details added to report';
             is $report->name, 'Joe Schmoe', 'User details added to report';
             is $report->get_extra_field_value('Notes'), "There was no problem with the bin";
+            FixMyStreet::Script::Reports::send();
+            $mech->email_count_is(1);
+            my $email = $mech->get_email;
+            my $text_email = $mech->get_text_body_from_email($email);
+            my $html_email = $mech->get_html_body_from_email($email);
+            like $text_email, qr/respond in the next two working days/, 'Correct text email next steps';
+            like $html_email, qr/respond in the next two working days/, 'Correct text email next steps';
         };
 
         $e->mock('GetEventsForObject', sub { [] }); # reset
