@@ -2,6 +2,7 @@ use FixMyStreet::TestMech;
 use File::Temp 'tempdir';
 use Path::Tiny;
 use DateTime;
+use FixMyStreet::Script::Reports;
 
 my $sample_pdf = path(__FILE__)->parent->parent->child("sample.pdf");
 
@@ -27,6 +28,7 @@ subtest 'Scaffold form submission - smoke test' => sub {
         PHONE_COUNTRY => 'GB',
         COBRAND_FEATURES => {
             licencing_forms => { tfl => 1 },
+            anonymous_account => { tfl => 'anon' },
         },
         PHOTO_STORAGE_OPTIONS => { UPLOAD_DIR => $UPLOAD_DIR },
     }, sub {
@@ -179,6 +181,57 @@ subtest 'Scaffold form submission - smoke test' => sub {
             my $file_path = $upload_dir->child($extra->{$field}->{files});
             ok -f $file_path, "Uploaded file exists at $file_path";
         }
+
+        subtest 'sent emails' => sub {
+            FixMyStreet::Script::Reports::send();
+
+            my @email = $mech->get_email;
+            my @email_parts;
+            $email[0]->walk_parts(sub {
+                my ($part) = @_;
+                push @email_parts, [ { $part->header_pairs }, $part->body ];
+            });
+            like $email_parts[0][0]{'Content-Type'}, qr{multipart/mixed};
+            is $email_parts[0][0]{'Subject'}, 'Problem Report: Scaffold licence';
+            is $email_parts[0][0]{'To'}, 'TfL <licence@tfl.gov.uk.example.org>';
+            like $email_parts[1][0]{'Content-Type'}, qr{multipart/related};
+            like $email_parts[2][0]{'Content-Type'}, qr{multipart/alternative};
+            like $email_parts[3][0]{'Content-Type'}, qr{text/plain};
+				# could check text here
+            like $email_parts[4][0]{'Content-Type'}, qr{text/html};
+				# could check html here
+            like $email_parts[5][0]{'Content-Type'}, qr{image/gif};
+            like $email_parts[5][0]{'Content-Disposition'}, qr{email-logo.gif};
+            my $next = 6;
+            if (@email_parts == 10) {
+                # IM installed, so there is a map attachment
+                like $email_parts[6][0]{'Content-Type'}, qr{image/jpeg};
+                like $email_parts[6][0]{'Content-Disposition'}, qr{map.jpeg};
+                $next++;
+            }
+            like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};
+            like $email_parts[$next++][0]{'Content-Disposition'}, qr{sample.pdf};
+            like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};
+            like $email_parts[$next++][0]{'Content-Disposition'}, qr{sample.pdf};
+            like $email_parts[$next][0]{'Content-Type'}, qr{application/pdf};
+            like $email_parts[$next++][0]{'Content-Disposition'}, qr{sample.pdf};
+
+            @email_parts = ();
+            $email[1]->walk_parts(sub {
+                my ($part) = @_;
+                push @email_parts, [ { $part->header_pairs }, $part->body ];
+            });
+            like $email_parts[0][0]{'Content-Type'}, qr{multipart/related};
+            is $email_parts[0][0]{'Subject'}, 'Your report has been logged: Scaffold licence';
+            is $email_parts[0][0]{'To'}, 'test@example.com';
+            like $email_parts[1][0]{'Content-Type'}, qr{multipart/alternative};
+            like $email_parts[2][0]{'Content-Type'}, qr{text/plain};
+				# could check text here
+            like $email_parts[3][0]{'Content-Type'}, qr{text/html};
+				# could check html here
+            like $email_parts[4][0]{'Content-Type'}, qr{image/gif};
+            like $email_parts[4][0]{'Content-Disposition'}, qr{email-logo.gif};
+        };
     };
 };
 
