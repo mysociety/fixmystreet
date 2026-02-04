@@ -180,7 +180,7 @@ sub waste_containers {
         $CONTAINERS{paper_360} => 'Blue lid paper and cardboard bin (360L)',
         $CONTAINERS{paper_180} => 'Blue lid paper and cardboard bin (180L)',
 
-        $CONTAINERS{paper_bag} => 'Paper & Card Reusable Bag',
+        $CONTAINERS{paper_bag} => 'Paper & Card Bag',
 
         $CONTAINERS{food_indoor} => 'Food waste bin (kitchen)',
         $CONTAINERS{food_outdoor} => 'Food waste bin (outdoor)',
