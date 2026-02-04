@@ -35,11 +35,140 @@ has_page location => (
     fields => ['building_name_number', 'street_name', 'borough', 'postcode', 'continue'],
     title => 'Location of mobile apparatus',
     intro => 'location.html',
-    next => 'dates',
+    next => 'date_choice',
     post_process => sub {
         my $form = shift;
         $form->post_process_location;
     },
+);
+
+# ==========================================================================
+# Date picker
+# ==========================================================================
+
+has_page date_choice => (
+    fields => ['date_choice', 'continue'],
+    title => 'Date option',
+    next => sub {
+        $_[0]->{date_choice} eq 'dates' ? 'dates_pick' : 'applicant',
+    },
+);
+
+has_field date_choice => (
+    type => 'Select',
+    widget => 'RadioGroup',
+    label => 'Would you like one to three individual dates, or a 1 or 2 week continuous period?',
+    required => 1,
+    options => [
+        { label => 'Individual dates', value => 'dates' },
+        { label => '7 operations (1 week continuous)', value => 'week' },
+        { label => '14 operations (2 weeks continuous)', value => 'fortnight' },
+    ],
+);
+
+has_page dates_pick => (
+    fields => [
+        'date1', 'start_time1', 'end_time1',
+        'date2', 'start_time2', 'end_time2',
+        'date3', 'start_time3', 'end_time3',
+        'continue'],
+    title => 'Pick your dates',
+    next => 'applicant',
+    tags => {
+        hide => sub {
+            my $self = shift;
+            my $data = $self->form->saved_data;
+            return $data->{date_choice} ne 'dates';
+        },
+    },
+);
+
+sub validate_date {
+    my $field = shift;
+    return if $field->has_errors; # Called even if already failed
+
+    my $dt = $field->value or return;
+    my $today = DateTime->today(time_zone => FixMyStreet->local_time_zone);
+    my $min_date = $today->clone->add(weeks => 4);
+
+    if ($dt < $min_date) {
+        $field->add_error('Date must be at least 4 weeks from today');
+    }
+}
+
+has_field date1 => (
+    type => 'DateTime',
+    label => 'Operation 1',
+    required => 1,
+    messages => {
+        datetime_invalid => 'Please enter a valid date',
+    },
+    validate_method => \&validate_date,
+);
+has_field 'date1.day' => ( type => 'MonthDay' );
+has_field 'date1.month' => ( type => 'Month' );
+has_field 'date1.year' => ( type => 'Year' );
+
+has_field start_time1 => (
+    type => 'Text',
+    label => 'Proposed start time',
+    required_when => { 'date1' => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
+);
+
+has_field end_time1 => (
+    type => 'Text',
+    label => 'Proposed end time',
+    required_when => { 'date1' => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
+);
+
+has_field date2 => (
+    type => 'DateTime',
+    label => 'Operation 2',
+    messages => {
+        datetime_invalid => 'Please enter a valid date',
+    },
+    tags => { hint => 'Optional' },
+    validate_method => \&validate_date,
+);
+has_field 'date2.day' => ( type => 'MonthDay' );
+has_field 'date2.month' => ( type => 'Month' );
+has_field 'date2.year' => ( type => 'Year' );
+
+has_field start_time2 => (
+    type => 'Text',
+    label => 'Proposed start time',
+    required_when => { 'date2' => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
+);
+
+has_field end_time2 => (
+    type => 'Text',
+    label => 'Proposed end time',
+    required_when => { 'date2' => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
+);
+
+has_field date3 => (
+    type => 'DateTime',
+    label => 'Operation 3',
+    messages => {
+        datetime_invalid => 'Please enter a valid date',
+    },
+    tags => { hint => 'Optional' },
+    validate_method => \&validate_date,
+);
+has_field 'date3.day' => ( type => 'MonthDay' );
+has_field 'date3.month' => ( type => 'Month' );
+has_field 'date3.year' => ( type => 'Year' );
+
+has_field start_time3 => (
+    type => 'Text',
+    label => 'Proposed start time',
+    required_when => { 'date3' => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
+);
+
+has_field end_time3 => (
+    type => 'Text',
+    label => 'Proposed end time',
+    required_when => { 'date3' => sub { $_[0] && ($_[0]->{day} || $_[0]->{month} || $_[0]->{year}) } },
 );
 
 # ==========================================================================
