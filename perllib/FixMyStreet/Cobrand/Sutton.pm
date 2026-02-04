@@ -957,4 +957,15 @@ sub waste_munge_small_items_data {
     $self->waste_munge_bulky_data($data);
 }
 
+sub waste_munge_report_form_fields {
+    my ($self, $field_list) = @_;
+
+    push @$field_list, 'sutton_collection_note' => {
+        type => 'Notice',
+        label => 'Once you’ve reported a missed collection, please leave the bin, box or caddy at the front of your property, ideally close to the pavement but not on it, ready for collection. Where this is not possible, bins, boxes, and caddies can be presented on the pavement, but must be removed as soon as possible after collection to avoid obstruction.',
+    };
+
+    # Look for "Select your missed collection" page and insert the note before the submit button
+}
+
 1;
